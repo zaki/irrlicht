@@ -377,7 +377,7 @@ public:
 	O(n*log n) in worst case. */
 	void sort()
 	{
-		if (!is_sorted || used>1)
+		if (!is_sorted && used>1)
 			heapsort(data, used);
 		is_sorted = true;
 	}
