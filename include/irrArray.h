@@ -164,18 +164,25 @@ public:
 		}
 		else
 		{
-			// move array content and construct new element
-			// first move end one up
-			for (u32 i=used; i>index; --i)
+			// element inserted not at end
+			if ( used > index )
 			{
-				if (i<used)
-					allocator.destruct(&data[i]);
-				allocator.construct(&data[i], data[i-1]); // data[i] = data[i-1];
+				// create one new element at the end
+				allocator.construct(&data[used], data[used-1]);
+
+				// move the rest of the array content
+				for (u32 i=used-1; i>index; --i)
+				{
+					data[i] = data[i-1];
+				}
+				// insert the new element
+				data[index] = element;
 			}
-			// then add new element
-			if (used > index)
-				allocator.destruct(&data[index]);
-			allocator.construct(&data[index], element); // data[index] = element;
+			else
+			{
+				// insert the new element to the end
+				allocator.construct(&data[index], element);
+			}
 		}
 		// set to false as we don't know if we have the comparison operators
 		is_sorted = false;
