@@ -259,7 +259,6 @@ private:
 	void readPass(io::IReadFile* file, OgreTechnique& technique);
 	void loadMaterials(io::IReadFile* file);
 	bool loadSkeleton(io::IReadFile* meshFile, const core::stringc& name);
-	core::stringc getTextureFileName(const core::stringc& texture, core::stringc& model);
 	void clearMeshes();
 
 	io::IFileSystem* FileSystem;

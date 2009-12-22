@@ -781,44 +781,33 @@ void COgreMeshFileLoader::composeObject(void)
 			}
 		}
 
-#if 0
 		// currently not working correctly
 		for (u32 i=0; i<Skeleton.Animations.size(); ++i)
 		{
 			for (u32 j=0; j<Skeleton.Animations[i].Keyframes.size(); ++j)
 			{
-				ISkinnedMesh::SPositionKey* poskey = m->addPositionKey(m->getAllJoints()[Skeleton.Animations[i].Keyframes[j].BoneID]);
-				poskey->frame=Skeleton.Animations[i].Keyframes[j].Time;
-				poskey->position=Skeleton.Animations[i].Keyframes[j].Position;
-				ISkinnedMesh::SRotationKey* rotkey = m->addRotationKey(m->getAllJoints()[Skeleton.Animations[i].Keyframes[j].BoneID]);
-				rotkey->frame=Skeleton.Animations[i].Keyframes[j].Time;
-				rotkey->rotation=Skeleton.Animations[i].Keyframes[j].Orientation;
-				ISkinnedMesh::SScaleKey* scalekey = m->addScaleKey(m->getAllJoints()[Skeleton.Animations[i].Keyframes[j].BoneID]);
-				scalekey->frame=Skeleton.Animations[i].Keyframes[j].Time;
-				scalekey->scale=Skeleton.Animations[i].Keyframes[j].Scale;
+#if 0
+				OgreKeyframe& frame = Skeleton.Animations[i].Keyframes[j];
+#ifdef IRR_OGRE_LOADER_DEBUG
+				os::Printer::log("Time", core::stringc(frame.Time));
+				os::Printer::log("Position", core::stringc(frame.Position.X)+" "+core::stringc(frame.Position.Y)+" "+core::stringc(frame.Position.Z));
+				os::Printer::log("Rotation quat", core::stringc(frame.Orientation.W)+" "+core::stringc(frame.Orientation.X)+" "+core::stringc(frame.Orientation.Y)+" "+core::stringc(frame.Orientation.Z));
+#endif
+				ISkinnedMesh::SJoint* keyjoint = m->getAllJoints()[frame.BoneID];
+				ISkinnedMesh::SPositionKey* poskey = m->addPositionKey(keyjoint);
+				poskey->frame=frame.Time;
+				poskey->position=keyjoint->LocalMatrix.getTranslation()+frame.Position;
+				ISkinnedMesh::SRotationKey* rotkey = m->addRotationKey(keyjoint);
+				rotkey->frame=frame.Time;
+				rotkey->rotation=frame.Orientation+core::quaternion(keyjoint->LocalMatrix);
+				ISkinnedMesh::SScaleKey* scalekey = m->addScaleKey(keyjoint);
+				scalekey->frame=frame.Time;
+				scalekey->scale=frame.Scale;
+#endif
 			}
 		}
-#endif
 		m->finalize();
 	}
-}
-
-
-core::stringc COgreMeshFileLoader::getTextureFileName(const core::stringc& texture,
-						 core::stringc& model)
-{
-	s32 idx = -1;
-	idx = model.findLast('/');
-
-	if (idx == -1)
-		idx = model.findLast('\\');
-
-	if (idx == -1)
-		return core::stringc();
-
-	core::stringc p = model.subString(0, idx+1);
-	p.append(texture);
-	return p;
 }
 
 
@@ -1366,8 +1355,8 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 				readQuaternion(file, data, bone.Orientation);
 #ifdef IRR_OGRE_LOADER_DEBUG
 				os::Printer::log("Bone", bone.Name+" ("+core::stringc(bone.Handle)+")");
-//				os::Printer::log("Position", core::stringc(bone.Position.X)+" "+core::stringc(bone.Position.Y)+" "+core::stringc(bone.Position.Z));
-//				os::Printer::log("Rotation quat", core::stringc(bone.Orientation.W)+" "+core::stringc(bone.Orientation.X)+" "+core::stringc(bone.Orientation.Y)+" "+core::stringc(bone.Orientation.Z));
+				os::Printer::log("Position", core::stringc(bone.Position.X)+" "+core::stringc(bone.Position.Y)+" "+core::stringc(bone.Position.Z));
+				os::Printer::log("Rotation quat", core::stringc(bone.Orientation.W)+" "+core::stringc(bone.Orientation.X)+" "+core::stringc(bone.Orientation.Y)+" "+core::stringc(bone.Orientation.Z));
 //				core::vector3df rot;
 //				bone.Orientation.toEuler(rot);
 //				rot *= core::RADTODEG;
@@ -1408,7 +1397,7 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 			break;
 		case COGRE_ANIMATION_TRACK:
 #ifdef IRR_OGRE_LOADER_DEBUG
-//			os::Printer::log("for Bone ", core::stringc(bone));
+			os::Printer::log("for Bone ", core::stringc(bone));
 #endif
 				readShort(file, data, &bone); // store current bone
 			break;
