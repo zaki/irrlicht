@@ -1818,7 +1818,7 @@ void CIrrDeviceLinux::copyToClipboard(const c8* text) const
 // return true if the passed event has the type passed in parameter arg
 Bool PredicateIsEventType(Display *display, XEvent *event, XPointer arg)
 {
-	if ( event && event->type == (int)arg )
+	if ( event && event->type == *(int*)arg )
 	{
 //		os::Printer::log("remove event:", core::stringc((int)arg).c_str(), ELL_INFORMATION);
 		return True;
@@ -1834,11 +1834,16 @@ void CIrrDeviceLinux::clearSystemMessages()
 	if (CreationParams.DriverType != video::EDT_NULL)
 	{
 		XEvent event;
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)ButtonPress) == True ) 	{}
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)ButtonRelease) == True ) {}
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)MotionNotify) == True ) 	{}
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)KeyRelease) == True )	{}
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)KeyPress) == True )		{}
+		int usrArg = ButtonPress;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) 	{}
+		usrArg = ButtonRelease;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) {}
+		usrArg = MotionNotify;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) 	{}
+		usrArg = KeyRelease;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True )	{}
+		usrArg = KeyPress;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True )		{}
 	}
 #endif //_IRR_COMPILE_WITH_X11_
 }
