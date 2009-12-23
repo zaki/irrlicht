@@ -90,6 +90,7 @@ bool CGUIModalScreen::OnEvent(const SEvent& event)
 			{
 				Environment->setFocus(this);
 			}
+			IGUIElement::OnEvent(event);
 			return false;
 		case EGET_ELEMENT_FOCUS_LOST:
 			if ( !canTakeFocus(event.GUIEvent.Element))

@@ -949,16 +949,19 @@ IGUIWindow* CGUIEnvironment::addWindow(const core::rect<s32>& rectangle, bool mo
 {
 	parent = parent ? parent : this;
 
-	if (modal)
-	{
-		parent = new CGUIModalScreen(this, parent, -1);
-		parent->drop();
-	}
-
 	IGUIWindow* win = new CGUIWindow(this, parent, id, rectangle);
 	if (text)
 		win->setText(text);
 	win->drop();
+
+	if (modal)
+	{
+		// Careful, don't just set the modal as parent above. That will mess up the focus (and is hard to change because we have to be very
+		// careful not to get virtual function call, like OnEvent, in the window.
+		CGUIModalScreen * modalScreen = new CGUIModalScreen(this, parent, -1);
+		modalScreen->drop();
+		modalScreen->addChild(win);
+	}
 
 	return win;
 }
@@ -998,16 +1001,20 @@ IGUIWindow* CGUIEnvironment::addMessageBox(const wchar_t* caption, const wchar_t
 	rect.LowerRightCorner.X = rect.UpperLeftCorner.X + msgBoxDim.Width;
 	rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + msgBoxDim.Height;
 
-	if (modal)
-	{
-		parent = new CGUIModalScreen(this, parent, -1);
-		parent->drop();
-	}
-
 	IGUIWindow* win = new CGUIMessageBox(this, caption, text, flag,
 		parent, id, rect, image);
-
 	win->drop();
+
+	if (modal)
+	{
+		// Careful, don't just set the modal as parent above. That will mess up the focus (and is hard to change because we have to be very
+		// careful not to get virtual function call, like OnEvent, in the CGUIMessageBox.
+		CGUIModalScreen * modalScreen = new CGUIModalScreen(this, parent, -1);
+		modalScreen->drop();
+		modalScreen->addChild( win );
+	}
+
+
 	return win;
 }
 
@@ -1136,15 +1143,18 @@ IGUIFileOpenDialog* CGUIEnvironment::addFileOpenDialog(const wchar_t* title,
 {
 	parent = parent ? parent : this;
 
+	IGUIFileOpenDialog* d = new CGUIFileOpenDialog(title, this, parent, id);
+	d->drop();
+
 	if (modal)
 	{
-		parent = new CGUIModalScreen(this, parent, -1);
-		parent->drop();
+		// Careful, don't just set the modal as parent above. That will mess up the focus (and is hard to change because we have to be very
+		// careful not to get virtual function call, like OnEvent, in the window.
+		CGUIModalScreen * modalScreen = new CGUIModalScreen(this, parent, -1);
+		modalScreen->drop();
+		modalScreen->addChild(d);
 	}
 
-	IGUIFileOpenDialog* d = new CGUIFileOpenDialog(title, this, parent, id);
-
-	d->drop();
 	return d;
 }
 
@@ -1155,16 +1165,19 @@ IGUIColorSelectDialog* CGUIEnvironment::addColorSelectDialog(const wchar_t* titl
 {
 	parent = parent ? parent : this;
 
-	if (modal)
-	{
-		parent = new CGUIModalScreen(this, parent, -1);
-		parent->drop();
-	}
-
 	IGUIColorSelectDialog* d = new CGUIColorSelectDialog( title,
 			this, parent, id);
-
 	d->drop();
+
+	if (modal)
+	{
+		// Careful, don't just set the modal as parent above. That will mess up the focus (and is hard to change because we have to be very
+		// careful not to get virtual function call, like OnEvent, in the window.
+		CGUIModalScreen * modalScreen = new CGUIModalScreen(this, parent, -1);
+		modalScreen->drop();
+		modalScreen->addChild(d);
+	}
+
 	return d;
 }
 
