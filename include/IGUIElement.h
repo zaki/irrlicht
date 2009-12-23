@@ -42,8 +42,10 @@ public:
 
 		// if we were given a parent to attach to
 		if (parent)
-			parent->addChild(this);
-
+		{
+			parent->addChildToEnd(this);
+			recalculateAbsolutePosition(true);
+		}
 	}
 
 
@@ -213,120 +215,7 @@ public:
 	//! Updates the absolute position.
 	virtual void updateAbsolutePosition()
 	{
-		core::rect<s32> parentAbsolute(0,0,0,0);
-		core::rect<s32> parentAbsoluteClip;
-		f32 fw=0.f, fh=0.f;
-
-		if (Parent)
-		{
-			parentAbsolute = Parent->AbsoluteRect;
-
-			if (NoClip)
-			{
-				IGUIElement* p=this;
-				while (p && p->Parent)
-					p = p->Parent;
-				parentAbsoluteClip = p->AbsoluteClippingRect;
-			}
-			else
-				parentAbsoluteClip = Parent->AbsoluteClippingRect;
-		}
-
-		const s32 diffx = parentAbsolute.getWidth() - LastParentRect.getWidth();
-		const s32 diffy = parentAbsolute.getHeight() - LastParentRect.getHeight();
-
-		if (AlignLeft == EGUIA_SCALE || AlignRight == EGUIA_SCALE)
-			fw = (f32)parentAbsolute.getWidth();
-
-		if (AlignTop == EGUIA_SCALE || AlignBottom == EGUIA_SCALE)
-			fh = (f32)parentAbsolute.getHeight();
-
-		switch (AlignLeft)
-		{
-			case EGUIA_UPPERLEFT:
-				break;
-			case EGUIA_LOWERRIGHT:
-				DesiredRect.UpperLeftCorner.X += diffx;
-				break;
-			case EGUIA_CENTER:
-				DesiredRect.UpperLeftCorner.X += diffx/2;
-				break;
-			case EGUIA_SCALE:
-				DesiredRect.UpperLeftCorner.X = core::round32(ScaleRect.UpperLeftCorner.X * fw);
-				break;
-		}
-
-		switch (AlignRight)
-		{
-			case EGUIA_UPPERLEFT:
-				break;
-			case EGUIA_LOWERRIGHT:
-				DesiredRect.LowerRightCorner.X += diffx;
-				break;
-			case EGUIA_CENTER:
-				DesiredRect.LowerRightCorner.X += diffx/2;
-				break;
-			case EGUIA_SCALE:
-				DesiredRect.LowerRightCorner.X = core::round32(ScaleRect.LowerRightCorner.X * fw);
-				break;
-		}
-
-		switch (AlignTop)
-		{
-			case EGUIA_UPPERLEFT:
-				break;
-			case EGUIA_LOWERRIGHT:
-				DesiredRect.UpperLeftCorner.Y += diffy;
-				break;
-			case EGUIA_CENTER:
-				DesiredRect.UpperLeftCorner.Y += diffy/2;
-				break;
-			case EGUIA_SCALE:
-				DesiredRect.UpperLeftCorner.Y = core::round32(ScaleRect.UpperLeftCorner.Y * fh);
-				break;
-		}
-
-		switch (AlignBottom)
-		{
-			case EGUIA_UPPERLEFT:
-				break;
-			case EGUIA_LOWERRIGHT:
-				DesiredRect.LowerRightCorner.Y += diffy;
-				break;
-			case EGUIA_CENTER:
-				DesiredRect.LowerRightCorner.Y += diffy/2;
-				break;
-			case EGUIA_SCALE:
-				DesiredRect.LowerRightCorner.Y = core::round32(ScaleRect.LowerRightCorner.Y * fh);
-				break;
-		}
-
-		RelativeRect = DesiredRect;
-
-		const s32 w = RelativeRect.getWidth();
-		const s32 h = RelativeRect.getHeight();
-
-		// make sure the desired rectangle is allowed
-		if (w < (s32)MinSize.Width)
-			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MinSize.Width;
-		if (h < (s32)MinSize.Height)
-			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MinSize.Height;
-		if (MaxSize.Width && w > (s32)MaxSize.Width)
-			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MaxSize.Width;
-		if (MaxSize.Height && h > (s32)MaxSize.Height)
-			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MaxSize.Height;
-
-		RelativeRect.repair();
-
-		AbsoluteRect = RelativeRect + parentAbsolute.UpperLeftCorner;
-
-		if (!Parent)
-			parentAbsoluteClip = AbsoluteRect;
-
-		AbsoluteClippingRect = AbsoluteRect;
-		AbsoluteClippingRect.clipAgainst(parentAbsoluteClip);
-
-		LastParentRect = parentAbsolute;
+		recalculateAbsolutePosition(false);
 
 		// update all children
 		core::list<IGUIElement*>::Iterator it = Children.begin();
@@ -388,13 +277,9 @@ public:
 	//! Adds a GUI element as new child of this element.
 	virtual void addChild(IGUIElement* child)
 	{
+		addChildToEnd(child);
 		if (child)
 		{
-			child->grab(); // prevent destruction when removed
-			child->remove(); // remove from old parent
-			child->LastParentRect = getAbsolutePosition();
-			child->Parent = this;
-			Children.push_back(child);
 			child->updateAbsolutePosition();
 		}
 	}
@@ -858,6 +743,149 @@ public:
 		setRelativePosition(in->getAttributeAsRect("Rect"));
 
 		setNotClipped(in->getAttributeAsBool("NoClip"));
+	}
+
+protected:
+	// not virtual because needed in constructor
+	void addChildToEnd(IGUIElement* child)
+	{
+		if (child)
+		{
+			child->grab(); // prevent destruction when removed
+			child->remove(); // remove from old parent
+			child->LastParentRect = getAbsolutePosition();
+			child->Parent = this;
+			Children.push_back(child);
+		}
+	}
+
+	// not virtual because needed in constructor
+	void recalculateAbsolutePosition(bool recursive)
+	{
+		core::rect<s32> parentAbsolute(0,0,0,0);
+		core::rect<s32> parentAbsoluteClip;
+		f32 fw=0.f, fh=0.f;
+
+		if (Parent)
+		{
+			parentAbsolute = Parent->AbsoluteRect;
+
+			if (NoClip)
+			{
+				IGUIElement* p=this;
+				while (p && p->Parent)
+					p = p->Parent;
+				parentAbsoluteClip = p->AbsoluteClippingRect;
+			}
+			else
+				parentAbsoluteClip = Parent->AbsoluteClippingRect;
+		}
+
+		const s32 diffx = parentAbsolute.getWidth() - LastParentRect.getWidth();
+		const s32 diffy = parentAbsolute.getHeight() - LastParentRect.getHeight();
+
+		if (AlignLeft == EGUIA_SCALE || AlignRight == EGUIA_SCALE)
+			fw = (f32)parentAbsolute.getWidth();
+
+		if (AlignTop == EGUIA_SCALE || AlignBottom == EGUIA_SCALE)
+			fh = (f32)parentAbsolute.getHeight();
+
+		switch (AlignLeft)
+		{
+			case EGUIA_UPPERLEFT:
+				break;
+			case EGUIA_LOWERRIGHT:
+				DesiredRect.UpperLeftCorner.X += diffx;
+				break;
+			case EGUIA_CENTER:
+				DesiredRect.UpperLeftCorner.X += diffx/2;
+				break;
+			case EGUIA_SCALE:
+				DesiredRect.UpperLeftCorner.X = core::round32(ScaleRect.UpperLeftCorner.X * fw);
+				break;
+		}
+
+		switch (AlignRight)
+		{
+			case EGUIA_UPPERLEFT:
+				break;
+			case EGUIA_LOWERRIGHT:
+				DesiredRect.LowerRightCorner.X += diffx;
+				break;
+			case EGUIA_CENTER:
+				DesiredRect.LowerRightCorner.X += diffx/2;
+				break;
+			case EGUIA_SCALE:
+				DesiredRect.LowerRightCorner.X = core::round32(ScaleRect.LowerRightCorner.X * fw);
+				break;
+		}
+
+		switch (AlignTop)
+		{
+			case EGUIA_UPPERLEFT:
+				break;
+			case EGUIA_LOWERRIGHT:
+				DesiredRect.UpperLeftCorner.Y += diffy;
+				break;
+			case EGUIA_CENTER:
+				DesiredRect.UpperLeftCorner.Y += diffy/2;
+				break;
+			case EGUIA_SCALE:
+				DesiredRect.UpperLeftCorner.Y = core::round32(ScaleRect.UpperLeftCorner.Y * fh);
+				break;
+		}
+
+		switch (AlignBottom)
+		{
+			case EGUIA_UPPERLEFT:
+				break;
+			case EGUIA_LOWERRIGHT:
+				DesiredRect.LowerRightCorner.Y += diffy;
+				break;
+			case EGUIA_CENTER:
+				DesiredRect.LowerRightCorner.Y += diffy/2;
+				break;
+			case EGUIA_SCALE:
+				DesiredRect.LowerRightCorner.Y = core::round32(ScaleRect.LowerRightCorner.Y * fh);
+				break;
+		}
+
+		RelativeRect = DesiredRect;
+
+		const s32 w = RelativeRect.getWidth();
+		const s32 h = RelativeRect.getHeight();
+
+		// make sure the desired rectangle is allowed
+		if (w < (s32)MinSize.Width)
+			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MinSize.Width;
+		if (h < (s32)MinSize.Height)
+			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MinSize.Height;
+		if (MaxSize.Width && w > (s32)MaxSize.Width)
+			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MaxSize.Width;
+		if (MaxSize.Height && h > (s32)MaxSize.Height)
+			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MaxSize.Height;
+
+		RelativeRect.repair();
+
+		AbsoluteRect = RelativeRect + parentAbsolute.UpperLeftCorner;
+
+		if (!Parent)
+			parentAbsoluteClip = AbsoluteRect;
+
+		AbsoluteClippingRect = AbsoluteRect;
+		AbsoluteClippingRect.clipAgainst(parentAbsoluteClip);
+
+		LastParentRect = parentAbsolute;
+
+		if ( recursive )
+		{
+			// update all children
+			core::list<IGUIElement*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+			{
+				(*it)->recalculateAbsolutePosition(recursive);
+			}
+		}
 	}
 
 protected:
