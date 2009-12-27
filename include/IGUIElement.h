@@ -683,6 +683,20 @@ public:
 		return Type;
 	}
 
+	//! Returns true if the gui element supports the given type.
+	/** This is mostly used to check if you can cast a gui element to the class that goes with the type.
+	Most gui elements will only support their own type, but if you derive your own classes from interfaces
+	you can overload this function and add a check for the type of the base-class additionally.
+	This allows for checks comparable to the dynamic_cast of c++ with enabled rtti.
+	Note that you can't do that by calling BaseClass::hasType(type), but you have to do an explicit
+	comparison check, because otherwise the base class usually just checks for the membervariable
+	Type which contains the type of your derived class.
+	*/
+	virtual bool hasType(EGUI_ELEMENT_TYPE type) const
+	{
+		return type == Type;
+	}
+
 
 	//! Returns the type name of the gui element.
 	/** This is needed serializing elements. For serializing your own elements, override this function

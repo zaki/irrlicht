@@ -9,6 +9,7 @@
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
 #include "IGUIFont.h"
+#include "IGUIWindow.h"
 
 #include "os.h"
 
@@ -184,28 +185,41 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 	return IGUIElement::OnEvent(event);
 }
 
-
 void CGUIMenu::recalculateSize()
 {
+	core::rect<s32> clientRect; // client rect of parent
+	if ( Parent && Parent->hasType(EGUIET_WINDOW) )
+	{
+		clientRect = static_cast<IGUIWindow*>(Parent)->getClientRect();
+	}
+	else if ( Parent )
+	{
+		clientRect = core::rect<s32>(0,0, Parent->getAbsolutePosition().getWidth(),
+					Parent->getAbsolutePosition().getHeight());
+	}
+	else
+	{
+		clientRect = RelativeRect;
+	}
+
+
 	IGUISkin* skin = Environment->getSkin();
 	IGUIFont* font = skin->getFont(EGDF_MENU);
 
 	if (!font)
 	{
 		if (Parent && skin)
-			RelativeRect = core::rect<s32>(0,0,
-					Parent->getAbsolutePosition().LowerRightCorner.X,
-					skin->getSize(EGDS_MENU_HEIGHT));
+			RelativeRect = core::rect<s32>(clientRect.UpperLeftCorner.X, clientRect.UpperLeftCorner.Y,
+					clientRect.LowerRightCorner.X, clientRect.UpperLeftCorner.Y+skin->getSize(EGDS_MENU_HEIGHT));
 		return;
 	}
 
 	core::rect<s32> rect;
-	rect.UpperLeftCorner.X = 0;
-	rect.UpperLeftCorner.Y = 0;
+	rect.UpperLeftCorner = clientRect.UpperLeftCorner;
 	s32 height = font->getDimension(L"A").Height + 5;
 	//if (skin && height < skin->getSize ( EGDS_MENU_HEIGHT ))
 	//	height = skin->getSize(EGDS_MENU_HEIGHT);
-	s32 width = 0;
+	s32 width = rect.UpperLeftCorner.X;
 	s32 i;
 
 	for (i=0; i<(s32)Items.size(); ++i)
@@ -225,11 +239,10 @@ void CGUIMenu::recalculateSize()
 		width += Items[i].Dim.Width;
 	}
 
-	if (Parent)
-		width = Parent->getAbsolutePosition().getWidth();
+	width = clientRect.getWidth();
 
-	rect.LowerRightCorner.X = width;
-	rect.LowerRightCorner.Y = height;
+	rect.LowerRightCorner.X = rect.UpperLeftCorner.X + width;
+	rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + height;
 
 	setRelativePosition(rect);
 
