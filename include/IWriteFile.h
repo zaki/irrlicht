@@ -13,7 +13,7 @@ namespace irr
 namespace io
 {
 
-	//! Interface providing write acess to a file.
+	//! Interface providing write access to a file.
 	class IWriteFile : public virtual IReferenceCounted
 	{
 	public:

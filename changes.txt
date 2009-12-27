@@ -1,5 +1,13 @@
 Changes in 1.7
 
+ - Add hasType to IGUIElement as a dynamic_cast substitute.
+
+ - Add another parameter to IGUISkin::draw3DWindowBackground to allow getting the client area without actually drawing 
+
+ - Add function getClientRect to IGUIWindow for getting the draw-able area
+
+ - Fix bug that menus on IGUIWindows with titlebar got drawn too high (id: 2714400)
+
  - Renamed OctTree to Octree
 
  - Allow getting a ConstIterator from a non-const core:list

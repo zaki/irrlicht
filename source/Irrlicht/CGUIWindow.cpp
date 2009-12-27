@@ -89,6 +89,8 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	setTabGroup(true);
 	setTabStop(true);
 	setTabOrder(-1);
+
+	updateClientRect();
 }
 
 
@@ -221,12 +223,15 @@ void CGUIWindow::draw()
 	{
 		IGUISkin* skin = Environment->getSkin();
 
+		// update each time because the skin is allowed to change this always.
+		updateClientRect();
+
 		core::rect<s32> rect = AbsoluteRect;
 
 		// draw body fast
         if ( DrawBackground )
         {
-	        rect = skin->draw3DWindowBackground(this, DrawTitlebar, 
+	        rect = skin->draw3DWindowBackground(this, DrawTitlebar,
 							skin->getColor(IsActive ? EGDC_ACTIVE_BORDER : EGDC_INACTIVE_BORDER),
 							AbsoluteRect, &AbsoluteClippingRect);
 
@@ -240,7 +245,7 @@ void CGUIWindow::draw()
                 if (font)
                 {
                     font->draw(Text.c_str(), rect,
-						skin->getColor(IsActive ? EGDC_ACTIVE_CAPTION:EGDC_INACTIVE_CAPTION), 
+						skin->getColor(IsActive ? EGDC_ACTIVE_CAPTION:EGDC_INACTIVE_CAPTION),
 						false, true, &AbsoluteClippingRect);
                 }
             }
@@ -310,6 +315,27 @@ bool CGUIWindow::getDrawTitlebar() const
     return DrawTitlebar;
 }
 
+void CGUIWindow::updateClientRect()
+{
+	if (! DrawBackground )
+	{
+		ClientRect = core::rect<s32>(0,0, AbsoluteRect.getWidth(), AbsoluteRect.getHeight());
+		return;
+	}
+	IGUISkin* skin = Environment->getSkin();
+	skin->draw3DWindowBackground(this,
+							DrawTitlebar,
+							skin->getColor(IsActive ? EGDC_ACTIVE_BORDER : EGDC_INACTIVE_BORDER),
+							AbsoluteRect, &AbsoluteClippingRect, &ClientRect);
+	ClientRect -= AbsoluteRect.UpperLeftCorner;
+}
+
+//! Returns the rectangle of the drawable area (without border, without titlebar and without scrollbars)
+core::rect<s32> CGUIWindow::getClientRect() const
+{
+	return ClientRect;
+}
+
 //! Writes attributes of the element.
 void CGUIWindow::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
@@ -345,6 +371,8 @@ void CGUIWindow::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
     CloseButton->setVisible( in->getAttributeAsBool("IsCloseVisible") );
     MinButton->setVisible( in->getAttributeAsBool("IsMinVisible") );
     RestoreButton->setVisible( in->getAttributeAsBool("IsRestoreVisible") );
+
+    updateClientRect();
 }
 
 } // end namespace gui
