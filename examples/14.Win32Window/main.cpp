@@ -142,6 +142,7 @@ int main()
 	HWND hIrrlichtWindow = CreateWindow("BUTTON", "",
 			WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 			50, 80, 320, 220, hWnd, NULL, hInstance, NULL);
+	video::SExposedVideoData videodata((key=='b')?hIrrlichtWindow:0);
 
 	/*
 	So now that we have some window, we can create an Irrlicht device
@@ -163,6 +164,21 @@ int main()
 	irr::scene::ISceneManager* smgr = device->getSceneManager();
 	video::IVideoDriver* driver = device->getVideoDriver();
 
+	if (driverType==video::EDT_OPENGL)
+	{
+		HDC HDc=GetDC(hIrrlichtWindow);
+		PIXELFORMATDESCRIPTOR pfd={0};
+		pfd.nSize=sizeof(PIXELFORMATDESCRIPTOR);
+		int pf = GetPixelFormat(HDc);
+		DescribePixelFormat(HDc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+		pfd.dwFlags |= PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+		pfd.cDepthBits=16;
+		pf = ChoosePixelFormat(HDc, &pfd);
+		SetPixelFormat(HDc, pf, &pfd);
+		videodata.OpenGLWin32.HDc = HDc;
+		videodata.OpenGLWin32.HRc=wglCreateContext(HDc);
+		wglShareLists((HGLRC)driver->getExposedVideoData().OpenGLWin32.HRc, (HGLRC)videodata.OpenGLWin32.HRc);
+	}
 	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
 	cam->setTarget(core::vector3df(0,0,0));
 
@@ -207,7 +223,7 @@ int main()
 
 	while (device->run())
 	{
-		driver->beginScene(true, true, 0, (key=='b')?hIrrlichtWindow:0);
+		driver->beginScene(true, true, 0, videodata);
 		smgr->drawAll();
 		driver->endScene();
 	}
