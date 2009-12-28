@@ -95,3 +95,4 @@ bool filesystem(void)
 	result |= testFlattenFilename(fs);
 	return result;
 }
+

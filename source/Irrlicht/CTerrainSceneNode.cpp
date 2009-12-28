@@ -497,6 +497,7 @@ namespace scene
 	{
 		TerrainData.Scale = scale;
 		applyTransformation();
+		calculateNormals(RenderBuffer);
 		ForceRecalculation = true;
 	}
 

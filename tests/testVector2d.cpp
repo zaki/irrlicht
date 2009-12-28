@@ -133,7 +133,7 @@ static bool doTests()
 				tmp.getAngle(), ref.getAngle());
 			return false;
 		}
-		val = atan2f((float)tmp.Y, (float)tmp.X)*core::RADTODEG;
+		val = atan2f((f32)tmp.Y, (f32)tmp.X)*core::RADTODEG;
 		if (val<=0)
 			val=-val;
 		else

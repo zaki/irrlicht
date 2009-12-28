@@ -135,31 +135,23 @@ namespace irr
 			{
 				CURSORINFO info;
 				info.cbSize = sizeof(CURSORINFO);
-
-				if ( visible )
+				BOOL gotCursorInfo = GetCursorInfo(&info);
+				while ( gotCursorInfo )
 				{
-					while ( GetCursorInfo(&info) )
+					if ( (visible && info.flags == CURSOR_SHOWING) 	// visible
+						|| (!visible && info.flags == 0 ) )			// hidden
 					{
-						if ( info.flags == CURSOR_SHOWING )
-						{
-							IsVisible = visible;
-							break;
-						}
-						ShowCursor(true);   // this only increases an internal display counter in windows, so it might have to be called some more
+						break;
 					}
-				}
-				else
-				{
-					while ( GetCursorInfo(&info) )
+					int showResult = ShowCursor(visible);   // this only increases an internal display counter in windows, so it might have to be called some more
+					if ( showResult < 0 )
 					{
-						if ( info.flags == 0 )  // cursor hidden
-						{
-							IsVisible = visible;
-							break;
-						}
-						ShowCursor(false);   // this only decreases an internal display counter in windows, so it might have to be called some more
+						break;
 					}
+					info.cbSize = sizeof(CURSORINFO);	// yes, it really must be set each time
+					gotCursorInfo = GetCursorInfo(&info);
 				}
+				IsVisible = visible;
 			}
 
 			//! Returns if the cursor is currently visible.

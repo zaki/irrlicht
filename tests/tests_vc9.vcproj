@@ -227,7 +227,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\irrArray.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\irrCoreEquals.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\irrList.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\irrMap.cpp"
 				>
 			</File>
 			<File
@@ -296,10 +308,6 @@
 			</File>
 			<File
 				RelativePath=".\terrainSceneNode.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\testArray.cpp"
 				>
 			</File>
 			<File

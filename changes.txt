@@ -147,6 +147,16 @@ Changes in 1.7
 ----------------
 Changes in 1.6.1
 
+ - Fix problem that the window did sometimes not get the keyboard focus in X11 in fullscreen. Add more debug output in case focus grabbing goes wrong.
+
+ - Fix screensize in videodriver when we didn't get the requested window size. This also prevents that gui-clicks are no longer synchronized with gui-drawing and elements can't be hit anymore.
+
+ - Bugfix: Prevent a crash when getTypeName was called for the guienvironment. EGUIET_ELEMENT got changed for this.
+
+ - Bugfix: Horizontal centered font with linebreaks draw now all lines. For example multiline TextSceneNodes work again.
+
+ - Bugfix: spinbox can no longer get in an endless loop due to floating point rounding error (found by slavik262)
+
  - !!API change!! Disabled AntiAliasing of Lines in material default
    Please enable this manually per material when sure that it won't lead to SW rendering.
 
@@ -830,7 +840,7 @@ Changes in 1.6 (23.09.2009)
  - Add a hitPosition out parameter to ISceneCollisionManager::getCollisionResultPosition() - this is a (small) API breaking change.
 
 -------------------------------------
-Changes in version 1.5.2 (??.??.2009)
+Changes in version 1.5.2 (16.12.2009)
 
  - Properly check boundaries in getFont and setFont.
 

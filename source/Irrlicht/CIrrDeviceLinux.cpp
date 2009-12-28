@@ -300,6 +300,37 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 }
 
 
+#if defined(_IRR_COMPILE_WITH_X11_)
+void IrrPrintXGrabError(int grabResult, const c8 * grabCommand )
+{
+	if ( grabResult == GrabSuccess )
+	{
+//		os::Printer::log(grabCommand, ": GrabSuccess", ELL_INFORMATION);
+		return;
+	}
+
+	switch ( grabResult )
+	{
+		case AlreadyGrabbed:
+			os::Printer::log(grabCommand, ": AlreadyGrabbed", ELL_WARNING);
+			break;
+		case GrabNotViewable:
+			os::Printer::log(grabCommand, ": GrabNotViewable", ELL_WARNING);
+			break;
+		case GrabFrozen:
+			os::Printer::log(grabCommand, ": GrabFrozen", ELL_WARNING);
+			break;
+		case GrabInvalidTime:
+			os::Printer::log(grabCommand, ": GrabInvalidTime", ELL_WARNING);
+			break;
+		default:
+			os::Printer::log(grabCommand, ": grab failed with unknown problem", ELL_WARNING);
+			break;
+	}
+}
+#endif
+
+
 bool CIrrDeviceLinux::createWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
@@ -601,10 +632,13 @@ bool CIrrDeviceLinux::createWindow()
 		XSetWMProtocols(display, window, &wmDelete, 1);
 		if (CreationParams.Fullscreen)
 		{
-			XGrabKeyboard(display, window, True, GrabModeAsync,
+ 			XSetInputFocus(display, window, RevertToParent, CurrentTime);
+			int grabKb = XGrabKeyboard(display, window, True, GrabModeAsync,
 				GrabModeAsync, CurrentTime);
-			XGrabPointer(display, window, True, ButtonPressMask,
+			IrrPrintXGrabError(grabKb, "XGrabKeyboard");
+			int grabPointer = XGrabPointer(display, window, True, ButtonPressMask,
 				GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
+			IrrPrintXGrabError(grabPointer, "XGrabPointer");
 			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
 		}
 	}
@@ -690,6 +724,9 @@ bool CIrrDeviceLinux::createWindow()
 
 	XGetGeometry(display, window, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
 	CreationParams.Bits = bits;
+	CreationParams.WindowSize.Width = Width;
+	CreationParams.WindowSize.Height = Height;
+
 	StdHints = XAllocSizeHints();
 	long num;
 	XGetWMNormalHints(display, window, StdHints, &num);

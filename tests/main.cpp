@@ -203,6 +203,8 @@ int main(int argumentCount, char * arguments[])
 			FILE * testsLastPassedAtFile = fopen("tests-last-passed-at.txt", "w");
 			if(testsLastPassedAtFile)
 			{
+				(void)fprintf(testsLastPassedAtFile, "Tests finished. %d test%s of %d passed.\n",
+			passed, 1 == passed ? "" : "s", numberOfTests);
 				(void)fprintf(testsLastPassedAtFile, "Test suite pass at GMT %s\n", asctime(timeinfo));
 				(void)fclose(testsLastPassedAtFile);
 			}
