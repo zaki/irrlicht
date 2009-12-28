@@ -16,7 +16,6 @@ tutorial, we use a lot stuff from the gui namespace.
 #include <irrlicht.h>
 #include <iostream>
 
-
 using namespace irr;
 using namespace gui;
 
@@ -307,6 +306,7 @@ void createToolBox()
 	scrollbar = env->addScrollBar(true,
 			core::rect<s32>(10,265,150,280), t1, GUI_ID_SKIN_ANIMATION_FPS);
 	scrollbar->setMax(MAX_FRAMERATE);
+	scrollbar->setMin(-MAX_FRAMERATE);
 	scrollbar->setPos(DEFAULT_FRAMERATE);
 
 	// bring irrlicht engine logo to front, because it
@@ -665,7 +665,6 @@ int main(int argc, char* argv[])
 	}
 
 	// create device and exit if creation failed
-
 	MyEventReceiver receiver;
 	Device = createDevice(driverType, core::dimension2d<u32>(800, 600),
 		16, false, false, false, &receiver);
