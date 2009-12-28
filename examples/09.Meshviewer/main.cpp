@@ -179,7 +179,8 @@ void loadModel(const c8* fn)
 		extension == ".png" || extension == ".ppm" ||
 		extension == ".pgm" || extension == ".pbm" ||
 		extension == ".psd" || extension == ".tga" ||
-		extension == ".bmp" || extension == ".wal")
+		extension == ".bmp" || extension == ".wal" ||
+		extension == ".rgb" || extension == ".rgba")
 	{
 		video::ITexture * texture =
 			Device->getVideoDriver()->getTexture( filename );
@@ -194,14 +195,9 @@ void loadModel(const c8* fn)
 		return;
 	}
 	// if a archive is loaded add it to the FileArchive..
-	else if (extension == ".pk3" || extension == ".zip")
+	else if (extension == ".pk3" || extension == ".zip" || extension == ".pak" || extension == ".npk")
 	{
-		Device->getFileSystem()->addZipFileArchive(filename.c_str());
-		return;
-	}
-	else if (extension == ".pak")
-	{
-		Device->getFileSystem()->addPakFileArchive(filename.c_str());
+		Device->getFileSystem()->addFileArchive(filename.c_str());
 		return;
 	}
 
