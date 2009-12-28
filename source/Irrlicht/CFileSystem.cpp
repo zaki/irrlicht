@@ -460,7 +460,6 @@ io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 	return tmp;
 #elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 	c8* p=0;
-
 	c8 fpath[4096];
 	fpath[0]=0;
 	p = realpath(filename.c_str(), fpath);

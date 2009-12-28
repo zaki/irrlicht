@@ -470,7 +470,7 @@ void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 	if (!Driver)
 		return;
 
-	core::dimension2d<s32> textDimension;
+	core::dimension2d<s32> textDimension;	// NOTE: don't make this u32 or the >> later on can fail when the dimension widht is < position width
 	core::position2d<s32> offset = position.UpperLeftCorner;
 
 	if (hcenter || vcenter || clip)
@@ -516,8 +516,7 @@ void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 
 			if ( hcenter )
 			{
-				core::dimension2d<u32> lineDim = getDimension(text.c_str());
-				offset.X += (position.getWidth() - lineDim.Width) >> 1;
+				offset.X += (position.getWidth() - textDimension.Width) >> 1;
 			}
 			continue;
 		}

@@ -288,6 +288,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			dev->postEventFromUser(event);
 
 		return 0;
+
+	case WM_SETCURSOR:
+		// because Windows forgot about that in the meantime
+		dev = getDeviceFromHWnd(hWnd);
+		if (dev)
+			dev->getCursorControl()->setVisible( dev->getCursorControl()->isVisible() );
+		break;
+
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }

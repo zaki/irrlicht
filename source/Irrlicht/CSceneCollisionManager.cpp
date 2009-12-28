@@ -115,7 +115,8 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 						ray.end = ray.start + (rayVector * sqrtf(toIntersectionSq));
 					}
 				}
-				else if (objectBox.intersectsWithLine(objectRay))
+				else
+				if (objectBox.intersectsWithLine(objectRay))
 				{
 					// Now transform into world space, since we need to use world space
 					// scales and distances.

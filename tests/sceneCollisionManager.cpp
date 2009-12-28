@@ -349,6 +349,8 @@ bool sceneCollisionManager(void)
 
 	bool result = testGetCollisionResultPosition(device, smgr, collMgr);
 
+	smgr->clear();
+
 	result &= testGetSceneNodeFromScreenCoordinatesBB(device, smgr, collMgr);
 
 	result &= getScaledPickedNodeBB(device, smgr, collMgr);
