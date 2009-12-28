@@ -19,7 +19,7 @@ CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s
 	CloseButton(0), Panel(0), SelectedTexture(-1), Dragging(false), IsDraggable(true)
 {
 	#ifdef _DEBUG
-	setDebugName("CGUIWindow");
+	setDebugName("CGUITextureCacheBrowser");
 	#endif
 
 	IGUISkin* skin = 0;
@@ -321,6 +321,12 @@ void CGUITextureCacheBrowser::setDraggable(bool draggable)
 		Dragging = false;
 }
 
+
+//! Returns the rectangle of the drawable area (without border, without titlebar and without scrollbars)
+core::rect<s32> CGUITextureCacheBrowser::getClientRect() const
+{
+	return core::recti();
+}
 
 } // namespace gui
 } // namespace irr

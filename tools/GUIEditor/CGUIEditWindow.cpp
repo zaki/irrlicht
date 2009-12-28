@@ -276,7 +276,12 @@ void CGUIEditWindow::setDraggable(bool draggable)
 
 // we're supposed to supply these if we're creating an IGUIWindow
 // but we don't need them so we'll just return null
+
+//! Returns the rectangle of the drawable area (without border, without titlebar and without scrollbars)
+core::rect<s32> CGUIEditWindow::getClientRect() const
+{
+	return core::recti();
+}
 IGUIButton* CGUIEditWindow::getCloseButton() const     {return 0;}
 IGUIButton* CGUIEditWindow::getMinimizeButton() const  {return 0;}
 IGUIButton* CGUIEditWindow::getMaximizeButton() const  {return 0;}
-
