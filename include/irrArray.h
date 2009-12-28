@@ -547,7 +547,10 @@ public:
 	\param count: Amount of elements to be erased. */
 	void erase(u32 index, s32 count)
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used || count<1 || index+count>used) // access violation
+		if (index>=used || count<1)
+			return;
+		if (index+count>used)
+			count = used-index;
 
 		u32 i;
 		for (i=index; i<index+count; ++i)
