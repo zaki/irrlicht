@@ -1,3 +1,3 @@
-Tests finished. 2 tests of 2 passed.
-Test suite pass at GMT Tue Dec 29 19:14:51 2009
+Tests finished. 45 tests of 45 passed.
+Test suite pass at GMT Tue Dec 29 23:26:41 2009
 

@@ -343,6 +343,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\timer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\transparentAlphaChannelRef.cpp"
 				>
 			</File>
