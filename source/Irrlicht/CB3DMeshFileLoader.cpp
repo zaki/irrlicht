@@ -554,24 +554,23 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
 	{
 		while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) // this chunk repeats
 		{
-			CSkinnedMesh::SWeight *weight=AnimatedMesh->addWeight(inJoint);
-
 			u32 globalVertexID;
-
+			f32 strength;
 			B3DFile->read(&globalVertexID, sizeof(globalVertexID));
-			B3DFile->read(&weight->strength, sizeof(weight->strength));
+			B3DFile->read(&strength, sizeof(strength));
 #ifdef __BIG_ENDIAN__
 			globalVertexID = os::Byteswap::byteswap(globalVertexID);
-			weight->strength = os::Byteswap::byteswap(weight->strength);
+			strength = os::Byteswap::byteswap(strength);
 #endif
 
 			if (AnimatedVertices_VertexID[globalVertexID]==-1)
 			{
 				os::Printer::log("B3dMeshLoader: Weight has bad vertex id (no link to meshbuffer index found)");
-				weight->vertex_id = weight->buffer_id = 0;
 			}
-			else
+			else if (strength >0)
 			{
+				CSkinnedMesh::SWeight *weight=AnimatedMesh->addWeight(inJoint);
+				weight->strength=strength;
 				//Find the meshbuffer and Vertex index from the Global Vertex ID:
 				weight->vertex_id = AnimatedVertices_VertexID[globalVertexID];
 				weight->buffer_id = AnimatedVertices_BufferID[globalVertexID];
@@ -596,6 +595,13 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
 	flags = os::Byteswap::byteswap(flags);
 #endif
 
+	CSkinnedMesh::SPositionKey *oldPosKey=0;
+	core::vector3df oldPos[2];
+	CSkinnedMesh::SScaleKey *oldScaleKey=0;
+	core::vector3df oldScale[2];
+	CSkinnedMesh::SRotationKey *oldRotKey=0;
+	core::quaternion oldRot[2];
+	bool isFirst[3]={true};
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
 	{
 		s32 frame;
@@ -610,24 +616,104 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
 		if (flags & 1)
 		{
 			readFloats(data, 3);
-			CSkinnedMesh::SPositionKey *Key=AnimatedMesh->addPositionKey(inJoint);
-			Key->frame = (f32)frame-1;
-			Key->position.set(data[0], data[1], data[2]);
+			if ((oldPosKey!=0) && (oldPos[0]==oldPos[1]))
+			{
+				const core::vector3df pos(data[0], data[1], data[2]);
+				if (oldPos[1]==pos)
+					oldPosKey->frame = (f32)frame-1;
+				else
+				{
+					oldPos[0]=oldPos[1];
+					oldPosKey=AnimatedMesh->addPositionKey(inJoint);
+					oldPosKey->frame = (f32)frame-1;
+					oldPos[1].set(oldPosKey->position.set(pos));
+				}
+			}
+			else if (oldPosKey==0 && isFirst[0])
+			{
+				oldPosKey=AnimatedMesh->addPositionKey(inJoint);
+				oldPosKey->frame = (f32)frame-1;
+				oldPos[0].set(oldPosKey->position.set(data[0], data[1], data[2]));
+				oldPosKey=0;
+				isFirst[0]=false;
+			}
+			else
+			{
+				if (oldPosKey!=0)
+					oldPos[0]=oldPos[1];
+				oldPosKey=AnimatedMesh->addPositionKey(inJoint);
+				oldPosKey->frame = (f32)frame-1;
+				oldPos[1].set(oldPosKey->position.set(data[0], data[1], data[2]));
+			}
 		}
 		if (flags & 2)
 		{
 			readFloats(data, 3);
-			CSkinnedMesh::SScaleKey *Key=AnimatedMesh->addScaleKey(inJoint);
-			Key->frame = (f32)frame-1;
-			Key->scale.set(data[0], data[1], data[2]);
+			if ((oldScaleKey!=0) && (oldScale[0]==oldScale[1]))
+			{
+				const core::vector3df scale(data[0], data[1], data[2]);
+				if (oldScale[1]==scale)
+					oldScaleKey->frame = (f32)frame-1;
+				else
+				{
+					oldScale[0]=oldScale[1];
+					oldScaleKey=AnimatedMesh->addScaleKey(inJoint);
+					oldScaleKey->frame = (f32)frame-1;
+					oldScale[1].set(oldScaleKey->scale.set(scale));
+				}
+			}
+			else if (oldScaleKey==0 && isFirst[1])
+			{
+				oldScaleKey=AnimatedMesh->addScaleKey(inJoint);
+				oldScaleKey->frame = (f32)frame-1;
+				oldScale[0].set(oldScaleKey->scale.set(data[0], data[1], data[2]));
+				oldScaleKey=0;
+				isFirst[1]=false;
+			}
+			else
+			{
+				if (oldScaleKey!=0)
+					oldScale[0]=oldScale[1];
+				oldScaleKey=AnimatedMesh->addScaleKey(inJoint);
+				oldScaleKey->frame = (f32)frame-1;
+				oldScale[1].set(oldScaleKey->scale.set(data[0], data[1], data[2]));
+			}
 		}
 		if (flags & 4)
 		{
 			readFloats(data, 4);
-			CSkinnedMesh::SRotationKey *Key=AnimatedMesh->addRotationKey(inJoint);
-			Key->frame = (f32)frame-1;
-			// meant to be in this order since b3d stores W first
-			Key->rotation.set(data[1], data[2], data[3], data[0]);
+			if ((oldRotKey!=0) && (oldRot[0]==oldRot[1]))
+			{
+				// meant to be in this order since b3d stores W first
+				const core::quaternion rot(data[1], data[2], data[3], data[0]);
+				if (oldRot[1]==rot)
+					oldRotKey->frame = (f32)frame-1;
+				else
+				{
+					oldRot[0]=oldRot[1];
+					oldRotKey=AnimatedMesh->addRotationKey(inJoint);
+					oldRotKey->frame = (f32)frame-1;
+					oldRot[1].set(oldRotKey->rotation.set(data[1], data[2], data[3], data[0]));
+				}
+			}
+			else if (oldRotKey==0 && isFirst[2])
+			{
+				oldRotKey=AnimatedMesh->addRotationKey(inJoint);
+				oldRotKey->frame = (f32)frame-1;
+				// meant to be in this order since b3d stores W first
+				oldRot[0].set(oldRotKey->rotation.set(data[1], data[2], data[3], data[0]));
+				oldRotKey=0;
+				isFirst[2]=false;
+			}
+			else
+			{
+				if (oldRotKey!=0)
+					oldRot[0]=oldRot[1];
+				oldRotKey=AnimatedMesh->addRotationKey(inJoint);
+				oldRotKey->frame = (f32)frame-1;
+				// meant to be in this order since b3d stores W first
+				oldRot[1].set(oldRotKey->rotation.set(data[1], data[2], data[3], data[0]));
+			}
 		}
 	}
 
