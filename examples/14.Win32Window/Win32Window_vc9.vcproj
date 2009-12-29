@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib opengl32.lib"
 				OutputFile="..\..\bin\Win32-VisualStudio\14.Win32Window.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"

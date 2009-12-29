@@ -89,12 +89,39 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16.Quake3MapShader_vc9", "1
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "18.SplitScreen_vc9", "18.SplitScreen\SplitScreen_vc9.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.MouseAndJoystick_vc9", "19.MouseAndJoystick\MouseAndJoystick_vc9.vcproj", "{FE853A36-E0D1-4AC5-A792-B643E70D2953}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20.ManagedLights_vc9", "20.ManagedLights\ManagedLights_vc9.vcproj", "{16007FE2-142B-47F8-93E1-519BA3F39E71}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "21.Quake3Explorer_vc9", "21.Quake3Explorer\Quake3Explorer_vc9.vcproj", "{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "22.MaterialViewer_vc9", "22.MaterialViewer\MaterialViewer_vc9.vcproj", "{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "23.SMeshHandling_vc9", "23.SMeshHandling\SMeshHandling_vc9.vcproj", "{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld for Windows Mobile on PC", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v9.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -190,6 +217,18 @@ Global
 		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Debug|Win32.Build.0 = Debug|Win32
 		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Release|Win32.ActiveCfg = Release|Win32
 		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Release|Win32.Build.0 = Release|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Debug|Win32.Build.0 = Debug|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Release|Win32.ActiveCfg = Release|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Release|Win32.Build.0 = Release|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Debug|Win32.Build.0 = Debug|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Release|Win32.ActiveCfg = Release|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Release|Win32.Build.0 = Release|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Debug|Win32.Build.0 = Debug|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.ActiveCfg = Release|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
