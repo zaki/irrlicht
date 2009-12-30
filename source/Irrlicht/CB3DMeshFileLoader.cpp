@@ -945,6 +945,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		}
 
 		B3dMaterial.Material.DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor();
+		B3dMaterial.Material.ColorMaterial=video::ECM_NONE;
 
 		//------ Material fx ------
 
@@ -957,7 +958,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			B3dMaterial.Material.AmbientColor = B3dMaterial.Material.DiffuseColor;
 
 		if (B3dMaterial.fx & 2) //use vertex colors instead of brush color
-			B3dMaterial.Material.ColorMaterial=video::ECM_NONE;
+			B3dMaterial.Material.ColorMaterial=video::ECM_DIFFUSE_AND_AMBIENT;
 
 		if (B3dMaterial.fx & 4) //flatshaded
 			B3dMaterial.Material.GouraudShading = false;
