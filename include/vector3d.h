@@ -377,6 +377,11 @@ namespace core
 		T Z;
 	};
 
+	//! partial specialization for integer vectors
+	template <>
+	vector3d<s32> vector3d<s32>::operator /(s32 val) const {return core::vector3d<s32>(X/val,Y/val,Z/val);}
+	template <>
+	vector3d<s32>& vector3d<s32>::operator /=(s32 val) {X/=val;Y/=val;Z/=val; return *this;}
 
 	//! Typedef for a f32 3d vector.
 	typedef vector3d<f32> vector3df;

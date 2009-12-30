@@ -43,23 +43,6 @@ class aabbox3d
 
 		// functions
 
-		//! Adds a point to the bounding box
-		/** The box grows bigger, if point was outside of the box.
-		\param p: Point to add into the box. */
-		void addInternalPoint(const vector3d<T>& p)
-		{
-			addInternalPoint(p.X, p.Y, p.Z);
-		}
-
-		//! Adds another bounding box
-		/** The box grows bigger, if the new box was outside of the box.
-		\param b: Other bounding box to add into this box. */
-		void addInternalBox(const aabbox3d<T>& b)
-		{
-			addInternalPoint(b.MaxEdge);
-			addInternalPoint(b.MinEdge);
-		}
-
 		//! Resets the bounding box to a one-point box.
 		/** \param x X coord of the point.
 		\param y Y coord of the point.
@@ -86,6 +69,23 @@ class aabbox3d
 		}
 
 		//! Adds a point to the bounding box
+		/** The box grows bigger, if point was outside of the box.
+		\param p: Point to add into the box. */
+		void addInternalPoint(const vector3d<T>& p)
+		{
+			addInternalPoint(p.X, p.Y, p.Z);
+		}
+
+		//! Adds another bounding box
+		/** The box grows bigger, if the new box was outside of the box.
+		\param b: Other bounding box to add into this box. */
+		void addInternalBox(const aabbox3d<T>& b)
+		{
+			addInternalPoint(b.MaxEdge);
+			addInternalPoint(b.MinEdge);
+		}
+
+		//! Adds a point to the bounding box
 		/** The box grows bigger, if point is outside of the box.
 		\param x X coordinate of the point to add to this box.
 		\param y Y coordinate of the point to add to this box.
@@ -101,8 +101,100 @@ class aabbox3d
 			if (z<MinEdge.Z) MinEdge.Z = z;
 		}
 
+		//! Get center of the bounding box
+		/** \return Center of the bounding box. */
+		vector3d<T> getCenter() const
+		{
+			return (MinEdge + MaxEdge) / 2;
+		}
+
+		//! Get extent of the box (maximal distance of two points in the box)
+		/** \return Extent of the bounding box. */
+		vector3d<T> getExtent() const
+		{
+			return MaxEdge - MinEdge;
+		}
+
+		//! Check if the box is empty.
+		/** This means that there is no space between the min and max edge.
+		\return True if box is empty, else false. */
+		bool isEmpty() const
+		{
+			return MinEdge.equals ( MaxEdge );
+		}
+
+		//! Get the volume enclosed by the box in cubed units
+		T getVolume() const
+		{
+			const vector3d<T> e = getExtent();
+			return e.X * e.Y * e.Z;
+		}
+
+		//! Get the surface area of the box in squared units
+		T getArea() const
+		{
+			const vector3d<T> e = getExtent();
+			return 2*(e.X*e.Y + e.X*e.Z + e.Y*e.Z);
+		}
+
+		//! Stores all 8 edges of the box into an array
+		/** \param edges: Pointer to array of 8 edges. */
+		void getEdges(vector3d<T> *edges) const
+		{
+			const core::vector3d<T> middle = getCenter();
+			const core::vector3d<T> diag = middle - MaxEdge;
+
+			/*
+			Edges are stored in this way:
+			Hey, am I an ascii artist, or what? :) niko.
+                   /3--------/7
+                  / |       / |
+                 /  |      /  |
+                1---------5   |
+                |  /2- - -|- -6
+                | /       |  /
+                |/        | /
+                0---------4/
+			*/
+
+			edges[0].set(middle.X + diag.X, middle.Y + diag.Y, middle.Z + diag.Z);
+			edges[1].set(middle.X + diag.X, middle.Y - diag.Y, middle.Z + diag.Z);
+			edges[2].set(middle.X + diag.X, middle.Y + diag.Y, middle.Z - diag.Z);
+			edges[3].set(middle.X + diag.X, middle.Y - diag.Y, middle.Z - diag.Z);
+			edges[4].set(middle.X - diag.X, middle.Y + diag.Y, middle.Z + diag.Z);
+			edges[5].set(middle.X - diag.X, middle.Y - diag.Y, middle.Z + diag.Z);
+			edges[6].set(middle.X - diag.X, middle.Y + diag.Y, middle.Z - diag.Z);
+			edges[7].set(middle.X - diag.X, middle.Y - diag.Y, middle.Z - diag.Z);
+		}
+
+		//! Repairs the box.
+		/** Necessary if for example MinEdge and MaxEdge are swapped. */
+		void repair()
+		{
+			T t;
+
+			if (MinEdge.X > MaxEdge.X)
+				{ t=MinEdge.X; MinEdge.X = MaxEdge.X; MaxEdge.X=t; }
+			if (MinEdge.Y > MaxEdge.Y)
+				{ t=MinEdge.Y; MinEdge.Y = MaxEdge.Y; MaxEdge.Y=t; }
+			if (MinEdge.Z > MaxEdge.Z)
+				{ t=MinEdge.Z; MinEdge.Z = MaxEdge.Z; MaxEdge.Z=t; }
+		}
+
+		//! Calculates a new interpolated bounding box.
+		/** \param other: other box to interpolate between
+		\param d: value between 0.0f and 1.0f.
+		\return Interpolated box. */
+		aabbox3d<T> getInterpolated(const aabbox3d<T>& other, f32 d) const
+		{
+			f32 inv = 1.0f - d;
+			return aabbox3d<T>((other.MinEdge*inv) + (MinEdge*d),
+				(other.MaxEdge*inv) + (MaxEdge*d));
+		}
+
 		//! Determines if a point is within this box.
-		/** \param p: Point to check.
+		/** Border is included (IS part of the box)!
+		\param p: Point to check.
 		\return True if the point is within the box and false if not */
 		bool isPointInside(const vector3d<T>& p) const
 		{
@@ -111,23 +203,15 @@ class aabbox3d
 				p.Z >= MinEdge.Z && p.Z <= MaxEdge.Z);
 		}
 
-		//! Determines if a point is within this box and its borders.
-		/** \param p: Point to check.
+		//! Determines if a point is within this box and not its borders.
+		/** Border is excluded (NOT part of the box)!
+		\param p: Point to check.
 		\return True if the point is within the box and false if not. */
 		bool isPointTotalInside(const vector3d<T>& p) const
 		{
 			return (p.X > MinEdge.X && p.X < MaxEdge.X &&
 				p.Y > MinEdge.Y && p.Y < MaxEdge.Y &&
 				p.Z > MinEdge.Z && p.Z < MaxEdge.Z);
-		}
-
-		//! Determines if the box intersects with another box.
-		/** \param other: Other box to check a intersection with.
-		\return True if there is an intersection with the other box,
-		otherwise false. */
-		bool intersectsWithBox(const aabbox3d<T>& other) const
-		{
-			return (MinEdge <= other.MaxEdge && MaxEdge >= other.MinEdge);
 		}
 
 		//! Check if this box is completely inside the 'other' box.
@@ -137,6 +221,15 @@ class aabbox3d
 		bool isFullInside(const aabbox3d<T>& other) const
 		{
 			return MinEdge >= other.MinEdge && MaxEdge <= other.MaxEdge;
+		}
+
+		//! Determines if the box intersects with another box.
+		/** \param other: Other box to check a intersection with.
+		\return True if there is an intersection with the other box,
+		otherwise false. */
+		bool intersectsWithBox(const aabbox3d<T>& other) const
+		{
+			return (MinEdge <= other.MaxEdge && MaxEdge >= other.MinEdge);
 		}
 
 		//! Tests if the box intersects with a line
@@ -154,8 +247,7 @@ class aabbox3d
 		\param halflength Half length of the line.
 		\return True if there is an intersection, else false. */
 		bool intersectsWithLine(const vector3d<T>& linemiddle,
-					const vector3d<T>& linevect,
-					T halflength) const
+					const vector3d<T>& linevect, T halflength) const
 		{
 			const vector3d<T> e = getExtent() * (T)0.5;
 			const vector3d<T> t = getCenter() - linemiddle;
@@ -215,103 +307,6 @@ class aabbox3d
 				return ISREL3D_CLIPPED;
 
 			return ISREL3D_BACK;
-		}
-
-
-		//! Get center of the bounding box
-		/** \return Center of the bounding box. */
-		vector3d<T> getCenter() const
-		{
-			return (MinEdge + MaxEdge) / 2;
-		}
-
-
-		//! Get extent of the box
-		/** \return Extent of the bounding box. */
-		vector3d<T> getExtent() const
-		{
-			return MaxEdge - MinEdge;
-		}
-
-
-		//! Stores all 8 edges of the box into an array
-		/** \param edges: Pointer to array of 8 edges. */
-		void getEdges(vector3d<T> *edges) const
-		{
-			const core::vector3d<T> middle = getCenter();
-			const core::vector3d<T> diag = middle - MaxEdge;
-
-			/*
-			Edges are stored in this way:
-			Hey, am I an ascii artist, or what? :) niko.
-                  /3--------/7
-                 /  |      / |
-                /   |     /  |
-                1---------5  |
-                |   2- - -| -6
-                |  /      |  /
-                |/        | /
-                0---------4/
-			*/
-
-			edges[0].set(middle.X + diag.X, middle.Y + diag.Y, middle.Z + diag.Z);
-			edges[1].set(middle.X + diag.X, middle.Y - diag.Y, middle.Z + diag.Z);
-			edges[2].set(middle.X + diag.X, middle.Y + diag.Y, middle.Z - diag.Z);
-			edges[3].set(middle.X + diag.X, middle.Y - diag.Y, middle.Z - diag.Z);
-			edges[4].set(middle.X - diag.X, middle.Y + diag.Y, middle.Z + diag.Z);
-			edges[5].set(middle.X - diag.X, middle.Y - diag.Y, middle.Z + diag.Z);
-			edges[6].set(middle.X - diag.X, middle.Y + diag.Y, middle.Z - diag.Z);
-			edges[7].set(middle.X - diag.X, middle.Y - diag.Y, middle.Z - diag.Z);
-		}
-
-
-		//! Check if the box is empty.
-		/** This means that there is no space between the min and max
-		edge.
-		\return True if box is empty, else false. */
-		bool isEmpty() const
-		{
-			return MinEdge.equals ( MaxEdge );
-		}
-
-
-		//! Repairs the box.
-		/** Necessary if for example MinEdge and MaxEdge are swapped. */
-		void repair()
-		{
-			T t;
-
-			if (MinEdge.X > MaxEdge.X)
-				{ t=MinEdge.X; MinEdge.X = MaxEdge.X; MaxEdge.X=t; }
-			if (MinEdge.Y > MaxEdge.Y)
-				{ t=MinEdge.Y; MinEdge.Y = MaxEdge.Y; MaxEdge.Y=t; }
-			if (MinEdge.Z > MaxEdge.Z)
-				{ t=MinEdge.Z; MinEdge.Z = MaxEdge.Z; MaxEdge.Z=t; }
-		}
-
-		//! Calculates a new interpolated bounding box.
-		/** \param other: other box to interpolate between
-		\param d: value between 0.0f and 1.0f.
-		\return Interpolated box. */
-		aabbox3d<T> getInterpolated(const aabbox3d<T>& other, f32 d) const
-		{
-			f32 inv = 1.0f - d;
-			return aabbox3d<T>((other.MinEdge*inv) + (MinEdge*d),
-				(other.MaxEdge*inv) + (MaxEdge*d));
-		}
-
-		//! Get the volume enclosed by the box in cubed units
-		T getVolume() const
-		{
-			const vector3d<T> e = getExtent();
-			return e.X * e.Y * e.Z;
-		}
-
-		//! Get the surface area of the box in squared units
-		T getArea() const
-		{
-			const vector3d<T> e = getExtent();
-			return 2*(e.X*e.Y + e.X*e.Z + e.Y*e.Z);
 		}
 
 		//! The near edge
