@@ -172,6 +172,8 @@ static bool doTests()
 	return true;
 }
 
+// These tests are also only called for f32 and f64, due to conversion problems
+// in the respective methods.
 template<class T>
 static bool checkCollisions()
 {
@@ -331,6 +333,25 @@ static bool checkPoints()
 	if (one.isPointTotalInside(core::vector3d<T>((T)10.2,-1,1)))
 	{
 		logTestString("isPointTotalInside failed with random point outside\n");
+		return false;
+	}
+
+	core::plane3d<T> plane(core::vector3d<T>(0,0,-1), -10);
+	if (one.classifyPlaneRelation(plane) != core::ISREL3D_BACK)
+	{
+		logTestString("box not behind\n");
+		return false;
+	}
+	plane.D=0;
+	if (one.classifyPlaneRelation(plane) != core::ISREL3D_CLIPPED)
+	{
+		logTestString("box not clipped\n");
+		return false;
+	}
+	plane.D=10;
+	if (one.classifyPlaneRelation(plane) != core::ISREL3D_FRONT)
+	{
+		logTestString("box not in front\n");
 		return false;
 	}
 	return true;
