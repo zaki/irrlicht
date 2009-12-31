@@ -31,6 +31,16 @@ static bool doTests()
 		logTestString("default aabbox3d<T> is empty\n");
 		return false;
 	}
+	if (empty.getVolume() != 8)
+	{
+		logTestString("default aabbox3d<T> has wrong volume\n");
+		return false;
+	}
+	if (empty.getArea() != 24)
+	{
+		logTestString("default aabbox3d<T> has wrong area\n");
+		return false;
+	}
 	aabbox3d<T> two(core::vector3d<T>(-1,-1,-1),core::vector3d<T>(2,2,2));
 	if (empty == two)
 	{
@@ -52,6 +62,16 @@ static bool doTests()
 		logTestString("extended aabbox3d<T> is empty\n");
 		return false;
 	}
+	if (two.getVolume() != 27)
+	{
+		logTestString("extended aabbox3d<T> has wrong volume\n");
+		return false;
+	}
+	if (two.getArea() != 54)
+	{
+		logTestString("extended aabbox3d<T> has wrong area\n");
+		return false;
+	}
 	one.reset(1,1,1);
 	if (one==empty)
 	{
@@ -71,6 +91,16 @@ static bool doTests()
 	if (!one.isEmpty())
 	{
 		logTestString("empty aabbox3d<T> is not empty\n");
+		return false;
+	}
+	if (one.getVolume() != 0)
+	{
+		logTestString("empty aabbox3d<T> has wrong volume\n");
+		return false;
+	}
+	if (one.getArea() != 0)
+	{
+		logTestString("empty aabbox3d<T> has wrong area\n");
 		return false;
 	}
 	one.addInternalPoint(core::vector3d<T>(-1,-1,-1));
@@ -112,13 +142,109 @@ static bool doTests()
 		logTestString("addInternalBox with larger box failed\n");
 		return false;
 	}
-	if (!checkCollisions<T>())
+	if (one.getCenter() != core::vector3d<T>((T)0.5,0,(T)-0.5))
+	{
+		logTestString("large aabbox3d<T> has wrong Center\n");
+		return false;
+	}
+	if (one.getExtent() != core::vector3d<T>(3,4,5))
+	{
+		logTestString("large aabbox3d<T> has wrong Extent\n");
+		return false;
+	}
+	if (one.isEmpty())
+	{
+		logTestString("large aabbox3d<T> is empty\n");
+		return false;
+	}
+	if (one.getVolume() != 60)
+	{
+		logTestString("large aabbox3d<T> has wrong volume\n");
+		return false;
+	}
+	if (one.getArea() != 94)
+	{
+		logTestString("large aabbox3d<T> has wrong area\n");
+		return false;
+	}
+	if (!checkPoints<T>())
 		return false;
 	return true;
 }
 
 template<class T>
 static bool checkCollisions()
+{
+	aabbox3d<T> one(0,0,0,4,4,4);
+	aabbox3d<T> two(2,2,2,4,4,4);
+
+	if (two.getInterpolated(one, 1) != two)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 1\n");
+		return false;
+	}
+	if (two.getInterpolated(one, 0) != one)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 0\n");
+		return false;
+	}
+	aabbox3d<T> three(two.getInterpolated(one, 0.5f)); 
+	if (two == one)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 0.5 (right)\n");
+		return false;
+	}
+	if (two == three)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 0.5 (left)\n");
+		return false;
+	}
+	three.reset(aabbox3d<T>(2,2,2,5,5,5));
+	if (!two.isFullInside(one))
+	{
+		logTestString("small aabbox3d<T> is not fully inside\n");
+		return false;
+	}
+	if (three.isFullInside(one))
+	{
+		logTestString("large aabbox3d<T> is fully inside\n");
+		return false;
+	}
+
+	if (!two.intersectsWithBox(one))
+	{
+		logTestString("small aabbox3d<T> does not intersect\n");
+		return false;
+	}
+	if (!three.intersectsWithBox(one))
+	{
+		logTestString("large aabbox3d<T> does not intersect\n");
+		return false;
+	}
+
+	core::line3d<T> line(-2,-2,-2,2,2,2);
+	if (!one.intersectsWithLine(line))
+	{
+		logTestString("aabbox3d<T> does not intersect with line(1)\n");
+		return false;
+	}
+	line.end.set(2,2,10);
+	if (!one.intersectsWithLine(line))
+	{
+		logTestString("aabbox3d<T> does not intersect with line(2)\n");
+		return false;
+	}
+	line.end.set(0,2,10);
+	if (one.intersectsWithLine(line))
+	{
+		logTestString("aabbox3d<T> does intersect with line(3)\n");
+		return false;
+	}
+	return true;
+}
+
+template<class T>
+static bool checkPoints()
 {
 	aabbox3d<T> one(-1,-2,-3,2,2,2);
 
@@ -214,12 +340,14 @@ static bool checkCollisions()
 bool testaabbox3d(void)
 {
 	bool f32Success = doTests<f32>();
+	f32Success &= checkCollisions<f32>();
 	if(f32Success)
 		logTestString("aabbox3d<f32> tests passed\n\n");
 	else
 		logTestString("\n*** aabbox3d<f32> tests failed ***\n\n");
 
 	bool f64Success = doTests<f64>();
+	f64Success &= checkCollisions<f64>();
 	if(f64Success)
 		logTestString("aabbox3d<f64> tests passed\n\n");
 	else

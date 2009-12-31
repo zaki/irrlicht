@@ -182,8 +182,10 @@ class aabbox3d
 		}
 
 		//! Calculates a new interpolated bounding box.
-		/** \param other: other box to interpolate between
-		\param d: value between 0.0f and 1.0f.
+		/** d=0 returns other, d=1 returns this, all other values blend between
+		the two boxes.
+		\param other Other box to interpolate between
+		\param d Value between 0.0f and 1.0f.
 		\return Interpolated box. */
 		aabbox3d<T> getInterpolated(const aabbox3d<T>& other, f32 d) const
 		{
