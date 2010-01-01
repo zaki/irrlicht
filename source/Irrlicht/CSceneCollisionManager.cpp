@@ -10,7 +10,6 @@
 
 #include "os.h"
 #include "irrMath.h"
-#include <float.h> // For FLT_MAX
 
 namespace irr
 {
@@ -41,21 +40,22 @@ CSceneCollisionManager::~CSceneCollisionManager()
 //! Returns the scene node, which is currently visible at the given
 //! screen coordinates, viewed from the currently active camera.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
-		const core::position2d<s32>& pos, s32 idBitMask, bool bNoDebugObjects, scene::ISceneNode* root)
+		const core::position2d<s32>& pos, s32 idBitMask, bool noDebugObjects, scene::ISceneNode* root)
 {
 	const core::line3d<f32> ln = getRayFromScreenCoordinates(pos, 0);
 
 	if ( ln.start == ln.end )
 		return 0;
 
-	return getSceneNodeFromRayBB(ln, idBitMask, bNoDebugObjects, root);
+	return getSceneNodeFromRayBB(ln, idBitMask, noDebugObjects, root);
 }
 
 
 //! Returns the nearest scene node which collides with a 3d ray and
 //! which id matches a bitmask.
-ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32>& ray,
-						s32 idBitMask, bool bNoDebugObjects, scene::ISceneNode* root)
+ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(
+		const core::line3d<f32>& ray,
+		s32 idBitMask, bool noDebugObjects, scene::ISceneNode* root)
 {
 	ISceneNode* best = 0;
 	f32 dist = FLT_MAX;
@@ -63,7 +63,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32
 	core::line3d<f32> truncatableRay(ray);
 
 	getPickedNodeBB((root==0)?SceneManager->getRootSceneNode():root, truncatableRay,
-		idBitMask, bNoDebugObjects, dist, best);
+		idBitMask, noDebugObjects, dist, best);
 
 	return best;
 }
@@ -71,7 +71,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32
 
 //! recursive method for going through all scene nodes
 void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
-		core::line3df& ray, s32 bits, bool bNoDebugObjects,
+		core::line3df& ray, s32 bits, bool noDebugObjects,
 		f32& outbestdistance, ISceneNode*& outbestnode)
 {
 	const ISceneNodeList& children = root->getChildren();
@@ -84,7 +84,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
 		if (current->isVisible())
 		{
-			if((bNoDebugObjects ? !current->isDebugObject() : true) &&
+			if((noDebugObjects ? !current->isDebugObject() : true) &&
 				(bits==0 || (bits != 0 && (current->getID() & bits))))
 			{
 				// get world to object space transform
@@ -103,8 +103,8 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 				// object space box test is more accurate.
 				if(objectBox.isPointInside(objectRay.start))
 				{
-					// If the line starts inside the box, then consider the distance as being
-					// to the centre of the box.
+					// If the line starts inside the box, then consider the 
+					// distance as being to the centre of the box.
 					const f32 toIntersectionSq = objectRay.start.getDistanceFromSQ(objectBox.getCenter());
 					if(toIntersectionSq < outbestdistance)
 					{
@@ -175,7 +175,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 								// on the box, so need to go back to object space again.
 								worldToObject.transformVect(intersection);
 
-                                // find the closes point on the box borders. Have to do this as exact checks will fail due to floating point problems.
+                                // find the closest point on the box borders. Have to do this as exact checks will fail due to floating point problems.
 								f32 distToBorder = core::max_ ( core::min_ (core::abs_(objectBox.MinEdge.X-intersection.X), core::abs_(objectBox.MaxEdge.X-intersection.X)),
                                                                 core::min_ (core::abs_(objectBox.MinEdge.Y-intersection.Y), core::abs_(objectBox.MaxEdge.Y-intersection.Y)),
                                                                 core::min_ (core::abs_(objectBox.MinEdge.Z-intersection.Z), core::abs_(objectBox.MaxEdge.Z-intersection.Z)) );
@@ -189,7 +189,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
 						// If the ray could be entering through the first face of a pair, then it can't
 						// also be entering through the opposite face, and so we can skip that face.
-						if(0 == (face % 2))
+						if (!(face & 0x01))
 							++face;
 					}
 
@@ -205,7 +205,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 			}
 
 			// Only check the children if this node is visible.
-			getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
+			getPickedNodeBB(current, ray, bits, noDebugObjects, outbestdistance, outbestnode);
 		}
 	}
 }
@@ -319,7 +319,7 @@ void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 //! Returns the scene node, at which the overgiven camera is looking at and
 //! which id matches the bitmask.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
-	ICameraSceneNode* camera, s32 idBitMask, bool bNoDebugObjects)
+	ICameraSceneNode* camera, s32 idBitMask, bool noDebugObjects)
 {
 	if (!camera)
 		return 0;
@@ -329,7 +329,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
 
 	end = start + ((end - start).normalize() * camera->getFarValue());
 
-	return getSceneNodeFromRayBB(core::line3d<f32>(start, end), idBitMask, bNoDebugObjects);
+	return getSceneNodeFromRayBB(core::line3d<f32>(start, end), idBitMask, noDebugObjects);
 }
 
 
