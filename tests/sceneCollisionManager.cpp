@@ -311,58 +311,67 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 	// add a cube to pick
 	scene::ISceneNode* cube = smgr->addCubeSceneNode(30, 0, -1, core::vector3df(0,0,0),core::vector3df(30,40,50));
 
-	driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
-	smgr->drawAll();
-	driver->endScene();
-
-	core::matrix4 invMat = cube->getAbsoluteTransformation();
-	invMat.makeInverse();
-
-	s32 hits=0;
-	u32 start = device->getTimer()->getRealTime();
-	for (u32 i=10; i<150; ++i)
+	bool result=true;
+	for (u32 round=0; round<2; ++round)
 	{
-		for (u32 j=10; j<110; ++j)
+		driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+		smgr->drawAll();
+		driver->endScene();
+
+		core::matrix4 invMat = cube->getAbsoluteTransformation();
+		invMat.makeInverse();
+
+		s32 hits=0;
+		u32 start = device->getTimer()->getRealTime();
+		for (u32 i=10; i<150; ++i)
 		{
-			const core::position2di pos(i, j);
+			for (u32 j=10; j<110; ++j)
+			{
+				const core::position2di pos(i, j);
 
-			// get the line used for picking
-			core::line3df ray = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(pos, camera);
+				// get the line used for picking
+				core::line3df ray = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(pos, camera);
 
-			invMat.transformVect(ray.start);
-			invMat.transformVect(ray.end);
+				invMat.transformVect(ray.start);
+				invMat.transformVect(ray.end);
 
-			hits += (cube->getBoundingBox().intersectsWithLine(ray)?1:0);
+				hits += (cube->getBoundingBox().intersectsWithLine(ray)?1:0);
+			}
 		}
-	}
-	u32 duration = device->getTimer()->getRealTime()-start;
-	logTestString("bbox intersection checks %d hits (of 14000).\n", hits);
-	hits = -hits;
+		u32 duration = device->getTimer()->getRealTime()-start;
+		logTestString("bbox intersection checks %d hits (of 14000).\n", hits);
+		hits = -hits;
 
-	start = device->getTimer()->getRealTime();
-	for (u32 i=10; i<150; ++i)
-	{
-		for (u32 j=10; j<110; ++j)
+		start = device->getTimer()->getRealTime();
+		for (u32 i=10; i<150; ++i)
 		{
-			const core::position2di pos(i, j);
+			for (u32 j=10; j<110; ++j)
+			{
+				const core::position2di pos(i, j);
 
-			// get the line used for picking
-			core::line3df ray = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(pos, camera);
+				// get the line used for picking
+				core::line3df ray = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(pos, camera);
 
-			invMat.transformVect(ray.start);
-			invMat.transformVect(ray.end);
+				invMat.transformVect(ray.start);
+				invMat.transformVect(ray.end);
 
-			hits += (IntersectBox(ray.start, (ray.end-ray.start).normalize(), cube->getBoundingBox())?1:0);
+				hits += (IntersectBox(ray.start, (ray.end-ray.start).normalize(), cube->getBoundingBox())?1:0);
+			}
 		}
-	}
-	u32 duration2 = device->getTimer()->getRealTime()-start;
-	logTestString("bbox intersection resulted in %d misses at a speed of %d compared to %d.\n", abs(hits), duration, duration2);
+		u32 duration2 = device->getTimer()->getRealTime()-start;
+		logTestString("bbox intersection resulted in %d misses at a speed of %d (old) compared to %d (new).\n", abs(hits), duration, duration2);
+		if (duration>(duration2*1.2f))
+			logTestString("Consider replacement of bbox intersection test.\n");
 
-	assert(hits==0);
+		result &= (hits==0);
+		assert(result);
+		// second round without any hits, so check opposite direction
+		camera->setTarget(core::vector3df(80.f, 80.f, 80.f));
+	}
 
 	smgr->clear();
 
-	return (hits==0);
+	return (result);
 }
 
 
@@ -444,7 +453,7 @@ bool sceneCollisionManager(void)
 
 	result &= checkBBoxIntersection(device, smgr);
 
-//	result &= compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(device, smgr, collMgr);
+	result &= compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(device, smgr, collMgr);
 
 	device->drop();
 	return result;

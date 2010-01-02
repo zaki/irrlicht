@@ -103,10 +103,20 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 				// object space box test is more accurate.
 				if(objectBox.isPointInside(objectRay.start))
 				{
-					// If the line starts inside the box, then consider the 
-					// distance as being to the centre of the box.
-					const f32 toIntersectionSq = objectRay.start.getDistanceFromSQ(objectBox.getCenter());
-					if(toIntersectionSq < outbestdistance)
+					// use fast bbox intersection to find distance to hitpoint
+					// algorithm from Kay et al., code from gamedev.net
+					const core::vector3df dir = (objectRay.end-objectRay.start).normalize();
+					const core::vector3df minDist = (objectBox.MinEdge - objectRay.start)/dir;
+					const core::vector3df maxDist = (objectBox.MaxEdge - objectRay.start)/dir;
+					const core::vector3df realMin(core::min_(minDist.X, maxDist.X),core::min_(minDist.Y, maxDist.Y),core::min_(minDist.Z, maxDist.Z));
+					const core::vector3df realMax(core::max_(minDist.X, maxDist.X),core::max_(minDist.Y, maxDist.Y),core::max_(minDist.Z, maxDist.Z));
+
+					const f32 minmax = core::min_(realMax.X, realMax.Y, realMax.Z);
+					// nearest distance to intersection
+					const f32 maxmin = core::max_(realMin.X, realMin.Y, realMin.Z);
+
+					const f32 toIntersectionSq = (maxmin>0?maxmin*maxmin:minmax*minmax);
+					if (toIntersectionSq < outbestdistance)
 					{
 						outbestdistance = toIntersectionSq;
 						outbestnode = current;
