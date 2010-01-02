@@ -1,3 +1,4 @@
 Tests finished. 46 tests of 46 passed.
-Test suite pass at GMT Sat Jan 02 13:04:56 2010
+Compiled as RELEASE
+Test suite pass at GMT Sat Jan 02 14:09:21 2010
 

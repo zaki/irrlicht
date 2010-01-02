@@ -207,6 +207,11 @@ int main(int argumentCount, char * arguments[])
 			{
 				(void)fprintf(testsLastPassedAtFile, "Tests finished. %d test%s of %d passed.\n",
 			passed, 1 == passed ? "" : "s", numberOfTests);
+#ifdef _DEBUG
+				(void)fprintf(testsLastPassedAtFile, "Compiled as DEBUG\n");
+#else
+				(void)fprintf(testsLastPassedAtFile, "Compiled as RELEASE\n");
+#endif
 				(void)fprintf(testsLastPassedAtFile, "Test suite pass at GMT %s\n", asctime(timeinfo));
 				(void)fclose(testsLastPassedAtFile);
 			}
