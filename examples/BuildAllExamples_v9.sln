@@ -123,6 +123,21 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld for Windows M
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI Editor_v9", "..\tools\GUIEditor\GUI Editor_v9.vcproj", "{853A396E-C031-4C26-A716-5B4E176BE11D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Font Tool", "..\tools\IrrFontTool\newFontTool\irrFontTool_v9.vcproj", "{4D53E40F-37E3-42B1-8848-F4C6F8313A17}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mesh Converter", "..\tools\MeshConverter\MeshConverter_v9.vcproj", "{E72B637E-4AA6-46F3-885F-AC67B4B470ED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -229,6 +244,18 @@ Global
 		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Debug|Win32.Build.0 = Debug|Win32
 		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.ActiveCfg = Release|Win32
 		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.Build.0 = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug|Win32.Build.0 = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release|Win32.ActiveCfg = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release|Win32.Build.0 = Release|Win32
+		{4D53E40F-37E3-42B1-8848-F4C6F8313A17}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4D53E40F-37E3-42B1-8848-F4C6F8313A17}.Debug|Win32.Build.0 = Debug|Win32
+		{4D53E40F-37E3-42B1-8848-F4C6F8313A17}.Release|Win32.ActiveCfg = Release|Win32
+		{4D53E40F-37E3-42B1-8848-F4C6F8313A17}.Release|Win32.Build.0 = Release|Win32
+		{E72B637E-4AA6-46F3-885F-AC67B4B470ED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E72B637E-4AA6-46F3-885F-AC67B4B470ED}.Debug|Win32.Build.0 = Debug|Win32
+		{E72B637E-4AA6-46F3-885F-AC67B4B470ED}.Release|Win32.ActiveCfg = Release|Win32
+		{E72B637E-4AA6-46F3-885F-AC67B4B470ED}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

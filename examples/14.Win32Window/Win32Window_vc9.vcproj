@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="14.Win32Window_vc9"
 	ProjectGUID="{772FBE05-D05A-467B-9842-BEC409EEA8D0}"
 	RootNamespace="Win32Window_vc9"
@@ -164,6 +164,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib"
 				OutputFile="..\..\bin\Win32-VisualStudio\14.Win32Window.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"

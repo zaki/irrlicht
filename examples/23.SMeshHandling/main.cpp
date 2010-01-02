@@ -324,7 +324,7 @@ up a mesh from a heightmap, light it with a moving light, and allow
 the user to navigate around it.
 */
 
-int main()
+int main(int argc, char* argv[])
 {
 	// ask user for driver
 	video::E_DRIVER_TYPE driverType;
