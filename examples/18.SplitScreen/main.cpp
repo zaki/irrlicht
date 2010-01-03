@@ -73,7 +73,7 @@ VideoDriver, load an animated mesh from .md2 and a map from
 .pk3. Because that's old stuff, I won't explain every step.
 Just take care of the maps position.
 */
-int main()
+int main(int argc, char** argv)
 {
 	video::E_DRIVER_TYPE driverType;
 
