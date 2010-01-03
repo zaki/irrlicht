@@ -295,7 +295,7 @@ namespace core
 			return angle;
 		}
 
-		//! Get the spherical coordinate angles 
+		//! Get the spherical coordinate angles
 		/** This returns Euler degrees for the point represented by
 		this vector.  The calculation assumes the pole at (0,1,0) and
 		returns the angles in X and Y.
@@ -317,7 +317,7 @@ namespace core
 				angle.X = (T)(acos(Y * core::reciprocal_squareroot(length)) * RADTODEG64);
 			}
 			return angle;
-		} 
+		}
 
 		//! Builds a direction vector from (this) rotation vector.
 		/** This vector is assumed to be a rotation vector composed of 3 Euler angle rotations, in degrees.
@@ -378,10 +378,11 @@ namespace core
 	};
 
 	//! partial specialization for integer vectors
+	// Implementor note: inline keyword needed due to template specialization for s32. Otherwise put specialization into a .cpp
 	template <>
-	vector3d<s32> vector3d<s32>::operator /(s32 val) const {return core::vector3d<s32>(X/val,Y/val,Z/val);}
+	inline vector3d<s32> vector3d<s32>::operator /(s32 val) const {return core::vector3d<s32>(X/val,Y/val,Z/val);}
 	template <>
-	vector3d<s32>& vector3d<s32>::operator /=(s32 val) {X/=val;Y/=val;Z/=val; return *this;}
+	inline vector3d<s32>& vector3d<s32>::operator /=(s32 val) {X/=val;Y/=val;Z/=val; return *this;}
 
 	//! Typedef for a f32 3d vector.
 	typedef vector3d<f32> vector3df;

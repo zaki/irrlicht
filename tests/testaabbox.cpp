@@ -6,6 +6,191 @@
 using namespace irr;
 using namespace core;
 
+// These tests are also only called for f32 and f64, due to conversion problems
+// in the respective methods.
+template<class T>
+static bool checkCollisions()
+{
+	aabbox3d<T> one(0,0,0,4,4,4);
+	aabbox3d<T> two(2,2,2,4,4,4);
+
+	if (two.getInterpolated(one, 1) != two)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 1\n");
+		return false;
+	}
+	if (two.getInterpolated(one, 0) != one)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 0\n");
+		return false;
+	}
+	aabbox3d<T> three(two.getInterpolated(one, 0.5f));
+	if (two == one)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 0.5 (right)\n");
+		return false;
+	}
+	if (two == three)
+	{
+		logTestString("aabbox3d<T> interpolation wrong on 0.5 (left)\n");
+		return false;
+	}
+	three.reset(aabbox3d<T>(2,2,2,5,5,5));
+	if (!two.isFullInside(one))
+	{
+		logTestString("small aabbox3d<T> is not fully inside\n");
+		return false;
+	}
+	if (three.isFullInside(one))
+	{
+		logTestString("large aabbox3d<T> is fully inside\n");
+		return false;
+	}
+
+	if (!two.intersectsWithBox(one))
+	{
+		logTestString("small aabbox3d<T> does not intersect\n");
+		return false;
+	}
+	if (!three.intersectsWithBox(one))
+	{
+		logTestString("large aabbox3d<T> does not intersect\n");
+		return false;
+	}
+
+	core::line3d<T> line(-2,-2,-2,2,2,2);
+	if (!one.intersectsWithLine(line))
+	{
+		logTestString("aabbox3d<T> does not intersect with line(1)\n");
+		return false;
+	}
+	line.end.set(2,2,10);
+	if (!one.intersectsWithLine(line))
+	{
+		logTestString("aabbox3d<T> does not intersect with line(2)\n");
+		return false;
+	}
+	line.end.set(0,2,10);
+	if (one.intersectsWithLine(line))
+	{
+		logTestString("aabbox3d<T> does intersect with line(3)\n");
+		return false;
+	}
+	return true;
+}
+
+template<class T>
+static bool checkPoints()
+{
+	aabbox3d<T> one(-1,-2,-3,2,2,2);
+
+	if (!one.isPointInside(core::vector3d<T>(-1,-2,-3)))
+	{
+		logTestString("isPointInside failed with min vertex\n");
+		return false;
+	}
+	if (!one.isPointInside(core::vector3d<T>(-1,2,-3)))
+	{
+		logTestString("isPointInside failed with other min vertex\n");
+		return false;
+	}
+	if (!one.isPointInside(core::vector3d<T>(2,-2,2)))
+	{
+		logTestString("isPointInside failed with other max vertex\n");
+		return false;
+	}
+	if (!one.isPointInside(core::vector3d<T>(2,2,2)))
+	{
+		logTestString("isPointInside failed with max vertex\n");
+		return false;
+	}
+	if (!one.isPointInside(core::vector3d<T>(0,0,0)))
+	{
+		logTestString("isPointInside failed with origin\n");
+		return false;
+	}
+	if (!one.isPointInside(core::vector3d<T>((T)1.2,-1,1)))
+	{
+		logTestString("isPointInside failed with random point inside\n");
+		return false;
+	}
+	if (one.isPointInside(core::vector3d<T>(-2,-2,-3)))
+	{
+		logTestString("isPointInside failed near min vertex\n");
+		return false;
+	}
+	if (one.isPointInside(core::vector3d<T>(2,3,2)))
+	{
+		logTestString("isPointInside failed near max vertex\n");
+		return false;
+	}
+	if (one.isPointInside(core::vector3d<T>(3,0,0)))
+	{
+		logTestString("isPointInside failed near origin\n");
+		return false;
+	}
+	if (one.isPointInside(core::vector3d<T>((T)10.2,-1,1)))
+	{
+		logTestString("isPointInside failed with random point outside\n");
+		return false;
+	}
+	if (one.isPointTotalInside(core::vector3d<T>(-1,-2,-3)))
+	{
+		logTestString("isPointTotalInside failed with min vertex\n");
+		return false;
+	}
+	if (one.isPointTotalInside(core::vector3d<T>(-1,2,-3)))
+	{
+		logTestString("isPointTotalInside failed with other min vertex\n");
+		return false;
+	}
+	if (one.isPointTotalInside(core::vector3d<T>(2,-2,2)))
+	{
+		logTestString("isPointTotalInside failed with other max vertex\n");
+		return false;
+	}
+	if (one.isPointTotalInside(core::vector3d<T>(2,2,2)))
+	{
+		logTestString("isPointTotalInside failed with max vertex\n");
+		return false;
+	}
+	if (!one.isPointTotalInside(core::vector3d<T>(0,0,0)))
+	{
+		logTestString("isPointTotalInside failed with origin\n");
+		return false;
+	}
+	if (!one.isPointTotalInside(core::vector3d<T>((T)1.2,-1,1)))
+	{
+		logTestString("isPointTotalInside failed with random point inside\n");
+		return false;
+	}
+	if (one.isPointTotalInside(core::vector3d<T>((T)10.2,-1,1)))
+	{
+		logTestString("isPointTotalInside failed with random point outside\n");
+		return false;
+	}
+
+	core::plane3d<T> plane(core::vector3d<T>(0,0,-1), -10);
+	if (one.classifyPlaneRelation(plane) != core::ISREL3D_BACK)
+	{
+		logTestString("box not behind\n");
+		return false;
+	}
+	plane.D=0;
+	if (one.classifyPlaneRelation(plane) != core::ISREL3D_CLIPPED)
+	{
+		logTestString("box not clipped\n");
+		return false;
+	}
+	plane.D=10;
+	if (one.classifyPlaneRelation(plane) != core::ISREL3D_FRONT)
+	{
+		logTestString("box not in front\n");
+		return false;
+	}
+	return true;
+}
+
 template <class T>
 static bool doTests()
 {
@@ -172,190 +357,6 @@ static bool doTests()
 	return true;
 }
 
-// These tests are also only called for f32 and f64, due to conversion problems
-// in the respective methods.
-template<class T>
-static bool checkCollisions()
-{
-	aabbox3d<T> one(0,0,0,4,4,4);
-	aabbox3d<T> two(2,2,2,4,4,4);
-
-	if (two.getInterpolated(one, 1) != two)
-	{
-		logTestString("aabbox3d<T> interpolation wrong on 1\n");
-		return false;
-	}
-	if (two.getInterpolated(one, 0) != one)
-	{
-		logTestString("aabbox3d<T> interpolation wrong on 0\n");
-		return false;
-	}
-	aabbox3d<T> three(two.getInterpolated(one, 0.5f)); 
-	if (two == one)
-	{
-		logTestString("aabbox3d<T> interpolation wrong on 0.5 (right)\n");
-		return false;
-	}
-	if (two == three)
-	{
-		logTestString("aabbox3d<T> interpolation wrong on 0.5 (left)\n");
-		return false;
-	}
-	three.reset(aabbox3d<T>(2,2,2,5,5,5));
-	if (!two.isFullInside(one))
-	{
-		logTestString("small aabbox3d<T> is not fully inside\n");
-		return false;
-	}
-	if (three.isFullInside(one))
-	{
-		logTestString("large aabbox3d<T> is fully inside\n");
-		return false;
-	}
-
-	if (!two.intersectsWithBox(one))
-	{
-		logTestString("small aabbox3d<T> does not intersect\n");
-		return false;
-	}
-	if (!three.intersectsWithBox(one))
-	{
-		logTestString("large aabbox3d<T> does not intersect\n");
-		return false;
-	}
-
-	core::line3d<T> line(-2,-2,-2,2,2,2);
-	if (!one.intersectsWithLine(line))
-	{
-		logTestString("aabbox3d<T> does not intersect with line(1)\n");
-		return false;
-	}
-	line.end.set(2,2,10);
-	if (!one.intersectsWithLine(line))
-	{
-		logTestString("aabbox3d<T> does not intersect with line(2)\n");
-		return false;
-	}
-	line.end.set(0,2,10);
-	if (one.intersectsWithLine(line))
-	{
-		logTestString("aabbox3d<T> does intersect with line(3)\n");
-		return false;
-	}
-	return true;
-}
-
-template<class T>
-static bool checkPoints()
-{
-	aabbox3d<T> one(-1,-2,-3,2,2,2);
-
-	if (!one.isPointInside(core::vector3d<T>(-1,-2,-3)))
-	{
-		logTestString("isPointInside failed with min vertex\n");
-		return false;
-	}
-	if (!one.isPointInside(core::vector3d<T>(-1,2,-3)))
-	{
-		logTestString("isPointInside failed with other min vertex\n");
-		return false;
-	}
-	if (!one.isPointInside(core::vector3d<T>(2,-2,2)))
-	{
-		logTestString("isPointInside failed with other max vertex\n");
-		return false;
-	}
-	if (!one.isPointInside(core::vector3d<T>(2,2,2)))
-	{
-		logTestString("isPointInside failed with max vertex\n");
-		return false;
-	}
-	if (!one.isPointInside(core::vector3d<T>(0,0,0)))
-	{
-		logTestString("isPointInside failed with origin\n");
-		return false;
-	}
-	if (!one.isPointInside(core::vector3d<T>((T)1.2,-1,1)))
-	{
-		logTestString("isPointInside failed with random point inside\n");
-		return false;
-	}
-	if (one.isPointInside(core::vector3d<T>(-2,-2,-3)))
-	{
-		logTestString("isPointInside failed near min vertex\n");
-		return false;
-	}
-	if (one.isPointInside(core::vector3d<T>(2,3,2)))
-	{
-		logTestString("isPointInside failed near max vertex\n");
-		return false;
-	}
-	if (one.isPointInside(core::vector3d<T>(3,0,0)))
-	{
-		logTestString("isPointInside failed near origin\n");
-		return false;
-	}
-	if (one.isPointInside(core::vector3d<T>((T)10.2,-1,1)))
-	{
-		logTestString("isPointInside failed with random point outside\n");
-		return false;
-	}
-	if (one.isPointTotalInside(core::vector3d<T>(-1,-2,-3)))
-	{
-		logTestString("isPointTotalInside failed with min vertex\n");
-		return false;
-	}
-	if (one.isPointTotalInside(core::vector3d<T>(-1,2,-3)))
-	{
-		logTestString("isPointTotalInside failed with other min vertex\n");
-		return false;
-	}
-	if (one.isPointTotalInside(core::vector3d<T>(2,-2,2)))
-	{
-		logTestString("isPointTotalInside failed with other max vertex\n");
-		return false;
-	}
-	if (one.isPointTotalInside(core::vector3d<T>(2,2,2)))
-	{
-		logTestString("isPointTotalInside failed with max vertex\n");
-		return false;
-	}
-	if (!one.isPointTotalInside(core::vector3d<T>(0,0,0)))
-	{
-		logTestString("isPointTotalInside failed with origin\n");
-		return false;
-	}
-	if (!one.isPointTotalInside(core::vector3d<T>((T)1.2,-1,1)))
-	{
-		logTestString("isPointTotalInside failed with random point inside\n");
-		return false;
-	}
-	if (one.isPointTotalInside(core::vector3d<T>((T)10.2,-1,1)))
-	{
-		logTestString("isPointTotalInside failed with random point outside\n");
-		return false;
-	}
-
-	core::plane3d<T> plane(core::vector3d<T>(0,0,-1), -10);
-	if (one.classifyPlaneRelation(plane) != core::ISREL3D_BACK)
-	{
-		logTestString("box not behind\n");
-		return false;
-	}
-	plane.D=0;
-	if (one.classifyPlaneRelation(plane) != core::ISREL3D_CLIPPED)
-	{
-		logTestString("box not clipped\n");
-		return false;
-	}
-	plane.D=10;
-	if (one.classifyPlaneRelation(plane) != core::ISREL3D_FRONT)
-	{
-		logTestString("box not in front\n");
-		return false;
-	}
-	return true;
-}
 
 /** Test the functionality of aabbox3d<T>. */
 bool testaabbox3d(void)
