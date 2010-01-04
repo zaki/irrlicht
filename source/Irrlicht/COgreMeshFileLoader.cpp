@@ -366,6 +366,9 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 	os::Printer::log("Read Submesh");
 #endif
 	readString(file, parent, subMesh.Material);
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("using material", subMesh.Material);
+#endif
 	readBool(file, parent, subMesh.SharedVertices);
 
 	s32 numIndices;
@@ -1147,7 +1150,13 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 			{
 				getMaterialToken(file, token);
 			} while (token != "}");
-			getMaterialToken(file, token);
+		}
+		else if (token=="shadow_caster_vertex_program_ref")
+		{
+			do
+			{
+				getMaterialToken(file, token);
+			} while (token != "}");
 		}
 		else if (token=="vertex_program_ref")
 		{
@@ -1155,7 +1164,6 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 			{
 				getMaterialToken(file, token);
 			} while (token != "}");
-			getMaterialToken(file, token);
 		}
 		//fog_override, iteration, point_size_attenuation
 		//not considered yet!
