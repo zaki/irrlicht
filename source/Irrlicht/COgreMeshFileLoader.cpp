@@ -121,7 +121,7 @@ IAnimatedMesh* COgreMeshFileLoader::createMesh(io::IReadFile* file)
 		return 0;
 	ChunkData data;
 	readString(file, data, Version);
-	if ((Version != "[MeshSerializer_v1.30]") && (Version != "[MeshSerializer_v1.40]"))
+	if ((Version != "[MeshSerializer_v1.30]") && (Version != "[MeshSerializer_v1.40]") && (Version != "[MeshSerializer_v1.41]"))
 		return 0;
 
 	clearMeshes();
@@ -781,29 +781,21 @@ void COgreMeshFileLoader::composeObject(void)
 			}
 		}
 
-		// currently not working correctly
 		for (u32 i=0; i<Skeleton.Animations.size(); ++i)
 		{
 			for (u32 j=0; j<Skeleton.Animations[i].Keyframes.size(); ++j)
 			{
-#if 0
 				OgreKeyframe& frame = Skeleton.Animations[i].Keyframes[j];
-#ifdef IRR_OGRE_LOADER_DEBUG
-				os::Printer::log("Time", core::stringc(frame.Time));
-				os::Printer::log("Position", core::stringc(frame.Position.X)+" "+core::stringc(frame.Position.Y)+" "+core::stringc(frame.Position.Z));
-				os::Printer::log("Rotation quat", core::stringc(frame.Orientation.W)+" "+core::stringc(frame.Orientation.X)+" "+core::stringc(frame.Orientation.Y)+" "+core::stringc(frame.Orientation.Z));
-#endif
 				ISkinnedMesh::SJoint* keyjoint = m->getAllJoints()[frame.BoneID];
 				ISkinnedMesh::SPositionKey* poskey = m->addPositionKey(keyjoint);
-				poskey->frame=frame.Time;
+				poskey->frame=frame.Time*25;
 				poskey->position=keyjoint->LocalMatrix.getTranslation()+frame.Position;
 				ISkinnedMesh::SRotationKey* rotkey = m->addRotationKey(keyjoint);
-				rotkey->frame=frame.Time;
-				rotkey->rotation=frame.Orientation+core::quaternion(keyjoint->LocalMatrix);
+				rotkey->frame=frame.Time*25;
+				rotkey->rotation=core::quaternion(keyjoint->LocalMatrix)*frame.Orientation;
 				ISkinnedMesh::SScaleKey* scalekey = m->addScaleKey(keyjoint);
-				scalekey->frame=frame.Time;
+				scalekey->frame=frame.Time*25;
 				scalekey->scale=frame.Scale;
-#endif
 			}
 		}
 		m->finalize();
@@ -1407,8 +1399,8 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 				OgreKeyframe& keyframe = Skeleton.Animations.getLast().Keyframes.getLast();
 				readFloat(file, data, &keyframe.Time);
 				keyframe.Time+=animationTotal;
-				readVector(file, data, keyframe.Position);
 				readQuaternion(file, data, keyframe.Orientation);
+				readVector(file, data, keyframe.Position);
 				if (data.read<data.header.length)
 				{
 					readVector(file, data, keyframe.Scale);
