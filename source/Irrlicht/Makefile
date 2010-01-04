@@ -55,7 +55,7 @@ LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
 ###############
 #Compiler flags
 CXXINCS = -I../../include -Izlib -Ijpeglib -Ilibpng
-CPPFLAGS = $(CXXINCS) -DIRRLICHT_EXPORTS=1
+CPPFLAGS += $(CXXINCS) -DIRRLICHT_EXPORTS=1
 CXXFLAGS += -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
 ifndef NDEBUG
 CXXFLAGS += -g -D_DEBUG
@@ -65,7 +65,7 @@ endif
 ifdef PROFILE
 CXXFLAGS += -pg
 endif
-CFLAGS := -fexpensive-optimizations -O3 -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
+CFLAGS := -O3 -fexpensive-optimizations -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
 
 sharedlib sharedlib_osx: CXXFLAGS += -fPIC
 sharedlib sharedlib_osx: CFLAGS += -fPIC
@@ -103,20 +103,22 @@ sharedlib_win32 staticlib_win32: CPPFLAGS += -DIRR_COMPILE_WITH_DX9_DEV_PACK -D_
 staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 
 ####################
-# All target, builds Irrlicht as static lib (libIrrlicht.a) and copies it into /lib/Linux
+# All target, builds Irrlicht as static lib (libIrrlicht.a) and copies it into lib/Linux
 all linux: staticlib
 
-# Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/Linux
+# Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into lib/Linux
 sharedlib: $(LINKOBJ)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	mkdir -p $(LIB_PATH)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
 $(STATIC_LIB): $(LINKOBJ)
 	$(AR) rs $@ $^
 
-# Copies static lib into /lib/Linux
+# Copies static lib into lib/Linux
 staticlib staticlib_osx: $(STATIC_LIB)
+	mkdir -p $(LIB_PATH)
 	cp $^ $(LIB_PATH)
 
 # Builds Irrlicht as dll (Irrlicht.dll) into ../../bin/Win32-gcc
@@ -165,7 +167,7 @@ help:
 	@echo "Available targets for Irrlicht"
 	@echo " sharedlib: Build shared library Irrlicht.so for Linux"
 	@echo " staticlib: Build static library Irrlicht.a for Linux"
-	@echo " install: Copy shared library to /usr/lib"
+	@echo " install: Copy shared library to /usr/local/lib"
 	@echo ""
 	@echo " sharedlib_win32: Build shared library Irrlicht.dll for Windows"
 	@echo " staticlib_win32: Build static library Irrlicht.a for Windows"
