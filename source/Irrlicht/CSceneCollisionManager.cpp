@@ -267,7 +267,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeAndCollisionPointFromRay(
 
 void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 				ISceneNode * root,
-				const core::line3df & ray,
+				core::line3df & ray,
 				s32 bits,
 				bool noDebugObjects,
 				f32 & outBestDistanceSquared,
@@ -315,6 +315,8 @@ void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 					outBestNode = current;
 					outBestCollisionPoint = candidateCollisionPoint;
 					outBestTriangle = candidateTriangle;
+					const core::vector3df rayVector = ray.getVector().normalize();
+					ray.end = ray.start + (rayVector * sqrtf(distanceSquared));
 				}
 			}
 		}
