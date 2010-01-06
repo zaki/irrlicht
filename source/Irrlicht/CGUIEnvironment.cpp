@@ -441,7 +441,7 @@ void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
 
 	if (Hovered)
 	{
-		u32 now = os::Timer::getTime ();
+		u32 now = os::Timer::getTime();
 
 		if (Hovered != this)
 			Hovered->grab();
@@ -458,7 +458,7 @@ void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
 				lastHovered->OnEvent(event);
 			}
 
-			if ( ToolTip.Element )
+			if (ToolTip.Element)
 			{
 				ToolTip.Element->remove();
 				ToolTip.Element->drop();
@@ -479,7 +479,8 @@ void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
 			}
 
 
-			event.GUIEvent.Caller = Hovered;
+			event.GUIEvent.Caller  = Hovered;
+			event.GUIEvent.Element = Hovered;
 			event.GUIEvent.EventType = EGET_ELEMENT_HOVERED;
 			Hovered->OnEvent(event);
 		}
