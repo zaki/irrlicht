@@ -353,23 +353,25 @@ const io::path& CFileSystem::getWorkingDirectory()
 	else
 	{
 		#if defined(_IRR_WINDOWS_CE_PLATFORM_)
-
+		// does not need this
 		#elif defined(_IRR_WINDOWS_API_)
+			fschar_t tmp[_MAX_PATH];
 			#if defined(_IRR_WCHAR_FILESYSTEM )
-				wchar_t tmp[_MAX_PATH];
 				_wgetcwd(tmp, _MAX_PATH);
+				WorkingDirectory[FILESYSTEM_NATIVE] = tmp;
+				WorkingDirectory[FILESYSTEM_NATIVE].replace(L'\\', L'/');
 			#else
-				c8 tmp[_MAX_PATH];
 				_getcwd(tmp, _MAX_PATH);
+				WorkingDirectory[FILESYSTEM_NATIVE] = tmp;
+				WorkingDirectory[FILESYSTEM_NATIVE].replace('\\', '/');
 			#endif
-			WorkingDirectory[FILESYSTEM_NATIVE] = tmp;
 		#endif
 
 		#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 
-			//! getting the CWD is rather complex as we do not know the size
-			//! so try it until the call was successful
-			//! Note that neither the first nor the second parameter may be 0 according to POSIX
+			// getting the CWD is rather complex as we do not know the size
+			// so try it until the call was successful
+			// Note that neither the first nor the second parameter may be 0 according to POSIX
 
 			#if defined(_IRR_WCHAR_FILESYSTEM )
 				u32 pathSize=256;
@@ -465,14 +467,11 @@ io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 	p = realpath(filename.c_str(), fpath);
 	if (!p)
 	{
-		// content in fpath is undefined at this point
-		if (!fpath[0]) // seems like fpath wasn't altered
+		// content in fpath is unclear at this point
+		if (!fpath[0]) // seems like fpath wasn't altered, use our best guess
 		{
-			// at least remove a ./ prefix
-			if ('.'==filename[0] && '/'==filename[1])
-				return filename.subString(2, filename.size()-2);
-			else
-				return filename;
+			io::path tmp(filename);
+			return flattenFilename(tmp);
 		}
 		else
 			return io::path(fpath);
@@ -532,7 +531,7 @@ io::path CFileSystem::getFileBasename(const io::path& filename, bool keepExtensi
 }
 
 
-//! flaten a path and file name for example: "/you/me/../." becomes "/you"
+//! flatten a path and file name for example: "/you/me/../." becomes "/you"
 io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root) const
 {
 	directory.replace('\\', '/');
