@@ -443,16 +443,16 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 
 io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 {
-#if defined(_IRR_WINDOWS_API_) && !defined(_IRR_WINDOWS_CE_PLATFORM_)
+#if defined(_IRR_WINDOWS_CE_PLATFORM_)
+	return filename;
+#elif defined(_IRR_WINDOWS_API_)
 	fschar_t *p=0;
-
+	fschar_t fpath[_MAX_PATH];
 	#if defined(_IRR_WCHAR_FILESYSTEM )
-		wchar_t fpath[_MAX_PATH];
 		p = _wfullpath(fpath, filename.c_str(), _MAX_PATH);
 		core::stringw tmp(p);
 		tmp.replace(L'\\', L'/');
 	#else
-		c8 fpath[_MAX_PATH];
 		p = _fullpath(fpath, filename.c_str(), _MAX_PATH);
 		core::stringc tmp(p);
 		tmp.replace('\\', '/');
@@ -477,10 +477,10 @@ io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 		else
 			return io::path(fpath);
 	}
-
-#endif
-
+	return io::path(p);
+#else
 	return io::path(filename);
+#endif
 }
 
 
