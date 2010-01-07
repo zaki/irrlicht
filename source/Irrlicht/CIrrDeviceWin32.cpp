@@ -1409,12 +1409,12 @@ void CIrrDeviceWin32::clearSystemMessages()
 void CIrrDeviceWin32::ReportLastWinApiError()
 {
 	// (based on code from ovidiucucu from http://www.codeguru.com/forum/showthread.php?t=318721)
-	LPCTSTR pszCaption = "Windows SDK Error Report";
+	LPCTSTR pszCaption = __TEXT("Windows SDK Error Report");
 	DWORD dwError      = GetLastError();
 
 	if(NOERROR == dwError)
 	{
-		MessageBox(NULL, "No error", pszCaption, MB_OK);
+		MessageBox(NULL, __TEXT("No error"), pszCaption, MB_OK);
 	}
 	else
 	{
@@ -1432,12 +1432,12 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 										NULL);
 		if(0 != dwCount)
 		{
-			MessageBox(NULL, (LPCSTR)pTextBuffer, pszCaption, MB_OK|MB_ICONERROR);
+			MessageBox(NULL, (LPCTSTR)pTextBuffer, pszCaption, MB_OK|MB_ICONERROR);
 			LocalFree(pTextBuffer);
 		}
 		else
 		{
-			MessageBox(NULL, "Unknown error", pszCaption, MB_OK|MB_ICONERROR);
+			MessageBox(NULL, __TEXT("Unknown error"), pszCaption, MB_OK|MB_ICONERROR);
 		}
 	}
 }
@@ -1445,4 +1445,3 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 } // end namespace
 
 #endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-
