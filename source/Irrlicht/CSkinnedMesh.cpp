@@ -1260,8 +1260,6 @@ void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChil
 		node->scaleHint=joint->scaleHint;
 		node->rotationHint=joint->rotationHint;
 
-		//node->setAbsoluteTransformation(joint->GlobalMatrix);
-		//Note: This updateAbsolutePosition will not work well if joints are not nested like b3d
 		node->updateAbsolutePosition();
 	}
 }

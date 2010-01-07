@@ -65,12 +65,11 @@ bool b3dAnimation(void)
 	if (node2)
 		node2->remove();
 
-	// TODO: Does not yet work, seems like bones are not properly placed
-#if 0
 	/** Now test if bones are correctly positioned. */
 	node1->setDebugDataVisible(scene::EDS_SKELETON);
 	node1->setPosition(vector3df(1, -5, 8));
 	node1->setRotation(core::vector3df(0,180,0));
+	node1->updateAbsolutePosition();
 	for (u32 i=0; i<node1->getJointCount(); ++i)
 	{
 		smgr->addCubeSceneNode(1.f,0,-1,node1->getJointNode(i)->getAbsolutePosition());
@@ -84,7 +83,6 @@ bool b3dAnimation(void)
 	driver->endScene();
 
 	result &= takeScreenshotAndCompareAgainstReference(driver, "-b3dJointPosition.png");
-#endif
 
 	device->drop();
 
