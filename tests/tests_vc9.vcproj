@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\draw2DImage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\drawPixel.cpp"
 				>
 			</File>

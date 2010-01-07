@@ -101,6 +101,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(textureRenderStates);
 	TEST(transparentAlphaChannelRef);
 	TEST(antiAliasing);
+	TEST(draw2DImage);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes
