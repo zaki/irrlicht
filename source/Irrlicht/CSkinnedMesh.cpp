@@ -1272,19 +1272,15 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &Join
 		const IBoneSceneNode* const node=JointChildSceneNodes[i];
 		SJoint *joint=AllJoints[i];
 
-		joint->LocalAnimatedMatrix.setTranslation(node->getPosition());
 		joint->LocalAnimatedMatrix.setRotationDegrees(node->getRotation());
-
-		//joint->LocalAnimatedMatrix.setScale( node->getScale() );
+		joint->LocalAnimatedMatrix.setTranslation(node->getPosition());
+		joint->LocalAnimatedMatrix *= core::matrix4().setScale(node->getScale());
 
 		joint->positionHint=node->positionHint;
 		joint->scaleHint=node->scaleHint;
 		joint->rotationHint=node->rotationHint;
 
-		if (node->getSkinningSpace()==EBSS_GLOBAL)
-			joint->GlobalSkinningSpace=true;
-		else
-			joint->GlobalSkinningSpace=false;
+		joint->GlobalSkinningSpace=(node->getSkinningSpace()==EBSS_GLOBAL);
 	}
 	//Remove cache, temp...
 	LastAnimatedFrame=-1;

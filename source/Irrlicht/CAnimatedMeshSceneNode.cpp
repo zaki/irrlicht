@@ -195,7 +195,7 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 	}
 }
 
-IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControlJoints)
+IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 {
 	if(Mesh->getMeshType() != EAMT_SKINNED)
 	{
@@ -204,7 +204,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 	else
 	{
 		// As multiple scene nodes may be sharing the same skinned mesh, we have to
-		// re-animated it every frame to ensure that this node gets the mesh that it needs.
+		// re-animate it every frame to ensure that this node gets the mesh that it needs.
 
 		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
 
@@ -246,7 +246,7 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 
 	if (Mesh)
 	{
-		scene::IMesh * mesh = getMeshForCurrentFrame( true );
+		scene::IMesh * mesh = getMeshForCurrentFrame();
 
 		if (mesh)
 			Box = mesh->getBoundingBox();
@@ -271,7 +271,7 @@ void CAnimatedMeshSceneNode::render()
 
 	++PassCount;
 
-	scene::IMesh* m = getMeshForCurrentFrame( false );
+	scene::IMesh* m = getMeshForCurrentFrame();
 
 	if(m)
 	{

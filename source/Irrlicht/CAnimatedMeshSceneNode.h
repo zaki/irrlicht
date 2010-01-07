@@ -165,7 +165,7 @@ namespace scene
 	private:
 
 		//! Get a static mesh for the current frame of this animated mesh
-		IMesh* getMeshForCurrentFrame(bool forceRecalcOfControlJoints);
+		IMesh* getMeshForCurrentFrame();
 
 		void buildFrameNr(u32 timeMs);
 		void checkJoints();
