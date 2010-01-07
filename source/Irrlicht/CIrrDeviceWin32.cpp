@@ -1292,21 +1292,28 @@ void CIrrDeviceWin32::pollJoysticks()
 
 	u32 joystick;
 	JOYINFOEX info;
-	info.dwSize = sizeof(info);
-	info.dwFlags = JOY_RETURNALL;
 
 	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 	{
+		// needs to be reset for each joystick
+		// request ALL values and POV as continuous if possible
+		info.dwSize = sizeof(info);
+		info.dwFlags = JOY_RETURNALL|JOY_RETURNPOVCTS;
+		const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
+		// if no POV is available don't ask for POV values
+		if (!(caps.wCaps & JOYCAPS_HASPOV))
+			info.dwFlags &= ~(JOY_RETURNPOV|JOY_RETURNPOVCTS);
 		if(JOYERR_NOERROR == joyGetPosEx(ActiveJoysticks[joystick].Index, &info))
 		{
 			SEvent event;
-			const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
 
 			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
 			event.JoystickEvent.Joystick = (u8)joystick;
-
+ 
 			event.JoystickEvent.POV = (u16)info.dwPOV;
-			if(event.JoystickEvent.POV > 35900)
+			// set to undefined if no POV value was returned or the value
+			// is out of range
+			if (!(info.dwFlags & JOY_RETURNPOV) || (event.JoystickEvent.POV > 35900))
 				event.JoystickEvent.POV = 65535;
 
 			for(int axis = 0; axis < SEvent::SJoystickEvent::NUMBER_OF_AXES; ++axis)
