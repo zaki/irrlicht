@@ -1254,17 +1254,15 @@ void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChil
 		SJoint *joint=AllJoints[i];
 		node->setPosition( joint->LocalAnimatedMatrix.getTranslation() );
 		node->setRotation( joint->LocalAnimatedMatrix.getRotationDegrees() );
-
-		//node->setScale( joint->LocalAnimatedMatrix.getScale() );
+		node->setScale( joint->LocalAnimatedMatrix.getScale() );
 
 		node->positionHint=joint->positionHint;
 		node->scaleHint=joint->scaleHint;
 		node->rotationHint=joint->rotationHint;
 
-		//node->setAbsoluteTransformation(joint->GlobalMatrix); //not going to work
-
+		//node->setAbsoluteTransformation(joint->GlobalMatrix);
 		//Note: This updateAbsolutePosition will not work well if joints are not nested like b3d
-		//node->updateAbsolutePosition();
+		node->updateAbsolutePosition();
 	}
 }
 

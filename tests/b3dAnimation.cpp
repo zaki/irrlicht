@@ -73,7 +73,7 @@ bool b3dAnimation(void)
 	node1->setRotation(core::vector3df(0,180,0));
 	for (u32 i=0; i<node1->getJointCount(); ++i)
 	{
-		smgr->addCubeSceneNode(5,0,-1,node1->getJointNode(i)->getAbsolutePosition());
+		smgr->addCubeSceneNode(1.f,0,-1,node1->getJointNode(i)->getAbsolutePosition());
 //		smgr->addCubeSceneNode(1.f,node1->getJointNode(i));
 	}
 
