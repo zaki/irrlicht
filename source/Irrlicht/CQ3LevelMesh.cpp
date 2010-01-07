@@ -1871,10 +1871,10 @@ void CQ3LevelMesh::loadTextures()
 	// load textures
 	Tex.set_used( NumTextures+1 );
 
-	const IShader * shader;
+	const IShader* shader;
 
 	core::stringc list;
-	core::stringc check;
+	io::path check;
 	tTexArray textureArray;
 
 	// pre-load shaders
