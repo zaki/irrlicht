@@ -15,15 +15,15 @@ static bool testgetAbsoluteFilename(io::IFileSystem* fs)
 		result = false;
 	}
 
-    apath = fs->getAbsolutePath("media/");
-	if (apath!=(cwd+"/media/"))
+	apath = fs->getAbsolutePath("../media/");
+	core::deletePathFromPath(cwd, 1);
+	if (apath!=(cwd+"media/"))
 	{
-		logTestString("getAbsolutePath failed on existing dir with postfix / %s\n", apath.c_str());
+		logTestString("getAbsolutePath failed on dir with postfix / %s\n", apath.c_str());
 		result = false;
 	}
 
 	apath = fs->getAbsolutePath ("../nothere.txt");   // file does not exist
-	core::deletePathFromPath(cwd, 1);
 	if (apath!=(cwd+"nothere.txt"))
 	{
 		logTestString("getAbsolutePath failed on non-existing file %s\n", apath.c_str());
