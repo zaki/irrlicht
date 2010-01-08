@@ -290,7 +290,7 @@ const SItemElement * getItemElement ( const stringc& key )
 {
 	const SItemElement *item = Quake3ItemElement;
 
-	while ( item->key[0] )
+	while ( item->key )
 	{
 		if ( 0 == strcmp ( key.c_str(), item->key ) )
 			return item;

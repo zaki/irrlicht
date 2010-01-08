@@ -4,6 +4,35 @@ using namespace irr;
 using namespace core;
 using namespace io;
 
+static bool testgetAbsoluteFilename(io::IFileSystem* fs)
+{
+	bool result=true;
+	io::path apath = fs->getAbsolutePath("media");
+	io::path cwd = fs->getWorkingDirectory();
+	if (apath!=(cwd+"/media"))
+	{
+		logTestString("getAbsolutePath failed on existing dir %s\n", apath.c_str());
+		result = false;
+	}
+
+	apath = fs->getAbsolutePath("../media/");
+	core::deletePathFromPath(cwd, 1);
+	if (apath!=(cwd+"media/"))
+	{
+		logTestString("getAbsolutePath failed on dir with postfix / %s\n", apath.c_str());
+		result = false;
+	}
+
+	apath = fs->getAbsolutePath ("../nothere.txt");   // file does not exist
+	if (apath!=(cwd+"nothere.txt"))
+	{
+		logTestString("getAbsolutePath failed on non-existing file %s\n", apath.c_str());
+		result = false;
+	}
+
+	return result;
+}
+
 static bool testFlattenFilename(io::IFileSystem* fs)
 {
 	bool result=true;
@@ -92,7 +121,8 @@ bool filesystem(void)
 	// remove it again to not affect other tests
 	device->getFileSystem()->removeFileArchive( device->getFileSystem()->getFileArchiveCount() );
 
-	result |= testFlattenFilename(fs);
+	result &= testFlattenFilename(fs);
+	result &= testgetAbsoluteFilename(fs);
 	return result;
 }
 

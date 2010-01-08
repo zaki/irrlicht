@@ -114,6 +114,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\include"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -171,6 +172,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\anti-aliasing.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\archiveReader.cpp"
 				>
 			</File>
@@ -192,6 +197,10 @@
 			</File>
 			<File
 				RelativePath=".\disambiguateTextures.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\draw2DImage.cpp"
 				>
 			</File>
 			<File
@@ -311,6 +320,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\testaabbox.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\testDimension2d.cpp"
 				>
 			</File>
@@ -340,6 +353,10 @@
 			</File>
 			<File
 				RelativePath=".\textureRenderStates.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\timer.cpp"
 				>
 			</File>
 			<File

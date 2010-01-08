@@ -271,13 +271,107 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 	else if(hit == farTarget)
 		logTestString("getSceneNodeFromRayBB() hit the far (scaled) target.\n");
 	else if(hit == middleTarget)
-		logTestString("getSceneNodeFromRayBB() hit the far (scaled) target.\n");
+		logTestString("getSceneNodeFromRayBB() hit the middle (scaled) target.\n");
 
 	assert(result);
 
 	smgr->clear();
 
 	return result;
+}
+
+
+// box intersection according to Kay et al., code from gamedev.net
+static bool IntersectBox(const core::vector3df& origin, const core::vector3df& dir, const core::aabbox3df& box)
+{
+	core::vector3df minDist = (box.MinEdge - origin)/dir;
+	core::vector3df maxDist = (box.MaxEdge - origin)/dir;
+   
+	core::vector3df realMin(core::min_(minDist.X, maxDist.X),core::min_(minDist.Y, maxDist.Y),core::min_(minDist.Z, maxDist.Z));
+	core::vector3df realMax(core::max_(minDist.X, maxDist.X),core::max_(minDist.Y, maxDist.Y),core::max_(minDist.Z, maxDist.Z));
+   
+	f32 minmax = core::min_(realMax.X, realMax.Y, realMax.Z);
+	// nearest distance to intersection
+	f32 maxmin = core::max_(realMin.X, realMin.Y, realMin.Z);
+
+	return (maxmin >=0 && minmax >= maxmin);
+}
+
+static bool checkBBoxIntersection(IrrlichtDevice * device,
+				ISceneManager * smgr)
+{
+	video::IVideoDriver* driver = device->getVideoDriver();
+
+	// add camera
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS();
+	camera->setPosition(core::vector3df(30, 30, 30));
+	camera->setTarget(core::vector3df(8.f, 8.f, 8.f));
+	camera->setID(0);
+
+	// add a cube to pick
+	scene::ISceneNode* cube = smgr->addCubeSceneNode(30, 0, -1, core::vector3df(0,0,0),core::vector3df(30,40,50));
+
+	bool result=true;
+	for (u32 round=0; round<2; ++round)
+	{
+		driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+		smgr->drawAll();
+		driver->endScene();
+
+		core::matrix4 invMat = cube->getAbsoluteTransformation();
+		invMat.makeInverse();
+
+		s32 hits=0;
+		u32 start = device->getTimer()->getRealTime();
+		for (u32 i=10; i<150; ++i)
+		{
+			for (u32 j=10; j<110; ++j)
+			{
+				const core::position2di pos(i, j);
+
+				// get the line used for picking
+				core::line3df ray = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(pos, camera);
+
+				invMat.transformVect(ray.start);
+				invMat.transformVect(ray.end);
+
+				hits += (cube->getBoundingBox().intersectsWithLine(ray)?1:0);
+			}
+		}
+		u32 duration = device->getTimer()->getRealTime()-start;
+		logTestString("bbox intersection checks %d hits (of 14000).\n", hits);
+		hits = -hits;
+
+		start = device->getTimer()->getRealTime();
+		for (u32 i=10; i<150; ++i)
+		{
+			for (u32 j=10; j<110; ++j)
+			{
+				const core::position2di pos(i, j);
+
+				// get the line used for picking
+				core::line3df ray = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(pos, camera);
+
+				invMat.transformVect(ray.start);
+				invMat.transformVect(ray.end);
+
+				hits += (IntersectBox(ray.start, (ray.end-ray.start).normalize(), cube->getBoundingBox())?1:0);
+			}
+		}
+		u32 duration2 = device->getTimer()->getRealTime()-start;
+		logTestString("bbox intersection resulted in %d misses at a speed of %d (old) compared to %d (new).\n", abs(hits), duration, duration2);
+		if (duration>(duration2*1.2f))
+			logTestString("Consider replacement of bbox intersection test.\n");
+
+		result &= (hits==0);
+		assert(result);
+		// second round without any hits, so check opposite direction
+		camera->setTarget(core::vector3df(80.f, 80.f, 80.f));
+	}
+
+	smgr->clear();
+
+	return (result);
 }
 
 
@@ -299,15 +393,18 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 	// add a cube to pick
 	scene::ISceneNode* cube = smgr->addCubeSceneNode(15);
 
+	driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+	smgr->drawAll();
+	driver->endScene();
+
+	core::matrix4 invMat = cube->getAbsoluteTransformation();
+	invMat.makeInverse();
+
 	bool result = true;
-	for (u32 i=68; i<82; ++i)
+	for (u32 i=76; i<82; ++i)
 	{
 		for (u32 j=56; j<64; ++j)
 		{
-			driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
-			smgr->drawAll();
-			driver->endScene();
-
 			const core::position2di pos(i, j);
 
 			// get the line used for picking
@@ -315,9 +412,6 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 
 			// find a selected node
 			scene::ISceneNode* pick = smgr->getSceneCollisionManager()->getSceneNodeFromRayBB(ray, 1);
-
-			core::matrix4 invMat = cube->getAbsoluteTransformation();
-			invMat.makeInverse();
 
 			invMat.transformVect(ray.start);
 			invMat.transformVect(ray.end);
@@ -357,10 +451,10 @@ bool sceneCollisionManager(void)
 
 	result &= getCollisionPoint_ignoreTriangleVertices(device, smgr, collMgr);
 
-	// TODO: Not yet going through
-//	result &= compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(device, smgr, collMgr);
+	result &= checkBBoxIntersection(device, smgr);
+
+	result &= compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(device, smgr, collMgr);
 
 	device->drop();
 	return result;
 }
-

@@ -289,7 +289,7 @@ namespace os
 	//! returns if the timer currently is stopped
 	bool Timer::isStopped()
 	{
-		return VirtualTimerStopCounter != 0;
+		return VirtualTimerStopCounter < 0;
 	}
 
 	void Timer::initVirtualTimer()

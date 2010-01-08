@@ -490,6 +490,7 @@ IReadFile* CZipReader::createAndOpenFile(const io::path& filename)
 	return 0;
 }
 
+#ifdef _IRR_COMPILE_WITH_LZMA_
 //! Used for LZMA decompression. The lib has no default memory management
 namespace
 {
@@ -497,6 +498,7 @@ namespace
 	void SzFree(void *p, void *address) { p = p; free(address); }
 	ISzAlloc lzmaAlloc = { SzAlloc, SzFree };
 }
+#endif
 
 //! opens a file by index
 IReadFile* CZipReader::createAndOpenFile(u32 index)

@@ -808,6 +808,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\coreutil.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\dimension2d.h"
 					>
 				</File>
@@ -1089,6 +1093,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\IQ3LevelMesh.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IQ3Shader.h"
 					>
 				</File>
 				<File

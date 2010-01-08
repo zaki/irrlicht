@@ -25,10 +25,7 @@ namespace scene
 		EJUOR_READ,
 
 		//! control joint positions in the mesh (eg. ragdolls, or set the animation from animateJoints() )
-		EJUOR_CONTROL,
-
-		//! count of all available interpolation modes
-		EJUOR_COUNT
+		EJUOR_CONTROL
 	};
 
 

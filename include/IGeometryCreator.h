@@ -35,7 +35,7 @@ public:
 
 	//! Create a pseudo-random mesh representing a hilly terrain.
 	/**
-	\param tileSize The size of each time.
+	\param tileSize The size of each tile.
 	\param tileCount The number of tiles in each dimension.
 	\param material The material to apply to the mesh.
 	\param hillHeight The maximum height of the hills.
@@ -49,6 +49,23 @@ public:
 			video::SMaterial* material, f32 hillHeight,
 			const core::dimension2d<f32>& countHills,
 			const core::dimension2d<f32>& textureRepeatCount) const =0;
+
+	//! Create a simple rectangular textured plane mesh.
+	/**
+	\param tileSize The size of each tile.
+	\param tileCount The number of tiles in each dimension.
+	\param material The material to apply to the mesh.
+	\param textureRepeatCount The number of times to repeat the material texture along each dimension.
+	\return Generated mesh.
+	*/
+	IMesh* createPlaneMesh(
+			const core::dimension2d<f32>& tileSize,
+			const core::dimension2d<u32>& tileCount,
+			video::SMaterial* material,
+			const core::dimension2d<f32>& textureRepeatCount)
+	{
+		return createHillPlaneMesh(tileSize, tileCount, material, 0.f, core::dimension2df(), textureRepeatCount);
+	}
 
 	//! Create a terrain mesh from an image representing a heightfield.
 	/**

@@ -21,7 +21,7 @@ static bool testSelfAssignment()
 	return myArray.size() == 1;
 }
 
-// this will (did once) simply crash when wrong, so no return value
+// this will (did once) crash when wrong due to deallocating memory twice, so no return value
 static void crashTestFastAlloc()
 {
 	core::array < VarArray, core::irrAllocatorFast<VarArray> > ArrayArray;

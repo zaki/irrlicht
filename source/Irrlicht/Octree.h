@@ -14,9 +14,14 @@
 /*!
 	Flags for Octree
 */
-#define OCTREE_USE_HARDWARE	// use meshbuffer for drawing, enables hardware acceleration
-#define OCTREE_PARENTTEST	// bypass full invisible/visible test
-#define OCTREE_BOX_BASED	// use bounding box or frustum for calculate polys
+//! use meshbuffer for drawing, enables VBO usage
+#define OCTREE_USE_HARDWARE	true
+//! use visibility information together with VBOs
+#define OCTREE_USE_VISIBILITY false
+//! use bounding box or frustum for calculate polys
+#define OCTREE_BOX_BASED true
+//! bypass full invisible/visible test
+#define OCTREE_PARENTTEST
 
 namespace irr
 {
@@ -29,7 +34,6 @@ class Octree
 {
 public:
 
-#if defined (OCTREE_USE_HARDWARE)
 	struct SMeshChunk : public scene::CMeshBuffer<T>
 	{
 		SMeshChunk ()
@@ -45,14 +49,6 @@ public:
 
 		s32 MaterialId;
 	};
-#else
-	struct SMeshChunk
-	{
-		core::array<T> Vertices;
-		core::array<u16> Indices;
-		s32 MaterialId;
-	};
-#endif
 
 	struct SIndexChunk
 	{

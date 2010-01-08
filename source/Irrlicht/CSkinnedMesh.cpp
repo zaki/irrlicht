@@ -1254,17 +1254,13 @@ void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChil
 		SJoint *joint=AllJoints[i];
 		node->setPosition( joint->LocalAnimatedMatrix.getTranslation() );
 		node->setRotation( joint->LocalAnimatedMatrix.getRotationDegrees() );
-
-		//node->setScale( joint->LocalAnimatedMatrix.getScale() );
+		node->setScale( joint->LocalAnimatedMatrix.getScale() );
 
 		node->positionHint=joint->positionHint;
 		node->scaleHint=joint->scaleHint;
 		node->rotationHint=joint->rotationHint;
 
-		//node->setAbsoluteTransformation(joint->GlobalMatrix); //not going to work
-
-		//Note: This updateAbsolutePosition will not work well if joints are not nested like b3d
-		//node->updateAbsolutePosition();
+		node->updateAbsolutePosition();
 	}
 }
 
@@ -1276,19 +1272,15 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &Join
 		const IBoneSceneNode* const node=JointChildSceneNodes[i];
 		SJoint *joint=AllJoints[i];
 
-		joint->LocalAnimatedMatrix.setTranslation(node->getPosition());
 		joint->LocalAnimatedMatrix.setRotationDegrees(node->getRotation());
-
-		//joint->LocalAnimatedMatrix.setScale( node->getScale() );
+		joint->LocalAnimatedMatrix.setTranslation(node->getPosition());
+		joint->LocalAnimatedMatrix *= core::matrix4().setScale(node->getScale());
 
 		joint->positionHint=node->positionHint;
 		joint->scaleHint=node->scaleHint;
 		joint->rotationHint=node->rotationHint;
 
-		if (node->getSkinningSpace()==EBSS_GLOBAL)
-			joint->GlobalSkinningSpace=true;
-		else
-			joint->GlobalSkinningSpace=false;
+		joint->GlobalSkinningSpace=(node->getSkinningSpace()==EBSS_GLOBAL);
 	}
 	//Remove cache, temp...
 	LastAnimatedFrame=-1;

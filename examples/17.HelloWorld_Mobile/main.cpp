@@ -134,9 +134,9 @@ IrrlichtDevice *startup()
 		wchar_t buf[255];
 		GetModuleFileNameW ( 0, buf, 255 );
 
-		string<c16> base = buf;
+		io::path base = buf;
 		base = base.subString ( 0, base.findLast ( '\\' ) + 1 );
-		device->getFileSystem()->registerFileArchive ( base );
+		device->getFileSystem()->addFileArchive ( base );
 	}
 #endif
 

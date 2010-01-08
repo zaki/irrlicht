@@ -63,6 +63,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testDimension2d);
 	TEST(testVector2d);
 	TEST(testVector3d);
+	TEST(testaabbox3d);
 	// TODO: Needs to be fixed first
 //	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);
@@ -80,6 +81,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(sceneCollisionManager);
 	TEST(sceneNodeAnimator);
 	TEST(meshLoaders);
+	TEST(testTimer);
 	// software drivers only
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
@@ -98,6 +100,8 @@ int main(int argumentCount, char * arguments[])
 	TEST(textureFeatures);
 	TEST(textureRenderStates);
 	TEST(transparentAlphaChannelRef);
+	TEST(antiAliasing);
+	TEST(draw2DImage);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes
@@ -205,6 +209,11 @@ int main(int argumentCount, char * arguments[])
 			{
 				(void)fprintf(testsLastPassedAtFile, "Tests finished. %d test%s of %d passed.\n",
 			passed, 1 == passed ? "" : "s", numberOfTests);
+#ifdef _DEBUG
+				(void)fprintf(testsLastPassedAtFile, "Compiled as DEBUG\n");
+#else
+				(void)fprintf(testsLastPassedAtFile, "Compiled as RELEASE\n");
+#endif
 				(void)fprintf(testsLastPassedAtFile, "Test suite pass at GMT %s\n", asctime(timeinfo));
 				(void)fclose(testsLastPassedAtFile);
 			}

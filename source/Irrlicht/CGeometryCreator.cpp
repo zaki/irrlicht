@@ -110,7 +110,7 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 			vtx.Pos.set(sx - center.X, 0, sy - center.Y);
 			vtx.TCoords.set(tsx, 1.0f - tsy);
 
-			if (hillHeight != 0.0f)
+			if (core::isnotzero(hillHeight))
 				vtx.Pos.Y = sinf(vtx.Pos.X * countHills.Width * core::PI / center.X) *
 					cosf(vtx.Pos.Z * countHills.Height * core::PI / center.Y) *
 					hillHeight;
@@ -158,6 +158,7 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 		buffer->Material = *material;
 
 	buffer->recalculateBoundingBox();
+	buffer->setHardwareMappingHint(EHM_STATIC);
 
 	SMesh* mesh = new SMesh();
 	mesh->addMeshBuffer(buffer);
@@ -327,9 +328,11 @@ IMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 		scene::IMeshBuffer* buffer = mesh2->getMeshBuffer(i);
 		for (u32 j=0; j<buffer->getVertexCount(); ++j)
 			buffer->getPosition(j).Y += cylinderHeight;
+		buffer->setDirty(EBT_VERTEX);
 		mesh->addMeshBuffer(buffer);
 	}
 	mesh2->drop();
+	mesh->setHardwareMappingHint(EHM_STATIC);
 
 	return mesh;
 }
@@ -494,6 +497,7 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 	mesh->addMeshBuffer(buffer);
 	buffer->drop();
 
+	mesh->setHardwareMappingHint(EHM_STATIC);
 	mesh->recalculateBoundingBox();
 	return mesh;
 }
@@ -630,6 +634,7 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 	buffer->recalculateBoundingBox();
 	SMesh* mesh = new SMesh();
 	mesh->addMeshBuffer(buffer);
+	mesh->setHardwareMappingHint(EHM_STATIC);
 	mesh->recalculateBoundingBox();
 	buffer->drop();
 	return mesh;
@@ -722,6 +727,7 @@ IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation,
 	mesh->addMeshBuffer(buffer);
 	buffer->drop();
 
+	mesh->setHardwareMappingHint(EHM_STATIC);
 	mesh->recalculateBoundingBox();
 	return mesh;
 }

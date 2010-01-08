@@ -1,5 +1,7 @@
 Changes in 1.7
 
+ - ITimer no longer stops when started twice
+
  - Add hasType to IGUIElement as a dynamic_cast substitute.
 
  - Add another parameter to IGUISkin::draw3DWindowBackground to allow getting the client area without actually drawing 
@@ -28,7 +30,7 @@ Changes in 1.7
 
  - Add OBJ_TEXTURE_PATH and B3D_TEXTURE_PATH to SceneParameters to allow setting texture-paths for obj and b3d.
 
- - Irrlicht keeps now filenames additionaly to the internally used names, thereby fixing some problems with uppercase-filenames on Linux.
+ - Irrlicht keeps now filenames additionally to the internally used names, thereby fixing some problems with uppercase-filenames on Linux.
 
  - Bugfix: Mousewheel no longer sends EMIE_MOUSE_WHEEL messages twice on Linux.
 
@@ -58,7 +60,7 @@ Changes in 1.7
 
  - Double and triple click events now for each mouse-button. Old events for that got removed.
 
- - Fix adding archives twice, which caused multiple archives of the same name and type covering each other. This one required a texture name change from using backslashes to slahes under Windows.
+ - Fix adding archives twice, which caused multiple archives of the same name and type covering each other. This one required a texture name change from using backslashes to slashes under Windows.
 
  - Give access to texture mipmaps. You can provide custom mipmap textures upon generation, regeneration, and locking.
    Make sure the provided data is large enough and covers all miplevels. Also the returned pointer (from lock) will only cover the smaller data of the mipmap level dimension chosen (level 0 is the original texture).
@@ -69,7 +71,7 @@ Changes in 1.7
  
  - windows show now active/inactive state
 
- - remove unneed drop/grab calls found by manik_sheeri
+ - remove unneeded drop/grab calls found by manik_sheeri
 
  - fix rounding problem in IGUIElements which have EGUIA_SCALE alignments.
 
@@ -115,13 +117,13 @@ Changes in 1.7
 
  - Bounding Box updates for skinned meshes fixed
 
- - The current FPS for an animated scene node cn be queried now, added some variables to serialization
+ - The current FPS for an animated scene node can be queried now, added some variables to serialization
 
  - Scrollbars fixed
 
  - Fixed 2d vertex primitive method to correctly handle transparency
 
- - Fullscreen handling has been ehanced for Windows, now proper resolution is restored on Alt-Tab etc.
+ - Fullscreen handling has been enhanced for Windows, now proper resolution is restored on Alt-Tab etc.
 
  - Cameras can now be added to the scene node without automatically activating them
    Clone method added
@@ -146,6 +148,12 @@ Changes in 1.7
 
 ----------------
 Changes in 1.6.1
+
+ - Fix pingpong for CSceneNodeAnimatorFlyStraight (found by gbox)
+
+ - Fix bug with IGUIEditBox where the cursor position is reset on text change.
+
+ - Make sure the window top-left corner on Windows is not negative on start so that Windows sytem-menu is always visible.
 
  - Fix problem that the window did sometimes not get the keyboard focus in X11 in fullscreen. Add more debug output in case focus grabbing goes wrong.
 
