@@ -559,6 +559,11 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
 		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
+		if ( windowLeft < 0 )
+			windowLeft = 0;
+		if ( windowTop < 0 )
+			windowTop = 0;	// make sure window menus are in screen on creation
+
 		if (CreationParams.Fullscreen)
 		{
 			windowLeft = 0;
@@ -576,6 +581,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 		// fix ugly ATI driver bugs. Thanks to ariaci
 		MoveWindow(HWnd, windowLeft, windowTop, realWidth, realHeight, TRUE);
+
+		// make sure everything gets updated to the real sizes
+		Resized = true;	
 	}
 	else if (CreationParams.WindowId)
 	{
