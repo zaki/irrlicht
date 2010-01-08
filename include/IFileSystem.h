@@ -147,9 +147,10 @@ public:
 	//! Returns the archive at a given index.
 	virtual IFileArchive* getFileArchive(u32 index) =0;
 
-	//! Adds a zip archive to the file system. Deprecated! This function is provided for compatibility
-	/** with older versions of Irrlicht and may be removed in future versions, you should use
-	addFileArchive instead.
+	//! Adds a zip archive to the file system.
+	/** \deprecated This function is provided for compatibility
+	with older versions of Irrlicht and may be removed in future versions,
+	you should use addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
 	access for example Quake3 .pk3 files, which are no different than .zip files.
@@ -165,8 +166,9 @@ public:
 	}
 
 	//! Adds an unzipped archive (or basedirectory with subdirectories..) to the file system.
-	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht
-	and may be removed in future versions, you should use addFileArchive instead.
+	/** \deprecated This function is provided for compatibility
+	with older versions of Irrlicht and may be removed in future versions,
+	you should use addFileArchive instead.
 	Useful for handling data which will be in a zip file
 	\param filename: Filename of the unzipped zip archive base directory to add to the file system.
 	\param ignoreCase: If set to true, files in the archive can be accessed without
@@ -180,8 +182,9 @@ public:
 	}
 
 	//! Adds a pak archive to the file system.
-	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht
-	and may be removed in future versions, you should use addFileArchive instead.
+	/** \deprecated This function is provided for compatibility
+	with older versions of Irrlicht and may be removed in future versions,
+	you should use addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
 	access for example Quake2/KingPin/Hexen2 .pak files
