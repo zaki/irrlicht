@@ -60,13 +60,13 @@ void CDemo::run()
 		return;
 
 	if (device->getFileSystem()->existFile("irrlicht.dat"))
-		device->getFileSystem()->addZipFileArchive("irrlicht.dat");
+		device->getFileSystem()->addFileArchive("irrlicht.dat");
 	else
-		device->getFileSystem()->addZipFileArchive("../../media/irrlicht.dat");
+		device->getFileSystem()->addFileArchive("../../media/irrlicht.dat");
 	if (device->getFileSystem()->existFile("map-20kdm2.pk3"))
-		device->getFileSystem()->addZipFileArchive("map-20kdm2.pk3");
+		device->getFileSystem()->addFileArchive("map-20kdm2.pk3");
 	else
-		device->getFileSystem()->addZipFileArchive("../../media/map-20kdm2.pk3");
+		device->getFileSystem()->addFileArchive("../../media/map-20kdm2.pk3");
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -77,12 +77,12 @@ void CDemo::run()
 	// set ambient light
 	smgr->setAmbientLight ( video::SColorf ( 0x00c0c0c0 ) );
 
-
 	wchar_t tmp[255];
 
 	// draw everything
 
 	s32 now = 0;
+	s32 lastfps = 0;
 	sceneStartTime = device->getTimer()->getTime();
 	while(device->run() && driver)
 	{
@@ -106,23 +106,19 @@ void CDemo::run()
 
 			smgr->drawAll();
 			guienv->drawAll();
-
 			driver->endScene();
 
 			// write statistics
-			static s32 lastfps = 0;
-			s32 nowfps = driver->getFPS();
+			const s32 nowfps = driver->getFPS();
 
-			swprintf(tmp, 255, L"%ls fps:%3d triangles:%0.3f mio",
-								driver->getName(),
-								driver->getFPS(),
-								(f32) driver->getPrimitiveCountDrawn( 1 ) * ( 1.f / 1000000.f )
-								);
+			swprintf(tmp, 255, L"%ls fps:%3d triangles:%0.3f mio/s",
+						driver->getName(), driver->getFPS(),
+						driver->getPrimitiveCountDrawn(1) * (1.f / 1000000.f));
 
 			statusText->setText(tmp);
 			if ( nowfps != lastfps )
 			{
-				device->setWindowCaption ( tmp );
+				device->setWindowCaption(tmp);
 				lastfps = nowfps;
 			}
 		}
@@ -340,7 +336,6 @@ void CDemo::switchToNextScene()
 	}
 
 	sceneStartTime = device->getTimer()->getTime();
-
 }
 
 
@@ -458,8 +453,6 @@ void CDemo::loadSceneData()
 		driver->getTexture("../../media/irrlicht2_bk.jpg"));
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
-	//driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
-
 	// create walk-between-portals animation
 
 	core::vector3df waypoint[2];
@@ -468,8 +461,8 @@ void CDemo::loadSceneData()
 
 	if (model2)
 	{
-		anim = device->getSceneManager()->createFlyStraightAnimator(waypoint[0],
-			waypoint[1], 2000, true);
+		anim = device->getSceneManager()->createFlyStraightAnimator(
+			waypoint[0], waypoint[1], 2000, true);
 		model2->addAnimator(anim);
 		anim->drop();
 	}
@@ -563,9 +556,7 @@ void CDemo::loadSceneData()
 	if (music)
 		startSound();
 	#endif
-
 }
-
 
 
 void CDemo::createLoadingScreen()
@@ -608,7 +599,6 @@ void CDemo::createLoadingScreen()
 	device->getGUIEnvironment()->getSkin()->setColor(gui::EGDC_BUTTON_TEXT,
 		video::SColor(255,100,100,100));
 }
-
 
 
 void CDemo::shoot()
@@ -701,7 +691,6 @@ void CDemo::shoot()
 }
 
 
-
 void CDemo::createParticleImpacts()
 {
 	u32 now = device->getTimer()->getTime();
@@ -763,7 +752,6 @@ void CDemo::createParticleImpacts()
 			i--;
 		}
 }
-
 
 
 #ifdef USE_IRRKLANG
