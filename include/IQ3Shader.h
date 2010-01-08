@@ -782,7 +782,7 @@ namespace quake3
 
 		textures.clear();
 
-		core::stringc loadFile;
+		io::path loadFile;
 		for ( u32 i = 0; i!= stringList.size (); ++i )
 		{
 			video::ITexture* texture = 0;

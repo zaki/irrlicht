@@ -38,9 +38,26 @@ bool testGeometryCreator(void)
 									0, -1, vector3df(-10, -20, 0));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 
+	node = smgr->addMeshSceneNode(geom->createConeMesh(5.f, 10.f, 16), 0, -1, vector3df(-35, -20, 0));
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialTexture(0, wall);
+
+	node = smgr->addMeshSceneNode(geom->createCubeMesh(), 0, -1, vector3df(-20, -20, 0));
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialTexture(0, wall);
+
+	node = smgr->addMeshSceneNode(geom->createCylinderMesh(3, 10, 16), 0, -1, vector3df(0, -20, 10), core::vector3df(45,0,0));
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialTexture(0, wall);
+
 	node = smgr->addMeshSceneNode(geom->createSphereMesh(), 0, -1, vector3df(10, -15, 0));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialTexture(0, wall);
+
+	node = smgr->addMeshSceneNode(geom->createVolumeLightMesh(), 0, -1, vector3df(20, -20, -10));
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialTexture(0, wall);
+	node->setScale(core::vector3df(4.f,4.f,4.f));
 
 	bool result = false;
 	device->run();

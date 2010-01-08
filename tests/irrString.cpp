@@ -8,6 +8,13 @@
 using namespace irr;
 using namespace core;
 
+static bool testSelfAssignment()
+{
+	core::stringw myString(L"foo");
+	myString = myString;
+	return myString == core::stringw(L"foo");
+}
+
 static bool testSplit()
 {
 	logTestString("Test stringw::split()\n");
@@ -18,6 +25,21 @@ static bool testSplit()
 	teststring.split<core::list<core::stringw> >(parts2, L"[", 1, false, true);
 	return (parts1.getSize()==4) && (parts2.getSize()==5);
 }
+
+static bool testFastAlloc()
+{
+	core::string<wchar_t, core::irrAllocatorFast<wchar_t> > FastString(L"abc");
+	core::string<wchar_t, core::irrAllocatorFast<wchar_t> > FastStringLong(L"longer");
+
+	FastString  = L"test";
+
+	// cause a reallocation
+	FastString = FastStringLong;
+
+	// this test should either not compile or crash when the allocaters are messed up
+	return true;
+}
+
 
 // Test the functionality of irrString
 /** Validation is done with asserts() against expected results. */
@@ -70,6 +92,12 @@ bool testIrrString(void)
 		io::path myPath;
 		myPath = "Some text"; // Only to avoid wrong optimizations
 	}
+
+	logTestString("Test self assignment\n");
+	allExpected &= testSelfAssignment();
+
+	logTestString("test fast alloc\n");
+	allExpected &= testFastAlloc();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");

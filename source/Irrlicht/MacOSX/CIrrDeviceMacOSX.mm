@@ -350,11 +350,14 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	{
 		firstLaunch = false;
 
-		[[NSAutoreleasePool alloc] init];
-		[NSApplication sharedApplication];
-		[NSApp setDelegate:[[[AppDelegate alloc] initWithDevice:this] autorelease]];
-		[NSBundle loadNibNamed:@"MainMenu" owner:[NSApp delegate]];
-		[NSApp finishLaunching];
+		if(!CreationParams.WindowId)  //load menus if standalone application
+		{
+			[[NSAutoreleasePool alloc] init];
+			[NSApplication sharedApplication];
+			[NSApp setDelegate:[[[AppDelegate alloc] initWithDevice:this] autorelease]];
+			[NSBundle loadNibNamed:@"MainMenu" owner:[NSApp delegate]];
+			[NSApp finishLaunching];
+		}
 
 		path = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
 		chdir([path fileSystemRepresentation]);
@@ -415,9 +418,18 @@ void CIrrDeviceMacOSX::closeDevice()
 	{
 		if (CGLContext != NULL)
 		{
-			CGLSetCurrentContext(NULL);
-			CGLClearDrawable(CGLContext);
-			CGLDestroyContext(CGLContext);
+			if(CreationParams.WindowId)
+			{
+				[(NSOpenGLContext *)OGLContext clearDrawable];
+				[(NSOpenGLContext *)OGLContext release];
+				OGLContext = NULL;
+			}
+			else
+			{
+				CGLSetCurrentContext(NULL);
+				CGLClearDrawable(CGLContext);
+				CGLDestroyContext(CGLContext);
+			}
 		}
 	}
 
@@ -448,8 +460,12 @@ bool CIrrDeviceMacOSX::createWindow()
 
 	if (!CreationParams.Fullscreen)
 	{
-		Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
-		if (Window != NULL)
+		if(!CreationParams.WindowId)  //create another window when WindowId is null
+		{
+			Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
+		}
+
+		if (Window != NULL || CreationParams.WindowId)
 		{
 			NSOpenGLPixelFormatAttribute windowattribs[] =
 			{
@@ -535,12 +551,17 @@ bool CIrrDeviceMacOSX::createWindow()
 
 			if (OGLContext != NULL)
 			{
-				[Window center];
-				[Window setDelegate:[NSApp delegate]];
-				[OGLContext setView:[Window contentView]];
-				[Window setAcceptsMouseMovedEvents:TRUE];
-				[Window setIsVisible:TRUE];
-				[Window makeKeyAndOrderFront:nil];
+				if (!CreationParams.WindowId)
+				{
+					[Window center];
+					[Window setDelegate:[NSApp delegate]];
+					[OGLContext setView:[Window contentView]];
+					[Window setAcceptsMouseMovedEvents:TRUE];
+					[Window setIsVisible:TRUE];
+					[Window makeKeyAndOrderFront:nil];
+				}
+				else //use another window for drawing
+					[OGLContext setView:(NSView*)CreationParams.WindowId];
 
 				CGLContext = (CGLContextObj) [OGLContext CGLContextObj];
 				DeviceWidth  = CreationParams.WindowSize.Width;
@@ -605,7 +626,7 @@ bool CIrrDeviceMacOSX::createWindow()
 	if (result)
 	{
 		// fullscreen?
-		if (Window == NULL)
+		if (Window == NULL && !CreationParams.WindowId) //hide menus in fullscreen mode only
 			SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
 		CGLSetCurrentContext(CGLContext);
 		newSwapInterval = (CreationParams.Vsync) ? 1 : 0;
@@ -625,8 +646,15 @@ void CIrrDeviceMacOSX::setResize(int width, int height)
 	[OGLContext update];
 
 	// resize the driver to the inner pane size
-	NSRect driverFrame = [Window contentRectForFrameRect:[Window frame]];
-	getVideoDriver()->OnResize(core::dimension2d<u32>( (s32)driverFrame.size.width, (s32)driverFrame.size.height));
+	if (Window)
+	{
+		NSRect driverFrame = [Window contentRectForFrameRect:[Window frame]];
+		getVideoDriver()->OnResize(core::dimension2d<u32>( (s32)driverFrame.size.width, (s32)driverFrame.size.height));
+	}
+	else
+		getVideoDriver()->OnResize(core::dimension2d<u32>( (s32)width, (s32)height));
+	if(CreationParams.WindowId && OGLContext)
+		[(NSOpenGLContext *)OGLContext update];
 }
 
 void CIrrDeviceMacOSX::createDriver()

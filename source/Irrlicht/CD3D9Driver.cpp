@@ -2413,6 +2413,7 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 	{
 		if (texture)
 		{
+			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 			if (alphaChannel)
 			{
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );

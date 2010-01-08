@@ -559,6 +559,11 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
 		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
+		if ( windowLeft < 0 )
+			windowLeft = 0;
+		if ( windowTop < 0 )
+			windowTop = 0;	// make sure window menus are in screen on creation
+
 		if (CreationParams.Fullscreen)
 		{
 			windowLeft = 0;
@@ -576,6 +581,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 		// fix ugly ATI driver bugs. Thanks to ariaci
 		MoveWindow(HWnd, windowLeft, windowTop, realWidth, realHeight, TRUE);
+
+		// make sure everything gets updated to the real sizes
+		Resized = true;	
 	}
 	else if (CreationParams.WindowId)
 	{
@@ -1292,21 +1300,28 @@ void CIrrDeviceWin32::pollJoysticks()
 
 	u32 joystick;
 	JOYINFOEX info;
-	info.dwSize = sizeof(info);
-	info.dwFlags = JOY_RETURNALL;
 
 	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 	{
+		// needs to be reset for each joystick
+		// request ALL values and POV as continuous if possible
+		info.dwSize = sizeof(info);
+		info.dwFlags = JOY_RETURNALL|JOY_RETURNPOVCTS;
+		const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
+		// if no POV is available don't ask for POV values
+		if (!(caps.wCaps & JOYCAPS_HASPOV))
+			info.dwFlags &= ~(JOY_RETURNPOV|JOY_RETURNPOVCTS);
 		if(JOYERR_NOERROR == joyGetPosEx(ActiveJoysticks[joystick].Index, &info))
 		{
 			SEvent event;
-			const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
 
 			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
 			event.JoystickEvent.Joystick = (u8)joystick;
-
+ 
 			event.JoystickEvent.POV = (u16)info.dwPOV;
-			if(event.JoystickEvent.POV > 35900)
+			// set to undefined if no POV value was returned or the value
+			// is out of range
+			if (!(info.dwFlags & JOY_RETURNPOV) || (event.JoystickEvent.POV > 35900))
 				event.JoystickEvent.POV = 65535;
 
 			for(int axis = 0; axis < SEvent::SJoystickEvent::NUMBER_OF_AXES; ++axis)
@@ -1402,12 +1417,12 @@ void CIrrDeviceWin32::clearSystemMessages()
 void CIrrDeviceWin32::ReportLastWinApiError()
 {
 	// (based on code from ovidiucucu from http://www.codeguru.com/forum/showthread.php?t=318721)
-	LPCTSTR pszCaption = "Windows SDK Error Report";
+	LPCTSTR pszCaption = __TEXT("Windows SDK Error Report");
 	DWORD dwError      = GetLastError();
 
 	if(NOERROR == dwError)
 	{
-		MessageBox(NULL, "No error", pszCaption, MB_OK);
+		MessageBox(NULL, __TEXT("No error"), pszCaption, MB_OK);
 	}
 	else
 	{
@@ -1425,12 +1440,12 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 										NULL);
 		if(0 != dwCount)
 		{
-			MessageBox(NULL, (LPCSTR)pTextBuffer, pszCaption, MB_OK|MB_ICONERROR);
+			MessageBox(NULL, (LPCTSTR)pTextBuffer, pszCaption, MB_OK|MB_ICONERROR);
 			LocalFree(pTextBuffer);
 		}
 		else
 		{
-			MessageBox(NULL, "Unknown error", pszCaption, MB_OK|MB_ICONERROR);
+			MessageBox(NULL, __TEXT("Unknown error"), pszCaption, MB_OK|MB_ICONERROR);
 		}
 	}
 }
@@ -1438,4 +1453,3 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 } // end namespace
 
 #endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-

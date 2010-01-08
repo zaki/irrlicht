@@ -215,7 +215,7 @@ bool MemorySerialization(io::IFileSystem * fs )
 // Serialization to/from an xml-file
 bool XmlSerialization(io::IFileSystem * fs, video::IVideoDriver * driver )
 {
-	const io::path XML_FILENAME("media/attributeSerialization.xml");
+	const io::path XML_FILENAME("results/attributeSerialization.xml");
 	SerializableMock origMock(false), copyMock;
 	origMock.set();
 	copyMock.reset();

@@ -89,7 +89,7 @@ namespace scene
 
 		//! recursive method for going through all scene nodes
 		void getPickedNodeFromBBAndSelector(ISceneNode * root,
-						const core::line3df & ray,
+						core::line3df & ray,
 						s32 bits,
 						bool noDebugObjects,
 						f32 & outBestDistanceSquared,

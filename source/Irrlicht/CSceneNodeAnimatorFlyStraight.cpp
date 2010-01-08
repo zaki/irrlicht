@@ -42,21 +42,27 @@ void CSceneNodeAnimatorFlyStraight::animateNode(ISceneNode* node, u32 timeMs)
 
 	u32 t = (timeMs-StartTime);
 
-	core::vector3df pos = Start;
+	core::vector3df pos;
 
-	if (!Loop && t >= TimeForWay)
+	if (!Loop && !PingPong && t >= TimeForWay)
 	{
 		pos = End;
+		HasFinished = true;
+	}
+	else if (!Loop && PingPong && t >= TimeForWay * 2.f )
+	{
+		pos = Start;
 		HasFinished = true;
 	}
 	else
 	{
 		f32 phase = fmodf( (f32) t, (f32) TimeForWay );
 		core::vector3df rel = Vector * phase * TimeFactor;
+		const bool pong = PingPong && fmodf( (f32) t, (f32) TimeForWay*2.f ) >= TimeForWay;
 
-		if ( !PingPong || phase < TimeForWay * 0.5f )
+		if ( !pong )
 		{
-			pos += rel;
+			pos += Start + rel;
 		}
 		else
 		{
