@@ -389,13 +389,18 @@ bool CGUIEnvironment::OnEvent(const SEvent& event)
 void CGUIEnvironment::OnPostRender( u32 time )
 {
 	// check tooltip
+	IGUIElement * hoveredNonSub = Hovered;
+	while ( hoveredNonSub && hoveredNonSub->isSubElement() )
+	{
+		hoveredNonSub = hoveredNonSub->getParent();
+	}
 
 	// launch tooltip
 	if ( time - ToolTip.LastTime >= ToolTip.LaunchTime &&
-		Hovered && Hovered != this &&
+		hoveredNonSub && hoveredNonSub != this &&
 		ToolTip.Element == 0 &&
-		Hovered != ToolTip.Element &&
-		Hovered->getToolTipText().size() &&
+		hoveredNonSub != ToolTip.Element &&
+		hoveredNonSub->getToolTipText().size() &&
 		getSkin() &&
 		getSkin()->getFont(EGDF_TOOLTIP)
 		)
@@ -403,7 +408,7 @@ void CGUIEnvironment::OnPostRender( u32 time )
 		core::rect<s32> pos;
 
 		pos.UpperLeftCorner = LastHoveredMousePos;
-		core::dimension2du dim = getSkin()->getFont(EGDF_TOOLTIP)->getDimension(Hovered->getToolTipText().c_str());
+		core::dimension2du dim = getSkin()->getFont(EGDF_TOOLTIP)->getDimension(hoveredNonSub->getToolTipText().c_str());
 		dim.Width += getSkin()->getSize(EGDS_TEXT_DISTANCE_X)*2;
 		dim.Height += getSkin()->getSize(EGDS_TEXT_DISTANCE_Y)*2;
 
@@ -413,7 +418,7 @@ void CGUIEnvironment::OnPostRender( u32 time )
 
 		pos.constrainTo(getAbsolutePosition());
 
-		ToolTip.Element = addStaticText(Hovered->getToolTipText().c_str(), pos, true, true, this, -1, true);
+		ToolTip.Element = addStaticText(hoveredNonSub->getToolTipText().c_str(), pos, true, true, this, -1, true);
 		ToolTip.Element->setOverrideColor(getSkin()->getColor(EGDC_TOOLTIP));
 		ToolTip.Element->setBackgroundColor(getSkin()->getColor(EGDC_TOOLTIP_BACKGROUND));
 		ToolTip.Element->setOverrideFont(getSkin()->getFont(EGDF_TOOLTIP));
