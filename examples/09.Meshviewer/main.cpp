@@ -208,6 +208,16 @@ void loadModel(const c8* fn)
 
 	Model = 0;
 
+	if (extension==".irr")
+	{
+		core::array<scene::ISceneNode*> outNodes;
+		Device->getSceneManager()->loadScene(filename);
+		Device->getSceneManager()->getSceneNodesFromType(scene::ESNT_ANIMATED_MESH, outNodes);
+		if (outNodes.size())
+			Model = outNodes[0];
+		return;
+	}
+
 	scene::IAnimatedMesh* m = Device->getSceneManager()->getMesh( filename.c_str() );
 
 	if (!m)
