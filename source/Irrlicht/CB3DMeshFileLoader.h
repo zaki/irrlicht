@@ -119,14 +119,12 @@ private:
 
 	core::array<video::S3DVertex2TCoords> BaseVertices;
 
-	core::array<scene::SSkinMeshBuffer*> *Buffers;
-	core::array<CSkinnedMesh::SJoint*> *AllJoints;
-
 	ISceneManager*	SceneManager;
 	CSkinnedMesh*	AnimatedMesh;
 	io::IReadFile*	B3DFile;
 
 	bool NormalsInFile;
+	bool HasVertexColors;
 	bool ShowWarning;
 };
 
