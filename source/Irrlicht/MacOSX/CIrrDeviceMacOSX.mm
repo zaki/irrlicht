@@ -361,6 +361,7 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 
 		path = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
 		chdir([path fileSystemRepresentation]);
+		[path release];
 	}
 
 	uname(&name);
@@ -838,6 +839,7 @@ bool CIrrDeviceMacOSX::run()
 				break;
 		}
 	}
+	[event release];
 
 	pollJoysticks();
 
@@ -881,7 +883,9 @@ void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	{
 		size = wcstombs(title,text,1024);
 		title[1023] = 0;
-		[Window setTitle:[NSString stringWithCString:title length:size]];
+		NSString* name = [NSString stringWithCString:title length:size];
+		[Window setTitle:name];
+		[name release];
 	}
 }
 
@@ -917,7 +921,7 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 	BOOL					skipCommand;
 
 	str = [(NSEvent *)event characters];
-	if (str != nil && [str length] > 0)
+	if ((str != nil) && ([str length] > 0))
 	{
 		mkey = mchar = 0;
 		skipCommand = false;
@@ -967,8 +971,10 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 
 		postEventFromUser(ievent);
 	}
+	[str release];
 }
 
+	
 void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 {
 	bool post = true;
@@ -993,6 +999,7 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 	[NSApp sendEvent:(NSEvent *)event];
 }
 
+	
 void CIrrDeviceMacOSX::storeMouseLocation()
 {
 	NSPoint	p;

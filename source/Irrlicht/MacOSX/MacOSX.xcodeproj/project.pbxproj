@@ -1011,10 +1011,10 @@
 		0E2E3C501103B261002DE8D7 /* COctreeTriangleSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COctreeTriangleSelector.h; sourceTree = "<group>"; };
 		0E2E3C531103B27D002DE8D7 /* CNPKReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CNPKReader.cpp; sourceTree = "<group>"; };
 		0E2E3C541103B27D002DE8D7 /* CNPKReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CNPKReader.h; sourceTree = "<group>"; };
-		0E2E3C571103B2AE002DE8D7 /* CIrrDeviceFB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CIrrDeviceFB.cpp; path = ../CIrrDeviceFB.cpp; sourceTree = SOURCE_ROOT; };
-		0E2E3C581103B2AE002DE8D7 /* CIrrDeviceFB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CIrrDeviceFB.h; path = ../CIrrDeviceFB.h; sourceTree = SOURCE_ROOT; };
-		0E2E3C591103B2AE002DE8D7 /* CIrrDeviceWinCE.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CIrrDeviceWinCE.cpp; path = ../CIrrDeviceWinCE.cpp; sourceTree = SOURCE_ROOT; };
-		0E2E3C5A1103B2AE002DE8D7 /* CIrrDeviceWinCE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CIrrDeviceWinCE.h; path = ../CIrrDeviceWinCE.h; sourceTree = SOURCE_ROOT; };
+		0E2E3C571103B2AE002DE8D7 /* CIrrDeviceFB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceFB.cpp; sourceTree = "<group>"; };
+		0E2E3C581103B2AE002DE8D7 /* CIrrDeviceFB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceFB.h; sourceTree = "<group>"; };
+		0E2E3C591103B2AE002DE8D7 /* CIrrDeviceWinCE.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceWinCE.cpp; sourceTree = "<group>"; };
+		0E2E3C5A1103B2AE002DE8D7 /* CIrrDeviceWinCE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceWinCE.h; sourceTree = "<group>"; };
 		0E2E3C631103B384002DE8D7 /* LzmaDec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = LzmaDec.c; path = lzma/LzmaDec.c; sourceTree = "<group>"; };
 		0E2E3C661103B3B9002DE8D7 /* blocksort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = blocksort.c; path = bzip2/blocksort.c; sourceTree = "<group>"; };
 		0E2E3C671103B3B9002DE8D7 /* bzcompress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bzcompress.c; path = bzip2/bzcompress.c; sourceTree = "<group>"; };
@@ -2652,6 +2652,10 @@
 			isa = PBXGroup;
 			children = (
 				4C53E14A0A484C2C0014E966 /* MacOSX */,
+				0E2E3C571103B2AE002DE8D7 /* CIrrDeviceFB.cpp */,
+				0E2E3C581103B2AE002DE8D7 /* CIrrDeviceFB.h */,
+				0E2E3C591103B2AE002DE8D7 /* CIrrDeviceWinCE.cpp */,
+				0E2E3C5A1103B2AE002DE8D7 /* CIrrDeviceWinCE.h */,
 				34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */,
 				34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */,
 				4C53DF660A484C230014E966 /* CIrrDeviceLinux.cpp */,
@@ -2996,10 +3000,6 @@
 		4C53E14A0A484C2C0014E966 /* MacOSX */ = {
 			isa = PBXGroup;
 			children = (
-				0E2E3C571103B2AE002DE8D7 /* CIrrDeviceFB.cpp */,
-				0E2E3C581103B2AE002DE8D7 /* CIrrDeviceFB.h */,
-				0E2E3C591103B2AE002DE8D7 /* CIrrDeviceWinCE.cpp */,
-				0E2E3C5A1103B2AE002DE8D7 /* CIrrDeviceWinCE.h */,
 				4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */,
 				4C53E14C0A484C2C0014E966 /* AppDelegate.h */,
 				4C53E14D0A484C2C0014E966 /* AppDelegate.mm */,
