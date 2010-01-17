@@ -11,12 +11,24 @@ using namespace core;
 #define EQUAL_VECTORS(compare, with)\
 	if(!equalVectors(cmp_equal<core::vector3d<T> >(compare), with)) {assert(false); return false;}
 
+#define LESS_VECTORS(compare, with)\
+	if(!equalVectors(cmp_less<core::vector3d<T> >(compare), with)) return false;
+
+#define LESS_EQUAL_VECTORS(compare, with)\
+	if(!equalVectors(cmp_less_equal<core::vector3d<T> >(compare), with)) return false;
+
+#define MORE_VECTORS(compare, with)\
+	if(!equalVectors(cmp_more<core::vector3d<T> >(compare), with)) return false;
+
+#define MORE_EQUAL_VECTORS(compare, with)\
+	if(!equalVectors(cmp_more_equal<core::vector3d<T> >(compare), with)) return false;
+
 // check if the vector contains a NAN (a==b is guaranteed to return false in this case)
 template<class T>
 static bool is_nan(const core::vector3d<T> &vec )
 {
-	return ( !(vec.X == vec.X) 
-			|| !(vec.Y == vec.Y) 
+	return ( !(vec.X == vec.X)
+			|| !(vec.Y == vec.Y)
 			|| !(vec.Z == vec.Z) );
 }
 
@@ -29,6 +41,42 @@ struct cmp_less
 		return val<other;
 	}
 	const char* getName() const {return "<";}
+	const T val;
+};
+
+template<class T>
+struct cmp_less_equal
+{
+	cmp_less_equal(const T& a) : val(a) {}
+	bool operator()(const T& other) const
+	{
+		return val<=other;
+	}
+	const char* getName() const {return "<=";}
+	const T val;
+};
+
+template<class T>
+struct cmp_more
+{
+	cmp_more(const T& a) : val(a) {}
+	bool operator()(const T& other) const
+	{
+		return val>other;
+	}
+	const char* getName() const {return ">";}
+	const T val;
+};
+
+template<class T>
+struct cmp_more_equal
+{
+	cmp_more_equal(const T& a) : val(a) {}
+	bool operator()(const T& other) const
+	{
+		return val>=other;
+	}
+	const char* getName() const {return ">=";}
 	const T val;
 };
 
@@ -203,22 +251,24 @@ static bool doTests()
 		return false;
 	}
 
-	//TODO: We need a proper order for vectors first
-#if 0
-	#define LESS_VECTORS(compare, with)\
-	if(!equalVectors(cmp_less<core::vector3d<T> >(compare), with)) return false;
-
 	vec.set(5, 5, 0);
 
 	otherVec.set(10, 20, 40);
 	LESS_VECTORS(vec, otherVec);
+	LESS_EQUAL_VECTORS(vec, otherVec);
+	MORE_VECTORS(otherVec, vec);
+	MORE_EQUAL_VECTORS(otherVec, vec);
 
 	vec.set(-1,-1,1);
 	otherVec.set(1,-1,1);
 	LESS_VECTORS(vec, otherVec);
+	LESS_EQUAL_VECTORS(vec, otherVec);
+	MORE_VECTORS(otherVec, vec);
+	MORE_EQUAL_VECTORS(otherVec, vec);
 
-	LESS_VECTORS(vec, vec);
-#endif
+	LESS_EQUAL_VECTORS(vec, vec);
+	MORE_EQUAL_VECTORS(vec, vec);
+
 	return true;
 }
 

@@ -1,6 +1,8 @@
 Changes in 1.7
 
-- Fix tooltips for gui-elements with sub-element like IGUISpinBox (id: 2927079, found by ArakisTheKitsune)
+ - Define sorting order for vector2d and vector3d in operators <, <=, > and >= to fix bugs 2783509 and 2783510. Operators order now by X,Y,Z and use float tolerances.
+
+ - Fix tooltips for gui-elements with sub-element like IGUISpinBox (id: 2927079, found by ArakisTheKitsune)
 
  - ITimer no longer stops when started twice
 
