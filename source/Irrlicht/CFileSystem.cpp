@@ -552,10 +552,15 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 		if (subdir == "../")
 		{
 			if (lastWasRealDir)
+			{
 				deletePathFromPath(dir, 2);
+				lastWasRealDir=dir.size();
+			}
 			else
+			{
 				dir.append(subdir);
-			lastWasRealDir=false;
+				lastWasRealDir=false;
+			}
 		}
 		else if (subdir == "/")
 		{
