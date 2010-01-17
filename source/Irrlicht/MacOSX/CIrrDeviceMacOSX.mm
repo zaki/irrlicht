@@ -1238,6 +1238,7 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 	if (!hidIterator)
 		return false;
 
+	u32 jindex = 0u;
 	while ((hidObject = IOIteratorNext (hidIterator)))
 	{
 		JoystickInfo info;
@@ -1311,11 +1312,13 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 				ActiveJoysticks.push_back(info);
 
 				SJoystickInfo returnInfo;
+				returnInfo.Joystick = jindex; 
 				returnInfo.Axes = info.axes;
 				//returnInfo.Hats = info.hats;
 				returnInfo.Buttons = info.buttons;
 				returnInfo.Name    = info.joystickName;
 				returnInfo.PovHat  = SJoystickInfo::POV_HAT_UNKNOWN;
+				++ jindex;
 
 				//if (info.hatComp.size())
 				//	returnInfo.PovHat = SJoystickInfo::POV_HAT_PRESENT;
