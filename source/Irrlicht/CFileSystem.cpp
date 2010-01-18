@@ -554,7 +554,7 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 			if (lastWasRealDir)
 			{
 				deletePathFromPath(dir, 2);
-				lastWasRealDir=dir.size();
+				lastWasRealDir=(dir.size()!=0);
 			}
 			else
 			{

@@ -13,26 +13,26 @@ bool testSorting()
 	// See http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=33391&highlight=
 	core::map<video::S3DVertex, int> testmap;
 	video::S3DVertex v;
-	v.Pos = core::vector3df(1.000000, -1.000000, 1.000000);
-	v.Normal = core::vector3df(0.577350, -0.577350, 0.577350);
+	v.Pos = core::vector3df(1.000000f, -1.000000f, 1.000000f);
+	v.Normal = core::vector3df(0.577350f, -0.577350f, 0.577350f);
 	v.Color = SColor(255,204,204,204);
 	v.TCoords = core::vector2d<f32>(0.f, 0.f);
 	testmap.insert(v, 0);
 
-	v.Pos = core::vector3df(-1.000000, -1.000000, 1.000000);
-	v.Normal = core::vector3df(-0.577350, -0.577350, 0.577350);
+	v.Pos = core::vector3df(-1.000000f, -1.000000f, 1.000000f);
+	v.Normal = core::vector3df(-0.577350f, -0.577350f, 0.577350f);
 	v.Color = SColor(255,204,204,204);
 	v.TCoords = core::vector2d<f32>(0.f, 0.f);
 	testmap.insert(v, 1);
 
-	v.Pos = core::vector3df(1.000000, 1.000000, 1.000000);
-	v.Normal = core::vector3df(0.577350, 0.577350, 0.577350);
+	v.Pos = core::vector3df(1.000000f, 1.000000f, 1.000000f);
+	v.Normal = core::vector3df(0.577350f, 0.577350f, 0.577350f);
 	v.Color = SColor(255,204,204,204);
 	v.TCoords = core::vector2d<f32>(0.f, 0.f);
 	testmap.insert(v, 2);
 
-	v.Pos = core::vector3df(1.000000, -1.000000, 1.000000);
-	v.Normal = core::vector3df(0.577350, -0.577350, 0.577350);
+	v.Pos = core::vector3df(1.000000f, -1.000000f, 1.000000f);
+	v.Normal = core::vector3df(0.577350f, -0.577350f, 0.577350f);
 	v.Color = SColor(255,204,204,204);
 	v.TCoords = core::vector2d<f32>(0.f, 0.f);
 
