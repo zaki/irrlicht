@@ -9,7 +9,7 @@ static bool testWithRenderTarget(video::E_DRIVER_TYPE driverType)
 	IrrlichtDevice *device = createDevice(driverType, core::dimension2d<u32>(160,120));
 
 	if (device == 0)
-		return false; // could not create selected driver.
+		return true; // could not create selected driver.
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 

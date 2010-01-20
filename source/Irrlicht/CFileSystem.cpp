@@ -476,7 +476,10 @@ io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 		else
 			return io::path(fpath);
 	}
-	return io::path(p);
+	if (filename[filename.size()-1]=='/')
+		return io::path(p)+"/";
+	else
+		return io::path(p);
 #else
 	return io::path(filename);
 #endif
