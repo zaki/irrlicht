@@ -997,6 +997,10 @@ namespace scene
 
 		//! Add a volume light mesh to the meshpool
 		/** \param name Name of the mesh
+		\param SubdivideU Horizontal subdivision count
+		\param SubdivideV Vertical subdivision count
+		\param FootColor Color of the bottom of the light
+		\param TailColor Color of the top of the light
 		\return Pointer to the volume light mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information.
 		*/
