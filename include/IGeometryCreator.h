@@ -62,7 +62,7 @@ public:
 			const core::dimension2d<f32>& tileSize,
 			const core::dimension2d<u32>& tileCount,
 			video::SMaterial* material,
-			const core::dimension2d<f32>& textureRepeatCount)
+			const core::dimension2d<f32>& textureRepeatCount) const
 	{
 		return createHillPlaneMesh(tileSize, tileCount, material, 0.f, core::dimension2df(), textureRepeatCount);
 	}
