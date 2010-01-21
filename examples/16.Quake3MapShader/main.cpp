@@ -226,8 +226,8 @@ int IRRCALLCONV main(int argc, char* argv[])
 	}
 
 	// create an event receiver for making screenshots
-	CScreenShotFactory screenshotFactory ( device, mapname, node );
-	device->setEventReceiver ( &screenshotFactory );
+	CScreenShotFactory screenshotFactory(device, mapname, node);
+	device->setEventReceiver(&screenshotFactory);
 
 	/*
 		now construct SceneNodes for each Shader
@@ -238,7 +238,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	if ( mesh )
 	{
 		// the additional mesh can be quite huge and is unoptimized
-		scene::IMesh * additional_mesh = mesh->getMesh ( quake3::E_Q3_MESH_ITEMS );
+		scene::IMesh * additional_mesh = mesh->getMesh(quake3::E_Q3_MESH_ITEMS);
 
 #ifdef SHOW_SHADER_NAME
 		gui::IGUIFont *font = device->getGUIEnvironment()->getFont("../../media/fontlucida.png");
@@ -247,11 +247,11 @@ int IRRCALLCONV main(int argc, char* argv[])
 
 		for ( u32 i = 0; i!= additional_mesh->getMeshBufferCount (); ++i )
 		{
-			IMeshBuffer *meshBuffer = additional_mesh->getMeshBuffer ( i );
+			const IMeshBuffer *meshBuffer = additional_mesh->getMeshBuffer ( i );
 			const video::SMaterial &material = meshBuffer->getMaterial();
 
 			//! The ShaderIndex is stored in the material parameter
-			s32 shaderIndex = (s32) material.MaterialTypeParam2;
+			const s32 shaderIndex = (s32) material.MaterialTypeParam2;
 
 			// the meshbuffer can be rendered without additional support, or it has no shader
 			const quake3::IShader *shader = mesh->getShader ( shaderIndex );

@@ -196,7 +196,7 @@ namespace scene
 			video::SColor colorTop = 0xFFFFFFFF, video::SColor colorBottom = 0xFFFFFFFF);
 
 		//! Adds a scene node, which can render a quake3 shader
-		virtual IMeshSceneNode* addQuake3SceneNode(IMeshBuffer* meshBuffer, const quake3::IShader * shader,
+		virtual IMeshSceneNode* addQuake3SceneNode(const IMeshBuffer* meshBuffer, const quake3::IShader * shader,
 												ISceneNode* parent=0, s32 id=-1
 												);
 

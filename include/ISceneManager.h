@@ -857,7 +857,7 @@ namespace scene
 		/** A Quake3 Scene renders multiple meshes for a specific HighLanguage Shader (Quake3 Style )
 		\return Pointer to the quake3 scene node if successful, otherwise NULL.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IMeshSceneNode* addQuake3SceneNode(IMeshBuffer* meshBuffer, const quake3::IShader * shader,
+		virtual IMeshSceneNode* addQuake3SceneNode(const IMeshBuffer* meshBuffer, const quake3::IShader * shader,
 												ISceneNode* parent=0, s32 id=-1
 												) = 0;
 
