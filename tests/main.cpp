@@ -93,6 +93,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(md2Animation);
 	TEST(testGeometryCreator);
 	TEST(writeImageToFile);
+	TEST(meshTransform);
 	// all driver checks
 	TEST(drawPixel);
 	TEST(guiDisabledMenu);

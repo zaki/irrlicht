@@ -288,6 +288,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\meshTransform.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\planeMatrix.cpp"
 				>
 			</File>
