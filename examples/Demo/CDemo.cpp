@@ -357,16 +357,13 @@ void CDemo::loadSceneData()
 
 		//move all quake level meshes (non-realtime)
 		core::matrix4 m;
-		m.setTranslation ( core::vector3df(-1300,-70,-1249) );
+		m.setTranslation(core::vector3df(-1300,-70,-1249));
 
 		for ( i = 0; i!= scene::quake3::E_Q3_MESH_SIZE; ++i )
-		{
-			sm->getMeshManipulator()->transformMesh ( quakeLevelMesh->getMesh(i), m );
-		}
+			sm->getMeshManipulator()->transform(quakeLevelMesh->getMesh(i), m);
 
 		quakeLevelNode = sm->addOctreeSceneNode(
-			quakeLevelMesh->getMesh( scene::quake3::E_Q3_MESH_GEOMETRY)
-									);
+				quakeLevelMesh->getMesh( scene::quake3::E_Q3_MESH_GEOMETRY));
 		if (quakeLevelNode)
 		{
 			//quakeLevelNode->setPosition(core::vector3df(-1300,-70,-1249));
@@ -405,7 +402,6 @@ void CDemo::loadSceneData()
 			// Now add the MeshBuffer(s) with the current Shader to the Manager
 			sm->addQuake3SceneNode ( meshBuffer, shader );
 		}
-
 	}
 
 	// load sydney model and create 2 instances
@@ -422,9 +418,9 @@ void CDemo::loadSceneData()
 			model1->setScale(core::vector3df(2,2,2));
 			model1->setMD2Animation(scene::EMAT_STAND);
 			model1->setMaterialFlag(video::EMF_LIGHTING, false);
+			model1->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 			model1->setMaterialType(video::EMT_SPHERE_MAP);
 			model1->addShadowVolumeSceneNode();
-			model1->setAutomaticCulling ( scene::EAC_BOX );
 		}
 
 		model2 = sm->addAnimatedMeshSceneNode(mesh);
@@ -435,8 +431,8 @@ void CDemo::loadSceneData()
 			model2->setMD2Animation(scene::EMAT_RUN);
 			model2->setMaterialTexture(0, device->getVideoDriver()->getTexture("../../media/sydney.bmp"));
 			model2->setMaterialFlag(video::EMF_LIGHTING, true);
+			model1->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 			model2->addShadowVolumeSceneNode();
-			model2->setAutomaticCulling ( scene::EAC_BOX );
 		}
 	}
 
@@ -525,7 +521,6 @@ void CDemo::loadSceneData()
 	campFire = sm->addParticleSystemSceneNode(false);
 	campFire->setPosition(core::vector3df(100,120,600));
 	campFire->setScale(core::vector3df(2,2,2));
-
 
 	scene::IParticleEmitter* em = campFire->createBoxEmitter(
 		core::aabbox3d<f32>(-7,0,-7,7,1,7),
