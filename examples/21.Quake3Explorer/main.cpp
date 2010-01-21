@@ -85,7 +85,7 @@ void GameData::setDefault ()
 	deviceParam.WindowSize.Width = 800;
 	deviceParam.WindowSize.Height = 600;
 	deviceParam.Fullscreen = false;
-	deviceParam.Bits = 32;
+	deviceParam.Bits = 24;
 	deviceParam.ZBufferBits = 16;
 	deviceParam.Vsync = false;
 	deviceParam.AntiAlias = false;
@@ -1040,12 +1040,14 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	IFileSystem *fs = Game->Device->getFileSystem();
 	ISceneManager *smgr = Game->Device->getSceneManager ();
 
-	IReadFile* file = fs->createMemoryReadFile ( &Game->loadParam, sizeof ( Game->loadParam ),
-													L"levelparameter.cfg", false);
+	IReadFile* file = fs->createMemoryReadFile(&Game->loadParam,
+				sizeof(Game->loadParam), L"levelparameter.cfg", false);
 
+	// load cfg file
 	smgr->getMesh( file );
 	file->drop ();
 
+	// load the actual map
 	Mesh = (IQ3LevelMesh*) smgr->getMesh(mapName);
 	if ( 0 == Mesh )
 		return;
@@ -1072,8 +1074,7 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	//s32 minimalNodes = b0 ? core::s32_max ( 2048, b0->getVertexCount() / 32 ) : 2048;
 	s32 minimalNodes = 2048;
 
-	MapParent = smgr->addMeshSceneNode( geometry );
-	//MapParent = smgr->addOctreeSceneNode(geometry, 0, -1, minimalNodes);
+	MapParent = smgr->addOctreeSceneNode(geometry, 0, -1, minimalNodes);
 	MapParent->setName ( mapName );
 	if ( Meta )
 	{
@@ -1105,7 +1106,6 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	if ( BulletParent )
 		BulletParent->setName ( "Bullet Container" );
 
-
 	/*
 		now construct SceneNodes for each Shader
 		The Objects are stored in the quake mesh E_Q3_MESH_ITEMS
@@ -1116,12 +1116,10 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	Q3ShaderFactory ( Game->loadParam, Game->Device, Mesh, E_Q3_MESH_FOG,FogParent, 0, false );
 	Q3ShaderFactory ( Game->loadParam, Game->Device, Mesh, E_Q3_MESH_UNRESOLVED,UnresolvedParent, Meta, true );
 
-
 	/*
 		Now construct Models from Entity List
 	*/
 	Q3ModelFactory ( Game->loadParam, Game->Device, Mesh, ItemParent, false );
-
 }
 
 /*
@@ -1193,7 +1191,6 @@ void CQuake3EventHandler::addSceneTreeItem( ISceneNode * parent, IGUITreeViewNod
 
 		addSceneTreeItem ( *it, node );
 	}
-
 }
 
 
@@ -1202,6 +1199,7 @@ void CQuake3EventHandler::CreatePlayers()
 {
 	Player[0].create ( Game->Device, Mesh, MapParent, Meta );
 }
+
 
 // Adds a skydome to the scene
 void CQuake3EventHandler::AddSky( u32 dome, const c8 *texture)
@@ -1237,28 +1235,16 @@ void CQuake3EventHandler::AddSky( u32 dome, const c8 *texture)
 	{
 		snprintf ( buf, 64, "%s.jpg", texture );
 		SkyNode = smgr->addSkyDomeSceneNode(
-			driver->getTexture( buf ),
-			32,32,
-			1.f,
-			1.f,
-			1000.f,
-			0,
-			11
-			);
+				driver->getTexture( buf ), 32,32,
+				1.f, 1.f, 1000.f, 0, 11);
 	}
 	else
 	if ( 2 == dome )
 	{
 		snprintf ( buf, 64, "%s.jpg", texture );
 		SkyNode = smgr->addSkyDomeSceneNode(
-			driver->getTexture( buf ),
-			16,8,
-			0.95f,
-			2.f,
-			1000.f,
-			0,
-			11
-			);
+				driver->getTexture( buf ), 16,8,
+				0.95f, 2.f, 1000.f, 0, 11);
 	}
 
 	if (SkyNode)
@@ -1266,7 +1252,6 @@ void CQuake3EventHandler::AddSky( u32 dome, const c8 *texture)
 	//SkyNode->getMaterial(0).ZBuffer = video::EMDF_DEPTH_LESS_EQUAL;
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
-
 }
 
 
@@ -1309,7 +1294,6 @@ void CQuake3EventHandler::SetGUIActive( s32 command)
 
 	Game->Device->getGUIEnvironment()->setFocus ( Game->guiActive ? gui.Window: 0 );
 }
-
 
 
 /*

@@ -97,7 +97,10 @@ public:
 			else
 			if (event.KeyInput.Key == KEY_F8)
 			{
-				Node->setDebugDataVisible(scene::EDS_BBOX_ALL);
+				if (Node->isDebugDataVisible())
+					Node->setDebugDataVisible(scene::EDS_OFF);
+				else
+					Node->setDebugDataVisible(scene::EDS_BBOX_ALL);
 			}
 		}
 		return false;
@@ -149,7 +152,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	}
 
 	// create device and exit if creation failed
-	const core::dimension2du videoDim ( 800,600 );
+	const core::dimension2du videoDim(800,600);
 
 	IrrlichtDevice *device = createDevice(driverType, videoDim, 32, false );
 
@@ -182,14 +185,12 @@ int IRRCALLCONV main(int argc, char* argv[])
 	directly be stored on disk.
 	*/
 	if (argc>2)
-		device->getFileSystem()->QUAKE3_STORAGE_FORMAT (argv[1]);
+		device->getFileSystem()->QUAKE3_STORAGE_FORMAT(argv[1]);
 	else
-		device->getFileSystem()->QUAKE3_STORAGE_FORMAT ( QUAKE3_STORAGE_1 );
+		device->getFileSystem()->QUAKE3_STORAGE_FORMAT(QUAKE3_STORAGE_1);
 #ifdef QUAKE3_STORAGE_2
-	device->getFileSystem()->QUAKE3_STORAGE_FORMAT ( QUAKE3_STORAGE_2 );
+	device->getFileSystem()->QUAKE3_STORAGE_FORMAT(QUAKE3_STORAGE_2);
 #endif
-
-
 
 	// Quake3 Shader controls Z-Writing
 	smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
@@ -210,7 +211,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	IVideoDriver class). Note that this optimization with the Octree is only
 	useful when drawing huge meshes consisting of lots of geometry.
 	*/
-	scene::IQ3LevelMesh* mesh =
+	scene::IQ3LevelMesh* const mesh =
 		(scene::IQ3LevelMesh*) smgr->getMesh(mapname);
 
 	/*
@@ -218,10 +219,9 @@ int IRRCALLCONV main(int argc, char* argv[])
 		The Geometry mesh is optimised for faster drawing
 	*/
 	scene::ISceneNode* node = 0;
-	if ( mesh )
+	if (mesh)
 	{
-		scene::IMesh *geometry = mesh->getMesh(quake3::E_Q3_MESH_GEOMETRY);
-//		node = smgr->addMeshSceneNode ( geometry );
+		scene::IMesh * const geometry = mesh->getMesh(quake3::E_Q3_MESH_GEOMETRY);
 		node = smgr->addOctreeSceneNode(geometry, 0, -1, 1024);
 	}
 
@@ -238,24 +238,24 @@ int IRRCALLCONV main(int argc, char* argv[])
 	if ( mesh )
 	{
 		// the additional mesh can be quite huge and is unoptimized
-		scene::IMesh * additional_mesh = mesh->getMesh(quake3::E_Q3_MESH_ITEMS);
+		const scene::IMesh * const additional_mesh = mesh->getMesh(quake3::E_Q3_MESH_ITEMS);
 
 #ifdef SHOW_SHADER_NAME
 		gui::IGUIFont *font = device->getGUIEnvironment()->getFont("../../media/fontlucida.png");
 		u32 count = 0;
 #endif
 
-		for ( u32 i = 0; i!= additional_mesh->getMeshBufferCount (); ++i )
+		for ( u32 i = 0; i!= additional_mesh->getMeshBufferCount(); ++i )
 		{
-			const IMeshBuffer *meshBuffer = additional_mesh->getMeshBuffer ( i );
-			const video::SMaterial &material = meshBuffer->getMaterial();
+			const IMeshBuffer* meshBuffer = additional_mesh->getMeshBuffer(i);
+			const video::SMaterial& material = meshBuffer->getMaterial();
 
-			//! The ShaderIndex is stored in the material parameter
+			// The ShaderIndex is stored in the material parameter
 			const s32 shaderIndex = (s32) material.MaterialTypeParam2;
 
 			// the meshbuffer can be rendered without additional support, or it has no shader
-			const quake3::IShader *shader = mesh->getShader ( shaderIndex );
-			if ( 0 == shader )
+			const quake3::IShader *shader = mesh->getShader(shaderIndex);
+			if (0 == shader)
 			{
 				continue;
 			}
@@ -266,25 +266,17 @@ int IRRCALLCONV main(int argc, char* argv[])
 			// would be full...
 			// quake3::dumpShader ( Shader );
 
-#ifndef SHOW_SHADER_NAME
-			smgr->addQuake3SceneNode ( meshBuffer, shader );
-#else
+			node = smgr->addQuake3SceneNode(meshBuffer, shader);
+
+#ifdef SHOW_SHADER_NAME
 			count += 1;
-
-			node = smgr->addQuake3SceneNode ( meshBuffer, shader );
-
 			core::stringw name( node->getName() );
 			node = smgr->addBillboardTextSceneNode(
-					font,
-					name.c_str(),
-					node,
+					font, name.c_str(), node,
 					core::dimension2d<f32>(80.0f, 8.0f),
-					core::vector3df(0, 10, 0)
-					);
+					core::vector3df(0, 10, 0));
 #endif
 		}
-
-
 	}
 
 	/*
@@ -305,38 +297,36 @@ int IRRCALLCONV main(int argc, char* argv[])
 		we can ask the Quake3 Loader for all entities with class_name
 		"info_player_deathmatch"
 		we choose a random launch
-
 	*/
 	if ( mesh )
 	{
-		quake3::tQ3EntityList &entityList = mesh->getEntityList ();
+		quake3::tQ3EntityList &entityList = mesh->getEntityList();
 
 		quake3::IEntity search;
 		search.name = "info_player_deathmatch";
 
-		s32 index = entityList.binary_search ( search );
-		if ( index >= 0 )
+		s32 index = entityList.binary_search(search);
+		if (index >= 0)
 		{
-			const quake3::SVarGroup *group;
 			s32 notEndList;
 			do
 			{
-				group = entityList[ index ].getGroup(1);
+				const quake3::SVarGroup *group = entityList[index].getGroup(1);
 
 				u32 parsepos = 0;
-				core::vector3df pos =
-					quake3::getAsVector3df ( group->get ( "origin" ), parsepos );
+				const core::vector3df pos =
+					quake3::getAsVector3df(group->get("origin"), parsepos);
 
 				parsepos = 0;
-				f32 angle = quake3::getAsFloat ( group->get ( "angle"), parsepos );
+				const f32 angle = quake3::getAsFloat(group->get("angle"), parsepos);
 
-				core::vector3df target ( 0.f, 0.f, 1.f );
-				target.rotateXZBy ( angle, core::vector3df () );
+				core::vector3df target(0.f, 0.f, 1.f);
+				target.rotateXZBy(angle);
 
-				camera->setPosition ( pos );
-				camera->setTarget ( pos + target );
+				camera->setPosition(pos);
+				camera->setTarget(pos + target);
 
-				index += 1;
+				++index;
 /*
 				notEndList = (	index < (s32) entityList.size () &&
 								entityList[index].name == search.name &&
@@ -346,7 +336,6 @@ int IRRCALLCONV main(int argc, char* argv[])
 				notEndList = index == 2;
 			} while ( notEndList );
 		}
-
 	}
 
 	/*
@@ -360,19 +349,19 @@ int IRRCALLCONV main(int argc, char* argv[])
 			core::position2d<s32>(10, 10));
 
 	// show the driver logo
-	core::position2di pos ( videoDim.Width - 128, videoDim.Height - 64 );
+	const core::position2di pos(videoDim.Width - 128, videoDim.Height - 64);
 
 	switch ( driverType )
 	{
 		case video::EDT_BURNINGSVIDEO:
-			gui->addImage(driver->getTexture("burninglogo.png"),pos);
+			gui->addImage(driver->getTexture("burninglogo.png"), pos);
 			break;
 		case video::EDT_OPENGL:
-			gui->addImage(driver->getTexture("opengllogo.png"),pos);
+			gui->addImage(driver->getTexture("opengllogo.png"), pos);
 			break;
 		case video::EDT_DIRECT3D8:
 		case video::EDT_DIRECT3D9:
-			gui->addImage(driver->getTexture("directxlogo.png"),pos);
+			gui->addImage(driver->getTexture("directxlogo.png"), pos);
 			break;
 	}
 
@@ -391,32 +380,26 @@ int IRRCALLCONV main(int argc, char* argv[])
 		driver->beginScene(true, true, video::SColor(255,20,20,40));
 		smgr->drawAll();
 		gui->drawAll();
-
 		driver->endScene();
 
 		int fps = driver->getFPS();
-
 		//if (lastFPS != fps)
 		{
-			io::IAttributes * attr = smgr->getParameters();
-
-			s32 calls = attr->getAttributeAsInt ( "calls" );
-			s32 culled = attr->getAttributeAsInt ( "culled" );
-
+			io::IAttributes * const attr = smgr->getParameters();
 			core::stringw str = L"Q3 [";
 			str += driver->getName();
 			str += "] FPS:";
 			str += fps;
 			str += " Cull:";
-			str += calls;
+			str += attr->getAttributeAsInt("calls");
 			str += "/";
-			str += culled;
+			str += attr->getAttributeAsInt("culled");
 			str += " Draw: ";
-			str += attr->getAttributeAsInt ( "drawn_solid" );
+			str += attr->getAttributeAsInt("drawn_solid");
 			str += "/";
-			str += attr->getAttributeAsInt ( "drawn_transparent" );
+			str += attr->getAttributeAsInt("drawn_transparent");
 			str += "/";
-			str += attr->getAttributeAsInt ( "drawn_transparent_effect" );
+			str += attr->getAttributeAsInt("drawn_transparent_effect");
 
 			device->setWindowCaption(str.c_str());
 			lastFPS = fps;
