@@ -288,6 +288,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\meshTransform.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\planeMatrix.cpp"
 				>
 			</File>
@@ -329,6 +333,10 @@
 			</File>
 			<File
 				RelativePath=".\testGeometryCreator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testS3DVertex.cpp"
 				>
 			</File>
 			<File

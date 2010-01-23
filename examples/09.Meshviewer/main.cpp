@@ -208,6 +208,16 @@ void loadModel(const c8* fn)
 
 	Model = 0;
 
+	if (extension==".irr")
+	{
+		core::array<scene::ISceneNode*> outNodes;
+		Device->getSceneManager()->loadScene(filename);
+		Device->getSceneManager()->getSceneNodesFromType(scene::ESNT_ANIMATED_MESH, outNodes);
+		if (outNodes.size())
+			Model = outNodes[0];
+		return;
+	}
+
 	scene::IAnimatedMesh* m = Device->getSceneManager()->getMesh( filename.c_str() );
 
 	if (!m)
@@ -679,9 +689,9 @@ int main(int argc, char* argv[])
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
-	smgr->addLightSceneNode();
 	smgr->addLightSceneNode(0, core::vector3df(200,200,200),
 		video::SColorf(1.0f,1.0f,1.0f),2000);
+	smgr->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));
 	// add our media directory as "search path"
 	Device->getFileSystem()->addFolderFileArchive("../../media/");
 

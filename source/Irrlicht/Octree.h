@@ -11,13 +11,13 @@
 #include "irrArray.h"
 #include "CMeshBuffer.h"
 
-/*!
+/**
 	Flags for Octree
 */
 //! use meshbuffer for drawing, enables VBO usage
 #define OCTREE_USE_HARDWARE	false
 //! use visibility information together with VBOs
-#define OCTREE_USE_VISIBILITY false
+#define OCTREE_USE_VISIBILITY true
 //! use bounding box or frustum for calculate polys
 #define OCTREE_BOX_BASED true
 //! bypass full invisible/visible test

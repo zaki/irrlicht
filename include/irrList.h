@@ -80,6 +80,7 @@ public:
 		SKListNode* Current;
 
 		friend class list<T>;
+		friend class ConstIterator;
 	};
 
 	//! List iterator for const access.

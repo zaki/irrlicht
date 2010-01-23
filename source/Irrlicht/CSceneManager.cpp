@@ -485,7 +485,7 @@ IBillboardTextSceneNode* CSceneManager::addBillboardTextSceneNode(gui::IGUIFont*
 
 
 //! Adds a scene node, which can render a quake3 shader
-IMeshSceneNode* CSceneManager::addQuake3SceneNode(IMeshBuffer* meshBuffer,
+IMeshSceneNode* CSceneManager::addQuake3SceneNode(const IMeshBuffer* meshBuffer,
 					const quake3::IShader * shader,
 					ISceneNode* parent, s32 id )
 {
@@ -1190,11 +1190,11 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 
 
 //! registers a node for rendering it at a specific time.
-u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS time)
+u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS pass)
 {
 	u32 taken = 0;
 
-	switch(time)
+	switch(pass)
 	{
 		// take camera if it is not already registered
 	case ESNRP_CAMERA:
@@ -1253,7 +1253,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	case ESNRP_AUTOMATIC:
 		if (!isCulled(node))
 		{
-			u32 count = node->getMaterialCount();
+			const u32 count = node->getMaterialCount();
 
 			taken = 0;
 			for (u32 i=0; i<count; ++i)

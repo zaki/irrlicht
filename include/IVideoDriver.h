@@ -249,9 +249,9 @@ namespace video
 		be cleared. It is not nesesarry to do so if only 2d drawing is
 		used.
 		\param color The color used for back buffer clearing
-		\param windowId Handle of another window, if you want the
-		bitmap to be displayed on another window. If this is null,
-		everything will be displayed in the default window.
+		\param videoData Handle of another window, if you want the
+		bitmap to be displayed on another window. If this is an empty
+		element, everything will be displayed in the default window.
 		Note: This feature is not fully implemented for all devices.
 		\param sourceRect Pointer to a rectangle defining the source
 		rectangle of the area to be presented. Set to null to present
@@ -382,9 +382,10 @@ namespace video
 		/** \param name A name for the texture. Later calls of
 		getTexture() with this name will return this texture
 		\param image Image the texture is created from.
-		\mipmapData Optional pointer to a set of images which build up the
-		whole mipmap set. Must be images of the same color type as image. If
-		this parameter is not given, the mipmaps are derived from image.
+		\param mipmapData Optional pointer to a set of images which
+		build up the whole mipmap set. Must be images of the same color
+		type as image. If this parameter is not given, the mipmaps are
+		derived from image.
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
@@ -789,8 +790,8 @@ namespace video
 		The subtextures are defined by the array of sourceRects and are
 		positioned using the array of positions.
 		\param texture Texture to be drawn.
-		\param pos Array of upper left 2d destinations where the images
-		will be drawn.
+		\param positions Array of upper left 2d destinations where the
+		images will be drawn.
 		\param sourceRects Source rectangles of the image.
 		\param clipRect Pointer to rectangle on the screen where the
 		images are clipped to.

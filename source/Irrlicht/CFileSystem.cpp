@@ -476,7 +476,10 @@ io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 		else
 			return io::path(fpath);
 	}
-	return io::path(p);
+	if (filename[filename.size()-1]=='/')
+		return io::path(p)+"/";
+	else
+		return io::path(p);
 #else
 	return io::path(filename);
 #endif
@@ -552,10 +555,15 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 		if (subdir == "../")
 		{
 			if (lastWasRealDir)
+			{
 				deletePathFromPath(dir, 2);
+				lastWasRealDir=(dir.size()!=0);
+			}
 			else
+			{
 				dir.append(subdir);
-			lastWasRealDir=false;
+				lastWasRealDir=false;
+			}
 		}
 		else if (subdir == "/")
 		{

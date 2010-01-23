@@ -470,6 +470,7 @@
 		<Unit filename="../../include/IGUITable.h" />
 		<Unit filename="../../include/IGUIToolbar.h" />
 		<Unit filename="../../include/IGUIWindow.h" />
+		<Unit filename="../../include/IGeometryCreator.h" />
 		<Unit filename="../../include/IImage.h" />
 		<Unit filename="../../include/IImageLoader.h" />
 		<Unit filename="../../include/ILightSceneNode.h" />
@@ -1196,6 +1197,11 @@
 		<Unit filename="libpng/pngwutil.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="lzma/LzmaDec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lzma/LzmaDec.h" />
+		<Unit filename="lzma/Types.h" />
 		<Unit filename="os.cpp" />
 		<Unit filename="os.h" />
 		<Unit filename="zlib/adler32.c">
@@ -1237,11 +1243,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="zlib/zutil.h" />
-		<Unit filename="lzma/LzmaDec.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lzma/LzmaDec.h" />
-		<Unit filename="lzma/Types.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

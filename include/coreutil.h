@@ -90,21 +90,23 @@ inline io::path& deletePathFromPath(io::path& filename, s32 pathCount)
 	s32 i = filename.size();
 
 	// search for path separator or beginning
-	while ( i )
+	while ( i>=0 )
 	{
 		if ( filename[i] == '/' || filename[i] == '\\' )
 		{
 			if ( --pathCount <= 0 )
 				break;
 		}
-		i -= 1;
+		--i;
 	}
 
-	if ( i )
+	if ( i>0 )
 	{
 		filename [ i + 1 ] = 0;
 		filename.validate();
 	}
+	else
+		filename="";
 	return filename;
 }
 

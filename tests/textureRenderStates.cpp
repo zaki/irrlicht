@@ -131,7 +131,7 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	gui->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 100);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.8f);
 
 	device->drop();
 

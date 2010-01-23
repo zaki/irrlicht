@@ -4,7 +4,7 @@
 	Version="9,00"
 	Name="21.Quake3Explorer_vc9"
 	ProjectGUID="{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}"
-	RootNamespace="19.Quake3Explorer_vc9"
+	RootNamespace="21.Quake3Explorer_vc9"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>

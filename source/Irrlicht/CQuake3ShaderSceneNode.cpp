@@ -27,7 +27,7 @@ using namespace quake3;
 */
 CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 			scene::ISceneNode* parent, scene::ISceneManager* mgr,s32 id,
-			io::IFileSystem *fileSystem, scene::IMeshBuffer *original,
+			io::IFileSystem *fileSystem, const scene::IMeshBuffer *original,
 			const IShader * shader)
 : scene::IMeshSceneNode(parent, mgr, id, 
 		core::vector3df(0.f, 0.f, 0.f),
@@ -53,20 +53,19 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 	MeshBuffer->drop ();
 
 	//Original = new SMeshBufferLightMap();
-	Original = (scene::SMeshBufferLightMap*) original;
+	Original = (const scene::SMeshBufferLightMap*) original;
 	Original->grab();
 
 	// clone meshbuffer to modifiable buffer
-	cloneBuffer( MeshBuffer, (scene::SMeshBufferLightMap*) original, 
-							original->getMaterial().ColorMask != 0
-						);
+	cloneBuffer(MeshBuffer, Original, 
+			Original->getMaterial().ColorMask != 0);
 
 	// load all Textures in all stages
 	loadTextures( fileSystem );
 
 	setAutomaticCulling( scene::EAC_OFF );
-
 }
+
 
 /*!
 */
@@ -84,7 +83,7 @@ CQuake3ShaderSceneNode::~CQuake3ShaderSceneNode()
 /*
 	create single copies
 */
-void CQuake3ShaderSceneNode::cloneBuffer( scene::SMeshBuffer *dest, scene::SMeshBufferLightMap * buffer, bool translateCenter )
+void CQuake3ShaderSceneNode::cloneBuffer( scene::SMeshBuffer *dest, const scene::SMeshBufferLightMap * buffer, bool translateCenter )
 {
 	dest->Material = buffer->Material;
 	dest->Indices = buffer->Indices;
@@ -120,7 +119,6 @@ void CQuake3ShaderSceneNode::cloneBuffer( scene::SMeshBuffer *dest, scene::SMesh
 		m.setTranslation( -MeshOffset );
 		SceneManager->getMeshManipulator()->transform( dest, m );
 	}
-	
 
 	// No Texture!. Use Shader-Pointer for sorting
 	dest->Material.setTexture(0, (video::ITexture*) Shader);
@@ -719,7 +717,7 @@ void CQuake3ShaderSceneNode::deformvertexes_autosprite( f32 dt, SModifierFunctio
 	const core::vector3df& camPos = SceneManager->getActiveCamera()->getPosition();
 
 	video::S3DVertex * dv = MeshBuffer->Vertices.pointer();
-	const video::S3DVertex2TCoords * vin = Original->Vertices.pointer();
+	const video::S3DVertex2TCoords * vin = Original->Vertices.const_pointer();
 
 	core::matrix4 lookat ( core::matrix4::EM4CONST_NOTHING );
 	core::quaternion q;
@@ -769,7 +767,7 @@ void CQuake3ShaderSceneNode::deformvertexes_autosprite2( f32 dt, SModifierFuncti
 	const core::vector3df camPos = SceneManager->getActiveCamera()->getAbsolutePosition();
 
 	video::S3DVertex * dv = MeshBuffer->Vertices.pointer();
-	const video::S3DVertex2TCoords * vin = Original->Vertices.pointer();
+	const video::S3DVertex2TCoords * vin = Original->Vertices.const_pointer();
 
 	core::matrix4 lookat ( core::matrix4::EM4CONST_NOTHING );
 
