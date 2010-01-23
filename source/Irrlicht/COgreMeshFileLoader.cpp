@@ -212,9 +212,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 		switch(data.header.id)
 		{
 			case COGRE_GEOMETRY:
-			{
 				readGeometry(file, data, mesh.Geometry);
-			}
 			break;
 			case COGRE_SUBMESH:
 				mesh.SubMeshes.push_back(OgreSubMesh());
@@ -252,7 +250,14 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 			case COGRE_MESH_LOD:
 			case COGRE_MESH_SUBMESH_NAME_TABLE:
 			case COGRE_MESH_EDGE_LISTS:
+				// ignore chunk
+				file->seek(data.header.length-data.read, true);
+				data.read += data.header.length-data.read;
+				break;
 			default:
+#ifdef IRR_OGRE_LOADER_DEBUG
+				os::Printer::log("Skipping", core::stringc(data.header.id));
+#endif
 				// ignore chunk
 				file->seek(data.header.length-data.read, true);
 				data.read += data.header.length-data.read;
@@ -287,6 +292,9 @@ bool COgreMeshFileLoader::readGeometry(io::IReadFile* file, ChunkData& parent, O
 			break;
 		default:
 			// ignore chunk
+#ifdef IRR_OGRE_LOADER_DEBUG
+			os::Printer::log("Skipping", core::stringc(data.header.id));
+#endif
 			file->seek(data.header.length-data.read, true);
 			data.read += data.header.length-data.read;
 		}
@@ -380,23 +388,13 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 	if (subMesh.Indices32Bit)
 		readInt(file, parent, subMesh.Indices.pointer(), numIndices);
 	else
+	{
 		for (s32 i=0; i<numIndices; ++i)
 		{
 			u16 num;
 			readShort(file, parent, &num);
 			subMesh.Indices[i]=num;
 		}
-
-	if (!subMesh.SharedVertices)
-	{
-		ChunkData data;
-		readChunkData(file, data);
-
-		if (data.header.id==COGRE_GEOMETRY)
-		{
-			readGeometry(file, data, subMesh.Geometry);
-		}
-		parent.read += data.read;
 	}
 
 	while(parent.read < parent.header.length)
@@ -406,6 +404,9 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 
 		switch(data.header.id)
 		{
+		case COGRE_GEOMETRY:
+			readGeometry(file, data, subMesh.Geometry);
+		break;
 		case COGRE_SUBMESH_OPERATION:
 			readShort(file, data, &subMesh.Operation);
 #ifdef IRR_OGRE_LOADER_DEBUG
@@ -434,6 +435,9 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 		}
 			break;
 		default:
+#ifdef IRR_OGRE_LOADER_DEBUG
+			os::Printer::log("Skipping", core::stringc(data.header.id));
+#endif
 			parent.read=parent.header.length;
 			file->seek(-(long)sizeof(ChunkHeader), true);
 			return true;
@@ -1474,7 +1478,7 @@ void COgreMeshFileLoader::readBool(io::IReadFile* file, ChunkData& data, bool& o
 void COgreMeshFileLoader::readInt(io::IReadFile* file, ChunkData& data, s32* out, u32 num)
 {
 	// normal C type because we read a bit string
-	file->read(out, sizeof(int));
+	file->read(out, sizeof(int)*num);
 	if (SwapEndian)
 	{
 		for (u32 i=0; i<num; ++i)

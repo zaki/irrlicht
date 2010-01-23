@@ -70,6 +70,34 @@ static bool testFlattenFilename(io::IFileSystem* fs)
 		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
 		result = false;
 	}
+
+	tmpString="this/tmp/next/../../my/fourth";
+	refString="this/my/fourth/";
+	fs->flattenFilename(tmpString);
+	if (tmpString != refString)
+	{
+		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
+		result = false;
+	}
+
+	tmpString="this/is/../../../a/fifth/test/";
+	refString="../a/fifth/test/";
+	fs->flattenFilename(tmpString);
+	if (tmpString != refString)
+	{
+		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
+		result = false;
+	}
+
+	tmpString="this/../is/../../a/sixth/test/";
+	refString="../a/sixth/test/";
+	fs->flattenFilename(tmpString);
+	if (tmpString != refString)
+	{
+		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
+		result = false;
+	}
+
 	return result;
 }
 

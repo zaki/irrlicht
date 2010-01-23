@@ -63,6 +63,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testDimension2d);
 	TEST(testVector2d);
 	TEST(testVector3d);
+	TEST(testS3DVertex);
 	TEST(testaabbox3d);
 	// TODO: Needs to be fixed first
 //	TEST(testTriangle3d);
@@ -92,6 +93,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(md2Animation);
 	TEST(testGeometryCreator);
 	TEST(writeImageToFile);
+	TEST(meshTransform);
 	// all driver checks
 	TEST(drawPixel);
 	TEST(guiDisabledMenu);

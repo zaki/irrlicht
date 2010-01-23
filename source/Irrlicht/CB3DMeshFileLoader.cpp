@@ -27,7 +27,7 @@ namespace scene
 //! Constructor
 CB3DMeshFileLoader::CB3DMeshFileLoader(scene::ISceneManager* smgr)
 : SceneManager(smgr), AnimatedMesh(0), B3DFile(0), NormalsInFile(false),
-	ShowWarning(true)
+	HasVertexColors(false), ShowWarning(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CB3DMeshFileLoader");
@@ -56,9 +56,6 @@ IAnimatedMesh* CB3DMeshFileLoader::createMesh(io::IReadFile* f)
 	AnimatedMesh = new scene::CSkinnedMesh();
 	ShowWarning = true; // If true a warning is issued if too many textures are used
 
-	Buffers = &AnimatedMesh->getMeshBuffers();
-	AllJoints = &AnimatedMesh->getAllJoints();
-
 	if ( load() )
 	{
 		AnimatedMesh->finalize();
@@ -78,6 +75,7 @@ bool CB3DMeshFileLoader::load()
 	B3dStack.clear();
 
 	NormalsInFile=false;
+	HasVertexColors=false;
 
 	//------ Get header ------
 
@@ -144,9 +142,6 @@ bool CB3DMeshFileLoader::load()
 
 	Materials.clear();
 	Textures.clear();
-
-	Buffers=0;
-	AllJoints=0;
 
 	return true;
 }
@@ -250,6 +245,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *inJoint)
 #endif
 
 	NormalsInFile=false;
+	HasVertexColors=false;
 
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
 	{
@@ -354,16 +350,22 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *inJoint)
 
 	//------ Allocate Memory, for speed -----------//
 
-	s32 NumberOfReads = 3;
+	s32 numberOfReads = 3;
 
 	if (flags & 1)
-		NumberOfReads += 3;
+	{
+		NormalsInFile = true;
+		numberOfReads += 3;
+	}
 	if (flags & 2)
-		NumberOfReads += 4;
+	{
+		numberOfReads += 4;
+		HasVertexColors=true;
+	}
 
-	NumberOfReads += tex_coord_sets*tex_coord_set_size;
+	numberOfReads += tex_coord_sets*tex_coord_set_size;
 
-	const s32 memoryNeeded = (B3dStack.getLast().length / sizeof(f32)) / NumberOfReads;
+	const s32 memoryNeeded = (B3dStack.getLast().length / sizeof(f32)) / numberOfReads;
 
 	BaseVertices.reallocate(memoryNeeded + BaseVertices.size() + 1);
 	AnimatedVertices_VertexID.reallocate(memoryNeeded + AnimatedVertices_VertexID.size() + 1);
@@ -380,11 +382,7 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *inJoint)
 		readFloats(position, 3);
 
 		if (flags & 1)
-		{
-			NormalsInFile = true;
 			readFloats(normal, 3);
-		}
-
 		if (flags & 2)
 			readFloats(color, 4);
 
@@ -510,7 +508,9 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 					// Apply Material/Color/etc...
 					video::S3DVertex *Vertex=meshBuffer->getVertex(meshBuffer->getVertexCount()-1);
 
-					if (Vertex->Color.getAlpha() == 255)
+					if (!HasVertexColors)
+						Vertex->Color=B3dMaterial->Material.DiffuseColor;
+					else if (Vertex->Color.getAlpha() == 255)
 						Vertex->Color.setAlpha( (s32)(B3dMaterial->alpha * 255.0f) );
 
 					// Use texture's scale
@@ -810,7 +810,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		core::stringc name;
 		readString(name);
 #ifdef _B3D_READER_DEBUG
-		os::Printer::log("read Material");
+		os::Printer::log("read Material", name);
 #endif
 		Materials.push_back(SB3dMaterial());
 		SB3dMaterial& B3dMaterial=Materials.getLast();

@@ -39,6 +39,8 @@ CDefaultSceneNodeFactory::CDefaultSceneNodeFactory(ISceneManager* mgr)
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_SKY_DOME, "skyDome"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_SHADOW_VOLUME, "shadowVolume"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_OCTREE, "octree"));
+	// Legacy support
+	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_OCTREE, "octTree"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_MESH, "mesh"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_LIGHT, "light"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_EMPTY, "empty"));

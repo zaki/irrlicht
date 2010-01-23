@@ -115,7 +115,6 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 	// now read lumps
 	file->read(&Lumps[0], sizeof(tBSPLump)*kMaxLumps);
 
-
 	s32 i;
 	if ( LoadParam.swapHeader )
 	{
@@ -151,14 +150,13 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 	loadLeafBrushes(&Lumps[kLeafBrushes], file);	// load the brushes of the leaf
 	loadFogs(&Lumps[kFogs], file );					// load the fogs
 
-
 	loadTextures();
 	constructMesh();
-	solveTJunction ();
+	solveTJunction();
 
 	cleanMeshes();
 	calcBoundingBoxes();
-	cleanLoader ();
+	cleanLoader();
 
 	return true;
 }
@@ -178,8 +176,8 @@ void CQ3LevelMesh::cleanLoader ()
 	delete [] MeshVerts; MeshVerts = 0;
 	delete [] Brushes; Brushes = 0;
 
-	Lightmap.clear ();
-	Tex.clear ();
+	Lightmap.clear();
+	Tex.clear();
 }
 
 //! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
@@ -1026,9 +1024,6 @@ void CQ3LevelMesh::constructMesh()
 }
 
 
-
-
-
 void CQ3LevelMesh::S3DVertex2TCoords_64::copy( video::S3DVertex2TCoords &dest ) const
 {
 #if defined (TJUNCTION_SOLVER_ROUND)
@@ -1198,7 +1193,6 @@ void CQ3LevelMesh::SBezier::tesselate( s32 level )
 			Patch->Indices.push_back( inx + 0 );
 			Patch->Indices.push_back( inx + (level + 1 ) + 1 );
 			Patch->Indices.push_back( inx + 1 );
-
 		}
 	}
 }
@@ -1764,9 +1758,7 @@ void CQ3LevelMesh::cleanMeshes()
 				);
 			os::Printer::log(buf, ELL_INFORMATION);
 		}
-
 	}
-
 }
 
 
@@ -1786,7 +1778,6 @@ void CQ3LevelMesh::calcBoundingBoxes()
 				);
 			os::Printer::log(buf, ELL_INFORMATION);
 		}
-
 	}
 
 	// create bounding box
@@ -1798,6 +1789,9 @@ void CQ3LevelMesh::calcBoundingBoxes()
 		}
 
 		Mesh[g]->recalculateBoundingBox();
+		// Mesh[0] is the main bbox
+		if (g!=0)
+			Mesh[0]->BoundingBox.addInternalBox(Mesh[g]->getBoundingBox());
 	}
 
 	if ( LoadParam.verbose > 0 )
@@ -1812,7 +1806,6 @@ void CQ3LevelMesh::calcBoundingBoxes()
 			);
 		os::Printer::log( buf, ELL_INFORMATION);
 	}
-
 }
 
 
@@ -1835,7 +1828,6 @@ void CQ3LevelMesh::loadTextures()
 				);
 			os::Printer::log( buf, ELL_INFORMATION);
 		}
-
 	}
 
 	c8 lightmapname[255];
@@ -1857,13 +1849,11 @@ void CQ3LevelMesh::loadTextures()
 
 		// lightmap is a CTexture::R8G8B8 format
 		lmapImg = Driver->createImageFromData(
-			video::ECF_R8G8B8,
-			lmapsize,
+			video::ECF_R8G8B8, lmapsize,
 			LightMaps[t].imageBits, false, true );
 
 		Lightmap[t] = Driver->addTexture( lightmapname, lmapImg );
 		lmapImg->drop();
-
 	}
 
 //	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
@@ -1940,20 +1930,19 @@ void CQ3LevelMesh::loadTextures()
 			);
 		os::Printer::log( buf, ELL_INFORMATION);
 	}
-
 }
 
 
 //! Returns an axis aligned bounding box of the mesh.
-//! \return A bounding box of this mesh is returned.
 const core::aabbox3d<f32>& CQ3LevelMesh::getBoundingBox() const
 {
 	return Mesh[0]->getBoundingBox();
 }
 
-void CQ3LevelMesh::setBoundingBox( const core::aabbox3df& box)
+
+void CQ3LevelMesh::setBoundingBox(const core::aabbox3df& box)
 {
-	Mesh[0]->setBoundingBox(box); //?
+	Mesh[0]->setBoundingBox(box);
 }
 
 

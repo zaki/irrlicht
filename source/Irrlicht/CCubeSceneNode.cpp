@@ -61,9 +61,71 @@ void CCubeSceneNode::setSize()
 void CCubeSceneNode::render()
 {
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	driver->setMaterial(Mesh->getMeshBuffer(0)->getMaterial());
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+
+	// for debug purposes only:
+	bool renderMeshes = true;
+	video::SMaterial mat = Mesh->getMeshBuffer(0)->getMaterial();
+
+	// overwrite half transparency
+	if (DebugDataVisible & scene::EDS_HALF_TRANSPARENCY)
+		mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
+	else
+		driver->setMaterial(Mesh->getMeshBuffer(0)->getMaterial());
+	driver->setMaterial(mat);
 	driver->drawMeshBuffer(Mesh->getMeshBuffer(0));
+
+	// for debug purposes only:
+	if (DebugDataVisible)
+	{
+		video::SMaterial m;
+		m.Lighting = false;
+		m.AntiAliasing=0;
+		driver->setMaterial(m);
+
+		if (DebugDataVisible & scene::EDS_BBOX)
+		{
+			driver->draw3DBox(Mesh->getMeshBuffer(0)->getBoundingBox(), video::SColor(255,255,255,255));
+		}
+		if (DebugDataVisible & scene::EDS_BBOX_BUFFERS)
+		{
+			driver->draw3DBox(Mesh->getMeshBuffer(0)->getBoundingBox(),
+					video::SColor(255,190,128,128));
+		}
+		if (DebugDataVisible & scene::EDS_NORMALS)
+		{
+			// draw normals
+			core::vector3df normalizedNormal;
+			const f32 DebugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
+			const video::SColor DebugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+
+			const scene::IMeshBuffer* mb = Mesh->getMeshBuffer(0);
+			const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
+			const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
+			const bool normalize = mb->getMaterial().NormalizeNormals;
+
+			for (u32 i=0; i != mb->getVertexCount(); ++i)
+			{
+				normalizedNormal = v->Normal;
+				if (normalize)
+					normalizedNormal.normalize();
+
+				driver->draw3DLine(v->Pos, v->Pos + (normalizedNormal * DebugNormalLength), DebugNormalColor);
+
+				v = (const video::S3DVertex*) ( (u8*) v+vSize );
+			}
+			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+		}
+
+		// show mesh
+		if (DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
+		{
+			m.Wireframe = true;
+			driver->setMaterial(m);
+
+			driver->drawMeshBuffer( Mesh->getMeshBuffer(0) );
+		}
+	}
 }
 
 

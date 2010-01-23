@@ -97,6 +97,8 @@ public:
 	number of previous locks.
 	\param readOnly Specifies that no changes to the locked texture are
 	made. Unspecified behavior will arise if still write access happens.
+	\param mipmapLevel Number of the mipmapLevel to lock. 0 is main texture.
+	Non-existing levels will silently fail and return 0.
 	\return Returns a pointer to the pixel data. The format of the pixel can
 	be determined by using getColorFormat(). 0 is returned, if
 	the texture cannot be locked. */

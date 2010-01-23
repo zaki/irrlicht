@@ -259,9 +259,9 @@ namespace scene
 				if (boundingBoxUpdate)
 				{
 					if (0==i)
-						bufferbox.reset(mesh->getBoundingBox());
+						bufferbox.reset(mesh->getMeshBuffer(i)->getBoundingBox());
 					else
-						bufferbox.addInternalBox(mesh->getBoundingBox());
+						bufferbox.addInternalBox(mesh->getMeshBuffer(i)->getBoundingBox());
 				}
 			}
 			if (boundingBoxUpdate)

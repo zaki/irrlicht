@@ -55,6 +55,7 @@ namespace gui
 		\param hasSubMenu: Set this to true if there should be a submenu
 		at this item. You can access this submenu via getSubMenu().
 		\param checked: Specifies if the menu item should be initially checked.
+		\param autoChecking: Specifies if the item should be checked by clicking
 		\return Returns the index of the new item */
 		virtual u32 addItem(const wchar_t* text, s32 commandId=-1, bool enabled=true,
 			bool hasSubMenu=false, bool checked=false, bool autoChecking=false) = 0;
@@ -71,6 +72,7 @@ namespace gui
 		\param hasSubMenu: Set this to true if there should be a submenu
 		at this item. You can access this submenu via getSubMenu().
 		\param checked: Specifies if the menu item should be initially checked.
+		\param autoChecking: Specifies if the item should be checked by clicking
 		\return Returns the index of the new item */
 		virtual u32 insertItem(u32 idx, const wchar_t* text, s32 commandId=-1, bool enabled=true,
 			bool hasSubMenu=false, bool checked=false, bool autoChecking=false) = 0;
