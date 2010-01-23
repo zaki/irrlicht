@@ -368,10 +368,10 @@ namespace video
 
 //	private:
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-		typedef void (APIENTRY * PFNGLDRAWTEXIOES) (GLint x, GLint y, GLint z, GLint width, GLint height);
-		typedef void (APIENTRY * PFNGLDRAWTEXIVOES) (const GLint* coords);
-		typedef void (APIENTRY * PFNGLDRAWTEXFOES) (GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height);
-		typedef void (APIENTRY * PFNGLDRAWTEXFVOES) (const GLfloat* coords);
+		typedef void (GL_APIENTRYP PFNGLDRAWTEXIOES) (GLint x, GLint y, GLint z, GLint width, GLint height);
+		typedef void (GL_APIENTRYP PFNGLDRAWTEXIVOES) (const GLint* coords);
+		typedef void (GL_APIENTRYP PFNGLDRAWTEXFOES) (GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height);
+		typedef void (GL_APIENTRYP PFNGLDRAWTEXFVOES) (const GLfloat* coords);
 		typedef GLboolean (GL_APIENTRYP PFNGLISRENDERBUFFEROES) (GLuint renderbuffer);
 		typedef void (GL_APIENTRYP PFNGLBINDRENDERBUFFEROES) (GLenum target, GLuint renderbuffer);
 		typedef void (GL_APIENTRYP PFNGLDELETERENDERBUFFERSOES) (GLsizei n, const GLuint* renderbuffers);
