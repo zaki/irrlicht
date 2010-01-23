@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{830FD174-FABE-4667-B9FC-F7F8B8378EE7}") = "19.Quake3MapExplorer", "Quake3MapShader.vcproj", "{CDC4AAA9-72E1-4ffa-A04D-7EF59D8B97CD}"
+Project("{830FD174-FABE-4667-B9FC-F7F8B8378EE7}") = "21.Quake3MapExplorer", "Quake3MapShader.vcproj", "{CDC4AAA9-72E1-4ffa-A04D-7EF59D8B97CD}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
