@@ -125,11 +125,16 @@ namespace gui
 		\param drawTitleBar: True to enable title drawing.
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.
-		\return Returns rect where to draw title bar text. */
+		\param checkClientArea: When set to non-null the function will not draw anything,
+		but will instead return the clientArea which can be used for drawing by the calling window.
+		That is the area without borders and without titlebar.
+		\return Returns rect where it would be good to draw title bar text. This will
+		work even when checkClientArea is set to a non-null value.*/
 		virtual core::rect<s32> draw3DWindowBackground(IGUIElement* element,
 				bool drawTitleBar, video::SColor titleBarColor,
 				const core::rect<s32>& rect,
-				const core::rect<s32>* clip=0);
+				const core::rect<s32>* clip,
+				core::rect<s32>* checkClientArea);
 
 		//! draws a standard 3d menu pane
 		/** Used for drawing for menus and context menus.

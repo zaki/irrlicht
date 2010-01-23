@@ -400,10 +400,10 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 //! applications must call this method before performing any rendering. returns false if failed.
 bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		void* windowId, core::rect<s32>* sourceRect)
+		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
-	WindowId = windowId;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	WindowId = (HWND)videoData.D3D8.HWnd;
 	SceneSourceRect = sourceRect;
 
 	if (!pID3DDevice)
@@ -412,8 +412,7 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	HRESULT hr;
 	if (DeviceLost)
 	{
-#if defined( _IRR_XBOX_PLATFORM_)
-#else
+#ifndef _IRR_XBOX_PLATFORM_
 		if(FAILED(hr = pID3DDevice->TestCooperativeLevel()))
 		{
 			if (hr == D3DERR_DEVICELOST)
@@ -480,7 +479,7 @@ bool CD3D8Driver::endScene()
 		sourceRectData.bottom = SceneSourceRect->LowerRightCorner.Y;
 	}
 
-	hr = pID3DDevice->Present(srcRct, NULL, (HWND)WindowId, NULL);
+	hr = pID3DDevice->Present(srcRct, NULL, WindowId, NULL);
 
 	if (SUCCEEDED(hr))
 		return true;
@@ -674,9 +673,9 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
+video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const io::path& name, void* mipmapData)
 {
-	return new CD3D8Texture(surface, this, TextureCreationFlags, name);
+	return new CD3D8Texture(surface, this, TextureCreationFlags, name, mipmapData);
 }
 
 
@@ -1755,13 +1754,12 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
+		}
+		if (!OverrideMaterial2DEnabled)
+		{
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+			LastMaterial=InitMaterial2D;
 
-			SMaterial mat;
-			mat.ZBuffer=ECFN_NEVER;
-			mat.Lighting=false;
-			mat.AntiAliasing=video::EAAM_OFF;
-			mat.TextureLayer[0].BilinearFilter=false;
-			setBasicRenderStates(mat, mat, true);
 			// fix everything that is wrongly set by SMaterial default
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
@@ -1772,11 +1770,8 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 			pID3DDevice->SetRenderState( D3DRS_STENCILENABLE, FALSE );
 
-			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
-			pID3DDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
 		}
 		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D8);
-
 		core::matrix4 m;
 		m.setTranslation(core::vector3df(-0.5f,-0.5f,0));
 		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)m.pointer()));
@@ -1788,9 +1783,18 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 		Transformation3DChanged = false;
 	}
+	if (OverrideMaterial2DEnabled)
+	{
+		OverrideMaterial2D.Lighting=false;
+		OverrideMaterial2D.ZBuffer=ECFN_NEVER;
+		OverrideMaterial2D.ZWriteEnable=false;
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
+		LastMaterial = OverrideMaterial2D;
+	}
 
 	if (texture)
 	{
+		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 		if (alphaChannel)
 		{
 			pID3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
@@ -2141,13 +2145,6 @@ bool CD3D8Driver::setPixelShaderConstant(const c8* name, const f32* floats, int 
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;
-}
-
-
-//! Returns pointer to the IGPUProgrammingServices interface.
-IGPUProgrammingServices* CD3D8Driver::getGPUProgrammingServices()
-{
-	return this;
 }
 
 

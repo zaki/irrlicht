@@ -18,6 +18,7 @@
 #include "triangle3d.h"
 #include "EDriverTypes.h"
 #include "EDriverFeatures.h"
+#include "SExposedVideoData.h"
 
 namespace irr
 {
@@ -39,7 +40,6 @@ namespace video
 	struct S3DVertex2TCoords;
 	struct S3DVertexTangents;
 	struct SLight;
-	struct SExposedVideoData;
 	class IImageLoader;
 	class IImageWriter;
 	class IMaterialRenderer;
@@ -106,6 +106,8 @@ namespace video
 		ERT_FRAME_BUFFER=0,
 		//! Render target is a render texture
 		ERT_RENDER_TEXTURE,
+		//! Multi-Render target textures
+		ERT_MULTI_RENDER_TEXTURES,
 		//! Render target is the main color frame buffer
 		ERT_STEREO_LEFT_BUFFER,
 		//! Render target is the right color buffer (left is the main buffer)
@@ -247,9 +249,9 @@ namespace video
 		be cleared. It is not nesesarry to do so if only 2d drawing is
 		used.
 		\param color The color used for back buffer clearing
-		\param windowId Handle of another window, if you want the
-		bitmap to be displayed on another window. If this is null,
-		everything will be displayed in the default window.
+		\param videoData Handle of another window, if you want the
+		bitmap to be displayed on another window. If this is an empty
+		element, everything will be displayed in the default window.
 		Note: This feature is not fully implemented for all devices.
 		\param sourceRect Pointer to a rectangle defining the source
 		rectangle of the area to be presented. Set to null to present
@@ -257,7 +259,7 @@ namespace video
 		\return False if failed. */
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
 				SColor color=SColor(255,0,0,0),
-				void* windowId=0,
+				const SExposedVideoData& videoData=SExposedVideoData(),
 				core::rect<s32>* sourceRect=0) =0;
 
 		//! Presents the rendered image to the screen.
@@ -380,10 +382,14 @@ namespace video
 		/** \param name A name for the texture. Later calls of
 		getTexture() with this name will return this texture
 		\param image Image the texture is created from.
+		\param mipmapData Optional pointer to a set of images which
+		build up the whole mipmap set. Must be images of the same color
+		type as image. If this parameter is not given, the mipmaps are
+		derived from image.
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
+		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
@@ -784,8 +790,8 @@ namespace video
 		The subtextures are defined by the array of sourceRects and are
 		positioned using the array of positions.
 		\param texture Texture to be drawn.
-		\param pos Array of upper left 2d destinations where the images
-		will be drawn.
+		\param positions Array of upper left 2d destinations where the
+		images will be drawn.
 		\param sourceRects Source rectangles of the image.
 		\param clipRect Pointer to rectangle on the screen where the
 		images are clipped to.
@@ -1137,7 +1143,7 @@ namespace video
 		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) =0;
 
 		//! Creates a software image by converting it to given format from another image.
-		/**
+		/** \deprecated Create an empty image and use copyTo()
 		\param format Desired color format of the image.
 		\param imageToCopy Image to copy to the new image.
 		\return The created image.
@@ -1146,7 +1152,7 @@ namespace video
 		virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
 
 		//! Creates a software image from a part of another image.
-		/**
+		/** \deprecated Create an empty image and use copyTo()
 		\param imageToCopy Image to copy to the new image in part.
 		\param pos Position of rectangle to copy.
 		\param size Extents of rectangle to copy.
@@ -1316,6 +1322,27 @@ namespace video
 		meshbuffer being rendered.
 		\return Reference to the Override Material. */
 		virtual SOverrideMaterial& getOverrideMaterial() =0;
+
+		//! Get the 2d override material for altering its values
+		/** The 2d override materual allows to alter certain render
+		states of the 2d methods. Not all members of SMaterial are
+		honored, especially not MaterialType and Textures. Moreover,
+		the zbuffer is always ignored, and lighting is always off. All
+		other flags can be changed, though some might have to effect
+		in most cases.
+		Please note that you have to enable/disable this effect with
+		enableInitMaterial2D(). This effect is costly, as it increases
+		the number of state changes considerably. Always reset the
+		values when done.
+		\return Material reference which should be altered to reflect
+		the new settings.
+		*/
+		virtual SMaterial& getMaterial2D() =0;
+
+		//! Enable the 2d override material
+		/** \param enable Flag which tells whether the material shall be
+		enabled or disabled. */
+		virtual void enableMaterial2D(bool enable=true) =0;
 
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() =0;

@@ -116,7 +116,7 @@
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
-#include "COctTreeSceneNode.h"
+#include "COctreeSceneNode.h"
 #include "CCameraSceneNode.h"
 
 #include "CLightSceneNode.h"
@@ -134,7 +134,7 @@
 
 #include "CSceneCollisionManager.h"
 #include "CTriangleSelector.h"
-#include "COctTreeTriangleSelector.h"
+#include "COctreeTriangleSelector.h"
 #include "CTriangleBBSelector.h"
 #include "CMetaTriangleSelector.h"
 #include "CTerrainTriangleSelector.h"
@@ -340,7 +340,7 @@ CSceneManager::~CSceneManager()
 //! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 IAnimatedMesh* CSceneManager::getMesh(const io::path& filename)
 {
-	IAnimatedMesh* msh = MeshCache->getMeshByFilename(filename);
+	IAnimatedMesh* msh = MeshCache->getMeshByName(filename);
 	if (msh)
 		return msh;
 
@@ -386,11 +386,10 @@ IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 		return 0;
 
 	io::path name = file->getFileName();
-	IAnimatedMesh* msh = MeshCache->getMeshByFilename(file->getFileName());
+	IAnimatedMesh* msh = MeshCache->getMeshByName(file->getFileName());
 	if (msh)
 		return msh;
 
-	name.make_lower();
 	s32 count = MeshLoaderList.size();
 	for (s32 i=count-1; i>=0; --i)
 	{
@@ -486,7 +485,7 @@ IBillboardTextSceneNode* CSceneManager::addBillboardTextSceneNode(gui::IGUIFont*
 
 
 //! Adds a scene node, which can render a quake3 shader
-IMeshSceneNode* CSceneManager::addQuake3SceneNode(IMeshBuffer* meshBuffer,
+IMeshSceneNode* CSceneManager::addQuake3SceneNode(const IMeshBuffer* meshBuffer,
 					const quake3::IShader * shader,
 					ISceneNode* parent, s32 id )
 {
@@ -616,25 +615,25 @@ IAnimatedMeshSceneNode* CSceneManager::addAnimatedMeshSceneNode(IAnimatedMesh* m
 }
 
 
-//! Adds a scene node for rendering using a octtree to the scene graph. This a good method for rendering
+//! Adds a scene node for rendering using a octree to the scene graph. This a good method for rendering
 //! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 //! faster then a bsp tree.
-IMeshSceneNode* CSceneManager::addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent,
+IMeshSceneNode* CSceneManager::addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent,
 			s32 id, s32 minimalPolysPerNode, bool alsoAddIfMeshPointerZero)
 {
 	if (!alsoAddIfMeshPointerZero && (!mesh || !mesh->getFrameCount()))
 		return 0;
 
-	return addOctTreeSceneNode(mesh ? mesh->getMesh(0) : 0,
+	return addOctreeSceneNode(mesh ? mesh->getMesh(0) : 0,
 				parent, id, minimalPolysPerNode,
 				alsoAddIfMeshPointerZero);
 }
 
 
-//! Adds a scene node for rendering using a octtree. This a good method for rendering
+//! Adds a scene node for rendering using a octree. This a good method for rendering
 //! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 //! faster then a bsp tree.
-IMeshSceneNode* CSceneManager::addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent,
+IMeshSceneNode* CSceneManager::addOctreeSceneNode(IMesh* mesh, ISceneNode* parent,
 		s32 id, s32 minimalPolysPerNode, bool alsoAddIfMeshPointerZero)
 {
 	if (!alsoAddIfMeshPointerZero && !mesh)
@@ -643,7 +642,7 @@ IMeshSceneNode* CSceneManager::addOctTreeSceneNode(IMesh* mesh, ISceneNode* pare
 	if (!parent)
 		parent = this;
 
-	COctTreeSceneNode* node = new COctTreeSceneNode(parent, this, id, minimalPolysPerNode);
+	COctreeSceneNode* node = new COctreeSceneNode(parent, this, id, minimalPolysPerNode);
 
 	if (node)
 	{
@@ -921,7 +920,7 @@ IAnimatedMesh* CSceneManager::addHillPlaneMesh(const io::path& name,
 		const core::dimension2d<f32>& textureRepeatCount)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createHillPlaneMesh(tileSize,
 			tileCount, material, hillHeight, countHills,
@@ -955,7 +954,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 	const core::dimension2d<u32>& defaultVertexBlockSize)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createTerrainMesh(texture, heightmap,
 			stretchSize, maxHeight, getVideoDriver(),
@@ -988,7 +987,7 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const io::path& name,
 		f32 cylinderHeight, f32 width0,f32 width1)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createArrowMesh( tesselationCylinder,
 			tesselationCone, height, cylinderHeight, width0,width1,
@@ -1019,7 +1018,7 @@ IAnimatedMesh* CSceneManager::addSphereMesh(const io::path& name,
 		f32 radius, u32 polyCountX, u32 polyCountY)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createSphereMesh(radius, polyCountX, polyCountY);
 	if (!mesh)
@@ -1050,7 +1049,7 @@ IAnimatedMesh* CSceneManager::addVolumeLightMesh(const io::path& name,
 		const video::SColor FootColor, const video::SColor TailColor)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createVolumeLightMesh(SubdivideU, SubdivideV, FootColor, TailColor);
 	if (!mesh)
@@ -1191,11 +1190,11 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 
 
 //! registers a node for rendering it at a specific time.
-u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS time)
+u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS pass)
 {
 	u32 taken = 0;
 
-	switch(time)
+	switch(pass)
 	{
 		// take camera if it is not already registered
 	case ESNRP_CAMERA:
@@ -1254,7 +1253,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	case ESNRP_AUTOMATIC:
 		if (!isCulled(node))
 		{
-			u32 count = node->getMaterialCount();
+			const u32 count = node->getMaterialCount();
 
 			taken = 0;
 			for (u32 i=0; i<count; ++i)
@@ -1685,10 +1684,10 @@ ISceneNodeAnimatorCollisionResponse* CSceneManager::createCollisionResponseAnima
 //! Creates a follow spline animator.
 ISceneNodeAnimator* CSceneManager::createFollowSplineAnimator(s32 startTime,
 	const core::array< core::vector3df >& points,
-	f32 speed, f32 tightness)
+	f32 speed, f32 tightness, bool loop, bool pingpong)
 {
 	ISceneNodeAnimator* a = new CSceneNodeAnimatorFollowSpline(startTime, points,
-		speed, tightness);
+		speed, tightness, loop, pingpong);
 	return a;
 }
 
@@ -1750,14 +1749,14 @@ ITriangleSelector* CSceneManager::createTriangleSelectorFromBoundingBox(ISceneNo
 
 
 //! Creates a simple ITriangleSelector, based on a mesh.
-ITriangleSelector* CSceneManager::createOctTreeTriangleSelector(IMesh* mesh,
+ITriangleSelector* CSceneManager::createOctreeTriangleSelector(IMesh* mesh,
 																ISceneNode* node,
 																s32 minimalPolysPerNode)
 {
 	if (!mesh)
 		return 0;
 
-	return new COctTreeTriangleSelector(mesh, node, minimalPolysPerNode);
+	return new COctreeTriangleSelector(mesh, node, minimalPolysPerNode);
 }
 
 

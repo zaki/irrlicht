@@ -216,8 +216,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			}
 		}
 
-		delete verts;
-		delete faces;
+		delete [] verts;
+		delete [] faces;
 	}
 
 	// delete all buffers without geometry in it.

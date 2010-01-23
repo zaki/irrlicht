@@ -166,6 +166,14 @@ public:
 	more information. */
 	virtual IGUIFont* getFont(const io::path& filename) = 0;
 
+	//! Adds an externally loaded font to the font list.
+	/** This method allows to attach an already loaded font to the list of
+	existing fonts. The font is grabbed if non-null and adding was successful.
+	\param name Name the font should be stored as.
+	\param font Pointer to font to add.
+	\return Pointer to the font stored. This can differ from given parameter if the name previously existed. */
+	virtual IGUIFont* addFont(const io::path& name, IGUIFont* font) = 0;
+
 	//! Returns the default built-in font.
 	/** \return Pointer to the default built-in font.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
@@ -201,7 +209,7 @@ public:
 	\param id Id with which the gui element can be identified.
 	\param text Text displayed on the button.
 	\param tooltiptext Text displayed in the tooltip.
-	\return Pointer to the created button. Returns 0 if an error occured.
+	\return Pointer to the created button. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUIButton* addButton(const core::rect<s32>& rectangle,
@@ -215,7 +223,7 @@ public:
 	\param text Text displayed as the window title.
 	\param parent Parent gui element of the window.
 	\param id Id with which the gui element can be identified.
-	\return Pointer to the created window. Returns 0 if an error occured.
+	\return Pointer to the created window. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUIWindow* addWindow(const core::rect<s32>& rectangle, bool modal = false,
@@ -225,7 +233,7 @@ public:
 	/** This control stops its parent's members from being able to receive
 	input until its last child is removed, it then deletes itself.
 	\param parent Parent gui element of the modal.
-	\return Pointer to the created modal. Returns 0 if an error occured.
+	\return Pointer to the created modal. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUIElement* addModalScreen(IGUIElement* parent) = 0;
@@ -243,7 +251,7 @@ public:
 	\param id Id with which the gui element can be identified.
 	\param image Optional texture which will be displayed beside the text as an image
 	\return Pointer to the created message box. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIWindow* addMessageBox(const wchar_t* caption, const wchar_t* text=0,
 		bool modal = true, s32 flags = EMBF_OK, IGUIElement* parent=0, s32 id=-1, video::ITexture* image=0) = 0;
@@ -255,7 +263,7 @@ public:
 	\param parent Parent gui element of the scroll bar.
 	\param id Id to identify the gui element.
 	\return Pointer to the created scrollbar. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIScrollBar* addScrollBar(bool horizontal, const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
@@ -270,7 +278,7 @@ public:
 	\param id Id to identify the gui element.
 	\param text Title text of the image.
 	\return Pointer to the created image element. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIImage* addImage(video::ITexture* image, core::position2d<s32> pos,
 		bool useAlphaChannel=true, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
@@ -282,7 +290,7 @@ public:
 	\param id Id to identify the gui element.
 	\param text Title text of the image.
 	\return Pointer to the created image element. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIImage* addImage(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
@@ -294,7 +302,7 @@ public:
 	\param id Id to identify the gui element.
 	\param text Title text of the check box.
 	\return Pointer to the created check box. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUICheckBox* addCheckBox(bool checked, const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
@@ -304,7 +312,7 @@ public:
 	\param parent Parent gui element of the list box.
 	\param id Id to identify the gui element.
 	\param drawBackground Flag whether the background should be drawn.
-	\return Pointer to the created list box. Returns 0 if an error occured.
+	\return Pointer to the created list box. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUIListBox* addListBox(const core::rect<s32>& rectangle,
@@ -317,7 +325,7 @@ public:
 	\param drawBackground Flag whether the background should be drawn.
 	\param scrollBarVertical Flag whether a vertical scrollbar should be used
 	\param scrollBarHorizontal Flag whether a horizontal scrollbar should be used
-	\return Pointer to the created list box. Returns 0 if an error occured.
+	\return Pointer to the created list box. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUITreeView* addTreeView(const core::rect<s32>& rectangle,
@@ -330,7 +338,7 @@ public:
 	\param id Id to identify the gui element.
 	\param text Title text of the mesh viewer.
 	\return Pointer to the created mesh viewer. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle,
 			IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
@@ -343,7 +351,7 @@ public:
 	\param parent Parent gui element of the dialog.
 	\param id Id to identify the gui element.
 	\return Pointer to the created file open dialog. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title = 0,
 		bool modal=true, IGUIElement* parent=0, s32 id=-1) = 0;
@@ -356,7 +364,7 @@ public:
 	\param parent The parent of the dialog.
 	\param id The ID of the dialog.
 	\return Pointer to the created file open dialog. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIColorSelectDialog* addColorSelectDialog(const wchar_t* title = 0,
 		bool modal=true, IGUIElement* parent=0, s32 id=-1) = 0;
@@ -371,7 +379,7 @@ public:
 	\param fillBackground Enable if the background shall be filled.
 	Defaults to false.
 	\return Pointer to the created static text. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIStaticText* addStaticText(const wchar_t* text, const core::rect<s32>& rectangle,
 		bool border=false, bool wordWrap=true, IGUIElement* parent=0, s32 id=-1,
@@ -389,7 +397,7 @@ public:
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the edit box directly in the environment.
 	\param id The ID of the element.
-	\return Pointer to the created edit box. Returns 0 if an error occured.
+	\return Pointer to the created edit box. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUIEditBox* addEditBox(const wchar_t* text, const core::rect<s32>& rectangle,
@@ -403,7 +411,7 @@ public:
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the spin box directly in the environment.
 	\param id The ID of the element.
-	\return Pointer to the created spin box. Returns 0 if an error occured.
+	\return Pointer to the created spin box. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle,
@@ -415,7 +423,7 @@ public:
 	\param parent Parent item of the element, e.g. a window.
 	\param id An identifier for the fader.
 	\return Pointer to the created in-out-fader. Returns 0 if an error
-	occured. This pointer should not be dropped. See
+	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -430,7 +438,7 @@ public:
 	the environment without a window as parent.
 	\param id An identifier for the tab control.
 	\return Pointer to the created tab control element. Returns 0 if an
-	error occured. This pointer should not be dropped. See
+	error occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUITabControl* addTabControl(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, bool fillbackground=false,
@@ -445,7 +453,7 @@ public:
 	Set it to 0 to place the tab directly in the environment.
 	\param id An identifier for the tab.
 	\return Pointer to the created tab. Returns 0 if an
-	error occured. This pointer should not be dropped. See
+	error occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUITab* addTab(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
@@ -457,7 +465,7 @@ public:
 	Set it to 0 to place the menu directly in the environment.
 	\param id An identifier for the menu.
 	\return Pointer to the created context menu. Returns 0 if an
-	error occured. This pointer should not be dropped. See
+	error occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIContextMenu* addContextMenu(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
@@ -469,7 +477,7 @@ public:
 	Set it to 0 to place the menu directly in the environment.
 	\param id An identifier for the menu.
 	\return Pointer to the created menu. Returns 0 if an
-	error occured. This pointer should not be dropped. See
+	error occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIContextMenu* addMenu(IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -480,7 +488,7 @@ public:
 	Set it to 0 to place the tool bar directly in the environment.
 	\param id An identifier for the tool bar.
 	\return Pointer to the created tool bar. Returns 0 if an
-	error occured. This pointer should not be dropped. See
+	error occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIToolBar* addToolBar(IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -490,7 +498,7 @@ public:
 	Set it to 0 to place the combo box directly in the environment.
 	\param id An identifier for the combo box.
 	\return Pointer to the created combo box. Returns 0 if an
-	error occured. This pointer should not be dropped. See
+	error occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIComboBox* addComboBox(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
@@ -501,7 +509,7 @@ public:
 	to place the element directly in the environment.
 	\param id An identifier for the table.
 	\param drawBackground Flag whether the background should be drawn.
-	\return Pointer to the created table. Returns 0 if an error occured.
+	\return Pointer to the created table. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUITable* addTable(const core::rect<s32>& rectangle,

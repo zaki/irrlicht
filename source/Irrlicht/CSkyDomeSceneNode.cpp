@@ -126,6 +126,7 @@ void CSkyDomeSceneNode::generateMesh()
 			Buffer->Indices.push_back(0 + (VerticalResolution + 1)*k + j);
 		}
 	}
+	Buffer->setHardwareMappingHint(scene::EHM_STATIC);
 }
 
 
@@ -288,4 +289,3 @@ ISceneNode* CSkyDomeSceneNode::clone(ISceneNode* newParent, ISceneManager* newMa
 
 } // namespace scene
 } // namespace irr
-

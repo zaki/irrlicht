@@ -5,8 +5,9 @@
 #ifndef __I_GPU_PROGRAMMING_SERVICES_H_INCLUDED__
 #define __I_GPU_PROGRAMMING_SERVICES_H_INCLUDED__
 
-#include "IReferenceCounted.h"
-#include "SMaterial.h"
+#include "EShaderTypes.h"
+#include "EMaterialTypes.h"
+#include "EPrimitiveTypes.h"
 #include "path.h"
 
 namespace irr
@@ -23,54 +24,6 @@ namespace video
 class IVideoDriver;
 class IShaderConstantSetCallBack;
 
-//! Compile target enumeration for the addHighLevelShaderMaterial() method.
-enum E_VERTEX_SHADER_TYPE
-{
-	EVST_VS_1_1 = 0,
-	EVST_VS_2_0,
-	EVST_VS_2_a,
-	EVST_VS_3_0,
-
-	//! This is not a type, but a value indicating how much types there are.
-	EVST_COUNT
-};
-
-//! Names for all vertex shader types, each entry corresponds to a E_VERTEX_SHADER_TYPE entry.
-const c8* const VERTEX_SHADER_TYPE_NAMES[] = {
-	"vs_1_1",
-	"vs_2_0",
-	"vs_2_a",
-	"vs_3_0",
-	0 };
-
-//! Compile target enumeration for the addHighLevelShaderMaterial() method.
-enum E_PIXEL_SHADER_TYPE
-{
-	EPST_PS_1_1 = 0,
-	EPST_PS_1_2,
-	EPST_PS_1_3,
-	EPST_PS_1_4,
-	EPST_PS_2_0,
-	EPST_PS_2_a,
-	EPST_PS_2_b,
-	EPST_PS_3_0,
-
-	//! This is not a type, but a value indicating how much types there are.
-	EPST_COUNT
-};
-
-//! Names for all pixel shader types, each entry corresponds to a E_PIXEL_SHADER_TYPE entry.
-const c8* const PIXEL_SHADER_TYPE_NAMES[] = {
-	"ps_1_1",
-	"ps_1_2",
-	"ps_1_3",
-	"ps_1_4",
-	"ps_2_0",
-	"ps_2_a",
-	"ps_2_b",
-	"ps_3_0",
-	0 };
-
 //! Interface making it possible to create and use programs running on the GPU.
 class IGPUProgrammingServices
 {
@@ -85,17 +38,29 @@ public:
 	shader program. This can be 0 if no vertex program shall be used.
 	\param vertexShaderEntryPointName: Name of the entry function of the
 	vertexShaderProgram
-	\param vsCompileTarget: Vertex shader version where the high level
-	shader shall be compiled to.
+	\param vsCompileTarget: Vertex shader version the high level shader
+	shall be compiled to.
 	\param pixelShaderProgram: String containing the source of the pixel
 	shader program. This can be 0 if no pixel shader shall be used.
 	\param pixelShaderEntryPointName: Entry name of the function of the
 	pixelShaderEntryPointName
-	\param psCompileTarget: Pixel shader version where the high level
-	shader shall be compiled to.
+	\param psCompileTarget: Pixel shader version the high level shader
+	shall be compiled to.
+	\param geometryShaderProgram: String containing the source of the
+	geometry shader program. This can be 0 if no geometry shader shall be
+	used.
+	\param geometryShaderEntryPointName: Entry name of the function of the
+	geometryShaderEntryPointName
+	\param gsCompileTarget: Geometry shader version the high level shader
+	shall be compiled to.
+	\param inType Type of vertices passed to geometry shader
+	\param outType Type of vertices created by geometry shader
+	\param verticesOut Maximal number of vertices created by geometry
+	shader. If 0, maximal number supported is assumed.
 	\param callback: Pointer to an implementation of
-	IShaderConstantSetCallBack in which you can set the needed vertex and
-	pixel shader program constants. Set this to 0 if you don't need this.
+	IShaderConstantSetCallBack in which you can set the needed vertex,
+	pixel, and geometry shader program constants. Set this to 0 if you
+	don't need this.
 	\param baseMaterial: Base material which renderstates will be used to
 	shade the material.
 	\param userData: a user data int. This int can be set to any value and
@@ -103,13 +68,30 @@ public:
 	OnSetConstants(). In this way it is easily possible to use the same
 	callback method for multiple materials and distinguish between them
 	during the call.
-	\return Returns the number of the material type which can be set in
-	SMaterial::MaterialType to use the renderer. -1 is returned if an
-	error occured, e.g. if a vertex or pixel shader program could not be
-	compiled or a compile target is not reachable. The error strings are
-	then printed to the error log and can be catched with a custom event
-	receiver. */
+	\return Number of the material type which can be set in
+	SMaterial::MaterialType to use the renderer. -1 is returned if an error
+	occured, e.g. if a shader program could not be compiled or a compile
+	target is not reachable. The error strings are then printed to the
+	error log and can be catched with a custom event receiver. */
 	virtual s32 addHighLevelShaderMaterial(
+		const c8* vertexShaderProgram,
+		const c8* vertexShaderEntryPointName = "main",
+		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
+		const c8* pixelShaderProgram = 0,
+		const c8* pixelShaderEntryPointName = "main",
+		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+		const c8* geometryShaderProgram = 0,
+		const c8* geometryShaderEntryPointName = "main",
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut = 0,
+		IShaderConstantSetCallBack* callback = 0,
+		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
+		s32 userData = 0 ) = 0;
+
+	//! convenience function for use without geometry shaders
+	s32 addHighLevelShaderMaterial(
 		const c8* vertexShaderProgram,
 		const c8* vertexShaderEntryPointName = "main",
 		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
@@ -118,31 +100,47 @@ public:
 		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0 ) = 0;
+		s32 userData = 0 )
+	{
+		return addHighLevelShaderMaterial(
+			vertexShaderProgram, vertexShaderEntryPointName,
+			vsCompileTarget, pixelShaderProgram,
+			pixelShaderEntryPointName, psCompileTarget,
+			0, "main", EGST_GS_4_0,
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
+			callback, baseMaterial, userData);
+	}
 
 	//! Like IGPUProgrammingServices::addShaderMaterial(), but loads from files.
-	/** \param vertexShaderProgram: Text file containing the source of the
-	 * vertex shader program.
-	Set to 0 if no shader shall be created.
+	/** \param vertexShaderProgramFileName: Text file containing the source
+	of the vertex shader program. Set to empty string if no vertex shader
+	shall be created.
 	\param vertexShaderEntryPointName: Name of the entry function of the
 	vertexShaderProgram
-	\param vsCompileTarget: Vertex shader version where the high level
-	shader shall be compiled to.
-	\param pixelShaderProgram: Text file containing the source of the pixel
-	shader program. Set to 0 if no shader shall be created.
-	\param vertexShaderEntryPointName: Name of the entry function of the
-	vertexShaderProgram
-	\param vsCompileTarget: Vertex shader version where the high level
-	shader shall be compiled to.
-	\param pixelShaderProgram: String containing the source of the pixel
-	shader program. This can be 0 if no pixel shader shall be used.
+	\param vsCompileTarget: Vertex shader version the high level shader
+	shall be compiled to.
+	\param pixelShaderProgramFileName: Text file containing the source of
+	the pixel shader program. Set to empty string if no pixel shader shall
+	be created.
 	\param pixelShaderEntryPointName: Entry name of the function of the
 	pixelShaderEntryPointName
-	\param psCompileTarget: Pixel shader version where the high level
-	shader shall be compiled to.
+	\param psCompileTarget: Pixel shader version the high level shader
+	shall be compiled to.
+	\param geometryShaderProgramFileName: String containing the source of
+	the geometry shader program. Set to empty string if no geometry shader
+	shall be created.
+	\param geometryShaderEntryPointName: Entry name of the function of the
+	geometryShaderEntryPointName
+	\param gsCompileTarget: Geometry shader version the high level shader
+	shall be compiled to.
+	\param inType Type of vertices passed to geometry shader
+	\param outType Type of vertices created by geometry shader
+	\param verticesOut Maximal number of vertices created by geometry
+	shader. If 0, maximal number supported is assumed.
 	\param callback: Pointer to an implementation of
-	IShaderConstantSetCallBack in which you can set the needed vertex and
-	pixel shader program constants. Set this to 0 if you don't need this.
+	IShaderConstantSetCallBack in which you can set the needed vertex,
+	pixel, and geometry shader program constants. Set this to 0 if you
+	don't need this.
 	\param baseMaterial: Base material which renderstates will be used to
 	shade the material.
 	\param userData: a user data int. This int can be set to any value and
@@ -150,13 +148,30 @@ public:
 	OnSetConstants(). In this way it is easily possible to use the same
 	callback method for multiple materials and distinguish between them
 	during the call.
-	\return Returns the number of the material type which can be set in
-	SMaterial::MaterialType to use the renderer. -1 is returned if an
-	error occured, e.g. if a vertex or pixel shader program could not be
-	compiled or a compile target is not reachable. The error strings are
-	then printed to the error log and can be catched with a custom event
-	receiver. */
+	\return Number of the material type which can be set in
+	SMaterial::MaterialType to use the renderer. -1 is returned if an error
+	occured, e.g. if a shader program could not be compiled or a compile
+	target is not reachable. The error strings are then printed to the
+	error log and can be catched with a custom event receiver. */
 	virtual s32 addHighLevelShaderMaterialFromFiles(
+		const io::path& vertexShaderProgramFileName,
+		const c8* vertexShaderEntryPointName = "main",
+		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
+		const io::path& pixelShaderProgramFileName = "",
+		const c8* pixelShaderEntryPointName = "main",
+		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+		const io::path& geometryShaderProgramFileName="",
+		const c8* geometryShaderEntryPointName = "main",
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut = 0,
+		IShaderConstantSetCallBack* callback = 0,
+		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
+		s32 userData = 0) = 0;
+
+	//! convenience function for use without geometry shaders
+	s32 addHighLevelShaderMaterialFromFiles(
 		const io::path& vertexShaderProgramFileName,
 		const c8* vertexShaderEntryPointName = "main",
 		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
@@ -165,25 +180,42 @@ public:
 		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0) = 0;
-
+		s32 userData = 0)
+	{
+		return addHighLevelShaderMaterialFromFiles(
+			vertexShaderProgramFileName, vertexShaderEntryPointName,
+			vsCompileTarget, pixelShaderProgramFileName,
+			pixelShaderEntryPointName, psCompileTarget,
+			"", "main", EGST_GS_4_0,
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
+			callback, baseMaterial, userData);
+	}
 
 	//! Like IGPUProgrammingServices::addShaderMaterial(), but loads from files.
 	/** \param vertexShaderProgram: Text file handle containing the source
-	 * of the vertex shader program.
-	Set to 0 if no shader shall be created.
+	of the vertex shader program. Set to 0 if no vertex shader shall be
+	created.
 	\param vertexShaderEntryPointName: Name of the entry function of the
 	vertexShaderProgram
-	\param vsCompileTarget: Vertex shader version where the high level
-	shader shall be compiled to.
-	\param pixelShaderProgram: Text file containing the source of the pixel
-	shader program. Set to
+	\param vsCompileTarget: Vertex shader version the high level shader
+	shall be compiled to.
 	\param pixelShaderProgram: Text file handle containing the source of
-	the pixel shader program. Set to 0 if no shader shall be created.
+	the pixel shader program. Set to 0 if no pixel shader shall be created.
 	\param pixelShaderEntryPointName: Entry name of the function of the
 	pixelShaderEntryPointName
-	\param psCompileTarget: Pixel shader version where the high level
-	shader shall be compiled to.
+	\param psCompileTarget: Pixel shader version the high level shader
+	shall be compiled to.
+	\param geometryShaderProgram: Text file handle containing the source of
+	the geometry shader program. Set to 0 if no geometry shader shall be
+	created.
+	\param geometryShaderEntryPointName: Entry name of the function of the
+	geometryShaderEntryPointName
+	\param gsCompileTarget: Geometry shader version the high level shader
+	shall be compiled to.
+	\param inType Type of vertices passed to geometry shader
+	\param outType Type of vertices created by geometry shader
+	\param verticesOut Maximal number of vertices created by geometry
+	shader. If 0, maximal number supported is assumed.
 	\param callback: Pointer to an implementation of
 	IShaderConstantSetCallBack in which you can set the needed vertex and
 	pixel shader program constants. Set this to 0 if you don't need this.
@@ -194,13 +226,30 @@ public:
 	OnSetConstants(). In this way it is easily possible to use the same
 	callback method for multiple materials and distinguish between them
 	during the call.
-	\return Returns the number of the material type which can be set in
+	\return Number of the material type which can be set in
 	SMaterial::MaterialType to use the renderer. -1 is returned if an
-	error occured, e.g. if a vertex or pixel shader program could not be
-	compiled or a compile target is not reachable. The error strings are
-	then printed to the error log and can be catched with a custom event
-	receiver. */
+	error occured, e.g. if a shader program could not be compiled or a
+	compile target is not reachable. The error strings are then printed to
+	the error log and can be catched with a custom event receiver. */
 	virtual s32 addHighLevelShaderMaterialFromFiles(
+		io::IReadFile* vertexShaderProgram,
+		const c8* vertexShaderEntryPointName = "main",
+		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
+		io::IReadFile* pixelShaderProgram = 0,
+		const c8* pixelShaderEntryPointName = "main",
+		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+		io::IReadFile* geometryShaderProgram = 0,
+		const c8* geometryShaderEntryPointName = "main",
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut = 0,
+		IShaderConstantSetCallBack* callback = 0,
+		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
+		s32 userData = 0) = 0;
+
+	//! convenience function for use without geometry shaders
+	s32 addHighLevelShaderMaterialFromFiles(
 		io::IReadFile* vertexShaderProgram,
 		const c8* vertexShaderEntryPointName = "main",
 		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
@@ -209,7 +258,16 @@ public:
 		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0) = 0;
+		s32 userData = 0)
+	{
+		return addHighLevelShaderMaterialFromFiles(
+			vertexShaderProgram, vertexShaderEntryPointName,
+			vsCompileTarget, pixelShaderProgram,
+			pixelShaderEntryPointName, psCompileTarget,
+			0, "main", EGST_GS_4_0,
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
+			callback, baseMaterial, userData);
+	}
 
 	//! Adds a new ASM shader material renderer to the VideoDriver
 	/** Note that it is a good idea to call IVideoDriver::queryFeature() in

@@ -189,7 +189,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 		u32 lastTextureHeight = getTextureSizeFromSurfaceSize(currenty);
 
 		// delete the glyph set
-		delete buf;
+		delete [] buf;
 
 		currentImages.set_used(currentImage+1);
 		currentTextures.set_used(currentImage+1);

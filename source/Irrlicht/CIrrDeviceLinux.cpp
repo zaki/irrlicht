@@ -305,6 +305,37 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 }
 
 
+#if defined(_IRR_COMPILE_WITH_X11_)
+void IrrPrintXGrabError(int grabResult, const c8 * grabCommand )
+{
+	if ( grabResult == GrabSuccess )
+	{
+//		os::Printer::log(grabCommand, ": GrabSuccess", ELL_INFORMATION);
+		return;
+	}
+
+	switch ( grabResult )
+	{
+		case AlreadyGrabbed:
+			os::Printer::log(grabCommand, ": AlreadyGrabbed", ELL_WARNING);
+			break;
+		case GrabNotViewable:
+			os::Printer::log(grabCommand, ": GrabNotViewable", ELL_WARNING);
+			break;
+		case GrabFrozen:
+			os::Printer::log(grabCommand, ": GrabFrozen", ELL_WARNING);
+			break;
+		case GrabInvalidTime:
+			os::Printer::log(grabCommand, ": GrabInvalidTime", ELL_WARNING);
+			break;
+		default:
+			os::Printer::log(grabCommand, ": grab failed with unknown problem", ELL_WARNING);
+			break;
+	}
+}
+#endif
+
+
 bool CIrrDeviceLinux::createWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
@@ -340,7 +371,7 @@ bool CIrrDeviceLinux::createWindow()
 		{
 #ifdef GLX_VERSION_1_3
 			typedef GLXFBConfig * ( * PFNGLXCHOOSEFBCONFIGPROC) (Display *dpy, int screen, const int *attrib_list, int *nelements);
-			
+
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXChooseFBConfig"));
 #else
@@ -606,10 +637,13 @@ bool CIrrDeviceLinux::createWindow()
 		XSetWMProtocols(display, window, &wmDelete, 1);
 		if (CreationParams.Fullscreen)
 		{
-			XGrabKeyboard(display, window, True, GrabModeAsync,
+ 			XSetInputFocus(display, window, RevertToParent, CurrentTime);
+			int grabKb = XGrabKeyboard(display, window, True, GrabModeAsync,
 				GrabModeAsync, CurrentTime);
-			XGrabPointer(display, window, True, ButtonPressMask,
+			IrrPrintXGrabError(grabKb, "XGrabKeyboard");
+			int grabPointer = XGrabPointer(display, window, True, ButtonPressMask,
 				GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
+			IrrPrintXGrabError(grabPointer, "XGrabPointer");
 			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
 		}
 	}
@@ -695,6 +729,9 @@ bool CIrrDeviceLinux::createWindow()
 
 	XGetGeometry(display, window, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
 	CreationParams.Bits = bits;
+	CreationParams.WindowSize.Width = Width;
+	CreationParams.WindowSize.Height = Height;
+
 	StdHints = XAllocSizeHints();
 	long num;
 	XGetWMNormalHints(display, window, StdHints, &num);
@@ -909,13 +946,19 @@ bool CIrrDeviceLinux::run()
 					break;
 
 				case  Button4:
-					irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
-					irrevent.MouseInput.Wheel = 1.0f;
+					if (event.type == ButtonPress)
+					{
+						irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
+						irrevent.MouseInput.Wheel = 1.0f;
+					}
 					break;
 
 				case  Button5:
-					irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
-					irrevent.MouseInput.Wheel = -1.0f;
+					if (event.type == ButtonPress)
+					{
+						irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
+						irrevent.MouseInput.Wheel = -1.0f;
+					}
 					break;
 				}
 
@@ -923,17 +966,17 @@ bool CIrrDeviceLinux::run()
 				{
 					postEventFromUser(irrevent);
 
-					if ( irrevent.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN )
+					if ( irrevent.MouseInput.Event >= EMIE_LMOUSE_PRESSED_DOWN && irrevent.MouseInput.Event <= EMIE_MMOUSE_PRESSED_DOWN )
 					{
-						u32 clicks = checkSuccessiveClicks(irrevent.MouseInput.X, irrevent.MouseInput.Y);
+						u32 clicks = checkSuccessiveClicks(irrevent.MouseInput.X, irrevent.MouseInput.Y, irrevent.MouseInput.Event);
 						if ( clicks == 2 )
 						{
-							irrevent.MouseInput.Event = EMIE_MOUSE_DOUBLE_CLICK;
+							irrevent.MouseInput.Event = (EMOUSE_INPUT_EVENT)(EMIE_LMOUSE_DOUBLE_CLICK + irrevent.MouseInput.Event-EMIE_LMOUSE_PRESSED_DOWN);
 							postEventFromUser(irrevent);
 						}
 						else if ( clicks == 3 )
 						{
-							irrevent.MouseInput.Event = EMIE_MOUSE_TRIPLE_CLICK;
+							irrevent.MouseInput.Event = (EMOUSE_INPUT_EVENT)(EMIE_LMOUSE_TRIPLE_CLICK + irrevent.MouseInput.Event-EMIE_LMOUSE_PRESSED_DOWN);
 							postEventFromUser(irrevent);
 						}
 					}
@@ -1824,6 +1867,40 @@ void CIrrDeviceLinux::copyToClipboard(const c8* text) const
 	XSetSelectionOwner (display, X_ATOM_CLIPBOARD, window, CurrentTime);
 	XFlush (display);
 #endif
+}
+
+#ifdef _IRR_COMPILE_WITH_X11_
+// return true if the passed event has the type passed in parameter arg
+Bool PredicateIsEventType(Display *display, XEvent *event, XPointer arg)
+{
+	if ( event && event->type == *(int*)arg )
+	{
+//		os::Printer::log("remove event:", core::stringc((int)arg).c_str(), ELL_INFORMATION);
+		return True;
+	}
+	return False;
+}
+#endif //_IRR_COMPILE_WITH_X11_
+
+//! Remove all messages pending in the system message loop
+void CIrrDeviceLinux::clearSystemMessages()
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+	if (CreationParams.DriverType != video::EDT_NULL)
+	{
+		XEvent event;
+		int usrArg = ButtonPress;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) 	{}
+		usrArg = ButtonRelease;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) {}
+		usrArg = MotionNotify;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) 	{}
+		usrArg = KeyRelease;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True )	{}
+		usrArg = KeyPress;
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True )		{}
+	}
+#endif //_IRR_COMPILE_WITH_X11_
 }
 
 void CIrrDeviceLinux::initXAtoms()

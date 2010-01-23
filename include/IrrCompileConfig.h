@@ -8,11 +8,11 @@
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
 #define IRRLICHT_VERSION_MINOR 7
-#define IRRLICHT_VERSION_REVISION 0-alpha
+#define IRRLICHT_VERSION_REVISION 0
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
-#define IRRLICHT_VERSION_SVN
-#define IRRLICHT_SDK_VERSION "1.7.0-alpha"
+#define IRRLICHT_VERSION_SVN -beta
+#define IRRLICHT_SDK_VERSION "1.7.0-beta"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -37,6 +37,7 @@
 //! _IRR_COMPILE_WITH_SDL_DEVICE_ for platform independent SDL framework
 //! _IRR_COMPILE_WITH_CONSOLE_DEVICE_ for no windowing system, used as a fallback
 //! _IRR_COMPILE_WITH_IPHONE_DEVICE_ for UIKit windowing on iPhoneOS (aka embeded OSX)
+//! _IRR_COMPILE_WITH_FB_DEVICE_ for framebuffer systems
 
 
 //! Uncomment this line to compile with the SDL device
@@ -198,18 +199,6 @@ you will not be able to use anything provided by the GUI Environment, including 
 disable this feature, the engine behave as before (ansi). This is currently only supported
 for Windows based systems. */
 //#define _IRR_WCHAR_FILESYSTEM
-
-//! Define _IRR_COMPILE_WITH_ZLIB_ to enable compiling the engine using zlib.
-/** This enables the engine to read from compressed .zip archives. If you
-disable this feature, the engine can still read archives, but only uncompressed
-ones. */
-#define _IRR_COMPILE_WITH_ZLIB_
-
-//! Define _IRR_USE_NON_SYSTEM_ZLIB_ to let irrlicht use the zlib which comes with irrlicht.
-/** If this is commented out, Irrlicht will try to compile using the zlib installed in the system.
-	This is only used when _IRR_COMPILE_WITH_ZLIB_ is defined. */
-#define _IRR_USE_NON_SYSTEM_ZLIB_
-
 
 //! Define _IRR_COMPILE_WITH_JPEGLIB_ to enable compiling the engine using libjpeg.
 /** This enables the engine to read jpeg images. If you comment this out,
@@ -379,7 +368,37 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_TGA_WRITER_
 
 //! Define __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_ if you want to open ZIP and GZIP archives
+/** ZIP reading has several more options below to configure. */
 #define __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
+#ifdef __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
+//! Define _IRR_COMPILE_WITH_ZLIB_ to enable compiling the engine using zlib.
+/** This enables the engine to read from compressed .zip archives. If you
+disable this feature, the engine can still read archives, but only uncompressed
+ones. */
+#define _IRR_COMPILE_WITH_ZLIB_
+//! Define _IRR_USE_NON_SYSTEM_ZLIB_ to let irrlicht use the zlib which comes with irrlicht.
+/** If this is commented out, Irrlicht will try to compile using the zlib
+installed on the system. This is only used when _IRR_COMPILE_WITH_ZLIB_ is
+defined. */
+#define _IRR_USE_NON_SYSTEM_ZLIB_
+//! Define _IRR_COMPILE_WITH_ZIP_ENCRYPTION_ if you want to read AES-encrypted ZIP archives
+#define _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
+//! Define _IRR_COMPILE_WITH_BZIP2_ if you want to support bzip2 compressed zip archives
+/** bzip2 is superior to the original zip file compression modes, but requires 
+a certain amount of memory for decompression and adds several files to the
+library. */
+#define _IRR_COMPILE_WITH_BZIP2_
+//! Define _IRR_USE_NON_SYSTEM_BZLIB_ to let irrlicht use the bzlib which comes with irrlicht.
+/** If this is commented out, Irrlicht will try to compile using the bzlib
+installed on the system. This is only used when _IRR_COMPILE_WITH_BZLIB_ is
+defined. */
+#define _IRR_USE_NON_SYSTEM_BZLIB_
+//! Define _IRR_COMPILE_WITH_LZMA_ if you want to use LZMA compressed zip files.
+/** LZMA is a very efficient compression code, known from 7zip. Irrlicht
+currently only supports zip archives, though. */
+#define _IRR_COMPILE_WITH_LZMA_
+#endif
+
 //! Define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_ if you want to mount folders as archives
 #define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
 //! Define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_ if you want to open ID software PAK archives

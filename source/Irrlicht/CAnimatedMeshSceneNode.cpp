@@ -195,7 +195,7 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 	}
 }
 
-IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControlJoints)
+IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 {
 	if(Mesh->getMeshType() != EAMT_SKINNED)
 	{
@@ -204,7 +204,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 	else
 	{
 		// As multiple scene nodes may be sharing the same skinned mesh, we have to
-		// re-animated it every frame to ensure that this node gets the mesh that it needs.
+		// re-animate it every frame to ensure that this node gets the mesh that it needs.
 
 		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
 
@@ -246,7 +246,7 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 
 	if (Mesh)
 	{
-		scene::IMesh * mesh = getMeshForCurrentFrame( true );
+		scene::IMesh * mesh = getMeshForCurrentFrame();
 
 		if (mesh)
 			Box = mesh->getBoundingBox();
@@ -271,7 +271,7 @@ void CAnimatedMeshSceneNode::render()
 
 	++PassCount;
 
-	scene::IMesh* m = getMeshForCurrentFrame( false );
+	scene::IMesh* m = getMeshForCurrentFrame();
 
 	if(m)
 	{
@@ -568,10 +568,7 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(const I
 		return 0;
 
 	if (Shadow)
-	{
-		os::Printer::log("This node already has a shadow.", ELL_WARNING);
-		return 0;
-	}
+		return Shadow;
 
 	if (!shadowMesh)
 		shadowMesh = Mesh; // if null is given, use the mesh of node
@@ -770,7 +767,7 @@ void CAnimatedMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttr
 {
 	IAnimatedMeshSceneNode::serializeAttributes(out, options);
 
-	out->addString("Mesh", SceneManager->getMeshCache()->getMeshFilename(Mesh).c_str());
+	out->addString("Mesh", SceneManager->getMeshCache()->getMeshName(Mesh).getPath().c_str());
 	out->addBool("Looping", Looping);
 	out->addBool("ReadOnlyMaterials", ReadOnlyMaterials);
 	out->addFloat("FramesPerSecond", FramesPerSecond);
@@ -784,7 +781,7 @@ void CAnimatedMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 {
 	IAnimatedMeshSceneNode::deserializeAttributes(in, options);
 
-	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshFilename(Mesh);
+	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshName(Mesh);
 	io::path newMeshStr = in->getAttributeAsString("Mesh");
 
 	Looping = in->getAttributeAsBool("Looping");

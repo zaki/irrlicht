@@ -214,10 +214,10 @@ void CSoftwareDriver::setMaterial(const SMaterial& material)
 
 //! clears the zbuffer
 bool CSoftwareDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		void* windowId, core::rect<s32>* sourceRect)
+		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
-	WindowId=windowId;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	WindowId=videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
 	if (backBuffer && BackBuffer)
@@ -241,9 +241,9 @@ bool CSoftwareDriver::endScene()
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
-	return new CSoftwareTexture(surface, name);
+	return new CSoftwareTexture(surface, name, false, mipmapData);
 }
 
 
@@ -919,7 +919,11 @@ void CSoftwareDriver::clearZBuffer()
 IImage* CSoftwareDriver::createScreenShot()
 {
 	if (BackBuffer)
-		return new CImage(BackBuffer->getColorFormat(), BackBuffer);
+	{
+		CImage* tmp = new CImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
+		BackBuffer->copyTo(tmp);
+		return tmp;
+	}
 	else
 		return 0;
 }

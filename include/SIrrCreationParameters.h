@@ -8,6 +8,7 @@
 #include "EDriverTypes.h"
 #include "EDeviceTypes.h"
 #include "dimension2d.h"
+#include "ILogger.h"
 
 namespace irr
 {
@@ -35,6 +36,7 @@ namespace irr
 			HighPrecisionFPU(false),
 			EventReceiver(0),
 			WindowId(0),
+			LoggingLevel(ELL_INFORMATION),
 			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
 		{
 		}
@@ -61,6 +63,7 @@ namespace irr
 			HighPrecisionFPU = other.HighPrecisionFPU;
 			EventReceiver = other.EventReceiver;
 			WindowId = other.WindowId;
+			LoggingLevel = other.LoggingLevel;
 			return *this;
 		}
 
@@ -227,6 +230,14 @@ namespace irr
 		However, there is no need to draw the picture this often. Just
 		do it how you like. */
 		void* WindowId;
+
+		//! Specifies the logging level used in the logging interface.
+		/** The default value is ELL_INFORMATION. You can access the ILogger interface
+		later on from the IrrlichtDevice with getLogger() and set another level.
+		But if you need more or less logging information already from device creation,
+		then you have to change it here.
+		*/
+		ELOG_LEVEL LoggingLevel;
 
 		//! Don't use or change this parameter.
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.

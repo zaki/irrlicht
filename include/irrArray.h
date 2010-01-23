@@ -8,6 +8,7 @@
 #include "irrTypes.h"
 #include "heapsort.h"
 #include "irrAllocator.h"
+#include "irrMath.h"
 
 namespace irr
 {
@@ -42,7 +43,7 @@ public:
 
 
 	//! Copy constructor
-	array(const array<T>& other) : data(0)
+	array(const array<T, TAlloc>& other) : data(0)
 	{
 		*this = other;
 	}
@@ -163,18 +164,25 @@ public:
 		}
 		else
 		{
-			// move array content and construct new element
-			// first move end one up
-			for (u32 i=used; i>index; --i)
+			// element inserted not at end
+			if ( used > index )
 			{
-				if (i<used)
-					allocator.destruct(&data[i]);
-				allocator.construct(&data[i], data[i-1]); // data[i] = data[i-1];
+				// create one new element at the end
+				allocator.construct(&data[used], data[used-1]);
+
+				// move the rest of the array content
+				for (u32 i=used-1; i>index; --i)
+				{
+					data[i] = data[i-1];
+				}
+				// insert the new element
+				data[index] = element;
 			}
-			// then add new element
-			if (used > index)
-				allocator.destruct(&data[index]);
-			allocator.construct(&data[index], element); // data[index] = element;
+			else
+			{
+				// insert the new element to the end
+				allocator.construct(&data[index], element);
+			}
 		}
 		// set to false as we don't know if we have the comparison operators
 		is_sorted = false;
@@ -247,8 +255,10 @@ public:
 
 
 	//! Assignment operator
-	void operator=(const array<T>& other)
+	const array<T, TAlloc>& operator=(const array<T, TAlloc>& other)
 	{
+		if (this == &other)
+			return *this;
 		strategy = other.strategy;
 
 		if (data)
@@ -267,11 +277,13 @@ public:
 
 		for (u32 i=0; i<other.used; ++i)
 			allocator.construct(&data[i], other.data[i]); // data[i] = other.data[i];
+
+		return *this;
 	}
 
 
 	//! Equality operator
-	bool operator == (const array<T>& other) const
+	bool operator == (const array<T, TAlloc>& other) const
 	{
 		if (used != other.used)
 			return false;
@@ -284,7 +296,7 @@ public:
 
 
 	//! Inequality operator
-	bool operator != (const array<T>& other) const
+	bool operator != (const array<T, TAlloc>& other) const
 	{
 		return !(*this==other);
 	}
@@ -372,7 +384,7 @@ public:
 	O(n*log n) in worst case. */
 	void sort()
 	{
-		if (!is_sorted || used>1)
+		if (!is_sorted && used>1)
 			heapsort(data, used);
 		is_sorted = true;
 	}
@@ -535,7 +547,10 @@ public:
 	\param count: Amount of elements to be erased. */
 	void erase(u32 index, s32 count)
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used || count<1 || index+count>used) // access violation
+		if (index>=used || count<1)
+			return;
+		if (index+count>used)
+			count = used-index;
 
 		u32 i;
 		for (i=index; i<index+count; ++i)
@@ -560,6 +575,28 @@ public:
 	void set_sorted(bool _is_sorted)
 	{
 		is_sorted = _is_sorted;
+	}
+
+
+	//! Swap the content of this array container with the content of another array
+	/** Afterwards this object will contain the content of the other object and the other
+	object will contain the content of this object.
+	\param other Swap content with this object	*/
+	void swap(array<T, TAlloc>& other)
+	{
+		core::swap(data, other.data);
+		core::swap(allocated, other.allocated);
+		core::swap(used, other.used);
+		core::swap(allocator, other.allocator);	// memory is still released by the same allocator used for allocation
+		eAllocStrategy helper_strategy(strategy);	// can't use core::swap with bitfields
+		strategy = other.strategy;
+		other.strategy = helper_strategy;
+		bool helper_free_when_destroyed(free_when_destroyed);
+		free_when_destroyed = other.free_when_destroyed;
+		other.free_when_destroyed = helper_free_when_destroyed;
+		bool helper_is_sorted(is_sorted);
+		is_sorted = other.is_sorted;
+		other.is_sorted = helper_is_sorted;
 	}
 
 

@@ -19,7 +19,7 @@ CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s
 	CloseButton(0), Panel(0), SelectedTexture(-1), Dragging(false), IsDraggable(true)
 {
 	#ifdef _DEBUG
-	setDebugName("CGUIWindow");
+	setDebugName("CGUITextureCacheBrowser");
 	#endif
 
 	IGUISkin* skin = 0;
@@ -115,7 +115,7 @@ void CGUITextureCacheBrowser::updateImageList()
 		core::stringw details;
 		video::ITexture* tex = Driver->getTextureByIndex(i);
 		details = L"File name: ";
-		details += tex->getName().c_str();
+		details += tex->getName();
 		details += L"\nFormat: ";
 		video::ECOLOR_FORMAT cf = tex->getColorFormat();
 
@@ -321,6 +321,12 @@ void CGUITextureCacheBrowser::setDraggable(bool draggable)
 		Dragging = false;
 }
 
+
+//! Returns the rectangle of the drawable area (without border, without titlebar and without scrollbars)
+core::rect<s32> CGUITextureCacheBrowser::getClientRect() const
+{
+	return core::recti();
+}
 
 } // namespace gui
 } // namespace irr

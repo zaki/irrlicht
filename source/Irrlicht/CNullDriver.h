@@ -43,7 +43,8 @@ namespace video
 		virtual ~CNullDriver();
 
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0), void* windowId=0,
+				SColor color=SColor(255,0,0,0),
+				const SExposedVideoData& videoData=SExposedVideoData(),
 				core::rect<s32>* sourceRect=0);
 
 		virtual bool endScene();
@@ -478,6 +479,12 @@ namespace video
 			const c8* pixelShaderProgram = 0,
 			const c8* pixelShaderEntryPointName = 0,
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+			const c8* geometryShaderProgram = 0,
+			const c8* geometryShaderEntryPointName = "main",
+			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+			scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+			scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -491,6 +498,12 @@ namespace video
 			const io::path& pixelShaderProgramFile = "",
 			const c8* pixelShaderEntryPointName = "main",
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+			const io::path& geometryShaderProgramFileName="",
+			const c8* geometryShaderEntryPointName = "main",
+			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+			scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+			scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -504,6 +517,12 @@ namespace video
 			io::IReadFile* pixelShaderProgram = 0,
 			const c8* pixelShaderEntryPointName = "main",
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+			io::IReadFile* geometryShaderProgram= 0,
+			const c8* geometryShaderEntryPointName = "main",
+			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+			scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+			scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -561,6 +580,12 @@ namespace video
 		meshbuffer being rendered. */
 		virtual SOverrideMaterial& getOverrideMaterial();
 
+		//! Get the 2d override material for altering its values
+		virtual SMaterial& getMaterial2D();
+
+		//! Enable the 2d override material
+		virtual void enableMaterial2D(bool enable=true);
+
 		//! Only used by the engine internally.
 		virtual void setAllowZWriteOnTransparent(bool flag)
 		{ AllowZWriteOnTransparent=flag; }
@@ -585,11 +610,11 @@ namespace video
 		void addTexture(video::ITexture* surface);
 
 		//! Creates a texture from a loaded IImage.
-		virtual ITexture* addTexture(const io::path& name, IImage* image);
+		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0);
 
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
@@ -640,18 +665,16 @@ namespace video
 		{
 			SDummyTexture(const io::path& name) : ITexture(name), size(0,0) {};
 
-			virtual void* lock(bool readOnly = false) { return 0; };
+			virtual void* lock(bool readOnly = false, u32 mipmapLevel=0) { return 0; };
 			virtual void unlock(){}
 			virtual const core::dimension2d<u32>& getOriginalSize() const { return size; }
 			virtual const core::dimension2d<u32>& getSize() const { return size; }
 			virtual E_DRIVER_TYPE getDriverType() const { return video::EDT_NULL; }
 			virtual ECOLOR_FORMAT getColorFormat() const { return video::ECF_A1R5G5B5; };
 			virtual u32 getPitch() const { return 0; }
-			virtual void regenerateMipMapLevels() {};
+			virtual void regenerateMipMapLevels(void* mipmapData=0) {};
 			core::dimension2d<u32> size;
 		};
-
-
 
 		core::array<SSurface> Textures;
 		core::array<video::IImageLoader*> SurfaceLoader;
@@ -685,6 +708,9 @@ namespace video
 		SExposedVideoData ExposedData;
 
 		SOverrideMaterial OverrideMaterial;
+		SMaterial OverrideMaterial2D;
+		SMaterial InitMaterial2D;
+		bool OverrideMaterial2DEnabled;
 
 		E_FOG_TYPE FogType;
 		bool PixelFog;
@@ -699,6 +725,3 @@ namespace video
 
 
 #endif
-
-
-

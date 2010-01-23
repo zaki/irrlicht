@@ -16,7 +16,6 @@ tutorial, we use a lot stuff from the gui namespace.
 #include <irrlicht.h>
 #include <iostream>
 
-
 using namespace irr;
 using namespace gui;
 
@@ -35,7 +34,7 @@ core::stringw Caption;
 scene::ISceneNode* Model = 0;
 scene::ISceneNode* SkyBox = 0;
 bool Octree=false;
-bool useLight=false;
+bool UseLight=false;
 
 scene::ICameraSceneNode* Camera[2] = {0, 0};
 
@@ -76,10 +75,23 @@ enum
 	GUI_ID_ABOUT,
 	GUI_ID_QUIT,
 
+	GUI_ID_TEXTUREFILTER,
+	GUI_ID_SKIN_TRANSPARENCY,
+	GUI_ID_SKIN_ANIMATION_FPS,
+
+	GUI_ID_BUTTON_SET_SCALE,
+	GUI_ID_BUTTON_SCALE_MUL10,
+	GUI_ID_BUTTON_SCALE_DIV10,
+	GUI_ID_BUTTON_OPEN_MODEL,
+	GUI_ID_BUTTON_SHOW_ABOUT,
+	GUI_ID_BUTTON_SHOW_TOOLBOX,
+	GUI_ID_BUTTON_SELECT_ARCHIVE,
+
 	// And some magic numbers
 	MAX_FRAMERATE = 1000,
 	DEFAULT_FRAMERATE = 30
 };
+
 
 /*
 Toggle between various cameras
@@ -94,6 +106,42 @@ void setActiveCamera(scene::ICameraSceneNode* newActive)
 
 	newActive->setInputReceiverEnabled(true);
 	Device->getSceneManager()->setActiveCamera(newActive);
+}
+
+/*
+	Set the skin transparency by changing the alpha values of all skin-colors
+*/
+void SetSkinTransparency(s32 alpha, irr::gui::IGUISkin * skin)
+{
+	for (s32 i=0; i<irr::gui::EGDC_COUNT ; ++i)
+	{
+		video::SColor col = skin->getColor((EGUI_DEFAULT_COLOR)i);
+		col.setAlpha(alpha);
+		skin->setColor((EGUI_DEFAULT_COLOR)i, col);
+	}
+}
+
+/*
+  Update the display of the model scaling
+*/
+void UpdateScaleInfo(scene::ISceneNode* model)
+{
+	IGUIElement* toolboxWnd = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
+	if (!toolboxWnd)
+		return;
+	if (!model)
+	{
+		toolboxWnd->getElementFromId(GUI_ID_X_SCALE, true)->setText( L"-" );
+		toolboxWnd->getElementFromId(GUI_ID_Y_SCALE, true)->setText( L"-" );
+		toolboxWnd->getElementFromId(GUI_ID_Z_SCALE, true)->setText( L"-" );
+	}
+	else
+	{
+		core::vector3df scale = model->getScale();
+		toolboxWnd->getElementFromId(GUI_ID_X_SCALE, true)->setText( core::stringw(scale.X).c_str() );
+		toolboxWnd->getElementFromId(GUI_ID_Y_SCALE, true)->setText( core::stringw(scale.Y).c_str() );
+		toolboxWnd->getElementFromId(GUI_ID_Z_SCALE, true)->setText( core::stringw(scale.Z).c_str() );
+	}
 }
 
 /*
@@ -131,7 +179,8 @@ void loadModel(const c8* fn)
 		extension == ".png" || extension == ".ppm" ||
 		extension == ".pgm" || extension == ".pbm" ||
 		extension == ".psd" || extension == ".tga" ||
-		extension == ".bmp" || extension == ".wal")
+		extension == ".bmp" || extension == ".wal" ||
+		extension == ".rgb" || extension == ".rgba")
 	{
 		video::ITexture * texture =
 			Device->getVideoDriver()->getTexture( filename );
@@ -146,14 +195,9 @@ void loadModel(const c8* fn)
 		return;
 	}
 	// if a archive is loaded add it to the FileArchive..
-	else if (extension == ".pk3" || extension == ".zip")
+	else if (extension == ".pk3" || extension == ".zip" || extension == ".pak" || extension == ".npk")
 	{
-		Device->getFileSystem()->addZipFileArchive(filename.c_str());
-		return;
-	}
-	else if (extension == ".pak")
-	{
-		Device->getFileSystem()->addPakFileArchive(filename.c_str());
+		Device->getFileSystem()->addFileArchive(filename.c_str());
 		return;
 	}
 
@@ -163,6 +207,16 @@ void loadModel(const c8* fn)
 		Model->remove();
 
 	Model = 0;
+
+	if (extension==".irr")
+	{
+		core::array<scene::ISceneNode*> outNodes;
+		Device->getSceneManager()->loadScene(filename);
+		Device->getSceneManager()->getSceneNodesFromType(scene::ESNT_ANIMATED_MESH, outNodes);
+		if (outNodes.size())
+			Model = outNodes[0];
+		return;
+	}
 
 	scene::IAnimatedMesh* m = Device->getSceneManager()->getMesh( filename.c_str() );
 
@@ -180,15 +234,15 @@ void loadModel(const c8* fn)
 	// set default material properties
 
 	if (Octree)
-		Model = Device->getSceneManager()->addOctTreeSceneNode(m->getMesh(0));
+		Model = Device->getSceneManager()->addOctreeSceneNode(m->getMesh(0));
 	else
 	{
 		scene::IAnimatedMeshSceneNode* animModel = Device->getSceneManager()->addAnimatedMeshSceneNode(m);
 		animModel->setAnimationSpeed(30);
 		Model = animModel;
 	}
-	Model->setMaterialFlag(video::EMF_LIGHTING, useLight);
-	Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, useLight);
+	Model->setMaterialFlag(video::EMF_LIGHTING, UseLight);
+	Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, UseLight);
 //	Model->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 	Model->setDebugDataVisible(scene::EDS_OFF);
 
@@ -198,13 +252,7 @@ void loadModel(const c8* fn)
 	if (menu)
 		for(int item = 1; item < 6; ++item)
 			menu->setItemChecked(item, false);
-	IGUIElement* toolboxWnd = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
-	if ( toolboxWnd )
-	{
-		toolboxWnd->getElementFromId(GUI_ID_X_SCALE, true)->setText(L"1.0");
-		toolboxWnd->getElementFromId(GUI_ID_Y_SCALE, true)->setText(L"1.0");
-		toolboxWnd->getElementFromId(GUI_ID_Z_SCALE, true)->setText(L"1.0");
-	}
+	UpdateScaleInfo(Model);
 }
 
 
@@ -234,7 +282,7 @@ void createToolBox()
 
 	// add some edit boxes and a button to tab one
 	env->addStaticText(L"Scale:",
-			core::rect<s32>(10,20,150,45), false, false, t1);
+			core::rect<s32>(10,20,60,45), false, false, t1);
 	env->addStaticText(L"X:", core::rect<s32>(22,48,40,66), false, false, t1);
 	env->addEditBox(L"1.0", core::rect<s32>(40,46,130,66), true, t1, GUI_ID_X_SCALE);
 	env->addStaticText(L"Y:", core::rect<s32>(22,82,40,GUI_ID_OPEN_MODEL), false, false, t1);
@@ -242,13 +290,19 @@ void createToolBox()
 	env->addStaticText(L"Z:", core::rect<s32>(22,108,40,126), false, false, t1);
 	env->addEditBox(L"1.0", core::rect<s32>(40,106,130,126), true, t1, GUI_ID_Z_SCALE);
 
-	env->addButton(core::rect<s32>(10,134,85,165), t1, 1101, L"Set");
+	env->addButton(core::rect<s32>(10,134,85,165), t1, GUI_ID_BUTTON_SET_SCALE, L"Set");
+
+	// quick scale buttons
+	env->addButton(core::rect<s32>(65,20,95,40), t1, GUI_ID_BUTTON_SCALE_MUL10, L"* 10");
+	env->addButton(core::rect<s32>(100,20,130,40), t1, GUI_ID_BUTTON_SCALE_DIV10, L"* 0.1");
+
+	UpdateScaleInfo(Model);
 
 	// add transparency control
 	env->addStaticText(L"GUI Transparency Control:",
 			core::rect<s32>(10,200,150,225), true, false, t1);
 	IGUIScrollBar* scrollbar = env->addScrollBar(true,
-			core::rect<s32>(10,225,150,240), t1, 104);
+			core::rect<s32>(10,225,150,240), t1, GUI_ID_SKIN_TRANSPARENCY);
 	scrollbar->setMax(255);
 	scrollbar->setPos(255);
 
@@ -256,15 +310,15 @@ void createToolBox()
 	env->addStaticText(L"Framerate:",
 			core::rect<s32>(10,240,150,265), true, false, t1);
 	scrollbar = env->addScrollBar(true,
-			core::rect<s32>(10,265,150,280), t1, 105);
+			core::rect<s32>(10,265,150,280), t1, GUI_ID_SKIN_ANIMATION_FPS);
 	scrollbar->setMax(MAX_FRAMERATE);
+	scrollbar->setMin(-MAX_FRAMERATE);
 	scrollbar->setPos(DEFAULT_FRAMERATE);
 
 	// bring irrlicht engine logo to front, because it
 	// now may be below the newly created toolbox
 	root->bringToFront(root->getElementFromId(666, true));
 }
-
 
 /*
 To get all the events sent by the GUI Elements, we need to create an event
@@ -281,42 +335,8 @@ public:
 		if (event.EventType == EET_KEY_INPUT_EVENT &&
 			event.KeyInput.PressedDown == false)
 		{
-			if (event.KeyInput.Key == irr::KEY_ESCAPE)
-			{
-				if (Device)
-				{
-					scene::ICameraSceneNode * camera =
-						Device->getSceneManager()->getActiveCamera();
-					if (camera)
-					{
-						camera->setInputReceiverEnabled( !camera->isInputReceiverEnabled() );
-					}
-					return true;
-				}
-			}
-			else if (event.KeyInput.Key == irr::KEY_F1)
-			{
-				if (Device)
-				{
-					IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_POSITION_TEXT);
-					if (elem)
-						elem->setVisible(!elem->isVisible());
-				}
-			}
-			else if (event.KeyInput.Key == irr::KEY_KEY_M)
-			{
-				if (Device)
-					Device->minimizeWindow();
-			}
-			else if (event.KeyInput.Key == irr::KEY_KEY_L)
-			{
-				useLight=!useLight;
-				if (Model)
-				{
-					Model->setMaterialFlag(video::EMF_LIGHTING, useLight);
-					Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, useLight);
-				}
-			}
+			if ( OnKeyUp(event.KeyInput.Key) )
+				return true;
 		}
 
 		if (event.EventType == EET_GUI_EVENT)
@@ -327,107 +347,9 @@ public:
 			switch(event.GUIEvent.EventType)
 			{
 			case EGET_MENU_ITEM_SELECTED:
-				{
 					// a menu item was clicked
-
-					IGUIContextMenu* menu = (IGUIContextMenu*)event.GUIEvent.Caller;
-					s32 id = menu->getItemCommandId(menu->getSelectedItem());
-
-					switch(id)
-					{
-					case GUI_ID_OPEN_MODEL: // File -> Open Model
-						env->addFileOpenDialog(L"Please select a model file to open");
-						break;
-					case GUI_ID_SET_MODEL_ARCHIVE: // File -> Set Model Archive
-						env->addFileOpenDialog(L"Please select your game archive/directory");
-						break;
-					case GUI_ID_LOAD_AS_OCTREE: // File -> LoadAsOctree
-						Octree = !Octree;
-						menu->setItemChecked(menu->getSelectedItem(), Octree);
-						break;
-					case GUI_ID_QUIT: // File -> Quit
-						Device->closeDevice();
-						break;
-					case GUI_ID_SKY_BOX_VISIBLE: // View -> Skybox
-						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
-						SkyBox->setVisible(!SkyBox->isVisible());
-						break;
-					case GUI_ID_DEBUG_OFF: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem()+1, false);
-						menu->setItemChecked(menu->getSelectedItem()+2, false);
-						menu->setItemChecked(menu->getSelectedItem()+3, false);
-						menu->setItemChecked(menu->getSelectedItem()+4, false);
-						menu->setItemChecked(menu->getSelectedItem()+5, false);
-						menu->setItemChecked(menu->getSelectedItem()+6, false);
-						if (Model)
-							Model->setDebugDataVisible(scene::EDS_OFF);
-						break;
-					case GUI_ID_DEBUG_BOUNDING_BOX: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
-						if (Model)
-							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX));
-						break;
-					case GUI_ID_DEBUG_NORMALS: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
-						if (Model)
-							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_NORMALS));
-						break;
-					case GUI_ID_DEBUG_SKELETON: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
-						if (Model)
-							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_SKELETON));
-						break;
-					case GUI_ID_DEBUG_WIRE_OVERLAY: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
-						if (Model)
-							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_MESH_WIRE_OVERLAY));
-						break;
-					case GUI_ID_DEBUG_HALF_TRANSPARENT: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
-						if (Model)
-							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_HALF_TRANSPARENCY));
-						break;
-					case GUI_ID_DEBUG_BUFFERS_BOUNDING_BOXES: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
-						if (Model)
-							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX_BUFFERS));
-						break;
-					case GUI_ID_DEBUG_ALL: // View -> Debug Information
-						menu->setItemChecked(menu->getSelectedItem()-1, true);
-						menu->setItemChecked(menu->getSelectedItem()-2, true);
-						menu->setItemChecked(menu->getSelectedItem()-3, true);
-						menu->setItemChecked(menu->getSelectedItem()-4, true);
-						menu->setItemChecked(menu->getSelectedItem()-5, true);
-						menu->setItemChecked(menu->getSelectedItem()-6, true);
-						if (Model)
-							Model->setDebugDataVisible(scene::EDS_FULL);
-						break;
-					case GUI_ID_ABOUT: // Help->About
-						showAboutText();
-						break;
-					case GUI_ID_MODEL_MATERIAL_SOLID: // View -> Material -> Solid
-						if (Model)
-							Model->setMaterialType(video::EMT_SOLID);
-						break;
-					case GUI_ID_MODEL_MATERIAL_TRANSPARENT: // View -> Material -> Transparent
-						if (Model)
-							Model->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-						break;
-					case GUI_ID_MODEL_MATERIAL_REFLECTION: // View -> Material -> Reflection
-						if (Model)
-							Model->setMaterialType(video::EMT_SPHERE_MAP);
-						break;
-
-					case GUI_ID_CAMERA_MAYA:
-						setActiveCamera(Camera[0]);
-						break;
-					case GUI_ID_CAMERA_FIRST_PERSON:
-						setActiveCamera(Camera[1]);
-						break;
-
-					}
+					OnMenuItemSelected( (IGUIContextMenu*)event.GUIEvent.Caller );
 				break;
-				}
 
 			case EGET_FILE_SELECTED:
 				{
@@ -441,17 +363,13 @@ public:
 			case EGET_SCROLL_BAR_CHANGED:
 
 				// control skin transparency
-				if (id == 104)
+				if (id == GUI_ID_SKIN_TRANSPARENCY)
 				{
 					const s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-					for (s32 i=0; i<irr::gui::EGDC_COUNT ; ++i)
-					{
-						video::SColor col = env->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
-						col.setAlpha(pos);
-						env->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, col);
-					}
+					SetSkinTransparency(pos, env->getSkin());
 				}
-				else if (id == 105)
+				// control animation speed
+				else if (id == GUI_ID_SKIN_ANIMATION_FPS)
 				{
 					const s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
 					if (scene::ESNT_ANIMATED_MESH == Model->getType())
@@ -462,46 +380,9 @@ public:
 			case EGET_COMBO_BOX_CHANGED:
 
 				// control anti-aliasing/filtering
-				if (id == 108)
+				if (id == GUI_ID_TEXTUREFILTER)
 				{
-					s32 pos = ((IGUIComboBox*)event.GUIEvent.Caller)->getSelected();
-					switch (pos)
-					{
-						case 0:
-						if (Model)
-						{
-							Model->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-							Model->setMaterialFlag(video::EMF_TRILINEAR_FILTER, false);
-							Model->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, false);
-						}
-						break;
-						case 1:
-						if (Model)
-						{
-							Model->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
-							Model->setMaterialFlag(video::EMF_TRILINEAR_FILTER, false);
-						}
-						break;
-						case 2:
-						if (Model)
-						{
-							Model->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-							Model->setMaterialFlag(video::EMF_TRILINEAR_FILTER, true);
-						}
-						break;
-						case 3:
-						if (Model)
-						{
-							Model->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, true);
-						}
-						break;
-						case 4:
-						if (Model)
-						{
-							Model->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, false);
-						}
-						break;
-					}
+					OnTextureFilterSelected( (IGUIComboBox*)event.GUIEvent.Caller );
 				}
 				break;
 
@@ -509,7 +390,7 @@ public:
 
 				switch(id)
 				{
-				case 1101:
+				case GUI_ID_BUTTON_SET_SCALE:
 					{
 						// set scale
 						gui::IGUIElement* root = env->getRootGUIElement();
@@ -525,18 +406,29 @@ public:
 
 						if (Model)
 							Model->setScale(scale);
+						UpdateScaleInfo(Model);
 					}
 					break;
-				case 1102:
+				case GUI_ID_BUTTON_SCALE_MUL10:
+					if (Model)
+						Model->setScale(Model->getScale()*10.f);
+					UpdateScaleInfo(Model);
+					break;
+				case GUI_ID_BUTTON_SCALE_DIV10:
+					if (Model)
+						Model->setScale(Model->getScale()*0.1f);
+					UpdateScaleInfo(Model);
+					break;
+				case GUI_ID_BUTTON_OPEN_MODEL:
 					env->addFileOpenDialog(L"Please select a model file to open");
 					break;
-				case 1103:
+				case GUI_ID_BUTTON_SHOW_ABOUT:
 					showAboutText();
 					break;
-				case 1104:
+				case GUI_ID_BUTTON_SHOW_TOOLBOX:
 					createToolBox();
 					break;
-				case 1105:
+				case GUI_ID_BUTTON_SELECT_ARCHIVE:
 					env->addFileOpenDialog(L"Please select your game archive/directory");
 					break;
 				}
@@ -548,6 +440,199 @@ public:
 		}
 
 		return false;
+	}
+
+
+	/*
+		Handle key-up events
+	*/
+	bool OnKeyUp(irr::EKEY_CODE keyCode)
+	{
+		if (keyCode == irr::KEY_ESCAPE)
+		{
+			if (Device)
+			{
+				scene::ICameraSceneNode * camera =
+					Device->getSceneManager()->getActiveCamera();
+				if (camera)
+				{
+					camera->setInputReceiverEnabled( !camera->isInputReceiverEnabled() );
+				}
+				return true;
+			}
+		}
+		else if (keyCode == irr::KEY_F1)
+		{
+			if (Device)
+			{
+				IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_POSITION_TEXT);
+				if (elem)
+					elem->setVisible(!elem->isVisible());
+			}
+		}
+		else if (keyCode == irr::KEY_KEY_M)
+		{
+			if (Device)
+				Device->minimizeWindow();
+		}
+		else if (keyCode == irr::KEY_KEY_L)
+		{
+			UseLight=!UseLight;
+			if (Model)
+			{
+				Model->setMaterialFlag(video::EMF_LIGHTING, UseLight);
+				Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, UseLight);
+			}
+		}
+		return false;
+	}
+
+
+	/*
+		Handle "menu item clicked" events.
+	*/
+	void OnMenuItemSelected( IGUIContextMenu* menu )
+	{
+		s32 id = menu->getItemCommandId(menu->getSelectedItem());
+		IGUIEnvironment* env = Device->getGUIEnvironment();
+
+		switch(id)
+		{
+		case GUI_ID_OPEN_MODEL: // FilOnButtonSetScalinge -> Open Model
+			env->addFileOpenDialog(L"Please select a model file to open");
+			break;
+		case GUI_ID_SET_MODEL_ARCHIVE: // File -> Set Model Archive
+			env->addFileOpenDialog(L"Please select your game archive/directory");
+			break;
+		case GUI_ID_LOAD_AS_OCTREE: // File -> LoadAsOctree
+			Octree = !Octree;
+			menu->setItemChecked(menu->getSelectedItem(), Octree);
+			break;
+		case GUI_ID_QUIT: // File -> Quit
+			Device->closeDevice();
+			break;
+		case GUI_ID_SKY_BOX_VISIBLE: // View -> Skybox
+			menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
+			SkyBox->setVisible(!SkyBox->isVisible());
+			break;
+		case GUI_ID_DEBUG_OFF: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem()+1, false);
+			menu->setItemChecked(menu->getSelectedItem()+2, false);
+			menu->setItemChecked(menu->getSelectedItem()+3, false);
+			menu->setItemChecked(menu->getSelectedItem()+4, false);
+			menu->setItemChecked(menu->getSelectedItem()+5, false);
+			menu->setItemChecked(menu->getSelectedItem()+6, false);
+			if (Model)
+				Model->setDebugDataVisible(scene::EDS_OFF);
+			break;
+		case GUI_ID_DEBUG_BOUNDING_BOX: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
+			if (Model)
+				Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX));
+			break;
+		case GUI_ID_DEBUG_NORMALS: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
+			if (Model)
+				Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_NORMALS));
+			break;
+		case GUI_ID_DEBUG_SKELETON: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
+			if (Model)
+				Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_SKELETON));
+			break;
+		case GUI_ID_DEBUG_WIRE_OVERLAY: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
+			if (Model)
+				Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_MESH_WIRE_OVERLAY));
+			break;
+		case GUI_ID_DEBUG_HALF_TRANSPARENT: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
+			if (Model)
+				Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_HALF_TRANSPARENCY));
+			break;
+		case GUI_ID_DEBUG_BUFFERS_BOUNDING_BOXES: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
+			if (Model)
+				Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX_BUFFERS));
+			break;
+		case GUI_ID_DEBUG_ALL: // View -> Debug Information
+			menu->setItemChecked(menu->getSelectedItem()-1, true);
+			menu->setItemChecked(menu->getSelectedItem()-2, true);
+			menu->setItemChecked(menu->getSelectedItem()-3, true);
+			menu->setItemChecked(menu->getSelectedItem()-4, true);
+			menu->setItemChecked(menu->getSelectedItem()-5, true);
+			menu->setItemChecked(menu->getSelectedItem()-6, true);
+			if (Model)
+				Model->setDebugDataVisible(scene::EDS_FULL);
+			break;
+		case GUI_ID_ABOUT: // Help->About
+			showAboutText();
+			break;
+		case GUI_ID_MODEL_MATERIAL_SOLID: // View -> Material -> Solid
+			if (Model)
+				Model->setMaterialType(video::EMT_SOLID);
+			break;
+		case GUI_ID_MODEL_MATERIAL_TRANSPARENT: // View -> Material -> Transparent
+			if (Model)
+				Model->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+			break;
+		case GUI_ID_MODEL_MATERIAL_REFLECTION: // View -> Material -> Reflection
+			if (Model)
+				Model->setMaterialType(video::EMT_SPHERE_MAP);
+			break;
+
+		case GUI_ID_CAMERA_MAYA:
+			setActiveCamera(Camera[0]);
+			break;
+		case GUI_ID_CAMERA_FIRST_PERSON:
+			setActiveCamera(Camera[1]);
+			break;
+		}
+	}
+
+	/*
+		Handle the event that one of the texture-filters was selected in the corresponding combobox.
+	*/
+	void OnTextureFilterSelected( IGUIComboBox* combo )
+	{
+		s32 pos = combo->getSelected();
+		switch (pos)
+		{
+			case 0:
+			if (Model)
+			{
+				Model->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+				Model->setMaterialFlag(video::EMF_TRILINEAR_FILTER, false);
+				Model->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, false);
+			}
+			break;
+			case 1:
+			if (Model)
+			{
+				Model->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
+				Model->setMaterialFlag(video::EMF_TRILINEAR_FILTER, false);
+			}
+			break;
+			case 2:
+			if (Model)
+			{
+				Model->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+				Model->setMaterialFlag(video::EMF_TRILINEAR_FILTER, true);
+			}
+			break;
+			case 3:
+			if (Model)
+			{
+				Model->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, true);
+			}
+			break;
+			case 4:
+			if (Model)
+			{
+				Model->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, false);
+			}
+			break;
+		}
 	}
 };
 
@@ -586,7 +671,6 @@ int main(int argc, char* argv[])
 	}
 
 	// create device and exit if creation failed
-
 	MyEventReceiver receiver;
 	Device = createDevice(driverType, core::dimension2d<u32>(800, 600),
 		16, false, false, false, &receiver);
@@ -605,9 +689,9 @@ int main(int argc, char* argv[])
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
-	smgr->addLightSceneNode();
 	smgr->addLightSceneNode(0, core::vector3df(200,200,200),
 		video::SColorf(1.0f,1.0f,1.0f),2000);
+	smgr->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));
 	// add our media directory as "search path"
 	Device->getFileSystem()->addFolderFileArchive("../../media/");
 
@@ -733,20 +817,20 @@ int main(int argc, char* argv[])
 	gui::IGUIToolBar* bar = env->addToolBar();
 
 	video::ITexture* image = driver->getTexture("open.png");
-	bar->addButton(1102, 0, L"Open a model",image, 0, false, true);
+	bar->addButton(GUI_ID_BUTTON_OPEN_MODEL, 0, L"Open a model",image, 0, false, true);
 
 	image = driver->getTexture("tools.png");
-	bar->addButton(1104, 0, L"Open Toolset",image, 0, false, true);
+	bar->addButton(GUI_ID_BUTTON_SHOW_TOOLBOX, 0, L"Open Toolset",image, 0, false, true);
 
 	image = driver->getTexture("zip.png");
-	bar->addButton(1105, 0, L"Set Model Archive",image, 0, false, true);
+	bar->addButton(GUI_ID_BUTTON_SELECT_ARCHIVE, 0, L"Set Model Archive",image, 0, false, true);
 
 	image = driver->getTexture("help.png");
-	bar->addButton(1103, 0, L"Open Help", image, 0, false, true);
+	bar->addButton(GUI_ID_BUTTON_SHOW_ABOUT, 0, L"Open Help", image, 0, false, true);
 
 	// create a combobox with some senseless texts
 
-	gui::IGUIComboBox* box = env->addComboBox(core::rect<s32>(250,4,350,23), bar, 108);
+	gui::IGUIComboBox* box = env->addComboBox(core::rect<s32>(250,4,350,23), bar, GUI_ID_TEXTUREFILTER);
 	box->addItem(L"No filtering");
 	box->addItem(L"Bilinear");
 	box->addItem(L"Trilinear");

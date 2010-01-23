@@ -475,10 +475,10 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 //! applications must call this method before performing any rendering. returns false if failed.
 bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		void* windowId, core::rect<s32>* sourceRect)
+		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
-	WindowId = windowId;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	WindowId = (HWND)videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
 	if (!pID3DDevice)
@@ -552,7 +552,7 @@ bool CD3D9Driver::endScene()
 		sourceRectData.bottom = SceneSourceRect->LowerRightCorner.Y;
 	}
 
-	hr = pID3DDevice->Present(srcRct, NULL, (HWND)WindowId, NULL);
+	hr = pID3DDevice->Present(srcRct, NULL, WindowId, NULL);
 
 	if (SUCCEEDED(hr))
 		return true;
@@ -720,9 +720,9 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
+video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name, void* mipmapData)
 {
-	return new CD3D9Texture(surface, this, TextureCreationFlags, name);
+	return new CD3D9Texture(surface, this, TextureCreationFlags, name, mipmapData);
 }
 
 
@@ -2344,6 +2344,15 @@ void CD3D9Driver::setRenderStatesStencilFillMode(bool alpha)
 }
 
 
+//! Enable the 2d override material
+void CD3D9Driver::enableMaterial2D(bool enable)
+{
+	if (!enable)
+		CurrentRenderMode = ERM_NONE;
+	CNullDriver::enableMaterial2D(enable);
+}
+
+
 //! sets the needed renderstates
 void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
@@ -2353,17 +2362,17 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
 		// unset last 3d material
-		if (CurrentRenderMode != ERM_2D)
+		if (CurrentRenderMode == ERM_3D)
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-			SMaterial mat;
-			mat.ZBuffer=ECFN_NEVER;
-			mat.Lighting=false;
-			mat.AntiAliasing=video::EAAM_OFF;
-			mat.TextureLayer[0].BilinearFilter=false;
-			setBasicRenderStates(mat, mat, true);
-			// fix everything that is wrongly set by SMaterial default
+		}
+		if (!OverrideMaterial2DEnabled)
+		{
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+			LastMaterial=InitMaterial2D;
+
+			// fix everything that is wrongly set by InitMaterial2D default
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -2372,11 +2381,7 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 			pID3DDevice->SetTextureStageState(3, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 			pID3DDevice->SetRenderState( D3DRS_STENCILENABLE, FALSE );
-
-			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);
 		}
-
 		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D9);
 
 		core::matrix4 m;
@@ -2390,6 +2395,14 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 		Transformation3DChanged = false;
 	}
+	if (OverrideMaterial2DEnabled)
+	{
+		OverrideMaterial2D.Lighting=false;
+		OverrideMaterial2D.ZBuffer=ECFN_NEVER;
+		OverrideMaterial2D.ZWriteEnable=false;
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
+		LastMaterial = OverrideMaterial2D;
+	}
 
 	u32 current2DSignature = 0;
 	current2DSignature |= alpha ? EC2D_ALPHA : 0;
@@ -2400,6 +2413,7 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 	{
 		if (texture)
 		{
+			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 			if (alphaChannel)
 			{
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
@@ -2884,13 +2898,6 @@ bool CD3D9Driver::setPixelShaderConstant(const c8* name, const f32* floats, int 
 }
 
 
-//! Returns pointer to the IGPUProgrammingServices interface.
-IGPUProgrammingServices* CD3D9Driver::getGPUProgrammingServices()
-{
-	return this;
-}
-
-
 //! Adds a new material renderer to the VideoDriver, using pixel and/or
 //! vertex shaders to render geometry.
 s32 CD3D9Driver::addShaderMaterial(const c8* vertexShaderProgram,
@@ -2917,6 +2924,11 @@ s32 CD3D9Driver::addHighLevelShaderMaterial(
 		const c8* pixelShaderProgram,
 		const c8* pixelShaderEntryPointName,
 		E_PIXEL_SHADER_TYPE psCompileTarget,
+		const c8* geometryShaderProgram,
+		const c8* geometryShaderEntryPointName,
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
+		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial, s32 userData)
 {

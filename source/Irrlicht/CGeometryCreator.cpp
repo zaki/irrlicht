@@ -110,7 +110,7 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 			vtx.Pos.set(sx - center.X, 0, sy - center.Y);
 			vtx.TCoords.set(tsx, 1.0f - tsy);
 
-			if (hillHeight != 0.0f)
+			if (core::isnotzero(hillHeight))
 				vtx.Pos.Y = sinf(vtx.Pos.X * countHills.Width * core::PI / center.X) *
 					cosf(vtx.Pos.Z * countHills.Height * core::PI / center.Y) *
 					hillHeight;
@@ -158,6 +158,7 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 		buffer->Material = *material;
 
 	buffer->recalculateBoundingBox();
+	buffer->setHardwareMappingHint(EHM_STATIC);
 
 	SMesh* mesh = new SMesh();
 	mesh->addMeshBuffer(buffer);
@@ -264,9 +265,10 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 			{
 				c8 textureName[64];
 				// create texture for this block
-				video::IImage* img = new video::CImage(texture,
+				video::IImage* img = new video::CImage(texture->getColorFormat(), texture->getDimension());
+				texture->copyTo(img, core::position2di(0,0), core::recti(
 					core::position2d<s32>(core::floor32(processed.X*thRel.X), core::floor32(processed.Y*thRel.Y)),
-					core::dimension2d<u32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y)));
+					core::dimension2d<u32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y))), 0);
 
 				sprintf(textureName, "terrain%u_%u", tm, mesh->getMeshBufferCount());
 
@@ -326,9 +328,11 @@ IMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 		scene::IMeshBuffer* buffer = mesh2->getMeshBuffer(i);
 		for (u32 j=0; j<buffer->getVertexCount(); ++j)
 			buffer->getPosition(j).Y += cylinderHeight;
+		buffer->setDirty(EBT_VERTEX);
 		mesh->addMeshBuffer(buffer);
 	}
 	mesh2->drop();
+	mesh->setHardwareMappingHint(EHM_STATIC);
 
 	return mesh;
 }
@@ -493,6 +497,7 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 	mesh->addMeshBuffer(buffer);
 	buffer->drop();
 
+	mesh->setHardwareMappingHint(EHM_STATIC);
 	mesh->recalculateBoundingBox();
 	return mesh;
 }
@@ -500,8 +505,8 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 
 /* A cylinder with proper normals and texture coords */
 IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length, 
-				u32 tesselation, const video::SColor& color, 
-				bool closeTop, f32 oblique) const
+			u32 tesselation, const video::SColor& color, 
+			bool closeTop, f32 oblique) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 
@@ -513,10 +518,10 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 	u32 i;
 	video::S3DVertex v;
 	v.Color = color;
-	buffer->Vertices.reallocate(tesselation*4+(closeTop?2:1));
-	buffer->Indices.reallocate((tesselation*2)*(closeTop?12:9));
+	buffer->Vertices.reallocate(tesselation*4+4+(closeTop?2:1));
+	buffer->Indices.reallocate((tesselation*2+1)*(closeTop?12:9));
 	f32 tcx = 0.f;
-	for ( i = 0; i != tesselation; ++i )
+	for ( i = 0; i <= tesselation; ++i )
 	{
 		const f32 angle = angleStep * i;
 		v.Pos.X = radius * cosf(angle);
@@ -553,8 +558,9 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 		tcx += recTesselation;
 	}
 
-	const u32 nonWrappedSize = ( tesselation* 4 ) - 2;
-	for ( i = 0; i != nonWrappedSize; i += 2 )
+	// indices for the main hull part
+	const u32 nonWrappedSize = tesselation* 4;
+	for (i=0; i != nonWrappedSize; i += 2)
 	{
 		buffer->Indices.push_back(i + 2);
 		buffer->Indices.push_back(i + 0);
@@ -565,6 +571,7 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 		buffer->Indices.push_back(i + 3);
 	}
 
+	// two closing quads between end and start
 	buffer->Indices.push_back(0);
 	buffer->Indices.push_back(i + 0);
 	buffer->Indices.push_back(i + 1);
@@ -627,6 +634,7 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 	buffer->recalculateBoundingBox();
 	SMesh* mesh = new SMesh();
 	mesh->addMeshBuffer(buffer);
+	mesh->setHardwareMappingHint(EHM_STATIC);
 	mesh->recalculateBoundingBox();
 	buffer->drop();
 	return mesh;
@@ -634,9 +642,10 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 
 
 /* A cone with proper normals and texture coords */
-IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation, 
-										const video::SColor& colorTop, 
-										const video::SColor& colorBottom, f32 oblique) const
+IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation,
+					const video::SColor& colorTop, 
+					const video::SColor& colorBottom,
+					f32 oblique) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 
@@ -718,6 +727,7 @@ IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation,
 	mesh->addMeshBuffer(buffer);
 	buffer->drop();
 
+	mesh->setHardwareMappingHint(EHM_STATIC);
 	mesh->recalculateBoundingBox();
 	return mesh;
 }

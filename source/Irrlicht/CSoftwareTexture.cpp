@@ -14,7 +14,8 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name, bool renderTarget)
+CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name,
+		bool renderTarget, void* mipmapData)
 : ITexture(name), Texture(0), IsRenderTarget(renderTarget)
 {
 	#ifdef _DEBUG
@@ -26,7 +27,8 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name, bool ren
 		OrigSize = image->getDimension();
 		core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
 
-		Image = new CImage(ECF_A1R5G5B5, image);
+		Image = new CImage(ECF_A1R5G5B5, OrigSize);
+		image->copyTo(Image);
 
 		if (optSize == OrigSize)
 		{
@@ -56,7 +58,7 @@ CSoftwareTexture::~CSoftwareTexture()
 
 
 //! lock function
-void* CSoftwareTexture::lock(bool readOnly)
+void* CSoftwareTexture::lock(bool readOnly, u32 mipmapLevel)
 {
 	return Image->lock();
 }
@@ -131,7 +133,7 @@ u32 CSoftwareTexture::getPitch() const
 
 //! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
-void CSoftwareTexture::regenerateMipMapLevels()
+void CSoftwareTexture::regenerateMipMapLevels(void* mipmapData)
 {
 	// our software textures don't have mip maps
 }

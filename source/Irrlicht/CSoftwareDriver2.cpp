@@ -343,10 +343,11 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 
 //! clears the zbuffer
 bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer,
-		SColor color, void* windowId, core::rect<s32>* sourceRect)
+		SColor color, const SExposedVideoData& videoData,
+		core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
-	WindowId = windowId;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	WindowId = videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
 	if (backBuffer && BackBuffer)
@@ -2049,7 +2050,11 @@ void CBurningVideoDriver::clearZBuffer()
 IImage* CBurningVideoDriver::createScreenShot()
 {
 	if (BackBuffer)
-		return new CImage(BackBuffer->getColorFormat(), BackBuffer);
+	{
+		CImage* tmp = new CImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
+		BackBuffer->copyTo(tmp);
+		return tmp;
+	}
 	else
 		return 0;
 
@@ -2058,13 +2063,12 @@ IImage* CBurningVideoDriver::createScreenShot()
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
 	return new CSoftwareTexture2(
 		surface, name,
 		(getTextureCreationFlag(ETCF_CREATE_MIP_MAPS) ? CSoftwareTexture2::GEN_MIPMAP : 0 ) |
-		(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE )
-	);
+		(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE ), mipmapData);
 
 }
 

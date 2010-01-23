@@ -11,7 +11,7 @@ namespace irr
 namespace scene
 {
 
-static const io::path emptyPath = "";
+static const io::SNamedPath emptyNamedPath;
 
 
 CMeshCache::~CMeshCache()
@@ -108,81 +108,74 @@ IAnimatedMesh* CMeshCache::getMeshByIndex(u32 number)
 }
 
 
-//! Returns a mesh based on its file name.
-IAnimatedMesh* CMeshCache::getMeshByFilename(const io::path& filename)
+//! Returns a mesh based on its name.
+IAnimatedMesh* CMeshCache::getMeshByName(const io::path& name)
 {
-	MeshEntry e ( filename );
+	MeshEntry e ( name );
 	s32 id = Meshes.binary_search(e);
 	return (id != -1) ? Meshes[id].Mesh : 0;
 }
 
-
-//! Returns name of a mesh based on its index number
-const io::path& CMeshCache::getMeshFilename(u32 number) const
+//! Get the name of a loaded mesh, based on its index.
+const io::SNamedPath& CMeshCache::getMeshName(u32 index) const
 {
-	if (number >= Meshes.size())
-		return emptyPath;
+	if (index >= Meshes.size())
+		return emptyNamedPath;
 
-	return Meshes[number].Name;
+	return Meshes[index].NamedPath;
 }
 
-
-
-//! Returns the filename of a loaded mesh, if there is any.
-const io::path& CMeshCache::getMeshFilename(const IAnimatedMesh* const mesh) const
+//! Get the name of a loaded mesh, if there is any.
+const io::SNamedPath& CMeshCache::getMeshName(const IAnimatedMesh* const mesh) const
 {
 	if(!mesh)
-		return emptyPath;
+		return emptyNamedPath;
 
 	for (u32 i=0; i<Meshes.size(); ++i)
 	{
 		if (Meshes[i].Mesh == mesh)
-			return Meshes[i].Name;
+			return Meshes[i].NamedPath;
 	}
 
-	return emptyPath;
+	return emptyNamedPath;
 }
 
-
-//! Returns the filename of a loaded mesh, if there is any. Returns 0 if there is none.
-const io::path& CMeshCache::getMeshFilename(const IMesh* const mesh) const
+//! Get the name of a loaded mesh, if there is any.
+const io::SNamedPath& CMeshCache::getMeshName(const IMesh* const mesh) const
 {
 	if (!mesh)
-		return emptyPath;
+		return emptyNamedPath;
 
 	for (u32 i=0; i<Meshes.size(); ++i)
 	{
 		// IMesh may actually be an IAnimatedMesh, so do a direct comparison
 		// as well as getting an IMesh from our stored IAnimatedMeshes
 		if (Meshes[i].Mesh && (Meshes[i].Mesh == mesh || Meshes[i].Mesh->getMesh(0) == mesh))
-			return Meshes[i].Name;
+			return Meshes[i].NamedPath;
 	}
 
-	return emptyPath;
+	return emptyNamedPath;
 }
 
-
-
-//! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(u32 index, const io::path& filename)
+//! Renames a loaded mesh.
+bool CMeshCache::renameMesh(u32 index, const io::path& name)
 {
 	if (index >= Meshes.size())
 		return false;
 
-	Meshes[index].Name = filename;
+	Meshes[index].NamedPath.setPath(name);
 	Meshes.sort();
 	return true;
 }
 
-
-//! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename)
+//! Renames a loaded mesh.
+bool CMeshCache::renameMesh(const IAnimatedMesh* const mesh, const io::path& name)
 {
 	for (u32 i=0; i<Meshes.size(); ++i)
 	{
 		if (Meshes[i].Mesh == mesh)
 		{
-			Meshes[i].Name = filename;
+			Meshes[i].NamedPath.setPath(name);
 			Meshes.sort();
 			return true;
 		}
@@ -191,15 +184,14 @@ bool CMeshCache::setMeshFilename(const IAnimatedMesh* const mesh, const io::path
 	return false;
 }
 
-
-//! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(const IMesh* const mesh, const io::path& filename)
+//! Renames a loaded mesh.
+bool CMeshCache::renameMesh(const IMesh* const mesh, const io::path& name)
 {
 	for (u32 i=0; i<Meshes.size(); ++i)
 	{
 		if (Meshes[i].Mesh && Meshes[i].Mesh->getMesh(0) == mesh)
 		{
-			Meshes[i].Name = filename;
+			Meshes[i].NamedPath.setPath(name);
 			Meshes.sort();
 			return true;
 		}
@@ -210,9 +202,9 @@ bool CMeshCache::setMeshFilename(const IMesh* const mesh, const io::path& filena
 
 
 //! returns if a mesh already was loaded
-bool CMeshCache::isMeshLoaded(const io::path& filename)
+bool CMeshCache::isMeshLoaded(const io::path& name)
 {
-	return getMeshByFilename(filename) != 0;
+	return getMeshByName(name) != 0;
 }
 
 

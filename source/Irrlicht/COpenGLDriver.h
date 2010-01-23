@@ -39,12 +39,14 @@ namespace video
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device);
 		//! inits the windows specific parts of the open gl driver
 		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceWin32* device);
+		bool changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceWin32* device);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceLinux* device);
 		//! inits the GLX specific parts of the open gl driver
 		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceLinux* device);
+		bool changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceLinux* device);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
@@ -55,13 +57,16 @@ namespace video
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device);
 		#endif
 
+		//! generic version which overloads the unimplemented versions
+		bool changeRenderContext(const SExposedVideoData& videoData, void* device) {return false;}
+
 		//! destructor
 		virtual ~COpenGLDriver();
 
 		//! clears the zbuffer
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
 				SColor color=SColor(255,0,0,0),
-				void* windowId=0,
+				const SExposedVideoData& videoData=SExposedVideoData(),
 				core::rect<s32>* sourceRect=0);
 
 		//! presents the rendered scene on the screen, returns false if failed
@@ -114,6 +119,15 @@ namespace video
 		//! using this material.
 		//! \param material: Material to be used from now on.
 		virtual void setMaterial(const SMaterial& material);
+
+		//! draws a set of 2d images, using a color and the alpha channel of the
+		//! texture if desired.
+		void draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect,
+				SColor color,
+				bool useAlphaChannelOfTexture);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
@@ -261,13 +275,22 @@ namespace video
 			IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);
 
 		//! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
-		virtual s32 addHighLevelShaderMaterial(const c8* vertexShaderProgram, const c8* vertexShaderEntryPointName,
-			E_VERTEX_SHADER_TYPE vsCompileTarget, const c8* pixelShaderProgram, const c8* pixelShaderEntryPointName,
-			E_PIXEL_SHADER_TYPE psCompileTarget, IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial,
-			s32 userData);
-
-		//! Returns pointer to the IGPUProgrammingServices interface.
-		virtual IGPUProgrammingServices* getGPUProgrammingServices();
+		virtual s32 addHighLevelShaderMaterial(
+				const c8* vertexShaderProgram,
+				const c8* vertexShaderEntryPointName = "main",
+				E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
+				const c8* pixelShaderProgram = 0,
+				const c8* pixelShaderEntryPointName = "main",
+				E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+				const c8* geometryShaderProgram = 0,
+				const c8* geometryShaderEntryPointName = "main",
+				E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+				scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+				scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+				u32 verticesOut = 0,
+				IShaderConstantSetCallBack* callback = 0,
+				E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
+				s32 userData = 0);
 
 		//! Returns a pointer to the IVideoDriver interface. (Implementation for
 		//! IMaterialRendererServices)
@@ -316,6 +339,9 @@ namespace video
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
+		//! Enable the 2d override material
+		virtual void enableMaterial2D(bool enable=true);
+
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return VendorName;}
 
@@ -324,6 +350,9 @@ namespace video
 
 		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
 		void removeDepthTexture(ITexture* texture);
+
+		//! Convert E_PRIMITIVE_TYPE to OpenGL equivalent
+		GLenum primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const;
 
 	private:
 
@@ -338,7 +367,7 @@ namespace video
 		//! inits the parts of the open gl driver used on all platforms
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
@@ -434,13 +463,20 @@ namespace video
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
-			HGLRC HRc; // Permanent Rendering Context
+		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+			CIrrDeviceWin32 *Device;
+		#endif
 		#endif
 		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 			GLXDrawable Drawable;
+			Display* X11Display;
+			CIrrDeviceLinux *Device;
 		#endif
 		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-			CIrrDeviceMacOSX *_device;
+			CIrrDeviceMacOSX *Device;
+		#endif
+		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+			CIrrDeviceSDL *Device;
 		#endif
 
 		E_DEVICE_TYPE DeviceType;

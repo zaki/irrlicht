@@ -1,6 +1,6 @@
 /*!
 	Model Factory.
-	create the additional scenenodes for ( bullets, health... ) 
+	create the additional scenenodes for ( bullets, health... )
 
 	Defines the Entities for Quake3
 */
@@ -122,7 +122,7 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"item_armor_body", 
+	"item_armor_body",
 	{"models/powerups/armor/armor_red.md3",
 	""},
 	"sound/misc/ar2_pkup.wav",
@@ -134,7 +134,7 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"item_armor_combat", 
+	"item_armor_combat",
 	{"models/powerups/armor/armor_yel.md3",
 	""},
 	"sound/misc/ar2_pkup.wav",
@@ -146,7 +146,7 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"item_armor_shard", 
+	"item_armor_shard",
 	{"models/powerups/armor/shard.md3",
 	""},
 	"sound/misc/ar1_pkup.wav",
@@ -158,7 +158,7 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"weapon_gauntlet", 
+	"weapon_gauntlet",
 	{"models/weapons2/gauntlet/gauntlet.md3",
 	""},
 	"sound/misc/w_pkup.wav",
@@ -170,7 +170,7 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"weapon_shotgun", 
+	"weapon_shotgun",
 	{"models/weapons2/shotgun/shotgun.md3",
 	""},
 	"sound/misc/w_pkup.wav",
@@ -290,7 +290,7 @@ const SItemElement * getItemElement ( const stringc& key )
 {
 	const SItemElement *item = Quake3ItemElement;
 
-	while ( item->key[0] )
+	while ( item->key )
 	{
 		if ( 0 == strcmp ( key.c_str(), item->key ) )
 			return item;
@@ -304,8 +304,8 @@ const SItemElement * getItemElement ( const stringc& key )
 	Takes the mesh buffers and creates scenenodes for their associated shaders
 */
 void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
-						IrrlichtDevice *device, 
-						IQ3LevelMesh* mesh, 
+						IrrlichtDevice *device,
+						IQ3LevelMesh* mesh,
 						eQ3MeshIndex meshIndex,
 						ISceneNode *parent,
 						IMetaTriangleSelector *meta,
@@ -463,7 +463,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 				m = node->getMesh();
 			}
 
-			//selector = smgr->createOctTreeTriangleSelector ( m, 0, 128 );
+			//selector = smgr->createOctreeTriangleSelector ( m, 0, 128 );
 			selector = smgr->createTriangleSelector ( m, 0 );
 			meta->addTriangleSelector ( selector );
 			selector->drop ();
@@ -479,7 +479,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 #if 0
 	if ( meta )
 	{
-		selector = smgr->createOctTreeTriangleSelector ( additional_mesh, 0 );
+		selector = smgr->createOctreeTriangleSelector ( additional_mesh, 0 );
 		meta->addTriangleSelector ( selector );
 		selector->drop ();
 	}
@@ -488,8 +488,8 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 	if ( loadParam.verbose > 0 )
 	{
 		loadParam.endTime = device->getTimer()->getRealTime ();
-		snprintf(buf, 128, "q3shaderfactory needed %04d ms to create %d shader nodes", 
-			loadParam.endTime - loadParam.startTime, 
+		snprintf(buf, 128, "q3shaderfactory needed %04d ms to create %d shader nodes",
+			loadParam.endTime - loadParam.startTime,
 			sceneNodeID
 			);
 		device->getLogger()->log(buf, ELL_INFORMATION);
@@ -502,8 +502,8 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 	create Items from Entity
 */
 void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
-						IrrlichtDevice *device, 
-						IQ3LevelMesh* masterMesh, 
+						IrrlichtDevice *device,
+						IQ3LevelMesh* masterMesh,
 						ISceneNode *parent,
 						bool showShaderName
 						)
@@ -620,7 +620,7 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 
 				if ( itemElement->special & SPECIAL_SFX_BOUNCE )
 				{
-					//anim = smgr->createFlyStraightAnimator ( 
+					//anim = smgr->createFlyStraightAnimator (
 					//	p, p + vector3df ( 0.f, 60.f, 0.f ), 1000, true, true );
 					anim = smgr->createFlyCircleAnimator (
 						p + vector3df( 0.f, 20.f, 0.f ),
@@ -745,7 +745,7 @@ vector3df getGravity ( const c8 * surface )
 	if ( 0 == strcmp ( surface, "moon" ) ) return vector3df ( 0.f, -6.f / 100.f, 0.f );
 	if ( 0 == strcmp ( surface, "water" ) ) return vector3df ( 0.1f / 100.f, -2.f / 100.f, 0.f );
 	if ( 0 == strcmp ( surface, "ice" ) ) return vector3df ( 0.2f / 100.f, -9.f / 100.f, 0.3f / 100.f );
-		
+
 	return vector3df ( 0.f, 0.f, 0.f );
 }
 

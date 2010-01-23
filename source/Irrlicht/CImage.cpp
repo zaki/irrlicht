@@ -40,39 +40,6 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 }
 
 
-//! Constructor from other image, with color conversion
-CImage::CImage(ECOLOR_FORMAT format, IImage* imageToCopy)
-: Data(0), Format(format), DeleteMemory(true)
-{
-	if (!imageToCopy)
-		return;
-
-	Size = imageToCopy->getDimension();
-	initData();
-
-	// now copy data from other image
-	Blit ( BLITTER_TEXTURE, this, 0, 0, imageToCopy, 0,0 );
-}
-
-
-//! Constructor from other image, partially
-CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
-		const core::dimension2d<u32>& size)
-	: Data(0), Size(0,0), DeleteMemory(true)
-{
-	if (!imageToCopy)
-		return;
-
-	Format = imageToCopy->getColorFormat();
-	Size = size;
-
-	initData();
-
-	core::rect<s32> sClip( pos.X, pos.Y, pos.X + size.Width,pos.Y + size.Height );
-	Blit (BLITTER_TEXTURE, this, 0, 0, imageToCopy, &sClip, 0);
-}
-
-
 //! assumes format and size has been set and creates the rest
 void CImage::initData()
 {

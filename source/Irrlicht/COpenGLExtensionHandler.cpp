@@ -19,13 +19,18 @@ namespace video
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false), MultiTextureExtension(false),
 		TextureCompressionExtension(false),
-		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1), MaxUserClipPlanes(0),
-		MaxAuxBuffers(0), MaxIndices(65535), MaxTextureSize(1), MaxTextureLODBias(0.f),
-		MaxMultipleRenderTargets(1), Version(0), ShaderLanguageVersion(0)
+		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1),
+		MaxUserClipPlanes(0), MaxAuxBuffers(0),
+		MaxMultipleRenderTargets(1), MaxIndices(65535),
+		MaxTextureSize(1), MaxGeometryVerticesOut(0),
+		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
-	pGlGenProgramsARB(0), pGlBindProgramARB(0), pGlProgramStringARB(0),
-	pGlDeleteProgramsARB(0), pGlProgramLocalParameter4fvARB(0),
+	pGlGenProgramsARB(0), pGlGenProgramsNV(0),
+	pGlBindProgramARB(0), pGlBindProgramNV(0),
+	pGlDeleteProgramsARB(0), pGlDeleteProgramsNV(0),
+	pGlProgramStringARB(0), pGlLoadProgramNV(0),
+	pGlProgramLocalParameter4fvARB(0),
 	pGlCreateShaderObjectARB(0), pGlShaderSourceARB(0),
 	pGlCompileShaderARB(0), pGlCreateProgramObjectARB(0), pGlAttachObjectARB(0),
 	pGlLinkProgramARB(0), pGlUseProgramObjectARB(0), pGlDeleteObjectARB(0),
@@ -48,7 +53,8 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0),
 	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0),
 	pGlColorMaskIndexedEXT(0), pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0),
-	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0)
+	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0),
+	pGlProgramParameteriARB(0), pGlProgramParameteriEXT(0)
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -124,9 +130,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	// get fragment and vertex program function pointers
 	pGlGenProgramsARB = (PFNGLGENPROGRAMSARBPROC) wglGetProcAddress("glGenProgramsARB");
+	pGlGenProgramsNV = (PFNGLGENPROGRAMSNVPROC) wglGetProcAddress("glGenProgramsNV");
 	pGlBindProgramARB = (PFNGLBINDPROGRAMARBPROC) wglGetProcAddress("glBindProgramARB");
+	pGlBindProgramNV = (PFNGLBINDPROGRAMNVPROC) wglGetProcAddress("glBindProgramNV");
 	pGlProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC) wglGetProcAddress("glProgramStringARB");
-	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSNVPROC) wglGetProcAddress("glDeleteProgramsARB");
+	pGlLoadProgramNV = (PFNGLLOADPROGRAMNVPROC) wglGetProcAddress("glLoadProgramNV");
+	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC) wglGetProcAddress("glDeleteProgramsARB");
+	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC) wglGetProcAddress("glDeleteProgramsNV");
 	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC) wglGetProcAddress("glProgramLocalParameter4fvARB");
 	pGlCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress("glCreateShaderObjectARB");
 	pGlShaderSourceARB = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress("glShaderSourceARB");
@@ -195,6 +205,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC) wglGetProcAddress("glDisableIndexedEXT");
 	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC) wglGetProcAddress("glBlendFuncIndexedAMD");
 	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC) wglGetProcAddress("glBlendFunciARB");
+	pGlProgramParameteriARB= (PFNGLPROGRAMPARAMETERIARBPROC) wglGetProcAddress("glProgramParameteriARB");
+	pGlProgramParameteriEXT= (PFNGLPROGRAMPARAMETERIEXTPROC) wglGetProcAddress("glProgramParameteriEXT");
 
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
@@ -238,14 +250,26 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGenProgramsARB = (PFNGLGENPROGRAMSARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenProgramsARB"));
 
+	pGlGenProgramsNV = (PFNGLGENPROGRAMSNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenProgramsNV"));
+
 	pGlBindProgramARB = (PFNGLBINDPROGRAMARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindProgramARB"));
+
+	pGlBindProgramNV = (PFNGLBINDPROGRAMNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindProgramNV"));
+
+	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsARB"));
+
+	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsNV"));
 
 	pGlProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramStringARB"));
 
-	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSNVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsARB"));
+	pGlLoadProgramNV = (PFNGLLOADPROGRAMNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glLoadProgramNV"));
 
 	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramLocalParameter4fvARB"));
@@ -421,6 +445,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFuncIndexedAMD"));
 	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFunciARB"));
+	pGlProgramParameteriARB = (PFNGLPROGRAMPARAMETERIARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriARB"));
+	pGlProgramParameteriEXT = (PFNGLPROGRAMPARAMETERIEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriEXT"));
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
@@ -438,8 +466,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	MaxLights=static_cast<u8>(num);
 #ifdef GL_EXT_texture_filter_anisotropic
 	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
+	{
 		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &num);
-	MaxAnisotropy=static_cast<u8>(num);
+		MaxAnisotropy=static_cast<u8>(num);
+	}
 #endif
 #ifdef GL_VERSION_1_2
 	if (Version>101)
@@ -450,7 +480,17 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
 	MaxTextureSize=static_cast<u32>(num);
-#ifdef EXT_texture_lod_bias
+	if (queryFeature(EVDF_GEOMETRY_SHADER))
+	{
+#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4)
+		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &num);
+		MaxGeometryVerticesOut=static_cast<u32>(num);
+#elif defined(GL_NV_geometry_program4)
+		extGlGetProgramiv(GEOMETRY_PROGRAM_NV, GL_MAX_PROGRAM_OUTPUT_VERTICES_NV, &num);
+		MaxGeometryVerticesOut=static_cast<u32>(num);
+#endif
+	}
+#ifdef GL_EXT_texture_lod_bias
 	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
 #endif
@@ -458,17 +498,17 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	MaxUserClipPlanes=static_cast<u8>(num);
 	glGetIntegerv(GL_AUX_BUFFERS, &num);
 	MaxAuxBuffers=static_cast<u8>(num);
-#ifdef ARB_draw_buffers
+#ifdef GL_ARB_draw_buffers
 	if (FeatureAvailable[IRR_ARB_draw_buffers])
 	{
-		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
-		MaxMultipleRenderTargets = static_cast<u8>(MaxUserClipPlanes);
+		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &num);
+		MaxMultipleRenderTargets = static_cast<u8>(num);
 	}
-#elif defined(ATI_draw_buffers)
+#elif defined(GL_ATI_draw_buffers)
 	if (FeatureAvailable[IRR_ATI_draw_buffers])
 	{
-		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
-		MaxMultipleRenderTargets = static_cast<u8>(MaxUserClipPlanes);
+		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &num);
+		MaxMultipleRenderTargets = static_cast<u8>(num);
 	}
 #endif
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
@@ -529,10 +569,15 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_SGIS_generate_mipmap];
 	case EVDF_STENCIL_BUFFER:
 		return StencilBuffer;
+	case EVDF_VERTEX_SHADER_1_1:
 	case EVDF_ARB_VERTEX_PROGRAM_1:
-		return FeatureAvailable[IRR_ARB_vertex_program];
+		return FeatureAvailable[IRR_ARB_vertex_program] || FeatureAvailable[IRR_NV_vertex_program1_1];
+	case EVDF_PIXEL_SHADER_1_1: 
+	case EVDF_PIXEL_SHADER_1_2: 
 	case EVDF_ARB_FRAGMENT_PROGRAM_1:
-		return FeatureAvailable[IRR_ARB_fragment_program];
+		return FeatureAvailable[IRR_ARB_fragment_program] || FeatureAvailable[IRR_NV_fragment_program];
+	case EVDF_PIXEL_SHADER_2_0:
+	case EVDF_VERTEX_SHADER_2_0:
 	case EVDF_ARB_GLSL:
 		return (FeatureAvailable[IRR_ARB_shading_language_100]||Version>=200);
 	case EVDF_TEXTURE_NSQUARE:

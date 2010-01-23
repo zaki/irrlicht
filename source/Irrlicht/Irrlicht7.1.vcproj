@@ -558,6 +558,9 @@
 			<Filter
 				Name="io">
 				<File
+					RelativePath=".\..\..\include\EAttributes.h">
+				</File>
+				<File
 					RelativePath=".\..\..\include\IAttributeExchangingObject.h">
 				</File>
 				<File
@@ -1474,7 +1477,7 @@
 				RelativePath="CSceneManager.h">
 			</File>
 			<File
-				RelativePath="OctTree.h">
+				RelativePath="Octree.h">
 			</File>
 			<Filter
 				Name="loaders">
@@ -1680,10 +1683,10 @@
 					RelativePath=".\CMeshSceneNode.h">
 				</File>
 				<File
-					RelativePath=".\COctTreeSceneNode.cpp">
+					RelativePath=".\COctreeSceneNode.cpp">
 				</File>
 				<File
-					RelativePath=".\COctTreeSceneNode.h">
+					RelativePath=".\COctreeSceneNode.h">
 				</File>
 				<File
 					RelativePath=".\CQuake3ShaderSceneNode.cpp">
@@ -1809,10 +1812,10 @@
 					RelativePath="CMetaTriangleSelector.h">
 				</File>
 				<File
-					RelativePath="COctTreeTriangleSelector.cpp">
+					RelativePath="COctreeTriangleSelector.cpp">
 				</File>
 				<File
-					RelativePath="COctTreeTriangleSelector.h">
+					RelativePath="COctreeTriangleSelector.h">
 				</File>
 				<File
 					RelativePath="CSceneCollisionManager.cpp">
@@ -2024,6 +2027,9 @@
 				RelativePath=".\CZipReader.h">
 			</File>
 			<File
+				RelativePath=".\IAttribute.h">
+			</File>
+			<File
 				RelativePath=".\irrXML.cpp">
 			</File>
 		</Filter>
@@ -2079,22 +2085,31 @@
 			</File>
 			<Filter
 				Name="extern">
+				<File
+					RelativePath=".\lzma\LzmaDec.c">
+				</File>
+				<File
+					RelativePath=".\lzma\LzmaDec.h">
+				</File>
+				<File
+					RelativePath=".\lzma\Types.h">
+				</File>
 				<Filter
 					Name="zlib">
 					<File
 						RelativePath="zlib\adler32.c">
 					</File>
 					<File
-						RelativePath=".\zlib\compress.c">
+						RelativePath="zlib\compress.c">
 					</File>
 					<File
-						RelativePath=".\zlib\crc32.c">
+						RelativePath="zlib\crc32.c">
 					</File>
 					<File
-						RelativePath=".\zlib\crc32.h">
+						RelativePath="zlib\crc32.h">
 					</File>
 					<File
-						RelativePath=".\zlib\deflate.c">
+						RelativePath="zlib\deflate.c">
 					</File>
 					<File
 						RelativePath="zlib\deflate.h">
@@ -2145,10 +2160,16 @@
 						RelativePath="jpeglib\cderror.h">
 					</File>
 					<File
+						RelativePath="jpeglib\jaricom.c">
+					</File>
+					<File
 						RelativePath="jpeglib\jcapimin.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jcapistd.c">
+					</File>
+					<File
+						RelativePath="jpeglib\jcarith.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jccoefct.c">
@@ -2187,9 +2208,6 @@
 						RelativePath="jpeglib\jcparam.c">
 					</File>
 					<File
-						RelativePath="jpeglib\jcphuff.c">
-					</File>
-					<File
 						RelativePath="jpeglib\jcprepct.c">
 					</File>
 					<File
@@ -2203,6 +2221,9 @@
 					</File>
 					<File
 						RelativePath="jpeglib\jdapistd.c">
+					</File>
+					<File
+						RelativePath="jpeglib\jdarith.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jdatadst.c">
@@ -2244,9 +2265,6 @@
 						RelativePath="jpeglib\jdmerge.c">
 					</File>
 					<File
-						RelativePath="jpeglib\jdphuff.c">
-					</File>
-					<File
 						RelativePath="jpeglib\jdpostct.c">
 					</File>
 					<File
@@ -2278,9 +2296,6 @@
 					</File>
 					<File
 						RelativePath="jpeglib\jidctint.c">
-					</File>
-					<File
-						RelativePath="jpeglib\jidctred.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jinclude.h">
@@ -2368,6 +2383,90 @@
 					</File>
 					<File
 						RelativePath=".\libpng\pngwutil.c">
+					</File>
+				</Filter>
+				<Filter
+					Name="aesGladman">
+					<File
+						RelativePath=".\aesGladman\aes.h">
+					</File>
+					<File
+						RelativePath=".\aesGladman\aescrypt.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\aeskey.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\aesopt.h">
+					</File>
+					<File
+						RelativePath=".\aesGladman\aestab.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\fileenc.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\fileenc.h">
+					</File>
+					<File
+						RelativePath=".\aesGladman\hmac.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\hmac.h">
+					</File>
+					<File
+						RelativePath=".\aesGladman\prng.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\prng.h">
+					</File>
+					<File
+						RelativePath=".\aesGladman\pwd2key.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\pwd2key.h">
+					</File>
+					<File
+						RelativePath=".\aesGladman\sha1.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\sha1.h">
+					</File>
+					<File
+						RelativePath=".\aesGladman\sha2.cpp">
+					</File>
+					<File
+						RelativePath=".\aesGladman\sha2.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="bzip2">
+					<File
+						RelativePath=".\bzip2\blocksort.c">
+					</File>
+					<File
+						RelativePath=".\bzip2\bzcompress.c">
+					</File>
+					<File
+						RelativePath=".\bzip2\bzlib.c">
+					</File>
+					<File
+						RelativePath=".\bzip2\bzlib.h">
+					</File>
+					<File
+						RelativePath=".\bzip2\bzlib_private.h">
+					</File>
+					<File
+						RelativePath=".\bzip2\crctable.c">
+					</File>
+					<File
+						RelativePath=".\bzip2\decompress.c">
+					</File>
+					<File
+						RelativePath=".\bzip2\huffman.c">
+					</File>
+					<File
+						RelativePath=".\bzip2\randtable.c">
 					</File>
 				</Filter>
 			</Filter>

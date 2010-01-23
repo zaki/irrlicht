@@ -40,6 +40,9 @@ class quaternion
 		//! Equalilty operator
 		bool operator==(const quaternion& other) const;
 
+		//! inequality operator
+		bool operator!=(const quaternion& other) const;
+
 		//! Assignment operator
 		inline quaternion& operator=(const quaternion& other);
 
@@ -75,6 +78,9 @@ class quaternion
 
 		//! Sets new quaternion based on euler angles (radians)
 		inline quaternion& set(const core::vector3df& vec);
+
+		//! Sets new quaternion from other quaternion
+		inline quaternion& set(const core::quaternion& quat);
 
 		//! Normalizes the quaternion
 		inline quaternion& normalize();
@@ -171,6 +177,11 @@ inline bool quaternion::operator==(const quaternion& other) const
 		(W == other.W));
 }
 
+// inequality operator
+inline bool quaternion::operator!=(const quaternion& other) const
+{
+	return !(*this == other);
+}
 
 // assignment operator
 inline quaternion& quaternion::operator=(const quaternion& other)
@@ -339,7 +350,7 @@ inline void quaternion::getMatrix( matrix4 &dest, const core::vector3df &center 
 	m2.setInverseTranslation ( center );
 	lookat *= m2;
 */
-inline void quaternion::getMatrixCenter(matrix4 &dest, 
+inline void quaternion::getMatrixCenter(matrix4 &dest,
 					const core::vector3df &center,
 					const core::vector3df &translation) const
 {
@@ -443,6 +454,12 @@ inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 inline quaternion& quaternion::set(const core::vector3df& vec)
 {
 	return set(vec.X, vec.Y, vec.Z);
+}
+
+// sets new quaternion based on other quaternion
+inline quaternion& quaternion::set(const core::quaternion& quat)
+{
+	return (*this=quat);
 }
 
 // normalizes the quaternion

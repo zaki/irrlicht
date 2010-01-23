@@ -73,7 +73,7 @@ VideoDriver, load an animated mesh from .md2 and a map from
 .pk3. Because that's old stuff, I won't explain every step.
 Just take care of the maps position.
 */
-int main()
+int main(int argc, char** argv)
 {
 	video::E_DRIVER_TYPE driverType;
 
@@ -129,7 +129,7 @@ int main()
 	IAnimatedMesh *map = smgr->getMesh("20kdm2.bsp");
 	if (map)
 	{
-		ISceneNode *map_node = smgr->addOctTreeSceneNode(map->getMesh(0));
+		ISceneNode *map_node = smgr->addOctreeSceneNode(map->getMesh(0));
 		//Set position
 		map_node->setPosition(vector3df(-850,-220,-850));
 	}

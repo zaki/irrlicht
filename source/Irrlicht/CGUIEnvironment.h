@@ -77,6 +77,11 @@ public:
 	//! returns the font
 	virtual IGUIFont* getFont(const io::path& filename);
 
+	//! add an externally loaded font
+	virtual IGUIFont* addFont(const io::path& name, IGUIFont* font);
+
+	//! returns default font
+	virtual IGUIFont* getBuiltInFont() const;
 
 	//! returns the sprite bank
 	virtual IGUISpriteBank* getSpriteBank(const io::path& filename);
@@ -182,9 +187,6 @@ public:
 	//! Returns the element with the focus
 	virtual IGUIElement* getFocus() const;
 
-	//! returns default font
-	virtual IGUIFont* getBuiltInFont() const;
-
 	//! Adds an element for fading in or out.
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1);
 
@@ -256,23 +258,23 @@ private:
 
 	struct SFont
 	{
-		io::path Filename;
+		io::SNamedPath NamedPath;
 		IGUIFont* Font;
 
 		bool operator < (const SFont& other) const
 		{
-			return (Filename < other.Filename);
+			return (NamedPath < other.NamedPath);
 		}
 	};
 
 	struct SSpriteBank
 	{
-		core::stringc Filename;
+		io::SNamedPath NamedPath;
 		IGUISpriteBank* Bank;
 
 		bool operator < (const SSpriteBank& other) const
 		{
-			return (Filename < other.Filename);
+			return (NamedPath < other.NamedPath);
 		}
 	};
 

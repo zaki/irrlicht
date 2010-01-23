@@ -52,6 +52,9 @@ int main(int argumentCount, char * arguments[])
 
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	// Now the simple tests without device
+	TEST(testIrrArray);
+	TEST(testIrrMap);
+	TEST(testIrrList);
 	TEST(exports);
 	TEST(irrCoreEquals);
 	TEST(testIrrString);
@@ -60,20 +63,26 @@ int main(int argumentCount, char * arguments[])
 	TEST(testDimension2d);
 	TEST(testVector2d);
 	TEST(testVector3d);
+	TEST(testS3DVertex);
+	TEST(testaabbox3d);
 	// TODO: Needs to be fixed first
 //	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);
-	// file system checks
+	// file system checks (with null driver)
 	TEST(filesystem);
 	TEST(archiveReader);
 	TEST(testXML);
+	TEST(serializeAttributes);
 	// null driver
 	TEST(fast_atof);
+	TEST(loadTextures);
 	TEST(collisionResponseAnimator);
 	TEST(enumerateImageManipulators);
 	TEST(removeCustomAnimator);
 	TEST(sceneCollisionManager);
 	TEST(sceneNodeAnimator);
+	TEST(meshLoaders);
+	TEST(testTimer);
 	// software drivers only
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
@@ -84,13 +93,17 @@ int main(int argumentCount, char * arguments[])
 	TEST(md2Animation);
 	TEST(testGeometryCreator);
 	TEST(writeImageToFile);
+	TEST(meshTransform);
 	// all driver checks
 	TEST(drawPixel);
 	TEST(guiDisabledMenu);
 	TEST(makeColorKeyTexture);
 	TEST(renderTargetTexture);
+	TEST(textureFeatures);
 	TEST(textureRenderStates);
 	TEST(transparentAlphaChannelRef);
+	TEST(antiAliasing);
+	TEST(draw2DImage);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes
@@ -103,7 +116,7 @@ int main(int argumentCount, char * arguments[])
 	unsigned int fails = 0;
 
 	bool firstRun=true;
-	const bool spawn=true;
+	const bool spawn=false;
 	// args: [testNumber] [testCount]
 	if(argumentCount > 1)
 	{
@@ -196,6 +209,13 @@ int main(int argumentCount, char * arguments[])
 			FILE * testsLastPassedAtFile = fopen("tests-last-passed-at.txt", "w");
 			if(testsLastPassedAtFile)
 			{
+				(void)fprintf(testsLastPassedAtFile, "Tests finished. %d test%s of %d passed.\n",
+			passed, 1 == passed ? "" : "s", numberOfTests);
+#ifdef _DEBUG
+				(void)fprintf(testsLastPassedAtFile, "Compiled as DEBUG\n");
+#else
+				(void)fprintf(testsLastPassedAtFile, "Compiled as RELEASE\n");
+#endif
 				(void)fprintf(testsLastPassedAtFile, "Test suite pass at GMT %s\n", asctime(timeinfo));
 				(void)fclose(testsLastPassedAtFile);
 			}

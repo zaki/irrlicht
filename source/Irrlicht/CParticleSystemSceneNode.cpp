@@ -450,6 +450,7 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 
 	for (u32 i=0; i<Particles.size();)
 	{
+		// erase is pretty expensive!
 		if (now > Particles[i].endTime)
 			Particles.erase(i);
 		else

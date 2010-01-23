@@ -90,6 +90,12 @@ int main()
 	core::rect<s32> imp2(387,15,423,78);
 
 	/*
+	Prepare a nicely filtering 2d render mode for special cases.
+	*/
+	driver->getMaterial2D().TextureLayer[0].BilinearFilter=true;
+	driver->getMaterial2D().AntiAliasing=video::EAAM_FULL_BASIC;
+
+	/*
 	Everything is prepared, now we can draw everything in the draw loop,
 	between the begin scene and end scene calls. In this example, we are
 	just doing 2d graphics, but it would be no problem to mix them with 3d
@@ -148,16 +154,18 @@ int main()
 					video::SColor(255,time % 255,time % 255,255));
 
 			/*
-			At last, we draw the Irrlicht Engine logo (without
-			using a color or an alpha channel) and a transparent 2d
-			Rectangle at the position of the mouse cursor.
+			Next, we draw the Irrlicht Engine logo (without
+			using a color or an alpha channel). Since we slightly scale
+			the image we use the prepared filter mode.
 			*/
-
-			// draw logo
-			driver->draw2DImage(images, core::position2d<s32>(10,10),
+			driver->enableMaterial2D();
+			driver->draw2DImage(images, core::rect<s32>(10,10,108,48),
 				core::rect<s32>(354,87,442,118));
+			driver->enableMaterial2D(false);
 
-			// draw transparent rect under cursor
+			/*
+			Finally draw a half-transparent rect under the mouse cursor.
+			*/
 			core::position2d<s32> m = device->getCursorControl()->getPosition();
 			driver->draw2DRectangle(video::SColor(100,255,255,255),
 				core::rect<s32>(m.X-20, m.Y-20, m.X+20, m.Y+20));

@@ -30,7 +30,7 @@
 // The IrrCSM library features the following capabilities
 //
 //  * Loads the .csm 4.0 and 4.1 files transparently
-//  * Presents the loaded file as irr::scene::IAnimatedMesh for easy creation of IOctTreeSceneNode
+//  * Presents the loaded file as irr::scene::IAnimatedMesh for easy creation of IOctreeSceneNode
 //  * Loads the textures given the correct texture root. hence map and textures can be in separate directories
 //
 // For more informations go to http://www.geocities.com/standard_template/irrcsm/downloads.html

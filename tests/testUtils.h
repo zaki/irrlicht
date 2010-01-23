@@ -2,13 +2,6 @@
 #ifndef _TEST_UTILS_H_
 #define _TEST_UTILS_H_ 1
 
-#if defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64) || defined(_WIN32_WCE)
-#define TESTING_ON_WINDOWS
-#define DIR_SEP_STRING "\\"
-#else
-#define DIR_SEP_STRING "/"
-#endif
-
 #include "irrlicht.h"
 #include <assert.h>
 

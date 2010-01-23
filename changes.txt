@@ -1,12 +1,81 @@
 Changes in 1.7
 
+ - Define sorting order for vector2d and vector3d in operators <, <=, > and >= to fix bugs 2783509 and 2783510. Operators order now by X,Y,Z and use float tolerances.
+
+ - Fix tooltips for gui-elements with sub-element like IGUISpinBox (id: 2927079, found by ArakisTheKitsune)
+
+ - ITimer no longer stops when started twice
+
+ - Add hasType to IGUIElement as a dynamic_cast substitute.
+
+ - Add another parameter to IGUISkin::draw3DWindowBackground to allow getting the client area without actually drawing 
+
+ - Add function getClientRect to IGUIWindow for getting the draw-able area
+
+ - Fix bug that menus on IGUIWindows with titlebar got drawn too high (id: 2714400)
+
+ - Renamed OctTree to Octree
+
+ - Allow getting a ConstIterator from a non-const core:list
+
+ - Add swap functions to irrMath and to the core classes.
+
+ - Deprecate map::isEmpty() and replace it with map::empty() to make it similar to other base classes.
+
+ - Allow to set the logging level already in SIrrlichtCreationParameters.
+
+ - Add clearSystemMessages to devices (implemented only for Linux and Win32 so far).
+ 
+ - Fix incorrect cursorpos for resizable windows on Windows Vista (found and patched by buffer)
+
+ - Change the beginScene window parameter from void* to SExposedVideoData&. This will allow to manage contexts for OpenGL at some point.
+
+ - Add bzip2 and LZMA decompression modes for zip loader.
+
+ - Add OBJ_TEXTURE_PATH and B3D_TEXTURE_PATH to SceneParameters to allow setting texture-paths for obj and b3d.
+
+ - Irrlicht keeps now filenames additionally to the internally used names, thereby fixing some problems with uppercase-filenames on Linux.
+
+ - Bugfix: Mousewheel no longer sends EMIE_MOUSE_WHEEL messages twice on Linux.
+
+ - refactoring: E_ATTRIBUTE_TYPE and IAttribute have now own headers
+
+ - CStringWArrayAttribute speedup
+
+ - SceneNodeAnimatorFollowSpline can now loop and pingpong
+
+ - Meshviewer.example got some fast-scale buttons.
+
+ - Support AES-encrypted zip files. Should work with 128, 196, and 256 bit AES. This addition also adds a new PRNG, SHA, and other algorithms to the engine, though no interface is yet added for them. The implementation of the encryption algorithms is provided by Dr Brian Gladman.
+
+ - Added geometry shaders for OpenGL. A first version of the code was submitted by Matthew Kielan (devsh).
+
+ - Bugfix: irrArray should no longer crash when using other allocators.
+
+ - Add MaterialViewer example.
+
+ - Checkbox uses now disabled text color when disabled.
+
+ - Changed colors for window-title caption to keep them readable when not active.
+
+ - Draw sub-menus to left side if they would be outside main-window otherwise.
+
+ - Give ListBox better defaults for the ScrollBar stepsizes.
+
+ - Double and triple click events now for each mouse-button. Old events for that got removed.
+
+ - Fix adding archives twice, which caused multiple archives of the same name and type covering each other. This one required a texture name change from using backslashes to slashes under Windows.
+
+ - Give access to texture mipmaps. You can provide custom mipmap textures upon generation, regeneration, and locking.
+   Make sure the provided data is large enough and covers all miplevels. Also the returned pointer (from lock) will only cover the smaller data of the mipmap level dimension chosen (level 0 is the original texture).
+
  - Separate TextureWrap mode into U and V fields
 
  - Add mirror texture wrap modes
  
  - windows show now active/inactive state
 
- - remove unneed drop/grab calls found by manik_sheeri
+ - remove unneeded drop/grab calls found by manik_sheeri
 
  - fix rounding problem in IGUIElements which have EGUIA_SCALE alignments.
 
@@ -52,13 +121,13 @@ Changes in 1.7
 
  - Bounding Box updates for skinned meshes fixed
 
- - The current FPS for an animated scene node cn be queried now, added some variables to serialization
+ - The current FPS for an animated scene node can be queried now, added some variables to serialization
 
  - Scrollbars fixed
 
  - Fixed 2d vertex primitive method to correctly handle transparency
 
- - Fullscreen handling has been ehanced for Windows, now proper resolution is restored on Alt-Tab etc.
+ - Fullscreen handling has been enhanced for Windows, now proper resolution is restored on Alt-Tab etc.
 
  - Cameras can now be added to the scene node without automatically activating them
    Clone method added
@@ -84,7 +153,48 @@ Changes in 1.7
 ----------------
 Changes in 1.6.1
 
+ - Fix pingpong for CSceneNodeAnimatorFlyStraight (found by gbox)
+
+ - Fix bug with IGUIEditBox where the cursor position is reset on text change.
+
+ - Make sure the window top-left corner on Windows is not negative on start so that Windows sytem-menu is always visible.
+
+ - Fix problem that the window did sometimes not get the keyboard focus in X11 in fullscreen. Add more debug output in case focus grabbing goes wrong.
+
+ - Fix screensize in videodriver when we didn't get the requested window size. This also prevents that gui-clicks are no longer synchronized with gui-drawing and elements can't be hit anymore.
+
+ - Bugfix: Prevent a crash when getTypeName was called for the guienvironment. EGUIET_ELEMENT got changed for this.
+
+ - Bugfix: Horizontal centered font with linebreaks draw now all lines. For example multiline TextSceneNodes work again.
+
+ - Bugfix: spinbox can no longer get in an endless loop due to floating point rounding error (found by slavik262)
+
+ - !!API change!! Disabled AntiAliasing of Lines in material default
+   Please enable this manually per material when sure that it won't lead to SW rendering.
+
+ - IGUIComboBox: clicking on the statictext displaying the active selection does now close and open listbox correctly. (Bug found by Reiko)
+
+ - Scrollbuttons in IGUITabControl adapt now to tab-height.
+
+ - Fix texturing of cylinder mesh
+
+ - Fix modal dialog position (found by LoneBoco: http://sourceforge.net/tracker/?func=detail&aid=2900266&group_id=74339&atid=540676)
+
+ - Fix DMF loading
+
+ - Fixing left+right special keys (ctrl, shift, alt) on Win32 (thanks to pc0de for good patch-ideas).
+
+ - Make stringarrays for enums in IGUISkin a little safer
+
+ - Add support for keys KEY_PRINT, KEY_HOME (on numpad) and KEY_NUMLOCK on Linux.
+
+ - Fix material handling in createMeshWith1TCoords
+
  - Fix another (OldValue == NewValue) before drop()/grap(), this time in CTextureAttribute::setTexture.
+
+ - Fix LIGHTMAP_LIGHTING for D3D drivers.
+
+ - AntiAliasing disabled for debug render elements.
 
  - Bugfix: CGUIToolBar::addButton does no longer mess up when no image is set and does now actually work with the text.
 
@@ -742,7 +852,13 @@ Changes in 1.6 (23.09.2009)
  - Add a hitPosition out parameter to ISceneCollisionManager::getCollisionResultPosition() - this is a (small) API breaking change.
 
 -------------------------------------
-Changes in version 1.5.2 (??.??.2009)
+Changes in version 1.5.2 (16.12.2009)
+
+ - Properly check boundaries in getFont and setFont.
+
+ - Reinit values in the driver when scene manager is cleared.
+
+ - Normals handling fixed in createMeshWithTangents, existing normals are not always destroyed now.
 
  - Fix terrain smoothing, bug found by loverlinfish
 

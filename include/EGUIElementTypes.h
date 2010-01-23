@@ -85,11 +85,11 @@ enum EGUI_ELEMENT_TYPE
 	//! A window
 	EGUIET_WINDOW,
 
-	//! Not an element, amount of elements in there
-	EGUIET_COUNT,
-
 	//! Unknown type.
 	EGUIET_ELEMENT,
+
+	//! Not an element, amount of elements in there
+	EGUIET_COUNT,
 
 	//! This enum is never used, it only forces the compiler to compile this enumeration to 32 bit.
 	EGUIET_FORCE_32_BIT = 0x7fffffff
@@ -122,6 +122,7 @@ const c8* const GUIElementTypeNames[] =
 	"toolBar",
 	"treeview",
 	"window",
+	"element",
 	0
 };
 

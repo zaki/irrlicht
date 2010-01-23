@@ -26,7 +26,7 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 	if(added)
 	{
-		ISceneNode * node = smgr->addOctTreeSceneNode(smgr->getMesh("20kdm2.bsp")->getMesh(0), 0, -1, 1024);
+		ISceneNode * node = smgr->addOctreeSceneNode(smgr->getMesh("20kdm2.bsp")->getMesh(0), 0, -1, 1024);
 		assert(node);
 
 		if (node)

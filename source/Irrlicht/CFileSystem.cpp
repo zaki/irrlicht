@@ -190,7 +190,8 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 
 //! Adds an archive to the file system.
 bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
-			  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
+			  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType,
+			  const core::stringc& password)
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
@@ -200,7 +201,11 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	for (i = 0; i < FileArchives.size(); ++i)
 	{
 		if (getAbsolutePath(filename) == FileArchives[i]->getFileList()->getPath())
+		{
+			if (password.size())
+				FileArchives[i]->Password=password;
 			return true;
+		}
 	}
 
 	// do we know what type it should be?
@@ -281,6 +286,8 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	if (archive)
 	{
 		FileArchives.push_back(archive);
+		if (password.size())
+			archive->Password=password;
 		ret = true;
 	}
 	else
@@ -346,23 +353,25 @@ const io::path& CFileSystem::getWorkingDirectory()
 	else
 	{
 		#if defined(_IRR_WINDOWS_CE_PLATFORM_)
-
+		// does not need this
 		#elif defined(_IRR_WINDOWS_API_)
+			fschar_t tmp[_MAX_PATH];
 			#if defined(_IRR_WCHAR_FILESYSTEM )
-				wchar_t tmp[_MAX_PATH];
 				_wgetcwd(tmp, _MAX_PATH);
+				WorkingDirectory[FILESYSTEM_NATIVE] = tmp;
+				WorkingDirectory[FILESYSTEM_NATIVE].replace(L'\\', L'/');
 			#else
-				c8 tmp[_MAX_PATH];
 				_getcwd(tmp, _MAX_PATH);
+				WorkingDirectory[FILESYSTEM_NATIVE] = tmp;
+				WorkingDirectory[FILESYSTEM_NATIVE].replace('\\', '/');
 			#endif
-			WorkingDirectory[FILESYSTEM_NATIVE] = tmp;
 		#endif
 
 		#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 
-			//! getting the CWD is rather complex as we do not know the size
-			//! so try it until the call was successful
-			//! Note that neither the first nor the second parameter may be 0 according to POSIX
+			// getting the CWD is rather complex as we do not know the size
+			// so try it until the call was successful
+			// Note that neither the first nor the second parameter may be 0 according to POSIX
 
 			#if defined(_IRR_WCHAR_FILESYSTEM )
 				u32 pathSize=256;
@@ -436,42 +445,44 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 
 io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 {
-	fschar_t *p=0;
-
 #if defined(_IRR_WINDOWS_CE_PLATFORM_)
 	return filename;
 #elif defined(_IRR_WINDOWS_API_)
-
+	fschar_t *p=0;
+	fschar_t fpath[_MAX_PATH];
 	#if defined(_IRR_WCHAR_FILESYSTEM )
-		wchar_t fpath[_MAX_PATH];
 		p = _wfullpath(fpath, filename.c_str(), _MAX_PATH);
+		core::stringw tmp(p);
+		tmp.replace(L'\\', L'/');
 	#else
-		c8 fpath[_MAX_PATH];
 		p = _fullpath(fpath, filename.c_str(), _MAX_PATH);
+		core::stringc tmp(p);
+		tmp.replace('\\', '/');
 	#endif
-
+	return tmp;
 #elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
+	c8* p=0;
 	c8 fpath[4096];
 	fpath[0]=0;
 	p = realpath(filename.c_str(), fpath);
 	if (!p)
 	{
-		// content in fpath is undefined at this point
-		if (!fpath[0]) // seems like fpath wasn't altered
+		// content in fpath is unclear at this point
+		if (!fpath[0]) // seems like fpath wasn't altered, use our best guess
 		{
-			// at least remove a ./ prefix
-			if ('.'==filename[0] && '/'==filename[1])
-				return filename.subString(2, filename.size()-2);
-			else
-				return filename;
+			io::path tmp(filename);
+			return flattenFilename(tmp);
 		}
 		else
 			return io::path(fpath);
 	}
-
+	if (filename[filename.size()-1]=='/')
+		return io::path(p)+"/";
+	else
+		return io::path(p);
+#else
+	return io::path(filename);
 #endif
-
-	return io::path(p);
 }
 
 
@@ -523,7 +534,7 @@ io::path CFileSystem::getFileBasename(const io::path& filename, bool keepExtensi
 }
 
 
-//! flaten a path and file name for example: "/you/me/../." becomes "/you"
+//! flatten a path and file name for example: "/you/me/../." becomes "/you"
 io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root) const
 {
 	directory.replace('\\', '/');
@@ -535,6 +546,7 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 
 	s32 lastpos = 0;
 	s32 pos = 0;
+	bool lastWasRealDir=false;
 
 	while ((pos = directory.findNext('/', lastpos)) >= 0)
 	{
@@ -542,7 +554,16 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 
 		if (subdir == "../")
 		{
-			deletePathFromPath(dir, 2);
+			if (lastWasRealDir)
+			{
+				deletePathFromPath(dir, 2);
+				lastWasRealDir=(dir.size()!=0);
+			}
+			else
+			{
+				dir.append(subdir);
+				lastWasRealDir=false;
+			}
 		}
 		else if (subdir == "/")
 		{
@@ -551,6 +572,7 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 		else if (subdir != "./" )
 		{
 			dir.append(subdir);
+			lastWasRealDir=true;
 		}
 
 		lastpos = pos + 1;

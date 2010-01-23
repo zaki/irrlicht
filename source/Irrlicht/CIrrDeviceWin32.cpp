@@ -35,7 +35,7 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params, 
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 			io::IFileSystem* io, CIrrDeviceWin32* device);
 		#endif
 
@@ -45,14 +45,178 @@ namespace irr
 	}
 } // end namespace irr
 
-
-struct SEnvMapper
+// Get the codepage from the locale language id 
+// Based on the table from http://www.science.co.il/Language/Locale-Codes.asp?s=decimal
+static unsigned int LocaleIdToCodepage(unsigned int lcid)
 {
-	HWND hWnd;
-	irr::CIrrDeviceWin32* irrDev;
-};
+    switch ( lcid )
+    {
+        case 1098:  // Telugu
+        case 1095:  // Gujarati
+        case 1094:  // Punjabi
+        case 1103:  // Sanskrit
+        case 1111:  // Konkani
+        case 1114:  // Syriac
+        case 1099:  // Kannada
+        case 1102:  // Marathi
+        case 1125:  // Divehi
+        case 1067:  // Armenian
+        case 1081:  // Hindi
+        case 1079:  // Georgian
+        case 1097:  // Tamil
+            return 0;
+        case 1054:  // Thai
+            return 874;
+        case 1041:  // Japanese
+            return 932;
+        case 2052:  // Chinese (PRC)
+        case 4100:  // Chinese (Singapore)
+            return 936;
+        case 1042:  // Korean
+            return 949;
+        case 5124:  // Chinese (Macau S.A.R.)
+        case 3076:  // Chinese (Hong Kong S.A.R.)
+        case 1028:  // Chinese (Taiwan)
+            return 950;
+        case 1048:  // Romanian
+        case 1060:  // Slovenian
+        case 1038:  // Hungarian
+        case 1051:  // Slovak
+        case 1045:  // Polish
+        case 1052:  // Albanian
+        case 2074:  // Serbian (Latin)
+        case 1050:  // Croatian
+        case 1029:  // Czech
+            return 1250;
+        case 1104:  // Mongolian (Cyrillic)
+        case 1071:  // FYRO Macedonian
+        case 2115:  // Uzbek (Cyrillic)
+        case 1058:  // Ukrainian
+        case 2092:  // Azeri (Cyrillic)
+        case 1092:  // Tatar
+        case 1087:  // Kazakh
+        case 1059:  // Belarusian
+        case 1088:  // Kyrgyz (Cyrillic)
+        case 1026:  // Bulgarian
+        case 3098:  // Serbian (Cyrillic)
+        case 1049:  // Russian
+            return 1251;
+        case 8201:  // English (Jamaica)
+        case 3084:  // French (Canada)
+        case 1036:  // French (France)
+        case 5132:  // French (Luxembourg)
+        case 5129:  // English (New Zealand)
+        case 6153:  // English (Ireland)
+        case 1043:  // Dutch (Netherlands)
+        case 9225:  // English (Caribbean)
+        case 4108:  // French (Switzerland)
+        case 4105:  // English (Canada)
+        case 1110:  // Galician
+        case 10249:  // English (Belize)
+        case 3079:  // German (Austria)
+        case 6156:  // French (Monaco)
+        case 12297:  // English (Zimbabwe)
+        case 1069:  // Basque
+        case 2067:  // Dutch (Belgium)
+        case 2060:  // French (Belgium)
+        case 1035:  // Finnish
+        case 1080:  // Faroese
+        case 1031:  // German (Germany)
+        case 3081:  // English (Australia)
+        case 1033:  // English (United States)
+        case 2057:  // English (United Kingdom)
+        case 1027:  // Catalan
+        case 11273:  // English (Trinidad)
+        case 7177:  // English (South Africa)
+        case 1030:  // Danish
+        case 13321:  // English (Philippines)
+        case 15370:  // Spanish (Paraguay)
+        case 9226:  // Spanish (Colombia)
+        case 5130:  // Spanish (Costa Rica)
+        case 7178:  // Spanish (Dominican Republic)
+        case 12298:  // Spanish (Ecuador)
+        case 17418:  // Spanish (El Salvador)
+        case 4106:  // Spanish (Guatemala)
+        case 18442:  // Spanish (Honduras)
+        case 3082:  // Spanish (International Sort)
+        case 13322:  // Spanish (Chile)
+        case 19466:  // Spanish (Nicaragua)
+        case 2058:  // Spanish (Mexico)
+        case 10250:  // Spanish (Peru)
+        case 20490:  // Spanish (Puerto Rico)
+        case 1034:  // Spanish (Traditional Sort)
+        case 14346:  // Spanish (Uruguay)
+        case 8202:  // Spanish (Venezuela)
+        case 1089:  // Swahili
+        case 1053:  // Swedish
+        case 2077:  // Swedish (Finland)
+        case 5127:  // German (Liechtenstein)
+        case 1078:  // Afrikaans
+        case 6154:  // Spanish (Panama)
+        case 4103:  // German (Luxembourg)
+        case 16394:  // Spanish (Bolivia)
+        case 2055:  // German (Switzerland)
+        case 1039:  // Icelandic
+        case 1057:  // Indonesian
+        case 1040:  // Italian (Italy)
+        case 2064:  // Italian (Switzerland)
+        case 2068:  // Norwegian (Nynorsk)
+        case 11274:  // Spanish (Argentina)
+        case 1046:  // Portuguese (Brazil)
+        case 1044:  // Norwegian (Bokmal)
+        case 1086:  // Malay (Malaysia)
+        case 2110:  // Malay (Brunei Darussalam)
+        case 2070:  // Portuguese (Portugal)
+            return 1252;
+        case 1032:  // Greek
+            return 1253;
+        case 1091:  // Uzbek (Latin)
+        case 1068:  // Azeri (Latin)
+        case 1055:  // Turkish
+            return 1254;
+        case 1037:  // Hebrew
+            return 1255;
+        case 5121:  // Arabic (Algeria)
+        case 15361:  // Arabic (Bahrain)
+        case 9217:  // Arabic (Yemen)
+        case 3073:  // Arabic (Egypt)
+        case 2049:  // Arabic (Iraq)
+        case 11265:  // Arabic (Jordan)
+        case 13313:  // Arabic (Kuwait)
+        case 12289:  // Arabic (Lebanon)
+        case 4097:  // Arabic (Libya)
+        case 6145:  // Arabic (Morocco)
+        case 8193:  // Arabic (Oman)
+        case 16385:  // Arabic (Qatar)
+        case 1025:  // Arabic (Saudi Arabia)
+        case 10241:  // Arabic (Syria)
+        case 14337:  // Arabic (U.A.E.)
+        case 1065:  // Farsi
+        case 1056:  // Urdu
+        case 7169:  // Arabic (Tunisia)
+            return 1256;
+        case 1061:  // Estonian
+        case 1062:  // Latvian
+        case 1063:  // Lithuanian
+            return 1257;
+        case 1066:  // Vietnamese
+            return 1258;
+    }
+    return 65001;   // utf-8
+} 
 
-irr::core::list<SEnvMapper> EnvMap;
+namespace
+{
+	struct SEnvMapper
+	{
+		HWND hWnd;
+		irr::CIrrDeviceWin32* irrDev;
+	};
+	irr::core::list<SEnvMapper> EnvMap;
+
+	HKL KEYBOARD_INPUT_HKL=0;
+	unsigned int KEYBOARD_INPUT_CODEPAGE = 1252; 
+};
 
 SEnvMapper* getEnvMapperFromHWnd(HWND hWnd)
 {
@@ -171,17 +335,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			dev->postEventFromUser(event);
 
-			if ( event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN )
+			if ( event.MouseInput.Event >= irr::EMIE_LMOUSE_PRESSED_DOWN && event.MouseInput.Event <= irr::EMIE_MMOUSE_PRESSED_DOWN )
 			{
-				irr::u32 clicks = dev->checkSuccessiveClicks(event.MouseInput.X, event.MouseInput.Y);
+				irr::u32 clicks = dev->checkSuccessiveClicks(event.MouseInput.X, event.MouseInput.Y, event.MouseInput.Event);
 				if ( clicks == 2 )
 				{
-					event.MouseInput.Event = irr::EMIE_MOUSE_DOUBLE_CLICK;
+					event.MouseInput.Event = (irr::EMOUSE_INPUT_EVENT)(irr::EMIE_LMOUSE_DOUBLE_CLICK + event.MouseInput.Event-irr::EMIE_LMOUSE_PRESSED_DOWN);
 					dev->postEventFromUser(event);
 				}
 				else if ( clicks == 3 )
 				{
-					event.MouseInput.Event = irr::EMIE_MOUSE_TRIPLE_CLICK;
+					event.MouseInput.Event = (irr::EMOUSE_INPUT_EVENT)(irr::EMIE_LMOUSE_TRIPLE_CLICK + event.MouseInput.Event-irr::EMIE_LMOUSE_PRESSED_DOWN);
 					dev->postEventFromUser(event);
 				}
 			}
@@ -223,23 +387,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				event.KeyInput.Key = (irr::EKEY_CODE)MapVirtualKey( ((lParam>>16) & 255), MY_MAPVK_VSC_TO_VK_EX );
 				// some keyboards will just return LEFT for both - left and right keys. So also check extend bit.
-				if (lParam & 0x1000000) 
+				if (lParam & 0x1000000)
 					event.KeyInput.Key = irr::KEY_RCONTROL;
 			}
 			if ( event.KeyInput.Key == irr::KEY_MENU )
 			{
 				event.KeyInput.Key = (irr::EKEY_CODE)MapVirtualKey( ((lParam>>16) & 255), MY_MAPVK_VSC_TO_VK_EX );
-				if (lParam & 0x1000000) 
+				if (lParam & 0x1000000)
 					event.KeyInput.Key = irr::KEY_RMENU;
 			}
-			
-			WORD KeyAsc=0;
+
 			GetKeyboardState(allKeys);
-			ToAscii((UINT)wParam,(UINT)lParam,allKeys,&KeyAsc,0);
 
 			event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
 			event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
-			event.KeyInput.Char = (KeyAsc & 0x00ff); //KeyAsc >= 0 ? KeyAsc : 0;
+
+			// Handle unicode and deadkeys in a way that works since Windows 95 and nt4.0
+			// Using ToUnicode instead would be shorter, but would to my knowledge not run on 95 and 98.
+			WORD keyChars[2];
+			UINT scanCode = HIWORD(lParam);
+			int conversionResult = ToAsciiEx(wParam,scanCode,allKeys,keyChars,0,KEYBOARD_INPUT_HKL);
+			if (conversionResult == 1)
+			{
+				WORD unicodeChar;
+				MultiByteToWideChar(
+						KEYBOARD_INPUT_CODEPAGE,
+						MB_PRECOMPOSED, // default
+						(LPCSTR)keyChars,
+						sizeof(keyChars),
+						(WCHAR*)&unicodeChar,
+						1 );
+				event.KeyInput.Char = unicodeChar; 
+			}
+			else
+				event.KeyInput.Char = 0;
+
+			// allow composing characters like '@' with Alt Gr on non-US keyboards
+			if ((allKeys[VK_MENU] & 0x80) != 0)
+				event.KeyInput.Control = 0;
 
 			dev = getDeviceFromHWnd(hWnd);
 			if (dev)
@@ -293,6 +478,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			dev->postEventFromUser(event);
 
 		return 0;
+
+	case WM_SETCURSOR:
+		// because Windows forgot about that in the meantime
+		dev = getDeviceFromHWnd(hWnd);
+		if (dev)
+			dev->getCursorControl()->setVisible( dev->getCursorControl()->isVisible() );
+		break;
+
+	case WM_INPUTLANGCHANGE:
+        // get the new codepage used for keyboard input
+        KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
+        KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) );
+        return 0; 
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -366,6 +564,11 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
 		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
+		if ( windowLeft < 0 )
+			windowLeft = 0;
+		if ( windowTop < 0 )
+			windowTop = 0;	// make sure window menus are in screen on creation
+
 		if (CreationParams.Fullscreen)
 		{
 			windowLeft = 0;
@@ -383,6 +586,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 		// fix ugly ATI driver bugs. Thanks to ariaci
 		MoveWindow(HWnd, windowLeft, windowTop, realWidth, realHeight, TRUE);
+
+		// make sure everything gets updated to the real sizes
+		Resized = true;	
 	}
 	else if (CreationParams.WindowId)
 	{
@@ -421,6 +627,10 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	// set this as active window
 	SetActiveWindow(HWnd);
 	SetForegroundWindow(HWnd);
+
+	// get the codepage used for keyboard input
+    KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
+    KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) ); 
 }
 
 
@@ -563,7 +773,8 @@ bool CIrrDeviceWin32::run()
 
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		TranslateMessage(&msg);
+		// No message translation because we don't use WM_CHAR and it would conflict with our
+		// deadkey handling.
 
 		if (ExternalWindow && msg.hwnd == HWnd)
 			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
@@ -640,7 +851,7 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 	if (IsNonNTWindows)
 	{
 		const core::stringc s = text;
-#ifdef WIN64
+#if defined(_WIN64) || defined(WIN64)
 		SetWindowTextA(HWnd, s.c_str());
 #else
 		SendMessageTimeout(HWnd, WM_SETTEXT, 0,
@@ -650,7 +861,7 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 	}
 	else
 	{
-#ifdef WIN64
+#if defined(_WIN64) || defined(WIN64)
 		SetWindowTextW(HWnd, text);
 #else
 		SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,
@@ -1014,6 +1225,8 @@ void CIrrDeviceWin32::setResizable(bool resize)
 
 	SetWindowPos(HWnd, HWND_TOP, windowLeft, windowTop, realWidth, realHeight,
 		SWP_FRAMECHANGED | SWP_NOMOVE | SWP_SHOWWINDOW);
+
+	static_cast<CCursorControl*>(CursorControl)->updateBorderSize(CreationParams.Fullscreen, resize);
 }
 
 
@@ -1113,21 +1326,28 @@ void CIrrDeviceWin32::pollJoysticks()
 
 	u32 joystick;
 	JOYINFOEX info;
-	info.dwSize = sizeof(info);
-	info.dwFlags = JOY_RETURNALL;
 
 	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 	{
+		// needs to be reset for each joystick
+		// request ALL values and POV as continuous if possible
+		info.dwSize = sizeof(info);
+		info.dwFlags = JOY_RETURNALL|JOY_RETURNPOVCTS;
+		const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
+		// if no POV is available don't ask for POV values
+		if (!(caps.wCaps & JOYCAPS_HASPOV))
+			info.dwFlags &= ~(JOY_RETURNPOV|JOY_RETURNPOVCTS);
 		if(JOYERR_NOERROR == joyGetPosEx(ActiveJoysticks[joystick].Index, &info))
 		{
 			SEvent event;
-			const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
 
 			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
 			event.JoystickEvent.Joystick = (u8)joystick;
-
+ 
 			event.JoystickEvent.POV = (u16)info.dwPOV;
-			if(event.JoystickEvent.POV > 35900)
+			// set to undefined if no POV value was returned or the value
+			// is out of range
+			if (!(info.dwFlags & JOY_RETURNPOV) || (event.JoystickEvent.POV > 35900))
 				event.JoystickEvent.POV = 65535;
 
 			for(int axis = 0; axis < SEvent::SJoystickEvent::NUMBER_OF_AXES; ++axis)
@@ -1209,7 +1429,53 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 
 }
 
+//! Remove all messages pending in the system message loop
+void CIrrDeviceWin32::clearSystemMessages()
+{
+	MSG msg;
+	while (PeekMessage(&msg, NULL, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE))
+	{}
+	while (PeekMessage(&msg, NULL, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE))
+	{}
+}
+
+// shows last error in a messagebox to help internal debugging.
+void CIrrDeviceWin32::ReportLastWinApiError()
+{
+	// (based on code from ovidiucucu from http://www.codeguru.com/forum/showthread.php?t=318721)
+	LPCTSTR pszCaption = __TEXT("Windows SDK Error Report");
+	DWORD dwError      = GetLastError();
+
+	if(NOERROR == dwError)
+	{
+		MessageBox(NULL, __TEXT("No error"), pszCaption, MB_OK);
+	}
+	else
+	{
+		const DWORD dwFormatControl = FORMAT_MESSAGE_ALLOCATE_BUFFER |
+										FORMAT_MESSAGE_IGNORE_INSERTS |
+										FORMAT_MESSAGE_FROM_SYSTEM;
+
+		LPVOID pTextBuffer = NULL;
+		DWORD dwCount = FormatMessage(dwFormatControl,
+										NULL,
+										dwError,
+										0,
+										(LPTSTR) &pTextBuffer,
+										0,
+										NULL);
+		if(0 != dwCount)
+		{
+			MessageBox(NULL, (LPCTSTR)pTextBuffer, pszCaption, MB_OK|MB_ICONERROR);
+			LocalFree(pTextBuffer);
+		}
+		else
+		{
+			MessageBox(NULL, __TEXT("Unknown error"), pszCaption, MB_OK|MB_ICONERROR);
+		}
+	}
+}
+
 } // end namespace
 
 #endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-

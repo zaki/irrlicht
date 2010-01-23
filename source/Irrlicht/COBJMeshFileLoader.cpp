@@ -426,7 +426,15 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 	bool newTexture=false;
 	if (texname.size())
 	{
-		if (FileSystem->existFile(texname))
+ 		io::path texnameWithUserPath( SceneManager->getParameters()->getAttributeAsString(OBJ_TEXTURE_PATH) );
+ 		if ( texnameWithUserPath.size() )
+ 		{
+ 			texnameWithUserPath += '/';
+ 			texnameWithUserPath += texname;
+ 		}
+ 		if (FileSystem->existFile(texnameWithUserPath))
+ 			texture = SceneManager->getVideoDriver()->getTexture(texnameWithUserPath);
+		else if (FileSystem->existFile(texname))
 		{
 			newTexture = SceneManager->getVideoDriver()->findTexture(texname) == 0;
 			texture = SceneManager->getVideoDriver()->getTexture(texname);

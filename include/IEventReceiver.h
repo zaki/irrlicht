@@ -99,13 +99,29 @@ namespace irr
 		//! in what direction and how fast.
 		EMIE_MOUSE_WHEEL,
 
-		//! Mouse double click.
+		//! Left mouse button double click.
 		//! This event is generated after the second EMIE_LMOUSE_PRESSED_DOWN event.
-		EMIE_MOUSE_DOUBLE_CLICK,
+		EMIE_LMOUSE_DOUBLE_CLICK,
 
-		//! Mouse triple click.
+		//! Right mouse button double click.
+		//! This event is generated after the second EMIE_RMOUSE_PRESSED_DOWN event.
+		EMIE_RMOUSE_DOUBLE_CLICK,
+
+		//! Middle mouse button double click.
+		//! This event is generated after the second EMIE_MMOUSE_PRESSED_DOWN event.
+		EMIE_MMOUSE_DOUBLE_CLICK,
+
+		//! Left mouse button triple click.
 		//! This event is generated after the third EMIE_LMOUSE_PRESSED_DOWN event.
-		EMIE_MOUSE_TRIPLE_CLICK,
+		EMIE_LMOUSE_TRIPLE_CLICK,
+
+		//! Right mouse button triple click.
+		//! This event is generated after the third EMIE_RMOUSE_PRESSED_DOWN event.
+		EMIE_RMOUSE_TRIPLE_CLICK,
+
+		//! Middle mouse button triple click.
+		//! This event is generated after the third EMIE_MMOUSE_PRESSED_DOWN event.
+		EMIE_MMOUSE_TRIPLE_CLICK,
 
 		//! No real event. Just for convenience to get number of events
 		EMIE_COUNT
@@ -415,7 +431,11 @@ public:
 	virtual ~IEventReceiver() {}
 
 	//! Called if an event happened.
-	/** \return True if the event was processed. */
+	/** Please take care that you should only return 'true' when you want to _prevent_ Irrlicht
+	* from processing the event any further. So 'true' does mean that an event is completely done.
+	* Therefore your return value for all unprocessed events should be 'false'.
+	\return True if the event was processed.
+	*/
 	virtual bool OnEvent(const SEvent& event) = 0;
 };
 

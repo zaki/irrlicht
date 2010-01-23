@@ -64,11 +64,33 @@ public:
 	vector2d<T> operator/(const T v) const { return vector2d<T>(X / v, Y / v); }
 	vector2d<T>& operator/=(const T v) { X/=v; Y/=v; return *this; }
 
-	bool operator<=(const vector2d<T>&other) const { return X<=other.X && Y<=other.Y; }
-	bool operator>=(const vector2d<T>&other) const { return X>=other.X && Y>=other.Y; }
+	//! sort in order X, Y. Equality with rounding tolerance.
+	bool operator<=(const vector2d<T>&other) const
+	{
+		return 	(X<other.X || core::equals(X, other.X)) ||
+				(core::equals(X, other.X) && (Y<other.Y || core::equals(Y, other.Y)));
+	}
 
-	bool operator<(const vector2d<T>&other) const { return X<other.X && Y<other.Y; }
-	bool operator>(const vector2d<T>&other) const { return X>other.X && Y>other.Y; }
+	//! sort in order X, Y. Equality with rounding tolerance.
+	bool operator>=(const vector2d<T>&other) const
+	{
+		return 	(X>other.X || core::equals(X, other.X)) ||
+				(core::equals(X, other.X) && (Y>other.Y || core::equals(Y, other.Y)));
+	}
+
+	//! sort in order X, Y. Difference must be above rounding tolerance.
+	bool operator<(const vector2d<T>&other) const
+	{
+		return 	(X<other.X && !core::equals(X, other.X)) ||
+				(core::equals(X, other.X) && Y<other.Y && !core::equals(Y, other.Y));
+	}
+
+	//! sort in order X, Y. Difference must be above rounding tolerance.
+	bool operator>(const vector2d<T>&other) const
+	{
+		return 	(X>other.X && !core::equals(X, other.X)) ||
+				(core::equals(X, other.X) && Y>other.Y && !core::equals(Y, other.Y));
+	}
 
 	bool operator==(const vector2d<T>& other) const { return equals(other); }
 	bool operator!=(const vector2d<T>& other) const { return !equals(other); }

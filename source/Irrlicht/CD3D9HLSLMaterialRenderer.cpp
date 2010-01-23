@@ -178,7 +178,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 #ifdef D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY
 	if (Driver->queryFeature(video::EVDF_VERTEX_SHADER_2_0) || Driver->queryFeature(video::EVDF_VERTEX_SHADER_3_0))
 		// this one's for newer DX SDKs which don't support ps_1_x anymore
-		// instead they'll siliently compile 1_x as 2_x when using this flag
+		// instead they'll silently compile 1_x as 2_x when using this flag
 		flags |= D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY;
 #endif
 #if defined(_IRR_D3D_USE_LEGACY_HLSL_COMPILER) && defined(D3DXSHADER_USE_LEGACY_D3DX9_31_DLL)
@@ -341,4 +341,3 @@ void CD3D9HLSLMaterialRenderer::printHLSLVariables(LPD3DXCONSTANTTABLE table)
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
-

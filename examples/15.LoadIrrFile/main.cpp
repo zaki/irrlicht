@@ -115,8 +115,8 @@ int main(int argc, char** argv)
 			selector = smgr->createTerrainTriangleSelector((scene::ITerrainSceneNode*)node);
 			break;
 
-		case scene::ESNT_OCT_TREE:
-			selector = smgr->createOctTreeTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
+		case scene::ESNT_OCTREE:
+			selector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
 			break;
 
 		default:

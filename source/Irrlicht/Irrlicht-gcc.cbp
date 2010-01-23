@@ -423,6 +423,7 @@
 			<Add alias="All" targets="Win32 - Debug - dll;Win32 - Release - accurate math - dll;Win32 - Release - fast math - dll;" />
 		</VirtualTargets>
 		<Unit filename="../../changes.txt" />
+		<Unit filename="../../include/EAttributes.h" />
 		<Unit filename="../../include/ECullingTypes.h" />
 		<Unit filename="../../include/EDebugSceneTypes.h" />
 		<Unit filename="../../include/EDriverTypes.h" />
@@ -447,7 +448,7 @@
 		<Unit filename="../../include/IFileSystem.h" />
 		<Unit filename="../../include/IGPUProgrammingServices.h" />
 		<Unit filename="../../include/IGUIButton.h" />
-		<Unit filename="../../include/IGUICheckbox.h" />
+		<Unit filename="../../include/IGUICheckBox.h" />
 		<Unit filename="../../include/IGUIComboBox.h" />
 		<Unit filename="../../include/IGUIContextMenu.h" />
 		<Unit filename="../../include/IGUIEditBox.h" />
@@ -469,6 +470,7 @@
 		<Unit filename="../../include/IGUITable.h" />
 		<Unit filename="../../include/IGUIToolbar.h" />
 		<Unit filename="../../include/IGUIWindow.h" />
+		<Unit filename="../../include/IGeometryCreator.h" />
 		<Unit filename="../../include/IImage.h" />
 		<Unit filename="../../include/IImageLoader.h" />
 		<Unit filename="../../include/ILightSceneNode.h" />
@@ -499,7 +501,6 @@
 		<Unit filename="../../include/ISceneNodeAnimatorCollisionResponse.h" />
 		<Unit filename="../../include/ISceneNodeAnimatorFactory.h" />
 		<Unit filename="../../include/ISceneNodeFactory.h" />
-		<Unit filename="../../include/ISceneNodeMeshLoader.h" />
 		<Unit filename="../../include/IShaderConstantSetCallBack.h" />
 		<Unit filename="../../include/IShadowVolumeSceneNode.h" />
 		<Unit filename="../../include/ISkinnedMesh.h" />
@@ -771,6 +772,8 @@
 		<Unit filename="CMetaTriangleSelector.h" />
 		<Unit filename="CMountPointReader.cpp" />
 		<Unit filename="CMountPointReader.h" />
+		<Unit filename="CNPKReader.cpp" />
+		<Unit filename="CNPKReader.h" />
 		<Unit filename="CNullDriver.cpp" />
 		<Unit filename="CNullDriver.h" />
 		<Unit filename="COBJMeshFileLoader.cpp" />
@@ -781,10 +784,10 @@
 		<Unit filename="COCTLoader.h" />
 		<Unit filename="COSOperator.cpp" />
 		<Unit filename="COSOperator.h" />
-		<Unit filename="COctTreeSceneNode.cpp" />
-		<Unit filename="COctTreeSceneNode.h" />
-		<Unit filename="COctTreeTriangleSelector.cpp" />
-		<Unit filename="COctTreeTriangleSelector.h" />
+		<Unit filename="COctreeSceneNode.cpp" />
+		<Unit filename="COctreeSceneNode.h" />
+		<Unit filename="COctreeTriangleSelector.cpp" />
+		<Unit filename="COctreeTriangleSelector.h" />
 		<Unit filename="COgreMeshFileLoader.cpp" />
 		<Unit filename="COgreMeshFileLoader.h" />
 		<Unit filename="COpenGLDriver.cpp" />
@@ -808,8 +811,6 @@
 		<Unit filename="CPLYMeshWriter.h" />
 		<Unit filename="CPakReader.cpp" />
 		<Unit filename="CPakReader.h" />
-		<Unit filename="CNPKReader.cpp" />
-		<Unit filename="CNPKReader.h" />
 		<Unit filename="CParticleAnimatedMeshSceneNodeEmitter.cpp" />
 		<Unit filename="CParticleAttractionAffector.cpp" />
 		<Unit filename="CParticleBoxEmitter.cpp" />
@@ -941,6 +942,7 @@
 		<Unit filename="CZBuffer.h" />
 		<Unit filename="CZipReader.cpp" />
 		<Unit filename="CZipReader.h" />
+		<Unit filename="IAttribute.h" />
 		<Unit filename="IBurningShader.cpp" />
 		<Unit filename="IBurningShader.h" />
 		<Unit filename="IDepthBuffer.h" />
@@ -950,19 +952,65 @@
 		<Unit filename="Irrlicht.cpp" />
 		<Unit filename="MacOSX/CIrrDeviceMacOSX.h" />
 		<Unit filename="MacOSX/CIrrDeviceMacOSX.mm" />
-		<Unit filename="OctTree.h" />
+		<Unit filename="Octree.h" />
 		<Unit filename="S2DVertex.h" />
 		<Unit filename="S4DVertex.h" />
 		<Unit filename="SoftwareDriver2_compile_config.h" />
 		<Unit filename="SoftwareDriver2_helper.h" />
+		<Unit filename="aesGladman/aes.h" />
+		<Unit filename="aesGladman/aescrypt.cpp" />
+		<Unit filename="aesGladman/aeskey.cpp" />
+		<Unit filename="aesGladman/aesopt.h" />
+		<Unit filename="aesGladman/aestab.cpp" />
+		<Unit filename="aesGladman/fileenc.cpp" />
+		<Unit filename="aesGladman/fileenc.h" />
+		<Unit filename="aesGladman/hmac.cpp" />
+		<Unit filename="aesGladman/hmac.h" />
+		<Unit filename="aesGladman/prng.cpp" />
+		<Unit filename="aesGladman/prng.h" />
+		<Unit filename="aesGladman/pwd2key.cpp" />
+		<Unit filename="aesGladman/pwd2key.h" />
+		<Unit filename="aesGladman/sha1.cpp" />
+		<Unit filename="aesGladman/sha1.h" />
+		<Unit filename="aesGladman/sha2.cpp" />
+		<Unit filename="aesGladman/sha2.h" />
+		<Unit filename="bzip2/blocksort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzcompress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzlib.h" />
+		<Unit filename="bzip2/bzlib_private.h" />
+		<Unit filename="bzip2/crctable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/decompress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/huffman.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/randtable.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="dmfsupport.h" />
 		<Unit filename="glext.h" />
 		<Unit filename="irrXML.cpp" />
 		<Unit filename="jpeglib/cderror.h" />
+		<Unit filename="jpeglib/jaricom.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="jpeglib/jcapimin.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jcapistd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="jpeglib/jcarith.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jccoefct.c">
@@ -997,9 +1045,6 @@
 		<Unit filename="jpeglib/jcparam.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib/jcphuff.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="jpeglib/jcprepct.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1013,6 +1058,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jdapistd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="jpeglib/jdarith.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jdatadst.c">
@@ -1050,9 +1098,6 @@
 		<Unit filename="jpeglib/jdmerge.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib/jdphuff.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="jpeglib/jdpostct.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1082,9 +1127,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jidctint.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="jpeglib/jidctred.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jinclude.h" />
@@ -1155,6 +1197,11 @@
 		<Unit filename="libpng/pngwutil.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="lzma/LzmaDec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lzma/LzmaDec.h" />
+		<Unit filename="lzma/Types.h" />
 		<Unit filename="os.cpp" />
 		<Unit filename="os.h" />
 		<Unit filename="zlib/adler32.c">

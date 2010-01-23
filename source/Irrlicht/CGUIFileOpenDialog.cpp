@@ -357,7 +357,7 @@ void CGUIFileOpenDialog::fillListBox()
 		int len = mbstowcs(ws,cs,strlen(cs));
 		ws[len] = 0;
 		s = ws;
-		delete ws;
+		delete [] ws;
 		#else
 		s = FileSystem->getWorkingDirectory();
 		#endif

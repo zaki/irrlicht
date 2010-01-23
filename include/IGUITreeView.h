@@ -20,16 +20,10 @@ namespace gui
 	class IGUITreeViewNode : public IReferenceCounted
 	{
 	public:
-		//! constructor
-		IGUITreeViewNode() {}
-		
-		//! destructor
-		virtual ~IGUITreeViewNode() {}
-		
 		//! returns the owner (tree view) of this node
 		virtual IGUITreeView* getOwner() const = 0;
 		
-		//! Returns the parent node of this node. 
+		//! Returns the parent node of this node.
 		/** For the root node this will return 0. */
 		virtual IGUITreeViewNode* getParent() const = 0;
 		
@@ -87,13 +81,10 @@ namespace gui
 		\param data2 user data2 (IReferenceCounted*) of the new node
 		\return The new node
 		*/
-		virtual IGUITreeViewNode* addChildBack( 
-				const wchar_t*		text, 
-				const wchar_t*		icon = 0, 
-				s32			imageIndex = -1,
-				s32			selectedImageIndex = -1,
-				void*			data = 0,
-				IReferenceCounted*	data2 = 0 ) = 0;
+		virtual IGUITreeViewNode* addChildBack(
+				const wchar_t* text, const wchar_t* icon = 0,
+				s32 imageIndex=-1, s32 selectedImageIndex=-1,
+				void* data=0, IReferenceCounted* data2=0) =0;
 
 		//! Adds a new node before the first child node.
 		/** \param text text of the new node
@@ -104,15 +95,12 @@ namespace gui
 		\param data2 user data2 (IReferenceCounted*) of the new node
 		\return The new node
 		*/
-		virtual IGUITreeViewNode* addChildFront( 
-				const wchar_t*		text, 
-				const wchar_t*		icon = 0, 
-				s32			imageIndex = -1,
-				s32			selectedImageIndex = -1,
-				void*			data = 0,
-				IReferenceCounted*	data2 = 0 ) = 0;
+		virtual IGUITreeViewNode* addChildFront(
+				const wchar_t* text, const wchar_t* icon = 0,
+				s32 imageIndex=-1, s32 selectedImageIndex=-1,
+				void* data=0, IReferenceCounted* data2=0 ) =0;
 
-		//! Adds a new node behind the other node. 
+		//! Adds a new node behind the other node.
 		/** The other node has also te be a child node from this node.
 		\param other Node to insert after
 		\param text text of the new node
@@ -123,16 +111,13 @@ namespace gui
 		\param data2 user data2 (IReferenceCounted*) of the new node
 		\return The new node or 0 if other is no child node from this
 		*/
-		virtual IGUITreeViewNode* insertChildAfter( 
-				IGUITreeViewNode*	other, 
-				const wchar_t*		text, 
-				const wchar_t*		icon = 0, 
-				s32			imageIndex = -1,
-				s32			selectedImageIndex = -1,
-				void*			data = 0,
-				IReferenceCounted*	data2 = 0 ) = 0;
+		virtual IGUITreeViewNode* insertChildAfter(
+				IGUITreeViewNode* other,
+				const wchar_t* text, const wchar_t* icon = 0,
+				s32 imageIndex=-1, s32 selectedImageIndex=-1,
+				void* data=0, IReferenceCounted* data2=0) =0;
 
-		//! Adds a new node before the other node. 
+		//! Adds a new node before the other node.
 		/** The other node has also te be a child node from this node.
 		\param other Node to insert before
 		\param text text of the new node
@@ -143,14 +128,11 @@ namespace gui
 		\param data2 user data2 (IReferenceCounted*) of the new node
 		\return The new node or 0 if other is no child node from this
 		*/
-		virtual IGUITreeViewNode* insertChildBefore( 
-				IGUITreeViewNode*	other, 
-				const wchar_t*		text, 
-				const wchar_t*		icon = 0, 
-				s32			imageIndex = -1,
-				s32			selectedImageIndex = -1,
-				void*			data = 0,
-				IReferenceCounted*	data2 = 0 ) = 0;
+		virtual IGUITreeViewNode* insertChildBefore(
+				IGUITreeViewNode* other,
+				const wchar_t* text, const wchar_t* icon = 0,
+				s32 imageIndex=-1, s32 selectedImageIndex=-1,
+				void* data=0, IReferenceCounted* data2=0) = 0;
 		
 		//! Return the first child node from this node.
 		/** \return The first child node or 0 if this node has no childs. */
@@ -214,20 +196,16 @@ namespace gui
 	
 	
 	//! Default tree view GUI element.
-	/** Displays a windows like tree buttons to expand/collaps the child nodes of an node
-	and optional tree lines.
-	Each node consits of an text, an icon text and a void pointer for user data.
-	*/
+	/** Displays a windows like tree buttons to expand/collaps the child
+	nodes of an node and optional tree lines. Each node consits of an
+	text, an icon text and a void pointer for user data. */
 	class IGUITreeView : public IGUIElement
 	{
 	public:
 		//! constructor
-		IGUITreeView( IGUIEnvironment* environment, IGUIElement* parent, s32 id, 
-				core::rect<s32> rectangle )
+		IGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
+				s32 id, core::rect<s32> rectangle)
 			: IGUIElement( EGUIET_TREE_VIEW, environment, parent, id, rectangle ) {}
-
-		//! destructor
-		virtual ~IGUITreeView() {}
 
 		//! returns the root node (not visible) from the tree.
 		virtual IGUITreeViewNode* getRoot() const = 0;

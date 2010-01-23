@@ -236,9 +236,9 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 void CGUISpinBox::verifyValueRange()
 {
 	f32 val = getValue();
-	if ( val < RangeMin )
+	if ( val+core::ROUNDING_ERROR_f32 < RangeMin )
 		val = RangeMin;
-	else if ( val > RangeMax )
+	else if ( val-core::ROUNDING_ERROR_f32 > RangeMax )
 		val = RangeMax;
 	else
 		return;
