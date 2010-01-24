@@ -119,8 +119,24 @@ namespace video
 		return FeatureAvailable[feature];
 	}
 
+	u16 EGLVersion;
+	u16 Version;
+	u8 MaxTextureUnits;
+	u8 MaxLights;
+	u8 MaxAnisotropy;
+	u8 MaxUserClipPlanes;
+	u8 MaxAuxBuffers;
+	u32 MaxIndices;
+	u32 MaxTextureSize;
+	f32 MaxTextureLODBias;
+	bool CommonProfile;
+	bool MultiTextureExtension;
+	bool MultiSamplingExtension;
+	bool StencilBuffer;
 
 	protected:
+		bool FeatureAvailable[IRR_OGLES_Feature_Count];
+
 		COGLES1ExtensionHandler();
 
 		bool queryFeature(video::E_VIDEO_DRIVER_FEATURE feature) const
@@ -404,23 +420,6 @@ namespace video
 		PFNGLFRAMEBUFFERTEXTURE2DOES pGlFramebufferTexture2DOES;
 		PFNGLGENERATEMIPMAPOES pGlGenerateMipMapOES;
 #endif
-
-	protected:
-		u16 EGLVersion;
-		u16 Version;
-		u8 MaxTextureUnits;
-		u8 MaxLights;
-		u8 MaxAnisotropy;
-		u8 MaxUserClipPlanes;
-		u8 MaxAuxBuffers;
-		u32 MaxIndices;
-		u32 MaxTextureSize;
-		f32 MaxTextureLODBias;
-		bool CommonProfile;
-		bool MultiTextureExtension;
-		bool MultiSamplingExtension;
-		bool StencilBuffer;
-		bool FeatureAvailable[IRR_OGLES_Feature_Count];
 	};
 
 } // end namespace video

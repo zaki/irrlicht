@@ -21,37 +21,47 @@ namespace video
 {
 
 //! constructor for usual textures
-COGLES1Texture::COGLES1Texture(IImage* origImage, const io::path& name, COGLES1Driver* driver)
-	: ITexture(name), Driver(driver), Image(0),
+COGLES1Texture::COGLES1Texture(IImage* origImage, const io::path& name, COGLES1Driver* driver, void* mipmapData)
+	: ITexture(name), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	// TODO ogl-es
 	// PixelFormat(GL_BGRA),
-	PixelType(GL_UNSIGNED_BYTE),
+	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	UseStencil(false), ReadOnlyLock(false)
+	UseStencil(false), ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES1Texture");
 	#endif
 
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
-	getImageData(origImage);
+	getImageValues(origImage);
 
-	if (Image)
+	glGenTextures(1, &TextureName);
+
+	Image = new CImage(ColorFormat, TextureSize);
+	if (ImageSize==TextureSize)
+		origImage->copyTo(Image);
+	else
+		// scale texture
+		origImage->copyToScaling(Image);
+	uploadTexture(true, mipmapData);
+	if (!KeepImage)
 	{
-		glGenTextures(1, &TextureName);
-		copyTexture();
+		Image->drop();
+		Image=0;
 	}
+
 }
 
 
 //! constructor for basic setup (only for derived classes)
 COGLES1Texture::COGLES1Texture(const io::path& name, COGLES1Driver* driver)
-	: ITexture(name), Driver(driver), Image(0),
+	: ITexture(name), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
-	PixelType(GL_UNSIGNED_BYTE),
+	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false)
+	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES1Texture");
@@ -110,7 +120,7 @@ ECOLOR_FORMAT COGLES1Texture::getBestColorFormat(ECOLOR_FORMAT format)
 }
 
 
-void COGLES1Texture::getImageData(IImage* image)
+void COGLES1Texture::getImageValues(IImage* image)
 {
 	if (!image)
 	{
@@ -126,29 +136,34 @@ void COGLES1Texture::getImageData(IImage* image)
 		return;
 	}
 
-	const core::dimension2d<u32> nImageSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
-	const ECOLOR_FORMAT destFormat = getBestColorFormat(image->getColorFormat());
-
-	if (ImageSize==nImageSize)
-		Image = new CImage(destFormat, image);
-	else
+	const f32 ratio = (f32)ImageSize.Width/(f32)ImageSize.Height;
+	if ((ImageSize.Width>Driver->MaxTextureSize) && (ratio >= 1.0f))
 	{
-		Image = new CImage(destFormat, nImageSize);
-		// scale texture
-		image->copyToScaling(Image);
+		ImageSize.Width = Driver->MaxTextureSize;
+		ImageSize.Height = (u32)(Driver->MaxTextureSize/ratio);
 	}
+	else if (ImageSize.Height>Driver->MaxTextureSize)
+	{
+		ImageSize.Height = Driver->MaxTextureSize;
+		ImageSize.Width = (u32)(Driver->MaxTextureSize*ratio);
+	}
+	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+
+	ColorFormat = getBestColorFormat(image->getColorFormat());
 }
 
 
 //! copies the the texture into an open gl texture.
-void COGLES1Texture::copyTexture(bool newTexture)
+void COGLES1Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 {
-	if (!Image)
+	IImage* image = level?MipImage:Image;
+	if (!image)
 	{
 		os::Printer::log("No image for OGLES1 texture to upload", ELL_ERROR);
 		return;
 	}
 
+	GLenum oldInternalFormat = InternalFormat;
 	void(*convert)(const void*, s32, void*)=0;
 	switch (Image->getColorFormat())
 	{
@@ -192,15 +207,18 @@ void COGLES1Texture::copyTexture(bool newTexture)
 	if (InternalFormat==GL_BGRA)
 		InternalFormat=GL_RGBA;
 #endif
+	// make sure we don't change the internal format of existing matrices
+	if (!newTexture)
+		InternalFormat=oldInternalFormat;
 
-	glBindTexture(GL_TEXTURE_2D, TextureName);
+	Driver->setTexture(0, this);
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
-	if (newTexture)
+	if (!level && newTexture)
 	{
 		#ifndef DISABLE_MIPMAPPING
-		if (HasMipMaps && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		if (HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
 			// automatically generate and update mipmaps
 			glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
@@ -209,7 +227,7 @@ void COGLES1Texture::copyTexture(bool newTexture)
 		else
 		{
 			AutomaticMipmapUpdate=false;
-			regenerateMipMapLevels();
+			regenerateMipMapLevels(mipmapData);
 		}
 		if (HasMipMaps) // might have changed in regenerateMipMapLevels
 		{
@@ -229,30 +247,29 @@ void COGLES1Texture::copyTexture(bool newTexture)
 		}
 	}
 
-	void* source = 0;
+	void* source = image->lock();
 	IImage* tmpImage=0;
-	source = Image->lock();
 	if (convert)
 	{
-		tmpImage = new CImage(Image->getColorFormat(), Image->getDimension());
+		tmpImage = new CImage(image->getColorFormat(), image->getDimension());
 		void* dest = tmpImage->lock();
-		convert(source, Image->getDimension().getArea(), dest);
-		Image->unlock();
+		convert(source, image->getDimension().getArea(), dest);
+		image->unlock();
 		source = dest;
 	}
 	if (newTexture)
-		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Image->getDimension().Width,
-			Image->getDimension().Height, 0, PixelFormat, PixelType, source);
+		glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, image->getDimension().Width,
+			image->getDimension().Height, 0, PixelFormat, PixelType, source);
 	else
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Image->getDimension().Width,
-			Image->getDimension().Height, PixelFormat, PixelType, source);
+		glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
+			image->getDimension().Height, PixelFormat, PixelType, source);
 	if (convert)
 	{
 		tmpImage->unlock();
 		tmpImage->drop();
 	}
 	else
-		Image->unlock();
+		image->unlock();
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
@@ -260,9 +277,13 @@ void COGLES1Texture::copyTexture(bool newTexture)
 
 
 //! lock function
-void* COGLES1Texture::lock(bool readOnly)
+void* COGLES1Texture::lock(bool readOnly, u32 mipmapLevel)
 {
+	// store info about which image is locked
+	IImage* image = (mipmapLevel==0)?Image:MipImage;
+
 	ReadOnlyLock |= readOnly;
+	MipLevelStored = mipmapLevel;
 
 	if (!Image)
 		Image = new CImage(ECF_A8R8G8B8, ImageSize);
@@ -308,7 +329,7 @@ void COGLES1Texture::unlock()
 {
 	Image->unlock();
 	if (!ReadOnlyLock)
-		copyTexture(false);
+		uploadTexture(false);
 	ReadOnlyLock = false;
 }
 
@@ -372,9 +393,9 @@ bool COGLES1Texture::hasMipMaps() const
 
 
 //! Regenerates the mip map levels of the texture.
-void COGLES1Texture::regenerateMipMapLevels()
+void COGLES1Texture::regenerateMipMapLevels(void* mipmapData)
 {
-	if (AutomaticMipmapUpdate || !HasMipMaps)
+	if (AutomaticMipmapUpdate || !HasMipMaps || !Image)
 		return;
 	if ((Image->getDimension().Width==1) && (Image->getDimension().Height==1))
 		return;
@@ -383,21 +404,38 @@ void COGLES1Texture::regenerateMipMapLevels()
 	u32 width=Image->getDimension().Width;
 	u32 height=Image->getDimension().Height;
 	u32 i=0;
-	u8* target = new u8[Image->getImageDataSizeInBytes()];
-	do
+	if (mipmapData)
 	{
-		if (width>1)
-			width>>=1;
-		if (height>1)
-			height>>=1;
-		++i;
-		Image->copyToScaling(target, width, height, Image->getColorFormat());
-		glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
-				0, PixelFormat, PixelType, target);
+		do
+		{
+			if (width>1)
+				width>>=1;
+			if (height>1)
+				height>>=1;
+			++i;
+			glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
+					0, PixelFormat, PixelType, mipmapData);
+			mipmapData = ((u8*)mipmapData)+width*height*Image->getBytesPerPixel();
+		}
+		while (width!=1 || height!=1);
 	}
-	while (width!=1 || height!=1);
-	delete [] target;
-	Image->unlock();
+	else
+	{
+		u8* target = new u8[Image->getImageDataSizeInBytes()];
+		do
+		{
+			if (width>1)
+				width>>=1;
+			if (height>1)
+				height>>=1;
+			++i;
+			Image->copyToScaling(target, width, height, Image->getColorFormat());
+			glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
+					0, PixelFormat, PixelType, target);
+		}
+		while (width!=1 || height!=1);
+		delete [] target;
+	}
 }
 
 

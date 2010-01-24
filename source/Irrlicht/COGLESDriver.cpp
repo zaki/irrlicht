@@ -376,7 +376,8 @@ bool COGLES1Driver::endScene()
 
 //! clears the zbuffer
 bool COGLES1Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		void* windowId, core::rect<s32>* sourceRect)
+		const SExposedVideoData& videoData,
+		core::rect<s32>* sourceRect)
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color);
 
@@ -1487,9 +1488,9 @@ inline void COGLES1Driver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
-	return new COGLES1Texture(surface, name, this);
+	return new COGLES1Texture(surface, name, this, mipmapData);
 }
 
 

@@ -715,9 +715,7 @@ void CIrrDeviceWin32::createDriver()
 			video::SExposedVideoData data;
 			data.OpenGLWin32.HWnd=HWnd;
 
-			if (CreationParams.Fullscreen)
-				switchToFullScreen(CreationParams.WindowSize.Width,	
-					CreationParams.WindowSize.Height, CreationParams.Bits);
+			switchToFullScreen();
 
 			VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem);
 			if (!VideoDriver)

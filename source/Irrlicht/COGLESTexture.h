@@ -30,13 +30,13 @@ class COGLES1Texture : public ITexture
 public:
 
 	//! constructor
-	COGLES1Texture(IImage* surface, const io::path& name, COGLES1Driver* driver=0);
+	COGLES1Texture(IImage* surface, const io::path& name, COGLES1Driver* driver=0, void* mipmapData=0);
 
 	//! destructor
 	virtual ~COGLES1Texture();
 
 	//! lock function
-	virtual void* lock(bool readOnly = false);
+	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0);
 
 	//! unlock function
 	virtual void unlock();
@@ -63,7 +63,7 @@ public:
 	virtual bool hasMipMaps() const;
 
 	//! Regenerates the mip map levels of the texture.
-	virtual void regenerateMipMapLevels();
+	virtual void regenerateMipMapLevels(void* mipmapData=0);
 
 	//! Is it a render target?
 	virtual bool isRenderTarget() const;
@@ -89,25 +89,30 @@ protected:
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
 
 	//! convert the image into an internal image with better properties for this driver.
-	void getImageData(IImage* image);
+	void getImageValues(IImage* image);
 
 	//! copies the the texture into an open gl texture.
-	void copyTexture(bool newTexture=true);
+	void uploadTexture(bool newTexture=true, void* mipmapData=0, u32 mipLevel=0);
 
 	core::dimension2d<u32> ImageSize;
+	core::dimension2d<u32> TextureSize;
+	ECOLOR_FORMAT ColorFormat;
 	COGLES1Driver* Driver;
 	IImage* Image;
+	IImage* MipImage;
 
 	GLuint TextureName;
 	GLint InternalFormat;
 	GLenum PixelFormat;
 	GLenum PixelType;
+	u32 MipLevelStored;
 
 	bool HasMipMaps;
 	bool IsRenderTarget;
 	bool AutomaticMipmapUpdate;
 	bool UseStencil;
 	bool ReadOnlyLock;
+	bool KeepImage;
 };
 
 
