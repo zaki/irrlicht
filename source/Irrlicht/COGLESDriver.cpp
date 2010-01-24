@@ -102,6 +102,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		EglSurface = eglCreateWindowSurface(EglDisplay, config, NULL, NULL);
 	if (EGL_NO_SURFACE==EglSurface)
 	{
+		testEGLError();
 		os::Printer::log("Could not create surface for OpenGL-ES1 display.");
 	}
 
@@ -161,6 +162,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 //! destructor
 COGLES1Driver::~COGLES1Driver()
 {
+	RequestedLights.clear();
 	deleteMaterialRenders();
 	deleteAllTextures();
 
@@ -225,36 +227,6 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// Reset The Current Viewport
 	glViewport(0, 0, screenSize.Width, screenSize.Height);
 
-// This needs an SMaterial flag to enable/disable later on, but should become default sometimes
-//	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-//	glEnable(GL_COLOR_MATERIAL);
-
-	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
-#ifdef GL_separate_specular_color
-	if (FeatureAvailable[IRR_separate_specular_color])
-		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-#endif
-// TODO ogl-es
-//	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-	glClearDepthf(1.0f);
-
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-	glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
-	glDepthFunc(GL_LEQUAL);
-	glFrontFace( GL_CW );
-
-	if (AntiAlias>1)
-	{
-		if (MultiSamplingExtension)
-			glEnable(GL_MULTISAMPLE);
-
-		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-		glEnable(GL_LINE_SMOOTH);
-	}
-// currently disabled, because often in software, and thus very slow
-	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
-//	glEnable(GL_POINT_SMOOTH);
-
 	UserClipPlane.reallocate(MaxUserClipPlanes);
 	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
 	for (i=0; i<MaxUserClipPlanes; ++i)
@@ -262,6 +234,25 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 		UserClipPlane.push_back(core::plane3df());
 		UserClipPlaneEnabled.push_back(false);
 	}
+
+	for (i=0; i<ETS_COUNT; ++i)
+		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
+
+	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
+#ifdef GL_EXT_separate_specular_color
+	if (FeatureAvailable[IRR_EXT_separate_specular_color])
+		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
+#endif
+// TODO ogl-es
+//	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+
+	glClearDepthf(1.0f);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
+	glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
+	glDepthFunc(GL_LEQUAL);
+	glFrontFace( GL_CW );
 
 	// create material renderers
 	createMaterialRenderers();
@@ -1762,8 +1753,8 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 		if ((material.Shininess != 0.0f) &&
 			(material.ColorMaterial != video::ECM_SPECULAR))
 		{
-#ifdef GL_separate_specular_color
-			if (FeatureAvailable[IRR_separate_specular_color])
+#ifdef GL_EXT_separate_specular_color
+			if (FeatureAvailable[IRR_EXT_separate_specular_color])
 				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 #endif
 			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material.Shininess);
@@ -1773,9 +1764,9 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			color[3] = material.SpecularColor.getAlpha() * inv;
 			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color);
 		}
-#ifdef GL_separate_specular_color
+#ifdef GL_EXT_separate_specular_color
 		else
-			if (FeatureAvailable[IRR_separate_specular_color])
+			if (FeatureAvailable[IRR_EXT_separate_specular_color])
 				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 #endif
 	}
@@ -1963,8 +1954,18 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 	// thickness
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 	{
-		glPointSize(material.Thickness);
-		glLineWidth(material.Thickness);
+		if (AntiAlias)
+		{
+//			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimSmoothedPoint[0], DimSmoothedPoint[1]));
+			// we don't use point smoothing
+			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedPoint[0], DimAliasedPoint[1]));
+			glLineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimSmoothedLine[0], DimSmoothedLine[1]));
+		}
+		else
+		{
+			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedPoint[0], DimAliasedPoint[1]));
+			glLineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
+		}
 	}
 
 	// Anti aliasing
@@ -1982,12 +1983,15 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			else
 				glDisable(GL_MULTISAMPLE);
 		}
-		if (AntiAlias >= 2)
+		if ((material.AntiAliasing & EAAM_LINE_SMOOTH) != (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH))
 		{
 			if (material.AntiAliasing & EAAM_LINE_SMOOTH)
 				glEnable(GL_LINE_SMOOTH);
 			else if (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH)
 				glDisable(GL_LINE_SMOOTH);
+		}
+		if ((material.AntiAliasing & EAAM_POINT_SMOOTH) != (lastmaterial.AntiAliasing & EAAM_POINT_SMOOTH))
+		{
 			if (material.AntiAliasing & EAAM_POINT_SMOOTH)
 				// often in software, and thus very slow
 				glEnable(GL_POINT_SMOOTH);

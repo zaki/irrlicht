@@ -109,13 +109,23 @@ COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 		pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
 		pGlGenerateMipMapOES(0),
 #endif
-	EGLVersion(0), Version(0), MaxTextureUnits(0), MaxLights(0), MaxAnisotropy(1),
-	MaxUserClipPlanes(0), MaxAuxBuffers(0), MaxIndices(65535), MaxTextureSize(1),
-	MaxTextureLODBias(0.f), CommonProfile(false), MultiTextureExtension(false),
-	MultiSamplingExtension(false), StencilBuffer(false)
+	EGLVersion(0), Version(0), MaxTextureUnits(0), MaxLights(0),
+	MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
+	MaxMultipleRenderTargets(1), MaxIndices(65535), MaxTextureSize(1),
+	MaxTextureLODBias(0.f), CommonProfile(false),
+	MultiTextureExtension(false), MultiSamplingExtension(false),
+	StencilBuffer(false)
 {
 	for (u32 i=0; i<IRR_OGLES_Feature_Count; ++i)
 		FeatureAvailable[i]=false;
+	DimAliasedLine[0]=1.f;
+	DimAliasedLine[1]=1.f;
+	DimAliasedPoint[0]=1.f;
+	DimAliasedPoint[1]=1.f;
+	DimSmoothedLine[0]=1.f;
+	DimSmoothedLine[1]=1.f;
+	DimSmoothedPoint[0]=1.f;
+	DimSmoothedPoint[1]=1.f;
 }
 
 
@@ -204,7 +214,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 #endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
 	MaxTextureSize=static_cast<u32>(val);
-#ifdef EXT_texture_lod_bias
+#ifdef GL_EXT_texture_lod_bias
 	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
 #endif
@@ -213,7 +223,10 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 		glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
 		MaxUserClipPlanes = static_cast<u8>(val);
 	}
-	MaxAuxBuffers=static_cast<u8>(val);
+	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
+	glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
+	glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, DimSmoothedLine);
+	glGetFloatv(GL_SMOOTH_POINT_SIZE_RANGE, DimSmoothedPoint);
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	if (FeatureAvailable[IRR_OES_draw_texture])

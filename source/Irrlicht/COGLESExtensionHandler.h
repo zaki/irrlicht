@@ -126,9 +126,18 @@ namespace video
 	u8 MaxAnisotropy;
 	u8 MaxUserClipPlanes;
 	u8 MaxAuxBuffers;
+	u8 MaxMultipleRenderTargets;
 	u32 MaxIndices;
 	u32 MaxTextureSize;
 	f32 MaxTextureLODBias;
+	//! Minimal and maximal supported thickness for lines without smoothing
+	GLfloat DimAliasedLine[2];
+	//! Minimal and maximal supported thickness for points without smoothing
+	GLfloat DimAliasedPoint[2];
+	//! Minimal and maximal supported thickness for lines with smoothing
+	GLfloat DimSmoothedLine[2];
+	//! Minimal and maximal supported thickness for points with smoothing
+	GLfloat DimSmoothedPoint[2];
 	bool CommonProfile;
 	bool MultiTextureExtension;
 	bool MultiSamplingExtension;
