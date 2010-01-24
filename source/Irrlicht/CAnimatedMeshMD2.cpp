@@ -350,30 +350,12 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 	InterpolationBuffer->setDirty();
 }
 
-//! calculates the bounding box
-void CAnimatedMeshMD2::calculateBoundingBox()
-{
-	InterpolationBuffer->BoundingBox.reset(0,0,0);
-
-	if (FrameCount)
-	{
-		u32 defaultFrame = 1;
-
-		if (defaultFrame>=FrameCount)
-			defaultFrame = 0;
-
-//		for (u32 j=0; j<FrameList[defaultFrame].size(); ++j)
-//			InterpolationBuffer->BoundingBox.addInternalPoint(FrameList[defaultFrame].pointer()[j].Pos);
-	}
-}
-
 
 //! sets a flag of all contained materials to a new value
 void CAnimatedMeshMD2::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 {
 	InterpolationBuffer->Material.setFlag(flag, newvalue);
 }
-
 
 
 //! set the hardware mapping hint, for driver

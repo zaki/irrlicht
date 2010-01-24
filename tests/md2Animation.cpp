@@ -27,6 +27,7 @@ bool md2Animation(void)
 	IAnimatedMeshSceneNode* node;
 	assert(mesh);
 
+	bool result = (mesh != 0);
 	if(mesh)
 	{
 		node = smgr->addAnimatedMeshSceneNode(mesh);
@@ -44,14 +45,33 @@ bool md2Animation(void)
 			// Just jump to the last frame since that's all we're interested in.
 			node->setMD2Animation(EMAT_DEATH_FALLBACK);
 			node->setCurrentFrame((f32)(node->getEndFrame()));
+			node->setAnimationSpeed(0);
 			device->run();
 			driver->beginScene(true, true, SColor(255, 255, 255, 0));
 			smgr->drawAll();
 			driver->endScene();
+			if (mesh->getBoundingBox() != mesh->getMesh(node->getEndFrame())->getBoundingBox())
+			{
+				logTestString("bbox of md2 mesh not updated.\n");
+				result = false;
+			}
+			//TODO: Does not yet work, not sure if this is correct or not
+#if 0
+			if (node->getBoundingBox() != mesh->getMesh(node->getFrameNr())->getBoundingBox())
+			{
+				logTestString("bbox of md2 scene node not updated.\n");
+				result = false;
+			}
+#endif
+			if (node->getTransformedBoundingBox() == core::aabbox3df())
+			{
+				logTestString("md2 node returns empty bbox.\n");
+				result = false;
+			}
 		}
 	}
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-md2Animation.png");
+	result &= takeScreenshotAndCompareAgainstReference(driver, "-md2Animation.png");
 	device->drop();
 
 	return result;
