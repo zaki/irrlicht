@@ -50,6 +50,7 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 bool transparentAlphaChannelRef(void)
 {
 	bool result = testWithDriver(EDT_DIRECT3D9);
+	result &= testWithDriver(EDT_OPENGL);
 
 	// FIXME Rogerborg 8-January-2009. Burning's video currently produces unexpected results,
 	// blending using the full alpha value instead of using a boolean mask. This test is being
