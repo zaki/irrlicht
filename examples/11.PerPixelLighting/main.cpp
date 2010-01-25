@@ -9,7 +9,7 @@ At first, we need to include all headers and do the stuff we always do, like in
 nearly all other tutorials.
 */
 #include <irrlicht.h>
-#include <iostream>
+#include "driverChoice.h"
 
 using namespace irr;
 

@@ -47,6 +47,9 @@ int main()
 	which video driver to use. The Software device might be
 	too slow to draw a huge Quake 3 map, but just for the fun of it, we make
 	this decision possible, too.
+	Instead of copying this whole code into your app, you can simply include
+	driverChoice.h from Irrlicht's include directory. The function
+	driverChoiceConsole does exactly the same.
 	*/
 
 	// ask user for driver

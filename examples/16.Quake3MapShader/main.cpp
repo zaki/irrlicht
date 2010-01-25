@@ -9,7 +9,7 @@ the irrlicht header files and an additional file to be able
 to ask the user for a driver type using the console.
 */
 #include <irrlicht.h>
-#include <iostream>
+#include "driverChoice.h"
 
 /*
 	define which Quake3 Level should be loaded
@@ -36,20 +36,6 @@ to ask the user for a driver type using the console.
 	#define QUAKE3_MAP_NAME			"maps/20kdm2.bsp"
 #endif
 
-
-/*
-As already written in the HelloWorld example, in the Irrlicht
-Engine, everything can be found in the namespace 'irr'.
-To get rid of the irr:: in front of the name of every class,
-we tell the compiler that we use that namespace from now on,
-and we will not have to write that 'irr::'.
-There are 5 other sub namespaces 'core', 'scene', 'video',
-'io' and 'gui'. Unlike in the HelloWorld example,
-we do not a 'using namespace' for these 5 other namespaces
-because in this way you will see what can be found in which
-namespace. But if you like, you can also include the namespaces
-like in the previous example. Code just like you want to.
-*/
 using namespace irr;
 using namespace scene;
 
@@ -63,7 +49,9 @@ to make it easy, we use a pragma comment lib:
 #endif
 
 
-//! produces a serie of screenshots
+/*
+A class to produce a series of screenshots
+*/
 class CScreenShotFactory : public IEventReceiver
 {
 public:
@@ -129,27 +117,9 @@ int IRRCALLCONV main(int argc, char* argv[])
 	*/
 
 	// ask user for driver
-
-	video::E_DRIVER_TYPE driverType;
-
-	printf("Please select the driver you want for this example:\n"\
-		" (a) Direct3D 9.0c\n (b) Direct3D 8.1\n (c) OpenGL 1.5\n"\
-		" (d) Software Renderer\n (e) Burning's Software Renderer\n"\
-		" (f) NullDevice\n (otherKey) exit\n\n");
-
-	char i;
-	std::cin >> i;
-
-	switch(i)
-	{
-		case 'a': driverType = video::EDT_DIRECT3D9;break;
-		case 'b': driverType = video::EDT_DIRECT3D8;break;
-		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
-		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
-		case 'f': driverType = video::EDT_NULL;     break;
-		default: return 1;
-	}
+	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
+	if (driverType==video::EDT_COUNT)
+		return 1;
 
 	// create device and exit if creation failed
 	const core::dimension2du videoDim(800,600);
@@ -222,7 +192,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	if (mesh)
 	{
 		scene::IMesh * const geometry = mesh->getMesh(quake3::E_Q3_MESH_GEOMETRY);
-		node = smgr->addOctreeSceneNode(geometry, 0, -1, 1024);
+		node = smgr->addOctreeSceneNode(geometry, 0, -1, 4096);
 	}
 
 	// create an event receiver for making screenshots
