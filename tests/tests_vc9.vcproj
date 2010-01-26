@@ -336,6 +336,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\testQuaternion.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\testS3DVertex.cpp"
 				>
 			</File>

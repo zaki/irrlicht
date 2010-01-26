@@ -82,6 +82,10 @@ class quaternion
 		//! Sets new quaternion from other quaternion
 		inline quaternion& set(const core::quaternion& quat);
 
+		//! returns if this quaternion equals the other one, taking floating point rounding errors into account
+		inline bool equals(const quaternion& other,
+				const f32 tolerance = ROUNDING_ERROR_f32 ) const;
+
 		//! Normalizes the quaternion
 		inline quaternion& normalize();
 
@@ -462,6 +466,17 @@ inline quaternion& quaternion::set(const core::quaternion& quat)
 	return (*this=quat);
 }
 
+
+//! returns if this quaternion equals the other one, taking floating point rounding errors into account
+inline bool quaternion::equals(const quaternion& other, const f32 tolerance) const
+{
+	return core::equals(X, other.X, tolerance) &&
+		core::equals(Y, other.Y, tolerance) &&
+		core::equals(Z, other.Z, tolerance) &&
+		core::equals(W, other.W, tolerance);
+}
+
+
 // normalizes the quaternion
 inline quaternion& quaternion::normalize()
 {
@@ -612,6 +627,13 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 	if (d >= 1.0f) // If dot == 1, vectors are the same
 	{
 		return makeIdentity();
+	}
+	else if (d <= -1.0f) // exactly opposite
+	{
+		core::vector3df axis(1.0f, 0.f, 0.f);
+		if (axis.crossProduct(core::vector3df(X,Y,Z)).getLength()==0)
+			axis.set(0.f,1.f,0.f);
+		return this->fromAngleAxis(core::PI, axis);
 	}
 
 	const f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
