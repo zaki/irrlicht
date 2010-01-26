@@ -277,8 +277,8 @@ int main()
 		EMF_FOG_ENABLE to true to enable fog in the room.
 		*/
 
-		scene::IMesh* tangentMesh = smgr->getMeshManipulator()->createMeshWithTangents(
-			roomMesh->getMesh(0));
+		scene::IMesh* tangentMesh = smgr->getMeshManipulator()->
+				createMeshWithTangents(roomMesh->getMesh(0));
 
 		room = smgr->addMeshSceneNode(tangentMesh);
 		room->setMaterialTexture(0,
