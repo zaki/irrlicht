@@ -631,8 +631,12 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 	else if (d <= -1.0f) // exactly opposite
 	{
 		core::vector3df axis(1.0f, 0.f, 0.f);
-		if (axis.crossProduct(core::vector3df(X,Y,Z)).getLength()==0)
+		axis = axis.crossProduct(core::vector3df(X,Y,Z));
+		if (axis.getLength()==0)
+		{
 			axis.set(0.f,1.f,0.f);
+			axis.crossProduct(core::vector3df(X,Y,Z));
+		}
 		return this->fromAngleAxis(core::PI, axis);
 	}
 
