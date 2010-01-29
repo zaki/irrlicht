@@ -14,7 +14,7 @@ namespace irr
 namespace gui
 {
 
-CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s32 id, IGUIElement *parent) 
+CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s32 id, IGUIElement *parent)
 :	IGUIWindow(environment, parent, id, core::rect<s32>(0,0,300,200)),
 	CloseButton(0), Panel(0), SelectedTexture(-1), Dragging(false), IsDraggable(true)
 {
@@ -28,7 +28,7 @@ CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s
 
 	if (environment)
 		skin = environment->getSkin();
-	
+
 	s32 buttonw = 15;
 	if (skin)
 	{
@@ -38,7 +38,7 @@ CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s
 	}
 	s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
-	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
+	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close" );
 	CloseButton->setSubElement(true);
 	CloseButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
@@ -62,7 +62,7 @@ CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s
 	Panel->setSubElement(true);
 
 	// some buttons
-	
+
 
 	// add images from texture cache
 	updateImageList();
@@ -75,7 +75,7 @@ CGUITextureCacheBrowser::~CGUITextureCacheBrowser()
 		CloseButton->drop();
 	if (Panel)
 		Panel->drop();
-	
+
 	// drop images
 	u32 i;
 	for (i=0; i<Images.size(); ++i)
@@ -105,7 +105,7 @@ void CGUITextureCacheBrowser::updateImageList()
 
 	s32 h = Panel->getClientArea().getWidth()-10;
 	s32 hw = h/2;
-	core::rect<s32> pos(Panel->getClientArea().getCenter().X - Panel->getAbsolutePosition().UpperLeftCorner.X - hw, 5, 
+	core::rect<s32> pos(Panel->getClientArea().getCenter().X - Panel->getAbsolutePosition().UpperLeftCorner.X - hw, 5,
 						Panel->getClientArea().getCenter().X - Panel->getAbsolutePosition().UpperLeftCorner.X + hw, h+5);
 
 	core::position2di moveDist(0, h+5);
@@ -257,7 +257,7 @@ bool CGUITextureCacheBrowser::OnEvent(const SEvent &event)
 						event.MouseInput.Y > Parent->getAbsolutePosition().LowerRightCorner.Y -1)
 
 						return true;
-					
+
 
 				move(core::position2d<s32>(event.MouseInput.X - DragStart.X, event.MouseInput.Y - DragStart.Y));
 				DragStart.X = event.MouseInput.X;
@@ -265,7 +265,11 @@ bool CGUITextureCacheBrowser::OnEvent(const SEvent &event)
 				return true;
 			}
 			break;
+		default:
+			break;
 		}
+	default:
+		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;

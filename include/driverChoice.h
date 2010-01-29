@@ -31,7 +31,7 @@ static irr::video::E_DRIVER_TYPE driverChoiceConsole(bool allDrivers=true)
 	{
 		if (!(allDrivers || (irr::IrrlichtDevice::isDriverSupported(irr::video::E_DRIVER_TYPE(i-1)))))
 			--c;
-		if (i==c)
+		if ((char)i==c)
 			return irr::video::E_DRIVER_TYPE(i-1);
 	}
 	return irr::video::EDT_COUNT;
