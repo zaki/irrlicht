@@ -2502,15 +2502,390 @@ new enum value
 
 Changes for Version 1.7
 -------------------------
-IEventReceiver.h
-- EMIE_LMOUSE_DOUBLE_CLICK replaces EMIE_MOUSE_DOUBLE_CLICK
-- EMIE_LMOUSE_TRIPLE_CLICK replaces EMIE_MOUSE_TRIPLE_CLICK
+This version has less API-breaking changes than the previous major changes. It has many new features, which simply add methods. All those changes, which affect old methods or structures are mostly put in parallel to the old (and now deprecated) methods. Only a few things are changed without backward compatibility: The texture wrap mode is split into separate U and V modes. The beginScene void* parameter has been replaced by an SExposedVideoData. Simply wrap the pointer with this struct and it should work again.
+EMIE_LMOUSE_DOUBLE_CLICK replaces EMIE_MOUSE_DOUBLE_CLICK and EMIE_LMOUSE_TRIPLE_CLICK replaces EMIE_MOUSE_TRIPLE_CLICK
+Elements used in the array container need now to have an operator= 
+Here comes the full list:
 
-irrMap.h
-- map::empty replaces map::isEmpty 
+path.h
+New type
+struct SNamedPath
+ 
+triangle3d.h
+New method
+bool isTotalOutsideBox(const aabbox3d<T>& box) const
 
+ESceneNodeTypes.h
+Changed enum value (from octt)
+ESNT_OCTREE         = MAKE_IRR_ID('o','c','t','r'),
+ 
+SColor.h
+New method
+f32 getLightness() const
+
+driverChoice.h
+New method
+static irr::video::E_DRIVER_TYPE driverChoiceConsole(bool allDrivers=true)
+
+ITexture.h
+New parameter
+virtual void regenerateMipMapLevels(void* mipmapData=0) = 0;
+Changed return value (from io:path) 
+const io::SNamedPath& getName() const { return NamedPath; }
+ 
+SceneParameters.h
+New scene parameters
+const c8* const OBJ_TEXTURE_PATH = "OBJ_TexturePath";
+const c8* const B3D_TEXTURE_PATH = "B3D_TexturePath";
+ 
+IMeshManipulator.h
+Not virtual anymore
+void setVertexColorAlpha(IMesh* mesh, s32 alpha) const
+void setVertexColors(IMesh* mesh, video::SColor color) const
+void scale(IMeshBuffer* buffer, const core::vector3df& factor) const
+void scaleMesh(IMesh* mesh, const core::vector3df& factor) const
+void scaleTCoords(scene::IMesh* mesh, const core::vector2df& factor, u32 level=1) const
+void scaleTCoords(scene::IMeshBuffer* buffer, const core::vector2df& factor, u32 level=1) const
+void transform(IMesh* mesh, const core::matrix4& m) const
+void transform(IMeshBuffer* buffer, const core::matrix4& m) const
+New method
+template <typename Functor>
+bool apply(const Functor& func, IMeshBuffer* buffer, bool boundingBoxUpdate=false) const
+template <typename Functor>
+bool apply(const Functor& func, IMesh* mesh, bool boundingBoxUpdate=false) const
+virtual void recalculateTangents(IMesh* mesh, bool recalculateNormals=false,
+		bool smooth=false, bool angleWeighted=false) const=0;
+void scale(IMesh* mesh, const core::vector3df& factor) const
+New parameter 
+virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false, bool recalculateTangents=true) const = 0;
+ 
+coreutil.h
+Changed return type and parameters (from stringc/w)
+inline io::path& cutFilenameExtension ( io::path &dest, const io::path &source )
+inline io::path& getFileNameExtension ( io::path &dest, const io::path &source )
+inline io::path& deletePathFromFilename(io::path& filename)
+Fixed behavior
+inline io::path& deletePathFromPath(io::path& filename, s32 pathCount)
+ 
+ICursorControl.h
+Return const-ref
+virtual const core::position2d<s32>& getPosition() = 0;
+ 
 irrArray.h
-- Elements used in the array container need now to have an operator= 
+Fixed allocator template usage
+array(const array<T, TAlloc>& other) : data(0)
+const array<T, TAlloc>& operator=(const array<T, TAlloc>& other)
+bool operator == (const array<T, TAlloc>& other) const
+bool operator != (const array<T, TAlloc>& other) const
+Changed behavior for free_when_destroyed
+void set_pointer(T* newPointer, u32 size, bool _is_sorted=false, bool _free_when_destroyed=true)
+void set_free_when_destroyed(bool f)
+ 
+irrMap.h
+Renamed method (from isEmpty)
+bool empty() const
+New method
+void swap(map<KeyType, ValueType>& other)
 
-Octrees (the structure formerly know as octtree):
-- All references to OctTree, OctTreeSceneNode, OctTreeTriangleSelector and OCT_TREE got replaced by Octree, OctreeSceneNode, OctreeTriangleSelector and OCTREE. (one 't' less).
+IAnimatedMesh.h
+virtual f32 getAnimationSpeed() const =0;
+
+IAttributes.h
+Made parameters const-ref
+virtual void addArray(const c8* attributeName, const core::array<core::stringw>& value) = 0;
+virtual void setAttribute(const c8* attributeName, const core::array<core::stringw>& value) = 0;
+virtual void setAttribute(s32 index, const core::array<core::stringw>& value) = 0;
+
+ISceneManager.h
+Renamed method (from OctTree)
+virtual IMeshSceneNode* addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+ 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
+virtual IMeshSceneNode* addOctreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
+ 			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
+virtual ITriangleSelector* createOctreeTriangleSelector(IMesh* mesh,
+ 		ISceneNode* node, s32 minimalPolysPerNode=32) = 0;
+New parameter (makeActive)
+virtual ICameraSceneNode* addCameraSceneNode(ISceneNode* parent = 0,
+		const core::vector3df& position = core::vector3df(0,0,0),
+		const core::vector3df& lookat = core::vector3df(0,0,100),
+		s32 id=-1, bool makeActive=true) = 0;
+virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
+ 		f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
+		f32 translationSpeed = 1500.0f, s32 id=-1,
+		bool makeActive=true) = 0;
+virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
+		f32 rotateSpeed = 100.0f, f32 moveSpeed = 0.5f, s32 id=-1,
+ 		SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
+		f32 jumpSpeed = 0.f, bool invertMouse=false,
+		bool makeActive=true) = 0;
+Make parameter const 
+virtual IMeshSceneNode* addQuake3SceneNode(const IMeshBuffer* meshBuffer, const quake3::IShader * shader,
+		ISceneNode* parent=0, s32 id=-1) = 0;
+New parameter (loop, pingpong)
+virtual ISceneNodeAnimator* createFollowSplineAnimator(s32 startTime,
+		const core::array< core::vector3df >& points,
+		f32 speed = 1.0f, f32 tightness = 0.5f, bool loop=true, bool pingpong=false) = 0;
+
+SMaterialLayer.h
+New clamp modes
+ETC_MIRROR_CLAMP, ETC_MIRROR_CLAMP_TO_EDGE, ETC_MIRROR_CLAMP_TO_BORDER
+New material layer modes (replaces TextureWrap)
+TextureWrapU(ETC_REPEAT), TextureWrapV(ETC_REPEAT)
+
+vector3d.h
+Use tolerance to compare, changed order function to total order
+bool operator<=(const vector3d<T>&other) const
+bool operator>=(const vector3d<T>&other) const
+bool operator<(const vector3d<T>&other) const
+bool operator>(const vector3d<T>&other) const
+New method 
+vector3d<T> getSphericalCoordinateAngles()
+New method specializations
+template <>
+inline vector3d<s32> vector3d<s32>::operator /(s32 val) const {return core::vector3d<s32>(X/val,Y/val,Z/val);}
+template <>
+inline vector3d<s32>& vector3d<s32>::operator /=(s32 val) {X/=val;Y/=val;Z/=val; return *this;}
+ 
+SExposedVideoData.h
+New constructors
+SExposedVideoData() {OpenGLWin32.HDc=0; OpenGLWin32.HRc=0; OpenGLWin32.HWnd=0;}
+explicit SExposedVideoData(void* Window) {OpenGLWin32.HDc=0; OpenGLWin32.HRc=0; OpenGLWin32.HWnd=Window;}
+
+IGUIEnvironment.h
+New method
+virtual IGUIFont* addFont(const io::path& name, IGUIFont* font) = 0;
+New parameter (image)
+virtual IGUIWindow* addMessageBox(const wchar_t* caption, const wchar_t* text=0,
+		bool modal = true, s32 flags = EMBF_OK, IGUIElement* parent=0, s32 id=-1, video::ITexture* image=0) = 0;
+ 
+IGeometryCreator.h
+New method
+IMesh* createPlaneMesh(const core::dimension2d<f32>& tileSize,
+			const core::dimension2d<u32>& tileCount,
+			video::SMaterial* material,
+			const core::dimension2d<f32>& textureRepeatCount) const
+
+IFileArchive.h
+New archive type
+EFAT_NPK     = MAKE_IRR_ID('N','P','K', 0),
+New member for storing the password of AES-encrypted archives
+core::stringc Password;
+ 
+IFileSystem.h
+New parameter (password)
+virtual bool addFileArchive(const path& filename, bool ignoreCase=true,
+		bool ignorePaths=true,
+		E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
+		const core::stringc& password="") =0;
+
+IrrlichtDevice.h
+New method
+virtual void clearSystemMessages() = 0;
+
+irrMath.h
+Changed constant (from 1)
+const s32 ROUNDING_ERROR_S32 = 0;
+New method
+template <class T>
+inline void swap(T& a, T& b)
+
+IGPUProgrammingServices.h
+New parameters (for geometry shaders)
+virtual s32 addHighLevelShaderMaterial
+virtual s32 addHighLevelShaderMaterialFromFiles
+virtual s32 addHighLevelShaderMaterialFromFiles
+New overload (for calling with geometry shaders)
+s32 addHighLevelShaderMaterial
+s32 addHighLevelShaderMaterialFromFiles
+s32 addHighLevelShaderMaterialFromFiles
+
+ISceneNode.h
+New types
+	typedef core::list<ISceneNode*> ISceneNodeList;
+	typedef core::list<ISceneNodeAnimator*> ISceneNodeAnimatorList;
+ 
+IEventReceiver.h
+Renamed events (split from EMIE_MOUSE_*)
+EMIE_LMOUSE_DOUBLE_CLICK,
+EMIE_RMOUSE_DOUBLE_CLICK,
+EMIE_MMOUSE_DOUBLE_CLICK,
+EMIE_LMOUSE_TRIPLE_CLICK,
+EMIE_RMOUSE_TRIPLE_CLICK,
+EMIE_MMOUSE_TRIPLE_CLICK,
+ 
+IGUISpriteBank.h
+New method
+virtual s32 addTextureAsSprite(video::ITexture* texture) = 0;
+virtual void clear() = 0;
+
+SMaterial.h
+Changed binary packing (non-visible from user calls)
+inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
+
+IGUISkin.h
+New values
+EGDS_MESSAGE_BOX_GAP_SPACE,
+EGDS_MESSAGE_BOX_MIN_TEXT_WIDTH,
+EGDS_MESSAGE_BOX_MAX_TEST_WIDTH,
+EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT,
+EGDS_MESSAGE_BOX_MAX_TEXT_HEIGHT,
+New parameter (checkClientArea)
+virtual core::rect<s32> draw3DWindowBackground(IGUIElement* element,
+			bool drawTitleBar, video::SColor titleBarColor,
+			const core::rect<s32>& rect,
+			const core::rect<s32>* clip=0,
+			core::rect<s32>* checkClientArea=0) = 0;
+ 
+quaternion.h
+New operator
+bool operator!=(const quaternion& other) const;
+New method
+inline quaternion& set(const core::quaternion& quat);
+inline bool equals(const quaternion& other,
+		const f32 tolerance = ROUNDING_ERROR_f32 ) const;
+
+irrList.h
+New method
+u32 size() const
+void swap(list<T>& other)
+ 
+IVideoDriver.h
+New render targets
+ERT_MULTI_RENDER_TEXTURES
+New class 
+struct IRenderTarget
+Changed parameter (from void*)
+virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+		SColor color=SColor(255,0,0,0),
+		const SExposedVideoData& videoData=SExposedVideoData(),
+		core::rect<s32>* sourceRect=0) =0;
+New parameter (mipmapData)
+virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) = 0;
+New method
+virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
+		bool clearBackBuffer=true, bool clearZBuffer=true,
+		SColor color=video::SColor(0,0,0,0)) =0;
+void drawIndexedTriangleFan(const S3DVertexTangents* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount)
+virtual void getFog(SColor& color, E_FOG_TYPE& fogType,
+		f32& start, f32& end, f32& density,
+		bool& pixelFog, bool& rangeFog) = 0;
+virtual SMaterial& getMaterial2D() =0;
+virtual void enableMaterial2D(bool enable=true) =0;
+virtual core::dimension2du getMaxTextureSize() const =0;
+Made non-virtual
+void drawIndexedTriangleList(const S3DVertex* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount)
+void drawIndexedTriangleList(const S3DVertex2TCoords* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount)
+void drawIndexedTriangleList(const S3DVertexTangents* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount)
+void drawIndexedTriangleFan(const S3DVertex* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount)
+void drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount)
+ 
+EDriverFeatures.h
+New driver feature enums
+EVDF_MULTIPLE_RENDER_TARGETS,
+EVDF_MRT_BLEND,
+EVDF_MRT_COLOR_MASK,
+EVDF_MRT_BLEND_FUNC,
+EVDF_GEOMETRY_SHADER,
+
+IGUIWindow.h
+New method
+virtual core::rect<s32> getClientRect() const = 0;
+ 
+IGUIContextMenu.h
+New enum
+enum ECONTEXT_MENU_CLOSE
+New method
+virtual void setCloseHandling(ECONTEXT_MENU_CLOSE onClose) = 0;
+virtual ECONTEXT_MENU_CLOSE getCloseHandling() const = 0;
+virtual u32 insertItem(u32 idx, const wchar_t* text, s32 commandId=-1, bool enabled=true,
+		bool hasSubMenu=false, bool checked=false, bool autoChecking=false) = 0;
+virtual s32 findItemWithCommandId(s32 commandId, u32 idxStartSearch=0) const = 0;
+virtual void setItemAutoChecking(u32 idx, bool autoChecking) = 0;
+virtual bool getItemAutoChecking(u32 idx) const = 0;
+virtual void setEventParent(IGUIElement *parent) = 0;
+New parameter 
+virtual u32 addItem(const wchar_t* text, s32 commandId=-1, bool enabled=true,
+		bool hasSubMenu=false, bool checked=false, bool autoChecking=false) = 0;
+ 
+SIrrCreationParameters.h
+New parameter (LoggingLevel)
+createDevice
+ 
+matrix4.h
+New method
+bool equals(const core::CMatrix4<T>& other, const T tolerance=(T)ROUNDING_ERROR_f64) const;
+
+SSkinMeshBuffer.h
+Renamed method (from MoveTo_2TCoords)
+virtual void convertTo2TCoords()
+Renamed method (from MoveTo_Tangents)
+virtual void convertToTangents()
+
+SVertexManipulator.h
+New classes (for vertex manipulation)
+class SVertexColorSetManipulator : public IVertexManipulator
+class SVertexColorSetAlphaManipulator : public IVertexManipulator
+class SVertexColorInvertManipulator : public IVertexManipulator
+class SVertexColorThresholdManipulator : public IVertexManipulator
+class SVertexColorBrightnessManipulator : public IVertexManipulator
+class SVertexColorContrastManipulator : public IVertexManipulator
+class SVertexColorContrastBrightnessManipulator : public IVertexManipulator
+class SVertexColorGammaManipulator : public IVertexManipulator
+;
+class SVertexColorScaleManipulator : public IVertexManipulator
+class SVertexColorDesaturateToLightnessManipulator : public IVertexManipulator
+class SVertexColorDesaturateToAverageManipulator : public IVertexManipulator
+class SVertexColorDesaturateToLuminanceManipulator : public IVertexManipulator
+class SVertexColorInterpolateLinearManipulator : public IVertexManipulator
+class SVertexColorInterpolateQuadraticManipulator : public IVertexManipulator
+class SVertexPositionScaleManipulator : public IVertexManipulator
+;
+class SVertexPositionScaleAlongNormalsManipulator : public IVertexManipulator
+class SVertexPositionTransformManipulator : public IVertexManipulator
+class SVertexTCoordsScaleManipulator : public IVertexManipulator
+
+IMeshCache.h
+Renamed method (from getMeshByFilename)
+virtual IAnimatedMesh* getMeshByName(const io::path& name) = 0;
+Renamed method and changed return type (from getMeshFilename/io::path) 
+virtual const io::SNamedPath& getMeshName(u32 index) const = 0;
+virtual const io::SNamedPath& getMeshName(const IAnimatedMesh* const mesh) const = 0;
+virtual const io::SNamedPath& getMeshName(const IMesh* const mesh) const = 0;
+Renamed method (from setMeshFilename)
+virtual bool renameMesh(u32 index, const io::path& name) = 0;
+virtual bool renameMesh(const IAnimatedMesh* const mesh, const io::path& name) = 0;
+virtual bool renameMesh(const IMesh* const mesh, const io::path& name) = 0;
+ 
+IGUIElement.h
+Changed parameter (to const-ref)
+ IGUIElement(EGUI_ELEMENT_TYPE type, IGUIEnvironment* environment, IGUIElement* parent,
+s32 id, const core::rect<s32>& rectangle)
+New method
+virtual bool hasType(EGUI_ELEMENT_TYPE type) const
+ 
+irrString.h
+Changed parameter (to template with allocator) in all methods with templates
+Made destructor non-virtual
+~string()
+Added parameter 
+s32 find(const B* const str, const u32 start = 0) const
+New method
+void remove(T c)
+void remove(const string<T,TAlloc> toRemove)
+void removeChars(const string<T,TAlloc> & characters)
+template<class container>
+u32 split(container& ret, const T* const c, u32 count=1, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
+ 
+vector2d.h
+Use tolerance to compare, changed order function to total order
+bool operator<=(const vector2d<T>&other) const
+bool operator>=(const vector2d<T>&other) const
+bool operator<(const vector2d<T>&other) const
+bool operator>(const vector2d<T>&other) const
+ 
