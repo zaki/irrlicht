@@ -714,6 +714,7 @@ void CDemo::createParticleImpacts()
 			paf->drop();
 
 			pas->setMaterialFlag(video::EMF_LIGHTING, false);
+			pas->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 			pas->setMaterialTexture(0, device->getVideoDriver()->getTexture("../../media/smoke.bmp"));
 			pas->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 
