@@ -1771,6 +1771,7 @@ void CQuake3EventHandler::useItem( Q3Player * player)
 
 	node->setMaterialFlag(EMF_LIGHTING, false);
 	node->setMaterialTexture(0, Game->Device->getVideoDriver()->getTexture("fireball.bmp"));
+	node->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	node->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
 
 	f32 length = (f32)(end - start).getLength();
@@ -1884,6 +1885,7 @@ void CQuake3EventHandler::createParticleImpacts( u32 now )
 			anim->drop();
 
 			pas->setMaterialFlag(video::EMF_LIGHTING, false);
+			pas->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 			pas->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA );
 			pas->setMaterialTexture(0, Game->Device->getVideoDriver()->getTexture( smoke[g].texture ));
 		}
