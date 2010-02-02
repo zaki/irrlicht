@@ -430,6 +430,7 @@ void CIrrDeviceMacOSX::closeDevice()
 				CGLSetCurrentContext(NULL);
 				CGLClearDrawable(CGLContext);
 				CGLDestroyContext(CGLContext);
+				CGReleaseAllDisplays();
 			}
 		}
 	}

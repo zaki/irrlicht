@@ -51,8 +51,11 @@ public:
 	//! Creates a planar texture mapping on the meshbuffer
 	void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const;
 
+	//! Recalculates tangents, requires a tangent mesh
+	virtual void recalculateTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const;
+
 	//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
-	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const;
+	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false, bool recalculateTangents=true) const;
 
 	//! Creates a copy of the mesh, which will only consist of S3D2TCoords vertices.
 	virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const;

@@ -440,9 +440,12 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	if (StencilBuffer)
 		flags |= D3DCLEAR_STENCIL;
 
-	hr = pID3DDevice->Clear( 0, NULL, flags, color.color, 1.0, 0);
-	if (FAILED(hr))
-		os::Printer::log("Direct3D8 clear failed.", ELL_WARNING);
+	if (flags)
+	{
+		hr = pID3DDevice->Clear( 0, NULL, flags, color.color, 1.0, 0);
+		if (FAILED(hr))
+			os::Printer::log("Direct3D8 clear failed.", ELL_WARNING);
+	}
 
 	hr = pID3DDevice->BeginScene();
 	if (FAILED(hr))

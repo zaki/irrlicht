@@ -79,7 +79,7 @@ CGUIEditWorkspace::EGUIEDIT_MODE CGUIEditWorkspace::getModeFromPos(core::positio
 	{
 		core::rect<s32>		r = SelectedElement->getAbsolutePosition();
 
-		if		(TLRect.isPointInside(p))  
+		if		(TLRect.isPointInside(p))
 			return EGUIEDM_RESIZE_TL;
 
 		else if (TRRect.isPointInside(p))
@@ -106,7 +106,7 @@ CGUIEditWorkspace::EGUIEDIT_MODE CGUIEditWorkspace::getModeFromPos(core::positio
 		else if (getEditableElementFromPoint(SelectedElement, p) == SelectedElement)
 			return EGUIEDM_MOVE;
 
-		else 
+		else
 			return EGUIEDM_SELECT;
 	}
 
@@ -296,6 +296,8 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					PasteXMLToSelectedElement();
 				}
 				break;
+			default:
+				break;
 			}
 
 			return true;
@@ -389,7 +391,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 				sub = mnu->getSubMenu(1);
 				sub->addItem(L"Cut (ctrl+x)", MenuCommandStart + EGUIEDMC_CUT_ELEMENT,	(SelectedElement != 0));
 				sub->addItem(L"Copy (ctrl+c)", MenuCommandStart + EGUIEDMC_COPY_ELEMENT,	(SelectedElement != 0));
-				sub->addItem(L"Paste (ctrl+v)", MenuCommandStart + EGUIEDMC_PASTE_ELEMENT,	
+				sub->addItem(L"Paste (ctrl+v)", MenuCommandStart + EGUIEDMC_PASTE_ELEMENT,
 					(core::stringc(Environment->getOSOperator()->getTextFromClipboard()) != ""));
 				sub->addItem(L"Delete (del)", MenuCommandStart + EGUIEDMC_DELETE_ELEMENT, (SelectedElement != 0));
 				sub->addSeparator();
@@ -446,7 +448,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 			{
 				if (SelectedElement)
 				{
-					MouseOverElement = getEditableElementFromPoint(Parent, 
+					MouseOverElement = getEditableElementFromPoint(Parent,
 						core::position2di(e.MouseInput.X,e.MouseInput.Y));
 					if (MouseOverElement)
 					{
@@ -554,9 +556,13 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					case EGUIEDM_RESIZE_BR:
 						SelectedArea.LowerRightCorner = p;
 						break;
+					default:
+						break;
 				}
 			}
 
+			break;
+		default:
 			break;
 		}
 		break;
@@ -571,7 +577,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 			break;
 
 		case EGET_MENU_ITEM_SELECTED:
-
+		{
 			IGUIContextMenu *menu = (IGUIContextMenu*)e.GUIEvent.Caller;
 			s32 cmdID = menu->getItemCommandId(menu->getSelectedItem()) - MenuCommandStart;
 
@@ -671,13 +677,19 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 						}
 					}
 					break;
+				}
 			}
 			return true;
+		default:
+			break;
 		}
+		break;
+
+	default:
 		break;
 	}
 
-	// even if we didn't absorb the event, 
+	// even if we didn't absorb the event,
 	// we never pass events back to the GUI we're editing!
 	return false;
 }
@@ -741,9 +753,9 @@ void CGUIEditWorkspace::draw()
 		TopRect = core::rect<s32>(r.getCenter().X-2, r.UpperLeftCorner.Y,r.getCenter().X+2, r.UpperLeftCorner.Y+4 );
 		BLRect = core::rect<s32>(r.UpperLeftCorner.X, r.LowerRightCorner.Y-4, r.UpperLeftCorner.X+4, r.LowerRightCorner.Y);
 		LRect = core::rect<s32>(r.UpperLeftCorner.X,r.getCenter().Y-2, r.UpperLeftCorner.X+4, r.getCenter().Y+2 );
-		RRect = core::rect<s32>(r.LowerRightCorner.X-4,r.getCenter().Y-2, r.LowerRightCorner.X, r.getCenter().Y+2 );	
+		RRect = core::rect<s32>(r.LowerRightCorner.X-4,r.getCenter().Y-2, r.LowerRightCorner.X, r.getCenter().Y+2 );
 		BRRect = core::rect<s32>(r.LowerRightCorner-d, r.LowerRightCorner);
-		BRect = core::rect<s32>(r.getCenter().X-2, r.LowerRightCorner.Y-4,r.getCenter().X+2, r.LowerRightCorner.Y );	
+		BRect = core::rect<s32>(r.getCenter().X-2, r.LowerRightCorner.Y-4,r.getCenter().X+2, r.LowerRightCorner.Y );
 
 		// top left
 		if (m == EGUIEDM_RESIZE_T || m == EGUIEDM_RESIZE_L || m == EGUIEDM_RESIZE_TL || m == EGUIEDM_MOVE )
@@ -868,7 +880,7 @@ void CGUIEditWorkspace::PasteXMLToSelectedElement()
 
 	// reset focus
 	Environment->setFocus(this);
-	
+
 	// drop the read file
 	memWrite->drop();
 }

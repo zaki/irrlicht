@@ -3,7 +3,7 @@ import sys
 
 USE_GCC = 1;
 NDEBUG = 1;
-PROFILE = 1;
+PROFILE = 0;
 
 APPLICATION_NAME = 'Irrlicht';
 LIBRARIES = ['gdi32', 'opengl32', 'd3dx9d', 'winmm'];
@@ -86,9 +86,9 @@ env.Append(LIBS = LIBRARIES, LIBPATH = CXXINCS);
 
 CXXFLAGS = ['-Wall'];
 if NDEBUG:
-	CXXFLAGS += ['-g', '-D_DEBUG'];
-else:
 	CXXFLAGS += ['-fexpensive-optimizations', '-O3'];
+else:
+	CXXFLAGS += ['-g', '-D_DEBUG'];
 
 if PROFILE:
 	CXXFLAGS += ['-pg'];

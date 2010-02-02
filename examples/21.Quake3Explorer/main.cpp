@@ -21,7 +21,7 @@ Copyright 2006-2009 Burningwater, Thomas Alten
 
 #include "q3factory.h"
 #include "sound.h"
-#include <iostream>
+#include "driverChoice.h"
 
 /*
 	Game Data is used to hold Data which is needed to drive the game
@@ -1771,6 +1771,7 @@ void CQuake3EventHandler::useItem( Q3Player * player)
 
 	node->setMaterialFlag(EMF_LIGHTING, false);
 	node->setMaterialTexture(0, Game->Device->getVideoDriver()->getTexture("fireball.bmp"));
+	node->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	node->setMaterialType(EMT_TRANSPARENT_ADD_COLOR);
 
 	f32 length = (f32)(end - start).getLength();
@@ -1884,6 +1885,7 @@ void CQuake3EventHandler::createParticleImpacts( u32 now )
 			anim->drop();
 
 			pas->setMaterialFlag(video::EMF_LIGHTING, false);
+			pas->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 			pas->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA );
 			pas->setMaterialTexture(0, Game->Device->getVideoDriver()->getTexture( smoke[g].texture ));
 		}
@@ -1923,8 +1925,85 @@ void CQuake3EventHandler::Render()
 	if ( 0 == driver )
 		return;
 
-	driver->beginScene(true, true, SColor(0,0,0,0));
-	Game->Device->getSceneManager ()->drawAll();
+	// TODO: This does not work, yet.
+	const bool anaglyph=false;
+	if (anaglyph)
+	{
+		scene::ICameraSceneNode* cameraOld = Game->Device->getSceneManager()->getActiveCamera();
+		driver->beginScene(true, true, SColor(0,0,0,0));
+		driver->getOverrideMaterial().Material.ColorMask = ECP_NONE;
+		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
+        driver->getOverrideMaterial().EnablePasses = ESNRP_SKY_BOX + 
+                                                     ESNRP_SOLID +
+                                                     ESNRP_TRANSPARENT +
+                                                     ESNRP_TRANSPARENT_EFFECT +
+                                                     ESNRP_SHADOW;
+		Game->Device->getSceneManager()->drawAll();
+		driver->clearZBuffer();
+
+		const vector3df oldPosition = cameraOld->getPosition();
+		const vector3df oldTarget   = cameraOld->getTarget();
+		const matrix4 startMatrix   = cameraOld->getAbsoluteTransformation();
+		const vector3df focusPoint  = (oldTarget -
+				cameraOld->getAbsolutePosition()).setLength(10000) +
+				cameraOld->getAbsolutePosition() ;
+
+		scene::ICameraSceneNode* camera = cameraOld;//Game->Device->getSceneManager()->addCameraSceneNode();
+
+		//Left eye...
+		vector3df pos;
+		matrix4   move;
+
+		move.setTranslation( vector3df(-1.5f,0.0f,0.0f) );
+		pos=(startMatrix*move).getTranslation();
+
+		driver->getOverrideMaterial().Material.ColorMask = ECP_RED;
+		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
+		driver->getOverrideMaterial().EnablePasses = 
+				ESNRP_SKY_BOX|ESNRP_SOLID|ESNRP_TRANSPARENT|
+				ESNRP_TRANSPARENT_EFFECT|ESNRP_SHADOW;
+
+		camera->setPosition(pos);
+		camera->setTarget(focusPoint);
+
+		Game->Device->getSceneManager()->drawAll();
+		driver->clearZBuffer();
+
+		//Right eye...
+		move.setTranslation( vector3df(1.5f,0.0f,0.0f) );
+		pos=(startMatrix*move).getTranslation();
+
+		driver->getOverrideMaterial().Material.ColorMask = ECP_GREEN + ECP_BLUE;
+		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
+		driver->getOverrideMaterial().EnablePasses = 
+				ESNRP_SKY_BOX|ESNRP_SOLID|ESNRP_TRANSPARENT|
+				ESNRP_TRANSPARENT_EFFECT|ESNRP_SHADOW;
+
+		camera->setPosition(pos);
+		camera->setTarget(focusPoint);
+
+		Game->Device->getSceneManager()->drawAll();
+
+		driver->getOverrideMaterial().Material.ColorMask=ECP_ALL;
+		driver->getOverrideMaterial().EnableFlags=0;
+		driver->getOverrideMaterial().EnablePasses=0;
+
+		if (camera != cameraOld)
+		{
+			Game->Device->getSceneManager()->setActiveCamera(cameraOld);
+			camera->remove();
+		}
+		else
+		{
+			camera->setPosition(oldPosition);
+			camera->setTarget(oldTarget);
+		}
+	}
+	else
+	{
+		driver->beginScene(true, true, SColor(0,0,0,0));
+		Game->Device->getSceneManager()->drawAll();
+	}
 	Game->Device->getGUIEnvironment()->drawAll();
 	driver->endScene();
 }
@@ -2083,23 +2162,10 @@ int IRRCALLCONV main(int argc, char* argv[])
 		if ( game.retVal == 0 )
 		{
 			game.setDefault ();
-			printf("Please select the driver you want for this example:\n"\
-				" (a) Direct3D 9.0c\n (b) Direct3D 8.1\n (c) OpenGL 1.5\n"\
-				" (d) Software Renderer\n (e) Burning's Video (TM) Thomas Alten\n"\
-				" (otherKey) exit\n\n");
-
-			char i = 'a';
-			std::cin >> i;
-
-			switch(i)
-			{
-				case 'a': game.deviceParam.DriverType = EDT_DIRECT3D9;break;
-				case 'b': game.deviceParam.DriverType = EDT_DIRECT3D8;break;
-				case 'c': game.deviceParam.DriverType = EDT_OPENGL;   break;
-				case 'd': game.deviceParam.DriverType = EDT_SOFTWARE; break;
-				case 'e': game.deviceParam.DriverType = EDT_BURNINGSVIDEO;break;
-				default: game.retVal = 3; break;
-			}
+			// ask user for driver
+			game.deviceParam.DriverType=driverChoiceConsole();
+			if (game.deviceParam.DriverType==video::EDT_COUNT)
+				game.retVal = 3;
 		}
 		runGame ( &game );
 	} while ( game.retVal < 3 );
@@ -2109,4 +2175,3 @@ int IRRCALLCONV main(int argc, char* argv[])
 
 /*
 **/
-

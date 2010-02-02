@@ -452,19 +452,11 @@ void CGUISkin::draw3DSunkenPane(IGUIElement* element, video::SColor bgcolor,
 
 
 //! draws a window background
-/** Used for drawing the background of dialogs and windows.
-\param element: Pointer to the element which wishes to draw this. This parameter
-is usually not used by ISkin, but can be used for example by more complex
-implementations to find out how to draw the part exactly.
-\param titleBarColor: Title color.
-\param drawTitleBar: True to enable title drawing.
-\param rect: Defining area where to draw.
-\param clip: Clip area.
-\return Returns rect where to draw title bar text. */
+// return where to draw title bar text.
 core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 				bool drawTitleBar, video::SColor titleBarColor,
 				const core::rect<s32>& r,
-				const core::rect<s32>* cl,
+				const core::rect<s32>* clip,
 				core::rect<s32>* checkClientArea)
 {
 	if (!Driver)
@@ -482,7 +474,7 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 	rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 1;
 	if ( !checkClientArea )
 	{
-		Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), rect, cl);
+		Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), rect, clip);
 	}
 
 	// left border
@@ -490,7 +482,7 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 	rect.LowerRightCorner.X = rect.UpperLeftCorner.X + 1;
 	if ( !checkClientArea )
 	{
-		Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), rect, cl);
+		Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), rect, clip);
 	}
 
 	// right border dark outer line
@@ -500,7 +492,7 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 	rect.LowerRightCorner.Y = r.LowerRightCorner.Y;
 	if ( !checkClientArea )
 	{
-		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), rect, cl);
+		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), rect, clip);
 	}
 
 	// right border bright innner line
@@ -510,7 +502,7 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 	rect.LowerRightCorner.Y -= 1;
 	if ( !checkClientArea )
 	{
-		Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), rect, cl);
+		Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), rect, clip);
 	}
 
 	// bottom border dark outer line
@@ -520,7 +512,7 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 	rect.LowerRightCorner.X = r.LowerRightCorner.X;
 	if ( !checkClientArea )
 	{
-		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), rect, cl);
+		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), rect, clip);
 	}
 
 	// bottom border bright inner line
@@ -530,7 +522,7 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 	rect.LowerRightCorner.Y -= 1;
 	if ( !checkClientArea )
 	{
-		Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), rect, cl);
+		Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), rect, clip);
 	}
 
 	// client area for background
@@ -548,20 +540,20 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 	{
 		if (!UseGradient)
 		{
-			Driver->draw2DRectangle(getColor(EGDC_3D_FACE), rect, cl);
+			Driver->draw2DRectangle(getColor(EGDC_3D_FACE), rect, clip);
 		}
 		else if ( Type == EGST_BURNING_SKIN )
 		{
 			const video::SColor c1 = getColor(EGDC_WINDOW).getInterpolated ( 0xFFFFFFFF, 0.9f );
 			const video::SColor c2 = getColor(EGDC_WINDOW).getInterpolated ( 0xFFFFFFFF, 0.8f );
 
-			Driver->draw2DRectangle(rect, c1, c1, c2, c2, cl);
+			Driver->draw2DRectangle(rect, c1, c1, c2, c2, clip);
 		}
 		else
 		{
 			const video::SColor c2 = getColor(EGDC_3D_SHADOW);
 			const video::SColor c1 = getColor(EGDC_3D_FACE);
-			Driver->draw2DRectangle(rect, c1, c1, c1, c2, cl);
+			Driver->draw2DRectangle(rect, c1, c1, c1, c2, clip);
 		}
 	}
 
@@ -582,17 +574,17 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 		{
 			// draw title bar
 			//if (!UseGradient)
-			//	Driver->draw2DRectangle(titleBarColor, rect, cl);
+			//	Driver->draw2DRectangle(titleBarColor, rect, clip);
 			//else
 			if ( Type == EGST_BURNING_SKIN )
 			{
 				const video::SColor c = titleBarColor.getInterpolated( 0xffffffff, 0.8f);
-				Driver->draw2DRectangle(rect, titleBarColor, titleBarColor, c, c, cl);
+				Driver->draw2DRectangle(rect, titleBarColor, titleBarColor, c, c, clip);
 			}
 			else
 			{
 				const video::SColor c = titleBarColor.getInterpolated(video::SColor(255,0,0,0), 0.2f);
-				Driver->draw2DRectangle(rect, titleBarColor, c, titleBarColor, c, cl);
+				Driver->draw2DRectangle(rect, titleBarColor, c, titleBarColor, c, clip);
 			}
 		}
 	}

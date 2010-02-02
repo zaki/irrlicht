@@ -31,7 +31,7 @@ namespace gui
 			AttribImage->setSubElement(true);
 			AttribImage->setScaleImage(true);
 			AttribImage->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
-			
+
 			topy += 105;
 
 			core::rect<s32> r2(0, topy, r.getWidth() - 15 - skin->getSize(EGDS_CHECK_BOX_WIDTH), topy + h);
@@ -81,15 +81,19 @@ namespace gui
 						break;
 					case EGET_FILE_SELECTED:
 						// file selected: change editbox value and set event
-						
+
 						return true;
 					case EGET_FILE_CHOOSE_DIALOG_CANCELLED:
 
 						return true;
+					default:
+						break;
 					}
 					break;
 				case EET_KEY_INPUT_EVENT:
 					return true;
+				default:
+					break;
 				}
 			}
 			return CGUIAttribute::OnEvent(e);
