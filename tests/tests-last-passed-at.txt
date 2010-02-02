@@ -1,4 +1,4 @@
-Tests finished. 50 tests of 50 passed.
+Tests finished. 51 tests of 51 passed.
 Compiled as DEBUG
-Test suite pass at GMT Thu Jan 21 13:53:33 2010
+Test suite pass at GMT Tue Jan 26 11:59:00 2010
 

@@ -35,7 +35,7 @@ public:
 
 	//! Opens a file for read access.
 	/** \param filename: Name of file to open.
-	\return Returns a pointer to the created file interface.
+	\return Pointer to the created file interface.
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information. */
 	virtual IReadFile* createAndOpenFile(const path& filename) =0;
@@ -47,7 +47,7 @@ public:
 	\param fileName: The name given to this file
 	\param deleteMemoryWhenDropped: True if the memory should be deleted
 	along with the IReadFile when it is dropped.
-	\return Returns a pointer to the created file interface.
+	\return Pointer to the created file interface.
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information.
 	*/
@@ -74,7 +74,7 @@ public:
 	\param fileName: The name given to this file
 	\param deleteMemoryWhenDropped: True if the memory should be deleted
 	along with the IWriteFile when it is dropped.
-	\return Returns a pointer to the created file interface.
+	\return Pointer to the created file interface.
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information.
 	*/
@@ -85,7 +85,7 @@ public:
 	/** \param filename: Name of file to open.
 	\param append: If the file already exist, all write operations are
 	appended to the file.
-	\return Returns a pointer to the created file interface. 0 is returned, if the
+	\return Pointer to the created file interface. 0 is returned, if the
 	file could not created or opened for writing.
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information. */
@@ -99,6 +99,8 @@ public:
 	default Irrlicht supports ZIP, PAK, TAR, PNK, and directories as
 	archives. You can provide your own archive types by implementing
 	IArchiveLoader and passing an instance to addArchiveLoader.
+	Irrlicht supports AES-encrypted zip files, and the advanced compression
+	techniques lzma and bzip2.
 	\param filename: Filename of the archive to add to the file system.
 	\param ignoreCase: If set to true, files in the archive can be accessed without
 	writing all letters in the right case.
@@ -109,7 +111,7 @@ public:
 	you use a different extension then you can use this parameter to force
 	a specific type of archive.
 	\param password An optional password, which is used in case of encrypted archives.
-	\return Returns true if the archive was added successfully, false if not. */
+	\return True if the archive was added successfully, false if not. */
 	virtual bool addFileArchive(const path& filename, bool ignoreCase=true,
 			bool ignorePaths=true,
 			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
@@ -120,14 +122,14 @@ public:
 	engine, for example proprietary or encrypted file storage. */
 	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
 
-	//! Returns the number of archives currently attached to the file system
+	//! Get the number of archives currently attached to the file system
 	virtual u32 getFileArchiveCount() const =0;
 
 	//! Removes an archive from the file system.
 	/** This will close the archive and free any file handles, but will not close resources which have already
 	been loaded and are now cached, for example textures and meshes.
 	\param index: The index of the archive to remove
-	\return Returns true on success, false on failure */
+	\return True on success, false on failure */
 	virtual bool removeFileArchive(u32 index) =0;
 
 	//! Removes an archive from the file system.
@@ -135,7 +137,7 @@ public:
 	close resources which have already been loaded and are now cached, for
 	example textures and meshes.
 	\param filename The archive of the given name will be removed
-	\return Returns true on success, false on failure */
+	\return True on success, false on failure */
 	virtual bool removeFileArchive(const path& filename) =0;
 
 	//! Changes the search order of attached archives.
@@ -144,7 +146,7 @@ public:
 	\param relative: The relative change in position, archives with a lower index are searched first */
 	virtual bool moveFileArchive(u32 sourceIndex, s32 relative) =0;
 
-	//! Returns the archive at a given index.
+	//! Get the archive at a given index.
 	virtual IFileArchive* getFileArchive(u32 index) =0;
 
 	//! Adds a zip archive to the file system.
@@ -159,7 +161,7 @@ public:
 	writing all letters in the right case.
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
-	\return Returns true if the archive was added successfully, false if not. */
+	\return True if the archive was added successfully, false if not. */
 	virtual bool addZipFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
 		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_ZIP);
@@ -175,7 +177,7 @@ public:
 	writing all letters in the right case.
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
-	\return Returns true if the archive was added successful, false if not. */
+	\return True if the archive was added successful, false if not. */
 	virtual bool addFolderFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
 		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_FOLDER);
@@ -193,7 +195,7 @@ public:
 	writing all letters in the right case.
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.(should not use with Quake2 paks
-	\return Returns true if the archive was added successful, false if not. */
+	\return True if the archive was added successful, false if not. */
 	virtual bool addPakFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
 		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_PAK);
@@ -215,12 +217,12 @@ public:
 	\result Absolute filename which points to the same file. */
 	virtual path getAbsolutePath(const path& filename) const =0;
 
-	//! Returns the directory a file is located in.
+	//! Get the directory a file is located in.
 	/** \param filename: The file to get the directory from.
 	\return String containing the directory of the file. */
 	virtual path getFileDir(const path& filename) const =0;
 
-	//! Returns the base part of a filename, i.e. the name without the directory part.
+	//! Get the base part of a filename, i.e. the name without the directory part.
 	/** If no directory is prefixed, the full name is returned.
 	\param filename: The file to get the basename from
 	\param keepExtension True if filename with extension is returned otherwise everything
@@ -247,7 +249,7 @@ public:
 
 	//! Determines if a file exists and could be opened.
 	/** \param filename is the string identifying the file which should be tested for existence.
-	\return Returns true if file exists, and false if it does not exist or an error occured. */
+	\return True if file exists, and false if it does not exist or an error occured. */
 	virtual bool existFile(const path& filename) const =0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as wide characters (wchar_t*).

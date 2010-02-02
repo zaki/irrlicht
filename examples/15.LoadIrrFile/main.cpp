@@ -11,7 +11,8 @@ Lets start: Create an Irrlicht device and setup the window.
 */
 
 #include <irrlicht.h>
-#include <iostream>
+#include "driverChoice.h"
+
 using namespace irr;
 
 #ifdef _MSC_VER
@@ -21,27 +22,9 @@ using namespace irr;
 int main(int argc, char** argv)
 {
 	// ask user for driver
-
-	video::E_DRIVER_TYPE driverType;
-
-	printf("Please select the driver you want for this example:\n"\
-		" (a) Direct3D 9.0c\n (b) Direct3D 8.1\n (c) OpenGL 1.5\n"\
-		" (d) Software Renderer\n (e) Burning's Software Renderer\n"\
-		" (f) NullDevice\n (otherKey) exit\n\n");
-
-	char i;
-	std::cin >> i;
-
-	switch(i)
-	{
-		case 'a': driverType = video::EDT_DIRECT3D9;break;
-		case 'b': driverType = video::EDT_DIRECT3D8;break;
-		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
-		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
-		case 'f': driverType = video::EDT_NULL;     break;
-		default: return 1;
-	}
+	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
+	if (driverType==video::EDT_COUNT)
+		return 1;
 
 	// create device and exit if creation failed
 

@@ -186,6 +186,8 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 				Resizing = false;
 			}
 			break;
+		default:
+			break;
 		}
 
 		break;
@@ -254,7 +256,11 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 				return true;
 			}
 			break;
+		default:
+			break;
 		}
+	default:
+		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;

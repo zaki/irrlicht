@@ -359,10 +359,8 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 	delete [] triangles;
 	delete [] textureCoords;
 
-	// return
-
-	mesh->calculateBoundingBox();
-
+	// init buffer with start frame.
+	mesh->getMesh(0);
 	return true;
 }
 

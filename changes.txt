@@ -1,10 +1,32 @@
 Changes in 1.7
 
+ - Implement minimize and deminimize under OSX.
+
  - Define sorting order for vector2d and vector3d in operators <, <=, > and >= to fix bugs 2783509 and 2783510. Operators order now by X,Y,Z and use float tolerances.
+
+ - Ogre mesh 32bit indices fixed.
 
  - Fix tooltips for gui-elements with sub-element like IGUISpinBox (id: 2927079, found by ArakisTheKitsune)
 
  - ITimer no longer stops when started twice
+
+ - wchar_t filesystem updates under Windows.
+
+ - Joystick POV fixed under Windows, ids fixed under OSX.
+
+ - Some updates to skinned mesh for better bones support and scaling animations.
+
+ - OSX supports external window id in creation parameters now.
+
+ - Fix bbox collision tests.
+
+ - Updates for win32 key handling
+
+ - new convenience method for flat plane creation.
+
+ - Sky dome and other meshes use VBOs by default now.
+
+ - Speed up b3d loading for files with many frames, material color flags and vertex color support enhanced.
 
  - Add hasType to IGUIElement as a dynamic_cast substitute.
 
@@ -26,6 +48,10 @@ Changes in 1.7
 
  - Add clearSystemMessages to devices (implemented only for Linux and Win32 so far).
  
+ - Support changing the render window from beginScene also with OpenGL driver.
+
+ - Add getMaterial2D which allows to alter the 2d render state settings, such as filtering, anti-aliasing, thickness, etc.
+
  - Fix incorrect cursorpos for resizable windows on Windows Vista (found and patched by buffer)
 
  - Change the beginScene window parameter from void* to SExposedVideoData&. This will allow to manage contexts for OpenGL at some point.
@@ -38,6 +64,8 @@ Changes in 1.7
 
  - Bugfix: Mousewheel no longer sends EMIE_MOUSE_WHEEL messages twice on Linux.
 
+ - Use latest jpeglib
+
  - refactoring: E_ATTRIBUTE_TYPE and IAttribute have now own headers
 
  - CStringWArrayAttribute speedup
@@ -48,11 +76,15 @@ Changes in 1.7
 
  - Support AES-encrypted zip files. Should work with 128, 196, and 256 bit AES. This addition also adds a new PRNG, SHA, and other algorithms to the engine, though no interface is yet added for them. The implementation of the encryption algorithms is provided by Dr Brian Gladman.
 
+ - flattenFilename and getAbsolutePath fixed and properly added at several places.
+
  - Added geometry shaders for OpenGL. A first version of the code was submitted by Matthew Kielan (devsh).
 
  - Bugfix: irrArray should no longer crash when using other allocators.
 
  - Add MaterialViewer example.
+
+ - Texture activation now back in setMaterial, which simplifies writing external material renderers (OpenGL only).
 
  - Checkbox uses now disabled text color when disabled.
 
@@ -91,6 +123,18 @@ Changes in 1.7
 	setEventParent now in public interface
 	New function findItemWithCommandId
   	New function insertItem
+
+ - new vector3d::getSphericalCoordinateAngles method.
+
+ - new triangle3d::isTotalOutsideBox method.
+
+ - Newly introduced VertexManipulator interface. This allows for very easy creation of vertex manipulation algorithms. Several manipulators, e.g. vertex color changer and transformation algorithms are already available.
+
+ - createMeshWith1TCoords avoids vertex duplication
+
+ - getRotation now handles matrices with scaling as well
+
+ - Ogre format animations now supported.
 
  - irrArray: Fixed issues with push_front and reallocation
    Changed behavior for set_pointer and clear, when free_when_destroyed is false

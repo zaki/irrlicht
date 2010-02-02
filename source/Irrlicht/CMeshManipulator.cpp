@@ -126,6 +126,167 @@ void CMeshManipulator::recalculateNormals(scene::IMesh* mesh, bool smooth, bool 
 }
 
 
+//! Recalculates tangents, requires a tangent mesh
+void CMeshManipulator::recalculateTangents(IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted) const
+{
+	if (!mesh || !mesh->getMeshBufferCount() || (mesh->getMeshBuffer(0)->getVertexType()!= video::EVT_TANGENTS))
+		return;
+
+	const u32 meshBufferCount = mesh->getMeshBufferCount();
+	for (u32 b=0; b<meshBufferCount; ++b)
+	{
+		IMeshBuffer* clone = mesh->getMeshBuffer(b);
+		const u32 vtxCnt = clone->getVertexCount();
+		const u32 idxCnt = clone->getIndexCount();
+
+		u16* idx = clone->getIndices();
+		video::S3DVertexTangents* v =
+			(video::S3DVertexTangents*)clone->getVertices();
+
+		if (smooth)
+		{
+			u32 i;
+
+			for ( i = 0; i!= vtxCnt; ++i )
+			{
+				if (recalculateNormals)
+					v[i].Normal.set( 0.f, 0.f, 0.f );
+				v[i].Tangent.set( 0.f, 0.f, 0.f );
+				v[i].Binormal.set( 0.f, 0.f, 0.f );
+			}
+
+			//Each vertex gets the sum of the tangents and binormals from the faces around it
+			for ( i=0; i<idxCnt; i+=3)
+			{
+				// if this triangle is degenerate, skip it!
+				if (v[idx[i+0]].Pos == v[idx[i+1]].Pos || 
+					v[idx[i+0]].Pos == v[idx[i+2]].Pos || 
+					v[idx[i+1]].Pos == v[idx[i+2]].Pos 
+					/*||
+					v[idx[i+0]].TCoords == v[idx[i+1]].TCoords || 
+					v[idx[i+0]].TCoords == v[idx[i+2]].TCoords || 
+					v[idx[i+1]].TCoords == v[idx[i+2]].TCoords */
+					) 
+					continue;
+
+				//Angle-weighted normals look better, but are slightly more CPU intensive to calculate
+				core::vector3df weight(1.f,1.f,1.f);
+				if (angleWeighted)
+					weight = getAngleWeight(v[i+0].Pos,v[i+1].Pos,v[i+2].Pos);
+				core::vector3df localNormal; 
+				core::vector3df localTangent;
+				core::vector3df localBinormal;
+
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords);
+
+				if (recalculateNormals)
+					v[idx[i+0]].Normal += localNormal * weight.X;
+				v[idx[i+0]].Tangent += localTangent * weight.X;
+				v[idx[i+0]].Binormal += localBinormal * weight.X;
+				
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords);
+
+				if (recalculateNormals)
+					v[idx[i+1]].Normal += localNormal * weight.Y;
+				v[idx[i+1]].Tangent += localTangent * weight.Y;
+				v[idx[i+1]].Binormal += localBinormal * weight.Y;
+
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords);
+
+				if (recalculateNormals)
+					v[idx[i+2]].Normal += localNormal * weight.Z;
+				v[idx[i+2]].Tangent += localTangent * weight.Z;
+				v[idx[i+2]].Binormal += localBinormal * weight.Z;
+			}
+
+			// Normalize the tangents and binormals
+			if (recalculateNormals)
+			{
+				for ( i = 0; i!= vtxCnt; ++i )
+					v[i].Normal.normalize();
+			}
+			for ( i = 0; i!= vtxCnt; ++i )
+			{
+				v[i].Tangent.normalize();
+				v[i].Binormal.normalize();
+			}
+		}
+		else
+		{
+			core::vector3df localNormal; 
+			for (u32 i=0; i<idxCnt; i+=3)
+			{
+				calculateTangents(
+					localNormal,
+					v[idx[i+0]].Tangent,
+					v[idx[i+0]].Binormal,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords);
+				if (recalculateNormals)
+					v[idx[i+0]].Normal=localNormal;
+
+				calculateTangents(
+					localNormal,
+					v[idx[i+1]].Tangent,
+					v[idx[i+1]].Binormal,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords);
+				if (recalculateNormals)
+					v[idx[i+1]].Normal=localNormal;
+
+				calculateTangents(
+					localNormal,
+					v[idx[i+2]].Tangent,
+					v[idx[i+2]].Binormal,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords);
+				if (recalculateNormals)
+					v[idx[i+2]].Normal=localNormal;
+			}
+		}
+	}
+}
+
+
 //! Clones a static IMesh into a modifyable SMesh.
 SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 {
@@ -564,7 +725,7 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 
 
 //! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
-IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted) const
+IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted, bool calculateTangents) const
 {
 	if (!mesh)
 		return 0;
@@ -573,221 +734,79 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNor
 
 	SMesh* clone = new SMesh();
 	const u32 meshBufferCount = mesh->getMeshBufferCount();
-	u32 b;
 
-	for (b=0; b<meshBufferCount; ++b)
+	for (u32 b=0; b<meshBufferCount; ++b)
 	{
-		const u32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
-		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
+		const IMeshBuffer* original = mesh->getMeshBuffer(b);
+		const u32 idxCnt = original->getIndexCount();
+		const u16* idx = original->getIndices();
 
 		SMeshBufferTangents* buffer = new SMeshBufferTangents();
-		buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+
+		buffer->Material = original->getMaterial();
+		buffer->Vertices.reallocate(idxCnt);
+		buffer->Indices.set_used(idxCnt);
+
+		core::map<video::S3DVertexTangents, int> vertMap;
+		int vertLocation;
 
 		// copy vertices
 
-		buffer->Vertices.reallocate(idxCnt);
-		switch(mesh->getMeshBuffer(b)->getVertexType())
-		{
-		case video::EVT_STANDARD:
-			{
-				video::S3DVertex* v =
-					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(
-						video::S3DVertexTangents(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				video::S3DVertex2TCoords* v =
-					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(video::S3DVertexTangents(
-						v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				video::S3DVertexTangents* v =
-					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(v[idx[i]]);
-			}
-			break;
-		}
-
-		// create new indices
-
-		buffer->Indices.set_used(idxCnt);
+		const video::E_VERTEX_TYPE vType = original->getVertexType();
+		video::S3DVertexTangents vNew;
 		for (u32 i=0; i<idxCnt; ++i)
-			buffer->Indices[i] = i;
+		{
+			switch(vType)
+			{
+			case video::EVT_STANDARD:
+				{
+					const video::S3DVertex* v =
+						(const video::S3DVertex*)original->getVertices();
+					vNew = video::S3DVertexTangents(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
+				}
+				break;
+			case video::EVT_2TCOORDS:
+				{
+					const video::S3DVertex2TCoords* v =
+						(const video::S3DVertex2TCoords*)original->getVertices();
+					vNew = video::S3DVertexTangents(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
+				}
+				break;
+			case video::EVT_TANGENTS:
+				{
+					const video::S3DVertexTangents* v =
+						(const video::S3DVertexTangents*)original->getVertices();
+					vNew = v[idx[i]];
+				}
+				break;
+			}
+			core::map<video::S3DVertexTangents, int>::Node* n = vertMap.find(vNew);
+			if (n)
+			{
+				vertLocation = n->getValue();
+			}
+			else
+			{
+				vertLocation = buffer->Vertices.size();
+				buffer->Vertices.push_back(vNew);
+				vertMap.insert(vNew, vertLocation);
+			}
 
-		//buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
-		buffer->recalculateBoundingBox ();
+			// create new indices
+			buffer->Indices[i] = vertLocation;
+		}
+		buffer->recalculateBoundingBox();
 
 		// add new buffer
 		clone->addMeshBuffer(buffer);
 		buffer->drop();
 	}
 
-	clone->recalculateBoundingBox ();
-	//clone->BoundingBox = mesh->getBoundingBox();
-
-	// now calculate tangents
-	for (b=0; b<meshBufferCount; ++b)
-	{
-		const u32 vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
-		const u32 idxCnt = clone->getMeshBuffer(b)->getIndexCount();
-
-		u16* idx = clone->getMeshBuffer(b)->getIndices();
-		video::S3DVertexTangents* v =
-			(video::S3DVertexTangents*)clone->getMeshBuffer(b)->getVertices();
-
-		if (smooth)
-		{
-			u32 i;
-
-			for ( i = 0; i!= vtxCnt; ++i )
-			{
-				if (recalculateNormals)
-					v[i].Normal.set( 0.f, 0.f, 0.f );
-				v[i].Tangent.set( 0.f, 0.f, 0.f );
-				v[i].Binormal.set( 0.f, 0.f, 0.f );
-			}
-
-			//Each vertex gets the sum of the tangents and binormals from the faces around it
-			for ( i=0; i<idxCnt; i+=3)
-			{
-				// if this triangle is degenerate, skip it!
-				if (v[idx[i+0]].Pos == v[idx[i+1]].Pos || 
-					v[idx[i+0]].Pos == v[idx[i+2]].Pos || 
-					v[idx[i+1]].Pos == v[idx[i+2]].Pos 
-					/*||
-					v[idx[i+0]].TCoords == v[idx[i+1]].TCoords || 
-					v[idx[i+0]].TCoords == v[idx[i+2]].TCoords || 
-					v[idx[i+1]].TCoords == v[idx[i+2]].TCoords */
-					) 
-					continue;
-
-				//Angle-weighted normals look better, but are slightly more CPU intensive to calculate
-				core::vector3df weight(1.f,1.f,1.f);
-				if (angleWeighted)
-					weight = getAngleWeight(v[i+0].Pos,v[i+1].Pos,v[i+2].Pos);
-				core::vector3df localNormal; 
-				core::vector3df localTangent;
-				core::vector3df localBinormal;
-
-				calculateTangents(
-					localNormal,
-					localTangent,
-					localBinormal,
-					v[idx[i+0]].Pos,
-					v[idx[i+1]].Pos,
-					v[idx[i+2]].Pos,
-					v[idx[i+0]].TCoords,
-					v[idx[i+1]].TCoords,
-					v[idx[i+2]].TCoords);
-
-				if (recalculateNormals)
-					v[idx[i+0]].Normal += localNormal * weight.X;
-				v[idx[i+0]].Tangent += localTangent * weight.X;
-				v[idx[i+0]].Binormal += localBinormal * weight.X;
-				
-				calculateTangents(
-					localNormal,
-					localTangent,
-					localBinormal,
-					v[idx[i+1]].Pos,
-					v[idx[i+2]].Pos,
-					v[idx[i+0]].Pos,
-					v[idx[i+1]].TCoords,
-					v[idx[i+2]].TCoords,
-					v[idx[i+0]].TCoords);
-
-				if (recalculateNormals)
-					v[idx[i+1]].Normal += localNormal * weight.Y;
-				v[idx[i+1]].Tangent += localTangent * weight.Y;
-				v[idx[i+1]].Binormal += localBinormal * weight.Y;
-
-				calculateTangents(
-					localNormal,
-					localTangent,
-					localBinormal,
-					v[idx[i+2]].Pos,
-					v[idx[i+0]].Pos,
-					v[idx[i+1]].Pos,
-					v[idx[i+2]].TCoords,
-					v[idx[i+0]].TCoords,
-					v[idx[i+1]].TCoords);
-
-				if (recalculateNormals)
-					v[idx[i+2]].Normal += localNormal * weight.Z;
-				v[idx[i+2]].Tangent += localTangent * weight.Z;
-				v[idx[i+2]].Binormal += localBinormal * weight.Z;
-			}
-
-			// Normalize the tangents and binormals
-			if (recalculateNormals)
-			{
-				for ( i = 0; i!= vtxCnt; ++i )
-					v[i].Normal.normalize();
-			}
-			for ( i = 0; i!= vtxCnt; ++i )
-			{
-				v[i].Tangent.normalize();
-				v[i].Binormal.normalize();
-			}
-		}
-		else
-		{
-			core::vector3df localNormal; 
-			for (u32 i=0; i<idxCnt; i+=3)
-			{
-				calculateTangents(
-					localNormal,
-					v[idx[i+0]].Tangent,
-					v[idx[i+0]].Binormal,
-					v[idx[i+0]].Pos,
-					v[idx[i+1]].Pos,
-					v[idx[i+2]].Pos,
-					v[idx[i+0]].TCoords,
-					v[idx[i+1]].TCoords,
-					v[idx[i+2]].TCoords);
-				if (recalculateNormals)
-					v[idx[i+0]].Normal=localNormal;
-
-				calculateTangents(
-					localNormal,
-					v[idx[i+1]].Tangent,
-					v[idx[i+1]].Binormal,
-					v[idx[i+1]].Pos,
-					v[idx[i+2]].Pos,
-					v[idx[i+0]].Pos,
-					v[idx[i+1]].TCoords,
-					v[idx[i+2]].TCoords,
-					v[idx[i+0]].TCoords);
-				if (recalculateNormals)
-					v[idx[i+1]].Normal=localNormal;
-
-				calculateTangents(
-					localNormal,
-					v[idx[i+2]].Tangent,
-					v[idx[i+2]].Binormal,
-					v[idx[i+2]].Pos,
-					v[idx[i+0]].Pos,
-					v[idx[i+1]].Pos,
-					v[idx[i+2]].TCoords,
-					v[idx[i+0]].TCoords,
-					v[idx[i+1]].TCoords);
-				if (recalculateNormals)
-					v[idx[i+2]].Normal=localNormal;
-			}
-		}
-	}
+	clone->recalculateBoundingBox();
+	if (calculateTangents)
+		recalculateTangents(clone, recalculateNormals, smooth, angleWeighted);
 
 	return clone;
 }
@@ -803,70 +822,76 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 
 	SMesh* clone = new SMesh();
 	const u32 meshBufferCount = mesh->getMeshBufferCount();
-	u32 b;
 
-	for (b=0; b<meshBufferCount; ++b)
+	for (u32 b=0; b<meshBufferCount; ++b)
 	{
-		const u32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
-		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
+		const IMeshBuffer* original = mesh->getMeshBuffer(b);
+		const u32 idxCnt = original->getIndexCount();
+		const u16* idx = original->getIndices();
 
 		SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
-		buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+		buffer->Material = original->getMaterial();
+		buffer->Vertices.reallocate(idxCnt);
+		buffer->Indices.set_used(idxCnt);
+
+		core::map<video::S3DVertex2TCoords, int> vertMap;
+		int vertLocation;
 
 		// copy vertices
 
-		buffer->Vertices.reallocate(idxCnt);
-		switch(mesh->getMeshBuffer(b)->getVertexType())
-		{
-		case video::EVT_STANDARD:
-			{
-				video::S3DVertex* v =
-					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(
-						video::S3DVertex2TCoords(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				video::S3DVertex2TCoords* v =
-					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(v[idx[i]]);
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				video::S3DVertexTangents* v =
-					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(video::S3DVertex2TCoords(
-						v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
-			}
-			break;
-		}
-
-		// create new indices
-
-		buffer->Indices.set_used(idxCnt);
+		const video::E_VERTEX_TYPE vType = original->getVertexType();
+		video::S3DVertex2TCoords vNew;
 		for (u32 i=0; i<idxCnt; ++i)
-			buffer->Indices[i] = i;
+		{
+			switch(vType)
+			{
+			case video::EVT_STANDARD:
+				{
+					const video::S3DVertex* v =
+						(const video::S3DVertex*)original->getVertices();
+					vNew = video::S3DVertex2TCoords(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords);
+				}
+				break;
+			case video::EVT_2TCOORDS:
+				{
+					const video::S3DVertex2TCoords* v =
+						(const video::S3DVertex2TCoords*)original->getVertices();
+					vNew = v[idx[i]];
+				}
+				break;
+			case video::EVT_TANGENTS:
+				{
+					const video::S3DVertexTangents* v =
+						(const video::S3DVertexTangents*)original->getVertices();
+					vNew = video::S3DVertex2TCoords(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords);
+				}
+				break;
+			}
+			core::map<video::S3DVertex2TCoords, int>::Node* n = vertMap.find(vNew);
+			if (n)
+			{
+				vertLocation = n->getValue();
+			}
+			else
+			{
+				vertLocation = buffer->Vertices.size();
+				buffer->Vertices.push_back(vNew);
+				vertMap.insert(vNew, vertLocation);
+			}
 
-		//buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
-		buffer->recalculateBoundingBox ();
+			// create new indices
+			buffer->Indices[i] = vertLocation;
+		}
+		buffer->recalculateBoundingBox();
 
 		// add new buffer
 		clone->addMeshBuffer(buffer);
 		buffer->drop();
 	}
 
-	clone->recalculateBoundingBox ();
-	//clone->BoundingBox = mesh->getBoundingBox();
-
+	clone->recalculateBoundingBox();
 	return clone;
 }
 
@@ -879,9 +904,8 @@ IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 	// copy mesh and fill data into SMeshBuffer
 	SMesh* clone = new SMesh();
 	const u32 meshBufferCount = mesh->getMeshBufferCount();
-	u32 b;
 
-	for (b=0; b<meshBufferCount; ++b)
+	for (u32 b=0; b<meshBufferCount; ++b)
 	{
 		const IMeshBuffer* original = mesh->getMeshBuffer(b);
 		const u32 idxCnt = original->getIndexCount();
@@ -941,9 +965,7 @@ IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 			// create new indices
 			buffer->Indices[i] = vertLocation;
 		}
-
-		//buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
-		buffer->recalculateBoundingBox ();
+		buffer->recalculateBoundingBox();
 
 		// add new buffer
 		clone->addMeshBuffer(buffer);

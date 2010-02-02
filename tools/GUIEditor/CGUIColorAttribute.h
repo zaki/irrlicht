@@ -23,7 +23,7 @@ namespace gui
 
 			core::rect<s32> r0(getAbsolutePosition()),
 					r2(0, fh + 5, r0.getWidth() - 5, fh*2 + 10 ),
-					r3(r2), 
+					r3(r2),
 					r4(r2.getWidth() - 20, 3, r2.getWidth() - 3, r2.getHeight()-3);
 
 			AttribColor = Environment->addTab(r4, this, 0);
@@ -116,7 +116,7 @@ namespace gui
 						Attribs->setAttribute(Index, AttribEditBox->getText());
 						video::SColor col = Attribs->getAttributeAsColor(Index);
 						AttribSliderA->setPos(col.getAlpha());
-						AttribSliderR->setPos(col.getRed()); 
+						AttribSliderR->setPos(col.getRed());
 						AttribSliderG->setPos(col.getGreen());
 						AttribSliderB->setPos(col.getBlue());
 						// update colour
@@ -126,7 +126,7 @@ namespace gui
 				case EGET_SCROLL_BAR_CHANGED:
 					{
 						// update editbox from scrollbars
-						video::SColor col( AttribSliderA->getPos(), AttribSliderR->getPos(), 
+						video::SColor col( AttribSliderA->getPos(), AttribSliderR->getPos(),
 							AttribSliderG->getPos(), AttribSliderB->getPos());
 
 						Attribs->setAttribute(Index, col);
@@ -135,7 +135,11 @@ namespace gui
 						AttribColor->setBackgroundColor(col);
 					}
 					return updateAttrib();
+				default:
+					break;
 				}
+				break;
+			default:
 				break;
 			}
 			return CGUIAttribute::OnEvent(e);
@@ -154,8 +158,8 @@ namespace gui
 
 		//! this shoudln't be serialized, but this is included as it's an example
 		virtual const c8* getTypeName() const
-		{ 
-			return "color_attribute"; 
+		{
+			return "color_attribute";
 		}
 
 	private:
