@@ -303,7 +303,7 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 	video::IVideoDriver* driver = device->getVideoDriver();
 
 	// add camera
-	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS();
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode();
 	camera->setPosition(core::vector3df(30, 30, 30));
 	camera->setTarget(core::vector3df(8.f, 8.f, 8.f));
 	camera->setID(0);
@@ -369,9 +369,32 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 		camera->setTarget(core::vector3df(80.f, 80.f, 80.f));
 	}
 
+	ISceneNode* node = smgr->addSphereSceneNode(5.f, 16, 0, -1, core::vector3df(0, 0, 1), core::vector3df(), core::vector3df(0.3f, 0.3f, 0.3f));
+	cube->remove();
+	cube = smgr->addCubeSceneNode(10.f, 0, -1, core::vector3df(0, 6.5f, 1), core::vector3df(), core::vector3df(10, 0.1f, 1.f));
+	camera->setPosition(core::vector3df(0, 0, 10));
+	camera->setTarget(core::vector3df());
+
+	u32 count=0;
+	for (u32 i=0; i<30; ++i)
+	{
+		driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+		smgr->drawAll();
+		driver->endScene();
+
+		count += node->getTransformedBoundingBox().intersectsWithBox(cube->getTransformedBoundingBox())?1:0;
+		node->setPosition(node->getPosition()+core::vector3df(.5f,.5f,0));
+		if (i==8 && count != 0)
+			result=false;
+		if (i==17 && count != 9)
+			result=false;
+	}
+	if (count != 9)
+		result=false;
+
 	smgr->clear();
 
-	return (result);
+	return result;
 }
 
 
@@ -433,7 +456,7 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 /** Test functionality of the sceneCollisionManager */
 bool sceneCollisionManager(void)
 {
-	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(160, 120));
+	IrrlichtDevice * device = irr::createDevice(video::EDT_OPENGL, dimension2d<u32>(160, 120));
 	assert(device);
 	if(!device)
 		return false;
