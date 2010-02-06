@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2010 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -11,7 +11,7 @@ static bool testLightTypes(video::E_DRIVER_TYPE driverType)
 	if (!device)
 		return true; // No error if device does not exist
 //	device->getSceneManager()->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));
-	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNodeFPS();
+	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNode();
 	cam->setPosition(core::vector3df(0,200,0));
 	cam->setTarget(core::vector3df());
 	device->getSceneManager()->addAnimatedMeshSceneNode(device->getSceneManager()->addHillPlaneMesh("plane", core::dimension2df(4,4), core::dimension2du(128,128)));
