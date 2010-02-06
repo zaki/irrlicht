@@ -260,6 +260,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\lights.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\line2dIntersectWith.cpp"
 				>
 			</File>
