@@ -296,6 +296,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\orthoCam.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\planeMatrix.cpp"
 				>
 			</File>

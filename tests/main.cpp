@@ -106,6 +106,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(antiAliasing);
 	TEST(draw2DImage);
 	TEST(lights);
+	TEST(orthoCam);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes
