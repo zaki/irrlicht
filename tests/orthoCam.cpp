@@ -26,6 +26,7 @@ static bool testOrthoCam(video::E_DRIVER_TYPE driverType)
 	device->getSceneManager()->addCubeSceneNode(20.f)->setPosition(core::vector3df(150,10,0));
 
 	scene::IAnimatedMeshSceneNode* node = device->getSceneManager()->addAnimatedMeshSceneNode(device->getSceneManager()->getMesh("../media/ninja.b3d"), 0, -1, core::vector3df(-50,2,-50), core::vector3df(),core::vector3df(5,5,5));
+	node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 	node->setAnimationSpeed(0.f);
 
 	scene::ILightSceneNode* light = device->getSceneManager()->addLightSceneNode(0, core::vector3df(0,100,0));
@@ -50,7 +51,7 @@ static bool testOrthoStencil(video::E_DRIVER_TYPE driverType)
 	if (!device)
 		return true; // No error if device does not exist
 
-	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNodeFPS();
+	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNode();
 	cam->setPosition(core::vector3df(300,250,-300));
 	cam->setTarget(core::vector3df(0,20,0));
 	cam->setProjectionMatrix(core::matrix4().buildProjectionMatrixOrthoLH(120,90,0.9f,2000.f), true);
@@ -58,6 +59,7 @@ static bool testOrthoStencil(video::E_DRIVER_TYPE driverType)
 	device->getSceneManager()->addAnimatedMeshSceneNode(device->getSceneManager()->addHillPlaneMesh("plane", core::dimension2df(32,32), core::dimension2du(16,16)));//->setMaterialFlag(video::EMF_WIREFRAME, true);
 
 	scene::IAnimatedMeshSceneNode* node = device->getSceneManager()->addAnimatedMeshSceneNode(device->getSceneManager()->getMesh("../media/ninja.b3d"), 0, -1, core::vector3df(0,2,0), core::vector3df(),core::vector3df(5,5,5));
+	node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 	node->addShadowVolumeSceneNode();
 	node->setAnimationSpeed(0.f);
 
