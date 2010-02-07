@@ -107,18 +107,13 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, u32& numEdges,
 	// Check every face if it is front or back facing the light.
 	for (i=0; i<faceCount; ++i)
 	{
-		const u16 wFace0 = Indices[3*i+0];
-		const u16 wFace1 = Indices[3*i+1];
-		const u16 wFace2 = Indices[3*i+2];
+		const core::vector3df v0 = Vertices[Indices[3*i+0]];
+		const core::vector3df v1 = Vertices[Indices[3*i+1]];
+		const core::vector3df v2 = Vertices[Indices[3*i+2]];
 
-		const core::vector3df v0 = Vertices[wFace0];
-		const core::vector3df v1 = Vertices[wFace1];
-		const core::vector3df v2 = Vertices[wFace2];
-
-		if (core::triangle3df(v0,v1,v2).isFrontFacing(light))
+		FaceData[i]=core::triangle3df(v0,v1,v2).isFrontFacing(light);
+		if (FaceData[i])
 		{
-			FaceData[i] = false; // it's a back facing face
-
 			if (svp->size() < svp->allocated_size()-5)
 			{
 				// add front cap
@@ -132,8 +127,6 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, u32& numEdges,
 				svp->push_back(v2-ls);
 			}
 		}
-		else
-			FaceData[i] = true; // it's a front facing face
 	}
 
 	for(i=0; i<faceCount; ++i)
@@ -340,20 +333,6 @@ void CShadowVolumeSceneNode::render()
 	for (u32 i=0; i<ShadowVolumesUsed; ++i)
 		driver->drawStencilShadowVolume(ShadowVolumes[i].pointer(),
 			ShadowVolumes[i].size(), UseZFailMethod);
-
-	if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
-	{
-		video::SMaterial mat;
-		mat.Lighting = false;
-		mat.Wireframe = true;
-		mat.ZBuffer = true;
-		driver->setMaterial(mat);
-		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-		for (u32 i=0; i<ShadowVolumesUsed; ++i)
-			driver->drawVertexPrimitiveList(ShadowVolumes[i].pointer(),
-			ShadowVolumes[i].size(),0,0);
-	}
 }
 
 
@@ -379,11 +358,11 @@ void CShadowVolumeSceneNode::calculateAdjacency()
 
 			// now we search an_O_ther _F_ace with these two
 			// vertices, which is not the current face.
-
 			u32 of;
 
 			for (of=0; of<IndexCount; of+=3)
 			{
+				// only other faces
 				if (of != f)
 				{
 					s32 cnt1 = 0;
@@ -399,14 +378,15 @@ void CShadowVolumeSceneNode::calculateAdjacency()
 						if (core::iszero(t2))
 							++cnt2;
 					}
-
+					// exactly one match for each vertex, i.e. edge is the same
 					if (cnt1 == 1 && cnt2 == 1)
 						break;
 				}
 			}
 
-			if (of == IndexCount)
-				Adjacency[f + edge] = f;
+			// no adjacent edges
+			if (of >= IndexCount)
+				Adjacency[f + edge] = f/3;
 			else
 				Adjacency[f + edge] = of/3;
 		}
@@ -416,4 +396,3 @@ void CShadowVolumeSceneNode::calculateAdjacency()
 
 } // end namespace scene
 } // end namespace irr
-
