@@ -46,19 +46,14 @@ namespace scene
 
 	private:
 
-		struct SShadowVolume
-		{
-			core::vector3df* vertices;
-			u32 count;
-			u32 size;
-		};
+		typedef core::array<core::vector3df> SShadowVolume;
 
 		void createShadowVolume(const core::vector3df& pos);
 		void createZPassVolume(s32 faceCount, u32& numEdges, core::vector3df light, SShadowVolume* svp, bool caps);
 		void createZFailVolume(s32 faceCount, u32& numEdges, const core::vector3df& light, SShadowVolume* svp);
 
 		//! Generates adjacency information based on mesh indices.
-		void calculateAdjacency(f32 epsilon=0.0001f);
+		void calculateAdjacency();
 
 		core::aabbox3d<f32> Box;
 
@@ -88,4 +83,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-
