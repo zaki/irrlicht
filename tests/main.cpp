@@ -107,6 +107,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(draw2DImage);
 	TEST(lights);
 	TEST(orthoCam);
+	TEST(stencilShadow)
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes

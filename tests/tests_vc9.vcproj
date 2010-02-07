@@ -328,6 +328,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\stencilshadow.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\terrainSceneNode.cpp"
 				>
 			</File>
