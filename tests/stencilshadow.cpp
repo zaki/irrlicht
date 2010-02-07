@@ -33,7 +33,24 @@ static bool shadows(video::E_DRIVER_TYPE driverType)
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 
-	const bool result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-stencilShadow.png", 99.91f);
+	bool result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-stencilShadow.png", 99.91f);
+
+	node->remove();
+	cube->remove();
+	// test self-shadowing
+	node = device->getSceneManager()->addAnimatedMeshSceneNode(device->getSceneManager()->getMesh("../media/dwarf.x"));
+	node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+	node->addShadowVolumeSceneNode();
+	node->setAnimationSpeed(0.f);
+
+	cam->setPosition(core::vector3df(0,55,-30));
+	cam->setTarget(core::vector3df(60,45,150));
+
+	device->getVideoDriver()->beginScene (true, true, 0);
+	device->getSceneManager()->drawAll();
+	device->getVideoDriver()->endScene();
+
+	result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-stencilSelfShadow.png", 99.91f);
 
 	device->drop();
 
