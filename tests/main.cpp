@@ -106,11 +106,13 @@ int main(int argumentCount, char * arguments[])
 	TEST(antiAliasing);
 	TEST(draw2DImage);
 	TEST(lights);
-	TEST(orthoCam);
-	TEST(stencilShadow)
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
-	// large scenes
+	// large scenes/long rendering
+	// shadows are slow
+	TEST(orthoCam);
+	TEST(stencilShadow);
+	// q3 maps are slow
 	TEST(planeMatrix);
 	TEST(terrainSceneNode);
 	TEST(lightMaps);
