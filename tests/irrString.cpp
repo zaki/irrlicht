@@ -41,6 +41,80 @@ static bool testFastAlloc()
 }
 
 
+bool testAppendStringc()
+{
+	core::stringc str;
+	// Test with character
+	if (str != "")
+		return false;
+	str += 'W';
+	if (str != "W")
+		return false;
+	str += 'i';
+	if (str != "Wi")
+		return false;
+	str="";
+	if (str != "")
+		return false;
+
+	// Test with C-style string
+	str += "Another Test";
+	if (str != "Another Test")
+		return false;
+	str="";
+	str += 'A';
+	str += "nother Test";
+	if (str != "Another Test")
+		return false;
+	str="";
+
+	// Test with int
+	str += 10;
+	if (str != "10")
+		return false;
+	str += 0;
+	if (str != "100")
+		return false;
+	str="";
+	str += "-32";
+	if (str != "-32")
+		return false;
+	str="";
+
+	// Test with unsigned int
+	str += 21u;
+	if (str != "21")
+		return false;
+	str += 0u;
+	if (str != "210")
+		return false;
+	str="";
+
+	// Test with long int
+	str += 456l;
+	if (str != "456")
+		return false;
+	str += 0l;
+	if (str != "4560")
+		return false;
+	str="";
+	str += -456l;
+	if (str != "-456")
+		return false;
+	str="";
+
+	// Test with unsigned long
+	str += 994ul;
+	if (str != "994")
+		return false;
+	str += 0ul;
+	if (str != "9940")
+		return false;
+	str="";
+	return true;
+}
+
+
 // Test the functionality of irrString
 /** Validation is done with asserts() against expected results. */
 bool testIrrString(void)
@@ -85,6 +159,7 @@ bool testIrrString(void)
 		assert(*(empty.c_str())==0);
 		assert(allExpected &= testSplit());
 	}
+	allExpected &= testAppendStringc();
 
 	logTestString("Test io::path\n");
 	{
@@ -106,4 +181,3 @@ bool testIrrString(void)
 
 	return allExpected;
 }
-

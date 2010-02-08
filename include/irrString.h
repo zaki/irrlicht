@@ -188,6 +188,85 @@ public:
 	}
 
 
+	//! Constructs a string from a long
+	explicit string(long number)
+	: array(0), allocated(0), used(0)
+	{
+		// store if negative and make positive
+
+		bool negative = false;
+		if (number < 0)
+		{
+			number *= -1;
+			negative = true;
+		}
+
+		// temporary buffer for 16 numbers
+
+		c8 tmpbuf[16]={0};
+		u32 idx = 15;
+
+		// special case '0'
+
+		if (!number)
+		{
+			tmpbuf[14] = '0';
+			*this = &tmpbuf[14];
+			return;
+		}
+
+		// add numbers
+
+		while(number && idx)
+		{
+			--idx;
+			tmpbuf[idx] = (c8)('0' + (number % 10));
+			number /= 10;
+		}
+
+		// add sign
+
+		if (negative)
+		{
+			--idx;
+			tmpbuf[idx] = '-';
+		}
+
+		*this = &tmpbuf[idx];
+	}
+
+
+	//! Constructs a string from an unsigned long
+	explicit string(unsigned long number)
+	: array(0), allocated(0), used(0)
+	{
+		// temporary buffer for 16 numbers
+
+		c8 tmpbuf[16]={0};
+		u32 idx = 15;
+
+		// special case '0'
+
+		if (!number)
+		{
+			tmpbuf[14] = '0';
+			*this = &tmpbuf[14];
+			return;
+		}
+
+		// add numbers
+
+		while(number && idx)
+		{
+			--idx;
+			tmpbuf[idx] = (c8)('0' + (number % 10));
+			number /= 10;
+		}
+
+		*this = &tmpbuf[idx];
+	}
+
+
 	//! Constructor for copying a string from a pointer with a given length
 	template <class B>
 	string(const B* const c, u32 length)
