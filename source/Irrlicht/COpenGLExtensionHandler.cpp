@@ -34,9 +34,18 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlCreateShaderObjectARB(0), pGlShaderSourceARB(0),
 	pGlCompileShaderARB(0), pGlCreateProgramObjectARB(0), pGlAttachObjectARB(0),
 	pGlLinkProgramARB(0), pGlUseProgramObjectARB(0), pGlDeleteObjectARB(0),
-	pGlGetObjectParameterivARB(0), pGlGetUniformLocationARB(0),
+	pGlCreateProgram(0), pGlUseProgram(0),
+	pGlDeleteProgram(0), pGlDeleteShader(0),
+	pGlGetAttachedObjectsARB(0), pGlGetAttachedShaders(0),
+	pGlCreateShader(0), pGlShaderSource(0), pGlCompileShader(0),
+	pGlAttachShader(0), pGlLinkProgram(0),
+	pGlGetInfoLogARB(0), pGlGetShaderInfoLog(0), pGlGetProgramInfoLog(0),
+	pGlGetObjectParameterivARB(0), pGlGetShaderiv(0), pGlGetProgramiv(0),
+	pGlGetUniformLocationARB(0), pGlGetUniformLocation(0),
 	pGlUniform1ivARB(0), pGlUniform1fvARB(0), pGlUniform2fvARB(0), pGlUniform3fvARB(0), pGlUniform4fvARB(0), pGlUniformMatrix2fvARB(0),
-	pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0), pGlGetActiveUniformARB(0), pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
+	pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0),
+	pGlGetActiveUniformARB(0), pGlGetActiveUniform(0),
+	pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
 	pGlCompressedTexImage2D(0),
@@ -139,16 +148,32 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC) wglGetProcAddress("glDeleteProgramsNV");
 	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC) wglGetProcAddress("glProgramLocalParameter4fvARB");
 	pGlCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress("glCreateShaderObjectARB");
+	pGlCreateShader = (PFNGLCREATESHADERPROC) wglGetProcAddress("glCreateShader");
 	pGlShaderSourceARB = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress("glShaderSourceARB");
+	pGlShaderSource = (PFNGLSHADERSOURCEPROC) wglGetProcAddress("glShaderSource");
 	pGlCompileShaderARB = (PFNGLCOMPILESHADERARBPROC) wglGetProcAddress("glCompileShaderARB");
+	pGlCompileShader = (PFNGLCOMPILESHADERPROC) wglGetProcAddress("glCompileShader");
 	pGlCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress("glCreateProgramObjectARB");
+	pGlCreateProgram = (PFNGLCREATEPROGRAMPROC) wglGetProcAddress("glCreateProgram");
 	pGlAttachObjectARB = (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress("glAttachObjectARB");
+	pGlAttachShader = (PFNGLATTACHSHADERPROC) wglGetProcAddress("glAttachShader");
 	pGlLinkProgramARB = (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress("glLinkProgramARB");
+	pGlLinkProgram = (PFNGLLINKPROGRAMPROC) wglGetProcAddress("glLinkProgram");
 	pGlUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress("glUseProgramObjectARB");
+	pGlUseProgram = (PFNGLUSEPROGRAMPROC) wglGetProcAddress("glUseProgram");
 	pGlDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress("glDeleteObjectARB");
+	pGlDeleteProgram = (PFNGLDELETEPROGRAMPROC) wglGetProcAddress("glDeleteProgram");
+	pGlDeleteShader = (PFNGLDELETESHADERPROC) wglGetProcAddress("glDeleteShader");
+	pGlGetAttachedShaders = (PFNGLGETATTACHEDSHADERSPROC) wglGetProcAddress("glGetAttachedShaders");
+	pGlGetAttachedObjectsARB = (PFNGLGETATTACHEDOBJECTSARBPROC) wglGetProcAddress("glGetAttachedObjectsARB");
 	pGlGetInfoLogARB = (PFNGLGETINFOLOGARBPROC) wglGetProcAddress("glGetInfoLogARB");
+	pGlGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC) wglGetProcAddress("glGetShaderInfoLog");
+	pGlGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC) wglGetProcAddress("glGetProgramInfoLog");
 	pGlGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress("glGetObjectParameterivARB");
+	pGlGetShaderiv = (PFNGLGETSHADERIVPROC) wglGetProcAddress("glGetShader");
+	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC) wglGetProcAddress("glGetProgram");
 	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress("glGetUniformLocationARB");
+	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) wglGetProcAddress("glGetUniformLocation");
 	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress("glUniform4fvARB");
 	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC) wglGetProcAddress("glUniform1ivARB");
 	pGlUniform1fvARB = (PFNGLUNIFORM1FVARBPROC) wglGetProcAddress("glUniform1fvARB");
@@ -158,6 +183,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlUniformMatrix3fvARB = (PFNGLUNIFORMMATRIX3FVARBPROC) wglGetProcAddress("glUniformMatrix3fvARB");
 	pGlUniformMatrix4fvARB = (PFNGLUNIFORMMATRIX4FVARBPROC) wglGetProcAddress("glUniformMatrix4fvARB");
 	pGlGetActiveUniformARB = (PFNGLGETACTIVEUNIFORMARBPROC) wglGetProcAddress("glGetActiveUniformARB");
+	pGlGetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC) wglGetProcAddress("glGetActiveUniform");
 
 	// get point parameter extension
 	pGlPointParameterfARB = (PFNGLPOINTPARAMETERFARBPROC) wglGetProcAddress("glPointParameterfARB");
@@ -277,35 +303,83 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateShaderObjectARB"));
 
+	pGlCreateShader = (PFNGLCREATESHADERPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateShader"));
+
 	pGlShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glShaderSourceARB"));
+
+	pGlShaderSource = (PFNGLSHADERSOURCEPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glShaderSource"));
 
 	pGlCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompileShaderARB"));
 
+	pGlCompileShader = (PFNGLCOMPILESHADERPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompileShader"));
+
 	pGlCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateProgramObjectARB"));
+
+	pGlCreateProgram = (PFNGLCREATEPROGRAMPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateProgram"));
 
 	pGlAttachObjectARB = (PFNGLATTACHOBJECTARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glAttachObjectARB"));
 
+	pGlAttachShader = (PFNGLATTACHSHADERPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glAttachShader"));
+
 	pGlLinkProgramARB = (PFNGLLINKPROGRAMARBPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glLinkProgram"));
+
+	pGlLinkProgram = (PFNGLLINKPROGRAMPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glLinkProgramARB"));
 
 	pGlUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUseProgramObjectARB"));
 
+	pGlUseProgram = (PFNGLUSEPROGRAMPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUseProgram"));
+
 	pGlDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteObjectARB"));
+
+	pGlDeleteProgram = (PFNGLDELETEPROGRAMPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgram"));
+
+	pGlDeleteShader = (PFNGLDELETESHADERPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteShader"));
+
+	pGlGetAttachedObjectsARB = (PFNGLGETATTACHEDOBJECTSARBPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetAttachedObjectsARB"));
+
+	pGlGetAttachedShaders = (PFNGLGETATTACHEDSHADERSPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetAttachedShaders"));
 
 	pGlGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetInfoLogARB"));
 
+	pGlGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetShaderInfoLog"));
+
+	pGlGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetProgramInfoLog"));
+
 	pGlGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetObjectParameterivARB"));
 
+	pGlGetShaderiv = (PFNGLGETSHADERIVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetShader"));
+
+	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetProgram"));
+
 	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetUniformLocationARB"));
+
+	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetUniformLocation"));
 
 	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniform4fvARB"));
@@ -336,6 +410,9 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	pGlGetActiveUniformARB = (PFNGLGETACTIVEUNIFORMARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetActiveUniformARB"));
+
+	pGlGetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetActiveUniform"));
 
 	// get point parameter extension
 	pGlPointParameterfARB = (PFNGLPOINTPARAMETERFARBPROC)
