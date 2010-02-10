@@ -394,7 +394,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 	}
 	else
 	{
-		Driver->extGlLinkProgram(Program);
+		Driver->extGlLinkProgramARB(Program);
 
 		GLint status = 0;
 
@@ -505,11 +505,11 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 		return false;
 
 #if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
-#ifdef GL_VERSION_2_0
-	GLint Location=Driver->extGlGetUniformLocation(Program2,name);
-#elif defined(GL_ARB_shader_objects)
-	GLint Location=Driver->extGlGetUniformLocationARB(Program,name);
-#endif
+	GLint Location=0;
+	if (Program2)
+		Location=Driver->extGlGetUniformLocation(Program2,name);
+	else
+		Location=Driver->extGlGetUniformLocationARB(Program,name);
 
 	switch (UniformInfo[i].type)
 	{
