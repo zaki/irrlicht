@@ -1485,7 +1485,7 @@ namespace core
 	}
 
 
-	// Builds a left-handed perspective projection matrix based on a field of view
+	// Builds a left-handed perspective projection matrix based on a field of view, with far plane culling at infinity
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveFovInfinityLH(
 			f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 epsilon)
@@ -1506,12 +1506,12 @@ namespace core
 
 		M[8] = 0;
 		M[9] = 0;
-		M[10] = 1-epsilon;
+		M[10] = (T)(1.f-epsilon);
 		M[11] = 1;
 
 		M[12] = 0;
 		M[13] = 0;
-		M[14] = (T)(zNear*(1-epsilon));
+		M[14] = (T)(zNear*(epsilon-1.f));
 		M[15] = 0;
 
 #if defined ( USE_MATRIX_TEST )
