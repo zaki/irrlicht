@@ -1125,10 +1125,13 @@ void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 		return;
 
 	XTextProperty txt;
-	XwcTextListToTextProperty(display, const_cast<wchar_t**>(&text), 1, XStdICCTextStyle, &txt);
-	XSetWMName(display, window, &txt);
-	XSetWMIconName(display, window, &txt);
-	XFree(txt.value);
+	if (Success==XwcTextListToTextProperty(display, const_cast<wchar_t**>(&text),
+				1, XStdICCTextStyle, &txt))
+	{
+		XSetWMName(display, window, &txt);
+		XSetWMIconName(display, window, &txt);
+		XFree(txt.value);
+	}
 #endif
 }
 

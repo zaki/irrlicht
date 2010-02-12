@@ -486,17 +486,11 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, const io::path& relPath)
 	if (FileSystem->existFile(realFile))
 		mtlReader = FileSystem->createAndOpenFile(realFile);
 	else if (FileSystem->existFile(relPath + realFile))
-	{
 		mtlReader = FileSystem->createAndOpenFile(relPath + realFile);
-	}
 	else if (FileSystem->existFile(FileSystem->getFileBasename(realFile)))
-	{
 		mtlReader = FileSystem->createAndOpenFile(FileSystem->getFileBasename(realFile));
-	}
 	else
-	{
 		mtlReader = FileSystem->createAndOpenFile(relPath + FileSystem->getFileBasename(realFile));
-	}
 	if (!mtlReader)	// fail to open and read file
 	{
 		os::Printer::log("Could not open material file", realFile, ELL_WARNING);
@@ -507,6 +501,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, const io::path& relPath)
 	if (!filesize)
 	{
 		os::Printer::log("Skipping empty material file", realFile, ELL_WARNING);
+		mtlReader->drop();
 		return;
 	}
 

@@ -933,7 +933,7 @@ class COpenGLExtensionHandler
 	void extGlEnableIndexed(GLenum target, GLuint index);
 	void extGlDisableIndexed(GLenum target, GLuint index);
 	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
-	void extGlProgramParameteri(GLhandleARB program, GLenum pname, GLint value);
+	void extGlProgramParameteri(GLuint program, GLenum pname, GLint value);
 
 
 	protected:
