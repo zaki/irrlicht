@@ -916,6 +916,8 @@ public:
 	void remove(const string<T,TAlloc> toRemove)
 	{
 		u32 size = toRemove.size();
+		if ( size == 0 )
+			return;
 		u32 pos = 0;
 		u32 found = 0;
 		for (u32 i=0; i<used; ++i)
