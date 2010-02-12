@@ -89,8 +89,13 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 	if (CallBack)
 		CallBack->drop();
 
-	if(Program)
+	if (Program)
 	{
+		GLhandleARB shaders[8];
+		GLint count;
+		Driver->extGlGetAttachedObjects(Program, 8, &count, shaders);
+		for (GLint i=0; i<count; ++i)
+			Driver->extGlDeleteObject(shaders[i]);
 		Driver->extGlDeleteObject(Program);
 		Program = 0;
 	}
@@ -130,12 +135,12 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 		if (!createShader(GL_GEOMETRY_SHADER_EXT, geometryShaderProgram))
 			return;
 #if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4)
-		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_INPUT_TYPE_EXT, Driver->primitiveTypeToGL(inType));
-		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_OUTPUT_TYPE_EXT, Driver->primitiveTypeToGL(outType));
+		Driver->extGlProgramParameteri((GLuint)Program, GL_GEOMETRY_INPUT_TYPE_EXT, Driver->primitiveTypeToGL(inType));
+		Driver->extGlProgramParameteri((GLuint)Program, GL_GEOMETRY_OUTPUT_TYPE_EXT, Driver->primitiveTypeToGL(outType));
 		if (verticesOut==0)
-			Driver->extGlProgramParameteri(Program, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
+			Driver->extGlProgramParameteri((GLuint)Program, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
 		else
-			Driver->extGlProgramParameteri(Program, GL_GEOMETRY_VERTICES_OUT_EXT, core::min_(verticesOut, Driver->MaxGeometryVerticesOut));
+			Driver->extGlProgramParameteri((GLuint)Program, GL_GEOMETRY_VERTICES_OUT_EXT, core::min_(verticesOut, Driver->MaxGeometryVerticesOut));
 #elif defined(GL_NV_geometry_program4)
 		if (verticesOut==0)
 			Driver->extGlProgramVertexLimit(GL_GEOMETRY_PROGRAM_NV, Driver->MaxGeometryVerticesOut);
@@ -215,10 +220,10 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 {
 	GLhandleARB shaderHandle = Driver->extGlCreateShaderObject(shaderType);
 
-	Driver->extGlShaderSource(shaderHandle, 1, &shader, NULL);
-	Driver->extGlCompileShader(shaderHandle);
+	Driver->extGlShaderSourceARB(shaderHandle, 1, &shader, NULL);
+	Driver->extGlCompileShaderARB(shaderHandle);
 
-	int status = 0;
+	GLint status = 0;
 
 #ifdef GL_ARB_shader_objects
 	Driver->extGlGetObjectParameteriv(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status);
@@ -228,16 +233,16 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 	{
 		os::Printer::log("GLSL shader failed to compile", ELL_ERROR);
 		// check error message and log it
-		int maxLength=0;
+		GLint maxLength=0;
 		GLsizei length;
 #ifdef GL_ARB_shader_objects
 		Driver->extGlGetObjectParameteriv(shaderHandle,
 				GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 #endif
-		GLcharARB *pInfoLog = new GLcharARB[maxLength];
-		Driver->extGlGetInfoLog(shaderHandle, maxLength, &length, pInfoLog);
-		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog), ELL_ERROR);
-		delete [] pInfoLog;
+		GLcharARB *infoLog = new GLcharARB[maxLength];
+		Driver->extGlGetInfoLog(shaderHandle, maxLength, &length, infoLog);
+		os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
+		delete [] infoLog;
 
 		return false;
 	}
@@ -250,9 +255,9 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 
 bool COpenGLSLMaterialRenderer::linkProgram()
 {
-	Driver->extGlLinkProgram(Program);
+	Driver->extGlLinkProgramARB(Program);
 
-	int status = 0;
+	GLint status = 0;
 
 #ifdef GL_ARB_shader_objects
 	Driver->extGlGetObjectParameteriv(Program, GL_OBJECT_LINK_STATUS_ARB, &status);
@@ -262,23 +267,23 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 	{
 		os::Printer::log("GLSL shader program failed to link", ELL_ERROR);
 		// check error message and log it
-		int maxLength=0;
+		GLint maxLength=0;
 		GLsizei length;
 #ifdef GL_ARB_shader_objects
 		Driver->extGlGetObjectParameteriv(Program,
 				GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 #endif
-		GLcharARB *pInfoLog = new GLcharARB[maxLength];
-		Driver->extGlGetInfoLog(Program, maxLength, &length, pInfoLog);
-		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog), ELL_ERROR);
-		delete [] pInfoLog;
+		GLcharARB *infoLog = new GLcharARB[maxLength];
+		Driver->extGlGetInfoLog(Program, maxLength, &length, infoLog);
+		os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
+		delete [] infoLog;
 
 		return false;
 	}
 
 	// get uniforms information
 
-	int num = 0;
+	GLint num = 0;
 #ifdef GL_ARB_shader_objects
 	Driver->extGlGetObjectParameteriv(Program, GL_OBJECT_ACTIVE_UNIFORMS_ARB, &num);
 #endif
@@ -289,7 +294,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 		return true;
 	}
 
-	int maxlen = 0;
+	GLint maxlen = 0;
 #ifdef GL_ARB_shader_objects
 	Driver->extGlGetObjectParameteriv(Program, GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, &maxlen);
 #endif
@@ -313,7 +318,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 		memset(buf, 0, maxlen);
 
 		GLint size;
-		Driver->extGlGetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLcharARB*>(buf));
+		Driver->extGlGetActiveUniformARB(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLcharARB*>(buf));
 		ui.name = buf;
 
 		UniformInfo.push_back(ui);
@@ -347,7 +352,8 @@ void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 sta
 
 bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
-	int i, num = static_cast<int>(UniformInfo.size());
+	u32 i;
+	const u32 num = UniformInfo.size();
 
 	for (i=0; i < num; ++i)
 	{
@@ -359,7 +365,7 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 		return false;
 
 #ifdef GL_ARB_shader_objects
-	GLint Location=Driver->extGlGetUniformLocation(Program,name);
+	GLint Location=Driver->extGlGetUniformLocationARB(Program,name);
 
 	switch (UniformInfo[i].type)
 	{
@@ -388,10 +394,13 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 			Driver->extGlUniform1iv(Location, count, reinterpret_cast<const GLint*>(floats));
 			break;
 	}
+	return true;
+#else
+	return false;
 #endif
 
-	return true;
 }
+
 
 void COpenGLSLMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {

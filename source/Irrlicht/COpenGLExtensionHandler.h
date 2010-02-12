@@ -856,16 +856,20 @@ class COpenGLExtensionHandler
 	void extGlDeletePrograms(GLsizei n, const GLuint *programs);
 	void extGlProgramLocalParameter4fv(GLenum, GLuint, const GLfloat *);
 	GLhandleARB extGlCreateShaderObject(GLenum shaderType);
-	void extGlShaderSource(GLhandleARB shader, int numOfStrings, const char **strings, int *lenOfStrings);
-	void extGlCompileShader(GLhandleARB shader);
+	// note: Due to the type confusion between shader_objects and OpenGL 2.0
+	// we have to add the ARB extension for proper method definitions in case
+	// that handleARB and uint are the same type
+	void extGlShaderSourceARB(GLhandleARB shader, int numOfStrings, const char **strings, int *lenOfStrings);
+	void extGlCompileShaderARB(GLhandleARB shader);
 	GLhandleARB extGlCreateProgramObject(void);
 	void extGlAttachObject(GLhandleARB program, GLhandleARB shader);
-	void extGlLinkProgram(GLhandleARB program);
+	void extGlLinkProgramARB(GLhandleARB program);
 	void extGlUseProgramObject(GLhandleARB prog);
 	void extGlDeleteObject(GLhandleARB object);
+	void extGlGetAttachedObjects(GLhandleARB program, GLsizei maxcount, GLsizei* count, GLhandleARB* shaders);
 	void extGlGetInfoLog(GLhandleARB object, GLsizei maxLength, GLsizei *length, GLcharARB *infoLog);
-	void extGlGetObjectParameteriv(GLhandleARB object, GLenum type, int *param);
-	GLint extGlGetUniformLocation(GLhandleARB program, const char *name);
+	void extGlGetObjectParameteriv(GLhandleARB object, GLenum type, GLint *param);
+	GLint extGlGetUniformLocationARB(GLhandleARB program, const char *name);
 	void extGlUniform4fv(GLint location, GLsizei count, const GLfloat *v);
 	void extGlUniform1iv(GLint loc, GLsizei count, const GLint *v);
 	void extGlUniform1fv(GLint loc, GLsizei count, const GLfloat *v);
@@ -874,7 +878,7 @@ class COpenGLExtensionHandler
 	void extGlUniformMatrix2fv(GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
 	void extGlUniformMatrix3fv(GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
 	void extGlUniformMatrix4fv(GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
-	void extGlGetActiveUniform(GLhandleARB program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLcharARB *name);
+	void extGlGetActiveUniformARB(GLhandleARB program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLcharARB *name);
 
 	// framebuffer objects
 	void extGlBindFramebuffer(GLenum target, GLuint framebuffer);
@@ -934,6 +938,7 @@ class COpenGLExtensionHandler
 		PFNGLLINKPROGRAMARBPROC pGlLinkProgramARB;
 		PFNGLUSEPROGRAMOBJECTARBPROC pGlUseProgramObjectARB;
 		PFNGLDELETEOBJECTARBPROC pGlDeleteObjectARB;
+		PFNGLGETATTACHEDOBJECTSARBPROC pGlGetAttachedObjectsARB;
 		PFNGLGETINFOLOGARBPROC pGlGetInfoLogARB;
 		PFNGLGETOBJECTPARAMETERIVARBPROC pGlGetObjectParameterivARB;
 		PFNGLGETUNIFORMLOCATIONARBPROC pGlGetUniformLocationARB;
@@ -1115,7 +1120,7 @@ inline GLhandleARB COpenGLExtensionHandler::extGlCreateShaderObject(GLenum shade
 	return 0;
 }
 
-inline void COpenGLExtensionHandler::extGlShaderSource(GLhandleARB shader, int numOfStrings, const char **strings, int *lenOfStrings)
+inline void COpenGLExtensionHandler::extGlShaderSourceARB(GLhandleARB shader, int numOfStrings, const char **strings, int *lenOfStrings)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlShaderSourceARB)
@@ -1127,7 +1132,7 @@ inline void COpenGLExtensionHandler::extGlShaderSource(GLhandleARB shader, int n
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlCompileShader(GLhandleARB shader)
+inline void COpenGLExtensionHandler::extGlCompileShaderARB(GLhandleARB shader)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlCompileShaderARB)
@@ -1164,7 +1169,7 @@ inline void COpenGLExtensionHandler::extGlAttachObject(GLhandleARB program, GLha
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlLinkProgram(GLhandleARB program)
+inline void COpenGLExtensionHandler::extGlLinkProgramARB(GLhandleARB program)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlLinkProgramARB)
@@ -1196,7 +1201,19 @@ inline void COpenGLExtensionHandler::extGlDeleteObject(GLhandleARB object)
 #elif defined(GL_ARB_shader_objects)
 	glDeleteObjectARB(object);
 #else
-	os::Printer::log("gldeleteObject not supported", ELL_ERROR);
+	os::Printer::log("glDeleteObject not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGetAttachedObjects(GLhandleARB program, GLsizei maxcount, GLsizei* count, GLhandleARB* shaders)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGetAttachedObjectsARB)
+		pGlGetAttachedObjectsARB(program, maxcount, count, shaders);
+#elif defined(GL_ARB_shader_objects)
+	glGetAttachedObjectsARB(program, maxcount, count, shaders);
+#else
+	os::Printer::log("glGetAttachedObjects not supported", ELL_ERROR);
 #endif
 }
 
@@ -1212,19 +1229,19 @@ inline void COpenGLExtensionHandler::extGlGetInfoLog(GLhandleARB object, GLsizei
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlGetObjectParameteriv(GLhandleARB object, GLenum type, int *param)
+inline void COpenGLExtensionHandler::extGlGetObjectParameteriv(GLhandleARB object, GLenum type, GLint *param)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetObjectParameterivARB)
 		pGlGetObjectParameterivARB(object, type, param);
 #elif defined(GL_ARB_shader_objects)
-	glGetObjectParameterivARB(object, type, (GLint *)param);
+	glGetObjectParameterivARB(object, type, param);
 #else
 	os::Printer::log("glGetObjectParameteriv not supported", ELL_ERROR);
 #endif
 }
 
-inline GLint COpenGLExtensionHandler::extGlGetUniformLocation(GLhandleARB program, const char *name)
+inline GLint COpenGLExtensionHandler::extGlGetUniformLocationARB(GLhandleARB program, const char *name)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetUniformLocationARB)
@@ -1333,7 +1350,7 @@ inline void COpenGLExtensionHandler::extGlUniformMatrix4fv(GLint loc, GLsizei co
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlGetActiveUniform(GLhandleARB program,
+inline void COpenGLExtensionHandler::extGlGetActiveUniformARB(GLhandleARB program,
 		GLuint index, GLsizei maxlength, GLsizei *length,
 		GLint *size, GLenum *type, GLcharARB *name)
 {

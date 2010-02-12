@@ -34,9 +34,12 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlCreateShaderObjectARB(0), pGlShaderSourceARB(0),
 	pGlCompileShaderARB(0), pGlCreateProgramObjectARB(0), pGlAttachObjectARB(0),
 	pGlLinkProgramARB(0), pGlUseProgramObjectARB(0), pGlDeleteObjectARB(0),
+	pGlGetAttachedObjectsARB(0), pGlGetInfoLogARB(0),
 	pGlGetObjectParameterivARB(0), pGlGetUniformLocationARB(0),
 	pGlUniform1ivARB(0), pGlUniform1fvARB(0), pGlUniform2fvARB(0), pGlUniform3fvARB(0), pGlUniform4fvARB(0), pGlUniformMatrix2fvARB(0),
-	pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0), pGlGetActiveUniformARB(0), pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
+	pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0),
+	pGlGetActiveUniformARB(0),
+	pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
 	pGlCompressedTexImage2D(0),
@@ -146,6 +149,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlLinkProgramARB = (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress("glLinkProgramARB");
 	pGlUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress("glUseProgramObjectARB");
 	pGlDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress("glDeleteObjectARB");
+	pGlGetAttachedObjectsARB = (PFNGLGETATTACHEDOBJECTSARBPROC) wglGetProcAddress("glGetAttachedObjectsARB");
 	pGlGetInfoLogARB = (PFNGLGETINFOLOGARBPROC) wglGetProcAddress("glGetInfoLogARB");
 	pGlGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress("glGetObjectParameterivARB");
 	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress("glGetUniformLocationARB");
@@ -297,6 +301,9 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	pGlDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteObjectARB"));
+
+	pGlGetAttachedObjectsARB = (PFNGLGETATTACHEDOBJECTSARBPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetAttachedObjectsARB"));
 
 	pGlGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetInfoLogARB"));
