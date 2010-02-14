@@ -1204,17 +1204,18 @@ void CSkinnedMesh::normalizeWeights()
 	// Normalise the weights on bones....
 
 	u32 i,j;
-	core::array< core::array<f32> > Vertices_TotalWeight;
+	core::array< core::array<f32> > verticesTotalWeight;
 
+	verticesTotalWeight.reallocate(LocalBuffers.size());
 	for (i=0; i<LocalBuffers.size(); ++i)
 	{
-		Vertices_TotalWeight.push_back(core::array<f32>());
-		Vertices_TotalWeight[i].set_used(LocalBuffers[i]->getVertexCount());
+		verticesTotalWeight.push_back(core::array<f32>());
+		verticesTotalWeight[i].set_used(LocalBuffers[i]->getVertexCount());
 	}
 
-	for (i=0; i<Vertices_TotalWeight.size(); ++i)
-		for (j=0; j<Vertices_TotalWeight[i].size(); ++j)
-			Vertices_TotalWeight[i][j] = 0;
+	for (i=0; i<verticesTotalWeight.size(); ++i)
+		for (j=0; j<verticesTotalWeight[i].size(); ++j)
+			verticesTotalWeight[i][j] = 0;
 
 	for (i=0; i<AllJoints.size(); ++i)
 	{
@@ -1228,7 +1229,7 @@ void CSkinnedMesh::normalizeWeights()
 			}
 			else
 			{
-				Vertices_TotalWeight[ joint->Weights[j].buffer_id ] [ joint->Weights[j].vertex_id ] += joint->Weights[j].strength;
+				verticesTotalWeight[joint->Weights[j].buffer_id] [joint->Weights[j].vertex_id] += joint->Weights[j].strength;
 			}
 		}
 	}
@@ -1238,7 +1239,7 @@ void CSkinnedMesh::normalizeWeights()
 		SJoint *joint=AllJoints[i];
 		for (j=0; j< joint->Weights.size(); ++j)
 		{
-			const f32 total = Vertices_TotalWeight[ joint->Weights[j].buffer_id ] [ joint->Weights[j].vertex_id ];
+			const f32 total = verticesTotalWeight[joint->Weights[j].buffer_id] [joint->Weights[j].vertex_id];
 			if (total != 0 && total != 1)
 				joint->Weights[j].strength /= total;
 		}
