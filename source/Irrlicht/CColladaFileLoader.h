@@ -247,12 +247,14 @@ private:
 	f32 readFloatNode(io::IXMLReaderUTF8* reader);
 
 	//! reads a <instance> node
-	void readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent,
-		scene::ISceneNode** outNode, CScenePrefab* p=0);
+	void readInstanceNode(io::IXMLReaderUTF8* reader,
+			scene::ISceneNode* parent, scene::ISceneNode** outNode,
+			CScenePrefab* p=0, const core::stringc& type=core::stringc());
 
 	//! creates a scene node from Prefabs (with name given in 'url')
 	void instantiateNode(scene::ISceneNode* parent, scene::ISceneNode** outNode=0,
-			CScenePrefab* p=0, const core::stringc& url="");
+			CScenePrefab* p=0, const core::stringc& url="",
+			const core::stringc& type=core::stringc());
 
 	//! reads a <light> element and stores it as prefab
 	void readLightPrefab(io::IXMLReaderUTF8* reader);
@@ -306,7 +308,7 @@ private:
 	void readColladaInputs(io::IXMLReaderUTF8* reader, const core::stringc& parentName);
 
 	//! reads a collada input tag and adds it to the input parameter
-	void readColladaInput(io::IXMLReaderUTF8* reader);
+	void readColladaInput(io::IXMLReaderUTF8* reader, core::array<SColladaInput>& inputs);
 
 	//! returns a collada input or none if not found
 	SColladaInput* getColladaInput(ECOLLADA_INPUT_SEMANTIC input);
@@ -319,8 +321,8 @@ private:
 
 	//! reads a polygons section and creates a mesh from it
 	void readPolygonSection(io::IXMLReaderUTF8* reader,
-		const core::stringc& vertexPositionSource, core::array<SSource>& sources,
-		scene::SMesh* mesh, const core::stringc& geometryId);
+			core::array<SSource>& sources, scene::SMesh* mesh,
+			const core::stringc& geometryId);
 
 	//! finds a material, possible instancing it
 	const SColladaMaterial * findMaterial(const core::stringc & materialName);
