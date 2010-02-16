@@ -252,7 +252,7 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 	if (Program2)
 	{
 		GLuint shaderHandle = Driver->extGlCreateShader(shaderType);
-		Driver->extGlShaderSource(Program2, 1, &shader, NULL);
+		Driver->extGlShaderSource(shaderHandle, 1, &shader, NULL);
 		Driver->extGlCompileShader(shaderHandle);
 
 		GLint status = 0;
@@ -261,7 +261,7 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 		Driver->extGlGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &status);
 #endif
 
-		if (!status)
+		if (status != GL_TRUE)
 		{
 			os::Printer::log("GLSL shader failed to compile", ELL_ERROR);
 			// check error message and log it
@@ -271,10 +271,13 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 			Driver->extGlGetShaderiv(shaderHandle, GL_INFO_LOG_LENGTH,
 					&maxLength);
 #endif
-			GLchar *infoLog = new GLchar[maxLength];
-			Driver->extGlGetShaderInfoLog(shaderHandle, maxLength, &length, infoLog);
-			os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
-			delete [] infoLog;
+			if (maxLength)
+			{
+				GLchar *infoLog = new GLchar[maxLength];
+				Driver->extGlGetShaderInfoLog(shaderHandle, maxLength, &length, infoLog);
+				os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
+				delete [] infoLog;
+			}
 
 			return false;
 		}
@@ -304,10 +307,13 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 			Driver->extGlGetObjectParameteriv(shaderHandle,
 					GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 #endif
-			GLcharARB *infoLog = new GLcharARB[maxLength];
-			Driver->extGlGetInfoLog(shaderHandle, maxLength, &length, infoLog);
-			os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
-			delete [] infoLog;
+			if (maxLength)
+			{
+				GLcharARB *infoLog = new GLcharARB[maxLength];
+				Driver->extGlGetInfoLog(shaderHandle, maxLength, &length, infoLog);
+				os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
+				delete [] infoLog;
+			}
 
 			return false;
 		}
@@ -339,10 +345,13 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 #ifdef GL_VERSION_2_0
 			Driver->extGlGetProgramiv(Program2, GL_INFO_LOG_LENGTH, &maxLength);
 #endif
-			GLchar *infoLog = new GLchar[maxLength];
-			Driver->extGlGetProgramInfoLog(Program2, maxLength, &length, infoLog);
-			os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
-			delete [] infoLog;
+			if (maxLength)
+			{
+				GLchar *infoLog = new GLchar[maxLength];
+				Driver->extGlGetProgramInfoLog(Program2, maxLength, &length, infoLog);
+				os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
+				delete [] infoLog;
+			}
 
 			return false;
 		}
@@ -412,10 +421,13 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 			Driver->extGlGetObjectParameteriv(Program,
 					GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 #endif
-			GLcharARB *infoLog = new GLcharARB[maxLength];
-			Driver->extGlGetInfoLog(Program, maxLength, &length, infoLog);
-			os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
-			delete [] infoLog;
+			if (maxLength)
+			{
+				GLcharARB *infoLog = new GLcharARB[maxLength];
+				Driver->extGlGetInfoLog(Program, maxLength, &length, infoLog);
+				os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
+				delete [] infoLog;
+			}
 
 			return false;
 		}

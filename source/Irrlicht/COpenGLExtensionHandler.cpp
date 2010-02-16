@@ -170,8 +170,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC) wglGetProcAddress("glGetShaderInfoLog");
 	pGlGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC) wglGetProcAddress("glGetProgramInfoLog");
 	pGlGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress("glGetObjectParameterivARB");
-	pGlGetShaderiv = (PFNGLGETSHADERIVPROC) wglGetProcAddress("glGetShader");
-	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC) wglGetProcAddress("glGetProgram");
+	pGlGetShaderiv = (PFNGLGETSHADERIVPROC) wglGetProcAddress("glGetShaderiv");
+	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC) wglGetProcAddress("glGetProgramiv");
 	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress("glGetUniformLocationARB");
 	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) wglGetProcAddress("glGetUniformLocation");
 	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress("glUniform4fvARB");
@@ -370,10 +370,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetObjectParameterivARB"));
 
 	pGlGetShaderiv = (PFNGLGETSHADERIVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetShader"));
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetShaderiv"));
 
 	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetProgram"));
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetProgramiv"));
 
 	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetUniformLocationARB"));
