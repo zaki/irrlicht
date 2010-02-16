@@ -1,10 +1,21 @@
-----------------
-Changes in 1.7.1
+-----------------------------
+Changes in 1.7.1 (17.02.2010)
 
  - Fix string::remove which got in an endless loop when remove was called with an empty string (found and fixed by Ulf)
 
-----------------
-Changes in 1.7
+ - Correctly release the GLSL shaders
+
+ - Make sure we only release an X11 atom when it was actually created
+
+ - Fix aabbox collision test, which not only broke the collision test routines, but also frustum culling, octree tests, etc.
+
+ - Fix compilation problem under OSX due to wrong glProgramParameteri usage
+
+ - mem leak in OBJ loader fixed
+
+ - Removed some default parameters to reduce ambigious situations
+---------------------------
+Changes in 1.7 (03.02.2010)
 
  - Implement minimize and deminimize under OSX.
 
@@ -200,8 +211,8 @@ Changes in 1.7
 
  - draw3DTriangle now renders filled polygons, old behavior can be achieved by setting EMT_WIREFRAME
 
-----------------
-Changes in 1.6.1
+-----------------------------
+Changes in 1.6.1 (13.01.2010)
 
  - Fix pingpong for CSceneNodeAnimatorFlyStraight (found by gbox)
 
