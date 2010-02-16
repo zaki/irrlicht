@@ -185,7 +185,7 @@ bool COpenGLSLMaterialRenderer::OnRender(IMaterialRendererServices* service,
 					E_VERTEX_TYPE vtxtype)
 {
 	// call callback to set shader constants
-	if (CallBack && Program)
+	if (CallBack && (Program||Program2))
 		CallBack->OnSetConstants(this, UserData);
 
 	return true;
