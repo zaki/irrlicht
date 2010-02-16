@@ -327,7 +327,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 		GLint status = 0;
 
 #ifdef GL_VERSION_2_0
-		Driver->extGlGetProgramiv(Program, GL_LINK_STATUS, &status);
+		Driver->extGlGetProgramiv(Program2, GL_LINK_STATUS, &status);
 #endif
 
 		if (!status)
@@ -337,10 +337,10 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 			GLint maxLength=0;
 			GLsizei length;
 #ifdef GL_VERSION_2_0
-			Driver->extGlGetProgramiv(Program, GL_INFO_LOG_LENGTH, &maxLength);
+			Driver->extGlGetProgramiv(Program2, GL_INFO_LOG_LENGTH, &maxLength);
 #endif
 			GLchar *infoLog = new GLchar[maxLength];
-			Driver->extGlGetProgramInfoLog(Program, maxLength, &length, infoLog);
+			Driver->extGlGetProgramInfoLog(Program2, maxLength, &length, infoLog);
 			os::Printer::log(reinterpret_cast<const c8*>(infoLog), ELL_ERROR);
 			delete [] infoLog;
 
@@ -351,7 +351,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 		GLint num = 0;
 #ifdef GL_VERSION_2_0
-		Driver->extGlGetProgramiv(Program, GL_ACTIVE_UNIFORMS, &num);
+		Driver->extGlGetProgramiv(Program2, GL_ACTIVE_UNIFORMS, &num);
 #endif
 
 		if (num == 0)
@@ -362,7 +362,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 		GLint maxlen = 0;
 #ifdef GL_VERSION_2_0
-		Driver->extGlGetProgramiv(Program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxlen);
+		Driver->extGlGetProgramiv(Program2, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxlen);
 #endif
 
 		if (maxlen == 0)
@@ -384,7 +384,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 			memset(buf, 0, maxlen);
 
 			GLint size;
-			Driver->extGlGetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLchar*>(buf));
+			Driver->extGlGetActiveUniform(Program2, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLchar*>(buf));
 			ui.name = buf;
 
 			UniformInfo.push_back(ui);
