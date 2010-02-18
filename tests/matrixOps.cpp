@@ -65,6 +65,25 @@ bool transformations(void)
 	core::vector3df newRotation = m.getRotationDegrees();
 	result &= (core::vector3df(30,40,50).equals(newRotation, 0.000004f));
 	assert(result);
+	m.setRotationDegrees(vector3df(90.0001f, 270.85f, 180.0f));
+	s.setRotationDegrees(vector3df(0,0, 0.860866));
+	m *= s;
+	newRotation = m.getRotationDegrees();
+	result &= (core::vector3df(0,270,270).equals(newRotation, 0.0001f));
+	assert(result);
+	m.setRotationDegrees(vector3df(270.0f, 89.8264f, 0.000100879f));
+	s.setRotationDegrees(vector3df(0,0, 0.189398));
+	m *= s;
+	newRotation = m.getRotationDegrees();
+	result &= (core::vector3df(0,90,90).equals(newRotation, 0.0001f));
+	assert(result);
+	m.setRotationDegrees(vector3df(270.0f, 89.0602f, 359.999f));
+	s.setRotationDegrees(vector3df(0,0, 0.949104));
+	m *= s;
+	newRotation = m.getRotationDegrees();
+	result &= (core::vector3df(0,90,89.999).equals(newRotation));
+	assert(result);
+
 	return result;
 }
 

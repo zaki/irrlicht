@@ -854,7 +854,7 @@ namespace core
 		const core::vector3d<T> scale = getScale();
 		const core::vector3d<f64> invScale(core::reciprocal(scale.X),core::reciprocal(scale.Y),core::reciprocal(scale.Z));
 
-		f64 Y = -asin(mat[2]*invScale.X);
+		f64 Y = -asin(core::clamp(mat[2]*invScale.X, -1.0, 1.0));
 		const f64 C = cos(Y);
 		Y *= RADTODEG64;
 
