@@ -926,6 +926,8 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		getMaterialToken(file, token); //open brace
 
 	getMaterialToken(file, token);
+	if (token == "}")
+		return;
 	u32 inBlocks=1;
 	u32 textureUnit=0;
 	while(inBlocks)
