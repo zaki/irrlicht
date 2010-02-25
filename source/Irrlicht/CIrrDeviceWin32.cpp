@@ -903,7 +903,8 @@ void CIrrDeviceWin32::closeDevice()
 	PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
 	PostQuitMessage(0);
 	PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
-	DestroyWindow(HWnd);
+	if (ExternalWindow)
+		DestroyWindow(HWnd);
 	Close=true;
 }
 
