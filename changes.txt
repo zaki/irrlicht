@@ -1,6 +1,24 @@
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
 
+ - Make sure that CAnimatedMeshSceneNode::clone calls the virtual updateAbsolutePosition for the new object
+
+ - Fix that clones got dropped too often when SceneNodes without parent got cloned (found by Ulf)
+
+ - Make sure TAB is still recognized on X11 when shift+tab is pressed. This does also fix going to the previous tabstop on X11.
+
+ - Send EGET_ELEMENT_LEFT also when there won't be a new hovered element
+
+ - Update docs for EGET_ELEMENT_LEFT and EGET_ELEMENT_HOVERED
+
+ - Fix tooltips: Remove them when the element is hidden or removed (thx to seven for finding)
+
+ - Fix tooltips: Make (more) sure they don't get confused by gui-subelements
+
+ - Fix tooltips: Get faster relaunch times working
+
+ - Fix tooltips: Make sure hovered element is never the tooltip itself
+
  - Fix string::remove which got in an endless loop when remove was called with an empty string (found and fixed by Ulf)
 
  - Correctly release the GLSL shaders
