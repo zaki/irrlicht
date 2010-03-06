@@ -69,13 +69,15 @@ class line2d
 
 		//! Tests if this line intersects with another line.
 		/** \param l: Other line to test intersection with.
+		\param checkOnlySegments: Default is to check intersection between the begin and endpoints.
+		When set to false the function will check for the first intersection point when extending the lines.
 		\param out: If there is an intersection, the location of the
 		intersection will be stored in this vector.
 		\return True if there is an intersection, false if not. */
-		bool intersectWith(const line2d<T>& l, vector2d<T>& out) const
+		bool intersectWith(const line2d<T>& l, vector2d<T>& out, bool checkOnlySegments=true) const
 		{
 			// Uses the method given at:
-			// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/ 
+			// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
 			const f32 commonDenominator = (l.end.Y - l.start.Y)*(end.X - start.X) -
 											(l.end.X - l.start.X)*(end.Y - start.Y);
 
@@ -83,10 +85,10 @@ class line2d
 											(l.end.Y - l.start.Y)*(start.X -l.start.X);
 
 			const f32 numeratorB = (end.X - start.X)*(start.Y - l.start.Y) -
-											(end.Y - start.Y)*(start.X -l.start.X); 
+											(end.Y - start.Y)*(start.X -l.start.X);
 
 			if(equals(commonDenominator, 0.f))
-			{ 
+			{
 				// The lines are either coincident or parallel
 				if(equals(numeratorA, 0.f) && equals(numeratorB, 0.f))
 				{
@@ -109,17 +111,17 @@ class line2d
 			// Get the point of intersection on this line, checking that
 			// it is within the line segment.
 			const f32 uA = numeratorA / commonDenominator;
-			if(uA < 0.f || uA > 1.f)
+			if(checkOnlySegments && (uA < 0.f || uA > 1.f) )
 				return false; // Outside the line segment
 
 			const f32 uB = numeratorB / commonDenominator;
-			if(uB < 0.f || uB > 1.f)
+			if(checkOnlySegments && (uB < 0.f || uB > 1.f))
 				return false; // Outside the line segment
 
 			// Calculate the intersection point.
 			out.X = start.X + uA * (end.X - start.X);
 			out.Y = start.Y + uA * (end.Y - start.Y);
-			return true; 
+			return true;
 		}
 
 		//! Get unit vector of the line.
