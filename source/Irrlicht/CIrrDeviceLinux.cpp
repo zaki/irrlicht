@@ -998,6 +998,7 @@ bool CIrrDeviceLinux::run()
 						irrevent.KeyInput.Key = (EKEY_CODE)KeyMap[idx].Win32Key;
 					else
 					{
+						// Usually you will check keysymdef.h and add the corresponding key to createKeyMap.
 						irrevent.KeyInput.Key = (EKEY_CODE)0;
 						os::Printer::log("Could not find win32 key for x11 key.", core::stringc((int)mp.X11Key).c_str(), ELL_WARNING);
 					}
@@ -1375,6 +1376,7 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.reallocate(84);
 	KeyMap.push_back(SKeyMap(XK_BackSpace, KEY_BACK));
 	KeyMap.push_back(SKeyMap(XK_Tab, KEY_TAB));
+	KeyMap.push_back(SKeyMap(XK_ISO_Left_Tab, KEY_TAB));
 	KeyMap.push_back(SKeyMap(XK_Linefeed, 0)); // ???
 	KeyMap.push_back(SKeyMap(XK_Clear, KEY_CLEAR));
 	KeyMap.push_back(SKeyMap(XK_Return, KEY_RETURN));
