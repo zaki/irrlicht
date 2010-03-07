@@ -10,6 +10,7 @@
 
 #include "ITexture.h"
 #include "IImage.h"
+#include "irrMath.h"    // needed by borland for sqrtf define
 #include <d3d9.h>
 
 namespace irr

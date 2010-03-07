@@ -31,7 +31,7 @@ CGUIModalScreen::CGUIModalScreen(IGUIEnvironment* environment, IGUIElement* pare
 
 bool CGUIModalScreen::canTakeFocus(IGUIElement* target) const
 {
-    return (target && (target == this // this element can take it
+    return (target && ((const IGUIElement*)target == this // this element can take it
                         || isMyChild(target)    // own childs also
                         || (target->getType() == EGUIET_MODAL_SCREEN )// other modals also fine
                         || (target->getParent() && target->getParent()->getType() == EGUIET_MODAL_SCREEN )))   // childs of other modals will do
