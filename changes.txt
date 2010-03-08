@@ -1,6 +1,12 @@
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
 
+ - Prevent borland compile warnings in SColorHSL::FromRGB and in SVertexColorThresholdManipulator (found by mdeininger)
+
+ - Improve Windows version detection rules (Patch from brferreira)
+
+ - Make it compile on Borland compilers (thx to mdeininger)
+
  - Make sure that CAnimatedMeshSceneNode::clone calls the virtual updateAbsolutePosition for the new object
 
  - Fix that clones got dropped too often when SceneNodes without parent got cloned (found by Ulf)

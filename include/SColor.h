@@ -106,7 +106,7 @@ namespace video
 
 
 	//! Returns the alpha component from A1R5G5B5 color
-	/** In Irrlicht, alpha refers to opacity. 
+	/** In Irrlicht, alpha refers to opacity.
 	\return The alpha value of the color. 0 is transparent, 1 is opaque. */
 	inline u32 getAlpha(u16 color)
 	{
@@ -172,7 +172,7 @@ namespace video
 			: color(clr) {}
 
 		//! Returns the alpha component of the color.
-		/** The alpha component defines how opaque a color is. 
+		/** The alpha component defines how opaque a color is.
 		\return The alpha value of the color. 0 is fully transparent, 255 is fully opaque. */
 		u32 getAlpha() const { return color>>24; }
 
@@ -492,7 +492,8 @@ namespace video
 
 	inline void SColorHSL::fromRGB(const SColor &color)
 	{
-		const f32 maxVal = (f32)core::max_(color.getRed(), color.getGreen(), color.getBlue());
+		const u32 maxValInt = core::max_(color.getRed(), color.getGreen(), color.getBlue());
+		const f32 maxVal = (f32)maxValInt;
 		const f32 minVal = (f32)core::min_(color.getRed(), color.getGreen(), color.getBlue());
 		Luminance = (maxVal/minVal)*0.5f;
 		if (core::equals(maxVal, minVal))
@@ -512,11 +513,11 @@ namespace video
 			Saturation = (delta)/(2-maxVal-minVal);
 		}
 
-		if (maxVal==color.getRed())
+		if (maxValInt == color.getRed())
 			Hue = (color.getGreen()-color.getBlue())/delta;
-		else if (maxVal==color.getGreen())
+		else if (maxValInt == color.getGreen())
 			Hue = 2+(color.getBlue()-color.getRed())/delta;
-		else if (maxVal==color.getBlue())
+		else // blue is max
 			Hue = 4+(color.getRed()-color.getGreen())/delta;
 
 		Hue *= (60.0f * core::DEGTORAD);
