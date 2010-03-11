@@ -80,6 +80,8 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_3DFX_texture_compression_FXT1",
 	"GL_AMD_draw_buffers_blend",
 	"GL_AMD_performance_monitor",
+	"GL_AMD_seamless_cubemap_per_texture",
+	"GL_AMD_shader_stencil_export",
 	"GL_AMD_texture_texture4",
 	"GL_AMD_vertex_shader_tesselator",
 	"GL_APPLE_aux_depth_stencil",
@@ -98,6 +100,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_APPLE_vertex_array_range",
 	"GL_APPLE_vertex_program_evaluators",
 	"GL_APPLE_ycbcr_422",
+	"GL_ARB_blend_func_extended",
 	"GL_ARB_color_buffer_float",
 	"GL_ARB_compatibility",
 	"GL_ARB_copy_buffer",
@@ -107,6 +110,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_ARB_draw_buffers",
 	"GL_ARB_draw_buffers_blend",
 	"GL_ARB_draw_elements_base_vertex",
+	"GL_ARB_draw_indirect",
 	"GL_ARB_draw_instanced",
 	"GL_ARB_fragment_coord_conventions",
 	"GL_ARB_fragment_program",
@@ -115,6 +119,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_ARB_framebuffer_object",
 	"GL_ARB_framebuffer_sRGB",
 	"GL_ARB_geometry_shader4",
+	"GL_ARB_gpu_shader_fp64",
 	"GL_ARB_half_float_pixel",
 	"GL_ARB_half_float_vertex",
 	"GL_ARB_imaging",
@@ -129,13 +134,17 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_ARB_point_sprite",
 	"GL_ARB_provoking_vertex",
 	"GL_ARB_sample_shading",
+	"GL_ARB_sampler_objects",
 	"GL_ARB_seamless_cube_map",
 	"GL_ARB_shader_objects",
+	"GL_ARB_shader_subroutine",
 	"GL_ARB_shader_texture_lod",
 	"GL_ARB_shading_language_100",
+	"GL_ARB_shading_language_include",
 	"GL_ARB_shadow",
 	"GL_ARB_shadow_ambient",
 	"GL_ARB_sync",
+	"GL_ARB_tessellation_shader",
 	"GL_ARB_texture_border_clamp",
 	"GL_ARB_texture_buffer_object",
 	"GL_ARB_texture_compression",
@@ -154,6 +163,9 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_ARB_texture_query_lod",
 	"GL_ARB_texture_rectangle",
 	"GL_ARB_texture_rg",
+	"GL_ARB_timer_query",
+	"GL_ARB_transform_feedback2",
+	"GL_ARB_transform_feedback3",
 	"GL_ARB_transpose_matrix",
 	"GL_ARB_uniform_buffer_object",
 	"GL_ARB_vertex_array_bgra",
@@ -162,6 +174,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_ARB_vertex_buffer_object",
 	"GL_ARB_vertex_program",
 	"GL_ARB_vertex_shader",
+	"GL_ARB_vertex_type_2_10_10_10_rev",
 	"GL_ARB_window_pos",
 	"GL_ATI_draw_buffers",
 	"GL_ATI_element_array",
@@ -433,6 +446,8 @@ class COpenGLExtensionHandler
 		IRR_3DFX_texture_compression_FXT1,
 		IRR_AMD_draw_buffers_blend,
 		IRR_AMD_performance_monitor,
+		IRR_AMD_seamless_cubemap_per_texture,
+		IRR_AMD_shader_stencil_export,
 		IRR_AMD_texture_texture4,
 		IRR_AMD_vertex_shader_tesselator,
 		IRR_APPLE_aux_depth_stencil,
@@ -451,6 +466,7 @@ class COpenGLExtensionHandler
 		IRR_APPLE_vertex_array_range,
 		IRR_APPLE_vertex_program_evaluators,
 		IRR_APPLE_ycbcr_422,
+		IRR_ARB_blend_func_extended,
 		IRR_ARB_color_buffer_float,
 		IRR_ARB_compatibility,
 		IRR_ARB_copy_buffer,
@@ -460,6 +476,7 @@ class COpenGLExtensionHandler
 		IRR_ARB_draw_buffers,
 		IRR_ARB_draw_buffers_blend,
 		IRR_ARB_draw_elements_base_vertex,
+		IRR_ARB_draw_indirect,
 		IRR_ARB_draw_instanced,
 		IRR_ARB_fragment_coord_conventions,
 		IRR_ARB_fragment_program,
@@ -468,6 +485,7 @@ class COpenGLExtensionHandler
 		IRR_ARB_framebuffer_object,
 		IRR_ARB_framebuffer_sRGB,
 		IRR_ARB_geometry_shader4,
+		IRR_ARB_gpu_shader_fp64,
 		IRR_ARB_half_float_pixel,
 		IRR_ARB_half_float_vertex,
 		IRR_ARB_imaging,
@@ -482,13 +500,17 @@ class COpenGLExtensionHandler
 		IRR_ARB_point_sprite,
 		IRR_ARB_provoking_vertex,
 		IRR_ARB_sample_shading,
+		IRR_ARB_sampler_objects,
 		IRR_ARB_seamless_cube_map,
 		IRR_ARB_shader_objects,
+		IRR_ARB_shader_subroutine,
 		IRR_ARB_shader_texture_lod,
 		IRR_ARB_shading_language_100,
+		IRR_ARB_shading_language_include,
 		IRR_ARB_shadow,
 		IRR_ARB_shadow_ambient,
 		IRR_ARB_sync,
+		IRR_ARB_tessellation_shader,
 		IRR_ARB_texture_border_clamp,
 		IRR_ARB_texture_buffer_object,
 		IRR_ARB_texture_compression,
@@ -507,6 +529,9 @@ class COpenGLExtensionHandler
 		IRR_ARB_texture_query_lod,
 		IRR_ARB_texture_rectangle,
 		IRR_ARB_texture_rg,
+		IRR_ARB_timer_query,
+		IRR_ARB_transform_feedback2,
+		IRR_ARB_transform_feedback3,
 		IRR_ARB_transpose_matrix,
 		IRR_ARB_uniform_buffer_object,
 		IRR_ARB_vertex_array_bgra,
@@ -515,6 +540,7 @@ class COpenGLExtensionHandler
 		IRR_ARB_vertex_buffer_object,
 		IRR_ARB_vertex_program,
 		IRR_ARB_vertex_shader,
+		IRR_ARB_vertex_type_2_10_10_10_rev,
 		IRR_ARB_window_pos,
 		IRR_ATI_draw_buffers,
 		IRR_ATI_element_array,
@@ -953,24 +979,24 @@ class COpenGLExtensionHandler
 		PFNGLLOADPROGRAMNVPROC pGlLoadProgramNV;
 		PFNGLPROGRAMLOCALPARAMETER4FVARBPROC pGlProgramLocalParameter4fvARB;
 		PFNGLCREATESHADEROBJECTARBPROC pGlCreateShaderObjectARB;
-		PFNGLCREATESHADERPROC pGlCreateShader;
 		PFNGLSHADERSOURCEARBPROC pGlShaderSourceARB;
-		PFNGLSHADERSOURCEPROC pGlShaderSource;
 		PFNGLCOMPILESHADERARBPROC pGlCompileShaderARB;
-		PFNGLCOMPILESHADERPROC pGlCompileShader;
 		PFNGLCREATEPROGRAMOBJECTARBPROC pGlCreateProgramObjectARB;
-		PFNGLCREATEPROGRAMPROC pGlCreateProgram;
 		PFNGLATTACHOBJECTARBPROC pGlAttachObjectARB;
-		PFNGLATTACHSHADERPROC pGlAttachShader;
 		PFNGLLINKPROGRAMARBPROC pGlLinkProgramARB;
-		PFNGLLINKPROGRAMPROC pGlLinkProgram;
 		PFNGLUSEPROGRAMOBJECTARBPROC pGlUseProgramObjectARB;
-		PFNGLUSEPROGRAMPROC pGlUseProgram;
 		PFNGLDELETEOBJECTARBPROC pGlDeleteObjectARB;
+		PFNGLCREATEPROGRAMPROC pGlCreateProgram;
+		PFNGLUSEPROGRAMPROC pGlUseProgram;
 		PFNGLDELETEPROGRAMPROC pGlDeleteProgram;
 		PFNGLDELETESHADERPROC pGlDeleteShader;
 		PFNGLGETATTACHEDOBJECTSARBPROC pGlGetAttachedObjectsARB;
 		PFNGLGETATTACHEDSHADERSPROC pGlGetAttachedShaders;
+		PFNGLCREATESHADERPROC pGlCreateShader;
+		PFNGLSHADERSOURCEPROC pGlShaderSource;
+		PFNGLCOMPILESHADERPROC pGlCompileShader;
+		PFNGLATTACHSHADERPROC pGlAttachShader;
+		PFNGLLINKPROGRAMPROC pGlLinkProgram;
 		PFNGLGETINFOLOGARBPROC pGlGetInfoLogARB;
 		PFNGLGETSHADERINFOLOGPROC pGlGetShaderInfoLog;
 		PFNGLGETPROGRAMINFOLOGPROC pGlGetProgramInfoLog;
