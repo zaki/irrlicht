@@ -127,6 +127,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	if (!temporary_wnd)
 	{
 		os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
+		UnregisterClass(ClassName, lhInstance);
 		return false;
 	}
 
@@ -197,6 +198,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			os::Printer::log("Cannot create a GL device context", "No suitable format for temporary window.", ELL_ERROR);
 			ReleaseDC(temporary_wnd, HDc);
 			DestroyWindow(temporary_wnd);
+			UnregisterClass(ClassName, lhInstance);
 			return false;
 		}
 
@@ -213,6 +215,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		os::Printer::log("Cannot create a temporary GL rendering context.", ELL_ERROR);
 		ReleaseDC(temporary_wnd, HDc);
 		DestroyWindow(temporary_wnd);
+		UnregisterClass(ClassName, lhInstance);
 		return false;
 	}
 
@@ -228,6 +231,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		wglDeleteContext(hrc);
 		ReleaseDC(temporary_wnd, HDc);
 		DestroyWindow(temporary_wnd);
+		UnregisterClass(ClassName, lhInstance);
 		return false;
 	}
 
@@ -318,6 +322,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	wglDeleteContext(hrc);
 	ReleaseDC(temporary_wnd, HDc);
 	DestroyWindow(temporary_wnd);
+	UnregisterClass(ClassName, lhInstance);
 
 	// get hdc
 	HDc=GetDC(Window);

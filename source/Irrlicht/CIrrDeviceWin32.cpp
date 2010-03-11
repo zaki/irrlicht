@@ -624,8 +624,8 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	SetForegroundWindow(HWnd);
 
 	// get the codepage used for keyboard input
-    KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
-    KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) ); 
+	KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
+	KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) ); 
 }
 
 
@@ -903,8 +903,13 @@ void CIrrDeviceWin32::closeDevice()
 	PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
 	PostQuitMessage(0);
 	PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
-	if (ExternalWindow)
+	if (!ExternalWindow)
+	{
 		DestroyWindow(HWnd);
+		const fschar_t* ClassName = __TEXT("CIrrDeviceWin32");
+		HINSTANCE hInstance = GetModuleHandle(0);
+		UnregisterClass(ClassName, hInstance);
+	}
 	Close=true;
 }
 
