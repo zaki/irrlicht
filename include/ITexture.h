@@ -22,7 +22,7 @@ namespace video
 enum E_TEXTURE_CREATION_FLAG
 {
 	/** Forces the driver to create 16 bit textures always, independent of
-	which format the file on disk has. When choosing this you may loose
+	which format the file on disk has. When choosing this you may lose
 	some color detail, but gain much speed and memory. 16 bit textures can
 	be transferred twice as fast as 32 bit textures and only use half of
 	the space in memory.
