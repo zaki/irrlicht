@@ -22,16 +22,15 @@
 //#define USE_MATRIX_TEST_DEBUG
 
 #if defined( USE_MATRIX_TEST_DEBUG )
-	#include <windows.h>
 
-	struct MatrixTest
-	{
-		MatrixTest () : ID(0), Calls(0) {}
-		char buf[256];
-		int Calls;
-		int ID;
-	};
-	static MatrixTest MTest;
+struct MatrixTest
+{
+	MatrixTest () : ID(0), Calls(0) {}
+	char buf[256];
+	int Calls;
+	int ID;
+};
+static MatrixTest MTest;
 
 #endif
 
@@ -64,7 +63,7 @@ namespace core
 			//! Copy constructor
 			/** \param other Other matrix to copy from
 			\param constructor Choose the initialization style */
-			CMatrix4( const CMatrix4<T>& other,eConstructor constructor = EM4CONST_COPY);
+			CMatrix4(const CMatrix4<T>& other, eConstructor constructor = EM4CONST_COPY);
 
 			//! Simple operator for directly accessing every element of the matrix.
 			T& operator()(const s32 row, const s32 col)
@@ -125,17 +124,20 @@ namespace core
 			CMatrix4<T>& operator-=(const CMatrix4<T>& other);
 
 			//! set this matrix to the product of two matrices
+			/** Calculate b*a */
 			inline CMatrix4<T>& setbyproduct(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
 
 			//! Set this matrix to the product of two matrices
-			/** no optimization used,
+			/** Calculate b*a, no optimization used,
 			use it if you know you never have a identity matrix */
 			CMatrix4<T>& setbyproduct_nocheck(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
 
 			//! Multiply by another matrix.
+			/** Calculate other*this */
 			CMatrix4<T> operator*(const CMatrix4<T>& other) const;
 
 			//! Multiply by another matrix.
+			/** Calculate and return other*this */
 			CMatrix4<T>& operator*=(const CMatrix4<T>& other);
 
 			//! Multiply by scalar.
@@ -1416,7 +1418,7 @@ namespace core
 	{
 		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
 		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
-		const T w = h / aspectRatio;
+		const T w = static_cast<T>(h / aspectRatio);
 
 		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = w;
@@ -1455,7 +1457,7 @@ namespace core
 	{
 		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
 		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
-		const T w = (T)(h / aspectRatio);
+		const T w = static_cast<T>(h / aspectRatio);
 
 		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = w;
@@ -1492,7 +1494,7 @@ namespace core
 	{
 		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
 		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
-		const T w = (T)(h / aspectRatio);
+		const T w = static_cast<T>(h / aspectRatio);
 
 		M[0] = w;
 		M[1] = 0;
