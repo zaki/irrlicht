@@ -1236,7 +1236,7 @@ video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
 void CIrrDeviceLinux::setResizable(bool resize)
 {
 #ifdef _IRR_COMPILE_WITH_X11_
-	if (CreationParams.DriverType == video::EDT_NULL)
+	if (CreationParams.DriverType == video::EDT_NULL || CreationParams.Fullscreen )
 		return;
 
 	XUnmapWindow(display, window);

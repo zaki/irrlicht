@@ -1,6 +1,10 @@
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
 
+ - Ignore setResizable also on X11 when we're fullscreen to avoid messing up the window mode.
+
+ - Work around a crash when pressing ESC after closing a Messagebox (found by Acki) 
+
  - Prevent borland compile warnings in SColorHSL::FromRGB and in SVertexColorThresholdManipulator (found by mdeininger)
 
  - Improve Windows version detection rules (Patch from brferreira)
