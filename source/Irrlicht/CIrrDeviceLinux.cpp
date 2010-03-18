@@ -251,6 +251,8 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 		if (bestMode != -1)
 		{
 			os::Printer::log("Starting fullscreen mode...", ELL_INFORMATION);
+			os::Printer::log("hdisplay: ", core::stringc(modes[bestMode]->hdisplay).c_str(), ELL_INFORMATION);
+			os::Printer::log("vdisplay: ", core::stringc(modes[bestMode]->vdisplay).c_str(), ELL_INFORMATION);
 			XF86VidModeSwitchToMode(display, screennr, modes[bestMode]);
 			XF86VidModeSetViewPort(display, screennr, 0, 0);
 			UseXVidMode=true;
