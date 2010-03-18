@@ -1,5 +1,7 @@
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
+ 
+ - Prevent that X11 selects larger resolutions in fullscreen even when perfect fits are available.
 
  - Ignore setResizable also on X11 when we're fullscreen to avoid messing up the window mode.
 

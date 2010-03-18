@@ -244,15 +244,16 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 			else if (bestMode!=-1 &&
 					modes[i]->hdisplay >= Width &&
 					modes[i]->vdisplay >= Height &&
-					modes[i]->hdisplay < modes[bestMode]->hdisplay &&
-					modes[i]->vdisplay < modes[bestMode]->vdisplay)
+					modes[i]->hdisplay <= modes[bestMode]->hdisplay &&
+					modes[i]->vdisplay <= modes[bestMode]->vdisplay)
 				bestMode = i;
 		}
 		if (bestMode != -1)
 		{
-			os::Printer::log("Starting fullscreen mode...", ELL_INFORMATION);
+			os::Printer::log("Starting vidmode fullscreen mode...", ELL_INFORMATION);
 			os::Printer::log("hdisplay: ", core::stringc(modes[bestMode]->hdisplay).c_str(), ELL_INFORMATION);
 			os::Printer::log("vdisplay: ", core::stringc(modes[bestMode]->vdisplay).c_str(), ELL_INFORMATION);
+
 			XF86VidModeSwitchToMode(display, screennr, modes[bestMode]);
 			XF86VidModeSetViewPort(display, screennr, 0, 0);
 			UseXVidMode=true;
@@ -280,12 +281,16 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 			else if (bestMode!=-1 &&
 					(u32)modes[i].width >= Width &&
 					(u32)modes[i].height >= Height &&
-					modes[i].width < modes[bestMode].width &&
-					modes[i].height < modes[bestMode].height)
+					modes[i].width <= modes[bestMode].width &&
+					modes[i].height <= modes[bestMode].height)
 				bestMode = i;
 		}
 		if (bestMode != -1)
 		{
+			os::Printer::log("Starting randr fullscreen mode...", ELL_INFORMATION);
+			os::Printer::log("width: ", core::stringc(modes[bestMode].width).c_str(), ELL_INFORMATION);
+			os::Printer::log("height: ", core::stringc(modes[bestMode].height).c_str(), ELL_INFORMATION);
+
 			XRRSetScreenConfig(display,config,DefaultRootWindow(display),bestMode,oldRandrRotation,CurrentTime);
 			UseXRandR=true;
 		}
