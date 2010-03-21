@@ -79,7 +79,7 @@ public:
 	: array(0), allocated(1), used(1)
 	{
 		array = allocator.allocate(1); // new T[1];
-		array[0] = 0x0;
+		array[0] = 0;
 	}
 
 
@@ -1072,7 +1072,7 @@ public:
 		}
 
 		// Re-allocate the string now, if needed.
-		u32 len = replace_size * find_count;
+		u32 len = delta * find_count;
 		if (used + len > allocated)
 			reallocate(used + len);
 
@@ -1100,12 +1100,12 @@ public:
 				array[pos + i] = replace[i];
 
 			pos += replace_size;
-			used += replace_size;
+			used += delta;
 		}
 
 		// Terminate the string and return ourself.
-		++used;
 		array[used] = 0;
+		++used;
 		return *this;
 	}
 
