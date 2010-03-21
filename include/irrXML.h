@@ -366,15 +366,29 @@ namespace io
 	};
 
 
+	template <typename T>
+	struct xmlChar
+	{
+		T c;
+		xmlChar<T>() {}
+		xmlChar<T>(char in) : c(static_cast<T>(in)) {}
+		xmlChar<T>(wchar_t in) : c(static_cast<T>(in)) {}
+		explicit xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
+		explicit xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
+		explicit xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
+		operator T() const { return c; }
+		void operator=(int t) { c=static_cast<T>(t); }
+	};
+
 	//! defines the utf-16 type.
 	/** Not using wchar_t for this because
 	wchar_t has 16 bit on windows and 32 bit on other operating systems. */
-	typedef unsigned short char16;
+	typedef xmlChar<unsigned short> char16;
 
 	//! defines the utf-32 type.
 	/** Not using wchar_t for this because
 	wchar_t has 16 bit on windows and 32 bit on other operating systems. */
-	typedef unsigned long char32;
+	typedef xmlChar<unsigned int> char32;
 
 	//! A UTF-8 or ASCII character xml parser.
 	/** This means that all character data will be returned in 8 bit ASCII or UTF-8 by this parser.

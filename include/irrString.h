@@ -958,7 +958,7 @@ public:
 
 	//! Appends a string representation of a number to this string
 	/** \param i Number to append. */
-	string<T,TAlloc>& operator += (const unsigned long& i)
+	string<T,TAlloc>& operator += (const unsigned long i)
 	{
 		append(string<T,TAlloc>(i));
 		return *this;
