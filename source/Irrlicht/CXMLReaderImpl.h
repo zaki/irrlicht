@@ -69,7 +69,7 @@ public:
 	virtual bool read()
 	{
 		// if not end reached, parse the node
-		if (P && (unsigned int)(P - TextBegin) < TextSize - 1 && *P != 0)
+		if (P && ((unsigned int)(P - TextBegin) < TextSize - 1) && (*P != 0))
 		{
 			return parseCurrentNode();
 		}
@@ -577,21 +577,21 @@ private:
 		// based on the byte order mark.
 
 		const unsigned char UTF8[] = {0xEF, 0xBB, 0xBF}; // 0xEFBBBF;
-		const int UTF16_BE = 0xFFFE;
-		const int UTF16_LE = 0xFEFF;
-		const int UTF32_BE = 0xFFFE0000;
-		const int UTF32_LE = 0x0000FEFF;
+		const u16 UTF16_BE = 0xFFFE;
+		const u16 UTF16_LE = 0xFEFF;
+		const u32 UTF32_BE = 0xFFFE0000;
+		const u32 UTF32_LE = 0x0000FEFF;
 
 		// check source for all utf versions and convert to target data format
 		
-		if (size >= 4 && data32[0] == (char32)UTF32_BE)
+		if (size >= 4 && data32[0] == static_cast<char32>(UTF32_BE))
 		{
 			// UTF-32, big endian
 			SourceFormat = ETF_UTF32_BE;
 			convertTextData(data32+1, data8, (size/4)-1); // data32+1 because we need to skip the header
 		}
 		else
-		if (size >= 4 && data32[0] == (char32)UTF32_LE)
+		if (size >= 4 && data32[0] == static_cast<char32>(UTF32_LE))
 		{
 			// UTF-32, little endian
 			SourceFormat = ETF_UTF32_LE;
@@ -630,10 +630,11 @@ private:
 
 
 	//! converts the text file into the desired format.
-	//! \param source: begin of the text (without byte order mark)
-	//! \param pointerToStore: pointer to text data block which can be
-	//! stored or deleted based on the nesessary conversion.
-	//! \param sizeWithoutHeader: Text size in characters without header
+	/** \param source: begin of the text (without byte order mark)
+	\param pointerToStore: pointer to text data block which can be
+	stored or deleted based on the nesessary conversion.
+	\param sizeWithoutHeader: Text size in characters without header
+	*/
 	template<class src_char_type>
 	void convertTextData(src_char_type* source, char* pointerToStore, int sizeWithoutHeader)
 	{
@@ -660,7 +661,7 @@ private:
 			TextData = new char_type[sizeWithoutHeader];
 
 			for (int i=0; i<sizeWithoutHeader; ++i)
-				TextData[i] = (char_type)source[i];
+				TextData[i] = static_cast<char_type>(source[i]);
 
 			TextBegin = TextData;
 			TextSize = sizeWithoutHeader;
