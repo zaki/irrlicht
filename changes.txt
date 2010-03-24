@@ -1,5 +1,7 @@
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
+
+ - Fix octree with frustum+parent checks enabled (didn't clip at all before). Now using plane-checks instead of edge-checks for frustum-box intersection.
  
  - Prevent that X11 selects larger resolutions in fullscreen even when perfect fits are available.
 
