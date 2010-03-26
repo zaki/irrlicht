@@ -433,7 +433,9 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_SUN_vertex",
 	"GL_SUNX_constant_data",
 	"GL_WIN_phong_shading",
-	"GL_WIN_specular_fog"
+	"GL_WIN_specular_fog",
+	// unofficial stuff
+	"GL_NVX_gpu_memory_info"
 };
 
 
@@ -800,6 +802,7 @@ class COpenGLExtensionHandler
 		IRR_SUNX_constant_data,
 		IRR_WIN_phong_shading,
 		IRR_WIN_specular_fog,
+		IRR_NVX_gpu_memory_info,
 		IRR_OpenGL_Feature_Count
 	};
 
