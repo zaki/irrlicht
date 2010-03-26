@@ -626,6 +626,31 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 	MaxTextureUnits = core::min_(MaxTextureUnits,static_cast<u8>(MATERIAL_MAX_TEXTURES));
 
+#ifdef _DEBUG
+	if (FeatureAvailable[IRR_NVX_gpu_memory_info])
+	{
+		// undocumented flags, so use the RAW values
+		GLint val;
+		glGetIntegerv(0x9047, &val);
+		os::Printer::log("Dedicated video memory (kB)", core::stringc(val));
+		glGetIntegerv(0x9048, &val);
+		os::Printer::log("Total video memory (kB)", core::stringc(val));
+		glGetIntegerv(0x9049, &val);
+		os::Printer::log("Available video memory (kB)", core::stringc(val));
+	}
+#ifdef GL_ATI_meminfo
+	if (FeatureAvailable[IRR_ATI_meminfo])
+	{
+		GLint val[4];
+		glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, val);
+		os::Printer::log("Free texture memory (kB)", core::stringc(val[0]));
+		glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, val);
+		os::Printer::log("Free VBO memory (kB)", core::stringc(val[0]));
+		glGetIntegerv(GL_RENDERBUFFER_FREE_MEMORY_ATI, val);
+		os::Printer::log("Free render buffer memory (kB)", core::stringc(val[0]));
+	}
+#endif
+#endif
 }
 
 bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
