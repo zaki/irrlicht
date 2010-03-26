@@ -930,46 +930,52 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	const E_VERTEX_TYPE vType=mb->getVertexType();
 	const u32 vertexSize = getVertexPitchFromType(vType);
 
-	//buffer vertex data, and convert colours...
-	core::array<c8> buffer(vertexSize * vertexCount);
-	memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
-
-	// in order to convert the colors into opengl format (RGBA)
-	switch (vType)
+	const c8* vbuf = static_cast<const c8*>(vertices);
+	core::array<c8> buffer;
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 	{
-		case EVT_STANDARD:
+		//buffer vertex data, and convert colours...
+		buffer.set_used(vertexSize * vertexCount);
+		memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
+		vbuf = buffer.const_pointer();
+
+		// in order to convert the colors into opengl format (RGBA)
+		switch (vType)
 		{
-			S3DVertex* pb = reinterpret_cast<S3DVertex*>(buffer.pointer());
-			const S3DVertex* po = static_cast<const S3DVertex*>(vertices);
-			for (u32 i=0; i<vertexCount; i++)
+			case EVT_STANDARD:
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				S3DVertex* pb = reinterpret_cast<S3DVertex*>(buffer.pointer());
+				const S3DVertex* po = static_cast<const S3DVertex*>(vertices);
+				for (u32 i=0; i<vertexCount; i++)
+				{
+					po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				}
 			}
-		}
-		break;
-		case EVT_2TCOORDS:
-		{
-			S3DVertex2TCoords* pb = reinterpret_cast<S3DVertex2TCoords*>(buffer.pointer());
-			const S3DVertex2TCoords* po = static_cast<const S3DVertex2TCoords*>(vertices);
-			for (u32 i=0; i<vertexCount; i++)
+			break;
+			case EVT_2TCOORDS:
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				S3DVertex2TCoords* pb = reinterpret_cast<S3DVertex2TCoords*>(buffer.pointer());
+				const S3DVertex2TCoords* po = static_cast<const S3DVertex2TCoords*>(vertices);
+				for (u32 i=0; i<vertexCount; i++)
+				{
+					po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				}
 			}
-		}
-		break;
-		case EVT_TANGENTS:
-		{
-			S3DVertexTangents* pb = reinterpret_cast<S3DVertexTangents*>(buffer.pointer());
-			const S3DVertexTangents* po = static_cast<const S3DVertexTangents*>(vertices);
-			for (u32 i=0; i<vertexCount; i++)
+			break;
+			case EVT_TANGENTS:
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				S3DVertexTangents* pb = reinterpret_cast<S3DVertexTangents*>(buffer.pointer());
+				const S3DVertexTangents* po = static_cast<const S3DVertexTangents*>(vertices);
+				for (u32 i=0; i<vertexCount; i++)
+				{
+					po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				}
 			}
-		}
-		break;
-		default:
-		{
-			return false;
+			break;
+			default:
+			{
+				return false;
+			}
 		}
 	}
 
@@ -992,17 +998,17 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	//copy data to graphics card
 	glGetError(); // clear error storage
 	if (!newBuffer)
-		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, buffer.const_pointer());
+		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, vbuf);
 	else
 	{
 		HWBuffer->vbo_verticesSize = vertexCount*vertexSize;
 
 		if (HWBuffer->Mapped_Vertex==scene::EHM_STATIC)
-			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STATIC_DRAW);
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, vbuf, GL_STATIC_DRAW);
 		else if (HWBuffer->Mapped_Vertex==scene::EHM_DYNAMIC)
-			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_DYNAMIC_DRAW);
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, vbuf, GL_DYNAMIC_DRAW);
 		else //scene::EHM_STREAM
-			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STREAM_DRAW);
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, vbuf, GL_STREAM_DRAW);
 	}
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1241,7 +1247,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
-	if (vertices)
+	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		createColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
@@ -1258,7 +1264,27 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		glEnableClientState(GL_NORMAL_ARRAY);
 
 	if (vertices)
-		glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	{
+#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
+		if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		{
+			switch (vType)
+			{
+				case EVT_STANDARD:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+					break;
+				case EVT_2TCOORDS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
+					break;
+				case EVT_TANGENTS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Color);
+					break;
+			}
+		}
+		else
+#endif
+			glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
 
 	switch (vType)
 	{
@@ -1532,7 +1558,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
-	if (vertices)
+	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		createColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
@@ -1558,7 +1584,27 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (vertices)
-		glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	{
+#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
+		if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		{
+			switch (vType)
+			{
+				case EVT_STANDARD:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+					break;
+				case EVT_2TCOORDS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
+					break;
+				case EVT_TANGENTS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Color);
+					break;
+			}
+		}
+		else
+#endif
+			glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
 
 	switch (vType)
 	{
