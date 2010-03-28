@@ -297,10 +297,10 @@ namespace video
 		{
 			d = core::clamp(d, 0.f, 1.f);
 			const f32 inv = 1.0f - d;
-			return SColor((u32)(other.getAlpha()*inv + getAlpha()*d),
-				(u32)(other.getRed()*inv + getRed()*d),
-				(u32)(other.getGreen()*inv + getGreen()*d),
-				(u32)(other.getBlue()*inv + getBlue()*d));
+			return SColor((u32)core::round32(other.getAlpha()*inv + getAlpha()*d),
+				(u32)core::round32(other.getRed()*inv + getRed()*d),
+				(u32)core::round32(other.getGreen()*inv + getGreen()*d),
+				(u32)core::round32(other.getBlue()*inv + getBlue()*d));
 		}
 
 		//! Returns interpolated color. ( quadratic )
@@ -374,7 +374,7 @@ namespace video
 		//! Converts this color to a SColor without floats.
 		SColor toSColor() const
 		{
-			return SColor((u32)(a*255.0f), (u32)(r*255.0f), (u32)(g*255.0f), (u32)(b*255.0f));
+			return SColor((u32)core::round32(a*255.0f), (u32)core::round32(r*255.0f), (u32)core::round32(g*255.0f), (u32)core::round32(b*255.0f));
 		}
 
 		//! Sets three color components to new values at once.
@@ -572,7 +572,7 @@ namespace video
 			rm1 = rm1 + (rm2 - rm1) * ( ( 240.0f * core::DEGTORAD ) - rh) /
 				(60.0f * core::DEGTORAD);
 
-		return (u32) (rm1 * 255.f);
+		return (u32) core::round32(rm1 * 255.f);
 	}
 
 } // end namespace video
