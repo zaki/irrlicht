@@ -63,7 +63,10 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0),
 	pGlColorMaskIndexedEXT(0), pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0),
 	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0),
-	pGlProgramParameteriARB(0), pGlProgramParameteriEXT(0)
+	pGlProgramParameteriARB(0), pGlProgramParameteriEXT(0),
+	pGlGenQueriesARB(0), pGlDeleteQueriesARB(0), pGlIsQueryARB(0),
+	pGlBeginQueryARB(0), pGlEndQueryARB(0), pGlGetQueryivARB(0),
+	pGlGetQueryObjectivARB(0), pGlGetQueryObjectuivARB(0)
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -234,6 +237,15 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlProgramParameteriARB= (PFNGLPROGRAMPARAMETERIARBPROC) wglGetProcAddress("glProgramParameteriARB");
 	pGlProgramParameteriEXT= (PFNGLPROGRAMPARAMETERIEXTPROC) wglGetProcAddress("glProgramParameteriEXT");
 
+	// occlusion query
+	pGlGenQueriesARB = (PFNGLGENQUERIESARBPROC) wglGetProcAddress("glGenQueriesARB");
+	pGlDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC) wglGetProcAddress("glDeleteQueriesARB");
+	pGlIsQueryARB = (PFNGLISQUERYARBPROC) wglGetProcAddress("glIsQueryARB");
+	pGlBeginQueryARB = (PFNGLBEGINQUERYARBPROC) wglGetProcAddress("glBeginQueryARB");
+	pGlEndQueryARB = (PFNGLENDQUERYARBPROC) wglGetProcAddress("glEndQueryARB");
+	pGlGetQueryivARB = (PFNGLGETQUERYIVARBPROC) wglGetProcAddress("glGetQueryivARB");
+	pGlGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC) wglGetProcAddress("glGetQueryObjectivARB");
+	pGlGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC) wglGetProcAddress("glGetQueryObjectuivARB");
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -526,6 +538,31 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriARB"));
 	pGlProgramParameteriEXT = (PFNGLPROGRAMPARAMETERIEXTPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriEXT"));
+
+	// occlusion query
+	pGlGenQueriesARB = (PFNGLGENQUERIESARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenQueriesARB"));
+ 
+	pGlDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteQueriesARB"));
+ 
+	pGlIsQueryARB = (PFNGLISQUERYARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glIsQueryARB"));
+ 
+	pGlBeginQueryARB = (PFNGLBEGINQUERYARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBeginQueryARB"));
+
+	pGlEndQueryARB = (PFNGLENDQUERYARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glEndQueryARB"));
+
+	pGlGetQueryivARB = (PFNGLGETQUERYIVARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetQueryivARB"));
+
+	pGlGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetQueryObjectivARB"));
+
+	pGlGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetQueryObjectuivARB"));
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_

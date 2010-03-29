@@ -964,6 +964,15 @@ class COpenGLExtensionHandler
 	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
 	void extGlProgramParameteri(GLuint program, GLenum pname, GLint value);
 
+	// occlusion query
+	void extGlGenQueries(GLsizei n, GLuint *ids);
+	void extGlDeleteQueries(GLsizei n, const GLuint *ids);
+	GLboolean extGlIsQuery(GLuint id);
+	void extGlBeginQuery(GLenum target, GLuint id);
+	void extGlEndQuery(GLenum target);
+	void extGlGetQueryiv(GLenum target, GLenum pname, GLint *params);
+	void extGlGetQueryObjectiv(GLuint id, GLenum pname, GLint *params);
+	void extGlGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params);
 
 	protected:
 	// the global feature array
@@ -1061,6 +1070,14 @@ class COpenGLExtensionHandler
 		PFNGLBLENDFUNCIPROC pGlBlendFunciARB;
 		PFNGLPROGRAMPARAMETERIARBPROC pGlProgramParameteriARB;
 		PFNGLPROGRAMPARAMETERIEXTPROC pGlProgramParameteriEXT;
+		PFNGLGENQUERIESARBPROC pGlGenQueriesARB;
+		PFNGLDELETEQUERIESARBPROC pGlDeleteQueriesARB;
+		PFNGLISQUERYARBPROC pGlIsQueryARB;
+		PFNGLBEGINQUERYARBPROC pGlBeginQueryARB;
+		PFNGLENDQUERYARBPROC pGlEndQueryARB;
+		PFNGLGETQUERYIVARBPROC pGlGetQueryivARB;
+		PFNGLGETQUERYOBJECTIVARBPROC pGlGetQueryObjectivARB;
+		PFNGLGETQUERYOBJECTUIVARBPROC pGlGetQueryObjectuivARB;
 	#endif
 };
 
@@ -2079,6 +2096,102 @@ inline void COpenGLExtensionHandler::extGlProgramParameteri(GLuint program, GLen
 	glProgramParameteriNV(program, pname, value);
 #else
 	os::Printer::log("glProgramParameteri not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGenQueries(GLsizei n, GLuint *ids)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGenQueriesARB)
+		pGlGenQueriesARB(n, ids);
+#elif defined(GL_ARB_occlusion_query)
+	glGenQueriesARB(n, ids);
+#else
+	os::Printer::log("glGenQueriesARB not supported", ELL_ERROR);
+#endif
+}
+ 
+inline void COpenGLExtensionHandler::extGlDeleteQueries(GLsizei n, const GLuint *ids)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlDeleteQueriesARB)
+		pGlDeleteQueriesARB(n, ids);
+#elif defined(GL_ARB_occlusion_query)
+	glDeleteQueriesARB(n, ids);
+#else
+	os::Printer::log("glDeleteQueriesARB not supported", ELL_ERROR);
+#endif
+}
+
+inline GLboolean COpenGLExtensionHandler::extGlIsQuery(GLuint id)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlIsQueryARB)
+		pGlIsQueryARB(id);
+#elif defined(GL_ARB_occlusion_query)
+	glIsQueryARB(id);
+#else
+	os::Printer::log("glIsQueryARB not supported", ELL_ERROR);
+#endif
+}
+ 
+inline void COpenGLExtensionHandler::extGlBeginQuery(GLenum target, GLuint id)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBeginQueryARB)
+		pGlBeginQueryARB(target, id);
+#elif defined(GL_ARB_occlusion_query)
+	glBeginQueryARB(target, id);
+#else
+	os::Printer::log("glBeginQueryARB not supported", ELL_ERROR);
+#endif
+}
+ 
+inline void COpenGLExtensionHandler::extGlEndQuery(GLenum target)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlEndQueryARB)
+		pGlEndQueryARB(target);
+#elif defined(GL_ARB_occlusion_query)
+	glEndQueryARB(target);
+#else
+	os::Printer::log("glEndQueryARB not supported", ELL_ERROR);
+#endif
+}
+ 
+inline void COpenGLExtensionHandler::extGlGetQueryiv(GLenum target, GLenum pname, GLint *params)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGetQueryivARB)
+		pGlGetQueryivARB(target, pname, params);
+#elif defined(GL_ARB_occlusion_query)
+	glGetQueryivARB(target, pname, params);
+#else
+	os::Printer::log("glGetQueryivARB not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGetQueryObjectiv(GLuint id, GLenum pname, GLint *params)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGetQueryObjectivARB)
+		pGlGetQueryObjectivARB(id, pname, params);
+#elif defined(GL_ARB_occlusion_query)
+	glGetQueryObjectivARB(id, pname, params);
+#else
+	os::Printer::log("glGetQueryObjectivARB not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGetQueryObjectuivARB)
+		pGlGetQueryObjectuivARB(id, pname, params);
+#elif defined(GL_ARB_occlusion_query)
+	glGetQueryObjectuivARB(id, pname, params);
+#else
+	os::Printer::log("glGetQueryObjectuivARB not supported", ELL_ERROR);
 #endif
 }
 
