@@ -2127,11 +2127,11 @@ inline GLboolean COpenGLExtensionHandler::extGlIsQuery(GLuint id)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlIsQueryARB)
-		pGlIsQueryARB(id);
+		return pGlIsQueryARB(id);
 #elif defined(GL_ARB_occlusion_query)
-	glIsQueryARB(id);
+	return glIsQueryARB(id);
 #else
-	os::Printer::log("glIsQueryARB not supported", ELL_ERROR);
+	return false;
 #endif
 }
  
