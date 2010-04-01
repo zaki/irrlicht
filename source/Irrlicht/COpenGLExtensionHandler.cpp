@@ -23,7 +23,8 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		MaxUserClipPlanes(0), MaxAuxBuffers(0),
 		MaxMultipleRenderTargets(1), MaxIndices(65535),
 		MaxTextureSize(1), MaxGeometryVerticesOut(0),
-		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0)
+		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0),
+		OcclusionQuerySupport(false)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
 	pGlGenProgramsARB(0), pGlGenProgramsNV(0),
@@ -663,6 +664,18 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 	MaxTextureUnits = core::min_(MaxTextureUnits,static_cast<u8>(MATERIAL_MAX_TEXTURES));
 
+#ifdef GL_ARB_occlusion_query
+	if (FeatureAvailable[IRR_ARB_occlusion_query])
+	{
+		extGlGetQueryiv(GL_SAMPLES_PASSED_ARB,GL_QUERY_COUNTER_BITS_ARB,
+						&num);
+		OcclusionQuerySupport=(num>0);
+	}
+	else
+#endif
+		OcclusionQuerySupport=false;
+
+
 #ifdef _DEBUG
 	if (FeatureAvailable[IRR_NVX_gpu_memory_info])
 	{
@@ -744,6 +757,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_EXT_draw_buffers2];
 	case EVDF_MRT_BLEND_FUNC:
 		return FeatureAvailable[IRR_ARB_draw_buffers_blend] || FeatureAvailable[IRR_AMD_draw_buffers_blend];
+	case EVDF_OCCLUSION_QUERY:
+		return FeatureAvailable[IRR_ARB_occlusion_query] && OcclusionQuerySupport;
 	default:
 		return false;
 	};

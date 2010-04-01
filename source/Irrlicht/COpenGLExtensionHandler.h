@@ -865,6 +865,8 @@ class COpenGLExtensionHandler
 	//! GLSL version as Integer: 100*Major+Minor
 	u16 ShaderLanguageVersion;
 
+	bool OcclusionQuerySupport;
+
 	// public access to the (loaded) extensions.
 	// general functions
 	void extGlActiveTexture(GLenum texture);

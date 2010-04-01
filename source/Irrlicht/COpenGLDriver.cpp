@@ -591,6 +591,8 @@ COpenGLDriver::~COpenGLDriver()
 	// textures manually before releasing the dc. Oh how I love this.
 
 	deleteAllTextures();
+	removeAllOcclusionQueries();
+	removeAllHardwareBuffers();
 
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 	if (DeviceType == EIDT_WIN32)
@@ -1224,6 +1226,101 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 	if (HWBuffer->Mapped_Index!=scene::EHM_NEVER)
 		extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
+}
+
+
+//! Create occlusion query.
+/** Use node for identification and mesh for occlusion test. */
+void COpenGLDriver::createOcclusionQuery(scene::ISceneNode* node,
+		const scene::IMesh* mesh)
+{
+	if (!queryFeature(EVDF_OCCLUSION_QUERY))
+		return;
+
+	CNullDriver::createOcclusionQuery(node, mesh);
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if ((index != -1) && (OcclusionQueries[index].ID == 0))
+		extGlGenQueries(1, reinterpret_cast<GLuint*>(&OcclusionQueries[index].ID));
+}
+
+
+//! Remove occlusion query.
+void COpenGLDriver::removeOcclusionQuery(scene::ISceneNode* node)
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		if (OcclusionQueries[index].ID != 0)
+			extGlDeleteQueries(1, reinterpret_cast<GLuint*>(&OcclusionQueries[index].ID));
+		CNullDriver::removeOcclusionQuery(node);
+	}
+}
+
+
+//! Run occlusion query. Draws mesh stored in query.
+/** If the mesh shall not be rendered visible, use
+overrideMaterial to disable the color and depth buffer. */
+void COpenGLDriver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
+{
+	if (!node)
+		return;
+
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		os::Printer::log("Start query", core::stringc(reinterpret_cast<GLuint>(OcclusionQueries[index].ID)));
+		if (OcclusionQueries[index].ID)
+			extGlBeginQuery(GL_SAMPLES_PASSED_ARB, reinterpret_cast<GLuint>(OcclusionQueries[index].ID));
+		CNullDriver::runOcclusionQuery(node,visible);
+		if (OcclusionQueries[index].ID)
+			extGlEndQuery(GL_SAMPLES_PASSED_ARB);
+		testGLError();
+	}
+}
+
+
+//! Update occlusion query. Retrieves results from GPU.
+/** If the query shall not block, set the flag to false.
+Update might not occur in this case, though */
+void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
+{
+
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		// not yet started
+		if (OcclusionQueries[index].Run==u32(~0))
+			return;
+		GLint available = block?GL_TRUE:GL_FALSE;
+		if (!block)
+			extGlGetQueryObjectiv(reinterpret_cast<GLuint>(OcclusionQueries[index].ID),
+						GL_QUERY_RESULT_AVAILABLE_ARB,
+						&available);
+		testGLError();
+		if (available==GL_TRUE)
+		{
+			extGlGetQueryObjectiv(reinterpret_cast<GLuint>(OcclusionQueries[index].ID),
+						GL_QUERY_RESULT_ARB,
+						&available);
+			OcclusionQueries[index].Result = available;
+			os::Printer::log("Occ result", core::stringc(available));
+		}
+		testGLError();
+	}
+}
+
+
+//! Return query result.
+/** Return value is the number of visible pixels/fragments.
+The value is a safe approximation, i.e. can be larger than the
+actual value of pixels. */
+u32 COpenGLDriver::getOcclusionQueryResult(scene::ISceneNode* node) const
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+		return OcclusionQueries[index].Result;
+	else
+		return ~0;
 }
 
 
@@ -2326,6 +2423,7 @@ bool COpenGLDriver::testGLError()
 		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", ELL_ERROR); break;
 #endif
 	};
+	_IRR_DEBUG_BREAK_IF(true);
 	return true;
 #else
 	return false;

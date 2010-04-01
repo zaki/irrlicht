@@ -31,7 +31,9 @@ namespace io
 namespace scene
 {
 	class IMeshBuffer;
+	class IMesh;
 	class IMeshManipulator;
+	class ISceneNode;
 } // end namespace scene
 
 namespace video
@@ -428,6 +430,43 @@ namespace video
 
 		//! Remove all hardware buffers
 		virtual void removeAllHardwareBuffers() =0;
+
+		//! Create occlusion query.
+		/** Use node for identification and mesh for occlusion test. */
+		virtual void createOcclusionQuery(scene::ISceneNode* node,
+				const scene::IMesh* mesh=0) =0;
+
+		//! Remove occlusion query.
+		virtual void removeOcclusionQuery(scene::ISceneNode* node) =0;
+
+		//! Remove all occlusion queries.
+		virtual void removeAllOcclusionQueries() =0;
+
+		//! Run occlusion query. Draws mesh stored in query.
+		/** If the mesh shall not be rendered visible, use
+		overrideMaterial to disable the color and depth buffer. */
+		virtual void runOcclusionQuery(scene::ISceneNode* node, bool visible=false) =0;
+
+		//! Run all occlusion queries. Draws all meshes stored in queries.
+		/** If the meshes shall not be rendered visible, use
+		overrideMaterial to disable the color and depth buffer. */
+		virtual void runAllOcclusionQueries(bool visible=false) =0;
+
+		//! Update occlusion query. Retrieves results from GPU.
+		/** If the query shall not block, set the flag to false.
+		Update might not occur in this case, though */
+		virtual void updateOcclusionQuery(scene::ISceneNode* node, bool block=true) =0;
+
+		//! Update all occlusion queries. Retrieves results from GPU.
+		/** If the query shall not block, set the flag to false.
+		Update might not occur in this case, though */
+		virtual void updateAllOcclusionQueries(bool block=true) =0;
+
+		//! Return query result.
+		/** Return value is the number of visible pixels/fragments.
+		The value is a safe approximation, i.e. can be larger than the
+		actual value of pixels. */
+		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const =0;
 
 		//! Sets a boolean alpha channel on the texture based on a color key.
 		/** This makes the texture fully transparent at the texels where
@@ -1066,9 +1105,9 @@ namespace video
 		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled=true) =0;
 
 		//! Returns if a texture creation flag is enabled or disabled.
-		/** You can change this value using setTextureCreationMode().
+		/** You can change this value using setTextureCreationFlag().
 		\param flag Texture creation flag.
-		\return The current texture creation mode. */
+		\return The current texture creation flag enabled mode. */
 		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const =0;
 
 		//! Creates a software image from a file.
@@ -1106,8 +1145,8 @@ namespace video
 		/** Requires that there is a suitable image writer registered
 		for writing the image.
 		\param image Image to write.
-		\param file  An already open io::IWriteFile object. The name will be used to determine
-					the appropriate image writer to use.
+		\param file  An already open io::IWriteFile object. The name
+		will be used to determine the appropriate image writer to use.
 		\param param Control parameter for the backend (e.g. compression
 		level).
 		\return True on successful write. */

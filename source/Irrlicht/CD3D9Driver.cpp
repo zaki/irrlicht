@@ -35,7 +35,8 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 	MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(0.f), LastSetLight(-1), Cached2DModeSignature(0),
 	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
-	Fullscreen(fullscreen), DriverWasReset(true), AlphaToCoverageSupport(false)
+	Fullscreen(fullscreen), DriverWasReset(true), OcclusionQuerySupport(false),
+	AlphaToCoverageSupport(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Driver");
@@ -72,9 +73,13 @@ CD3D9Driver::~CD3D9Driver()
 {
 	deleteMaterialRenders();
 	deleteAllTextures();
-
-	// drop the main depth buffer
-	DepthBuffers[0]->drop();
+	removeAllOcclusionQueries();
+	removeAllHardwareBuffers();
+	for (u32 i=0; i<DepthBuffers.size(); ++i)
+	{
+		DepthBuffers[i]->drop();
+	}
+	DepthBuffers.clear();
 
 	// drop d3d9
 
@@ -424,6 +429,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
+	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
 
 	if (VendorID==0x10DE)//NVidia
 		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
@@ -636,6 +642,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_INDEPENDENTWRITEMASKS) != 0;
 	case EVDF_MRT_BLEND:
 		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_MRTPOSTPIXELSHADERBLENDING) != 0;
+	case EVDF_OCCLUSION_QUERY:
+		return OcclusionQuerySupport;
 	default:
 		return false;
 	};
@@ -1225,6 +1233,102 @@ void CD3D9Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 		pID3DDevice->SetStreamSource(0, 0, 0, 0);
 	if (HWBuffer->indexBuffer)
 		pID3DDevice->SetIndices(0);
+}
+
+
+//! Create occlusion query.
+/** Use node for identification and mesh for occlusion test. */
+void CD3D9Driver::createOcclusionQuery(scene::ISceneNode* node,
+		const scene::IMesh* mesh)
+{
+	if (!queryFeature(EVDF_OCCLUSION_QUERY))
+		return;
+	CNullDriver::createOcclusionQuery(node, mesh);
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if ((index != -1) && (OcclusionQueries[index].ID == 0))
+		pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, reinterpret_cast<IDirect3DQuery9**>(&OcclusionQueries[index].ID));
+}
+
+
+//! Remove occlusion query.
+void CD3D9Driver::removeOcclusionQuery(scene::ISceneNode* node)
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		if (OcclusionQueries[index].ID != 0)
+			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].ID)->Release();
+		CNullDriver::removeOcclusionQuery(node);
+	}
+}
+
+
+//! Run occlusion query. Draws mesh stored in query.
+/** If the mesh shall not be rendered visible, use
+overrideMaterial to disable the color and depth buffer. */
+void CD3D9Driver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
+{
+	if (!node)
+		return;
+
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		os::Printer::log("Start query", core::stringc(reinterpret_cast<u32>(OcclusionQueries[index].ID)));
+		if (OcclusionQueries[index].ID)
+			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].ID)->Issue(D3DISSUE_BEGIN);
+		CNullDriver::runOcclusionQuery(node,visible);
+		if (OcclusionQueries[index].ID)
+			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].ID)->Issue(D3DISSUE_END);
+	}
+}
+
+
+//! Update occlusion query. Retrieves results from GPU.
+/** If the query shall not block, set the flag to false.
+Update might not occur in this case, though */
+void CD3D9Driver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		// not yet started
+		if (OcclusionQueries[index].Run==u32(~0))
+			return;
+		bool available = block?true:false;
+		int tmp=0;
+		if (!block)
+			available=(reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].ID)->GetData(&tmp, sizeof(DWORD), 0)==S_OK);
+		else
+		{
+			do
+			{
+				HRESULT hr = reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].ID)->GetData(&tmp, sizeof(DWORD), D3DGETDATA_FLUSH);
+				available = (hr == S_OK);
+				if (hr!=S_FALSE)
+					break;
+			} while (!available);
+		}
+		if (available)
+		{
+			OcclusionQueries[index].Result = tmp;
+			os::Printer::log("Occ result", core::stringc(tmp));
+		}
+	}
+}
+
+
+//! Return query result.
+/** Return value is the number of visible pixels/fragments.
+The value is a safe approximation, i.e. can be larger than the
+actual value of pixels. */
+u32 CD3D9Driver::getOcclusionQueryResult(scene::ISceneNode* node) const
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+		return OcclusionQueries[index].Result;
+	else
+		return ~0;
 }
 
 
@@ -2733,8 +2837,16 @@ bool CD3D9Driver::reset()
 	}
 	for (i=0; i<DepthBuffers.size(); ++i)
 	{
-		if(DepthBuffers[i]->Surface)
+		if (DepthBuffers[i]->Surface)
 			DepthBuffers[i]->Surface->Release();
+	}
+	for (i=0; i<OcclusionQueries.size(); ++i)
+	{
+		if (OcclusionQueries[i].ID)
+		{
+			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[i].ID)->Release();
+			OcclusionQueries[i].ID=0;
+		}
 	}
 	// this does not require a restore in the reset method, it's updated
 	// automatically in the next render cycle.
@@ -2780,6 +2892,10 @@ bool CD3D9Driver::reset()
 				TRUE,
 				&(DepthBuffers[i]->Surface),
 				NULL);
+	}
+	for (i=0; i<OcclusionQueries.size(); ++i)
+	{
+		pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, reinterpret_cast<IDirect3DQuery9**>(&OcclusionQueries[i].ID));
 	}
 
 	if (FAILED(hr))

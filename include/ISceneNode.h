@@ -521,7 +521,7 @@ namespace scene
 		their geometry because it is their only reason for existence,
 		for example the OctreeSceneNode.
 		\param state The culling state to be used. */
-		void setAutomaticCulling( E_CULLING_TYPE state)
+		void setAutomaticCulling( u32 state)
 		{
 			AutomaticCullingState = state;
 		}
@@ -529,9 +529,8 @@ namespace scene
 
 		//! Gets the automatic culling state.
 		/** \return The automatic culling state. */
-		E_CULLING_TYPE getAutomaticCulling() const
+		u32 getAutomaticCulling() const
 		{
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return AutomaticCullingState;
 		}
 
@@ -687,7 +686,7 @@ namespace scene
 			out->addVector3d("Scale", getScale() );
 
 			out->addBool	("Visible", IsVisible );
-			out->addEnum	("AutomaticCulling", AutomaticCullingState, AutomaticCullingNames);
+			out->addInt	("AutomaticCulling", AutomaticCullingState);
 			out->addInt	("DebugDataVisible", DebugDataVisible );
 			out->addBool	("IsDebugObject", IsDebugObject );
 		}
@@ -712,8 +711,12 @@ namespace scene
 			setScale(in->getAttributeAsVector3d("Scale"));
 
 			IsVisible = in->getAttributeAsBool("Visible");
-			AutomaticCullingState = (scene::E_CULLING_TYPE) in->getAttributeAsEnumeration("AutomaticCulling",
+			s32 tmpState = in->getAttributeAsEnumeration("AutomaticCulling",
 					scene::AutomaticCullingNames);
+			if (tmpState != -1)
+				AutomaticCullingState = (u32)tmpState;
+			else
+				AutomaticCullingState = in->getAttributeAsInt("AutomaticCulling");
 
 			DebugDataVisible = in->getAttributeAsInt("DebugDataVisible");
 			IsDebugObject = in->getAttributeAsBool("IsDebugObject");
@@ -825,7 +828,7 @@ namespace scene
 		s32 ID;
 
 		//! Automatic culling state
-		E_CULLING_TYPE AutomaticCullingState;
+		u32 AutomaticCullingState;
 
 		//! Flag if debug data should be drawn, such as Bounding Boxes.
 		s32 DebugDataVisible;
