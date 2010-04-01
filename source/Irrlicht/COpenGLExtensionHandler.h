@@ -66,6 +66,10 @@
 	#include "glxext.h"
 	#endif
 #endif
+#ifndef GL_VERSION_2_0
+/* GL type for program/shader text */
+typedef char GLchar;
+#endif
 
 
 namespace irr
@@ -931,7 +935,7 @@ class COpenGLExtensionHandler
 	void extGlUniformMatrix3fv(GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
 	void extGlUniformMatrix4fv(GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
 	void extGlGetActiveUniformARB(GLhandleARB program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLcharARB *name);
-	void extGlGetActiveUniform(GLuint program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLcharARB *name);
+	void extGlGetActiveUniform(GLuint program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLchar *name);
 
 	// framebuffer objects
 	void extGlBindFramebuffer(GLenum target, GLuint framebuffer);
