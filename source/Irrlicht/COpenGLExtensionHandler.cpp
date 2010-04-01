@@ -673,8 +673,15 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 	else
 #endif
+#ifdef GL_NV_occlusion_query
+	if (FeatureAvailable[IRR_NV_occlusion_query])
+	{
+		glGetIntegerv(GL_PIXEL_COUNTER_BITS_NV, &num);
+		OcclusionQuerySupport=(num>0);
+	}
+	else
+#endif
 		OcclusionQuerySupport=false;
-
 
 #ifdef _DEBUG
 	if (FeatureAvailable[IRR_NVX_gpu_memory_info])
