@@ -1084,6 +1084,13 @@ class COpenGLExtensionHandler
 		PFNGLGETQUERYIVARBPROC pGlGetQueryivARB;
 		PFNGLGETQUERYOBJECTIVARBPROC pGlGetQueryObjectivARB;
 		PFNGLGETQUERYOBJECTUIVARBPROC pGlGetQueryObjectuivARB;
+		PFNGLGENOCCLUSIONQUERIESNVPROC pGlGenOcclusionQueriesNV;
+		PFNGLDELETEOCCLUSIONQUERIESNVPROC pGlDeleteOcclusionQueriesNV;
+		PFNGLISOCCLUSIONQUERYNVPROC pGlIsOcclusionQueryNV;
+		PFNGLBEGINOCCLUSIONQUERYNVPROC pGlBeginOcclusionQueryNV;
+		PFNGLENDOCCLUSIONQUERYNVPROC pGlEndOcclusionQueryNV;
+		PFNGLGETOCCLUSIONQUERYIVNVPROC pGlGetOcclusionQueryivNV;
+		PFNGLGETOCCLUSIONQUERYUIVNVPROC pGlGetOcclusionQueryuivNV;
 	#endif
 };
 
@@ -2110,12 +2117,14 @@ inline void COpenGLExtensionHandler::extGlGenQueries(GLsizei n, GLuint *ids)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGenQueriesARB)
 		pGlGenQueriesARB(n, ids);
+	else if (pGlGenOcclusionQueriesNV)
+		pGlGenOcclusionQueriesNV(n, ids);
 #elif defined(GL_ARB_occlusion_query)
 	glGenQueriesARB(n, ids);
 #elif defined(GL_NV_occlusion_query)
 	glGenOcclusionQueriesNV(n, ids);
 #else
-	os::Printer::log("glGenQueriesARB not supported", ELL_ERROR);
+	os::Printer::log("glGenQueries not supported", ELL_ERROR);
 #endif
 }
  
@@ -2124,12 +2133,14 @@ inline void COpenGLExtensionHandler::extGlDeleteQueries(GLsizei n, const GLuint 
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlDeleteQueriesARB)
 		pGlDeleteQueriesARB(n, ids);
+	else if (pGlDeleteOcclusionQueriesNV)
+		pGlDeleteOcclusionQueriesNV(n, ids);
 #elif defined(GL_ARB_occlusion_query)
 	glDeleteQueriesARB(n, ids);
 #elif defined(GL_NV_occlusion_query)
 	glDeleteOcclusionQueriesNV(n, ids);
 #else
-	os::Printer::log("glDeleteQueriesARB not supported", ELL_ERROR);
+	os::Printer::log("glDeleteQueries not supported", ELL_ERROR);
 #endif
 }
 
@@ -2138,6 +2149,8 @@ inline GLboolean COpenGLExtensionHandler::extGlIsQuery(GLuint id)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlIsQueryARB)
 		return pGlIsQueryARB(id);
+	else if (pGlIsOcclusionQueryNV)
+		return pGlIsOcclusionQueryNV(id);
 #elif defined(GL_ARB_occlusion_query)
 	return glIsQueryARB(id);
 #elif defined(GL_NV_occlusion_query)
@@ -2152,12 +2165,14 @@ inline void COpenGLExtensionHandler::extGlBeginQuery(GLenum target, GLuint id)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBeginQueryARB)
 		pGlBeginQueryARB(target, id);
+	else if (pGlBeginOcclusionQueryNV)
+		pGlBeginOcclusionQueryNV(id);
 #elif defined(GL_ARB_occlusion_query)
 	glBeginQueryARB(target, id);
 #elif defined(GL_NV_occlusion_query)
 	glBeginOcclusionQueryNV(id);
 #else
-	os::Printer::log("glBeginQueryARB not supported", ELL_ERROR);
+	os::Printer::log("glBeginQuery not supported", ELL_ERROR);
 #endif
 }
  
@@ -2166,12 +2181,14 @@ inline void COpenGLExtensionHandler::extGlEndQuery(GLenum target)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlEndQueryARB)
 		pGlEndQueryARB(target);
+	else if (pGlEndOcclusionQueryNV)
+		pGlEndOcclusionQueryNV();
 #elif defined(GL_ARB_occlusion_query)
 	glEndQueryARB(target);
 #elif defined(GL_NV_occlusion_query)
 	glEndOcclusionQueryNV();
 #else
-	os::Printer::log("glEndQueryARB not supported", ELL_ERROR);
+	os::Printer::log("glEndQuery not supported", ELL_ERROR);
 #endif
 }
  
@@ -2192,6 +2209,8 @@ inline void COpenGLExtensionHandler::extGlGetQueryObjectiv(GLuint id, GLenum pna
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetQueryObjectivARB)
 		pGlGetQueryObjectivARB(id, pname, params);
+	else if (pGlGetOcclusionQueryivNV)
+		pGlGetOcclusionQueryivNV(id, pname, params);
 #elif defined(GL_ARB_occlusion_query)
 	glGetQueryObjectivARB(id, pname, params);
 #elif defined(GL_NV_occlusion_query)
@@ -2206,6 +2225,8 @@ inline void COpenGLExtensionHandler::extGlGetQueryObjectuiv(GLuint id, GLenum pn
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetQueryObjectuivARB)
 		pGlGetQueryObjectuivARB(id, pname, params);
+	else if (pGlGetOcclusionQueryuivNV)
+		pGlGetOcclusionQueryuivNV(id, pname, params);
 #elif defined(GL_ARB_occlusion_query)
 	glGetQueryObjectuivARB(id, pname, params);
 #elif defined(GL_NV_occlusion_query)
@@ -2222,4 +2243,3 @@ inline void COpenGLExtensionHandler::extGlGetQueryObjectuiv(GLuint id, GLenum pn
 #endif
 
 #endif
-
