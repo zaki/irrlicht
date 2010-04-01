@@ -86,16 +86,15 @@ IFileArchive* CArchiveLoaderMount::createArchive(io::IReadFile* file, bool ignor
 	return 0;
 }
 
-//! compatible Folder Archticture
-//
+//! compatible Folder Architecture
 CMountPointReader::CMountPointReader(IFileSystem * parent, const io::path& basename, bool ignoreCase, bool ignorePaths)
 	: CFileList(basename, ignoreCase, ignorePaths), Parent(parent)
 {
 	//! ensure CFileList path ends in a slash
 	if (Path.lastChar() != '/' )
-		Path.append ('/');
+		Path.append('/');
 
-	io::path work = Parent->getWorkingDirectory();
+	const io::path work = Parent->getWorkingDirectory();
 
 	Parent->changeWorkingDirectoryTo(basename);
 	buildDirectory();
@@ -104,10 +103,6 @@ CMountPointReader::CMountPointReader(IFileSystem * parent, const io::path& basen
 	sort();
 }
 
-CMountPointReader::~CMountPointReader()
-{
-
-}
 
 //! returns the list of files
 const IFileList* CMountPointReader::getFileList() const
@@ -118,6 +113,8 @@ const IFileList* CMountPointReader::getFileList() const
 void CMountPointReader::buildDirectory()
 {
 	IFileList * list = Parent->createFileList();
+	if (!list)
+		return;
 
 	const u32 size = list->getFileCount();
 	for (u32 i=0; i < size; ++i)
@@ -142,7 +139,7 @@ void CMountPointReader::buildDirectory()
 			{
 				addItem(full, 0, true, 0);
 				Parent->changeWorkingDirectoryTo(pwd);
-				buildDirectory ();
+				buildDirectory();
 				Parent->changeWorkingDirectoryTo("..");
 			}
 		}
