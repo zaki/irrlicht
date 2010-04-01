@@ -67,7 +67,11 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlProgramParameteriARB(0), pGlProgramParameteriEXT(0),
 	pGlGenQueriesARB(0), pGlDeleteQueriesARB(0), pGlIsQueryARB(0),
 	pGlBeginQueryARB(0), pGlEndQueryARB(0), pGlGetQueryivARB(0),
-	pGlGetQueryObjectivARB(0), pGlGetQueryObjectuivARB(0)
+	pGlGetQueryObjectivARB(0), pGlGetQueryObjectuivARB(0),
+	pGlGenOcclusionQueriesNV(0), pGlDeleteOcclusionQueriesNV(0),
+	pGlIsOcclusionQueryNV(0), pGlBeginOcclusionQueryNV(0),
+	pGlEndOcclusionQueryNV(0), pGlGetOcclusionQueryivNV(0),
+	pGlGetOcclusionQueryuivNV(0)
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -247,6 +251,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGetQueryivARB = (PFNGLGETQUERYIVARBPROC) wglGetProcAddress("glGetQueryivARB");
 	pGlGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC) wglGetProcAddress("glGetQueryObjectivARB");
 	pGlGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC) wglGetProcAddress("glGetQueryObjectuivARB");
+	pGlGenOcclusionQueriesNV = (PFNGLGENOCCLUSIONQUERIESNVPROC) wglGetProcAddress("glGenOcclusionQueriesNV");
+	pGlDeleteOcclusionQueriesNV = (PFNGLDELETEOCCLUSIONQUERIESNVPROC) wglGetProcAddress("glDeleteOcclusionQueriesNV");
+	pGlIsOcclusionQueryNV = (PFNGLISOCCLUSIONQUERYNVPROC) wglGetProcAddress("glIsOcclusionQueryNV");
+	pGlBeginOcclusionQueryNV = (PFNGLBEGINOCCLUSIONQUERYNVPROC) wglGetProcAddress("glBeginOcclusionQueryNV");
+	pGlEndOcclusionQueryNV = (PFNGLENDOCCLUSIONQUERYNVPROC) wglGetProcAddress("glEndOcclusionQueryNV");
+	pGlGetOcclusionQueryivNV = (PFNGLGETOCCLUSIONQUERYIVNVPROC) wglGetProcAddress("glGetOcclusionQueryivNV");
+	pGlGetOcclusionQueryuivNV = (PFNGLGETOCCLUSIONQUERYUIVNVPROC) wglGetProcAddress("glGetOcclusionQueryuivNV");
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -564,6 +575,27 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	pGlGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetQueryObjectuivARB"));
+
+	pGlGenOcclusionQueriesNV = (PFNGLGENOCCLUSIONQUERIESNVPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenOcclusionQueriesNV"));
+
+	pGlDeleteOcclusionQueriesNV = (PFNGLDELETEOCCLUSIONQUERIESNVPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteOcclusionQueriesNV"));
+
+	pGlIsOcclusionQueryNV = (PFNGLISOCCLUSIONQUERYNVPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glIsOcclusionQueryNV"));
+
+	pGlBeginOcclusionQueryNV = (PFNGLBEGINOCCLUSIONQUERYNVPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBeginOcclusionQueryNV"));
+
+	pGlEndOcclusionQueryNV = (PFNGLENDOCCLUSIONQUERYNVPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glEndOcclusionQueryNV"));
+
+	pGlGetOcclusionQueryivNV = (PFNGLGETOCCLUSIONQUERYIVNVPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetOcclusionQueryivNV"));
+
+	pGlGetOcclusionQueryuivNV = (PFNGLGETOCCLUSIONQUERYUIVNVPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetOcclusionQueryuivNV"));
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
