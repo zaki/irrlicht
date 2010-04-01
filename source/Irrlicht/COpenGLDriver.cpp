@@ -1268,12 +1268,22 @@ void COpenGLDriver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
 	if (index != -1)
 	{
-		os::Printer::log("Start query", core::stringc(reinterpret_cast<GLuint>(OcclusionQueries[index].ID)));
 		if (OcclusionQueries[index].ID)
-			extGlBeginQuery(GL_SAMPLES_PASSED_ARB, reinterpret_cast<GLuint>(OcclusionQueries[index].ID));
+			extGlBeginQuery(
+#ifdef GL_ARB_occlusion_query
+				GL_SAMPLES_PASSED_ARB,
+#else
+				0,
+#endif
+				reinterpret_cast<GLuint>(OcclusionQueries[index].ID));
 		CNullDriver::runOcclusionQuery(node,visible);
 		if (OcclusionQueries[index].ID)
-			extGlEndQuery(GL_SAMPLES_PASSED_ARB);
+			extGlEndQuery(
+#ifdef GL_ARB_occlusion_query
+				GL_SAMPLES_PASSED_ARB);
+#else
+				0);
+#endif
 		testGLError();
 	}
 }
@@ -1284,7 +1294,6 @@ void COpenGLDriver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
 Update might not occur in this case, though */
 void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 {
-
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
 	if (index != -1)
 	{
@@ -1294,16 +1303,28 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 		GLint available = block?GL_TRUE:GL_FALSE;
 		if (!block)
 			extGlGetQueryObjectiv(reinterpret_cast<GLuint>(OcclusionQueries[index].ID),
+#ifdef GL_ARB_occlusion_query
 						GL_QUERY_RESULT_AVAILABLE_ARB,
+#elif defined(GL_NV_occlusion_query)
+						GL_PIXEL_COUNT_AVAILABLE_NV,
+#else
+						0,
+#endif
 						&available);
 		testGLError();
 		if (available==GL_TRUE)
 		{
 			extGlGetQueryObjectiv(reinterpret_cast<GLuint>(OcclusionQueries[index].ID),
+#ifdef GL_ARB_occlusion_query
 						GL_QUERY_RESULT_ARB,
+#elif defined(GL_NV_occlusion_query)
+						GL_PIXEL_COUNT_NV,
+#else
+						0,
+#endif
 						&available);
-			OcclusionQueries[index].Result = available;
-			os::Printer::log("Occ result", core::stringc(available));
+			if (queryFeature(EVDF_OCCLUSION_QUERY))
+				OcclusionQueries[index].Result = available;
 		}
 		testGLError();
 	}

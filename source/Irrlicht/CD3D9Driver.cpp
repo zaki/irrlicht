@@ -1274,7 +1274,6 @@ void CD3D9Driver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
 	if (index != -1)
 	{
-		os::Printer::log("Start query", core::stringc(reinterpret_cast<u32>(OcclusionQueries[index].ID)));
 		if (OcclusionQueries[index].ID)
 			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].ID)->Issue(D3DISSUE_BEGIN);
 		CNullDriver::runOcclusionQuery(node,visible);
@@ -1310,10 +1309,7 @@ void CD3D9Driver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 			} while (!available);
 		}
 		if (available)
-		{
 			OcclusionQueries[index].Result = tmp;
-			os::Printer::log("Occ result", core::stringc(tmp));
-		}
 	}
 }
 
