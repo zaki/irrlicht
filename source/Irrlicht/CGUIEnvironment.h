@@ -282,7 +282,9 @@ private:
 	{
 		IGUIStaticText* Element;
 		u32 LastTime;
+		u32 EnterTime;
 		u32 LaunchTime;
+		u32 RelaunchTime;
 	};
 
 	SToolTip ToolTip;
@@ -293,6 +295,7 @@ private:
 	core::array<SSpriteBank> Banks;
 	video::IVideoDriver* Driver;
 	IGUIElement* Hovered;
+	IGUIElement* HoveredNoSubelement;	// subelements replaced by their parent, so you only have 'real' elements here
 	IGUIElement* Focus;
 	core::position2d<s32> LastHoveredMousePos;
 	IGUISkin* CurrentSkin;

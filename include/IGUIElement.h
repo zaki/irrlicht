@@ -187,6 +187,7 @@ public:
 	}
 
 
+	//! The alignment defines how the borders of this element will be positioned when the parent element is resized.
 	void setAlignment(EGUI_ALIGNMENT left, EGUI_ALIGNMENT right, EGUI_ALIGNMENT top, EGUI_ALIGNMENT bottom)
 	{
 		AlignLeft = left;

@@ -813,7 +813,7 @@ u32 COBJMeshFileLoader::copyWord(c8* outBuf, const c8* const inBuf, u32 outBufLe
 	for (u32 j=0; j<length; ++j)
 		outBuf[j] = inBuf[j];
 
-	outBuf[i] = 0;
+	outBuf[length] = 0;
 	return length;
 }
 

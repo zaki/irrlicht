@@ -1060,8 +1060,14 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	if (!newManager) newManager = SceneManager;
 
 	CAnimatedMeshSceneNode * newNode =
-		new CAnimatedMeshSceneNode(Mesh, newParent, newManager, ID, RelativeTranslation,
+		new CAnimatedMeshSceneNode(Mesh, NULL, newManager, ID, RelativeTranslation,
 						 RelativeRotation, RelativeScale);
+
+	if ( newParent )
+	{
+		newNode->setParent(newParent); 	// not in constructor because virtual overload for updateAbsolutePosition won't be called
+		newNode->drop();
+	}
 
 	newNode->cloneMembers(this, newManager);
 
@@ -1088,7 +1094,6 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	newNode->RenderFromIdentity = RenderFromIdentity;
 	newNode->MD3Special = MD3Special;
 
-	(void)newNode->drop();
 	return newNode;
 }
 

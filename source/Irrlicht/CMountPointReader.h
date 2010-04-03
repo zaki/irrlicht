@@ -25,9 +25,6 @@ namespace io
 		//! Constructor
 		CArchiveLoaderMount(io::IFileSystem* fs);
 
-		//! destructor
-		virtual ~CArchiveLoaderMount();
-
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".zip")
 		virtual bool isALoadableFileFormat(const io::path& filename) const;
@@ -65,9 +62,6 @@ namespace io
 		//! Constructor
 		CMountPointReader(IFileSystem *parent, const io::path& basename,
 				bool ignoreCase, bool ignorePaths);
-
-		//! Destructor
-		virtual ~CMountPointReader();
 
 		//! opens a file by index
 		virtual IReadFile* createAndOpenFile(u32 index);

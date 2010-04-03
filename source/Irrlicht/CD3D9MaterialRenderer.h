@@ -9,6 +9,9 @@
 #ifdef _IRR_WINDOWS_
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
+#if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
+#include "irrMath.h"    // needed by borland for sqrtf define
+#endif
 #include <d3d9.h>
 
 #include "IMaterialRenderer.h"

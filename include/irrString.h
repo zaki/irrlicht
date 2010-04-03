@@ -1137,8 +1137,8 @@ public:
 	string<T,TAlloc>& remove(const string<T,TAlloc>& toRemove)
 	{
 		u32 size = toRemove.size();
-		if (size == 0) return *this;
-
+		if ( size == 0 )
+			return *this;
 		u32 pos = 0;
 		u32 found = 0;
 		for (u32 i=0; i<used; ++i)

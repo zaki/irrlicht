@@ -40,7 +40,7 @@ namespace irr
 	}
 } // end namespace irr
 
-// Get the codepage from the locale language id 
+// Get the codepage from the locale language id
 // Based on the table from http://www.science.co.il/Language/Locale-Codes.asp?s=decimal
 static unsigned int LocaleIdToCodepage(unsigned int lcid)
 {
@@ -198,7 +198,7 @@ static unsigned int LocaleIdToCodepage(unsigned int lcid)
             return 1258;
     }
     return 65001;   // utf-8
-} 
+}
 
 namespace
 {
@@ -210,7 +210,7 @@ namespace
 	irr::core::list<SEnvMapper> EnvMap;
 
 	HKL KEYBOARD_INPUT_HKL=0;
-	unsigned int KEYBOARD_INPUT_CODEPAGE = 1252; 
+	unsigned int KEYBOARD_INPUT_CODEPAGE = 1252;
 };
 
 SEnvMapper* getEnvMapperFromHWnd(HWND hWnd)
@@ -412,7 +412,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						sizeof(keyChars),
 						(WCHAR*)&unicodeChar,
 						1 );
-				event.KeyInput.Char = unicodeChar; 
+				event.KeyInput.Char = unicodeChar;
 			}
 			else
 				event.KeyInput.Char = 0;
@@ -485,7 +485,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // get the new codepage used for keyboard input
         KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
         KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) );
-        return 0; 
+        return 0;
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -583,7 +583,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		MoveWindow(HWnd, windowLeft, windowTop, realWidth, realHeight, TRUE);
 
 		// make sure everything gets updated to the real sizes
-		Resized = true;	
+		Resized = true;
 	}
 	else if (CreationParams.WindowId)
 	{
@@ -1039,132 +1039,215 @@ video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 	return &VideoModeList;
 }
 
+typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+// Needed for old windows apis
+#define PRODUCT_ULTIMATE                            0x00000001
+#define PRODUCT_HOME_BASIC                          0x00000002
+#define PRODUCT_HOME_PREMIUM                        0x00000003
+#define PRODUCT_ENTERPRISE                          0x00000004
+#define PRODUCT_HOME_BASIC_N                        0x00000005
+#define PRODUCT_BUSINESS                            0x00000006
+#define PRODUCT_STARTER                             0x0000000B
+#define PRODUCT_BUSINESS_N                          0x00000010
+#define PRODUCT_HOME_PREMIUM_N                      0x0000001A
+#define PRODUCT_ENTERPRISE_N                        0x0000001B
+#define PRODUCT_ULTIMATE_N                          0x0000001C
+#define PRODUCT_STARTER_N                           0x0000002F
+#define PRODUCT_PROFESSIONAL                        0x00000030
+#define PRODUCT_PROFESSIONAL_N                      0x00000031
+#define PRODUCT_STARTER_E                           0x00000042
+#define PRODUCT_HOME_BASIC_E                        0x00000043
+#define PRODUCT_HOME_PREMIUM_E                      0x00000044
+#define PRODUCT_PROFESSIONAL_E                      0x00000045
+#define PRODUCT_ENTERPRISE_E                        0x00000046
+#define PRODUCT_ULTIMATE_E                          0x00000047
 
 void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 {
-	OSVERSIONINFOEX osvi;
-	BOOL bOsVersionInfoEx;
+    OSVERSIONINFOEX osvi;
+    PGPI pGPI;
+    BOOL bOsVersionInfoEx;
 
-	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-	bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO*) &osvi);
-	if (!bOsVersionInfoEx)
-	{
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		if (! GetVersionEx((OSVERSIONINFO *) &osvi))
-			return;
-	}
+    bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO*) &osvi);
+    if (!bOsVersionInfoEx)
+    {
+        osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+        if (! GetVersionEx((OSVERSIONINFO *) &osvi))
+            return;
+    }
 
-	switch (osvi.dwPlatformId)
-	{
-	case VER_PLATFORM_WIN32_NT:
-		if (osvi.dwMajorVersion <= 4)
-			out.append("Microsoft Windows NT ");
-		else
-		if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0)
-			out.append("Microsoft Windows 2000 ");
-		else
-		if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
-			out.append("Microsoft Windows XP ");
-		else
-		if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0)
-			out.append("Microsoft Windows Vista ");
+    switch (osvi.dwPlatformId)
+    {
+    case VER_PLATFORM_WIN32_NT:
+        if (osvi.dwMajorVersion <= 4)
+            out.append("Microsoft Windows NT ");
+        else
+        if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0)
+            out.append("Microsoft Windows 2000 ");
+        else
+        if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
+            out.append("Microsoft Windows XP ");
+        else
+        if (osvi.dwMajorVersion == 6 )
+        {
+            if (osvi.dwMinorVersion == 0)
+            {
+                if (osvi.wProductType == VER_NT_WORKSTATION)
+                    out.append("Microsoft Windows Vista ");
+                else
+                    out.append("Microsoft Windows Server 2008 ");
+            }
+            else if (osvi.dwMinorVersion == 1)
+            {
+                if (osvi.wProductType == VER_NT_WORKSTATION)
+                    out.append("Microsoft Windows 7 ");
+                else
+                    out.append("Microsoft Windows Server 2008 R2 ");
+            }
+        }
 
-		if (bOsVersionInfoEx)
-		{
-			#ifdef VER_SUITE_ENTERPRISE
-			if (osvi.wProductType == VER_NT_WORKSTATION)
-			{
+        if (bOsVersionInfoEx)
+        {
+            if (osvi.dwMajorVersion == 6)
+            {
+                DWORD dwType;
+                pGPI = (PGPI)GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "GetProductInfo");
+                pGPI(osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
+
+                switch (dwType)
+                {
+                case PRODUCT_ULTIMATE:
+                case PRODUCT_ULTIMATE_E:
+                case PRODUCT_ULTIMATE_N:
+                    out.append("Ultimate Edition ");
+                    break;
+                case PRODUCT_PROFESSIONAL:
+                case PRODUCT_PROFESSIONAL_E:
+                case PRODUCT_PROFESSIONAL_N:
+                    out.append("Professional Edition ");
+                    break;
+                case PRODUCT_HOME_BASIC:
+                case PRODUCT_HOME_BASIC_E:
+                case PRODUCT_HOME_BASIC_N:
+                    out.append("Home Basic Edition ");
+                    break;
+                case PRODUCT_HOME_PREMIUM:
+                case PRODUCT_HOME_PREMIUM_E:
+                case PRODUCT_HOME_PREMIUM_N:
+                    out.append("Home Premium Edition ");
+                    break;
+                case PRODUCT_ENTERPRISE:
+                case PRODUCT_ENTERPRISE_E:
+                case PRODUCT_ENTERPRISE_N:
+                    out.append("Enterprise Edition ");
+                    break;
+                case PRODUCT_BUSINESS:
+                case PRODUCT_BUSINESS_N:
+                    out.append("Business Edition ");
+                    break;
+                case PRODUCT_STARTER:
+                case PRODUCT_STARTER_E:
+                case PRODUCT_STARTER_N:
+                    out.append("Starter Edition ");
+                    break;
+                }
+            }
+#ifdef VER_SUITE_ENTERPRISE
+            else
+            if (osvi.wProductType == VER_NT_WORKSTATION)
+            {
 #ifndef __BORLANDC__
-				if( osvi.wSuiteMask & VER_SUITE_PERSONAL )
-					out.append("Personal ");
-				else
-					out.append("Professional ");
+                if( osvi.wSuiteMask & VER_SUITE_PERSONAL )
+                    out.append("Personal ");
+                else
+                    out.append("Professional ");
 #endif
-			}
-			else if (osvi.wProductType == VER_NT_SERVER)
-			{
-				if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
-					out.append("DataCenter Server ");
-				else if( osvi.wSuiteMask & VER_SUITE_ENTERPRISE )
-					out.append("Advanced Server ");
-				else
-					out.append("Server ");
-			}
-			#endif
-		}
-		else
-		{
-			HKEY hKey;
-			char szProductType[80];
-			DWORD dwBufLen;
+            }
+            else if (osvi.wProductType == VER_NT_SERVER)
+            {
+                if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
+                    out.append("DataCenter Server ");
+                else if( osvi.wSuiteMask & VER_SUITE_ENTERPRISE )
+                    out.append("Advanced Server ");
+                else
+                    out.append("Server ");
+            }
+#endif
+        }
+        else
+        {
+            HKEY hKey;
+            char szProductType[80];
+            DWORD dwBufLen;
 
-			RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-				__TEXT("SYSTEM\\CurrentControlSet\\Control\\ProductOptions"),
-				0, KEY_QUERY_VALUE, &hKey );
-			RegQueryValueEx( hKey, __TEXT("ProductType"), NULL, NULL,
-				(LPBYTE) szProductType, &dwBufLen);
-			RegCloseKey( hKey );
+            RegOpenKeyEx( HKEY_LOCAL_MACHINE,
+                    __TEXT("SYSTEM\\CurrentControlSet\\Control\\ProductOptions"),
+                    0, KEY_QUERY_VALUE, &hKey );
+            RegQueryValueEx( hKey, __TEXT("ProductType"), NULL, NULL,
+                    (LPBYTE) szProductType, &dwBufLen);
+            RegCloseKey( hKey );
 
-			if (_strcmpi( "WINNT", szProductType) == 0 )
-				out.append("Professional ");
-			if (_strcmpi( "LANMANNT", szProductType) == 0)
-				out.append("Server ");
-			if (_strcmpi( "SERVERNT", szProductType) == 0)
-				out.append("Advanced Server ");
-		}
+            if (_strcmpi( "WINNT", szProductType) == 0 )
+                out.append("Professional ");
+            if (_strcmpi( "LANMANNT", szProductType) == 0)
+                out.append("Server ");
+            if (_strcmpi( "SERVERNT", szProductType) == 0)
+                out.append("Advanced Server ");
+        }
 
-		// Display version, service pack (if any), and build number.
+        // Display version, service pack (if any), and build number.
 
-		char tmp[255];
+        char tmp[255];
 
-		if (osvi.dwMajorVersion <= 4 )
-		{
-			sprintf(tmp, "version %ld.%ld %s (Build %ld)",
-				osvi.dwMajorVersion,
-				osvi.dwMinorVersion,
-				osvi.szCSDVersion,
-				osvi.dwBuildNumber & 0xFFFF);
-		}
-		else
-		{
-			sprintf(tmp, "%s (Build %ld)", osvi.szCSDVersion,
-				osvi.dwBuildNumber & 0xFFFF);
-		}
+        if (osvi.dwMajorVersion <= 4 )
+        {
+            sprintf(tmp, "version %ld.%ld %s (Build %ld)",
+                    osvi.dwMajorVersion,
+                    osvi.dwMinorVersion,
+                    osvi.szCSDVersion,
+                    osvi.dwBuildNumber & 0xFFFF);
+        }
+        else
+        {
+            sprintf(tmp, "%s (Build %ld)", osvi.szCSDVersion,
+            osvi.dwBuildNumber & 0xFFFF);
+        }
 
-		out.append(tmp);
-		break;
+        out.append(tmp);
+        break;
 
-	case VER_PLATFORM_WIN32_WINDOWS:
+    case VER_PLATFORM_WIN32_WINDOWS:
 
-		IsNonNTWindows = true;
+        IsNonNTWindows = true;
 
-		if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0)
-		{
-			out.append("Microsoft Windows 95 ");
-			if ( osvi.szCSDVersion[1] == 'C' || osvi.szCSDVersion[1] == 'B' )
-				out.append("OSR2 " );
-		}
+        if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0)
+        {
+            out.append("Microsoft Windows 95 ");
+            if ( osvi.szCSDVersion[1] == 'C' || osvi.szCSDVersion[1] == 'B' )
+                out.append("OSR2 " );
+        }
 
-		if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 10)
-		{
-			out.append("Microsoft Windows 98 ");
-			if ( osvi.szCSDVersion[1] == 'A' )
-				out.append( "SE " );
-		}
+        if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 10)
+        {
+            out.append("Microsoft Windows 98 ");
+            if ( osvi.szCSDVersion[1] == 'A' )
+                out.append( "SE " );
+        }
 
-		if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90)
-			out.append("Microsoft Windows Me ");
+        if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90)
+            out.append("Microsoft Windows Me ");
 
-		break;
+        break;
 
-	case VER_PLATFORM_WIN32s:
+    case VER_PLATFORM_WIN32s:
 
-		IsNonNTWindows = true;
-		out.append("Microsoft Win32s ");
-		break;
-	}
+        IsNonNTWindows = true;
+        out.append("Microsoft Win32s ");
+        break;
+    }
 }
 
 //! Notifies the device, that it has been resized
@@ -1323,7 +1406,7 @@ void CIrrDeviceWin32::pollJoysticks()
 
 			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
 			event.JoystickEvent.Joystick = (u8)joystick;
- 
+
 			event.JoystickEvent.POV = (u16)info.dwPOV;
 			// set to undefined if no POV value was returned or the value
 			// is out of range

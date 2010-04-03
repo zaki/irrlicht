@@ -66,6 +66,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testQuaternion);
 	TEST(testS3DVertex);
 	TEST(testaabbox3d);
+    TEST(color);
 	// TODO: Needs to be fixed first
 //	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);

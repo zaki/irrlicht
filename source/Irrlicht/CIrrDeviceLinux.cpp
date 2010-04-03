@@ -244,13 +244,16 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 			else if (bestMode!=-1 &&
 					modes[i]->hdisplay >= Width &&
 					modes[i]->vdisplay >= Height &&
-					modes[i]->hdisplay < modes[bestMode]->hdisplay &&
-					modes[i]->vdisplay < modes[bestMode]->vdisplay)
+					modes[i]->hdisplay <= modes[bestMode]->hdisplay &&
+					modes[i]->vdisplay <= modes[bestMode]->vdisplay)
 				bestMode = i;
 		}
 		if (bestMode != -1)
 		{
-			os::Printer::log("Starting fullscreen mode...", ELL_INFORMATION);
+			os::Printer::log("Starting vidmode fullscreen mode...", ELL_INFORMATION);
+			os::Printer::log("hdisplay: ", core::stringc(modes[bestMode]->hdisplay).c_str(), ELL_INFORMATION);
+			os::Printer::log("vdisplay: ", core::stringc(modes[bestMode]->vdisplay).c_str(), ELL_INFORMATION);
+
 			XF86VidModeSwitchToMode(display, screennr, modes[bestMode]);
 			XF86VidModeSetViewPort(display, screennr, 0, 0);
 			UseXVidMode=true;
@@ -278,12 +281,16 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 			else if (bestMode!=-1 &&
 					(u32)modes[i].width >= Width &&
 					(u32)modes[i].height >= Height &&
-					modes[i].width < modes[bestMode].width &&
-					modes[i].height < modes[bestMode].height)
+					modes[i].width <= modes[bestMode].width &&
+					modes[i].height <= modes[bestMode].height)
 				bestMode = i;
 		}
 		if (bestMode != -1)
 		{
+			os::Printer::log("Starting randr fullscreen mode...", ELL_INFORMATION);
+			os::Printer::log("width: ", core::stringc(modes[bestMode].width).c_str(), ELL_INFORMATION);
+			os::Printer::log("height: ", core::stringc(modes[bestMode].height).c_str(), ELL_INFORMATION);
+
 			XRRSetScreenConfig(display,config,DefaultRootWindow(display),bestMode,oldRandrRotation,CurrentTime);
 			UseXRandR=true;
 		}
@@ -998,6 +1005,7 @@ bool CIrrDeviceLinux::run()
 						irrevent.KeyInput.Key = (EKEY_CODE)KeyMap[idx].Win32Key;
 					else
 					{
+						// Usually you will check keysymdef.h and add the corresponding key to createKeyMap.
 						irrevent.KeyInput.Key = (EKEY_CODE)0;
 						os::Printer::log("Could not find win32 key for x11 key.", core::stringc((int)mp.X11Key).c_str(), ELL_WARNING);
 					}
@@ -1235,7 +1243,7 @@ video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
 void CIrrDeviceLinux::setResizable(bool resize)
 {
 #ifdef _IRR_COMPILE_WITH_X11_
-	if (CreationParams.DriverType == video::EDT_NULL)
+	if (CreationParams.DriverType == video::EDT_NULL || CreationParams.Fullscreen )
 		return;
 
 	XUnmapWindow(display, window);
@@ -1375,6 +1383,7 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.reallocate(84);
 	KeyMap.push_back(SKeyMap(XK_BackSpace, KEY_BACK));
 	KeyMap.push_back(SKeyMap(XK_Tab, KEY_TAB));
+	KeyMap.push_back(SKeyMap(XK_ISO_Left_Tab, KEY_TAB));
 	KeyMap.push_back(SKeyMap(XK_Linefeed, 0)); // ???
 	KeyMap.push_back(SKeyMap(XK_Clear, KEY_CLEAR));
 	KeyMap.push_back(SKeyMap(XK_Return, KEY_RETURN));

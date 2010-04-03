@@ -104,7 +104,7 @@ bool CArchiveLoaderNPK::isALoadableFileFormat(io::IReadFile* file) const
 	NPK Reader
 */
 CNPKReader::CNPKReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
-: CFileList(file ? file->getFileName() : "", ignoreCase, ignorePaths), File(file)
+: CFileList((file ? file->getFileName() : io::path("")), ignoreCase, ignorePaths), File(file)
 {
 #ifdef _DEBUG
 	setDebugName("CNPKReader");
@@ -137,13 +137,13 @@ const IFileList* CNPKReader::getFileList() const
 bool CNPKReader::scanLocalHeader()
 {
 	SNPKHeader header;
-		
+
 	// Read and validate the header
 	File->read(&header, sizeof(header));
 	if (!isHeaderValid(header))
 		return false;
 
-	// Seek to the table of contents	
+	// Seek to the table of contents
 #ifdef __BIG_ENDIAN__
 	header.Offset = os::Byteswap::byteswap(header.Offset);
 	header.Length = os::Byteswap::byteswap(header.Length);
@@ -222,7 +222,7 @@ bool CNPKReader::scanLocalHeader()
 #ifdef IRR_DEBUG_NPK_READER
 		os::Printer::log("Name", entry.Name);
 #endif
-		addItem(isDir?dirName:dirName+entry.Name, entry.Length, isDir, Offsets.size());
+		addItem((isDir?dirName:dirName+entry.Name), entry.Length, isDir, Offsets.size());
 		Offsets.push_back(entry.Offset+header.Offset);
 	}
 	return true;
