@@ -24,7 +24,7 @@ namespace scene
         |  /      |  /
         |/        | /
         0------11,1/
-       000       100       
+       000       100
 	*/
 
 //! constructor
@@ -190,13 +190,14 @@ ISceneNode* CCubeSceneNode::clone(ISceneNode* newParent, ISceneManager* newManag
 	if (!newManager)
 		newManager = SceneManager;
 
-	CCubeSceneNode* nb = new CCubeSceneNode(Size, newParent, 
+	CCubeSceneNode* nb = new CCubeSceneNode(Size, newParent,
 		newManager, ID, RelativeTranslation);
 
 	nb->cloneMembers(this, newManager);
 	nb->getMaterial(0) = getMaterial(0);
 
-	nb->drop();
+	if ( newParent )
+		nb->drop();
 	return nb;
 }
 

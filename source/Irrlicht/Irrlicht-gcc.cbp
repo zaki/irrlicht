@@ -532,6 +532,7 @@
 		<Unit filename="../../include/SMeshBufferTangents.h" />
 		<Unit filename="../../include/SParticle.h" />
 		<Unit filename="../../include/SSkinMeshBuffer.h" />
+		<Unit filename="../../include/SVertexManipulator.h" />
 		<Unit filename="../../include/SViewFrustum.h" />
 		<Unit filename="../../include/SceneParameters.h" />
 		<Unit filename="../../include/aabbox3d.h" />

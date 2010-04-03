@@ -319,33 +319,21 @@ private:
 			if ( parentTest != 2 )
 #endif
 			{
-				core::vector3df edges[8];
-				Box.getEdges(edges);
-
+#if defined (OCTREE_PARENTTEST )
+				parentTest = 2;
+#endif
 				for (i=0; i!=scene::SViewFrustum::VF_PLANE_COUNT; ++i)
 				{
-					u32 boxInFrustum=0;
-
-					for (u32 j=0; j!=8; ++j)
-					{
-						if (frustum.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
-						{
-							boxInFrustum += 1;
-#if !defined (OCTREE_PARENTTEST )
-							break;
-#endif
-						}
-					}
-
-					if ( 0  == boxInFrustum) // all edges outside
+					core::EIntersectionRelation3D r = Box.classifyPlaneRelation(frustum.planes[i]);
+					if ( r == core::ISREL3D_FRONT )
 						return;
-
 #if defined (OCTREE_PARENTTEST )
-					if ( 8  == boxInFrustum) // all edges in, all children in
-						parentTest = 2;
+					if ( r == core::ISREL3D_CLIPPED )
+						parentTest = 1;	// must still check childs
 #endif
 				}
 			}
+
 
 			const u32 cnt = IndexData->size();
 

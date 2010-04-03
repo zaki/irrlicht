@@ -1,4 +1,53 @@
-Changes in 1.7
+-----------------------------
+Changes in 1.7.1 (17.02.2010)
+
+ - Fix octree with frustum+parent checks enabled (didn't clip at all before). Now using plane-checks instead of edge-checks for frustum-box intersection.
+ 
+ - Prevent that X11 selects larger resolutions in fullscreen even when perfect fits are available.
+
+ - Ignore setResizable also on X11 when we're fullscreen to avoid messing up the window mode.
+
+ - Work around a crash when pressing ESC after closing a Messagebox (found by Acki) 
+
+ - Prevent borland compile warnings in SColorHSL::FromRGB and in SVertexColorThresholdManipulator (found by mdeininger)
+
+ - Improve Windows version detection rules (Patch from brferreira)
+
+ - Make it compile on Borland compilers (thx to mdeininger)
+
+ - Make sure that CAnimatedMeshSceneNode::clone calls the virtual updateAbsolutePosition for the new object
+
+ - Fix that clones got dropped too often when SceneNodes without parent got cloned (found by Ulf)
+
+ - Make sure TAB is still recognized on X11 when shift+tab is pressed. This does also fix going to the previous tabstop on X11.
+
+ - Send EGET_ELEMENT_LEFT also when there won't be a new hovered element
+
+ - Update docs for EGET_ELEMENT_LEFT and EGET_ELEMENT_HOVERED
+
+ - Fix tooltips: Remove them when the element is hidden or removed (thx to seven for finding)
+
+ - Fix tooltips: Make (more) sure they don't get confused by gui-subelements
+
+ - Fix tooltips: Get faster relaunch times working
+
+ - Fix tooltips: Make sure hovered element is never the tooltip itself
+
+ - Fix string::remove which got in an endless loop when remove was called with an empty string (found and fixed by Ulf)
+
+ - Correctly release the GLSL shaders
+
+ - Make sure we only release an X11 atom when it was actually created
+
+ - Fix aabbox collision test, which not only broke the collision test routines, but also frustum culling, octree tests, etc.
+
+ - Fix compilation problem under OSX due to wrong glProgramParameteri usage
+
+ - mem leak in OBJ loader fixed
+
+ - Removed some default parameters to reduce ambigious situations
+---------------------------
+Changes in 1.7 (03.02.2010)
 
  - Implement minimize and deminimize under OSX.
 
@@ -194,8 +243,8 @@ Changes in 1.7
 
  - draw3DTriangle now renders filled polygons, old behavior can be achieved by setting EMT_WIREFRAME
 
-----------------
-Changes in 1.6.1
+-----------------------------
+Changes in 1.6.1 (13.01.2010)
 
  - Fix pingpong for CSceneNodeAnimatorFlyStraight (found by gbox)
 

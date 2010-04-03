@@ -751,8 +751,10 @@ bool CFileSystem::existFile(const io::path& filename) const
 #else
 	return (_access(filename.c_str(), 0) != -1);
 #endif
-#else
+#elif defined(F_OK)
 	return (access(filename.c_str(), F_OK) != -1);
+#else
+    return (access(filename.c_str(), 0) != -1);
 #endif
 #endif
 }

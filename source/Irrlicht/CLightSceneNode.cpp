@@ -262,7 +262,8 @@ ISceneNode* CLightSceneNode::clone(ISceneNode* newParent, ISceneManager* newMana
 	nb->LightData = LightData;
 	nb->BBox = BBox;
 
-	nb->drop();
+	if ( newParent )
+		nb->drop();
 	return nb;
 }
 

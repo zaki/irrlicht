@@ -36,7 +36,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 	IGUISkin* skin = Environment->getSkin();
 	const s32 s = skin->getSize(EGDS_SCROLLBAR_SIZE);
 
-	ScrollBar = new CGUIScrollBar(false, Environment, this, 0,
+	ScrollBar = new CGUIScrollBar(false, Environment, this, -1,
 		core::rect<s32>(RelativeRect.getWidth() - s, 0, RelativeRect.getWidth(), RelativeRect.getHeight()),
 		!clip);
 	ScrollBar->setSubElement(true);

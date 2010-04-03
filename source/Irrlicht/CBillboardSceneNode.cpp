@@ -225,13 +225,14 @@ ISceneNode* CBillboardSceneNode::clone(ISceneNode* newParent, ISceneManager* new
 	if (!newManager)
 		newManager = SceneManager;
 
-	CBillboardSceneNode* nb = new CBillboardSceneNode(newParent, 
+	CBillboardSceneNode* nb = new CBillboardSceneNode(newParent,
 		newManager, ID, RelativeTranslation, Size);
 
 	nb->cloneMembers(this, newManager);
 	nb->Material = Material;
 
-	nb->drop();
+	if ( newParent )
+		nb->drop();
 	return nb;
 }
 

@@ -106,7 +106,7 @@ namespace video
 
 
 	//! Returns the alpha component from A1R5G5B5 color
-	/** In Irrlicht, alpha refers to opacity. 
+	/** In Irrlicht, alpha refers to opacity.
 	\return The alpha value of the color. 0 is transparent, 1 is opaque. */
 	inline u32 getAlpha(u16 color)
 	{
@@ -172,7 +172,7 @@ namespace video
 			: color(clr) {}
 
 		//! Returns the alpha component of the color.
-		/** The alpha component defines how opaque a color is. 
+		/** The alpha component defines how opaque a color is.
 		\return The alpha value of the color. 0 is fully transparent, 255 is fully opaque. */
 		u32 getAlpha() const { return color>>24; }
 
@@ -297,10 +297,10 @@ namespace video
 		{
 			d = core::clamp(d, 0.f, 1.f);
 			const f32 inv = 1.0f - d;
-			return SColor((u32)(other.getAlpha()*inv + getAlpha()*d),
-				(u32)(other.getRed()*inv + getRed()*d),
-				(u32)(other.getGreen()*inv + getGreen()*d),
-				(u32)(other.getBlue()*inv + getBlue()*d));
+			return SColor((u32)core::round32(other.getAlpha()*inv + getAlpha()*d),
+				(u32)core::round32(other.getRed()*inv + getRed()*d),
+				(u32)core::round32(other.getGreen()*inv + getGreen()*d),
+				(u32)core::round32(other.getBlue()*inv + getBlue()*d));
 		}
 
 		//! Returns interpolated color. ( quadratic )
@@ -374,7 +374,7 @@ namespace video
 		//! Converts this color to a SColor without floats.
 		SColor toSColor() const
 		{
-			return SColor((u32)(a*255.0f), (u32)(r*255.0f), (u32)(g*255.0f), (u32)(b*255.0f));
+			return SColor((u32)core::round32(a*255.0f), (u32)core::round32(r*255.0f), (u32)core::round32(g*255.0f), (u32)core::round32(b*255.0f));
 		}
 
 		//! Sets three color components to new values at once.
@@ -492,7 +492,8 @@ namespace video
 
 	inline void SColorHSL::fromRGB(const SColor &color)
 	{
-		const f32 maxVal = (f32)core::max_(color.getRed(), color.getGreen(), color.getBlue());
+		const u32 maxValInt = core::max_(color.getRed(), color.getGreen(), color.getBlue());
+		const f32 maxVal = (f32)maxValInt;
 		const f32 minVal = (f32)core::min_(color.getRed(), color.getGreen(), color.getBlue());
 		Luminance = (maxVal/minVal)*0.5f;
 		if (core::equals(maxVal, minVal))
@@ -512,11 +513,11 @@ namespace video
 			Saturation = (delta)/(2-maxVal-minVal);
 		}
 
-		if (maxVal==color.getRed())
+		if (maxValInt == color.getRed())
 			Hue = (color.getGreen()-color.getBlue())/delta;
-		else if (maxVal==color.getGreen())
+		else if (maxValInt == color.getGreen())
 			Hue = 2+(color.getBlue()-color.getRed())/delta;
-		else if (maxVal==color.getBlue())
+		else // blue is max
 			Hue = 4+(color.getRed()-color.getGreen())/delta;
 
 		Hue *= (60.0f * core::DEGTORAD);
@@ -571,7 +572,7 @@ namespace video
 			rm1 = rm1 + (rm2 - rm1) * ( ( 240.0f * core::DEGTORAD ) - rh) /
 				(60.0f * core::DEGTORAD);
 
-		return (u32) (rm1 * 255.f);
+		return (u32) core::round32(rm1 * 255.f);
 	}
 
 } // end namespace video

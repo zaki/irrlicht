@@ -8,11 +8,11 @@
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
 #define IRRLICHT_VERSION_MINOR 7
-#define IRRLICHT_VERSION_REVISION 0
+#define IRRLICHT_VERSION_REVISION 1
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
 #define IRRLICHT_VERSION_SVN -beta
-#define IRRLICHT_SDK_VERSION "1.7.0-beta"
+#define IRRLICHT_SDK_VERSION "1.7.1-beta"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -101,9 +101,9 @@
 
 //! Define _IRR_COMPILE_WITH_DIRECT3D_8_ and _IRR_COMPILE_WITH_DIRECT3D_9_ to
 //! compile the Irrlicht engine with Direct3D8 and/or DIRECT3D9.
-/** If you only want to use the software device or opengl this can be useful.
+/** If you only want to use the software device or opengl you can disable those defines.
 This switch is mostly disabled because people do not get the g++ compiler compile
-directX header files, and directX is only available on windows platforms. If you
+directX header files, and directX is only available on Windows platforms. If you
 are using Dev-Cpp, and want to compile this using a DX dev pack, you can define
 _IRR_COMPILE_WITH_DX9_DEV_PACK_. So you simply need to add something like this
 to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
@@ -352,7 +352,7 @@ defined. */
 //! Define _IRR_COMPILE_WITH_ZIP_ENCRYPTION_ if you want to read AES-encrypted ZIP archives
 #define _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
 //! Define _IRR_COMPILE_WITH_BZIP2_ if you want to support bzip2 compressed zip archives
-/** bzip2 is superior to the original zip file compression modes, but requires 
+/** bzip2 is superior to the original zip file compression modes, but requires
 a certain amount of memory for decompression and adds several files to the
 library. */
 #define _IRR_COMPILE_WITH_BZIP2_

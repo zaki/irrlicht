@@ -67,7 +67,7 @@ namespace scene
 			video::SColor high) : Threshold(threshold), Low(low), High(high) {}
 		void operator()(video::S3DVertex& vertex) const
 		{
-			vertex.Color = (vertex.Color.getAverage()>Threshold)?High:Low;
+			vertex.Color = ((u8)vertex.Color.getAverage()>Threshold)?High:Low;
 		}
 	private:
 		u8 Threshold;

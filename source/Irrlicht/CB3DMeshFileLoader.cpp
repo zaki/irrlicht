@@ -601,7 +601,7 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
 	core::vector3df oldScale[2];
 	CSkinnedMesh::SRotationKey *oldRotKey=0;
 	core::quaternion oldRot[2];
-	bool isFirst[3]={true};
+	bool isFirst[3]={true,true,true};
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
 	{
 		s32 frame;
