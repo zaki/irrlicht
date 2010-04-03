@@ -24,12 +24,6 @@ CArchiveLoaderMount::CArchiveLoaderMount( io::IFileSystem* fs)
 }
 
 
-//! destructor
-CArchiveLoaderMount::~CArchiveLoaderMount()
-{
-}
-
-
 //! returns true if the file maybe is able to be loaded by this class
 bool CArchiveLoaderMount::isALoadableFileFormat(const io::path& filename) const
 {
