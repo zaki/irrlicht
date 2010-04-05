@@ -186,6 +186,7 @@ namespace video
 						case EMF_NORMALIZE_NORMALS: material.NormalizeNormals = Material.NormalizeNormals; break;
 						case EMF_ANTI_ALIASING: material.AntiAliasing = Material.AntiAliasing; break;
 						case EMF_COLOR_MASK: material.ColorMask = Material.ColorMask; break;
+						case EMF_USE_MIP_MAPS: material.UseMipMaps = Material.UseMipMaps; break;
 						case EMF_BILINEAR_FILTER: material.TextureLayer[0].BilinearFilter = Material.TextureLayer[0].BilinearFilter; break;
 						case EMF_TRILINEAR_FILTER: material.TextureLayer[0].TrilinearFilter = Material.TextureLayer[0].TrilinearFilter; break;
 						case EMF_ANISOTROPIC_FILTER: material.TextureLayer[0].AnisotropicFilter = Material.TextureLayer[0].AnisotropicFilter; break;
