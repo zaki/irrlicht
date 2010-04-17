@@ -718,7 +718,7 @@ namespace video
 
 		struct SOccQuery
 		{
-			SOccQuery(scene::ISceneNode* node, const scene::IMesh* mesh=0) : Node(node), Mesh(mesh), ID(0), Result(~0), Run(~0)
+			SOccQuery(scene::ISceneNode* node, const scene::IMesh* mesh=0) : Node(node), Mesh(mesh), PID(0), Result(~0), Run(~0)
 			{
 				if (Node)
 					Node->grab();
@@ -726,7 +726,7 @@ namespace video
 					Mesh->grab();
 			}
 
-			SOccQuery(const SOccQuery& other) : Node(other.Node), Mesh(other.Mesh), ID(other.ID), Result(other.Result), Run(other.Run)
+			SOccQuery(const SOccQuery& other) : Node(other.Node), Mesh(other.Mesh), PID(other.PID), Result(other.Result), Run(other.Run)
 			{
 				if (Node)
 					Node->grab();
@@ -746,7 +746,7 @@ namespace video
 			{
 				Node=other.Node;
 				Mesh=other.Mesh;
-				ID=other.ID;
+				PID=other.PID;
 				Result=other.Result;
 				Run=other.Run;
 				if (Node)
@@ -763,7 +763,11 @@ namespace video
 
 			scene::ISceneNode* Node;
 			const scene::IMesh* Mesh;
-			void* ID;
+			union
+			{
+				void* PID;
+				unsigned int UID;
+			};
 			u32 Result;
 			u32 Run;
 		};
