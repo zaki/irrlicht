@@ -1239,8 +1239,8 @@ void COpenGLDriver::createOcclusionQuery(scene::ISceneNode* node,
 
 	CNullDriver::createOcclusionQuery(node, mesh);
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
-	if ((index != -1) && (OcclusionQueries[index].ID == 0))
-		extGlGenQueries(1, reinterpret_cast<GLuint*>(&OcclusionQueries[index].ID));
+	if ((index != -1) && (OcclusionQueries[index].UID == 0))
+		extGlGenQueries(1, &OcclusionQueries[index].UID);
 }
 
 
@@ -1250,8 +1250,8 @@ void COpenGLDriver::removeOcclusionQuery(scene::ISceneNode* node)
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
 	if (index != -1)
 	{
-		if (OcclusionQueries[index].ID != 0)
-			extGlDeleteQueries(1, reinterpret_cast<GLuint*>(&OcclusionQueries[index].ID));
+		if (OcclusionQueries[index].UID != 0)
+			extGlDeleteQueries(1, &OcclusionQueries[index].UID);
 		CNullDriver::removeOcclusionQuery(node);
 	}
 }
@@ -1268,16 +1268,16 @@ void COpenGLDriver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
 	if (index != -1)
 	{
-		if (OcclusionQueries[index].ID)
+		if (OcclusionQueries[index].UID)
 			extGlBeginQuery(
 #ifdef GL_ARB_occlusion_query
 				GL_SAMPLES_PASSED_ARB,
 #else
 				0,
 #endif
-				reinterpret_cast<GLuint>(OcclusionQueries[index].ID));
+				OcclusionQueries[index].UID);
 		CNullDriver::runOcclusionQuery(node,visible);
-		if (OcclusionQueries[index].ID)
+		if (OcclusionQueries[index].UID)
 			extGlEndQuery(
 #ifdef GL_ARB_occlusion_query
 				GL_SAMPLES_PASSED_ARB);
@@ -1302,7 +1302,7 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 			return;
 		GLint available = block?GL_TRUE:GL_FALSE;
 		if (!block)
-			extGlGetQueryObjectiv(reinterpret_cast<GLuint>(OcclusionQueries[index].ID),
+			extGlGetQueryObjectiv(OcclusionQueries[index].UID,
 #ifdef GL_ARB_occlusion_query
 						GL_QUERY_RESULT_AVAILABLE_ARB,
 #elif defined(GL_NV_occlusion_query)
@@ -1314,7 +1314,7 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 		testGLError();
 		if (available==GL_TRUE)
 		{
-			extGlGetQueryObjectiv(reinterpret_cast<GLuint>(OcclusionQueries[index].ID),
+			extGlGetQueryObjectiv(OcclusionQueries[index].UID,
 #ifdef GL_ARB_occlusion_query
 						GL_QUERY_RESULT_ARB,
 #elif defined(GL_NV_occlusion_query)
