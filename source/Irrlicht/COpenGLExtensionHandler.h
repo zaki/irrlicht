@@ -1502,7 +1502,7 @@ inline void COpenGLExtensionHandler::extGlGetProgramiv(GLuint program, GLenum ty
 	if (pGlGetProgramiv)
 		pGlGetProgramiv(program, type, param);
 #elif defined(GL_VERSION_2_0)
-	glGetShaderiv(program, type, param);
+	glGetProgramiv(program, type, param);
 #else
 	os::Printer::log("glGetProgramiv not supported", ELL_ERROR);
 #endif
