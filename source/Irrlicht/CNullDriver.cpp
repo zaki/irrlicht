@@ -2332,5 +2332,22 @@ core::dimension2du CNullDriver::getMaxTextureSize() const
 }
 
 
+//! Color conversion convenience function
+/** Convert an image (as array of pixels) from source to destination
+array, thereby converting the color format. The pixel size is
+determined by the color formats.
+\param sP Pointer to source
+\param sF Color format of source
+\param sN Number of pixels to convert, both array must be large enough
+\param dP Pointer to destination
+\param dF Color format of destination
+*/
+void CNullDriver::convertColor(const void* sP, ECOLOR_FORMAT sF, s32 sN,
+		void* dP, ECOLOR_FORMAT dF) const
+{
+	video::CColorConverter::convert_viaFormat(sP, sF, sN, dP, dF);
+}
+
+
 } // end namespace
 } // end namespace

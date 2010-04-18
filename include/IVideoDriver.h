@@ -1384,7 +1384,7 @@ namespace video
 		enabled or disabled. */
 		virtual void enableMaterial2D(bool enable=true) =0;
 
-		//! Returns the graphics card vendor name.
+		//! Get the graphics card vendor name.
 		virtual core::stringc getVendorInfo() =0;
 
 		//! Only used by the engine internally.
@@ -1399,8 +1399,21 @@ namespace video
 		\param flag Default behavior is to disable ZWrite, i.e. false. */
 		virtual void setAllowZWriteOnTransparent(bool flag) =0;
 
-		//! Returns the maximum texture size supported.
+		//! Get the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const =0;
+
+		//! Color conversion convenience function
+		/** Convert an image (as array of pixels) from source to destination
+		array, thereby converting the color format. The pixel size is
+		determined by the color formats.
+		\param sP Pointer to source
+		\param sF Color format of source
+		\param sN Number of pixels to convert, both array must be large enough
+		\param dP Pointer to destination
+		\param dF Color format of destination
+		*/
+		virtual void convertColor(const void* sP, ECOLOR_FORMAT sF, s32 sN,
+				void* dP, ECOLOR_FORMAT dF) const =0;
 	};
 
 } // end namespace video
