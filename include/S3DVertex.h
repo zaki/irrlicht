@@ -89,6 +89,15 @@ struct S3DVertex
 	{
 		return EVT_STANDARD;
 	}
+
+	S3DVertex getInterpolated(const S3DVertex& other, f32 d)
+	{
+		d = core::clamp(d, 0.0f, 1.0f);
+		return S3DVertex(Pos.getInterpolated(other.Pos, d),
+				Normal.getInterpolated(other.Normal, d),
+				Color.getInterpolated(other.Color, d),
+				TCoords.getInterpolated(other.TCoords, d));
+	}
 };
 
 
@@ -158,6 +167,16 @@ struct S3DVertex2TCoords : public S3DVertex
 	{
 		return EVT_2TCOORDS;
 	}
+
+	S3DVertex2TCoords getInterpolated(const S3DVertex2TCoords& other, f32 d)
+	{
+		d = core::clamp(d, 0.0f, 1.0f);
+		return S3DVertex2TCoords(Pos.getInterpolated(other.Pos, d),
+				Normal.getInterpolated(other.Normal, d),
+				Color.getInterpolated(other.Color, d),
+				TCoords.getInterpolated(other.TCoords, d),
+				TCoords2.getInterpolated(other.TCoords2, d));
+	}
 };
 
 
@@ -218,6 +237,17 @@ struct S3DVertexTangents : public S3DVertex
 	E_VERTEX_TYPE getType() const
 	{
 		return EVT_TANGENTS;
+	}
+
+	S3DVertexTangents getInterpolated(const S3DVertexTangents& other, f32 d)
+	{
+		d = core::clamp(d, 0.0f, 1.0f);
+		return S3DVertexTangents(Pos.getInterpolated(other.Pos, d),
+				Normal.getInterpolated(other.Normal, d),
+				Color.getInterpolated(other.Color, d),
+				TCoords.getInterpolated(other.TCoords, d),
+				Tangent.getInterpolated(other.Tangent, d),
+				Binormal.getInterpolated(other.Binormal, d));
 	}
 };
 
