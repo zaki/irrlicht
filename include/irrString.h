@@ -907,7 +907,7 @@ public:
 			array[pos++] = array[i];
 		}
 		used -= found;
-		array[used] = 0;
+		array[used-1] = 0;
 	}
 
 
@@ -939,7 +939,7 @@ public:
 			array[pos++] = array[i];
 		}
 		used -= found;
-		array[used] = 0;
+		array[used-1] = 0;
 	}
 
 
@@ -969,7 +969,7 @@ public:
 			array[pos++] = array[i];
 		}
 		used -= found;
-		array[used] = 0;
+		array[used-1] = 0;
 	}
 
 
@@ -1019,8 +1019,8 @@ public:
 		// terminate
 		if ( allocated > 0 )
 		{
-			used = allocated - 1;
-			array[used] = 0;
+			used = allocated;
+			array[used-1] = 0;
 		}
 		else
 		{
