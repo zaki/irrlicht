@@ -481,6 +481,12 @@ public:
 		return used-1;
 	}
 
+	//! Informs if the string is empty or not.
+	//! \return True if the string is empty, false if not.
+	bool empty() const
+	{
+		return (size() == 0);
+	}
 
 	//! Returns character string
 	/** \return pointer to C-style NUL terminated string. */
@@ -1055,7 +1061,7 @@ public:
 				// No match found, just copy characters.
 				array[i] = array[pos];
 			}
-			array[i] = 0;
+			array[i-1] = 0;
 			used = i;
 			
 			return *this;
