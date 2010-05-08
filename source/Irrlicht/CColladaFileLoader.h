@@ -131,9 +131,10 @@ struct SColladaMaterial
 //! Collada effect (materials, shaders, and programs)
 struct SColladaEffect
 {
-	video::SMaterial Mat;
 	core::stringc Id;
 	f32 Transparency;
+	core::array<core::stringc> Textures;
+	video::SMaterial Mat;
 
 	inline bool operator< (const SColladaEffect & other) const
 	{
@@ -355,7 +356,9 @@ private:
 	core::array<SColladaMaterial> Materials;
 	core::array<SColladaInput> Inputs;
 	core::array<SColladaEffect> Effects;
+	//! meshbuffer reference ("geomid/matname") -> index into MeshesToBind
 	core::map<core::stringc,u32> MaterialsToBind;
+	//! Array of buffers for each material binding
 	core::array< core::array<irr::scene::IMeshBuffer*> > MeshesToBind;
 	io::CAttributes Parameters;
 

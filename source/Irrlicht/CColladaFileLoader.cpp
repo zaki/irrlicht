@@ -1438,8 +1438,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 								if (reader->getNodeType() == io::EXN_ELEMENT &&
 									textureNodeName == reader->getNodeName())
 								{
-									const core::stringc tname = reader->getAttributeValue("texture");
-									effect->Mat.setTexture(0, getTextureFromImage(tname));
+									effect->Textures.push_back(reader->getAttributeValue("texture"));
 									break;
 								}
 								else
@@ -1548,6 +1547,10 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 
 const SColladaMaterial* CColladaFileLoader::findMaterial(const core::stringc& materialName)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA find material", materialName);
+	#endif
+
 	// do a quick lookup in the materials
 	SColladaMaterial matToFind;
 	matToFind.Id = materialName;
@@ -1565,6 +1568,7 @@ const SColladaMaterial* CColladaFileLoader::findMaterial(const core::stringc& ma
 		{
 			// found the effect, instantiate by copying into the material
 			Materials[mat].Mat = Effects[effect].Mat;
+			Materials[mat].Mat.setTexture(0, getTextureFromImage(Effects[effect].Textures[0]));
 			Materials[mat].Transparency = Effects[effect].Transparency;
 			// and indicate the material is instantiated by removing the effect ref
 			Materials[mat].InstanceEffectId = "";
@@ -2749,7 +2753,7 @@ core::stringc CColladaFileLoader::readId(io::IXMLReaderUTF8* reader)
 video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 {
 	#ifdef COLLADA_READER_DEBUG
-	os::Printer::log("COLLADA searching texture", uri.c_str());
+	os::Printer::log("COLLADA searching texture", uri);
 	#endif
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	for (;;)
