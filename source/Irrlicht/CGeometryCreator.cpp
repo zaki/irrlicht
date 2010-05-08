@@ -329,11 +329,13 @@ IMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 		for (u32 j=0; j<buffer->getVertexCount(); ++j)
 			buffer->getPosition(j).Y += cylinderHeight;
 		buffer->setDirty(EBT_VERTEX);
+		buffer->recalculateBoundingBox();
 		mesh->addMeshBuffer(buffer);
 	}
 	mesh2->drop();
 	mesh->setHardwareMappingHint(EHM_STATIC);
 
+	mesh->recalculateBoundingBox();
 	return mesh;
 }
 

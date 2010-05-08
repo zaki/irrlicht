@@ -778,11 +778,14 @@ void COgreMeshFileLoader::composeObject(void)
 			{
 				for (u32 k=0; k<Meshes[i].SubMeshes[j].BoneAssignments.size(); ++k)
 				{
-					OgreBoneAssignment& ba = Meshes[i].SubMeshes[j].BoneAssignments[k];
-					ISkinnedMesh::SWeight* w = m->addWeight(m->getAllJoints()[ba.BoneID]);
-					w->strength=ba.Weight;
-					w->vertex_id=ba.VertexID;
-					w->buffer_id=bufCount;
+					const OgreBoneAssignment& ba = Meshes[i].SubMeshes[j].BoneAssignments[k];
+					if (ba.BoneID<m->getJointCount())
+					{
+						ISkinnedMesh::SWeight* w = m->addWeight(m->getAllJoints()[ba.BoneID]);
+						w->strength=ba.Weight;
+						w->vertex_id=ba.VertexID;
+						w->buffer_id=bufCount;
+					}
 				}
 				++bufCount;
 			}

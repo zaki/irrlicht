@@ -3696,6 +3696,10 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 			if (tex)
 			{
 				success = static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
+				if ( !success )
+				{
+					removeDepthTexture(tex);
+				}
 				tex->drop();
 			}
 			rtt->drop();
