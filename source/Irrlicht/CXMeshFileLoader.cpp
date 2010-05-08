@@ -449,7 +449,6 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 
 	readUntilEndOfLine();
 	FilePath = FileSystem->getFileDir(file->getFileName()) + "/";
-	FilePath += '/';
 
 	return true;
 }

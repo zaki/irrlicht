@@ -26,9 +26,9 @@ namespace gui
 		//! gets the maximum value of the scrollbar.
 		virtual s32 getMax() const = 0;
 
-		//! sets the maximum value of the scrollbar.
-		virtual void setMin(s32 max) = 0;
-		//! gets the maximum value of the scrollbar.
+		//! sets the minimum value of the scrollbar.
+		virtual void setMin(s32 min) = 0;
+		//! gets the minimum value of the scrollbar.
 		virtual s32 getMin() const = 0;
 
 		//! gets the small step value
