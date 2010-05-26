@@ -21,11 +21,11 @@
 #include "CMemoryFile.h"
 #include "CLimitReadFile.h"
 
-
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
 		#include <direct.h> // for _chdir
 		#include <io.h> // for _access
+		#include <tchar.h>
 	#endif
 #else
 	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
@@ -613,7 +613,7 @@ IFileList* CFileSystem::createFileList()
 		struct _tfinddata_t c_file;
 		long hFile;
 
-		if( (hFile = _tfindfirst( __TEXT"*", &c_file )) != -1L )
+		if( (hFile = _tfindfirst( _T("*"), &c_file )) != -1L )
 		{
 			do
 			{
