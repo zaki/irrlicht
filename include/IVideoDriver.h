@@ -31,7 +31,9 @@ namespace io
 namespace scene
 {
 	class IMeshBuffer;
+	class IMesh;
 	class IMeshManipulator;
+	class ISceneNode;
 } // end namespace scene
 
 namespace video
@@ -184,6 +186,7 @@ namespace video
 						case EMF_NORMALIZE_NORMALS: material.NormalizeNormals = Material.NormalizeNormals; break;
 						case EMF_ANTI_ALIASING: material.AntiAliasing = Material.AntiAliasing; break;
 						case EMF_COLOR_MASK: material.ColorMask = Material.ColorMask; break;
+						case EMF_USE_MIP_MAPS: material.UseMipMaps = Material.UseMipMaps; break;
 						case EMF_BILINEAR_FILTER: material.TextureLayer[0].BilinearFilter = Material.TextureLayer[0].BilinearFilter; break;
 						case EMF_TRILINEAR_FILTER: material.TextureLayer[0].TrilinearFilter = Material.TextureLayer[0].TrilinearFilter; break;
 						case EMF_ANISOTROPIC_FILTER: material.TextureLayer[0].AnisotropicFilter = Material.TextureLayer[0].AnisotropicFilter; break;
@@ -428,6 +431,43 @@ namespace video
 
 		//! Remove all hardware buffers
 		virtual void removeAllHardwareBuffers() =0;
+
+		//! Create occlusion query.
+		/** Use node for identification and mesh for occlusion test. */
+		virtual void createOcclusionQuery(scene::ISceneNode* node,
+				const scene::IMesh* mesh=0) =0;
+
+		//! Remove occlusion query.
+		virtual void removeOcclusionQuery(scene::ISceneNode* node) =0;
+
+		//! Remove all occlusion queries.
+		virtual void removeAllOcclusionQueries() =0;
+
+		//! Run occlusion query. Draws mesh stored in query.
+		/** If the mesh shall not be rendered visible, use
+		overrideMaterial to disable the color and depth buffer. */
+		virtual void runOcclusionQuery(scene::ISceneNode* node, bool visible=false) =0;
+
+		//! Run all occlusion queries. Draws all meshes stored in queries.
+		/** If the meshes shall not be rendered visible, use
+		overrideMaterial to disable the color and depth buffer. */
+		virtual void runAllOcclusionQueries(bool visible=false) =0;
+
+		//! Update occlusion query. Retrieves results from GPU.
+		/** If the query shall not block, set the flag to false.
+		Update might not occur in this case, though */
+		virtual void updateOcclusionQuery(scene::ISceneNode* node, bool block=true) =0;
+
+		//! Update all occlusion queries. Retrieves results from GPU.
+		/** If the query shall not block, set the flag to false.
+		Update might not occur in this case, though */
+		virtual void updateAllOcclusionQueries(bool block=true) =0;
+
+		//! Return query result.
+		/** Return value is the number of visible pixels/fragments.
+		The value is a safe approximation, i.e. can be larger than the
+		actual value of pixels. */
+		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const =0;
 
 		//! Sets a boolean alpha channel on the texture based on a color key.
 		/** This makes the texture fully transparent at the texels where
@@ -1066,9 +1106,9 @@ namespace video
 		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled=true) =0;
 
 		//! Returns if a texture creation flag is enabled or disabled.
-		/** You can change this value using setTextureCreationMode().
+		/** You can change this value using setTextureCreationFlag().
 		\param flag Texture creation flag.
-		\return The current texture creation mode. */
+		\return The current texture creation flag enabled mode. */
 		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const =0;
 
 		//! Creates a software image from a file.
@@ -1106,8 +1146,8 @@ namespace video
 		/** Requires that there is a suitable image writer registered
 		for writing the image.
 		\param image Image to write.
-		\param file  An already open io::IWriteFile object. The name will be used to determine
-					the appropriate image writer to use.
+		\param file  An already open io::IWriteFile object. The name
+		will be used to determine the appropriate image writer to use.
 		\param param Control parameter for the backend (e.g. compression
 		level).
 		\return True on successful write. */
@@ -1344,7 +1384,7 @@ namespace video
 		enabled or disabled. */
 		virtual void enableMaterial2D(bool enable=true) =0;
 
-		//! Returns the graphics card vendor name.
+		//! Get the graphics card vendor name.
 		virtual core::stringc getVendorInfo() =0;
 
 		//! Only used by the engine internally.
@@ -1359,8 +1399,21 @@ namespace video
 		\param flag Default behavior is to disable ZWrite, i.e. false. */
 		virtual void setAllowZWriteOnTransparent(bool flag) =0;
 
-		//! Returns the maximum texture size supported.
+		//! Get the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const =0;
+
+		//! Color conversion convenience function
+		/** Convert an image (as array of pixels) from source to destination
+		array, thereby converting the color format. The pixel size is
+		determined by the color formats.
+		\param sP Pointer to source
+		\param sF Color format of source
+		\param sN Number of pixels to convert, both array must be large enough
+		\param dP Pointer to destination
+		\param dF Color format of destination
+		*/
+		virtual void convertColor(const void* sP, ECOLOR_FORMAT sF, s32 sN,
+				void* dP, ECOLOR_FORMAT dF) const =0;
 	};
 
 } // end namespace video

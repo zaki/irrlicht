@@ -36,7 +36,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 	IGUISkin* skin = Environment->getSkin();
 	const s32 s = skin->getSize(EGDS_SCROLLBAR_SIZE);
 
-	ScrollBar = new CGUIScrollBar(false, Environment, this, 0,
+	ScrollBar = new CGUIScrollBar(false, Environment, this, -1,
 		core::rect<s32>(RelativeRect.getWidth() - s, 0, RelativeRect.getWidth(), RelativeRect.getHeight()),
 		!clip);
 	ScrollBar->setSubElement(true);
@@ -450,6 +450,8 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 
 	recalculateScrollPos();
 
+	gui::EGUI_EVENT_TYPE eventType = (Selected == oldSelected && now < selectTime + 500) ? EGET_LISTBOX_SELECTED_AGAIN : EGET_LISTBOX_CHANGED;
+	selectTime = now;
 	// post the news
 	if (Parent && !onlyHover)
 	{
@@ -457,10 +459,9 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
 		event.GUIEvent.Element = 0;
-		event.GUIEvent.EventType = (Selected == oldSelected && now < selectTime + 500) ? EGET_LISTBOX_SELECTED_AGAIN : EGET_LISTBOX_CHANGED;
+		event.GUIEvent.EventType = eventType;
 		Parent->OnEvent(event);
 	}
-	selectTime = now;
 }
 
 

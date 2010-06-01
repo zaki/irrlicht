@@ -265,7 +265,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 			{
 				c8 textureName[64];
 				// create texture for this block
-				video::IImage* img = new video::CImage(texture->getColorFormat(), texture->getDimension());
+				video::IImage* img = new video::CImage(texture->getColorFormat(), core::dimension2d<u32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y)));
 				texture->copyTo(img, core::position2di(0,0), core::recti(
 					core::position2d<s32>(core::floor32(processed.X*thRel.X), core::floor32(processed.Y*thRel.Y)),
 					core::dimension2d<u32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y))), 0);
@@ -329,11 +329,13 @@ IMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 		for (u32 j=0; j<buffer->getVertexCount(); ++j)
 			buffer->getPosition(j).Y += cylinderHeight;
 		buffer->setDirty(EBT_VERTEX);
+		buffer->recalculateBoundingBox();
 		mesh->addMeshBuffer(buffer);
 	}
 	mesh2->drop();
 	mesh->setHardwareMappingHint(EHM_STATIC);
 
+	mesh->recalculateBoundingBox();
 	return mesh;
 }
 

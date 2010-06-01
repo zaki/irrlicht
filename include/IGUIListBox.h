@@ -78,7 +78,7 @@ namespace gui
 		//! sets the selected item. Set this to 0 if no item should be selected
 		virtual void setSelected(const wchar_t *item) = 0;
 
-		//! set whether the listbox should scroll to new or newly selected items
+		//! set whether the listbox should scroll to newly selected items
 		virtual void setAutoScrollEnabled(bool scroll) = 0;
 
 		//! returns true if automatic scrolling is enabled, false if not.

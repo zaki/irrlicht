@@ -165,7 +165,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		FirstUpdate = false;
 	}
 
-	u32 diff = timeMs - LastTime;
+	const u32 diff = timeMs - LastTime;
 	LastTime = timeMs;
 
 	CollisionResultPosition = Object->getPosition();

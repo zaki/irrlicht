@@ -39,7 +39,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
-	HDc(0), Device(device), Window(static_cast<HWND>(params.WindowId)),
+	HDc(0), Window(static_cast<HWND>(params.WindowId)), Device(device),
 	DeviceType(EIDT_WIN32)
 {
 	#ifdef _DEBUG
@@ -127,6 +127,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	if (!temporary_wnd)
 	{
 		os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
+		UnregisterClass(ClassName, lhInstance);
 		return false;
 	}
 
@@ -197,6 +198,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			os::Printer::log("Cannot create a GL device context", "No suitable format for temporary window.", ELL_ERROR);
 			ReleaseDC(temporary_wnd, HDc);
 			DestroyWindow(temporary_wnd);
+			UnregisterClass(ClassName, lhInstance);
 			return false;
 		}
 
@@ -213,6 +215,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		os::Printer::log("Cannot create a temporary GL rendering context.", ELL_ERROR);
 		ReleaseDC(temporary_wnd, HDc);
 		DestroyWindow(temporary_wnd);
+		UnregisterClass(ClassName, lhInstance);
 		return false;
 	}
 
@@ -221,13 +224,14 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	data.OpenGLWin32.HRc = hrc;
 	data.OpenGLWin32.HWnd = temporary_wnd;
 
-	
+
 	if (!changeRenderContext(data, device))
 	{
 		os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
 		wglDeleteContext(hrc);
 		ReleaseDC(temporary_wnd, HDc);
 		DestroyWindow(temporary_wnd);
+		UnregisterClass(ClassName, lhInstance);
 		return false;
 	}
 
@@ -318,6 +322,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	wglDeleteContext(hrc);
 	ReleaseDC(temporary_wnd, HDc);
 	DestroyWindow(temporary_wnd);
+	UnregisterClass(ClassName, lhInstance);
 
 	// get hdc
 	HDc=GetDC(Window);
@@ -405,7 +410,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	ExposedData.OpenGLWin32.HWnd = Window;
 
 	// activate rendering context
-	
+
 	if (!changeRenderContext(ExposedData, device))
 	{
 		os::Printer::log("Cannot activate GL rendering context", ELL_ERROR);
@@ -586,6 +591,8 @@ COpenGLDriver::~COpenGLDriver()
 	// textures manually before releasing the dc. Oh how I love this.
 
 	deleteAllTextures();
+	removeAllOcclusionQueries();
+	removeAllHardwareBuffers();
 
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 	if (DeviceType == EIDT_WIN32)
@@ -925,46 +932,52 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	const E_VERTEX_TYPE vType=mb->getVertexType();
 	const u32 vertexSize = getVertexPitchFromType(vType);
 
-	//buffer vertex data, and convert colours...
-	core::array<c8> buffer(vertexSize * vertexCount);
-	memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
-
-	// in order to convert the colors into opengl format (RGBA)
-	switch (vType)
+	const c8* vbuf = static_cast<const c8*>(vertices);
+	core::array<c8> buffer;
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 	{
-		case EVT_STANDARD:
+		//buffer vertex data, and convert colours...
+		buffer.set_used(vertexSize * vertexCount);
+		memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
+		vbuf = buffer.const_pointer();
+
+		// in order to convert the colors into opengl format (RGBA)
+		switch (vType)
 		{
-			S3DVertex* pb = reinterpret_cast<S3DVertex*>(buffer.pointer());
-			const S3DVertex* po = static_cast<const S3DVertex*>(vertices);
-			for (u32 i=0; i<vertexCount; i++)
+			case EVT_STANDARD:
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				S3DVertex* pb = reinterpret_cast<S3DVertex*>(buffer.pointer());
+				const S3DVertex* po = static_cast<const S3DVertex*>(vertices);
+				for (u32 i=0; i<vertexCount; i++)
+				{
+					po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				}
 			}
-		}
-		break;
-		case EVT_2TCOORDS:
-		{
-			S3DVertex2TCoords* pb = reinterpret_cast<S3DVertex2TCoords*>(buffer.pointer());
-			const S3DVertex2TCoords* po = static_cast<const S3DVertex2TCoords*>(vertices);
-			for (u32 i=0; i<vertexCount; i++)
+			break;
+			case EVT_2TCOORDS:
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				S3DVertex2TCoords* pb = reinterpret_cast<S3DVertex2TCoords*>(buffer.pointer());
+				const S3DVertex2TCoords* po = static_cast<const S3DVertex2TCoords*>(vertices);
+				for (u32 i=0; i<vertexCount; i++)
+				{
+					po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				}
 			}
-		}
-		break;
-		case EVT_TANGENTS:
-		{
-			S3DVertexTangents* pb = reinterpret_cast<S3DVertexTangents*>(buffer.pointer());
-			const S3DVertexTangents* po = static_cast<const S3DVertexTangents*>(vertices);
-			for (u32 i=0; i<vertexCount; i++)
+			break;
+			case EVT_TANGENTS:
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				S3DVertexTangents* pb = reinterpret_cast<S3DVertexTangents*>(buffer.pointer());
+				const S3DVertexTangents* po = static_cast<const S3DVertexTangents*>(vertices);
+				for (u32 i=0; i<vertexCount; i++)
+				{
+					po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
+				}
 			}
-		}
-		break;
-		default:
-		{
-			return false;
+			break;
+			default:
+			{
+				return false;
+			}
 		}
 	}
 
@@ -987,17 +1000,17 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	//copy data to graphics card
 	glGetError(); // clear error storage
 	if (!newBuffer)
-		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, buffer.const_pointer());
+		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, vbuf);
 	else
 	{
 		HWBuffer->vbo_verticesSize = vertexCount*vertexSize;
 
 		if (HWBuffer->Mapped_Vertex==scene::EHM_STATIC)
-			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STATIC_DRAW);
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, vbuf, GL_STATIC_DRAW);
 		else if (HWBuffer->Mapped_Vertex==scene::EHM_DYNAMIC)
-			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_DYNAMIC_DRAW);
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, vbuf, GL_DYNAMIC_DRAW);
 		else //scene::EHM_STREAM
-			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STREAM_DRAW);
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, vbuf, GL_STREAM_DRAW);
 	}
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -1216,6 +1229,122 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 }
 
 
+//! Create occlusion query.
+/** Use node for identification and mesh for occlusion test. */
+void COpenGLDriver::createOcclusionQuery(scene::ISceneNode* node,
+		const scene::IMesh* mesh)
+{
+	if (!queryFeature(EVDF_OCCLUSION_QUERY))
+		return;
+
+	CNullDriver::createOcclusionQuery(node, mesh);
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if ((index != -1) && (OcclusionQueries[index].UID == 0))
+		extGlGenQueries(1, &OcclusionQueries[index].UID);
+}
+
+
+//! Remove occlusion query.
+void COpenGLDriver::removeOcclusionQuery(scene::ISceneNode* node)
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		if (OcclusionQueries[index].UID != 0)
+			extGlDeleteQueries(1, &OcclusionQueries[index].UID);
+		CNullDriver::removeOcclusionQuery(node);
+	}
+}
+
+
+//! Run occlusion query. Draws mesh stored in query.
+/** If the mesh shall not be rendered visible, use
+overrideMaterial to disable the color and depth buffer. */
+void COpenGLDriver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
+{
+	if (!node)
+		return;
+
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		if (OcclusionQueries[index].UID)
+			extGlBeginQuery(
+#ifdef GL_ARB_occlusion_query
+				GL_SAMPLES_PASSED_ARB,
+#else
+				0,
+#endif
+				OcclusionQueries[index].UID);
+		CNullDriver::runOcclusionQuery(node,visible);
+		if (OcclusionQueries[index].UID)
+			extGlEndQuery(
+#ifdef GL_ARB_occlusion_query
+				GL_SAMPLES_PASSED_ARB);
+#else
+				0);
+#endif
+		testGLError();
+	}
+}
+
+
+//! Update occlusion query. Retrieves results from GPU.
+/** If the query shall not block, set the flag to false.
+Update might not occur in this case, though */
+void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+	{
+		// not yet started
+		if (OcclusionQueries[index].Run==u32(~0))
+			return;
+		GLint available = block?GL_TRUE:GL_FALSE;
+		if (!block)
+			extGlGetQueryObjectiv(OcclusionQueries[index].UID,
+#ifdef GL_ARB_occlusion_query
+						GL_QUERY_RESULT_AVAILABLE_ARB,
+#elif defined(GL_NV_occlusion_query)
+						GL_PIXEL_COUNT_AVAILABLE_NV,
+#else
+						0,
+#endif
+						&available);
+		testGLError();
+		if (available==GL_TRUE)
+		{
+			extGlGetQueryObjectiv(OcclusionQueries[index].UID,
+#ifdef GL_ARB_occlusion_query
+						GL_QUERY_RESULT_ARB,
+#elif defined(GL_NV_occlusion_query)
+						GL_PIXEL_COUNT_NV,
+#else
+						0,
+#endif
+						&available);
+			if (queryFeature(EVDF_OCCLUSION_QUERY))
+				OcclusionQueries[index].Result = available;
+		}
+		testGLError();
+	}
+}
+
+
+//! Return query result.
+/** Return value is the number of visible pixels/fragments.
+The value is a safe approximation, i.e. can be larger than the
+actual value of pixels. */
+u32 COpenGLDriver::getOcclusionQueryResult(scene::ISceneNode* node) const
+{
+	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
+	if (index != -1)
+		return OcclusionQueries[index].Result;
+	else
+		return ~0;
+}
+
+
 // small helper function to create vertex buffer object adress offsets
 static inline u8* buffer_offset(const long offset)
 {
@@ -1236,7 +1365,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
-	if (vertices)
+	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		createColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
@@ -1253,7 +1382,27 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		glEnableClientState(GL_NORMAL_ARRAY);
 
 	if (vertices)
-		glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	{
+#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
+		if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		{
+			switch (vType)
+			{
+				case EVT_STANDARD:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+					break;
+				case EVT_2TCOORDS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
+					break;
+				case EVT_TANGENTS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Color);
+					break;
+			}
+		}
+		else
+#endif
+			glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
 
 	switch (vType)
 	{
@@ -1527,7 +1676,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
-	if (vertices)
+	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		createColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
@@ -1553,7 +1702,27 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (vertices)
-		glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	{
+#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
+		if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		{
+			switch (vType)
+			{
+				case EVT_STANDARD:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+					break;
+				case EVT_2TCOORDS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
+					break;
+				case EVT_TANGENTS:
+					glColorPointer(GL_BGRA, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Color);
+					break;
+			}
+		}
+		else
+#endif
+			glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
 
 	switch (vType)
 	{
@@ -2275,6 +2444,7 @@ bool COpenGLDriver::testGLError()
 		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", ELL_ERROR); break;
 #endif
 	};
+	_IRR_DEBUG_BREAK_IF(true);
 	return true;
 #else
 	return false;
@@ -2575,7 +2745,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 			(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
-		if (material.getTexture(i) && material.getTexture(i)->hasMipMaps())
+		if (material.getTexture(i) && material.getTexture(i)->hasMipMaps() && material.UseMipMaps)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
 				material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
@@ -3195,26 +3365,8 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			glEnable(GL_DEPTH_CLAMP_NV);
 #endif
 		glDisable(GL_CULL_FACE);
-		if (!zfail)
+		if (zfail)
 		{
-			// ZPASS Method
-
-			extGlActiveStencilFace(GL_BACK);
-				glStencilOp(GL_KEEP, GL_KEEP, decr);
-			glStencilMask(~0);
-			glStencilFunc(GL_ALWAYS, 0, ~0);
-
-			extGlActiveStencilFace(GL_FRONT);
-			glStencilOp(GL_KEEP, GL_KEEP, incr);
-			glStencilMask(~0);
-			glStencilFunc(GL_ALWAYS, 0, ~0);
-
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		else
-		{
-			// ZFAIL Method
-
 			extGlActiveStencilFace(GL_BACK);
 			glStencilOp(GL_KEEP, incr, GL_KEEP);
 			glStencilMask(~0);
@@ -3222,65 +3374,67 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 
 			extGlActiveStencilFace(GL_FRONT);
 			glStencilOp(GL_KEEP, decr, GL_KEEP);
+		}
+		else // zpass
+		{
+			extGlActiveStencilFace(GL_BACK);
+			glStencilOp(GL_KEEP, GL_KEEP, decr);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
-			glDrawArrays(GL_TRIANGLES,0,count);
+			extGlActiveStencilFace(GL_FRONT);
+			glStencilOp(GL_KEEP, GL_KEEP, incr);
 		}
+		glStencilMask(~0);
+		glStencilFunc(GL_ALWAYS, 0, ~0);
+		glDrawArrays(GL_TRIANGLES,0,count);
+#ifdef GL_NV_depth_clamp
+		if (FeatureAvailable[IRR_NV_depth_clamp])
+			glDisable(GL_DEPTH_CLAMP_NV);
+#endif
+		glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
 	}
 	else
 #endif
 	if (FeatureAvailable[IRR_ATI_separate_stencil])
 	{
 		glDisable(GL_CULL_FACE);
-		if (!zfail)
+		if (zfail)
 		{
-			// ZPASS Method
-
-			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, decr);
-			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, incr);
-			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
-			glStencilMask(~0);
-
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		else
-		{
-			// ZFAIL Method
-
 			extGlStencilOpSeparate(GL_BACK, GL_KEEP, incr, GL_KEEP);
 			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, decr, GL_KEEP);
-			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
-
-			glDrawArrays(GL_TRIANGLES,0,count);
 		}
+		else // zpass
+		{
+			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, decr);
+			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, incr);
+		}
+		extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
+		glStencilMask(~0);
+		glDrawArrays(GL_TRIANGLES,0,count);
 	}
 	else
 #endif
 	{
 		glEnable(GL_CULL_FACE);
-		if (!zfail)
+		if (zfail)
 		{
-			// ZPASS Method
+			glCullFace(GL_FRONT);
+			glStencilOp(GL_KEEP, incr, GL_KEEP);
+			glDrawArrays(GL_TRIANGLES,0,count);
 
+			glCullFace(GL_BACK);
+			glStencilOp(GL_KEEP, decr, GL_KEEP);
+			glDrawArrays(GL_TRIANGLES,0,count);
+		}
+		else // zpass
+		{
 			glCullFace(GL_BACK);
 			glStencilOp(GL_KEEP, GL_KEEP, incr);
 			glDrawArrays(GL_TRIANGLES,0,count);
 
 			glCullFace(GL_FRONT);
 			glStencilOp(GL_KEEP, GL_KEEP, decr);
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		else
-		{
-			// ZFAIL Method
-
-			glStencilOp(GL_KEEP, incr, GL_KEEP);
-			glCullFace(GL_FRONT);
-			glDrawArrays(GL_TRIANGLES,0,count);
-
-			glStencilOp(GL_KEEP, decr, GL_KEEP);
-			glCullFace(GL_BACK);
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
 	}
@@ -3542,6 +3696,10 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 			if (tex)
 			{
 				success = static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
+				if ( !success )
+				{
+					removeDepthTexture(tex);
+				}
 				tex->drop();
 			}
 			rtt->drop();
@@ -3758,7 +3916,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 		{
 			if (FeatureAvailable[IRR_EXT_draw_buffers2])
 			{
-				extGlColorMaskIndexed(i, 
+				extGlColorMaskIndexed(i,
 					(targets[i].ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,

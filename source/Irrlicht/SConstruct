@@ -3,7 +3,7 @@ import sys
 
 USE_GCC = 1;
 NDEBUG = 1;
-PROFILE = 1;
+PROFILE = 0;
 
 APPLICATION_NAME = 'Irrlicht';
 LIBRARIES = ['gdi32', 'opengl32', 'd3dx9d', 'winmm'];
@@ -27,7 +27,7 @@ IRRMESHWRITER = ['CColladaMeshWriter.cpp', 'CIrrMeshWriter.cpp', 'COBJMeshWriter
 
 IRRMESHOBJ = IRRMESHLOADER + IRRMESHWRITER + ['CSkinnedMesh.cpp', 'CBoneSceneNode.cpp', 'CMeshSceneNode.cpp', 'CAnimatedMeshSceneNode.cpp', 'CAnimatedMeshMD2.cpp', 'CAnimatedMeshMD3.cpp', 'CQ3LevelMesh.cpp', 'CQuake3ShaderSceneNode.cpp'];
 
-IRROBJ = ['CBillboardSceneNode.cpp', 'CCameraSceneNode.cpp', 'CDummyTransformationSceneNode.cpp', 'CEmptySceneNode.cpp', 'CGeometryCreator.cpp', 'CLightSceneNode.cpp', 'CMeshManipulator.cpp', 'CMetaTriangleSelector.cpp', 'COctTreeSceneNode.cpp', 'COctTreeTriangleSelector.cpp', 'CSceneCollisionManager.cpp', 'CSceneManager.cpp', 'CShadowVolumeSceneNode.cpp', 'CSkyBoxSceneNode.cpp', 'CSkyDomeSceneNode.cpp', 'CTerrainSceneNode.cpp', 'CTerrainTriangleSelector.cpp', 'CVolumeLightSceneNode.cpp', 'CCubeSceneNode.cpp', 'CSphereSceneNode.cpp', 'CTextSceneNode.cpp', 'CTriangleBBSelector.cpp', 'CTriangleSelector.cpp', 'CWaterSurfaceSceneNode.cpp', 'CMeshCache.cpp', 'CDefaultSceneNodeAnimatorFactory.cpp', 'CDefaultSceneNodeFactory.cpp'];
+IRROBJ = ['CBillboardSceneNode.cpp', 'CCameraSceneNode.cpp', 'CDummyTransformationSceneNode.cpp', 'CEmptySceneNode.cpp', 'CGeometryCreator.cpp', 'CLightSceneNode.cpp', 'CMeshManipulator.cpp', 'CMetaTriangleSelector.cpp', 'COctreeSceneNode.cpp', 'COctreeTriangleSelector.cpp', 'CSceneCollisionManager.cpp', 'CSceneManager.cpp', 'CShadowVolumeSceneNode.cpp', 'CSkyBoxSceneNode.cpp', 'CSkyDomeSceneNode.cpp', 'CTerrainSceneNode.cpp', 'CTerrainTriangleSelector.cpp', 'CVolumeLightSceneNode.cpp', 'CCubeSceneNode.cpp', 'CSphereSceneNode.cpp', 'CTextSceneNode.cpp', 'CTriangleBBSelector.cpp', 'CTriangleSelector.cpp', 'CWaterSurfaceSceneNode.cpp', 'CMeshCache.cpp', 'CDefaultSceneNodeAnimatorFactory.cpp', 'CDefaultSceneNodeFactory.cpp'];
 
 IRRPARTICLEOBJ = ['CParticleAnimatedMeshSceneNodeEmitter.cpp', 'CParticleBoxEmitter.cpp', 'CParticleCylinderEmitter.cpp', 'CParticleMeshEmitter.cpp', 'CParticlePointEmitter.cpp', 'CParticleRingEmitter.cpp', 'CParticleSphereEmitter.cpp', 'CParticleAttractionAffector.cpp', 'CParticleFadeOutAffector.cpp', 'CParticleGravityAffector.cpp', 'CParticleRotationAffector.cpp', 'CParticleSystemSceneNode.cpp', 'CParticleScaleAffector.cpp'];
 
@@ -86,9 +86,9 @@ env.Append(LIBS = LIBRARIES, LIBPATH = CXXINCS);
 
 CXXFLAGS = ['-Wall'];
 if NDEBUG:
-	CXXFLAGS += ['-g', '-D_DEBUG'];
-else:
 	CXXFLAGS += ['-fexpensive-optimizations', '-O3'];
+else:
+	CXXFLAGS += ['-g', '-D_DEBUG'];
 
 if PROFILE:
 	CXXFLAGS += ['-pg'];

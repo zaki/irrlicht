@@ -440,9 +440,12 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	if (StencilBuffer)
 		flags |= D3DCLEAR_STENCIL;
 
-	hr = pID3DDevice->Clear( 0, NULL, flags, color.color, 1.0, 0);
-	if (FAILED(hr))
-		os::Printer::log("Direct3D8 clear failed.", ELL_WARNING);
+	if (flags)
+	{
+		hr = pID3DDevice->Clear( 0, NULL, flags, color.color, 1.0, 0);
+		if (FAILED(hr))
+			os::Printer::log("Direct3D8 clear failed.", ELL_WARNING);
+	}
 
 	hr = pID3DDevice->BeginScene();
 	if (FAILED(hr))
@@ -1582,7 +1585,7 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 						material.TextureLayer[st].AnisotropicFilter) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
 				const D3DTEXTUREFILTERTYPE tftMin = ((Caps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC) &&
 						material.TextureLayer[st].AnisotropicFilter) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
-				const D3DTEXTUREFILTERTYPE tftMip = material.TextureLayer[st].TrilinearFilter ? D3DTEXF_LINEAR : D3DTEXF_POINT;
+				const D3DTEXTUREFILTERTYPE tftMip = material.UseMipMaps? (material.TextureLayer[st].TrilinearFilter ? D3DTEXF_LINEAR : D3DTEXF_POINT) : D3DTEXF_NONE;
 
 				if (tftMag==D3DTEXF_ANISOTROPIC || tftMin == D3DTEXF_ANISOTROPIC)
 					pID3DDevice->SetTextureStageState(st, D3DTSS_MAXANISOTROPY, core::min_((DWORD)material.TextureLayer[st].AnisotropicFilter, Caps.MaxAnisotropy));

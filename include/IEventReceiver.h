@@ -161,9 +161,11 @@ namespace irr
 			EGET_ELEMENT_FOCUSED,
 
 			//! The mouse cursor hovered over a gui element.
+			/** If an element has sub-elements you also get this message for the subelements */
 			EGET_ELEMENT_HOVERED,
 
 			//! The mouse cursor left the hovered element.
+			/** If an element has sub-elements you also get this message for the subelements */
 			EGET_ELEMENT_LEFT,
 
 			//! An element would like to close.
@@ -180,10 +182,12 @@ namespace irr
 			//! A checkbox has changed its check state.
 			EGET_CHECKBOX_CHANGED,
 
-			//! A new item in a listbox was seleted.
+			//! A new item in a listbox was selected.
+			/** NOTE: You also get this event currently when the same item was clicked again after more than 500 ms. */
 			EGET_LISTBOX_CHANGED,
 
 			//! An item in the listbox was selected, which was already selected.
+			/** NOTE: You get the event currently only if the item was clicked again within 500 ms or selected by "enter" or "space". */
 			EGET_LISTBOX_SELECTED_AGAIN,
 
 			//! A file has been selected in the file dialog

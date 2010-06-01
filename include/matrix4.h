@@ -22,16 +22,15 @@
 //#define USE_MATRIX_TEST_DEBUG
 
 #if defined( USE_MATRIX_TEST_DEBUG )
-	#include <windows.h>
 
-	struct MatrixTest
-	{
-		MatrixTest () : ID(0), Calls(0) {}
-		char buf[256];
-		int Calls;
-		int ID;
-	};
-	static MatrixTest MTest;
+struct MatrixTest
+{
+	MatrixTest () : ID(0), Calls(0) {}
+	char buf[256];
+	int Calls;
+	int ID;
+};
+static MatrixTest MTest;
 
 #endif
 
@@ -64,7 +63,7 @@ namespace core
 			//! Copy constructor
 			/** \param other Other matrix to copy from
 			\param constructor Choose the initialization style */
-			CMatrix4( const CMatrix4<T>& other,eConstructor constructor = EM4CONST_COPY);
+			CMatrix4(const CMatrix4<T>& other, eConstructor constructor = EM4CONST_COPY);
 
 			//! Simple operator for directly accessing every element of the matrix.
 			T& operator()(const s32 row, const s32 col)
@@ -125,17 +124,20 @@ namespace core
 			CMatrix4<T>& operator-=(const CMatrix4<T>& other);
 
 			//! set this matrix to the product of two matrices
+			/** Calculate b*a */
 			inline CMatrix4<T>& setbyproduct(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
 
 			//! Set this matrix to the product of two matrices
-			/** no optimization used,
+			/** Calculate b*a, no optimization used,
 			use it if you know you never have a identity matrix */
 			CMatrix4<T>& setbyproduct_nocheck(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
 
 			//! Multiply by another matrix.
+			/** Calculate other*this */
 			CMatrix4<T> operator*(const CMatrix4<T>& other) const;
 
 			//! Multiply by another matrix.
+			/** Calculate and return other*this */
 			CMatrix4<T>& operator*=(const CMatrix4<T>& other);
 
 			//! Multiply by scalar.
@@ -257,6 +259,9 @@ namespace core
 
 			//! Builds a left-handed perspective projection matrix based on a field of view
 			CMatrix4<T>& buildProjectionMatrixPerspectiveFovLH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar);
+
+			//! Builds a left-handed perspective projection matrix based on a field of view, with far plane at infinity
+			CMatrix4<T>& buildProjectionMatrixPerspectiveFovInfinityLH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 epsilon=0);
 
 			//! Builds a right-handed perspective projection matrix.
 			CMatrix4<T>& buildProjectionMatrixPerspectiveRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
@@ -851,7 +856,7 @@ namespace core
 		const core::vector3d<T> scale = getScale();
 		const core::vector3d<f64> invScale(core::reciprocal(scale.X),core::reciprocal(scale.Y),core::reciprocal(scale.Z));
 
-		f64 Y = -asin(mat[2]*invScale.X);
+		f64 Y = -asin(core::clamp(mat[2]*invScale.X, -1.0, 1.0));
 		const f64 C = cos(Y);
 		Y *= RADTODEG64;
 
@@ -1413,7 +1418,7 @@ namespace core
 	{
 		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
 		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
-		const T w = h / aspectRatio;
+		const T w = static_cast<T>(h / aspectRatio);
 
 		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = w;
@@ -1452,7 +1457,7 @@ namespace core
 	{
 		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
 		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
-		const T w = (T)(h / aspectRatio);
+		const T w = static_cast<T>(h / aspectRatio);
 
 		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = w;
@@ -1473,6 +1478,42 @@ namespace core
 		M[12] = 0;
 		M[13] = 0;
 		M[14] = (T)(-zNear*zFar/(zFar-zNear));
+		M[15] = 0;
+
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix=false;
+#endif
+		return *this;
+	}
+
+
+	// Builds a left-handed perspective projection matrix based on a field of view, with far plane culling at infinity
+	template <class T>
+	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveFovInfinityLH(
+			f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 epsilon)
+	{
+		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
+		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
+		const T w = static_cast<T>(h / aspectRatio);
+
+		M[0] = w;
+		M[1] = 0;
+		M[2] = 0;
+		M[3] = 0;
+
+		M[4] = 0;
+		M[5] = (T)h;
+		M[6] = 0;
+		M[7] = 0;
+
+		M[8] = 0;
+		M[9] = 0;
+		M[10] = (T)(1.f-epsilon);
+		M[11] = 1;
+
+		M[12] = 0;
+		M[13] = 0;
+		M[14] = (T)(zNear*(epsilon-1.f));
 		M[15] = 0;
 
 #if defined ( USE_MATRIX_TEST )
@@ -1817,22 +1858,22 @@ namespace core
 	inline CMatrix4<T>& CMatrix4<T>::buildRotateFromTo(const core::vector3df& from, const core::vector3df& to)
 	{
 		// unit vectors
-		core::vector3df f ( from );
-		core::vector3df t ( to );
-		f.normalize ();
-		t.normalize ();
+		core::vector3df f(from);
+		core::vector3df t(to);
+		f.normalize();
+		t.normalize();
 
 		// axis multiplication by sin
-		core::vector3df vs ( t.crossProduct ( f ) );
+		core::vector3df vs(t.crossProduct(f));
 
 		// axis of rotation
-		core::vector3df v ( vs );
+		core::vector3df v(vs);
 		v.normalize();
 
 		// cosinus angle
-		T ca = f.dotProduct ( t );	
+		T ca = f.dotProduct(t);	
 
-		core::vector3df vt ( v * ( (T) 1 - ca ) );
+		core::vector3df vt(v * (1 - ca));
 
 		M[0] = vt.X * v.X + ca;
 		M[5] = vt.Y * v.Y + ca;
@@ -1844,84 +1885,78 @@ namespace core
 
 		M[1] = vt.X - vs.Z;
 		M[2] = vt.Z + vs.Y;
-		M[3] = (T) 0;
+		M[3] = 0;
 
 		M[4] = vt.X + vs.Z;
 		M[6] = vt.Y - vs.X;
-		M[7] = (T) 0;
+		M[7] = 0;
 
 		M[8] = vt.Z - vs.Y;
 		M[9] = vt.Y + vs.X;
-		M[11] = (T) 0;
+		M[11] = 0;
 
-		M[12] = (T) 0;
-		M[13] = (T) 0;
-		M[14] = (T) 0;
-		M[15] = (T) 1;
+		M[12] = 0;
+		M[13] = 0;
+		M[14] = 0;
+		M[15] = 1;
 
 		return *this;
 	}
 
 	//! Builds a matrix which rotates a source vector to a look vector over an arbitrary axis
-	/** \param camPos: viewer position in world coo
-	\param center: object position in world-coo and rotation pivot
+	/** \param camPos: viewer position in world coord
+	\param center: object position in world-coord, rotation pivot
 	\param translation: object final translation from center
 	\param axis: axis to rotate about
 	\param from: source vector to rotate from
 	 */
 	template <class T>
-	inline void CMatrix4<T>::buildAxisAlignedBillboard(	const core::vector3df& camPos,
-											const core::vector3df& center,
-											const core::vector3df& translation,
-											const core::vector3df& axis,
-											const core::vector3df& from
-										)
+	inline void CMatrix4<T>::buildAxisAlignedBillboard(
+				const core::vector3df& camPos,
+				const core::vector3df& center,
+				const core::vector3df& translation,
+				const core::vector3df& axis,
+				const core::vector3df& from)
 	{
 		// axis of rotation
 		core::vector3df up = axis;
-		up.normalize ();
-
-		core::vector3df forward = camPos - center;
-		forward.normalize();
-
-		core::vector3df right = up.crossProduct ( forward );
-		right.normalize ();
+		up.normalize();
+		const core::vector3df forward = (camPos - center).normalize();
+		const core::vector3df right = up.crossProduct(forward).normalize();
 
 		// correct look vector
-		core::vector3df look = right.crossProduct ( up );
+		const core::vector3df look = right.crossProduct(up);
 
 		// rotate from to
-
 		// axis multiplication by sin
-		core::vector3df vs = look.crossProduct ( from );
+		const core::vector3df vs = look.crossProduct(from);
 
 		// cosinus angle
-		f32 ca = from.dotProduct ( look );	
+		const f32 ca = from.dotProduct(look);	
 
-		core::vector3df vt ( up * ( 1.f - ca ) );
+		core::vector3df vt(up * (1.f - ca));
 
-		M[0] = vt.X * up.X + ca;
-		M[5] = vt.Y * up.Y + ca;
-		M[10] = vt.Z * up.Z + ca;
+		M[0] = static_cast<T>(vt.X * up.X + ca);
+		M[5] = static_cast<T>(vt.Y * up.Y + ca);
+		M[10] = static_cast<T>(vt.Z * up.Z + ca);
 
 		vt.X *= up.Y;
 		vt.Z *= up.X;
 		vt.Y *= up.Z;
 
-		M[1] = vt.X - vs.Z;
-		M[2] = vt.Z + vs.Y;
-		M[3] = (T) 0;
+		M[1] = static_cast<T>(vt.X - vs.Z);
+		M[2] = static_cast<T>(vt.Z + vs.Y);
+		M[3] = 0;
 
-		M[4] = vt.X + vs.Z;
-		M[6] = vt.Y - vs.X;
-		M[7] = (T) 0;
+		M[4] = static_cast<T>(vt.X + vs.Z);
+		M[6] = static_cast<T>(vt.Y - vs.X);
+		M[7] = 0;
 
-		M[8] = vt.Z - vs.Y;
-		M[9] = vt.Y + vs.X;
-		M[11] = (T) 0;
+		M[8] = static_cast<T>(vt.Z - vs.Y);
+		M[9] = static_cast<T>(vt.Y + vs.X);
+		M[11] = 0;
 
-		setRotationCenter ( center, translation );
-
+		setRotationCenter(center, translation);
 	}
 
 

@@ -192,6 +192,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\color.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\cursorSetVisible.cpp"
 				>
 			</File>
@@ -260,6 +264,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\lights.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\line2dIntersectWith.cpp"
 				>
 			</File>
@@ -292,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\orthoCam.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\planeMatrix.cpp"
 				>
 			</File>
@@ -320,6 +332,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\stencilshadow.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\terrainSceneNode.cpp"
 				>
 			</File>
@@ -333,6 +349,10 @@
 			</File>
 			<File
 				RelativePath=".\testGeometryCreator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testQuaternion.cpp"
 				>
 			</File>
 			<File

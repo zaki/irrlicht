@@ -159,8 +159,8 @@ IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(FILE* file)
 
 
 //! Creates an instance of an UTF-32 xml parser. 
-IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(IFileReadCallBack* callback,
-																	bool deleteCallback)
+IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(
+		IFileReadCallBack* callback, bool deleteCallback)
 {
 	if (callback && (callback->getSize() >= 0))
 	{

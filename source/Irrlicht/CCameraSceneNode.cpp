@@ -14,7 +14,7 @@ namespace scene
 
 
 //! constructor
-CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, 
+CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 	const core::vector3df& position, const core::vector3df& lookat)
 	: ICameraSceneNode(parent, mgr, id, position),
 	Target(lookat), UpVector(0.0f, 1.0f, 0.0f), ZNear(1.0f), ZFar(3000.0f),
@@ -25,14 +25,14 @@ CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 i
 	#endif
 
 	// set default projection
-	Fovy = core::PI / 2.5f;	// Field of view, in radians. 
+	Fovy = core::PI / 2.5f;	// Field of view, in radians.
 
 	const video::IVideoDriver* const d = mgr?mgr->getVideoDriver():0;
 	if (d)
 		Aspect = (f32)d->getCurrentRenderTargetSize().Width /
 			(f32)d->getCurrentRenderTargetSize().Height;
 	else
-		Aspect = 4.0f / 3.0f;	// Aspect ratio. 
+		Aspect = 4.0f / 3.0f;	// Aspect ratio.
 
 	recalculateProjectionMatrix();
 	recalculateViewArea();
@@ -99,10 +99,10 @@ const core::matrix4& CCameraSceneNode::getViewMatrixAffector() const
 
 
 //! It is possible to send mouse and key events to the camera. Most cameras
-//! may ignore this input, but camera scene nodes which are created for 
+//! may ignore this input, but camera scene nodes which are created for
 //! example with scene::ISceneManager::addMayaCameraSceneNode or
 //! scene::ISceneManager::addFPSCameraSceneNode, may want to get this input
-//! for changing their position, look at target or whatever. 
+//! for changing their position, look at target or whatever.
 bool CCameraSceneNode::OnEvent(const SEvent& event)
 {
 	if (!InputReceiverEnabled)
@@ -111,7 +111,7 @@ bool CCameraSceneNode::OnEvent(const SEvent& event)
 	// send events to event receiving animators
 
 	ISceneNodeAnimatorList::Iterator ait = Animators.begin();
-	
+
 	for (; ait != Animators.end(); ++ait)
 		if ((*ait)->isEventReceiverEnabled() && (*ait)->OnEvent(event))
 			return true;
@@ -173,25 +173,25 @@ const core::vector3df& CCameraSceneNode::getUpVector() const
 }
 
 
-f32 CCameraSceneNode::getNearValue() const 
+f32 CCameraSceneNode::getNearValue() const
 {
 	return ZNear;
 }
 
 
-f32 CCameraSceneNode::getFarValue() const 
+f32 CCameraSceneNode::getFarValue() const
 {
 	return ZFar;
 }
 
 
-f32 CCameraSceneNode::getAspectRatio() const 
+f32 CCameraSceneNode::getAspectRatio() const
 {
 	return Aspect;
 }
 
 
-f32 CCameraSceneNode::getFOV() const 
+f32 CCameraSceneNode::getFOV() const
 {
 	return Fovy;
 }
@@ -243,7 +243,7 @@ void CCameraSceneNode::OnRegisterSceneNode()
 
 //! render
 void CCameraSceneNode::render()
-{	
+{
 	core::vector3df pos = getAbsolutePosition();
 	core::vector3df tgtv = Target - pos;
 	tgtv.normalize();
@@ -327,7 +327,7 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	TargetAndRotationAreBound = in->getAttributeAsBool("Binding");
 
 	recalculateProjectionMatrix();
-	recalculateViewArea();	
+	recalculateViewArea();
 }
 
 
@@ -353,12 +353,13 @@ ISceneNode* CCameraSceneNode::clone(ISceneNode* newParent, ISceneManager* newMan
 	if (!newManager)
 		newManager = SceneManager;
 
-	CCameraSceneNode* nb = new CCameraSceneNode(newParent, 
+	CCameraSceneNode* nb = new CCameraSceneNode(newParent,
 		newManager, ID, RelativeTranslation, Target);
 
 	nb->cloneMembers(this, newManager);
 
-	nb->drop();
+	if ( newParent )
+		nb->drop();
 	return nb;
 }
 

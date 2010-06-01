@@ -9,7 +9,7 @@ At first, we need to include all headers and do the stuff we always do, like in
 nearly all other tutorials.
 */
 #include <irrlicht.h>
-#include <iostream>
+#include "driverChoice.h"
 
 using namespace irr;
 
@@ -277,8 +277,8 @@ int main()
 		EMF_FOG_ENABLE to true to enable fog in the room.
 		*/
 
-		scene::IMesh* tangentMesh = smgr->getMeshManipulator()->createMeshWithTangents(
-			roomMesh->getMesh(0));
+		scene::IMesh* tangentMesh = smgr->getMeshManipulator()->
+				createMeshWithTangents(roomMesh->getMesh(0));
 
 		room = smgr->addMeshSceneNode(tangentMesh);
 		room->setMaterialTexture(0,

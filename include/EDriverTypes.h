@@ -53,7 +53,10 @@ namespace video
 		EDT_OPENGL,
 
 		//! OpenGL-ES device, for embedded and mobile systems
-		EDT_OGLES1
+		EDT_OGLES1,
+
+		//! No driver, just for counting the elements
+		EDT_COUNT
 	};
 
 } // end namespace video

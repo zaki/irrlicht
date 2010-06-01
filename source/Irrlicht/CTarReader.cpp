@@ -125,7 +125,7 @@ bool CArchiveLoaderTAR::isALoadableFileFormat(io::IReadFile* file) const
 	TAR Archive
 */
 CTarReader::CTarReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
- : CFileList(file ? file->getFileName() : "", ignoreCase, ignorePaths), File(file)
+ : CFileList((file ? file->getFileName() : io::path("")), ignoreCase, ignorePaths), File(file)
 {
 	#ifdef _DEBUG
 	setDebugName("CTarReader");

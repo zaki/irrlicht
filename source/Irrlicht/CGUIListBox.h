@@ -76,7 +76,7 @@ namespace gui
 		//! skin through getIcon
 		virtual void setSpriteBank(IGUISpriteBank* bank);
 
-		//! sets if automatic scrolling is enabled or not. Default is true.
+		//! set whether the listbox should scroll to newly selected items
 		virtual void setAutoScrollEnabled(bool scroll);
 
 		//! returns true if automatic scrolling is enabled, false if not.

@@ -1131,61 +1131,62 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
+	bool result = false;
 
-	switch ( node->getAutomaticCulling() )
+	// has occlusion query information
+	if (node->getAutomaticCulling() & scene::EAC_OCC_QUERY)
 	{
-		// can be seen by a bounding box ?
-		case scene::EAC_BOX:
+		result = (Driver->getOcclusionQueryResult(const_cast<ISceneNode*>(node))==0);
+	}
+
+	// can be seen by a bounding box ?
+	if (!result && (node->getAutomaticCulling() & scene::EAC_BOX))
+	{
+		core::aabbox3d<f32> tbox = node->getBoundingBox();
+		node->getAbsoluteTransformation().transformBoxEx(tbox);
+		result = !(tbox.intersectsWithBox(cam->getViewFrustum()->getBoundingBox() ));
+	}
+
+	// can be seen by a bounding sphere
+	if (!result && (node->getAutomaticCulling() & scene::EAC_FRUSTUM_SPHERE))
+	{ // requires bbox diameter
+	}
+
+	// can be seen by cam pyramid planes ?
+	if (!result && (node->getAutomaticCulling() & scene::EAC_FRUSTUM_BOX))
+	{
+		SViewFrustum frust = *cam->getViewFrustum();
+
+		//transform the frustum to the node's current absolute transformation
+		core::matrix4 invTrans(node->getAbsoluteTransformation(), core::matrix4::EM4CONST_INVERSE);
+		//invTrans.makeInverse();
+		frust.transform(invTrans);
+
+		core::vector3df edges[8];
+		node->getBoundingBox().getEdges(edges);
+
+		for (s32 i=0; i<scene::SViewFrustum::VF_PLANE_COUNT; ++i)
 		{
-			core::aabbox3d<f32> tbox = node->getBoundingBox();
-			node->getAbsoluteTransformation().transformBoxEx(tbox);
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-			return !(tbox.intersectsWithBox(cam->getViewFrustum()->getBoundingBox() ));
-		}
-
-		// can be seen by a bounding sphere
-		case scene::EAC_FRUSTUM_SPHERE:
-		{ // requires bbox diameter
-		}
-		break;
-
-		// can be seen by cam pyramid planes ?
-		case scene::EAC_FRUSTUM_BOX:
-		{
-			SViewFrustum frust = *cam->getViewFrustum();
-
-			//transform the frustum to the node's current absolute transformation
-			core::matrix4 invTrans(node->getAbsoluteTransformation(), core::matrix4::EM4CONST_INVERSE);
-			//invTrans.makeInverse();
-			frust.transform(invTrans);
-
-			core::vector3df edges[8];
-			node->getBoundingBox().getEdges(edges);
-
-			for (s32 i=0; i<scene::SViewFrustum::VF_PLANE_COUNT; ++i)
+			bool boxInFrustum=false;
+			for (u32 j=0; j<8; ++j)
 			{
-				bool boxInFrustum=false;
-				for (u32 j=0; j<8; ++j)
+				if (frust.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
 				{
-					if (frust.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
-					{
-						boxInFrustum=true;
-						break;
-					}
+					boxInFrustum=true;
+					break;
 				}
+			}
 
-				if (!boxInFrustum)
-					return true;
+			if (!boxInFrustum)
+			{
+				result = true;
+				break;
 			}
 		}
-		break;
-
-		case scene::EAC_OFF:
-		break;
 	}
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return false;
+	return result;
 }
 
 

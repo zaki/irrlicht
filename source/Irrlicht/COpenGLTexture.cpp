@@ -381,10 +381,10 @@ void* COpenGLTexture::lock(bool readOnly, u32 mipmapLevel)
 					++i;
 				}
 				while (i != mipmapLevel);
-				image = new CImage(ECF_A8R8G8B8, core::dimension2du(width,height));
+				MipImage = image = new CImage(ECF_A8R8G8B8, core::dimension2du(width,height));
 			}
 			else
-				image = new CImage(ECF_A8R8G8B8, ImageSize);
+				Image = image = new CImage(ECF_A8R8G8B8, ImageSize);
 			ColorFormat = ECF_A8R8G8B8;
 		}
 		if (!image)

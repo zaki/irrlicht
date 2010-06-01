@@ -141,11 +141,11 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 			{
 			case EMIE_MOUSE_WHEEL:
 				if (Environment->hasFocus(this))
-				{ 
+				{
 					// thanks to a bug report by REAPER
 					// thanks to tommi by tommi for another bugfix
 					// everybody needs a little thanking. hallo niko!;-)
-					setPos(	getPos() + 
+					setPos(	getPos() +
 							( (s32)event.MouseInput.Wheel * SmallStep * (Horizontal ? 1 : -1 ) )
 							);
 
@@ -205,7 +205,7 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 							return isInside;
 					}
 				}
-				
+
 				if (DraggedBySlider)
 				{
 					setPos(newPos);
@@ -407,7 +407,7 @@ void CGUIScrollBar::setMax(s32 max)
 	setPos(Pos);
 }
 
-//! gets the maximum value of the scrollbar.
+//! gets the minimum value of the scrollbar.
 s32 CGUIScrollBar::getMin() const
 {
 	return Min;

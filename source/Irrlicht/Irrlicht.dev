@@ -2190,7 +2190,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit217]
-FileName=COctTreeSceneNode.cpp
+FileName=COctreeSceneNode.cpp
 Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
@@ -2200,7 +2200,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit218]
-FileName=COctTreeSceneNode.h
+FileName=COctreeSceneNode.h
 Folder=Irrlicht/scene/nodes
 Compile=1
 CompileCpp=1
@@ -2210,7 +2210,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit219]
-FileName=COctTreeTriangleSelector.cpp
+FileName=COctreeTriangleSelector.cpp
 Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
@@ -2220,7 +2220,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit220]
-FileName=COctTreeTriangleSelector.h
+FileName=COctreeTriangleSelector.h
 Folder=Irrlicht/scene/collision
 Compile=1
 CompileCpp=1
@@ -2770,7 +2770,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit275]
-FileName=OctTree.h
+FileName=Octree.h
 Folder=Irrlicht/scene/mesh
 Compile=1
 CompileCpp=1

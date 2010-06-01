@@ -217,5 +217,9 @@ code like 'code', but some generate warnings so we use this macro here */
 		((irr::u32)(irr::u8)(c0) | ((irr::u32)(irr::u8)(c1) << 8) | \
 		((irr::u32)(irr::u8)(c2) << 16) | ((irr::u32)(irr::u8)(c3) << 24 ))
 
+#if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
+#define _strcmpi(a,b) strcmpi(a,b)
+#endif
+
 #endif // __IRR_TYPES_H_INCLUDED__
 

@@ -63,8 +63,10 @@ int main(int argumentCount, char * arguments[])
 	TEST(testDimension2d);
 	TEST(testVector2d);
 	TEST(testVector3d);
+	TEST(testQuaternion);
 	TEST(testS3DVertex);
 	TEST(testaabbox3d);
+    TEST(color);
 	// TODO: Needs to be fixed first
 //	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);
@@ -104,9 +106,14 @@ int main(int argumentCount, char * arguments[])
 	TEST(transparentAlphaChannelRef);
 	TEST(antiAliasing);
 	TEST(draw2DImage);
+	TEST(lights);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
-	// large scenes
+	// large scenes/long rendering
+	// shadows are slow
+	TEST(orthoCam);
+	TEST(stencilShadow);
+	// q3 maps are slow
 	TEST(planeMatrix);
 	TEST(terrainSceneNode);
 	TEST(lightMaps);

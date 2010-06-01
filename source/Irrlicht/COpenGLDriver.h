@@ -99,6 +99,30 @@ namespace video
 		//! Draw hardware buffer
 		virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer);
 
+		//! Create occlusion query.
+		/** Use node for identification and mesh for occlusion test. */
+		virtual void createOcclusionQuery(scene::ISceneNode* node,
+				const scene::IMesh* mesh=0);
+
+		//! Remove occlusion query.
+		virtual void removeOcclusionQuery(scene::ISceneNode* node);
+
+		//! Run occlusion query. Draws mesh stored in query.
+		/** If the mesh shall not be rendered visible, use
+		overrideMaterial to disable the color and depth buffer. */
+		virtual void runOcclusionQuery(scene::ISceneNode* node, bool visible=false);
+
+		//! Update occlusion query. Retrieves results from GPU.
+		/** If the query shall not block, set the flag to false.
+		Update might not occur in this case, though */
+		virtual void updateOcclusionQuery(scene::ISceneNode* node, bool block=true);
+
+		//! Return query result.
+		/** Return value is the number of visible pixels/fragments.
+		The value is a safe approximation, i.e. can be larger then the
+		actual value of pixels. */
+		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const;
+
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
@@ -277,12 +301,12 @@ namespace video
 		//! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
 		virtual s32 addHighLevelShaderMaterial(
 				const c8* vertexShaderProgram,
-				const c8* vertexShaderEntryPointName = "main",
-				E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
-				const c8* pixelShaderProgram = 0,
-				const c8* pixelShaderEntryPointName = "main",
-				E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
-				const c8* geometryShaderProgram = 0,
+				const c8* vertexShaderEntryPointName,
+				E_VERTEX_SHADER_TYPE vsCompileTarget,
+				const c8* pixelShaderProgram,
+				const c8* pixelShaderEntryPointName,
+				E_PIXEL_SHADER_TYPE psCompileTarget,
+				const c8* geometryShaderProgram,
 				const c8* geometryShaderEntryPointName = "main",
 				E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
 				scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
