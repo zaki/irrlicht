@@ -21,11 +21,11 @@
 #include "CMemoryFile.h"
 #include "CLimitReadFile.h"
 
-
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
 		#include <direct.h> // for _chdir
 		#include <io.h> // for _access
+		#include <tchar.h>
 	#endif
 #else
 	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
@@ -603,7 +603,6 @@ IFileList* CFileSystem::createFileList()
 	//! Construct from native filesystem
 	if (FileSystemType == FILESYSTEM_NATIVE)
 	{
-		io::path fullPath;
 		// --------------------------------------------
 		//! Windows version
 		#ifdef _IRR_WINDOWS_API_
@@ -611,18 +610,16 @@ IFileList* CFileSystem::createFileList()
 
 		r = new CFileList(Path, true, false);
 
-		struct _finddata_t c_file;
+		struct _tfinddata_t c_file;
 		long hFile;
 
-		if( (hFile = _findfirst( "*", &c_file )) != -1L )
+		if( (hFile = _tfindfirst( _T("*"), &c_file )) != -1L )
 		{
 			do
 			{
-				fullPath = Path + c_file.name;
-
-				r->addItem(fullPath, c_file.size, (_A_SUBDIR & c_file.attrib) != 0, 0);
+				r->addItem(Path + c_file.name, c_file.size, (_A_SUBDIR & c_file.attrib) != 0, 0);
 			}
-			while( _findnext( hFile, &c_file ) == 0 );
+			while( _tfindnext( hFile, &c_file ) == 0 );
 
 			_findclose( hFile );
 		}
@@ -652,7 +649,6 @@ IFileList* CFileSystem::createFileList()
 			{
 				u32 size = 0;
 				bool isDirectory = false;
-				fullPath = Path + dirEntry->d_name;
 
 				if((strcmp(dirEntry->d_name, ".")==0) ||
 				   (strcmp(dirEntry->d_name, "..")==0))
@@ -673,7 +669,7 @@ IFileList* CFileSystem::createFileList()
 				}
 				#endif
 
-				r->addItem(fullPath, size, isDirectory, 0);
+				r->addItem(Path + dirEntry->d_name, size, isDirectory, 0);
 			}
 			closedir(dirHandle);
 		}
@@ -703,12 +699,10 @@ IFileList* CFileSystem::createFileList()
 			{
 				if (core::isInSameDirectory(Path, merge->getFullFileName(j)) == 0)
 				{
-					io::path fullPath = merge->getFullFileName(j);
-					r->addItem(fullPath, merge->getFileSize(j), merge->isDirectory(j), 0);
+					r->addItem(merge->getFullFileName(j), merge->getFileSize(j), merge->isDirectory(j), 0);
 				}
 			}
 		}
-
 	}
 
 	if (r)

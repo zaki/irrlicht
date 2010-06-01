@@ -243,8 +243,8 @@ private:
 						}
 					}
 
-					memcpy( (*indices)[i].Indices.pointer(), keepIndices.pointer(), keepIndices.size()*sizeof(u16));
 					(*indices)[i].Indices.set_used(keepIndices.size());
+					memcpy( (*indices)[i].Indices.pointer(), keepIndices.pointer(), keepIndices.size()*sizeof(u16));
 					keepIndices.set_used(0);
 				}
 

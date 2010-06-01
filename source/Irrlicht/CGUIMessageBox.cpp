@@ -122,7 +122,7 @@ void CGUIMessageBox::refreshControls()
 	core::rect<s32> staticRect;
 	staticRect.UpperLeftCorner.X = borderWidth;
 	staticRect.UpperLeftCorner.Y = titleHeight + borderWidth;
-	staticRect.LowerRightCorner.X = staticRect.UpperLeftCorner.X + skin->getSize(EGDS_MESSAGE_BOX_MAX_TEST_WIDTH);
+	staticRect.LowerRightCorner.X = staticRect.UpperLeftCorner.X + skin->getSize(EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH);
 	staticRect.LowerRightCorner.Y = staticRect.UpperLeftCorner.Y + skin->getSize(EGDS_MESSAGE_BOX_MAX_TEXT_HEIGHT);
 	if (!StaticText)
 	{
