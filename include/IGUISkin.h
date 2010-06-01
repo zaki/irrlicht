@@ -163,7 +163,9 @@ namespace gui
 		//! minimal space to reserve for messagebox text-width
 		EGDS_MESSAGE_BOX_MIN_TEXT_WIDTH,
 		//! maximal space to reserve for messagebox text-width
-		EGDS_MESSAGE_BOX_MAX_TEST_WIDTH,
+		EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH,
+		//! deprecated - this was a typo. Should be removed for 1.8
+		EGDS_MESSAGE_BOX_MAX_TEST_WIDTH = EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH,
 		//! minimal space to reserve for messagebox text-height
 		EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT,
 		//! maximal space to reserve for messagebox text-height

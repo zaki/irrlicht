@@ -168,9 +168,9 @@ void loadModel(const c8* fn)
 {
 	// modify the name if it a .pk3 file
 
-	core::stringc filename(fn);
+	io::path filename(fn);
 
-	core::stringc extension;
+	io::path extension;
 	core::getFileNameExtension(extension, filename);
 	extension.make_lower();
 

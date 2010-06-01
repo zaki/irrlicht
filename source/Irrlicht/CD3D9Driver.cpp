@@ -2863,7 +2863,7 @@ bool CD3D9Driver::reset()
 	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
 	D3DSURFACE_DESC desc;
 	// restore other depth buffers
-	// dpeth format is taken from main depth buffer
+	// depth format is taken from main depth buffer
 	DepthBuffers[0]->Surface->GetDesc(&desc);
 	// multisampling is taken from rendertarget
 	D3DSURFACE_DESC desc2;
