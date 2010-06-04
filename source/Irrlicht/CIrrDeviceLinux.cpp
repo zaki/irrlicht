@@ -134,9 +134,8 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 #ifdef _IRR_COMPILE_WITH_X11_
 	if (StdHints)
 		XFree(StdHints);
-	// Disable cursor and free it later on
+	// Disable cursor (it is drop'ed in stub)
 	CursorControl->setVisible(false);
-	CursorControl->drop();
 	if (display)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
