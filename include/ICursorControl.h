@@ -14,6 +14,70 @@ namespace irr
 namespace gui
 {
 
+	class IGUISpriteBank;
+
+	//! Default icons for cursors
+	enum ECURSOR_ICON
+	{
+		// Following cursors might be system specific, or might use an Irrlicht icon-set. No guarantees so far.
+		ECI_NORMAL,		// arrow
+		ECI_CROSS,		// Crosshair
+		ECI_HAND, 		// Hand
+		ECI_HELP,		// Arrow and question mark
+		ECI_IBEAM,		// typical text-selection cursor
+		ECI_NO, 		// should not click icon
+		ECI_WAIT, 		// hourclass
+		ECI_SIZEALL,  	// arrow in all directions
+		ECI_SIZENESW,	// resizes in direction north-east or south-west
+		ECI_SIZENWSE, 	// resizes in direction north-west or south-east
+		ECI_SIZENS, 	// resizes in direction north or south
+		ECI_SIZEWE, 	// resizes in direction west or east
+		ECI_UP,			// up-arrow
+
+		// Implementer note: Should we add system specific cursors, which use guaranteed the system icons,
+		// then I would recommend using a naming scheme like ECI_W32_CROSS, ECI_X11_CROSSHAIR and adding those
+		// additionally.
+
+		ECI_COUNT		// maximal of defined cursors. Note that higher values can be created at runtime
+	};
+
+	//! Names for ECURSOR_ICON
+	const c8* const GUICursorIconNames[ECI_COUNT+1] =
+	{
+		"normal",
+		"cross",
+		"hand",
+		"help",
+		"ibeam",
+		"no",
+		"wait",
+		"sizeall",
+		"sizenesw",
+		"sizenwse",
+		"sizens",
+		"sizewe",
+		"sizeup",
+		0
+	};
+
+	//! structure used to set sprites as cursors.
+	struct SCursorSprite
+	{
+		SCursorSprite()
+		: SpriteBank(0), SpriteId(-1)
+		{
+		}
+
+		SCursorSprite( gui::IGUISpriteBank * spriteBank, s32 spriteId, const core::position2d<s32> &hotspot=core::position2d<s32>(0,0) )
+		: SpriteBank(spriteBank), SpriteId(spriteId), HotSpot(hotspot)
+		{
+		}
+
+		gui::IGUISpriteBank * SpriteBank;
+		s32 SpriteId;
+		core::position2d<s32> HotSpot;
+	};
+
 	//! Interface to manipulate the mouse cursor.
 	class ICursorControl : public virtual IReferenceCounted
 	{
@@ -73,6 +137,28 @@ namespace gui
 		for example in an editor.
 		\param rect: A pointer to an reference rectangle or 0 to disable the reference rectangle.*/
 		virtual void setReferenceRect(core::rect<s32>* rect=0) = 0;
+
+
+		//! Sets the active cursor icon
+		/** Setting cursor icons is so far only supported on Win32 and Linux */
+		virtual void setActiveIcon(ECURSOR_ICON iconId) {}
+
+		//! Gets the currently active icon
+		virtual ECURSOR_ICON getActiveIcon() const { return gui::ECI_NORMAL; }
+
+		//! Add a custom sprite as cursor icon.
+		/** \return Identification for the icon */
+		virtual ECURSOR_ICON addIcon(const gui::SCursorSprite& icon) { return gui::ECI_NORMAL; }
+
+		//! replace a cursor icon.
+		/** Changing cursor icons is so far only supported on Win32 and Linux
+			Note that this only changes the icons within your application, system cursors outside your
+			application will not be affected.
+		*/
+		virtual void changeIcon(ECURSOR_ICON iconId, const gui::SCursorSprite& sprite) {}
+
+		//! Return a system-specific size which is supported for cursors. Larger icons will fail, smaller icons might work.
+		virtual core::dimension2di getSupportedIconSize() const { return core::dimension2di(0,0); }
 	};
 
 

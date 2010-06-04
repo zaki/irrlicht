@@ -13,7 +13,7 @@ all: all_linux
 
 # target specific settings
 all_linux: SYSTEM=Linux
-all_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L../../lib/$(SYSTEM) -lIrrlicht -lGL -lXxf86vm -lXext -lX11
+all_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L../../lib/$(SYSTEM) -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -lXcursor
 
 all_win32 clean_win32: SYSTEM=Win32-gcc
 all_win32: LDFLAGS = -L../../lib/$(SYSTEM) -lIrrlicht -lopengl32 -lm
