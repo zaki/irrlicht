@@ -31,6 +31,7 @@
 				</Compiler>
 				<Linker>
 					<Add library="Xxf86vm" />
+					<Add library="Xcursor" />
 					<Add library="GL" />
 					<Add directory="../../lib/Linux" />
 				</Linker>
