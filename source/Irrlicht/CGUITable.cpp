@@ -166,6 +166,7 @@ bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 					SEvent event;
 					event.EventType = EET_GUI_EVENT;
 					event.GUIEvent.Caller = this;
+					event.GUIEvent.Element = 0;
 					event.GUIEvent.EventType = EGET_TABLE_HEADER_CHANGED;
 					Parent->OnEvent(event);
 				}
@@ -195,6 +196,7 @@ bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = EGET_TABLE_HEADER_CHANGED;
 		Parent->OnEvent(event);
 	}
@@ -852,6 +854,7 @@ void CGUITable::selectNew(s32 ypos, bool onlyHover)
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = (Selected != oldSelected) ? EGET_TABLE_CHANGED : EGET_TABLE_SELECTED_AGAIN;
 		Parent->OnEvent(event);
 	}

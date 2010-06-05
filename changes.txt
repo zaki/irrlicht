@@ -1,3 +1,17 @@
+ - Initialize GUIEvent.Element in several places (found by greenya)
+
+ - Add EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH and deprecated EGDS_MESSAGE_BOX_MAX_TEST_WIDTH (thx to greenya for reporting).
+
+ - Fix several places where "used" in core::string was used wrongly preventing some memory corruption
+
+ - Remove additional slash in pathnames in X-Loader
+
+ - Fix crash in CGUIListBox when environment was cleared on events
+
+ - Bugfix: Clear up depth-textures which could not be attached in OpenGL to prevent crashes. 
+
+ - Fix arrowMesh boundingbox.
+
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
 
