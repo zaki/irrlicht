@@ -6,7 +6,6 @@
 #define __I_EVENT_RECEIVER_H_INCLUDED__
 
 #include "ILogger.h"
-#include "position2d.h"
 #include "Keycodes.h"
 #include "irrString.h"
 

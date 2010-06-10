@@ -1,3 +1,5 @@
+ - reduce file dependencies for IGUIEventReceiver.h (thx ngc92)
+
  - Initialize GUIEvent.Element in several places (found by greenya)
 
  - Add EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH and deprecated EGDS_MESSAGE_BOX_MAX_TEST_WIDTH (thx to greenya for reporting).
