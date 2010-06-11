@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.SMeshHandling", "SMeshHandling.vcproj", "{EB3B38EA-5CE7-4983-845B-880661E69D09}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.SMeshHandling", "SMeshHandling.vcproj", "{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -9,10 +9,10 @@ Global
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{EB3B38EA-5CE7-4983-845B-880661E69D09}.Debug.ActiveCfg = Debug|Win32
-		{EB3B38EA-5CE7-4983-845B-880661E69D09}.Debug.Build.0 = Debug|Win32
-		{EB3B38EA-5CE7-4983-845B-880661E69D09}.Release.ActiveCfg = Release|Win32
-		{EB3B38EA-5CE7-4983-845B-880661E69D09}.Release.Build.0 = Release|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Debug.ActiveCfg = Debug|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Debug.Build.0 = Debug|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Release.ActiveCfg = Release|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

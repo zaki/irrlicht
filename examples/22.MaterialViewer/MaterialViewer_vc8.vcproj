@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="22.MaterialViewer_vc8"
-	ProjectGUID="{0914E5C8-5352-467B-8421-C9EB35BD5596}"
+	ProjectGUID="{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}"
 	RootNamespace="MaterialViewer_vc8"
 	>
 	<Platforms>
