@@ -37,6 +37,7 @@ namespace irr
 			EventReceiver(0),
 			WindowId(0),
 			LoggingLevel(ELL_INFORMATION),
+			DisplayAdapter(0),
 			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
 		{
 		}
@@ -64,6 +65,7 @@ namespace irr
 			EventReceiver = other.EventReceiver;
 			WindowId = other.WindowId;
 			LoggingLevel = other.LoggingLevel;
+			DisplayAdapter = 0;
 			return *this;
 		}
 
@@ -238,6 +240,10 @@ namespace irr
 		then you have to change it here.
 		*/
 		ELOG_LEVEL LoggingLevel;
+
+		//! Allows to select which graphic card is used for rendering when more than one card is in the system.
+		/** So far only supported on D3D */
+		u32 DisplayAdapter;
 
 		//! Don't use or change this parameter.
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.

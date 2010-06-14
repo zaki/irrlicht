@@ -193,7 +193,7 @@ namespace video
 		//! initialises the Direct3D API
 		bool initDriver(const core::dimension2d<u32>& screenSize, HWND hwnd,
 				u32 bits, bool fullScreen, bool pureSoftware,
-				bool highPrecisionFPU, bool vsync, u8 antiAlias);
+				bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
 
 		//! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 		//! driver, it would return "Direct3D8.1".
@@ -461,6 +461,8 @@ namespace video
 		bool DriverWasReset;
 		bool OcclusionQuerySupport;
 		bool AlphaToCoverageSupport;
+
+		u32 DisplayAdapter;
 	};
 
 
