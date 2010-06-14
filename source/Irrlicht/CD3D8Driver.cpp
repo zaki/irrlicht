@@ -34,7 +34,7 @@ CD3D8Driver::CD3D8Driver(const core::dimension2d<u32>& screenSize, HWND window,
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(0), LastSetLight(-1), DeviceLost(false),
-	DriverWasReset(true)
+	DriverWasReset(true), DisplayAdapter(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D8Driver");
@@ -143,10 +143,11 @@ void CD3D8Driver::createMaterialRenderers()
 //! initialises the Direct3D API
 bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
-		bool highPrecisionFPU, bool vsync, u8 antiAlias)
+		bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter)
 {
 	HRESULT hr;
 	typedef IDirect3D8 * (__stdcall *D3DCREATETYPE)(UINT);
+	DisplayAdapter = displayAdapter;
 
 #if defined( _IRR_XBOX_PLATFORM_)
 	D3DCREATETYPE d3dCreate = (D3DCREATETYPE) &Direct3DCreate8;
@@ -179,7 +180,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	// print device information
 	D3DADAPTER_IDENTIFIER8 dai;
-	if (!FAILED(pID3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, D3DENUM_NO_WHQL_LEVEL, &dai)))
+	if (!FAILED(pID3D->GetAdapterIdentifier(DisplayAdapter, D3DENUM_NO_WHQL_LEVEL, &dai)))
 	{
 		char tmp[512];
 
@@ -194,7 +195,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	}
 
 	D3DDISPLAYMODE d3ddm;
-	hr = pID3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
+	hr = pID3D->GetAdapterDisplayMode(DisplayAdapter, &d3ddm);
 	if (FAILED(hr))
 	{
 		os::Printer::log("Error: Could not get Adapter Display mode.", ELL_ERROR);
@@ -236,7 +237,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 		while(antiAlias > 0)
 		{
-			if(!FAILED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+			if(!FAILED(pID3D->CheckDeviceMultiSampleType(DisplayAdapter,
 				devtype , present.BackBufferFormat, !fullScreen,
 				(D3DMULTISAMPLE_TYPE)antiAlias)))
 			{
@@ -255,18 +256,18 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	if (StencilBuffer)
 	{
 		present.AutoDepthStencilFormat = D3DFMT_D24S8;
-		if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
 #if !defined( _IRR_XBOX_PLATFORM_)
 			present.AutoDepthStencilFormat = D3DFMT_D24X4S4;
-			if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+			if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
 				present.AutoDepthStencilFormat = D3DFMT_D15S1;
-				if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+				if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
@@ -277,7 +278,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 #endif
 		}
 		else
-		if(FAILED(pID3D->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, devtype,
+		if(FAILED(pID3D->CheckDepthStencilMatch(DisplayAdapter, devtype,
 			present.BackBufferFormat, present.BackBufferFormat, present.AutoDepthStencilFormat)))
 		{
 			os::Printer::log("Depth-stencil format is not compatible with display format, disabling stencil buffer.", ELL_WARNING);
@@ -289,17 +290,17 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	{
 #if !defined( _IRR_XBOX_PLATFORM_)
 		present.AutoDepthStencilFormat = D3DFMT_D32;
-		if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
 			present.AutoDepthStencilFormat = D3DFMT_D24X8;
-			if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+			if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
 				present.AutoDepthStencilFormat = D3DFMT_D16;
-				if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+				if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
@@ -310,7 +311,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		}
 #else
 		present.AutoDepthStencilFormat = D3DFMT_D16;
-		if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
@@ -328,7 +329,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 #endif
 	if (pureSoftware)
 	{
-		hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hwnd,
+		hr = pID3D->CreateDevice(DisplayAdapter, D3DDEVTYPE_REF, hwnd,
 				fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if (FAILED(hr))
@@ -336,14 +337,14 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	}
 	else
 	{
-		hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, devtype, hwnd,
+		hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
 				fpuPrecision | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if(FAILED(hr))
-			hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, devtype, hwnd,
+			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
 					fpuPrecision | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
 		if(FAILED(hr))
-			hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, devtype, hwnd,
+			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
 					fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 		if (FAILED(hr))
 			os::Printer::log("Was not able to create Direct3D8 device.", ELL_ERROR);
@@ -2347,13 +2348,13 @@ namespace video
 IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize,
 		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
 		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-		bool vsync, u8 antiAlias)
+		bool vsync, u8 antiAlias, u32 displayAdapter)
 {
 	CD3D8Driver* dx8 = new CD3D8Driver(screenSize, window, fullscreen,
 					stencilbuffer, io, pureSoftware);
 
 	if (!dx8->initDriver(screenSize, window, bits, fullscreen,
-			pureSoftware, highPrecisionFPU, vsync, antiAlias))
+			pureSoftware, highPrecisionFPU, vsync, antiAlias, displayAdapter))
 	{
 		dx8->drop();
 		dx8 = 0;
