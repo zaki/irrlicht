@@ -3,6 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CParticleRotationAffector.h"
+#include "IAttributes.h"
 
 namespace irr
 {
@@ -47,6 +48,19 @@ void CParticleRotationAffector::affect(u32 now, SParticle* particlearray, u32 co
 	}
 }
 
+//! Writes attributes of the object.
+void CParticleRotationAffector::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
+{
+	out->addVector3d("PivotPoint", PivotPoint);
+	out->addVector3d("Speed", Speed);
+}
+
+//! Reads attributes of the object.
+void CParticleRotationAffector::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
+{
+	PivotPoint = in->getAttributeAsVector3d("PivotPoint");
+	Speed = in->getAttributeAsVector3d("Speed");
+}
 
 } // end namespace scene
 } // end namespace irr

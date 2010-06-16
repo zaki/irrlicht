@@ -4,6 +4,7 @@
 
 #include "CParticleRingEmitter.h"
 #include "os.h"
+#include "IAttributes.h"
 
 namespace irr
 {
@@ -104,6 +105,62 @@ s32 CParticleRingEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 	}
 
 	return 0;
+}
+
+//! Writes attributes of the object.
+void CParticleRingEmitter::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
+{
+	out->addVector3d("Center", Center);
+	out->addFloat("Radius", Radius);
+	out->addFloat("RingThickness", RingThickness);
+
+	out->addVector3d("Direction", Direction);
+	out->addFloat("MinStartSizeWidth", MinStartSize.Width);
+	out->addFloat("MinStartSizeHeight", MinStartSize.Height);
+	out->addFloat("MaxStartSizeWidth", MaxStartSize.Width);
+	out->addFloat("MaxStartSizeHeight", MaxStartSize.Height); 
+	out->addInt("MinParticlesPerSecond", MinParticlesPerSecond);
+	out->addInt("MaxParticlesPerSecond", MaxParticlesPerSecond);
+	out->addColor("MinStartColor", MinStartColor);
+	out->addColor("MaxStartColor", MaxStartColor);
+	out->addInt("MinLifeTime", MinLifeTime);
+	out->addInt("MaxLifeTime", MaxLifeTime);
+	out->addInt("MaxAngleDegrees", MaxAngleDegrees);
+}
+
+//! Reads attributes of the object.
+void CParticleRingEmitter::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
+{
+	Center = in->getAttributeAsVector3d("Center");
+	Radius = in->getAttributeAsFloat("Radius"); 
+	RingThickness = in->getAttributeAsFloat("RingThickness"); 
+
+	Direction = in->getAttributeAsVector3d("Direction");
+	if (Direction.getLength() == 0)
+		Direction.set(0,0.01f,0);
+
+	MinStartSize.Width = in->getAttributeAsFloat("MinStartSizeWidth");
+	MinStartSize.Height = in->getAttributeAsFloat("MinStartSizeHeight");
+	MaxStartSize.Width = in->getAttributeAsFloat("MaxStartSizeWidth");
+	MaxStartSize.Height = in->getAttributeAsFloat("MaxStartSizeHeight"); 
+
+	MinParticlesPerSecond = in->getAttributeAsInt("MinParticlesPerSecond");
+	MaxParticlesPerSecond = in->getAttributeAsInt("MaxParticlesPerSecond");
+
+	MinParticlesPerSecond = core::max_(1u, MinParticlesPerSecond);
+	MaxParticlesPerSecond = core::max_(MaxParticlesPerSecond, 1u);
+	MaxParticlesPerSecond = core::min_(MaxParticlesPerSecond, 200u);
+	MinParticlesPerSecond = core::min_(MinParticlesPerSecond, MaxParticlesPerSecond);
+
+	MinStartColor = in->getAttributeAsColor("MinStartColor");
+	MaxStartColor = in->getAttributeAsColor("MaxStartColor");
+	MinLifeTime = in->getAttributeAsInt("MinLifeTime");
+	MaxLifeTime = in->getAttributeAsInt("MaxLifeTime");
+	MinLifeTime = core::max_(0u, MinLifeTime);
+	MaxLifeTime = core::max_(MaxLifeTime, MinLifeTime);
+	MinLifeTime = core::min_(MinLifeTime, MaxLifeTime);
+
+	MaxAngleDegrees = in->getAttributeAsInt("MaxAngleDegrees");
 }
 
 } // end namespace scene

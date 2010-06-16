@@ -3,6 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CParticleAttractionAffector.h"
+#include "IAttributes.h"
 
 namespace irr
 {
@@ -56,6 +57,27 @@ void CParticleAttractionAffector::affect(u32 now, SParticle* particlearray, u32 
 	}
 }
 
+//! Writes attributes of the object.
+void CParticleAttractionAffector::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
+{
+	out->addVector3d("Point", Point);
+	out->addFloat("Speed", Speed);
+	out->addBool("AffectX", AffectX);
+	out->addBool("AffectY", AffectY);
+	out->addBool("AffectZ", AffectZ);
+	out->addBool("Attract", Attract);
+}
+
+//! Reads attributes of the object.
+void CParticleAttractionAffector::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
+{
+	Point = in->getAttributeAsVector3d("Point");
+	Speed = in->getAttributeAsFloat("Speed");
+	AffectX = in->getAttributeAsBool("AffectX");
+	AffectY = in->getAttributeAsBool("AffectY");
+	AffectZ = in->getAttributeAsBool("AffectZ");
+	Attract = in->getAttributeAsBool("Attract");
+}
 
 } // end namespace scene
 } // end namespace irr

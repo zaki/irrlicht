@@ -62,6 +62,12 @@ public:
 	//! Get whether or not the particles Z position are affected
 	virtual bool getAffectZ() const { return AffectZ; }
 
+	//! Writes attributes of the object.
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+
+	//! Reads attributes of the object.
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+
 private:
 
 	core::vector3df Point;
