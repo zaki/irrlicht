@@ -32,7 +32,7 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
 		const core::vector3df& rotation,
 		const core::vector3df& scale)
 : IAnimatedMeshSceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
-	BeginFrameTime(0), StartFrame(0), EndFrame(0), FramesPerSecond(0.f),
+	StartFrame(0), EndFrame(0), FramesPerSecond(0.f),
 	CurrentFrameNr(0.f), LastTimeMs(0),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
 	JointMode(EJUOR_NONE), JointsUsed(false),
@@ -44,7 +44,6 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
 	setDebugName("CAnimatedMeshSceneNode");
 	#endif
 
-	BeginFrameTime = os::Timer::getTime();
 	FramesPerSecond = 25.f/1000.f;
 
 	setMesh(mesh);
@@ -78,12 +77,6 @@ void CAnimatedMeshSceneNode::setCurrentFrame(f32 frame)
 	// if you pass an out of range value, we just clamp it
 	CurrentFrameNr = core::clamp ( frame, (f32)StartFrame, (f32)EndFrame );
 
-	BeginFrameTime = os::Timer::getTime();
-	if (FramesPerSecond > 0)
-		BeginFrameTime += (s32)((CurrentFrameNr - StartFrame) / FramesPerSecond);
-	else if (FramesPerSecond < 0)
-		BeginFrameTime += (s32)((CurrentFrameNr - EndFrame) / -FramesPerSecond);
-
 	beginTransition(); //transit to this frame if enabled
 }
 
@@ -115,15 +108,18 @@ void CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 	{
 		// play animation looped
 		CurrentFrameNr += timeMs * FramesPerSecond;
+
+		// We have no interpolation between EndFrame and StartFrame,
+		// the last frame must be identical to first one with our current solution.
 		if (FramesPerSecond > 0.f) //forwards...
 		{
 			if (CurrentFrameNr > EndFrame)
-				CurrentFrameNr -= (EndFrame-StartFrame);
+				CurrentFrameNr = StartFrame + fmod(CurrentFrameNr - StartFrame, (f32)(EndFrame-StartFrame));
 		}
 		else //backwards...
 		{
 			if (CurrentFrameNr < StartFrame)
-				CurrentFrameNr += (EndFrame-StartFrame);
+				CurrentFrameNr = EndFrame - fmod(EndFrame - CurrentFrameNr, (f32)(EndFrame-StartFrame));
 		}
 	}
 	else
@@ -1074,7 +1070,6 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	newNode->Materials = Materials;
 	newNode->Box = Box;
 	newNode->Mesh = Mesh;
-	newNode->BeginFrameTime = BeginFrameTime;
 	newNode->StartFrame = StartFrame;
 	newNode->EndFrame = EndFrame;
 	newNode->FramesPerSecond = FramesPerSecond;

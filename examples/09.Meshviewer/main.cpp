@@ -329,7 +329,7 @@ void updateToolBox()
 	IGUIElement* dlg = root->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
 	if (!dlg )
 		return;
-		
+
 	// update the info we have about the animation of the model
 	IGUIStaticText *  aniInfo = (IGUIStaticText *)(dlg->getElementFromId(GUI_ID_ANIMATION_INFO, true));
 	if (aniInfo)
@@ -337,7 +337,8 @@ void updateToolBox()
 		if ( Model && scene::ESNT_ANIMATED_MESH == Model->getType() )
 		{
 			scene::IAnimatedMeshSceneNode* animatedModel = (scene::IAnimatedMeshSceneNode*)Model;
-			core::stringw str( (s32)animatedModel->getAnimationSpeed() );
+
+			core::stringw str( (s32)core::round_(animatedModel->getAnimationSpeed()) );
 			str += L" Frame: ";
 			str += core::stringw((s32)animatedModel->getFrameNr());
 			aniInfo->setText(str.c_str());
@@ -838,7 +839,7 @@ int main(int argc, char* argv[])
 	bar->addButton(GUI_ID_BUTTON_SHOW_ABOUT, 0, L"Open Help", image, 0, false, true);
 
 	// create a combobox for texture filters
-	
+
 	gui::IGUIComboBox* box = env->addComboBox(core::rect<s32>(250,4,350,23), bar, GUI_ID_TEXTUREFILTER);
 	box->addItem(L"No filtering");
 	box->addItem(L"Bilinear");
