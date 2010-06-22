@@ -87,8 +87,10 @@ enum
 	GUI_ID_BUTTON_SHOW_TOOLBOX,
 	GUI_ID_BUTTON_SELECT_ARCHIVE,
 
+	GUI_ID_ANIMATION_INFO,
+
 	// And some magic numbers
-	MAX_FRAMERATE = 1000,
+	MAX_FRAMERATE = 80,
 	DEFAULT_FRAMERATE = 30
 };
 
@@ -111,7 +113,7 @@ void setActiveCamera(scene::ICameraSceneNode* newActive)
 /*
 	Set the skin transparency by changing the alpha values of all skin-colors
 */
-void SetSkinTransparency(s32 alpha, irr::gui::IGUISkin * skin)
+void setSkinTransparency(s32 alpha, irr::gui::IGUISkin * skin)
 {
 	for (s32 i=0; i<irr::gui::EGDC_COUNT ; ++i)
 	{
@@ -124,7 +126,7 @@ void SetSkinTransparency(s32 alpha, irr::gui::IGUISkin * skin)
 /*
   Update the display of the model scaling
 */
-void UpdateScaleInfo(scene::ISceneNode* model)
+void updateScaleInfo(scene::ISceneNode* model)
 {
 	IGUIElement* toolboxWnd = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
 	if (!toolboxWnd)
@@ -252,7 +254,7 @@ void loadModel(const c8* fn)
 	if (menu)
 		for(int item = 1; item < 6; ++item)
 			menu->setItemChecked(item, false);
-	UpdateScaleInfo(Model);
+	updateScaleInfo(Model);
 }
 
 
@@ -296,7 +298,7 @@ void createToolBox()
 	env->addButton(core::rect<s32>(65,20,95,40), t1, GUI_ID_BUTTON_SCALE_MUL10, L"* 10");
 	env->addButton(core::rect<s32>(100,20,130,40), t1, GUI_ID_BUTTON_SCALE_DIV10, L"* 0.1");
 
-	UpdateScaleInfo(Model);
+	updateScaleInfo(Model);
 
 	// add transparency control
 	env->addStaticText(L"GUI Transparency Control:",
@@ -307,17 +309,42 @@ void createToolBox()
 	scrollbar->setPos(255);
 
 	// add framerate control
+	env->addStaticText(L":", core::rect<s32>(10,240,150,265), true, false, t1);
 	env->addStaticText(L"Framerate:",
-			core::rect<s32>(10,240,150,265), true, false, t1);
+			core::rect<s32>(12,240,75,265), false, false, t1);
+	env->addStaticText(L"", core::rect<s32>(75,240,200,265), false, false, t1,
+			GUI_ID_ANIMATION_INFO);
 	scrollbar = env->addScrollBar(true,
 			core::rect<s32>(10,265,150,280), t1, GUI_ID_SKIN_ANIMATION_FPS);
 	scrollbar->setMax(MAX_FRAMERATE);
 	scrollbar->setMin(-MAX_FRAMERATE);
 	scrollbar->setPos(DEFAULT_FRAMERATE);
+	scrollbar->setSmallStep(1);
+}
 
-	// bring irrlicht engine logo to front, because it
-	// now may be below the newly created toolbox
-	root->bringToFront(root->getElementFromId(666, true));
+void updateToolBox()
+{
+	IGUIEnvironment* env = Device->getGUIEnvironment();
+	IGUIElement* root = env->getRootGUIElement();
+	IGUIElement* dlg = root->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
+	if (!dlg )
+		return;
+		
+	// update the info we have about the animation of the model
+	IGUIStaticText *  aniInfo = (IGUIStaticText *)(dlg->getElementFromId(GUI_ID_ANIMATION_INFO, true));
+	if (aniInfo)
+	{
+		if ( Model && scene::ESNT_ANIMATED_MESH == Model->getType() )
+		{
+			scene::IAnimatedMeshSceneNode* animatedModel = (scene::IAnimatedMeshSceneNode*)Model;
+			core::stringw str( (s32)animatedModel->getAnimationSpeed() );
+			str += L" Frame: ";
+			str += core::stringw((s32)animatedModel->getFrameNr());
+			aniInfo->setText(str.c_str());
+		}
+		else
+			aniInfo->setText(L"");
+	}
 }
 
 /*
@@ -366,7 +393,7 @@ public:
 				if (id == GUI_ID_SKIN_TRANSPARENCY)
 				{
 					const s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-					SetSkinTransparency(pos, env->getSkin());
+					setSkinTransparency(pos, env->getSkin());
 				}
 				// control animation speed
 				else if (id == GUI_ID_SKIN_ANIMATION_FPS)
@@ -406,18 +433,18 @@ public:
 
 						if (Model)
 							Model->setScale(scale);
-						UpdateScaleInfo(Model);
+						updateScaleInfo(Model);
 					}
 					break;
 				case GUI_ID_BUTTON_SCALE_MUL10:
 					if (Model)
 						Model->setScale(Model->getScale()*10.f);
-					UpdateScaleInfo(Model);
+					updateScaleInfo(Model);
 					break;
 				case GUI_ID_BUTTON_SCALE_DIV10:
 					if (Model)
 						Model->setScale(Model->getScale()*0.1f);
-					UpdateScaleInfo(Model);
+					updateScaleInfo(Model);
 					break;
 				case GUI_ID_BUTTON_OPEN_MODEL:
 					env->addFileOpenDialog(L"Please select a model file to open");
@@ -810,8 +837,8 @@ int main(int argc, char* argv[])
 	image = driver->getTexture("help.png");
 	bar->addButton(GUI_ID_BUTTON_SHOW_ABOUT, 0, L"Open Help", image, 0, false, true);
 
-	// create a combobox with some senseless texts
-
+	// create a combobox for texture filters
+	
 	gui::IGUIComboBox* box = env->addComboBox(core::rect<s32>(250,4,350,23), bar, GUI_ID_TEXTUREFILTER);
 	box->addItem(L"No filtering");
 	box->addItem(L"Bilinear");
@@ -914,12 +941,14 @@ int main(int argc, char* argv[])
 
 			driver->endScene();
 
+			// update information about current frame-rate
 			core::stringw str(L"FPS: ");
 			str.append(core::stringw(driver->getFPS()));
 			str += L" Tris: ";
 			str.append(core::stringw(driver->getPrimitiveCountDrawn()));
 			fpstext->setText(str.c_str());
 
+			// update information about the active camera
 			scene::ICameraSceneNode* cam = Device->getSceneManager()->getActiveCamera();
 			str = L"Pos: ";
 			str.append(core::stringw(cam->getPosition().X));
@@ -934,6 +963,9 @@ int main(int argc, char* argv[])
 			str += L" ";
 			str.append(core::stringw(cam->getTarget().Z));
 			postext->setText(str.c_str());
+
+			// update the tool dialog
+			updateToolBox();
 		}
 		else
 			Device->yield();
