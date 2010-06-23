@@ -1,3 +1,5 @@
+ - Prevent crash in BillboardTextSceneNode when a custom font is used. Found and fixed by Nalin (bugtracker id: 3020487)
+
  - Fix problem in animation system that currentFrame got messed up after long pauses (especially when not starting at frame 0).
    See forum thread (http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?p=210537#210537) and bug id 2898876.
    Also remove BeginFrameTime in CAnimatedMeshSceneNode as it hasn't been used anymore since some time.
