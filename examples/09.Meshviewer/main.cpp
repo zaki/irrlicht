@@ -287,7 +287,7 @@ void createToolBox()
 			core::rect<s32>(10,20,60,45), false, false, t1);
 	env->addStaticText(L"X:", core::rect<s32>(22,48,40,66), false, false, t1);
 	env->addEditBox(L"1.0", core::rect<s32>(40,46,130,66), true, t1, GUI_ID_X_SCALE);
-	env->addStaticText(L"Y:", core::rect<s32>(22,82,40,GUI_ID_OPEN_MODEL), false, false, t1);
+	env->addStaticText(L"Y:", core::rect<s32>(22,82,40,96), false, false, t1);
 	env->addEditBox(L"1.0", core::rect<s32>(40,76,130,96), true, t1, GUI_ID_Y_SCALE);
 	env->addStaticText(L"Z:", core::rect<s32>(22,108,40,126), false, false, t1);
 	env->addEditBox(L"1.0", core::rect<s32>(40,106,130,126), true, t1, GUI_ID_Z_SCALE);
