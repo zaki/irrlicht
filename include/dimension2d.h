@@ -35,7 +35,7 @@ namespace core
 
 			template <class U>
 			dimension2d<T>& operator=(const dimension2d<U>& other)
-			{ 
+			{
 				Width = (T) other.Width;
 				Height = (T) other.Height;
 				return *this;
@@ -106,6 +106,12 @@ namespace core
 				return *this;
 			}
 
+			//! Add two dimensions
+			dimension2d<T> operator+(const dimension2d<T>& other) const
+			{
+				return dimension2d<T>(Width+other.Width, Height+other.Height);
+			}
+
 			//! Subtract a dimension from this one
 			dimension2d<T>& operator-=(const dimension2d<T>& other)
 			{
@@ -114,11 +120,10 @@ namespace core
 				return *this;
 			}
 
-
-			//! Add two dimensions
-			dimension2d<T> operator+(const dimension2d<T>& other) const
+			//! Subtract one dimension from another
+			dimension2d<T> operator-(const dimension2d<T>& other) const
 			{
-				return dimension2d<T>(Width+other.Width, Height+other.Height);
+				return dimension2d<T>(Width-other.Width, Height-other.Height);
 			}
 
 			//! Get area
