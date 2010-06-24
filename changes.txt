@@ -1,3 +1,17 @@
+- Add logging level ELL_DEBUG
+
+- Add parameter DisplayAdapter to creation params to allow selecting the card when more than one card is in the system.
+
+- Add parameter to line2d::intersectWith to allow getting intersections outside the segments (thx Yoran).
+
+- Added support for custom cursors
+
+- Avoid argument lookup ambiguity in swap when used in combination with stl. Using same trick as boost now and use 2 different template parameters in it.
+
+- Fixed bug causing memory access violation in string::replace found and patched by Nalin.
+
+- WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
+
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
 

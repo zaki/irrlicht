@@ -596,7 +596,7 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 
 	if (number == -1)
 	{
-		os::Printer::log("Joint with specified name not found in skinned mesh.", jointName, ELL_WARNING);
+		os::Printer::log("Joint with specified name not found in skinned mesh.", jointName, ELL_DEBUG);
 		return 0;
 	}
 
