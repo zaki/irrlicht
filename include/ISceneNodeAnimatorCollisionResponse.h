@@ -145,7 +145,7 @@ namespace scene
 		//! Returns the last triangle that caused a collision
 		virtual const core::triangle3df & getCollisionTriangle() const = 0;
 
-		//! Returns the position that the target node will be moved to, unless the collision is consumed in a callback).
+		//! Returns the position that the target node will be moved to, unless the collision is consumed in a callback.
 		/**
 		If you have a collision callback registered, and it consumes the collision, then the
 		node will ignore the collision and will not stop at this position. Instead, it will
