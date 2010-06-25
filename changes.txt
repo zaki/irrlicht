@@ -1,3 +1,5 @@
+ - Fix compile problem in swap when using irrlicht in combination with stl (backport from trunk r3281)
+
  - Fix serialization in CParticleSystemSceneNode (found by B@z)
 
  - Prevent crash in BillboardTextSceneNode when a custom font is used. Found and fixed by Nalin (bugtracker id: 3020487)
