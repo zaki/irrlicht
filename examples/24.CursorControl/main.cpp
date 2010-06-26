@@ -5,6 +5,7 @@ It can also be used for experiments with the mouse in general.
 */
 
 #include <irrlicht.h>
+#include "driverChoice.h"
 
 using namespace irr;
 using namespace core;
@@ -416,10 +417,16 @@ s32 AddIconToSpriteBank( gui::IGUISpriteBank * spriteBank, video::IVideoDriver* 
 
 int main()
 {
-	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
+	video::E_DRIVER_TYPE driverType = driverChoiceConsole();
+	if (driverType==video::EDT_COUNT)
+		return 1;
+
 	IrrlichtDevice * device = createDevice(driverType, dimension2d<u32>(640, 480));
 	if (device == 0)
 		return 1; // could not create selected driver.
+
+	// It's sometimes of interest to know how the mouse behaves after a resize
+	device->setResizable(true);
 
 	device->setWindowCaption(L"Cursor control - Irrlicht engine tutorial");
 	video::IVideoDriver* driver = device->getVideoDriver();
