@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="24.CursorControl_vc9"
-	ProjectGUID="{02B67A37-50E1-49db-BECF-905BC029C2FE}"
+	ProjectGUID="{02B67A37-50E1-49DB-BECF-905BC029C2FE}"
 	RootNamespace="24.CursorControl_vc9"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
