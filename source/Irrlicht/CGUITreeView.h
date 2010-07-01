@@ -21,62 +21,62 @@ namespace gui
 	class CGUITreeViewNode : public IGUITreeViewNode
 	{
 	friend class CGUITreeView;
-	
+
 	public:
 		//! constructor
 		CGUITreeViewNode( CGUITreeView* owner, CGUITreeViewNode* parent );
-		
+
 		//! destructor
 		~CGUITreeViewNode();
-		
+
 		//! returns the owner (tree view) of this node
 		virtual IGUITreeView* getOwner() const;
-		
-		//! Returns the parent node of this node. 
+
+		//! Returns the parent node of this node.
 		virtual IGUITreeViewNode* getParent() const;
-		
+
 		//! returns the text of the node
 		virtual const wchar_t* getText() const
 		{ return Text.c_str(); }
-		
+
 		//! sets the text of the node
 		virtual void setText( const wchar_t* text );
-		
-		//! returns the icon text of the node		
+
+		//! returns the icon text of the node
 		virtual const wchar_t* getIcon() const
 		{ return Icon.c_str(); }
-		
+
 		//! sets the icon text of the node
 		virtual void setIcon( const wchar_t* icon );
-		
-		//! returns the image index of the node		
+
+		//! returns the image index of the node
 		virtual u32 getImageIndex() const
 		{ return ImageIndex; }
-		
+
 		//! sets the image index of the node
 		virtual void setImageIndex( u32 imageIndex )
 		{ ImageIndex = imageIndex; }
-		
-		//! returns the image index of the node		
+
+		//! returns the image index of the node
 		virtual u32 getSelectedImageIndex() const
 		{ return SelectedImageIndex; }
-		
+
 		//! sets the image index of the node
 		virtual void setSelectedImageIndex( u32 imageIndex )
 		{ SelectedImageIndex = imageIndex; }
-		
+
 		//! returns the user data (void*) of this node
 		virtual void* getData() const
 		{ return Data; }
-		
+
 		//! sets the user data (void*) of this node
 		virtual void setData( void* data )
 		{ Data = data; }
-		
+
 		//! returns the user data2 (IReferenceCounted) of this node
 		virtual IReferenceCounted* getData2() const
 		{ return Data2; }
-		
+
 		//! sets the user data2 (IReferenceCounted) of this node
 		virtual void setData2( IReferenceCounted* data )
 		{
@@ -90,18 +90,18 @@ namespace gui
 				Data2->grab();
 			}
 		}
-		
+
 		//! returns the child item count
 		virtual u32 getChildCount() const
-		{ return Childs.getSize(); }
-		
-		//! removes all childs (recursive) from this node
-		virtual void clearChilds();
+		{ return Children.getSize(); }
+
+		//! removes all children (recursive) from this node
+		virtual void clearChildren();
 
 		//! returns true if this node has child nodes
-		virtual bool hasChilds() const
-		{ return !Childs.empty(); }
-		
+		virtual bool hasChildren() const
+		{ return !Children.empty(); }
+
 		//! Adds a new node behind the last child node.
 		//! \param text text of the new node
 		//! \param icon icon text of the new node
@@ -111,9 +111,9 @@ namespace gui
 		//! \param data2 user data2 (IReferenceCounted*) of the new node
 		//! \return
 		//! returns the new node
-		virtual IGUITreeViewNode* addChildBack( 
-				const wchar_t* text, 
-				const wchar_t* icon = 0, 
+		virtual IGUITreeViewNode* addChildBack(
+				const wchar_t* text,
+				const wchar_t* icon = 0,
 				s32 imageIndex = -1,
 				s32 selectedImageIndex = -1,
 				void* data = 0,
@@ -128,15 +128,15 @@ namespace gui
 		//! \param data2 user data2 (IReferenceCounted*) of the new node
 		//! \return
 		//! returns the new node
-		virtual IGUITreeViewNode* addChildFront( 
-				const wchar_t*		text, 
-				const wchar_t*		icon = 0, 
+		virtual IGUITreeViewNode* addChildFront(
+				const wchar_t*		text,
+				const wchar_t*		icon = 0,
 				s32					imageIndex = -1,
 				s32					selectedImageIndex = -1,
 				void*					data = 0,
 				IReferenceCounted*			data2 = 0 );
 
-		//! Adds a new node behind the other node. 
+		//! Adds a new node behind the other node.
 		//! The other node has also te be a child node from this node.
 		//! \param text text of the new node
 		//! \param icon icon text of the new node
@@ -146,16 +146,16 @@ namespace gui
 		//! \param data2 user data2 (IReferenceCounted*) of the new node
 		//! \return
 		//! returns the new node or 0 if other is no child node from this
-		virtual IGUITreeViewNode* insertChildAfter( 
-				IGUITreeViewNode*	other, 
-				const wchar_t*		text, 
-				const wchar_t*		icon = 0, 
+		virtual IGUITreeViewNode* insertChildAfter(
+				IGUITreeViewNode*	other,
+				const wchar_t*		text,
+				const wchar_t*		icon = 0,
 				s32					imageIndex = -1,
 				s32					selectedImageIndex = -1,
 				void*					data = 0,
 				IReferenceCounted*			data2 = 0 );
 
-		//! Adds a new node before the other node. 
+		//! Adds a new node before the other node.
 		//! The other node has also te be a child node from this node.
 		//! \param text text of the new node
 		//! \param icon icon text of the new node
@@ -165,10 +165,10 @@ namespace gui
 		//! \param data2 user data2 (IReferenceCounted*) of the new node
 		//! \return
 		//! returns the new node or 0 if other is no child node from this
-		virtual IGUITreeViewNode* insertChildBefore( 
-				IGUITreeViewNode*	other, 
-				const wchar_t*		text, 
-				const wchar_t*		icon = 0, 
+		virtual IGUITreeViewNode* insertChildBefore(
+				IGUITreeViewNode*	other,
+				const wchar_t*		text,
+				const wchar_t*		icon = 0,
 				s32					imageIndex = -1,
 				s32					selectedImageIndex = -1,
 				void*					data = 0,
@@ -197,31 +197,31 @@ namespace gui
 
 		//! Moves a child node one position down.
 		virtual bool moveChildDown( IGUITreeViewNode* child );
-		
-		//! Returns true if the node is expanded (childs are visible).
+
+		//! Returns true if the node is expanded (children are visible).
 		virtual bool getExpanded() const
 		{ return Expanded; }
-		
+
 		//! Sets if the node is expanded.
 		virtual void setExpanded( bool expanded );
-		
+
 		//! Returns true if the node is currently selected.
 		virtual bool getSelected() const;
-		
+
 		//! Sets this node as selected.
 		virtual void setSelected( bool selected );
-		
+
 		//! Returns true if this node is the root node.
 		virtual bool isRoot() const;
-		
+
 		//! Returns the level of this node.
 		virtual s32 getLevel() const;
-		
+
 		//! Returns true if this node is visible (all parents are expanded).
 		virtual bool isVisible() const;
 
 	private:
-	
+
 		CGUITreeView*			Owner;
 		CGUITreeViewNode*		Parent;
 		core::stringw			Text;
@@ -231,7 +231,7 @@ namespace gui
 		void*				Data;
 		IReferenceCounted*		Data2;
 		bool				Expanded;
-		core::list<CGUITreeViewNode*>	Childs;
+		core::list<CGUITreeViewNode*>	Children;
 	};
 
 
@@ -239,10 +239,10 @@ namespace gui
 	class CGUITreeView : public IGUITreeView
 	{
 	friend class CGUITreeViewNode;
-	
+
 	public:
 		//! constructor
-		CGUITreeView( IGUIEnvironment* environment, IGUIElement* parent, 
+		CGUITreeView( IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool clip = true,
 			bool drawBack = false, bool scrollBarVertical = true, bool scrollBarHorizontal = true );
 
@@ -280,15 +280,15 @@ namespace gui
 		//! Sets the image list which should be used for the image and selected image of every node.
 		//! The default is 0 (no images).
 		virtual void setImageList( IGUIImageList* imageList );
-		
+
 		//! Returns the image list which is used for the nodes.
 		virtual IGUIImageList* getImageList() const
 		{ return ImageList; }
-		
+
 		//! Sets if the image is left of the icon. Default is true.
 		virtual void setImageLeftOfIcon( bool bLeftOf )
 		{ ImageLeftOfIcon = bLeftOf; }
-		
+
 		//! Returns if the Image is left of the icon. Default is true.
 		virtual bool getImageLeftOfIcon() const
 		{ return ImageLeftOfIcon; }
@@ -300,7 +300,7 @@ namespace gui
 	private:
 		//! calculates the heigth of an node and of all visible nodes.
 		void recalculateItemHeight();
-		
+
 		//! executes an mouse action (like selectNew of CGUIListBox)
 		void mouseAction( s32 xpos, s32 ypos, bool onlyHover = false );
 

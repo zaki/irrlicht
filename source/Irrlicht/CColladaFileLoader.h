@@ -214,7 +214,7 @@ private:
 	void readAssetSection(io::IXMLReaderUTF8* reader);
 
 	//! reads a <node> section and its content
-	//! if a prefab pointer is passed the nodes are created as scene prefabs childs of that prefab
+	//! if a prefab pointer is passed the nodes are created as scene prefabs children of that prefab
 	void readNodeSection(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent, CScenePrefab* p=0);
 
 	//! reads a <lookat> element and its content and creates a matrix from it

@@ -22,56 +22,70 @@ namespace gui
 	public:
 		//! returns the owner (tree view) of this node
 		virtual IGUITreeView* getOwner() const = 0;
-		
+
 		//! Returns the parent node of this node.
 		/** For the root node this will return 0. */
 		virtual IGUITreeViewNode* getParent() const = 0;
-		
+
 		//! returns the text of the node
 		virtual const wchar_t* getText() const = 0;
 
 		//! sets the text of the node
 		virtual void setText( const wchar_t* text ) = 0;
 
-		//! returns the icon text of the node		
+		//! returns the icon text of the node
 		virtual const wchar_t* getIcon() const = 0;
-		
+
 		//! sets the icon text of the node
 		virtual void setIcon( const wchar_t* icon ) = 0;
-		
-		//! returns the image index of the node		
+
+		//! returns the image index of the node
 		virtual u32 getImageIndex() const = 0;
-		
+
 		//! sets the image index of the node
 		virtual void setImageIndex( u32 imageIndex ) = 0;
-		
-		//! returns the image index of the node		
+
+		//! returns the image index of the node
 		virtual u32 getSelectedImageIndex() const = 0;
-		
+
 		//! sets the image index of the node
 		virtual void setSelectedImageIndex( u32 imageIndex ) = 0;
-		
+
 		//! returns the user data (void*) of this node
 		virtual void* getData() const = 0;
-		
+
 		//! sets the user data (void*) of this node
 		virtual void setData( void* data ) = 0;
-		
+
 		//! returns the user data2 (IReferenceCounted) of this node
 		virtual IReferenceCounted* getData2() const = 0;
-		
+
 		//! sets the user data2 (IReferenceCounted) of this node
 		virtual void setData2( IReferenceCounted* data ) = 0;
-		
+
 		//! returns the child item count
-		virtual u32 getChildCount() const = 0;		
-		
-		//! removes all childs (recursive) from this node
-		virtual void clearChilds() = 0;
-		
+		virtual u32 getChildCount() const = 0;
+
+		//! removes all children (recursive) from this node
+		virtual void clearChildren() = 0;
+
+		//! removes all children (recursive) from this node
+		/** \deprecated Deprecated in 1.8, use clearChildren() instead. */
+		_IRR_DEPRECATED_ void clearChilds()
+		{
+			return clearChildren();
+		}
+
 		//! returns true if this node has child nodes
-		virtual bool hasChilds() const = 0;
-		
+		virtual bool hasChildren() const = 0;
+
+		//! returns true if this node has child nodes
+		/** \deprecated Deprecated in 1.8, use hasChildren() instead. */
+		_IRR_DEPRECATED_ bool hasChilds() const
+		{
+			return hasChildren();
+		}
+
 		//! Adds a new node behind the last child node.
 		/** \param text text of the new node
 		\param icon icon text of the new node
@@ -133,13 +147,13 @@ namespace gui
 				const wchar_t* text, const wchar_t* icon = 0,
 				s32 imageIndex=-1, s32 selectedImageIndex=-1,
 				void* data=0, IReferenceCounted* data2=0) = 0;
-		
+
 		//! Return the first child node from this node.
-		/** \return The first child node or 0 if this node has no childs. */
+		/** \return The first child node or 0 if this node has no children. */
 		virtual IGUITreeViewNode* getFirstChild() const = 0;
 
 		//! Return the last child node from this node.
-		/** \return The last child node or 0 if this node has no childs. */
+		/** \return The last child node or 0 if this node has no children. */
 		virtual IGUITreeViewNode* getLastChild() const = 0;
 
 		//! Returns the previous sibling node from this node.
@@ -162,7 +176,7 @@ namespace gui
 		//! Deletes a child node.
 		/** \return Returns true if the node was found as a child and is deleted. */
 		virtual bool deleteChild( IGUITreeViewNode* child ) = 0;
-		
+
 		//! Moves a child node one position up.
 		/** \return True if the node was found as achild node and was not already the first child. */
 		virtual bool moveChildUp( IGUITreeViewNode* child ) = 0;
@@ -171,30 +185,30 @@ namespace gui
 		/** \return True if the node was found as achild node and was not already the last child. */
 		virtual bool moveChildDown( IGUITreeViewNode* child ) = 0;
 
-		//! Returns true if the node is expanded (childs are visible).
+		//! Returns true if the node is expanded (children are visible).
 		virtual bool getExpanded() const = 0;
-		
+
 		//! Sets if the node is expanded.
 		virtual void setExpanded( bool expanded ) = 0;
-		
+
 		//! Returns true if the node is currently selected.
 		virtual bool getSelected() const = 0;
-		
+
 		//! Sets this node as selected.
 		virtual void setSelected( bool selected ) = 0;
-		
+
 		//! Returns true if this node is the root node.
 		virtual bool isRoot() const = 0;
-		
+
 		//! Returns the level of this node.
-		/** The root node has level 0. Direct childs of the root has level 1 ... */
+		/** The root node has level 0. Direct children of the root has level 1 ... */
 		virtual s32 getLevel() const = 0;
-		
+
 		//! Returns true if this node is visible (all parents are expanded).
 		virtual bool isVisible() const = 0;
 	};
-	
-	
+
+
 	//! Default tree view GUI element.
 	/** Displays a windows like tree buttons to expand/collaps the child
 	nodes of an node and optional tree lines. Each node consits of an
@@ -215,7 +229,7 @@ namespace gui
 
 		//! returns true if the tree lines are visible
 		virtual bool getLinesVisible() const = 0;
-		
+
 		//! sets if the tree lines are visible
 		/** \param visible true for visible, false for invisible */
 		virtual void setLinesVisible( bool visible ) = 0;
@@ -228,20 +242,20 @@ namespace gui
 		strings defined in GUIIcons.h can be used.
 		*/
 		virtual void setIconFont( IGUIFont* font ) = 0;
-		
+
 		//! Sets the image list which should be used for the image and selected image of every node.
 		/** The default is 0 (no images). */
 		virtual void setImageList( IGUIImageList* imageList ) = 0;
-		
+
 		//! Returns the image list which is used for the nodes.
 		virtual IGUIImageList* getImageList() const = 0;
-		
+
 		//! Sets if the image is left of the icon. Default is true.
 		virtual void setImageLeftOfIcon( bool bLeftOf ) = 0;
-		
+
 		//! Returns if the Image is left of the icon. Default is true.
 		virtual bool getImageLeftOfIcon() const = 0;
-		
+
 		//! Returns the node which is associated to the last event.
 		/** This pointer is only valid inside the OnEvent call! */
 		virtual IGUITreeViewNode* getLastEventNode() const = 0;
