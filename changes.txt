@@ -1,3 +1,9 @@
+- In IGUITreeView "clearChilds" and "hasChilds" deprecated for "clearChildren" and "hasChildren" (thx @Greenya for noticing)
+
+- add dimension2d::operator-
+
+- add CGUIEditBox::getOverrideColor and CGUIEditBox::isOverrideColorEnabled
+
 - Add logging level ELL_DEBUG
 
 - Add parameter DisplayAdapter to creation params to allow selecting the card when more than one card is in the system.

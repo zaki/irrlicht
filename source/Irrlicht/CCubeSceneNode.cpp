@@ -64,7 +64,6 @@ void CCubeSceneNode::render()
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 	// for debug purposes only:
-	bool renderMeshes = true;
 	video::SMaterial mat = Mesh->getMeshBuffer(0)->getMaterial();
 
 	// overwrite half transparency

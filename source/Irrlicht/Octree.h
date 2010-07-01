@@ -329,7 +329,7 @@ private:
 						return;
 #if defined (OCTREE_PARENTTEST )
 					if ( r == core::ISREL3D_CLIPPED )
-						parentTest = 1;	// must still check childs
+						parentTest = 1;	// must still check children
 #endif
 				}
 			}
