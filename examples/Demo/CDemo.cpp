@@ -359,7 +359,7 @@ void CDemo::loadSceneData()
 		core::matrix4 m;
 		m.setTranslation(core::vector3df(-1300,-70,-1249));
 
-		for ( i = 0; i!= scene::quake3::E_Q3_MESH_SIZE; ++i )
+		for ( i = 0; i != scene::quake3::E_Q3_MESH_SIZE; ++i )
 			sm->getMeshManipulator()->transform(quakeLevelMesh->getMesh(i), m);
 
 		quakeLevelNode = sm->addOctreeSceneNode(

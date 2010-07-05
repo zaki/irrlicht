@@ -1,3 +1,18 @@
+-----------------------------
+Changes in 1.7.1 (05.07.2010) TA
+	- BurningVideo 
+		- add Normalmap Rendering ( one light only), pushed Burningvideo to 0.46
+		- internal vertexformat changed
+		- changed fixpoint from 9 to 10 bit fract resolution
+		- renamed createBurningVideoDriver to createBurningVideoDriver and uses SIrrlichtCreationParameters like opengl
+		- internal interfaces for the trianglerenders unified.
+		
+	- Example 11.
+		changed the light billboards to use the light color. ( green light, green particle, red light red particle )
+		allow to disable the bump/parallax on the earth like in the room ( with transparency )
+
+--------------------------------------
+
 - In IGUITreeView "clearChilds" and "hasChilds" deprecated for "clearChildren" and "hasChildren" (thx @Greenya for noticing)
 
 - add dimension2d::operator-

@@ -217,6 +217,7 @@ namespace core
 
 			//! An alternate transform vector method, writing into an array of 4 floats
 			void transformVect(T *out,const core::vector3df &in) const;
+			void transformVec3(T *out, const T * in) const;
 
 			//! Translate a vector by the translation part of this matrix.
 			void translateVect( vector3df& vect ) const;
@@ -947,17 +948,29 @@ namespace core
 		if (definitelyIdentityMatrix)
 			return true;
 #endif
+		if (!core::equals( M[12], (T)0 ) || !core::equals( M[13], (T)0 ) || !core::equals( M[14], (T)0 ) || !core::equals( M[15], (T)1 ))
+			return false;
+
+		if (!core::equals( M[ 0], (T)1 ) || !core::equals( M[ 1], (T)0 ) || !core::equals( M[ 2], (T)0 ) || !core::equals( M[ 3], (T)0 ))
+			return false;
+
+		if (!core::equals( M[ 4], (T)0 ) || !core::equals( M[ 5], (T)1 ) || !core::equals( M[ 6], (T)0 ) || !core::equals( M[ 7], (T)0 ))
+			return false;
+
+		if (!core::equals( M[ 8], (T)0 ) || !core::equals( M[ 9], (T)0 ) || !core::equals( M[10], (T)1 ) || !core::equals( M[11], (T)0 ))
+			return false;
+/*
 		if (!core::equals( M[ 0], (T)1 ) ||
-				!core::equals( M[ 5], (T)1 ) ||
-				!core::equals( M[10], (T)1 ) ||
-				!core::equals( M[15], (T)1 ))
+			!core::equals( M[ 5], (T)1 ) ||
+			!core::equals( M[10], (T)1 ) ||
+			!core::equals( M[15], (T)1 ))
 			return false;
 
 		for (s32 i=0; i<4; ++i)
 			for (s32 j=0; j<4; ++j)
 				if ((j != i) && (!iszero((*this)(i,j))))
 					return false;
-
+*/
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=true;
 #endif
@@ -1095,6 +1108,14 @@ namespace core
 		out[1] = in.X*M[1] + in.Y*M[5] + in.Z*M[9] + M[13];
 		out[2] = in.X*M[2] + in.Y*M[6] + in.Z*M[10] + M[14];
 		out[3] = in.X*M[3] + in.Y*M[7] + in.Z*M[11] + M[15];
+	}
+
+	template <class T>
+	inline void CMatrix4<T>::transformVec3(T *out, const T * in) const
+	{
+		out[0] = in[0]*M[0] + in[1]*M[4] + in[2]*M[8] + M[12];
+		out[1] = in[0]*M[1] + in[1]*M[5] + in[2]*M[9] + M[13];
+		out[2] = in[0]*M[2] + in[1]*M[6] + in[2]*M[10] + M[14];
 	}
 
 
