@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C++ Express 2008
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01.HelloWorld_vc9", "01.HelloWorld\HelloWorld_vc9.vcproj", "{5AD4C95C-BA38-4692-BA4B-8C25A86208F9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
@@ -118,7 +118,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "23.SMeshHandling_vc9", "23.
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld for Windows Mobile on PC", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v9.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld_Mobile_v9", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v9.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection

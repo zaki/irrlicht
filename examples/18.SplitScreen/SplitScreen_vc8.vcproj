@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="18.SplitScreen_vc8"
-	ProjectGUID="{EB3B38EA-5CE7-4983-845B-880661E69D09}"
+	ProjectGUID="{E6F60924-57CD-47F9-A485-853A3BA08FBD}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -129,7 +129,6 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
-				CallingConvention="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
