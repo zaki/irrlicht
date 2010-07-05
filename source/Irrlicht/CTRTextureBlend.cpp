@@ -81,7 +81,7 @@ class CTRTextureBlend : public IBurningShader
 public:
 
 	//! constructor
-	CTRTextureBlend(IDepthBuffer* zbuffer);
+	CTRTextureBlend(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
@@ -111,8 +111,8 @@ private:
 };
 
 //! constructor
-CTRTextureBlend::CTRTextureBlend(IDepthBuffer* zbuffer)
-: IBurningShader(zbuffer)
+CTRTextureBlend::CTRTextureBlend(CBurningVideoDriver* driver)
+: IBurningShader(driver)
 {
 	#ifdef _DEBUG
 	setDebugName("CTRTextureBlend");
@@ -334,7 +334,7 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 
-		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+		getSample_texture ( a0,r0,g0,b0, 
 							&IT[0],
 							tofix ( line.t[0][0].x,iw),
 							tofix ( line.t[0][0].y,iw)
@@ -377,7 +377,7 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 
-		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+		getSample_texture ( a0,r0,g0,b0, 
 							&IT[0],
 							tofix ( line.t[0][0].x,iw),
 							tofix ( line.t[0][0].y,iw)
@@ -494,7 +494,7 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 
 	f32 iw = 	FIX_POINT_F32_MUL;
 
-	tFixPointu a0, r0, g0, b0;
+	tFixPoint a0, r0, g0, b0;
 	tFixPoint     r1, g1, b1;
 
 	s32 i;
@@ -557,7 +557,7 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 
-		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+		getSample_texture ( a0,r0,g0,b0, 
 							&IT[0],
 							tofix ( line.t[0][0].x,iw),
 							tofix ( line.t[0][0].y,iw)
@@ -674,7 +674,7 @@ void CTRTextureBlend::fragment_one_one_minus_src_alpha()
 
 	f32 iw = FIX_POINT_F32_MUL;
 
-	tFixPointu a0,r0, g0, b0;
+	tFixPoint a0,r0, g0, b0;
 	tFixPoint	 r1, g1, b1;
 	tFixPoint	 r2, g2, b2;
 
@@ -1067,7 +1067,7 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 
 	f32 iw = FIX_POINT_F32_MUL;
 
-	tFixPointu a0, r0, g0, b0;
+	tFixPoint a0, r0, g0, b0;
 	tFixPoint r1, g1, b1;
 	tFixPoint r2, g2, b2;
 
@@ -2369,10 +2369,10 @@ namespace video
 {
 
 //! creates a flat triangle renderer
-IBurningShader* createTRTextureBlend(IDepthBuffer* zbuffer)
+IBurningShader* createTRTextureBlend(CBurningVideoDriver* driver)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-	return new CTRTextureBlend(zbuffer);
+	return new CTRTextureBlend(driver);
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
