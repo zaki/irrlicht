@@ -255,8 +255,9 @@
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
+				StructMemberAlignment="0"
 				BufferSecurityCheck="false"
-				EnableFunctionLevelLinking="true"
+				EnableFunctionLevelLinking="false"
 				EnableEnhancedInstructionSet="2"
 				FloatingPointModel="2"
 				RuntimeTypeInfo="false"
@@ -268,7 +269,6 @@
 				WarnAsError="false"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="0"
-				CallingConvention="1"
 				CompileAs="0"
 			/>
 			<Tool
@@ -2509,6 +2509,10 @@
 					</File>
 					<File
 						RelativePath="CTRGouraudAlphaNoZ2.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\CTRNormalMap.cpp"
 						>
 					</File>
 					<File

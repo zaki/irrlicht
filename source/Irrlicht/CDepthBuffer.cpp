@@ -68,12 +68,70 @@ void CDepthBuffer::setSize(const core::dimension2d<u32>& size)
 	Pitch = size.Width * sizeof ( fp24 );
 	TotalSize = Pitch * size.Height;
 	Buffer = new u8[TotalSize];
+	clear ();
 }
 
 
 
 //! returns the size of the zbuffer
 const core::dimension2d<u32>& CDepthBuffer::getSize() const
+{
+	return Size;
+}
+
+// -----------------------------------------------------------------
+
+//! constructor
+CStencilBuffer::CStencilBuffer(const core::dimension2d<u32>& size)
+: Buffer(0), Size(0,0)
+{
+	#ifdef _DEBUG
+	setDebugName("CDepthBuffer");
+	#endif
+
+	setSize(size);
+}
+
+
+
+//! destructor
+CStencilBuffer::~CStencilBuffer()
+{
+	if (Buffer)
+		delete [] Buffer;
+}
+
+
+
+//! clears the zbuffer
+void CStencilBuffer::clear()
+{
+	memset32 ( Buffer, 0, TotalSize );
+}
+
+
+
+//! sets the new size of the zbuffer
+void CStencilBuffer::setSize(const core::dimension2d<u32>& size)
+{
+	if (size == Size)
+		return;
+
+	Size = size;
+
+	if (Buffer)
+		delete [] Buffer;
+
+	Pitch = size.Width * sizeof ( u8 );
+	TotalSize = Pitch * size.Height;
+	Buffer = new u8[TotalSize];
+	clear ();
+}
+
+
+
+//! returns the size of the zbuffer
+const core::dimension2d<u32>& CStencilBuffer::getSize() const
 {
 	return Size;
 }
@@ -95,6 +153,17 @@ IDepthBuffer* createDepthBuffer(const core::dimension2d<u32>& size)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CDepthBuffer(size);
+	#else
+	return 0;
+	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
+}
+
+
+//! creates a ZBuffer
+IStencilBuffer* createStencilBuffer(const core::dimension2d<u32>& size)
+{
+	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+	return new CStencilBuffer(size);
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
