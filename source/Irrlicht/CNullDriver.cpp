@@ -33,6 +33,9 @@ IImageLoader* createImageLoaderTGA();
 //! creates a loader which is able to load psd images
 IImageLoader* createImageLoaderPSD();
 
+//! creates a loader which is able to load dds images
+IImageLoader* createImageLoaderDDS();
+
 //! creates a loader which is able to load pcx images
 IImageLoader* createImageLoaderPCX();
 
@@ -107,6 +110,9 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #endif
 #ifdef _IRR_COMPILE_WITH_PSD_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
+#endif
+#ifdef _IRR_COMPILE_WITH_DDS_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderDDS());
 #endif
 #ifdef _IRR_COMPILE_WITH_PCX_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPCX());

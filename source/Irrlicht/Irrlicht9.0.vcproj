@@ -2343,6 +2343,14 @@
 							>
 						</File>
 						<File
+							RelativePath=".\CImageLoaderDDS.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\CImageLoaderDDS.h"
+							>
+						</File>
+						<File
 							RelativePath="CImageLoaderJPG.cpp"
 							>
 						</File>
