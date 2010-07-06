@@ -10,6 +10,7 @@ Changes in 1.7.1 (05.07.2010) TA
 	- Example 11.
 		changed the light billboards to use the light color. ( green light, green particle, red light red particle )
 		allow to disable the bump/parallax on the earth like in the room ( with transparency )
+	- added DDS Image files, DXT2, DXT3, DXT4, DXT5, based on code from nvidia and Randy Reddig
 
 --------------------------------------
 

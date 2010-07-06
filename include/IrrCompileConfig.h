@@ -315,6 +315,8 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_PPM_LOADER_
 //! Define _IRR_COMPILE_WITH_PSD_LOADER_ if you want to load .psd files
 #define _IRR_COMPILE_WITH_PSD_LOADER_
+//! Define _IRR_COMPILE_WITH_DDS_LOADER_ if you want to load .dds files
+#define _IRR_COMPILE_WITH_DDS_LOADER_
 //! Define _IRR_COMPILE_WITH_TGA_LOADER_ if you want to load .tga files
 #define _IRR_COMPILE_WITH_TGA_LOADER_
 //! Define _IRR_COMPILE_WITH_WAL_LOADER_ if you want to load .wal files
