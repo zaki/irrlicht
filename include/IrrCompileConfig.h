@@ -381,6 +381,8 @@ currently only supports zip archives, though. */
 #define __IRR_COMPILE_WITH_NPK_ARCHIVE_LOADER_
 //! Define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_ if you want to open TAR archives
 #define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
+//! Define __IRR_COMPILE_WITH_WAD_ARCHIVE_LOADER_ if you want to open WAD archives
+#define __IRR_COMPILE_WITH_WAD_ARCHIVE_LOADER_
 
 //! Set FPU settings
 /** Irrlicht should use approximate float and integer fpu techniques

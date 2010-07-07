@@ -145,7 +145,6 @@ bool CPakReader::scanLocalHeader()
 
 	const int numberOfFiles = header.length / sizeof(SPAKFileEntry);
 
-	Offsets.reallocate(numberOfFiles);
 	// Loop through each entry in the table of contents
 	for(int i = 0; i < numberOfFiles; i++)
 	{
@@ -162,8 +161,7 @@ bool CPakReader::scanLocalHeader()
 		entry.length = os::Byteswap::byteswap(entry.length);
 #endif
 
-		addItem(io::path(entry.name), entry.length, false, Offsets.size());
-		Offsets.push_back(entry.offset);
+		addItem(io::path(entry.name), entry.offset, entry.length, false );
 	}
 	return true;
 }
@@ -184,12 +182,11 @@ IReadFile* CPakReader::createAndOpenFile(const io::path& filename)
 //! opens a file by index
 IReadFile* CPakReader::createAndOpenFile(u32 index)
 {
-	if (index < Files.size())
-	{
-		return createLimitReadFile(Files[index].FullName, File, Offsets[Files[index].ID], Files[index].Size);
-	}
-	else
+	if (index >= Files.size() )
 		return 0;
+
+	const SFileListEntry &entry = Files[index];
+	return createLimitReadFile( entry.FullName, File, entry.Offset, entry.Size );
 }
 
 } // end namespace io

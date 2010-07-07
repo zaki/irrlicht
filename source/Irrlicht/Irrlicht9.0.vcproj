@@ -2532,6 +2532,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\CTRStencilShadow.cpp"
+						>
+					</File>
+					<File
 						RelativePath="CTRTextureBlend.cpp"
 						>
 					</File>
@@ -3314,6 +3318,14 @@
 				</File>
 				<File
 					RelativePath="CTarReader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CWADReader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CWADReader.h"
 					>
 				</File>
 				<File

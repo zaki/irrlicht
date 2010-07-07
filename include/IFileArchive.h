@@ -42,6 +42,9 @@ enum E_FILE_ARCHIVE_TYPE
 	//! A Tape ARchive
 	EFAT_TAR     = MAKE_IRR_ID('T','A','R', 0),
 
+	//! A wad Archive, Quake2, Halflife
+	EFAT_WAD     = MAKE_IRR_ID('W','A','D', 0),
+
 	//! The type of this archive is unknown
 	EFAT_UNKNOWN = MAKE_IRR_ID('u','n','k','n')
 };

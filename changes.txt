@@ -12,10 +12,10 @@ Changes in 1.7.1 (05.07.2010) TA
 		allow to disable the bump/parallax on the earth like in the room ( with transparency )
 	- added DDS Image files, DXT2, DXT3, DXT4, DXT5, based on code from nvidia and Randy Reddig
 	
-	- added a Halflife 1 Model Loader. ( bases on code by Fabio Concas )
+	- added a Halflife 1 Model Loader. ( bases on code by Fabio Concas ) Halflife 1.1.0.8, Counter-Strike 1.6 working
 		-> Load all Textures ( can even optimize it to texture atlas ), all bone animation, all submodels.
 		-> But to make use of the values ( named animation, mouth animation ) the Interface for IAnimatedMeshSceneNode
-		has to be reonde. I don't want to blow up the Interface again...
+		has to be redone. I don't want to blow up the Interface again...
 		
 		TODO:
 			->can handle float frames numbers, the interface for getMesh should be reworked
@@ -75,7 +75,10 @@ Changes in 1.7.1 (05.07.2010) TA
 		Valve uses WAL archive types like quake2. textures are inside model files
 		I reworked the existing ImageloaderWAL and added named Halflife textures to wal2 ( they have not extension )
 		and an LMP (palette/texture) loader into the same file ( all using 32bit now )
-		
+	- added WAD Archive Loader ( Quake2 (WAL2) and Halflife (WAL3) are supported )
+	- CFileList
+		added Offset Parameter to SFileListEntry and removed the private array from the archive loaders.
+		CFileList::addItem now uses automatic incremental id if id = 0
 	- coreutil.h 
 		added void splitFilenam, splits a path into components
 	- irstring.h

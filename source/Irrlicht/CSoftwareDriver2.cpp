@@ -385,6 +385,7 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 	BurningShader[ETR_TEXTURE_GOURAUD_ALPHA_NOZ] = createTRTextureGouraudAlphaNoZ( this );
 
 	BurningShader[ETR_NORMAL_MAP_SOLID] = createTRNormalMap ( this );
+	BurningShader[ETR_STENCIL_SHADOW] = createTRStencilShadow ( this );
 	BurningShader[ETR_TEXTURE_BLEND] = createTRTextureBlend( this );
 
 	BurningShader[ETR_REFERENCE] = createTriangleRendererReference ( this );
@@ -446,11 +447,12 @@ CBurningVideoDriver::~CBurningVideoDriver()
 	// delete triangle renderers
 
 	for (s32 i=0; i<ETR2_COUNT; ++i)
+	{
 		if (BurningShader[i])
 			BurningShader[i]->drop();
+	}
 
-	// delete zbuffer
-
+	// delete Additional buffer
 	if (StencilBuffer)
 		StencilBuffer->drop();
 
@@ -1727,6 +1729,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 			dc_area = screenarea2 ( face );
 			if ( Material.org.BackfaceCulling && F32_LOWER_EQUAL_0( dc_area ) )
 				continue;
+			else
 			if ( Material.org.FrontfaceCulling && F32_GREATER_EQUAL_0( dc_area ) )
 				continue;
 
@@ -1844,6 +1847,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 		dc_area = screenarea ( CurrentOut.data );
 		if ( Material.org.BackfaceCulling && F32_LOWER_EQUAL_0 ( dc_area ) )
 			continue;
+		else
 		if ( Material.org.FrontfaceCulling && F32_GREATER_EQUAL_0( dc_area ) )
 			continue;
 
@@ -2547,6 +2551,41 @@ u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 //! volume. Next use IVideoDriver::drawStencilShadow() to visualize the shadow.
 void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
 {
+	if (!StencilBuffer || !count)
+		return;
+
+	IBurningShader *shader = BurningShader [ ETR_STENCIL_SHADOW ];
+	shader->setRenderTarget(RenderTargetSurface, ViewPort);
+
+	//glStencilMask(~0);
+	//glStencilFunc(GL_ALWAYS, 0, ~0);
+
+	if (zfail)
+	{
+		Material.org.BackfaceCulling = false;
+		Material.org.FrontfaceCulling = true;
+		//glStencilOp(GL_KEEP, incr, GL_KEEP);
+		//glDrawArrays(GL_TRIANGLES,0,count);
+
+		Material.org.BackfaceCulling = true;
+		Material.org.FrontfaceCulling = false;
+		//glStencilOp(GL_KEEP, decr, GL_KEEP);
+		//glDrawArrays(GL_TRIANGLES,0,count);
+	}
+	else // zpass
+	{
+		Material.org.BackfaceCulling = true;
+		Material.org.FrontfaceCulling = false;
+		//glStencilOp(GL_KEEP, GL_KEEP, incr);
+		//glDrawArrays(GL_TRIANGLES,0,count);
+
+		Material.org.BackfaceCulling = false;
+		Material.org.FrontfaceCulling = true;
+		//glStencilOp(GL_KEEP, GL_KEEP, decr);
+		//glDrawArrays(GL_TRIANGLES,0,count);
+	}
+
+	
 #if 0
 	if (!StencilBuffer || !count)
 		return;
