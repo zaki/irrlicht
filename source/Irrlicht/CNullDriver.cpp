@@ -45,6 +45,12 @@ IImageLoader* createImageLoaderPNG();
 //! creates a loader which is able to load WAL images
 IImageLoader* createImageLoaderWAL();
 
+//! creates a loader which is able to load halflife images
+IImageLoader* createImageLoaderHalfLife();
+
+//! creates a loader which is able to load lmp images
+IImageLoader* createImageLoaderLMP();
+
 //! creates a loader which is able to load ppm/pgm/pbm images
 IImageLoader* createImageLoaderPPM();
 
@@ -123,6 +129,13 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #ifdef _IRR_COMPILE_WITH_WAL_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderWAL());
 #endif
+#ifdef _IRR_COMPILE_WITH_LMP_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderLMP());
+#endif
+#ifdef _IRR_COMPILE_WITH_HALFLIFE_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderHalfLife());
+#endif
+
 #ifdef _IRR_COMPILE_WITH_PPM_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPPM());
 #endif

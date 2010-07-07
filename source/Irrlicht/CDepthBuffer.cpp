@@ -122,7 +122,7 @@ void CStencilBuffer::setSize(const core::dimension2d<u32>& size)
 	if (Buffer)
 		delete [] Buffer;
 
-	Pitch = size.Width * sizeof ( u8 );
+	Pitch = size.Width * sizeof ( u32 );
 	TotalSize = Pitch * size.Height;
 	Buffer = new u8[TotalSize];
 	clear ();

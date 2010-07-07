@@ -1396,6 +1396,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\CAnimatedMeshHalfLife.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\CAnimatedMeshHalfLife.h"
+						>
+					</File>
+					<File
 						RelativePath="CAnimatedMeshMD2.cpp"
 						>
 					</File>

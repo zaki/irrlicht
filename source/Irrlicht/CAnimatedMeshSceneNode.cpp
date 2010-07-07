@@ -199,7 +199,9 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 {
 	if(Mesh->getMeshType() != EAMT_SKINNED)
 	{
-		return Mesh->getMesh((s32)getFrameNr(), 255, StartFrame, EndFrame);
+		s32 frameNr = (s32) getFrameNr();
+		s32 frameBlend = (s32) (core::fract ( getFrameNr() ) * 1000.f);
+		return Mesh->getMesh(frameNr, frameBlend, StartFrame, EndFrame);
 	}
 	else
 	{

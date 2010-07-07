@@ -260,12 +260,12 @@ B3D, MS3D or X meshes */
 
 //! Define _IRR_COMPILE_WITH_IRR_MESH_LOADER_ if you want to load Irrlicht Engine .irrmesh files
 #define _IRR_COMPILE_WITH_IRR_MESH_LOADER_
-
+//! Define _IRR_COMPILE_WITH_HALFLIFE_LOADER_ if you want to load Halflife animated files
+#define _IRR_COMPILE_WITH_HALFLIFE_LOADER_
 //! Define _IRR_COMPILE_WITH_MD2_LOADER_ if you want to load Quake 2 animated files
 #define _IRR_COMPILE_WITH_MD2_LOADER_
 //! Define _IRR_COMPILE_WITH_MD3_LOADER_ if you want to load Quake 3 animated files
 #define _IRR_COMPILE_WITH_MD3_LOADER_
-
 //! Define _IRR_COMPILE_WITH_3DS_LOADER_ if you want to load 3D Studio Max files
 #define _IRR_COMPILE_WITH_3DS_LOADER_
 //! Define _IRR_COMPILE_WITH_COLLADA_LOADER_ if you want to load Collada files
@@ -321,6 +321,8 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_TGA_LOADER_
 //! Define _IRR_COMPILE_WITH_WAL_LOADER_ if you want to load .wal files
 #define _IRR_COMPILE_WITH_WAL_LOADER_
+//! Define _IRR_COMPILE_WITH_LMP_LOADER_ if you want to load .lmp files
+#define _IRR_COMPILE_WITH_LMP_LOADER_
 //! Define _IRR_COMPILE_WITH_RGB_LOADER_ if you want to load Silicon Graphics .rgb/.rgba/.sgi/.int/.inta/.bw files
 #define _IRR_COMPILE_WITH_RGB_LOADER_
 

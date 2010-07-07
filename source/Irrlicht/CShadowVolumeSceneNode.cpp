@@ -331,8 +331,9 @@ void CShadowVolumeSceneNode::render()
 	driver->setTransform(video::ETS_WORLD, Parent->getAbsoluteTransformation());
 
 	for (u32 i=0; i<ShadowVolumesUsed; ++i)
-		driver->drawStencilShadowVolume(ShadowVolumes[i].pointer(),
-			ShadowVolumes[i].size(), UseZFailMethod);
+	{
+		driver->drawStencilShadowVolume(ShadowVolumes[i].pointer(),ShadowVolumes[i].size(), UseZFailMethod);
+	}
 }
 
 

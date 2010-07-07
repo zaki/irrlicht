@@ -348,9 +348,12 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 		BackBuffer->fill(SColor(0));
 
 		// create z buffer
-		DepthBuffer = video::createDepthBuffer(BackBuffer->getDimension());
+		if ( params.ZBufferBits )
+			DepthBuffer = video::createDepthBuffer(BackBuffer->getDimension());
+
 		// create stencil buffer
-		StencilBuffer = video::createStencilBuffer(BackBuffer->getDimension());
+		if ( params.Stencilbuffer )
+			StencilBuffer = video::createStencilBuffer(BackBuffer->getDimension());
 	}
 
 	// create triangle renderers
@@ -607,6 +610,7 @@ bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_MIP_MAP:
 		return true;
 #endif
+	case EVDF_STENCIL_BUFFER:
 	case EVDF_RENDER_TO_TARGET:
 	case EVDF_MULTITEXTURE:
 	case EVDF_HARDWARE_TL:

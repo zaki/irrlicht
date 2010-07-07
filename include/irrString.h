@@ -884,25 +884,35 @@ public:
 
 	//! Returns a substring
 	/** \param begin: Start of substring.
-	\param length: Length of substring. */
-	string<T,TAlloc> subString(u32 begin, s32 length) const
+	\param length: Length of substring.
+	\param make_lower, copy only lower case */
+	string<T> subString(u32 begin, s32 length, bool make_lower = false ) const
 	{
 		// if start after string
 		// or no proper substring length
 		if ((length <= 0) || (begin>=size()))
-			return string<T,TAlloc>("");
+			return string<T>("");
 		// clamp length to maximal value
 		if ((length+begin) > size())
 			length = size()-begin;
 
-		string<T,TAlloc> o;
+		string<T> o;
 		o.reserve(length+1);
 
-		for (s32 i=0; i<length; ++i)
-			o.array[i] = array[i+begin];
+		s32 i;
+		if ( !make_lower )
+		{
+			for (i=0; i<length; ++i)
+				o.array[i] = array[i+begin];
+		}
+		else
+		{
+			for (i=0; i<length; ++i)
+				o.array[i] = locale_lower ( array[i+begin] );
+		}
 
 		o.array[length] = 0;
-		o.used = o.allocated;
+		o.used = length + 1;
 
 		return o;
 	}
