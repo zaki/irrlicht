@@ -118,7 +118,7 @@ void CMountPointReader::buildDirectory()
 
 		if (!list->isDirectory(i))
 		{
-			addItem(full, list->getFileSize(i), false, RealFileNames.size());
+			addItem(full, list->getFileOffset(i), list->getFileSize(i), false, RealFileNames.size());
 			RealFileNames.push_back(list->getFullFileName(i));
 		}
 		else
@@ -131,7 +131,7 @@ void CMountPointReader::buildDirectory()
 
 			if ( rel != "." && rel != ".." )
 			{
-				addItem(full, 0, true, 0);
+				addItem(full, 0, 0, true, 0);
 				Parent->changeWorkingDirectoryTo(pwd);
 				buildDirectory();
 				Parent->changeWorkingDirectoryTo("..");

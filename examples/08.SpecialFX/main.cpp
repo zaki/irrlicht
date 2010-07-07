@@ -38,7 +38,7 @@ int main()
 	if (driverType==video::EDT_COUNT)
 		return 1;
 */
-	video::E_DRIVER_TYPE driverType = video::EDT_DIRECT3D9; // video::EDT_BURNINGSVIDEO; // video::EDT_OPENGL; //video::EDT_BURNINGSVIDEO;
+	video::E_DRIVER_TYPE driverType = video::EDT_BURNINGSVIDEO;// video::EDT_DIRECT3D9; // video::EDT_BURNINGSVIDEO; // video::EDT_OPENGL; //video::EDT_BURNINGSVIDEO;
 	bool shadows = true;
 
 	/*

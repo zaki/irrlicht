@@ -9,6 +9,7 @@
 
 // compile flag for this file
 #undef USE_ZBUFFER
+#undef USE_SBUFFER
 #undef IPOL_Z
 #undef CMP_Z
 #undef WRITE_Z
@@ -31,14 +32,11 @@
 #define INVERSE_W
 
 #define USE_ZBUFFER
+#define USE_SBUFFER
 #define IPOL_W
 #define CMP_W
-#define WRITE_W
+//#define WRITE_W
 
-#define IPOL_C0
-#define IPOL_T0
-#define IPOL_T1
-#define IPOL_L0
 
 // apply global override
 #ifndef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
@@ -78,20 +76,19 @@ namespace irr
 namespace video
 {
 
-
-class CTRNormalMap : public IBurningShader
+class CTRStencilShadow : public IBurningShader
 {
 public:
 
 	//! constructor
-	CTRNormalMap(CBurningVideoDriver* driver);
+	CTRStencilShadow(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
 
 
 private:
-	void scanline_bilinear ();
+	void scanline ();
 
 	sScanConvertData scan;
 	sScanLineData line;
@@ -99,11 +96,11 @@ private:
 };
 
 //! constructor
-CTRNormalMap::CTRNormalMap(CBurningVideoDriver* driver)
+CTRStencilShadow::CTRStencilShadow(CBurningVideoDriver* driver)
 : IBurningShader(driver)
 {
 	#ifdef _DEBUG
-	setDebugName("CTRNormalMap");
+	setDebugName("CTRStencilShadow");
 	#endif
 }
 
@@ -111,12 +108,16 @@ CTRNormalMap::CTRNormalMap(CBurningVideoDriver* driver)
 
 /*!
 */
-void CTRNormalMap::scanline_bilinear ()
+void CTRStencilShadow::scanline ()
 {
 	tVideoSample *dst;
 
 #ifdef USE_ZBUFFER
 	fp24 *z;
+#endif
+
+#ifdef USE_SBUFFER
+	u32 *stencil;
 #endif
 
 	s32 xStart;
@@ -209,22 +210,14 @@ void CTRNormalMap::scanline_bilinear ()
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
+#ifdef USE_SBUFFER
+	stencil = (u32*) Stencil->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
 
 #ifdef INVERSE_W
 	f32 inversew;
 #endif
-
-	tFixPoint tx0, tx1;
-	tFixPoint ty0, ty1;
-
-	tFixPoint r0, g0, b0;
-	tFixPoint r1, g1, b1;
-	tFixPoint r2, g2, b2;
-
-	tFixPoint lx, ly, lz;
-	tFixPoint ndotl;
-
-	sVec3 light;
 
 
 #ifdef IPOL_C0
@@ -243,85 +236,11 @@ void CTRNormalMap::scanline_bilinear ()
 #ifdef INVERSE_W
 			inversew = fix_inverse32 ( line.w[0] );
 
-			tx0 = tofix ( line.t[0][0].x,inversew);
-			ty0 = tofix ( line.t[0][0].y,inversew);
-			tx1 = tofix ( line.t[1][0].x,inversew);
-			ty1 = tofix ( line.t[1][0].y,inversew);
-
-
-#ifdef IPOL_C0
-			r3 = tofix ( line.c[0][0].y ,inversew );
-			g3 = tofix ( line.c[0][0].z ,inversew );
-			b3 = tofix ( line.c[0][0].w ,inversew );
-#endif
-
 #else
-			tx0 = tofix ( line.t[0][0].x );
-			ty0 = tofix ( line.t[0][0].y );
-			tx1 = tofix ( line.t[1][0].x );
-			ty1 = tofix ( line.t[1][0].y );
-
-#ifdef IPOL_C0
-			r3 = tofix ( line.c[0][0].y );
-			g3 = tofix ( line.c[0][0].z );
-			b3 = tofix ( line.c[0][0].w );
-#endif
 
 #endif
-			getSample_texture ( r0, g0, b0, &IT[0], tx0, ty0 );
 
-			// normal map
-			getSample_texture ( r1, g1, b1, &IT[1], tx1, ty1 );
-
-			r1 = ( r1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2-1);
-			g1 = ( g1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2-1);
-			b1 = ( b1 - FIX_POINT_HALF_COLOR) >> (COLOR_MAX_LOG2-1);
-
-/*
-			sVec3 l = line.l[0][0] * inversew;
-			l.setLength( 2.f );
-
-			lx = tofix ( l.x - 0.5f );
-			ly = tofix ( l.y - 0.5f );
-			lz = tofix ( l.z - 0.5f );
-*/
-
-			lx = tofix ( line.l[0][0].x, inversew );
-			ly = tofix ( line.l[0][0].y, inversew );
-			lz = tofix ( line.l[0][0].z, inversew );
-
-			// DOT 3 Normal Map light in tangent space
-			ndotl = saturateFix ( FIX_POINT_HALF_COLOR +  (( imulFix ( r1, lx ) + imulFix ( g1, ly ) + imulFix ( b1, lz ) ) << (COLOR_MAX_LOG2-1)) );
-
-#ifdef IPOL_C0
-
-			// N . L
-			r2 = imulFix ( imulFix_tex1 ( r0, ndotl ), r3 );
-			g2 = imulFix ( imulFix_tex1 ( g0, ndotl ), g3 );
-			b2 = imulFix ( imulFix_tex1 ( b0, ndotl ), b3 );
-
-/*
-			// heightmap: (1 - neu ) + alt - 0.5, on_minus_srcalpha + add signed
-			// emboss bump map
-			a4 -= a1;
-			r2 = clampfix_maxcolor ( clampfix_mincolor ( imulFix ( r0 + a4, r3 ) ) );
-			g2 = clampfix_maxcolor ( clampfix_mincolor ( imulFix ( g0 + a4, g3 ) ) );
-			b2 = clampfix_maxcolor ( clampfix_mincolor ( imulFix ( b0 + a4, b3 ) ) );
-*/
-
-/*
-			r2 = clampfix_maxcolor ( imulFix_tex1 ( r2, r1 ) );
-			g2 = clampfix_maxcolor ( imulFix_tex1 ( g2, g1 ) );
-			b2 = clampfix_maxcolor ( imulFix_tex1 ( b2, b1 ) );
-*/
-#else
-			r2 = clampfix_maxcolor ( imulFix_tex4 ( r0, r1 ) );
-			g2 = clampfix_maxcolor ( imulFix_tex4 ( g0, g1 ) );
-			b2 = clampfix_maxcolor ( imulFix_tex4 ( b0, b1 ) );
-#endif
-
-
-			dst[i] = fix_to_color ( r2, g2, b2 );
+			dst[i] = 0xFFFFFFFF;
 
 #ifdef WRITE_Z
 			z[i] = line.z[0];
@@ -356,7 +275,7 @@ void CTRNormalMap::scanline_bilinear ()
 
 }
 
-void CTRNormalMap::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c )
+void CTRStencilShadow::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c )
 {
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
@@ -566,7 +485,7 @@ void CTRNormalMap::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4
 #endif
 
 			// render a scanline
-			scanline_bilinear ();
+			scanline ();
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];
@@ -774,7 +693,7 @@ void CTRNormalMap::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4
 #endif
 
 			// render a scanline
-			scanline_bilinear ();
+			scanline ();
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];
@@ -831,10 +750,10 @@ namespace video
 
 
 //! creates a triangle renderer
-IBurningShader* createTRNormalMap(CBurningVideoDriver* driver)
+IBurningShader* createTRStencilShadow(CBurningVideoDriver* driver)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-	return new CTRNormalMap(driver);
+	return new CTRStencilShadow(driver);
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

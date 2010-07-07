@@ -112,6 +112,7 @@ namespace video
 		ETR_TEXTURE_GOURAUD_ALPHA_NOZ,
 
 		ETR_NORMAL_MAP_SOLID,
+		ETR_STENCIL_SHADOW,
 
 		ETR_TEXTURE_BLEND,
 		ETR_REFERENCE,
@@ -187,6 +188,7 @@ namespace video
 	IBurningShader* createTRTextureInverseAlphaBlend(CBurningVideoDriver* driver);
 
 	IBurningShader* createTRNormalMap(CBurningVideoDriver* driver);
+	IBurningShader* createTRStencilShadow(CBurningVideoDriver* driver);
 
 	IBurningShader* createTriangleRendererReference(CBurningVideoDriver* driver);
 
