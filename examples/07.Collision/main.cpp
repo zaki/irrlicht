@@ -164,14 +164,15 @@ int main()
 	selection is being performed. */
 	scene::IAnimatedMeshSceneNode* node = 0;
 
+	video::SMaterial material;
+
 	// Add an MD2 node, which uses vertex-based animation.
 	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/faerie.md2"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
-	node->setPosition(core::vector3df(-70,-15,-120)); // Put its feet on the floor.
+	node->setPosition(core::vector3df(-70,-15,-140)); // Put its feet on the floor.
 	node->setScale(core::vector3df(2, 2, 2)); // Make it appear realistically scaled
 	node->setMD2Animation(scene::EMAT_POINT);
 	node->setAnimationSpeed(20.f);
-	video::SMaterial material;
 	material.setTexture(0, driver->getTexture("../../media/faerie2.bmp"));
 	material.Lighting = true;
 	material.NormalizeNormals = true;
@@ -183,24 +184,38 @@ int main()
 	node->setTriangleSelector(selector);
 	selector->drop(); // We're done with this selector, so drop it now.
 
-	// This X files uses skeletal animation, but without skinning.
-	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/dwarf.x"),
-						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
-	node->setPosition(core::vector3df(-70,-66,0)); // Put its feet on the floor.
-	node->setRotation(core::vector3df(0,-90,0)); // And turn it towards the camera.
-	node->setAnimationSpeed(20.f);
-	selector = smgr->createTriangleSelector(node);
-	node->setTriangleSelector(selector);
-	selector->drop();
-
 	// And this B3D file uses skinned skeletal animation.
 	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
 	node->setScale(core::vector3df(10, 10, 10));
-	node->setPosition(core::vector3df(-70,-66,-60));
+	node->setPosition(core::vector3df(-70,-66,-80));
 	node->setRotation(core::vector3df(0,90,0));
 	node->setAnimationSpeed(10.f);
 	node->getMaterial(0).NormalizeNormals = true;
+	node->getMaterial(0).Lighting = true;
+	// Just do the same as we did above.
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop();
+
+	// This X files uses skeletal animation, but without skinning.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/dwarf.x"),
+						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setPosition(core::vector3df(-70,-66,-30)); // Put its feet on the floor.
+	node->setRotation(core::vector3df(0,-90,0)); // And turn it towards the camera.
+	node->setAnimationSpeed(20.f);
+	node->getMaterial(0).Lighting = true;
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop();
+
+
+	// And this mdl file uses skinned skeletal animation.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/yodan.mdl"),
+						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setPosition(core::vector3df(-70,-25,20));
+	node->getMaterial(0).Lighting = true;
+
 	// Just do the same as we did above.
 	selector = smgr->createTriangleSelector(node);
 	node->setTriangleSelector(selector);
@@ -310,3 +325,4 @@ int main()
 
 /*
 **/
+

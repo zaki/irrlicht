@@ -112,6 +112,93 @@ void CColorConverter::convert8BitTo16Bit(const u8* in, s16* out, s32 width, s32 
 	}
 }
 
+//! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
+void CColorConverter::convert8BitTo24Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad, bool flip)
+{
+	if (!in || !out )
+		return;
+
+	const s32 lineWidth = 3 * width;
+	if (flip)
+		out += lineWidth * height;
+
+	for (s32 y=0; y<height; ++y)
+	{
+		if (flip)
+			out -= lineWidth; // one line back
+		for (s32 x=0; x< lineWidth; x += 3)
+		{
+			if ( palette )
+			{
+#ifdef __BIG_ENDIAN__
+				out[x+0] = palette[ (in[0] << 2 ) + 0];
+				out[x+1] = palette[ (in[0] << 2 ) + 1];
+				out[x+2] = palette[ (in[0] << 2 ) + 2];
+#else
+				out[x+0] = palette[ (in[0] << 2 ) + 2];
+				out[x+1] = palette[ (in[0] << 2 ) + 1];
+				out[x+2] = palette[ (in[0] << 2 ) + 0];
+#endif
+			}
+			else
+			{
+				out[x+0] = in[0];
+				out[x+1] = in[0];
+				out[x+2] = in[0];
+			}
+			++in;
+		}
+		if (!flip)
+			out += lineWidth;
+		in += linepad;
+	}
+}
+
+//! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
+void CColorConverter::convert8BitTo32Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad, bool flip)
+{
+	if (!in || !out )
+		return;
+
+	const u32 lineWidth = 4 * width;
+	if (flip)
+		out += lineWidth * height;
+
+	u32 x;
+	register u32 c;
+	for (u32 y=0; y < (u32) height; ++y)
+	{
+		if (flip)
+			out -= lineWidth; // one line back
+
+		if ( palette )
+		{
+			for (x=0; x < (u32) width; x += 1)
+			{
+				c = in[x];
+				((u32*)out)[x] = ((u32*)palette)[ c ];
+			}
+		}
+		else
+		{
+			for (x=0; x < (u32) width; x += 1)
+			{
+				c = in[x];
+#ifdef __BIG_ENDIAN__
+				((u32*)out)[x] = c << 24 | c << 16 | c << 8 | 0x000000FF;
+#else
+				((u32*)out)[x] = 0xFF000000 | c << 16 | c << 8 | c;
+#endif
+			}
+
+		}
+
+		if (!flip)
+			out += lineWidth;
+		in += width + linepad;
+	}
+}
+
 
 
 //! converts 16bit data to 16bit data

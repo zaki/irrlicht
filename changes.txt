@@ -11,6 +11,84 @@ Changes in 1.7.1 (05.07.2010) TA
 		changed the light billboards to use the light color. ( green light, green particle, red light red particle )
 		allow to disable the bump/parallax on the earth like in the room ( with transparency )
 	- added DDS Image files, DXT2, DXT3, DXT4, DXT5, based on code from nvidia and Randy Reddig
+	
+	- added a Halflife 1 Model Loader. ( bases on code by Fabio Concas )
+		-> Load all Textures ( can even optimize it to texture atlas ), all bone animation, all submodels.
+		-> But to make use of the values ( named animation, mouth animation ) the Interface for IAnimatedMeshSceneNode
+		has to be reonde. I don't want to blow up the Interface again...
+		
+		TODO:
+			->can handle float frames numbers, the interface for getMesh should be reworked
+			I already have working implementations for MD2, MD3 and MDL to use float blendning instead
+			of using some kind of fix point..
+			
+			This is my idea of a new getMesh interface for IAnimatedMesh
+
+			//! Returns the IMesh interface for a frame.
+			/** \param frameA: Frame number as zero based index.
+			The Blend Factor is in the fractional part of frameA
+			The Mesh will be calculated as
+				frame = integer(frameA) * (1-fractional(frameA )) + frameB * fractional(frameA)
+				FrameNr		KeyFrameA   KeyFrameB
+				40.0		1			0
+				40.1		0.9			0.1
+				40.5		0.5			0.5
+				40.9		0.1			0.9
+				41.0		0			1
+			\param frameB: Frame number as zero based index. The other KeyFrame which is blended with FrameA. 
+			\param userParam: for Example Level of detail, or something else
+			*/
+			virtual IMesh* getMesh(f32 frameA, s32 frameB = 0,s32 param = 0) = 0;
+			
+			Should be discussed. handles all situations ( forward/reverse animation ) because the direction
+			vector is A->B
+			
+			For now i used the (unused, always 255) detail level parameter and set a blend percentage as
+			s32 frameNr = (s32) getFrameNr();
+			s32 frameBlend = (s32) (core::fract ( getFrameNr() ) * 1000.f);
+			return Mesh->getMesh(frameNr, frameBlend, StartFrame, EndFrame);
+
+			So no interface is affected.
+		
+		TODO:
+		I also added structures (suggestion) for Keyframe Interpolation which are currently not used here
+		mainly to unifiy get and set named animations/bones from different model files with a unique function call.
+		It would also effect the Handling of IAnimatedMeshSceneNode. This Topic should be discussed.
+		
+		My goal is to get as many information from the original model file like key/bone animation, skin info, shaders
+		sub models, attachement points etc in a public interface
+		and to reduce the interface like setMD2Anim, setMD3Animn, setBoneAnim into one slim line function call
+		for setting and getting.
+		
+		The callback interface also should be more generalized and event based.
+		(Halflife for example can notify if your left foot animation touches ground, or tirggers sound or whatever)
+		Maybe we use the gui event system for that
+		
+		I included a 357kb Yodan.mdl and the copyright info file from Doug Hillyer to the media directory
+		used in example 7. collision as 4th model..
+		
+		it's not easy to unify different model types and that's why it's not finished;-)
+		
+		-> TODO: Quaternion Rotation is done private hand made and should be done with irrlicht quaterions
+		
+	- added Halflife 1 Texture Loader
+		Valve uses WAL archive types like quake2. textures are inside model files
+		I reworked the existing ImageloaderWAL and added named Halflife textures to wal2 ( they have not extension )
+		and an LMP (palette/texture) loader into the same file ( all using 32bit now )
+		
+	- coreutil.h 
+		added void splitFilenam, splits a path into components
+	- irstring.h
+		added parameter make_lower to substring ( copy just lower case )
+		string<T> subString(u32 begin, s32 length, bool make_lower = false ) const
+		
+	- ColorConverter
+			added
+			//! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
+			static void convert8BitTo24Bit(const u8* in, s16* out, s32 width, s32 height, const s32* palette, s32 linepad = 0, bool flip=false);
+			//! converts a 8 bit palettized or non palettized image (A8) into A8R8G8B8
+			static void convert8BitTo32Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad = 0, bool flip=false);
+	
 
 --------------------------------------
 
@@ -573,7 +651,7 @@ Changes in 1.6 (23.09.2009)
   There exists a known list of ArchiveLoaders, which know how to produce a Archive.
   The Loaders and the Archives can be attached/detached on runtime.
 
-  The FileNames are now stored as core::string<c16>. where c16 is toggled between char/wchar
+  The FileNames are now stored as io::path. where c16 is toggled between char/wchar
   with the #define flag _IRR_WCHAR_FILESYSTEM, to supported unicode backends (default:off)
   Replaced most (const c8* filename) to string references.
 
