@@ -66,6 +66,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "21.Quake3Explorer_vc8", "21
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld for Windows Mobile on PC", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v8.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "22.MaterialViewer_vc8", "22.MaterialViewer\MaterialViewer_vc8.vcproj", "{2856AB41-9BC5-4716-9B35-762A65F6F5D1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "23.SMeshHandling_vc8", "23.SMeshHandling\SMeshHandling_vc8.vcproj", "{08D2F676-9DEB-4443-AEF7-52CC6F7D5F7C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "24.CursorControl_vc8", "24.CursorControl\CursorControl_vc8.vcproj", "{02B67A37-50E1-49DB-BECF-905BC029C2FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -160,6 +166,18 @@ Global
 		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Debug|Win32.Build.0 = Debug|Win32
 		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.ActiveCfg = Release|Win32
 		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.Build.0 = Release|Win32
+		{2856AB41-9BC5-4716-9B35-762A65F6F5D1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2856AB41-9BC5-4716-9B35-762A65F6F5D1}.Debug|Win32.Build.0 = Debug|Win32
+		{2856AB41-9BC5-4716-9B35-762A65F6F5D1}.Release|Win32.ActiveCfg = Release|Win32
+		{2856AB41-9BC5-4716-9B35-762A65F6F5D1}.Release|Win32.Build.0 = Release|Win32
+		{08D2F676-9DEB-4443-AEF7-52CC6F7D5F7C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{08D2F676-9DEB-4443-AEF7-52CC6F7D5F7C}.Debug|Win32.Build.0 = Debug|Win32
+		{08D2F676-9DEB-4443-AEF7-52CC6F7D5F7C}.Release|Win32.ActiveCfg = Release|Win32
+		{08D2F676-9DEB-4443-AEF7-52CC6F7D5F7C}.Release|Win32.Build.0 = Release|Win32
+		{02B67A37-50E1-49DB-BECF-905BC029C2FE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{02B67A37-50E1-49DB-BECF-905BC029C2FE}.Debug|Win32.Build.0 = Debug|Win32
+		{02B67A37-50E1-49DB-BECF-905BC029C2FE}.Release|Win32.ActiveCfg = Release|Win32
+		{02B67A37-50E1-49DB-BECF-905BC029C2FE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

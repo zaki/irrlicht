@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="23.SMeshHandling_vc8"
-	ProjectGUID="{EB3B38EA-5CE7-4983-845B-880661E69D09}"
+	ProjectGUID="{08D2F676-9DEB-4443-AEF7-52CC6F7D5F7C}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>

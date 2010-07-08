@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="24.CursorControl_vc8"
-	ProjectGUID="{02B67A37-50E1-49db-BECF-905BC029C2FE}"
+	ProjectGUID="{02B67A37-50E1-49DB-BECF-905BC029C2FE}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>

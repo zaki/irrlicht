@@ -2580,9 +2580,6 @@ u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 //! volume. Next use IVideoDriver::drawStencilShadow() to visualize the shadow.
 void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
 {
-	if (!StencilBuffer || !count)
-		return;
-
 	IBurningShader *shader = BurningShader [ ETR_STENCIL_SHADOW ];
 
 	CurrentShader = shader;
@@ -2645,9 +2642,6 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 void CBurningVideoDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
-	if (!StencilBuffer)
-		return;
-
 	// draw a shadow rectangle covering the entire screen using stencil buffer
 	const u32 h = RenderTargetSurface->getDimension().Height;
 	const u32 w = RenderTargetSurface->getDimension().Width;
@@ -2669,61 +2663,6 @@ void CBurningVideoDriver::drawStencilShadow(bool clearStencilBuffer, video::SCol
 	}
 
 	StencilBuffer->clear();
-#if 0
-	if (!StencilBuffer)
-		return;
-
-	disableTextures();
-
-	// store attributes
-	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_STENCIL_BUFFER_BIT);
-
-	glDisable(GL_LIGHTING);
-	glDisable(GL_FOG);
-	glDepthMask(GL_FALSE);
-
-	glShadeModel(GL_FLAT);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_NOTEQUAL, 0, ~0);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-	// draw a shadow rectangle covering the entire screen using stencil buffer
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-
-	glBegin(GL_QUADS);
-
-	glColor4ub(leftDownEdge.getRed(), leftDownEdge.getGreen(), leftDownEdge.getBlue(), leftDownEdge.getAlpha());
-	glVertex3f(-1.f,-1.f,-0.9f);
-
-	glColor4ub(leftUpEdge.getRed(), leftUpEdge.getGreen(), leftUpEdge.getBlue(), leftUpEdge.getAlpha());
-	glVertex3f(-1.f, 1.f,-0.9f);
-
-	glColor4ub(rightUpEdge.getRed(), rightUpEdge.getGreen(), rightUpEdge.getBlue(), rightUpEdge.getAlpha());
-	glVertex3f(1.f, 1.f,-0.9f);
-
-	glColor4ub(rightDownEdge.getRed(), rightDownEdge.getGreen(), rightDownEdge.getBlue(), rightDownEdge.getAlpha());
-	glVertex3f(1.f,-1.f,-0.9f);
-
-	glEnd();
-
-	clearBuffers(false, false, clearStencilBuffer, 0x0);
-
-	// restore settings
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glPopAttrib();
-#endif
 }
 
 

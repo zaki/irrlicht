@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="22.MaterialViewer_vc8"
-	ProjectGUID="{0914E5C8-5352-467B-8421-C9EB35BD5596}"
+	ProjectGUID="{2856AB41-9BC5-4716-9B35-762A65F6F5D1}"
 	RootNamespace="MaterialViewer_vc8"
 	>
 	<Platforms>
