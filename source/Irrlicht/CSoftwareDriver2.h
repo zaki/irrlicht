@@ -159,6 +159,7 @@ namespace video
 		virtual core::dimension2du getMaxTextureSize() const;
 
 		virtual IDepthBuffer * getDepthBuffer () { return DepthBuffer; }
+		virtual IStencilBuffer * getStencilBuffer () { return StencilBuffer; }
 
 	protected:
 

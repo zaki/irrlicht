@@ -39,6 +39,11 @@ namespace video
 		DepthBuffer = (CDepthBuffer*) driver->getDepthBuffer ();
 		if ( DepthBuffer )
 			DepthBuffer->grab();
+
+		Stencil = (CStencilBuffer*) driver->getStencilBuffer ();
+		if ( Stencil )
+			Stencil->grab();
+
 	}
 
 
@@ -50,6 +55,9 @@ namespace video
 
 		if (DepthBuffer)
 			DepthBuffer->drop();
+
+		if (Stencil)
+			Stencil->drop();
 
 		for ( u32 i = 0; i != BURNING_MATERIAL_MAX_TEXTURES; ++i )
 		{

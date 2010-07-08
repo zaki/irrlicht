@@ -651,7 +651,7 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 			}
 			else
 			{
-				Transformation[ETS_WORLD].getInversePrimitive ( Transformation[ETS_WORLD_INVERSE] );
+				//Transformation[ETS_WORLD].getInversePrimitive ( Transformation[ETS_WORLD_INVERSE] );
 				Transformation[ETS_CURRENT].setbyproduct_nocheck (
 					Transformation[ETS_VIEW_PROJECTION],
 					Transformation[ETS_WORLD]
@@ -1155,7 +1155,8 @@ const SVSize CBurningVideoDriver::vSize[] =
 	{ VERTEX4D_FORMAT_TEXTURE_1 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex), 1 },
 	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex2TCoords),2 },
 	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1 | VERTEX4D_FORMAT_BUMP_DOT3, sizeof(S3DVertexTangents),2 },
-	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex), 2 },
+	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex), 2 },	// reflection map
+	{ 0, sizeof(f32) * 3, 0 },	// core::vector3df*
 };
 
 
@@ -1184,6 +1185,9 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex, const u32 dest
 	// transform Model * World * Camera * Projection * NDCSpace matrix
 	const S3DVertex *base = ((S3DVertex*) source );
 	Transformation [ ETS_CURRENT].transformVect ( &dest->Pos.x, base->Pos );
+
+	//mhm ;-) maybe no goto
+	if ( VertexCache.vType == 4 ) goto clipandproject;
 
 
 #if defined (SOFTWARE_DRIVER_2_LIGHTING) || defined ( SOFTWARE_DRIVER_2_TEXTURE_TRANSFORM )
@@ -1443,6 +1447,7 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex, const u32 dest
 
 #endif
 
+clipandproject:
 	dest[0].flag = dest[1].flag = vSize[VertexCache.vType].Format;
 
 	// test vertex
@@ -1501,10 +1506,18 @@ REALINLINE void CBurningVideoDriver::VertexCache_get ( s4DVertex ** face )
 				fillIndex < VERTEXCACHE_ELEMENT
 				)
 		{
-			sourceIndex = VertexCache.iType == 1 ?
-			((u16*)VertexCache.indices) [ VertexCache.indicesIndex ] :
-			((u32*)VertexCache.indices) [ VertexCache.indicesIndex ];
-
+			switch ( VertexCache.iType )
+			{
+				case 1:
+					sourceIndex =  ((u16*)VertexCache.indices) [ VertexCache.indicesIndex ];
+					break;
+				case 2:
+					sourceIndex =  ((u32*)VertexCache.indices) [ VertexCache.indicesIndex ];
+					break;
+				case 4:
+					sourceIndex = VertexCache.indicesIndex;
+					break;
+			}
 
 			VertexCache.indicesIndex += 1;
 
@@ -1566,19 +1579,28 @@ REALINLINE void CBurningVideoDriver::VertexCache_get ( s4DVertex ** face )
 
 	const u32 i0 = core::if_c_a_else_0 ( VertexCache.pType != scene::EPT_TRIANGLE_FAN, VertexCache.indicesRun );
 
-	if ( VertexCache.iType == 1 )
+	switch ( VertexCache.iType )
 	{
-		const u16 *p = (const u16 *) VertexCache.indices;
-		face[0] = VertexCache_getVertex ( p[ i0    ] );
-		face[1] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 1] );
-		face[2] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 2] );
-	}
-	else
-	{
-		const u32 *p = (const u32 *) VertexCache.indices;
-		face[0] = VertexCache_getVertex ( p[ i0    ] );
-		face[1] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 1] );
-		face[2] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 2] );
+		case 1:
+		{
+			const u16 *p = (const u16 *) VertexCache.indices;
+			face[0] = VertexCache_getVertex ( p[ i0    ] );
+			face[1] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 1] );
+			face[2] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 2] );
+		} break;
+
+		case 2:
+		{
+			const u32 *p = (const u32 *) VertexCache.indices;
+			face[0] = VertexCache_getVertex ( p[ i0    ] );
+			face[1] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 1] );
+			face[2] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 2] );
+		} break;
+		case 4:
+			face[0] = VertexCache_getVertex ( VertexCache.indicesRun + 0 );
+			face[1] = VertexCache_getVertex ( VertexCache.indicesRun + 1 );
+			face[2] = VertexCache_getVertex ( VertexCache.indicesRun + 2 );
+			break;
 	}
 
 	VertexCache.indicesRun += VertexCache.primitivePitch;
@@ -1633,7 +1655,14 @@ void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCo
 	else
 		VertexCache.vType = vType;
 	VertexCache.pType = pType;
-	VertexCache.iType = iType == EIT_16BIT ? 1 : 2;
+
+	switch ( iType )
+	{
+		case EIT_16BIT: VertexCache.iType = 1; break;
+		case EIT_32BIT: VertexCache.iType = 2; break;
+		default:
+			VertexCache.iType = iType; break;
+	}
 
 	switch ( VertexCache.pType )
 	{
@@ -2451,13 +2480,13 @@ void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 const wchar_t* CBurningVideoDriver::getName() const
 {
 #ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	return L"Burning's Video 0.46 beautiful";
+	return L"Burning's Video 0.47 beautiful";
 #elif defined ( BURNINGVIDEO_RENDERER_ULTRA_FAST )
-	return L"Burning's Video 0.46 ultra fast";
+	return L"Burning's Video 0.47 ultra fast";
 #elif defined ( BURNINGVIDEO_RENDERER_FAST )
-	return L"Burning's Video 0.46 fast";
+	return L"Burning's Video 0.47 fast";
 #else
-	return L"Burning's Video 0.46";
+	return L"Burning's Video 0.47";
 #endif
 }
 
@@ -2555,20 +2584,36 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 		return;
 
 	IBurningShader *shader = BurningShader [ ETR_STENCIL_SHADOW ];
+
+	CurrentShader = shader;
 	shader->setRenderTarget(RenderTargetSurface, ViewPort);
+
+	Material.org.MaterialType = video::EMT_SOLID;
+	Material.org.Lighting = false;
+	Material.org.ZWriteEnable = false;
+	Material.org.ZBuffer = ECFN_LESSEQUAL;
+	LightSpace.Flags &= ~VERTEXTRANSFORM;
 
 	//glStencilMask(~0);
 	//glStencilFunc(GL_ALWAYS, 0, ~0);
 
 	if (zfail)
 	{
-		Material.org.BackfaceCulling = false;
-		Material.org.FrontfaceCulling = true;
+		Material.org.BackfaceCulling = true;
+		Material.org.FrontfaceCulling = false;
+		shader->setParam ( 0, 0 );
+		shader->setParam ( 1, 1 );
+		shader->setParam ( 2, 0 );
+		drawVertexPrimitiveList ( triangles, count, 0, count/3, (video::E_VERTEX_TYPE) 4, scene::EPT_TRIANGLES, (video::E_INDEX_TYPE) 4 );
 		//glStencilOp(GL_KEEP, incr, GL_KEEP);
 		//glDrawArrays(GL_TRIANGLES,0,count);
 
-		Material.org.BackfaceCulling = true;
-		Material.org.FrontfaceCulling = false;
+		Material.org.BackfaceCulling = false;
+		Material.org.FrontfaceCulling = true;
+		shader->setParam ( 0, 0 );
+		shader->setParam ( 1, 2 );
+		shader->setParam ( 2, 0 );
+		drawVertexPrimitiveList ( triangles, count, 0, count/3, (video::E_VERTEX_TYPE) 4, scene::EPT_TRIANGLES, (video::E_INDEX_TYPE) 4 );
 		//glStencilOp(GL_KEEP, decr, GL_KEEP);
 		//glDrawArrays(GL_TRIANGLES,0,count);
 	}
@@ -2576,87 +2621,54 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 	{
 		Material.org.BackfaceCulling = true;
 		Material.org.FrontfaceCulling = false;
+		shader->setParam ( 0, 0 );
+		shader->setParam ( 1, 0 );
+		shader->setParam ( 2, 1 );
 		//glStencilOp(GL_KEEP, GL_KEEP, incr);
 		//glDrawArrays(GL_TRIANGLES,0,count);
 
 		Material.org.BackfaceCulling = false;
 		Material.org.FrontfaceCulling = true;
+		shader->setParam ( 0, 0 );
+		shader->setParam ( 1, 0 );
+		shader->setParam ( 2, 2 );
 		//glStencilOp(GL_KEEP, GL_KEEP, decr);
 		//glDrawArrays(GL_TRIANGLES,0,count);
 	}
 
 	
-#if 0
-	if (!StencilBuffer || !count)
-		return;
-
-	// unset last 3d material
-	if (CurrentRenderMode == ERM_3D &&
-		static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
-	{
-		MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
-		ResetRenderStates = true;
-	}
-
-	// store current OpenGL state
-	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT |
-		GL_POLYGON_BIT | GL_STENCIL_BUFFER_BIT);
-
-	glDisable(GL_LIGHTING);
-	glDisable(GL_FOG);
-	glDepthFunc(GL_LEQUAL);
-	glDepthMask(GL_FALSE); // no depth buffer writing
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no color buffer drawing
-	glEnable(GL_STENCIL_TEST);
-	glEnable(GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset(0.0f, 1.0f);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),&triangles[0]);
-	glStencilMask(~0);
-	glStencilFunc(GL_ALWAYS, 0, ~0);
-
-	GLenum incr = GL_INCR;
-	GLenum decr = GL_DECR;
-	if (FeatureAvailable[IRR_EXT_stencil_wrap])
-	{
-		incr = GL_INCR_WRAP_EXT;
-		decr = GL_DECR_WRAP_EXT;
-	}
-
-	{
-		glEnable(GL_CULL_FACE);
-		if (zfail)
-		{
-			glCullFace(GL_FRONT);
-			glStencilOp(GL_KEEP, incr, GL_KEEP);
-			glDrawArrays(GL_TRIANGLES,0,count);
-
-			glCullFace(GL_BACK);
-			glStencilOp(GL_KEEP, decr, GL_KEEP);
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		else // zpass
-		{
-			glCullFace(GL_BACK);
-			glStencilOp(GL_KEEP, GL_KEEP, incr);
-			glDrawArrays(GL_TRIANGLES,0,count);
-
-			glCullFace(GL_FRONT);
-			glStencilOp(GL_KEEP, GL_KEEP, decr);
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-	}
-
-	glDisableClientState(GL_VERTEX_ARRAY); //not stored on stack
-	glPopAttrib();
-#endif
 }
 
-
+//! Fills the stencil shadow with color. After the shadow volume has been drawn
+//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
+//! to draw the color of the shadow.
 void CBurningVideoDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
+	if (!StencilBuffer)
+		return;
+
+	// draw a shadow rectangle covering the entire screen using stencil buffer
+	const u32 h = RenderTargetSurface->getDimension().Height;
+	const u32 w = RenderTargetSurface->getDimension().Width;
+	tVideoSample *dst;
+	u32 *stencil;
+
+	for ( u32 y = 0; y < h; ++y )
+	{
+		dst = (tVideoSample*)RenderTargetSurface->lock() + ( y * w );
+		stencil = (u32*) StencilBuffer->lock() + ( y * w );
+
+		for ( u32 x = 0; x < w; ++x )
+		{
+			if ( stencil[x] > 1 )
+			{
+				dst[x] = PixelBlend32 ( dst[x], leftUpEdge.color );
+			}
+		}
+	}
+
+	StencilBuffer->clear();
 #if 0
 	if (!StencilBuffer)
 		return;
