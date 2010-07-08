@@ -3443,7 +3443,9 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glPopAttrib();
 }
 
-
+//! Fills the stencil shadow with color. After the shadow volume has been drawn
+//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
+//! to draw the color of the shadow.
 void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
