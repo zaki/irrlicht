@@ -1706,6 +1706,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CImageLoaderDDS.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CImageLoaderDDS.h"
+					>
+				</File>
+				<File
 					RelativePath="CImageLoaderJPG.cpp"
 					>
 				</File>
@@ -1946,6 +1954,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CTRNormalMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CTRStencilShadow.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\CTRTextureBlend.cpp"
 					>
 				</File>
@@ -2091,6 +2107,14 @@
 				</File>
 				<File
 					RelativePath=".\C3DSMeshFileLoader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CAnimatedMeshHalfLife.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CAnimatedMeshHalfLife.h"
 					>
 				</File>
 				<File
@@ -2755,19 +2779,19 @@
 				>
 			</File>
 			<File
-				RelativePath="CPakReader.cpp"
-				>
-			</File>
-			<File
-				RelativePath="CPakReader.h"
-				>
-			</File>
-			<File
 				RelativePath="CNPKReader.cpp"
 				>
 			</File>
 			<File
 				RelativePath="CNPKReader.h"
+				>
+			</File>
+			<File
+				RelativePath="CPakReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CPakReader.h"
 				>
 			</File>
 			<File
@@ -2788,6 +2812,14 @@
 			</File>
 			<File
 				RelativePath="CTarReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CWADReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CWADReader.h"
 				>
 			</File>
 			<File
