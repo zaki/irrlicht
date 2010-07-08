@@ -63,7 +63,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\24.CursorControl.exe"
-				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CursorControl.pdb"
@@ -141,7 +140,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\24.CursorControl.exe"
-				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="false"
 				SubSystem="1"
