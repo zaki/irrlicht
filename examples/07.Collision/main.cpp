@@ -169,8 +169,8 @@ int main()
 	// Add an MD2 node, which uses vertex-based animation.
 	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/faerie.md2"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
-	node->setPosition(core::vector3df(-70,-15,-140)); // Put its feet on the floor.
-	node->setScale(core::vector3df(2, 2, 2)); // Make it appear realistically scaled
+	node->setPosition(core::vector3df(-90,-15,-140)); // Put its feet on the floor.
+	node->setScale(core::vector3df(1.6f)); // Make it appear realistically scaled
 	node->setMD2Animation(scene::EMAT_POINT);
 	node->setAnimationSpeed(20.f);
 	material.setTexture(0, driver->getTexture("../../media/faerie2.bmp"));
@@ -187,10 +187,10 @@ int main()
 	// And this B3D file uses skinned skeletal animation.
 	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
-	node->setScale(core::vector3df(10, 10, 10));
-	node->setPosition(core::vector3df(-70,-66,-80));
+	node->setScale(core::vector3df(10));
+	node->setPosition(core::vector3df(-75,-66,-80));
 	node->setRotation(core::vector3df(0,90,0));
-	node->setAnimationSpeed(10.f);
+	node->setAnimationSpeed(8.f);
 	node->getMaterial(0).NormalizeNormals = true;
 	node->getMaterial(0).Lighting = true;
 	// Just do the same as we did above.
@@ -213,8 +213,10 @@ int main()
 	// And this mdl file uses skinned skeletal animation.
 	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/yodan.mdl"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
-	node->setPosition(core::vector3df(-70,-25,20));
+	node->setPosition(core::vector3df(-90,-25,20));
+	node->setScale(core::vector3df(0.8f));
 	node->getMaterial(0).Lighting = true;
+	node->setAnimationSpeed(20.f);
 
 	// Just do the same as we did above.
 	selector = smgr->createTriangleSelector(node);
