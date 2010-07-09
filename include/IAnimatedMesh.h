@@ -61,7 +61,7 @@ namespace scene
 		//! No Animation
 		EAMT_STILL,
 		//! From Start to End, then Stop ( Limited Line )
-		EAMT_WAYPOINT,					 	
+		EAMT_WAYPOINT,
 		//! Linear Cycling Animation	 ( Sawtooth )
 		EAMT_LOOPING,
 		//! Linear bobbing				 ( Triangle )
@@ -103,10 +103,9 @@ namespace scene
 		KeyFrameInterpolation ( const c8 * name = "", s32 start = 0, s32 frames = 0, s32 loopingframes = 0,
 								f32 fps = 0.f, f32 relativefps = 1.f  )
 			: Name ( name ), AnimationType ( loopingframes ? EAMT_LOOPING : EAMT_WAYPOINT),
-			StartFrame ( start ), CurrentFrame ( (f32) start ), NextFrame ( start ), 
-			Frames ( frames ), EndFrame ( start + frames - 1 ),
+			CurrentFrame ( (f32) start ), NextFrame ( start ), StartFrame ( start ),
+			Frames ( frames ), LoopingFrames ( loopingframes ), EndFrame ( start + frames - 1 ),
 			FramesPerSecond ( fps ), RelativeSpeed ( relativefps ),
-			LoopingFrames ( loopingframes ),
 			BeginTime ( 0 ), EndTime ( 0 ), LastTime ( 0 )
 		{
 		}

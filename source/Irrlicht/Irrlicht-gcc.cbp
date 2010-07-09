@@ -562,6 +562,8 @@
 		<Unit filename="BuiltInFont.h" />
 		<Unit filename="C3DSMeshFileLoader.cpp" />
 		<Unit filename="C3DSMeshFileLoader.h" />
+		<Unit filename="CAnimatedMeshHalfLife.cpp" />
+		<Unit filename="CAnimatedMeshHalfLife.h" />
 		<Unit filename="CAnimatedMeshMD2.cpp" />
 		<Unit filename="CAnimatedMeshMD2.h" />
 		<Unit filename="CAnimatedMeshMD3.cpp" />
@@ -696,6 +698,8 @@
 		<Unit filename="CImage.h" />
 		<Unit filename="CImageLoaderBMP.cpp" />
 		<Unit filename="CImageLoaderBMP.h" />
+		<Unit filename="CImageLoaderDDS.cpp" />
+		<Unit filename="CImageLoaderDDS.h" />
 		<Unit filename="CImageLoaderJPG.cpp" />
 		<Unit filename="CImageLoaderJPG.h" />
 		<Unit filename="CImageLoaderPCX.cpp" />
@@ -889,6 +893,8 @@
 		<Unit filename="CTRGouraudAlpha2.cpp" />
 		<Unit filename="CTRGouraudAlphaNoZ2.cpp" />
 		<Unit filename="CTRGouraudWire.cpp" />
+		<Unit filename="CTRNormalMap.cpp" />
+		<Unit filename="CTRStencilShadow.cpp" />
 		<Unit filename="CTRTextureBlend.cpp" />
 		<Unit filename="CTRTextureDetailMap2.cpp" />
 		<Unit filename="CTRTextureFlat.cpp" />
@@ -928,6 +934,8 @@
 		<Unit filename="CVideoModeList.h" />
 		<Unit filename="CVolumeLightSceneNode.cpp" />
 		<Unit filename="CVolumeLightSceneNode.h" />
+		<Unit filename="CWADReader.cpp" />
+		<Unit filename="CWADReader.h" />
 		<Unit filename="CWaterSurfaceSceneNode.cpp" />
 		<Unit filename="CWaterSurfaceSceneNode.h" />
 		<Unit filename="CWriteFile.cpp" />

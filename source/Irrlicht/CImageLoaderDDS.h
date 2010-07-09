@@ -18,7 +18,7 @@ namespace video
 #if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_WRITER_)
 
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -131,7 +131,7 @@ struct ddsBuffer
 	u32		size;
 	u32		flags;
 	u32		height;
-	u32		width; 
+	u32		width;
 	union
 	{
 		s32				pitch;
@@ -149,18 +149,18 @@ struct ddsBuffer
 	void				*surface;
 	union
 	{
-		ddsColorKey	ckDestOverlay;   
+		ddsColorKey	ckDestOverlay;
 		u32	emptyFaceColor;
 	};
 	ddsColorKey		ckDestBlt;
-	ddsColorKey		ckSrcOverlay;    
-	ddsColorKey		ckSrcBlt;     
+	ddsColorKey		ckSrcOverlay;
+	ddsColorKey		ckSrcBlt;
 	union
 	{
 		ddsPixelFormat	pixelFormat;
 		u32	fvf;
 	};
-	ddsCaps			ddsCaps;
+	ddsCaps			caps;
 	u32		textureStage;
 
 	/* data (Varying size) */
@@ -284,7 +284,7 @@ floatSwapUnion;
 
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 

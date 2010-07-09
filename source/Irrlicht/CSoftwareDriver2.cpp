@@ -40,7 +40,7 @@ struct mat4{
    float m[4][4];
 
    vec4 operator* ( const vec4 &in ) const
-   { 
+   {
 	   vec4 out;
 	   return out;
    }
@@ -51,7 +51,7 @@ struct mat3{
    float m[3][3];
 
    vec3 operator* ( const vec3 &in ) const
-   { 
+   {
 	   vec3 out;
 	   return out;
    }
@@ -164,7 +164,7 @@ struct gl_MaterialParameters
 uniform gl_MaterialParameters gl_FrontMaterial;
 uniform gl_MaterialParameters gl_BackMaterial;
 
-// GLSL has some built-in attributes in a vertex shader: 
+// GLSL has some built-in attributes in a vertex shader:
 attribute vec4 gl_Vertex;			// 4D vector representing the vertex position
 attribute vec3 gl_Normal;			// 3D vector representing the vertex normal
 attribute vec4 gl_Color;			// 4D vector representing the vertex color
@@ -197,7 +197,7 @@ vec4 ftransform(void)
 
 vec3 fnormal(void)
 {
-    //Compute the normal 
+    //Compute the normal
     vec3 normal = gl_NormalMatrix * gl_Normal;
     normal = normalize(normal);
     return normal;
@@ -256,7 +256,7 @@ struct program1
 
 	vec3 fnormal(void)
 	{
-		//Compute the normal 
+		//Compute the normal
 		vec3 normal = gl_NormalMatrix * gl_Normal;
 		normal = normalize(normal);
 		return normal;
@@ -312,13 +312,13 @@ struct program1
 		ftexgen(transformedNormal, ecPosition);
 	}
 
-	void fragmentshader_main (void) 
+	void fragmentshader_main (void)
 	{
 		vec4 color;
 
 		color = gl_Color;
 
-		color *= texture2D(texUnit0, gl_TexCoord[0].xy);
+		color *= texture2D(texUnit0, vec2(gl_TexCoord[0].x, gl_TexCoord[0].y) );
 
 		color += gl_SecondaryColor;
 		color = clamp(color, 0.0, 1.0);
@@ -2633,7 +2633,7 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 		//glDrawArrays(GL_TRIANGLES,0,count);
 	}
 
-	
+
 }
 
 //! Fills the stencil shadow with color. After the shadow volume has been drawn
