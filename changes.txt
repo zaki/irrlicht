@@ -1,5 +1,5 @@
 -----------------------------
-Changes in 1.7.1 (05.07.2010) TA
+Changes in 1.7.1 (05.07.2010) TA 
 	- BurningVideo 
 		- add Normalmap Rendering ( one light only), pushed Burningvideo to 0.46
 		- add Stencil Shadow Rendering (one color only and 32 bit only), pushed Burningvideo to 0.47
