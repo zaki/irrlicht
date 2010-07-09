@@ -112,10 +112,10 @@ struct sVec4
 	{
 		struct { f32 x, y, z, w; };
 		struct { f32 a, r, g, b; };
-		struct { sVec2 xy, zw; };
+//		struct { sVec2 xy, zw; };	// sorry, this does not compile with gcc
 	};
 
-	
+
 
 	sVec4 () {}
 
@@ -640,7 +640,7 @@ struct sPixelShaderData
 /*
 	load a color value
 */
-inline void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 							const sVec4 &v
 							)
 {
@@ -652,7 +652,7 @@ inline void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 /*
 	load a color value
 */
-inline void getSample_color (	tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getSample_color (	tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b,
 							const sVec4 &v
 							)
 {
@@ -689,5 +689,5 @@ inline void getSample_color (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 
 }
 
-#endif 
+#endif
 
