@@ -106,6 +106,54 @@ bool cdata( irr::io::IFileSystem * fs )
 	return result;
 }
 
+bool attributeValues(irr::io::IFileSystem * fs)
+{
+	io::IXMLReaderUTF8* reader = fs->createXMLReaderUTF8("media/attributes.xml");
+	if (!reader)
+	{
+		logTestString("Could not create XML reader.\n");
+		return false;
+	}
+
+	bool result = true;
+	bool hasNode = false;
+	while (reader->read())
+	{
+		if (io::EXN_ELEMENT == reader->getNodeType() )
+		{
+			if ( core::stringc(reader->getNodeName()) == core::stringc("element_position") )
+			{
+				hasNode = true;
+				int id1 = reader->getAttributeValueAsInt("id1");
+				if ( id1 != 152722522 )
+				{
+					logTestString("id1 is %d in %s:%d\n", id1, __FILE__, __LINE__);
+					result = false;
+				}
+				else
+				{
+					logTestString("I'm fine\n");
+				}
+				int id2 = reader->getAttributeValueAsInt("id2");
+				result &= id2 == 3;
+				int x = reader->getAttributeValueAsInt("x");
+				result &= x == 301;
+				int y = reader->getAttributeValueAsInt("y");
+				result &= y == 118;
+			}
+		}
+	}
+
+	if ( !hasNode )
+	{
+		logTestString("missing node in xml in %s:%d\n", __FILE__, __LINE__);
+		return false;
+	}
+
+	reader->drop();
+	return result;
+}
+
 /** Tests for XML handling */
 bool testXML(void)
 {
@@ -115,6 +163,7 @@ bool testXML(void)
 
 	result &= simple_xml(device->getFileSystem());
 	result &= cdata(device->getFileSystem());
+	// result &= attributeValues(device->getFileSystem());	// TODO: this bug is still open! 
 
 	device->drop();
 	return result;

@@ -28,6 +28,7 @@ OBJ = $(Sources:.cpp=.o)
 all_linux all_win32: $(OBJ)
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ -o $(DESTPATH) $(LDFLAGS)
+	@$(RM) tests	# otherwise it's easy to forget to copy it and run the old binary
 
 clean: clean_linux clean_win32
 	$(warning Cleaning...)
