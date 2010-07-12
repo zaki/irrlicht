@@ -1,3 +1,8 @@
+
+ - Fix CXMLReaderImpl::getAttributeValueAsInt which returned wrong values with large integers (thx to squisher for finding)
+ 
+ - Add EGET_TREEVIEW_NODE_COLLAPSE and deprecate EGET_TREEVIEW_NODE_COLLAPS (found by greenya)
+ 
  - Fix compile problem in swap when using irrlicht in combination with stl (backport from trunk r3281)
 
  - Fix serialization in CParticleSystemSceneNode (found by B@z)

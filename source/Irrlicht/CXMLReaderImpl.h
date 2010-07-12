@@ -139,14 +139,24 @@ public:
 	//! Returns the value of an attribute as integer. 
 	int getAttributeValueAsInt(const char_type* name) const
 	{
-		return (int)getAttributeValueAsFloat(name);
+		const SAttribute* attr = getAttributeByName(name);
+		if (!attr)
+			return 0;
+
+		core::stringc c(attr->Value.c_str());
+		return core::strtol10(c.c_str());
 	}
 
 
 	//! Returns the value of an attribute as integer. 
 	int getAttributeValueAsInt(int idx) const
 	{
-		return (int)getAttributeValueAsFloat(idx);
+		const char_type* attrvalue = getAttributeValue(idx);
+		if (!attrvalue)
+			return 0;
+
+		core::stringc c(attrvalue);
+		return core::strtol10(c.c_str());
 	}
 
 

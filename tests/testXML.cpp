@@ -130,10 +130,6 @@ bool attributeValues(irr::io::IFileSystem * fs)
 					logTestString("id1 is %d in %s:%d\n", id1, __FILE__, __LINE__);
 					result = false;
 				}
-				else
-				{
-					logTestString("I'm fine\n");
-				}
 				int id2 = reader->getAttributeValueAsInt("id2");
 				result &= id2 == 3;
 				int x = reader->getAttributeValueAsInt("x");
@@ -163,7 +159,7 @@ bool testXML(void)
 
 	result &= simple_xml(device->getFileSystem());
 	result &= cdata(device->getFileSystem());
-	// result &= attributeValues(device->getFileSystem());	// TODO: this bug is still open! 
+	result &= attributeValues(device->getFileSystem());	// TODO: this bug is still open!
 
 	device->drop();
 	return result;
