@@ -65,7 +65,7 @@ namespace irr
 			EventReceiver = other.EventReceiver;
 			WindowId = other.WindowId;
 			LoggingLevel = other.LoggingLevel;
-			DisplayAdapter = 0;
+			DisplayAdapter = other.DisplayAdapter;
 			return *this;
 		}
 
