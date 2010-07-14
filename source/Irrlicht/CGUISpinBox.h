@@ -80,10 +80,12 @@ namespace gui
 
 	protected:
 		virtual void verifyValueRange();
+		void refreshSprites();
 
 		IGUIEditBox * EditBox;
 		IGUIButton * ButtonSpinUp;
 		IGUIButton * ButtonSpinDown;
+		video::SColor CurrentIconColor;
 		f32 StepSize;
 		f32 RangeMin;
 		f32 RangeMax;

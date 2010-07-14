@@ -578,12 +578,12 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 			//else
 			if ( Type == EGST_BURNING_SKIN )
 			{
-				const video::SColor c = titleBarColor.getInterpolated( 0xffffffff, 0.8f);
+				const video::SColor c = titleBarColor.getInterpolated( video::SColor(titleBarColor.getAlpha(),255,255,255), 0.8f);
 				Driver->draw2DRectangle(rect, titleBarColor, titleBarColor, c, c, clip);
 			}
 			else
 			{
-				const video::SColor c = titleBarColor.getInterpolated(video::SColor(255,0,0,0), 0.2f);
+				const video::SColor c = titleBarColor.getInterpolated(video::SColor(titleBarColor.getAlpha(),0,0,0), 0.2f);
 				Driver->draw2DRectangle(rect, titleBarColor, c, titleBarColor, c, clip);
 			}
 		}
@@ -909,8 +909,9 @@ void CGUISkin::drawIcon(IGUIElement* element, EGUI_DEFAULT_ICON icon,
 	if (!SpriteBank)
 		return;
 
+	// TODO: we need another state for disabled elements (can't add now because it's an interface change)
 	SpriteBank->draw2DSprite(Icons[icon], position, clip,
-			video::SColor(255,0,0,0), starttime, currenttime, loop, true);
+			Colors[EGDC_WINDOW_SYMBOL], starttime, currenttime, loop, true);
 }
 
 
