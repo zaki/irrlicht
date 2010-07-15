@@ -1,7 +1,10 @@
+
+ - Fix crashes when taking Screenhots for DirectX in Windowed mode (thx to agamemnus for reporting)
+
  - StaticText does now serialize the background color
 
- - Fix gui-elements which didn't care when skin-colors changed. That made it impossible to make the gui slowly transparent (thx to PI for reporting)
-   Note that it couldn't be completely fixed for the SpinBox without breaking the interface, so for that element you have to enforce this by calling for example element->setValue(element->getValue()) once.
+ - Fix gui-elements which didn't care when skin-colors changed. That made it impossible to make the gui slowly transparent (thx to PI for reporting). 
+ Note that it couldn't be completely fixed for the SpinBox without breaking the interface, so for that element you have to enforce this by calling for example element->setValue(element->getValue()) once.
 
  - Fix CXMLReaderImpl::getAttributeValueAsInt which returned wrong values with large integers (thx to squisher for finding)
  

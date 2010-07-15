@@ -2222,6 +2222,12 @@ IImage* CD3D8Driver::createScreenShot()
 		clientRect.top    = clientPoint.y;
 		clientRect.right  = clientRect.left + ScreenSize.Width;
 		clientRect.bottom = clientRect.top  + ScreenSize.Height;
+
+		// window can be off-screen partly, we can't take screenshots from that
+		clientRect.left = core::max_(clientRect.left, 0l);
+		clientRect.top = core::max_(clientRect.top, 0l);
+		clientRect.right = core::min_(clientRect.right, (long)displayMode.Width);
+		clientRect.bottom = core::min_(clientRect.bottom, (long)displayMode.Height );
 	}
 
 	// lock our area of the surface
@@ -2232,8 +2238,12 @@ IImage* CD3D8Driver::createScreenShot()
 		return 0;
 	}
 
+	irr::core::dimension2d<u32> shotSize;
+	shotSize.Width = core::min_( ScreenSize.Width, (u32)(clientRect.right-clientRect.left) );
+	shotSize.Height = core::min_( ScreenSize.Height, (u32)(clientRect.bottom-clientRect.top) );
+
 	// this could throw, but we aren't going to worry about that case very much
-	IImage* newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
+	IImage* newImage = new CImage(ECF_A8R8G8B8, shotSize);
 
 	// d3d pads the image, so we need to copy the correct number of bytes
 	u32* dP = (u32*)newImage->lock();
@@ -2244,26 +2254,26 @@ IImage* CD3D8Driver::createScreenShot()
 	// set each pixel alpha value to 255.
 	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
 	{
-		for (u32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < shotSize.Height; ++y)
 		{
-			for(u32 x = 0; x < ScreenSize.Width; ++x)
+			for(u32 x = 0; x < shotSize.Width; ++x)
 			{
 				*dP = *((u32*)sP) | 0xFF000000;
 				dP++;
 				sP += 4;
 			}
 
-			sP += lockedRect.Pitch - (4 * ScreenSize.Width);
+			sP += lockedRect.Pitch - (4 * shotSize.Width);
 		}
 	}
 	else
 	{
-		for (u32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < shotSize.Height; ++y)
 		{
-			memcpy(dP, sP, ScreenSize.Width * 4);
+			memcpy(dP, sP, shotSize.Width * 4);
 
 			sP += lockedRect.Pitch;
-			dP += ScreenSize.Width;
+			dP += shotSize.Width;
 		}
 	}
 
