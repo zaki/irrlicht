@@ -38,6 +38,8 @@ bool testXML(void)
 	}
 
 	reader->drop();
+	device->drop();
+
 	return retVal;
 }
 

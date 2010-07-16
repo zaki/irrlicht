@@ -67,6 +67,7 @@ bool writeImageToFile(void)
 		irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot->getDimension());
 		screenshot->copyTo(fixedScreenshot);
 		screenshot->drop();
+		screenshot = 0;
 
 		if(!fixedScreenshot)
 		{
@@ -109,14 +110,17 @@ bool writeImageToFile(void)
 	referenceFilename = "media/Burning's Video-drawPixel.png";
 	if(!binaryCompareFiles(writtenFilename, referenceFilename))
 	{
-		logTestString("File written from memory is not the same as the reference file.\n");
-		assert(false);
+		logTestString("File written from memory is not the same as the reference file. %s:%d\n" ,  __FILE__, __LINE__);
+//		assert(false);
 		goto cleanup;
 	}
 
 	result = true;
 
 cleanup:
+	if ( screenshot )
+		screenshot->drop();
+
 	if(writtenFile)
 		writtenFile->drop();
 
