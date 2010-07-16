@@ -3,7 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 /*
-	Based on Code from Copyright (c) 2003 Randy Reddig 
+	Based on Code from Copyright (c) 2003 Randy Reddig
 	Based on code from Nvidia's DDS example:
 	http://www.nvidia.com/object/dxtc_decompression_code.html
 
@@ -140,9 +140,9 @@ void DDSGetColorBlockColors( ddsColorBlock *block, ddsColor colors[ 4 ] )
 	/* use this for all but the super-freak math method */
 	if( block->colors[ 0 ] > block->colors[ 1 ] )
 	{
-		/* four-color block: derive the other two colors.    
+		/* four-color block: derive the other two colors.
 		00 = color 0, 01 = color 1, 10 = color 2, 11 = color 3
-		these two bit codes correspond to the 2-bit fields 
+		these two bit codes correspond to the 2-bit fields
 		stored in the 64-bit block. */
 
 		word = ((u16) colors[ 0 ].r * 2 + (u16) colors[ 1 ].r ) / 3;
@@ -166,9 +166,9 @@ void DDSGetColorBlockColors( ddsColorBlock *block, ddsColor colors[ 4 ] )
 	else
 	{
 		/* three-color block: derive the other color.
-		00 = color 0, 01 = color 1, 10 = color 2,  
+		00 = color 0, 01 = color 1, 10 = color 2,
 		11 = transparent.
-		These two bit codes correspond to the 2-bit fields 
+		These two bit codes correspond to the 2-bit fields
 		stored in the 64-bit block */
 
 		word = ((u16) colors[ 0 ].r + (u16) colors[ 1 ].r) / 2;
@@ -253,7 +253,7 @@ decodes a dds explicit alpha block
 */
 
 static void DDSDecodeAlphaExplicit( u32 *pixel, ddsAlphaBlockExplicit *alphaBlock, s32 width, u32 alphaZero )
-{	
+{
 	s32				row, pix;
 	u16	word;
 	ddsColor		color;
@@ -319,7 +319,7 @@ static void DDSDecodeAlpha3BitLinear( u32 *pixel, ddsAlphaBlock3BitLinear *alpha
 
 	/* 6-alpha block */
 	else
-	{ 
+	{
 		/* 000 = alpha_0, 001 = alpha_1, others are interpolated */
 		alphas[ 2 ] = (4 * alphas[ 0 ] +     alphas[ 1 ]) / 5;	/* bit code 010 */
 		alphas[ 3 ] = (3 * alphas[ 0 ] + 2 * alphas[ 1 ]) / 5;	/* bit code 011 */
@@ -390,7 +390,7 @@ static void DDSDecodeAlpha3BitLinear( u32 *pixel, ddsAlphaBlock3BitLinear *alpha
 			*pixel &= alphaZero;
 
 			/* or the bits into the prev. nulled alpha */
-			*pixel |= *((u32*) &(aColors[ row ][ pix ]));	
+			*pixel |= *((u32*) &(aColors[ row ][ pix ]));
 			pixel++;
 		}
 	}
@@ -647,7 +647,7 @@ s32 DDSDecompress( ddsBuffer *dds, u8 *pixels )
 		break;
 
 	case DDS_PF_DXT3:
-		r = DDSDecompressDXT3( dds, width, height, pixels );	
+		r = DDSDecompressDXT3( dds, width, height, pixels );
 		break;
 
 	case DDS_PF_DXT4:
@@ -655,7 +655,7 @@ s32 DDSDecompress( ddsBuffer *dds, u8 *pixels )
 		break;
 
 	case DDS_PF_DXT5:
-		r = DDSDecompressDXT5( dds, width, height, pixels );		
+		r = DDSDecompressDXT5( dds, width, height, pixels );
 		break;
 
 	default:
