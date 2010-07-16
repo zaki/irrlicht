@@ -28,36 +28,48 @@ bool testGeometryCreator(void)
 	material.Lighting = false;
 	material.TextureLayer[0].Texture = wall;
 
-	IMeshSceneNode * node = smgr->addMeshSceneNode(
-		geom->createHillPlaneMesh(dimension2df(10, 5), dimension2du(5, 5), 
-									&material, 10, dimension2df(2, 2), dimension2df(3, 3)), 0, -1,
+	irr::scene::IMesh * meshHill = geom->createHillPlaneMesh(dimension2df(10, 5), dimension2du(5, 5), 
+									&material, 10, dimension2df(2, 2), dimension2df(3, 3) );
+	IMeshSceneNode * node = smgr->addMeshSceneNode(meshHill, 0, -1,
 									vector3df(0, 10, 0), vector3df(-60, 0, 0));
+	meshHill->drop();
 
-	node = smgr->addMeshSceneNode(geom->createArrowMesh(4, 8, 10, 6, 3, 6,
-														SColor(255, 255, 0, 0), SColor(255, 0, 255, 0)),
-									0, -1, vector3df(-10, -20, 0));
+	irr::scene::IMesh * meshArrow = geom->createArrowMesh(4, 8, 10, 6, 3, 6,
+								SColor(255, 255, 0, 0), SColor(255, 0, 255, 0));
+	node = smgr->addMeshSceneNode(meshArrow, 0, -1, vector3df(-10, -20, 0));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	meshArrow->drop();
 
-	node = smgr->addMeshSceneNode(geom->createConeMesh(5.f, 10.f, 16), 0, -1, vector3df(-35, -20, 0));
-	node->setMaterialFlag(video::EMF_LIGHTING, false);
-	node->setMaterialTexture(0, wall);
-
-	node = smgr->addMeshSceneNode(geom->createCubeMesh(), 0, -1, vector3df(-20, -20, 0));
-	node->setMaterialFlag(video::EMF_LIGHTING, false);
-	node->setMaterialTexture(0, wall);
-
-	node = smgr->addMeshSceneNode(geom->createCylinderMesh(3, 10, 16), 0, -1, vector3df(0, -20, 10), core::vector3df(45,0,0));
+	irr::scene::IMesh * meshCone = geom->createConeMesh(5.f, 10.f, 16);
+	node = smgr->addMeshSceneNode(meshCone, 0, -1, vector3df(-35, -20, 0));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialTexture(0, wall);
+	meshCone->drop();
 
-	node = smgr->addMeshSceneNode(geom->createSphereMesh(), 0, -1, vector3df(10, -15, 0));
+	irr::scene::IMesh * meshCube = geom->createCubeMesh();
+	node = smgr->addMeshSceneNode(meshCube, 0, -1, vector3df(-20, -20, 0));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialTexture(0, wall);
+	meshCube->drop();
 
-	node = smgr->addMeshSceneNode(geom->createVolumeLightMesh(), 0, -1, vector3df(20, -20, -10));
+	irr::scene::IMesh * meshCylinder = geom->createCylinderMesh(3, 10, 16);
+	node = smgr->addMeshSceneNode(meshCylinder, 0, -1, vector3df(0, -20, 10), core::vector3df(45,0,0));
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialTexture(0, wall);
+	meshCylinder->drop();
+
+	irr::scene::IMesh * meshSphere = geom->createSphereMesh();
+	node = smgr->addMeshSceneNode(meshSphere, 0, -1, vector3df(10, -15, 0));
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialTexture(0, wall);
+	meshSphere->drop();
+
+	irr::scene::IMesh * meshVolumeLight = geom->createVolumeLightMesh();
+	node = smgr->addMeshSceneNode(meshVolumeLight, 0, -1, vector3df(20, -20, -10));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialTexture(0, wall);
 	node->setScale(core::vector3df(4.f,4.f,4.f));
+	meshVolumeLight->drop();
 
 	bool result = false;
 	device->run();

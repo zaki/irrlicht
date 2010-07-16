@@ -72,7 +72,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(vectorPositionDimension2d);
 	// file system checks (with null driver)
 	TEST(filesystem);
-	TEST(archiveReader);
+	TEST(archiveReader); 
 	TEST(testXML);
 	TEST(serializeAttributes);
 	// null driver
@@ -93,7 +93,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(drawRectOutline);
 	TEST(flyCircleAnimator);
 	TEST(md2Animation);
-	TEST(testGeometryCreator);
+	TEST(testGeometryCreator); 
 	TEST(writeImageToFile);
 	TEST(meshTransform);
 	// all driver checks
@@ -116,7 +116,7 @@ int main(int argumentCount, char * arguments[])
 	// q3 maps are slow
 	TEST(planeMatrix);
 	TEST(terrainSceneNode);
-	TEST(lightMaps);
+	TEST(lightMaps); 
 
 	unsigned int numberOfTests = tests.size();
 	unsigned int testToRun = 0;

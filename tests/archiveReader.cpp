@@ -87,6 +87,8 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	if ( fs->getFileArchiveCount() )
 		return false;
 
+	readFile->drop();
+
 	return true;
 }
 
@@ -178,6 +180,8 @@ bool testEncryptedZip(IFileSystem* fs)
 	if ( fs->getFileArchiveCount() )
 		return false;
 
+	readFile->drop();
+
 	return true;
 }
 
@@ -201,6 +205,9 @@ bool archiveReader()
 	ret &= testArchive(fs, "media/file_with_path.npk");
 	logTestString("Testing encrypted zip files.\n");
 	ret &= testEncryptedZip(fs);
+
+	device->drop();
+
 	return ret;
 }
 

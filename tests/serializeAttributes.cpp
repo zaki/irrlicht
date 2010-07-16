@@ -315,5 +315,7 @@ bool serializeAttributes()
 		logTestString("XmlSerialization failed in %s:%d\n", __FILE__, __LINE__ );
 	}
 
+	device->drop();
+
 	return result;
 }

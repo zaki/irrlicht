@@ -43,5 +43,7 @@ bool testTimer(void)
 	timer->start();
 	success &= !timer->isStopped();
 
+	device->drop();
+
 	return success;
 }
