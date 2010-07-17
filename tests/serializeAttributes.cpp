@@ -145,7 +145,7 @@ public:
 
 	void set()
 	{
-		ValInt = 1;
+		ValInt = 152722522;
 		ValFloat = 1.f;
 		ValString = "one";
 		ValStringW = L"ONE";

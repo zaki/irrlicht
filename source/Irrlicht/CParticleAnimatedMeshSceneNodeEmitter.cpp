@@ -174,10 +174,18 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 void CParticleAnimatedMeshSceneNodeEmitter::setAnimatedMeshSceneNode( IAnimatedMeshSceneNode* node )
 {
 	Node = node;
+	AnimatedMesh = 0;
+	BaseMesh = 0;
+	TotalVertices = 0;
+	VertexPerMeshBufferList.clear();
+	if ( !node )
+	{
+		return;
+	}
+
 	AnimatedMesh = node->getMesh();
 	BaseMesh = AnimatedMesh->getMesh(0);
 
-	TotalVertices = 0;
 	MBCount = BaseMesh->getMeshBufferCount();
 	VertexPerMeshBufferList.reallocate(MBCount);
 	for( u32 i = 0; i < MBCount; ++i )

@@ -699,6 +699,7 @@ void CGUITreeView::mouseAction( s32 xpos, s32 ypos, bool onlyHover /*= false*/ )
 
 	event.EventType			= EET_GUI_EVENT;
 	event.GUIEvent.Caller	= this;
+	event.GUIEvent.Element = 0;
 
 	xpos -= AbsoluteRect.UpperLeftCorner.X;
 	ypos -= AbsoluteRect.UpperLeftCorner.Y;

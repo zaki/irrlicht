@@ -175,7 +175,6 @@ namespace scene
 		core::aabbox3d<f32> Box;
 		IAnimatedMesh* Mesh;
 
-		u32 BeginFrameTime;
 		s32 StartFrame;
 		s32 EndFrame;
 		f32 FramesPerSecond;

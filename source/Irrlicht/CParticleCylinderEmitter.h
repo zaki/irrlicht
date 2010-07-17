@@ -110,6 +110,12 @@ public:
 	//! Gets the minimum starting size for particles
 	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
 
+	//! Writes attributes of the object.
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+
+	//! Reads attributes of the object.
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+
 private:
 
 	core::array<SParticle> Particles;

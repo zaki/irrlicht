@@ -64,7 +64,7 @@ CGUIComboBox::CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 	SelectedText->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	SelectedText->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_CENTER);
 	if (skin)
-		SelectedText->setOverrideColor(skin->getColor(EGDC_BUTTON_TEXT)); 
+		SelectedText->setOverrideColor(skin->getColor(EGDC_BUTTON_TEXT));
 	SelectedText->enableOverrideColor(true);
 
 	// this element can be tabbed to
@@ -363,20 +363,23 @@ void CGUIComboBox::draw()
 	{
 		HasFocus = currentFocus == this || isMyChild(currentFocus);
 		LastFocus = currentFocus;
-
-		SelectedText->setBackgroundColor(skin->getColor(EGDC_HIGH_LIGHT));
-
-		if(isEnabled())
-		{
-			SelectedText->setDrawBackground(HasFocus);
-			SelectedText->setOverrideColor(skin->getColor(HasFocus ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT));
-		}
-		else
-		{
-			SelectedText->setDrawBackground(false);
-			SelectedText->setOverrideColor(skin->getColor(EGDC_GRAY_TEXT)); 
-		}
 	}
+
+	// set colors each time as skin-colors can be changed
+	SelectedText->setBackgroundColor(skin->getColor(EGDC_HIGH_LIGHT));
+	if(isEnabled())
+	{
+		SelectedText->setDrawBackground(HasFocus);
+		SelectedText->setOverrideColor(skin->getColor(HasFocus ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT));
+	}
+	else
+	{
+		SelectedText->setDrawBackground(false);
+		SelectedText->setOverrideColor(skin->getColor(EGDC_GRAY_TEXT));
+	}
+	ListButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_DOWN), skin->getColor(EGDC_WINDOW_SYMBOL));
+	ListButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_DOWN), skin->getColor(EGDC_WINDOW_SYMBOL));
+
 
 	core::rect<s32> frameRect(AbsoluteRect);
 

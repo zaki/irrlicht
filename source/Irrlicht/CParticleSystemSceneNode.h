@@ -25,7 +25,7 @@ public:
 
 	//! constructor
 	CParticleSystemSceneNode(bool createDefaultEmitter,
-		ISceneNode* parent, ISceneManager* mgr, s32 id, 
+		ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position,
 		const core::vector3df& rotation,
 		const core::vector3df& scale);
@@ -77,7 +77,7 @@ public:
 	//! Creates a box particle emitter.
 	virtual IParticleBoxEmitter* createBoxEmitter(
 		const core::aabbox3df& box = core::aabbox3d<f32>(-10,0,-10,5,30,10),
-		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f), 
+		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
 		u32 minParticlesPerSecond = 5,
 		u32 maxParticlesPerSecond = 10,
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
@@ -117,7 +117,7 @@ public:
 
 	//! Creates a point particle emitter.
 	virtual IParticlePointEmitter* createPointEmitter(
-		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f), 
+		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
 		u32 minParticlesPerSecond = 5,
 		u32 maxParticlesPerSecond = 10,
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),

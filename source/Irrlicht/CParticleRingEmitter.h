@@ -97,6 +97,12 @@ public:
 	//! Get the thickness of the ring
 	virtual f32 getRingThickness() const { return RingThickness; }
 
+	//! Writes attributes of the object.
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+
+	//! Reads attributes of the object.
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+
 private:
 
 	core::array<SParticle> Particles;

@@ -449,6 +449,7 @@
 		<Unit filename="../../include/IGPUProgrammingServices.h" />
 		<Unit filename="../../include/IGUIButton.h" />
 		<Unit filename="../../include/IGUICheckBox.h" />
+		<Unit filename="../../include/IGUIColorSelectDialog.h" />
 		<Unit filename="../../include/IGUIComboBox.h" />
 		<Unit filename="../../include/IGUIContextMenu.h" />
 		<Unit filename="../../include/IGUIEditBox.h" />

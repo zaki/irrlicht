@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="18.SplitScreen_vc8"
-	ProjectGUID="{E6F60924-57CD-47F9-A485-853A3BA08FBD}"
+	ProjectGUID="{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
