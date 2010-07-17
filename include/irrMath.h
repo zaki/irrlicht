@@ -162,10 +162,10 @@ namespace core
 	}
 
 	//! swaps the content of the passed parameters
-	// Note: We use the same trick as boost and use two template arguments to 
-	// avoid ambiguity when swapping objectsof an Irrlicht type that has not 
-	// it's own swap overload. Otherwise we get conflicts with some compilers 
-	// in combination with stl. 
+	// Note: We use the same trick as boost and use two template arguments to
+	// avoid ambiguity when swapping objects of an Irrlicht type that has not
+	// it's own swap overload. Otherwise we get conflicts with some compilers
+	// in combination with stl.
 	template <class T1, class T2>
 	inline void swap(T1& a, T2& b)
 	{

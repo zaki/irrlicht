@@ -109,6 +109,10 @@ void CParticleBoxEmitter::serializeAttributes(io::IAttributes* out, io::SAttribu
 	b *= 0.5f;
 	out->addVector3d("Box", b);
 	out->addVector3d("Direction", Direction);
+	out->addFloat("MinStartSizeWidth", MinStartSize.Width);
+	out->addFloat("MinStartSizeHeight", MinStartSize.Height);
+	out->addFloat("MaxStartSizeWidth", MaxStartSize.Width);
+	out->addFloat("MaxStartSizeHeight", MaxStartSize.Height); 
 	out->addInt("MinParticlesPerSecond", MinParticlesPerSecond);
 	out->addInt("MaxParticlesPerSecond", MaxParticlesPerSecond);
 	out->addColor("MinStartColor", MinStartColor);
@@ -143,6 +147,11 @@ void CParticleBoxEmitter::deserializeAttributes(io::IAttributes* in, io::SAttrib
 	Direction = in->getAttributeAsVector3d("Direction");
 	if (Direction.getLength() == 0)
 		Direction.set(0,0.01f,0);
+
+	MinStartSize.Width = in->getAttributeAsFloat("MinStartSizeWidth");
+	MinStartSize.Height = in->getAttributeAsFloat("MinStartSizeHeight");
+	MaxStartSize.Width = in->getAttributeAsFloat("MaxStartSizeWidth");
+	MaxStartSize.Height = in->getAttributeAsFloat("MaxStartSizeHeight"); 
 
 	MinParticlesPerSecond = in->getAttributeAsInt("MinParticlesPerSecond");
 	MaxParticlesPerSecond = in->getAttributeAsInt("MaxParticlesPerSecond");

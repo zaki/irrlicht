@@ -88,6 +88,10 @@ s32 CParticlePointEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& out
 void CParticlePointEmitter::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addVector3d("Direction", Direction);
+	out->addFloat("MinStartSizeWidth", MinStartSize.Width);
+	out->addFloat("MinStartSizeHeight", MinStartSize.Height);
+	out->addFloat("MaxStartSizeWidth", MaxStartSize.Width);
+	out->addFloat("MaxStartSizeHeight", MaxStartSize.Height); 
 	out->addInt("MinParticlesPerSecond", MinParticlesPerSecond);
 	out->addInt("MaxParticlesPerSecond", MaxParticlesPerSecond);
 	out->addColor("MinStartColor", MinStartColor);
@@ -97,13 +101,17 @@ void CParticlePointEmitter::serializeAttributes(io::IAttributes* out, io::SAttri
 	out->addInt("MaxAngleDegrees", MaxAngleDegrees);
 }
 
-
 //! Reads attributes of the object.
 void CParticlePointEmitter::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
 	Direction = in->getAttributeAsVector3d("Direction");
 	if (Direction.getLength() == 0)
 		Direction.set(0,0.01f,0);
+
+	MinStartSize.Width = in->getAttributeAsFloat("MinStartSizeWidth");
+	MinStartSize.Height = in->getAttributeAsFloat("MinStartSizeHeight");
+	MaxStartSize.Width = in->getAttributeAsFloat("MaxStartSizeWidth");
+	MaxStartSize.Height = in->getAttributeAsFloat("MaxStartSizeHeight"); 
 
 	MinParticlesPerSecond = in->getAttributeAsInt("MinParticlesPerSecond");
 	MaxParticlesPerSecond = in->getAttributeAsInt("MaxParticlesPerSecond");

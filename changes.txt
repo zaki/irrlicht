@@ -1,102 +1,80 @@
+Changes in 1.8 (??.0?.2010)
+
  - Add IGUIElement::bringToBack (patch written by DtD, although I'm to blame for the function-name)
 
------------------------------
-Changes in 1.7.1 (05.07.2010) TA (eh... why 1.7.1? Trunk is for 1.8)
-	- BurningVideo 
-		- add Normalmap Rendering ( one light only), pushed Burningvideo to 0.46
-		- add Stencil Shadow Rendering (one color only and 32 bit only), pushed Burningvideo to 0.47
-		- internal vertexformat changed
-		- changed fixpoint from 9 to 10 bit fract resolution
-		- renamed createBurningVideoDriver to createBurningVideoDriver and uses SIrrlichtCreationParameters like opengl
-		- internal interfaces for the trianglerenders unified.
-		
-	- Example 11.
-		changed the light billboards to use the light color. ( green light, green particle, red light red particle )
-		allow to disable the bump/parallax on the earth like in the room ( with transparency )
-	- added DDS Image files, DXT2, DXT3, DXT4, DXT5, based on code from nvidia and Randy Reddig
-	
-	- added a Halflife 1 Model Loader. ( bases on code by Fabio Concas ) Halflife 1.1.0.8, Counter-Strike 1.6 working
-		-> Load all Textures ( can even optimize it to texture atlas ), all bone animation, all submodels.
-		-> But to make use of the values ( named animation, mouth animation ) the Interface for IAnimatedMeshSceneNode
-		has to be redone. I don't want to blow up the Interface again...
-		
-		TODO:
-			->can handle float frames numbers, the interface for getMesh should be reworked
-			I already have working implementations for MD2, MD3 and MDL to use float blendning instead
-			of using some kind of fix point..
-			
-			This is my idea of a new getMesh interface for IAnimatedMesh
+ - BurningVideo 
+   - add Normalmap Rendering (one light only), pushed Burningvideo to 0.46
+   - add Stencil Shadow Rendering (one color only and 32 bit only),
+     pushed Burningvideo to 0.47
+   - internal vertexformat changed
+   - changed fixpoint from 9 to 10 bit fract resolution
+   - renamed createBurningVideoDriver to createBurningVideoDriver and uses SIrrlichtCreationParameters like opengl
+   - internal interfaces for the trianglerenders unified.
 
-			//! Returns the IMesh interface for a frame.
-			/** \param frameA: Frame number as zero based index.
-			The Blend Factor is in the fractional part of frameA
-			The Mesh will be calculated as
-				frame = integer(frameA) * (1-fractional(frameA )) + frameB * fractional(frameA)
-				FrameNr		KeyFrameA   KeyFrameB
-				40.0		1			0
-				40.1		0.9			0.1
-				40.5		0.5			0.5
-				40.9		0.1			0.9
-				41.0		0			1
-			\param frameB: Frame number as zero based index. The other KeyFrame which is blended with FrameA. 
-			\param userParam: for Example Level of detail, or something else
-			*/
-			virtual IMesh* getMesh(f32 frameA, s32 frameB = 0,s32 param = 0) = 0;
-			
-			Should be discussed. handles all situations ( forward/reverse animation ) because the direction
-			vector is A->B
-			
-			For now i used the (unused, always 255) detail level parameter and set a blend percentage as
-			s32 frameNr = (s32) getFrameNr();
-			s32 frameBlend = (s32) (core::fract ( getFrameNr() ) * 1000.f);
-			return Mesh->getMesh(frameNr, frameBlend, StartFrame, EndFrame);
+ - Example 11, changed the light billboards to use the light color.
+   allow to disable the bump/parallax on the earth like in the room ( with transparency )
 
-			So no interface is affected.
-		
-		TODO:
-		I also added structures (suggestion) for Keyframe Interpolation which are currently not used here
-		mainly to unifiy get and set named animations/bones from different model files with a unique function call.
-		It would also effect the Handling of IAnimatedMeshSceneNode. This Topic should be discussed.
-		
-		My goal is to get as many information from the original model file like key/bone animation, skin info, shaders
-		sub models, attachement points etc in a public interface
-		and to reduce the interface like setMD2Anim, setMD3Animn, setBoneAnim into one slim line function call
-		for setting and getting.
-		
-		The callback interface also should be more generalized and event based.
-		(Halflife for example can notify if your left foot animation touches ground, or tirggers sound or whatever)
-		Maybe we use the gui event system for that
-		
-		I included a 357kb Yodan.mdl and the copyright info file from Doug Hillyer to the media directory
-		used in example 7. collision as 4th model..
-		
-		it's not easy to unify different model types and that's why it's not finished;-)
-		
-		-> TODO: Quaternion Rotation is done private hand made and should be done with irrlicht quaterions
-		
-	- added Halflife 1 Texture Loader
-		Valve uses WAL archive types like quake2. textures are inside model files
-		I reworked the existing ImageloaderWAL and added named Halflife textures to wal2 ( they have not extension )
-		and an LMP (palette/texture) loader into the same file ( all using 32bit now )
-	- added WAD Archive Loader ( Quake2 (WAL2) and Halflife (WAL3) are supported )
-	- CFileList
-		added Offset Parameter to SFileListEntry and removed the private array from the archive loaders.
-		CFileList::addItem now uses automatic incremental id if id = 0
-	- coreutil.h 
-		added void splitFilenam, splits a path into components
-	- irstring.h
-		added parameter make_lower to substring ( copy just lower case )
-		string<T> subString(u32 begin, s32 length, bool make_lower = false ) const
-		
-	- ColorConverter
-			added
-			//! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
-			static void convert8BitTo24Bit(const u8* in, s16* out, s32 width, s32 height, const s32* palette, s32 linepad = 0, bool flip=false);
-			//! converts a 8 bit palettized or non palettized image (A8) into A8R8G8B8
-			static void convert8BitTo32Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad = 0, bool flip=false);
-	
+ - added DDS Image files, DXT2, DXT3, DXT4, DXT5, based on code from nvidia and Randy Reddig
+ 
+ - added Halflife 1 Model Loader (based on code by Fabio Concas)
+   Halflife 1.1.0.8, Counter-Strike 1.6 working
+   -> Load all Textures ( can even optimize it to texture atlas ), all bone animation, all submodels.
+   -> But to make use of the values (named animation, mouth animation)
+      the Interface for IAnimatedMeshSceneNode has to be redone.
+  
+   TODO:
+   ->can handle float frames numbers, the interface for getMesh should be reworked
+   This is my idea of a new getMesh interface for IAnimatedMesh
 
---------------------------------------
+   //! Returns the IMesh interface for a frame.
+   /** \param frameA: Frame number as zero based index.
+   The Blend Factor is in the fractional part of frameA
+   The Mesh will be calculated as
+    frame = integer(frameA) * (1-fractional(frameA )) + frameB * fractional(frameA)
+    FrameNr  KeyFrameA   KeyFrameB
+    40.0  1   0
+    40.1  0.9   0.1
+    40.5  0.5   0.5
+    40.9  0.1   0.9
+    41.0  0   1
+   \param frameB: Frame number as zero based index. The other KeyFrame which is blended with FrameA. 
+   \param userParam: for Example Level of detail, or something else
+   */
+   virtual IMesh* getMesh(f32 frameA, s32 frameB = 0,s32 param = 0) = 0;
+   
+   For now i used the (unused, always 255) detail level parameter and set a blend percentage as
+   s32 frameNr = (s32) getFrameNr();
+   s32 frameBlend = (s32) (core::fract ( getFrameNr() ) * 1000.f);
+   return Mesh->getMesh(frameNr, frameBlend, StartFrame, EndFrame);
+
+   So no interface is affected.
+  
+   -> TODO: Quaternion Rotation is done private hand made and should be done with irrlicht quaternions
+  
+ - Included 357kb Yodan.mdl mesh and copyright info file from Doug Hillyer
+   to the media directory, used in example 7. collision as 4th model.
+
+ - added Halflife 1 Texture Loader
+   Valve uses WAL archive types like quake2. textures are inside model files
+   I reworked the existing ImageloaderWAL and added named Halflife textures to wal2 ( they have no extension )
+   and an LMP (palette/texture) loader into the same file (all using 32bit now)
+
+ - added WAD Archive Loader (Quake2 (WAL2) and Halflife (WAL3) are supported)
+
+ - CFileList
+   added Offset Parameter to SFileListEntry and removed the private array from the archive loaders.
+   CFileList::addItem now uses automatic incremental id if id = 0
+
+ - added void splitFilename, splits a path into components
+
+ - added parameter make_lower to substring ( copy just lower case )
+   string<T> subString(u32 begin, s32 length, bool make_lower = false ) const
+  
+ - ColorConverter added
+   //! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
+   static void convert8BitTo24Bit(const u8* in, s16* out, s32 width, s32 height, const s32* palette, s32 linepad = 0, bool flip=false);
+   //! converts a 8 bit palettized or non palettized image (A8) into A8R8G8B8
+   static void convert8BitTo32Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad = 0, bool flip=false);
 
 - In IGUITreeView "clearChilds" and "hasChilds" deprecated for "clearChildren" and "hasChildren" (thx @Greenya for noticing)
 
@@ -117,6 +95,58 @@ Changes in 1.7.1 (05.07.2010) TA (eh... why 1.7.1? Trunk is for 1.8)
 - Fixed bug causing memory access violation in string::replace found and patched by Nalin.
 
 - WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
+
+-----------------------------
+Changes in 1.7.2 (??.??.2010)
+
+ - Fix crashes when taking Screenhots for DirectX in Windowed mode (thx to agamemnus for reporting)
+
+ - StaticText does now serialize the background color
+
+ - Fix gui-elements which didn't care when skin-colors changed. That made it impossible to make the gui slowly transparent (thx to PI for reporting). 
+ Note that it couldn't be completely fixed for the SpinBox without breaking the interface, so for that element you have to enforce this by calling for example element->setValue(element->getValue()) once.
+
+ - Fix CXMLReaderImpl::getAttributeValueAsInt which returned wrong values with large integers (thx to squisher for finding)
+ 
+ - Add EGET_TREEVIEW_NODE_COLLAPSE and deprecate EGET_TREEVIEW_NODE_COLLAPS (found by greenya)
+ 
+ - Fix compile problem in swap when using irrlicht in combination with stl (backport from trunk r3281)
+
+ - Fix serialization in CParticleSystemSceneNode (found by B@z)
+
+ - Prevent crash in BillboardTextSceneNode when a custom font is used. Found and fixed by Nalin (bugtracker id: 3020487)
+
+ - Fix problem in animation system that currentFrame got messed up after long pauses (especially when not starting at frame 0).
+   See forum thread (http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?p=210537#210537) and bug id 2898876.
+   Also remove BeginFrameTime in CAnimatedMeshSceneNode as it hasn't been used anymore since some time.
+
+ - Add framerate and current frame information for animations in example 09 and do some minor cleanup.
+ 
+ - Added another test for xml-reader.
+ 
+ - Fix serialization in several particle emitters and affectors (thx to Ion Dune for reporting).
+ 
+ - Fix compile-error on VS for vector2d::getAngleTrig when used with integers. (thx to greenya for reporting)
+ 
+ - Fix bug in dimension2d::getInterpolated that caused wrong results when used with integers as template parameter. (thx to Greenya for noticing a warning which made me look over this code).
+ 
+ - Remove 2 minor memory leaks in meshloaders (found by tool cppcheck-1.43)
+
+ - reduce file dependencies for IGUIEventReceiver.h (thx ngc92)
+
+ - Initialize GUIEvent.Element in several places (found by greenya)
+
+ - Add EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH and deprecated EGDS_MESSAGE_BOX_MAX_TEST_WIDTH (thx to greenya for reporting).
+
+ - Fix several places where "used" in core::string was used wrongly preventing some memory corruption
+
+ - Remove additional slash in pathnames in X-Loader
+
+ - Fix crash in CGUIListBox when environment was cleared on events
+
+ - Bugfix: Clear up depth-textures which could not be attached in OpenGL to prevent crashes. 
+
+ - Fix arrowMesh boundingbox.
 
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
@@ -166,6 +196,7 @@ Changes in 1.7.1 (17.02.2010)
  - mem leak in OBJ loader fixed
 
  - Removed some default parameters to reduce ambigious situations
+
 ---------------------------
 Changes in 1.7 (03.02.2010)
 
@@ -286,12 +317,12 @@ Changes in 1.7 (03.02.2010)
  - Let maya-cam animator react on a setTarget call to the camera which happened outside it's own control
 
  - New contextmenue features:
-	automatic checking for checked flag.
-	close handling now customizable
-	serialization can handle incomplete xml's
-	setEventParent now in public interface
-	New function findItemWithCommandId
-  	New function insertItem
+   automatic checking for checked flag.
+   close handling now customizable
+   serialization can handle incomplete xml's
+   setEventParent now in public interface
+   New function findItemWithCommandId
+   New function insertItem
 
  - new vector3d::getSphericalCoordinateAngles method.
 

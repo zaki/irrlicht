@@ -78,12 +78,6 @@ void CGUITable::addColumn(const wchar_t* caption, s32 columnIndex)
 	tabHeader.Width = Font->getDimension(caption).Width + (CellWidthPadding * 2) + ARROW_PAD;
 	tabHeader.OrderingMode = EGCO_NONE;
 
-	IGUISkin* skin = Environment->getSkin();
-	if (skin)
-	{
-		tabHeader.TextColor = skin->getColor(EGDC_BUTTON_TEXT);
-	}
-
 	if ( columnIndex < 0 || columnIndex >= (s32)Columns.size() )
 	{
 		Columns.push_back(tabHeader);
@@ -166,6 +160,7 @@ bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 					SEvent event;
 					event.EventType = EET_GUI_EVENT;
 					event.GUIEvent.Caller = this;
+					event.GUIEvent.Element = 0;
 					event.GUIEvent.EventType = EGET_TABLE_HEADER_CHANGED;
 					Parent->OnEvent(event);
 				}
@@ -195,6 +190,7 @@ bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = EGET_TABLE_HEADER_CHANGED;
 		Parent->OnEvent(event);
 	}
@@ -306,6 +302,7 @@ void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& 
 		Rows[rowIndex].Items[columnIndex].Text = text;
 		breakText( Rows[rowIndex].Items[columnIndex].Text, Rows[rowIndex].Items[columnIndex].BrokenText, Columns[columnIndex].Width );
 		Rows[rowIndex].Items[columnIndex].Color = color;
+		Rows[rowIndex].Items[columnIndex].IsOverrideColor = true;
 	}
 }
 
@@ -315,6 +312,7 @@ void CGUITable::setCellColor(u32 rowIndex, u32 columnIndex, video::SColor color)
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
 		Rows[rowIndex].Items[columnIndex].Color = color;
+		Rows[rowIndex].Items[columnIndex].IsOverrideColor = true;
 	}
 }
 
@@ -852,6 +850,7 @@ void CGUITable::selectNew(s32 ypos, bool onlyHover)
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = (Selected != oldSelected) ? EGET_TABLE_CHANGED : EGET_TABLE_SELECTED_AGAIN;
 		Parent->OnEvent(event);
 	}
@@ -950,6 +949,8 @@ void CGUITable::draw()
 				}
 				else
 				{
+					if ( !Rows[i].Items[j].IsOverrideColor )	// skin-colors can change
+						Rows[i].Items[j].Color = skin->getColor(EGDC_BUTTON_TEXT);
 					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, IsEnabled ? Rows[i].Items[j].Color : skin->getColor(EGDC_GRAY_TEXT), false, true, &clientClip);
 				}
 
@@ -1092,8 +1093,6 @@ void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 
 		label = "Column"; label += i; label += "name";
 		out->addString(label.c_str(), Columns[i].Name.c_str() );
-		label = "Column"; label += i; label += "color";
-		out->addColor(label.c_str(), Columns[i].TextColor );
 		label = "Column"; label += i; label += "width";
 		out->addInt(label.c_str(), Columns[i].Width );
 		label = "Column"; label += i; label += "OrderingMode";
@@ -1119,6 +1118,8 @@ void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 			// core::stringw BrokenText;	// can be recalculated
 			label = "Row"; label += i; label += "cell"; label += c; label += "color";
 			out->addColor(label.c_str(), Rows[i].Items[c].Color );
+			label = "Row"; label += i; label += "cell"; label += c; label += "IsOverrideColor";
+			out->addColor(label.c_str(), Rows[i].Items[c].IsOverrideColor );
 			// void *data;	// can't be serialized
 		}
 	}
@@ -1162,8 +1163,6 @@ void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 
 		label = "Column"; label += i; label += "name";
 		column.Name = core::stringw(in->getAttributeAsString(label.c_str()).c_str());
-		label = "Column"; label += i; label += "color";
-		column.TextColor = in->getAttributeAsColor(label.c_str());
 		label = "Column"; label += i; label += "width";
 		column.Width = in->getAttributeAsInt(label.c_str());
 		label = "Column"; label += i; label += "OrderingMode";
@@ -1202,6 +1201,9 @@ void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 			breakText( cell.Text, cell.BrokenText, Columns[c].Width );
 			label = "Row"; label += i; label += "cell"; label += c; label += "color";
 			cell.Color = in->getAttributeAsColor(label.c_str());
+			label = "Row"; label += i; label += "cell"; label += c; label += "IsOverrideColor";
+			cell.IsOverrideColor = in->getAttributeAsBool(label.c_str());
+
 			cell.Data = NULL;
 
 			Rows[Rows.size()-1].Items.push_back(cell);

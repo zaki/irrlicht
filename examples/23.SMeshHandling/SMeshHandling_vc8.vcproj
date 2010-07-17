@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="23.SMeshHandling_vc8"
-	ProjectGUID="{08D2F676-9DEB-4443-AEF7-52CC6F7D5F7C}"
+	ProjectGUID="{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>

@@ -23,7 +23,7 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 			bool background)
 : IGUIStaticText(environment, parent, id, rectangle),
 	HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_UPPERLEFT),
-	Border(border), OverrideColorEnabled(false), WordWrap(false), Background(background),
+	Border(border), OverrideColorEnabled(false), OverrideBGColorEnabled(false), WordWrap(false), Background(background),
 	OverrideColor(video::SColor(101,255,255,255)), BGColor(video::SColor(101,210,210,210)),
 	OverrideFont(0), LastBreakFont(0)
 {
@@ -64,6 +64,9 @@ void CGUIStaticText::draw()
 
 	if (Background)
 	{
+		if ( !OverrideBGColorEnabled )	// skin-colors can change
+			BGColor = skin->getColor(gui::EGDC_3D_FACE);
+
 		driver->draw2DRectangle(BGColor, frameRect, &AbsoluteClippingRect);
 	}
 
@@ -177,6 +180,7 @@ void CGUIStaticText::setOverrideColor(video::SColor color)
 void CGUIStaticText::setBackgroundColor(video::SColor color)
 {
 	BGColor = color;
+	OverrideBGColorEnabled = true;
 	Background = true;
 }
 
@@ -425,9 +429,11 @@ void CGUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 
 	out->addBool	("Border",              Border);
 	out->addBool	("OverrideColorEnabled",OverrideColorEnabled);
-	out->addBool	("WordWrap",		WordWrap);
+	out->addBool	("OverrideBGColorEnabled",OverrideBGColorEnabled);
+	out->addBool	("WordWrap",			WordWrap);
 	out->addBool	("Background",          Background);
 	out->addColor	("OverrideColor",       OverrideColor);
+	out->addColor	("BGColor",       		BGColor);
 	out->addEnum	("HTextAlign",          HAlign, GUIAlignmentNames);
 	out->addEnum	("VTextAlign",          VAlign, GUIAlignmentNames);
 
@@ -441,11 +447,12 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	IGUIStaticText::deserializeAttributes(in,options);
 
 	Border = in->getAttributeAsBool("Border");
-	OverrideColor = in->getAttributeAsColor("OverrideColor");
-
 	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
+	OverrideBGColorEnabled = in->getAttributeAsBool("OverrideBGColorEnabled");
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
 	Background = in->getAttributeAsBool("Background");
+	OverrideColor = in->getAttributeAsColor("OverrideColor");
+	BGColor = in->getAttributeAsColor("BGColor");
 
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
                       (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));

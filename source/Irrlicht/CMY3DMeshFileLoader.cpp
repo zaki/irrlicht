@@ -246,8 +246,6 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 
 	// loading meshes
 
-	SMesh* mesh = new SMesh();
-
 	if (id!=MY3D_MESH_LIST_ID)
 	{
 		os::Printer::log("Can not find MY3D_MESH_LIST_ID, loading failed!", ELL_ERROR);
@@ -637,6 +635,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 	}
 
 	// creating mesh
+	SMesh* mesh = new SMesh();
 
 	for (u32 num=0; num<MeshBufferEntry.size(); ++num)
 	{

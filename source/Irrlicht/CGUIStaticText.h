@@ -94,6 +94,7 @@ namespace gui
 		EGUI_ALIGNMENT HAlign, VAlign;
 		bool Border;
 		bool OverrideColorEnabled;
+		bool OverrideBGColorEnabled;
 		bool WordWrap;
 		bool Background;
 
