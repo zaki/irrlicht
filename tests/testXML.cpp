@@ -159,8 +159,8 @@ bool testXML(void)
 	result &= simple_xml(device->getFileSystem());
 	logTestString("Test XML reader CDATA support.\n");
 	result &= cdata(device->getFileSystem());
-//	logTestString("Test XML reader attribute support.\n");
-//	result &= attributeValues(device->getFileSystem());	// TODO: this bug is still open!
+	logTestString("Test XML reader attribute support.\n");
+	result &= attributeValues(device->getFileSystem());	
 
 	device->drop();
 	return result;
