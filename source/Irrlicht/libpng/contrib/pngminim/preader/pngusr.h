@@ -2,7 +2,7 @@
  *
  * Copyright (c) 2009 Glenn Randers-Pehrson
  *
- * This code is released under the zlib/libpng license.
+ * This code is released under the libpng license.
  * For conditions of distribution and use, see the disclaimer
  * and license in png.h
  *
@@ -12,8 +12,6 @@
 #ifndef MINPRDPNGCONF_H
 #define MINPRDPNGCONF_H
 
-#define PNG_NO_GLOBAL_ARRAYS
-
 #define PNG_NO_WARNINGS
 #define png_warning(s1,s2) ""
 #define png_chunk_warning(s1,s2) ""
@@ -21,8 +19,7 @@
 #define png_error(s1,s2) png_err(s1)
 #define png_chunk_error(s1,s2) png_err(s1)
 
-#define PNG_NO_ASSEMBLER_CODE
-#define PNG_NO_OPTIMIZED_CODE
+#define PNG_NO_READ_BGR
 #define PNG_NO_READ_DITHER
 #define PNG_NO_READ_INVERT
 #define PNG_NO_READ_SHIFT
@@ -50,11 +47,11 @@
 #define PNG_NO_READ_OPT_PLTE
 #define PNG_NO_READ_STRIP_ALPHA
 #define PNG_NO_READ_oFFs
-#define PNG_NO_WARN_UNINITIALIZED_ROW
 
 #define PNG_NO_WRITE_SUPPORTED
 
 #define PNG_NO_INFO_IMAGE
+#define PNG_NO_IO_STATE
 #define PNG_NO_USER_MEM
 #define PNG_NO_FIXED_POINT_SUPPORTED
 #define PNG_NO_MNG_FEATURES
@@ -64,5 +61,8 @@
 #define PNG_NO_ZALLOC_ZERO
 #define PNG_NO_ERROR_NUMBERS
 #define PNG_NO_EASY_ACCESS
+#define PNG_NO_USER_LIMITS
+#define PNG_NO_SET_USER_LIMITS
+#define PNG_NO_TIME_RFC1143
 
 #endif /* MINPRDPNGCONF_H */
