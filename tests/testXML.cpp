@@ -159,7 +159,7 @@ bool testXML(void)
 
 	result &= simple_xml(device->getFileSystem());
 	result &= cdata(device->getFileSystem());
-	result &= attributeValues(device->getFileSystem());	// TODO: this bug is still open!
+	result &= attributeValues(device->getFileSystem());	
 
 	device->drop();
 	return result;
