@@ -34,7 +34,9 @@ typedef sVec2 vec2;
 #define attribute
 #define varying
 
+#ifdef _MSC_VER
 #pragma warning(disable:4244)
+#endif
 
 struct mat4{
    float m[4][4];
