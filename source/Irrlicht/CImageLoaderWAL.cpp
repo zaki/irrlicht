@@ -281,7 +281,7 @@ IImage* CImageLoaderLMP::loadImage(irr::io::IReadFile* file) const
 
 	// maybe palette file
 	u32 rawtexsize = header.width * header.height;
-	if ( rawtexsize + sizeof ( header ) != file->getSize() )
+	if ( rawtexsize + sizeof ( header ) != (u32)file->getSize() )
 		return 0;
 
 	u8 *rawtex = new u8 [ rawtexsize ];
