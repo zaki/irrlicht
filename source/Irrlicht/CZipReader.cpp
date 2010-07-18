@@ -363,7 +363,7 @@ bool CZipReader::scanGZipHeader()
 #endif
 
 		// now we've filled all the fields, this is just a standard deflate block
-		addItem(ZipFileName, entry.header.DataDescriptor.UncompressedSize, false, 0);
+		addItem(ZipFileName, entry.Offset, entry.header.DataDescriptor.UncompressedSize, false, 0);
 		FileInfo.push_back(entry);
 	}
 
@@ -471,7 +471,7 @@ bool CZipReader::scanZipHeader()
 	//os::Debuginfo::print("added file from archive", ZipFileName.c_str());
 	#endif
 
-	addItem(ZipFileName, entry.header.DataDescriptor.UncompressedSize, false, FileInfo.size());
+	addItem(ZipFileName, entry.Offset, entry.header.DataDescriptor.UncompressedSize, false, FileInfo.size());
 	FileInfo.push_back(entry);
 
 	return true;

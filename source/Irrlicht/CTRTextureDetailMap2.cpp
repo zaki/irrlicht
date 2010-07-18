@@ -81,7 +81,7 @@ class CTRTextureDetailMap2 : public IBurningShader
 public:
 
 	//! constructor
-	CTRTextureDetailMap2(IDepthBuffer* zbuffer);
+	CTRTextureDetailMap2(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
@@ -95,8 +95,8 @@ private:
 };
 
 //! constructor
-CTRTextureDetailMap2::CTRTextureDetailMap2(IDepthBuffer* zbuffer)
-: IBurningShader(zbuffer)
+CTRTextureDetailMap2::CTRTextureDetailMap2(CBurningVideoDriver* driver)
+: IBurningShader(driver)
 {
 	#ifdef _DEBUG
 	setDebugName("CTRTextureDetailMap2");
@@ -229,8 +229,6 @@ void CTRTextureDetailMap2::scanline_bilinear ()
 #endif
 			getSample_texture ( r0, g0, b0, &IT[0], tx0,ty0 );
 			getSample_texture ( r1, g1, b1, &IT[1], tx1,ty1 );
-
-#define FIX_POINT_HALF_COLOR ( (tFixPoint) ( ((f32) COLOR_MAX / 2.f * FIX_POINT_F32_MUL ) ) )
 
 			// bias half color
 			r1 += -FIX_POINT_HALF_COLOR;
@@ -645,10 +643,10 @@ namespace video
 {
 
 //! creates a flat triangle renderer
-IBurningShader* createTriangleRendererTextureDetailMap2(IDepthBuffer* zbuffer)
+IBurningShader* createTriangleRendererTextureDetailMap2(CBurningVideoDriver* driver)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-	return new CTRTextureDetailMap2(zbuffer);
+	return new CTRTextureDetailMap2(driver);
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

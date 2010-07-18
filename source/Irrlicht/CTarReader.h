@@ -135,9 +135,6 @@ namespace io
 		u32 populateFileList();
 
 		IReadFile* File;
-
-		//! Contains offsets of the files from the start of the archive file
-		core::array<u32> Offsets;
 	};
 
 } // end namespace io

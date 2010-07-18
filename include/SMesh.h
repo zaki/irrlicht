@@ -33,6 +33,16 @@ namespace scene
 				MeshBuffers[i]->drop();
 		}
 
+		//! clean mesh
+		virtual void clear()
+		{
+			for (u32 i=0; i<MeshBuffers.size(); ++i)
+				MeshBuffers[i]->drop();
+			MeshBuffers.clear();
+			BoundingBox.reset ( 0.f, 0.f, 0.f );
+		}
+
+
 		//! returns amount of mesh buffers.
 		virtual u32 getMeshBufferCount() const
 		{

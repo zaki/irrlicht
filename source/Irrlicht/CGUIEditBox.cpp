@@ -109,6 +109,12 @@ void CGUIEditBox::setOverrideColor(video::SColor color)
 }
 
 
+video::SColor const& CGUIEditBox::getOverrideColor() const
+{
+	return OverrideColor;
+}
+
+
 //! Turns the border on or off
 void CGUIEditBox::setDrawBorder(bool border)
 {
@@ -122,6 +128,11 @@ void CGUIEditBox::enableOverrideColor(bool enable)
 	OverrideColorEnabled = enable;
 }
 
+bool CGUIEditBox::isOverrideColorEnabled() const
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return OverrideColorEnabled;
+}
 
 //! Enables or disables word wrap
 void CGUIEditBox::setWordWrap(bool enable)

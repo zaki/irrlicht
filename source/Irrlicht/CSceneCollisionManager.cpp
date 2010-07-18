@@ -916,7 +916,7 @@ inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR,
 	f32 determinant = b*b - 4.0f*a*c;
 
 	// if determinant is negative, no solution
-	if (determinant < 0.0f) return false;
+	if (determinant < 0.0f || a == 0.f ) return false;
 
 	// calculate two roots: (if det==0 then x1==x2
 	// but lets disregard that slight optimization)

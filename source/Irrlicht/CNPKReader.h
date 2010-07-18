@@ -117,9 +117,6 @@ namespace io
 		void readString(core::stringc& name);
 
 		IReadFile* File;
-
-		//! Contains offsets of the files from the start of the archive file
-		core::array<u32> Offsets;
 	};
 
 } // end namespace io

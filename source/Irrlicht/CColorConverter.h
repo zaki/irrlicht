@@ -26,6 +26,12 @@ public:
 	//! converts a 8 bit palettized image to A1R5G5B5
 	static void convert8BitTo16Bit(const u8* in, s16* out, s32 width, s32 height, const s32* palette, s32 linepad=0, bool flip=false);
 
+	//! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
+	static void convert8BitTo24Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad = 0, bool flip=false);
+
+	//! converts a 8 bit palettized or non palettized image (A8) into A8R8G8B8
+	static void convert8BitTo32Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad = 0, bool flip=false);
+
 	//! converts R8G8B8 16 bit data to A1R5G5B5 data
 	static void convert16BitTo16Bit(const s16* in, s16* out, s32 width, s32 height, s32 linepad=0, bool flip=false);
 

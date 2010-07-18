@@ -99,6 +99,7 @@ namespace gui
 		s32 LargeStep;
 		s32 DesiredPos;
 		u32 LastChange;
+		video::SColor CurrentIconColor;
 
 		f32 range () const { return (f32) ( Max - Min ); }
 	};

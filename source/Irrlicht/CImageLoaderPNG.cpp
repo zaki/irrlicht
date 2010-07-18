@@ -162,7 +162,11 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	if (BitDepth < 8)
 	{
 		if (ColorType==PNG_COLOR_TYPE_GRAY || ColorType==PNG_COLOR_TYPE_GRAY_ALPHA)
+#if (PNG_LIBPNG_VER_MAJOR > 1) || (PNG_LIBPNG_VER_MINOR > 3)
+			png_set_expand_gray_1_2_4_to_8(png_ptr);
+#else
 			png_set_gray_1_2_4_to_8(png_ptr);
+#endif
 		else
 			png_set_packing(png_ptr);
 	}

@@ -538,6 +538,27 @@ public:
 	}
 
 
+	//! Moves a child to the back, so it's siblings are drawn on top of it
+	/** \return True if successful, false if not. */
+	virtual bool bringToBack(IGUIElement* child)
+	{
+		core::list<IGUIElement*>::Iterator it = Children.begin();
+		if (child == (*it))	// already there
+			return true;
+		for (; it != Children.end(); ++it)
+		{
+			if (child == (*it))
+			{
+				Children.erase(it);
+				Children.push_front(child);
+				return true;
+			}
+		}
+
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+		return false;
+	}
+
 	//! Returns list with children of this element
 	virtual const core::list<IGUIElement*>& getChildren() const
 	{

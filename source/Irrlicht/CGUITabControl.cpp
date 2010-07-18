@@ -27,7 +27,7 @@ CGUITab::CGUITab(s32 number, IGUIEnvironment* environment,
 	IGUIElement* parent, const core::rect<s32>& rectangle,
 	s32 id)
 	: IGUITab(environment, parent, id, rectangle), Number(number),
-		BackColor(0,0,0,0), TextColor(255,0,0,0),
+		BackColor(0,0,0,0), OverrideTextColorEnabled(false), TextColor(255,0,0,0),
 		DrawBackground(false)
 {
 	#ifdef _DEBUG
@@ -54,6 +54,13 @@ void CGUITab::setNumber(s32 n)
 	Number = n;
 }
 
+void CGUITab::refreshSkinColors()
+{
+	if ( !OverrideTextColorEnabled )
+	{
+		TextColor = Environment->getSkin()->getColor(EGDC_BUTTON_TEXT);
+	}
+}
 
 //! draws the element and its children
 void CGUITab::draw()
@@ -87,6 +94,7 @@ void CGUITab::setBackgroundColor(video::SColor c)
 //! sets the color of the text
 void CGUITab::setTextColor(video::SColor c)
 {
+	OverrideTextColorEnabled = true;
 	TextColor = c;
 }
 
@@ -120,6 +128,7 @@ void CGUITab::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteO
 	out->addInt		("TabNumber",		Number);
 	out->addBool	("DrawBackground",	DrawBackground);
 	out->addColor	("BackColor",		BackColor);
+	out->addBool	("OverrideTextColorEnabled", OverrideTextColorEnabled);
 	out->addColor	("TextColor",		TextColor);
 
 }
@@ -133,7 +142,12 @@ void CGUITab::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWrite
 	setNumber(in->getAttributeAsInt("TabNumber"));
 	setDrawBackground(in->getAttributeAsBool("DrawBackground"));
 	setBackgroundColor(in->getAttributeAsColor("BackColor"));
+	bool override = in->getAttributeAsBool("OverrideTextColorEnabled");
 	setTextColor(in->getAttributeAsColor("TextColor"));
+	if ( !override )
+	{
+		OverrideTextColorEnabled = false;
+	}
 
 	if (Parent && Parent->getType() == EGUIET_TAB_CONTROL)
 	{
@@ -395,18 +409,18 @@ s32 CGUITabControl::calcTabWidth(s32 pos, IGUIFont* font, const wchar_t* text, b
 {
 	if ( !font )
 		return 0;
-	
+
 	s32 len = font->getDimension(text).Width + TabExtraWidth;
 	if ( TabMaxWidth > 0 && len > TabMaxWidth )
 		len = TabMaxWidth;
-	
+
 	// check if we miss the place to draw the tab-button
 	if ( withScrollControl && ScrollControl && pos+len > UpButton->getAbsolutePosition().UpperLeftCorner.X - 2 )
 	{
 		s32 tabMinWidth = font->getDimension(L"A").Width;
 		if ( TabExtraWidth > 0 && TabExtraWidth > tabMinWidth )
 			tabMinWidth = TabExtraWidth;
-		
+
 		if ( ScrollControl && pos+tabMinWidth <= UpButton->getAbsolutePosition().UpperLeftCorner.X - 2 )
 		{
 			len = UpButton->getAbsolutePosition().UpperLeftCorner.X - 2 - pos;
@@ -499,7 +513,7 @@ bool CGUITabControl::selectTab(core::position2d<s32> p)
 		s32 len = calcTabWidth(pos, font, text, true);
 		if ( ScrollControl && pos+len > UpButton->getAbsolutePosition().UpperLeftCorner.X - 2 )
 			return false;
-		
+
 		frameRect.UpperLeftCorner.X = pos;
 		frameRect.LowerRightCorner.X = frameRect.UpperLeftCorner.X + len;
 
@@ -552,7 +566,7 @@ void CGUITabControl::draw()
 
 	bool needLeftScroll = CurrentScrollTabIndex > 0;
 	bool needRightScroll = false;
-	
+
 	// left and right pos of the active tab
 	s32 left = 0;
 	s32 right = 0;
@@ -580,6 +594,9 @@ void CGUITabControl::draw()
 		frameRect.LowerRightCorner.X = frameRect.UpperLeftCorner.X + len;
 
 		pos += len;
+
+		if ( text )
+			Tabs[i]->refreshSkinColors();
 
 		if ((s32)i == ActiveTab)
 		{
@@ -669,7 +686,7 @@ void CGUITabControl::draw()
 	}
 
 	skin->draw3DTabBody(this, Border, FillBackground, AbsoluteRect, &AbsoluteClippingRect, TabHeight, VerticalAlignment);
-	
+
 	// enable scrollcontrols on need
 	if ( UpButton )
 		UpButton->setEnabled(needLeftScroll);
@@ -704,7 +721,7 @@ void CGUITabControl::setTabMaxWidth(s32 width )
 {
 	TabMaxWidth = width;
 }
-	
+
 //! get the maximal width of a tab
 s32 CGUITabControl::getTabMaxWidth() const
 {

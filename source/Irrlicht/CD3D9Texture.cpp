@@ -312,9 +312,9 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 	{
 		LPDIRECT3D9 intf = Driver->getExposedVideoData().D3D9.D3D9;
 		D3DDISPLAYMODE d3ddm;
-		intf->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
+		intf->GetAdapterDisplayMode(Driver->DisplayAdapter, &d3ddm);
 
-		if (D3D_OK==intf->CheckDeviceFormat(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,d3ddm.Format,D3DUSAGE_AUTOGENMIPMAP,D3DRTYPE_TEXTURE,format))
+		if (D3D_OK==intf->CheckDeviceFormat(Driver->DisplayAdapter,D3DDEVTYPE_HAL,d3ddm.Format,D3DUSAGE_AUTOGENMIPMAP,D3DRTYPE_TEXTURE,format))
 		{
 			usage = D3DUSAGE_AUTOGENMIPMAP;
 			HardwareMipMaps = true;

@@ -36,7 +36,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 	MaxLightDistance(0.f), LastSetLight(-1), Cached2DModeSignature(0),
 	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
 	Fullscreen(fullscreen), DriverWasReset(true), OcclusionQuerySupport(false),
-	AlphaToCoverageSupport(false)
+	AlphaToCoverageSupport(false), DisplayAdapter(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Driver");
@@ -160,11 +160,12 @@ void CD3D9Driver::createMaterialRenderers()
 //! initialises the Direct3D API
 bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
-		bool highPrecisionFPU, bool vsync, u8 antiAlias)
+		bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter)
 {
 	HRESULT hr;
 	Fullscreen = fullScreen;
 	CurrentDepthBufferSize = screenSize;
+	DisplayAdapter = displayAdapter;
 
 	if (!pID3D)
 	{
@@ -197,7 +198,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	// print device information
 	D3DADAPTER_IDENTIFIER9 dai;
-	if (!FAILED(pID3D->GetAdapterIdentifier(D3DADAPTER_DEFAULT, 0, &dai)))
+	if (!FAILED(pID3D->GetAdapterIdentifier(DisplayAdapter, 0, &dai)))
 	{
 		char tmp[512];
 
@@ -225,7 +226,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	}
 
 	D3DDISPLAYMODE d3ddm;
-	hr = pID3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
+	hr = pID3D->GetAdapterDisplayMode(DisplayAdapter, &d3ddm);
 	if (FAILED(hr))
 	{
 		os::Printer::log("Error: Could not get Adapter Display mode.", ELL_ERROR);
@@ -261,7 +262,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		present.Windowed		= TRUE;
 	}
 
-	UINT adapter = D3DADAPTER_DEFAULT;
+	UINT adapter = DisplayAdapter;
 	D3DDEVTYPE devtype = D3DDEVTYPE_HAL;
 	#ifndef _IRR_D3D_NO_SHADER_DEBUGGING
 	devtype = D3DDEVTYPE_REF;
@@ -369,7 +370,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	DWORD fpuPrecision = highPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
 	if (pureSoftware)
 	{
-		hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hwnd,
+		hr = pID3D->CreateDevice(DisplayAdapter, D3DDEVTYPE_REF, hwnd,
 				fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if (FAILED(hr))
@@ -432,13 +433,13 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
 
 	if (VendorID==0x10DE)//NVidia
-		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(DisplayAdapter, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A', 'T', 'O', 'C')) == S_OK);
 	else if (VendorID==0x1002)//ATI
 		AlphaToCoverageSupport = true; // TODO: Check unknown
 #if 0
-		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(DisplayAdapter, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
 #endif
@@ -3135,6 +3136,12 @@ IImage* CD3D9Driver::createScreenShot()
 		clientRect.top	= clientPoint.y;
 		clientRect.right  = clientRect.left + ScreenSize.Width;
 		clientRect.bottom = clientRect.top  + ScreenSize.Height;
+
+		// window can be off-screen partly, we can't take screenshots from that
+		clientRect.left = core::max_(clientRect.left, 0l);
+		clientRect.top = core::max_(clientRect.top, 0l);
+		clientRect.right = core::min_(clientRect.right, (long)displayMode.Width);
+		clientRect.bottom = core::min_(clientRect.bottom, (long)displayMode.Height );
 	}
 
 	// lock our area of the surface
@@ -3145,8 +3152,12 @@ IImage* CD3D9Driver::createScreenShot()
 		return 0;
 	}
 
+	irr::core::dimension2d<u32> shotSize;
+	shotSize.Width = core::min_( ScreenSize.Width, (u32)(clientRect.right-clientRect.left) );
+	shotSize.Height = core::min_( ScreenSize.Height, (u32)(clientRect.bottom-clientRect.top) );
+
 	// this could throw, but we aren't going to worry about that case very much
-	IImage* newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
+	IImage* newImage = new CImage(ECF_A8R8G8B8, shotSize);
 
 	// d3d pads the image, so we need to copy the correct number of bytes
 	u32* dP = (u32*)newImage->lock();
@@ -3157,26 +3168,26 @@ IImage* CD3D9Driver::createScreenShot()
 	// set each pixel alpha value to 255.
 	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
 	{
-		for (u32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < shotSize.Height; ++y)
 		{
-			for(u32 x = 0; x < ScreenSize.Width; ++x)
+			for(u32 x = 0; x < shotSize.Width; ++x)
 			{
 				*dP = *((u32*)sP) | 0xFF000000;
 				dP++;
 				sP += 4;
 			}
 
-			sP += lockedRect.Pitch - (4 * ScreenSize.Width);
+			sP += lockedRect.Pitch - (4 * shotSize.Width);
 		}
 	}
 	else
 	{
-		for (u32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < shotSize.Height; ++y)
 		{
-			memcpy(dP, sP, ScreenSize.Width * 4);
+			memcpy(dP, sP, shotSize.Width * 4);
 
 			sP += lockedRect.Pitch;
-			dP += ScreenSize.Width;
+			dP += shotSize.Width;
 		}
 	}
 
@@ -3412,10 +3423,10 @@ namespace video
 IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize,
 		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
 		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-		bool vsync, u8 antiAlias)
+		bool vsync, u8 antiAlias, u32 displayAdapter)
 {
 	CD3D9Driver* dx9 = new CD3D9Driver(screenSize, window, fullscreen, stencilbuffer, io, pureSoftware);
-	if (!dx9->initDriver(screenSize, window, bits, fullscreen, pureSoftware, highPrecisionFPU, vsync, antiAlias))
+	if (!dx9->initDriver(screenSize, window, bits, fullscreen, pureSoftware, highPrecisionFPU, vsync, antiAlias, displayAdapter))
 	{
 		dx9->drop();
 		dx9 = 0;

@@ -15,6 +15,7 @@
 #include "irrString.h"
 #include "COSOperator.h"
 #include "dimension2d.h"
+#include "IGUISpriteBank.h"
 #include <winuser.h>
 #include "SExposedVideoData.h"
 
@@ -25,13 +26,13 @@ namespace irr
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 		IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize, HWND window,
 			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias);
+			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 		IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias);
+			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -486,7 +487,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// because Windows forgot about that in the meantime
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
+		{
+			dev->getCursorControl()->setActiveIcon( dev->getCursorControl()->getActiveIcon() );
 			dev->getCursorControl()->setVisible( dev->getCursorControl()->isVisible() );
+		}
 		break;
 
 	case WM_INPUTLANGCHANGE:
@@ -535,7 +539,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		wcex.cbWndExtra		= 0;
 		wcex.hInstance		= hInstance;
 		wcex.hIcon			= NULL;
-		wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+		wcex.hCursor		= 0; // LoadCursor(NULL, IDC_ARROW);
 		wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
 		wcex.lpszMenuName	= 0;
 		wcex.lpszClassName	= ClassName;
@@ -583,6 +587,8 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		HWnd = CreateWindow( ClassName, __TEXT(""), style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
 		CreationParams.WindowId = HWnd;
+//		CreationParams.WindowSize.Width = realWidth;
+//		CreationParams.WindowSize.Height = realHeight;
 
 		ShowWindow(HWnd, SW_SHOW);
 		UpdateWindow(HWnd);
@@ -607,7 +613,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 	// create cursor control
 
-	Win32CursorControl = new CCursorControl(CreationParams.WindowSize, HWnd, CreationParams.Fullscreen);
+	Win32CursorControl = new CCursorControl(this, CreationParams.WindowSize, HWnd, CreationParams.Fullscreen);
 	CursorControl = Win32CursorControl;
 
 	// initialize doubleclicks with system values
@@ -633,7 +639,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 	// get the codepage used for keyboard input
 	KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
-	KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) ); 
+	KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) );
 }
 
 
@@ -667,7 +673,7 @@ void CIrrDeviceWin32::createDriver()
 		VideoDriver = video::createDirectX8Driver(CreationParams.WindowSize, HWnd,
 			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
 			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
-			CreationParams.AntiAlias);
+			CreationParams.AntiAlias, CreationParams.DisplayAdapter);
 
 		if (!VideoDriver)
 		{
@@ -685,7 +691,7 @@ void CIrrDeviceWin32::createDriver()
 		VideoDriver = video::createDirectX9Driver(CreationParams.WindowSize, HWnd,
 			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
 			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
-			CreationParams.AntiAlias);
+			CreationParams.AntiAlias, CreationParams.DisplayAdapter);
 
 		if (!VideoDriver)
 		{
@@ -747,7 +753,7 @@ void CIrrDeviceWin32::createDriver()
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		switchToFullScreen();
 
-		VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
+		VideoDriver = video::createBurningVideoDriver(CreationParams, FileSystem, this);
 		#else
 		os::Printer::log("Burning's Video driver was not compiled in.", ELL_ERROR);
 		#endif
@@ -769,6 +775,8 @@ void CIrrDeviceWin32::createDriver()
 bool CIrrDeviceWin32::run()
 {
 	os::Timer::tick();
+
+    static_cast<CCursorControl*>(CursorControl)->update();
 
 	MSG msg;
 
@@ -1565,6 +1573,217 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 		}
 	}
 }
+
+// Convert an Irrlicht texture to a Windows cursor
+// Based on http://www.codeguru.com/cpp/w-p/win32/cursors/article.php/c4529/
+HCURSOR CIrrDeviceWin32::TextureToCursor(HWND hwnd, irr::video::ITexture * tex, const core::rect<s32>& sourceRect, const core::position2d<s32> &hotspot)
+{
+	//
+	// create the bitmaps needed for cursors from the texture
+
+	HDC dc = GetDC(hwnd);
+	HDC andDc = CreateCompatibleDC(dc);
+	HDC xorDc = CreateCompatibleDC(dc);
+	HBITMAP andBitmap = CreateCompatibleBitmap(dc, sourceRect.getWidth(), sourceRect.getHeight());
+	HBITMAP xorBitmap = CreateCompatibleBitmap(dc, sourceRect.getWidth(), sourceRect.getHeight());
+
+	HBITMAP oldAndBitmap = (HBITMAP)SelectObject(andDc, andBitmap);
+	HBITMAP oldXorBitmap = (HBITMAP)SelectObject(xorDc, xorBitmap);
+
+
+	video::ECOLOR_FORMAT format = tex->getColorFormat();
+	u32 bytesPerPixel = video::IImage::getBitsPerPixelFromFormat(format) / 8;
+	u32 bytesLeftGap = sourceRect.UpperLeftCorner.X * bytesPerPixel;
+	u32 bytesRightGap = tex->getPitch() - sourceRect.LowerRightCorner.X * bytesPerPixel;
+	const u8* data = (const u8*)tex->lock(true, 0);
+	data += sourceRect.UpperLeftCorner.Y*tex->getPitch();
+	for ( s32 y = 0; y < sourceRect.getHeight(); ++y )
+	{
+		data += bytesLeftGap;
+		for ( s32 x = 0; x < sourceRect.getWidth(); ++x )
+        {
+			video::SColor pixelCol;
+			pixelCol.setData((const void*)data, format);
+			data += bytesPerPixel;
+
+			if ( pixelCol.getAlpha() == 0 )	// transparent
+			{
+				SetPixel(andDc, x, y, RGB(255,255,255));
+				SetPixel(xorDc, x, y, RGB(0,0,0));
+			}
+			else	// color
+			{
+				SetPixel(andDc, x, y, RGB(0,0,0));
+				SetPixel(xorDc, x, y, RGB(pixelCol.getRed(), pixelCol.getGreen(), pixelCol.getBlue()));
+			}
+		}
+		data += bytesRightGap;
+	}
+	tex->unlock();
+
+	SelectObject(andDc, oldAndBitmap);
+	SelectObject(xorDc, oldXorBitmap);
+
+	DeleteDC(xorDc);
+	DeleteDC(andDc);
+
+	ReleaseDC(hwnd, dc);
+
+
+	//
+	// create the cursor
+
+	ICONINFO iconinfo;
+	iconinfo.fIcon = false;	// type is cursor not icon
+	iconinfo.xHotspot = hotspot.X;
+	iconinfo.yHotspot = hotspot.Y;
+	iconinfo.hbmMask = andBitmap;
+	iconinfo.hbmColor = xorBitmap;
+
+	HCURSOR cursor = CreateIconIndirect(&iconinfo);
+
+    DeleteObject(andBitmap);
+    DeleteObject(xorBitmap);
+
+	return cursor;
+}
+
+
+CIrrDeviceWin32::CCursorControl::CCursorControl(CIrrDeviceWin32* device, const core::dimension2d<u32>& wsize, HWND hwnd, bool fullscreen)
+    : Device(device), WindowSize(wsize), InvWindowSize(0.0f, 0.0f),
+        HWnd(hwnd), BorderX(0), BorderY(0),
+        UseReferenceRect(false), IsVisible(true)
+        , ActiveIcon(gui::ECI_NORMAL), ActiveIconStartTime(0)
+{
+    if (WindowSize.Width!=0)
+        InvWindowSize.Width = 1.0f / WindowSize.Width;
+
+    if (WindowSize.Height!=0)
+        InvWindowSize.Height = 1.0f / WindowSize.Height;
+
+    updateBorderSize(fullscreen, false);
+    initCursors();
+}
+
+CIrrDeviceWin32::CCursorControl::~CCursorControl()
+{
+	for ( u32 i=0; i < Cursors.size(); ++i )
+	{
+		for ( u32 f=0; f < Cursors[i].Frames.size(); ++f )
+		{
+			DestroyCursor(Cursors[i].Frames[f].IconHW);
+		}
+	}
+}
+
+
+void CIrrDeviceWin32::CCursorControl::initCursors()
+{
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_ARROW)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_CROSS)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_HAND)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_HELP)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_IBEAM)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_NO)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_WAIT)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_SIZEALL)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_SIZENESW)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_SIZENWSE)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_SIZENS)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_SIZEWE)) );
+    Cursors.push_back( CursorW32(LoadCursor(NULL, IDC_UPARROW)) );
+}
+
+
+void CIrrDeviceWin32::CCursorControl::update()
+{
+	if ( !Cursors[ActiveIcon].Frames.empty() && Cursors[ActiveIcon].FrameTime )
+	{
+		// update animated cursors. This could also be done by X11 in case someone wants to figure that out (this way was just easier to implement)
+		u32 now = Device->getTimer()->getRealTime();
+		u32 frame = ((now - ActiveIconStartTime) / Cursors[ActiveIcon].FrameTime) % Cursors[ActiveIcon].Frames.size();
+		SetCursor( Cursors[ActiveIcon].Frames[frame].IconHW );
+	}
+}
+
+//! Sets the active cursor icon
+void CIrrDeviceWin32::CCursorControl::setActiveIcon(gui::ECURSOR_ICON iconId)
+{
+    if ( iconId >= (s32)Cursors.size() )
+        return;
+
+    ActiveIcon = iconId;
+    ActiveIconStartTime = Device->getTimer()->getRealTime();
+    if ( Cursors[ActiveIcon].Frames.size() )
+        SetCursor( Cursors[ActiveIcon].Frames[0].IconHW );
+}
+
+
+//! Add a custom sprite as cursor icon.
+gui::ECURSOR_ICON CIrrDeviceWin32::CCursorControl::addIcon(const gui::SCursorSprite& icon)
+{
+	if ( icon.SpriteId >= 0 )
+	{
+	    CursorW32 cW32;
+		cW32.FrameTime = icon.SpriteBank->getSprites()[icon.SpriteId].frameTime;
+
+		for ( u32 i=0; i < icon.SpriteBank->getSprites()[icon.SpriteId].Frames.size(); ++i )
+		{
+			irr::u32 texId = icon.SpriteBank->getSprites()[icon.SpriteId].Frames[i].textureNumber;
+			irr::u32 rectId = icon.SpriteBank->getSprites()[icon.SpriteId].Frames[i].rectNumber;
+			irr::core::rect<s32> rectIcon = icon.SpriteBank->getPositions()[rectId];
+
+            HCURSOR hc = Device->TextureToCursor(HWnd, icon.SpriteBank->getTexture(texId), rectIcon, icon.HotSpot);
+			cW32.Frames.push_back( CursorFrameW32(hc) );
+		}
+
+		Cursors.push_back( cW32 );
+		return (gui::ECURSOR_ICON)(Cursors.size() - 1);
+	}
+	return gui::ECI_NORMAL;
+}
+
+
+//! replace the given cursor icon.
+void CIrrDeviceWin32::CCursorControl::changeIcon(gui::ECURSOR_ICON iconId, const gui::SCursorSprite& icon)
+{
+	if ( iconId >= (s32)Cursors.size() )
+		return;
+
+	for ( u32 i=0; i < Cursors[iconId].Frames.size(); ++i )
+		DestroyCursor(Cursors[iconId].Frames[i].IconHW);
+
+	if ( icon.SpriteId >= 0 )
+	{
+		CursorW32 cW32;
+		cW32.FrameTime = icon.SpriteBank->getSprites()[icon.SpriteId].frameTime;
+		for ( u32 i=0; i < icon.SpriteBank->getSprites()[icon.SpriteId].Frames.size(); ++i )
+		{
+			irr::u32 texId = icon.SpriteBank->getSprites()[icon.SpriteId].Frames[i].textureNumber;
+			irr::u32 rectId = icon.SpriteBank->getSprites()[icon.SpriteId].Frames[i].rectNumber;
+			irr::core::rect<s32> rectIcon = icon.SpriteBank->getPositions()[rectId];
+
+			HCURSOR hc = Device->TextureToCursor(HWnd, icon.SpriteBank->getTexture(texId), rectIcon, icon.HotSpot);
+			cW32.Frames.push_back( CursorFrameW32(hc) );
+		}
+
+		Cursors[iconId] = cW32;
+	}
+}
+
+
+//! Return a system-specific size which is supported for cursors. Larger icons will fail, smaller icons might work.
+core::dimension2di CIrrDeviceWin32::CCursorControl::getSupportedIconSize() const
+{
+    core::dimension2di result;
+
+    result.Width = GetSystemMetrics(SM_CXCURSOR);
+    result.Height = GetSystemMetrics(SM_CYCURSOR);
+
+    return result;
+}
+
+
 
 } // end namespace
 

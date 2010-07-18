@@ -31,7 +31,7 @@ O=.o
 L=.a
 E=
 
-ZOBJS  = adler32$(O) crc32$(O) gzio$(O) \
+ZOBJS  = adler32$(O) crc32$(O) \
 	 infback$(O) inffast$(O) inflate$(O) inftrees$(O) \
 	 trees$(O) uncompr$(O) zutil$(O)
 
@@ -41,7 +41,7 @@ OBJS  = rpng2-x$(O) readpng2$(O) png$(O) pngerror$(O) pngget$(O) pngmem$(O) \
 
 # implicit make rules -------------------------------------------------------
 
-.c$(O): png.h pngconf.h readpng2.h pngusr.h zlib.h
+.c$(O): png.h pngconf.h pngpriv.h readpng2.h pngusr.h zlib.h
 	$(CC) -c $(CFLAGS) $<
 
 # dependencies

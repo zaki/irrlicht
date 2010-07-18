@@ -1,13 +1,13 @@
 #!/bin/sh
 echo "
   There is no \"configure\" script in this distribution of
-  libpng-1.2.39.
+  libpng-1.4.3.
 
   Instead, please copy the appropriate makefile for your system from the
   \"scripts\" directory.  Read the INSTALL file for more details.
 
   Update, July 2004: you can get a \"configure\" based distribution
   from the libpng distribution sites.  Download the file
-  libpng-1.2.39.tar.gz, libpng-1.2.39.tar.lzma, or libpng-1.2.39.tar.bz2
+  libpng-1.4.3.tar.gz, libpng-1.4.3.tar.xz, or libpng-1.4.3.tar.bz2
 "
 

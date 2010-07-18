@@ -7,6 +7,7 @@
 
 #include "SoftwareDriver2_compile_config.h"
 #include "IBurningShader.h"
+#include "CSoftwareDriver2.h"
 
 namespace irr
 {
@@ -21,8 +22,7 @@ namespace video
 		0xf0,0x70,0xd0,0x50
 	};
 
-	IBurningShader::IBurningShader(IDepthBuffer* zbuffer)
-		: RenderTarget(0),DepthBuffer(zbuffer)
+	IBurningShader::IBurningShader(CBurningVideoDriver* driver)
 	{
 		#ifdef _DEBUG
 		setDebugName("IBurningShader");
@@ -33,8 +33,17 @@ namespace video
 			IT[i].Texture = 0;
 		}
 
+		Driver = driver;
+		RenderTarget = 0;
+		ColorMask = COLOR_BRIGHT_WHITE;
+		DepthBuffer = (CDepthBuffer*) driver->getDepthBuffer ();
 		if ( DepthBuffer )
 			DepthBuffer->grab();
+
+		Stencil = (CStencilBuffer*) driver->getStencilBuffer ();
+		if ( Stencil )
+			Stencil->grab();
+
 	}
 
 
@@ -46,6 +55,9 @@ namespace video
 
 		if (DepthBuffer)
 			DepthBuffer->drop();
+
+		if (Stencil)
+			Stencil->drop();
 
 		for ( u32 i = 0; i != BURNING_MATERIAL_MAX_TEXTURES; ++i )
 		{

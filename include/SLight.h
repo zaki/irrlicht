@@ -78,7 +78,7 @@ struct SLight
 	/** If Type is ELT_POINT, it is ignored. Changed via light scene node's rotation. */
 	core::vector3df Direction;
 
-	//! Read-ONLY! Radius of light. Everything within this radius be be lighted.
+	//! Read-ONLY! Radius of light. Everything within this radius will be lighted.
 	f32 Radius;
 
 	//! Read-ONLY! Type of the light. Default: ELT_POINT

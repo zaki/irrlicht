@@ -498,6 +498,7 @@ void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
 		if (lastHovered)
 		{
 			event.GUIEvent.Caller = lastHovered;
+			event.GUIEvent.Element = 0;
 			event.GUIEvent.EventType = EGET_ELEMENT_LEFT;
 			lastHovered->OnEvent(event);
 		}

@@ -38,11 +38,18 @@ namespace gui
 		\param color: New color of the text. */
 		virtual void setOverrideColor(video::SColor color) = 0;
 
+		//! Gets the override color
+		virtual video::SColor const & getOverrideColor() const = 0;
+
 		//! Sets if the text should use the override color or the color in the gui skin.
 		/** \param enable: If set to true, the override color, which can be set
 		with IGUIEditBox::setOverrideColor is used, otherwise the
 		EGDC_BUTTON_TEXT color of the skin. */
 		virtual void enableOverrideColor(bool enable) = 0;
+
+		//! Checks if an override color is enabled
+		/** \return true if the override color is enabled, false otherwise */
+		virtual bool isOverrideColorEnabled(void) const = 0;
 
 		//! Turns the border on or off
 		/** \param border: true if you want the border to be drawn, false if not */

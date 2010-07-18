@@ -91,6 +91,12 @@ public:
 	//! Get the radius of the sphere for particle emissions
 	virtual f32 getRadius() const { return Radius; }
 
+	//! Writes attributes of the object.
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+
+	//! Reads attributes of the object.
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+
 private:
 
 	core::array<SParticle> Particles;

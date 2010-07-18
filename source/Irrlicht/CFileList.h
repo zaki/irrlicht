@@ -36,6 +36,9 @@ struct SFileListEntry
 	file in an archive, which can hold things like data offset and CRC. */
 	u32 ID;
 
+	//! FileOffset inside an archive
+	u32 Offset;
+
 	//! True if this is a folder, false if not.
 	bool IsDirectory;
 
@@ -76,9 +79,10 @@ public:
 	//! Add as a file or folder to the list
 	/** \param fullPath The file name including path, up to the root of the file list.
 	\param isDirectory True if this is a directory rather than a file.
+	\param offset The offset where the file is stored in an archive
 	\param size The size of the file in bytes.
 	\param id The ID of the file in the archive which owns it */
-	virtual u32 addItem(const io::path& fullPath, u32 size, bool isDirectory, u32 id=0);
+	virtual u32 addItem(const io::path& fullPath, u32 offset, u32 size, bool isDirectory, u32 id=0);
 
 	//! Sorts the file list. You should call this after adding any items to the file list
 	virtual void sort();
@@ -100,6 +104,9 @@ public:
 
 	//! Returns the size of a file
 	virtual u32 getFileSize(u32 index) const;
+
+	//! Returns the offest of a file
+	virtual u32 getFileOffset(u32 index) const;
 
 	//! Searches for a file or folder within the list, returns the index
 	virtual s32 findFile(const io::path& filename, bool isFolder) const;

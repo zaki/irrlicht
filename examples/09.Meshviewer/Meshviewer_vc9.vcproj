@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="09.Meshviewer_vc9"
 	ProjectGUID="{2AE24484-22FC-481B-9A40-7CD0DA5C8E06}"
 	RootNamespace="Meshviewer_vc9"

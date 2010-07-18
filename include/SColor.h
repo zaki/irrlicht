@@ -12,6 +12,50 @@ namespace irr
 {
 namespace video
 {
+	//! An enum for the color format of textures used by the Irrlicht Engine.
+	/** A color format specifies how color information is stored. */
+	enum ECOLOR_FORMAT
+	{
+		//! 16 bit color format used by the software driver.
+		/** It is thus preferred by all other irrlicht engine video drivers.
+		There are 5 bits for every color component, and a single bit is left
+		for alpha information. */
+		ECF_A1R5G5B5 = 0,
+
+		//! Standard 16 bit color format.
+		ECF_R5G6B5,
+
+		//! 24 bit color, no alpha channel, but 8 bit for red, green and blue.
+		ECF_R8G8B8,
+
+		//! Default 32 bit color format. 8 bits are used for every component: red, green, blue and alpha.
+		ECF_A8R8G8B8,
+
+		/** Floating Point formats. The following formats may only be used for render target textures. */
+
+		//! 16 bit floating point format using 16 bits for the red channel.
+		ECF_R16F,
+
+		//! 32 bit floating point format using 16 bits for the red channel and 16 bits for the green channel.
+		ECF_G16R16F,
+
+		//! 64 bit floating point format 16 bits are used for the red, green, blue and alpha channels.
+		ECF_A16B16G16R16F,
+
+		//! 32 bit floating point format using 32 bits for the red channel.
+		ECF_R32F,
+
+		//! 64 bit floating point format using 32 bits for the red channel and 32 bits for the green channel.
+		ECF_G32R32F,
+
+		//! 128 bit floating point format. 32 bits are used for the red, green, blue and alpha channels.
+		ECF_A32B32G32R32F,
+
+		//! Unknown color format:
+		ECF_UNKNOWN
+	};
+
+
 	//! Creates a 16 bit A1R5G5B5 color
 	inline u16 RGBA16(u32 r, u32 g, u32 b, u32 a=0xFF)
 	{
@@ -325,6 +369,77 @@ namespace video
 							getGreen() * mul0 + c1.getGreen() * mul1 + c2.getGreen() * mul2 ), 0, 255 ),
 					core::clamp ( core::floor32(
 							getBlue()  * mul0 + c1.getBlue()  * mul1 + c2.getBlue()  * mul2 ), 0, 255 ));
+		}
+
+		//! set the color by expecting data in the given format
+		/** \param data: must point to valid memory containing color information in the given format
+			\param format: tells the format in which data is available
+		*/
+		void setData(const void *data, ECOLOR_FORMAT format)
+		{
+			switch (format)
+			{
+				case ECF_A1R5G5B5:
+					color = A1R5G5B5toA8R8G8B8(*(u16*)data);
+					break;
+				case ECF_R5G6B5:
+					color = R5G6B5toA8R8G8B8(*(u16*)data);
+					break;
+				case ECF_A8R8G8B8:
+					color = *(u32*)data;
+					break;
+				case ECF_R8G8B8:
+					{
+						u8* p = (u8*)data;
+						set(255, p[0],p[1],p[2]);
+					}
+					break;
+				default:
+				break;
+			}
+		}
+
+		//! Write the color to data in the defined format
+		/** \param data: target to write the color. Must contain sufficiently large memory to receive the number of bytes neede for format
+			\param format: tells the format used to write the color into data
+		*/
+		void getData(void *data, ECOLOR_FORMAT format)
+		{
+			switch(format)
+			{
+				case ECF_A1R5G5B5:
+				{
+					u16 * dest = (u16*)data;
+					*dest = video::A8R8G8B8toA1R5G5B5( color );
+				} 
+				break;
+
+				case ECF_R5G6B5:
+				{
+					u16 * dest = (u16*)data;
+					*dest = video::A8R8G8B8toR5G6B5( color );
+				} 
+				break;
+
+				case ECF_R8G8B8:
+				{
+					u8* dest = (u8*)data;
+					dest[0] = (u8)getRed();
+					dest[1] = (u8)getGreen();
+					dest[2] = (u8)getBlue();
+				} 
+				break;
+
+				case ECF_A8R8G8B8:
+				{
+					u32 * dest = (u32*)data;
+					*dest = color;
+				} 
+				break;
+
+				default:
+				break;
+			}
 		}
 
 		//! color in A8R8G8B8 Format

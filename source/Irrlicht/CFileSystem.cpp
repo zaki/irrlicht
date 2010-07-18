@@ -12,6 +12,7 @@
 #include "CPakReader.h"
 #include "CNPKReader.h"
 #include "CTarReader.h"
+#include "CWADReader.h"
 #include "CFileList.h"
 #include "CXMLReader.h"
 #include "CXMLWriter.h"
@@ -75,6 +76,11 @@ CFileSystem::CFileSystem()
 #ifdef __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
 	ArchiveLoader.push_back(new CArchiveLoaderTAR(this));
 #endif
+
+#ifdef __IRR_COMPILE_WITH_WAD_ARCHIVE_LOADER_
+	ArchiveLoader.push_back(new CArchiveLoaderWAD(this));
+#endif
+
 }
 
 
@@ -617,7 +623,7 @@ IFileList* CFileSystem::createFileList()
 		{
 			do
 			{
-				r->addItem(Path + c_file.name, c_file.size, (_A_SUBDIR & c_file.attrib) != 0, 0);
+				r->addItem(Path + c_file.name, 0, c_file.size, (_A_SUBDIR & c_file.attrib) != 0, 0);
 			}
 			while( _tfindnext( hFile, &c_file ) == 0 );
 
@@ -638,7 +644,7 @@ IFileList* CFileSystem::createFileList()
 
 		r = new CFileList(Path, false, false);
 
-		r->addItem(Path + "..", 0, true, 0);
+		r->addItem(Path + "..", 0, 0, true, 0);
 
 		//! We use the POSIX compliant methods instead of scandir
 		DIR* dirHandle=opendir(Path.c_str());
@@ -669,7 +675,7 @@ IFileList* CFileSystem::createFileList()
 				}
 				#endif
 
-				r->addItem(Path + dirEntry->d_name, size, isDirectory, 0);
+				r->addItem(Path + dirEntry->d_name, 0, size, isDirectory, 0);
 			}
 			closedir(dirHandle);
 		}
@@ -685,10 +691,10 @@ IFileList* CFileSystem::createFileList()
 		SFileListEntry e3;
 
 		//! PWD
-		r->addItem(Path + ".", 0, true, 0);
+		r->addItem(Path + ".", 0, 0, true, 0);
 
 		//! parent
-		r->addItem(Path + "..", 0, true, 0);
+		r->addItem(Path + "..", 0, 0, true, 0);
 
 		//! merge archives
 		for (u32 i=0; i < FileArchives.size(); ++i)
@@ -699,7 +705,7 @@ IFileList* CFileSystem::createFileList()
 			{
 				if (core::isInSameDirectory(Path, merge->getFullFileName(j)) == 0)
 				{
-					r->addItem(merge->getFullFileName(j), merge->getFileSize(j), merge->isDirectory(j), 0);
+					r->addItem(merge->getFullFileName(j), merge->getFileOffset(j), merge->getFileSize(j), merge->isDirectory(j), 0);
 				}
 			}
 		}

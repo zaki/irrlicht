@@ -111,24 +111,16 @@ namespace irr
 		//! Does call GetLastError and on errors formats the errortext and displays it in a messagebox.
 		static void ReportLastWinApiError();
 
+		// convert an Irrlicht texture to a windows cursor
+		HCURSOR TextureToCursor(HWND hwnd, irr::video::ITexture * tex, const core::rect<s32>& sourceRect, const core::position2d<s32> &hotspot);
+
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<u32>& wsize, HWND hwnd, bool fullscreen)
-				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f),
-					HWnd(hwnd), BorderX(0), BorderY(0),
-					UseReferenceRect(false), IsVisible(true)
-			{
-				if (WindowSize.Width!=0)
-					InvWindowSize.Width = 1.0f / WindowSize.Width;
-
-				if (WindowSize.Height!=0)
-					InvWindowSize.Height = 1.0f / WindowSize.Height;
-
-				updateBorderSize(fullscreen, false);
-			}
+			CCursorControl(CIrrDeviceWin32* device, const core::dimension2d<u32>& wsize, HWND hwnd, bool fullscreen);
+			~CCursorControl();
 
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
@@ -280,6 +272,27 @@ namespace irr
 			   }
 			}
 
+
+			//! Sets the active cursor icon
+			virtual void setActiveIcon(gui::ECURSOR_ICON iconId);
+
+			//! Gets the currently active icon
+			virtual gui::ECURSOR_ICON getActiveIcon() const
+			{
+				return ActiveIcon;
+			}
+
+			//! Add a custom sprite as cursor icon.
+			virtual gui::ECURSOR_ICON addIcon(const gui::SCursorSprite& icon);
+
+			//! replace the given cursor icon.
+			virtual void changeIcon(gui::ECURSOR_ICON iconId, const gui::SCursorSprite& icon);
+
+            //! Return a system-specific size which is supported for cursors. Larger icons will fail, smaller icons might work.
+			virtual core::dimension2di getSupportedIconSize() const;
+
+            void update();
+
 		private:
 
 			//! Updates the internal cursor position
@@ -316,6 +329,7 @@ namespace irr
 				}
 			}
 
+            CIrrDeviceWin32* Device;
 			core::position2d<s32> CursorPos;
 			core::dimension2d<u32> WindowSize;
 			core::dimension2d<f32> InvWindowSize;
@@ -325,6 +339,32 @@ namespace irr
 			core::rect<s32> ReferenceRect;
 			bool UseReferenceRect;
 			bool IsVisible;
+
+
+			struct CursorFrameW32
+			{
+				CursorFrameW32() : IconHW(0) {}
+				CursorFrameW32(HCURSOR icon) : IconHW(icon) {}
+
+				HCURSOR IconHW;	// hardware cursor
+			};
+
+			struct CursorW32
+			{
+				CursorW32() {}
+				explicit CursorW32(HCURSOR iconHw, u32 frameTime=0) : FrameTime(frameTime)
+				{
+					Frames.push_back( CursorFrameW32(iconHw) );
+				}
+				core::array<CursorFrameW32> Frames;
+				u32 FrameTime;
+			};
+
+			core::array<CursorW32> Cursors;
+			gui::ECURSOR_ICON ActiveIcon;
+			u32 ActiveIconStartTime;
+
+			void initCursors();
 		};
 
 		//! returns the win32 cursor control

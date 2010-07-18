@@ -260,7 +260,7 @@ namespace
 
 	//! prefab for a container scene node
 	//! Collects other prefabs and instantiates them upon instantiation
-	//! Uses a dummy scene node to return the childs as one scene node
+	//! Uses a dummy scene node to return the children as one scene node
 	class CScenePrefab : public CPrefab
 	{
 	public:
@@ -279,7 +279,7 @@ namespace
 			os::Printer::log("COLLADA: Constructing scene instance", Id.c_str());
 			#endif
 
-			if (Childs.size()==0)
+			if (Children.size()==0)
 				return 0;
 
 			scene::IDummyTransformationSceneNode* s = mgr->addDummyTransformationSceneNode(parent);
@@ -295,14 +295,14 @@ namespace
 				}
 os::Printer::log("COLLADA: Transformation", t.c_str());
 
-				for (u32 i=0; i<Childs.size(); ++i)
-					Childs[i]->addInstance(s, mgr);
+				for (u32 i=0; i<Children.size(); ++i)
+					Children[i]->addInstance(s, mgr);
 			}
 
 			return s;
 		}
 
-		core::array<IColladaPrefab*> Childs;
+		core::array<IColladaPrefab*> Children;
 		core::matrix4 Transformation;
 	};
 
@@ -737,7 +737,7 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 	if (p)
 	{
 		nodeprefab = new CScenePrefab(readId(reader));
-		p->Childs.push_back(nodeprefab);
+		p->Children.push_back(nodeprefab);
 		Prefabs.push_back(nodeprefab); // in order to delete them later on
 	}
 
@@ -1132,7 +1132,7 @@ void CColladaFileLoader::instantiateNode(scene::ISceneNode* parent,
 		if (url == "" || url == Prefabs[i]->getId())
 		{
 			if (p)
-				p->Childs.push_back(Prefabs[i]);
+				p->Children.push_back(Prefabs[i]);
 			else
 			if (CreateInstances)
 			{
@@ -1153,7 +1153,7 @@ void CColladaFileLoader::instantiateNode(scene::ISceneNode* parent,
 		if (instanceGeometryName==type)
 		{
 			Prefabs.push_back(new CGeometryPrefab(url));
-			p->Childs.push_back(Prefabs.getLast());
+			p->Children.push_back(Prefabs.getLast());
 		}
 	}
 }
@@ -1661,7 +1661,7 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 	core::array<SSource> sources;
 	bool okToReadArray = false;
 
-	// handles geometry node and the mesh childs in this loop
+	// handles geometry node and the mesh children in this loop
 	// read sources with arrays and accessor for each mesh
 	if (!reader->isEmptyElement())
 	while(reader->read())

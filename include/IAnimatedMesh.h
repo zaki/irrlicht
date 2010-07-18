@@ -47,9 +47,103 @@ namespace scene
 		can be loaded directly by Irrlicht */
 		EAMT_OCT,
 
+		//! Halflife MDL model file
+		EAMT_MDL_HALFLIFE,
+
 		//! generic skinned mesh
 		EAMT_SKINNED
 	};
+
+
+	//! Possible types of Animation Type
+	enum E_ANIMATION_TYPE
+	{
+		//! No Animation
+		EAMT_STILL,
+		//! From Start to End, then Stop ( Limited Line )
+		EAMT_WAYPOINT,
+		//! Linear Cycling Animation	 ( Sawtooth )
+		EAMT_LOOPING,
+		//! Linear bobbing				 ( Triangle )
+		EAMT_PINGPONG
+	};
+
+	//! Names for Animation Type
+	const c8* const MeshAnimationTypeNames[] =
+	{
+		"still",
+		"waypoint",
+		"looping",
+		"pingpong",
+		0
+	};
+
+
+	//! Data for holding named Animation Info
+	struct KeyFrameInterpolation
+	{
+		core::stringc Name;		// Name of the current Animation/Bone
+		E_ANIMATION_TYPE AnimationType;	// Type of Animation ( looping, usw..)
+
+		f32 CurrentFrame;		// Current Frame
+		s32 NextFrame;			// Frame which will be used next. For blending
+
+		s32 StartFrame;			// Absolute Frame where the current animation start
+		s32 Frames;				// Relative Frames how much Frames this animation have
+		s32 LoopingFrames;		// How much of Frames sould be looped
+		s32 EndFrame;			// Absolute Frame where the current animation ends End = start + frames - 1
+
+		f32 FramesPerSecond;	// Speed in Frames/Seconds the animation is played
+		f32 RelativeSpeed;		// Factor Original fps is modified
+
+		u32 BeginTime;			// Animation started at this thime
+		u32 EndTime;			// Animation end at this time
+		u32 LastTime;			// Last Keyframe was done at this time
+
+		KeyFrameInterpolation ( const c8 * name = "", s32 start = 0, s32 frames = 0, s32 loopingframes = 0,
+								f32 fps = 0.f, f32 relativefps = 1.f  )
+			: Name ( name ), AnimationType ( loopingframes ? EAMT_LOOPING : EAMT_WAYPOINT),
+			CurrentFrame ( (f32) start ), NextFrame ( start ), StartFrame ( start ),
+			Frames ( frames ), LoopingFrames ( loopingframes ), EndFrame ( start + frames - 1 ),
+			FramesPerSecond ( fps ), RelativeSpeed ( relativefps ),
+			BeginTime ( 0 ), EndTime ( 0 ), LastTime ( 0 )
+		{
+		}
+
+		// linear search
+		bool operator == ( const KeyFrameInterpolation & other ) const
+		{
+			return Name.equals_ignore_case ( other.Name );
+		}
+
+	};
+
+
+	//! a List holding named Animations
+	typedef core::array < KeyFrameInterpolation > IAnimationList;
+
+	//! a List holding named Skins
+	typedef core::array < core::stringc > ISkinList;
+
+
+	// Current Model per Body
+	struct SubModel
+	{
+		core::stringc name;
+		u32 startBuffer;
+		u32 endBuffer;
+		u32 state;
+	};
+
+	struct BodyPart
+	{
+		core::stringc name;
+		u32 defaultModel;
+		core::array < SubModel > model;
+	};
+	//! a List holding named Models and SubModels
+	typedef core::array < BodyPart > IBodyList;
+
 
 	//! Interface for an animated mesh.
 	/** There are already simple implementations of this interface available so

@@ -81,7 +81,7 @@ class CTRTextureGouraudAlphaNoZ : public IBurningShader
 public:
 
 	//! constructor
-	CTRTextureGouraudAlphaNoZ(IDepthBuffer* zbuffer);
+	CTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
 	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
@@ -99,8 +99,8 @@ private:
 };
 
 //! constructor
-CTRTextureGouraudAlphaNoZ::CTRTextureGouraudAlphaNoZ(IDepthBuffer* zbuffer)
-: IBurningShader(zbuffer)
+CTRTextureGouraudAlphaNoZ::CTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver)
+: IBurningShader(driver)
 {
 	#ifdef _DEBUG
 	setDebugName("CTRTextureGouraudAlphaNoZ");
@@ -273,13 +273,13 @@ void CTRTextureGouraudAlphaNoZ::scanline_bilinear ()
 
 #ifdef INVERSE_W
 		inversew = fix_inverse32 ( line.w[0] );
-		getSample_texture ( (tFixPointu&) a0, (tFixPointu&) r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+		getSample_texture ( a0, r0, g0, b0, 
 							&IT[0],
 							tofix ( line.t[0][0].x,inversew),
 							tofix ( line.t[0][0].y,inversew)
 						);
 #else
-		getSample_texture ( (tFixPointu&) a0, (tFixPointu&) r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+		getSample_texture ( a0, r0, g0,b0, 
 							&IT[0],
 							tofix ( line.t[0][0].x),
 							tofix ( line.t[0][0].y)
@@ -729,10 +729,10 @@ namespace video
 
 
 //! creates a flat triangle renderer
-IBurningShader* createTRTextureGouraudAlphaNoZ(IDepthBuffer* zbuffer)
+IBurningShader* createTRTextureGouraudAlphaNoZ(CBurningVideoDriver* driver)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-	return new CTRTextureGouraudAlphaNoZ(zbuffer);
+	return new CTRTextureGouraudAlphaNoZ(driver);
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

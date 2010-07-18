@@ -33,9 +33,16 @@ namespace gui
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
 
+		//! Gets the override color
+		virtual video::SColor const & getOverrideColor() const;
+
 		//! Sets if the text should use the overide color or the
 		//! color in the gui skin.
 		virtual void enableOverrideColor(bool enable);
+
+		//! Checks if an override color is enabled
+		/** \return true if the override color is enabled, false otherwise */
+		virtual bool isOverrideColorEnabled(void) const;
 
 		//! Turns the border on or off
 		virtual void setDrawBorder(bool border);

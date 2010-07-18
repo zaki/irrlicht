@@ -39,9 +39,8 @@ namespace irr
 		IVideoDriver* createSoftwareDriver(const core::dimension2d<u32>& windowSize,
 				bool fullscreen, io::IFileSystem* io,
 				video::IImagePresenter* presenter);
-		IVideoDriver* createSoftwareDriver2(const core::dimension2d<u32>& windowSize,
-				bool fullscreen, io::IFileSystem* io,
-				video::IImagePresenter* presenter);
+		IVideoDriver* createBurningVideoDriver(const irr::SIrrlichtCreationParameters& params,
+				io::IFileSystem* io, video::IImagePresenter* presenter);
 		IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize);
 	}
 

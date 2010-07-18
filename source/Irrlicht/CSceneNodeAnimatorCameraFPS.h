@@ -7,6 +7,7 @@
 
 #include "ISceneNodeAnimatorCameraFPS.h"
 #include "vector2d.h"
+#include "position2d.h"
 #include "SKeyMap.h"
 #include "irrArray.h"
 
@@ -21,16 +22,16 @@ namespace scene
 {
 
 	//! Special scene node animator for FPS cameras
-	class CSceneNodeAnimatorCameraFPS : public ISceneNodeAnimatorCameraFPS 
+	class CSceneNodeAnimatorCameraFPS : public ISceneNodeAnimatorCameraFPS
 	{
 	public:
 
 		//! Constructor
-		CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl, 
+		CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl,
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, f32 jumpSpeed=0.f,
 			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false,
 			bool invertY=false);
-			
+
 		//! Destructor
 		virtual ~CSceneNodeAnimatorCameraFPS();
 

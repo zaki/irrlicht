@@ -25,7 +25,6 @@ using namespace irr;
 int main()
 {
 	// ask if user would like shadows
-
 	char i;
 	printf("Please press 'y' if you want to use realtime shadows.\n");
 
@@ -37,6 +36,7 @@ int main()
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
 	if (driverType==video::EDT_COUNT)
 		return 1;
+
 
 	/*
 	Create device and exit if creation failed. We make the stencil flag

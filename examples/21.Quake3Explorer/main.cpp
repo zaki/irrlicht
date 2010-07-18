@@ -805,7 +805,7 @@ void CQuake3EventHandler::CreateGUI()
 	gui.SceneTree = env->addTreeView(	rect<s32>( dim.Width - 400, dim.Height - 380, dim.Width - 5, dim.Height - 40 ),
 									gui.Window, -1, true, true, false );
 	gui.SceneTree->setToolTipText ( L"Show the current Scenegraph" );
-	gui.SceneTree->getRoot()->clearChilds();
+	gui.SceneTree->getRoot()->clearChildren();
 	addSceneTreeItem ( Game->Device->getSceneManager()->getRootSceneNode(), gui.SceneTree->getRoot() );
 
 
@@ -1288,7 +1288,7 @@ void CQuake3EventHandler::SetGUIActive( s32 command)
 			gui.SceneTree && Game->Device->getGUIEnvironment()->getFocus() != gui.SceneTree
 		)
 	{
-		gui.SceneTree->getRoot()->clearChilds();
+		gui.SceneTree->getRoot()->clearChildren();
 		addSceneTreeItem ( Game->Device->getSceneManager()->getRootSceneNode(), gui.SceneTree->getRoot() );
 	}
 
