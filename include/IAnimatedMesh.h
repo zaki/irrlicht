@@ -65,7 +65,7 @@ namespace scene
 		//! Linear Cycling Animation	 ( Sawtooth )
 		EAMT_LOOPING,
 		//! Linear bobbing				 ( Triangle )
-		EAMT_PINGPONG,
+		EAMT_PINGPONG
 	};
 
 	//! Names for Animation Type
