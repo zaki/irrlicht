@@ -11,13 +11,13 @@ using namespace video;
 /** Tests the offset capability of the fly circle animator */
 bool flyCircleAnimator(void)
 {
-    IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
+	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
 										core::dimension2du(160,120), 32);
-    if (!device)
-        return false;
+	if (!device)
+		return false;
 
-    IVideoDriver* driver = device->getVideoDriver();
-    ISceneManager* smgr = device->getSceneManager();
+	IVideoDriver* driver = device->getVideoDriver();
+	ISceneManager* smgr = device->getSceneManager();
 
 	const f32 offsetDegrees[] = { 0.f, 45.f, 135.f, 270.f };
 
@@ -25,10 +25,9 @@ bool flyCircleAnimator(void)
 	{
 		IBillboardSceneNode * node = smgr->addBillboardSceneNode();
 		// Have the animator rotate around the Z axis plane, rather than the default Y axis
-		ISceneNodeAnimator * animator =
-			smgr->createFlyCircleAnimator(vector3df(0, 0, 0), 30.f,
-											0.001f, vector3df(0, 0, 1),
-											(offsetDegrees[i] / 360.f));
+		ISceneNodeAnimator * animator = smgr->createFlyCircleAnimator(
+				vector3df(0, 0, 0), 30.f, 0.001f,
+				vector3df(0, 0, 1), (offsetDegrees[i] / 360.f));
 		if(!node || !animator)
 			return false;
 
@@ -44,7 +43,7 @@ bool flyCircleAnimator(void)
 
 	bool result = false;
 
-    // Don't do device->run() since I need the time to remain at 0.
+	// Don't do device->run() since I need the time to remain at 0.
 	if (driver->beginScene(true, true, video::SColor(0, 80, 80, 80)))
 	{
 		smgr->drawAll();
@@ -52,7 +51,8 @@ bool flyCircleAnimator(void)
 		result = takeScreenshotAndCompareAgainstReference(driver, "-flyCircleAnimator.png", 100);
 	}
 
-    device->drop();
+	device->drop();
 
-    return result;
+	return result;
 }
+
