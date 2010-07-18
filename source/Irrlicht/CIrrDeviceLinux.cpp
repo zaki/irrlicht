@@ -2126,7 +2126,7 @@ void CIrrDeviceLinux::CCursorControl::initCursors()
 
 void CIrrDeviceLinux::CCursorControl::update()
 {
-	if ( !Cursors[ActiveIcon].Frames.empty() && Cursors[ActiveIcon].FrameTime )
+	if ( (u32)ActiveIcon < Cursors.size() && !Cursors[ActiveIcon].Frames.empty() && Cursors[ActiveIcon].FrameTime )
 	{
 		// update animated cursors. This could also be done by X11 in case someone wants to figure that out (this way was just easier to implement)
 		u32 now = Device->getTimer()->getRealTime();
