@@ -575,8 +575,8 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		HWnd = CreateWindow( ClassName, __TEXT(""), style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
 		CreationParams.WindowId = HWnd;
-		CreationParams.WindowSize.Width = realWidth;
-		CreationParams.WindowSize.Height = realHeight;
+//		CreationParams.WindowSize.Width = realWidth;
+//		CreationParams.WindowSize.Height = realHeight;
 
 		ShowWindow(HWnd, SW_SHOW);
 		UpdateWindow(HWnd);
