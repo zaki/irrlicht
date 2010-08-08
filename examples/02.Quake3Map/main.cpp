@@ -57,22 +57,24 @@ int main()
 	video::E_DRIVER_TYPE driverType;
 
 	printf("Please select the driver you want for this example:\n"\
-		" (a) OpenGL 1.5\n (b) Direct3D 9.0c\n (c) Direct3D 8.1\n"\
-		" (d) OpenGL-ES1\n (e) Burning's Software Renderer\n (f) Software Renderer\n"\
-		" (g) NullDevice\n (otherKey) exit\n\n");
+		" (a) OpenGL ES 2.x\n (b) OpenGL ES 1.x\n (c) OpenGL 1.x-4.x\n"\
+		" (d) Direct3D 9.0c\n (e) Direct3D 8.1\n"\
+		" (f) Burning's Software Renderer\n (g) Software Renderer\n"\
+		" (h) NullDevice\n (otherKey) exit\n\n");
 
 	char i;
 	std::cin >> i;
 
 	switch(i)
 	{
-		case 'a': driverType = video::EDT_OPENGL;   break;
-		case 'b': driverType = video::EDT_DIRECT3D9;break;
-		case 'c': driverType = video::EDT_DIRECT3D8;break;
-		case 'd': driverType = video::EDT_OGLES1;   break;
-		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
-		case 'f': driverType = video::EDT_SOFTWARE; break;
-		case 'g': driverType = video::EDT_NULL;     break;
+		case 'a': driverType = video::EDT_OGLES2;   break;
+		case 'b': driverType = video::EDT_OGLES1;   break;
+		case 'c': driverType = video::EDT_OPENGL;   break;
+		case 'd': driverType = video::EDT_DIRECT3D9;break;
+		case 'e': driverType = video::EDT_DIRECT3D8;break;
+		case 'f': driverType = video::EDT_BURNINGSVIDEO;break;
+		case 'g': driverType = video::EDT_SOFTWARE; break;
+		case 'h': driverType = video::EDT_NULL;     break;
 		default: return 1;
 	}
 

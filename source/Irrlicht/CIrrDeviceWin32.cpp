@@ -43,6 +43,10 @@ namespace irr
 		#ifdef _IRR_COMPILE_WITH_OGLES1_
 		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io);
 		#endif
+
+		#ifdef _IRR_COMPILE_WITH_OGLES2_
+		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io);
+		#endif
 	}
 } // end namespace irr
 
@@ -734,6 +738,25 @@ void CIrrDeviceWin32::createDriver()
 		}
 		#else
 		os::Printer::log("OpenGL-ES1 driver was not compiled in.", ELL_ERROR);
+		#endif
+		break;
+
+	case video::EDT_OGLES2:
+		#ifdef _IRR_COMPILE_WITH_OGLES2_
+		{
+			video::SExposedVideoData data;
+			data.OpenGLWin32.HWnd=HWnd;
+
+			switchToFullScreen();
+
+			VideoDriver = video::createOGLES2Driver(CreationParams, data, FileSystem);
+			if (!VideoDriver)
+			{
+				os::Printer::log("Could not create OpenGL-ES2 driver.", ELL_ERROR);
+			}
+		}
+		#else
+		os::Printer::log("OpenGL-ES2 driver was not compiled in.", ELL_ERROR);
 		#endif
 		break;
 

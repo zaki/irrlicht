@@ -135,7 +135,7 @@ headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
 //! Define _IRR_COMPILE_WITH_OPENGL_ to compile the Irrlicht engine with OpenGL.
 /** If you do not wish the engine to be compiled with OpenGL, comment this
 define out. */
-//#define _IRR_COMPILE_WITH_OPENGL_
+#define _IRR_COMPILE_WITH_OPENGL_
 
 //! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
 /** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment
@@ -144,7 +144,16 @@ You should only use this define if you really need the OpenGL-ES driver, and
 it should be usually the only HW accelerated one. OpenGL is currently disabled
 if using this driver, to avoid problems with the ogl-es emulators.
 */
-#define _IRR_COMPILE_WITH_OGLES1_
+//#define _IRR_COMPILE_WITH_OGLES1_
+
+//! Define _IRR_COMPILE_WITH_OGLES2_ to compile the Irrlicht engine with OpenGL-ES 2.x.
+/** If you do not wish the engine to be compiled with OpenGL-ES 2.x, comment
+this define out.
+You should only use this define if you really need the OpenGL-ES driver, and
+it should be usually the only HW accelerated one. OpenGL is currently disabled
+if using this driver, to avoid problems with the ogl-es emulators.
+*/
+//#define _IRR_COMPILE_WITH_OGLES2_
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
 /** If you do not need the software driver, or want to use Burning's Video instead,
@@ -535,8 +544,13 @@ precision will be lower but speed higher. currently X86 only
 #endif
 
 // OpenGL-ES usually interferes with OpenGL
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_OGLES1_
+#endif
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_OGLES2_
 #endif
 
 #ifndef _IRR_WINDOWS_API_
