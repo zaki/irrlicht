@@ -1393,7 +1393,7 @@ IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32
 //! Creates a software image from part of a texture.
 IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>& pos, const core::dimension2d<u32>& size)
 {
-	if (pos==core::position2di(0,0) && size == texture->getSize())
+	if ((pos==core::position2di(0,0)) && (size == texture->getSize()))
 	{
 		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(true), false);
 		texture->unlock();
@@ -1410,14 +1410,16 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 					core::clamp(static_cast<u32>(size.Height), 0u, texture->getSize().Height)));
 		if (!clamped.isValid())
 			return 0;
-		void* src = texture->lock(true);
+		u8* src = static_cast<u8*>(texture->lock(true));
 		if (!src)
 			return 0;
 		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
-		void* dst = image->lock();
-		for (u32 i=clamped.UpperLeftCorner.X; i<clamped.getHeight(); ++i)
+		u8* dst = static_cast<u8*>(image->lock());
+		for (u32 i=clamped.UpperLeftCorner.Y; i<clamped.getHeight(); ++i)
 		{
 			video::CColorConverter::convert_viaFormat(src, texture->getColorFormat(), clamped.getWidth(), dst, image->getColorFormat());
+			src += texture->getPitch();
+			dst += image->getPitch();
 		}
 		image->unlock();
 		texture->unlock();

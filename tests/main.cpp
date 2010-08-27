@@ -96,6 +96,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testGeometryCreator);
 	TEST(writeImageToFile);
 	TEST(meshTransform);
+	TEST(createImage);
 	// all driver checks
 	TEST(drawPixel);
 	TEST(guiDisabledMenu);
