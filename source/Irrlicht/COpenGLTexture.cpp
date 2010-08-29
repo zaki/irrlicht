@@ -605,7 +605,7 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 					const io::path& name, COpenGLDriver* driver,
-					const ECOLOR_FORMAT format)
+					ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG
@@ -614,6 +614,9 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	ImageSize = size;
 	TextureSize = size;
+
+	if (ECF_UNKNOWN == format)
+		format = getBestColorFormat(driver->getColorFormat());
 
 	GLint FilteringType;
 	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
