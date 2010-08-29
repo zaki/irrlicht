@@ -1578,7 +1578,8 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		if (resetAllRenderstates ||
 			lastmaterial.TextureLayer[st].BilinearFilter != material.TextureLayer[st].BilinearFilter ||
 			lastmaterial.TextureLayer[st].TrilinearFilter != material.TextureLayer[st].TrilinearFilter ||
-			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter )
+			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter ||
+			lastmaterial.UseMipMaps != material.UseMipMaps)
 		{
 			if (material.TextureLayer[st].BilinearFilter || material.TextureLayer[st].TrilinearFilter || material.TextureLayer[st].AnisotropicFilter>1)
 			{
