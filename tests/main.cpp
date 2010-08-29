@@ -107,6 +107,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(transparentAlphaChannelRef);
 	TEST(antiAliasing);
 	TEST(draw2DImage);
+	TEST(twodmaterial);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes
