@@ -414,6 +414,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\IAnimatedMeshMD3.h" />
     <ClInclude Include="..\..\include\IEventReceiver.h" />
     <ClInclude Include="..\..\include\ILogger.h" />
     <ClInclude Include="..\..\include\IOSOperator.h" />
@@ -486,7 +487,6 @@
     <ClInclude Include="..\..\include\ESceneNodeTypes.h" />
     <ClInclude Include="..\..\include\IAnimatedMesh.h" />
     <ClInclude Include="..\..\include\IAnimatedMeshMD2.h" />
-    <ClInclude Include="..\..\include\IAnimatedMeshMS3D.h" />
     <ClInclude Include="..\..\include\IAnimatedMeshSceneNode.h" />
     <ClInclude Include="..\..\include\IBillboardSceneNode.h" />
     <ClInclude Include="..\..\include\ICameraSceneNode.h" />
@@ -730,10 +730,8 @@
     <ClInclude Include="zlib\zlib.h" />
     <ClInclude Include="zlib\zutil.h" />
     <ClInclude Include="jpeglib\cderror.h" />
-    <ClInclude Include="jpeglib\jchuff.h" />
     <ClInclude Include="jpeglib\jconfig.h" />
     <ClInclude Include="jpeglib\jdct.h" />
-    <ClInclude Include="jpeglib\jdhuff.h" />
     <ClInclude Include="jpeglib\jerror.h" />
     <ClInclude Include="jpeglib\jinclude.h" />
     <ClInclude Include="jpeglib\jmemsys.h" />
