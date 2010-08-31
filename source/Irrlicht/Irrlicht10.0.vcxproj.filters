@@ -321,9 +321,6 @@
     <ClInclude Include="..\..\include\IAnimatedMeshMD2.h">
       <Filter>include\scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\IAnimatedMeshMS3D.h">
-      <Filter>include\scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\IAnimatedMeshSceneNode.h">
       <Filter>include\scene</Filter>
     </ClInclude>
@@ -1053,16 +1050,10 @@
     <ClInclude Include="jpeglib\cderror.h">
       <Filter>Irrlicht\irr\extern\jpeglib</Filter>
     </ClInclude>
-    <ClInclude Include="jpeglib\jchuff.h">
-      <Filter>Irrlicht\irr\extern\jpeglib</Filter>
-    </ClInclude>
     <ClInclude Include="jpeglib\jconfig.h">
       <Filter>Irrlicht\irr\extern\jpeglib</Filter>
     </ClInclude>
     <ClInclude Include="jpeglib\jdct.h">
-      <Filter>Irrlicht\irr\extern\jpeglib</Filter>
-    </ClInclude>
-    <ClInclude Include="jpeglib\jdhuff.h">
       <Filter>Irrlicht\irr\extern\jpeglib</Filter>
     </ClInclude>
     <ClInclude Include="jpeglib\jerror.h">
@@ -1283,6 +1274,9 @@
     </ClInclude>
     <ClInclude Include="CGUIWindow.h">
       <Filter>Irrlicht\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IAnimatedMeshMD3.h">
+      <Filter>include\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
