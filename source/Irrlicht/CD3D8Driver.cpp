@@ -950,8 +950,8 @@ void CD3D8Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 		case scene::EPT_LINE_LOOP:
 		{
 			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-				primitiveCount, indexList, indexType, vertices, stride);
-			u16 tmpIndices[] = {0, primitiveCount};
+				primitiveCount - 1, indexList, indexType, vertices, stride);
+			u16 tmpIndices[] = {primitiveCount - 1, 0};
 			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
 				1, tmpIndices, indexType, vertices, stride);
 		}
