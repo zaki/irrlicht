@@ -50,7 +50,7 @@ static bool shadows(video::E_DRIVER_TYPE driverType)
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 
-	result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-stencilSelfShadow.png", 99.91f);
+	result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-stencilSelfShadow.png", 99.41f);
 
 	device->drop();
 
