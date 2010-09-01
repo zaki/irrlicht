@@ -88,6 +88,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16.Quake3MapShader_vc9", "1
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld_Mobile_v9", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v9.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "18.SplitScreen_vc9", "18.SplitScreen\SplitScreen_vc9.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
@@ -118,7 +123,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "23.SMeshHandling_vc9", "23.
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld_Mobile_v9", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v9.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "24.CursorControl_vc9", "24.CursorControl\CursorControl_vc9.vcproj", "{02B67A37-50E1-49DB-BECF-905BC029C2FE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
@@ -137,8 +142,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mesh Converter", "..\tools\
 	ProjectSection(ProjectDependencies) = postProject
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "24.CursorControl_vc9", "24.CursorControl\CursorControl_vc9.vcproj", "{02B67A37-50E1-49DB-BECF-905BC029C2FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
