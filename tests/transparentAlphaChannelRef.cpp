@@ -39,7 +39,7 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 	smgr->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentAlphaChannelRef.png", 99.88f);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentAlphaChannelRef.png", 99.18f);
 
 	device->drop();
 
