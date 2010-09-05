@@ -35,12 +35,13 @@ namespace io
 	{
 		ETLI_REGULAR_FILE_OLD      =  0 ,
 		ETLI_REGULAR_FILE          = '0',
-		ETLI_LINK_TO_ARCHIVED_FILE = '1',
+		ETLI_LINK_TO_ARCHIVED_FILE = '1', // Hard link
 		ETLI_SYMBOLIC_LINK         = '2',
 		ETLI_CHAR_SPECIAL_DEVICE   = '3',
 		ETLI_BLOCK_SPECIAL_DEVICE  = '4',
 		ETLI_DIRECTORY             = '5',
-		ETLI_FIFO_SPECIAL_FILE     = '6'
+		ETLI_FIFO_SPECIAL_FILE     = '6',
+		ETLI_CONTIGUOUS_FILE       = '7'
 	};
 
 	struct STarHeader

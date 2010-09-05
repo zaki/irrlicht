@@ -90,6 +90,7 @@ class line2d
 			if(equals(commonDenominator, 0.f))
 			{
 				// The lines are either coincident or parallel
+				// if both numerators are 0, the lines are coincident
 				if(equals(numeratorA, 0.f) && equals(numeratorB, 0.f))
 				{
 					// Try and find a common endpoint
@@ -97,10 +98,52 @@ class line2d
 						out = start;
 					else if(l.end == end || l.start == end)
 						out = end;
+					// now check if the two segments are disjunct
+					else if (l.start.X>start.X && l.end.X>start.X && l.start.X>end.X && l.end.X>end.X)
+						return false;
+					else if (l.start.Y>start.Y && l.end.Y>start.Y && l.start.Y>end.Y && l.end.Y>end.Y)
+						return false;
+					else if (l.start.X<start.X && l.end.X<start.X && l.start.X<end.X && l.end.X<end.X)
+						return false;
+					else if (l.start.Y<start.Y && l.end.Y<start.Y && l.start.Y<end.Y && l.end.Y<end.Y)
+						return false;
+					// else the lines are overlapping to some extent
 					else
-						// one line is contained in the other, so for lack of a better
-						// answer, pick the average of both lines
-						out = ((start + end + l.start + l.end) * 0.25f);
+					{
+						// find the points which are not contributing to the
+						// common part
+						vector2d<T> maxp;
+						vector2d<T> minp;
+						if ((start.X>l.start.X && start.X>l.end.X && start.X>end.X) || (start.Y>l.start.Y && start.Y>l.end.Y && start.Y>end.Y))
+							maxp=start;
+						else if ((end.X>l.start.X && end.X>l.end.X && end.X>start.X) || (end.Y>l.start.Y && end.Y>l.end.Y && end.Y>start.Y))
+							maxp=end;
+						else if ((l.start.X>start.X && l.start.X>l.end.X && l.start.X>end.X) || (l.start.Y>start.Y && l.start.Y>l.end.Y && l.start.Y>end.Y))
+							maxp=l.start;
+						else
+							maxp=l.end;
+						if (maxp != start && ((start.X<l.start.X && start.X<l.end.X && start.X<end.X) || (start.Y<l.start.Y && start.Y<l.end.Y && start.Y<end.Y)))
+							minp=start;
+						else if (maxp != end && ((end.X<l.start.X && end.X<l.end.X && end.X<start.X) || (end.Y<l.start.Y && end.Y<l.end.Y && end.Y<start.Y)))
+							minp=end;
+						else if (maxp != l.start && ((l.start.X<start.X && l.start.X<l.end.X && l.start.X<end.X) || (l.start.Y<start.Y && l.start.Y<l.end.Y && l.start.Y<end.Y)))
+							minp=l.start;
+						else
+							minp=l.end;
+
+						// one line is contained in the other. Pick the center
+						// of the remaining points, which overlap for sure
+						out = core::vector2d<T>();
+						if (start != maxp && start != minp)
+							out += start;
+						if (end != maxp && end != minp)
+							out += end;
+						if (l.start != maxp && l.start != minp)
+							out += l.start;
+						if (l.end != maxp && l.end != minp)
+							out += l.end;
+						out *= 0.5f;
+					}
 
 					return true; // coincident
 				}
