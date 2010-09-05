@@ -99,6 +99,10 @@ Changes in 1.8 (??.0?.2010)
 -----------------------------
 Changes in 1.7.2 (??.??.2010)
 
+ - Fix blend mode setup in OpenGL driver, when using the material2d override, as pointed out by Auria
+
+ - Fix image creation from texture, found by dataslayer
+
  - Fix crashes when taking Screenhots for DirectX in Windowed mode (thx to agamemnus for reporting)
 
  - StaticText does now serialize the background color

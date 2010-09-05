@@ -296,7 +296,7 @@ namespace core
 			CMatrix4<T>& buildShadowMatrix(const core::vector3df& light, core::plane3df plane, f32 point=1.0f);
 
 			//! Builds a matrix which transforms a normalized Device Coordinate to Device Coordinates.
-			/** Used to scale <-1,-1><1,1> to viewport, for example from von <-1,-1> <1,1> to the viewport <0,0><0,640> */
+			/** Used to scale <-1,-1><1,1> to viewport, for example from <-1,-1> <1,1> to the viewport <0,0><0,640> */
 			CMatrix4<T>& buildNDCToDCMatrix( const core::rect<s32>& area, f32 zScale);
 
 			//! Creates a new matrix as interpolated matrix from two other ones.
