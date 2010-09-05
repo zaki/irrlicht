@@ -730,7 +730,7 @@ public:
 			glEnable(GL_TEXTURE_GEN_S);
 			glEnable(GL_TEXTURE_GEN_T);
 
-			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
 		}
 	}

@@ -104,7 +104,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(renderTargetTexture);
 	TEST(textureFeatures);
 	TEST(textureRenderStates);
-	TEST(transparentAlphaChannelRef);
+	TEST(transparentMaterials);
 	TEST(antiAliasing);
 	TEST(draw2DImage);
 	TEST(lights);
