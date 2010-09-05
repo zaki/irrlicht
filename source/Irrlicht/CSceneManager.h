@@ -216,8 +216,9 @@ namespace scene
 
 		//! Adds a terrain mesh to the mesh pool.
 		virtual IAnimatedMesh* addTerrainMesh(const io::path& meshname,	video::IImage* texture, video::IImage* heightmap,
-			const core::dimension2d<f32>& stretchSize,
-			f32 maxHeight, const core::dimension2d<u32>& defaultVertexBlockSize);
+			const core::dimension2d<f32>& stretchSize = core::dimension2d<f32>(10.0f,10.0f),
+			f32 maxHeight=200.0f,
+			const core::dimension2d<u32>& defaultVertexBlockSize = core::dimension2d<u32>(64,64));
 
 		//! Add a arrow mesh to the mesh pool
 		virtual IAnimatedMesh* addArrowMesh(const io::path& name,
