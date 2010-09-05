@@ -963,9 +963,10 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByName(name);
 
+	const bool debugBorders=false;
 	IMesh* mesh = GeometryCreator->createTerrainMesh(texture, heightmap,
 			stretchSize, maxHeight, getVideoDriver(),
-			defaultVertexBlockSize);
+			defaultVertexBlockSize, debugBorders);
 	if (!mesh)
 		return 0;
 
