@@ -80,6 +80,39 @@ bool testGeometryCreator(void)
 		result = takeScreenshotAndCompareAgainstReference(driver, "-testGeometryCreator.png", 99.999f);
 	}
 
+	smgr->clear();
+
+	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
+
+	// add camera
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0,100.0f,2.0f);
+	camera->setPosition(core::vector3df(2000.0f,5000.f,0.0f));
+	camera->setTarget(core::vector3df(0.0f,0.0f,0.0f));
+	camera->setFarValue(20000.0f);
+	device->getCursorControl()->setVisible(false); // disable mouse cursor
+
+	video::IImage* colorMapImage = driver->createImageFromFile("../media/terrain-texture.jpg");
+	video::IImage* heightMapImage = driver->createImageFromFile("../media/terrain-heightmap.bmp");
+
+	scene::IAnimatedMesh* terrain = smgr->addTerrainMesh("TerrainMeshName", colorMapImage, heightMapImage,
+		core::dimension2d<f32>(40, 40), // size of a pixel
+		8*40); // maximum height
+
+	scene::IAnimatedMeshSceneNode* anode = smgr->addAnimatedMeshSceneNode(terrain);
+	if (anode)
+	{
+		anode->setMaterialFlag(video::EMF_LIGHTING, false);
+		anode->setPosition(core::vector3df(-5000,0,-5000));
+	}
+
+	driver->beginScene();
+	smgr->drawAll();
+	driver->endScene();
+
+	// This screenshot shows some mipmap problems, but this seems to be
+	// no fault of the mesh
+	result = takeScreenshotAndCompareAgainstReference(driver, "-testTerrainMesh.png", 99.999f);
+
     device->drop();
 
     return result;
