@@ -206,7 +206,11 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	// check if the archive was already loaded
 	for (i = 0; i < FileArchives.size(); ++i)
 	{
-		if (getAbsolutePath(filename) == FileArchives[i]->getFileList()->getPath())
+		// TODO: This should go into a path normalization method
+		// We need to check for directory names with trailing slash and without
+		const core::stringc absPath = getAbsolutePath(filename);
+		const core::stringc arcPath = FileArchives[i]->getFileList()->getPath();
+		if ((absPath == arcPath) || ((absPath+"/") == arcPath))
 		{
 			if (password.size())
 				FileArchives[i]->Password=password;
@@ -588,7 +592,7 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 }
 
 
-//! Creates a list of files and directories in the current working directory
+//! Sets the current file systen type
 EFileSystemType CFileSystem::setFileListSystem(EFileSystemType listType)
 {
 	EFileSystemType current = FileSystemType;

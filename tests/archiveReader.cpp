@@ -30,6 +30,7 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
 	{
 		logTestString("Mounting a second time failed\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -37,7 +38,33 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	if ( fs->getFileArchiveCount() != 1 )
 	{
 		logTestString("Duplicate mount not recognized\n");
+		while (fs->getFileArchiveCount())
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
+	}
+	if (fs->getFileArchive(0)->getType()==io::EFAT_FOLDER)
+	{
+		// mount again with different path end symbol (either with slash or without)
+		core::stringc newArchiveName=archiveName;
+		if (archiveName.lastChar()=='/')
+			newArchiveName.erase(newArchiveName.size()-1);
+		else
+			newArchiveName.append('/');
+		if ( !fs->addFileArchive(newArchiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+		{
+			logTestString("Mounting a second time with different name failed\n");
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
+			return false;
+		}
+
+		// make sure there is exactly one archive mounted
+		if ( fs->getFileArchiveCount() != 1 )
+		{
+			logTestString("Duplicate mount with different filename not recognized\n");
+			while (fs->getFileArchiveCount())
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+			return false;
+		}
 	}
 
 	// log what we got
@@ -53,6 +80,8 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	if (!fs->existFile(filename))
 	{
 		logTestString("existFile with deep path failed\n");
+		while (fs->getFileArchiveCount())
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -60,6 +89,8 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	if (!fs->existFile(filename))
 	{
 		logTestString("existFile failed\n");
+		while (fs->getFileArchiveCount())
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -67,6 +98,8 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	if ( !readFile )
 	{
 		logTestString("createAndOpenFile failed\n");
+		while (fs->getFileArchiveCount())
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -75,6 +108,8 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	if (strncmp(tmp, "Hello world!", 12))
 	{
 		logTestString("Read bad data from archive: %s\n", tmp);
+		while (fs->getFileArchiveCount())
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 	if (!fs->removeFileArchive(fs->getFileArchiveCount()-1))
@@ -197,6 +232,10 @@ bool archiveReader()
 		return false;
 	
 	bool ret = true;
+	logTestString("Testing mount file.\n");
+	ret &= testArchive(fs, "media/file_with_path");
+	logTestString("Testing mount file.\n");
+	ret &= testArchive(fs, "media/file_with_path/");
 	logTestString("Testing zip files.\n");
 	ret &= testArchive(fs, "media/file_with_path.zip");
 	logTestString("Testing pak files.\n");
