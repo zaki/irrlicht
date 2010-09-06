@@ -27,16 +27,19 @@ CArchiveLoaderMount::CArchiveLoaderMount( io::IFileSystem* fs)
 //! returns true if the file maybe is able to be loaded by this class
 bool CArchiveLoaderMount::isALoadableFileFormat(const io::path& filename) const
 {
-	bool ret = false;
 	io::path fname(filename);
 	deletePathFromFilename(fname);
 
 	if (!fname.size())
+		return true;
+	IFileList* list = FileSystem->createFileList();
+	if (list)
 	{
-		ret = true;
+		// check if name is found as directory
+		if (list->findFile(filename, true))
+			return true;
 	}
-
-	return ret;
+	return false;
 }
 
 //! Check to see if the loader can create archives of this type.
@@ -58,11 +61,11 @@ IFileArchive* CArchiveLoaderMount::createArchive(const io::path& filename, bool 
 
 	EFileSystemType current = FileSystem->setFileListSystem(FILESYSTEM_NATIVE);
 
-	io::path save = FileSystem->getWorkingDirectory();
+	const io::path save = FileSystem->getWorkingDirectory();
 	io::path fullPath = FileSystem->getAbsolutePath(filename);
 	FileSystem->flattenFilename(fullPath);
 
-	if ( FileSystem->changeWorkingDirectoryTo ( fullPath ) )
+	if (FileSystem->changeWorkingDirectoryTo(fullPath))
 	{
 		archive = new CMountPointReader(FileSystem, fullPath, ignoreCase, ignorePaths);
 	}
