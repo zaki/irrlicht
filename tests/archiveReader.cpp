@@ -67,6 +67,7 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 		}
 	}
 
+#if 0
 	// log what we got
 	io::IFileArchive* archive = fs->getFileArchive(fs->getFileArchiveCount()-1);
 	const io::IFileList* fileList = archive->getFileList();
@@ -74,8 +75,10 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	{
 		logTestString("File name: %s\n", fileList->getFileName(f).c_str());
 		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
+		logTestString("ID: %d\n", fileList->getID(f));
 	}
-	
+#endif
+
 	io::path filename("mypath/mypath/myfile.txt");
 	if (!fs->existFile(filename))
 	{
@@ -103,6 +106,13 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 		return false;
 	}
 
+	if (fs->getFileBasename(readFile->getFileName()) != "test.txt")
+	{
+		logTestString("Wrong filename, file list seems to be corrupt\n");
+		while (fs->getFileArchiveCount())
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
 	char tmp[13] = {'\0'};
 	readFile->read(tmp, 12);
 	if (strncmp(tmp, "Hello world!", 12))
