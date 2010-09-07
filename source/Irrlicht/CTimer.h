@@ -20,18 +20,24 @@ namespace irr
 			os::Timer::initTimer();
 		}
 
-		//! Returns current real time in milliseconds of the system. 
+		//! Returns current real time in milliseconds of the system.
 		/** This value does not start with 0 when the application starts.
-		For example in one implementation the value returned could be the 
+		For example in one implementation the value returned could be the
 		amount of milliseconds which have elapsed since the system was started. */
 		virtual u32 getRealTime() const
 		{
 			return os::Timer::getRealTime();
 		}
 
-		//! Returns current virtual time in milliseconds. 
+		//! Get current time and date in calendar form
+		virtual RealTimeDate getRealTimeAndDate() const
+		{
+			return os::Timer::getRealTimeAndDate();
+		}
+
+		//! Returns current virtual time in milliseconds.
 		/** This value starts with 0 and can be manipulated using setTime(), stopTimer(),
-		startTimer(), etc. This value depends on the set speed of the timer if the timer 
+		startTimer(), etc. This value depends on the set speed of the timer if the timer
 		is stopped, etc. If you need the system time, use getRealTime() */
 		virtual u32 getTime() const
 		{
@@ -44,8 +50,8 @@ namespace irr
 			os::Timer::setTime(time);
 		}
 
-		//! Stops the game timer. 
-		/** The timer is reference counted, which means everything which calls 
+		//! Stops the game timer.
+		/** The timer is reference counted, which means everything which calls
 		stopTimer() will also have to call startTimer(), otherwise the timer may not start/stop
 		corretly again. */
 		virtual void stop()
@@ -54,7 +60,7 @@ namespace irr
 		}
 
 		//! Starts the game timer.
-		/** The timer is reference counted, which means everything which calls 
+		/** The timer is reference counted, which means everything which calls
 		stopTimer() will also have to call startTimer(), otherwise the timer may not start/stop
 		corretly again. */
 		virtual void start()

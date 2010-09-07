@@ -10,6 +10,7 @@
 #include "irrString.h"
 #include "path.h"
 #include "ILogger.h"
+#include "ITimer.h"
 
 namespace irr
 {
@@ -66,6 +67,9 @@ namespace os
 
 		//! returns the current time in milliseconds
 		static u32 getTime();
+
+		//! get current time and date in calendar form
+		static ITimer::RealTimeDate getRealTimeAndDate();
 
 		//! initializes the real timer
 		static void initTimer();
