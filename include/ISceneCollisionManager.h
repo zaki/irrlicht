@@ -86,7 +86,7 @@ namespace scene
 		at a length of the far value of the camera at a position which
 		would be behind the 2d screen coodinates. */
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0) = 0;
+			const core::position2d<s32>& pos, ICameraSceneNode* camera = 0) = 0;
 
 		//! Calculates 2d screen position from a 3d position.
 		/** \param pos: 3D position in world space to be transformed
@@ -95,12 +95,12 @@ namespace scene
 		camera is used.
 		\return 2d screen coordinates which a object in the 3d world
 		would have if it would be rendered to the screen. If the 3d
-		position is behind the camera, it is set to (-10000,-10000). In
+		position is behind the camera, it is set to (-1000,-1000). In
 		most cases you can ignore this fact, because if you use this
 		method for drawing a decorator over a 3d object, it will be
 		clipped by the screen borders. */
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			const core::vector3df & pos, ICameraSceneNode* camera=0) = 0;
+			const core::vector3df& pos, ICameraSceneNode* camera=0) = 0;
 
 		//! Gets the scene node, which is currently visible under the given screencoordinates, viewed from the currently active camera.
 		/** The collision tests are done using a bounding box for each
