@@ -230,7 +230,7 @@ void CAttributes::setAttribute(s32 index, const core::array<core::stringw>& valu
 
 
 //! Returns attribute index from name, -1 if not found
-s32 CAttributes::findAttribute(const c8* attributeName)
+s32 CAttributes::findAttribute(const c8* attributeName) const
 {
 	for (u32 i=0; i<Attributes.size(); ++i)
 		if (Attributes[i]->Name == attributeName)
@@ -240,7 +240,7 @@ s32 CAttributes::findAttribute(const c8* attributeName)
 }
 
 
-IAttribute* CAttributes::getAttributeP(const c8* attributeName)
+IAttribute* CAttributes::getAttributeP(const c8* attributeName) const
 {
 	for (u32 i=0; i<Attributes.size(); ++i)
 		if (Attributes[i]->Name == attributeName)
@@ -294,7 +294,7 @@ void CAttributes::setAttribute(const c8* attributeName, s32 value)
 //! \param attributeName: Name of the attribute to get.
 //! \return Returns value of the attribute previously set by setAttribute() as integer
 //! or 0 if attribute is not set.
-s32 CAttributes::getAttributeAsInt(const c8* attributeName)
+s32 CAttributes::getAttributeAsInt(const c8* attributeName) const
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -614,7 +614,7 @@ bool CAttributes::getAttributeAsBool(s32 index)
 
 //! Gets an attribute as integer value
 //! \param index: Index value, must be between 0 and getAttributeCount()-1.
-s32 CAttributes::getAttributeAsInt(s32 index)
+s32 CAttributes::getAttributeAsInt(s32 index) const
 {
 	if ((u32)index < Attributes.size())
 		return Attributes[index]->getInt();
