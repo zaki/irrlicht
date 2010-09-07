@@ -54,7 +54,7 @@ public:
 	virtual bool existsAttribute(const c8* attributeName);
 
 	//! Returns attribute index from name, -1 if not found
-	virtual s32 findAttribute(const c8* attributeName);
+	virtual s32 findAttribute(const c8* attributeName) const;
 
 	//! Removes all attributes
 	virtual void clear();
@@ -84,11 +84,11 @@ public:
 	//! Gets an attribute as integer value
 	//! \param attributeName: Name of the attribute to get.
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual s32 getAttributeAsInt(const c8* attributeName);
+	virtual s32 getAttributeAsInt(const c8* attributeName) const;
 
 	//! Gets an attribute as integer value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual s32 getAttributeAsInt(s32 index);
+	virtual s32 getAttributeAsInt(s32 index) const;
 
 	//! Sets an attribute as integer value
 	virtual void setAttribute(s32 index, s32 value);
@@ -649,7 +649,7 @@ protected:
 
 	core::array<IAttribute*> Attributes;
 
-	IAttribute* getAttributeP(const c8* attributeName);
+	IAttribute* getAttributeP(const c8* attributeName) const;
 
 	video::IVideoDriver* Driver;
 };

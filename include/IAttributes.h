@@ -67,7 +67,7 @@ public:
 	virtual bool existsAttribute(const c8* attributeName) = 0;
 
 	//! Returns attribute index from name, -1 if not found
-	virtual s32 findAttribute(const c8* attributeName) = 0;
+	virtual s32 findAttribute(const c8* attributeName) const =0;
 
 	//! Removes all attributes
 	virtual void clear() = 0;
@@ -102,11 +102,11 @@ public:
 	//! Gets an attribute as integer value
 	//! \param attributeName: Name of the attribute to get.
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual s32 getAttributeAsInt(const c8* attributeName) = 0;
+	virtual s32 getAttributeAsInt(const c8* attributeName) const =0;
 
 	//! Gets an attribute as integer value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual s32 getAttributeAsInt(s32 index) = 0;
+	virtual s32 getAttributeAsInt(s32 index) const =0;
 
 	//! Sets an attribute as integer value
 	virtual void setAttribute(s32 index, s32 value) = 0;
