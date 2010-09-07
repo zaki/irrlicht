@@ -778,11 +778,11 @@ namespace core
 	}
 
 	//! Returns the absolute values of the scales of the matrix.
-	/** 
-	Note that this always returns the absolute (positive) values.  Unfortunately it
-	does not appear to be possible to extract any original negative values.  The best
-	that we could do would be to arbitrarily make one scale negative if one or three
-	of them were negative.
+	/**
+	Note that this returns the absolute (positive) values unless only scale is set.
+	Unfortunately it does not appear to be possible to extract any original negative
+	values. The best that we could do would be to arbitrarily make one scale
+	negative if one or three of them were negative.
 	FIXME - return the original values.
 	*/
 	template <class T>
@@ -854,7 +854,23 @@ namespace core
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
 	{
 		const CMatrix4<T> &mat = *this;
-		const core::vector3d<T> scale = getScale();
+		core::vector3d<T> scale = getScale();
+		// we need to check for negative scale on to axes, which would bring up wrong results
+		if (scale.Y<0 && scale.Z<0)
+		{
+			scale.Y =-scale.Y;
+			scale.Z =-scale.Z;
+		}
+		else if (scale.X<0 && scale.Z<0)
+		{
+			scale.X =-scale.X;
+			scale.Z =-scale.Z;
+		}
+		else if (scale.X<0 && scale.Y<0)
+		{
+			scale.X =-scale.X;
+			scale.Y =-scale.Y;
+		}
 		const core::vector3d<f64> invScale(core::reciprocal(scale.X),core::reciprocal(scale.Y),core::reciprocal(scale.Z));
 
 		f64 Y = -asin(core::clamp(mat[2]*invScale.X, -1.0, 1.0));
@@ -882,8 +898,6 @@ namespace core
 		}
 
 		// fix values that get below zero
-		// before it would set (!) values to 360
-		// that were above 360:
 		if (X < 0.0) X += 360.0;
 		if (Y < 0.0) Y += 360.0;
 		if (Z < 0.0) Z += 360.0;
