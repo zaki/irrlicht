@@ -258,7 +258,7 @@ public:
 
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
 

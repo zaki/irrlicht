@@ -114,7 +114,7 @@ bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 	frontCube->setMaterialTexture(0, driver->getTexture("../media/help.png"));
 	frontCube->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 	frontCube->setMaterialFlag(video::EMF_LIGHTING, false);
-	driver->getMeshManipulator()->setVertexColorAlpha(frontCube->getMesh(), 1);
+	driver->getMeshManipulator()->setVertexColorAlpha(frontCube->getMesh(), 45);
 
 	(void)smgr->addCameraSceneNode(0, vector3df(0, 0, -15));
 
@@ -122,7 +122,7 @@ bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 	smgr->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentVertexAlpha.png");
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentVertexAlpha.png", 98.76f);
 
 	device->drop();
 
@@ -216,6 +216,53 @@ bool testTransparentAddColor(video::E_DRIVER_TYPE driverType)
 }
 
 
+bool testTransparentVertexAlphaMore(E_DRIVER_TYPE driverType)
+{
+	IrrlichtDevice *device = createDevice(driverType, dimension2d<u32>(160, 120));
+
+	IVideoDriver* driver = device->getVideoDriver();
+	ISceneManager* smgr = device->getSceneManager();
+
+	IAnimatedMesh* mesh = smgr->getMesh("../media/sydney.md2");
+	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
+	IMeshSceneNode* cube = smgr->addCubeSceneNode(10.0f,0,-1,vector3df(-5,3,-15));
+
+	if (node)
+	{
+		node->setMaterialFlag(EMF_LIGHTING, false);
+		node->setFrameLoop(0, 310);
+		node->setMaterialTexture( 0, driver->getTexture("../media/sydney.bmp") );
+	}
+	if (cube)
+	{
+		cube->getMaterial(0).MaterialType = EMT_TRANSPARENT_VERTEX_ALPHA;
+		cube->setMaterialTexture(0, driver->getTexture("../media/wall.bmp"));
+		cube->setMaterialFlag(EMF_LIGHTING, false);
+		smgr->getMeshManipulator()->setVertexColorAlpha(cube->getMesh(),128);
+	}
+	// second cube without texture
+	cube = smgr->addCubeSceneNode(10.0f,0,-1,vector3df(5,3,-15));
+	if (cube)
+	{
+		cube->getMaterial(0).MaterialType = EMT_TRANSPARENT_VERTEX_ALPHA;
+		cube->setMaterialFlag(EMF_LIGHTING, false);
+		smgr->getMeshManipulator()->setVertexColorAlpha(cube->getMesh(),128);
+	}
+
+	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
+
+	driver->beginScene(true, true, SColor(0,200,200,200));
+	smgr->drawAll();
+	driver->endScene();
+
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentVertexAlphaChannelMore.png", 99.18f);
+
+	device->drop();
+
+	return result;
+}
+
+
 bool transparentMaterials(void)
 {
 	bool result = testTransparentAlphaChannel(EDT_DIRECT3D9);
@@ -242,6 +289,11 @@ bool transparentMaterials(void)
 	result &= testTransparentReflection2Layer(EDT_DIRECT3D9);
 	result &= testTransparentReflection2Layer(EDT_OPENGL);
 	result &= testTransparentReflection2Layer(EDT_BURNINGSVIDEO);
+
+	result &= testTransparentVertexAlphaMore(EDT_DIRECT3D9);
+	result &= testTransparentVertexAlphaMore(EDT_OPENGL);
+	// This type seems to be broken as well for Burning's video.
+	result &= testTransparentVertexAlphaMore(EDT_BURNINGSVIDEO);
 
 	return result;
 }
