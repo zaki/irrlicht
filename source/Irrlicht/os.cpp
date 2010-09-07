@@ -15,6 +15,7 @@
 	#include <stdlib.h>
 	#define bswap_16(X) _byteswap_ushort(X)
 	#define bswap_32(X) _byteswap_ulong(X)
+	#define localtime _localtime_s
 #elif defined(_IRR_OSX_PLATFORM_)
 	#include <libkern/OSByteOrder.h>
 	#define bswap_16(X) OSReadSwapInt16(&X,0)
@@ -55,6 +56,7 @@ namespace os
 #else
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <time.h>
 #endif
 
 namespace irr
@@ -153,7 +155,6 @@ namespace os
 		gettimeofday(&tv, 0);
 		return (u32)(tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	}
-
 } // end namespace os
 
 #endif // end linux / windows
@@ -222,6 +223,28 @@ namespace os
 	u32 Timer::LastVirtualTime = 0;
 	u32 Timer::StartRealTime = 0;
 	u32 Timer::StaticTime = 0;
+
+	//! Get real time and date in calendar form
+	ITimer::RealTimeDate Timer::getRealTimeAndDate()
+	{
+		time_t rawtime;
+		time(&rawtime);
+
+		struct tm * timeinfo;
+		timeinfo = localtime(&rawtime);
+
+		ITimer::RealTimeDate date;
+		date.Hour=(u32)timeinfo->tm_hour;
+		date.Minute=(u32)timeinfo->tm_min;
+		date.Second=(u32)timeinfo->tm_sec;
+		date.Day=(u32)timeinfo->tm_mday;
+		date.Month=(u32)timeinfo->tm_mon+1;
+		date.Year=(u32)timeinfo->tm_year+1900;
+		date.Weekday=(ITimer::EWeekday)timeinfo->tm_wday;
+		date.Yearday=(u32)timeinfo->tm_yday+1;
+		date.IsDST=timeinfo->tm_isdst != 0;
+		return date;
+	}
 
 	//! returns current virtual time
 	u32 Timer::getTime()
