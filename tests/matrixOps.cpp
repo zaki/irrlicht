@@ -175,6 +175,20 @@ bool rotations(void)
 	result &= (vec1.equals(core::vector3df(27.5400505f, 34.4302292f, 42.6845398f), 0.000002f));
 	assert(result);
 
+	// corner cases
+    rot1.setRotationDegrees(irr::core::vector3df(180.0f, 0.f, 0.f));
+    vec1=rot1.getRotationDegrees();
+	result &= (vec1.equals(core::vector3df(180.0f, 0.f, 0.f), 0.000002f));
+	assert(result);
+    rot1.setRotationDegrees(irr::core::vector3df(0.f, 180.0f, 0.f));
+    vec1=rot1.getRotationDegrees();
+	result &= (vec1.equals(core::vector3df(180.0f, 360, 180.0f), 0.000002f));
+	assert(result);
+    rot1.setRotationDegrees(irr::core::vector3df(0.f, 0.f, 180.0f));
+    vec1=rot1.getRotationDegrees();
+	result &= (vec1.equals(core::vector3df(0.f, 0.f, 180.0f), 0.000002f));
+	assert(result);
+
 	return result;
 }
 
