@@ -396,7 +396,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\transparentAlphaChannelRef.cpp"
+				RelativePath=".\transparentMaterials.cpp"
 				>
 			</File>
 			<File
