@@ -105,7 +105,7 @@ static bool addBlend2d(video::E_DRIVER_TYPE type)
 	driver->enableMaterial2D(false);
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-addBlend2D.png" );
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-addBlend2D.png", 98.66f);
 
 	device->drop();
     return result;
