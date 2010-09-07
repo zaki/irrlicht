@@ -15,9 +15,9 @@ namespace irr
 	{
 	public:
 
-		CTimer()
+		CTimer(bool usePerformanceTimer=true)
 		{
-			os::Timer::initTimer();
+			os::Timer::initTimer(usePerformanceTimer);
 		}
 
 		//! Returns current real time in milliseconds of the system.

@@ -1,5 +1,11 @@
 Changes in 1.8 (??.0?.2010)
 
+ - Add creation parameter which allows to disable highres timers on Windows upon device creation.
+
+ - Several transparency setup bugs fixed.
+
+ - Added a method to get real time and date in a human readable struct
+
  - Add IGUIElement::bringToBack (patch written by DtD, although I'm to blame for the function-name)
 
  - BurningVideo 
