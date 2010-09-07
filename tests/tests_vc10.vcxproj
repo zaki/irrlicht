@@ -81,12 +81,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2dmaterial.cpp" />
     <ClCompile Include="anti-aliasing.cpp" />
     <ClCompile Include="archiveReader.cpp" />
     <ClCompile Include="b3dAnimation.cpp" />
     <ClCompile Include="burningsVideo.cpp" />
     <ClCompile Include="collisionResponseAnimator.cpp" />
     <ClCompile Include="color.cpp" />
+    <ClCompile Include="createImage.cpp" />
     <ClCompile Include="cursorSetVisible.cpp" />
     <ClCompile Include="disambiguateTextures.cpp" />
     <ClCompile Include="draw2DImage.cpp" />

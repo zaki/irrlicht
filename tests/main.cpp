@@ -96,7 +96,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testGeometryCreator); 
 	TEST(writeImageToFile);
 	TEST(meshTransform);
-//	TEST(createImage);
+	TEST(createImage);
 	// all driver checks
 	TEST(drawPixel);
 	TEST(guiDisabledMenu);
@@ -108,7 +108,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(antiAliasing);
 	TEST(draw2DImage);
 	TEST(lights);
-//	TEST(twodmaterial);
+	TEST(twodmaterial);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes/long rendering
