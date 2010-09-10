@@ -84,7 +84,7 @@ namespace os
 	void Timer::initTimer(bool usePerformanceTimer)
 	{
 #if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
-		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
+		// workaround for hires timer on multiple core systems, bios bugs result in bad hires timers.
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
 		MultiCore = (sysinfo.dwNumberOfProcessors > 1);
@@ -147,7 +147,7 @@ namespace os
 		printf("%s\n", message);
 	}
 
-	void Timer::initTimer()
+	void Timer::initTimer(bool usePerformanceTimer)
 	{
 		initVirtualTimer();
 	}
