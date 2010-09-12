@@ -19,8 +19,8 @@ namespace video
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false), MultiTextureExtension(false),
 		TextureCompressionExtension(false),
-		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1),
-		MaxUserClipPlanes(0), MaxAuxBuffers(0),
+		MaxSupportedTextures(1), MaxTextureUnits(1), MaxLights(1),
+		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
 		MaxMultipleRenderTargets(1), MaxIndices(65535),
 		MaxTextureSize(1), MaxGeometryVerticesOut(0),
 		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0),
@@ -606,7 +606,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	if (Version>102 || FeatureAvailable[IRR_ARB_multitexture])
 	{
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &num);
-		MaxTextureUnits=static_cast<u8>(num);
+		MaxSupportedTextures=static_cast<u8>(num);
 	}
 #endif
 	glGetIntegerv(GL_MAX_LIGHTS, &num);
@@ -689,12 +689,12 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 	else
 #endif
+	MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
 	if (MaxTextureUnits < 2)
 	{
 		MultiTextureExtension = false;
 		os::Printer::log("Warning: OpenGL device only has one texture unit. Disabling multitexturing.", ELL_WARNING);
 	}
-	MaxTextureUnits = core::min_(MaxTextureUnits,static_cast<u8>(MATERIAL_MAX_TEXTURES));
 
 #ifdef GL_ARB_occlusion_query
 	if (FeatureAvailable[IRR_ARB_occlusion_query])
