@@ -7,12 +7,12 @@
 
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
-#define IRRLICHT_VERSION_MINOR 7
-#define IRRLICHT_VERSION_REVISION 1
+#define IRRLICHT_VERSION_MINOR 8
+#define IRRLICHT_VERSION_REVISION 0
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
 #define IRRLICHT_VERSION_SVN -beta
-#define IRRLICHT_SDK_VERSION "1.7.1-beta"
+#define IRRLICHT_SDK_VERSION "1.8.0-alpha"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
