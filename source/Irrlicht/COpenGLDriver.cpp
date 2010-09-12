@@ -649,6 +649,19 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	}
 	else
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
+	DriverAttributes->addInt("MaxTextures", MaxTextureUnits);
+	DriverAttributes->addInt("MaxSupportedTextures", MaxSupportedTextures);
+//	DriverAttributes->addInt("MaxLights", MaxLights);
+	DriverAttributes->addInt("MaxAnisotropy", MaxAnisotropy);
+	DriverAttributes->addInt("MaxUserClipPlanes", MaxUserClipPlanes);
+	DriverAttributes->addInt("MaxAuxBuffers", MaxAuxBuffers);
+	DriverAttributes->addInt("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
+	DriverAttributes->addInt("MaxIndices", MaxIndices);
+	DriverAttributes->addInt("MaxTextureSize", MaxTextureSize);
+	DriverAttributes->addInt("MaxGeometryVerticesOut", MaxGeometryVerticesOut);
+	DriverAttributes->addFloat("MaxTextureLODBias", MaxTextureLODBias);
+	DriverAttributes->addInt("Version", Version);
+	DriverAttributes->addInt("ShaderLanguageVersion", ShaderLanguageVersion);
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 

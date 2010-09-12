@@ -57,6 +57,9 @@ namespace video
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
+		//! Get attributes of the actual video driver
+		const io::IAttributes& getDriverAttributes() const;
+
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
 
@@ -815,6 +818,8 @@ namespace video
 		f32 FogDensity;
 		SColor FogColor;
 		SExposedVideoData ExposedData;
+
+		io::IAttributes* DriverAttributes;
 
 		SOverrideMaterial OverrideMaterial;
 		SMaterial OverrideMaterial2D;

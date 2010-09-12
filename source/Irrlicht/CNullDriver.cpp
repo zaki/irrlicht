@@ -90,6 +90,21 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	setDebugName("CNullDriver");
 	#endif
 
+	DriverAttributes = new io::CAttributes(this);
+	DriverAttributes->addInt("MaxTextures", _IRR_MATERIAL_MAX_TEXTURES_);
+	DriverAttributes->addInt("MaxSupportedTextures", _IRR_MATERIAL_MAX_TEXTURES_);
+	DriverAttributes->addInt("MaxLights", getMaximalDynamicLightAmount());
+	DriverAttributes->addInt("MaxAnisotropy", 1);
+//	DriverAttributes->addInt("MaxUserClipPlanes", 0);
+//	DriverAttributes->addInt("MaxAuxBuffers", 0);
+//	DriverAttributes->addInt("MaxMultipleRenderTargets", 0);
+	DriverAttributes->addInt("MaxIndices", -1);
+	DriverAttributes->addInt("MaxTextureSize", -1);
+//	DriverAttributes->addInt("MaxGeometryVerticesOut", 0);
+//	DriverAttributes->addFloat("MaxTextureLODBias", 0.f);
+	DriverAttributes->addInt("Version", 1);
+//	DriverAttributes->addInt("ShaderLanguageVersion", 0);
+
 	setFog();
 
 	setTextureCreationFlag(ETCF_ALWAYS_32_BIT, true);
@@ -207,6 +222,7 @@ CNullDriver::~CNullDriver()
 
 	// delete hardware mesh buffers
 	removeAllHardwareBuffers();
+	DriverAttributes->drop();
 }
 
 
@@ -310,6 +326,13 @@ void CNullDriver::disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag)
 bool CNullDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
 	return false;
+}
+
+
+//! Get attributes of the actual video driver
+const io::IAttributes& CNullDriver::getDriverAttributes() const
+{
+	return *DriverAttributes;
 }
 
 

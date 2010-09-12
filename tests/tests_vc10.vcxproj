@@ -139,6 +139,7 @@
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="transparentAlphaChannelRef.cpp" />
     <ClCompile Include="vectorPositionDimension2d.cpp" />
+    <ClCompile Include="videoDriver.cpp" />
     <ClCompile Include="writeImageToFile.cpp" />
   </ItemGroup>
   <ItemGroup>

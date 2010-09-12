@@ -206,7 +206,6 @@ vec3 fnormal(void)
 }
 
 
-
 struct program1
 {
 	vec4 Ambient;
@@ -357,6 +356,12 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 		if ( params.Stencilbuffer )
 			StencilBuffer = video::createStencilBuffer(BackBuffer->getDimension());
 	}
+
+	DriverAttributes->addInt("MaxTextures", 2);
+	DriverAttributes->addInt("MaxIndices", 1<<16);
+	DriverAttributes->addInt("MaxTextureSize", 1024);
+	DriverAttributes->addFloat("MaxTextureLODBias", 16.f);
+	DriverAttributes->addInt("Version", 45);
 
 	// create triangle renderers
 

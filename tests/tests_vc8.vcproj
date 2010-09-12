@@ -325,6 +325,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\videoDriver.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\writeImageToFile.cpp"
 				>
 			</File>
