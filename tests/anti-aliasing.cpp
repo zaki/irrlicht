@@ -5,7 +5,7 @@ using namespace irr;
 static bool testLineRendering(video::E_DRIVER_TYPE type)
 {
 	SIrrlichtCreationParameters params;
-	params.AntiAlias = 0;
+	params.AntiAlias = 2;
 	params.Bits = 16;
 	params.WindowSize = core::dimension2d<u32>(160, 120);
 	params.DriverType = type;
@@ -41,7 +41,7 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 	driver->draw2DLine(core::position2di(10,10), core::position2di(100,100), video::SColor(255,0,0,0));
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-lineAntiAliasing.png" );
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-lineAntiAliasing.png", 99.5f );
 
 	device->drop();
     return result;
