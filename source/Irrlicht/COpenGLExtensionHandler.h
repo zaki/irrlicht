@@ -836,6 +836,8 @@ class COpenGLExtensionHandler
 
 	// Some non-boolean properties
 	//! Maxmimum texture layers supported by the fixed pipeline
+	u8 MaxSupportedTextures;
+	//! Maxmimum texture layers supported by the engine
 	u8 MaxTextureUnits;
 	//! Maximum hardware lights supported
 	u8 MaxLights;
