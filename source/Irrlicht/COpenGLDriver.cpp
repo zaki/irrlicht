@@ -3353,6 +3353,10 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		decr = GL_DECR_WRAP_EXT;
 	}
 #endif
+#ifdef GL_NV_depth_clamp
+	if (FeatureAvailable[IRR_NV_depth_clamp])
+		glEnable(GL_DEPTH_CLAMP_NV);
+#endif
 
 	// The first parts are not correctly working, yet.
 #if 0
@@ -3360,10 +3364,6 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	if (FeatureAvailable[IRR_EXT_stencil_two_side])
 	{
 		glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-#ifdef GL_NV_depth_clamp
-		if (FeatureAvailable[IRR_NV_depth_clamp])
-			glEnable(GL_DEPTH_CLAMP_NV);
-#endif
 		glDisable(GL_CULL_FACE);
 		if (zfail)
 		{
@@ -3388,10 +3388,6 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		glStencilMask(~0);
 		glStencilFunc(GL_ALWAYS, 0, ~0);
 		glDrawArrays(GL_TRIANGLES,0,count);
-#ifdef GL_NV_depth_clamp
-		if (FeatureAvailable[IRR_NV_depth_clamp])
-			glDisable(GL_DEPTH_CLAMP_NV);
-#endif
 		glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
 	}
 	else
@@ -3409,7 +3405,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, decr);
 			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, incr);
 		}
-		extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
+		extGlStencilFuncSeparate(GL_ALWAYS, GL_ALWAYS, 0, ~0);
 		glStencilMask(~0);
 		glDrawArrays(GL_TRIANGLES,0,count);
 	}
@@ -3438,6 +3434,10 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
 	}
+#ifdef GL_NV_depth_clamp
+	if (FeatureAvailable[IRR_NV_depth_clamp])
+		glDisable(GL_DEPTH_CLAMP_NV);
+#endif
 
 	glDisableClientState(GL_VERTEX_ARRAY); //not stored on stack
 	glPopAttrib();
