@@ -443,6 +443,18 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
 #endif
+
+	DriverAttributes->addInt("MaxTextures", MaxTextureUnits);
+	DriverAttributes->addInt("MaxSupportedTextures", Caps.MaxSimultaneousTextures);
+	DriverAttributes->addInt("MaxAnisotropy", Caps.MaxAnisotropy);
+	DriverAttributes->addInt("MaxUserClipPlanes", Caps.MaxUserClipPlanes);
+	DriverAttributes->addInt("MaxMultipleRenderTargets", Caps.NumSimultaneousRTs);
+	DriverAttributes->addInt("MaxIndices", Caps.MaxVertexIndex);
+	DriverAttributes->addInt("MaxTextureSize", core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
+	DriverAttributes->addFloat("MaxTextureLODBias", 16);
+	DriverAttributes->addInt("Version", 901);
+	DriverAttributes->addInt("ShaderLanguageVersion", Caps.VertexShaderVersion*100);
+
 	// set the renderstates
 	setRenderStates3DMode();
 

@@ -733,6 +733,10 @@
 				Name="video"
 				>
 				<File
+					RelativePath="..\..\include\EDriverFeatures.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\EDriverTypes.h"
 					>
 				</File>

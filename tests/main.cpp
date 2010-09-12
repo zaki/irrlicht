@@ -98,6 +98,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(meshTransform);
 	TEST(createImage);
 	// all driver checks
+	TEST(videoDriver);
 	TEST(drawPixel);
 	TEST(guiDisabledMenu);
 	TEST(makeColorKeyTexture);
@@ -113,8 +114,8 @@ int main(int argumentCount, char * arguments[])
 //	TEST(projectionMatrix);
 	// large scenes/long rendering
 	// shadows are slow
-	TEST(orthoCam);
-	TEST(stencilShadow);
+//	TEST(orthoCam);
+//	TEST(stencilShadow);
 	// q3 maps are slow
 	TEST(planeMatrix);
 	TEST(terrainSceneNode);

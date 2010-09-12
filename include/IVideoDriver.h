@@ -284,6 +284,24 @@ namespace video
 		\param flag When true the feature is disabled, otherwise it is enabled. */
 		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true) =0;
 
+		//! Get attributes of the actual video driver
+		/** The following names can be queried for the given types:
+		MaxTextures (int) The maximum number of simultaneous textures supported by the driver. This can be less than the supported number of textures of the driver. Use _IRR_MATERIAL_MAX_TEXTURES_ to adapt the number.
+		MaxSupportedTextures (int) The maximum number of simultaneous textures supported by the fixed function pipeline of the (hw) driver. The actual supported number of textures supported by the engine can be lower.
+		MaxLights (int) Number of hardware lights supported in the fixed function pipieline of the driver, typically 6-8. Use light manager or deferred shading for more.
+		MaxAnisotropy (int) Number of anisotropy levels supported for filtering. At least 1, max is typically at 16 or 32.
+		MaxUserClipPlanes (int) Number of additional clip planes, which can be set by the user via dedicated driver methods.
+		MaxAuxBuffers (int) Special render buffers, which are currently not really usable inside Irrlicht. Only supported by OpenGL
+		MaxMultipleRenderTargets (int) Number of render targets which can be bound simultaneously. Rendering to MRTs is done via shaders.
+		MaxIndices (int) Number of indices which can be used in one render call (i.e. one mesh buffer).
+		MaxTextureSize (int) Dimension that a texture may have, both in width and height.
+		MaxGeometryVerticesOut (int) Number of vertices the geometry shader can output in one pass. Only OpenGL so far.
+		MaxTextureLODBias (float) Maximum value for LOD bias. Is usually at around 16, but can be lower on some systems.
+		Version (int) Version of the driver. Should be Major*100+Minor
+		ShaderLanguageVersion (int) Version of the high level shader language. Should be Major*100+Minor.
+		*/
+		virtual const io::IAttributes& getDriverAttributes() const=0;
+
 		//! Check if the driver was recently reset.
 		/** For d3d devices you will need to recreate the RTTs if the
 		driver was reset. Should be queried right after beginScene().
@@ -1421,4 +1439,3 @@ namespace video
 
 
 #endif
-
