@@ -43,6 +43,8 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-lineAntiAliasing.png", 99.5f );
 
+	device->closeDevice();
+	device->run();
 	device->drop();
     return result;
 } 

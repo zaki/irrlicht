@@ -31,6 +31,8 @@ static bool testWithRenderTarget(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-draw2DImageRTT.png");
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

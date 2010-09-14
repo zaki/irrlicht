@@ -77,7 +77,7 @@ bool testGeometryCreator(void)
 	{
 		smgr->drawAll();
 		driver->endScene();
-		result = takeScreenshotAndCompareAgainstReference(driver, "-testGeometryCreator.png", 99.999f);
+		result = takeScreenshotAndCompareAgainstReference(driver, "-testGeometryCreator.png", 99.994f);
 	}
 
 	smgr->clear();
@@ -111,8 +111,10 @@ bool testGeometryCreator(void)
 
 	// This screenshot shows some mipmap problems, but this seems to be
 	// no fault of the mesh
-	result = takeScreenshotAndCompareAgainstReference(driver, "-testTerrainMesh.png", 99.999f);
+	result = takeScreenshotAndCompareAgainstReference(driver, "-testTerrainMesh.png", 99.989f);
 
+	device->closeDevice();
+	device->run();
     device->drop();
 
     return result;

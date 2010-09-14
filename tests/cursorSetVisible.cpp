@@ -55,6 +55,8 @@ bool cursorSetVisible(void)
 	// each actual change of visibility.
 	bool result = (moveTrapper.MouseMovesReceived <= 3);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	if(!result)

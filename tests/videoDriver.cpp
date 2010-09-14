@@ -16,7 +16,9 @@ bool testVideoDriver(video::E_DRIVER_TYPE driverType)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
+	logTestString("Testing driver %ls\n", driver->getName());
 	logTestString("MaxTextures: %d\n", driver->getDriverAttributes().getAttributeAsInt("MaxTextures"));
+	logTestString("MaxSupportedTextures: %d\n", driver->getDriverAttributes().getAttributeAsInt("MaxSupportedTextures"));
 	logTestString("MaxLights: %d\n", driver->getDriverAttributes().getAttributeAsInt("MaxLights"));
 	logTestString("MaxAnisotropy: %d\n", driver->getDriverAttributes().getAttributeAsInt("MaxAnisotropy"));
 	logTestString("MaxUserClipPlanes: %d\n", driver->getDriverAttributes().getAttributeAsInt("MaxUserClipPlanes"));
@@ -28,6 +30,8 @@ bool testVideoDriver(video::E_DRIVER_TYPE driverType)
 	logTestString("Version: %d\n", driver->getDriverAttributes().getAttributeAsInt("Version"));
 	logTestString("ShaderLanguageVersion: %d\n", driver->getDriverAttributes().getAttributeAsInt("ShaderLanguageVersion"));
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 	return true;
 }
