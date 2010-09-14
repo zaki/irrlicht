@@ -79,7 +79,6 @@ IImageWriter* createImageWriterPNG();
 //! creates a writer which is able to save ppm images
 IImageWriter* createImageWriterPPM();
 
-
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
@@ -90,14 +89,14 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	setDebugName("CNullDriver");
 	#endif
 
-	DriverAttributes = new io::CAttributes(this);
+	DriverAttributes = new io::CAttributes();
 	DriverAttributes->addInt("MaxTextures", _IRR_MATERIAL_MAX_TEXTURES_);
 	DriverAttributes->addInt("MaxSupportedTextures", _IRR_MATERIAL_MAX_TEXTURES_);
 	DriverAttributes->addInt("MaxLights", getMaximalDynamicLightAmount());
 	DriverAttributes->addInt("MaxAnisotropy", 1);
 //	DriverAttributes->addInt("MaxUserClipPlanes", 0);
 //	DriverAttributes->addInt("MaxAuxBuffers", 0);
-//	DriverAttributes->addInt("MaxMultipleRenderTargets", 0);
+	DriverAttributes->addInt("MaxMultipleRenderTargets", 1);
 	DriverAttributes->addInt("MaxIndices", -1);
 	DriverAttributes->addInt("MaxTextureSize", -1);
 //	DriverAttributes->addInt("MaxGeometryVerticesOut", 0);
@@ -203,6 +202,9 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 //! destructor
 CNullDriver::~CNullDriver()
 {
+	if (DriverAttributes)
+		DriverAttributes->drop();
+
 	if (FileSystem)
 		FileSystem->drop();
 
@@ -222,7 +224,6 @@ CNullDriver::~CNullDriver()
 
 	// delete hardware mesh buffers
 	removeAllHardwareBuffers();
-	DriverAttributes->drop();
 }
 
 
