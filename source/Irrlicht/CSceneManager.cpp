@@ -291,6 +291,12 @@ CSceneManager::~CSceneManager()
 {
 	clearDeletionList();
 
+	//! force to remove hardwareTextures from the driver
+	//! because Scenes may hold internally data bounded to sceneNodes
+	//! which may be destroyed twice
+	if (Driver)
+		Driver->removeAllHardwareBuffers ();
+
 	if (FileSystem)
 		FileSystem->drop();
 
@@ -323,12 +329,6 @@ CSceneManager::~CSceneManager()
 
 	for (i=0; i<SceneNodeAnimatorFactoryList.size(); ++i)
 		SceneNodeAnimatorFactoryList[i]->drop();
-
-	//! force to remove hardwareTextures from the driver
-	//! because Scenes may hold internally data bounded to sceneNodes
-	//! which may be destroyed twice
-	if (Driver)
-		Driver->removeAllHardwareBuffers ();
 
 	if(LightManager)
 		LightManager->drop();

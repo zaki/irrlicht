@@ -391,15 +391,15 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
 
-	DriverAttributes->addInt("MaxTextures", MaxTextureUnits);
-	DriverAttributes->addInt("MaxSupportedTextures", Caps.MaxSimultaneousTextures);
-	DriverAttributes->addInt("MaxAnisotropy", Caps.MaxAnisotropy);
-	DriverAttributes->addInt("MaxUserClipPlanes", Caps.MaxUserClipPlanes);
-	DriverAttributes->addInt("MaxIndices", Caps.MaxVertexIndex);
-	DriverAttributes->addInt("MaxTextureSize", core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
-	DriverAttributes->addFloat("MaxTextureLODBias", 16.f);
-	DriverAttributes->addInt("Version", 901);
-	DriverAttributes->addInt("ShaderLanguageVersion", Caps.VertexShaderVersion*100);
+	DriverAttributes->setAttribute("MaxTextures", (s32)MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Caps.MaxSimultaneousTextures);
+	DriverAttributes->setAttribute("MaxAnisotropy", (s32)Caps.MaxAnisotropy);
+	DriverAttributes->setAttribute("MaxUserClipPlanes", (s32)Caps.MaxUserClipPlanes);
+	DriverAttributes->setAttribute("MaxIndices", (s32)Caps.MaxVertexIndex);
+	DriverAttributes->setAttribute("MaxTextureSize", (s32)core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
+	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
+	DriverAttributes->setAttribute("Version", 800);
+	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
 
 	// set the renderstates
 	setRenderStates3DMode();

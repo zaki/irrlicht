@@ -649,19 +649,19 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	}
 	else
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
-	DriverAttributes->addInt("MaxTextures", MaxTextureUnits);
-	DriverAttributes->addInt("MaxSupportedTextures", MaxSupportedTextures);
-//	DriverAttributes->addInt("MaxLights", MaxLights);
-	DriverAttributes->addInt("MaxAnisotropy", MaxAnisotropy);
-	DriverAttributes->addInt("MaxUserClipPlanes", MaxUserClipPlanes);
-	DriverAttributes->addInt("MaxAuxBuffers", MaxAuxBuffers);
-	DriverAttributes->addInt("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
-	DriverAttributes->addInt("MaxIndices", MaxIndices);
-	DriverAttributes->addInt("MaxTextureSize", MaxTextureSize);
-	DriverAttributes->addInt("MaxGeometryVerticesOut", MaxGeometryVerticesOut);
-	DriverAttributes->addFloat("MaxTextureLODBias", MaxTextureLODBias);
-	DriverAttributes->addInt("Version", Version);
-	DriverAttributes->addInt("ShaderLanguageVersion", ShaderLanguageVersion);
+	DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", MaxSupportedTextures);
+//	DriverAttributes->setAttribute("MaxLights", MaxLights);
+	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
+	DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
+	DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
+	DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
+	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
+	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
+	DriverAttributes->setAttribute("MaxGeometryVerticesOut", (s32)MaxGeometryVerticesOut);
+	DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
+	DriverAttributes->setAttribute("Version", Version);
+	DriverAttributes->setAttribute("ShaderLanguageVersion", ShaderLanguageVersion);
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 

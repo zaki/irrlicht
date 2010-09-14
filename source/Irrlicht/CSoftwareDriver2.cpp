@@ -357,11 +357,11 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 			StencilBuffer = video::createStencilBuffer(BackBuffer->getDimension());
 	}
 
-	DriverAttributes->addInt("MaxTextures", 2);
-	DriverAttributes->addInt("MaxIndices", 1<<16);
-	DriverAttributes->addInt("MaxTextureSize", 1024);
-	DriverAttributes->addFloat("MaxTextureLODBias", 16.f);
-	DriverAttributes->addInt("Version", 45);
+	DriverAttributes->setAttribute("MaxTextures", 2);
+	DriverAttributes->setAttribute("MaxIndices", 1<<16);
+	DriverAttributes->setAttribute("MaxTextureSize", 1024);
+	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
+	DriverAttributes->setAttribute("Version", 45);
 
 	// create triangle renderers
 
