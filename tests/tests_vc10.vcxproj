@@ -115,6 +115,7 @@
     <ClCompile Include="md2Animation.cpp" />
     <ClCompile Include="meshLoaders.cpp" />
     <ClCompile Include="meshTransform.cpp" />
+    <ClCompile Include="mrt.cpp" />
     <ClCompile Include="orthoCam.cpp" />
     <ClCompile Include="planeMatrix.cpp" />
     <ClCompile Include="removeCustomAnimator.cpp" />
@@ -137,7 +138,7 @@
     <ClCompile Include="textureFeatures.cpp" />
     <ClCompile Include="textureRenderStates.cpp" />
     <ClCompile Include="timer.cpp" />
-    <ClCompile Include="transparentAlphaChannelRef.cpp" />
+    <ClCompile Include="transparentMaterials.cpp" />
     <ClCompile Include="vectorPositionDimension2d.cpp" />
     <ClCompile Include="videoDriver.cpp" />
     <ClCompile Include="writeImageToFile.cpp" />
