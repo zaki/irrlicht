@@ -32,7 +32,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), VendorID(0),
-	MaxTextureUnits(0), MaxUserClipPlanes(0),
+	MaxTextureUnits(0), MaxUserClipPlanes(0), MaxMRTs(1), NumSetMRTs(1),
 	MaxLightDistance(0.f), LastSetLight(-1), Cached2DModeSignature(0),
 	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
 	Fullscreen(fullscreen), DriverWasReset(true), OcclusionQuerySupport(false),
@@ -430,6 +430,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
+	MaxMRTs = (s32)Caps.NumSimultaneousRTs;
 	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
 
 	if (VendorID==0x10DE)//NVidia
@@ -444,16 +445,16 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
 #endif
 
-	DriverAttributes->addInt("MaxTextures", MaxTextureUnits);
-	DriverAttributes->addInt("MaxSupportedTextures", Caps.MaxSimultaneousTextures);
-	DriverAttributes->addInt("MaxAnisotropy", Caps.MaxAnisotropy);
-	DriverAttributes->addInt("MaxUserClipPlanes", Caps.MaxUserClipPlanes);
-	DriverAttributes->addInt("MaxMultipleRenderTargets", Caps.NumSimultaneousRTs);
-	DriverAttributes->addInt("MaxIndices", Caps.MaxVertexIndex);
-	DriverAttributes->addInt("MaxTextureSize", core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
-	DriverAttributes->addFloat("MaxTextureLODBias", 16);
-	DriverAttributes->addInt("Version", 901);
-	DriverAttributes->addInt("ShaderLanguageVersion", Caps.VertexShaderVersion*100);
+	DriverAttributes->setAttribute("MaxTextures", (s32)MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Caps.MaxSimultaneousTextures);
+	DriverAttributes->setAttribute("MaxAnisotropy", (s32)Caps.MaxAnisotropy);
+	DriverAttributes->setAttribute("MaxUserClipPlanes", (s32)Caps.MaxUserClipPlanes);
+	DriverAttributes->setAttribute("MaxMultipleRenderTargets", (s32)Caps.NumSimultaneousRTs);
+	DriverAttributes->setAttribute("MaxIndices", (s32)Caps.MaxVertexIndex);
+	DriverAttributes->setAttribute("MaxTextureSize", (s32)core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
+	DriverAttributes->setAttribute("MaxTextureLODBias", 16);
+	DriverAttributes->setAttribute("Version", 901);
+	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
 
 	// set the renderstates
 	setRenderStates3DMode();
@@ -787,6 +788,11 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 
 	bool ret = true;
 
+	for(u32 i = 1; i < NumSetMRTs; i++)
+	{
+		// First texture handled elsewhere
+		pID3DDevice->SetRenderTarget(i, NULL);
+	}
 	if (tex == 0)
 	{
 		if (PrevRenderTarget)
@@ -860,7 +866,7 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targe
 	if (targets.size()==0)
 		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
 
-	u32 maxMultipleRTTs = core::min_(4u, targets.size());
+	u32 maxMultipleRTTs = core::min_(MaxMRTs, targets.size());
 
 	for (u32 i = 0; i < maxMultipleRTTs; ++i)
 	{
@@ -924,6 +930,7 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targe
 
 	// set new render target
 
+	// In d3d9 we have at most 4 MRTs, so the following is enough
 	D3DRENDERSTATETYPE colorWrite[4]={D3DRS_COLORWRITEENABLE, D3DRS_COLORWRITEENABLE1, D3DRS_COLORWRITEENABLE2, D3DRS_COLORWRITEENABLE3};
 	for (u32 i = 0; i < maxMultipleRTTs; ++i)
 	{
@@ -942,6 +949,11 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targe
 			pID3DDevice->SetRenderState(colorWrite[i], flag);
 		}
 	}
+	for(u32 i = maxMultipleRTTs; i < NumSetMRTs; i++)
+	{
+		pID3DDevice->SetRenderTarget(i, NULL);
+	}
+	NumSetMRTs=maxMultipleRTTs;
 
 	CurrentRendertargetSize = tex->getSize();
 

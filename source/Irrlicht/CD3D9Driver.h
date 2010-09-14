@@ -442,6 +442,8 @@ namespace video
 
 		u32 MaxTextureUnits;
 		u32 MaxUserClipPlanes;
+		u32 MaxMRTs;
+		u32 NumSetMRTs;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
 
