@@ -188,7 +188,8 @@ bool collisionResponseAnimator(void)
 		result = false;
 	}
 
-
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	result &= expectedCollisionCallbackPositions;

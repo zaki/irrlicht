@@ -28,6 +28,8 @@ static bool testImageCreation(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-createImage.png");
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

@@ -255,6 +255,8 @@ bool archiveReader()
 	logTestString("Testing encrypted zip files.\n");
 	ret &= testEncryptedZip(fs);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return ret;
