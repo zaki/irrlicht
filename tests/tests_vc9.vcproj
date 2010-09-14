@@ -308,6 +308,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mrt.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\orthoCam.cpp"
 				>
 			</File>

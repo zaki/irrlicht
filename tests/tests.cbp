@@ -63,6 +63,9 @@
 		<Unit filename="makeColorKeyTexture.cpp" />
 		<Unit filename="matrixOps.cpp" />
 		<Unit filename="md2Animation.cpp" />
+		<Unit filename="meshLoaders.cpp" />
+		<Unit filename="meshTransform.cpp" />
+		<Unit filename="mrt.cpp" />
 		<Unit filename="planeMatrix.cpp" />
 		<Unit filename="removeCustomAnimator.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
