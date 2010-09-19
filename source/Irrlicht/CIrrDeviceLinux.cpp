@@ -136,6 +136,7 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		XFree(StdHints);
 	// Disable cursor (it is drop'ed in stub)
 	CursorControl->setVisible(false);
+	static_cast<CCursorControl*>(CursorControl)->clearCursors();
 	if (display)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -2096,6 +2097,12 @@ CIrrDeviceLinux::CCursorControl::CCursorControl(CIrrDeviceLinux* dev, bool null)
 
 CIrrDeviceLinux::CCursorControl::~CCursorControl()
 {
+	// Do not clearCursors here as the display is already closed
+	// TODO (cutealien): droping cursorcontrol earlier might work, not sure about reason why that's done in stub currently.
+}
+
+void CIrrDeviceLinux::CCursorControl::clearCursors()
+{
 	for ( u32 i=0; i < Cursors.size(); ++i )
 	{
 		for ( u32 f=0; f < Cursors[i].Frames.size(); ++f )
@@ -2104,7 +2111,6 @@ CIrrDeviceLinux::CCursorControl::~CCursorControl()
 		}
 	}
 }
-
 
 #ifdef _IRR_COMPILE_WITH_X11_
 void CIrrDeviceLinux::CCursorControl::initCursors()

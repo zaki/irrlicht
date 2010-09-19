@@ -294,6 +294,7 @@ namespace irr
 
 #ifdef _IRR_COMPILE_WITH_X11_
 			void update();
+			void clearCursors();
 #endif
 		private:
 
