@@ -1,5 +1,7 @@
 Changes in 1.8 (??.0?.2010)
 
+ - Add xml example written by Yoran Bosman.
+
  - Add creation parameter which allows to disable highres timers on Windows upon device creation.
 
  - Several transparency setup bugs fixed.
