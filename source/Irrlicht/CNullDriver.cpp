@@ -189,6 +189,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	InitMaterial2D.Lighting=false;
 	InitMaterial2D.ZWriteEnable=false;
 	InitMaterial2D.ZBuffer=video::ECFN_NEVER;
+	InitMaterial2D.UseMipMaps=false;
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{
 		InitMaterial2D.TextureLayer[i].BilinearFilter=false;
