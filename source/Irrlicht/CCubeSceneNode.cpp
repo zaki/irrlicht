@@ -69,8 +69,6 @@ void CCubeSceneNode::render()
 	// overwrite half transparency
 	if (DebugDataVisible & scene::EDS_HALF_TRANSPARENCY)
 		mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
-	else
-		driver->setMaterial(Mesh->getMeshBuffer(0)->getMaterial());
 	driver->setMaterial(mat);
 	driver->drawMeshBuffer(Mesh->getMeshBuffer(0));
 
