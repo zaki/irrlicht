@@ -15,7 +15,9 @@
 	#include <stdlib.h>
 	#define bswap_16(X) _byteswap_ushort(X)
 	#define bswap_32(X) _byteswap_ulong(X)
+#if (_MSC_VER >= 1400)
 	#define localtime _localtime_s
+#endif
 #elif defined(_IRR_OSX_PLATFORM_)
 	#include <libkern/OSByteOrder.h>
 	#define bswap_16(X) OSReadSwapInt16(&X,0)
