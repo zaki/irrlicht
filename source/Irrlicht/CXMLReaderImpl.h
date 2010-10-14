@@ -670,9 +670,19 @@ private:
 
 			TextData = new char_type[sizeWithoutHeader];
 
-			for (int i=0; i<sizeWithoutHeader; ++i)
-				TextData[i] = static_cast<char_type>(source[i]);
-
+			if ( sizeof(src_char_type) == 1 )
+			{
+				// we have to cast away negative numbers or results might add the sign instead of just doing a copy
+				for (int i=0; i<sizeWithoutHeader; ++i)
+				{
+					TextData[i] = static_cast<char_type>(static_cast<unsigned char>(source[i]));
+				}
+			}
+			else
+			{
+				for (int i=0; i<sizeWithoutHeader; ++i)
+					TextData[i] = static_cast<char_type>(source[i]);
+			}
 			TextBegin = TextData;
 			TextSize = sizeWithoutHeader;
 
