@@ -101,7 +101,7 @@ void CGUIStaticText::draw()
 				}
 
 				font->draw(Text.c_str(), frameRect,
-					OverrideColorEnabled ? OverrideColor : skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+					OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
 					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, &AbsoluteClippingRect);
 			}
 			else
@@ -130,7 +130,7 @@ void CGUIStaticText::draw()
 					}
 
 					font->draw(BrokenText[i].c_str(), r,
-						OverrideColorEnabled ? OverrideColor : skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+						OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
 						HAlign == EGUIA_CENTER, false, &AbsoluteClippingRect);
 
 					r.LowerRightCorner.Y += height;

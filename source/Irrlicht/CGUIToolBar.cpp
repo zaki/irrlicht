@@ -67,7 +67,7 @@ CGUIToolBar::CGUIToolBar(IGUIEnvironment* environment, IGUIElement* parent, s32 
 //! called if an event happened.
 bool CGUIToolBar::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 		if (event.EventType == EET_MOUSE_INPUT_EVENT &&
 			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
@@ -128,11 +128,11 @@ IGUIButton* CGUIToolBar::addButton(s32 id, const wchar_t* text,const wchar_t* to
 		rectangle.LowerRightCorner.X = rectangle.UpperLeftCorner.X + size.Width + 8;
 		rectangle.LowerRightCorner.Y = rectangle.UpperLeftCorner.Y + size.Height + 6;
 	}
-	
+
 	if ( text )
 	{
 		IGUISkin* skin = Environment->getSkin();
-		IGUIFont * font = skin->getFont(EGDF_BUTTON);	
+		IGUIFont * font = skin->getFont(EGDF_BUTTON);
 		if ( font )
 		{
 			core::dimension2d<u32> dim = font->getDimension(text);

@@ -454,9 +454,16 @@ public:
 	}
 
 
-	//! Returns true if element is enabled.
+	//! Returns true if element is enabled
+	/** Currently elements do _not_ care about parent-states.
+		So if you want to affect childs you have to enable/disable them all.
+		The only exception to this are sub-elements which also check their parent.
+	*/
 	virtual bool isEnabled() const
 	{
+		if ( isSubElement() && IsEnabled && getParent() )
+			return getParent()->isEnabled();
+
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsEnabled;
 	}

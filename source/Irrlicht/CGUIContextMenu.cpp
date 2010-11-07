@@ -276,7 +276,7 @@ void CGUIContextMenu::removeAllItems()
 //! called if an event happened.
 bool CGUIContextMenu::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 
 		switch(event.EventType)

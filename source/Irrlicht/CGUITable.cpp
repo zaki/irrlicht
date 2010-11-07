@@ -535,7 +535,7 @@ void CGUITable::refreshControls()
 //! called if an event happened.
 bool CGUITable::OnEvent(const SEvent &event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 
 		switch(event.EventType)
@@ -567,7 +567,7 @@ bool CGUITable::OnEvent(const SEvent &event)
 			break;
 		case EET_MOUSE_INPUT_EVENT:
 			{
-				if ( !IsEnabled )
+				if ( !isEnabled() )
 					return false;
 
 				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
@@ -945,13 +945,13 @@ void CGUITable::draw()
 				// draw item text
 				if ((s32)i == Selected)
 				{
-					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, skin->getColor(IsEnabled ? EGDC_HIGH_LIGHT_TEXT : EGDC_GRAY_TEXT), false, true, &clientClip);
+					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, skin->getColor(isEnabled() ? EGDC_HIGH_LIGHT_TEXT : EGDC_GRAY_TEXT), false, true, &clientClip);
 				}
 				else
 				{
 					if ( !Rows[i].Items[j].IsOverrideColor )	// skin-colors can change
 						Rows[i].Items[j].Color = skin->getColor(EGDC_BUTTON_TEXT);
-					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, IsEnabled ? Rows[i].Items[j].Color : skin->getColor(EGDC_GRAY_TEXT), false, true, &clientClip);
+					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, isEnabled() ? Rows[i].Items[j].Color : skin->getColor(EGDC_GRAY_TEXT), false, true, &clientClip);
 				}
 
 				pos += Columns[j].Width;
@@ -987,7 +987,7 @@ void CGUITable::draw()
 
 		// draw header column text
 		columnrect.UpperLeftCorner.X += CellWidthPadding;
-		font->draw(text, columnrect, skin->getColor( IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &tableRect);
+		font->draw(text, columnrect, skin->getColor( isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &tableRect);
 
 		// draw icon for active column tab
 		if ( (s32)i == ActiveTab )

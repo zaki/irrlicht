@@ -164,6 +164,7 @@ namespace gui
 
 		void recalculateScrollButtonPlacement();
 		void recalculateScrollBar();
+		void refreshSprites();
 
 		core::array<CGUITab*> Tabs;
 		s32 ActiveTab;
