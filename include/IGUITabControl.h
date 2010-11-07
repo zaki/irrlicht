@@ -75,7 +75,7 @@ namespace gui
 		//! Brings a tab to front.
 		/** \param tab: pointer to the tab.
 		\return Returns true if successful. */
-		virtual bool setActiveTab(IGUIElement *tab) = 0;
+		virtual bool setActiveTab(IGUITab *tab) = 0;
 
 		//! Returns which tab is currently active
 		virtual s32 getActiveTab() const = 0;
