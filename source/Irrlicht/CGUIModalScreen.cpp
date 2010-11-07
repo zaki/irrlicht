@@ -77,7 +77,7 @@ bool CGUIModalScreen::isPointInside(const core::position2d<s32>& point) const
 //! called if an event happened.
 bool CGUIModalScreen::OnEvent(const SEvent& event)
 {
-    if (!IsEnabled || !isVisible() )
+    if (!isEnabled() || !isVisible() )
         return IGUIElement::OnEvent(event);
 
     switch(event.EventType)

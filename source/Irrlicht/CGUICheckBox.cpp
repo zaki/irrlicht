@@ -34,7 +34,7 @@ CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIEleme
 //! called if an event happened.
 bool CGUICheckBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 		switch(event.EventType)
 		{
@@ -139,7 +139,10 @@ void CGUICheckBox::draw()
 	checkRect.LowerRightCorner.X = checkRect.UpperLeftCorner.X + height;
 	checkRect.LowerRightCorner.Y = checkRect.UpperLeftCorner.Y + height;
 
-	skin->draw3DSunkenPane(this, skin->getColor(Pressed || !IsEnabled ? EGDC_3D_FACE : EGDC_ACTIVE_CAPTION),
+	EGUI_DEFAULT_COLOR col = EGDC_GRAY_EDITABLE;
+	if ( isEnabled() )
+		col = Pressed ? EGDC_FOCUSED_EDITABLE : EGDC_EDITABLE;
+	skin->draw3DSunkenPane(this, skin->getColor(col),
 		false, true, checkRect, &AbsoluteClippingRect);
 
 	if (Checked && Environment->getSkin())
@@ -154,7 +157,7 @@ void CGUICheckBox::draw()
 		IGUIFont* font = skin->getFont();
 		if (font)
 			font->draw(Text.c_str(), checkRect,
-					skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &AbsoluteClippingRect);
+					skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &AbsoluteClippingRect);
 	}
 
 	IGUIElement::draw();

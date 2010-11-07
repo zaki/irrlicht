@@ -470,6 +470,7 @@
 		<Unit filename="../../include/IGUITabControl.h" />
 		<Unit filename="../../include/IGUITable.h" />
 		<Unit filename="../../include/IGUIToolbar.h" />
+		<Unit filename="../../include/IGUITreeView.h" />
 		<Unit filename="../../include/IGUIWindow.h" />
 		<Unit filename="../../include/IGeometryCreator.h" />
 		<Unit filename="../../include/IImage.h" />

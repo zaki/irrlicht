@@ -62,6 +62,9 @@ namespace gui
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
 
+		//! Draws the element and its children.
+		virtual void draw();
+
 		//! Sets the new caption of the element
 		virtual void setText(const wchar_t* text);
 

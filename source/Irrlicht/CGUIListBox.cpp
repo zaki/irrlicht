@@ -213,7 +213,7 @@ void CGUIListBox::setSelected(const wchar_t *item)
 //! called if an event happened.
 bool CGUIListBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 		switch(event.EventType)
 		{

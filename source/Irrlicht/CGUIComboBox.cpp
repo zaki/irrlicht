@@ -182,7 +182,7 @@ void CGUIComboBox::setSelected(s32 idx)
 //! called if an event happened.
 bool CGUIComboBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 		switch(event.EventType)
 		{
@@ -377,8 +377,8 @@ void CGUIComboBox::draw()
 		SelectedText->setDrawBackground(false);
 		SelectedText->setOverrideColor(skin->getColor(EGDC_GRAY_TEXT));
 	}
-	ListButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_DOWN), skin->getColor(EGDC_WINDOW_SYMBOL));
-	ListButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_DOWN), skin->getColor(EGDC_WINDOW_SYMBOL));
+	ListButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_DOWN), skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL));
+	ListButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_DOWN), skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL));
 
 
 	core::rect<s32> frameRect(AbsoluteRect);

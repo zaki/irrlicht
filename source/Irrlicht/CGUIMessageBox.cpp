@@ -254,7 +254,7 @@ void CGUIMessageBox::refreshControls()
 //! called if an event happened.
 bool CGUIMessageBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 		SEvent outevent;
 		outevent.EventType = EET_GUI_EVENT;

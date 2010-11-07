@@ -86,7 +86,7 @@ void CGUISpinBox::refreshSprites()
 	if (sb)
 	{
 		IGUISkin * skin = Environment->getSkin();
-		CurrentIconColor = skin->getColor(EGDC_WINDOW_SYMBOL);
+		CurrentIconColor = skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL);
 		ButtonSpinDown->setSpriteBank(sb);
 		ButtonSpinDown->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_SMALL_CURSOR_DOWN), CurrentIconColor);
 		ButtonSpinDown->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_SMALL_CURSOR_DOWN), CurrentIconColor);
@@ -246,13 +246,26 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 }
 
 
+void CGUISpinBox::draw()
+{
+	if ( !isVisible() )
+		return;
+
+	IGUISkin* skin = Environment->getSkin();
+	if (!skin)
+		return;
+
+	video::SColor iconColor = skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL);
+	if ( iconColor != CurrentIconColor )
+	{
+		refreshSprites();
+	}
+
+	IGUISpinBox::draw();
+}
+
 void CGUISpinBox::verifyValueRange()
 {
-	// TODO: This should be called in "draw" similar to the way it's done in CGUIWindow.
-	// But guess I can't in bugfix-release as overloading draw would break binary compitibility.
-	// So added here to allow users at least to manually force the element to having new skin-colors.
-	refreshSprites();
-
 	f32 val = getValue();
 	if ( val+core::ROUNDING_ERROR_f32 < RangeMin )
 		val = RangeMin;
