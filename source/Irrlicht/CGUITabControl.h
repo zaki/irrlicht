@@ -107,7 +107,7 @@ namespace gui
 		virtual bool setActiveTab(s32 idx);
 
 		//! Brings a tab to front.
-		virtual bool setActiveTab(IGUIElement *tab);
+		virtual bool setActiveTab(IGUITab *tab);
 
 		//! Returns which tab is currently active
 		virtual s32 getActiveTab() const;

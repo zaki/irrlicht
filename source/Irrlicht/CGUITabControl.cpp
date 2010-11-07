@@ -872,7 +872,7 @@ bool CGUITabControl::setActiveTab(s32 idx)
 }
 
 
-bool CGUITabControl::setActiveTab(IGUIElement *tab)
+bool CGUITabControl::setActiveTab(IGUITab *tab)
 {
 	for (s32 i=0; i<(s32)Tabs.size(); ++i)
 		if (Tabs[i] == tab)
