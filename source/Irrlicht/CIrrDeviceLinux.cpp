@@ -135,8 +135,11 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 	if (StdHints)
 		XFree(StdHints);
 	// Disable cursor (it is drop'ed in stub)
-	CursorControl->setVisible(false);
-	static_cast<CCursorControl*>(CursorControl)->clearCursors();
+	if (CursorControl)
+	{
+		CursorControl->setVisible(false);
+		static_cast<CCursorControl*>(CursorControl)->clearCursors();
+	}
 	if (display)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
