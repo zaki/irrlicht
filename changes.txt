@@ -1,5 +1,17 @@
 Changes in 1.8 (??.0?.2010)
 
+ - Compile-defines can now be disabled from Makefiles/Projectfiles instead of having to change IrrCompileConfig.h each time.
+
+ - IGUITabControl::setActiveTab should only take IGUITab* and not IGUIElement* (thx to greenya for finding)
+ 
+ - Add new skin-colors: EGDC_GRAY_WINDOW_SYMBOL, EGDC_EDITABLE, EGDC_GRAY_EDITABLE, EGDC_FOCUSED_EDITABLE
+ 
+ - Disabled state is now extended to sub-elements
+ 
+ - Make disabled state for several elements more visible
+ 
+ - Bugfix: Icons in tabcontrol get now affected immediately by skin-changes
+
  - Add xml example written by Yoran Bosman.
 
  - Add creation parameter which allows to disable highres timers on Windows upon device creation.
