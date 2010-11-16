@@ -75,6 +75,15 @@ public:
 	//! Set the minimum starting size for particles
 	virtual void setMinStartSize( const core::dimension2df& size ) = 0;
 
+	//! Set the minimum particle life-time in milliseconds
+	virtual void setMinLifeTime( u32 lifeTimeMin ) = 0;
+
+	//! Set the maximum particle life-time in milliseconds
+	virtual void setMaxLifeTime( u32 lifeTimeMax ) = 0;
+
+	//!	Set maximal random derivation from the direction
+	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) = 0;
+
 	//! Get direction the emitter emits particles
 	virtual const core::vector3df& getDirection() const = 0;
 
@@ -95,6 +104,15 @@ public:
 
 	//! Get the minimum starting size for particles
 	virtual const core::dimension2df& getMinStartSize() const = 0;
+
+	//! Get the minimum particle life-time in milliseconds
+	virtual u32 getMinLifeTime() const = 0;
+
+	//! Get the maximum particle life-time in milliseconds
+	virtual u32 getMaxLifeTime() const = 0;
+
+	//!	Get maximal random derivation from the direction
+	virtual s32 getMaxAngleDegrees() const = 0;
 
 
 	//! Get emitter type

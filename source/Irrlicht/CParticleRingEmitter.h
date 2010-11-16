@@ -53,10 +53,19 @@ public:
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
 	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
+	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; }
 
 	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
+	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; }
+
+	//! Set the minimum particle life-time in milliseconds
+	virtual void setMinLifeTime( u32 lifeTimeMin ) { MinLifeTime = lifeTimeMin; }
+
+	//! Set the maximum particle life-time in milliseconds
+	virtual void setMaxLifeTime( u32 lifeTimeMax ) { MaxLifeTime = lifeTimeMax; }
+
+	//!	Set maximal random derivation from the direction
+	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) { MaxAngleDegrees = maxAngleDegrees; }
 
 	//! Set the center of the ring
 	virtual void setCenter( const core::vector3df& center ) { Center = center; }
@@ -83,10 +92,19 @@ public:
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
 	//! Gets the maximum starting size for particles
-	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; };
+	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
 
 	//! Gets the minimum starting size for particles
-	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
+	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
+
+	//! Get the minimum particle life-time in milliseconds
+	virtual u32 getMinLifeTime() const { return MinLifeTime; }
+
+	//! Get the maximum particle life-time in milliseconds
+	virtual u32 getMaxLifeTime() const { return MaxLifeTime; }
+
+	//!	Get maximal random derivation from the direction
+	virtual s32 getMaxAngleDegrees() const { return MaxAngleDegrees; }
 
 	//! Get the center of the ring
 	virtual const core::vector3df& getCenter() const { return Center; }

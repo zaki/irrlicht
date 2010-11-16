@@ -42,6 +42,9 @@ public:
 	//! Adds new particle affector to the particle system.
 	virtual void addAffector(IParticleAffector* affector);
 
+	//! Get a list of all particle affectors.
+	virtual const core::list<IParticleAffector*>& getAffectors() const;
+
 	//! Removes all particle affectors in the particle system.
 	virtual void removeAllAffectors();
 

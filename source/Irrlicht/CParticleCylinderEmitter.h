@@ -31,7 +31,7 @@ public:
 		u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
 		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
-		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) 
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f)
 		);
 
 	//! Prepares an array with new particles to emitt into the system
@@ -69,10 +69,19 @@ public:
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
 	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
+	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; }
 
 	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
+	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; }
+
+	//! Set the minimum particle life-time in milliseconds
+	virtual void setMinLifeTime( u32 lifeTimeMin ) { MinLifeTime = lifeTimeMin; }
+
+	//! Set the maximum particle life-time in milliseconds
+	virtual void setMaxLifeTime( u32 lifeTimeMax ) { MaxLifeTime = lifeTimeMax; }
+
+	//!	Maximal random derivation from the direction
+	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) { MaxAngleDegrees = maxAngleDegrees; }
 
 	//! Get the center of the cylinder
 	virtual const core::vector3df& getCenter() const { return Center; }
@@ -105,10 +114,19 @@ public:
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
 	//! Gets the maximum starting size for particles
-	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; };
+	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
 
 	//! Gets the minimum starting size for particles
-	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
+	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
+
+	//! Get the minimum particle life-time in milliseconds
+	virtual u32 getMinLifeTime() const { return MinLifeTime; }
+
+	//! Get the maximum particle life-time in milliseconds
+	virtual u32 getMaxLifeTime() const { return MaxLifeTime; }
+
+	//!	Maximal random derivation from the direction
+	virtual s32 getMaxAngleDegrees() const { return MaxAngleDegrees; }
 
 	//! Writes attributes of the object.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
