@@ -36,7 +36,7 @@ void CParticleFadeOutAffector::affect(u32 now, SParticle* particlearray, u32 cou
 	{
 		if (particlearray[i].endTime - now < FadeOutTime)
 		{
-			d = (particlearray[i].endTime - now) / FadeOutTime;
+			d = (particlearray[i].endTime - now) / FadeOutTime;	// FadeOutTime probably f32 to save casts here (just guessing)
 			particlearray[i].color = particlearray[i].startColor.getInterpolated(
 				TargetColor, d);
 		}
