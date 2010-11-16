@@ -28,22 +28,22 @@ public:
 	virtual void setTargetColor( const video::SColor& targetColor ) { TargetColor = targetColor; }
 
 	//! Sets the amount of time it takes for each particle to fade out.
-	virtual void setFadeOutTime( f32 fadeOutTime ) { FadeOutTime = fadeOutTime; }
+	virtual void setFadeOutTime( u32 fadeOutTime ) { FadeOutTime = fadeOutTime ? static_cast<f32>(fadeOutTime) : 1.0f; }
 
 	//! Sets the targetColor, i.e. the color the particles will interpolate
 	//! to over time.
 	virtual const video::SColor& getTargetColor() const { return TargetColor; }
 
 	//! Sets the amount of time it takes for each particle to fade out.
-	virtual f32 getFadeOutTime() const { return FadeOutTime; }
+	virtual u32 getFadeOutTime() const { return static_cast<u32>(FadeOutTime); }
 
 	//! Writes attributes of the object.
-	//! Implement this to expose the attributes of your scene node animator for 
+	//! Implement this to expose the attributes of your scene node animator for
 	//! scripting languages, editors, debuggers or xml serialization purposes.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 	//! Reads attributes of the object.
-	//! Implement this to set the attributes of your scene node animator for 
+	//! Implement this to set the attributes of your scene node animator for
 	//! scripting languages, editors, debuggers or xml deserialization purposes.
 	//! \param startIndex: start index where to start reading attributes.
 	//! \return: returns last index of an attribute read by this affector

@@ -1,5 +1,9 @@
 Changes in 1.8 (??.0?.2010)
 
+ - ParticleFadeOutAffector::setFadeOutTime can no longer be set to invalid values
+
+ - ParticleFadeOutAffector uses now throughout u32 for fadeOutTime (found by greenya)
+
  - Add missing access function CParticleSystemSceneNode::getAffectors() (seen by B@z)
 
  - Add missing setters/getters for particle emitters (seen by B@z)
