@@ -91,6 +91,11 @@ void CParticleSystemSceneNode::addAffector(IParticleAffector* affector)
 	AffectorList.push_back(affector);
 }
 
+//! Get a list of all particle affectors.
+const core::list<IParticleAffector*>& CParticleSystemSceneNode::getAffectors() const
+{
+	return AffectorList;
+}
 
 //! Removes all particle affectors in the particle system.
 void CParticleSystemSceneNode::removeAllAffectors()

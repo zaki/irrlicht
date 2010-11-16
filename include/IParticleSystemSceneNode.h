@@ -91,6 +91,10 @@ public:
 	\param affector: New affector. */
 	virtual void addAffector(IParticleAffector* affector) = 0;
 
+	//! Get a list of all particle affectors.
+	/** \return The list of particle affectors attached to this node. */
+	virtual const core::list<IParticleAffector*>& getAffectors() const = 0;
+
 	//! Removes all particle affectors in the particle system.
 	virtual void removeAllAffectors() = 0;
 

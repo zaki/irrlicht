@@ -1,5 +1,9 @@
 Changes in 1.8 (??.0?.2010)
 
+ - Add missing access function CParticleSystemSceneNode::getAffectors() (seen by B@z)
+
+ - Add missing setters/getters for particle emitters (seen by B@z)
+
  - Compile-defines can now be disabled from Makefiles/Projectfiles instead of having to change IrrCompileConfig.h each time.
 
  - IGUITabControl::setActiveTab should only take IGUITab* and not IGUIElement* (thx to greenya for finding)
