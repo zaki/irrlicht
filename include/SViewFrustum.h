@@ -72,6 +72,18 @@ namespace scene
 		//! returns the point which is on the far right bottom corner inside the the view frustum.
 		core::vector3df getFarRightDown() const;
 
+		//! returns the point which is on the near left upper corner inside the the view frustum.
+		core::vector3df getNearLeftUp() const;
+
+		//! returns the point which is on the near left bottom corner inside the the view frustum.
+		core::vector3df getNearLeftDown() const;
+
+		//! returns the point which is on the near right top corner inside the the view frustum.
+		core::vector3df getNearRightUp() const;
+
+		//! returns the point which is on the near right bottom corner inside the the view frustum.
+		core::vector3df getNearRightDown() const;
+
 		//! returns a bounding box enclosing the whole view frustum
 		const core::aabbox3d<f32> &getBoundingBox() const;
 
@@ -177,6 +189,46 @@ namespace scene
 	{
 		core::vector3df p;
 		planes[scene::SViewFrustum::VF_FAR_PLANE].getIntersectionWithPlanes(
+			planes[scene::SViewFrustum::VF_BOTTOM_PLANE],
+			planes[scene::SViewFrustum::VF_RIGHT_PLANE], p);
+
+		return p;
+	}
+
+	inline core::vector3df SViewFrustum::getNearLeftUp() const
+	{
+		core::vector3df p;
+		planes[scene::SViewFrustum::VF_NEAR_PLANE].getIntersectionWithPlanes(
+			planes[scene::SViewFrustum::VF_TOP_PLANE],
+			planes[scene::SViewFrustum::VF_LEFT_PLANE], p);
+
+		return p;
+	}
+
+	inline core::vector3df SViewFrustum::getNearLeftDown() const
+	{
+		core::vector3df p;
+		planes[scene::SViewFrustum::VF_NEAR_PLANE].getIntersectionWithPlanes(
+			planes[scene::SViewFrustum::VF_BOTTOM_PLANE],
+			planes[scene::SViewFrustum::VF_LEFT_PLANE], p);
+
+		return p;
+	}
+
+	inline core::vector3df SViewFrustum::getNearRightUp() const
+	{
+		core::vector3df p;
+		planes[scene::SViewFrustum::VF_NEAR_PLANE].getIntersectionWithPlanes(
+			planes[scene::SViewFrustum::VF_TOP_PLANE],
+			planes[scene::SViewFrustum::VF_RIGHT_PLANE], p);
+
+		return p;
+	}
+
+	inline core::vector3df SViewFrustum::getNearRightDown() const
+	{
+		core::vector3df p;
+		planes[scene::SViewFrustum::VF_NEAR_PLANE].getIntersectionWithPlanes(
 			planes[scene::SViewFrustum::VF_BOTTOM_PLANE],
 			planes[scene::SViewFrustum::VF_RIGHT_PLANE], p);
 
@@ -296,13 +348,13 @@ namespace scene
 		{
 			if (planes[i].classifyPointRelation(line.start) == core::ISREL3D_FRONT)
 			{
-				line.start = line.start.getInterpolated(line.end, 
+				line.start = line.start.getInterpolated(line.end,
 						planes[i].getKnownIntersectionWithLine(line.start, line.end));
 				wasClipped = true;
 			}
 			if (planes[i].classifyPointRelation(line.end) == core::ISREL3D_FRONT)
 			{
-				line.end = line.start.getInterpolated(line.end, 
+				line.end = line.start.getInterpolated(line.end,
 						planes[i].getKnownIntersectionWithLine(line.start, line.end));
 				wasClipped = true;
 			}
