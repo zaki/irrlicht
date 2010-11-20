@@ -1,5 +1,7 @@
 Changes in 1.8 (??.0?.2010)
 
+ - Add function to SViewFrustum to get corners of the near plane (patch provided by Matt Kline, aka slavik262)
+
  - ParticleFadeOutAffector::setFadeOutTime can no longer be set to invalid values
 
  - ParticleFadeOutAffector uses now throughout u32 for fadeOutTime (found by greenya)
