@@ -394,6 +394,16 @@ namespace core
 			array[3] = 0;
 		}
 
+		//! Fills an array of 3 values with the vector data (usually floats).
+		/** Useful for setting in shader constants for example.*/
+		void getAs3Values(T* array) const
+		{
+			array[0] = X;
+			array[1] = Y;
+			array[2] = Z;
+		}
+
+
 		//! X coordinate of the vector
 		T X;
 
