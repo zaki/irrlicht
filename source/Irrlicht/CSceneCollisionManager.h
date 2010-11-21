@@ -45,7 +45,7 @@ namespace scene
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
 			ITriangleSelector* selector, core::vector3df& outCollisionPoint,
 			core::triangle3df& outTriangle,
-			const ISceneNode* & outNode);
+			ISceneNode* & outNode);
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns
 		//! the resulting new position of the ellipsoid.
@@ -57,7 +57,7 @@ namespace scene
 			core::triangle3df& triout,
 			core::vector3df& hitPosition,
 			bool& outFalling,
-			const ISceneNode*& outNode,
+			ISceneNode*& outNode,
 			f32 slidingSpeed,
 			const core::vector3df& gravityDirectionAndSpeed);
 
@@ -138,7 +138,7 @@ namespace scene
 			const core::vector3df& gravity, core::triangle3df& triout,
 			core::vector3df& hitPosition,
 			bool& outFalling,
-			const ISceneNode*& outNode);
+			ISceneNode*& outNode);
 
 		core::vector3df collideWithWorld(s32 recursionDepth, SCollisionData &colData,
 			core::vector3df pos, core::vector3df vel);

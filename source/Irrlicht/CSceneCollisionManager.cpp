@@ -303,7 +303,7 @@ void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 			core::triangle3df candidateTriangle;
 
 			// do intersection test in object space
-			const ISceneNode * hitNode = 0;
+			ISceneNode * hitNode = 0;
 			if (box.intersectsWithLine(line) &&
 				getCollisionPoint(ray, selector, candidateCollisionPoint, candidateTriangle, hitNode))
 			{
@@ -349,7 +349,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
 bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 		ITriangleSelector* selector, core::vector3df& outIntersection,
 		core::triangle3df& outTriangle,
-		const ISceneNode*& outNode)
+		ISceneNode*& outNode)
 {
 	if (!selector)
 	{
@@ -423,7 +423,7 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 		core::triangle3df& triout,
 		core::vector3df& hitPosition,
 		bool& outFalling,
-		const ISceneNode*& outNode,
+		ISceneNode*& outNode,
 		f32 slidingSpeed,
 		const core::vector3df& gravity)
 {
@@ -691,7 +691,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 		core::triangle3df& triout,
 		core::vector3df& hitPosition,
 		bool& outFalling,
-		const ISceneNode*& outNode)
+		ISceneNode*& outNode)
 {
 	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
 		return position;

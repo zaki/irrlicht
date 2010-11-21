@@ -620,7 +620,7 @@ void CDemo::shoot()
 	core::line3d<f32> line(start, end);
 
 	// get intersection point with map
-	const scene::ISceneNode* hitNode;
+	scene::ISceneNode* hitNode;
 	if (sm->getSceneCollisionManager()->getCollisionPoint(
 		line, mapSelector, end, triangle, hitNode))
 	{

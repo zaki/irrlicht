@@ -1733,7 +1733,7 @@ void CQuake3EventHandler::useItem( Q3Player * player)
 	line3d<f32> line(start, end);
 
 	// get intersection point with map
-	const scene::ISceneNode* hitNode;
+	scene::ISceneNode* hitNode;
 	if (smgr->getSceneCollisionManager()->getCollisionPoint(
 		line, Meta, end, triangle,hitNode))
 	{

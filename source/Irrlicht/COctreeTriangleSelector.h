@@ -20,7 +20,7 @@ class COctreeTriangleSelector : public CTriangleSelector
 public:
 
 	//! Constructs a selector based on a mesh
-	COctreeTriangleSelector(const IMesh* mesh, const ISceneNode* node, s32 minimalPolysPerNode);
+	COctreeTriangleSelector(const IMesh* mesh, ISceneNode* node, s32 minimalPolysPerNode);
 
 	virtual ~COctreeTriangleSelector();
 
