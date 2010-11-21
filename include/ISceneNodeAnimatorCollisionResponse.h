@@ -153,7 +153,7 @@ namespace scene
 		virtual const core::vector3df & getCollisionResultPosition(void) const = 0;
 
 		//! Returns the node that was collided with.
-		virtual const ISceneNode* getCollisionNode(void) const = 0;
+		virtual ISceneNode* getCollisionNode(void) const = 0;
 
 		//! Sets a callback interface which will be called if a collision occurs.
 		/** \param callback: collision callback handler that will be called when a collision

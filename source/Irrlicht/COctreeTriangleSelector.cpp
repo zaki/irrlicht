@@ -14,7 +14,7 @@ namespace scene
 
 //! constructor
 COctreeTriangleSelector::COctreeTriangleSelector(const IMesh* mesh,
-		const ISceneNode* node, s32 minimalPolysPerNode)
+		ISceneNode* node, s32 minimalPolysPerNode)
 	: CTriangleSelector(mesh, node), Root(0), NodeCount(0),
 	 MinimalPolysPerNode(minimalPolysPerNode)
 {

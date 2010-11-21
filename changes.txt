@@ -1,5 +1,9 @@
 Changes in 1.8 (??.0?.2010)
 
+ - The following functions will now use a "ISceneNode *" instead of a "const ISceneNode *":
+   ITriangleSelector::getSceneNodeForTriangle, ISceneNodeAnimatorCollisionResponse::getCollisionNode, ISceneCollisionManager::getCollisionPoint and ISceneCollisionManager::getCollisionResultPosition.
+   As collision functions often are followed by changing node positions users where so far forced to using const_casts (found by Greenya).
+
  - Add vector3d::getAs3Values (patch provided by slavik262)
 
  - Add function to SViewFrustum to get corners of the near plane (patch provided by Matt Kline, aka slavik262)

@@ -3,8 +3,8 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 // The code for the TerrainTriangleSelector is based on the GeoMipMapSelector
-// developed by Spintz. He made it available for Irrlicht and allowed it to be 
-// distributed under this licence. I only modified some parts. A lot of thanks go to him. 
+// developed by Spintz. He made it available for Irrlicht and allowed it to be
+// distributed under this licence. I only modified some parts. A lot of thanks go to him.
 
 #ifndef __C_TERRAIN_TRIANGLE_SELECTOR_H__
 #define __C_TERRAIN_TRIANGLE_SELECTOR_H__
@@ -21,8 +21,8 @@ class ITerrainSceneNode;
 
 //! Triangle Selector for the TerrainSceneNode
 //! The code for the TerrainTriangleSelector is based on the GeoMipMapSelector
-//! developed by Spintz. He made it available for Irrlicht and allowed it to be 
-//! distributed under this licence. I only modified some parts. A lot of thanks go to him. 
+//! developed by Spintz. He made it available for Irrlicht and allowed it to be
+//! distributed under this licence. I only modified some parts. A lot of thanks go to him.
 class CTerrainTriangleSelector : public ITriangleSelector
 {
 public:
@@ -46,16 +46,14 @@ public:
 
 	//! Gets all triangles which have or may have contact with a 3d line.
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::line3d<f32>& line, 
+		s32& outTriangleCount, const core::line3d<f32>& line,
 		const core::matrix4* transform=0) const;
 
 	//! Returns amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const;
 
 	//! Return the scene node associated with a given triangle.
-	/** ITerrainSceneNode is an ISceneNode, we just don't know it yet. */
-	virtual const ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const
-		{ return (ISceneNode*)SceneNode; }
+	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const;
 
 private:
 

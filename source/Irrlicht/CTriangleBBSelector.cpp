@@ -11,7 +11,7 @@ namespace scene
 {
 
 //! constructor
-CTriangleBBSelector::CTriangleBBSelector(const ISceneNode* node)
+CTriangleBBSelector::CTriangleBBSelector(ISceneNode* node)
 : CTriangleSelector(node)
 {
 	#ifdef _DEBUG
@@ -25,7 +25,7 @@ CTriangleBBSelector::CTriangleBBSelector(const ISceneNode* node)
 
 //! Gets all triangles.
 void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
-					s32 arraySize, s32& outTriangleCount, 
+					s32 arraySize, s32& outTriangleCount,
 					const core::matrix4* transform) const
 {
 	if (!SceneNode)
