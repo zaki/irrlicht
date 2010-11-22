@@ -4185,7 +4185,7 @@ GLenum COpenGLDriver::primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const
 }
 
 
-GLenum getGLBlend (E_BLEND_FACTOR factor) const
+GLenum COpenGLDriver::getGLBlend (E_BLEND_FACTOR factor) const
 {
 	u32 r = 0;
 	switch (factor)

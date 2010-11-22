@@ -379,7 +379,7 @@ namespace video
 		GLenum primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const;
 
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
-		GLenum getGLBlend((E_BLEND_FACTOR factor) const;
+		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
 	private:
 
