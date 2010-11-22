@@ -1630,7 +1630,7 @@ public:
 	virtual bool getBool()
 	{
 		if (IsStringW)
-			return Value.equals_ignore_case(L"true");
+			return ValueW.equals_ignore_case(L"true");
 		else
 			return Value.equals_ignore_case("true");
 	}

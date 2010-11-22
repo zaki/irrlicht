@@ -66,7 +66,7 @@ public:
 	//! Searches for a file or folder in the list
 	/** Searches for a file by name
 	\param filename The name of the file to search for.
-	\param isFolder True if you are searching for a file, false if you want a dir.
+	\param isFolder True if you are searching for a directory path, false if you are searching for a file
 	\return Returns the index of the file in the file list, or -1 if
 	no matching name name was found. */
 	virtual s32 findFile(const io::path& filename, bool isFolder=false) const = 0;

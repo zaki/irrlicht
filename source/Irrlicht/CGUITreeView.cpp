@@ -460,6 +460,7 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 			!clip );
 		ScrollBarV->drop();
 
+		ScrollBarV->setSubElement(true);
 		ScrollBarV->setPos( 0 );
 		ScrollBarV->grab();
 	}
@@ -471,6 +472,7 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 			!clip );
 		ScrollBarH->drop();
 
+		ScrollBarH->setSubElement(true);
 		ScrollBarH->setPos( 0 );
 		ScrollBarH->grab();
 	}
@@ -591,97 +593,99 @@ void CGUITreeView::recalculateItemHeight()
 //! called if an event happened.
 bool CGUITreeView::OnEvent( const SEvent &event )
 {
-	switch( event.EventType )
+	if ( isEnabled() )
 	{
-	case EET_GUI_EVENT:
-		switch( event.GUIEvent.EventType )
+		switch( event.EventType )
 		{
-		case gui::EGET_SCROLL_BAR_CHANGED:
-			if( event.GUIEvent.Caller == ScrollBarV || event.GUIEvent.Caller == ScrollBarH )
+		case EET_GUI_EVENT:
+			switch( event.GUIEvent.EventType )
 			{
-				//s32 pos = ( ( gui::IGUIScrollBar* )event.GUIEvent.Caller )->getPos();
-				return true;
-			}
-			break;
-		case gui::EGET_ELEMENT_FOCUS_LOST:
-			{
-				Selecting = false;
-				return false;
-			}
-			break;
-		default:
-			break;
-		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		{
-			core::position2d<s32> p( event.MouseInput.X, event.MouseInput.Y );
-
-			switch( event.MouseInput.Event )
-			{
-			case EMIE_MOUSE_WHEEL:
-				if ( ScrollBarV )
-					ScrollBarV->setPos( ScrollBarV->getPos() + (s32)event.MouseInput.Wheel * -10 );
-				return true;
-				break;
-
-			case EMIE_LMOUSE_PRESSED_DOWN:
-
-				if (Environment->hasFocus(this) && !AbsoluteClippingRect.isPointInside(p) )
+			case gui::EGET_SCROLL_BAR_CHANGED:
+				if( event.GUIEvent.Caller == ScrollBarV || event.GUIEvent.Caller == ScrollBarH )
 				{
-					Environment->removeFocus(this);
+					//s32 pos = ( ( gui::IGUIScrollBar* )event.GUIEvent.Caller )->getPos();
+					return true;
+				}
+				break;
+			case gui::EGET_ELEMENT_FOCUS_LOST:
+				{
+					Selecting = false;
 					return false;
-				}
-
-				if( Environment->hasFocus( this ) &&
-					(	( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
-					( ScrollBarH && ScrollBarH->getAbsolutePosition().isPointInside( p ) &&	ScrollBarH->OnEvent( event ) )
-					)
-					)
-				{
-					return true;
-				}
-
-				Selecting = true;
-				Environment->setFocus( this );
-				return true;
-				break;
-
-			case EMIE_LMOUSE_LEFT_UP:
-				if( Environment->hasFocus( this ) &&
-					(	( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
-					( ScrollBarH && ScrollBarH->getAbsolutePosition().isPointInside( p ) &&	ScrollBarH->OnEvent( event ) )
-					)
-					)
-				{
-					return true;
-				}
-
-				Selecting = false;
-				Environment->removeFocus( this );
-				mouseAction( event.MouseInput.X, event.MouseInput.Y );
-				return true;
-				break;
-
-			case EMIE_MOUSE_MOVED:
-				if( Selecting )
-				{
-					if( getAbsolutePosition().isPointInside( p ) )
-					{
-						mouseAction( event.MouseInput.X, event.MouseInput.Y, true );
-						return true;
-					}
 				}
 				break;
 			default:
 				break;
 			}
-		}
-		break;
-	default:
-		break;
-	}
+			break;
+		case EET_MOUSE_INPUT_EVENT:
+			{
+				core::position2d<s32> p( event.MouseInput.X, event.MouseInput.Y );
 
+				switch( event.MouseInput.Event )
+				{
+				case EMIE_MOUSE_WHEEL:
+					if ( ScrollBarV )
+						ScrollBarV->setPos( ScrollBarV->getPos() + (s32)event.MouseInput.Wheel * -10 );
+					return true;
+					break;
+
+				case EMIE_LMOUSE_PRESSED_DOWN:
+
+					if (Environment->hasFocus(this) && !AbsoluteClippingRect.isPointInside(p) )
+					{
+						Environment->removeFocus(this);
+						return false;
+					}
+
+					if( Environment->hasFocus( this ) &&
+						(	( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
+						( ScrollBarH && ScrollBarH->getAbsolutePosition().isPointInside( p ) &&	ScrollBarH->OnEvent( event ) )
+						)
+						)
+					{
+						return true;
+					}
+
+					Selecting = true;
+					Environment->setFocus( this );
+					return true;
+					break;
+
+				case EMIE_LMOUSE_LEFT_UP:
+					if( Environment->hasFocus( this ) &&
+						(	( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
+						( ScrollBarH && ScrollBarH->getAbsolutePosition().isPointInside( p ) &&	ScrollBarH->OnEvent( event ) )
+						)
+						)
+					{
+						return true;
+					}
+
+					Selecting = false;
+					Environment->removeFocus( this );
+					mouseAction( event.MouseInput.X, event.MouseInput.Y );
+					return true;
+					break;
+
+				case EMIE_MOUSE_MOVED:
+					if( Selecting )
+					{
+						if( getAbsolutePosition().isPointInside( p ) )
+						{
+							mouseAction( event.MouseInput.X, event.MouseInput.Y, true );
+							return true;
+						}
+					}
+					break;
+				default:
+					break;
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
 
 	return Parent ? Parent->OnEvent( event ) : false;
 }
@@ -940,6 +944,10 @@ void CGUITreeView::draw()
 
 			if( Font )
 			{
+				EGUI_DEFAULT_COLOR textCol = EGDC_GRAY_TEXT;
+				if ( isEnabled() )
+					textCol = ( node == Selected ) ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT;
+
 				s32 iconWidth = 0;
 				for( s32 n = 0; n < 2; ++n )
 				{
@@ -966,13 +974,13 @@ void CGUITreeView::draw()
 						&& ( ( ImageLeftOfIcon && n == 1 )
 						|| ( !ImageLeftOfIcon && n == 0 ) ) )
 					{
-						IconFont->draw( node->getIcon(), textRect, skin->getColor( ( node == Selected ) ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT ), false, true, &clientClip );
+						IconFont->draw( node->getIcon(), textRect, skin->getColor(textCol), false, true, &clientClip );
 						iconWidth += IconFont->getDimension( node->getIcon() ).Width + 3;
 						textRect.UpperLeftCorner.X += IconFont->getDimension( node->getIcon() ).Width + 3;
 					}
 				}
 
-				Font->draw( node->getText(), textRect, skin->getColor( ( node == Selected ) ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT ), false, true, &clientClip );
+				Font->draw( node->getText(), textRect, skin->getColor(textCol), false, true, &clientClip );
 
 				textRect.UpperLeftCorner.X -= iconWidth;
 			}
