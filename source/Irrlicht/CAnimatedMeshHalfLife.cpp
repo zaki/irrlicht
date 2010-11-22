@@ -850,9 +850,9 @@ void STextureAtlas::addSource ( const c8 * name, video::IImage * image )
 
 /*!
 */
-void STextureAtlas::getScale ( core::vector2df & scale )
+void STextureAtlas::getScale(core::vector2df& scale)
 {
-	for ( u32 i = atlas.size() - 1; i >= 0; --i)
+	for (s32 i = static_cast<s32>(atlas.size()) - 1; i >= 0; --i)
 	{
 		if ( atlas[i].name == "_merged_" )
 		{
@@ -995,7 +995,6 @@ void STextureAtlas::create ( u32 border, E_TEXTURE_CLAMP texmode)
 				master->setPixel ( atlas[i].pos.X + atlas[i].width + b, atlas[i].pos.Y + a, col[wrap[texmode][1]] );
 			}
 		}
-
 	}
 
 	addSource ( "_merged_", master );
@@ -1117,8 +1116,6 @@ SHalflifeHeader * CAnimatedMeshHalfLife::loadModel( io::IReadFile* file, const i
 
 	return header;
 }
-
-
 
 
 /*!
