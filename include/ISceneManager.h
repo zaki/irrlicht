@@ -967,22 +967,22 @@ namespace scene
 
 		//! add a static arrow mesh to the meshpool
 		/** \param name Name of the mesh
-		\param vtxColor0 color of the cylinder
-		\param vtxColor1 color of the cone
+		\param vtxColorCylinder color of the cylinder
+		\param vtxColorCone color of the cone
 		\param tesselationCylinder Number of quads the cylinder side consists of
 		\param tesselationCone Number of triangles the cone's roof consits of
 		\param height Total height of the arrow
 		\param cylinderHeight Total height of the cylinder, should be lesser than total height
-		\param width0 Diameter of the cylinder
-		\param width1 Diameter of the cone's base, should be not smaller than the cylinder's diameter
+		\param widthCylinder Diameter of the cylinder
+		\param widthCone Diameter of the cone's base, should be not smaller than the cylinder's diameter
 		\return Pointer to the arrow mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IAnimatedMesh* addArrowMesh(const io::path& name,
-				video::SColor vtxColor0=0xFFFFFFFF,
-				video::SColor vtxColor1=0xFFFFFFFF,
+				video::SColor vtxColorCylinder=0xFFFFFFFF,
+				video::SColor vtxColorCone=0xFFFFFFFF,
 				u32 tesselationCylinder=4, u32 tesselationCone=8,
 				f32 height=1.f, f32 cylinderHeight=0.6f,
-				f32 width0=0.05f, f32 width1=0.3f) = 0;
+				f32 widthCylinder=0.05f, f32 widthCone=0.3f) = 0;
 
 		//! add a static sphere mesh to the meshpool
 		/** \param name Name of the mesh
