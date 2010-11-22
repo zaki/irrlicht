@@ -149,7 +149,7 @@ namespace gui
 		//! clears the table rows, but keeps the columns intact
 		virtual void clearRows() = 0;
 
-		//! Swap two row positions. This is useful for a custom ordering algo.
+		//! Swap two row positions.
 		virtual void swapRows(u32 rowIndexA, u32 rowIndexB) = 0;
 
 		//! This tells the table to start ordering all the rows.

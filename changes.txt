@@ -133,6 +133,13 @@ Changes in 1.8 (??.0?.2010)
 - WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
 
 -----------------------------
+Changes maybe still for 1.7.2 - or is that out already?
+
+ - Menu no longer sets highlight state when clicking disabled menu-item (reported by Mloren)
+
+ - Treeview can now be disabled
+
+-----------------------------
 Changes in 1.7.2 (??.??.2010)
 
  - Fix blend mode setup in OpenGL driver, when using the material2d override, as pointed out by Auria
