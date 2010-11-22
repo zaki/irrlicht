@@ -3943,7 +3943,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 			}
 			if (FeatureAvailable[IRR_AMD_draw_buffers_blend] || FeatureAvailable[IRR_ARB_draw_buffers_blend])
 			{
-				extGlBlendFuncIndexed(i, targets[i].BlendFuncSrc, targets[i].BlendFuncDst);
+				extGlBlendFuncIndexed(i, getGLBlend(targets[i].BlendFuncSrc), getGLBlend(targets[i].BlendFuncDst));
 			}
 			if (targets[i].TargetType==ERT_RENDER_TEXTURE)
 			{
@@ -4148,6 +4148,7 @@ core::dimension2du COpenGLDriver::getMaxTextureSize() const
 	return core::dimension2du(MaxTextureSize, MaxTextureSize);
 }
 
+
 //! Convert E_PRIMITIVE_TYPE to OpenGL equivalent
 GLenum COpenGLDriver::primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const
 {
@@ -4182,6 +4183,28 @@ GLenum COpenGLDriver::primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const
 	}
 	return GL_TRIANGLES;
 }
+
+
+GLenum getGLBlend (E_BLEND_FACTOR factor) const
+{
+	u32 r = 0;
+	switch (factor)
+	{
+		case EBF_ZERO:			r = GL_ZERO; break;
+		case EBF_ONE:			r = GL_ONE; break;
+		case EBF_DST_COLOR:		r = GL_DST_COLOR; break;
+		case EBF_ONE_MINUS_DST_COLOR:	r = GL_ONE_MINUS_DST_COLOR; break;
+		case EBF_SRC_COLOR:		r = GL_SRC_COLOR; break;
+		case EBF_ONE_MINUS_SRC_COLOR:	r = GL_ONE_MINUS_SRC_COLOR; break;
+		case EBF_SRC_ALPHA:		r = GL_SRC_ALPHA; break;
+		case EBF_ONE_MINUS_SRC_ALPHA:	r = GL_ONE_MINUS_SRC_ALPHA; break;
+		case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
+		case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
+		case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
+	}
+	return r;
+}
+
 
 } // end namespace
 } // end namespace
