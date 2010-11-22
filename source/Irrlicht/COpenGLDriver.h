@@ -378,6 +378,9 @@ namespace video
 		//! Convert E_PRIMITIVE_TYPE to OpenGL equivalent
 		GLenum primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const;
 
+		//! Convert E_BLEND_FACTOR to OpenGL equivalent
+		GLenum getGLBlend((E_BLEND_FACTOR factor) const;
+
 	private:
 
 		//! clears the zbuffer and color buffer

@@ -93,7 +93,7 @@ public:
 			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, (f32) modulate );
 #endif
 
-			glBlendFunc( getGLBlend(srcFact), getGLBlend(dstFact) );
+			glBlendFunc( Driver->getGLBlend(srcFact), Driver->getGLBlend(dstFact) );
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.f);
 			glEnable(GL_BLEND);
@@ -165,29 +165,6 @@ public:
  	{
  		return true;
  	}
-
-	private:
-
-		u32 getGLBlend ( E_BLEND_FACTOR factor ) const
-		{
-			u32 r = 0;
-			switch ( factor )
-			{
-				case EBF_ZERO:			r = GL_ZERO; break;
-				case EBF_ONE:			r = GL_ONE; break;
-				case EBF_DST_COLOR:		r = GL_DST_COLOR; break;
-				case EBF_ONE_MINUS_DST_COLOR:	r = GL_ONE_MINUS_DST_COLOR; break;
-				case EBF_SRC_COLOR:		r = GL_SRC_COLOR; break;
-				case EBF_ONE_MINUS_SRC_COLOR:	r = GL_ONE_MINUS_SRC_COLOR; break;
-				case EBF_SRC_ALPHA:		r = GL_SRC_ALPHA; break;
-				case EBF_ONE_MINUS_SRC_ALPHA:	r = GL_ONE_MINUS_SRC_ALPHA; break;
-				case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
-				case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
-				case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
-			}
-			return r;
-		}
-
 };
 
 
