@@ -49,14 +49,7 @@ namespace scene
 		this name. */
 		virtual void addMesh(const io::path& name, IAnimatedMesh* mesh) = 0;
 
-		//! Removes a mesh from the cache.
-		/** After loading a mesh with getMesh(), the mesh can be
-		removed from the cache using this method, freeing a lot of
-		memory.
-		\param mesh Pointer to the mesh which shall be removed. */
-		virtual void removeMesh(const IAnimatedMesh* const mesh) = 0;
-
-		//! Removes a mesh from the cache.
+		//! Removes the mesh from the cache.
 		/** After loading a mesh with getMesh(), the mesh can be
 		removed from the cache using this method, freeing a lot of
 		memory.
@@ -71,12 +64,7 @@ namespace scene
 		\return Number of meshes in cache. */
 		virtual u32 getMeshCount() const = 0;
 
-		//! Returns current index number of the mesh, and -1 if it is not in the cache.
-		/** \param mesh Pointer to the mesh to search for.
-		\return Index of the mesh in the cache, or -1 if not found. */
-		virtual s32 getMeshIndex(const IAnimatedMesh* const mesh) const = 0;
-
-		//! Returns current index number of the mesh, and -1 if it is not in the cache.
+		//! Returns current index number of the mesh or -1 when not found.
 		/** \param mesh Pointer to the mesh to search for.
 		\return Index of the mesh in the cache, or -1 if not found. */
 		virtual s32 getMeshIndex(const IMesh* const mesh) const = 0;
@@ -106,13 +94,6 @@ namespace scene
 
 		//! Get the name of a loaded mesh, if there is any. (Name is often identical to the filename).
 		/** \deprecated Use getMeshName() instead. */
-		_IRR_DEPRECATED_ const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const
-		{
-			return getMeshName(mesh).getInternalName();
-		}
-
-		//! Get the name of a loaded mesh, if there is any. (Name is often identical to the filename).
-		/** \deprecated Use getMeshName() instead. */
 		_IRR_DEPRECATED_ const io::path& getMeshFilename(const IMesh* const mesh) const
 		{
 			return getMeshName(mesh).getInternalName();
@@ -123,13 +104,6 @@ namespace scene
 		_IRR_DEPRECATED_ bool setMeshFilename(u32 index, const io::path& filename)
 		{
 			return renameMesh(index, filename);
-		}
-
-		//! Renames a loaded mesh.
-		/** \deprecated Use renameMesh() instead. */
-		_IRR_DEPRECATED_ bool setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename)
-		{
-			return renameMesh(mesh, filename);
 		}
 
 		//! Renames a loaded mesh.
@@ -149,12 +123,7 @@ namespace scene
 		\return The name if mesh was found and has a name, else	the path is empty. */
 		virtual const io::SNamedPath& getMeshName(u32 index) const = 0;
 
-		//! Get the name of a loaded mesh, if there is any.
-		/** \param mesh Pointer to mesh to query.
-		\return The name if mesh was found and has a name, else	the path is empty. */
-		virtual const io::SNamedPath& getMeshName(const IAnimatedMesh* const mesh) const = 0;
-
-		//! Get the name of a loaded mesh, if there is any.
+		//! Get the name of the loaded mesh if there is any.
 		/** \param mesh Pointer to mesh to query.
 		\return The name if mesh was found and has a name, else	the path is empty. */
 		virtual const io::SNamedPath& getMeshName(const IMesh* const mesh) const = 0;
@@ -168,16 +137,7 @@ namespace scene
 		\return True if mesh was renamed. */
 		virtual bool renameMesh(u32 index, const io::path& name) = 0;
 
-		//! Renames a loaded mesh.
-		/** Note that renaming meshes might change the ordering of the
-		meshes, and so the index of the meshes as returned by
-		getMeshIndex() or taken by some methods will change.
-		\param mesh Mesh to be renamed.
-		\param name New name for the mesh.
-		\return True if mesh was renamed. */
-		virtual bool renameMesh(const IAnimatedMesh* const mesh, const io::path& name) = 0;
-
-		//! Renames a loaded mesh.
+		//! Renames the loaded mesh
 		/** Note that renaming meshes might change the ordering of the
 		meshes, and so the index of the meshes as returned by
 		getMeshIndex() or taken by some methods will change.

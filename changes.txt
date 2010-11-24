@@ -1,5 +1,7 @@
 Changes in 1.8 (??.0?.2010)
 
+ - Functions in IMeshCache expecting IAnimatedMesh* parameters removed as similar functions with IMesh* can be used since a while. Fixes also problems when IAnimatedMesh* got upcasted to IMesh*. (thx @ Greenya for reporting)
+
  - The following functions will now use a "ISceneNode *" instead of a "const ISceneNode *":
    ITriangleSelector::getSceneNodeForTriangle, ISceneNodeAnimatorCollisionResponse::getCollisionNode, ISceneCollisionManager::getCollisionPoint and ISceneCollisionManager::getCollisionResultPosition.
    As collision functions often are followed by changing node positions users where so far forced to using const_casts (found by Greenya).
