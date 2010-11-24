@@ -35,11 +35,6 @@ namespace scene
 		//! Removes a mesh from the cache.
 		/** After loading a mesh with getMesh(), the mesh can be removed from the cache
 		using this method, freeing a lot of memory. */
-		virtual void removeMesh(const IAnimatedMesh* const mesh);
-
-		//! Removes a mesh from the cache.
-		/** After loading a mesh with getMesh(), the mesh can be removed from the cache
-		using this method, freeing a lot of memory. */
 		virtual void removeMesh(const IMesh* const mesh);
 
 		//! Returns amount of loaded meshes in the cache.
@@ -47,9 +42,6 @@ namespace scene
 		If you ever need to access the internal mesh cache, you can do this using
 		removeMesh(), getMeshNumber(), getMeshByIndex() and getMeshFilename() */
 		virtual u32 getMeshCount() const;
-
-		//! Returns current index number of the mesh, and -1 if it is not in the cache.
-		virtual s32 getMeshIndex(const IAnimatedMesh* const mesh) const;
 
 		//! Returns current index number of the mesh, and -1 if it is not in the cache.
 		virtual s32 getMeshIndex(const IMesh* const mesh) const;
@@ -73,11 +65,6 @@ namespace scene
 		//! Get the name of a loaded mesh, if there is any.
 		/** \param mesh Pointer to mesh to query.
 		\return The name if mesh was found and has a name, else	the path is empty. */
-		virtual const io::SNamedPath& getMeshName(const IAnimatedMesh* const mesh) const;
-
-		//! Get the name of a loaded mesh, if there is any.
-		/** \param mesh Pointer to mesh to query.
-		\return The name if mesh was found and has a name, else	the path is empty. */
 		virtual const io::SNamedPath& getMeshName(const IMesh* const mesh) const;
 
 		//! Renames a loaded mesh.
@@ -88,15 +75,6 @@ namespace scene
 		\param name New name for the mesh.
 		\return True if mesh was renamed. */
 		virtual bool renameMesh(u32 index, const io::path& name);
-
-		//! Renames a loaded mesh.
-		/** Note that renaming meshes might change the ordering of the
-		meshes, and so the index of the meshes as returned by
-		getMeshIndex() or taken by some methods will change.
-		\param mesh Mesh to be renamed.
-		\param name New name for the mesh.
-		\return True if mesh was renamed. */
-		virtual bool renameMesh(const IAnimatedMesh* const mesh, const io::path& name);
 
 		//! Renames a loaded mesh.
 		/** Note that renaming meshes might change the ordering of the
