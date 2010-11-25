@@ -33,13 +33,15 @@ bool CArchiveLoaderMount::isALoadableFileFormat(const io::path& filename) const
 	if (!fname.size())
 		return true;
 	IFileList* list = FileSystem->createFileList();
+	bool ret = false;
 	if (list)
 	{
 		// check if name is found as directory
 		if (list->findFile(filename, true))
-			return true;
+			ret=true;
+		list->drop();
 	}
-	return false;
+	return ret;
 }
 
 //! Check to see if the loader can create archives of this type.
