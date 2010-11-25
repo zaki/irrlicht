@@ -585,7 +585,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 //		CreationParams.WindowSize.Width = realWidth;
 //		CreationParams.WindowSize.Height = realHeight;
 
-		ShowWindow(HWnd, SW_SHOW);
+		ShowWindow(HWnd, SW_SHOWNORMAL);
 		UpdateWindow(HWnd);
 
 		// fix ugly ATI driver bugs. Thanks to ariaci
@@ -629,8 +629,11 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	EnvMap.push_back(em);
 
 	// set this as active window
-	SetActiveWindow(HWnd);
-	SetForegroundWindow(HWnd);
+	if ( HWnd )
+	{
+		SetActiveWindow(HWnd);
+		SetForegroundWindow(HWnd);
+	}
 
 	// get the codepage used for keyboard input
 	KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
