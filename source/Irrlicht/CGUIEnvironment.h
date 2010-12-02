@@ -80,6 +80,9 @@ public:
 	//! add an externally loaded font
 	virtual IGUIFont* addFont(const io::path& name, IGUIFont* font);
 
+	//! remove loaded font
+	virtual void removeFont(IGUIFont* font);
+
 	//! returns default font
 	virtual IGUIFont* getBuiltInFont() const;
 

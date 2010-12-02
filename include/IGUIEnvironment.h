@@ -174,6 +174,9 @@ public:
 	\return Pointer to the font stored. This can differ from given parameter if the name previously existed. */
 	virtual IGUIFont* addFont(const io::path& name, IGUIFont* font) = 0;
 
+	//! remove loaded font
+	virtual void removeFont(IGUIFont* font) = 0;
+
 	//! Returns the default built-in font.
 	/** \return Pointer to the default built-in font.
 	This pointer should not be dropped. See IReferenceCounted::drop() for

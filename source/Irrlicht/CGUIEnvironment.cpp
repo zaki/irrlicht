@@ -1481,6 +1481,21 @@ IGUIFont* CGUIEnvironment::addFont(const io::path& name, IGUIFont* font)
 	return font;
 }
 
+//! remove loaded font
+void CGUIEnvironment::removeFont(IGUIFont* font)
+{
+	if ( !font )
+		return;
+	for ( u32 i=0; i<Fonts.size(); ++i )
+	{
+		if ( Fonts[i].Font == font )
+		{
+			Fonts[i].Font->drop();
+			Fonts.erase(i);
+			return;
+		}
+	}
+}
 
 //! returns default font
 IGUIFont* CGUIEnvironment::getBuiltInFont() const
