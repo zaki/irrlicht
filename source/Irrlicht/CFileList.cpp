@@ -128,18 +128,19 @@ u32 CFileList::getFileOffset(u32 index) const
 s32 CFileList::findFile(const io::path& filename, bool isDirectory = false) const
 {
 	SFileListEntry entry;
+	// we only need FullName to be set for the search
 	entry.FullName = filename;
 	entry.IsDirectory = isDirectory;
 
-	// swap
+	// exchange
 	entry.FullName.replace('\\', '/');
 
 	// remove trailing slash
-	if (entry.Name.lastChar() == '/')
+	if (entry.FullName.lastChar() == '/')
 	{
 		entry.IsDirectory = true;
-		entry.Name[ entry.Name.size()-1] = 0;
-		entry.Name.validate();
+		entry.FullName[entry.FullName.size()-1] = 0;
+		entry.FullName.validate();
 	}
 
 	if (IgnoreCase)
@@ -151,11 +152,13 @@ s32 CFileList::findFile(const io::path& filename, bool isDirectory = false) cons
 	return Files.binary_search(entry);
 }
 
+
 //! Returns the base path of the file list
 const io::path& CFileList::getPath() const
 {
 	return Path;
 }
+
 
 } // end namespace irr
 } // end namespace io
