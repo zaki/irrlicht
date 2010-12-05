@@ -32,6 +32,7 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 	#endif
 
 	Text = text;
+	RestrainTextInside = true;
 	if (environment && environment->getSkin())
 	{
 		BGColor = environment->getSkin()->getColor(gui::EGDC_3D_FACE);
@@ -102,7 +103,7 @@ void CGUIStaticText::draw()
 
 				font->draw(Text.c_str(), frameRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, &AbsoluteClippingRect);
+					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			}
 			else
 			{
@@ -131,7 +132,7 @@ void CGUIStaticText::draw()
 
 					font->draw(BrokenText[i].c_str(), r,
 						OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-						HAlign == EGUIA_CENTER, false, &AbsoluteClippingRect);
+						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 
 					r.LowerRightCorner.Y += height;
 					r.UpperLeftCorner.Y += height;
@@ -196,6 +197,18 @@ void CGUIStaticText::setDrawBackground(bool draw)
 void CGUIStaticText::setDrawBorder(bool draw)
 {
 	Border = draw;
+}
+
+
+void CGUIStaticText::setTextRestrainedInside(bool restrainTextInside)
+{
+	RestrainTextInside = restrainTextInside;
+}
+ 
+
+bool CGUIStaticText::isTextRestrainedInside() const
+{
+	return RestrainTextInside;
 }
 
 
@@ -430,10 +443,11 @@ void CGUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 	out->addBool	("Border",              Border);
 	out->addBool	("OverrideColorEnabled",OverrideColorEnabled);
 	out->addBool	("OverrideBGColorEnabled",OverrideBGColorEnabled);
-	out->addBool	("WordWrap",			WordWrap);
+	out->addBool	("WordWrap",		WordWrap);
 	out->addBool	("Background",          Background);
+	out->addBool	("RestrainTextInside",  RestrainTextInside);
 	out->addColor	("OverrideColor",       OverrideColor);
-	out->addColor	("BGColor",       		BGColor);
+	out->addColor	("BGColor",       	BGColor);
 	out->addEnum	("HTextAlign",          HAlign, GUIAlignmentNames);
 	out->addEnum	("VTextAlign",          VAlign, GUIAlignmentNames);
 
@@ -451,6 +465,7 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	OverrideBGColorEnabled = in->getAttributeAsBool("OverrideBGColorEnabled");
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
 	Background = in->getAttributeAsBool("Background");
+	RestrainTextInside = in->getAttributeAsBool("RestrainTextInside");
 	OverrideColor = in->getAttributeAsColor("OverrideColor");
 	BGColor = in->getAttributeAsColor("BGColor");
 
