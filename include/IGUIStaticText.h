@@ -91,6 +91,12 @@ namespace gui
 		/** If the text is broken, this returns the width of the widest line
 		\return The width of the text, or the widest broken line. */
 		virtual s32 getTextWidth(void) const = 0;
+		
+		//! Set whether the text in this label should be clipped if it goes outside bounds
+		virtual void setTextRestrainedInside(bool restrainedInside) = 0;
+		
+		//! Checks if the text in this label should be clipped if it goes outside bounds
+		virtual bool isTextRestrainedInside() const = 0;
 	};
 
 
