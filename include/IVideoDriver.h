@@ -222,6 +222,15 @@ namespace video
 			TargetType(target), ColorMask(colorMask),
 			BlendFuncSrc(blendFuncSrc), BlendFuncDst(blendFuncDst),
 			BlendEnable(blendEnable) {}
+		bool operator!=(const IRenderTarget& other) const
+		{
+			return ((RenderTexture != other.RenderTexture) ||
+				(TargetType != other.TargetType) ||
+				(ColorMask != other.ColorMask) ||
+				(BlendFuncSrc != other.BlendFuncSrc) ||
+				(BlendFuncDst != other.BlendFuncDst) ||
+				(BlendEnable != other.BlendEnable));
+		}
 		ITexture* RenderTexture;
 		E_RENDER_TARGET TargetType:8;
 		E_COLOR_PLANE ColorMask:8;
