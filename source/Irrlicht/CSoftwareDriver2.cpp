@@ -2649,16 +2649,19 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 void CBurningVideoDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
+	if (!StencilBuffer)
+		return;
 	// draw a shadow rectangle covering the entire screen using stencil buffer
 	const u32 h = RenderTargetSurface->getDimension().Height;
 	const u32 w = RenderTargetSurface->getDimension().Width;
 	tVideoSample *dst;
 	u32 *stencil;
+	u32* const stencilBase=(u32*) StencilBuffer->lock();
 
 	for ( u32 y = 0; y < h; ++y )
 	{
 		dst = (tVideoSample*)RenderTargetSurface->lock() + ( y * w );
-		stencil = (u32*) StencilBuffer->lock() + ( y * w );
+		stencil =  stencilBase + ( y * w );
 
 		for ( u32 x = 0; x < w; ++x )
 		{
