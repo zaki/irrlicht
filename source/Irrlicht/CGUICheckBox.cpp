@@ -127,39 +127,42 @@ void CGUICheckBox::draw()
 		return;
 
 	IGUISkin* skin = Environment->getSkin();
-
-	core::rect<s32> rect = AbsoluteRect;
-
-	s32 height = skin->getSize(EGDS_CHECK_BOX_WIDTH);
-
-	core::rect<s32> checkRect(AbsoluteRect.UpperLeftCorner.X,
-				((AbsoluteRect.getHeight() - height) / 2) + AbsoluteRect.UpperLeftCorner.Y,
-				0, 0);
-
-	checkRect.LowerRightCorner.X = checkRect.UpperLeftCorner.X + height;
-	checkRect.LowerRightCorner.Y = checkRect.UpperLeftCorner.Y + height;
-
-	EGUI_DEFAULT_COLOR col = EGDC_GRAY_EDITABLE;
-	if ( isEnabled() )
-		col = Pressed ? EGDC_FOCUSED_EDITABLE : EGDC_EDITABLE;
-	skin->draw3DSunkenPane(this, skin->getColor(col),
-		false, true, checkRect, &AbsoluteClippingRect);
-
-	if (Checked && Environment->getSkin())
-		Environment->getSkin()->drawIcon(this, EGDI_CHECK_BOX_CHECKED, checkRect.getCenter(),
-			checkTime, os::Timer::getTime(), false, &AbsoluteClippingRect);
-
-	if (Text.size())
+	if (skin)
 	{
-		checkRect = AbsoluteRect;
-		checkRect.UpperLeftCorner.X += height + 5;
+		const core::rect<s32> rect = AbsoluteRect;
+		const s32 height = skin->getSize(EGDS_CHECK_BOX_WIDTH);
 
-		IGUIFont* font = skin->getFont();
-		if (font)
-			font->draw(Text.c_str(), checkRect,
-					skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &AbsoluteClippingRect);
+		core::rect<s32> checkRect(AbsoluteRect.UpperLeftCorner.X,
+					((AbsoluteRect.getHeight() - height) / 2) + AbsoluteRect.UpperLeftCorner.Y,
+					0, 0);
+
+		checkRect.LowerRightCorner.X = checkRect.UpperLeftCorner.X + height;
+		checkRect.LowerRightCorner.Y = checkRect.UpperLeftCorner.Y + height;
+
+		EGUI_DEFAULT_COLOR col = EGDC_GRAY_EDITABLE;
+		if ( isEnabled() )
+			col = Pressed ? EGDC_FOCUSED_EDITABLE : EGDC_EDITABLE;
+		skin->draw3DSunkenPane(this, skin->getColor(col),
+			false, true, checkRect, &AbsoluteClippingRect);
+
+		if (Checked)
+		{
+			skin->drawIcon(this, EGDI_CHECK_BOX_CHECKED, checkRect.getCenter(),
+				checkTime, os::Timer::getTime(), false, &AbsoluteClippingRect);
+		}
+		if (Text.size())
+		{
+			checkRect = AbsoluteRect;
+			checkRect.UpperLeftCorner.X += height + 5;
+
+			IGUIFont* font = skin->getFont();
+			if (font)
+			{
+				font->draw(Text.c_str(), checkRect,
+						skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &AbsoluteClippingRect);
+			}
+		}
 	}
-
 	IGUIElement::draw();
 }
 
