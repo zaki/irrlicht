@@ -3764,7 +3764,12 @@ bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTar
 
 	if (ERT_RENDER_TEXTURE == target)
 	{
-		os::Printer::log("Fatal Error: For render textures call setRenderTarget with the actual texture as first parameter.", ELL_ERROR);
+		os::Printer::log("For render textures call setRenderTarget with the actual texture as first parameter.", ELL_ERROR);
+		return false;
+	}
+	if (ERT_MULTI_RENDER_TEXTURES == target)
+	{
+		os::Printer::log("For multiple render textures call setRenderTarget with the texture array as first parameter.", ELL_ERROR);
 		return false;
 	}
 
@@ -3814,34 +3819,50 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		return false;
 	}
 
+	if (CurrentTarget==ERT_MULTI_RENDER_TEXTURES)
+	{
+		for (u32 i=0; i<MRTargets.size(); ++i)
+		{
+			if (MRTargets[i].TargetType==ERT_RENDER_TEXTURE)
+			{
+				for (; i<MRTargets.size(); ++i)
+					if (MRTargets[i].TargetType==ERT_RENDER_TEXTURE)
+						extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT+i, GL_TEXTURE_2D, 0, 0);
+			}
+		}
+		MRTargets.clear();
+	}
+
 	// check if we should set the previous RT back
-
-	setActiveTexture(0, 0);
-	ResetRenderStates=true;
-	if (RenderTargetTexture!=0)
+	if (RenderTargetTexture != texture)
 	{
-		RenderTargetTexture->unbindRTT();
-	}
+		setActiveTexture(0, 0);
+		ResetRenderStates=true;
+		if (RenderTargetTexture!=0)
+		{
+			RenderTargetTexture->unbindRTT();
+		}
 
-	if (texture)
-	{
-		// we want to set a new target. so do this.
-		glViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
-		RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
-		RenderTargetTexture->bindRTT();
-		CurrentRendertargetSize = texture->getSize();
-		CurrentTarget=ERT_RENDER_TEXTURE;
+		if (texture)
+		{
+			// we want to set a new target. so do this.
+			glViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
+			RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
+			RenderTargetTexture->bindRTT();
+			CurrentRendertargetSize = texture->getSize();
+			CurrentTarget=ERT_RENDER_TEXTURE;
+		}
+		else
+		{
+			glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
+			RenderTargetTexture = 0;
+			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
+			CurrentTarget=ERT_FRAME_BUFFER;
+			glDrawBuffer(Doublebuffer?GL_BACK_LEFT:GL_FRONT_LEFT);
+		}
 	}
-	else
-	{
-		glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
-		RenderTargetTexture = 0;
-		CurrentRendertargetSize = core::dimension2d<u32>(0,0);
-		CurrentTarget=ERT_FRAME_BUFFER;
-		glDrawBuffer(Doublebuffer?GL_BACK_LEFT:GL_FRONT_LEFT);
-	}
-
 	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
+
 	return true;
 }
 
@@ -3850,8 +3871,21 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
 				bool clearBackBuffer, bool clearZBuffer, SColor color)
 {
+	// if simply disabling the MRT via array call
 	if (targets.size()==0)
 		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+	// if disabling old MRT, but enabling new one as well
+	if ((MRTargets.size()!=0) && (targets != MRTargets))
+		setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+	// if no change, simply clear buffers
+	else if (targets == MRTargets)
+	{
+		clearBuffers(clearBackBuffer, clearZBuffer, false, color);
+		return true;
+	}
+
+	// copy to storage for correct disabling
+	MRTargets=targets;
 
 	u32 maxMultipleRTTs = core::min_(static_cast<u32>(MaxMultipleRenderTargets), targets.size());
 
@@ -3914,7 +3948,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 		if (targets[i].TargetType==ERT_RENDER_TEXTURE)
 		{
 			setRenderTarget(targets[i].RenderTexture, false, false, 0x0);
-			break;
+			break; // bind only first RTT
 		}
 	}
 	// init other main buffer, if necessary
@@ -3951,7 +3985,8 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 #ifdef GL_EXT_framebuffer_object
 				// attach texture to FrameBuffer Object on Color [i]
 				attachment = GL_COLOR_ATTACHMENT0_EXT+i;
-				extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, attachment, GL_TEXTURE_2D, static_cast<COpenGLTexture*>(targets[i].RenderTexture)->getOpenGLTextureName(), 0);
+				if (targets[i].RenderTexture != RenderTargetTexture)
+					extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, attachment, GL_TEXTURE_2D, static_cast<COpenGLTexture*>(targets[i].RenderTexture)->getOpenGLTextureName(), 0);
 #endif
 				MRTs[i]=attachment;
 			}

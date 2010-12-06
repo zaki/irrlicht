@@ -449,6 +449,7 @@ namespace video
 
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
+		core::array<video::IRenderTarget> MRTargets;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane
