@@ -110,14 +110,12 @@ CTRStencilShadow::CTRStencilShadow(CBurningVideoDriver* driver)
 }
 
 
-
 /*!
 */
 void CTRStencilShadow::setParam ( u32 index, f32 value)
 {
 	u32 val = (u32) value;
 
-	
 	// glStencilOp (fail,zfail,zpass
 	if ( index == 1 && val == 1 )
 	{
@@ -128,14 +126,14 @@ void CTRStencilShadow::setParam ( u32 index, f32 value)
 	{
 		fragmentShader = &CTRStencilShadow::fragment_zfail_decr;
 	}
-
-
 }
 
 /*!
 */
 void CTRStencilShadow::fragment_zfail_decr ()
 {
+	if (!Stencil)
+		return;
 	//tVideoSample *dst;
 
 #ifdef USE_ZBUFFER
@@ -149,7 +147,6 @@ void CTRStencilShadow::fragment_zfail_decr ()
 	s32 xStart;
 	s32 xEnd;
 	s32 dx;
-
 
 #ifdef SUBTEXEL
 	f32 subPixel;
@@ -285,13 +282,14 @@ void CTRStencilShadow::fragment_zfail_decr ()
 		line.l[0][0] += slopeL[0];
 #endif
 	}
-
 }
 
 /*!
 */
-void CTRStencilShadow::fragment_zfail_incr ()
+void CTRStencilShadow::fragment_zfail_incr()
 {
+	if (!Stencil)
+		return;
 	//tVideoSample *dst;
 
 #ifdef USE_ZBUFFER
@@ -396,11 +394,9 @@ void CTRStencilShadow::fragment_zfail_incr ()
 	stencil = (u32*) Stencil->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
-
 #ifdef INVERSE_W
 	f32 inversew;
 #endif
-
 
 #ifdef IPOL_C0
 	tFixPoint r3, g3, b3;
@@ -441,7 +437,6 @@ void CTRStencilShadow::fragment_zfail_incr ()
 		line.l[0][0] += slopeL[0];
 #endif
 	}
-
 }
 
 void CTRStencilShadow::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c )
@@ -519,7 +514,6 @@ void CTRStencilShadow::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #ifdef SUBTEXEL
 	f32 subPixel;
 #endif
-
 
 	// rasterize upper sub-triangle
 	//if ( (f32) 0.0 != scan.invDeltaY[1]  )
