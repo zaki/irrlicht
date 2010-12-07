@@ -41,6 +41,8 @@ bool removeCustomAnimator(void)
 	// deleted cleanly, without a crash.
 	node->OnAnimate(0);
 	
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	// If we didn't crash, then the test passed.

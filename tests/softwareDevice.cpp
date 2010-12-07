@@ -48,6 +48,8 @@ bool softwareDevice(void)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-softwareDevice-rotatedClip.png");
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

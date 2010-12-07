@@ -478,6 +478,8 @@ bool sceneCollisionManager(void)
 
 	result &= compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(device, smgr, collMgr);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 	return result;
 }

@@ -153,6 +153,8 @@ bool filesystem(void)
 	result &= testgetAbsoluteFilename(fs);
 
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

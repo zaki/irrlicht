@@ -45,6 +45,8 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 		}
 	}
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
