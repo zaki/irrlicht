@@ -400,6 +400,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
 	DriverAttributes->setAttribute("Version", 800);
 	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
+	DriverAttributes->setAttribute("AntiAlias", antiAlias);
 
 	// set the renderstates
 	setRenderStates3DMode();

@@ -103,6 +103,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 //	DriverAttributes->addFloat("MaxTextureLODBias", 0.f);
 	DriverAttributes->addInt("Version", 1);
 //	DriverAttributes->addInt("ShaderLanguageVersion", 0);
+//	DriverAttributes->addInt("AntiAlias", 0);
 
 	setFog();
 

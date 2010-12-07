@@ -455,6 +455,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16);
 	DriverAttributes->setAttribute("Version", 901);
 	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
+	DriverAttributes->setAttribute("AntiAlias", AntiAliasing);
 
 	// set the renderstates
 	setRenderStates3DMode();

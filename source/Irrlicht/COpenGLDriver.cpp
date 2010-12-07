@@ -235,8 +235,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		return false;
 	}
 
-#ifdef _DEBUG
-	core::stringc wglExtensions;
+	io::path wglExtensions;
 #ifdef WGL_ARB_extensions_string
 	PFNWGLGETEXTENSIONSSTRINGARBPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	if (irrGetExtensionsString)
@@ -246,12 +245,16 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	if (irrGetExtensionsString)
 		wglExtensions = irrGetExtensionsString(HDc);
 #endif
+	const bool pixel_format_supported = (wglExtensions.find("WGL_ARB_pixel_format") != -1);
+	const bool multi_sample_supported = ((wglExtensions.find("WGL_ARB_multisample") != -1) ||
+		(wglExtensions.find("WGL_EXT_multisample") != -1) || (wglExtensions.find("WGL_3DFX_multisample") != -1) );
+#ifdef _DEBUG
 	os::Printer::log("WGL_extensions", wglExtensions);
 #endif
 
 #ifdef WGL_ARB_pixel_format
 	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-	if (wglChoosePixelFormat_ARB)
+	if (pixel_format_supported && multi_sample_supported && wglChoosePixelFormat_ARB)
 	{
 		// This value determines the number of samples used for antialiasing
 		// My experience is that 8 does not show a big
@@ -662,6 +665,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
 	DriverAttributes->setAttribute("Version", Version);
 	DriverAttributes->setAttribute("ShaderLanguageVersion", ShaderLanguageVersion);
+	DriverAttributes->setAttribute("AntiAlias", AntiAlias);
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
