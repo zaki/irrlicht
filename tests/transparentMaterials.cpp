@@ -41,6 +41,8 @@ bool testTransparentAlphaChannelRef(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentAlphaChannelRef.png", 99.18f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -79,6 +81,8 @@ bool testTransparentAlphaChannel(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentAlphaChannel.png");
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -124,6 +128,8 @@ bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentVertexAlpha.png", 98.76f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -172,6 +178,8 @@ bool testTransparentReflection2Layer(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentReflection2Layer.png");
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -210,6 +218,8 @@ bool testTransparentAddColor(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentAddColor.png");
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -257,6 +267,8 @@ bool testTransparentVertexAlphaMore(E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-transparentVertexAlphaChannelMore.png", 99.18f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

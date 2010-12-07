@@ -164,6 +164,8 @@ bool fast_atof(void)
 	logTestString("         atof time = %d\n    fast_atof Time = %d\nold fast_atof time = %d\n",
 		atofTime, fastAtofTime, oldFastAtofTime);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	if(fastAtofTime > (1.2f*atofTime))

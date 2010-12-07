@@ -65,6 +65,8 @@ bool terrainSceneNode(void)
 		logTestString("Large camera up rotation caused bad recalc.\n");
 	}
 
-    device->drop();
+	device->closeDevice();
+	device->run();
+	device->drop();
     return result;
 }

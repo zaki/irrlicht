@@ -72,6 +72,8 @@ bool md2Animation(void)
 	}
 
 	result &= takeScreenshotAndCompareAgainstReference(driver, "-md2Animation.png");
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

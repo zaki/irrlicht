@@ -162,6 +162,8 @@ bool testXML(void)
 	logTestString("Test XML reader attribute support.\n");
 	result &= attributeValues(device->getFileSystem());	
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 	return result;
 }

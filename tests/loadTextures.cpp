@@ -82,6 +82,8 @@ bool loadFromFileFolder(void)
 		return false;
 	}
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 	return ((tex1 == tex2) && (tex1 == tex3) && (tex1 == tex4));
 }

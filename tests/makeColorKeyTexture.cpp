@@ -54,6 +54,8 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, screenshotName);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

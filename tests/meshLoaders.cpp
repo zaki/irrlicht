@@ -35,6 +35,8 @@ bool meshLoaders(void)
 		}
 	}
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

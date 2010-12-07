@@ -101,6 +101,8 @@ bool sceneNodeAnimator(void)
 	textureAnimator->drop();
 	textureAnimatorLooping->drop();
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	if(!result)

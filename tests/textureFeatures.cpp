@@ -71,6 +71,8 @@ static bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 	result |= (bits[0].color==0x001212ff);
 	tex->unlock();
 	
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

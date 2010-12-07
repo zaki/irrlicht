@@ -51,6 +51,8 @@ bool flyCircleAnimator(void)
 		result = takeScreenshotAndCompareAgainstReference(driver, "-flyCircleAnimator.png", 100);
 	}
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

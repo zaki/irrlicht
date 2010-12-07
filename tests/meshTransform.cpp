@@ -80,6 +80,8 @@ bool meshTransform(void)
 
 	result = takeScreenshotAndCompareAgainstReference(driver, "-meshTransform.png");
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

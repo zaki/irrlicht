@@ -39,6 +39,8 @@ static bool testLightTypes(video::E_DRIVER_TYPE driverType)
 
 	const bool result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-lightType.png", 99.91f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
