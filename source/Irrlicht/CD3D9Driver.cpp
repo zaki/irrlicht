@@ -985,23 +985,22 @@ void CD3D9Driver::setViewPort(const core::rect<s32>& area)
 	core::rect<s32> vp = area;
 	core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
 	vp.clipAgainst(rendert);
-
-	D3DVIEWPORT9 viewPort;
-	viewPort.X = vp.UpperLeftCorner.X;
-	viewPort.Y = vp.UpperLeftCorner.Y;
-	viewPort.Width = vp.getWidth();
-	viewPort.Height = vp.getHeight();
-	viewPort.MinZ = 0.0f;
-	viewPort.MaxZ = 1.0f;
-
-	HRESULT hr = D3DERR_INVALIDCALL;
 	if (vp.getHeight()>0 && vp.getWidth()>0)
-		hr = pID3DDevice->SetViewport(&viewPort);
+	{
+		D3DVIEWPORT9 viewPort;
+		viewPort.X = vp.UpperLeftCorner.X;
+		viewPort.Y = vp.UpperLeftCorner.Y;
+		viewPort.Width = vp.getWidth();
+		viewPort.Height = vp.getHeight();
+		viewPort.MinZ = 0.0f;
+		viewPort.MaxZ = 1.0f;
 
-	if (FAILED(hr))
-		os::Printer::log("Failed setting the viewport.", ELL_WARNING);
-
-	ViewPort = vp;
+		HRESULT hr = pID3DDevice->SetViewport(&viewPort);
+		if (FAILED(hr))
+			os::Printer::log("Failed setting the viewport.", ELL_WARNING);
+		else
+			ViewPort = vp;
+	}
 }
 
 
@@ -1576,11 +1575,11 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 
 	s16 indices[6] = {0,1,2,0,2,3};
 
+	setActiveTexture(0, const_cast<video::ITexture*>(texture));
+
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
-
-	setActiveTexture(0, const_cast<video::ITexture*>(texture));
 
 	setVertexShader(EVT_STANDARD);
 

@@ -22,7 +22,7 @@ static bool testWithRenderTarget(video::E_DRIVER_TYPE driverType)
 	//draw the 256x256 water image on the rendertarget:
 	driver->setRenderTarget(RenderTarget,true,true,video::SColor(255,0,0,255));//Rendertarget background is blue
 	driver->draw2DImage(Image, core::position2d<s32>(0,0), core::recti(0,0,32,32));
-	driver->setRenderTarget(0);
+	driver->setRenderTarget(0, false);
 
 	//draw the rendertarget on screen:
 	//this should normally draw a 64x64 image containing a 32x32 image in the top left corner
@@ -41,6 +41,9 @@ static bool testWithRenderTarget(video::E_DRIVER_TYPE driverType)
 bool draw2DImage()
 {
 	bool result = testWithRenderTarget(video::EDT_DIRECT3D9);
+	result &= testWithRenderTarget(video::EDT_DIRECT3D8);
 	result &= testWithRenderTarget(video::EDT_OPENGL);
+	result &= testWithRenderTarget(video::EDT_BURNINGSVIDEO);
+	result &= testWithRenderTarget(video::EDT_SOFTWARE);
 	return result;
 }

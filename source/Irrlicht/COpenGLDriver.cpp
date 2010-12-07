@@ -3313,16 +3313,20 @@ void COpenGLDriver::setAmbientLight(const SColorf& color)
 // method just a bit.
 void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 {
+	if (area == ViewPort)
+		return;
 	core::rect<s32> vp = area;
 	core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
 	vp.clipAgainst(rendert);
 
 	if (vp.getHeight()>0 && vp.getWidth()>0)
+	{
 		glViewport(vp.UpperLeftCorner.X,
 				getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(),
 				vp.getWidth(), vp.getHeight());
 
-	ViewPort = vp;
+		ViewPort = vp;
+	}
 }
 
 
@@ -3863,6 +3867,8 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 			CurrentTarget=ERT_FRAME_BUFFER;
 			glDrawBuffer(Doublebuffer?GL_BACK_LEFT:GL_FRONT_LEFT);
 		}
+		// we need to update the matrices due to the rendersize change.
+		Transformation3DChanged=true;
 	}
 	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
 
