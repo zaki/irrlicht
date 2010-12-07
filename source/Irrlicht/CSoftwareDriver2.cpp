@@ -2241,10 +2241,10 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 #endif
 		if (useAlphaChannelOfTexture)
 			((CSoftwareTexture2*)texture)->getImage()->copyToWithAlpha(
-			BackBuffer, destPos, sourceRect, color, clipRect);
+			RenderTargetSurface, destPos, sourceRect, color, clipRect);
 		else
 			((CSoftwareTexture2*)texture)->getImage()->copyTo(
-				BackBuffer, destPos, sourceRect, clipRect);
+				RenderTargetSurface, destPos, sourceRect, clipRect);
 	}
 }
 
