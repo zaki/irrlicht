@@ -35,6 +35,8 @@ static bool renderAndLoad(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureRenderStates.png", 100);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -81,6 +83,8 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 	smgr->drawAll();
 	driver->endScene();
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return true;
@@ -129,6 +133,8 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.8f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

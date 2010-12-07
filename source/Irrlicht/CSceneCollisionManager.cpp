@@ -874,7 +874,7 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 
 //! Calculates 2d screen position from a 3d position.
 core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition(
-	const core::vector3df & pos3d, ICameraSceneNode* camera)
+	const core::vector3df & pos3d, ICameraSceneNode* camera, bool useViewPort)
 {
 	if (!SceneManager || !Driver)
 		return core::position2d<s32>(-1000,-1000);
@@ -885,8 +885,11 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 	if (!camera)
 		return core::position2d<s32>(-1000,-1000);
 
-	const core::rect<s32>& viewPort = Driver->getViewPort();
-	core::dimension2d<u32> dim(viewPort.getWidth(), viewPort.getHeight());
+	core::dimension2d<u32> dim;
+	if (useViewPort)
+		dim.set(Driver->getViewPort().getWidth(), Driver->getViewPort().getHeight());
+	else
+		dim=(Driver->getScreenSize());
 
 	dim.Width /= 2;
 	dim.Height /= 2;
@@ -905,7 +908,7 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 		core::reciprocal(transformedPos[3]);
 
 	return core::position2d<s32>(
-			core::round32(dim.Width * transformedPos[0] * zDiv) + dim.Width,
+			dim.Width + core::round32(dim.Width * (transformedPos[0] * zDiv)),
 			dim.Height - core::round32(dim.Height * (transformedPos[1] * zDiv)));
 }
 
