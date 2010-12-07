@@ -308,6 +308,7 @@ namespace video
 		MaxTextureLODBias (float) Maximum value for LOD bias. Is usually at around 16, but can be lower on some systems.
 		Version (int) Version of the driver. Should be Major*100+Minor
 		ShaderLanguageVersion (int) Version of the high level shader language. Should be Major*100+Minor.
+		AntiAlias (int) Number of Samples the driver uses for each pixel. 0 and 1 means anti aliasing is off, typical values are 2,4,8,16,32
 		*/
 		virtual const io::IAttributes& getDriverAttributes() const=0;
 
