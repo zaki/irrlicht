@@ -93,6 +93,10 @@ namespace scene
 		into 2d.
 		\param camera: Camera to be used. If null, the currently active
 		camera is used.
+		\param useViewPort: Calculate screen coordinates relative to
+		the current view port. Please note that unless the driver does
+		not take care of the view port, it is usually best to get the
+		result in absolute screen coordinates (flag=false).
 		\return 2d screen coordinates which a object in the 3d world
 		would have if it would be rendered to the screen. If the 3d
 		position is behind the camera, it is set to (-1000,-1000). In
@@ -100,7 +104,7 @@ namespace scene
 		method for drawing a decorator over a 3d object, it will be
 		clipped by the screen borders. */
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			const core::vector3df& pos, ICameraSceneNode* camera=0) = 0;
+			const core::vector3df& pos, ICameraSceneNode* camera=0, bool useViewPort=false) = 0;
 
 		//! Gets the scene node, which is currently visible under the given screencoordinates, viewed from the currently active camera.
 		/** The collision tests are done using a bounding box for each

@@ -783,7 +783,6 @@ void CBurningVideoDriver::setViewPort(const core::rect<s32>& area)
 
 	Transformation [ ETS_CLIPSCALE ].buildNDCToDCMatrix ( ViewPort, 1 );
 
-
 	if (CurrentShader)
 		CurrentShader->setRenderTarget(RenderTargetSurface, ViewPort);
 }
@@ -2225,9 +2224,24 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 			return;
 		}
 
+#if 0
+		// 2d methods don't use viewPort
+		core::position2di dest = destPos;
+		core::recti clip=ViewPort;
+		if (ViewPort.getSize().Width != ScreenSize.Width)
+		{
+			dest.X=ViewPort.UpperLeftCorner.X+core::round32(destPos.X*ViewPort.getWidth()/(f32)ScreenSize.Width);
+			dest.Y=ViewPort.UpperLeftCorner.Y+core::round32(destPos.Y*ViewPort.getHeight()/(f32)ScreenSize.Height);
+			if (clipRect)
+			{
+				clip.constrainTo(*clipRect);
+			}
+			clipRect = &clip;
+		}
+#endif
 		if (useAlphaChannelOfTexture)
 			((CSoftwareTexture2*)texture)->getImage()->copyToWithAlpha(
-				BackBuffer, destPos, sourceRect, color, clipRect);
+			BackBuffer, destPos, sourceRect, color, clipRect);
 		else
 			((CSoftwareTexture2*)texture)->getImage()->copyTo(
 				BackBuffer, destPos, sourceRect, clipRect);

@@ -141,6 +141,7 @@
     <ClCompile Include="transparentMaterials.cpp" />
     <ClCompile Include="vectorPositionDimension2d.cpp" />
     <ClCompile Include="videoDriver.cpp" />
+    <ClCompile Include="viewPort.cpp" />
     <ClCompile Include="writeImageToFile.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -81,6 +81,7 @@
 		<Unit filename="transparentMaterials.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />
 		<Unit filename="videoDriver.cpp" />
+		<Unit filename="viewPort.cpp" />
 		<Unit filename="writeImageToFile.cpp" />
 		<Unit filename="zipReader.cpp" />
 		<Extensions>

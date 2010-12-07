@@ -90,7 +90,6 @@ int main(int argumentCount, char * arguments[])
 	TEST(b3dAnimation);
 	TEST(burningsVideo);
 	TEST(cursorSetVisible);
-	TEST(drawRectOutline);
 	TEST(flyCircleAnimator);
 	TEST(md2Animation);
 	TEST(testGeometryCreator); 
@@ -100,6 +99,7 @@ int main(int argumentCount, char * arguments[])
 	// all driver checks
 	TEST(videoDriver);
 	TEST(drawPixel);
+	TEST(drawRectOutline);
 	TEST(guiDisabledMenu);
 	TEST(makeColorKeyTexture);
 	TEST(renderTargetTexture);
@@ -110,7 +110,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(draw2DImage);
 	TEST(lights);
 	TEST(twodmaterial);
-//	TEST(viewPort);
+	TEST(viewPort);
 	TEST(mrt);
 	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
