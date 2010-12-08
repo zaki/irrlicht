@@ -651,7 +651,11 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &num);
 		MaxMultipleRenderTargets = static_cast<u8>(num);
 	}
-#elif defined(GL_ATI_draw_buffers)
+#endif
+#if defined(GL_ATI_draw_buffers)
+#ifdef GL_ARB_draw_buffers
+	else
+#endif
 	if (FeatureAvailable[IRR_ATI_draw_buffers])
 	{
 		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &num);
