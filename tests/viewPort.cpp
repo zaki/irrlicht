@@ -51,7 +51,7 @@ static bool viewPortText(E_DRIVER_TYPE driverType)
 	driver->draw2DImage(driver->getTexture("../media/fire.bmp"), core::vector2di(160/2,120/2));
 	driver->endScene(); 
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-viewPortText.png", 99.8f);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-viewPortText.png", 99.77f);
 
 	device->drop();
 
