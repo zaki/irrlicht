@@ -130,7 +130,7 @@ namespace irr
             void dump() const;
 
             void initExtensions( COGLES2Driver* driver,
-                                 void* display,
+                                 EGLDisplay display,
                                  bool withStencil );
 
         protected:

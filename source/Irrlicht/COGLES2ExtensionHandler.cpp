@@ -104,9 +104,7 @@ namespace irr
 
 
         void COGLES2ExtensionHandler::initExtensions( COGLES2Driver* driver,
-#ifdef EGL_VERSION_1_0
                                                       EGLDisplay display,
-#endif
                                                       bool withStencil )
         {
 #ifdef EGL_VERSION_1_0
