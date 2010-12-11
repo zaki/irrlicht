@@ -18,13 +18,20 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	// if no AntiAliasing supported, skip this test
 	if (driver->getDriverAttributes().getAttributeAsInt("AntiAlias")<2)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
 		return true;
+	}
 
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	scene::IAnimatedMesh* mesh = smgr->getMesh("../media/sydney.md2");
 	if (!mesh)
 	{
+		device->closeDevice();
+		device->run();
 		device->drop();
 		return false;
 	}
