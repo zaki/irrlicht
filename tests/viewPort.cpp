@@ -53,6 +53,8 @@ static bool viewPortText(E_DRIVER_TYPE driverType)
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-viewPortText.png", 99.77f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
