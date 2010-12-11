@@ -894,42 +894,43 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		break;
 	case ETS_PROJECTION:
 		{
-			GLfloat glmat[16];
-			createGLMatrix(glmat, mat);
-			// flip z to compensate OpenGLs right-hand coordinate system
-			glmat[12] *= -1.0f;
 			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(glmat);
+			glLoadMatrixf(mat.pointer());
+			// we have to update the clip planes to the latest view matrix
+			for (u32 i=0; i<MaxUserClipPlanes; ++i)
+				if (UserClipPlanes[i].Enabled)
+					uploadClipPlane(i);
 		}
 		break;
 	case ETS_COUNT:
 		return;
 	default:
-	{
-		const u32 i = state - ETS_TEXTURE_0;
-		if (i >= MATERIAL_MAX_TEXTURES)
-			break;
-
-		const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
-
-		if (MultiTextureExtension)
-			extGlActiveTexture(GL_TEXTURE0_ARB + i);
-
-		glMatrixMode(GL_TEXTURE);
-		if (!isRTT && mat.isIdentity() )
-			glLoadIdentity();
-		else
 		{
-			GLfloat glmat[16];
-			if (isRTT)
-				createGLTextureMatrix(glmat, mat * TextureFlipMatrix);
-			else
-				createGLTextureMatrix(glmat, mat);
+			const u32 i = state - ETS_TEXTURE_0;
+			if (i >= MATERIAL_MAX_TEXTURES)
+				break;
 
-			glLoadMatrixf(glmat);
+			const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
+
+			if (MultiTextureExtension)
+				extGlActiveTexture(GL_TEXTURE0_ARB + i);
+
+			glMatrixMode(GL_TEXTURE);
+			if (!isRTT && mat.isIdentity() )
+				glLoadIdentity();
+			else
+			{
+				if (isRTT)
+				{
+					GLfloat glmat[16];
+					createGLTextureMatrix(glmat, mat * TextureFlipMatrix);
+					glLoadMatrixf(glmat);
+				}
+				else
+					glLoadMatrixf(mat.pointer());
+			}
+			break;
 		}
-		break;
-	}
 	}
 }
 
@@ -1836,8 +1837,6 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 
 	const u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
 
-	// texcoords need to be flipped horizontally for RTTs
-	const bool isRTT = texture->isRenderTarget();
 	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
@@ -1938,9 +1937,9 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 
 		const core::rect<f32> tcoords(
 				sourcePos.X * invW,
-				(isRTT?(sourcePos.Y + sourceSize.Height):sourcePos.Y) * invH,
+				sourcePos.Y * invH,
 				(sourcePos.X + sourceSize.Width) * invW,
-				(isRTT?sourcePos.Y:(sourcePos.Y + sourceSize.Height)) * invH);
+				(sourcePos.Y + sourceSize.Height) * invH);
 
 		const core::rect<s32> poss(targetPos, sourceSize);
 
@@ -2057,16 +2056,14 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	// ok, we've clipped everything.
 	// now draw it.
 
-	// texcoords need to be flipped horizontally for RTTs
-	const bool isRTT = texture->isRenderTarget();
 	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 	const core::rect<f32> tcoords(
 			sourcePos.X * invW,
-			(isRTT?(sourcePos.Y + sourceSize.Height):sourcePos.Y) * invH,
+			sourcePos.Y * invH,
 			(sourcePos.X + sourceSize.Width) * invW,
-			(isRTT?sourcePos.Y:(sourcePos.Y + sourceSize.Height)) * invH);
+			(sourcePos.Y + sourceSize.Height) * invH);
 
 	const core::rect<s32> poss(targetPos, sourceSize);
 
@@ -2102,16 +2099,14 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	if (!texture)
 		return;
 
-	// texcoords need to be flipped horizontally for RTTs
-	const bool isRTT = texture->isRenderTarget();
 	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 	const core::rect<f32> tcoords(
 			sourceRect.UpperLeftCorner.X * invW,
-			(isRTT?sourceRect.LowerRightCorner.Y:sourceRect.UpperLeftCorner.Y) * invH,
+			sourceRect.UpperLeftCorner.Y * invH,
 			sourceRect.LowerRightCorner.X * invW,
-			(isRTT?sourceRect.UpperLeftCorner.Y:sourceRect.LowerRightCorner.Y) *invH);
+			sourceRect.LowerRightCorner.Y *invH);
 
 	const video::SColor temp[4] =
 	{
@@ -2199,8 +2194,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	core::position2d<s32> targetPos(pos);
-	// texcoords need to be flipped horizontally for RTTs
-	const bool isRTT = texture->isRenderTarget();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 
@@ -2212,9 +2205,9 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 		const core::rect<f32> tcoords(
 				sourceRects[currentIndex].UpperLeftCorner.X * invW,
-				(isRTT?sourceRects[currentIndex].LowerRightCorner.Y:sourceRects[currentIndex].UpperLeftCorner.Y) * invH,
+				sourceRects[currentIndex].UpperLeftCorner.Y * invH,
 				sourceRects[currentIndex].LowerRightCorner.X * invW,
-				(isRTT?sourceRects[currentIndex].UpperLeftCorner.Y:sourceRects[currentIndex].LowerRightCorner.Y) * invH);
+				sourceRects[currentIndex].LowerRightCorner.Y * invH);
 
 		const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
 
@@ -2356,6 +2349,7 @@ bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 		if (texture->getDriverType() != EDT_OPENGL)
 		{
 			glDisable(GL_TEXTURE_2D);
+			CurrentTexture[stage]=0;
 			os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
 			return false;
 		}
@@ -2483,11 +2477,8 @@ void COpenGLDriver::setRenderStates3DMode()
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
 
-		GLfloat glmat[16];
-		createGLMatrix(glmat, Matrices[ETS_PROJECTION]);
-		glmat[12] *= -1.0f;
 		glMatrixMode(GL_PROJECTION);
-		glLoadMatrixf(glmat);
+		glLoadMatrixf(Matrices[ETS_PROJECTION].pointer());
 
 		ResetRenderStates = true;
 	}
@@ -3051,6 +3042,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
+		Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
 		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 		// Due to the transformation change, the previous line would call a reset each frame
 		// but we can safely reset the variable as it was false before
