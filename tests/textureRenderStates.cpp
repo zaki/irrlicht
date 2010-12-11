@@ -6,6 +6,60 @@
 using namespace irr;
 using namespace core;
 
+static bool manyTextures(video::E_DRIVER_TYPE driverType)
+{
+	IrrlichtDevice *device = createDevice(driverType, dimension2d<u32>(160, 120), 32);
+	if (!device)
+		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+	scene::ISceneManager * smgr = device->getSceneManager();
+	(void)smgr->addCameraSceneNode();
+
+	scene::SMeshBufferLightMap* mesh = new scene::SMeshBufferLightMap;
+
+	mesh->Vertices.reallocate(4);
+	mesh->Indices.reallocate(6);
+
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(-50,50,80,irr::video::SColor(255,100,100,100),0,1,0,1));
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(50,50,80,irr::video::SColor(255,100,100,100),1,1,1,1));
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(50,-50,80,irr::video::SColor(255,100,100,100),1,0,1,0));
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(-50,-50,80,irr::video::SColor(255,100,100,100),0,0,0,0));
+
+	mesh->Indices.push_back(0);
+	mesh->Indices.push_back(1);
+	mesh->Indices.push_back(2);
+	mesh->Indices.push_back(2);
+	mesh->Indices.push_back(3);
+	mesh->Indices.push_back(0);
+
+	video::SMaterial& mat = mesh->getMaterial();
+	mat.Lighting = false;
+	mat.setTexture(0,driver->getTexture("../media/fire.bmp"));
+	mat.setTexture(1,driver->getTexture("../media/fire.bmp"));
+	mat.setTexture(2,driver->getTexture("../media/fire.bmp"));
+	mat.setTexture(3,driver->getTexture("../media/fire.bmp"));
+
+	mesh->setDirty();
+
+	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	// set camera
+	smgr->drawAll();
+	// draw meshbuffer
+	driver->setMaterial(mat);
+	driver->drawMeshBuffer(mesh); 
+	driver->endScene();
+	mesh->drop();
+
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-multiTexture.png", 100);
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
+
 //! Tests interleaved loading and rendering of textures
 /** The test loads a texture, renders it using draw2dimage, loads another
 	texture and renders the first one again. Due to the texture cache this
@@ -161,6 +215,12 @@ bool textureRenderStates(void)
 	passed &= testTextureMatrixInMixedScenes(video::EDT_BURNINGSVIDEO);
 	passed &= testTextureMatrixInMixedScenes(video::EDT_DIRECT3D9);
 	passed &= testTextureMatrixInMixedScenes(video::EDT_DIRECT3D8);
+
+	passed &= manyTextures(video::EDT_OPENGL);
+	passed &= manyTextures(video::EDT_SOFTWARE);
+	passed &= manyTextures(video::EDT_BURNINGSVIDEO);
+	passed &= manyTextures(video::EDT_DIRECT3D9);
+	passed &= manyTextures(video::EDT_DIRECT3D8);
 
 	return passed;
 }
