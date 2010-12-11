@@ -2624,6 +2624,8 @@ void COpenGLDriver::setWrapMode(const SMaterial& material)
 	// Has to be checked always because it depends on the textures
 	for (u32 u=0; u<MaxTextureUnits; ++u)
 	{
+		if (!CurrentTexture[u])
+			continue;
 		if (MultiTextureExtension)
 			extGlActiveTexture(GL_TEXTURE0_ARB + u);
 		else if (u>0)
@@ -2741,6 +2743,8 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// Filtering has to be set for each texture layer
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
+		if (!CurrentTexture[i])
+			continue;
 		if (MultiTextureExtension)
 			extGlActiveTexture(GL_TEXTURE0_ARB + i);
 		else if (i>0)
