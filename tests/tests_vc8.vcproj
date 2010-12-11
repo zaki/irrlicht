@@ -285,6 +285,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\projectionMatrix.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\removeCustomAnimator.cpp"
 				>
 			</File>

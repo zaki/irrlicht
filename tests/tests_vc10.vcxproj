@@ -118,6 +118,7 @@
     <ClCompile Include="mrt.cpp" />
     <ClCompile Include="orthoCam.cpp" />
     <ClCompile Include="planeMatrix.cpp" />
+    <ClCompile Include="projectionMatrix.cpp" />
     <ClCompile Include="removeCustomAnimator.cpp" />
     <ClCompile Include="renderTargetTexture.cpp" />
     <ClCompile Include="sceneCollisionManager.cpp" />

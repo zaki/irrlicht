@@ -67,6 +67,7 @@
 		<Unit filename="meshTransform.cpp" />
 		<Unit filename="mrt.cpp" />
 		<Unit filename="planeMatrix.cpp" />
+		<Unit filename="projectionMatrix.cpp" />
 		<Unit filename="removeCustomAnimator.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="sceneNodeAnimator.cpp" />

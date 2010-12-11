@@ -113,7 +113,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(viewPort);
 	TEST(mrt);
 	// TODO: Needs to be fixed first.
-//	TEST(projectionMatrix);
+	TEST(projectionMatrix);
 	// large scenes/long rendering
 	// shadows are slow
 //	TEST(orthoCam);
