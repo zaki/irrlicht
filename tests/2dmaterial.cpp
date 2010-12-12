@@ -8,7 +8,7 @@ using namespace irr;
 static bool addBlend2d(video::E_DRIVER_TYPE type)
 {
 	SIrrlichtCreationParameters params;
-	params.AntiAlias = 2;
+	params.AntiAlias = 0;
 	params.Bits = 32;
 	params.WindowSize = core::dimension2d<u32>(160, 120);
 	params.DriverType = type;
