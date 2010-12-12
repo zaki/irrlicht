@@ -85,7 +85,7 @@ static bool testWith2DImage(E_DRIVER_TYPE driverType)
 		driver->endScene ();
 	}
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-rttWith2DImage.png", 99.91f);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-rttWith2DImage.png", 99.9f);
 
 	device->closeDevice();
 	device->run();
@@ -208,7 +208,7 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 
 	driver->beginScene(true, true, SColor(255,255, 255, 255));
 	driver->setRenderTarget(rt, true, true, video::SColor(255,255,0,255));
-	driver->draw2DImage(driver->getTexture("../media/fireball.bmp"), recti(0, 0,256,256), recti(0,0,64,64));
+	driver->draw2DImage(driver->getTexture("../media/fireball.bmp"), recti(0, 0,rt->getSize().Width,rt->getSize().Height), recti(0,0,64,64));
 	guienv->getBuiltInFont()->draw(L"OMGGG =!", rect<s32>(120, 100, 256, 256), SColor(255, 0, 0, 255));
 	driver->setRenderTarget(0);
 	driver->endScene();

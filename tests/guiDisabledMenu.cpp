@@ -48,7 +48,7 @@ bool guiDisabledMenu(void)
 	env->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-guiDisabledMenu.png");
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-guiDisabledMenu.png", 98.77f);
 	device->closeDevice();
 	device->run();
 	device->drop();

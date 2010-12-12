@@ -51,7 +51,7 @@ static bool manyTextures(video::E_DRIVER_TYPE driverType)
 	driver->endScene();
 	mesh->drop();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-multiTexture.png", 100);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-multiTexture.png", 99.31f);
 
 	device->closeDevice();
 	device->run();
@@ -87,7 +87,7 @@ static bool renderAndLoad(video::E_DRIVER_TYPE driverType)
 	driver->draw2DImage(tex1, position2di(0,0));
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureRenderStates.png", 100);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureRenderStates.png", 99.85f);
 
 	device->closeDevice();
 	device->run();
@@ -185,7 +185,7 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	gui->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.8f);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.34f);
 
 	device->closeDevice();
 	device->run();
