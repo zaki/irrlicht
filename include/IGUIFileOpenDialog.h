@@ -14,6 +14,7 @@ namespace gui
 {
 
 	//! Standard file chooser dialog.
+	/** When the user selects a folder this does change the current working directory  */
 	class IGUIFileOpenDialog : public IGUIElement
 	{
 	public:
