@@ -28,7 +28,7 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-drawRectOutline.png", 99.79f );
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-drawRectOutline.png", 98.5f );
 
 	device->closeDevice();
 	device->run();
