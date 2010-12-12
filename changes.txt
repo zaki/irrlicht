@@ -1,5 +1,9 @@
 Changes in 1.8 (??.0?.2010)
 
+ - Speedup deleting of particles
+
+ - Add function IParticleSystemSceneNode::clearParticles
+
  - Add function IGUIEnvironment::removeFont
 
  - Functions in IMeshCache expecting IAnimatedMesh* parameters removed as similar functions with IMesh* can be used since a while. Fixes also problems when IAnimatedMesh* got upcasted to IMesh*. (thx @ Greenya for reporting)

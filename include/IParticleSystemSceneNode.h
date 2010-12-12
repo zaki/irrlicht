@@ -64,6 +64,9 @@ public:
 	Default is true. */
 	virtual void setParticlesAreGlobal(bool global=true) = 0;
 
+	//! Remove all currently visible particles
+	virtual void clearParticles() = 0;
+
 	//! Gets the particle emitter, which creates the particles.
 	/** \return The particle emitter. Can be 0 if none is set. */
 	virtual IParticleEmitter* getEmitter() =0;
