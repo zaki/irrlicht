@@ -190,6 +190,9 @@ public:
 	//! ignore it. Default is true.
 	virtual void setParticlesAreGlobal(bool global=true);
 
+	//! Remove all currently visible particles
+	virtual void clearParticles();
+
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
