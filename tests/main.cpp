@@ -112,7 +112,6 @@ int main(int argumentCount, char * arguments[])
 	TEST(twodmaterial);
 	TEST(viewPort);
 	TEST(mrt);
-	// TODO: Needs to be fixed first.
 	TEST(projectionMatrix);
 	// large scenes/long rendering
 	// shadows are slow
