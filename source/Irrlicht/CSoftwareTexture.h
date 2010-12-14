@@ -28,7 +28,7 @@ public:
 	virtual ~CSoftwareTexture();
 
 	//! lock function
-	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0);
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0);
 
 	//! unlock function
 	virtual void unlock();

@@ -354,11 +354,11 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 
 //! lock function
-void* COpenGLTexture::lock(bool readOnly, u32 mipmapLevel)
+void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
-	ReadOnlyLock |= readOnly;
+	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
 
 	// if data not available or might have changed on GPU download it
@@ -390,48 +390,51 @@ void* COpenGLTexture::lock(bool readOnly, u32 mipmapLevel)
 		if (!image)
 			return 0;
 
-		u8* pixels = static_cast<u8*>(image->lock());
-		if (!pixels)
-			return 0;
-
-		// we need to keep the correct texture bound later on
-		GLint tmpTexture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
-		glBindTexture(GL_TEXTURE_2D, TextureName);
-
-		// allows to read pixels in top-to-bottom order
-#ifdef GL_MESA_pack_invert
-		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
-			glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
-#endif
-
-		// download GPU data as ARGB8 to pixels;
-		glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
-
-#ifdef GL_MESA_pack_invert
-		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
-			glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
-		else
-#endif
+		if (mode != ETLM_WRITE_ONLY)
 		{
-			// opengl images are horizontally flipped, so we have to fix that here.
-			const s32 pitch=image->getPitch();
-			u8* p2 = pixels + (image->getDimension().Height - 1) * pitch;
-			u8* tmpBuffer = new u8[pitch];
-			for (u32 i=0; i < image->getDimension().Height; i += 2)
-			{
-				memcpy(tmpBuffer, pixels, pitch);
-				memcpy(pixels, p2, pitch);
-				memcpy(p2, tmpBuffer, pitch);
-				pixels += pitch;
-				p2 -= pitch;
-			}
-			delete [] tmpBuffer;
-		}
-		image->unlock();
+			u8* pixels = static_cast<u8*>(image->lock());
+			if (!pixels)
+				return 0;
 
-		//reset old bound texture
-		glBindTexture(GL_TEXTURE_2D, tmpTexture);
+			// we need to keep the correct texture bound later on
+			GLint tmpTexture;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
+			glBindTexture(GL_TEXTURE_2D, TextureName);
+
+			// allows to read pixels in top-to-bottom order
+	#ifdef GL_MESA_pack_invert
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
+				glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
+	#endif
+
+			// download GPU data as ARGB8 to pixels;
+			glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
+
+	#ifdef GL_MESA_pack_invert
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
+				glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
+			else
+	#endif
+			{
+				// opengl images are horizontally flipped, so we have to fix that here.
+				const s32 pitch=image->getPitch();
+				u8* p2 = pixels + (image->getDimension().Height - 1) * pitch;
+				u8* tmpBuffer = new u8[pitch];
+				for (u32 i=0; i < image->getDimension().Height; i += 2)
+				{
+					memcpy(tmpBuffer, pixels, pitch);
+					memcpy(pixels, p2, pitch);
+					memcpy(p2, tmpBuffer, pitch);
+					pixels += pitch;
+					p2 -= pitch;
+				}
+				delete [] tmpBuffer;
+			}
+			image->unlock();
+
+			//reset old bound texture
+			glBindTexture(GL_TEXTURE_2D, tmpTexture);
+		}
 	}
 	return image->lock();
 }

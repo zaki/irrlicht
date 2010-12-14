@@ -36,7 +36,7 @@ public:
 	virtual ~CSoftwareTexture2();
 
 	//! lock function
-	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0)
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0)
 	{
 		if (Flags & GEN_MIPMAP)
 			MipMapLOD=mipmapLevel;

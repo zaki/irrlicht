@@ -383,7 +383,7 @@ bool CD3D9Texture::copyTexture(IImage * image)
 
 
 //! lock function
-void* CD3D9Texture::lock(bool readOnly, u32 mipmapLevel)
+void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
 	if (!Texture)
 		return 0;
@@ -393,7 +393,7 @@ void* CD3D9Texture::lock(bool readOnly, u32 mipmapLevel)
 	D3DLOCKED_RECT rect;
 	if(!IsRenderTarget)
 	{
-		hr = Texture->LockRect(mipmapLevel, &rect, 0, readOnly?D3DLOCK_READONLY:0);
+		hr = Texture->LockRect(mipmapLevel, &rect, 0, (mode==ETLM_READ_ONLY)?D3DLOCK_READONLY:0);
 		if (FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
@@ -429,7 +429,7 @@ void* CD3D9Texture::lock(bool readOnly, u32 mipmapLevel)
 			os::Printer::log("Could not lock DIRECT3D9 Texture", "Data copy failed.", ELL_ERROR);
 			return 0;
 		}
-		hr = RTTSurface->LockRect(&rect, 0, readOnly?D3DLOCK_READONLY:0);
+		hr = RTTSurface->LockRect(&rect, 0, (mode==ETLM_READ_ONLY)?D3DLOCK_READONLY:0);
 		if(FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture", "LockRect failed.", ELL_ERROR);

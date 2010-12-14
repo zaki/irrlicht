@@ -1,5 +1,7 @@
 Changes in 1.8 (??.0?.2010)
 
+ - API change: Added write only lock mode for textures. The lock method has changed the signature and uses an enum parameter now instead of a bool. The default is still to lock for read/write (previously 'false'). The old 'true' value should be replaced by ETLM_READ_ONLY.
+
  - Speedup deleting of particles
 
  - Add function IParticleSystemSceneNode::clearParticles

@@ -55,19 +55,19 @@ static bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 	driver->endScene();
 
 	video::ITexture* tex = driver->findTexture("miptest");
-	video::SColor* bits = (video::SColor*)tex->lock(true, 0);
+	video::SColor* bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 0);
 	result |= (bits[0].color==0xff0000ff);
 	tex->unlock();
-	bits = (video::SColor*)tex->lock(true, 1);
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 1);
 	result |= (bits[0].color==0x00ff00ff);
 	tex->unlock();
-	bits = (video::SColor*)tex->lock(true, 2);
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 2);
 	result |= (bits[0].color==0x0000ffff);
 	tex->unlock();
-	bits = (video::SColor*)tex->lock(true, 3);
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
 	result |= (bits[0].color==0xc2c200ff);
 	tex->unlock();
-	bits = (video::SColor*)tex->lock(true, 4);
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 4);
 	result |= (bits[0].color==0x001212ff);
 	tex->unlock();
 	
