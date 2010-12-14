@@ -61,7 +61,7 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 	driver->endScene();
 
-	result = takeScreenshotAndCompareAgainstReference(driver, "-projMat.png");
+	result = takeScreenshotAndCompareAgainstReference(driver, "-projMat.png", 98.71f);
 
 	device->closeDevice();
 	device->run();
