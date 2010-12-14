@@ -1086,7 +1086,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 	if (texture->getColorFormat() == ECF_A1R5G5B5)
 	{
-		u16 *p = (u16*)texture->lock(true);
+		u16 *p = (u16*)texture->lock(ETLM_READ_ONLY);
 
 		if (!p)
 		{
@@ -1102,7 +1102,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 	}
 	else
 	{
-		u32 *p = (u32*)texture->lock(true);
+		u32 *p = (u32*)texture->lock(ETLM_READ_ONLY);
 
 		if (!p)
 		{
@@ -1442,7 +1442,7 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 {
 	if ((pos==core::position2di(0,0)) && (size == texture->getSize()))
 	{
-		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(true), false);
+		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(ETLM_READ_ONLY), false);
 		texture->unlock();
 		return image;
 	}
@@ -1457,7 +1457,7 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 					core::clamp(static_cast<u32>(size.Height), 0u, texture->getSize().Height)));
 		if (!clamped.isValid())
 			return 0;
-		u8* src = static_cast<u8*>(texture->lock(true));
+		u8* src = static_cast<u8*>(texture->lock(ETLM_READ_ONLY));
 		if (!src)
 			return 0;
 		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
