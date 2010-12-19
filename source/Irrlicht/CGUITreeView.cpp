@@ -583,10 +583,10 @@ void CGUITreeView::recalculateItemHeight()
 	}
 
 	if ( ScrollBarV )
-		ScrollBarV->setMax( TotalItemHeight - AbsoluteRect.getHeight() );
+		ScrollBarV->setMax( core::max_(0,TotalItemHeight - AbsoluteRect.getHeight()) );
 
 	if ( ScrollBarH )
-		ScrollBarH->setMax( TotalItemWidth - AbsoluteRect.getWidth() );
+		ScrollBarH->setMax( core::max_(0, TotalItemWidth - AbsoluteRect.getWidth()) );
 
 }
 

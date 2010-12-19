@@ -1935,7 +1935,7 @@ void CQuake3EventHandler::Render()
 		driver->beginScene(true, true, SColor(0,0,0,0));
 		driver->getOverrideMaterial().Material.ColorMask = ECP_NONE;
 		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
-        driver->getOverrideMaterial().EnablePasses = ESNRP_SKY_BOX + 
+        driver->getOverrideMaterial().EnablePasses = ESNRP_SKY_BOX +
                                                      ESNRP_SOLID +
                                                      ESNRP_TRANSPARENT +
                                                      ESNRP_TRANSPARENT_EFFECT +
@@ -1961,7 +1961,7 @@ void CQuake3EventHandler::Render()
 
 		driver->getOverrideMaterial().Material.ColorMask = ECP_RED;
 		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
-		driver->getOverrideMaterial().EnablePasses = 
+		driver->getOverrideMaterial().EnablePasses =
 				ESNRP_SKY_BOX|ESNRP_SOLID|ESNRP_TRANSPARENT|
 				ESNRP_TRANSPARENT_EFFECT|ESNRP_SHADOW;
 
@@ -1977,7 +1977,7 @@ void CQuake3EventHandler::Render()
 
 		driver->getOverrideMaterial().Material.ColorMask = ECP_GREEN + ECP_BLUE;
 		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
-		driver->getOverrideMaterial().EnablePasses = 
+		driver->getOverrideMaterial().EnablePasses =
 				ESNRP_SKY_BOX|ESNRP_SOLID|ESNRP_TRANSPARENT|
 				ESNRP_TRANSPARENT_EFFECT|ESNRP_SHADOW;
 

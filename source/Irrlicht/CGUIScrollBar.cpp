@@ -406,7 +406,9 @@ s32 CGUIScrollBar::getMax() const
 //! sets the maximum value of the scrollbar.
 void CGUIScrollBar::setMax(s32 max)
 {
-	Max = core::max_ ( max, Min );
+	Max = max;
+	if ( Min > Max )
+		Min = Max;
 
 	bool enable = core::isnotzero ( range() );
 	UpButton->setEnabled(enable);
@@ -424,7 +426,10 @@ s32 CGUIScrollBar::getMin() const
 //! sets the minimum value of the scrollbar.
 void CGUIScrollBar::setMin(s32 min)
 {
-	Min = core::min_ ( min, Max );
+	Min = min;
+	if ( Max < Min )
+		Max = Min;
+
 
 	bool enable = core::isnotzero ( range() );
 	UpButton->setEnabled(enable);

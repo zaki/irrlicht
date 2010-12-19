@@ -588,9 +588,6 @@ ISceneNode* CSceneManager::addWaterSurfaceSceneNode(IMesh* mesh, f32 waveHeight,
 	ISceneNode* parent, s32 id, const core::vector3df& position,
 	const core::vector3df& rotation, const core::vector3df& scale)
 {
-	if (!mesh)
-		return 0;
-
 	if (!parent)
 		parent = this;
 

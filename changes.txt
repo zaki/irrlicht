@@ -1,4 +1,4 @@
-Changes in 1.8 (??.0?.2010)
+Changes in 1.8 (??.??.2011)
 
  - API change: Added write only lock mode for textures. The lock method has changed the signature and uses an enum parameter now instead of a bool. The default is still to lock for read/write (previously 'false'). The old 'true' value should be replaced by ETLM_READ_ONLY.
 
@@ -143,14 +143,32 @@ Changes in 1.8 (??.0?.2010)
 - WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
 
 -----------------------------
-Changes maybe still for 1.7.2 - or is that out already?
+Changes in 1.7.3 (??.??.2011)
+
+ - Tab-positions care now about the borders correctly
+
+ - TabControl now respositions it's tabs when setTabVerticalAlignment is changed (thx @ ceyron for reporting+testcase)
+
+ - CGUIModalScreen now no longer takes focus itself, but tries to give it first child when possible to fix modal windows losing focus all the time
+
+ - Modal screens no longer blinks when gui-elements call removeFocus on themself (thx @ yaten for reporting+testcase)
+
+ - Fix crash in multiline-editbox when selecting with mouse (thx @ ceyron for reporting and testcase)
+
+ - Q3 maps no longer crash when faces try accessing lightmaps which are not mentioned to be loaded in the file.
+
+ - Get particles saved before 1.7.2 (for example in irrEdit) working again (thx to smashly for problem reporting)
+ 
+ - Fix IGUIScrollBar setMax and setMin which had been restricted wrongly (reported by REDDemon)
+
+ - Fix CNullDriver::createImage - Creating the image from a texture-rectangle which doesn't start at 0,0 works now again (thx @ ceyron for bugreport+testcase)
 
  - Menu no longer sets highlight state when clicking disabled menu-item (reported by Mloren)
 
  - Treeview can now be disabled
 
 -----------------------------
-Changes in 1.7.2 (??.??.2010)
+Changes in 1.7.2 (15.11.2010)
 
  - Fix blend mode setup in OpenGL driver, when using the material2d override, as pointed out by Auria
 

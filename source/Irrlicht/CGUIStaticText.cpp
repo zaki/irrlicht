@@ -309,15 +309,15 @@ void CGUIStaticText::breakText()
 			if (word.size())
 			{
 				// here comes the next whitespace, look if
-				// we can break the last word to the next line.
-				s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
-				s32 worldlgth = font->getDimension(word.c_str()).Width;
+				// we must break the last word to the next line.
+				const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
+				const s32 wordlgth = font->getDimension(word.c_str()).Width;
 
-				if (length + worldlgth + whitelgth > elWidth)
+				if (length && (length + wordlgth + whitelgth > elWidth))
 				{
 					// break to next line
-					length = worldlgth;
 					BrokenText.push_back(line);
+					length = wordlgth;
 					line = word;
 				}
 				else
@@ -325,7 +325,7 @@ void CGUIStaticText::breakText()
 					// add word to line
 					line += whitespace;
 					line += word;
-					length += whitelgth + worldlgth;
+					length += whitelgth + wordlgth;
 				}
 
 				word = L"";

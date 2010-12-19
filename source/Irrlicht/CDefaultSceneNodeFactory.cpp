@@ -49,6 +49,7 @@ CDefaultSceneNodeFactory::CDefaultSceneNodeFactory(ISceneManager* mgr)
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_BILLBOARD, "billBoard"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_ANIMATED_MESH, "animatedMesh"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_PARTICLE_SYSTEM, "particleSystem"));
+	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_VOLUME_LIGHT, "volumeLight"));
 	// SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_MD3_SCENE_NODE, "md3"));
 
 	// legacy, for version <= 1.4.x irr files
@@ -108,6 +109,8 @@ ISceneNode* CDefaultSceneNodeFactory::addSceneNode(ESCENE_NODE_TYPE type, IScene
 												 core::vector3df(), core::vector3df(1,1,1), true);
 	case ESNT_PARTICLE_SYSTEM:
 		return Manager->addParticleSystemSceneNode(true, parent);
+	case ESNT_VOLUME_LIGHT:
+		return (ISceneNode*)Manager->addVolumeLightSceneNode(parent);
 	default:
 		break;
 	}

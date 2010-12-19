@@ -77,7 +77,7 @@ namespace scene
 
 		core::array<video::SMaterial> Materials;
 		core::aabbox3d<f32> Box;
-		video::SMaterial tmpReadOnlyMaterial;
+		video::SMaterial ReadOnlyMaterial;
 
 		IMesh* Mesh;
 

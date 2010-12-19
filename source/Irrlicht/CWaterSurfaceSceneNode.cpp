@@ -29,13 +29,13 @@ CWaterSurfaceSceneNode::CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f3
 	#endif
 
 	// create copy of the mesh
-	if (!mesh)
-		return;
-
-	// Mesh is set in CMeshSceneNode constructor, now it is moved to OriginalMesh
-	IMesh* clone = SceneManager->getMeshManipulator()->createMeshCopy(mesh);
-	OriginalMesh = Mesh;
-	Mesh = clone;
+	if (mesh)
+	{
+		// Mesh is set in CMeshSceneNode constructor, now it is moved to OriginalMesh
+		IMesh* clone = SceneManager->getMeshManipulator()->createMeshCopy(mesh);
+		OriginalMesh = Mesh;
+		Mesh = clone;
+	}
 }
 
 

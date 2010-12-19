@@ -12,6 +12,7 @@ namespace irr
 namespace video
 {
 	class IMaterialRendererServices;
+	class SMaterial;
 
 //! Interface making it possible to set constants for gpu programs every frame.
 /** Implement this interface in an own class and pass a pointer to it to one of

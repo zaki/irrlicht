@@ -273,6 +273,8 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 			// init with 0
 			for (i=0;i<mesh->Vertices.size();++i)
 			{
+				// watch out for vertices which are not part of the mesh
+				// they will keep the -1 and can lead to out-of-bounds access
 				verticesLinkBuffer[i]=-1;
 			}
 
@@ -305,7 +307,10 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				memset(vCountArray, 0, mesh->Buffers.size()*sizeof(u32));
 				// count vertices in each buffer and reallocate
 				for (i=0; i<mesh->Vertices.size(); ++i)
-					++vCountArray[verticesLinkBuffer[i]];
+				{
+					if (verticesLinkBuffer[i] != -1)
+						++vCountArray[verticesLinkBuffer[i]];
+				}
 				if (mesh->TCoords2.size())
 				{
 					for (i=0; i!=mesh->Buffers.size(); ++i)
@@ -324,6 +329,9 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				// actually store vertices
 				for (i=0; i<mesh->Vertices.size(); ++i)
 				{
+					// if a vertex is missing for some reason, just skip it
+					if (verticesLinkBuffer[i]==-1)
+						continue;
 					scene::SSkinMeshBuffer *buffer = mesh->Buffers[ verticesLinkBuffer[i] ];
 
 					if (mesh->TCoords2.size())

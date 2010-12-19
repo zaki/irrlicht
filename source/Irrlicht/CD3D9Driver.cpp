@@ -1022,58 +1022,55 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 	const u32 vertexCount=mb->getVertexCount();
 	const E_VERTEX_TYPE vType=mb->getVertexType();
 	const u32 vertexSize = getVertexPitchFromType(vType);
+	const u32 bufSize = vertexSize * vertexCount;
 
-	void* pLockedBuffer = 0;
-
-	if (!hwBuffer->vertexBuffer || vertexSize * vertexCount > hwBuffer->vertexBufferSize)
+	if (!hwBuffer->vertexBuffer || (bufSize > hwBuffer->vertexBufferSize))
 	{
-		DWORD flags = 0;
+		if (hwBuffer->vertexBuffer)
+		{
+			hwBuffer->vertexBuffer->Release();
+			hwBuffer->vertexBuffer=0;
+		}
 
-		u32 vertexSize;
 		DWORD FVF;
-
 		// Get the vertex sizes and cvf
 		switch (vType)
 		{
 			case EVT_STANDARD:
-				vertexSize = sizeof(S3DVertex);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 				break;
 			case EVT_2TCOORDS:
-				vertexSize = sizeof(S3DVertex2TCoords);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2;
 				break;
 			case EVT_TANGENTS:
-				vertexSize = sizeof(S3DVertexTangents);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX3;
 				break;
 			default:
 				return false;
 		}
 
-		flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
+		DWORD flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
 		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC;
 
-		pID3DDevice->CreateVertexBuffer(vertexCount * vertexSize, flags, FVF, D3DPOOL_DEFAULT, &hwBuffer->vertexBuffer, NULL);
-
-		if(!hwBuffer->vertexBuffer)
+		if (FAILED(pID3DDevice->CreateVertexBuffer(bufSize, flags, FVF, D3DPOOL_DEFAULT, &hwBuffer->vertexBuffer, NULL)))
 			return false;
+		hwBuffer->vertexBufferSize = bufSize;
 
 		flags = 0; // SIO2: Reset flags before Lock
 		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags = D3DLOCK_DISCARD;
 
-		hwBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, flags);
-		memcpy(pLockedBuffer, vertices, vertexCount * vertexSize);
+		void* lockedBuffer = 0;
+		hwBuffer->vertexBuffer->Lock(0, bufSize, (void**)&lockedBuffer, flags);
+		memcpy(lockedBuffer, vertices, bufSize);
 		hwBuffer->vertexBuffer->Unlock();
-
-		hwBuffer->vertexBufferSize = vertexCount * vertexSize;
 	}
 	else
 	{
-		hwBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, D3DLOCK_DISCARD);
-		memcpy(pLockedBuffer, vertices, vertexCount * vertexSize);
+		void* lockedBuffer = 0;
+		hwBuffer->vertexBuffer->Lock(0, bufSize, (void**)&lockedBuffer, D3DLOCK_DISCARD);
+		memcpy(lockedBuffer, vertices, bufSize);
 		hwBuffer->vertexBuffer->Unlock();
 	}
 
@@ -1093,13 +1090,13 @@ bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 	D3DFORMAT indexType=D3DFMT_UNKNOWN;
 	switch (mb->getIndexType())
 	{
-		case (EIT_16BIT):
+		case EIT_16BIT:
 		{
 			indexType=D3DFMT_INDEX16;
 			indexSize = 2;
 			break;
 		}
-		case (EIT_32BIT):
+		case EIT_32BIT:
 		{
 			indexType=D3DFMT_INDEX32;
 			indexSize = 4;
@@ -1107,37 +1104,41 @@ bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 		}
 	}
 
-	if (!hwBuffer->indexBuffer || indexSize * indexCount > hwBuffer->indexBufferSize)
+	const u32 bufSize = indexSize * indexCount;
+	if (!hwBuffer->indexBuffer || (bufSize > hwBuffer->indexBufferSize))
 	{
-		DWORD flags = 0;
+		if (hwBuffer->indexBuffer)
+		{
+			hwBuffer->indexBuffer->Release();
+			hwBuffer->indexBuffer=0;
+		}
 
-		flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
-		if(hwBuffer->Mapped_Index != scene::EHM_STATIC)
+		DWORD flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
+		if (hwBuffer->Mapped_Index != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC; // SIO2: Add DYNAMIC flag for dynamic buffer data
 
-		if(FAILED(pID3DDevice->CreateIndexBuffer( indexCount * indexSize, flags, indexType, D3DPOOL_DEFAULT, &hwBuffer->indexBuffer, NULL)))
+		if (FAILED(pID3DDevice->CreateIndexBuffer(bufSize, flags, indexType, D3DPOOL_DEFAULT, &hwBuffer->indexBuffer, NULL)))
 			return false;
-
-		void* pIndices = 0;
 
 		flags = 0; // SIO2: Reset flags before Lock
-		if(hwBuffer->Mapped_Index != scene::EHM_STATIC)
+		if (hwBuffer->Mapped_Index != scene::EHM_STATIC)
 			flags = D3DLOCK_DISCARD;
 
-		if(FAILED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, flags)))
+		void* lockedBuffer = 0;
+		if (FAILED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&lockedBuffer, flags)))
 			return false;
 
-		memcpy(pIndices, indices, indexCount * indexSize);
+		memcpy(lockedBuffer, indices, bufSize);
 		hwBuffer->indexBuffer->Unlock();
 
-		hwBuffer->indexBufferSize = indexCount * indexSize;
+		hwBuffer->indexBufferSize = bufSize;
 	}
 	else
 	{
-		void* pIndices = 0;
-		if( SUCCEEDED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, D3DLOCK_DISCARD)))
+		void* lockedBuffer = 0;
+		if( SUCCEEDED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&lockedBuffer, D3DLOCK_DISCARD)))
 		{
-			memcpy(pIndices, indices, indexCount * indexSize);
+			memcpy(lockedBuffer, indices, bufSize);
 			hwBuffer->indexBuffer->Unlock();
 		}
 	}
@@ -1157,7 +1158,6 @@ bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *hwBuffer)
 		if (hwBuffer->ChangedID_Vertex != hwBuffer->MeshBuffer->getChangedID_Vertex()
 			|| !((SHWBufferLink_d3d9*)hwBuffer)->vertexBuffer)
 		{
-
 			hwBuffer->ChangedID_Vertex = hwBuffer->MeshBuffer->getChangedID_Vertex();
 
 			if (!updateVertexHardwareBuffer((SHWBufferLink_d3d9*)hwBuffer))
@@ -1170,7 +1170,6 @@ bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *hwBuffer)
 		if (hwBuffer->ChangedID_Index != hwBuffer->MeshBuffer->getChangedID_Index()
 			|| !((SHWBufferLink_d3d9*)hwBuffer)->indexBuffer)
 		{
-
 			hwBuffer->ChangedID_Index = hwBuffer->MeshBuffer->getChangedID_Index();
 
 			if (!updateIndexHardwareBuffer((SHWBufferLink_d3d9*)hwBuffer))
@@ -1215,7 +1214,8 @@ CD3D9Driver::SHWBufferLink *CD3D9Driver::createHardwareBuffer(const scene::IMesh
 
 void CD3D9Driver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
-	if (!_HWBuffer) return;
+	if (!_HWBuffer)
+		return;
 
 	SHWBufferLink_d3d9 *HWBuffer=(SHWBufferLink_d3d9*)_HWBuffer;
 	if (HWBuffer->indexBuffer)
@@ -1249,8 +1249,10 @@ void CD3D9Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const E_VERTEX_TYPE vType = mb->getVertexType();
 	const u32 stride = getVertexPitchFromType(vType);
-	if (HWBuffer->vertexBuffer) pID3DDevice->SetStreamSource(0, HWBuffer->vertexBuffer, 0, stride);
-	if (HWBuffer->indexBuffer) pID3DDevice->SetIndices(HWBuffer->indexBuffer);
+	if (HWBuffer->vertexBuffer)
+		pID3DDevice->SetStreamSource(0, HWBuffer->vertexBuffer, 0, stride);
+	if (HWBuffer->indexBuffer)
+		pID3DDevice->SetIndices(HWBuffer->indexBuffer);
 
 	drawVertexPrimitiveList(0, mb->getVertexCount(), 0, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
 
