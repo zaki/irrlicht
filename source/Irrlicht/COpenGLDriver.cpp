@@ -158,7 +158,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 
 	GLuint PixelFormat;
 
-	for (u32 i=0; i<5; ++i)
+	for (u32 i=0; i<6; ++i)
 	{
 		if (i == 1)
 		{

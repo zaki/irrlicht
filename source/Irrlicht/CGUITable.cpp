@@ -457,7 +457,7 @@ void CGUITable::checkScrollbars()
 	{
 		clientClip.LowerRightCorner.Y -= scrollBarSize;
 		HorizontalScrollBar->setVisible(true);
-		HorizontalScrollBar->setMax(TotalItemWidth - clientClip.getWidth());
+		HorizontalScrollBar->setMax(core::max_(0,TotalItemWidth - clientClip.getWidth()));
 	}
 
 	// needs vertical scroll be visible?
@@ -465,7 +465,7 @@ void CGUITable::checkScrollbars()
 	{
 		clientClip.LowerRightCorner.X -= scrollBarSize;
 		VerticalScrollBar->setVisible(true);
-		VerticalScrollBar->setMax(TotalItemHeight - clientClip.getHeight());
+		VerticalScrollBar->setMax(core::max_(0,TotalItemHeight - clientClip.getHeight()));
 
 		// check horizontal again because we have now smaller clientClip
 		if ( !HorizontalScrollBar->isVisible() )
@@ -474,7 +474,7 @@ void CGUITable::checkScrollbars()
 			{
 				clientClip.LowerRightCorner.Y -= scrollBarSize;
 				HorizontalScrollBar->setVisible(true);
-				HorizontalScrollBar->setMax(TotalItemWidth - clientClip.getWidth());
+				HorizontalScrollBar->setMax(core::max_(0,TotalItemWidth - clientClip.getWidth()));
 			}
 		}
 	}

@@ -88,14 +88,27 @@ bool CGUIModalScreen::OnEvent(const SEvent& event)
 		case EGET_ELEMENT_FOCUSED:
 			if ( !canTakeFocus(event.GUIEvent.Caller))
 			{
-				Environment->setFocus(this);
+				if ( !Children.empty() )
+					Environment->setFocus(*(Children.begin()));
+				else
+					Environment->setFocus(this);
 			}
 			IGUIElement::OnEvent(event);
 			return false;
 		case EGET_ELEMENT_FOCUS_LOST:
 			if ( !canTakeFocus(event.GUIEvent.Element))
             {
-				MouseDownTime = os::Timer::getTime();
+            	if ( isMyChild(event.GUIEvent.Caller) )
+				{
+					if ( !Children.empty() )
+						Environment->setFocus(*(Children.begin()));
+					else
+						Environment->setFocus(this);
+				}
+				else
+				{
+					MouseDownTime = os::Timer::getTime();
+				}
 				return true;
 			}
 			else
@@ -118,7 +131,7 @@ bool CGUIModalScreen::OnEvent(const SEvent& event)
 		break;
 	}
 
-	IGUIElement::OnEvent(event);
+	IGUIElement::OnEvent(event);	// anyone knows why events are passed on here? Causes p.e. problems when this is child of a CGUIWindow.
 
 	return true; // absorb everything else
 }

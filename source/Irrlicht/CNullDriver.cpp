@@ -434,7 +434,7 @@ ITexture* CNullDriver::getTexture(const io::path& filename)
 	// Now try to open the file using the complete path.
 	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath);
 
-	if(!file)
+	if (!file)
 	{
 		// Try to open it using the raw filename.
 		file = FileSystem->createAndOpenFile(filename);
@@ -489,10 +489,10 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 			addTexture(texture);
 			texture->drop(); // drop it because we created it, one grab too much
 		}
-	}
 
-	if (!texture)
-		os::Printer::log("Could not load texture", file->getFileName(), ELL_WARNING);
+		if (!texture)
+			os::Printer::log("Could not load texture", file->getFileName(), ELL_WARNING);
+	}
 
 	return texture;
 }
@@ -1462,7 +1462,8 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 			return 0;
 		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
 		u8* dst = static_cast<u8*>(image->lock());
-		for (u32 i=clamped.UpperLeftCorner.Y; i<clamped.getHeight(); ++i)
+		src += clamped.UpperLeftCorner.Y * texture->getPitch() + image->getBytesPerPixel() * clamped.UpperLeftCorner.X;
+		for (u32 i=0; i<clamped.getHeight(); ++i)
 		{
 			video::CColorConverter::convert_viaFormat(src, texture->getColorFormat(), clamped.getWidth(), dst, image->getColorFormat());
 			src += texture->getPitch();

@@ -148,10 +148,19 @@ void CParticleBoxEmitter::deserializeAttributes(io::IAttributes* in, io::SAttrib
 	if (Direction.getLength() == 0)
 		Direction.set(0,0.01f,0);
 
-	MinStartSize.Width = in->getAttributeAsFloat("MinStartSizeWidth");
-	MinStartSize.Height = in->getAttributeAsFloat("MinStartSizeHeight");
-	MaxStartSize.Width = in->getAttributeAsFloat("MaxStartSizeWidth");
-	MaxStartSize.Height = in->getAttributeAsFloat("MaxStartSizeHeight"); 
+	int idx = -1;
+	idx = in->findAttribute("MinStartSizeWidth");
+	if ( idx >= 0 )
+		MinStartSize.Width = in->getAttributeAsFloat(idx);
+	idx = in->findAttribute("MinStartSizeHeight");
+	if ( idx >= 0 )
+		MinStartSize.Height = in->getAttributeAsFloat(idx);
+	idx = in->findAttribute("MaxStartSizeWidth");
+	if ( idx >= 0 )
+		MaxStartSize.Width = in->getAttributeAsFloat(idx);
+	idx = in->findAttribute("MaxStartSizeHeight");
+	if ( idx >= 0 )
+		MaxStartSize.Height = in->getAttributeAsFloat(idx); 
 
 	MinParticlesPerSecond = in->getAttributeAsInt("MinParticlesPerSecond");
 	MaxParticlesPerSecond = in->getAttributeAsInt("MaxParticlesPerSecond");

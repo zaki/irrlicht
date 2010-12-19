@@ -27,9 +27,10 @@ namespace scene
 //! constructor
 CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr,
 				const Q3LevelLoadParameter &loadParam)
-	: LoadParam(loadParam), Textures(0), LightMaps(0),
-	Vertices(0), Faces(0),	Planes(0), Nodes(0), Leafs(0), LeafFaces(0),
-	MeshVerts(0), Brushes(0), FileSystem(fs), SceneManager(smgr)
+	: LoadParam(loadParam), Textures(0), NumTextures(0), LightMaps(0), NumLightMaps(0),
+	Vertices(0), NumVertices(0), Faces(0), NumFaces(0),	Planes(0), NumPlanes(0),
+	Nodes(0), NumNodes(0), Leafs(0), NumLeafs(0), LeafFaces(0), NumLeafFaces(0),
+	MeshVerts(0), NumMeshVerts(0), Brushes(0), NumBrushes(0), FileSystem(fs), SceneManager(smgr)
 {
 	#ifdef _DEBUG
 	IReferenceCounted::setDebugName("CQ3LevelMesh");
@@ -197,6 +198,8 @@ IMesh* CQ3LevelMesh::getMesh(s32 frameInMs, s32 detailLevel, s32 startFrameLoop,
 void CQ3LevelMesh::loadTextures(tBSPLump* l, io::IReadFile* file)
 {
 	NumTextures = l->length / sizeof(tBSPTexture);
+	if ( !NumTextures )
+		return;
 	Textures = new tBSPTexture[NumTextures];
 
 	file->seek(l->offset);
@@ -217,6 +220,8 @@ void CQ3LevelMesh::loadTextures(tBSPLump* l, io::IReadFile* file)
 void CQ3LevelMesh::loadLightmaps(tBSPLump* l, io::IReadFile* file)
 {
 	NumLightMaps = l->length / sizeof(tBSPLightmap);
+	if ( !NumLightMaps )
+		return;
 	LightMaps = new tBSPLightmap[NumLightMaps];
 
 	file->seek(l->offset);
@@ -228,6 +233,8 @@ void CQ3LevelMesh::loadLightmaps(tBSPLump* l, io::IReadFile* file)
 void CQ3LevelMesh::loadVerts(tBSPLump* l, io::IReadFile* file)
 {
 	NumVertices = l->length / sizeof(tBSPVertex);
+	if ( !NumVertices )
+		return;
 	Vertices = new tBSPVertex[NumVertices];
 
 	file->seek(l->offset);
@@ -255,6 +262,8 @@ void CQ3LevelMesh::loadVerts(tBSPLump* l, io::IReadFile* file)
 void CQ3LevelMesh::loadFaces(tBSPLump* l, io::IReadFile* file)
 {
 	NumFaces = l->length / sizeof(tBSPFace);
+	if (!NumFaces)
+		return;
 	Faces = new tBSPFace[NumFaces];
 
 	file->seek(l->offset);
@@ -395,6 +404,8 @@ void CQ3LevelMesh::loadModels(tBSPLump* l, io::IReadFile* file)
 void CQ3LevelMesh::loadMeshVerts(tBSPLump* l, io::IReadFile* file)
 {
 	NumMeshVerts = l->length / sizeof(s32);
+	if (!NumMeshVerts)
+		return;
 	MeshVerts = new s32[NumMeshVerts];
 
 	file->seek(l->offset);
@@ -718,13 +729,13 @@ s32 CQ3LevelMesh::setShaderMaterial( video::SMaterial &material, const tBSPFace 
 
 	s32 shaderState = -1;
 
-	if ( face->textureID >= 0 )
+	if ( face->textureID >= 0 && face->textureID < (s32)Tex.size() )
 	{
 		material.setTexture(0, Tex [ face->textureID ].Texture);
 		shaderState = Tex [ face->textureID ].ShaderID;
 	}
 
-	if ( face->lightmapID >= 0 )
+	if ( face->lightmapID >= 0 && face->lightmapID < (s32)Lightmap.size() )
 	{
 		material.setTexture(1, Lightmap [ face->lightmapID ]);
 		material.MaterialType = LoadParam.defaultLightMapMaterial;
@@ -1834,7 +1845,7 @@ void CQ3LevelMesh::loadTextures()
 	s32 t;
 
 	// load lightmaps.
-	Lightmap.set_used(NumLightMaps+1);
+	Lightmap.set_used(NumLightMaps);
 
 /*
 	bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
@@ -1859,7 +1870,7 @@ void CQ3LevelMesh::loadTextures()
 //	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
 
 	// load textures
-	Tex.set_used( NumTextures+1 );
+	Tex.set_used( NumTextures );
 
 	const IShader* shader;
 

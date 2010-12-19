@@ -39,6 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib"
 				OutputFile="..\..\bin\Win32-VisualStudio\14.Win32Window.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="TRUE"
@@ -101,6 +102,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib"
 				OutputFile="..\..\bin\Win32-VisualStudio\14.Win32Window.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="TRUE"

@@ -100,7 +100,7 @@ public:
 	//! copies this surface into another, scaling it to fit, appyling a box filter
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false);
 
-	//! fills the surface with black or white
+	//! fills the surface with given color
 	virtual void fill(const SColor &color);
 
 	//! draws a rectangle

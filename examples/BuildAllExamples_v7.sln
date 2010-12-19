@@ -103,6 +103,26 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo", "Demo\Demo.vcproj", 
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "18.SplitScreen", "18.SplitScreen\SplitScreen.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "23.SMeshHandling", "23.SMeshHandling\SMeshHandling.vcproj", "{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "22.MaterialViewer", "22.MaterialViewer\MaterialViewer.vcproj", "{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI Editor", "..\tools\GUIEditor\GUI Editor_v7.vcproj", "{853A396E-C031-4C26-A716-5B4E176BE11D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Font Tool", "..\tools\IrrFontTool\newFontTool\irrFontTool_v7.vcproj", "{853A396E-C031-4C26-A716-5B4E176BE11D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -191,6 +211,26 @@ Global
 		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Debug.Build.0 = Debug|Win32
 		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Release.ActiveCfg = Release|Win32
 		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Release.Build.0 = Release|Win32
+		{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}.Debug.ActiveCfg = Debug|Win32
+		{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}.Debug.Build.0 = Debug|Win32
+		{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}.Release.ActiveCfg = Release|Win32
+		{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}.Release.Build.0 = Release|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Debug.ActiveCfg = Debug|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Debug.Build.0 = Debug|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Release.ActiveCfg = Release|Win32
+		{6AEC2AA2-C9FF-4B7D-B07A-94A9D34B41D7}.Release.Build.0 = Release|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Debug.ActiveCfg = Debug|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Debug.Build.0 = Debug|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Release.ActiveCfg = Release|Win32
+		{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}.Release.Build.0 = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug.ActiveCfg = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug.Build.0 = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release.ActiveCfg = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release.Build.0 = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug.ActiveCfg = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug.Build.0 = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release.ActiveCfg = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

@@ -1056,7 +1056,7 @@ s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
 
-	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	s32 idx = txtLine ? font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X) : -1;
 
 	// click was on or left of the line
 	if (idx != -1)
