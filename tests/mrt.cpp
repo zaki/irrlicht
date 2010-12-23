@@ -63,7 +63,24 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 		driver->endScene();
 
 		result = takeScreenshotAndCompareAgainstReference(driver, "-mrt.png");
+
+		driver->beginScene (true, true, video::SColor (255, 200, 200, 200));
+		// render
+		device->getSceneManager()->getActiveCamera()->setPosition(core::vector3df(0,5,0));
+		driver->setRenderTarget( gbufferlist );
+		device->getSceneManager()->drawAll();
+		driver->setRenderTarget(0);
+
+		// draw debug rt
+		driver->draw2DImage(gbuffer[0], core::position2d<s32>(0,0));
+		driver->draw2DImage(gbuffer[1], core::position2d<s32>(64,0));
+		driver->draw2DImage(gbuffer[2], core::position2d<s32>(128,0)); 
+
+		driver->endScene();
+
+		result |= takeScreenshotAndCompareAgainstReference(driver, "-mrt2.png");
 	}
+
 	device->closeDevice();
 	device->run();
 	device->drop();
