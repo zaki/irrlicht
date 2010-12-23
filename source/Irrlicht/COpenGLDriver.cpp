@@ -3828,7 +3828,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	if (CurrentTarget==ERT_MULTI_RENDER_TEXTURES)
 	{
-		for (u32 i=0; i<MRTargets.size(); ++i)
+		for (u32 i=1; i<MRTargets.size(); ++i)
 		{
 			if (MRTargets[i].TargetType==ERT_RENDER_TEXTURE)
 			{
