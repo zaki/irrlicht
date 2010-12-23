@@ -630,7 +630,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 #ifdef GL_EXT_framebuffer_object
 	// generate frame buffer
 	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+	bindRTT();
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
@@ -675,6 +675,7 @@ void COpenGLFBOTexture::bindRTT()
 #ifdef GL_EXT_framebuffer_object
 	if (ColorFrameBuffer != 0)
 		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
 #endif
 }
 
@@ -697,7 +698,7 @@ COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 		const io::path& name,
 		COpenGLDriver* driver,
 		bool useStencil)
-	: COpenGLFBOTexture(size, name, driver), DepthRenderBuffer(0),
+	: COpenGLTexture(name, driver), DepthRenderBuffer(0),
 	StencilRenderBuffer(0), UseStencil(useStencil)
 {
 #ifdef _DEBUG
@@ -733,19 +734,14 @@ COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, ImageSize.Width,
 				ImageSize.Height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
 
-			// we 're in trouble! the code below does not complete
-			// the FBO currently...  stencil buffer is only
-			// supported with EXT_packed_depth_stencil extension
-			// (above)
-
-//			// generate stencil texture
-//			glGenTextures(1, &StencilRenderBuffer);
-//			glBindTexture(GL_TEXTURE_2D, StencilRenderBuffer);
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//			glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX, ImageSize.Width,
-//			ImageSize.Height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 0);
-//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			// generate stencil texture
+			glGenTextures(1, &StencilRenderBuffer);
+			glBindTexture(GL_TEXTURE_2D, StencilRenderBuffer);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX, ImageSize.Width,
+				ImageSize.Height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 0);
 		}
 	}
 #ifdef GL_EXT_framebuffer_object
@@ -889,6 +885,7 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 	}
 #endif
 	os::Printer::log("FBO error", ELL_ERROR);
+	_IRR_DEBUG_BREAK_IF(true);
 	return false;
 }
 

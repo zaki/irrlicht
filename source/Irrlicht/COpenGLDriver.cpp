@@ -3828,11 +3828,11 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	if (CurrentTarget==ERT_MULTI_RENDER_TEXTURES)
 	{
-		for (u32 i=1; i<MRTargets.size(); ++i)
+		for (u32 i=0; i<MRTargets.size(); ++i)
 		{
 			if (MRTargets[i].TargetType==ERT_RENDER_TEXTURE)
 			{
-				for (; i<MRTargets.size(); ++i)
+				for (++i; i<MRTargets.size(); ++i)
 					if (MRTargets[i].TargetType==ERT_RENDER_TEXTURE)
 						extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT+i, GL_TEXTURE_2D, 0, 0);
 			}
@@ -3870,6 +3870,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		// we need to update the matrices due to the rendersize change.
 		Transformation3DChanged=true;
 	}
+
 	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
 
 	return true;
@@ -3994,7 +3995,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 #ifdef GL_EXT_framebuffer_object
 				// attach texture to FrameBuffer Object on Color [i]
 				attachment = GL_COLOR_ATTACHMENT0_EXT+i;
-				if (targets[i].RenderTexture != RenderTargetTexture)
+				if ((i != 0) && (targets[i].RenderTexture != RenderTargetTexture))
 					extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, attachment, GL_TEXTURE_2D, static_cast<COpenGLTexture*>(targets[i].RenderTexture)->getOpenGLTextureName(), 0);
 #endif
 				MRTs[i]=attachment;

@@ -172,7 +172,7 @@ protected:
 
 
 //! OpenGL FBO depth texture.
-class COpenGLFBODepthTexture : public COpenGLFBOTexture
+class COpenGLFBODepthTexture : public COpenGLTexture
 {
 public:
 	//! FrameBufferObject depth constructor

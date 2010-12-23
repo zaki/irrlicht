@@ -66,7 +66,7 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 		driver->beginScene (true, true, video::SColor (255, 200, 200, 200));
 		// render
-		device->getSceneManager()->getActiveCamera()->setPosition(core::vector3df(0,5,0));
+		device->getSceneManager()->getActiveCamera()->setPosition(core::vector3df(0,0,-15));
 		driver->setRenderTarget( gbufferlist );
 		device->getSceneManager()->drawAll();
 		driver->setRenderTarget(0);
