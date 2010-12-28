@@ -78,7 +78,7 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 		driver->endScene();
 
-		result |= takeScreenshotAndCompareAgainstReference(driver, "-mrt2.png");
+		result &= takeScreenshotAndCompareAgainstReference(driver, "-mrt2.png");
 	}
 
 	device->closeDevice();
