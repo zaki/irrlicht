@@ -920,14 +920,12 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 				glLoadIdentity();
 			else
 			{
+				GLfloat glmat[16];
 				if (isRTT)
-				{
-					GLfloat glmat[16];
 					createGLTextureMatrix(glmat, mat * TextureFlipMatrix);
-					glLoadMatrixf(glmat);
-				}
 				else
-					glLoadMatrixf(mat.pointer());
+					createGLTextureMatrix(glmat, mat);
+				glLoadMatrixf(glmat);
 			}
 			break;
 		}

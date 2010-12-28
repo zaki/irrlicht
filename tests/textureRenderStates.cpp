@@ -147,11 +147,7 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 
 static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 {
-	SIrrlichtCreationParameters cp;
-	cp.DriverType = driverType;
-	cp.WindowSize = dimension2du(160,120);
-
-	irr::IrrlichtDevice* device = createDeviceEx(cp);
+	irr::IrrlichtDevice* device = createDevice(driverType, dimension2du(160,120));
 	if (!device)
 		return true;
 
@@ -194,6 +190,62 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	return result;
 } 
 
+// animated texture matrix test.
+static bool textureMatrix(video::E_DRIVER_TYPE driverType)
+{
+	irr::IrrlichtDevice* device = createDevice(driverType, dimension2du(160,120));
+	if (!device)
+		return true;
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+	scene::ISceneManager* sceneManager = device->getSceneManager();
+
+	scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNode();
+	camera->setPosition(vector3df(0,0,-10));
+
+	// set up plane mesh to face the camera
+	scene::IMesh* mesh = sceneManager->getGeometryCreator()->createPlaneMesh(dimension2df(150,150), core::dimension2du(1,1),0,core::dimension2df(1,1));
+	scene::IMeshSceneNode* node = sceneManager->addMeshSceneNode(mesh, 0, -1, vector3df(0, 0, 150), vector3df(-90, 0, 0));
+	if (mesh)
+		mesh->drop();
+
+	// set the hillplane material texture & save a reference
+	// to the texture matrix.
+	video::SMaterial& material = node->getMaterial(0);
+	video::ITexture* tex = driver->getTexture("../media/water.jpg");
+
+	material.setTexture(0,tex);
+	material.setFlag(video::EMF_LIGHTING,false);
+	matrix4& textureMatrix = material.TextureLayer[0].getTextureMatrix();
+
+	const vector2df rcenter, scale(1.f, 1.f);
+	vector2df trans;
+
+	trans.X += 0.0005f;
+	textureMatrix.buildTextureTransform(0.f, rcenter, trans, scale);
+
+	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	sceneManager->drawAll();
+	driver->endScene();
+
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrix.png");
+
+	trans.X += 0.45f;
+	textureMatrix.buildTextureTransform(0.f, rcenter, trans, scale);
+
+	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	sceneManager->drawAll();
+	driver->endScene();
+
+	result &= takeScreenshotAndCompareAgainstReference(driver, "-textureMatrix2.png");
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
+
 bool textureRenderStates(void)
 {
 	bool passed = true;
@@ -221,6 +273,9 @@ bool textureRenderStates(void)
 	passed &= manyTextures(video::EDT_BURNINGSVIDEO);
 	passed &= manyTextures(video::EDT_DIRECT3D9);
 	passed &= manyTextures(video::EDT_DIRECT3D8);
+
+	passed &= textureMatrix(video::EDT_OPENGL);
+	passed &= textureMatrix(video::EDT_DIRECT3D9);
 
 	return passed;
 }
