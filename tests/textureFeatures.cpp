@@ -56,21 +56,24 @@ static bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 
 	video::ITexture* tex = driver->findTexture("miptest");
 	video::SColor* bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 0);
-	result |= (bits[0].color==0xff0000ff);
+	result &= (bits[0].color==0xff0000ff);
 	tex->unlock();
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 1);
-	result |= (bits[0].color==0x00ff00ff);
+	result &= (bits[0].color==0x00ff00ff);
 	tex->unlock();
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 2);
-	result |= (bits[0].color==0x0000ffff);
+	result &= (bits[0].color==0x0000ffff);
 	tex->unlock();
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
-	result |= (bits[0].color==0xc2c200ff);
+	result &= (bits[0].color==0xc2c200ff);
 	tex->unlock();
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 4);
-	result |= (bits[0].color==0x001212ff);
+	result &= (bits[0].color==0x001212ff);
 	tex->unlock();
 	
+	if (!result)
+		logTestString("mipmap lock with driver %ls failed.\n", driver->getName());
+
 	device->closeDevice();
 	device->run();
 	device->drop();
@@ -84,11 +87,9 @@ bool textureFeatures(void)
 	bool passed = true;
 
 	passed &= lockAllMipLevels(video::EDT_OPENGL);
-	passed &= lockAllMipLevels(video::EDT_SOFTWARE);
 	passed &= lockAllMipLevels(video::EDT_BURNINGSVIDEO);
 	passed &= lockAllMipLevels(video::EDT_DIRECT3D9);
 	passed &= lockAllMipLevels(video::EDT_DIRECT3D8);
 
 	return passed;
 }
-
