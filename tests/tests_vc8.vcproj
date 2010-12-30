@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\color.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\createImage.cpp"
 				>
 			</File>
@@ -206,6 +210,10 @@
 			</File>
 			<File
 				RelativePath=".\disambiguateTextures.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\draw2DImage.cpp"
 				>
 			</File>
 			<File
@@ -241,7 +249,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\irrArray.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\irrCoreEquals.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\irrList.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\irrMap.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\irrString.cpp"
 				>
 			</File>
 			<File
@@ -249,7 +273,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\lights.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\line2dIntersectWith.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\loadTextures.cpp"
 				>
 			</File>
 			<File
@@ -281,6 +313,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\orthoCam.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\planeMatrix.cpp"
 				>
 			</File>
@@ -293,6 +329,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\renderTargetTexture.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\sceneCollisionManager.cpp"
 				>
 			</File>
@@ -301,11 +341,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\serializeAttributes.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\skinnedMesh.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\softwareDevice.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\stencilshadow.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\terrainSceneNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testaabbox.cpp"
 				>
 			</File>
 			<File
@@ -314,6 +370,14 @@
 			</File>
 			<File
 				RelativePath=".\testGeometryCreator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testQuaternion.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testS3DVertex.cpp"
 				>
 			</File>
 			<File
@@ -329,7 +393,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\testXML.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\textureFeatures.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\textureRenderStates.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\timer.cpp"
 				>
 			</File>
 			<File
@@ -350,10 +426,6 @@
 			</File>
 			<File
 				RelativePath=".\writeImageToFile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\zipReader.cpp"
 				>
 			</File>
 		</Filter>

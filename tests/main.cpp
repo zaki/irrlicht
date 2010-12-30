@@ -89,13 +89,14 @@ int main(int argumentCount, char * arguments[])
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
 	TEST(burningsVideo);
+	TEST(createImage);
 	TEST(cursorSetVisible);
 	TEST(flyCircleAnimator);
 	TEST(md2Animation);
+	TEST(meshTransform);
+	TEST(skinnedMesh);
 	TEST(testGeometryCreator); 
 	TEST(writeImageToFile);
-	TEST(meshTransform);
-	TEST(createImage);
 	// all driver checks
 	TEST(videoDriver);
 	TEST(drawPixel);

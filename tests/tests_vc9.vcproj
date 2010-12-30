@@ -344,6 +344,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\skinnedMesh.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\softwareDevice.cpp"
 				>
 			</File>
