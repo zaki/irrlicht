@@ -18,11 +18,10 @@ namespace scene
 
 //! constructor
 CSkinnedMesh::CSkinnedMesh()
-: SkinningBuffers(0), AnimationFrames(0.f),
-	LastAnimatedFrame(0.f), LastSkinnedFrame(0.f),
-	InterpolationMode(EIM_LINEAR),
+: SkinningBuffers(0), AnimationFrames(0.f), FramesPerSecond(25.f),
+	LastAnimatedFrame(0.f),	InterpolationMode(EIM_LINEAR),
 	HasAnimation(false), PreparedForSkinning(false),
-	BoneControlUsed(false), AnimateNormals(true), HardwareSkinning(false)
+	AnimateNormals(true), HardwareSkinning(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CSkinnedMesh");
@@ -51,6 +50,23 @@ CSkinnedMesh::~CSkinnedMesh()
 u32 CSkinnedMesh::getFrameCount() const
 {
 	return core::floor32(AnimationFrames);
+}
+
+
+//! Gets the default animation speed of the animated mesh.
+/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
+f32 CSkinnedMesh::getAnimationSpeed() const
+{
+	return FramesPerSecond;
+}
+
+
+//! Gets the frame count of the animated mesh.
+/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
+The actual speed is set in the scene node the mesh is instantiated in.*/
+void CSkinnedMesh::setAnimationSpeed(f32 fps)
+{
+	FramesPerSecond=fps;
 }
 
 
@@ -125,14 +141,14 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 
 	//----------------
 	// Temp!
-	buildAll_LocalAnimatedMatrices();
+	buildAllLocalAnimatedMatrices();
 	//-----------------
 
 	updateBoundingBox();
 }
 
 
-void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
+void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 {
 	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
@@ -200,12 +216,12 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 }
 
 
-void CSkinnedMesh::buildAll_GlobalAnimatedMatrices(SJoint *joint, SJoint *parentJoint)
+void CSkinnedMesh::buildAllGlobalAnimatedMatrices(SJoint *joint, SJoint *parentJoint)
 {
 	if (!joint)
 	{
 		for (u32 i=0; i<RootJoints.size(); ++i)
-			buildAll_GlobalAnimatedMatrices(RootJoints[i], 0);
+			buildAllGlobalAnimatedMatrices(RootJoints[i], 0);
 		return;
 	}
 	else
@@ -219,7 +235,7 @@ void CSkinnedMesh::buildAll_GlobalAnimatedMatrices(SJoint *joint, SJoint *parent
 	}
 
 	for (u32 j=0; j<joint->Children.size(); ++j)
-		buildAll_GlobalAnimatedMatrices(joint->Children[j], joint);
+		buildAllGlobalAnimatedMatrices(joint->Children[j], joint);
 }
 
 
@@ -426,12 +442,12 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 //! Preforms a software skin on this mesh based of joint positions
 void CSkinnedMesh::skinMesh()
 {
-	if ( !HasAnimation)
+	if (!HasAnimation)
 		return;
 
 	//----------------
 	// This is marked as "Temp!".  A shiny dubloon to whomever can tell me why.
-	buildAll_GlobalAnimatedMatrices();
+	buildAllGlobalAnimatedMatrices();
 	//-----------------
 
 	if (!HardwareSkinning)
@@ -456,7 +472,7 @@ void CSkinnedMesh::skinMesh()
 
 		//skin starting with the root joints
 		for (i=0; i<RootJoints.size(); ++i)
-			SkinJoint(RootJoints[i], 0);
+			skinJoint(RootJoints[i], 0);
 
 		for (i=0; i<SkinningBuffers->size(); ++i)
 			(*SkinningBuffers)[i]->setDirty(EBT_VERTEX);
@@ -465,7 +481,7 @@ void CSkinnedMesh::skinMesh()
 }
 
 
-void CSkinnedMesh::SkinJoint(SJoint *joint, SJoint *parentJoint)
+void CSkinnedMesh::skinJoint(SJoint *joint, SJoint *parentJoint)
 {
 	if (joint->Weights.size())
 	{
@@ -515,7 +531,7 @@ void CSkinnedMesh::SkinJoint(SJoint *joint, SJoint *parentJoint)
 
 	//Skin all children
 	for (u32 j=0; j<joint->Children.size(); ++j)
-		SkinJoint(joint->Children[j], joint);
+		skinJoint(joint->Children[j], joint);
 }
 
 
@@ -694,7 +710,6 @@ bool CSkinnedMesh::setHardwareSkinning(bool on)
 {
 	if (HardwareSkinning!=on)
 	{
-
 		if (on)
 		{
 
@@ -719,7 +734,7 @@ bool CSkinnedMesh::setHardwareSkinning(bool on)
 }
 
 
-void CSkinnedMesh::CalculateGlobalMatrices(SJoint *joint,SJoint *parentJoint)
+void CSkinnedMesh::calculateGlobalMatrices(SJoint *joint,SJoint *parentJoint)
 {
 	if (!joint && parentJoint) // bit of protection from endless loops
 		return;
@@ -728,7 +743,7 @@ void CSkinnedMesh::CalculateGlobalMatrices(SJoint *joint,SJoint *parentJoint)
 	if (!joint)
 	{
 		for (u32 i=0; i<RootJoints.size(); ++i)
-			CalculateGlobalMatrices(RootJoints[i],0);
+			calculateGlobalMatrices(RootJoints[i],0);
 		return;
 	}
 
@@ -747,7 +762,7 @@ void CSkinnedMesh::CalculateGlobalMatrices(SJoint *joint,SJoint *parentJoint)
 	}
 
 	for (u32 j=0; j<joint->Children.size(); ++j)
-		CalculateGlobalMatrices(joint->Children[j],joint);
+		calculateGlobalMatrices(joint->Children[j],joint);
 }
 
 
@@ -864,8 +879,8 @@ void CSkinnedMesh::finalize()
 {
 	u32 i;
 
+	// Make sure we recalc the next frame
 	LastAnimatedFrame=-1;
-	LastSkinnedFrame=-1;
 
 	//calculate bounding box
 	for (i=0; i<LocalBuffers.size(); ++i)
@@ -1066,11 +1081,11 @@ void CSkinnedMesh::finalize()
 
 	//Needed for animation and skinning...
 
-	CalculateGlobalMatrices(0,0);
+	calculateGlobalMatrices(0,0);
 
 	//animateMesh(0, 1);
-	//buildAll_LocalAnimatedMatrices();
-	//buildAll_GlobalAnimatedMatrices();
+	//buildAllLocalAnimatedMatrices();
+	//buildAllGlobalAnimatedMatrices();
 
 	//rigid animation for non animated meshes
 	for (i=0; i<AllJoints.size(); ++i)
@@ -1247,15 +1262,15 @@ void CSkinnedMesh::normalizeWeights()
 }
 
 
-void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes)
+void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode*> &jointChildSceneNodes)
 {
-	for (u32 i=0;i<AllJoints.size();++i)
+	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
-		IBoneSceneNode* node=JointChildSceneNodes[i];
+		IBoneSceneNode* node=jointChildSceneNodes[i];
 		SJoint *joint=AllJoints[i];
-		node->setPosition( joint->LocalAnimatedMatrix.getTranslation() );
-		node->setRotation( joint->LocalAnimatedMatrix.getRotationDegrees() );
-		node->setScale( joint->LocalAnimatedMatrix.getScale() );
+		node->setPosition(joint->LocalAnimatedMatrix.getTranslation());
+		node->setRotation(joint->LocalAnimatedMatrix.getRotationDegrees());
+		node->setScale(joint->LocalAnimatedMatrix.getScale());
 
 		node->positionHint=joint->positionHint;
 		node->scaleHint=joint->scaleHint;
@@ -1266,11 +1281,11 @@ void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChil
 }
 
 
-void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes)
+void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &jointChildSceneNodes)
 {
 	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
-		const IBoneSceneNode* const node=JointChildSceneNodes[i];
+		const IBoneSceneNode* const node=jointChildSceneNodes[i];
 		SJoint *joint=AllJoints[i];
 
 		joint->LocalAnimatedMatrix.setRotationDegrees(node->getRotation());
@@ -1283,17 +1298,16 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &Join
 
 		joint->GlobalSkinningSpace=(node->getSkinningSpace()==EBSS_GLOBAL);
 	}
-	//Remove cache, temp...
+	// Make sure we recalc the next frame
 	LastAnimatedFrame=-1;
-	LastSkinnedFrame=-1;
 }
 
 
-void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes)
+void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &jointChildSceneNodes)
 {
-	for (u32 i=0;i<AllJoints.size();++i)
+	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
-		const IBoneSceneNode* const node=JointChildSceneNodes[i];
+		const IBoneSceneNode* const node=jointChildSceneNodes[i];
 		SJoint *joint=AllJoints[i];
 
 		joint->positionHint=node->positionHint;
@@ -1303,32 +1317,28 @@ void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNod
 }
 
 
-void CSkinnedMesh::createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,
-		IAnimatedMeshSceneNode* AnimatedMeshSceneNode,
-		ISceneManager* SceneManager)
+void CSkinnedMesh::addJoints(core::array<IBoneSceneNode*> &jointChildSceneNodes,
+		IAnimatedMeshSceneNode* node, ISceneManager* smgr)
 {
-	u32 i;
-
 	//Create new joints
-	for (i=0;i<AllJoints.size();++i)
+	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
-		JointChildSceneNodes.push_back(new CBoneSceneNode(0, SceneManager, 0, i, AllJoints[i]->Name.c_str()));
+		jointChildSceneNodes.push_back(new CBoneSceneNode(0, smgr, 0, i, AllJoints[i]->Name.c_str()));
 	}
 
 	//Match up parents
-	for (i=0;i<JointChildSceneNodes.size();++i)
+	for (u32 i=0; i<jointChildSceneNodes.size(); ++i)
 	{
-		IBoneSceneNode* node=JointChildSceneNodes[i];
 		const SJoint* const joint=AllJoints[i]; //should be fine
 
 		s32 parentID=-1;
 
-		for (u32 j=0;j<AllJoints.size();++j)
+		for (u32 j=0;(parentID==-1)&&(j<AllJoints.size());++j)
 		{
-			if (i!=j && parentID==-1)
+			if (i!=j)
 			{
 				const SJoint* const parentTest=AllJoints[j];
-				for (u32 n=0;n<parentTest->Children.size();++n)
+				for (u32 n=0; n<parentTest->Children.size(); ++n)
 				{
 					if (parentTest->Children[n]==joint)
 					{
@@ -1339,12 +1349,13 @@ void CSkinnedMesh::createJoints(core::array<IBoneSceneNode*> &JointChildSceneNod
 			}
 		}
 
+		IBoneSceneNode* bone=jointChildSceneNodes[i];
 		if (parentID!=-1)
-			node->setParent( JointChildSceneNodes[parentID] );
+			bone->setParent(jointChildSceneNodes[parentID]);
 		else
-			node->setParent( AnimatedMeshSceneNode );
+			bone->setParent(node);
 
-		node->drop();
+		bone->drop();
 	}
 }
 

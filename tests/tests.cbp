@@ -71,6 +71,8 @@
 		<Unit filename="removeCustomAnimator.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="sceneNodeAnimator.cpp" />
+		<Unit filename="serializeAttributes.cpp" />
+		<Unit filename="skinnedMesh.cpp" />
 		<Unit filename="softwareDevice.cpp" />
 		<Unit filename="terrainSceneNode.cpp" />
 		<Unit filename="testDimension2d.cpp" />

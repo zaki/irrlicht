@@ -124,6 +124,7 @@
     <ClCompile Include="sceneCollisionManager.cpp" />
     <ClCompile Include="sceneNodeAnimator.cpp" />
     <ClCompile Include="serializeAttributes.cpp" />
+    <ClCompile Include="skinnedMesh.cpp" />
     <ClCompile Include="softwareDevice.cpp" />
     <ClCompile Include="stencilshadow.cpp" />
     <ClCompile Include="terrainSceneNode.cpp" />

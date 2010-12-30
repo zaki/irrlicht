@@ -35,6 +35,15 @@ namespace scene
 		//! returns the amount of frames. If the amount is 1, it is a static (=non animated) mesh.
 		virtual u32 getFrameCount() const;
 
+		//! Gets the default animation speed of the animated mesh.
+		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
+		virtual f32 getAnimationSpeed() const;
+
+		//! Gets the frame count of the animated mesh.
+		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
+		The actual speed is set in the scene node the mesh is instantiated in.*/
+		virtual void setAnimationSpeed(f32 fps);
+
 		//! returns the animated mesh based on a detail level (which is ignored)
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1);
 
@@ -95,20 +104,6 @@ namespace scene
 		//! Sets Interpolation Mode
 		virtual void setInterpolationMode(E_INTERPOLATION_MODE mode);
 
-		//! Recovers the joints from the mesh
-		virtual void recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes);
-
-		//! Tranfers the joint data to the mesh
-		virtual void transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
-
-		//! Tranfers the joint hints to the mesh
-		virtual void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
-
-		//! Creates an array of joints from this mesh
-		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,
-				IAnimatedMeshSceneNode* AnimatedMeshSceneNode,
-				ISceneManager* SceneManager);
-
 		//! Convertes the mesh to contain tangent information
 		virtual void convertMeshToTangents();
 
@@ -119,8 +114,7 @@ namespace scene
 		virtual bool setHardwareSkinning(bool on);
 
 		//Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
-
-		//these functions will use the needed arrays, set vaules, etc to help the loaders
+		//these functions will use the needed arrays, set values, etc to help the loaders
 
 		//! exposed for loaders to add mesh buffers
 		virtual core::array<SSkinMeshBuffer*> &getMeshBuffers();
@@ -152,23 +146,37 @@ namespace scene
 
 		virtual void updateBoundingBox(void);
 
+		//! Recovers the joints from the mesh
+		void recoverJointsFromMesh(core::array<IBoneSceneNode*> &jointChildSceneNodes);
+
+		//! Tranfers the joint data to the mesh
+		void transferJointsToMesh(const core::array<IBoneSceneNode*> &jointChildSceneNodes);
+
+		//! Tranfers the joint hints to the mesh
+		void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &jointChildSceneNodes);
+
+		//! Creates an array of joints from this mesh as children of node
+		void addJoints(core::array<IBoneSceneNode*> &jointChildSceneNodes,
+				IAnimatedMeshSceneNode* node,
+				ISceneManager* smgr);
+
 private:
 		void checkForAnimation();
 
 		void normalizeWeights();
 
-		void buildAll_LocalAnimatedMatrices(); //public?
+		void buildAllLocalAnimatedMatrices();
 
-		void buildAll_GlobalAnimatedMatrices(SJoint *Joint=0, SJoint *ParentJoint=0);
+		void buildAllGlobalAnimatedMatrices(SJoint *Joint=0, SJoint *ParentJoint=0);
 
 		void getFrameData(f32 frame, SJoint *Node,
 				core::vector3df &position, s32 &positionHint,
 				core::vector3df &scale, s32 &scaleHint,
 				core::quaternion &rotation, s32 &rotationHint);
 
-		void CalculateGlobalMatrices(SJoint *Joint,SJoint *ParentJoint);
+		void calculateGlobalMatrices(SJoint *Joint,SJoint *ParentJoint);
 
-		void SkinJoint(SJoint *Joint, SJoint *ParentJoint);
+		void skinJoint(SJoint *Joint, SJoint *ParentJoint);
 
 		void calculateTangents(core::vector3df& normal,
 			core::vector3df& tangent, core::vector3df& binormal,
@@ -182,20 +190,19 @@ private:
 		core::array<SJoint*> AllJoints;
 		core::array<SJoint*> RootJoints;
 
-		core::aabbox3d<f32> BoundingBox;
-
 		core::array< core::array<bool> > Vertices_Moved;
 
+		core::aabbox3d<f32> BoundingBox;
+
 		f32 AnimationFrames;
+		f32 FramesPerSecond;
 
 		f32 LastAnimatedFrame;
-		f32 LastSkinnedFrame;
 
-		E_INTERPOLATION_MODE InterpolationMode;
+		E_INTERPOLATION_MODE InterpolationMode:8;
 
 		bool HasAnimation;
 		bool PreparedForSkinning;
-		bool BoneControlUsed;
 		bool AnimateNormals;
 		bool HardwareSkinning;
 	};
