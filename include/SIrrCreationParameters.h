@@ -36,7 +36,11 @@ namespace irr
 			HighPrecisionFPU(false),
 			EventReceiver(0),
 			WindowId(0),
+#ifdef _DEBUG
+			LoggingLevel(ELL_DEBUG),
+#else
 			LoggingLevel(ELL_INFORMATION),
+#endif
 			DisplayAdapter(0),
 			UsePerformanceTimer(true),
 			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
