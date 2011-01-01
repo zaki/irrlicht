@@ -486,7 +486,7 @@ bool CXMeshFileLoader::parseDataObject()
 
 	// parse specific object
 #ifdef _XREADER_DEBUG
-	os::Printer::log("debug DataObject:", objectName.c_str() );
+	os::Printer::log("debug DataObject:", objectName.c_str(), ELL_DEBUG);
 #endif
 
 	if (objectName == "template")
@@ -538,7 +538,7 @@ bool CXMeshFileLoader::parseDataObject()
 bool CXMeshFileLoader::parseDataObjectTemplate()
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading template");
+	os::Printer::log("CXFileReader: Reading template", ELL_DEBUG);
 #endif
 
 	// parse a template data object. Currently not stored.
@@ -574,7 +574,7 @@ bool CXMeshFileLoader::parseDataObjectTemplate()
 bool CXMeshFileLoader::parseDataObjectFrame(CSkinnedMesh::SJoint *Parent)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading frame");
+	os::Printer::log("CXFileReader: Reading frame", ELL_DEBUG);
 #endif
 
 	// A coordinate frame, or "frame of reference." The Frame template
@@ -612,7 +612,7 @@ bool CXMeshFileLoader::parseDataObjectFrame(CSkinnedMesh::SJoint *Parent)
 	if (!joint)
 	{
 #ifdef _XREADER_DEBUG
-		os::Printer::log("creating joint ", name.c_str());
+		os::Printer::log("creating joint ", name.c_str(), ELL_DEBUG);
 #endif
 		joint=AnimatedMesh->addJoint(Parent);
 		joint->Name=name;
@@ -621,7 +621,7 @@ bool CXMeshFileLoader::parseDataObjectFrame(CSkinnedMesh::SJoint *Parent)
 	else
 	{
 #ifdef _XREADER_DEBUG
-		os::Printer::log("using joint ", name.c_str());
+		os::Printer::log("using joint ", name.c_str(), ELL_DEBUG);
 #endif
 		if (Parent)
 			Parent->Children.push_back(joint);
@@ -635,7 +635,7 @@ bool CXMeshFileLoader::parseDataObjectFrame(CSkinnedMesh::SJoint *Parent)
 		core::stringc objectName = getNextToken();
 
 #ifdef _XREADER_DEBUG
-		os::Printer::log("debug DataObject in frame:", objectName.c_str() );
+		os::Printer::log("debug DataObject in frame:", objectName.c_str(), ELL_DEBUG);
 #endif
 
 		if (objectName.size() == 0)
@@ -698,7 +698,7 @@ bool CXMeshFileLoader::parseDataObjectFrame(CSkinnedMesh::SJoint *Parent)
 bool CXMeshFileLoader::parseDataObjectTransformationMatrix(core::matrix4 &mat)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading Transformation Matrix");
+	os::Printer::log("CXFileReader: Reading Transformation Matrix", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -734,7 +734,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	if (!readHeadOfDataObject(&name))
 	{
 #ifdef _XREADER_DEBUG
-		os::Printer::log("CXFileReader: Reading mesh");
+		os::Printer::log("CXFileReader: Reading mesh", ELL_DEBUG);
 #endif
 		os::Printer::log("No opening brace in Mesh found in x file", ELL_WARNING);
 		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
@@ -742,7 +742,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	}
 
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading mesh", name.c_str());
+	os::Printer::log("CXFileReader: Reading mesh", name.c_str(), ELL_DEBUG);
 #endif
 
 	// read vertex count
@@ -836,7 +836,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		}
 
 #ifdef _XREADER_DEBUG
-		os::Printer::log("debug DataObject in mesh:", objectName.c_str() );
+		os::Printer::log("debug DataObject in mesh:", objectName.c_str(), ELL_DEBUG);
 #endif
 
 		if (objectName == "MeshNormals")
@@ -1080,7 +1080,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading mesh skin weights");
+	os::Printer::log("CXFileReader: Reading mesh skin weights", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1116,7 +1116,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	if (!joint)
 	{
 #ifdef _XREADER_DEBUG
-		os::Printer::log("creating joint for skinning ", TransformNodeName.c_str());
+		os::Printer::log("creating joint for skinning ", TransformNodeName.c_str(), ELL_DEBUG);
 #endif
 		n = AnimatedMesh->getAllJoints().size();
 		joint=AnimatedMesh->addJoint(0);
@@ -1180,7 +1180,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 bool CXMeshFileLoader::parseDataObjectSkinMeshHeader(SXMesh& mesh)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading skin mesh header");
+	os::Printer::log("CXFileReader: Reading skin mesh header", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1211,7 +1211,7 @@ bool CXMeshFileLoader::parseDataObjectSkinMeshHeader(SXMesh& mesh)
 bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: reading mesh normals");
+	os::Printer::log("CXFileReader: reading mesh normals", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1302,7 +1302,7 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 bool CXMeshFileLoader::parseDataObjectMeshTextureCoords(SXMesh &mesh)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: reading mesh texture coordinates");
+	os::Printer::log("CXFileReader: reading mesh texture coordinates", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1336,7 +1336,7 @@ bool CXMeshFileLoader::parseDataObjectMeshTextureCoords(SXMesh &mesh)
 bool CXMeshFileLoader::parseDataObjectMeshVertexColors(SXMesh &mesh)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: reading mesh vertex colors");
+	os::Printer::log("CXFileReader: reading mesh vertex colors", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1381,7 +1381,7 @@ bool CXMeshFileLoader::parseDataObjectMeshVertexColors(SXMesh &mesh)
 bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading mesh material list");
+	os::Printer::log("CXFileReader: Reading mesh material list", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1477,7 +1477,7 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading mesh material");
+	os::Printer::log("CXFileReader: Reading mesh material", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1580,7 +1580,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 bool CXMeshFileLoader::parseDataObjectAnimationSet()
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading animation set");
+	os::Printer::log("CXFileReader: Reading animation set", ELL_DEBUG);
 #endif
 
 	core::stringc AnimationName;
@@ -1591,6 +1591,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationSet()
 		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
 		return false;
 	}
+	os::Printer::log("Reading animationset ", AnimationName, ELL_DEBUG);
 
 	while(true)
 	{
@@ -1627,7 +1628,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationSet()
 bool CXMeshFileLoader::parseDataObjectAnimation()
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: reading animation");
+	os::Printer::log("CXFileReader: reading animation", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1695,7 +1696,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 	if (FrameName.size() != 0)
 	{
 #ifdef _XREADER_DEBUG
-		os::Printer::log("getting name: ", FrameName.c_str());
+		os::Printer::log("frame name", FrameName.c_str(), ELL_DEBUG);
 #endif
 		CSkinnedMesh::SJoint *joint=0;
 
@@ -1712,7 +1713,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		if (!joint)
 		{
 #ifdef _XREADER_DEBUG
-			os::Printer::log("creating joint for animation ", FrameName.c_str());
+			os::Printer::log("creating joint for animation ", FrameName.c_str(), ELL_DEBUG);
 #endif
 			joint=AnimatedMesh->addJoint(0);
 			joint->Name=FrameName;
@@ -1746,7 +1747,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: reading animation key");
+	os::Printer::log("CXFileReader: reading animation key", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
@@ -1918,7 +1919,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 bool CXMeshFileLoader::parseDataObjectTextureFilename(core::stringc& texturename)
 {
 #ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: reading texture filename");
+	os::Printer::log("CXFileReader: reading texture filename", ELL_DEBUG);
 #endif
 
 	if (!readHeadOfDataObject())
