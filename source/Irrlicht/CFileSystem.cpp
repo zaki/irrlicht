@@ -21,6 +21,7 @@
 #include "CAttributes.h"
 #include "CMemoryFile.h"
 #include "CLimitReadFile.h"
+#include "irrList.h"
 
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
@@ -589,6 +590,42 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 	}
 	directory = dir;
 	return directory;
+}
+
+
+//! Get the relative filename, relative to the given directory
+path CFileSystem::getRelativeFilename(const path& filename, const path& directory) const
+{
+		io::path path, file, ext;
+		core::splitFilename(getAbsolutePath(filename), &path, &file, &ext);
+		io::path path2(getAbsolutePath(directory));
+		core::list<io::path> list1, list2;
+		path.split(list1, "/\\", 2);
+		path2.split(list2, "/\\", 2);
+		u32 i=0;
+		core::list<io::path>::ConstIterator it1,it2;
+		it1=list1.begin();
+		it2=list2.begin();
+		for (; i<list1.size() && (*it1==*it2); ++i)
+		{
+			++it1;
+			++it2;
+		}
+		path="";
+		for (; i<list2.size(); ++i)
+			path += "../";
+		while (it1 != list1.end())
+		{
+			path += *it1++;
+			path += "/";
+		}
+		path += file;
+		if (ext.size())
+		{
+			path += ".";
+			path += ext;
+		}
+		return path;
 }
 
 
