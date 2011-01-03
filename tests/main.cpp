@@ -72,7 +72,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(vectorPositionDimension2d);
 	// file system checks (with null driver)
 	TEST(filesystem);
-	TEST(archiveReader); 
+	TEST(archiveReader);
 	TEST(testXML);
 	TEST(serializeAttributes);
 	// null driver
@@ -97,6 +97,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(skinnedMesh);
 	TEST(testGeometryCreator); 
 	TEST(writeImageToFile);
+	TEST(ioScene);
 	// all driver checks
 	TEST(videoDriver);
 	TEST(drawPixel);

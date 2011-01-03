@@ -46,8 +46,11 @@
 		<Unit filename="b3dAnimation.cpp" />
 		<Unit filename="burningsVideo.cpp" />
 		<Unit filename="collisionResponseAnimator.cpp" />
+		<Unit filename="color.cpp" />
+		<Unit filename="createImage.cpp" />
 		<Unit filename="cursorSetVisible.cpp" />
 		<Unit filename="disambiguateTextures.cpp" />
+		<Unit filename="draw2DImage.cpp" />
 		<Unit filename="drawPixel.cpp" />
 		<Unit filename="drawRectOutline.cpp" />
 		<Unit filename="enumerateImageManipulators.cpp" />
@@ -56,9 +59,15 @@
 		<Unit filename="filesystem.cpp" />
 		<Unit filename="flyCircleAnimator.cpp" />
 		<Unit filename="guiDisabledMenu.cpp" />
+		<Unit filename="irrArray.cpp" />
 		<Unit filename="irrCoreEquals.cpp" />
+		<Unit filename="irrList.cpp" />
+		<Unit filename="irrMap.cpp" />
+		<Unit filename="irrString.cpp" />
 		<Unit filename="lightMaps.cpp" />
+		<Unit filename="lights.cpp" />
 		<Unit filename="line2dIntersectWith.cpp" />
+		<Unit filename="loadTextures.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />
 		<Unit filename="matrixOps.cpp" />
@@ -66,27 +75,35 @@
 		<Unit filename="meshLoaders.cpp" />
 		<Unit filename="meshTransform.cpp" />
 		<Unit filename="mrt.cpp" />
+		<Unit filename="orthocam.cpp" />
 		<Unit filename="planeMatrix.cpp" />
 		<Unit filename="projectionMatrix.cpp" />
 		<Unit filename="removeCustomAnimator.cpp" />
+		<Unit filename="renderTargetTexture.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="sceneNodeAnimator.cpp" />
 		<Unit filename="serializeAttributes.cpp" />
 		<Unit filename="skinnedMesh.cpp" />
 		<Unit filename="softwareDevice.cpp" />
+		<Unit filename="stencilShadow.cpp" />
 		<Unit filename="terrainSceneNode.cpp" />
+		<Unit filename="testaabbox.cpp" />
 		<Unit filename="testDimension2d.cpp" />
 		<Unit filename="testGeometryCreator.cpp" />
+		<Unit filename="testQuaternion.cpp" />
+		<Unit filename="testS3DVertex.cpp" />
 		<Unit filename="testUtils.cpp" />
 		<Unit filename="testVector2d.cpp" />
 		<Unit filename="testVector3d.cpp" />
+		<Unit filename="testXML.cpp" />
+		<Unit filename="textureFeatures.cpp" />
 		<Unit filename="textureRenderStates.cpp" />
+		<Unit filename="timer.cpp" />
 		<Unit filename="transparentMaterials.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />
 		<Unit filename="videoDriver.cpp" />
 		<Unit filename="viewPort.cpp" />
 		<Unit filename="writeImageToFile.cpp" />
-		<Unit filename="zipReader.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

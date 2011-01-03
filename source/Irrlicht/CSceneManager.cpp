@@ -2080,7 +2080,7 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 
 //! Loads a scene. Note that the current scene is not cleared before.
 //! \param filename: Name of the file .
-bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer, ISceneNode* node)
 {
 	bool ret = false;
 	io::IReadFile* read = FileSystem->createAndOpenFile(filename);
@@ -2090,7 +2090,7 @@ bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer
 	}
 	else
 	{
-		ret = loadScene(read, userDataSerializer);
+		ret = loadScene(read, userDataSerializer, node);
 		read->drop();
 	}
 
@@ -2100,7 +2100,7 @@ bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer
 
 
 //! Loads a scene. Note that the current scene is not cleared before.
-bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer, ISceneNode* node)
 {
 	if (!file)
 	{
@@ -2126,7 +2126,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 
 	while(reader->read())
 	{
-		readSceneNode(reader, 0, userDataSerializer);
+		readSceneNode(reader, node, userDataSerializer);
 	}
 
 	// restore old collada parameters
@@ -2148,8 +2148,16 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 
 	scene::ISceneNode* node = 0;
 
-	if (!parent && IRR_XML_FORMAT_SCENE==reader->getNodeName())
-		node = this; // root
+	bool readAttributes=true;
+	if (IRR_XML_FORMAT_SCENE==reader->getNodeName())
+	{
+		// node==parent on start, which can be scene manager or distinct parent node
+		if (!parent)
+			node = this; // root
+		else
+			node = parent;
+		readAttributes = (node==this);
+	}
 	else if (parent && IRR_XML_FORMAT_NODE==reader->getNodeName())
 	{
 		// find node type and create it
@@ -2159,7 +2167,10 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 			node = SceneNodeFactoryList[i]->addSceneNode(attrName.c_str(), parent);
 
 		if (!node)
+		{
 			os::Printer::log("Could not create scene node of unknown type", attrName.c_str());
+			node=addEmptySceneNode(parent);
+		}
 	}
 
 	// read attributes
@@ -2177,7 +2188,7 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 			}
 			break;
 		case io::EXN_ELEMENT:
-			if (core::stringw(L"attributes")==reader->getNodeName())
+			if ((core::stringw(L"attributes")==reader->getNodeName()) && readAttributes)
 			{
 				// read attributes
 				io::IAttributes* attr = FileSystem->createEmptyAttributes(Driver);
@@ -2189,19 +2200,24 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 				attr->drop();
 			}
 			else
-			if (core::stringw(L"materials")==reader->getNodeName())
+			if ((core::stringw(L"materials")==reader->getNodeName()) && readAttributes)
 				readMaterials(reader, node);
 			else
-			if (core::stringw(L"animators")==reader->getNodeName())
+			if ((core::stringw(L"animators")==reader->getNodeName()) && readAttributes)
 				readAnimators(reader, node);
 			else
-			if (core::stringw(L"userData")==reader->getNodeName())
+			if ((core::stringw(L"userData")==reader->getNodeName()) && readAttributes)
 				readUserData(reader, node, userDataSerializer);
 			else
-			if ((IRR_XML_FORMAT_NODE==reader->getNodeName()) ||
-				(IRR_XML_FORMAT_SCENE==reader->getNodeName()))
+			if (IRR_XML_FORMAT_NODE==reader->getNodeName())
 			{
 				readSceneNode(reader, node, userDataSerializer);
+			}
+			else
+			if (IRR_XML_FORMAT_SCENE==reader->getNodeName())
+			{
+				// pass on parent value
+				readSceneNode(reader, parent, userDataSerializer);
 			}
 			else
 			{
@@ -2452,11 +2468,18 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 	if (init)
 		node=tmpNode;
 
-	// write children
-
-	ISceneNodeList::ConstIterator it = node->getChildren().begin();
-	for (; it != node->getChildren().end(); ++it)
-		writeSceneNode(writer, (*it), userDataSerializer, currentPath);
+	// write children once root node is written
+	// if parent is not scene manager, we need to write out node first
+	if (init && (node != this))
+	{
+		writeSceneNode(writer, node, userDataSerializer, currentPath);
+	}
+	else
+	{
+		ISceneNodeList::ConstIterator it = node->getChildren().begin();
+		for (; it != node->getChildren().end(); ++it)
+			writeSceneNode(writer, (*it), userDataSerializer, currentPath);
+	}
 
 	attr->drop();
 
