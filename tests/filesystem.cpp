@@ -101,6 +101,27 @@ static bool testFlattenFilename(io::IFileSystem* fs)
 	return result;
 }
 
+static bool testgetRelativeFilename(io::IFileSystem* fs)
+{
+	bool result=true;
+	io::path apath = fs->getAbsolutePath("media");
+	io::path cwd = fs->getWorkingDirectory();
+	if (fs->getRelativeFilename(apath, cwd) != "media")
+	{
+		logTestString("getRelativePath failed on %s\n", apath.c_str());
+		result = false;
+	}
+
+	apath = fs->getAbsolutePath("../media/");
+	if (fs->getRelativeFilename(apath, cwd) != "../media/")
+	{
+		logTestString("getRelativePath failed on %s\n", apath.c_str());
+		result = false;
+	}
+
+	return result;
+}
+
 bool filesystem(void)
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(1, 1));
@@ -151,7 +172,7 @@ bool filesystem(void)
 
 	result &= testFlattenFilename(fs);
 	result &= testgetAbsoluteFilename(fs);
-
+	result &= testgetRelativeFilename(fs);
 
 	device->closeDevice();
 	device->run();

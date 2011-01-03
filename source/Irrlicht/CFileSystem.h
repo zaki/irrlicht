@@ -92,6 +92,9 @@ public:
 	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
 	virtual io::path& flattenFilename( io::path& directory, const io::path& root = "/" ) const;
 
+	//! Get the relative filename, relative to the given directory
+	virtual path getRelativeFilename(const path& filename, const path& directory) const;
+
 	virtual EFileSystemType setFileListSystem(EFileSystemType listType);
 
 	//! Creates a list of files and directories in the current working directory
