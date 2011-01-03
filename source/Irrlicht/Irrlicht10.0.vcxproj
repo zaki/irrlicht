@@ -327,6 +327,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>..\..\lib\Win32-visualstudio\Irrlicht.lib</ImportLibrary>
+      <Version>1.8.0.alpha</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -1056,6 +1057,7 @@
     <ClInclude Include="CZBuffer.h" />
     <ClInclude Include="ITriangleRenderer.h" />
     <ClInclude Include="IZBuffer.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="S2DVertex.h" />
     <ClInclude Include="COpenGLDriver.h" />
     <ClInclude Include="COpenGLExtensionHandler.h" />
@@ -1511,6 +1513,9 @@
     <ClCompile Include="CGUIToolBar.cpp" />
     <ClCompile Include="CGUITreeView.cpp" />
     <ClCompile Include="CGUIWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Irrlicht.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
