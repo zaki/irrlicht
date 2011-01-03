@@ -1278,6 +1278,7 @@
     <ClInclude Include="..\..\include\IAnimatedMeshMD3.h">
       <Filter>include\scene</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2197,5 +2198,8 @@
     <ClCompile Include="CGUIWindow.cpp">
       <Filter>Irrlicht\gui</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Irrlicht.rc" />
   </ItemGroup>
 </Project>
