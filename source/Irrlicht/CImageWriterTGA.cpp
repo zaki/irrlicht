@@ -133,7 +133,7 @@ bool CImageWriterTGA::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 	if (file->write(&imageFooter, sizeof(imageFooter)) < (s32)sizeof(imageFooter))
 		return false;
 
-	return imageHeader.ImageHeight < y;
+	return imageHeader.ImageHeight <= y;
 }
 
 } // namespace video
