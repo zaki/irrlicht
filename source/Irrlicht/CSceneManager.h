@@ -457,10 +457,10 @@ namespace scene
 
 		//! Saves the current scene into a file.
 		//! \param filename: Name of the file .
-		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Saves the current scene into a file.
-		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		//! \param filename: Name of the file .
@@ -502,7 +502,7 @@ namespace scene
 		void clearDeletionList();
 
 		//! writes a scene node
-		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer);
+		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer, const c8* currentPath=0, bool init=false);
 
 		//! reads a scene node
 		void readSceneNode(io::IXMLReader* reader, ISceneNode* parent, ISceneUserDataSerializer* userDataSerializer);

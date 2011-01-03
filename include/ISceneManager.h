@@ -1433,12 +1433,15 @@ namespace scene
 		The scene is usually written to an .irr file, an xml based format. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org).
 		To load .irr files again, see ISceneManager::loadScene().
-		\param filename: Name of the file.
-		\param userDataSerializer: If you want to save some user data for every scene node into the
+		\param filename Name of the file.
+		\param userDataSerializer If you want to save some user data for every scene node into the
 		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
 		Otherwise, simply specify 0 as this parameter.
+		\param node Node which is taken as the top node of the scene. This node and all of its
+		descendants are saved into the scene file. Pass 0 or the scene manager to save the full
+		scene (which is also the default).
 		\return True if successful. */
-		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Saves the current scene into a file.
 		/** Scene nodes with the option isDebugObject set to true are not being saved.
@@ -1449,8 +1452,11 @@ namespace scene
 		\param userDataSerializer: If you want to save some user data for every scene node into the
 		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
 		Otherwise, simply specify 0 as this parameter.
+		\param node Node which is taken as the top node of the scene. This node and all of its
+		descendants are saved into the scene file. Pass 0 or the scene manager to save the full
+		scene (which is also the default).
 		\return True if successful. */
-		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can
