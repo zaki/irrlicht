@@ -100,6 +100,7 @@
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="flyCircleAnimator.cpp" />
     <ClCompile Include="guiDisabledMenu.cpp" />
+    <ClCompile Include="ioScene.cpp" />
     <ClCompile Include="irrArray.cpp" />
     <ClCompile Include="irrCoreEquals.cpp" />
     <ClCompile Include="irrList.cpp" />

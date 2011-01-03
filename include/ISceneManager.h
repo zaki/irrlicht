@@ -1468,8 +1468,10 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
+		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can
@@ -1481,8 +1483,10 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
+		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Get a mesh writer implementation if available
 		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()

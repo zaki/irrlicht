@@ -249,6 +249,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ioScene.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\irrArray.cpp"
 				>
 			</File>

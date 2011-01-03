@@ -464,10 +464,10 @@ namespace scene
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		//! \param filename: Name of the file .
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
