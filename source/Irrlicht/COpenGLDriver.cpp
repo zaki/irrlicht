@@ -839,7 +839,8 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 	if (stencilBuffer)
 		mask |= GL_STENCIL_BUFFER_BIT;
 
-	glClear(mask);
+	if (mask)
+		glClear(mask);
 }
 
 

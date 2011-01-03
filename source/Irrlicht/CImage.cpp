@@ -52,7 +52,10 @@ void CImage::initData()
 	Pitch = BytesPerPixel * Size.Width;
 
 	if (!Data)
+	{
+		DeleteMemory=true;
 		Data = new u8[Size.Height * Pitch];
+	}
 }
 
 
