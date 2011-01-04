@@ -200,7 +200,7 @@ bool COgreMeshFileLoader::readChunk(io::IReadFile* file)
 bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent, OgreMesh& mesh)
 {
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Read Object Chunk");
+	os::Printer::log("Read Object Chunk", ELL_DEBUG);
 #endif
 	readBool(file, parent, mesh.SkeletalAnimation);
 	bool skeleton_loaded=false;
@@ -221,7 +221,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 			case COGRE_MESH_BOUNDS:
 			{
 #ifdef IRR_OGRE_LOADER_DEBUG
-				os::Printer::log("Read Mesh Bounds");
+				os::Printer::log("Read Mesh Bounds", ELL_DEBUG);
 #endif
 				readVector(file, data, mesh.BBoxMinEdge);
 				readVector(file, data, mesh.BBoxMaxEdge);
@@ -231,7 +231,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 			case COGRE_SKELETON_LINK:
 			{
 #ifdef IRR_OGRE_LOADER_DEBUG
-				os::Printer::log("Read Skeleton link");
+				os::Printer::log("Read Skeleton link", ELL_DEBUG);
 #endif
 				core::stringc name;
 				readString(file, data, name);
@@ -256,7 +256,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 				break;
 			default:
 #ifdef IRR_OGRE_LOADER_DEBUG
-				os::Printer::log("Skipping", core::stringc(data.header.id));
+				os::Printer::log("Skipping", core::stringc(data.header.id), ELL_DEBUG);
 #endif
 				// ignore chunk
 				file->seek(data.header.length-data.read, true);
@@ -274,7 +274,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 bool COgreMeshFileLoader::readGeometry(io::IReadFile* file, ChunkData& parent, OgreGeometry& geometry)
 {
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Read Geometry");
+	os::Printer::log("Read Geometry", ELL_DEBUG);
 #endif
 	readInt(file, parent, &geometry.NumVertex);
 	while(parent.read < parent.header.length)
@@ -293,13 +293,15 @@ bool COgreMeshFileLoader::readGeometry(io::IReadFile* file, ChunkData& parent, O
 		default:
 			// ignore chunk
 #ifdef IRR_OGRE_LOADER_DEBUG
-			os::Printer::log("Skipping", core::stringc(data.header.id));
+			os::Printer::log("Skipping", core::stringc(data.header.id), ELL_DEBUG);
 #endif
 			file->seek(data.header.length-data.read, true);
 			data.read += data.header.length-data.read;
 		}
 		parent.read += data.read;
 	}
+	if (parent.read != parent.header.length)
+		os::Printer::log("Incorrect geometry length. File might be corrupted.");
 	return true;
 }
 
@@ -307,7 +309,7 @@ bool COgreMeshFileLoader::readGeometry(io::IReadFile* file, ChunkData& parent, O
 bool COgreMeshFileLoader::readVertexDeclaration(io::IReadFile* file, ChunkData& parent, OgreGeometry& geometry)
 {
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Read Vertex Declaration");
+	os::Printer::log("Read Vertex Declaration", ELL_DEBUG);
 #endif
 	NumUV = 0;
 	while(parent.read < parent.header.length)
@@ -340,6 +342,8 @@ bool COgreMeshFileLoader::readVertexDeclaration(io::IReadFile* file, ChunkData& 
 		}
 		parent.read += data.read;
 	}
+	if (parent.read != parent.header.length)
+		os::Printer::log("Incorrect vertex declaration length. File might be corrupted.");
 	return true;
 }
 
@@ -347,7 +351,7 @@ bool COgreMeshFileLoader::readVertexDeclaration(io::IReadFile* file, ChunkData& 
 bool COgreMeshFileLoader::readVertexBuffer(io::IReadFile* file, ChunkData& parent, OgreGeometry& geometry)
 {
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Read Vertex Buffer");
+	os::Printer::log("Read Vertex Buffer", ELL_DEBUG);
 #endif
 	OgreVertexBuffer buf;
 	readShort(file, parent, &buf.BindIndex);
@@ -364,6 +368,8 @@ bool COgreMeshFileLoader::readVertexBuffer(io::IReadFile* file, ChunkData& paren
 
 	geometry.Buffers.push_back(buf);
 	parent.read += data.read;
+	if (parent.read != parent.header.length)
+		os::Printer::log("Incorrect vertex buffer length. File might be corrupted.");
 	return true;
 }
 
@@ -371,11 +377,11 @@ bool COgreMeshFileLoader::readVertexBuffer(io::IReadFile* file, ChunkData& paren
 bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, OgreSubMesh& subMesh)
 {
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Read Submesh");
+	os::Printer::log("Read Submesh", ELL_DEBUG);
 #endif
 	readString(file, parent, subMesh.Material);
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("using material", subMesh.Material);
+	os::Printer::log("using material", subMesh.Material, ELL_DEBUG);
 #endif
 	readBool(file, parent, subMesh.SharedVertices);
 
@@ -410,7 +416,7 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 		case COGRE_SUBMESH_OPERATION:
 			readShort(file, data, &subMesh.Operation);
 #ifdef IRR_OGRE_LOADER_DEBUG
-			os::Printer::log("Read Submesh Operation",core::stringc(subMesh.Operation));
+			os::Printer::log("Read Submesh Operation",core::stringc(subMesh.Operation), ELL_DEBUG);
 #endif
 			if (subMesh.Operation != 4)
 				os::Printer::log("Primitive type != trilist not yet implemented", ELL_WARNING);
@@ -418,7 +424,7 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 		case COGRE_SUBMESH_TEXTURE_ALIAS:
 		{
 #ifdef IRR_OGRE_LOADER_DEBUG
-				os::Printer::log("Read Submesh Texture Alias");
+				os::Printer::log("Read Submesh Texture Alias", ELL_DEBUG);
 #endif
 			core::stringc texture, alias;
 			readString(file, data, texture);
@@ -436,7 +442,7 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 			break;
 		default:
 #ifdef IRR_OGRE_LOADER_DEBUG
-			os::Printer::log("Skipping", core::stringc(data.header.id));
+			os::Printer::log("Skipping", core::stringc(data.header.id), ELL_DEBUG);
 #endif
 			parent.read=parent.header.length;
 			file->seek(-(long)sizeof(ChunkHeader), true);
@@ -444,6 +450,11 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 		}
 		parent.read += data.read;
 	}
+	if (parent.read != parent.header.length)
+		os::Printer::log("Incorrect submesh length. File might be corrupted.");
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Done with submesh", ELL_DEBUG);
+#endif
 	return true;
 }
 
@@ -1071,7 +1082,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		else if (token=="texture_unit")
 		{
 #ifdef IRR_OGRE_LOADER_DEBUG
-			os::Printer::log("Read Texture unit");
+			os::Printer::log("Read Texture unit", ELL_DEBUG);
 #endif
 			getMaterialToken(file, token); //open brace
 			getMaterialToken(file, token);
@@ -1081,7 +1092,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 				{
 					getMaterialToken(file, pass.Texture.Filename);
 #ifdef IRR_OGRE_LOADER_DEBUG
-					os::Printer::log("Read Texture", pass.Texture.Filename.c_str());
+					os::Printer::log("Read Texture", pass.Texture.Filename.c_str(), ELL_DEBUG);
 #endif
 					getMaterialToken(file, pass.Texture.CoordsType, true);
 					getMaterialToken(file, pass.Texture.MipMaps, true);
@@ -1217,7 +1228,7 @@ void COgreMeshFileLoader::readTechnique(io::IReadFile* file, OgreMaterial& mat)
 void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 {
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Load Materials");
+	os::Printer::log("Load Materials", ELL_DEBUG);
 #endif
 	core::stringc token;
 	io::IReadFile* file = 0;
@@ -1268,7 +1279,7 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 
 		getMaterialToken(file, mat.Name);
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Load Material", mat.Name.c_str());
+	os::Printer::log("Load Material", mat.Name.c_str(), ELL_DEBUG);
 #endif
 		getMaterialToken(file, token); //open brace
 		getMaterialToken(file, token);
@@ -1300,7 +1311,7 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 
 	file->drop();
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Finished loading Materials");
+	os::Printer::log("Finished loading Materials", ELL_DEBUG);
 #endif
 }
 
@@ -1308,7 +1319,7 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stringc& name)
 {
 #ifdef IRR_OGRE_LOADER_DEBUG
-	os::Printer::log("Load Skeleton", name);
+	os::Printer::log("Load Skeleton", name, ELL_DEBUG);
 #endif
 	io::IReadFile* file = 0;
 	io::path filename;
@@ -1363,9 +1374,9 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 				readVector(file, data, bone.Position);
 				readQuaternion(file, data, bone.Orientation);
 #ifdef IRR_OGRE_LOADER_DEBUG
-				os::Printer::log("Bone", bone.Name+" ("+core::stringc(bone.Handle)+")");
-				os::Printer::log("Position", core::stringc(bone.Position.X)+" "+core::stringc(bone.Position.Y)+" "+core::stringc(bone.Position.Z));
-				os::Printer::log("Rotation quat", core::stringc(bone.Orientation.W)+" "+core::stringc(bone.Orientation.X)+" "+core::stringc(bone.Orientation.Y)+" "+core::stringc(bone.Orientation.Z));
+				os::Printer::log("Bone", bone.Name+" ("+core::stringc(bone.Handle)+")", ELL_DEBUG);
+				os::Printer::log("Position", core::stringc(bone.Position.X)+" "+core::stringc(bone.Position.Y)+" "+core::stringc(bone.Position.Z), ELL_DEBUG);
+				os::Printer::log("Rotation quat", core::stringc(bone.Orientation.W)+" "+core::stringc(bone.Orientation.X)+" "+core::stringc(bone.Orientation.Y)+" "+core::stringc(bone.Orientation.Z), ELL_DEBUG);
 //				core::vector3df rot;
 //				bone.Orientation.toEuler(rot);
 //				rot *= core::RADTODEG;
@@ -1399,14 +1410,14 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 				readString(file, data, anim.Name);
 				readFloat(file, data, &anim.Length);
 #ifdef IRR_OGRE_LOADER_DEBUG
-				os::Printer::log("Animation", anim.Name);
-				os::Printer::log("Length", core::stringc(anim.Length));
+				os::Printer::log("Animation", anim.Name, ELL_DEBUG);
+				os::Printer::log("Length", core::stringc(anim.Length), ELL_DEBUG);
 #endif
 			}
 			break;
 		case COGRE_ANIMATION_TRACK:
 #ifdef IRR_OGRE_LOADER_DEBUG
-			os::Printer::log("for Bone ", core::stringc(bone));
+			os::Printer::log("for Bone ", core::stringc(bone), ELL_DEBUG);
 #endif
 				readShort(file, data, &bone); // store current bone
 			break;
@@ -1430,7 +1441,7 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 			break;
 		case COGRE_ANIMATION_LINK:
 #ifdef IRR_OGRE_LOADER_DEBUG
-			os::Printer::log("Animation link");
+			os::Printer::log("Animation link", ELL_DEBUG);
 #endif
 			break;
 		default:
