@@ -88,40 +88,50 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 		return false;
 	}
 
-	filename="test/test.txt";
-	if (!fs->existFile(filename))
+	const char* names[] = {"test/test.txt", "mypath/myfile.txt", "mypath/mypath/myfile.txt"};
+	const char* basenames[] = {"test.txt", "myfile.txt", "myfile.txt"};
+	const char* content[] = {"Hello world!", "1est\n", "2est"};
+
+	for (u32 i=0; i<3; ++i)
 	{
-		logTestString("existFile failed\n");
-		while (fs->getFileArchiveCount())
-			fs->removeFileArchive(fs->getFileArchiveCount()-1);
-		return false;
+		if (!fs->existFile(names[i]))
+		{
+			logTestString("existFile failed\n");
+			while (fs->getFileArchiveCount())
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+			return false;
+		}
+
+		IReadFile* readFile = fs->createAndOpenFile(names[i]);
+		if (!readFile)
+		{
+			logTestString("createAndOpenFile failed\n");
+			while (fs->getFileArchiveCount())
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+			return false;
+		}
+
+		if (fs->getFileBasename(readFile->getFileName()) != basenames[i])
+		{
+			logTestString("Wrong filename, file list seems to be corrupt\n");
+			while (fs->getFileArchiveCount())
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+			readFile->drop();
+			return false;
+		}
+		char tmp[13] = {'\0'};
+		readFile->read(tmp, 12);
+		if (strcmp(tmp, content[i]))
+		{
+			logTestString("Read bad data from archive: %s\n", tmp);
+			while (fs->getFileArchiveCount())
+				fs->removeFileArchive(fs->getFileArchiveCount()-1);
+			readFile->drop();
+			return false;
+		}
+		readFile->drop();
 	}
 
-	IReadFile* readFile = fs->createAndOpenFile(filename);
-	if ( !readFile )
-	{
-		logTestString("createAndOpenFile failed\n");
-		while (fs->getFileArchiveCount())
-			fs->removeFileArchive(fs->getFileArchiveCount()-1);
-		return false;
-	}
-
-	if (fs->getFileBasename(readFile->getFileName()) != "test.txt")
-	{
-		logTestString("Wrong filename, file list seems to be corrupt\n");
-		while (fs->getFileArchiveCount())
-			fs->removeFileArchive(fs->getFileArchiveCount()-1);
-		return false;
-	}
-	char tmp[13] = {'\0'};
-	readFile->read(tmp, 12);
-	if (strncmp(tmp, "Hello world!", 12))
-	{
-		logTestString("Read bad data from archive: %s\n", tmp);
-		while (fs->getFileArchiveCount())
-			fs->removeFileArchive(fs->getFileArchiveCount()-1);
-		return false;
-	}
 	if (!fs->removeFileArchive(fs->getFileArchiveCount()-1))
 	{
 		logTestString("Couldn't remove archive.\n");
@@ -131,8 +141,6 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	// make sure there is no archive mounted
 	if ( fs->getFileArchiveCount() )
 		return false;
-
-	readFile->drop();
 
 	return true;
 }
@@ -230,6 +238,42 @@ bool testEncryptedZip(IFileSystem* fs)
 	return true;
 }
 
+static bool testMountFile(IFileSystem* fs)
+{
+	bool result = true;
+#if 1
+	fs->changeWorkingDirectoryTo("empty");
+	// log what we got
+	const io::IFileList* fileList = fs->createFileList();
+	for ( u32 f=0; f < fileList->getFileCount(); ++f)
+	{
+		logTestString("File name: %s\n", fileList->getFileName(f).c_str());
+		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
+		logTestString("ID: %d\n", fileList->getID(f));
+	}
+	fileList->drop();
+	fs->changeWorkingDirectoryTo("..");
+#endif
+	if (!fs->addFileArchive("empty"), false)
+		result = false;
+	const IFileList* list = fs->getFileArchive(0)->getFileList();
+#if 1
+	// log what we got
+	io::IFileArchive* archive = fs->getFileArchive(fs->getFileArchiveCount()-1);
+	fileList = archive->getFileList();
+	for ( u32 f=0; f < fileList->getFileCount(); ++f)
+	{
+		logTestString("File name: %s\n", fileList->getFileName(f).c_str());
+		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
+		logTestString("ID: %d\n", fileList->getID(f));
+	}
+#endif
+
+	if (list->getFileName(0) != "burnings video 0.39b.png")
+		result = false;
+	return result;
+}
+
 bool archiveReader()
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(1, 1));
@@ -254,6 +298,8 @@ bool archiveReader()
 	ret &= testArchive(fs, "media/file_with_path.npk");
 	logTestString("Testing encrypted zip files.\n");
 	ret &= testEncryptedZip(fs);
+//	logTestString("Testing complex mount file.\n");
+//	ret &= testMountFile(fs);
 
 	device->closeDevice();
 	device->run();

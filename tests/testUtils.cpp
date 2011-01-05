@@ -3,6 +3,7 @@
 
 #if defined(_MSC_VER)
 #define _CRT_SECURE_NO_WARNINGS 1
+#define TESTING_ON_WINDOWS
 #endif // _MSC_VER
 
 #include "testUtils.h"

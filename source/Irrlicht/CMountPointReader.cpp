@@ -93,7 +93,7 @@ CMountPointReader::CMountPointReader(IFileSystem * parent, const io::path& basen
 	if (Path.lastChar() != '/' )
 		Path.append('/');
 
-	const io::path work = Parent->getWorkingDirectory();
+	const io::path& work = Parent->getWorkingDirectory();
 
 	Parent->changeWorkingDirectoryTo(basename);
 	buildDirectory();
