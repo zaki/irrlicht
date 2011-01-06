@@ -43,7 +43,7 @@ s32 CParticleSphereEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& ou
 	Time += timeSinceLastCall;
 
 	const u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
-	const f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
+	const f32 perSecond = pps ? ((f32)MinParticlesPerSecond + os::Randomizer::frand() * pps) : MinParticlesPerSecond;
 	const f32 everyWhatMillisecond = 1000.0f / perSecond;
 
 	if(Time > everyWhatMillisecond)
@@ -59,13 +59,13 @@ s32 CParticleSphereEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& ou
 		for(u32 i=0; i<amount; ++i)
 		{
 			// Random distance from center
-			f32 distance = fmodf( (f32)os::Randomizer::rand(), Radius * 1000.0f ) * 0.001f;
+			const f32 distance = os::Randomizer::rand() * Radius;
 
 			// Random direction from center
 			p.pos.set(Center + distance);
-			p.pos.rotateXYBy( os::Randomizer::rand() % 360, Center );
-			p.pos.rotateYZBy( os::Randomizer::rand() % 360, Center );
-			p.pos.rotateXZBy( os::Randomizer::rand() % 360, Center );
+			p.pos.rotateXYBy(os::Randomizer::frand() * 360.f, Center );
+			p.pos.rotateYZBy(os::Randomizer::frand() * 360.f, Center );
+			p.pos.rotateXZBy(os::Randomizer::frand() * 360.f, Center );
 
 			p.startTime = now;
 			p.vector = Direction;
@@ -73,19 +73,20 @@ s32 CParticleSphereEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& ou
 			if(MaxAngleDegrees)
 			{
 				core::vector3df tgt = Direction;
-				tgt.rotateXYBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees);
-				tgt.rotateYZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees);
-				tgt.rotateXZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees);
+				tgt.rotateXYBy(os::Randomizer::frand() * MaxAngleDegrees);
+				tgt.rotateYZBy(os::Randomizer::frand() * MaxAngleDegrees);
+				tgt.rotateXZBy(os::Randomizer::frand() * MaxAngleDegrees);
 				p.vector = tgt;
 			}
 
-			if(MaxLifeTime - MinLifeTime == 0)
-				p.endTime = now + MinLifeTime;
-			else
-				p.endTime = now + MinLifeTime + (os::Randomizer::rand() % (MaxLifeTime - MinLifeTime));
+			p.endTime = now + MinLifeTime;
+			if (MaxLifeTime != MinLifeTime)
+				p.endTime += os::Randomizer::rand() % (MaxLifeTime - MinLifeTime);
 
-			p.color = MinStartColor.getInterpolated(
-				MaxStartColor, (os::Randomizer::rand() % 100) / 100.0f);
+			if (MinStartColor==MaxStartColor)
+				p.color=MinStartColor;
+			else
+				p.color = MinStartColor.getInterpolated(MaxStartColor, os::Randomizer::frand());
 
 			p.startColor = p.color;
 			p.startVector = p.vector;
@@ -93,8 +94,7 @@ s32 CParticleSphereEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& ou
 			if (MinStartSize==MaxStartSize)
 				p.startSize = MinStartSize;
 			else
-				p.startSize = MinStartSize.getInterpolated(
-					MaxStartSize, (os::Randomizer::rand() % 100) / 100.0f);
+				p.startSize = MinStartSize.getInterpolated(MaxStartSize, os::Randomizer::frand());
 			p.size = p.startSize;
 
 			Particles.push_back(p);

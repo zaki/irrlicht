@@ -202,15 +202,23 @@ namespace os
 	//! generates a pseudo random number
 	s32 Randomizer::rand()
 	{
-		const s32 m = 2147483399;	// a non-Mersenne prime
-		const s32 a = 40692;		// another spectral success story
-		const s32 q = m/a;
-		const s32 r = m%a;		// again less than q
-
+		// (a*seed)%m with Schrage's method
 		seed = a * (seed%q) - r* (seed/q);
-		if (seed<0) seed += m;
+		if (seed<0)
+			seed += m;
 
 		return seed;
+	}
+
+	//! generates a pseudo random number
+	f32 Randomizer::frand()
+	{
+		return rand()*(1.f/rMax);
+	}
+
+	s32 Randomizer::randMax()
+	{
+		return rMax;
 	}
 
 	//! resets the randomizer
