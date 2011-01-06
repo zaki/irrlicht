@@ -194,6 +194,10 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 	}
 	else
 	{
+#ifndef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+		return 0;
+#endif
+
 		// As multiple scene nodes may be sharing the same skinned mesh, we have to
 		// re-animate it every frame to ensure that this node gets the mesh that it needs.
 
@@ -568,11 +572,15 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(
 	return Shadow;
 }
 
-
 //! Returns a pointer to a child node, which has the same transformation as
 //! the corresponding joint, if the mesh in this scene node is a skinned mesh.
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 {
+#ifndef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+	os::Printer::log("Compiled without _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_", ELL_WARNING);
+	return 0;
+#endif
+
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
 	{
 		os::Printer::log("No mesh, or mesh not of skinned mesh type", ELL_WARNING);
@@ -601,10 +609,16 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 }
 
 
+
 //! Returns a pointer to a child node, which has the same transformation as
 //! the corresponding joint, if the mesh in this scene node is a skinned mesh.
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
 {
+#ifndef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+	os::Printer::log("Compiled without _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_", ELL_WARNING);
+	return 0;
+#endif
+
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
 	{
 		os::Printer::log("No mesh, or mesh not of skinned mesh type", ELL_WARNING);
@@ -625,6 +639,10 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
 //! Gets joint count.
 u32 CAnimatedMeshSceneNode::getJointCount() const
 {
+#ifndef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+	return 0;
+#endif
+
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
 		return 0;
 
@@ -648,7 +666,6 @@ ISceneNode* CAnimatedMeshSceneNode::getXJointNode(const c8* jointName)
 {
 	return  getJointNode(jointName);
 }
-
 
 //! Removes a child from this scene node.
 //! Implemented here, to be able to remove the shadow properly, if there is one,
@@ -890,14 +907,12 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 	}
 }
 
-
 //! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
 void CAnimatedMeshSceneNode::setJointMode(E_JOINT_UPDATE_ON_RENDER mode)
 {
 	checkJoints();
 	JointMode=mode;
 }
-
 
 //! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
 //! you must call animateJoints(), or the mesh will not animate
@@ -924,6 +939,9 @@ void CAnimatedMeshSceneNode::setRenderFromIdentity(bool enable)
 //! updates the joint positions of this mesh
 void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 {
+#ifndef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+	return;
+#endif
 	if (Mesh && Mesh->getMeshType() == EAMT_SKINNED )
 	{
 		checkJoints();
@@ -997,11 +1015,14 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 	}
 }
 
-
 /*!
 */
 void CAnimatedMeshSceneNode::checkJoints()
 {
+#ifndef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+	return;
+#endif
+
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
 		return;
 
@@ -1019,7 +1040,6 @@ void CAnimatedMeshSceneNode::checkJoints()
 		JointMode=EJUOR_READ;
 	}
 }
-
 
 /*!
 */
