@@ -8,6 +8,7 @@
 #include "IGUIWindow.h"
 #include "CGUIPanel.h"
 #include "IGUIImage.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {

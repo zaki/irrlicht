@@ -54,7 +54,7 @@ const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE	= L"type";
 
 //! constructor
 CGUIEnvironment::CGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* driver, IOSOperator* op)
-: IGUIElement(EGUIET_ELEMENT, 0, 0, 0, core::rect<s32>(core::position2d<s32>(0,0), driver ? core::dimension2d<s32>(driver->getScreenSize()) : core::dimension2d<s32>(0,0))),
+: IGUIElement(EGUIET_ROOT, 0, 0, 0, core::rect<s32>(core::position2d<s32>(0,0), driver ? core::dimension2d<s32>(driver->getScreenSize()) : core::dimension2d<s32>(0,0))),
 	Driver(driver), Hovered(0), HoveredNoSubelement(0), Focus(0), LastHoveredMousePos(0,0), CurrentSkin(0),
 	FileSystem(fs), UserReceiver(0), Operator(op)
 {
@@ -698,6 +698,7 @@ IGUIElement* CGUIEnvironment::addGUIElement(const c8* elementName, IGUIElement* 
 
 	for (u32 i=0; i<GUIElementFactoryList.size() && !node; ++i)
 		node = GUIElementFactoryList[i]->addGUIElement(elementName, parent);
+
 
 	return node;
 }

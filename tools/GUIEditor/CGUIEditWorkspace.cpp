@@ -16,6 +16,7 @@
 #include "CGUIEditWindow.h"
 #include "IGUIContextMenu.h"
 #include "IGUIFileOpenDialog.h"
+#include "IGUITreeView.h"
 #include "CGUIAttribute.h"
 #include "CMemoryReadWriteFile.h"
 
@@ -237,6 +238,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					if (SelectedElement)
 					{
 						SelectedElement->deserializeAttributes(EditorWindow->getAttributeEditor()->getAttribs());
+						EditorWindow->updateTree();
 					}
 					return true;
 				}
@@ -268,6 +270,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					setSelectedElement(0);
 					MouseOverElement = 0;
 					el->remove();
+					EditorWindow->updateTree();
 				}
 				break;
 			case KEY_KEY_X:
@@ -570,6 +573,13 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 	case EET_GUI_EVENT:
 		switch(e.GUIEvent.EventType)
 		{
+        case EGET_TREEVIEW_NODE_SELECT:
+        {
+            IGUITreeViewNode* eventnode = ((IGUITreeView*)e.GUIEvent.Caller)->getLastEventNode();
+            if(!eventnode->isRoot())
+                setSelectedElement((IGUIElement*)(eventnode->getData()));
+            break;
+        }
 		// load a gui file
 		case EGET_FILE_SELECTED:
 			dialog = (IGUIFileOpenDialog*)e.GUIEvent.Caller;
@@ -639,6 +649,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					break;
 
 				case EGUIEDMC_SAVE_ELEMENT:
+                    //TODO: add 'save' dialog.
 					Environment->saveGUI("guiTest.xml", SelectedElement ? SelectedElement : Environment->getRootGUIElement() );
 					break;
 
@@ -678,6 +689,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					}
 					break;
 				}
+				EditorWindow->updateTree();
 			}
 			return true;
 		default:

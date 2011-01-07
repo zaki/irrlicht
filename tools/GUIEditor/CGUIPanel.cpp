@@ -20,7 +20,7 @@ namespace irr
 namespace gui
 {
 
-CGUIPanel::CGUIPanel( IGUIEnvironment* environment, IGUIElement* parent, s32 id, const core::rect<s32>& rectangle,
+CGUIPanel::CGUIPanel(IGUIEnvironment* environment, IGUIElement* parent, s32 id, const core::rect<s32>& rectangle,
 			bool border, E_SCROLL_BAR_MODE vMode, E_SCROLL_BAR_MODE hMode)
 	: IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
 	VScrollBar(0), HScrollBar(0), ClipPane(0), InnerPane(0),

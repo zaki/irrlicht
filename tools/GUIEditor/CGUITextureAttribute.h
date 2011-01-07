@@ -5,6 +5,7 @@
 #include "IGUIEditBox.h"
 #include "IGUIImage.h"
 #include "IGUIButton.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -121,8 +122,11 @@ namespace gui
 			return CGUIAttribute::updateAttrib(sendEvent);
 		}
 
-		//! this shoudln't be serialized, but this is included as it's an example
-		virtual const c8* getTypeName() const { return "texture_attribute"; }
+		//! Returns the type name of the gui element.
+		virtual const c8* getTypeName() const
+		{
+			return GUIEditElementTypeNames[EGUIEDIT_TEXTUREATTRIBUTE];
+		}
 
 	private:
 		IGUIEditBox*		AttribEditBox;
