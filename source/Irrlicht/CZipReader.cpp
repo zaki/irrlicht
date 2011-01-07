@@ -176,90 +176,6 @@ const IFileList* CZipReader::getFileList() const
 	return this;
 }
 
-#if 0
-#include <windows.h>
-
-const c8 *sigName( u32 sig )
-{
-	switch ( sig )
-	{
-		case 0x04034b50: return "PK0304";
-		case 0x02014b50: return "PK0102";
-		case 0x06054b50: return "PK0506";
-	}
-	return "unknown";
-}
-
-bool CZipReader::scanLocalHeader2()
-{
-	c8 buf [ 128 ];
-	c8 *c;
-
-	File->read( &temp.header.Sig, 4 );
-
-#ifdef __BIG_ENDIAN__
-	os::Byteswap::byteswap(temp.header.Sig);
-#endif
-
-	sprintf ( buf, "sig: %08x,%s,", temp.header.Sig, sigName ( temp.header.Sig ) );
-	OutputDebugStringA ( buf );
-
-	// Local File Header
-	if ( temp.header.Sig == 0x04034b50 )
-	{
-		File->read( &temp.header.VersionToExtract, sizeof( temp.header ) - 4 );
-
-		temp.zipFileName.reserve( temp.header.FilenameLength+2);
-		c = (c8*) temp.zipFileName.c_str();
-		File->read( c, temp.header.FilenameLength);
-		c [ temp.header.FilenameLength ] = 0;
-		temp.zipFileName.verify();
-
-		sprintf ( buf, "%d,'%s'\n", temp.header.CompressionMethod, c );
-		OutputDebugStringA ( buf );
-
-		if (temp.header.ExtraFieldLength)
-		{
-			File->seek( temp.header.ExtraFieldLength, true);
-		}
-
-		if (temp.header.GeneralBitFlag & ZIP_INFO_IN_DATA_DESCRIPTOR)
-		{
-			// read data descriptor
-			File->seek(sizeof(SZIPFileDataDescriptor), true );
-		}
-
-		// compressed data
-		temp.fileDataPosition = File->getPos();
-		File->seek( temp.header.DataDescriptor.CompressedSize, true);
-		FileList.push_back( temp );
-		return true;
-	}
-
-	// Central directory structure
-	if ( temp.header.Sig == 0x04034b50 )
-	{
-		//SZIPFileCentralDirFileHeader h;
-		//File->read( &h, sizeof( h ) - 4 );
-		return true;
-	}
-
-	// End of central dir
-	if ( temp.header.Sig == 0x06054b50 )
-	{
-		return true;
-	}
-
-	// eof
-	if ( temp.header.Sig == 0x02014b50 )
-	{
-		return false;
-	}
-
-	return false;
-}
-
-#endif
 
 //! scans for a local header, returns false if there is no more local file header.
 //! The gzip file format seems to think that there can be multiple files in a gzip file
@@ -372,7 +288,7 @@ bool CZipReader::scanGZipHeader()
 }
 
 //! scans for a local header, returns false if there is no more local file header.
-bool CZipReader::scanZipHeader()
+bool CZipReader::scanZipHeader(bool ignoreGPBits)
 {
 	io::path ZipFileName = "";
 	SZipFileEntry entry;
@@ -450,16 +366,57 @@ bool CZipReader::scanZipHeader()
 	if (entry.header.ExtraFieldLength)
 		File->seek(entry.header.ExtraFieldLength, true);
 
-	// if bit 3 was set, read DataDescriptor, following after the compressed data
-	if (entry.header.GeneralBitFlag & ZIP_INFO_IN_DATA_DESCRIPTOR)
+	// if bit 3 was set, use CentralDirectory for setup
+	if (!ignoreGPBits && entry.header.GeneralBitFlag & ZIP_INFO_IN_DATA_DESCRIPTOR)
 	{
-		// read data descriptor
-		File->read(&entry.header.DataDescriptor, sizeof(entry.header.DataDescriptor));
+		SZIPFileCentralDirEnd dirEnd;
+		FileInfo.clear();
+		Files.clear();
+		// First place where the end record could be stored
+		File->seek(File->getSize()-22);
+		const char endID[] = {0x50, 0x4b, 0x05, 0x06, 0x0};
+		char tmp[5]={'\0'};
+		bool found=false;
+		// search for the end record ID
+		while (!found && File->getPos()>0)
+		{
+			int seek=8;
+			File->read(tmp, 4);
+			switch (tmp[0])
+			{
+			case 0x50:
+				if (!strcmp(endID, tmp))
+				{
+					seek=4;
+					found=true;
+				}
+				break;
+			case 0x4b:
+				seek=5;
+				break;
+			case 0x05:
+				seek=6;
+				break;
+			case 0x06:
+				seek=7;
+				break;
+			}
+			File->seek(-seek, true);
+		}
+		File->read(&dirEnd, sizeof(dirEnd));
 #ifdef __BIG_ENDIAN__
-		entry.header.DataDescriptor.CRC32 = os::Byteswap::byteswap(entry.header.DataDescriptor.CRC32);
-		entry.header.DataDescriptor.CompressedSize = os::Byteswap::byteswap(entry.header.DataDescriptor.CompressedSize);
-		entry.header.DataDescriptor.UncompressedSize = os::Byteswap::byteswap(entry.header.DataDescriptor.UncompressedSize);
+		dirEnd.NumberDisk = os::Byteswap::byteswap(dirEnd.NumberDisk);
+		dirEnd.NumberStart = os::Byteswap::byteswap(dirEnd.NumberStart);
+		dirEnd.TotalDisk = os::Byteswap::byteswap(dirEnd.TotalDisk);
+		dirEnd.TotalEntries = os::Byteswap::byteswap(dirEnd.TotalEntries);
+		dirEnd.Size = os::Byteswap::byteswap(dirEnd.Size);
+		dirEnd.Offset = os::Byteswap::byteswap(dirEnd.Offset);
+		dirEnd.CommentLength = os::Byteswap::byteswap(dirEnd.CommentLength);
 #endif
+		FileInfo.reallocate(dirEnd.TotalEntries);
+		File->seek(dirEnd.Offset);
+		while (scanCentralDirectoryHeader()) { }
+		return false;
 	}
 
 	// store position in file
@@ -474,6 +431,48 @@ bool CZipReader::scanZipHeader()
 	addItem(ZipFileName, entry.Offset, entry.header.DataDescriptor.UncompressedSize, false, FileInfo.size());
 	FileInfo.push_back(entry);
 
+	return true;
+}
+
+
+//! scans for a local header, returns false if there is no more local file header.
+bool CZipReader::scanCentralDirectoryHeader()
+{
+	io::path ZipFileName = "";
+	SZIPFileCentralDirFileHeader entry;
+	File->read(&entry, sizeof(SZIPFileCentralDirFileHeader));
+
+#ifdef __BIG_ENDIAN__
+	entry.Sig = os::Byteswap::byteswap(entry.Sig);
+	entry.VersionMadeBy = os::Byteswap::byteswap(entry.VersionMadeBy);
+	entry.VersionToExtract = os::Byteswap::byteswap(entry.VersionToExtract);
+	entry.GeneralBitFlag = os::Byteswap::byteswap(entry.GeneralBitFlag);
+	entry.CompressionMethod = os::Byteswap::byteswap(entry.CompressionMethod);
+	entry.LastModFileTime = os::Byteswap::byteswap(entry.LastModFileTime);
+	entry.LastModFileDate = os::Byteswap::byteswap(entry.LastModFileDate);
+	entry.CRC32 = os::Byteswap::byteswap(entry.CRC32);
+	entry.CompressedSize = os::Byteswap::byteswap(entry.CompressedSize);
+	entry.UncompressedSize = os::Byteswap::byteswap(entry.UncompressedSize);
+	entry.FilenameLength = os::Byteswap::byteswap(entry.FilenameLength);
+	entry.ExtraFieldLength = os::Byteswap::byteswap(entry.ExtraFieldLength);
+	entry.FileCommentLength = os::Byteswap::byteswap(entry.FileCommentLength);
+	entry.DiskNumberStart = os::Byteswap::byteswap(entry.DiskNumberStart);
+	entry.InternalFileAttributes = os::Byteswap::byteswap(entry.InternalFileAttributes);
+	entry.ExternalFileAttributes = os::Byteswap::byteswap(entry.ExternalFileAttributes);
+	entry.RelativeOffsetOfLocalHeader = os::Byteswap::byteswap(entry.RelativeOffsetOfLocalHeader);
+#endif
+
+	if (entry.Sig != 0x02014b50)
+		return false; // central dir headers end here.
+
+	const long pos = File->getPos();
+	File->seek(entry.RelativeOffsetOfLocalHeader);
+	scanZipHeader(true);
+	File->seek(pos+entry.FilenameLength+entry.ExtraFieldLength+entry.FileCommentLength);
+	FileInfo.getLast().header.DataDescriptor.CompressedSize=entry.CompressedSize;
+	FileInfo.getLast().header.DataDescriptor.UncompressedSize=entry.UncompressedSize;
+	FileInfo.getLast().header.DataDescriptor.CRC32=entry.CRC32;
+	Files.getLast().Size=entry.UncompressedSize;
 	return true;
 }
 
