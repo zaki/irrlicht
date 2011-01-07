@@ -428,7 +428,7 @@ bool CZipReader::scanZipHeader(bool ignoreGPBits)
 	//os::Debuginfo::print("added file from archive", ZipFileName.c_str());
 	#endif
 
-	addItem(ZipFileName, entry.Offset, entry.header.DataDescriptor.UncompressedSize, false, FileInfo.size());
+	addItem(ZipFileName, entry.Offset, entry.header.DataDescriptor.UncompressedSize, ZipFileName.lastChar()=='/', FileInfo.size());
 	FileInfo.push_back(entry);
 
 	return true;
