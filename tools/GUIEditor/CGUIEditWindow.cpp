@@ -6,6 +6,7 @@
 #include "IAttributes.h"
 #include "IGUIFont.h"
 #include "IGUITabControl.h"
+#include "IGUITreeView.h"
 #include "CGUIEditWorkspace.h"
 
 using namespace irr;
@@ -76,6 +77,12 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	AttribEditor->setRelativePositionProportional(core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
 	AttribEditor->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 
+	IGUITab* TreeTab = TabControl->addTab(L"Tree");
+	TreeView = environment->addTreeView(core::rect<s32>(0,0,0,0), TreeTab);
+	TreeView->setRelativePositionProportional(core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
+	TreeView->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+	IGUITreeViewNode* treenode = TreeView->getRoot();
+	//treenode->addChildFront(L"Elements");
 	ResizeButton = environment->addButton(core::rect<s32>(199-th,449-th,199,449), this);
 	ResizeButton->setDrawBorder(false);
 	ResizeButton->setEnabled(false);
@@ -85,6 +92,7 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	ResizeButton->grab();
 	ResizeButton->setSubElement(true);
 	ResizeButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
+	updateTree();
 }
 
 
@@ -102,6 +110,10 @@ CGUIEditWindow::~CGUIEditWindow()
 		ResizeButton->drop();
 }
 
+IGUITreeView* CGUIEditWindow::getTreeView() const
+{
+	return TreeView;
+}
 CGUIAttributeEditor* CGUIEditWindow::getEnvironmentEditor() const
 {
 	return EnvEditor;
@@ -117,10 +129,65 @@ CGUIAttributeEditor* CGUIEditWindow::getOptionEditor() const
 	return OptionEditor;
 }
 
+IGUITreeViewNode* CGUIEditWindow::getTreeNode(IGUIElement* element, IGUITreeViewNode* searchnode)
+{
+	IGUITreeViewNode* child = searchnode->getFirstChild();
+	while (!child)
+	{
+		if (((IGUIElement*) child->getData()) == element)
+			return child;
+
+		if (child->hasChildren())
+		{
+			IGUITreeViewNode* foundnode = getTreeNode(element, child);
+			if (foundnode)
+				return foundnode;
+		}
+		child = child->getNextSibling();
+	}
+	return 0;
+}
+
+void CGUIEditWindow::addChildrenToTree(IGUIElement* parentElement, IGUITreeViewNode* treenode)
+{
+	core::stringw name = core::stringw(parentElement->getTypeName());
+	if (parentElement->getID() != -1)
+		name += core::stringw(L" [") + core::stringw(parentElement->getID()) + core::stringw(L"]");
+
+	IGUITreeViewNode* newnode = treenode->addChildBack(name.c_str());
+	newnode->setData((void*)parentElement);
+	core::list<IGUIElement*> children = parentElement->getChildren();
+
+	for (core::list<IGUIElement*>::Iterator i = children.begin(); i != children.end(); i++ )
+	{
+		if(core::stringc((*i)->getTypeName()) != "GUIEditor" && !(*i)->isSubElement())
+			addChildrenToTree(*i, newnode);
+	}
+}
+
+void CGUIEditWindow::updateTree()
+{
+	TreeView->getRoot()->clearChildren();
+	IGUIElement* root = Environment->getRootGUIElement();
+	addChildrenToTree(root, TreeView->getRoot());
+	TreeView->getRoot()->getFirstChild()->setExpanded(true);
+}
+
 void CGUIEditWindow::setSelectedElement(IGUIElement *sel)
 {
 	// save changes
 	AttribEditor->updateAttribs();
+	IGUITreeViewNode* elementTreeNode = getTreeNode(sel, TreeView->getRoot());
+
+	if (elementTreeNode)
+	{
+		elementTreeNode->setSelected(true);
+		while (elementTreeNode)
+		{
+			elementTreeNode->setExpanded(true);
+			elementTreeNode = elementTreeNode->getParent();
+		}
+	}
 
 	io::IAttributes* Attribs = AttribEditor->getAttribs();
 
@@ -196,7 +263,6 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 		{
 		case EMIE_LMOUSE_PRESSED_DOWN:
 		{
-
 			DragStart.X = event.MouseInput.X;
 			DragStart.Y = event.MouseInput.Y;
 
@@ -284,10 +350,7 @@ void CGUIEditWindow::setDraggable(bool draggable)
 // but we don't need them so we'll just return null
 
 //! Returns the rectangle of the drawable area (without border, without titlebar and without scrollbars)
-core::rect<s32> CGUIEditWindow::getClientRect() const
-{
-	return core::recti();
-}
-IGUIButton* CGUIEditWindow::getCloseButton() const     {return 0;}
+core::rect<s32> CGUIEditWindow::getClientRect() const  {return core::recti();}
+IGUIButton* CGUIEditWindow::getCloseButton()    const  {return 0;}
 IGUIButton* CGUIEditWindow::getMinimizeButton() const  {return 0;}
 IGUIButton* CGUIEditWindow::getMaximizeButton() const  {return 0;}

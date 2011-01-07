@@ -1,5 +1,9 @@
 Changes in 1.8 (??.??.2011)
 
+ - Added treeview to GUI editor, provided by Armen
+
+ - Added root type for GUI environment
+
  - Fixed panel scrollbars in GUI editor, reported by Armen
 
  - Add some getters to IGUIImage: getImage, getColor

@@ -5,6 +5,7 @@
 #include "CGUIPanel.h"
 #include "irrArray.h"
 #include "IAttributes.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -33,8 +34,11 @@ namespace gui
 		// save the attributes
 		void updateAttribs();
 
-		//! this shoudln't be serialized, but this is included as it's an example
-		virtual const c8* getTypeName() const { return "attributeEditor"; }
+		//! Returns the type name of the gui element.
+		virtual const c8* getTypeName() const
+		{
+			return GUIEditElementTypeNames[EGUIEDIT_ATTRIBUTEEDITOR];
+		}
 
 	private:
 

@@ -7,6 +7,7 @@
 
 #include "IGUIElement.h"
 #include "CGUIEditWindow.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -22,7 +23,7 @@ namespace gui
 	*/
 
 	// custom events
-	enum EGUIEDIT_CUSTOM_EVENTS 
+	enum EGUIEDIT_CUSTOM_EVENTS
 	{
 		EGUIEDCE_ATTRIB_EDITOR = MAKE_IRR_ID('g','A','t','t'),
 		EGUIEDCE_OPTION_EDITOR = MAKE_IRR_ID('g','O','p','t'),
@@ -53,7 +54,7 @@ namespace gui
 
 		//! Sets the menu command id's
 		/** The GUI editor defaults to command ID's from 0xED17 to 0xED17+EGUIEDMC_COUNT
-		In the rare case that these are already in use and you wish to use menus 
+		In the rare case that these are already in use and you wish to use menus
 		while the editor is present you can set a new offset here.
 		*/
 		virtual void setMenuCommandIDStart(s32 id);
@@ -80,8 +81,10 @@ namespace gui
 		//! copies the xml of the selected element and all children to the clipboard
 		virtual void PasteXMLToSelectedElement();
 
-		//! this shoudln't be serialized, but this is included as it's an example
-		virtual const c8* getTypeName() const { return "GUIEditor"; }
+		virtual const c8* getTypeName() const
+		{
+			return GUIEditElementTypeNames[EGUIEDIT_GUIEDIT];
+		}
 
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0);
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
@@ -143,7 +146,7 @@ namespace gui
 		s32			MenuCommandStart;
 		bool			DrawGrid, UseGrid;
 
-		IGUIElement		*MouseOverElement, 
+		IGUIElement		*MouseOverElement,
 					*SelectedElement;
 		CGUIEditWindow		*EditorWindow;
 

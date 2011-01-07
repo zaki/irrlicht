@@ -4,6 +4,7 @@
 #include "CGUIAttribute.h"
 #include "IGUIComboBox.h"
 #include "IGUIEditBox.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -15,7 +16,7 @@ namespace gui
 	public:
 		//
 		CGUIEnumAttribute(IGUIEnvironment* environment, IGUIElement *parent, s32 myParentID) :
-			CGUIAttribute(environment, parent, myParentID),	
+			CGUIAttribute(environment, parent, myParentID),
 			AttribComboBox(0), AttribEditBox(0)
 		{
 
@@ -51,8 +52,8 @@ namespace gui
 			attribs->getAttributeEnumerationLiteralsOfEnumeration(attribIndex, outLiterals);
 
 			core::rect<s32> r = getAbsolutePosition();
-			core::rect<s32> r2(0, Environment->getSkin()->getFont()->getDimension(L"A").Height + 10, 
-				r.getWidth() - 5, 
+			core::rect<s32> r2(0, Environment->getSkin()->getFont()->getDimension(L"A").Height + 10,
+				r.getWidth() - 5,
 				Environment->getSkin()->getFont()->getDimension(L"A").Height*2 + 20 );
 
 			if (outLiterals.size() > 0)
@@ -77,7 +78,7 @@ namespace gui
 				AttribEditBox->setSubElement(true);
 				AttribEditBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 			}
-				
+
 			CGUIAttribute::setAttrib(attribs, attribIndex);
 		}
 
@@ -95,8 +96,11 @@ namespace gui
 			return CGUIAttribute::updateAttrib(sendEvent);
 		}
 
-		//! this shoudln't be serialized, but this is included as it's an example
-		virtual const c8* getTypeName() const { return "enum_attribute"; }
+		//! Returns the type name of the gui element.
+		virtual const c8* getTypeName() const
+		{
+			return GUIEditElementTypeNames[EGUIEDIT_ENUMATTRIBUTE];
+		}
 
 	private:
 		IGUIComboBox*	AttribComboBox;

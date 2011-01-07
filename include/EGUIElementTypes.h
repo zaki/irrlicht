@@ -88,6 +88,9 @@ enum EGUI_ELEMENT_TYPE
 	//! Unknown type.
 	EGUIET_ELEMENT,
 
+	//! The root of the GUI
+	EGUIET_ROOT,
+
 	//! Not an element, amount of elements in there
 	EGUIET_COUNT,
 
@@ -123,6 +126,7 @@ const c8* const GUIElementTypeNames[] =
 	"treeview",
 	"window",
 	"element",
+	"root",
 	0
 };
 

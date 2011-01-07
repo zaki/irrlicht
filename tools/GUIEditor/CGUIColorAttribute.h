@@ -5,6 +5,7 @@
 #include "IGUIStaticText.h"
 #include "IGUIScrollBar.h"
 #include "IGUITabControl.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -156,10 +157,10 @@ namespace gui
 			return CGUIAttribute::updateAttrib(sendEvent);
 		}
 
-		//! this shoudln't be serialized, but this is included as it's an example
+		//! Returns the type name of the gui element.
 		virtual const c8* getTypeName() const
 		{
-			return "color_attribute";
+			return GUIEditElementTypeNames[EGUIEDIT_COLORATTRIBUTE];
 		}
 
 	private:

@@ -1,7 +1,7 @@
 /*
 	This base class is used by the Attribute editor for making your own attribute types.
 
-	The attribute editor will try and create an attribute called "AttribType_attribute", 
+	The attribute editor will try and create an attribute called "AttribType_attribute",
 	and if it fails, it will create a "string_attribute".
 
 */
@@ -38,7 +38,7 @@ namespace gui
 			#endif
 
 			AttribName = environment->addStaticText(0,
-				core::rect<s32>(0, 0, 
+				core::rect<s32>(0, 0,
 					100, Environment->getSkin()->getFont()->getDimension(L"A").Height),
 					false, false, this, -1, false);
 			AttribName->grab();
@@ -104,7 +104,7 @@ namespace gui
 			AttribName->setText(name.c_str());
 
 			core::rect<s32> r = Parent->getAbsolutePosition();
-			core::rect<s32> r2(0, 5, 
+			core::rect<s32> r2(0, 5,
 				r.getWidth(), Environment->getSkin()->getFont()->getDimension(L"A").Height + 10 );
 
 			AttribName->setRelativePosition(r2);

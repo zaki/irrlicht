@@ -6,8 +6,10 @@
 #include "CGUIAttributeEditor.h"
 //#include "IGUIStaticText.h"
 #include "IGUIButton.h"
+#include "IGUITreeView.h"
 #include "irrArray.h"
 #include "IAttributes.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -47,16 +49,22 @@ namespace gui
 		virtual void setDrawTitlebar(bool draw) { }
 		virtual bool getDrawTitlebar() const { return true; }
 
+        IGUITreeView* getTreeView() const;
 		CGUIAttributeEditor* getAttributeEditor() const;
 		CGUIAttributeEditor* getOptionEditor() const;
 		CGUIAttributeEditor* getEnvironmentEditor() const;
 
-		//! this shoudln't be serialized, but this is included as it's an example
-		virtual const c8* getTypeName() const { return "GUIEditWindow"; }
+		//! Returns the type name of the gui element.
+		virtual const c8* getTypeName() const
+		{
+			return GUIEditElementTypeNames[EGUIEDIT_GUIEDITWINDOW];
+		}
 
+        void updateTree();
 	private:
 
-
+        void addChildrenToTree(IGUIElement* parentElement, IGUITreeViewNode* treenode);
+        IGUITreeViewNode* getTreeNode(IGUIElement* element, IGUITreeViewNode* searchnode);
 		// for dragging the window
 		bool                    Dragging;
 		bool                    IsDraggable;
@@ -68,6 +76,7 @@ namespace gui
 		CGUIAttributeEditor*    AttribEditor;	// edits the current attribute
 		CGUIAttributeEditor*    OptionEditor;	// edits the options for the window
 		CGUIAttributeEditor*    EnvEditor;		// edits attributes for the environment
+		IGUITreeView*           TreeView;       // tree view of all elements in scene
 		IGUIButton*             ResizeButton;
 
 	};
