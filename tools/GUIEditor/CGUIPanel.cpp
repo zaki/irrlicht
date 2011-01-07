@@ -35,16 +35,16 @@ CGUIPanel::CGUIPanel( IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 
 	core::rect<s32> rct = core::rect<s32>(width - SCROLL_BAR_SIZE,0, width, height);
 
-	VScrollBar = environment->addScrollBar( false, rct, 0, id );
+	VScrollBar = environment->addScrollBar(false, rct, 0, id);
 	VScrollBar->setSubElement(true);
 	VScrollBar->setTabStop(false);
 	VScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	VScrollBar->grab();
 	IGUIElement::addChild(VScrollBar);
 
-	rct = core::rect<s32>(0,height - SCROLL_BAR_SIZE, width - SCROLL_BAR_SIZE,height );
+	rct = core::rect<s32>(0, height - SCROLL_BAR_SIZE, width - SCROLL_BAR_SIZE,height );
 
-	HScrollBar = environment->addScrollBar( true, rct, 0, id );
+	HScrollBar = environment->addScrollBar(true, rct, 0, id);
 	HScrollBar->setSubElement(true);
 	HScrollBar->setTabStop(false);
 	HScrollBar->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
@@ -59,7 +59,7 @@ CGUIPanel::CGUIPanel( IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 	ClipPane->grab();
 	IGUIElement::addChild(ClipPane);
 
-	InnerPane = environment->addTab( rct, ClipPane, -1);
+	InnerPane = environment->addTab(rct, ClipPane, -1);
 	InnerPane->setSubElement(true);
 	InnerPane->grab();
 
@@ -157,7 +157,7 @@ E_SCROLL_BAR_MODE CGUIPanel::getHScrollBarMode() const
 	return HScrollBarMode;
 }
 
-void CGUIPanel::setHScrollBarMode( E_SCROLL_BAR_MODE mode )
+void CGUIPanel::setHScrollBarMode(E_SCROLL_BAR_MODE mode)
 {
 	HScrollBarMode = mode;
 	NeedsUpdate = true;
@@ -166,7 +166,7 @@ void CGUIPanel::setHScrollBarMode( E_SCROLL_BAR_MODE mode )
 bool CGUIPanel::OnEvent(const SEvent &event)
 {
 	// Redirect mouse wheel to scrollbar
-	if ( event.EventType == EET_MOUSE_INPUT_EVENT && event.MouseInput.Event == EMIE_MOUSE_WHEEL )
+	if (event.EventType == EET_MOUSE_INPUT_EVENT && event.MouseInput.Event == EMIE_MOUSE_WHEEL)
 	{
 		if (VScrollBar->isVisible())
 		{
@@ -183,8 +183,8 @@ bool CGUIPanel::OnEvent(const SEvent &event)
 	}
 	else
 	{
-		if ( event.EventType == EET_GUI_EVENT && event.GUIEvent.EventType == EGET_SCROLL_BAR_CHANGED &&
-			( event.GUIEvent.Caller == HScrollBar || event.GUIEvent.Caller == VScrollBar) )
+		if (event.EventType == EET_GUI_EVENT && event.GUIEvent.EventType == EGET_SCROLL_BAR_CHANGED &&
+			(event.GUIEvent.Caller == HScrollBar || event.GUIEvent.Caller == VScrollBar) )
 		{
 			moveInnerPane();
 
@@ -224,12 +224,12 @@ void CGUIPanel::resizeInnerPane()
 	InnerPane->setRelativePosition(outerRect);
 
 	// get desired size (total size of all children)
-	core::rect<s32> totalRect(0,0,0,0);
+	core::rect<s32> totalRect(0, 0, 0, 0);
 
 	core::list<IGUIElement*>::ConstIterator it;
 
-	for ( it = InnerPane->getChildren().begin();
-		it != InnerPane->getChildren().end(); ++it )
+	for (it  = InnerPane->getChildren().begin();
+         it != InnerPane->getChildren().end(); ++it)
 	{
 		core::rect<s32> rct = (*it)->getRelativePosition();
 		totalRect.addInternalPoint(rct.UpperLeftCorner);

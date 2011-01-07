@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Fixed panel scrollbars in GUI editor, reported by Armen
+
  - Add some getters to IGUIImage: getImage, getColor
 
  - API change: Added write only lock mode for textures. The lock method has changed the signature and uses an enum parameter now instead of a bool. The default is still to lock for read/write (previously 'false'). The old 'true' value should be replaced by ETLM_READ_ONLY.
