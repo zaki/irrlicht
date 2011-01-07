@@ -55,6 +55,7 @@ IAnimatedMesh* CB3DMeshFileLoader::createMesh(io::IReadFile* f)
 	B3DFile = f;
 	AnimatedMesh = new scene::CSkinnedMesh();
 	ShowWarning = true; // If true a warning is issued if too many textures are used
+	VerticesStart=0;
 
 	if ( load() )
 	{
@@ -198,6 +199,7 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
 		}
 		else if ( strncmp( B3dStack.getLast().name, "MESH", 4 ) == 0 )
 		{
+			VerticesStart=BaseVertices.size();
 			if (!readChunkMESH(joint))
 				return false;
 		}
@@ -236,12 +238,10 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *inJoint)
 	os::Printer::log("read ChunkMESH");
 #endif
 
-	const s32 vertices_Start=BaseVertices.size(); //B3Ds have Vertex ID's local within the mesh I don't want this
-
-	s32 brush_id;
-	B3DFile->read(&brush_id, sizeof(brush_id));
+	s32 brushID;
+	B3DFile->read(&brushID, sizeof(brushID));
 #ifdef __BIG_ENDIAN__
-	brush_id = os::Byteswap::byteswap(brush_id);
+	brushID = os::Byteswap::byteswap(brushID);
 #endif
 
 	NormalsInFile=false;
@@ -266,13 +266,13 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *inJoint)
 		{
 			scene::SSkinMeshBuffer *meshBuffer = AnimatedMesh->addMeshBuffer();
 
-			if (brush_id!=-1)
+			if (brushID!=-1)
 			{
-				loadTextures(Materials[brush_id]);
-				meshBuffer->Material=Materials[brush_id].Material;
+				loadTextures(Materials[brushID]);
+				meshBuffer->Material=Materials[brushID].Material;
 			}
 
-			if(readChunkTRIS(meshBuffer,AnimatedMesh->getMeshBuffers().size()-1, vertices_Start)==false)
+			if(readChunkTRIS(meshBuffer,AnimatedMesh->getMeshBuffers().size()-1, VerticesStart)==false)
 				return false;
 
 			if (!NormalsInFile)
@@ -293,7 +293,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *inJoint)
 				for ( i = 0; i<(s32)meshBuffer->getVertexCount(); ++i )
 				{
 					meshBuffer->getVertex(i)->Normal.normalize();
-					BaseVertices[vertices_Start+i].Normal=meshBuffer->getVertex(i)->Normal;
+					BaseVertices[VerticesStart+i].Normal=meshBuffer->getVertex(i)->Normal;
 				}
 			}
 		}
@@ -562,6 +562,7 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
 			globalVertexID = os::Byteswap::byteswap(globalVertexID);
 			strength = os::Byteswap::byteswap(strength);
 #endif
+			globalVertexID += VerticesStart;
 
 			if (AnimatedVertices_VertexID[globalVertexID]==-1)
 			{
