@@ -132,7 +132,7 @@ CGUIAttributeEditor* CGUIEditWindow::getOptionEditor() const
 IGUITreeViewNode* CGUIEditWindow::getTreeNode(IGUIElement* element, IGUITreeViewNode* searchnode)
 {
 	IGUITreeViewNode* child = searchnode->getFirstChild();
-	while (!child)
+	while (child)
 	{
 		if (((IGUIElement*) child->getData()) == element)
 			return child;
