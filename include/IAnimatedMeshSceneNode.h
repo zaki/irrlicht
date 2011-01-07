@@ -210,7 +210,7 @@ namespace scene
 		virtual void animateJoints(bool CalculateAbsolutePositions=true) = 0;
 
 		//! render mesh ignoring its transformation.
-		/** Used with ragdolls. Culling is unaffected. */
+		/** Culling is unaffected. */
 		virtual void setRenderFromIdentity( bool On )=0;
 
 		//! Creates a clone of this scene node and its children.
