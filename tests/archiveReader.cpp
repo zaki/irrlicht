@@ -187,14 +187,40 @@ bool testEncryptedZip(IFileSystem* fs)
 
 	// log what we got
 	io::IFileArchive* archive = fs->getFileArchive(fs->getFileArchiveCount()-1);
+	io::path filename("doc");
 	const io::IFileList* fileList = archive->getFileList();
 	for ( u32 f=0; f < fileList->getFileCount(); ++f)
 	{
-		logTestString("File name: %s\n", fileList->getFileName(f).c_str());
+		logTestString("%s name: %s\n", fileList->isDirectory(f)?"Directory":"File", fileList->getFileName(f).c_str());
 		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
 	}
-	
-	io::path filename("doc/readme.txt");
+	if (fileList->findFile(filename) != -1)
+	{
+		logTestString("findFile wrongly succeeded on directory\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+	if (fileList->findFile(filename, true)==-1)
+	{
+		logTestString("findFile failed on directory\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+
+	filename="doc/readme.txt";
+	if (fileList->findFile(filename)==-1)
+	{
+		logTestString("findFile failed\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+	if (fileList->findFile(filename, true) != -1)
+	{
+		logTestString("findFile wrongly succeeded on non-directory\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+
 	if (!fs->existFile(filename))
 	{
 		logTestString("existFile failed\n");
@@ -202,6 +228,15 @@ bool testEncryptedZip(IFileSystem* fs)
 		return false;
 	}
 
+	filename="doc";
+	if (fs->existFile(filename))
+	{
+		logTestString("existFile succeeded wrongly on directory\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+
+	filename="doc/readme.txt";
 	IReadFile* readFile = fs->createAndOpenFile(filename);
 	if ( readFile )
 	{
@@ -273,7 +308,7 @@ bool testSpecialZip(IFileSystem* fs)
 	const io::IFileList* fileList = archive->getFileList();
 	for ( u32 f=0; f < fileList->getFileCount(); ++f)
 	{
-		logTestString("File name: %s\n", fileList->getFileName(f).c_str());
+		logTestString("%s name: %s\n", fileList->isDirectory(f)?"Directory":"File", fileList->getFileName(f).c_str());
 		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
 	}
 	
