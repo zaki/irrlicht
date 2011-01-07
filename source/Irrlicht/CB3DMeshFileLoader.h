@@ -123,6 +123,10 @@ private:
 	CSkinnedMesh*	AnimatedMesh;
 	io::IReadFile*	B3DFile;
 
+	//B3Ds have Vertex ID's local within the mesh I don't want this
+	// Variable needs to be class member due to recursion in calls
+	u32 VerticesStart;
+
 	bool NormalsInFile;
 	bool HasVertexColors;
 	bool ShowWarning;
