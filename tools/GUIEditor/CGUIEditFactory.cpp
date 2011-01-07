@@ -94,47 +94,48 @@ IGUIElement* CGUIEditFactory::addGUIElement(const c8* typeName, IGUIElement* par
 
 	core::stringc elementType(typeName);
 	IGUIElement* ret=0;
-	if (parent == 0)
-	{
+	if (!parent)
 		parent = Environment->getRootGUIElement();
-	}
 
 	// editor workspace
 	if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_GUIEDIT]))
-		ret = new CGUIEditWorkspace(Environment, -1, parent);
+		ret = new CGUIEditWorkspace(Environment, -1, 0);
 	// editor window
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_GUIEDITWINDOW]))
-		ret = new CGUIEditWindow(Environment, core::rect<s32>(0,0,100,100), parent);
+		ret = new CGUIEditWindow(Environment, core::rect<s32>(0,0,100,100), 0);
 	// Klasker's GUI Panel
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_GUIPANEL]))
-		ret = new CGUIPanel(Environment, parent);
+		ret = new CGUIPanel(Environment, 0);
 	// texture cache browser
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_TEXTUREBROWSER]))
-		ret = new CGUITextureCacheBrowser(Environment, -1, parent);
+		ret = new CGUITextureCacheBrowser(Environment, -1, 0);
 	// block of attribute editors
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_ATTRIBUTEEDITOR]))
-		ret = new CGUIAttributeEditor(Environment, -1, parent);
+		ret = new CGUIAttributeEditor(Environment, -1, 0);
 	//! single attribute editors
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_STRINGATTRIBUTE]))
-		ret = new CGUIStringAttribute(Environment, parent, -1);
+		ret = new CGUIStringAttribute(Environment, 0, -1);
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_BOOLATTRIBUTE]))
-		ret = new CGUIBoolAttribute(Environment, parent, -1);
+		ret = new CGUIBoolAttribute(Environment, 0, -1);
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_ENUMATTRIBUTE]))
-		ret = new CGUIEnumAttribute(Environment, parent, -1);
+		ret = new CGUIEnumAttribute(Environment, 0, -1);
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_COLORATTRIBUTE]))
-		ret = new CGUIColorAttribute(Environment, parent, -1);
+		ret = new CGUIColorAttribute(Environment, 0, -1);
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_COLORFATTRIBUTE]))
-		ret = new CGUIColorAttribute(Environment, parent, -1);
+		ret = new CGUIColorAttribute(Environment, 0, -1);
 	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_TEXTUREATTRIBUTE]))
-		ret = new CGUITextureAttribute(Environment, parent, -1);
+		ret = new CGUITextureAttribute(Environment, 0, -1);
 	// stubs and custom editors
-	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_CONTEXTMENUEDITOR]) || 
-			 elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_MENUEDITOR]) || 
-			 elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_FILEDIALOGEDITOR]) || 
-			 elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_COLORDIALOGEDITOR]) || 
+	else if (elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_CONTEXTMENUEDITOR]) ||
+			 elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_MENUEDITOR])        ||
+			 elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_FILEDIALOGEDITOR])  ||
+			 elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_COLORDIALOGEDITOR]) ||
 			 elementType == core::stringc(GUIEditElementTypeNames[EGUIEDIT_MODALSCREENEDITOR]) )
-		ret = new CGUIDummyEditorStub(Environment, parent, typeName);
+		ret = new CGUIDummyEditorStub(Environment, 0, typeName);
 
+    // add the element to its parent
+    if (ret)
+        parent->addChild(ret);
 
 	// the environment now has the reference, so we can drop the element
 	if (ret)
@@ -151,7 +152,7 @@ s32 CGUIEditFactory::getCreatableGUIElementTypeCount() const
 }
 
 
-//! returns type name of a createable element type 
+//! returns type name of a createable element type
 const c8* CGUIEditFactory::getCreateableGUIElementTypeName(s32 idx) const
 {
 	if (idx>=0 && idx<EGUIEDIT_COUNT)
