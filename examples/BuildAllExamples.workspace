@@ -20,10 +20,10 @@
 		<Project filename="18.SplitScreen/SplitScreen.cbp" />
 		<Project filename="19.MouseAndJoystick/MouseAndJoystick.cbp" />
 		<Project filename="20.ManagedLights/ManagedLights.cbp" />
-		<Project filename="21.Quake3Explorer/Quake3Explorer.cbp" active="1" />
+		<Project filename="21.Quake3Explorer/Quake3Explorer.cbp" />
 		<Project filename="22.MaterialViewer/MaterialViewer.cbp" />
 		<Project filename="Demo/demo.cbp" />
-		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" />
+		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" active="1" />
 		<Project filename="../tools/MeshConverter/MeshConverter.cbp" />
 		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" />
 	</Workspace>

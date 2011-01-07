@@ -69,6 +69,7 @@
 		<Unit filename="CGUITextureCacheBrowser.h" />
 		<Unit filename="CMemoryReadWriteFile.cpp" />
 		<Unit filename="CMemoryReadWriteFile.h" />
+		<Unit filename="EGUIEditTypes.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
