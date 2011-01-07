@@ -172,6 +172,7 @@ bool testEncryptedZip(IFileSystem* fs)
 	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
 	{
 		logTestString("Mounting a second time failed\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -179,6 +180,8 @@ bool testEncryptedZip(IFileSystem* fs)
 	if ( fs->getFileArchiveCount() != 1 )
 	{
 		logTestString("Duplicate mount not recognized\n");
+		while (fs->getFileArchiveCount())
+			fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -195,6 +198,7 @@ bool testEncryptedZip(IFileSystem* fs)
 	if (!fs->existFile(filename))
 	{
 		logTestString("existFile failed\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -202,6 +206,8 @@ bool testEncryptedZip(IFileSystem* fs)
 	if ( readFile )
 	{
 		logTestString("createAndOpenFile succeeded, even though no password was set.\n");
+		readFile->drop();
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -211,6 +217,7 @@ bool testEncryptedZip(IFileSystem* fs)
 	if ( !readFile )
 	{
 		logTestString("createAndOpenFile failed\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
 		return false;
 	}
 
@@ -234,6 +241,79 @@ bool testEncryptedZip(IFileSystem* fs)
 		return false;
 
 	readFile->drop();
+
+	return true;
+}
+
+bool testSpecialZip(IFileSystem* fs)
+{
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+	{
+		logTestString("Already mounted archives found\n");
+		return false;
+	}
+
+	const char* archiveName = "media/Monty.zip";
+	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	{
+		logTestString("Mounting archive failed\n");
+		return false;
+	}
+
+	// make sure there is an archive mounted
+	if ( !fs->getFileArchiveCount() )
+	{
+		logTestString("Mounted archive not in list\n");
+		return false;
+	}
+
+	// log what we got
+	io::IFileArchive* archive = fs->getFileArchive(fs->getFileArchiveCount()-1);
+	const io::IFileList* fileList = archive->getFileList();
+	for ( u32 f=0; f < fileList->getFileCount(); ++f)
+	{
+		logTestString("File name: %s\n", fileList->getFileName(f).c_str());
+		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
+	}
+	
+	io::path filename("monty/license.txt");
+	if (!fs->existFile(filename))
+	{
+		logTestString("existFile failed\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+
+	IReadFile* readFile = fs->createAndOpenFile(filename);
+	if ( !readFile )
+	{
+		logTestString("createAndOpenFile failed\n");
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+
+	char tmp[6] = {'\0'};
+	readFile->read(tmp, 5);
+	if (strcmp(tmp, "Monty"))
+	{
+		logTestString("Read bad data from archive: %s\n", tmp);
+		readFile->drop();
+		fs->removeFileArchive(fs->getFileArchiveCount()-1);
+		return false;
+	}
+
+	readFile->drop();
+
+	if (!fs->removeFileArchive(fs->getFileArchiveCount()-1))
+	{
+		logTestString("Couldn't remove archive.\n");
+		return false;
+	}
+
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+		return false;
 
 	return true;
 }
@@ -298,6 +378,8 @@ bool archiveReader()
 	ret &= testArchive(fs, "media/file_with_path.npk");
 	logTestString("Testing encrypted zip files.\n");
 	ret &= testEncryptedZip(fs);
+	logTestString("Testing special zip files.\n");
+	ret &= testSpecialZip(fs);
 //	logTestString("Testing complex mount file.\n");
 //	ret &= testMountFile(fs);
 
