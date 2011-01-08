@@ -95,18 +95,22 @@ static bool loadScene(void)
 		smgr->drawAll();
 		driver->endScene();
 		result = takeScreenshotAndCompareAgainstReference(driver, "-loadScene.png", 98.91f);
+		if (!result)
+			logTestString("Rendering the loaded scene failed.\n");
 	}
 
 	ISceneNode* node = smgr->getSceneNodeFromId(128);
 	if (!node)
 		result=false;
-	else
+	else if (result) // only check if scene was correctly loaded
 	{
 		result &= (node->getChildren().size()==0);
-		assert(result);
+		if (!result)
+			logTestString("Node has an illegal child node.\n");
 		device->getSceneManager()->loadScene("results/scene2.irr", 0, node);
 		result &= (node->getChildren().size()!=0);
-		assert(result);
+		if (!result)
+			logTestString("Loading second scene as child failed.\n");
 	}
 
 	device->closeDevice();
