@@ -288,15 +288,24 @@ bool CGUIContextMenu::OnEvent(const SEvent& event)
 				if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element) && AllowFocus)
 				{
 					// set event parent of submenus
-					setEventParent(EventParent ? EventParent : Parent);
+					IGUIElement * p =  EventParent ? EventParent : Parent;
+					setEventParent(p);
 
-					if ( CloseHandling & ECMC_HIDE )
+					SEvent event;
+					event.EventType = EET_GUI_EVENT;
+					event.GUIEvent.Caller = this;
+					event.GUIEvent.Element = 0;
+					event.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
+					if ( !p->OnEvent(event) )
 					{
-						setVisible(false);
-					}
-					if ( CloseHandling & ECMC_REMOVE )
-					{
- 						remove();
+						if ( CloseHandling & ECMC_HIDE )
+						{
+							setVisible(false);
+						}
+						if ( CloseHandling & ECMC_REMOVE )
+						{
+							remove();
+						}
 					}
 
 					return false;

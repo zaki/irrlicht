@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Send EGET_ELEMENT_CLOSED event when context menues should be closed (thx @ Mloren for reporting).
+
  - Added treeview to GUI editor, provided by Armen
 
  - Added root type for GUI environment
