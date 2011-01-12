@@ -2,13 +2,33 @@ Changes in 1.8 (??.??.2011)
 
  - Send EGET_ELEMENT_CLOSED event when context menues should be closed (thx @ Mloren for reporting).
 
+ - zip archive fixes: Fix directory tags in file list. Fix loading of stream zip files which have file sizes only in the central directory.
+
  - Added treeview to GUI editor, provided by Armen
 
  - Added root type for GUI environment
 
  - Fixed panel scrollbars in GUI editor, reported by Armen
 
+ - Fix b3d loading of files with mixed mesh/bone sections.
+
+ - Fix particle emitters which used integer random numbers so far. The distributions of the particles should be much better (and the code also somewhat faster) now.
+
+ - Add new random method frand: Returns a random number in the interval [0..1] and gives better distributions than using fmodf on the integer number.
+
+ - Add node parameter to saveScene and loadScene. saveScene saves the given node and all descendants to the file (if 0, the full scene is saved as before). loadScene loads all elements of the scene as childs of the given node. As before, 0 would load the file on the top level (scenemanager).
+
+ - Add method to make a filename relative to a given directory.
+
+ - Fix setMesh to correctly update the joints cache.
+
+ - Fix setting transition time of skinned meshes back to 0.
+
  - Add some getters to IGUIImage: getImage, getColor
+
+ - Fix OpenGL FBODepthTexture to create less overhead
+
+ - Fix MRT disablingunder OpenGL
 
  - API change: Added write only lock mode for textures. The lock method has changed the signature and uses an enum parameter now instead of a bool. The default is still to lock for read/write (previously 'false'). The old 'true' value should be replaced by ETLM_READ_ONLY.
 
@@ -16,9 +36,25 @@ Changes in 1.8 (??.??.2011)
 
  - Add function IParticleSystemSceneNode::clearParticles
 
- - Add function IGUIEnvironment::removeFont
+ - Fix RTT render states under OpenGL
+
+ - Fix AntiAliasing setup under Windows/OpenGL in case no AA is available
+
+ - Fix transformation matrices when RTT used
+
+ - API change: getScreenCoordinatesFrom3DPosition has a new parameter, which needs to be set to true to get the original behavior. Now, the method returns coordinates which would fit as render coordinates of a currently enabled viewport. With the parameter set to true the result would fit only after the viewport is reset to full window rendering.
+
+ - Add flag and method to disable clipping of the text to the gui element rectangle in GUI static text.
+
+ - addShadowVolumeSceneNode now replaces an existing shadow. One should avoid to call this method multiple times without changing any parameter, as it is quite time consuming and cannot recognize the duplicate calls.
+
+ - Add function IGUIEnvironment::removeFont (TODO: Does not remove the texture from cache so far)
+
+ - Update to bzip2 1.0.6, libpng 1.4.4 and lzma from 9.20 SDK
 
  - Functions in IMeshCache expecting IAnimatedMesh* parameters removed as similar functions with IMesh* can be used since a while. Fixes also problems when IAnimatedMesh* got upcasted to IMesh*. (thx @ Greenya for reporting)
+
+ - Fix blend states for MRTs
 
  - The following functions will now use a "ISceneNode *" instead of a "const ISceneNode *":
    ITriangleSelector::getSceneNodeForTriangle, ISceneNodeAnimatorCollisionResponse::getCollisionNode, ISceneCollisionManager::getCollisionPoint and ISceneCollisionManager::getCollisionResultPosition.
@@ -50,11 +86,45 @@ Changes in 1.8 (??.??.2011)
 
  - Add xml example written by Yoran Bosman.
 
+ - Fix cursor cleanup under Linux when using multiple devices
+
+ - Fix collada parser
+
+ - Fix MRT reset under D3D
+
+ - Add a generic attribute interface for querying video driver attributes which are not necessarily of type bool. This interface allows to check certain supported features, such as the number of user clip planes, supported lights and textures, MRTs, and other things. The interface might change in the future, but it's fully functional already. The supported attributes are listed in the API docs of the function:
+The following names can be queried for the given types:
+		* MaxTextures (int) The maximum number of simultaneous textures supported by the driver. This can be less than the supported number of textures of the driver. Use _IRR_MATERIAL_MAX_TEXTURES_ to adapt the number.
+		* MaxSupportedTextures (int) The maximum number of simultaneous textures supported by the fixed function pipeline of the (hw) driver. The actual supported number of textures supported by the engine can be lower.
+		* MaxLights (int) Number of hardware lights supported in the fixed function pipieline of the driver, typically 6-8. Use light manager or deferred shading for more.
+		* MaxAnisotropy (int) Number of anisotropy levels supported for filtering. At least 1, max is typically at 16 or 32.
+		* MaxUserClipPlanes (int) Number of additional clip planes, which can be set by the user via dedicated driver methods.
+		* MaxAuxBuffers (int) Special render buffers, which are currently not really usable inside Irrlicht. Only supported by OpenGL
+		* MaxMultipleRenderTargets (int) Number of render targets which can be bound simultaneously. Rendering to MRTs is done via shaders.
+		* MaxIndices (int) Number of indices which can be used in one render call (i.e. one mesh buffer).
+		* MaxTextureSize (int) Dimension that a texture may have, both in width and height.
+		* MaxGeometryVerticesOut (int) Number of vertices the geometry shader can output in one pass. Only OpenGL so far.
+		* MaxTextureLODBias (float) Maximum value for LOD bias. Is usually at around 16, but can be lower on some systems.
+		* Version (int) Version of the driver. Should be Major*100+Minor
+		* ShaderLanguageVersion (int) Version of the high level shader language. Should be Major*100+Minor.
+    
+ - Fix getRotationDegrees
+
  - Add creation parameter which allows to disable highres timers on Windows upon device creation.
 
- - Several transparency setup bugs fixed.
+ - Several transparency setup bugs fixed. Now, alpha_vertex_blend uses proper alpha blending instead of a mixed add/alpha blending.
 
  - Added a method to get real time and date in a human readable struct
+
+ - Fix add folder archives method to support files without trailing slashes.
+
+ - fix transparent_reflection_2_layers
+
+ - Add support for MSVC 2010
+
+ - Fix "unsupported format" warning on RTT usage
+
+ - Add UseMipMap flag in material
 
  - Add IGUIElement::bringToBack (patch written by DtD, although I'm to blame for the function-name)
 
@@ -132,25 +202,43 @@ Changes in 1.8 (??.??.2011)
    //! converts a 8 bit palettized or non palettized image (A8) into A8R8G8B8
    static void convert8BitTo32Bit(const u8* in, u8* out, s32 width, s32 height, const u8* palette, s32 linepad = 0, bool flip=false);
 
-- In IGUITreeView "clearChilds" and "hasChilds" deprecated for "clearChildren" and "hasChildren" (thx @Greenya for noticing)
+ - In IGUITreeView "clearChilds" and "hasChilds" deprecated for "clearChildren" and "hasChildren" (thx @Greenya for noticing)
 
-- add dimension2d::operator-
+ - Add occlusion query support. Based on code by Nadro
 
-- add CGUIEditBox::getOverrideColor and CGUIEditBox::isOverrideColorEnabled
+ - Add support for vertex_array_bgra extension in OpenGL driver. This will speed up OpenGL rendering quite a lot as it skips the silly color conversion thing we have to do otherwise.
 
-- Add logging level ELL_DEBUG
+ - Replace raw xml char implementation with template struct in order to decouple the type from POD types. May also help for 64bit problems or changes needed there.
 
-- Add parameter DisplayAdapter to creation params to allow selecting the card when more than one card is in the system.
+ - add dimension2d::operator-
 
-- Add parameter to line2d::intersectWith to allow getting intersections outside the segments (thx Yoran).
+ - add CGUIEditBox::getOverrideColor and CGUIEditBox::isOverrideColorEnabled
 
-- Added support for custom cursors
+ - Add logging level ELL_DEBUG
 
-- Avoid argument lookup ambiguity in swap when used in combination with stl. Using same trick as boost now and use 2 different template parameters in it.
+ - Add parameter DisplayAdapter to creation params to allow selecting the card when more than one card is in the system.
 
-- Fixed bug causing memory access violation in string::replace found and patched by Nalin.
+ - Add parameter to line2d::intersectWith to allow getting intersections outside the segments (thx Yoran).
 
-- WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
+ - External windows are not destroyed anymore
+
+ - clamp values in getRotationDegrees to avoid nan values
+
+ - texture size in terrain mesh fixed
+
+ - ms3d fixes
+
+ - Add new matrix methods for infinite projection matrix
+
+ - Support new OpenGL 2.x shader creation
+
+ - Added support for custom cursors
+
+ - Avoid argument lookup ambiguity in swap when used in combination with stl. Using same trick as boost now and use 2 different template parameters in it.
+
+ - Fixed bug causing memory access violation in string::replace found and patched by Nalin.
+
+ - WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
 
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
@@ -826,7 +914,6 @@ Changes in 1.6 (23.09.2009)
     virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast ) = 0;
     virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue ) = 0;
   and calculating methods to DeviceStub.
-  implemented in Win32, SDL, Linux TODO: other Devices
 
   -  irrlicht.h
     changed exported irrlicht.dll routines createDevice, createDeviceEx, IdentityMatrix
