@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Renamed IGUIElement::bringToBack to sendToBack, like in Windows
+
  - Send EGET_ELEMENT_CLOSED event when context menues should be closed (thx @ Mloren for reporting).
 
  - zip archive fixes: Fix directory tags in file list. Fix loading of stream zip files which have file sizes only in the central directory.
