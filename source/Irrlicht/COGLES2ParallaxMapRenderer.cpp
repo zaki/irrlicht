@@ -35,8 +35,8 @@ namespace irr
         };
 
 // Irrlicht Engine OGLES2 render path normal map vertex shader
-        const c8 VertexShaderFile[]   = "../../media/Shaders/COGLES2ParallaxMap.vsh";
-        const c8 FragmentShaderFile[] = "../../media/Shaders/COGLES2ParallaxMap.fsh";
+        const c8 VertexShaderFile[]   = IRR_OGLES2_SHADER_PATH "COGLES2ParallaxMap.vsh";
+        const c8 FragmentShaderFile[] = IRR_OGLES2_SHADER_PATH "COGLES2ParallaxMap.fsh";
 
 //! Constructor
         COGLES2ParallaxMapRenderer::COGLES2ParallaxMapRenderer( video::COGLES2Driver* driver,

@@ -172,6 +172,9 @@ it should be usually the only HW accelerated one. OpenGL is currently disabled
 if using this driver, to avoid problems with the ogl-es emulators.
 */
 //#define _IRR_COMPILE_WITH_OGLES1_
+#ifdef NO_IRR_COMPILE_WITH_OGLES1_
+#undef _IRR_COMPILE_WITH_OGLES1_
+#endif
 
 //! Define _IRR_COMPILE_WITH_OGLES2_ to compile the Irrlicht engine with OpenGL-ES 2.x.
 /** If you do not wish the engine to be compiled with OpenGL-ES 2.x, comment
@@ -181,6 +184,12 @@ it should be usually the only HW accelerated one. OpenGL is currently disabled
 if using this driver, to avoid problems with the ogl-es emulators.
 */
 //#define _IRR_COMPILE_WITH_OGLES2_
+#ifdef NO_IRR_COMPILE_WITH_OGLES2_
+#undef _IRR_COMPILE_WITH_OGLES2_
+#endif
+#ifndef IRR_OGLES2_SHADER_PATH 
+#define IRR_OGLES2_SHADER_PATH "../../media/Shaders/"
+#endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
 /** If you do not need the software driver, or want to use Burning's Video instead,

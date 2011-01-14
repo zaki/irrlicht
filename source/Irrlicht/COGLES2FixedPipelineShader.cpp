@@ -57,8 +57,8 @@ namespace irr
             0
         };
 
-        const c8 VertexShaderFile[] = "../../media/Shaders/COGLES2FixedPipeline.vsh";
-        const c8 FragmentShaderFile[] = "../../media/Shaders/COGLES2FixedPipeline.fsh";
+        const c8 VertexShaderFile[] = IRR_OGLES2_SHADER_PATH "COGLES2FixedPipeline.vsh";
+        const c8 FragmentShaderFile[] = IRR_OGLES2_SHADER_PATH "COGLES2FixedPipeline.fsh";
 
         COGLES2FixedPipelineShader::COGLES2FixedPipelineShader( video::COGLES2Driver *driver, io::IFileSystem* fs )
                 : COGLES2SLMaterialRenderer( driver, fs, 0, 0, sBuiltInShaderUniformNames, UNIFORM_COUNT ), Normalize( 0 ), AlphaTest( 0 ), AlphaValue( 0.f ),

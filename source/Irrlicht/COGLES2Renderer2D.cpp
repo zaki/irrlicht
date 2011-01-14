@@ -22,8 +22,8 @@ namespace irr
             0
         };
 
-        static const char* vertexShaderFile   = "../../media/Shaders/COGLES2Renderer2D.vsh";
-        static const char* fragmentShaderFile = "../../media/Shaders/COGLES2Renderer2D.fsh";
+        static const char* vertexShaderFile   = IRR_OGLES2_SHADER_PATH "COGLES2Renderer2D.vsh";
+        static const char* fragmentShaderFile = IRR_OGLES2_SHADER_PATH "COGLES2Renderer2D.fsh";
 
         COGLES2Renderer2d::COGLES2Renderer2d( irr::video::COGLES2Driver *driver, irr::io::IFileSystem *fs )
                 : COGLES2SLMaterialRenderer( driver, fs, 0, 0, sBuiltInShaderUniformNames, UNIFORM_COUNT )
