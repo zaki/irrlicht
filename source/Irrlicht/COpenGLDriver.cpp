@@ -3825,6 +3825,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		return false;
 	}
 
+#if defined(GL_EXT_framebuffer_object)
 	if (CurrentTarget==ERT_MULTI_RENDER_TEXTURES)
 	{
 		for (u32 i=0; i<MRTargets.size(); ++i)
@@ -3838,6 +3839,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		}
 		MRTargets.clear();
 	}
+#endif
 
 	// check if we should set the previous RT back
 	if (RenderTargetTexture != texture)
