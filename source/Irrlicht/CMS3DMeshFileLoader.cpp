@@ -327,7 +327,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		}
 	}
 
-	// skip materials
+	// load materials
 	u16 numMaterials = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numMaterials = os::Byteswap::byteswap(numMaterials);
@@ -336,9 +336,6 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	os::Printer::log("Load Materials", core::stringc(numMaterials).c_str());
 #endif
 	pPtr += sizeof(u16);
-
-	// MS3DMaterial *materials = (MS3DMaterial*)pPtr;
-	// pPtr += sizeof(MS3DMaterial) * numMaterials;
 
 	if(numMaterials == 0)
 	{
@@ -383,16 +380,15 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		if (TexturePath.trim()!="")
 		{
 			TexturePath=stripPathFromString(file->getFileName(),true) + stripPathFromString(TexturePath,false);
-			tmpBuffer->Material.setTexture(0, Driver->getTexture(TexturePath) );
+			tmpBuffer->Material.setTexture(0, Driver->getTexture(TexturePath));
 		}
 
 		core::stringc AlphamapPath=(const c8*)material->Alphamap;
 		if (AlphamapPath.trim()!="")
 		{
 			AlphamapPath=stripPathFromString(file->getFileName(),true) + stripPathFromString(AlphamapPath,false);
-			tmpBuffer->Material.setTexture(2, Driver->getTexture(AlphamapPath) );
+			tmpBuffer->Material.setTexture(2, Driver->getTexture(AlphamapPath));
 		}
-
 	}
 
 	// animation time
@@ -408,7 +404,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	if (framesPerSecond<1.f)
 		framesPerSecond=1.f;
 
-// calculated inside SkinnedMesh
+// ignore, calculated inside SkinnedMesh
 //	s32 frameCount = *(int*)pPtr;
 #ifdef __BIG_ENDIAN__
 //	frameCount = os::Byteswap::byteswap(frameCount);
@@ -550,7 +546,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	core::array<MS3DVertexWeights> vertexWeights;
 	f32 weightFactor=0;
 
-	if ((pHeader->Version == 4) && (pPtr < buffer+fileSize))
+	if (jointCount && (pHeader->Version == 4) && (pPtr < buffer+fileSize))
 	{
 		s32 subVersion = *(s32*)pPtr; // comment subVersion, always 1
 #ifdef __BIG_ENDIAN__
@@ -729,7 +725,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 						w->vertex_id = index;
 					}
 				}
-				else // new weights from 1.8.x
+				else if (jointCount) // new weights from 1.8.x
 				{
 					f32 sum = 1.0f;
 					s32 boneid = vertices[vertidx].BoneID;
