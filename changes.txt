@@ -245,6 +245,12 @@ The following names can be queried for the given types:
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
 
+ - Skip bone weights and additional information in ms3d file if no joint was defined before.
+
+ - Fix mem leak in CImage, found by mloren.
+
+ - Fix tga writing, reported by xirtamatrix
+
  - Tab-positions care now about the borders correctly
 
  - TabControl now respositions it's tabs when setTabVerticalAlignment is changed (thx @ ceyron for reporting+testcase)
@@ -255,7 +261,25 @@ Changes in 1.7.3 (??.??.2011)
 
  - Fix crash in multiline-editbox when selecting with mouse (thx @ ceyron for reporting and testcase)
 
+ - Fix render context creation for OpenGL under Windows.
+
+ - Fix the reset problem of d3d9 driver in combination with hardware buffers.
+
+ - Fix .x loader in case of unused vertices.
+
+ - Avoid empty line in texts with very large words. Text wrapping would introduce an empty line in earlier versions.
+
+ - Add a new attribute which assigns hw mapping hint to the whole Mesh.
+
+ - Allow creation of water scene node without mesh.
+
+ - Fix regeneration of skydome.
+
+ - Fix scene node type and factory support for volume light
+
  - Q3 maps no longer crash when faces try accessing lightmaps which are not mentioned to be loaded in the file.
+
+ - Fix crash on null-readfile in texture loading
 
  - Get particles saved before 1.7.2 (for example in irrEdit) working again (thx to smashly for problem reporting)
  
@@ -270,7 +294,19 @@ Changes in 1.7.3 (??.??.2011)
 -----------------------------
 Changes in 1.7.2 (15.11.2010)
 
+ - Fix in d3d9 driver, which caused a crash when device creation failed. Bug found and fixed by Kostya
+
+ - Fix a wrong access to Value instead of ValueW. Found and fixed by vroad.
+
+ - Fix line loop rendering in d3d drivers. Fix submitted by tonic.
+
+ - Fix tar recognition in tar reader.
+
  - Fix blend mode setup in OpenGL driver, when using the material2d override, as pointed out by Auria
+
+ - Avoid crash due to tcoords2 handling. Might need some more fixing to work correctly.
+
+ - Fix 2d line intersections. Has had problems with consecutive, but non-overlapping line segments and with overlapping line segments.
 
  - Fix image creation from texture, found by dataslayer
 
@@ -283,10 +319,10 @@ Changes in 1.7.2 (15.11.2010)
 
  - Fix CXMLReaderImpl::getAttributeValueAsInt which returned wrong values with large integers (thx to squisher for finding)
  
- - Add EGET_TREEVIEW_NODE_COLLAPSE and deprecate EGET_TREEVIEW_NODE_COLLAPS (found by greenya)
- 
  - Fix compile problem in swap when using irrlicht in combination with stl (backport from trunk r3281)
 
+ - Add EGET_TREEVIEW_NODE_COLLAPSE and deprecate EGET_TREEVIEW_NODE_COLLAPS (found by greenya)
+ 
  - Fix serialization in CParticleSystemSceneNode (found by B@z)
 
  - Prevent crash in BillboardTextSceneNode when a custom font is used. Found and fixed by Nalin (bugtracker id: 3020487)
@@ -313,6 +349,8 @@ Changes in 1.7.2 (15.11.2010)
 
  - Add EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH and deprecated EGDS_MESSAGE_BOX_MAX_TEST_WIDTH (thx to greenya for reporting).
 
+ - Fix colors in irr files.
+
  - Fix several places where "used" in core::string was used wrongly preventing some memory corruption
 
  - Remove additional slash in pathnames in X-Loader
@@ -322,6 +360,20 @@ Changes in 1.7.2 (15.11.2010)
  - Bugfix: Clear up depth-textures which could not be attached in OpenGL to prevent crashes. 
 
  - Fix arrowMesh boundingbox.
+
+ - Fix rounding problem in getInterpolated in the color classes
+
+ - Scrollbar in GUIListbox now uses default id -1 instead of 0
+
+ - Fix octree clipping issues.
+
+ - Fix obj loader.
+
+ - clone function fixes.
+
+ - Fix tooltips.
+
+ - Fix Ogre parser.
 
 -----------------------------
 Changes in 1.7.1 (17.02.2010)
