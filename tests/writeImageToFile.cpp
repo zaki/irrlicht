@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Colin MacDonald
+// Copyright (C) 2009-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #if defined(_MSC_VER)

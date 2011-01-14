@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -108,7 +108,7 @@ void CGUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor col
 //! called if an event happened.
 bool CGUIButton::OnEvent(const SEvent& event)
 {
-	if (!IsEnabled)
+	if (!isEnabled())
 		return IGUIElement::OnEvent(event);
 
 	switch(event.EventType)
@@ -297,7 +297,7 @@ void CGUIButton::draw()
 
 		if (font)
 			font->draw(Text.c_str(), rect,
-				skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+				skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
 				true, true, &AbsoluteClippingRect);
 	}
 

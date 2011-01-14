@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2011 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -45,6 +45,8 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 		}
 	}
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -75,7 +75,10 @@ bool disambiguateTextures(void)
 	// The working directory must be restored for the other tests to work.
 	changed &= device->getFileSystem()->changeWorkingDirectoryTo(wd.c_str());
 
+	device->closeDevice();
+	device->run();
 	device->drop();
+
 	return (changed && tex1 == tex2 && tex1 == tex3 && tex1 != tex4) ? true : false;
 }
 

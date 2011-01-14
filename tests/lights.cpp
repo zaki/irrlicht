@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2010 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2011 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -39,6 +39,8 @@ static bool testLightTypes(video::E_DRIVER_TYPE driverType)
 
 	const bool result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-lightType.png", 99.91f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -12,6 +12,7 @@ namespace irr
 namespace video
 {
 	class IMaterialRendererServices;
+	class SMaterial;
 
 //! Interface making it possible to set constants for gpu programs every frame.
 /** Implement this interface in an own class and pass a pointer to it to one of

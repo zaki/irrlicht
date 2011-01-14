@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -390,6 +390,17 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
+
+	DriverAttributes->setAttribute("MaxTextures", (s32)MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Caps.MaxSimultaneousTextures);
+	DriverAttributes->setAttribute("MaxAnisotropy", (s32)Caps.MaxAnisotropy);
+	DriverAttributes->setAttribute("MaxUserClipPlanes", (s32)Caps.MaxUserClipPlanes);
+	DriverAttributes->setAttribute("MaxIndices", (s32)Caps.MaxVertexIndex);
+	DriverAttributes->setAttribute("MaxTextureSize", (s32)core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
+	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
+	DriverAttributes->setAttribute("Version", 800);
+	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
+	DriverAttributes->setAttribute("AntiAlias", antiAlias);
 
 	// set the renderstates
 	setRenderStates3DMode();
@@ -951,8 +962,8 @@ void CD3D8Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 		case scene::EPT_LINE_LOOP:
 		{
 			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-				primitiveCount, indexList, indexType, vertices, stride);
-			u16 tmpIndices[] = {0, primitiveCount};
+				primitiveCount - 1, indexList, indexType, vertices, stride);
+			u16 tmpIndices[] = {primitiveCount - 1, 0};
 			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
 				1, tmpIndices, indexType, vertices, stride);
 		}
@@ -1578,7 +1589,8 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		if (resetAllRenderstates ||
 			lastmaterial.TextureLayer[st].BilinearFilter != material.TextureLayer[st].BilinearFilter ||
 			lastmaterial.TextureLayer[st].TrilinearFilter != material.TextureLayer[st].TrilinearFilter ||
-			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter )
+			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter ||
+			lastmaterial.UseMipMaps != material.UseMipMaps)
 		{
 			if (material.TextureLayer[st].BilinearFilter || material.TextureLayer[st].TrilinearFilter || material.TextureLayer[st].AnisotropicFilter>1)
 			{

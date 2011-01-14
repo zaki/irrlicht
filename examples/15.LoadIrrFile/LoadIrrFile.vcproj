@@ -45,8 +45,7 @@
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/LoadIrrFile.pdb"
-				SubSystem="1"
-				TargetMachine="1"/>
+				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\Debug/LoadIrrFile.tlb"

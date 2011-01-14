@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -174,7 +174,6 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 	setDebugName("CGUITabControl");
 	#endif
 
-	video::SColor color(255,255,255,255);
 	IGUISkin* skin = Environment->getSkin();
 	IGUISpriteBank* sprites = 0;
 
@@ -183,7 +182,6 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 	if (skin)
 	{
 		sprites = skin->getSpriteBank();
-		color = skin->getColor(EGDC_WINDOW_SYMBOL);
 		TabHeight = skin->getSize(gui::EGDS_BUTTON_HEIGHT) + 2;
 	}
 
@@ -192,8 +190,6 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 	if (UpButton)
 	{
 		UpButton->setSpriteBank(sprites);
-		UpButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_LEFT), color);
-		UpButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_LEFT), color);
 		UpButton->setVisible(false);
 		UpButton->setSubElement(true);
 		UpButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
@@ -206,8 +202,6 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 	if (DownButton)
 	{
 		DownButton->setSpriteBank(sprites);
-		DownButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_RIGHT), color);
-		DownButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_RIGHT), color);
 		DownButton->setVisible(false);
 		DownButton->setSubElement(true);
 		DownButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
@@ -216,8 +210,8 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 	}
 
 	setTabVerticalAlignment(EGUIA_UPPERLEFT);
+	refreshSprites();
 }
-
 
 //! destructor
 CGUITabControl::~CGUITabControl()
@@ -235,6 +229,27 @@ CGUITabControl::~CGUITabControl()
 		DownButton->drop();
 }
 
+void CGUITabControl::refreshSprites()
+{
+	video::SColor color(255,255,255,255);
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+	{
+		color = skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL);
+	}
+
+	if (UpButton)
+	{
+		UpButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_LEFT), color);
+		UpButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_LEFT), color);
+	}
+
+	if (DownButton)
+	{
+		DownButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_RIGHT), color);
+		DownButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_RIGHT), color);
+	}
+}
 
 //! Adds a tab
 IGUITab* CGUITabControl::addTab(const wchar_t* caption, s32 id)
@@ -243,25 +258,7 @@ IGUITab* CGUITabControl::addTab(const wchar_t* caption, s32 id)
 	if (!skin)
 		return 0;
 
-	core::rect<s32> r;
-	if ( VerticalAlignment == EGUIA_UPPERLEFT )
-	{
-		r.UpperLeftCorner.X = 1;
-		r.UpperLeftCorner.Y = TabHeight;
-
-		r.LowerRightCorner.X = AbsoluteRect.getWidth()-1;
-		r.LowerRightCorner.Y = AbsoluteRect.getHeight()-1;
-	}
-	else
-	{
-		r.UpperLeftCorner.X = 1;
-		r.UpperLeftCorner.Y = 1;
-
-		r.LowerRightCorner.X = AbsoluteRect.getWidth()-1;
-		r.LowerRightCorner.Y = AbsoluteRect.getHeight()-TabHeight;
-	}
-
-	CGUITab* tab = new CGUITab(Tabs.size(), Environment, this, r, id);
+	CGUITab* tab = new CGUITab(Tabs.size(), Environment, this, calcTabPos(), id);
 
 	tab->setText(caption);
 	tab->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
@@ -339,7 +336,7 @@ IGUITab* CGUITabControl::getTab(s32 idx) const
 //! called if an event happened.
 bool CGUITabControl::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 
 		switch(event.EventType)
@@ -529,6 +526,40 @@ bool CGUITabControl::selectTab(core::position2d<s32> p)
 }
 
 
+core::rect<s32> CGUITabControl::calcTabPos()
+{
+	core::rect<s32> r;
+	r.UpperLeftCorner.X = 0;
+	r.LowerRightCorner.X = AbsoluteRect.getWidth();
+	if ( Border )
+	{
+		++r.UpperLeftCorner.X;
+		--r.LowerRightCorner.X;
+	}
+
+	if ( VerticalAlignment == EGUIA_UPPERLEFT )
+	{
+		r.UpperLeftCorner.Y = TabHeight+2;
+		r.LowerRightCorner.Y = AbsoluteRect.getHeight()-1;
+		if ( Border )
+		{
+			--r.LowerRightCorner.Y;
+		}
+	}
+	else
+	{
+		r.UpperLeftCorner.Y = 0;
+		r.LowerRightCorner.Y = AbsoluteRect.getHeight()-(TabHeight+2);
+		if ( Border )
+		{
+			++r.UpperLeftCorner.Y;
+		}
+	}
+
+	return r;
+}
+
+
 //! draws the element and its children
 void CGUITabControl::draw()
 {
@@ -692,6 +723,7 @@ void CGUITabControl::draw()
 		UpButton->setEnabled(needLeftScroll);
 	if ( DownButton )
 		DownButton->setEnabled(needRightScroll);
+	refreshSprites();
 
 	IGUIElement::draw();
 }
@@ -770,7 +802,6 @@ void CGUITabControl::recalculateScrollBar()
 	bringToFront( DownButton );
 }
 
-
 //! Set the alignment of the tabs
 void CGUITabControl::setTabVerticalAlignment( EGUI_ALIGNMENT alignment )
 {
@@ -778,6 +809,12 @@ void CGUITabControl::setTabVerticalAlignment( EGUI_ALIGNMENT alignment )
 
 	recalculateScrollButtonPlacement();
 	recalculateScrollBar();
+
+	core::rect<s32> r(calcTabPos());
+	for ( u32 i=0; i<Tabs.size(); ++i )
+	{
+		Tabs[i]->setRelativePosition(r);
+	}
 }
 
 void CGUITabControl::recalculateScrollButtonPlacement()
@@ -857,7 +894,7 @@ bool CGUITabControl::setActiveTab(s32 idx)
 }
 
 
-bool CGUITabControl::setActiveTab(IGUIElement *tab)
+bool CGUITabControl::setActiveTab(IGUITab *tab)
 {
 	for (s32 i=0; i<(s32)Tabs.size(); ++i)
 		if (Tabs[i] == tab)

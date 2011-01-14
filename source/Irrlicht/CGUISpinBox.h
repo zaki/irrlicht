@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2009 Michael Zeilfelder
+// Copyright (C) 2006-2011 Michael Zeilfelder
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -61,6 +61,9 @@ namespace gui
 
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
+
+		//! Draws the element and its children.
+		virtual void draw();
 
 		//! Sets the new caption of the element
 		virtual void setText(const wchar_t* text);

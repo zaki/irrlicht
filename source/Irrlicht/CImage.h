@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -100,7 +100,7 @@ public:
 	//! copies this surface into another, scaling it to fit, appyling a box filter
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false);
 
-	//! fills the surface with black or white
+	//! fills the surface with given color
 	virtual void fill(const SColor &color);
 
 	//! draws a rectangle

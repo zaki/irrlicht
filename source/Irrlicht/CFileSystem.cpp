@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -21,6 +21,7 @@
 #include "CAttributes.h"
 #include "CMemoryFile.h"
 #include "CLimitReadFile.h"
+#include "irrList.h"
 
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
@@ -206,7 +207,11 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	// check if the archive was already loaded
 	for (i = 0; i < FileArchives.size(); ++i)
 	{
-		if (getAbsolutePath(filename) == FileArchives[i]->getFileList()->getPath())
+		// TODO: This should go into a path normalization method
+		// We need to check for directory names with trailing slash and without
+		const core::stringc absPath = getAbsolutePath(filename);
+		const core::stringc arcPath = FileArchives[i]->getFileList()->getPath();
+		if ((absPath == arcPath) || ((absPath+"/") == arcPath))
 		{
 			if (password.size())
 				FileArchives[i]->Password=password;
@@ -588,7 +593,43 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 }
 
 
-//! Creates a list of files and directories in the current working directory
+//! Get the relative filename, relative to the given directory
+path CFileSystem::getRelativeFilename(const path& filename, const path& directory) const
+{
+		io::path path, file, ext;
+		core::splitFilename(getAbsolutePath(filename), &path, &file, &ext);
+		io::path path2(getAbsolutePath(directory));
+		core::list<io::path> list1, list2;
+		path.split(list1, "/\\", 2);
+		path2.split(list2, "/\\", 2);
+		u32 i=0;
+		core::list<io::path>::ConstIterator it1,it2;
+		it1=list1.begin();
+		it2=list2.begin();
+		for (; i<list1.size() && (*it1==*it2); ++i)
+		{
+			++it1;
+			++it2;
+		}
+		path="";
+		for (; i<list2.size(); ++i)
+			path += "../";
+		while (it1 != list1.end())
+		{
+			path += *it1++;
+			path += "/";
+		}
+		path += file;
+		if (ext.size())
+		{
+			path += ".";
+			path += ext;
+		}
+		return path;
+}
+
+
+//! Sets the current file systen type
 EFileSystemType CFileSystem::setFileListSystem(EFileSystemType listType)
 {
 	EFileSystemType current = FileSystemType;

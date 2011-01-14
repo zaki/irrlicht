@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -13,7 +13,7 @@ namespace gui
 {
 	class IGUIElement;
 	class IGUIEnvironment;
-	
+
 	//!	Interface making it possible to dynamicly create gui elements
 	class CGUIEditFactory : public IGUIElementFactory
 	{
@@ -35,7 +35,6 @@ namespace gui
 		/** \param idx: Index of the type in this factory. Must be a value between 0 and
 		getCreatableGUIElementTypeCount() */
 		virtual const c8* getCreateableGUIElementTypeName(s32 idx) const;
-
 
 		// not used:
 		virtual const c8* getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type) const {return 0;} ;

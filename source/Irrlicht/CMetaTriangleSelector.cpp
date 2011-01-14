@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -135,7 +135,7 @@ void CMetaTriangleSelector::removeAllTriangleSelectors()
 
 
 //! Return the scene node associated with a given triangle.
-const ISceneNode* CMetaTriangleSelector::getSceneNodeForTriangle(u32 triangleIndex) const
+ISceneNode* CMetaTriangleSelector::getSceneNodeForTriangle(u32 triangleIndex) const
 {
 	u32 totalTriangles = 0;
 

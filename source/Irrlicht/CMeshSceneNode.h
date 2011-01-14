@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -77,7 +77,7 @@ namespace scene
 
 		core::array<video::SMaterial> Materials;
 		core::aabbox3d<f32> Box;
-		video::SMaterial tmpReadOnlyMaterial;
+		video::SMaterial ReadOnlyMaterial;
 
 		IMesh* Mesh;
 

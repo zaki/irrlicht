@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -45,7 +45,7 @@ public:
 	//! Returns the file offset of a file in the file list, based on an index.
 	/** \param index is the zero based index of the file which should be returned.
 	The index must be less than the amount getFileCount() returns.
-	\return The size of the file in bytes. */
+	\return The offset of the file in bytes. */
 	virtual u32 getFileOffset(u32 index) const = 0;
 
 	//! Returns the ID of a file in the file list, based on an index.
@@ -66,7 +66,7 @@ public:
 	//! Searches for a file or folder in the list
 	/** Searches for a file by name
 	\param filename The name of the file to search for.
-	\param isFolder True if you are searching for a file, false if you want a dir.
+	\param isFolder True if you are searching for a directory path, false if you are searching for a file
 	\return Returns the index of the file in the file list, or -1 if
 	no matching name name was found. */
 	virtual s32 findFile(const io::path& filename, bool isFolder=false) const = 0;

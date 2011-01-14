@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -99,7 +99,7 @@ void CGUIWindow::refreshSprites()
 	if ( !sprites )
 		return;
 
-	CurrentIconColor = skin->getColor(EGDC_WINDOW_SYMBOL);
+	CurrentIconColor = skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL);
 
 	if (sprites)
 	{
@@ -120,7 +120,7 @@ void CGUIWindow::refreshSprites()
 //! called if an event happened.
 bool CGUIWindow::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 
 		switch(event.EventType)
@@ -236,7 +236,7 @@ void CGUIWindow::draw()
 		// update each time because the skin is allowed to change this always.
 		updateClientRect();
 
-		if ( CurrentIconColor != skin->getColor(EGDC_WINDOW_SYMBOL) )
+		if ( CurrentIconColor != skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL) )
 			refreshSprites();
 
 		core::rect<s32> rect = AbsoluteRect;

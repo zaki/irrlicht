@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -37,20 +37,20 @@ public:
 	\param vertexShaderProgram: String containing the source of the vertex
 	shader program. This can be 0 if no vertex program shall be used.
 	\param vertexShaderEntryPointName: Name of the entry function of the
-	vertexShaderProgram
+	vertexShaderProgram (p.e. "main")
 	\param vsCompileTarget: Vertex shader version the high level shader
 	shall be compiled to.
 	\param pixelShaderProgram: String containing the source of the pixel
 	shader program. This can be 0 if no pixel shader shall be used.
 	\param pixelShaderEntryPointName: Entry name of the function of the
-	pixelShaderEntryPointName
+	pixelShaderProgram (p.e. "main")
 	\param psCompileTarget: Pixel shader version the high level shader
 	shall be compiled to.
 	\param geometryShaderProgram: String containing the source of the
 	geometry shader program. This can be 0 if no geometry shader shall be
 	used.
 	\param geometryShaderEntryPointName: Entry name of the function of the
-	geometryShaderEntryPointName
+	geometryShaderProgram (p.e. "main")
 	\param gsCompileTarget: Geometry shader version the high level shader
 	shall be compiled to.
 	\param inType Type of vertices passed to geometry shader
@@ -116,21 +116,21 @@ public:
 	of the vertex shader program. Set to empty string if no vertex shader
 	shall be created.
 	\param vertexShaderEntryPointName: Name of the entry function of the
-	vertexShaderProgram
+	vertexShaderProgram  (p.e. "main")
 	\param vsCompileTarget: Vertex shader version the high level shader
 	shall be compiled to.
 	\param pixelShaderProgramFileName: Text file containing the source of
 	the pixel shader program. Set to empty string if no pixel shader shall
 	be created.
 	\param pixelShaderEntryPointName: Entry name of the function of the
-	pixelShaderEntryPointName
+	pixelShaderProgram (p.e. "main")
 	\param psCompileTarget: Pixel shader version the high level shader
 	shall be compiled to.
-	\param geometryShaderProgramFileName: String containing the source of
+	\param geometryShaderProgramFileName: Name of the source of
 	the geometry shader program. Set to empty string if no geometry shader
 	shall be created.
 	\param geometryShaderEntryPointName: Entry name of the function of the
-	geometryShaderEntryPointName
+	geometryShaderProgram (p.e. "main")
 	\param gsCompileTarget: Geometry shader version the high level shader
 	shall be compiled to.
 	\param inType Type of vertices passed to geometry shader
@@ -202,14 +202,14 @@ public:
 	\param pixelShaderProgram: Text file handle containing the source of
 	the pixel shader program. Set to 0 if no pixel shader shall be created.
 	\param pixelShaderEntryPointName: Entry name of the function of the
-	pixelShaderEntryPointName
+	pixelShaderProgram (p.e. "main")
 	\param psCompileTarget: Pixel shader version the high level shader
 	shall be compiled to.
 	\param geometryShaderProgram: Text file handle containing the source of
 	the geometry shader program. Set to 0 if no geometry shader shall be
 	created.
 	\param geometryShaderEntryPointName: Entry name of the function of the
-	geometryShaderEntryPointName
+	geometryShaderProgram (p.e. "main")
 	\param gsCompileTarget: Geometry shader version the high level shader
 	shall be compiled to.
 	\param inType Type of vertices passed to geometry shader

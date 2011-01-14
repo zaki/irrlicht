@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -27,15 +27,20 @@ CArchiveLoaderMount::CArchiveLoaderMount( io::IFileSystem* fs)
 //! returns true if the file maybe is able to be loaded by this class
 bool CArchiveLoaderMount::isALoadableFileFormat(const io::path& filename) const
 {
-	bool ret = false;
 	io::path fname(filename);
 	deletePathFromFilename(fname);
 
 	if (!fname.size())
+		return true;
+	IFileList* list = FileSystem->createFileList();
+	bool ret = false;
+	if (list)
 	{
-		ret = true;
+		// check if name is found as directory
+		if (list->findFile(filename, true))
+			ret=true;
+		list->drop();
 	}
-
 	return ret;
 }
 
@@ -58,11 +63,11 @@ IFileArchive* CArchiveLoaderMount::createArchive(const io::path& filename, bool 
 
 	EFileSystemType current = FileSystem->setFileListSystem(FILESYSTEM_NATIVE);
 
-	io::path save = FileSystem->getWorkingDirectory();
+	const io::path save = FileSystem->getWorkingDirectory();
 	io::path fullPath = FileSystem->getAbsolutePath(filename);
 	FileSystem->flattenFilename(fullPath);
 
-	if ( FileSystem->changeWorkingDirectoryTo ( fullPath ) )
+	if (FileSystem->changeWorkingDirectoryTo(fullPath))
 	{
 		archive = new CMountPointReader(FileSystem, fullPath, ignoreCase, ignorePaths);
 	}
@@ -88,7 +93,7 @@ CMountPointReader::CMountPointReader(IFileSystem * parent, const io::path& basen
 	if (Path.lastChar() != '/' )
 		Path.append('/');
 
-	const io::path work = Parent->getWorkingDirectory();
+	const io::path& work = Parent->getWorkingDirectory();
 
 	Parent->changeWorkingDirectoryTo(basename);
 	buildDirectory();

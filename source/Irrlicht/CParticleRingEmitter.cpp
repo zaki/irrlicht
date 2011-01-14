@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -42,7 +42,7 @@ s32 CParticleRingEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 	Time += timeSinceLastCall;
 
 	u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
-	f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
+	f32 perSecond = pps ? ((f32)MinParticlesPerSecond + os::Randomizer::frand() * pps) : MinParticlesPerSecond;
 	f32 everyWhatMillisecond = 1000.0f / perSecond;
 
 	if(Time > everyWhatMillisecond)
@@ -57,14 +57,14 @@ s32 CParticleRingEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 
 		for(u32 i=0; i<amount; ++i)
 		{
-			f32 distance = fmodf( (f32)os::Randomizer::rand(), RingThickness * 0.5f * 1000.0f ) * 0.001f;
-			s32 plusMinus = os::Randomizer::rand() % 2;
-			if( plusMinus )
-				distance *= -1.0f;
-			distance += Radius;
+			f32 distance = os::Randomizer::frand() * RingThickness * 0.5f;
+			if (os::Randomizer::rand() % 2)
+				distance -= Radius;
+			else
+				distance += Radius;
 
 			p.pos.set(Center.X + distance, Center.Y, Center.Z + distance);
-			p.pos.rotateXZBy( ( os::Randomizer::rand() % 3600 ) * 0.1f, Center );
+			p.pos.rotateXZBy(os::Randomizer::frand() * 360, Center );
 
 			p.startTime = now;
 			p.vector = Direction;
@@ -72,19 +72,20 @@ s32 CParticleRingEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 			if(MaxAngleDegrees)
 			{
 				core::vector3df tgt = Direction;
-				tgt.rotateXYBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, Center );
-				tgt.rotateYZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, Center );
-				tgt.rotateXZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, Center );
+				tgt.rotateXYBy(os::Randomizer::frand() * MaxAngleDegrees, Center );
+				tgt.rotateYZBy(os::Randomizer::frand() * MaxAngleDegrees, Center );
+				tgt.rotateXZBy(os::Randomizer::frand() * MaxAngleDegrees, Center );
 				p.vector = tgt;
 			}
 
-			if(MaxLifeTime - MinLifeTime == 0)
-				p.endTime = now + MinLifeTime;
-			else
-				p.endTime = now + MinLifeTime + (os::Randomizer::rand() % (MaxLifeTime - MinLifeTime));
+			p.endTime = now + MinLifeTime;
+			if (MaxLifeTime != MinLifeTime)
+				p.endTime += os::Randomizer::rand() % (MaxLifeTime - MinLifeTime);
 
-			p.color = MinStartColor.getInterpolated(
-				MaxStartColor, (os::Randomizer::rand() % 100) / 100.0f);
+			if (MinStartColor==MaxStartColor)
+				p.color=MinStartColor;
+			else
+				p.color = MinStartColor.getInterpolated(MaxStartColor, os::Randomizer::frand());
 
 			p.startColor = p.color;
 			p.startVector = p.vector;
@@ -92,8 +93,7 @@ s32 CParticleRingEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 			if (MinStartSize==MaxStartSize)
 				p.startSize = MinStartSize;
 			else
-				p.startSize = MinStartSize.getInterpolated(
-					MaxStartSize, (os::Randomizer::rand() % 100) / 100.0f);
+				p.startSize = MinStartSize.getInterpolated(MaxStartSize, os::Randomizer::frand());
 			p.size = p.startSize;
 
 			Particles.push_back(p);
@@ -139,10 +139,19 @@ void CParticleRingEmitter::deserializeAttributes(io::IAttributes* in, io::SAttri
 	if (Direction.getLength() == 0)
 		Direction.set(0,0.01f,0);
 
-	MinStartSize.Width = in->getAttributeAsFloat("MinStartSizeWidth");
-	MinStartSize.Height = in->getAttributeAsFloat("MinStartSizeHeight");
-	MaxStartSize.Width = in->getAttributeAsFloat("MaxStartSizeWidth");
-	MaxStartSize.Height = in->getAttributeAsFloat("MaxStartSizeHeight"); 
+	int idx = -1;
+	idx = in->findAttribute("MinStartSizeWidth");
+	if ( idx >= 0 )
+		MinStartSize.Width = in->getAttributeAsFloat(idx);
+	idx = in->findAttribute("MinStartSizeHeight");
+	if ( idx >= 0 )
+		MinStartSize.Height = in->getAttributeAsFloat(idx);
+	idx = in->findAttribute("MaxStartSizeWidth");
+	if ( idx >= 0 )
+		MaxStartSize.Width = in->getAttributeAsFloat(idx);
+	idx = in->findAttribute("MaxStartSizeHeight");
+	if ( idx >= 0 )
+		MaxStartSize.Height = in->getAttributeAsFloat(idx);
 
 	MinParticlesPerSecond = in->getAttributeAsInt("MinParticlesPerSecond");
 	MaxParticlesPerSecond = in->getAttributeAsInt("MaxParticlesPerSecond");

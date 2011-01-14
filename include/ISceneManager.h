@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -967,22 +967,22 @@ namespace scene
 
 		//! add a static arrow mesh to the meshpool
 		/** \param name Name of the mesh
-		\param vtxColor0 color of the cylinder
-		\param vtxColor1 color of the cone
+		\param vtxColorCylinder color of the cylinder
+		\param vtxColorCone color of the cone
 		\param tesselationCylinder Number of quads the cylinder side consists of
 		\param tesselationCone Number of triangles the cone's roof consits of
 		\param height Total height of the arrow
 		\param cylinderHeight Total height of the cylinder, should be lesser than total height
-		\param width0 Diameter of the cylinder
-		\param width1 Diameter of the cone's base, should be not smaller than the cylinder's diameter
+		\param widthCylinder Diameter of the cylinder
+		\param widthCone Diameter of the cone's base, should be not smaller than the cylinder's diameter
 		\return Pointer to the arrow mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IAnimatedMesh* addArrowMesh(const io::path& name,
-				video::SColor vtxColor0=0xFFFFFFFF,
-				video::SColor vtxColor1=0xFFFFFFFF,
+				video::SColor vtxColorCylinder=0xFFFFFFFF,
+				video::SColor vtxColorCone=0xFFFFFFFF,
 				u32 tesselationCylinder=4, u32 tesselationCone=8,
 				f32 height=1.f, f32 cylinderHeight=0.6f,
-				f32 width0=0.05f, f32 width1=0.3f) = 0;
+				f32 widthCylinder=0.05f, f32 widthCone=0.3f) = 0;
 
 		//! add a static sphere mesh to the meshpool
 		/** \param name Name of the mesh
@@ -1433,12 +1433,15 @@ namespace scene
 		The scene is usually written to an .irr file, an xml based format. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org).
 		To load .irr files again, see ISceneManager::loadScene().
-		\param filename: Name of the file.
-		\param userDataSerializer: If you want to save some user data for every scene node into the
+		\param filename Name of the file.
+		\param userDataSerializer If you want to save some user data for every scene node into the
 		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
 		Otherwise, simply specify 0 as this parameter.
+		\param node Node which is taken as the top node of the scene. This node and all of its
+		descendants are saved into the scene file. Pass 0 or the scene manager to save the full
+		scene (which is also the default).
 		\return True if successful. */
-		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Saves the current scene into a file.
 		/** Scene nodes with the option isDebugObject set to true are not being saved.
@@ -1449,8 +1452,11 @@ namespace scene
 		\param userDataSerializer: If you want to save some user data for every scene node into the
 		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
 		Otherwise, simply specify 0 as this parameter.
+		\param node Node which is taken as the top node of the scene. This node and all of its
+		descendants are saved into the scene file. Pass 0 or the scene manager to save the full
+		scene (which is also the default).
 		\return True if successful. */
-		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can
@@ -1462,8 +1468,10 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
+		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can
@@ -1475,8 +1483,10 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
+		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Get a mesh writer implementation if available
 		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()

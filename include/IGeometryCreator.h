@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -60,9 +60,9 @@ public:
 	*/
 	IMesh* createPlaneMesh(
 			const core::dimension2d<f32>& tileSize,
-			const core::dimension2d<u32>& tileCount,
-			video::SMaterial* material,
-			const core::dimension2d<f32>& textureRepeatCount) const
+			const core::dimension2d<u32>& tileCount=core::dimension2du(1,1),
+			video::SMaterial* material=0,
+			const core::dimension2df& textureRepeatCount=core::dimension2df(1.f,1.f)) const
 	{
 		return createHillPlaneMesh(tileSize, tileCount, material, 0.f, core::dimension2df(), textureRepeatCount);
 	}

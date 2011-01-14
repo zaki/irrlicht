@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -48,7 +48,9 @@ bool guiDisabledMenu(void)
 	env->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-guiDisabledMenu.png");
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-guiDisabledMenu.png", 98.77f);
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

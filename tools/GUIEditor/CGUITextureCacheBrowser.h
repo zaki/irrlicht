@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt / Gaz Davidson
+// Copyright (C) 2002-2011 Nikolaus Gebhardt / Gaz Davidson
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -8,6 +8,7 @@
 #include "IGUIWindow.h"
 #include "CGUIPanel.h"
 #include "IGUIImage.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {

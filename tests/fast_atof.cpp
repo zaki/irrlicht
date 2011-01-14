@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -164,6 +164,8 @@ bool fast_atof(void)
 	logTestString("         atof time = %d\n    fast_atof Time = %d\nold fast_atof time = %d\n",
 		atofTime, fastAtofTime, oldFastAtofTime);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	if(fastAtofTime > (1.2f*atofTime))

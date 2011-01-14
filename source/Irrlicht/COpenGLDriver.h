@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -378,6 +378,9 @@ namespace video
 		//! Convert E_PRIMITIVE_TYPE to OpenGL equivalent
 		GLenum primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const;
 
+		//! Convert E_BLEND_FACTOR to OpenGL equivalent
+		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
+
 	private:
 
 		//! clears the zbuffer and color buffer
@@ -446,6 +449,7 @@ namespace video
 
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
+		core::array<video::IRenderTarget> MRTargets;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane

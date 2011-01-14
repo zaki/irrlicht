@@ -1,10 +1,64 @@
-// Copyright (C) 2008-2009 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2011 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
 
 using namespace irr;
 using namespace core;
+
+static bool manyTextures(video::E_DRIVER_TYPE driverType)
+{
+	IrrlichtDevice *device = createDevice(driverType, dimension2d<u32>(160, 120), 32);
+	if (!device)
+		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+	scene::ISceneManager * smgr = device->getSceneManager();
+	(void)smgr->addCameraSceneNode();
+
+	scene::SMeshBufferLightMap* mesh = new scene::SMeshBufferLightMap;
+
+	mesh->Vertices.reallocate(4);
+	mesh->Indices.reallocate(6);
+
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(-50,50,80,irr::video::SColor(255,100,100,100),0,1,0,1));
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(50,50,80,irr::video::SColor(255,100,100,100),1,1,1,1));
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(50,-50,80,irr::video::SColor(255,100,100,100),1,0,1,0));
+	mesh->Vertices.push_back(video::S3DVertex2TCoords(-50,-50,80,irr::video::SColor(255,100,100,100),0,0,0,0));
+
+	mesh->Indices.push_back(0);
+	mesh->Indices.push_back(1);
+	mesh->Indices.push_back(2);
+	mesh->Indices.push_back(2);
+	mesh->Indices.push_back(3);
+	mesh->Indices.push_back(0);
+
+	video::SMaterial& mat = mesh->getMaterial();
+	mat.Lighting = false;
+	mat.setTexture(0,driver->getTexture("../media/fire.bmp"));
+	mat.setTexture(1,driver->getTexture("../media/fire.bmp"));
+	mat.setTexture(2,driver->getTexture("../media/fire.bmp"));
+	mat.setTexture(3,driver->getTexture("../media/fire.bmp"));
+
+	mesh->setDirty();
+
+	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	// set camera
+	smgr->drawAll();
+	// draw meshbuffer
+	driver->setMaterial(mat);
+	driver->drawMeshBuffer(mesh); 
+	driver->endScene();
+	mesh->drop();
+
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-multiTexture.png", 99.31f);
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
 
 //! Tests interleaved loading and rendering of textures
 /** The test loads a texture, renders it using draw2dimage, loads another
@@ -33,8 +87,10 @@ static bool renderAndLoad(video::E_DRIVER_TYPE driverType)
 	driver->draw2DImage(tex1, position2di(0,0));
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureRenderStates.png", 100);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureRenderStates.png", 99.85f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -81,6 +137,8 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 	smgr->drawAll();
 	driver->endScene();
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return true;
@@ -89,11 +147,7 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 
 static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 {
-	SIrrlichtCreationParameters cp;
-	cp.DriverType = driverType;
-	cp.WindowSize = dimension2du(160,120);
-
-	irr::IrrlichtDevice* device = createDeviceEx(cp);
+	irr::IrrlichtDevice* device = createDevice(driverType, dimension2du(160,120));
 	if (!device)
 		return true;
 
@@ -127,12 +181,70 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	gui->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.8f);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.34f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
 } 
+
+// animated texture matrix test.
+static bool textureMatrix(video::E_DRIVER_TYPE driverType)
+{
+	irr::IrrlichtDevice* device = createDevice(driverType, dimension2du(160,120));
+	if (!device)
+		return true;
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+	scene::ISceneManager* sceneManager = device->getSceneManager();
+
+	scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNode();
+	camera->setPosition(vector3df(0,0,-10));
+
+	// set up plane mesh to face the camera
+	scene::IMesh* mesh = sceneManager->getGeometryCreator()->createPlaneMesh(dimension2df(150,150), core::dimension2du(1,1),0,core::dimension2df(1,1));
+	scene::IMeshSceneNode* node = sceneManager->addMeshSceneNode(mesh, 0, -1, vector3df(0, 0, 150), vector3df(-90, 0, 0));
+	if (mesh)
+		mesh->drop();
+
+	// set the hillplane material texture & save a reference
+	// to the texture matrix.
+	video::SMaterial& material = node->getMaterial(0);
+	video::ITexture* tex = driver->getTexture("../media/water.jpg");
+
+	material.setTexture(0,tex);
+	material.setFlag(video::EMF_LIGHTING,false);
+	matrix4& textureMatrix = material.TextureLayer[0].getTextureMatrix();
+
+	const vector2df rcenter, scale(1.f, 1.f);
+	vector2df trans;
+
+	trans.X += 0.0005f;
+	textureMatrix.buildTextureTransform(0.f, rcenter, trans, scale);
+
+	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	sceneManager->drawAll();
+	driver->endScene();
+
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrix.png");
+
+	trans.X += 0.45f;
+	textureMatrix.buildTextureTransform(0.f, rcenter, trans, scale);
+
+	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	sceneManager->drawAll();
+	driver->endScene();
+
+	result &= takeScreenshotAndCompareAgainstReference(driver, "-textureMatrix2.png");
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
 
 bool textureRenderStates(void)
 {
@@ -155,6 +267,15 @@ bool textureRenderStates(void)
 	passed &= testTextureMatrixInMixedScenes(video::EDT_BURNINGSVIDEO);
 	passed &= testTextureMatrixInMixedScenes(video::EDT_DIRECT3D9);
 	passed &= testTextureMatrixInMixedScenes(video::EDT_DIRECT3D8);
+
+	passed &= manyTextures(video::EDT_OPENGL);
+	passed &= manyTextures(video::EDT_SOFTWARE);
+	passed &= manyTextures(video::EDT_BURNINGSVIDEO);
+	passed &= manyTextures(video::EDT_DIRECT3D9);
+	passed &= manyTextures(video::EDT_DIRECT3D8);
+
+	passed &= textureMatrix(video::EDT_OPENGL);
+	passed &= textureMatrix(video::EDT_DIRECT3D9);
 
 	return passed;
 }

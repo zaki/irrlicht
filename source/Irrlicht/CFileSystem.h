@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -91,6 +91,9 @@ public:
 
 	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
 	virtual io::path& flattenFilename( io::path& directory, const io::path& root = "/" ) const;
+
+	//! Get the relative filename, relative to the given directory
+	virtual path getRelativeFilename(const path& filename, const path& directory) const;
 
 	virtual EFileSystemType setFileListSystem(EFileSystemType listType);
 

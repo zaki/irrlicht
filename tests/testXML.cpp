@@ -1,4 +1,4 @@
-// Copyright (C) 2009 Christian Stehno
+// Copyright (C) 2009-2011 Christian Stehno
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -162,6 +162,8 @@ bool testXML(void)
 	logTestString("Test XML reader attribute support.\n");
 	result &= attributeValues(device->getFileSystem());	
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 	return result;
 }

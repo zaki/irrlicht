@@ -16,7 +16,7 @@ You can download the Quake III Arena demo ( copyright id software )
 at the following location:
 ftp://ftp.idsoftware.com/idstuff/quake3/win32/q3ademo.exe
 
-Copyright 2006-2009 Burningwater, Thomas Alten
+Copyright 2006-2011 Burningwater, Thomas Alten
 */
 
 #include "q3factory.h"
@@ -652,6 +652,8 @@ void CQuake3EventHandler::CreateGUI()
 	env->getSkin()->setColor ( EGDC_BUTTON_TEXT, video::SColor(240,0xAA,0xAA,0xAA) );
 	env->getSkin()->setColor ( EGDC_3D_HIGH_LIGHT, video::SColor(240,0x22,0x22,0x22) );
 	env->getSkin()->setColor ( EGDC_3D_FACE, video::SColor(240,0x44,0x44,0x44) );
+	env->getSkin()->setColor ( EGDC_EDITABLE, video::SColor(240,0x44,0x44,0x44) );
+	env->getSkin()->setColor ( EGDC_FOCUSED_EDITABLE, video::SColor(240,0x54,0x54,0x54) );
 	env->getSkin()->setColor ( EGDC_WINDOW, video::SColor(240,0x66,0x66,0x66) );
 
 	// minimal gui size 800x600
@@ -1733,7 +1735,7 @@ void CQuake3EventHandler::useItem( Q3Player * player)
 	line3d<f32> line(start, end);
 
 	// get intersection point with map
-	const scene::ISceneNode* hitNode;
+	scene::ISceneNode* hitNode;
 	if (smgr->getSceneCollisionManager()->getCollisionPoint(
 		line, Meta, end, triangle,hitNode))
 	{
@@ -1933,7 +1935,7 @@ void CQuake3EventHandler::Render()
 		driver->beginScene(true, true, SColor(0,0,0,0));
 		driver->getOverrideMaterial().Material.ColorMask = ECP_NONE;
 		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
-        driver->getOverrideMaterial().EnablePasses = ESNRP_SKY_BOX + 
+        driver->getOverrideMaterial().EnablePasses = ESNRP_SKY_BOX +
                                                      ESNRP_SOLID +
                                                      ESNRP_TRANSPARENT +
                                                      ESNRP_TRANSPARENT_EFFECT +
@@ -1959,7 +1961,7 @@ void CQuake3EventHandler::Render()
 
 		driver->getOverrideMaterial().Material.ColorMask = ECP_RED;
 		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
-		driver->getOverrideMaterial().EnablePasses = 
+		driver->getOverrideMaterial().EnablePasses =
 				ESNRP_SKY_BOX|ESNRP_SOLID|ESNRP_TRANSPARENT|
 				ESNRP_TRANSPARENT_EFFECT|ESNRP_SHADOW;
 
@@ -1975,7 +1977,7 @@ void CQuake3EventHandler::Render()
 
 		driver->getOverrideMaterial().Material.ColorMask = ECP_GREEN + ECP_BLUE;
 		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
-		driver->getOverrideMaterial().EnablePasses = 
+		driver->getOverrideMaterial().EnablePasses =
 				ESNRP_SKY_BOX|ESNRP_SOLID|ESNRP_TRANSPARENT|
 				ESNRP_TRANSPARENT_EFFECT|ESNRP_SHADOW;
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -470,7 +470,7 @@ void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 	if (!Driver)
 		return;
 
-	core::dimension2d<s32> textDimension;	// NOTE: don't make this u32 or the >> later on can fail when the dimension widht is < position width
+	core::dimension2d<s32> textDimension;	// NOTE: don't make this u32 or the >> later on can fail when the dimension width is < position width
 	core::position2d<s32> offset = position.UpperLeftCorner;
 
 	if (hcenter || vcenter || clip)

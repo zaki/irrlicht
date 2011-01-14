@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -276,7 +276,7 @@ void CGUIContextMenu::removeAllItems()
 //! called if an event happened.
 bool CGUIContextMenu::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 
 		switch(event.EventType)
@@ -288,15 +288,24 @@ bool CGUIContextMenu::OnEvent(const SEvent& event)
 				if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element) && AllowFocus)
 				{
 					// set event parent of submenus
-					setEventParent(EventParent ? EventParent : Parent);
+					IGUIElement * p =  EventParent ? EventParent : Parent;
+					setEventParent(p);
 
-					if ( CloseHandling & ECMC_HIDE )
+					SEvent event;
+					event.EventType = EET_GUI_EVENT;
+					event.GUIEvent.Caller = this;
+					event.GUIEvent.Element = 0;
+					event.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
+					if ( !p->OnEvent(event) )
 					{
-						setVisible(false);
-					}
-					if ( CloseHandling & ECMC_REMOVE )
-					{
- 						remove();
+						if ( CloseHandling & ECMC_HIDE )
+						{
+							setVisible(false);
+						}
+						if ( CloseHandling & ECMC_REMOVE )
+						{
+							remove();
+						}
 					}
 
 					return false;
@@ -417,11 +426,16 @@ u32 CGUIContextMenu::sendClick(const core::position2d<s32>& p)
 //! returns true, if an element was highligted
 bool CGUIContextMenu::highlight(const core::position2d<s32>& p, bool canOpenSubMenu)
 {
+	if (!isEnabled())
+	{
+		return false;
+	}
+
 	// get number of open submenu
 	s32 openmenu = -1;
 	s32 i;
 	for (i=0; i<(s32)Items.size(); ++i)
-		if (Items[i].SubMenu && Items[i].SubMenu->isVisible())
+		if (Items[i].Enabled && Items[i].SubMenu && Items[i].SubMenu->isVisible())
 		{
 			openmenu = i;
 			break;
@@ -430,7 +444,7 @@ bool CGUIContextMenu::highlight(const core::position2d<s32>& p, bool canOpenSubM
 	// delegate highlight operation to submenu
 	if (openmenu != -1)
 	{
-		if (Items[openmenu].SubMenu->highlight(p, canOpenSubMenu))
+		if (Items[openmenu].Enabled && Items[openmenu].SubMenu->highlight(p, canOpenSubMenu))
 		{
 			HighLighted = openmenu;
 			ChangeTime = os::Timer::getTime();
@@ -440,7 +454,8 @@ bool CGUIContextMenu::highlight(const core::position2d<s32>& p, bool canOpenSubM
 
 	// highlight myself
 	for (i=0; i<(s32)Items.size(); ++i)
-		if (getHRect(Items[i], AbsoluteRect).isPointInside(p))
+	{
+		if (Items[i].Enabled && getHRect(Items[i], AbsoluteRect).isPointInside(p))
 		{
 			HighLighted = i;
 			ChangeTime = os::Timer::getTime();
@@ -456,6 +471,7 @@ bool CGUIContextMenu::highlight(const core::position2d<s32>& p, bool canOpenSubM
 					}
 			return true;
 		}
+	}
 
 	HighLighted = openmenu;
 	return false;

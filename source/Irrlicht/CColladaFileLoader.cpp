@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -1568,7 +1568,8 @@ const SColladaMaterial* CColladaFileLoader::findMaterial(const core::stringc& ma
 		{
 			// found the effect, instantiate by copying into the material
 			Materials[mat].Mat = Effects[effect].Mat;
-			Materials[mat].Mat.setTexture(0, getTextureFromImage(Effects[effect].Textures[0]));
+			if (Effects[effect].Textures.size())
+				Materials[mat].Mat.setTexture(0, getTextureFromImage(Effects[effect].Textures[0]));
 			Materials[mat].Transparency = Effects[effect].Transparency;
 			// and indicate the material is instantiated by removing the effect ref
 			Materials[mat].InstanceEffectId = "";

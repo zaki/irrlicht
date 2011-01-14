@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -101,6 +101,8 @@ bool sceneNodeAnimator(void)
 	textureAnimator->drop();
 	textureAnimatorLooping->drop();
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	if(!result)

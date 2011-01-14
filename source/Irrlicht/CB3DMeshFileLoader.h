@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2009 Luke Hoschke
+// Copyright (C) 2006-2011 Luke Hoschke
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -122,6 +122,10 @@ private:
 	ISceneManager*	SceneManager;
 	CSkinnedMesh*	AnimatedMesh;
 	io::IReadFile*	B3DFile;
+
+	//B3Ds have Vertex ID's local within the mesh I don't want this
+	// Variable needs to be class member due to recursion in calls
+	u32 VerticesStart;
 
 	bool NormalsInFile;
 	bool HasVertexColors;

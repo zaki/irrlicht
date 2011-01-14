@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -210,7 +210,7 @@ namespace scene
 		virtual void animateJoints(bool CalculateAbsolutePositions=true) = 0;
 
 		//! render mesh ignoring its transformation.
-		/** Used with ragdolls. Culling is unaffected. */
+		/** Culling is unaffected. */
 		virtual void setRenderFromIdentity( bool On )=0;
 
 		//! Creates a clone of this scene node and its children.

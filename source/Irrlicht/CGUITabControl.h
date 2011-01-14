@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -107,7 +107,7 @@ namespace gui
 		virtual bool setActiveTab(s32 idx);
 
 		//! Brings a tab to front.
-		virtual bool setActiveTab(IGUIElement *tab);
+		virtual bool setActiveTab(IGUITab *tab);
 
 		//! Returns which tab is currently active
 		virtual s32 getActiveTab() const;
@@ -161,9 +161,11 @@ namespace gui
 		void scrollRight();
 		bool needScrollControl( s32 startIndex=0, bool withScrollControl=false );
 		s32 calcTabWidth(s32 pos, IGUIFont* font, const wchar_t* text, bool withScrollControl );
+		core::rect<s32> calcTabPos();
 
 		void recalculateScrollButtonPlacement();
 		void recalculateScrollBar();
+		void refreshSprites();
 
 		core::array<CGUITab*> Tabs;
 		s32 ActiveTab;

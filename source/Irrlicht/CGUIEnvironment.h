@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -79,6 +79,9 @@ public:
 
 	//! add an externally loaded font
 	virtual IGUIFont* addFont(const io::path& name, IGUIFont* font);
+
+	//! remove loaded font
+	virtual void removeFont(IGUIFont* font);
 
 	//! returns default font
 	virtual IGUIFont* getBuiltInFont() const;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -173,6 +173,9 @@ public:
 	\param font Pointer to font to add.
 	\return Pointer to the font stored. This can differ from given parameter if the name previously existed. */
 	virtual IGUIFont* addFont(const io::path& name, IGUIFont* font) = 0;
+
+	//! remove loaded font
+	virtual void removeFont(IGUIFont* font) = 0;
 
 	//! Returns the default built-in font.
 	/** \return Pointer to the default built-in font.

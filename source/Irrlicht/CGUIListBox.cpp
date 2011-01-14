@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -162,7 +162,7 @@ void CGUIListBox::recalculateItemHeight()
 	}
 
 	TotalItemHeight = ItemHeight * Items.size();
-	ScrollBar->setMax(TotalItemHeight - AbsoluteRect.getHeight());
+	ScrollBar->setMax( core::max_(0, TotalItemHeight - AbsoluteRect.getHeight()) );
 	s32 minItemHeight = ItemHeight > 0 ? ItemHeight : 1;
 	ScrollBar->setSmallStep ( minItemHeight );
 	ScrollBar->setLargeStep ( 2*minItemHeight );
@@ -213,7 +213,7 @@ void CGUIListBox::setSelected(const wchar_t *item)
 //! called if an event happened.
 bool CGUIListBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 		switch(event.EventType)
 		{

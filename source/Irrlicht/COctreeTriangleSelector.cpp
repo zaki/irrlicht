@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -14,7 +14,7 @@ namespace scene
 
 //! constructor
 COctreeTriangleSelector::COctreeTriangleSelector(const IMesh* mesh,
-		const ISceneNode* node, s32 minimalPolysPerNode)
+		ISceneNode* node, s32 minimalPolysPerNode)
 	: CTriangleSelector(mesh, node), Root(0), NodeCount(0),
 	 MinimalPolysPerNode(minimalPolysPerNode)
 {

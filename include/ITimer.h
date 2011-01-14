@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -24,6 +24,41 @@ public:
 	amount of milliseconds which have elapsed since the system was started.
 	*/
 	virtual u32 getRealTime() const = 0;
+
+	enum EWeekday
+	{
+		EWD_SUNDAY=0,
+		EWD_MONDAY,
+		EWD_TUESDAY,
+		EWD_WEDNESDAY,
+		EWD_THURSDAY,
+		EWD_FRIDAY,
+		EWD_SATURDAY
+	};
+
+	struct RealTimeDate
+	{
+		// Hour of the day, from 0 to 23
+		u32 Hour;
+		// Minute of the hour, from 0 to 59
+		u32 Minute;
+		// Second of the minute, due to extra seconds from 0 to 61
+		u32 Second;
+		// Year of the gregorian calender
+		s32 Year;
+		// Month of the year, from 1 to 12
+		u32 Month;
+		// Day of the month, from 1 to 31
+		u32 Day;
+		// Weekday for the current day
+		EWeekday Weekday;
+		// Day of the year, from 1 to 366
+		u32 Yearday;
+		// Whether daylight saving is on
+		bool IsDST;		
+	};
+
+	virtual RealTimeDate getRealTimeAndDate() const = 0;
 
 	//! Returns current virtual time in milliseconds.
 	/** This value starts with 0 and can be manipulated using setTime(),

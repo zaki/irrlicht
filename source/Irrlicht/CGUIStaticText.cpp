@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -32,6 +32,7 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 	#endif
 
 	Text = text;
+	RestrainTextInside = true;
 	if (environment && environment->getSkin())
 	{
 		BGColor = environment->getSkin()->getColor(gui::EGDC_3D_FACE);
@@ -101,8 +102,8 @@ void CGUIStaticText::draw()
 				}
 
 				font->draw(Text.c_str(), frameRect,
-					OverrideColorEnabled ? OverrideColor : skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, &AbsoluteClippingRect);
+					OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			}
 			else
 			{
@@ -130,8 +131,8 @@ void CGUIStaticText::draw()
 					}
 
 					font->draw(BrokenText[i].c_str(), r,
-						OverrideColorEnabled ? OverrideColor : skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-						HAlign == EGUIA_CENTER, false, &AbsoluteClippingRect);
+						OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 
 					r.LowerRightCorner.Y += height;
 					r.UpperLeftCorner.Y += height;
@@ -196,6 +197,18 @@ void CGUIStaticText::setDrawBackground(bool draw)
 void CGUIStaticText::setDrawBorder(bool draw)
 {
 	Border = draw;
+}
+
+
+void CGUIStaticText::setTextRestrainedInside(bool restrainTextInside)
+{
+	RestrainTextInside = restrainTextInside;
+}
+ 
+
+bool CGUIStaticText::isTextRestrainedInside() const
+{
+	return RestrainTextInside;
 }
 
 
@@ -296,15 +309,15 @@ void CGUIStaticText::breakText()
 			if (word.size())
 			{
 				// here comes the next whitespace, look if
-				// we can break the last word to the next line.
-				s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
-				s32 worldlgth = font->getDimension(word.c_str()).Width;
+				// we must break the last word to the next line.
+				const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
+				const s32 wordlgth = font->getDimension(word.c_str()).Width;
 
-				if (length + worldlgth + whitelgth > elWidth)
+				if (length && (length + wordlgth + whitelgth > elWidth))
 				{
 					// break to next line
-					length = worldlgth;
 					BrokenText.push_back(line);
+					length = wordlgth;
 					line = word;
 				}
 				else
@@ -312,7 +325,7 @@ void CGUIStaticText::breakText()
 					// add word to line
 					line += whitespace;
 					line += word;
-					length += whitelgth + worldlgth;
+					length += whitelgth + wordlgth;
 				}
 
 				word = L"";
@@ -430,10 +443,11 @@ void CGUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 	out->addBool	("Border",              Border);
 	out->addBool	("OverrideColorEnabled",OverrideColorEnabled);
 	out->addBool	("OverrideBGColorEnabled",OverrideBGColorEnabled);
-	out->addBool	("WordWrap",			WordWrap);
+	out->addBool	("WordWrap",		WordWrap);
 	out->addBool	("Background",          Background);
+	out->addBool	("RestrainTextInside",  RestrainTextInside);
 	out->addColor	("OverrideColor",       OverrideColor);
-	out->addColor	("BGColor",       		BGColor);
+	out->addColor	("BGColor",       	BGColor);
 	out->addEnum	("HTextAlign",          HAlign, GUIAlignmentNames);
 	out->addEnum	("VTextAlign",          VAlign, GUIAlignmentNames);
 
@@ -451,6 +465,7 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	OverrideBGColorEnabled = in->getAttributeAsBool("OverrideBGColorEnabled");
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
 	Background = in->getAttributeAsBool("Background");
+	RestrainTextInside = in->getAttributeAsBool("RestrainTextInside");
 	OverrideColor = in->getAttributeAsColor("OverrideColor");
 	BGColor = in->getAttributeAsColor("BGColor");
 

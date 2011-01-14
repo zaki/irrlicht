@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // Code for this scene node has been contributed by Anders la Cour-Harbo (alc)
@@ -53,9 +53,6 @@ CSkyDomeSceneNode::CSkyDomeSceneNode(video::ITexture* sky, u32 horiRes, u32 vert
 	Buffer->BoundingBox.MaxEdge.set(0,0,0);
 	Buffer->BoundingBox.MinEdge.set(0,0,0);
 
-	Buffer->Vertices.clear();
-	Buffer->Indices.clear();
-
 	// regenerate the mesh
 	generateMesh();
 }
@@ -72,6 +69,9 @@ void CSkyDomeSceneNode::generateMesh()
 {
 	f32 azimuth;
 	u32 k;
+
+	Buffer->Vertices.clear();
+	Buffer->Indices.clear();
 
 	const f32 azimuth_step = (core::PI * 2.f) / HorizontalResolution;
 	if (SpherePercentage < 0.f)

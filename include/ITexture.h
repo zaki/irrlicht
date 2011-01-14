@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -70,6 +70,21 @@ enum E_TEXTURE_CREATION_FLAG
 	ETCF_FORCE_32_BIT_DO_NOT_USE = 0x7fffffff
 };
 
+//! Enum for the mode for texture locking. Read-Only, write-only or read/write.
+enum E_TEXTURE_LOCK_MODE
+{
+	//! The default mode. Texture can be read and written to.
+	ETLM_READ_WRITE = 0,
+
+	//! Read only. The texture is downloaded, but not uploaded again.
+	/** Often used to read back shader generated textures. */
+	ETLM_READ_ONLY,
+
+	//! Write only. The texture is not downloaded and might be uninitialised.
+	/** The updated texture is uploaded to the GPU.
+	Used for initialising the shader from the CPU. */
+	ETLM_WRITE_ONLY
+};
 
 //! Interface of a Video Driver dependent Texture.
 /** An ITexture is created by an IVideoDriver by using IVideoDriver::addTexture
@@ -99,14 +114,17 @@ public:
 	unlocked.
 	The size of the i-th mipmap level is defined as max(getSize().Width>>i,1)
 	and max(getSize().Height>>i,1)
-	\param readOnly Specifies that no changes to the locked texture are
-	made. Unspecified behavior will arise if still write access happens.
+	\param mode Specifies what kind of changes to the locked texture are
+	allowed. Unspecified behavior will arise if texture is written in read
+	only mode or read from in write only mode.
+	Support for this feature depends on the driver, so don't rely on the
+	texture being write-protected when locking with read-only, etc.
 	\param mipmapLevel Number of the mipmapLevel to lock. 0 is main texture.
 	Non-existing levels will silently fail and return 0.
 	\return Returns a pointer to the pixel data. The format of the pixel can
 	be determined by using getColorFormat(). 0 is returned, if
 	the texture cannot be locked. */
-	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0) = 0;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) = 0;
 
 	//! Unlock function. Must be called after a lock() to the texture.
 	/** One should avoid to call unlock more than once before another lock.

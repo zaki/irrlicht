@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -140,7 +140,11 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 	if (StdHints)
 		XFree(StdHints);
 	// Disable cursor (it is drop'ed in stub)
-	CursorControl->setVisible(false);
+	if (CursorControl)
+	{
+		CursorControl->setVisible(false);
+		static_cast<CCursorControl*>(CursorControl)->clearCursors();
+	}
 	if (display)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -1038,7 +1042,7 @@ bool CIrrDeviceLinux::run()
 					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
 					irrevent.KeyInput.PressedDown = (event.type == KeyPress);
 //					mbtowc(&irrevent.KeyInput.Char, buf, sizeof(buf));
-					irrevent.KeyInput.Char = ((wchar_t*)(buf))[0];
+					irrevent.KeyInput.Char = (reinterpret_cast<wchar_t*>(buf))[0];
 					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 					irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 					postEventFromUser(irrevent);
@@ -1960,7 +1964,7 @@ Cursor CIrrDeviceLinux::TextureToMonochromeCursor(irr::video::ITexture * tex, co
 	u32 bytesPerPixel = video::IImage::getBitsPerPixelFromFormat(format) / 8;
 	u32 bytesLeftGap = sourceRect.UpperLeftCorner.X * bytesPerPixel;
 	u32 bytesRightGap = tex->getPitch() - sourceRect.LowerRightCorner.X * bytesPerPixel;
-	const u8* data = (const u8*)tex->lock(true, 0);
+	const u8* data = (const u8*)tex->lock(video::ETLM_READ_ONLY, 0);
 	data += sourceRect.UpperLeftCorner.Y*tex->getPitch();
 	for ( s32 y = 0; y < sourceRect.getHeight(); ++y )
 	{
@@ -2036,7 +2040,7 @@ Cursor CIrrDeviceLinux::TextureToARGBCursor(irr::video::ITexture * tex, const co
 	u32 bytesLeftGap = sourceRect.UpperLeftCorner.X * bytesPerPixel;
 	u32 bytesRightGap = tex->getPitch() - sourceRect.LowerRightCorner.X * bytesPerPixel;
 	XcursorPixel* target = image->pixels;
-	const u8* data = (const u8*)tex->lock(true, 0);
+	const u8* data = (const u8*)tex->lock(ETLM_READ_ONLY, 0);
 	data += sourceRect.UpperLeftCorner.Y*tex->getPitch();
 	for ( s32 y = 0; y < sourceRect.getHeight(); ++y )
 	{
@@ -2114,6 +2118,12 @@ CIrrDeviceLinux::CCursorControl::CCursorControl(CIrrDeviceLinux* dev, bool null)
 
 CIrrDeviceLinux::CCursorControl::~CCursorControl()
 {
+	// Do not clearCursors here as the display is already closed
+	// TODO (cutealien): droping cursorcontrol earlier might work, not sure about reason why that's done in stub currently.
+}
+
+void CIrrDeviceLinux::CCursorControl::clearCursors()
+{
 	for ( u32 i=0; i < Cursors.size(); ++i )
 	{
 		for ( u32 f=0; f < Cursors[i].Frames.size(); ++f )
@@ -2122,7 +2132,6 @@ CIrrDeviceLinux::CCursorControl::~CCursorControl()
 		}
 	}
 }
-
 
 #ifdef _IRR_COMPILE_WITH_X11_
 void CIrrDeviceLinux::CCursorControl::initCursors()

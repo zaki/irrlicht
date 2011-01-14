@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -53,9 +53,8 @@ inline void heapsort(T* array_, s32 size)
 	for (i=((size-1)/2); i>=0; --i)
 		heapsink(virtualArray, i+1, virtualSize-1);
 
-	// sort array
-
-	for (i=size-1; i>=0; --i)
+	// sort array, leave out the last element (0)
+	for (i=size-1; i>0; --i)
 	{
 		T t = array_[0];
 		array_[0] = array_[i];

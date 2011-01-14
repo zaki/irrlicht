@@ -1,8 +1,9 @@
-// Copyright (C) 2008-2009 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #if defined(_MSC_VER)
 #define _CRT_SECURE_NO_WARNINGS 1
+#define TESTING_ON_WINDOWS
 #endif // _MSC_VER
 
 #include "testUtils.h"

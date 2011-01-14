@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -87,7 +87,7 @@ public:
 	//! copies this surface into another
 	virtual void copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect=0) =0;
 
-	//! copies this surface into another, using the alpha mask, an cliprect and a color to add with
+	//! copies this surface into another, using the alpha mask and cliprect and a color to add with
 	virtual void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos,
 			const core::rect<s32>& sourceRect, const SColor &color,
 			const core::rect<s32>* clipRect = 0) =0;
@@ -95,7 +95,7 @@ public:
 	//! copies this surface into another, scaling it to fit, appyling a box filter
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false) = 0;
 
-	//! fills the surface with black or white
+	//! fills the surface with given color
 	virtual void fill(const SColor &color) =0;
 
 	//! get the amount of Bits per Pixel of the given color format
@@ -129,7 +129,7 @@ public:
 	}
 
 	//! test if the color format is only viable for RenderTarget textures
-	/** Since we don't have support for e.g. floating point iimage formats
+	/** Since we don't have support for e.g. floating point IImage formats
 	one should test if the color format can be used for arbitrary usage, or
 	if it is restricted to RTTs. */
 	static bool isRenderTargetOnlyFormat(const ECOLOR_FORMAT format)

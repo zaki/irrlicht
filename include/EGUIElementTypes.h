@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -88,6 +88,9 @@ enum EGUI_ELEMENT_TYPE
 	//! Unknown type.
 	EGUIET_ELEMENT,
 
+	//! The root of the GUI
+	EGUIET_ROOT,
+
 	//! Not an element, amount of elements in there
 	EGUIET_COUNT,
 
@@ -123,6 +126,7 @@ const c8* const GUIElementTypeNames[] =
 	"treeview",
 	"window",
 	"element",
+	"root",
 	0
 };
 

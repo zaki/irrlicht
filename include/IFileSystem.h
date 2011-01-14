@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -231,6 +231,9 @@ public:
 
 	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
 	virtual path& flattenFilename(path& directory, const path& root="/") const =0;
+
+	//! Get the relative filename, relative to the given directory
+	virtual path getRelativeFilename(const path& filename, const path& directory) const =0;
 
 	//! Creates a list of files and directories in the current working directory and returns it.
 	/** \return a Pointer to the created IFileList is returned. After the list has been used

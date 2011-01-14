@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2011 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -36,7 +36,7 @@ public:
 	virtual ~CSoftwareTexture2();
 
 	//! lock function
-	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0)
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0)
 	{
 		if (Flags & GEN_MIPMAP)
 			MipMapLOD=mipmapLevel;

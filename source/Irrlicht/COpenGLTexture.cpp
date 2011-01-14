@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -24,7 +24,7 @@ namespace video
 COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mipmapData, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
-	PixelType(GL_UNSIGNED_BYTE),
+	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	IsRenderTarget(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
 {
@@ -61,7 +61,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
-	PixelType(GL_UNSIGNED_BYTE),
+	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
 {
@@ -354,11 +354,11 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 
 //! lock function
-void* COpenGLTexture::lock(bool readOnly, u32 mipmapLevel)
+void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
-	ReadOnlyLock |= readOnly;
+	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
 
 	// if data not available or might have changed on GPU download it
@@ -390,48 +390,51 @@ void* COpenGLTexture::lock(bool readOnly, u32 mipmapLevel)
 		if (!image)
 			return 0;
 
-		u8* pixels = static_cast<u8*>(image->lock());
-		if (!pixels)
-			return 0;
-
-		// we need to keep the correct texture bound later on
-		GLint tmpTexture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
-		glBindTexture(GL_TEXTURE_2D, TextureName);
-
-		// allows to read pixels in top-to-bottom order
-#ifdef GL_MESA_pack_invert
-		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
-			glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
-#endif
-
-		// download GPU data as ARGB8 to pixels;
-		glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
-
-#ifdef GL_MESA_pack_invert
-		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
-			glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
-		else
-#endif
+		if (mode != ETLM_WRITE_ONLY)
 		{
-			// opengl images are horizontally flipped, so we have to fix that here.
-			const s32 pitch=image->getPitch();
-			u8* p2 = pixels + (image->getDimension().Height - 1) * pitch;
-			u8* tmpBuffer = new u8[pitch];
-			for (u32 i=0; i < image->getDimension().Height; i += 2)
-			{
-				memcpy(tmpBuffer, pixels, pitch);
-				memcpy(pixels, p2, pitch);
-				memcpy(p2, tmpBuffer, pitch);
-				pixels += pitch;
-				p2 -= pitch;
-			}
-			delete [] tmpBuffer;
-		}
-		image->unlock();
+			u8* pixels = static_cast<u8*>(image->lock());
+			if (!pixels)
+				return 0;
 
-		//reset old bound texture
-		glBindTexture(GL_TEXTURE_2D, tmpTexture);
+			// we need to keep the correct texture bound later on
+			GLint tmpTexture;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
+			glBindTexture(GL_TEXTURE_2D, TextureName);
+
+			// allows to read pixels in top-to-bottom order
+	#ifdef GL_MESA_pack_invert
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
+				glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
+	#endif
+
+			// download GPU data as ARGB8 to pixels;
+			glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
+
+	#ifdef GL_MESA_pack_invert
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
+				glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
+			else
+	#endif
+			{
+				// opengl images are horizontally flipped, so we have to fix that here.
+				const s32 pitch=image->getPitch();
+				u8* p2 = pixels + (image->getDimension().Height - 1) * pitch;
+				u8* tmpBuffer = new u8[pitch];
+				for (u32 i=0; i < image->getDimension().Height; i += 2)
+				{
+					memcpy(tmpBuffer, pixels, pitch);
+					memcpy(pixels, p2, pitch);
+					memcpy(p2, tmpBuffer, pitch);
+					pixels += pitch;
+					p2 -= pitch;
+				}
+				delete [] tmpBuffer;
+			}
+			image->unlock();
+
+			//reset old bound texture
+			glBindTexture(GL_TEXTURE_2D, tmpTexture);
+		}
 	}
 	return image->lock();
 }
@@ -605,7 +608,7 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 					const io::path& name, COpenGLDriver* driver,
-					const ECOLOR_FORMAT format)
+					ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG
@@ -614,6 +617,9 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	ImageSize = size;
 	TextureSize = size;
+
+	if (ECF_UNKNOWN == format)
+		format = getBestColorFormat(driver->getColorFormat());
 
 	GLint FilteringType;
 	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
@@ -624,7 +630,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 #ifdef GL_EXT_framebuffer_object
 	// generate frame buffer
 	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+	bindRTT();
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
@@ -669,6 +675,7 @@ void COpenGLFBOTexture::bindRTT()
 #ifdef GL_EXT_framebuffer_object
 	if (ColorFrameBuffer != 0)
 		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
 #endif
 }
 
@@ -691,7 +698,7 @@ COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 		const io::path& name,
 		COpenGLDriver* driver,
 		bool useStencil)
-	: COpenGLFBOTexture(size, name, driver), DepthRenderBuffer(0),
+	: COpenGLTexture(name, driver), DepthRenderBuffer(0),
 	StencilRenderBuffer(0), UseStencil(useStencil)
 {
 #ifdef _DEBUG
@@ -727,19 +734,14 @@ COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, ImageSize.Width,
 				ImageSize.Height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
 
-			// we 're in trouble! the code below does not complete
-			// the FBO currently...  stencil buffer is only
-			// supported with EXT_packed_depth_stencil extension
-			// (above)
-
-//			// generate stencil texture
-//			glGenTextures(1, &StencilRenderBuffer);
-//			glBindTexture(GL_TEXTURE_2D, StencilRenderBuffer);
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//			glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX, ImageSize.Width,
-//			ImageSize.Height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 0);
-//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			// generate stencil texture
+			glGenTextures(1, &StencilRenderBuffer);
+			glBindTexture(GL_TEXTURE_2D, StencilRenderBuffer);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX, ImageSize.Width,
+				ImageSize.Height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 0);
 		}
 	}
 #ifdef GL_EXT_framebuffer_object
@@ -883,6 +885,7 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 	}
 #endif
 	os::Printer::log("FBO error", ELL_ERROR);
+	_IRR_DEBUG_BREAK_IF(true);
 	return false;
 }
 

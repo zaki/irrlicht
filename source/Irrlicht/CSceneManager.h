@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -216,8 +216,9 @@ namespace scene
 
 		//! Adds a terrain mesh to the mesh pool.
 		virtual IAnimatedMesh* addTerrainMesh(const io::path& meshname,	video::IImage* texture, video::IImage* heightmap,
-			const core::dimension2d<f32>& stretchSize,
-			f32 maxHeight, const core::dimension2d<u32>& defaultVertexBlockSize);
+			const core::dimension2d<f32>& stretchSize = core::dimension2d<f32>(10.0f,10.0f),
+			f32 maxHeight=200.0f,
+			const core::dimension2d<u32>& defaultVertexBlockSize = core::dimension2d<u32>(64,64));
 
 		//! Add a arrow mesh to the mesh pool
 		virtual IAnimatedMesh* addArrowMesh(const io::path& name,
@@ -456,17 +457,17 @@ namespace scene
 
 		//! Saves the current scene into a file.
 		//! \param filename: Name of the file .
-		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Saves the current scene into a file.
-		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		//! \param filename: Name of the file .
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -501,7 +502,7 @@ namespace scene
 		void clearDeletionList();
 
 		//! writes a scene node
-		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer);
+		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer, const c8* currentPath=0, bool init=false);
 
 		//! reads a scene node
 		void readSceneNode(io::IXMLReader* reader, ISceneNode* parent, ISceneUserDataSerializer* userDataSerializer);

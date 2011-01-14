@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and/or irrXML.h
 
@@ -120,7 +120,7 @@
 	The irrXML license is based on the zlib license. Basicly, this means you can do with
 	irrXML whatever you want:
 
-	Copyright (C) 2002-2009 Nikolaus Gebhardt
+	Copyright (C) 2002-2011 Nikolaus Gebhardt
 
 	This software is provided 'as-is', without any express or implied
 	warranty. In no event will the authors be held liable for any damages
@@ -373,6 +373,7 @@ namespace io
 		xmlChar<T>() {}
 		xmlChar<T>(char in) : c(static_cast<T>(in)) {}
 		xmlChar<T>(wchar_t in) : c(static_cast<T>(in)) {}
+		explicit xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}

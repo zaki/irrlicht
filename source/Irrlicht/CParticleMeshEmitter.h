@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -71,10 +71,19 @@ public:
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
 	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
+	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; }
 
 	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
+	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; }
+
+	//! Set the minimum particle life-time in milliseconds
+	virtual void setMinLifeTime( u32 lifeTimeMin ) { MinLifeTime = lifeTimeMin; }
+
+	//! Set the maximum particle life-time in milliseconds
+	virtual void setMaxLifeTime( u32 lifeTimeMax ) { MaxLifeTime = lifeTimeMax; }
+
+	//!	Set maximal random derivation from the direction
+	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) { MaxAngleDegrees = maxAngleDegrees; }
 
 	//! Get Mesh we're emitting particles from
 	virtual const IMesh* getMesh() const { return Mesh; }
@@ -105,10 +114,19 @@ public:
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
 	//! Gets the maximum starting size for particles
-	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; };
+	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
 
 	//! Gets the minimum starting size for particles
-	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
+	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
+
+	//! Get the minimum particle life-time in milliseconds
+	virtual u32 getMinLifeTime() const { return MinLifeTime; }
+
+	//! Get the maximum particle life-time in milliseconds
+	virtual u32 getMaxLifeTime() const { return MaxLifeTime; }
+
+	//!	Get maximal random derivation from the direction
+	virtual s32 getMaxAngleDegrees() const { return MaxAngleDegrees; }
 
 private:
 

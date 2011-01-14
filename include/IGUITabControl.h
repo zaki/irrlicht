@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -75,7 +75,7 @@ namespace gui
 		//! Brings a tab to front.
 		/** \param tab: pointer to the tab.
 		\return Returns true if successful. */
-		virtual bool setActiveTab(IGUIElement *tab) = 0;
+		virtual bool setActiveTab(IGUITab *tab) = 0;
 
 		//! Returns which tab is currently active
 		virtual s32 getActiveTab() const = 0;

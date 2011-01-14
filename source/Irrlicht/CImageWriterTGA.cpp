@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -133,7 +133,7 @@ bool CImageWriterTGA::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 	if (file->write(&imageFooter, sizeof(imageFooter)) < (s32)sizeof(imageFooter))
 		return false;
 
-	return imageHeader.ImageHeight < y;
+	return imageHeader.ImageHeight <= y;
 }
 
 } // namespace video

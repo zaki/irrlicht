@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -37,6 +37,11 @@ CSoftwareDriver::CSoftwareDriver(const core::dimension2d<u32>& windowSize, bool 
 		// create z buffer
 		ZBuffer = video::createZBuffer(BackBuffer->getDimension());
 	}
+
+	DriverAttributes->setAttribute("MaxTextures", 1);
+	DriverAttributes->setAttribute("MaxIndices", 1<<16);
+	DriverAttributes->setAttribute("MaxTextureSize", 1024);
+	DriverAttributes->setAttribute("Version", 1);
 
 	// create triangle renderers
 

@@ -3,6 +3,7 @@
 
 #include "CGUIAttribute.h"
 #include "IGUICheckBox.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -18,8 +19,8 @@ namespace gui
 		{
 
 			core::rect<s32> r = getAbsolutePosition();
-			core::rect<s32> r2(0, Environment->getSkin()->getFont()->getDimension(L"A").Height + 10, 
-				r.getWidth() - 5, 
+			core::rect<s32> r2(0, Environment->getSkin()->getFont()->getDimension(L"A").Height + 10,
+				r.getWidth() - 5,
 				Environment->getSkin()->getFont()->getDimension(L"A").Height*2 + 15 );
 
 			AttribCheckBox = environment->addCheckBox(false, r2, this);
@@ -49,6 +50,12 @@ namespace gui
 			Attribs->setAttribute(Index, AttribCheckBox->isChecked());
 
 			return CGUIAttribute::updateAttrib(sendEvent);
+		}
+
+		//! Returns the type name of the gui element.
+		virtual const c8* getTypeName() const
+		{
+			return GUIEditElementTypeNames[EGUIEDIT_BOOLATTRIBUTE];
 		}
 
 	private:

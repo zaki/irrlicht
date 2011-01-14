@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -41,6 +41,8 @@ bool removeCustomAnimator(void)
 	// deleted cleanly, without a crash.
 	node->OnAnimate(0);
 	
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	// If we didn't crash, then the test passed.

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -91,6 +91,11 @@ void CParticleSystemSceneNode::addAffector(IParticleAffector* affector)
 	AffectorList.push_back(affector);
 }
 
+//! Get a list of all particle affectors.
+const core::list<IParticleAffector*>& CParticleSystemSceneNode::getAffectors() const
+{
+	return AffectorList;
+}
 
 //! Removes all particle affectors in the particle system.
 void CParticleSystemSceneNode::removeAllAffectors()
@@ -452,7 +457,14 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 	{
 		// erase is pretty expensive!
 		if (now > Particles[i].endTime)
-			Particles.erase(i);
+		{
+			// Particle order does not seem to matter.
+			// So we can delete by switching with last particle and deleting that one.
+			// This is a lot faster and speed is very important here as the erase otherwise
+			// can cause noticable freezes.
+			Particles[i] = Particles[Particles.size()-1];
+			Particles.erase( Particles.size()-1 );
+		}
 		else
 		{
 			Particles[i].pos += (Particles[i].vector * scale);
@@ -486,6 +498,11 @@ void CParticleSystemSceneNode::setParticlesAreGlobal(bool global)
 	ParticlesAreGlobal = global;
 }
 
+//! Remove all currently visible particles
+void CParticleSystemSceneNode::clearParticles()
+{
+	Particles.set_used(0);
+}
 
 //! Sets the size of all particles.
 void CParticleSystemSceneNode::setParticleSize(const core::dimension2d<f32> &size)

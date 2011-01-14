@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2010 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2011 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -50,8 +50,10 @@ static bool shadows(video::E_DRIVER_TYPE driverType)
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 
-	result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-stencilSelfShadow.png", 99.91f);
+	result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-stencilSelfShadow.png", 99.41f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

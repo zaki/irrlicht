@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -79,7 +79,6 @@ IImageWriter* createImageWriterPNG();
 //! creates a writer which is able to save ppm images
 IImageWriter* createImageWriterPPM();
 
-
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
@@ -89,6 +88,22 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");
 	#endif
+
+	DriverAttributes = new io::CAttributes();
+	DriverAttributes->addInt("MaxTextures", _IRR_MATERIAL_MAX_TEXTURES_);
+	DriverAttributes->addInt("MaxSupportedTextures", _IRR_MATERIAL_MAX_TEXTURES_);
+	DriverAttributes->addInt("MaxLights", getMaximalDynamicLightAmount());
+	DriverAttributes->addInt("MaxAnisotropy", 1);
+//	DriverAttributes->addInt("MaxUserClipPlanes", 0);
+//	DriverAttributes->addInt("MaxAuxBuffers", 0);
+	DriverAttributes->addInt("MaxMultipleRenderTargets", 1);
+	DriverAttributes->addInt("MaxIndices", -1);
+	DriverAttributes->addInt("MaxTextureSize", -1);
+//	DriverAttributes->addInt("MaxGeometryVerticesOut", 0);
+//	DriverAttributes->addFloat("MaxTextureLODBias", 0.f);
+	DriverAttributes->addInt("Version", 1);
+//	DriverAttributes->addInt("ShaderLanguageVersion", 0);
+//	DriverAttributes->addInt("AntiAlias", 0);
 
 	setFog();
 
@@ -175,6 +190,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	InitMaterial2D.Lighting=false;
 	InitMaterial2D.ZWriteEnable=false;
 	InitMaterial2D.ZBuffer=video::ECFN_NEVER;
+	InitMaterial2D.UseMipMaps=false;
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{
 		InitMaterial2D.TextureLayer[i].BilinearFilter=false;
@@ -188,6 +204,9 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 //! destructor
 CNullDriver::~CNullDriver()
 {
+	if (DriverAttributes)
+		DriverAttributes->drop();
+
 	if (FileSystem)
 		FileSystem->drop();
 
@@ -313,6 +332,13 @@ bool CNullDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 
+//! Get attributes of the actual video driver
+const io::IAttributes& CNullDriver::getDriverAttributes() const
+{
+	return *DriverAttributes;
+}
+
+
 //! sets transformation
 void CNullDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
@@ -408,7 +434,7 @@ ITexture* CNullDriver::getTexture(const io::path& filename)
 	// Now try to open the file using the complete path.
 	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath);
 
-	if(!file)
+	if (!file)
 	{
 		// Try to open it using the raw filename.
 		file = FileSystem->createAndOpenFile(filename);
@@ -463,10 +489,10 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 			addTexture(texture);
 			texture->drop(); // drop it because we created it, one grab too much
 		}
-	}
 
-	if (!texture)
-		os::Printer::log("Could not load texture", file->getFileName(), ELL_WARNING);
+		if (!texture)
+			os::Printer::log("Could not load texture", file->getFileName(), ELL_WARNING);
+	}
 
 	return texture;
 }
@@ -1060,7 +1086,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 	if (texture->getColorFormat() == ECF_A1R5G5B5)
 	{
-		u16 *p = (u16*)texture->lock(true);
+		u16 *p = (u16*)texture->lock(ETLM_READ_ONLY);
 
 		if (!p)
 		{
@@ -1076,7 +1102,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 	}
 	else
 	{
-		u32 *p = (u32*)texture->lock(true);
+		u32 *p = (u32*)texture->lock(ETLM_READ_ONLY);
 
 		if (!p)
 		{
@@ -1414,9 +1440,9 @@ IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32
 //! Creates a software image from part of a texture.
 IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>& pos, const core::dimension2d<u32>& size)
 {
-	if (pos==core::position2di(0,0) && size == texture->getSize())
+	if ((pos==core::position2di(0,0)) && (size == texture->getSize()))
 	{
-		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(true), false);
+		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(ETLM_READ_ONLY), false);
 		texture->unlock();
 		return image;
 	}
@@ -1431,14 +1457,17 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 					core::clamp(static_cast<u32>(size.Height), 0u, texture->getSize().Height)));
 		if (!clamped.isValid())
 			return 0;
-		void* src = texture->lock(true);
+		u8* src = static_cast<u8*>(texture->lock(ETLM_READ_ONLY));
 		if (!src)
 			return 0;
 		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
-		void* dst = image->lock();
-		for (u32 i=clamped.UpperLeftCorner.X; i<clamped.getHeight(); ++i)
+		u8* dst = static_cast<u8*>(image->lock());
+		src += clamped.UpperLeftCorner.Y * texture->getPitch() + image->getBytesPerPixel() * clamped.UpperLeftCorner.X;
+		for (u32 i=0; i<clamped.getHeight(); ++i)
 		{
 			video::CColorConverter::convert_viaFormat(src, texture->getColorFormat(), clamped.getWidth(), dst, image->getColorFormat());
+			src += texture->getPitch();
+			dst += image->getPitch();
 		}
 		image->unlock();
 		texture->unlock();
@@ -1789,6 +1818,7 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addBool("FrontfaceCulling", material.FrontfaceCulling);
 	attr->addBool("FogEnable", material.FogEnable);
 	attr->addBool("NormalizeNormals", material.NormalizeNormals);
+	attr->addBool("UseMipMaps", material.UseMipMaps);
 	attr->addInt("AntiAliasing", material.AntiAliasing);
 	attr->addInt("ColorMask", material.ColorMask);
 
@@ -1853,6 +1883,11 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.FrontfaceCulling = attr->getAttributeAsBool("FrontfaceCulling");
 	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable");
 	outMaterial.NormalizeNormals = attr->getAttributeAsBool("NormalizeNormals");
+	if (attr->existsAttribute("UseMipMaps")) // legacy
+		outMaterial.UseMipMaps = attr->getAttributeAsBool("UseMipMaps");
+	else
+		outMaterial.UseMipMaps = true;
+
 	// default 0 is ok
 	outMaterial.AntiAliasing = attr->getAttributeAsInt("AntiAliasing");
 	if (attr->existsAttribute("ColorMask"))

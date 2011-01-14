@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -594,7 +594,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 //		CreationParams.WindowSize.Width = realWidth;
 //		CreationParams.WindowSize.Height = realHeight;
 
-		ShowWindow(HWnd, SW_SHOW);
+		ShowWindow(HWnd, SW_SHOWNORMAL);
 		UpdateWindow(HWnd);
 
 		// fix ugly ATI driver bugs. Thanks to ariaci
@@ -638,8 +638,11 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	EnvMap.push_back(em);
 
 	// set this as active window
-	SetActiveWindow(HWnd);
-	SetForegroundWindow(HWnd);
+	if ( HWnd )
+	{
+		SetActiveWindow(HWnd);
+		SetForegroundWindow(HWnd);
+	}
 
 	// get the codepage used for keyboard input
 	KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
@@ -1618,7 +1621,7 @@ HCURSOR CIrrDeviceWin32::TextureToCursor(HWND hwnd, irr::video::ITexture * tex, 
 	u32 bytesPerPixel = video::IImage::getBitsPerPixelFromFormat(format) / 8;
 	u32 bytesLeftGap = sourceRect.UpperLeftCorner.X * bytesPerPixel;
 	u32 bytesRightGap = tex->getPitch() - sourceRect.LowerRightCorner.X * bytesPerPixel;
-	const u8* data = (const u8*)tex->lock(true, 0);
+	const u8* data = (const u8*)tex->lock(video::ETLM_READ_ONLY, 0);
 	data += sourceRect.UpperLeftCorner.Y*tex->getPitch();
 	for ( s32 y = 0; y < sourceRect.getHeight(); ++y )
 	{

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2011 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -101,7 +101,7 @@ namespace video
 			// select mignify and magnify ( lodLevel )
 			//SOFTWARE_DRIVER_2_MIPMAPPING_LOD_BIAS
 			it->lodLevel = lodLevel;
-			it->data = (tVideoSample*) it->Texture->lock(true,
+			it->data = (tVideoSample*) it->Texture->lock(ETLM_READ_ONLY,
 				core::s32_clamp ( lodLevel + SOFTWARE_DRIVER_2_MIPMAPPING_LOD_BIAS, 0, SOFTWARE_DRIVER_2_MIPMAPPING_MAX - 1 ));
 
 			// prepare for optimal fixpoint

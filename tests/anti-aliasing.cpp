@@ -5,7 +5,7 @@ using namespace irr;
 static bool testLineRendering(video::E_DRIVER_TYPE type)
 {
 	SIrrlichtCreationParameters params;
-	params.AntiAlias = 0;
+	params.AntiAlias = 2;
 	params.Bits = 16;
 	params.WindowSize = core::dimension2d<u32>(160, 120);
 	params.DriverType = type;
@@ -16,11 +16,22 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 		return true; // in case the driver type does not exist
 
 	video::IVideoDriver* driver = device->getVideoDriver();
+	// if no AntiAliasing supported, skip this test
+	if (driver->getDriverAttributes().getAttributeAsInt("AntiAlias")<2)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	scene::IAnimatedMesh* mesh = smgr->getMesh("../media/sydney.md2");
 	if (!mesh)
 	{
+		device->closeDevice();
+		device->run();
 		device->drop();
 		return false;
 	}
@@ -41,8 +52,10 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 	driver->draw2DLine(core::position2di(10,10), core::position2di(100,100), video::SColor(255,0,0,0));
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-lineAntiAliasing.png" );
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-lineAntiAliasing.png", 99.42f );
 
+	device->closeDevice();
+	device->run();
 	device->drop();
     return result;
 } 

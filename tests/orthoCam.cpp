@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2010 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2011 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -40,6 +40,8 @@ static bool testOrthoCam(video::E_DRIVER_TYPE driverType)
 
 	const bool result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-orthoCam.png", 99.91f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
@@ -74,6 +76,8 @@ static bool testOrthoStencil(video::E_DRIVER_TYPE driverType)
 
 	const bool result = takeScreenshotAndCompareAgainstReference(device->getVideoDriver(), "-orthoStencil.png", 99.91f);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

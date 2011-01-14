@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -291,6 +291,12 @@ CSceneManager::~CSceneManager()
 {
 	clearDeletionList();
 
+	//! force to remove hardwareTextures from the driver
+	//! because Scenes may hold internally data bounded to sceneNodes
+	//! which may be destroyed twice
+	if (Driver)
+		Driver->removeAllHardwareBuffers ();
+
 	if (FileSystem)
 		FileSystem->drop();
 
@@ -323,12 +329,6 @@ CSceneManager::~CSceneManager()
 
 	for (i=0; i<SceneNodeAnimatorFactoryList.size(); ++i)
 		SceneNodeAnimatorFactoryList[i]->drop();
-
-	//! force to remove hardwareTextures from the driver
-	//! because Scenes may hold internally data bounded to sceneNodes
-	//! which may be destroyed twice
-	if (Driver)
-		Driver->removeAllHardwareBuffers ();
 
 	if(LightManager)
 		LightManager->drop();
@@ -588,9 +588,6 @@ ISceneNode* CSceneManager::addWaterSurfaceSceneNode(IMesh* mesh, f32 waveHeight,
 	ISceneNode* parent, s32 id, const core::vector3df& position,
 	const core::vector3df& rotation, const core::vector3df& scale)
 {
-	if (!mesh)
-		return 0;
-
 	if (!parent)
 		parent = this;
 
@@ -963,9 +960,10 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByName(name);
 
+	const bool debugBorders=false;
 	IMesh* mesh = GeometryCreator->createTerrainMesh(texture, heightmap,
 			stretchSize, maxHeight, getVideoDriver(),
-			defaultVertexBlockSize);
+			defaultVertexBlockSize, debugBorders);
 	if (!mesh)
 		return 0;
 
@@ -2040,13 +2038,13 @@ ISceneNodeAnimatorFactory* CSceneManager::getSceneNodeAnimatorFactory(u32 index)
 
 //! Saves the current scene into a file.
 //! \param filename: Name of the file .
-bool CSceneManager::saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer, ISceneNode* node)
 {
 	bool ret = false;
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
 	if (file)
 	{
-		ret = saveScene(file, userDataSerializer);
+		ret = saveScene(file, userDataSerializer, node);
 		file->drop();
 	}
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
@@ -2055,7 +2053,7 @@ bool CSceneManager::saveScene(const io::path& filename, ISceneUserDataSerializer
 
 
 //! Saves the current scene into a file.
-bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer, ISceneNode* node)
 {
 	if (!file)
 	{
@@ -2069,9 +2067,11 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
+	if (!node)
+		node=this;
 
 	writer->writeXMLHeader();
-	writeSceneNode(writer, this, userDataSerializer);
+	writeSceneNode(writer, node, userDataSerializer, FileSystem->getFileDir(FileSystem->getAbsolutePath(file->getFileName())).c_str(), true);
 	writer->drop();
 
 	return true;
@@ -2080,7 +2080,7 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 
 //! Loads a scene. Note that the current scene is not cleared before.
 //! \param filename: Name of the file .
-bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer, ISceneNode* node)
 {
 	bool ret = false;
 	io::IReadFile* read = FileSystem->createAndOpenFile(filename);
@@ -2090,7 +2090,7 @@ bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer
 	}
 	else
 	{
-		ret = loadScene(read, userDataSerializer);
+		ret = loadScene(read, userDataSerializer, node);
 		read->drop();
 	}
 
@@ -2100,7 +2100,7 @@ bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer
 
 
 //! Loads a scene. Note that the current scene is not cleared before.
-bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer, ISceneNode* node)
 {
 	if (!file)
 	{
@@ -2126,7 +2126,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 
 	while(reader->read())
 	{
-		readSceneNode(reader, 0, userDataSerializer);
+		readSceneNode(reader, node, userDataSerializer);
 	}
 
 	// restore old collada parameters
@@ -2148,8 +2148,16 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 
 	scene::ISceneNode* node = 0;
 
-	if (!parent && IRR_XML_FORMAT_SCENE==reader->getNodeName())
-		node = this; // root
+	bool readAttributes=true;
+	if (IRR_XML_FORMAT_SCENE==reader->getNodeName())
+	{
+		// node==parent on start, which can be scene manager or distinct parent node
+		if (!parent)
+			node = this; // root
+		else
+			node = parent;
+		readAttributes = (node==this);
+	}
 	else if (parent && IRR_XML_FORMAT_NODE==reader->getNodeName())
 	{
 		// find node type and create it
@@ -2159,7 +2167,10 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 			node = SceneNodeFactoryList[i]->addSceneNode(attrName.c_str(), parent);
 
 		if (!node)
+		{
 			os::Printer::log("Could not create scene node of unknown type", attrName.c_str());
+			node=addEmptySceneNode(parent);
+		}
 	}
 
 	// read attributes
@@ -2177,7 +2188,7 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 			}
 			break;
 		case io::EXN_ELEMENT:
-			if (core::stringw(L"attributes")==reader->getNodeName())
+			if ((core::stringw(L"attributes")==reader->getNodeName()) && readAttributes)
 			{
 				// read attributes
 				io::IAttributes* attr = FileSystem->createEmptyAttributes(Driver);
@@ -2189,19 +2200,24 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 				attr->drop();
 			}
 			else
-			if (core::stringw(L"materials")==reader->getNodeName())
+			if ((core::stringw(L"materials")==reader->getNodeName()) && readAttributes)
 				readMaterials(reader, node);
 			else
-			if (core::stringw(L"animators")==reader->getNodeName())
+			if ((core::stringw(L"animators")==reader->getNodeName()) && readAttributes)
 				readAnimators(reader, node);
 			else
-			if (core::stringw(L"userData")==reader->getNodeName())
+			if ((core::stringw(L"userData")==reader->getNodeName()) && readAttributes)
 				readUserData(reader, node, userDataSerializer);
 			else
-			if ((IRR_XML_FORMAT_NODE==reader->getNodeName()) ||
-				(IRR_XML_FORMAT_SCENE==reader->getNodeName()))
+			if (IRR_XML_FORMAT_NODE==reader->getNodeName())
 			{
 				readSceneNode(reader, node, userDataSerializer);
+			}
+			else
+			if (IRR_XML_FORMAT_SCENE==reader->getNodeName())
+			{
+				// pass on parent value
+				readSceneNode(reader, parent, userDataSerializer);
 			}
 			else
 			{
@@ -2341,17 +2357,20 @@ void CSceneManager::readUserData(io::IXMLReader* reader, ISceneNode* node, IScen
 
 
 //! writes a scene node
-void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer)
+void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer,
+		const c8* currentPath, bool init)
 {
 	if (!writer || !node || node->isDebugObject())
 		return;
 
 	const wchar_t* name;
+	ISceneNode* tmpNode=node;
 
-	if (node == this)
+	if (init)
 	{
 		name = IRR_XML_FORMAT_SCENE.c_str();
 		writer->writeElement(name, false);
+		node=this;
 	}
 	else
 	{
@@ -2361,12 +2380,17 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 	}
 
 	writer->writeLineBreak();
-	writer->writeLineBreak();
 
 	// write properties
 
 	io::IAttributes* attr = FileSystem->createEmptyAttributes(Driver);
-	node->serializeAttributes(attr);
+	io::SAttributeReadWriteOptions options;
+	if (currentPath)
+	{
+		options.Filename=currentPath;
+		options.Flags|=io::EARWF_USE_RELATIVE_PATHS;
+	}
+	node->serializeAttributes(attr, &options);
 
 	if (attr->getAttributeCount() != 0)
 	{
@@ -2440,12 +2464,22 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 			userData->drop();
 		}
 	}
+	// reset to actual root node
+	if (init)
+		node=tmpNode;
 
-	// write children
-
-	ISceneNodeList::ConstIterator it = node->getChildren().begin();
-	for (; it != node->getChildren().end(); ++it)
-		writeSceneNode(writer, (*it), userDataSerializer);
+	// write children once root node is written
+	// if parent is not scene manager, we need to write out node first
+	if (init && (node != this))
+	{
+		writeSceneNode(writer, node, userDataSerializer, currentPath);
+	}
+	else
+	{
+		ISceneNodeList::ConstIterator it = node->getChildren().begin();
+		for (; it != node->getChildren().end(); ++it)
+			writeSceneNode(writer, (*it), userDataSerializer, currentPath);
+	}
 
 	attr->drop();
 

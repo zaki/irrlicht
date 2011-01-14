@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -393,6 +393,16 @@ namespace core
 			array[2] = Z;
 			array[3] = 0;
 		}
+
+		//! Fills an array of 3 values with the vector data (usually floats).
+		/** Useful for setting in shader constants for example.*/
+		void getAs3Values(T* array) const
+		{
+			array[0] = X;
+			array[1] = Y;
+			array[2] = Z;
+		}
+
 
 		//! X coordinate of the vector
 		T X;

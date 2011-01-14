@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald and Christian Stehno
+// Copyright (C) 2008-2011 Colin MacDonald and Christian Stehno
 // No rights reserved: this software is in the public domain.
 
 // This is the entry point for the Irrlicht test suite.
@@ -72,7 +72,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(vectorPositionDimension2d);
 	// file system checks (with null driver)
 	TEST(filesystem);
-	TEST(archiveReader); 
+	TEST(archiveReader);
 	TEST(testXML);
 	TEST(serializeAttributes);
 	// null driver
@@ -89,30 +89,36 @@ int main(int argumentCount, char * arguments[])
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
 	TEST(burningsVideo);
+	TEST(createImage);
 	TEST(cursorSetVisible);
-	TEST(drawRectOutline);
 	TEST(flyCircleAnimator);
 	TEST(md2Animation);
+	TEST(meshTransform);
+	TEST(skinnedMesh);
 	TEST(testGeometryCreator); 
 	TEST(writeImageToFile);
-	TEST(meshTransform);
+	TEST(ioScene);
 	// all driver checks
+	TEST(videoDriver);
 	TEST(drawPixel);
+	TEST(drawRectOutline);
 	TEST(guiDisabledMenu);
 	TEST(makeColorKeyTexture);
 	TEST(renderTargetTexture);
 	TEST(textureFeatures);
 	TEST(textureRenderStates);
-	TEST(transparentAlphaChannelRef);
+	TEST(transparentMaterials);
 	TEST(antiAliasing);
 	TEST(draw2DImage);
 	TEST(lights);
-	// TODO: Needs to be fixed first.
-//	TEST(projectionMatrix);
+	TEST(twodmaterial);
+	TEST(viewPort);
+	TEST(mrt);
+	TEST(projectionMatrix);
 	// large scenes/long rendering
 	// shadows are slow
-	TEST(orthoCam);
-	TEST(stencilShadow);
+//	TEST(orthoCam);
+//	TEST(stencilShadow);
 	// q3 maps are slow
 	TEST(planeMatrix);
 	TEST(terrainSceneNode);

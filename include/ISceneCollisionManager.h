@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -40,7 +40,7 @@ namespace scene
 		\return True if a collision was detected and false if not. */
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
 				ITriangleSelector* selector, core::vector3df& outCollisionPoint,
-				core::triangle3df& outTriangle, const ISceneNode*& outNode) =0;
+				core::triangle3df& outTriangle, ISceneNode*& outNode) =0;
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns the resulting new position of the ellipsoid.
 		/** This can be used for moving a character in a 3d world: The
@@ -73,7 +73,7 @@ namespace scene
 			core::triangle3df& triout,
 			core::vector3df& hitPosition,
 			bool& outFalling,
-			const ISceneNode*& outNode,
+			ISceneNode*& outNode,
 			f32 slidingSpeed = 0.0005f,
 			const core::vector3df& gravityDirectionAndSpeed
 			= core::vector3df(0.0f, 0.0f, 0.0f)) = 0;
@@ -86,21 +86,25 @@ namespace scene
 		at a length of the far value of the camera at a position which
 		would be behind the 2d screen coodinates. */
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0) = 0;
+			const core::position2d<s32>& pos, ICameraSceneNode* camera = 0) = 0;
 
 		//! Calculates 2d screen position from a 3d position.
 		/** \param pos: 3D position in world space to be transformed
 		into 2d.
 		\param camera: Camera to be used. If null, the currently active
 		camera is used.
+		\param useViewPort: Calculate screen coordinates relative to
+		the current view port. Please note that unless the driver does
+		not take care of the view port, it is usually best to get the
+		result in absolute screen coordinates (flag=false).
 		\return 2d screen coordinates which a object in the 3d world
 		would have if it would be rendered to the screen. If the 3d
-		position is behind the camera, it is set to (-10000,-10000). In
+		position is behind the camera, it is set to (-1000,-1000). In
 		most cases you can ignore this fact, because if you use this
 		method for drawing a decorator over a 3d object, it will be
 		clipped by the screen borders. */
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			const core::vector3df & pos, ICameraSceneNode* camera=0) = 0;
+			const core::vector3df& pos, ICameraSceneNode* camera=0, bool useViewPort=false) = 0;
 
 		//! Gets the scene node, which is currently visible under the given screencoordinates, viewed from the currently active camera.
 		/** The collision tests are done using a bounding box for each

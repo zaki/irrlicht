@@ -172,6 +172,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\2dmaterial.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\anti-aliasing.cpp"
 				>
 			</File>
@@ -193,6 +197,10 @@
 			</File>
 			<File
 				RelativePath=".\color.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\createImage.cpp"
 				>
 			</File>
 			<File
@@ -237,6 +245,10 @@
 			</File>
 			<File
 				RelativePath=".\guiDisabledMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ioScene.cpp"
 				>
 			</File>
 			<File
@@ -300,11 +312,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mrt.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\orthoCam.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\planeMatrix.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\projectionMatrix.cpp"
 				>
 			</File>
 			<File
@@ -325,6 +345,10 @@
 			</File>
 			<File
 				RelativePath=".\serializeAttributes.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\skinnedMesh.cpp"
 				>
 			</File>
 			<File
@@ -388,11 +412,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\transparentAlphaChannelRef.cpp"
+				RelativePath=".\transparentMaterials.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\vectorPositionDimension2d.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\videoDriver.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\viewPort.cpp"
 				>
 			</File>
 			<File

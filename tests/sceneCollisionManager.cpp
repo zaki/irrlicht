@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -18,7 +18,7 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 	triangle3df triOut;
 	vector3df hitPosition;
 	bool falling;
-	const ISceneNode* hitNode;
+	ISceneNode* hitNode;
 
 	vector3df resultPosition =
 		collMgr->getCollisionResultPosition(cubeSelector,
@@ -112,7 +112,7 @@ static bool getCollisionPoint_ignoreTriangleVertices(IrrlichtDevice * device,
 	line3df ray(0, 0, -5, 0, 0, 100);
 	vector3df hitPosition;
 	triangle3df hitTriangle;
-	const ISceneNode* hitNode;
+	ISceneNode* hitNode;
 
 	bool collision = collMgr->getCollisionPoint(ray, meta, hitPosition, hitTriangle, hitNode);
 
@@ -478,6 +478,8 @@ bool sceneCollisionManager(void)
 
 	result &= compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(device, smgr, collMgr);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 	return result;
 }

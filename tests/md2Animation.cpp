@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -72,6 +72,8 @@ bool md2Animation(void)
 	}
 
 	result &= takeScreenshotAndCompareAgainstReference(driver, "-md2Animation.png");
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;

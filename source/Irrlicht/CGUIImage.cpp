@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -49,6 +49,11 @@ void CGUIImage::setImage(video::ITexture* image)
 		Texture->grab();
 }
 
+//! Gets the image texture
+video::ITexture* CGUIImage::getImage() const
+{
+	return Texture;
+}
 
 //! sets the color of the image
 void CGUIImage::setColor(video::SColor color)
@@ -56,6 +61,11 @@ void CGUIImage::setColor(video::SColor color)
 	Color = color;
 }
 
+//! Gets the color of the image
+video::SColor CGUIImage::getColor() const
+{
+	return Color;
+}
 
 //! draws the element and its children
 void CGUIImage::draw()

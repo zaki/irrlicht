@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -20,7 +20,7 @@ class COctreeTriangleSelector : public CTriangleSelector
 public:
 
 	//! Constructs a selector based on a mesh
-	COctreeTriangleSelector(const IMesh* mesh, const ISceneNode* node, s32 minimalPolysPerNode);
+	COctreeTriangleSelector(const IMesh* mesh, ISceneNode* node, s32 minimalPolysPerNode);
 
 	virtual ~COctreeTriangleSelector();
 

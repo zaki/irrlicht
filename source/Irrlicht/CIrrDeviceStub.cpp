@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -22,7 +22,7 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 	FileSystem(0), InputReceivingSceneManager(0), CreationParams(params),
 	Close(false)
 {
-	Timer = new CTimer();
+	Timer = new CTimer(params.UsePerformanceTimer);
 	if (os::Printer::Logger)
 	{
 		os::Printer::Logger->grab();

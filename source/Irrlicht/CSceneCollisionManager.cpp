@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -303,7 +303,7 @@ void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 			core::triangle3df candidateTriangle;
 
 			// do intersection test in object space
-			const ISceneNode * hitNode = 0;
+			ISceneNode * hitNode = 0;
 			if (box.intersectsWithLine(line) &&
 				getCollisionPoint(ray, selector, candidateCollisionPoint, candidateTriangle, hitNode))
 			{
@@ -349,7 +349,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
 bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 		ITriangleSelector* selector, core::vector3df& outIntersection,
 		core::triangle3df& outTriangle,
-		const ISceneNode*& outNode)
+		ISceneNode*& outNode)
 {
 	if (!selector)
 	{
@@ -423,7 +423,7 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 		core::triangle3df& triout,
 		core::vector3df& hitPosition,
 		bool& outFalling,
-		const ISceneNode*& outNode,
+		ISceneNode*& outNode,
 		f32 slidingSpeed,
 		const core::vector3df& gravity)
 {
@@ -691,7 +691,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 		core::triangle3df& triout,
 		core::vector3df& hitPosition,
 		bool& outFalling,
-		const ISceneNode*& outNode)
+		ISceneNode*& outNode)
 {
 	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
 		return position;
@@ -874,7 +874,7 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 
 //! Calculates 2d screen position from a 3d position.
 core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition(
-	const core::vector3df & pos3d, ICameraSceneNode* camera)
+	const core::vector3df & pos3d, ICameraSceneNode* camera, bool useViewPort)
 {
 	if (!SceneManager || !Driver)
 		return core::position2d<s32>(-1000,-1000);
@@ -885,8 +885,11 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 	if (!camera)
 		return core::position2d<s32>(-1000,-1000);
 
-	const core::rect<s32>& viewPort = Driver->getViewPort();
-	core::dimension2d<u32> dim(viewPort.getWidth(), viewPort.getHeight());
+	core::dimension2d<u32> dim;
+	if (useViewPort)
+		dim.set(Driver->getViewPort().getWidth(), Driver->getViewPort().getHeight());
+	else
+		dim=(Driver->getScreenSize());
 
 	dim.Width /= 2;
 	dim.Height /= 2;
@@ -905,7 +908,7 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 		core::reciprocal(transformedPos[3]);
 
 	return core::position2d<s32>(
-			core::round32(dim.Width * transformedPos[0] * zDiv) + dim.Width,
+			dim.Width + core::round32(dim.Width * (transformedPos[0] * zDiv)),
 			dim.Height - core::round32(dim.Height * (transformedPos[1] * zDiv)));
 }
 

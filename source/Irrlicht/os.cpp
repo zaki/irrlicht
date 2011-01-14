@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,6 +15,9 @@
 	#include <stdlib.h>
 	#define bswap_16(X) _byteswap_ushort(X)
 	#define bswap_32(X) _byteswap_ulong(X)
+#if (_MSC_VER >= 1400)
+	#define localtime _localtime_s
+#endif
 #elif defined(_IRR_OSX_PLATFORM_)
 	#include <libkern/OSByteOrder.h>
 	#define bswap_16(X) OSReadSwapInt16(&X,0)
@@ -55,6 +58,7 @@ namespace os
 #else
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <time.h>
 #endif
 
 namespace irr
@@ -79,15 +83,18 @@ namespace os
 	static BOOL HighPerformanceTimerSupport = FALSE;
 	static BOOL MultiCore = FALSE;
 
-	void Timer::initTimer()
+	void Timer::initTimer(bool usePerformanceTimer)
 	{
 #if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
-		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
+		// workaround for hires timer on multiple core systems, bios bugs result in bad hires timers.
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
 		MultiCore = (sysinfo.dwNumberOfProcessors > 1);
 #endif
-		HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
+		if (usePerformanceTimer)
+			HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
+		else
+			HighPerformanceTimerSupport = FALSE;
 		initVirtualTimer();
 	}
 
@@ -142,7 +149,7 @@ namespace os
 		printf("%s\n", message);
 	}
 
-	void Timer::initTimer()
+	void Timer::initTimer(bool usePerformanceTimer)
 	{
 		initVirtualTimer();
 	}
@@ -153,7 +160,6 @@ namespace os
 		gettimeofday(&tv, 0);
 		return (u32)(tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	}
-
 } // end namespace os
 
 #endif // end linux / windows
@@ -196,15 +202,23 @@ namespace os
 	//! generates a pseudo random number
 	s32 Randomizer::rand()
 	{
-		const s32 m = 2147483399;	// a non-Mersenne prime
-		const s32 a = 40692;		// another spectral success story
-		const s32 q = m/a;
-		const s32 r = m%a;		// again less than q
-
+		// (a*seed)%m with Schrage's method
 		seed = a * (seed%q) - r* (seed/q);
-		if (seed<0) seed += m;
+		if (seed<0)
+			seed += m;
 
 		return seed;
+	}
+
+	//! generates a pseudo random number
+	f32 Randomizer::frand()
+	{
+		return rand()*(1.f/rMax);
+	}
+
+	s32 Randomizer::randMax()
+	{
+		return rMax;
 	}
 
 	//! resets the randomizer
@@ -222,6 +236,28 @@ namespace os
 	u32 Timer::LastVirtualTime = 0;
 	u32 Timer::StartRealTime = 0;
 	u32 Timer::StaticTime = 0;
+
+	//! Get real time and date in calendar form
+	ITimer::RealTimeDate Timer::getRealTimeAndDate()
+	{
+		time_t rawtime;
+		time(&rawtime);
+
+		struct tm * timeinfo;
+		timeinfo = localtime(&rawtime);
+
+		ITimer::RealTimeDate date;
+		date.Hour=(u32)timeinfo->tm_hour;
+		date.Minute=(u32)timeinfo->tm_min;
+		date.Second=(u32)timeinfo->tm_sec;
+		date.Day=(u32)timeinfo->tm_mday;
+		date.Month=(u32)timeinfo->tm_mon+1;
+		date.Year=(u32)timeinfo->tm_year+1900;
+		date.Weekday=(ITimer::EWeekday)timeinfo->tm_wday;
+		date.Yearday=(u32)timeinfo->tm_yday+1;
+		date.IsDST=timeinfo->tm_isdst != 0;
+		return date;
+	}
 
 	//! returns current virtual time
 	u32 Timer::getTime()

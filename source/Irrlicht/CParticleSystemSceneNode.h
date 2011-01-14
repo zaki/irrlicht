@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -41,6 +41,9 @@ public:
 
 	//! Adds new particle affector to the particle system.
 	virtual void addAffector(IParticleAffector* affector);
+
+	//! Get a list of all particle affectors.
+	virtual const core::list<IParticleAffector*>& getAffectors() const;
 
 	//! Removes all particle affectors in the particle system.
 	virtual void removeAllAffectors();
@@ -186,6 +189,9 @@ public:
 	//! the movement of the particle system scene node too, otherwise they completely
 	//! ignore it. Default is true.
 	virtual void setParticlesAreGlobal(bool global=true);
+
+	//! Remove all currently visible particles
+	virtual void clearParticles();
 
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -32,7 +32,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), VendorID(0),
-	MaxTextureUnits(0), MaxUserClipPlanes(0),
+	MaxTextureUnits(0), MaxUserClipPlanes(0), MaxMRTs(1), NumSetMRTs(1),
 	MaxLightDistance(0.f), LastSetLight(-1), Cached2DModeSignature(0),
 	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
 	Fullscreen(fullscreen), DriverWasReset(true), OcclusionQuerySupport(false),
@@ -430,6 +430,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
+	MaxMRTs = (s32)Caps.NumSimultaneousRTs;
 	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
 
 	if (VendorID==0x10DE)//NVidia
@@ -443,6 +444,19 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
 #endif
+
+	DriverAttributes->setAttribute("MaxTextures", (s32)MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Caps.MaxSimultaneousTextures);
+	DriverAttributes->setAttribute("MaxAnisotropy", (s32)Caps.MaxAnisotropy);
+	DriverAttributes->setAttribute("MaxUserClipPlanes", (s32)Caps.MaxUserClipPlanes);
+	DriverAttributes->setAttribute("MaxMultipleRenderTargets", (s32)Caps.NumSimultaneousRTs);
+	DriverAttributes->setAttribute("MaxIndices", (s32)Caps.MaxVertexIndex);
+	DriverAttributes->setAttribute("MaxTextureSize", (s32)core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
+	DriverAttributes->setAttribute("MaxTextureLODBias", 16);
+	DriverAttributes->setAttribute("Version", 901);
+	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
+	DriverAttributes->setAttribute("AntiAlias", AntiAliasing);
+
 	// set the renderstates
 	setRenderStates3DMode();
 
@@ -775,6 +789,11 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 
 	bool ret = true;
 
+	for(u32 i = 1; i < NumSetMRTs; i++)
+	{
+		// First texture handled elsewhere
+		pID3DDevice->SetRenderTarget(i, NULL);
+	}
 	if (tex == 0)
 	{
 		if (PrevRenderTarget)
@@ -848,7 +867,7 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targe
 	if (targets.size()==0)
 		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
 
-	u32 maxMultipleRTTs = core::min_(4u, targets.size());
+	u32 maxMultipleRTTs = core::min_(MaxMRTs, targets.size());
 
 	for (u32 i = 0; i < maxMultipleRTTs; ++i)
 	{
@@ -912,6 +931,7 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targe
 
 	// set new render target
 
+	// In d3d9 we have at most 4 MRTs, so the following is enough
 	D3DRENDERSTATETYPE colorWrite[4]={D3DRS_COLORWRITEENABLE, D3DRS_COLORWRITEENABLE1, D3DRS_COLORWRITEENABLE2, D3DRS_COLORWRITEENABLE3};
 	for (u32 i = 0; i < maxMultipleRTTs; ++i)
 	{
@@ -930,6 +950,11 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targe
 			pID3DDevice->SetRenderState(colorWrite[i], flag);
 		}
 	}
+	for(u32 i = maxMultipleRTTs; i < NumSetMRTs; i++)
+	{
+		pID3DDevice->SetRenderTarget(i, NULL);
+	}
+	NumSetMRTs=maxMultipleRTTs;
 
 	CurrentRendertargetSize = tex->getSize();
 
@@ -961,23 +986,22 @@ void CD3D9Driver::setViewPort(const core::rect<s32>& area)
 	core::rect<s32> vp = area;
 	core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
 	vp.clipAgainst(rendert);
-
-	D3DVIEWPORT9 viewPort;
-	viewPort.X = vp.UpperLeftCorner.X;
-	viewPort.Y = vp.UpperLeftCorner.Y;
-	viewPort.Width = vp.getWidth();
-	viewPort.Height = vp.getHeight();
-	viewPort.MinZ = 0.0f;
-	viewPort.MaxZ = 1.0f;
-
-	HRESULT hr = D3DERR_INVALIDCALL;
 	if (vp.getHeight()>0 && vp.getWidth()>0)
-		hr = pID3DDevice->SetViewport(&viewPort);
+	{
+		D3DVIEWPORT9 viewPort;
+		viewPort.X = vp.UpperLeftCorner.X;
+		viewPort.Y = vp.UpperLeftCorner.Y;
+		viewPort.Width = vp.getWidth();
+		viewPort.Height = vp.getHeight();
+		viewPort.MinZ = 0.0f;
+		viewPort.MaxZ = 1.0f;
 
-	if (FAILED(hr))
-		os::Printer::log("Failed setting the viewport.", ELL_WARNING);
-
-	ViewPort = vp;
+		HRESULT hr = pID3DDevice->SetViewport(&viewPort);
+		if (FAILED(hr))
+			os::Printer::log("Failed setting the viewport.", ELL_WARNING);
+		else
+			ViewPort = vp;
+	}
 }
 
 
@@ -998,58 +1022,55 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 	const u32 vertexCount=mb->getVertexCount();
 	const E_VERTEX_TYPE vType=mb->getVertexType();
 	const u32 vertexSize = getVertexPitchFromType(vType);
+	const u32 bufSize = vertexSize * vertexCount;
 
-	void* pLockedBuffer = 0;
-
-	if (!hwBuffer->vertexBuffer || vertexSize * vertexCount > hwBuffer->vertexBufferSize)
+	if (!hwBuffer->vertexBuffer || (bufSize > hwBuffer->vertexBufferSize))
 	{
-		DWORD flags = 0;
+		if (hwBuffer->vertexBuffer)
+		{
+			hwBuffer->vertexBuffer->Release();
+			hwBuffer->vertexBuffer=0;
+		}
 
-		u32 vertexSize;
 		DWORD FVF;
-
 		// Get the vertex sizes and cvf
 		switch (vType)
 		{
 			case EVT_STANDARD:
-				vertexSize = sizeof(S3DVertex);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 				break;
 			case EVT_2TCOORDS:
-				vertexSize = sizeof(S3DVertex2TCoords);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2;
 				break;
 			case EVT_TANGENTS:
-				vertexSize = sizeof(S3DVertexTangents);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX3;
 				break;
 			default:
 				return false;
 		}
 
-		flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
+		DWORD flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
 		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC;
 
-		pID3DDevice->CreateVertexBuffer(vertexCount * vertexSize, flags, FVF, D3DPOOL_DEFAULT, &hwBuffer->vertexBuffer, NULL);
-
-		if(!hwBuffer->vertexBuffer)
+		if (FAILED(pID3DDevice->CreateVertexBuffer(bufSize, flags, FVF, D3DPOOL_DEFAULT, &hwBuffer->vertexBuffer, NULL)))
 			return false;
+		hwBuffer->vertexBufferSize = bufSize;
 
 		flags = 0; // SIO2: Reset flags before Lock
 		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags = D3DLOCK_DISCARD;
 
-		hwBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, flags);
-		memcpy(pLockedBuffer, vertices, vertexCount * vertexSize);
+		void* lockedBuffer = 0;
+		hwBuffer->vertexBuffer->Lock(0, bufSize, (void**)&lockedBuffer, flags);
+		memcpy(lockedBuffer, vertices, bufSize);
 		hwBuffer->vertexBuffer->Unlock();
-
-		hwBuffer->vertexBufferSize = vertexCount * vertexSize;
 	}
 	else
 	{
-		hwBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, D3DLOCK_DISCARD);
-		memcpy(pLockedBuffer, vertices, vertexCount * vertexSize);
+		void* lockedBuffer = 0;
+		hwBuffer->vertexBuffer->Lock(0, bufSize, (void**)&lockedBuffer, D3DLOCK_DISCARD);
+		memcpy(lockedBuffer, vertices, bufSize);
 		hwBuffer->vertexBuffer->Unlock();
 	}
 
@@ -1069,13 +1090,13 @@ bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 	D3DFORMAT indexType=D3DFMT_UNKNOWN;
 	switch (mb->getIndexType())
 	{
-		case (EIT_16BIT):
+		case EIT_16BIT:
 		{
 			indexType=D3DFMT_INDEX16;
 			indexSize = 2;
 			break;
 		}
-		case (EIT_32BIT):
+		case EIT_32BIT:
 		{
 			indexType=D3DFMT_INDEX32;
 			indexSize = 4;
@@ -1083,37 +1104,41 @@ bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 		}
 	}
 
-	if (!hwBuffer->indexBuffer || indexSize * indexCount > hwBuffer->indexBufferSize)
+	const u32 bufSize = indexSize * indexCount;
+	if (!hwBuffer->indexBuffer || (bufSize > hwBuffer->indexBufferSize))
 	{
-		DWORD flags = 0;
+		if (hwBuffer->indexBuffer)
+		{
+			hwBuffer->indexBuffer->Release();
+			hwBuffer->indexBuffer=0;
+		}
 
-		flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
-		if(hwBuffer->Mapped_Index != scene::EHM_STATIC)
+		DWORD flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
+		if (hwBuffer->Mapped_Index != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC; // SIO2: Add DYNAMIC flag for dynamic buffer data
 
-		if(FAILED(pID3DDevice->CreateIndexBuffer( indexCount * indexSize, flags, indexType, D3DPOOL_DEFAULT, &hwBuffer->indexBuffer, NULL)))
+		if (FAILED(pID3DDevice->CreateIndexBuffer(bufSize, flags, indexType, D3DPOOL_DEFAULT, &hwBuffer->indexBuffer, NULL)))
 			return false;
-
-		void* pIndices = 0;
 
 		flags = 0; // SIO2: Reset flags before Lock
-		if(hwBuffer->Mapped_Index != scene::EHM_STATIC)
+		if (hwBuffer->Mapped_Index != scene::EHM_STATIC)
 			flags = D3DLOCK_DISCARD;
 
-		if(FAILED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, flags)))
+		void* lockedBuffer = 0;
+		if (FAILED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&lockedBuffer, flags)))
 			return false;
 
-		memcpy(pIndices, indices, indexCount * indexSize);
+		memcpy(lockedBuffer, indices, bufSize);
 		hwBuffer->indexBuffer->Unlock();
 
-		hwBuffer->indexBufferSize = indexCount * indexSize;
+		hwBuffer->indexBufferSize = bufSize;
 	}
 	else
 	{
-		void* pIndices = 0;
-		if( SUCCEEDED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, D3DLOCK_DISCARD)))
+		void* lockedBuffer = 0;
+		if( SUCCEEDED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&lockedBuffer, D3DLOCK_DISCARD)))
 		{
-			memcpy(pIndices, indices, indexCount * indexSize);
+			memcpy(lockedBuffer, indices, bufSize);
 			hwBuffer->indexBuffer->Unlock();
 		}
 	}
@@ -1133,7 +1158,6 @@ bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *hwBuffer)
 		if (hwBuffer->ChangedID_Vertex != hwBuffer->MeshBuffer->getChangedID_Vertex()
 			|| !((SHWBufferLink_d3d9*)hwBuffer)->vertexBuffer)
 		{
-
 			hwBuffer->ChangedID_Vertex = hwBuffer->MeshBuffer->getChangedID_Vertex();
 
 			if (!updateVertexHardwareBuffer((SHWBufferLink_d3d9*)hwBuffer))
@@ -1146,7 +1170,6 @@ bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *hwBuffer)
 		if (hwBuffer->ChangedID_Index != hwBuffer->MeshBuffer->getChangedID_Index()
 			|| !((SHWBufferLink_d3d9*)hwBuffer)->indexBuffer)
 		{
-
 			hwBuffer->ChangedID_Index = hwBuffer->MeshBuffer->getChangedID_Index();
 
 			if (!updateIndexHardwareBuffer((SHWBufferLink_d3d9*)hwBuffer))
@@ -1191,7 +1214,8 @@ CD3D9Driver::SHWBufferLink *CD3D9Driver::createHardwareBuffer(const scene::IMesh
 
 void CD3D9Driver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
-	if (!_HWBuffer) return;
+	if (!_HWBuffer)
+		return;
 
 	SHWBufferLink_d3d9 *HWBuffer=(SHWBufferLink_d3d9*)_HWBuffer;
 	if (HWBuffer->indexBuffer)
@@ -1225,8 +1249,10 @@ void CD3D9Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const E_VERTEX_TYPE vType = mb->getVertexType();
 	const u32 stride = getVertexPitchFromType(vType);
-	if (HWBuffer->vertexBuffer) pID3DDevice->SetStreamSource(0, HWBuffer->vertexBuffer, 0, stride);
-	if (HWBuffer->indexBuffer) pID3DDevice->SetIndices(HWBuffer->indexBuffer);
+	if (HWBuffer->vertexBuffer)
+		pID3DDevice->SetStreamSource(0, HWBuffer->vertexBuffer, 0, stride);
+	if (HWBuffer->indexBuffer)
+		pID3DDevice->SetIndices(HWBuffer->indexBuffer);
 
 	drawVertexPrimitiveList(0, mb->getVertexCount(), 0, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
 
@@ -1463,9 +1489,9 @@ void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 			else
 			{
 				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-				primitiveCount, indexList, indexType, vertices, stride);
+				primitiveCount - 1, indexList, indexType, vertices, stride);
 
-				u16 tmpIndices[] = {0, primitiveCount};
+				u16 tmpIndices[] = {primitiveCount - 1, 0};
 
 				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
 					1, tmpIndices, indexType, vertices, stride);
@@ -1552,11 +1578,11 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 
 	s16 indices[6] = {0,1,2,0,2,3};
 
+	setActiveTexture(0, const_cast<video::ITexture*>(texture));
+
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
-
-	setActiveTexture(0, const_cast<video::ITexture*>(texture));
 
 	setVertexShader(EVT_STANDARD);
 
@@ -2280,7 +2306,8 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		if (resetAllRenderstates ||
 			lastmaterial.TextureLayer[st].BilinearFilter != material.TextureLayer[st].BilinearFilter ||
 			lastmaterial.TextureLayer[st].TrilinearFilter != material.TextureLayer[st].TrilinearFilter ||
-			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter)
+			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter ||
+			lastmaterial.UseMipMaps != material.UseMipMaps)
 		{
 			if (material.TextureLayer[st].BilinearFilter || material.TextureLayer[st].TrilinearFilter || material.TextureLayer[st].AnisotropicFilter)
 			{

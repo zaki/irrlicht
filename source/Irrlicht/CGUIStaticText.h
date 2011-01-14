@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -61,6 +61,12 @@ namespace gui
 		//! Checks if an override color is enabled
 		virtual bool isOverrideColorEnabled() const;
 
+		//! Set whether the text in this label should be clipped if it goes outside bounds
+		virtual void setTextRestrainedInside(bool restrainedInside);
+		
+		//! Checks if the text in this label should be clipped if it goes outside bounds
+		virtual bool isTextRestrainedInside() const;
+
 		//! Enables or disables word wrap for using the static text as
 		//! multiline text control.
 		virtual void setWordWrap(bool enable);
@@ -97,6 +103,7 @@ namespace gui
 		bool OverrideBGColorEnabled;
 		bool WordWrap;
 		bool Background;
+		bool RestrainTextInside;
 
 		video::SColor OverrideColor, BGColor;
 		gui::IGUIFont* OverrideFont;

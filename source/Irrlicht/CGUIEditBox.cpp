@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -207,7 +207,7 @@ void CGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT ver
 //! called if an event happened.
 bool CGUIEditBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 
 		switch(event.EventType)
@@ -290,7 +290,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 				sc = Text.subString(realmbgn, realmend - realmbgn).c_str();
 				Operator->copyToClipboard(sc.c_str());
 
-				if (IsEnabled)
+				if (isEnabled())
 				{
 					// delete
 					core::stringw s;
@@ -306,7 +306,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			}
 			break;
 		case KEY_KEY_V:
-			if ( !IsEnabled )
+			if ( !isEnabled() )
 				break;
 
 			// paste from the clipboard
@@ -562,7 +562,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		break;
 
 	case KEY_BACK:
-		if ( !this->IsEnabled )
+		if ( !isEnabled() )
 			break;
 
 		if (Text.size())
@@ -602,7 +602,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		}
 		break;
 	case KEY_DELETE:
-		if ( !this->IsEnabled )
+		if ( !isEnabled() )
 			break;
 
 		if (Text.size() != 0)
@@ -708,7 +708,10 @@ void CGUIEditBox::draw()
 
 	if (Border)
 	{
-		skin->draw3DSunkenPane(this, skin->getColor(EGDC_WINDOW),
+		EGUI_DEFAULT_COLOR col = EGDC_GRAY_EDITABLE;
+		if ( isEnabled() )
+			col = focus ? EGDC_FOCUSED_EDITABLE : EGDC_EDITABLE;
+		skin->draw3DSunkenPane(this, skin->getColor(col),
 			false, true, FrameRect, &AbsoluteClippingRect);
 
 		FrameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
@@ -757,7 +760,7 @@ void CGUIEditBox::draw()
 
 		if (Text.size())
 		{
-			if (!IsEnabled && !OverrideColorEnabled)
+			if (!isEnabled() && !OverrideColorEnabled)
 			{
 				OverrideColorEnabled = true;
 				OverrideColor = skin->getColor(EGDC_GRAY_TEXT);
@@ -1053,7 +1056,7 @@ s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
 
-	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	s32 idx = txtLine ? font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X) : -1;
 
 	// click was on or left of the line
 	if (idx != -1)
@@ -1270,7 +1273,7 @@ s32 CGUIEditBox::getLineFromPos(s32 pos)
 
 void CGUIEditBox::inputChar(wchar_t c)
 {
-	if (!IsEnabled)
+	if (!isEnabled())
 		return;
 
 	if (c != 0)

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -13,7 +13,7 @@ namespace irr
 namespace core
 {
 
-/*! \file irrxml.h
+/*! \file coreutil.h
 	\brief File containing useful basic utility functions
 */
 
@@ -139,7 +139,8 @@ inline s32 isInSameDirectory ( const io::path& path, const io::path& file )
 }
 
 // splits a path into components
-static inline void splitFilename( const io::path &name, io::path *path,io::path* filename, io::path* extension,bool make_lower = false )
+static inline void splitFilename(const io::path &name, io::path* path=0,
+		io::path* filename=0, io::path* extension=0, bool make_lower=false)
 {
 	s32 i = name.size();
 	s32 extpos = i;
@@ -185,4 +186,3 @@ inline s32 isupper(s32 c) { return c >= 'A' && c <= 'Z'; }
 } // end namespace irr
 
 #endif
-

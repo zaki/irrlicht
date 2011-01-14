@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2011 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -254,7 +254,7 @@ void CGUIMessageBox::refreshControls()
 //! called if an event happened.
 bool CGUIMessageBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (isEnabled())
 	{
 		SEvent outevent;
 		outevent.EventType = EET_GUI_EVENT;

@@ -1,4 +1,4 @@
-// Copyright 2006-2009 Asger Feldthaus
+// Copyright 2006-2011 Asger Feldthaus
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,6 +6,7 @@
 #define _C_GUI_PANEL_H_
 
 #include "IGUIElement.h"
+#include "EGUIEditTypes.h"
 
 namespace irr
 {
@@ -92,6 +93,12 @@ public:
 
 	//! returns children of the inner pane
 	virtual const core::list<IGUIElement*>& getChildren();
+
+	//! Returns the type name of the gui element.
+	virtual const c8* getTypeName() const
+	{
+		return GUIEditElementTypeNames[EGUIEDIT_GUIPANEL];
+	}
 
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0);
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);

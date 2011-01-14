@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2011 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -54,6 +54,8 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, screenshotName);
 
+	device->closeDevice();
+	device->run();
 	device->drop();
 
 	return result;
