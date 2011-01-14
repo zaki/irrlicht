@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Colin MacDonald, Christian Stehno
+// Copyright (C) 2008-2011 Colin MacDonald, Christian Stehno
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -45,4 +45,3 @@ bool videoDriver()
 	result &= testVideoDriver(video::EDT_SOFTWARE);
 	result &= testVideoDriver(video::EDT_NULL);
 	return result;
-}

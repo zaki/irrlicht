@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2011 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -283,7 +283,7 @@ bool transparentMaterials(void)
 
 	result &= testTransparentAlphaChannelRef(EDT_DIRECT3D9);
 	result &= testTransparentAlphaChannelRef(EDT_OPENGL);
-	// FIXME Rogerborg 8-January-2009. Burning's video currently produces unexpected results,
+	// FIXME Rogerborg 8-January-2011. Burning's video currently produces unexpected results,
 	// blending using the full alpha value instead of using a boolean mask. This test is being
 	// added now anyway to help verify the fix when it's done; it should just require an
 	// update of the reference image.

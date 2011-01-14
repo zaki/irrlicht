@@ -1,6 +1,6 @@
 /* irrlicht.h -- interface of the 'Irrlicht Engine'
 
-  Copyright (C) 2002-2009 Nikolaus Gebhardt
+  Copyright (C) 2002-2011 Nikolaus Gebhardt
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
