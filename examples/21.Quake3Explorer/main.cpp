@@ -16,7 +16,7 @@ You can download the Quake III Arena demo ( copyright id software )
 at the following location:
 ftp://ftp.idsoftware.com/idstuff/quake3/win32/q3ademo.exe
 
-Copyright 2006-2009 Burningwater, Thomas Alten
+Copyright 2006-2011 Burningwater, Thomas Alten
 */
 
 #include "q3factory.h"

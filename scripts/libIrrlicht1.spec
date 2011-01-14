@@ -1,4 +1,4 @@
-# Copyright (c) 2007 oc2pus
+# Copyright (c) 2007-2011 oc2pus
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
@@ -11,7 +11,7 @@
 # norootforbuild
 
 Name:			libIrrlicht1
-Version:		1.6.0
+Version:		1.8.0
 Release:		0.pm.1
 Summary:		The Irrlicht Engine SDK
 License:		see readme.txt
