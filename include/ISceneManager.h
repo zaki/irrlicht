@@ -49,8 +49,6 @@ namespace video
 
 namespace scene
 {
-	class IMeshWriter;
-
 	//! Enumeration for render passes.
 	/** A parameter passed to the registerNodeForRendering() method of the ISceneManager,
 	specifying when the node wants to be drawn in relation to the other nodes. */
@@ -96,33 +94,35 @@ namespace scene
 		ESNRP_SHADOW =64
 	};
 
+	class IAnimatedMesh;
+	class IAnimatedMeshSceneNode;
+	class IBillboardSceneNode;
+	class IBillboardTextSceneNode;
+	class ICameraSceneNode;
+	class IDummyTransformationSceneNode;
+	class ILightManager;
+	class ILightSceneNode;
 	class IMesh;
 	class IMeshBuffer;
-	class IAnimatedMesh;
 	class IMeshCache;
+	class IMeshLoader;
+	class IMeshManipulator;
+	class IMeshSceneNode;
+	class IMeshWriter;
+	class IMetaTriangleSelector;
+	class IParticleSystemSceneNode;
+	class ISceneCollisionManager;
+	class ISceneLoader;
 	class ISceneNode;
-	class ICameraSceneNode;
-	class IAnimatedMeshSceneNode;
 	class ISceneNodeAnimator;
 	class ISceneNodeAnimatorCollisionResponse;
-	class ILightSceneNode;
-	class IBillboardSceneNode;
-	class ITerrainSceneNode;
-	class IMeshSceneNode;
-	class IMeshLoader;
-	class ISceneCollisionManager;
-	class IParticleSystemSceneNode;
-	class IDummyTransformationSceneNode;
-	class ITriangleSelector;
-	class IMetaTriangleSelector;
-	class IMeshManipulator;
-	class ITextSceneNode;
-	class IBillboardTextSceneNode;
-	class IVolumeLightSceneNode;
-	class ISceneNodeFactory;
 	class ISceneNodeAnimatorFactory;
+	class ISceneNodeFactory;
 	class ISceneUserDataSerializer;
-	class ILightManager;
+	class ITerrainSceneNode;
+	class ITextSceneNode;
+	class ITriangleSelector;
+	class IVolumeLightSceneNode;
 
 	namespace quake3
 	{
@@ -1356,9 +1356,18 @@ namespace scene
 		file formats it currently is not able to load (e.g. .cob), just implement
 		the IMeshLoader interface in your loading class and add it with this method.
 		Using this method it is also possible to override built-in mesh loaders with
-		newer or updated versions without the need of recompiling the engine.
+		newer or updated versions without the need to recompile the engine.
 		\param externalLoader: Implementation of a new mesh loader. */
 		virtual void addExternalMeshLoader(IMeshLoader* externalLoader) = 0;
+
+		//! Adds an external scene loader for extending the engine with new file formats.
+		/** If you want the engine to be extended with
+		file formats it currently is not able to load (e.g. .vrml), just implement
+		the ISceneLoader interface in your loading class and add it with this method.
+		Using this method it is also possible to override the built-in scene loaders
+		with newer or updated versions without the need to recompile the engine.
+		\param externalLoader: Implementation of a new mesh loader. */
+		virtual void addExternalSceneLoader(ISceneLoader* externalLoader) = 0;
 
 		//! Get pointer to the scene collision manager.
 		/** \return Pointer to the collision manager
@@ -1506,7 +1515,8 @@ namespace scene
 		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		/** The scene is usually load from an .irr file, an xml based format. .irr files can
+		/** The scene is usually loaded from an .irr file, an xml based format, but other scene formats
+		can be added to the engine via ISceneManager::addExternalSceneLoader. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
 		saved directly by the engine using ISceneManager::saveScene().
 		\param filename: Name of the file.
@@ -1515,13 +1525,14 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
-		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		\param rootNode Node which is taken as the root node of the scene. Pass 0 to add the scene
 		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		/** The scene is usually load from an .irr file, an xml based format. .irr files can
+		/** The scene is usually loaded from an .irr file, an xml based format, but other scene formats
+		can be added to the engine via ISceneManager::addExternalSceneLoader. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
 		saved directly by the engine using ISceneManager::saveScene().
 		\param file: File where the scene is going to be saved into.
@@ -1530,10 +1541,10 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
-		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		\param rootNode Node which is taken as the root node of the scene. Pass 0 to add the scene
 		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) = 0;
 
 		//! Get a mesh writer implementation if available
 		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
