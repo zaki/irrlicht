@@ -45,3 +45,4 @@ bool videoDriver()
 	result &= testVideoDriver(video::EDT_SOFTWARE);
 	result &= testVideoDriver(video::EDT_NULL);
 	return result;
+}
