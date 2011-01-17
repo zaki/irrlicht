@@ -245,9 +245,9 @@ namespace irr
 
 		//! lock function
 		/** TODO: support miplevel */
-        void* COGLES2Texture::lock( bool readOnly, u32 mipmapLevel )
+        void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
         {
-            ReadOnlyLock |= readOnly;
+			ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 
             if ( !Image )
                 Image = new CImage( ECF_A8R8G8B8, ImageSize );

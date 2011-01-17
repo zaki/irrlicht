@@ -183,7 +183,7 @@ You should only use this define if you really need the OpenGL-ES driver, and
 it should be usually the only HW accelerated one. OpenGL is currently disabled
 if using this driver, to avoid problems with the ogl-es emulators.
 */
-//#define _IRR_COMPILE_WITH_OGLES2_
+#define _IRR_COMPILE_WITH_OGLES2_
 #ifdef NO_IRR_COMPILE_WITH_OGLES2_
 #undef _IRR_COMPILE_WITH_OGLES2_
 #endif
