@@ -144,7 +144,7 @@ namespace scene
 	character on a moving platform on a moving ship.
 	The SceneManager is also able to load 3d mesh files of different
 	formats. Take a look at getMesh() to find out what formats are
-	supported. And if these formats are not enough use
+	supported. If these formats are not enough, use
 	addExternalMeshLoader() to add new formats to the engine.
 	*/
 	class ISceneManager : public virtual IReferenceCounted
@@ -172,7 +172,11 @@ namespace scene
 		 *  <TR>
 		 *    <TD>Bliz Basic B3D (.b3d)</TD>
 		 *    <TD>Loader for blitz basic files, developed by Mark
-		 *      Sibly, also supports animations.</TD>
+		 *      Sibly. This is the ideal animated mesh format for game
+		 *      characters as it is both rigidly defined and widely
+		 *      supported by modeling and animation software.
+		 *      As this format supports skeletal animations, an
+		 *      ISkinnedMesh will be returned by this importer.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Cartography shop 4 (.csm)</TD>
@@ -203,7 +207,7 @@ namespace scene
 		 *        behaves like the other loaders and does not create
 		 *        instances, but it can be switched into this mode by
 		 *        using
-		 *        SceneManager->getParameters()->setAttribute(COLLADA_CREATE_SCENE_INSTANCES, true);
+		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(COLLADA_CREATE_SCENE_INSTANCES, true);
 		 *        Created scene nodes will be named as the names of the
 		 *        nodes in the COLLADA file. The returned mesh is just
 		 *        a dummy object in this mode. Meshes included in the
@@ -244,8 +248,28 @@ namespace scene
 		 *      and there are several tools for them available, e.g.
 		 *      the Maya exporter included in the DX SDK.
 		 *      .x files can include skeletal animations and Irrlicht
-		 *      is able to play and display them. Currently, Irrlicht
-		 *      only supports uncompressed .x files.</TD>
+		 *      is able to play and display them, users can manipulate
+		 *      the joints via the ISkinnedMesh interface. Currently,
+		 *      Irrlicht only supports uncompressed .x files.</TD>
+		 *  </TR>
+		 *  <TR>
+		 *    <TD>Half-Life model (.mdl)</TD>
+		 *    <TD>This loader opens Half-life 1 models, it was contributed
+		 *        by Fabio Concas and adapted by Thomas Alten.</TD>
+		 *  </TR>
+		 *  <TR>
+		 *    <TD>Irrlicht Mesh (.irrMesh)</TD>
+		 *    <TD>This is a static mesh format written in XML, native
+		 *      to Irrlicht and written by ISceneManager::saveMesh.
+		 *      This format is exported by the CopperCube engine's
+		 *      lightmapper.</TD>
+		 *  </TR>
+		 *  <TR>
+		 *    <TD>LightWave (.lwo)</TD>
+		 *    <TD>Native to NewTek's LightWave 3D, the LWO format is well
+		 *      known and supported by many exporters. This loader will
+		 *      import LWO2 models including lightmaps, bumpmaps and
+		 *      reflection textures.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Maya (.obj)</TD>
@@ -258,8 +282,8 @@ namespace scene
 		 *    <TD>Milkshape (.ms3d)</TD>
 		 *    <TD>.MS3D files contain models and sometimes skeletal
 		 *      animations from the Milkshape 3D modeling and animation
-		 *      software. This importer for Irrlicht can display and/or
-		 *      animate these files. </TD>
+		 *      software. Like the other skeletal mesh loaders, oints
+		 *      are exposed via the ISkinnedMesh animated mesh type.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *  <TD>My3D (.my3d)</TD>
@@ -330,6 +354,29 @@ namespace scene
 		 *      <TD>Quake 2 models are characters with morph target
 		 *        animation. Irrlicht can read, display and animate
 		 *        them directly with this importer. </TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Quake 3 models (.md3)</TD>
+		 *      <TD>Quake 3 models are characters with morph target
+		 *        animation, they contain mount points for weapons and body
+		 *        parts and are typically made of several sections which are
+		 *        manually joined together.</TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Stanford Triangle (.ply)</TD>
+		 *      <TD>Invented by Stanford University and known as the native
+		 *        format of the infamous "Stanford Bunny" model, this is a
+		 *        popular static mesh format used by 3D scanning hardware
+		 *        and software. This loader supports extremely large models
+		 *        in both ASCII and binary format, but only has rudimentary
+		 *        material support in the form of vertex colors and texture
+		 *        coordinates.</TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Stereolithography (.stl)</TD>
+		 *      <TD>The STL format is used for rapid prototyping and
+		 *        computer-aided manufacturing, thus has no support for
+		 *        materials.</TD>
 		 *    </TR>
 		 *  </TABLE>
 		 *
