@@ -915,6 +915,7 @@
     <ClInclude Include="..\..\include\IQ3Shader.h" />
     <ClInclude Include="..\..\include\ISceneCollisionManager.h" />
     <ClInclude Include="..\..\include\ISceneManager.h" />
+    <ClInclude Include="..\..\include\ISceneLoader.h" />
     <ClInclude Include="..\..\include\ISceneNode.h" />
     <ClInclude Include="..\..\include\ISceneNodeAnimator.h" />
     <ClInclude Include="..\..\include\ISceneNodeAnimatorCameraFPS.h" />
@@ -1036,6 +1037,7 @@
     <ClInclude Include="CTerrainTriangleSelector.h" />
     <ClInclude Include="CTriangleBBSelector.h" />
     <ClInclude Include="CTriangleSelector.h" />
+    <ClInclude Include="CSceneLoaderIrr.h" />
     <ClInclude Include="CSceneNodeAnimatorCameraFPS.h" />
     <ClInclude Include="CSceneNodeAnimatorCameraMaya.h" />
     <ClInclude Include="CSceneNodeAnimatorCollisionResponse.h" />
@@ -1278,6 +1280,7 @@
     <ClCompile Include="CTerrainTriangleSelector.cpp" />
     <ClCompile Include="CTriangleBBSelector.cpp" />
     <ClCompile Include="CTriangleSelector.cpp" />
+    <ClInclude Include="CSceneLoaderIrr.cpp" />
     <ClCompile Include="CSceneNodeAnimatorCameraFPS.cpp" />
     <ClCompile Include="CSceneNodeAnimatorCameraMaya.cpp" />
     <ClCompile Include="CSceneNodeAnimatorCollisionResponse.cpp" />

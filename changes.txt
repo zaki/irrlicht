@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Added ISceneLoader interface and .irr loader. Users can now add their own scene loaders to the scene manager and use them by calling loadScene.
+
  - Renamed IGUIElement::bringToBack to sendToBack, like in Windows
 
  - Send EGET_ELEMENT_CLOSED event when context menues should be closed (thx @ Mloren for reporting).

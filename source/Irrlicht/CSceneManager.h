@@ -371,6 +371,9 @@ namespace scene
 		//! Adds an external mesh loader.
 		virtual void addExternalMeshLoader(IMeshLoader* externalLoader);
 
+		//! Adds an external scene loader.
+		virtual void addExternalSceneLoader(ISceneLoader* externalLoader);
+
 		//! Returns a pointer to the scene collision manager.
 		virtual ISceneCollisionManager* getSceneCollisionManager();
 
@@ -456,18 +459,16 @@ namespace scene
 		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index);
 
 		//! Saves the current scene into a file.
-		//! \param filename: Name of the file .
 		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Saves the current scene into a file.
 		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		//! \param filename: Name of the file .
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0);
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -503,18 +504,6 @@ namespace scene
 
 		//! writes a scene node
 		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer, const c8* currentPath=0, bool init=false);
-
-		//! reads a scene node
-		void readSceneNode(io::IXMLReader* reader, ISceneNode* parent, ISceneUserDataSerializer* userDataSerializer);
-
-		//! read materials
-		void readMaterials(io::IXMLReader* reader, ISceneNode* node);
-
-		//! reads animators of a node
-		void readAnimators(io::IXMLReader* reader, ISceneNode* node);
-
-		//! reads user data of a node
-		void readUserData(io::IXMLReader* reader, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer);
 
 		struct DefaultNodeEntry
 		{
@@ -605,6 +594,7 @@ namespace scene
 		core::array<TransparentNodeEntry> TransparentEffectNodeList;
 
 		core::array<IMeshLoader*> MeshLoaderList;
+		core::array<ISceneLoader*> SceneLoaderList;
 		core::array<ISceneNode*> DeletionList;
 		core::array<ISceneNodeFactory*> SceneNodeFactoryList;
 		core::array<ISceneNodeAnimatorFactory*> SceneNodeAnimatorFactoryList;

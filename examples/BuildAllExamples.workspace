@@ -15,7 +15,7 @@
 		<Project filename="12.TerrainRendering/TerrainRendering.cbp" />
 		<Project filename="13.RenderToTexture/RenderToTexture.cbp" />
 		<Project filename="14.Win32Window/Win32Window.cbp" />
-		<Project filename="15.LoadIrrFile/LoadIrrFile.cbp" />
+		<Project filename="15.LoadIrrFile/LoadIrrFile.cbp" active="1" />
 		<Project filename="16.Quake3MapShader/Quake3MapShader.cbp" />
 		<Project filename="18.SplitScreen/SplitScreen.cbp" />
 		<Project filename="19.MouseAndJoystick/MouseAndJoystick.cbp" />
@@ -23,7 +23,7 @@
 		<Project filename="21.Quake3Explorer/Quake3Explorer.cbp" />
 		<Project filename="22.MaterialViewer/MaterialViewer.cbp" />
 		<Project filename="Demo/demo.cbp" />
-		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" active="1" />
+		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" />
 		<Project filename="../tools/MeshConverter/MeshConverter.cbp" />
 		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" />
 	</Workspace>

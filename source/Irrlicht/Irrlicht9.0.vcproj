@@ -1109,6 +1109,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\ISceneLoader.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\ISceneManager.h"
 					>
 				</File>
@@ -1374,6 +1378,14 @@
 				</File>
 				<File
 					RelativePath="CMeshManipulator.h"
+					>
+				</File>
+				<File
+					RelativePath="CSceneLoaderIrr.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CSceneLoaderIrr.h"
 					>
 				</File>
 				<File

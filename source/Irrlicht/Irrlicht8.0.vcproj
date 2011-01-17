@@ -946,6 +946,11 @@
 					>
 				</File>
 				<File
+					RelativePath=".\..\..\include\ISceneLoader.h"
+					>
+				</File>
+
+				<File
 					RelativePath=".\..\..\include\ISceneNode.h"
 					>
 				</File>
@@ -2091,11 +2096,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CSceneManager.cpp"
+				RelativePath="CSceneLoaderIrr.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CSceneManager.h"
+				RelativePath="CSceneLoaderIrr.h"
+				>
+			</File>
+			<File
+				RelativePath="CSceneManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CSceneManager.h"
 				>
 			</File>
 			<Filter
