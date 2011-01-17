@@ -212,28 +212,14 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	// create geometry creator
 	GeometryCreator = new CGeometryCreator();
 
-	// add file format loaders
+	// add file format loaders. add the least commonly used ones first,
+	// as these are checked last
 
-	#ifdef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
-	MeshLoaderList.push_back(new CIrrMeshFileLoader(this, FileSystem));
+	#ifdef _IRR_COMPILE_WITH_STL_LOADER_
+	MeshLoaderList.push_back(new CSTLMeshFileLoader());
 	#endif
-	#ifdef _IRR_COMPILE_WITH_BSP_LOADER_
-	MeshLoaderList.push_back(new CBSPMeshFileLoader(this, FileSystem));
-	#endif
-	#ifdef _IRR_COMPILE_WITH_MD2_LOADER_
-	MeshLoaderList.push_back(new CMD2MeshFileLoader());
-	#endif
-	#ifdef _IRR_COMPILE_WITH_MS3D_LOADER_
-	MeshLoaderList.push_back(new CMS3DMeshFileLoader(Driver));
-	#endif
-	#ifdef _IRR_COMPILE_WITH_HALFLIFE_LOADER_
-	MeshLoaderList.push_back(new CHalflifeMDLMeshFileLoader( this ));
-	#endif
-	#ifdef _IRR_COMPILE_WITH_3DS_LOADER_
-	MeshLoaderList.push_back(new C3DSMeshFileLoader(this, FileSystem));
-	#endif
-	#ifdef _IRR_COMPILE_WITH_X_LOADER_
-	MeshLoaderList.push_back(new CXMeshFileLoader(this, FileSystem));
+	#ifdef _IRR_COMPILE_WITH_PLY_LOADER_
+	MeshLoaderList.push_back(new CPLYMeshFileLoader());
 	#endif
 	#ifdef _IRR_COMPILE_WITH_OCT_LOADER_
 	MeshLoaderList.push_back(new COCTLoader(this, FileSystem));
@@ -247,32 +233,47 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	#ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
 	MeshLoaderList.push_back(new CMY3DMeshFileLoader(this, FileSystem));
 	#endif
-	#ifdef _IRR_COMPILE_WITH_COLLADA_LOADER_
-	MeshLoaderList.push_back(new CColladaFileLoader(this, FileSystem));
-	#endif
 	#ifdef _IRR_COMPILE_WITH_DMF_LOADER_
 	MeshLoaderList.push_back(new CDMFLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_OGRE_LOADER_
 	MeshLoaderList.push_back(new COgreMeshFileLoader(FileSystem, Driver));
 	#endif
-	#ifdef _IRR_COMPILE_WITH_OBJ_LOADER_
-	MeshLoaderList.push_back(new COBJMeshFileLoader(this, FileSystem));
+	#ifdef _IRR_COMPILE_WITH_HALFLIFE_LOADER_
+	MeshLoaderList.push_back(new CHalflifeMDLMeshFileLoader( this ));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_MD3_LOADER_
 	MeshLoaderList.push_back(new CMD3MeshFileLoader( this));
 	#endif
-	#ifdef _IRR_COMPILE_WITH_B3D_LOADER_
-	MeshLoaderList.push_back(new CB3DMeshFileLoader(this));
-	#endif
 	#ifdef _IRR_COMPILE_WITH_LWO_LOADER_
 	MeshLoaderList.push_back(new CLWOMeshFileLoader(this, FileSystem));
 	#endif
-	#ifdef _IRR_COMPILE_WITH_STL_LOADER_
-	MeshLoaderList.push_back(new CSTLMeshFileLoader());
+	#ifdef _IRR_COMPILE_WITH_MD2_LOADER_
+	MeshLoaderList.push_back(new CMD2MeshFileLoader());
 	#endif
-	#ifdef _IRR_COMPILE_WITH_PLY_LOADER_
-	MeshLoaderList.push_back(new CPLYMeshFileLoader());
+	#ifdef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
+	MeshLoaderList.push_back(new CIrrMeshFileLoader(this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_BSP_LOADER_
+	MeshLoaderList.push_back(new CBSPMeshFileLoader(this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_COLLADA_LOADER_
+	MeshLoaderList.push_back(new CColladaFileLoader(this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_3DS_LOADER_
+	MeshLoaderList.push_back(new C3DSMeshFileLoader(this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_X_LOADER_
+	MeshLoaderList.push_back(new CXMeshFileLoader(this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_MS3D_LOADER_
+	MeshLoaderList.push_back(new CMS3DMeshFileLoader(Driver));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_OBJ_LOADER_
+	MeshLoaderList.push_back(new COBJMeshFileLoader(this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_B3D_LOADER_
+	MeshLoaderList.push_back(new CB3DMeshFileLoader(this));
 	#endif
 
 	// factories
@@ -358,6 +359,7 @@ IAnimatedMesh* CSceneManager::getMesh(const io::path& filename)
 		return 0;
 	}
 
+	// iterate the list in reverse order so user-added loaders can override the built-in ones
 	s32 count = MeshLoaderList.size();
 	for (s32 i=count-1; i>=0; --i)
 	{
@@ -397,6 +399,7 @@ IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 	if (msh)
 		return msh;
 
+	// iterate the list in reverse order so user-added loaders can override the built-in ones
 	s32 count = MeshLoaderList.size();
 	for (s32 i=count-1; i>=0; --i)
 	{
