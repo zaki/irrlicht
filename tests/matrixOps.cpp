@@ -13,8 +13,8 @@ using namespace gui;
 namespace
 {
 
-// Basic tests
-bool matrices(void)
+// Basic tests for identity matrix
+bool identity(void)
 {
 	bool result = true;
 	matrix4 m;
@@ -189,6 +189,14 @@ bool rotations(void)
 	result &= (vec1.equals(core::vector3df(0.f, 0.f, 180.0f), 0.000002f));
 	assert(result);
 
+	rot1.makeIdentity();
+	rot1.setRotationDegrees(core::vector3df(270.f,0,0));
+	rot2.makeIdentity();
+	rot2.setRotationDegrees(core::vector3df(-90.f,0,0));
+	vec1=(rot1*rot2).getRotationDegrees();
+	result &= (vec1.equals(core::vector3df(180.f, 0.f, 0.0f)));
+	assert(result);
+
 	return result;
 }
 
@@ -233,7 +241,7 @@ bool isOrthogonal(void)
 bool matrixOps(void)
 {
 	bool result = true;
-	result &= matrices();
+	result &= identity();
 	result &= rotations();
 	result &= isOrthogonal();
 	result &= transformations();

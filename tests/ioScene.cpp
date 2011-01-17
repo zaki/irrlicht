@@ -125,3 +125,4 @@ bool ioScene(void)
 	bool result = saveScene();
 	result &= loadScene();
 	return result;
+}
