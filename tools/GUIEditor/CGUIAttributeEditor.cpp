@@ -85,9 +85,9 @@ void CGUIAttributeEditor::refreshAttribs()
 		str += "_attribute";
 		CGUIAttribute* n = (CGUIAttribute*)Environment->addGUIElement(str.c_str(), this);
 
-        // if this doesn't exist, use a string editor
-        if (!n)
-            n = (CGUIAttribute*)Environment->addGUIElement("string_attribute", this);
+		// if this doesn't exist, use a string editor
+		if (!n)
+			n = (CGUIAttribute*)Environment->addGUIElement("string_attribute", this);
 
 		if (n)
 		{

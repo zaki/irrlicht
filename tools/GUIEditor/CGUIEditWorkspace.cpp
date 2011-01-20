@@ -179,10 +179,10 @@ void CGUIEditWorkspace::selectNextSibling()
 {
 	IGUIElement* p=0;
 
-	if (!SelectedElement)
-		p = Parent;
-	else
+	if (SelectedElement && SelectedElement->getParent())
 		p = SelectedElement->getParent();
+	else
+		p = Parent;
 
 	core::list<IGUIElement*>::ConstIterator it = p->getChildren().begin();
 	// find selected element
@@ -202,10 +202,10 @@ void CGUIEditWorkspace::selectPreviousSibling()
 {
 	IGUIElement* p=0;
 
-	if (!SelectedElement)
-		p = Parent;
-	else
+	if (SelectedElement && SelectedElement->getParent())
 		p = SelectedElement->getParent();
+	else
+		p = Parent;
 
 	core::list<IGUIElement*>::ConstIterator it = p->getChildren().getLast();
 	// find selected element
@@ -469,7 +469,10 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 				setSelectedElement(0);
 
 				// move
-				core::position2d<s32> p = sel->getParent()->getAbsolutePosition().UpperLeftCorner;
+				core::position2d<s32> p(0,0);
+				if (sel->getParent())
+					p = sel->getParent()->getAbsolutePosition().UpperLeftCorner;
+
 				sel->setRelativePosition(SelectedArea - p);
 
 				// select
@@ -645,7 +648,8 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					CurrentMode = EGUIEDM_SELECT_NEW_PARENT;
 					break;
 				case EGUIEDMC_BRING_TO_FRONT:
-					SelectedElement->getParent()->bringToFront(SelectedElement);
+					if (SelectedElement->getParent())
+						SelectedElement->getParent()->bringToFront(SelectedElement);
 					break;
 
 				case EGUIEDMC_SAVE_ELEMENT:
