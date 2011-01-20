@@ -215,6 +215,8 @@ namespace scene
 		 *        following naming scheme:
 		 *        "path/to/file/file.dea#meshname". The loading of such
 		 *        meshes is logged. Currently, this loader is able to
+
+
 		 *        create meshes (made of only polygons), lights, and
 		 *        cameras. Materials and animations are currently not
 		 *        supported but this will change with future releases.
@@ -260,7 +262,7 @@ namespace scene
 		 *  <TR>
 		 *    <TD>Irrlicht Mesh (.irrMesh)</TD>
 		 *    <TD>This is a static mesh format written in XML, native
-		 *      to Irrlicht and written by ISceneManager::saveMesh.
+		 *      to Irrlicht and written by the irr mesh writer.
 		 *      This format is exported by the CopperCube engine's
 		 *      lightmapper.</TD>
 		 *  </TR>
@@ -1360,6 +1362,15 @@ namespace scene
 		\param externalLoader: Implementation of a new mesh loader. */
 		virtual void addExternalMeshLoader(IMeshLoader* externalLoader) = 0;
 
+		//! Returns the number of mesh loaders supported by Irrlicht at this time
+		virtual u32 getMeshLoaderCount() const = 0;
+
+		//! Retrieve the given mesh loader
+		/** \param index The index of the loader to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified loader, 0 if the index is incorrect. */
+		virtual IMeshLoader* getMeshLoader(u32 index) const = 0;
+
 		//! Adds an external scene loader for extending the engine with new file formats.
 		/** If you want the engine to be extended with
 		file formats it currently is not able to load (e.g. .vrml), just implement
@@ -1368,6 +1379,15 @@ namespace scene
 		with newer or updated versions without the need to recompile the engine.
 		\param externalLoader: Implementation of a new mesh loader. */
 		virtual void addExternalSceneLoader(ISceneLoader* externalLoader) = 0;
+
+		//! Returns the number of scene loaders supported by Irrlicht at this time
+		virtual u32 getSceneLoaderCount() const = 0;
+
+		//! Retrieve the given scene loader
+		/** \param index The index of the loader to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified loader, 0 if the index is incorrect. */
+		virtual ISceneLoader* getSceneLoader(u32 index) const = 0;
 
 		//! Get pointer to the scene collision manager.
 		/** \return Pointer to the collision manager

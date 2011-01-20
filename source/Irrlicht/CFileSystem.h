@@ -57,6 +57,12 @@ public:
 	//! Adds an external archive loader to the engine.
 	virtual void addArchiveLoader(IArchiveLoader* loader);
 
+	//! Returns the total number of archive loaders added.
+	virtual u32 getArchiveLoaderCount() const;
+
+	//! Gets the archive loader by index.
+	virtual IArchiveLoader* getArchiveLoader(u32 index) const;
+
 	//! gets the file archive count
 	virtual u32 getFileArchiveCount() const;
 

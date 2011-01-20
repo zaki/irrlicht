@@ -171,6 +171,20 @@ void CFileSystem::addArchiveLoader(IArchiveLoader* loader)
 	ArchiveLoader.push_back(loader);
 }
 
+//! Returns the total number of archive loaders added.
+u32 CFileSystem::getArchiveLoaderCount() const 
+{
+	return ArchiveLoader.size();
+}
+
+//! Gets the archive loader by index.
+IArchiveLoader* CFileSystem::getArchiveLoader(u32 index) const
+{
+	if (index < ArchiveLoader.size())
+		return ArchiveLoader[index];
+	else
+		return 0;
+}
 
 //! move the hirarchy of the filesystem. moves sourceIndex relative up or down
 bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)

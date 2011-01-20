@@ -371,8 +371,20 @@ namespace scene
 		//! Adds an external mesh loader.
 		virtual void addExternalMeshLoader(IMeshLoader* externalLoader);
 
+		//! Returns the number of mesh loaders supported by Irrlicht at this time
+		virtual u32 getMeshLoaderCount() const;
+
+		//! Retrieve the given mesh loader
+		virtual IMeshLoader* getMeshLoader(u32 index) const;
+
 		//! Adds an external scene loader.
 		virtual void addExternalSceneLoader(ISceneLoader* externalLoader);
+
+		//! Returns the number of scene loaders supported by Irrlicht at this time
+		virtual u32 getSceneLoaderCount() const;
+
+		//! Retrieve the given scene loader
+		virtual ISceneLoader* getSceneLoader(u32 index) const;
 
 		//! Returns a pointer to the scene collision manager.
 		virtual ISceneCollisionManager* getSceneCollisionManager();

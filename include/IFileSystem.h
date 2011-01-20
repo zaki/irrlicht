@@ -117,11 +117,6 @@ public:
 			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
 			const core::stringc& password="") =0;
 
-	//! Adds an external archive loader to the engine.
-	/** Use this function to add support for new archive types to the
-	engine, for example proprietary or encrypted file storage. */
-	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
-
 	//! Get the number of archives currently attached to the file system
 	virtual u32 getFileArchiveCount() const =0;
 
@@ -148,6 +143,20 @@ public:
 
 	//! Get the archive at a given index.
 	virtual IFileArchive* getFileArchive(u32 index) =0;
+
+	//! Adds an external archive loader to the engine.
+	/** Use this function to add support for new archive types to the
+	engine, for example proprietary or encrypted file storage. */
+	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
+
+	//! Gets the number of archive loaders currently added
+	virtual u32 getArchiveLoaderCount() const = 0;
+
+	//! Retrieve the given archive loader
+	/** \param index The index of the loader to retrieve. This parameter is an 0-based
+	array index.
+	\return A pointer to the specified loader, 0 if the index is incorrect. */
+	virtual IArchiveLoader* getArchiveLoader(u32 index) const = 0;
 
 	//! Adds a zip archive to the file system.
 	/** \deprecated This function is provided for compatibility

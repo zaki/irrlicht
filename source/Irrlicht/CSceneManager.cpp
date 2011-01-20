@@ -1726,6 +1726,22 @@ void CSceneManager::addExternalMeshLoader(IMeshLoader* externalLoader)
 	MeshLoaderList.push_back(externalLoader);
 }
 
+//! Returns the number of mesh loaders supported by Irrlicht at this time
+u32 CSceneManager::getMeshLoaderCount() const 
+{
+	return MeshLoaderList.size();
+}
+
+
+//! Retrieve the given mesh loader
+IMeshLoader* CSceneManager::getMeshLoader(u32 index) const
+{
+	if (index < MeshLoaderList.size())
+		return MeshLoaderList[index];
+	else
+		return 0; 
+}
+
 //! Adds an external scene loader.
 void CSceneManager::addExternalSceneLoader(ISceneLoader* externalLoader)
 {
@@ -1734,6 +1750,22 @@ void CSceneManager::addExternalSceneLoader(ISceneLoader* externalLoader)
 
 	externalLoader->grab();
 	SceneLoaderList.push_back(externalLoader);
+}
+
+//! Returns the number of scene loaders
+u32 CSceneManager::getSceneLoaderCount() const 
+{
+	return SceneLoaderList.size();
+}
+
+
+//! Retrieve the given scene loader
+ISceneLoader* CSceneManager::getSceneLoader(u32 index) const
+{
+	if (index < SceneLoaderList.size())
+		return SceneLoaderList[index];
+	else
+		return 0; 
 }
 
 //! Returns a pointer to the scene collision manager.
@@ -2148,7 +2180,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 	// try scene loaders in reverse order
 	s32 i = SceneLoaderList.size()-1;
 	for (; i >= 0 && !ret; --i)
-		if (SceneLoaderList[i]->isALoadableFileType(file))
+		if (SceneLoaderList[i]->isALoadableFileFormat(file))
 			ret = SceneLoaderList[i]->loadScene(file, userDataSerializer, rootNode);
 
 	if (!ret)
