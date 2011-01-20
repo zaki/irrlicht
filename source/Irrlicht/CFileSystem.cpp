@@ -58,14 +58,6 @@ CFileSystem::CFileSystem()
 	//! reset current working directory
 	getWorkingDirectory();
 
-#ifdef __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
-	ArchiveLoader.push_back(new CArchiveLoaderZIP(this));
-#endif
-
-#ifdef __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
-	ArchiveLoader.push_back(new CArchiveLoaderMount(this));
-#endif
-
 #ifdef __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
 	ArchiveLoader.push_back(new CArchiveLoaderPAK(this));
 #endif
@@ -80,6 +72,14 @@ CFileSystem::CFileSystem()
 
 #ifdef __IRR_COMPILE_WITH_WAD_ARCHIVE_LOADER_
 	ArchiveLoader.push_back(new CArchiveLoaderWAD(this));
+#endif
+
+#ifdef __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
+	ArchiveLoader.push_back(new CArchiveLoaderMount(this));
+#endif
+
+#ifdef __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
+	ArchiveLoader.push_back(new CArchiveLoaderZIP(this));
 #endif
 
 }
@@ -216,28 +216,29 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
-	u32 i;
 
 	// check if the archive was already loaded
-	for (i = 0; i < FileArchives.size(); ++i)
+	for (u32 idx = 0; idx < FileArchives.size(); ++idx)
 	{
 		// TODO: This should go into a path normalization method
 		// We need to check for directory names with trailing slash and without
 		const core::stringc absPath = getAbsolutePath(filename);
-		const core::stringc arcPath = FileArchives[i]->getFileList()->getPath();
+		const core::stringc arcPath = FileArchives[idx]->getFileList()->getPath();
 		if ((absPath == arcPath) || ((absPath+"/") == arcPath))
 		{
 			if (password.size())
-				FileArchives[i]->Password=password;
+				FileArchives[idx]->Password=password;
 			return true;
 		}
 	}
+
+	s32 i;
 
 	// do we know what type it should be?
 	if (archiveType == EFAT_UNKNOWN || archiveType == EFAT_FOLDER)
 	{
 		// try to load archive based on file name
-		for (i = 0; i < ArchiveLoader.size(); ++i)
+		for (i = ArchiveLoader.size()-1; i >=0 ; --i)
 		{
 			if (ArchiveLoader[i]->isALoadableFileFormat(filename))
 			{
@@ -253,7 +254,7 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 			io::IReadFile* file = createAndOpenFile(filename);
 			if (file)
 			{
-				for (i = 0; i < ArchiveLoader.size(); ++i)
+				for (i = ArchiveLoader.size()-1; i >= 0; --i)
 				{
 					file->seek(0);
 					if (ArchiveLoader[i]->isALoadableFileFormat(file))
@@ -274,7 +275,7 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 
 		io::IReadFile* file = 0;
 
-		for (i = 0; i < ArchiveLoader.size(); ++i)
+		for (i = ArchiveLoader.size()-1; i >= 0; --i)
 		{
 			if (ArchiveLoader[i]->isALoadableFileFormat(archiveType))
 			{

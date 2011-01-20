@@ -120,14 +120,20 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 
 	// create surface loader
 
-#ifdef _IRR_COMPILE_WITH_BMP_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderBMP());
+#ifdef _IRR_COMPILE_WITH_HALFLIFE_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderHalfLife());
 #endif
-#ifdef _IRR_COMPILE_WITH_JPG_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderJPG());
+#ifdef _IRR_COMPILE_WITH_WAL_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderWAL());
 #endif
-#ifdef _IRR_COMPILE_WITH_TGA_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderTGA());
+#ifdef _IRR_COMPILE_WITH_LMP_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderLMP());
+#endif
+#ifdef _IRR_COMPILE_WITH_PPM_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderPPM());
+#endif
+#ifdef _IRR_COMPILE_WITH_RGB_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderRGB());
 #endif
 #ifdef _IRR_COMPILE_WITH_PSD_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
@@ -138,48 +144,42 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #ifdef _IRR_COMPILE_WITH_PCX_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPCX());
 #endif
+#ifdef _IRR_COMPILE_WITH_TGA_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderTGA());
+#endif
 #ifdef _IRR_COMPILE_WITH_PNG_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPNG());
 #endif
-#ifdef _IRR_COMPILE_WITH_WAL_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderWAL());
+#ifdef _IRR_COMPILE_WITH_JPG_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderJPG());
 #endif
-#ifdef _IRR_COMPILE_WITH_LMP_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderLMP());
-#endif
-#ifdef _IRR_COMPILE_WITH_HALFLIFE_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderHalfLife());
-#endif
-
-#ifdef _IRR_COMPILE_WITH_PPM_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderPPM());
-#endif
-#ifdef _IRR_COMPILE_WITH_RGB_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderRGB());
+#ifdef _IRR_COMPILE_WITH_BMP_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderBMP());
 #endif
 
 
-#ifdef _IRR_COMPILE_WITH_BMP_WRITER_
-	SurfaceWriter.push_back(video::createImageWriterBMP());
-#endif
-#ifdef _IRR_COMPILE_WITH_JPG_WRITER_
-	SurfaceWriter.push_back(video::createImageWriterJPG());
-#endif
-#ifdef _IRR_COMPILE_WITH_TGA_WRITER_
-	SurfaceWriter.push_back(video::createImageWriterTGA());
-#endif
-#ifdef _IRR_COMPILE_WITH_PSD_WRITER_
-	SurfaceWriter.push_back(video::createImageWriterPSD());
+#ifdef _IRR_COMPILE_WITH_PPM_WRITER_
+	SurfaceWriter.push_back(video::createImageWriterPPM());
 #endif
 #ifdef _IRR_COMPILE_WITH_PCX_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterPCX());
 #endif
+#ifdef _IRR_COMPILE_WITH_PSD_WRITER_
+	SurfaceWriter.push_back(video::createImageWriterPSD());
+#endif
+#ifdef _IRR_COMPILE_WITH_TGA_WRITER_
+	SurfaceWriter.push_back(video::createImageWriterTGA());
+#endif
+#ifdef _IRR_COMPILE_WITH_JPG_WRITER_
+	SurfaceWriter.push_back(video::createImageWriterJPG());
+#endif
 #ifdef _IRR_COMPILE_WITH_PNG_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterPNG());
 #endif
-#ifdef _IRR_COMPILE_WITH_PPM_WRITER_
-	SurfaceWriter.push_back(video::createImageWriterPPM());
+#ifdef _IRR_COMPILE_WITH_BMP_WRITER_
+	SurfaceWriter.push_back(video::createImageWriterBMP());
 #endif
+
 
 	// set ExposedData to 0
 	memset(&ExposedData, 0, sizeof(ExposedData));
@@ -261,7 +261,7 @@ u32 CNullDriver::getImageLoaderCount() const
 //! Retrieve the given image loader
 IImageLoader* CNullDriver::getImageLoader(u32 n)
 {
-	if(n < SurfaceLoader.size())
+	if (n < SurfaceLoader.size())
 		return SurfaceLoader[n];
 	return 0;
 }
@@ -277,7 +277,7 @@ u32 CNullDriver::getImageWriterCount() const
 //! Retrieve the given image writer
 IImageWriter* CNullDriver::getImageWriter(u32 n)
 {
-	if(n < SurfaceWriter.size())
+	if (n < SurfaceWriter.size())
 		return SurfaceWriter[n];
 	return 0;
 }
@@ -903,6 +903,7 @@ void CNullDriver::setAmbientLight(const SColorf& color)
 
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 //! driver, it would return "Direct3D8".
+
 const wchar_t* CNullDriver::getName() const
 {
 	return L"Irrlicht NullDevice";
@@ -1317,10 +1318,10 @@ IImage* CNullDriver::createImageFromFile(io::IReadFile* file)
 
 	IImage* image = 0;
 
-	u32 i;
+	s32 i;
 
 	// try to load file based on file extension
-	for (i=0; i<SurfaceLoader.size(); ++i)
+	for (i=SurfaceLoader.size()-1; i>=0; --i)
 	{
 		if (SurfaceLoader[i]->isALoadableFileExtension(file->getFileName()))
 		{
@@ -1333,7 +1334,7 @@ IImage* CNullDriver::createImageFromFile(io::IReadFile* file)
 	}
 
 	// try to load file based on what is in it
-	for (i=0; i<SurfaceLoader.size(); ++i)
+	for (i=SurfaceLoader.size()-1; i>=0; --i)
 	{
 		// dito
 		file->seek(0);
@@ -1369,7 +1370,7 @@ bool CNullDriver::writeImageToFile(IImage* image, io::IWriteFile * file, u32 par
 	if(!file)
 		return false;
 
-	for (u32 i=0; i<SurfaceWriter.size(); ++i)
+	for (s32 i=SurfaceWriter.size()-1; i>=0; --i)
 	{
 		if (SurfaceWriter[i]->isAWriteableFileExtension(file->getFileName()))
 		{
