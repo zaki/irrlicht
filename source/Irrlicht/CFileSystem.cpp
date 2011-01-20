@@ -866,8 +866,12 @@ IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(IReadFile* file)
 IXMLWriter* CFileSystem::createXMLWriter(const io::path& filename)
 {
 	IWriteFile* file = createAndWriteFile(filename);
-	IXMLWriter* writer = createXMLWriter(file);
-	file->drop();
+	IXMLWriter* writer = 0;
+	if (file)
+	{
+		writer = createXMLWriter(file);
+		file->drop();
+	}
 	return writer;
 }
 
