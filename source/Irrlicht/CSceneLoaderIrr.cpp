@@ -220,7 +220,9 @@ void CSceneLoaderIrr::readAnimators(io::IXMLReader* reader, ISceneNode* node)
 					core::stringc typeName = attr->getAttributeAsString("Type");
 					ISceneNodeAnimator* anim = 0;
 
-					for (u32 i=0; i < SceneManager->getRegisteredSceneNodeAnimatorFactoryCount() && !anim; ++i)
+					// todo: need a method to add animator by name in the scene manager. This loader and others like it
+					// have no business messing with the animator factories! 
+					for (s32 i=SceneManager->getRegisteredSceneNodeAnimatorFactoryCount(); i >=0 && !anim; --i)
 						anim = SceneManager->getSceneNodeAnimatorFactory(i)->createSceneNodeAnimator(typeName.c_str(), node);
 
 					if (anim)

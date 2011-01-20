@@ -696,7 +696,7 @@ IGUIElement* CGUIEnvironment::addGUIElement(const c8* elementName, IGUIElement* 
 	if (!parent)
 		parent = this;
 
-	for (u32 i=0; i<GUIElementFactoryList.size() && !node; ++i)
+	for (s32 i=GUIElementFactoryList.size()-1; i>=0 && !node; --i)
 		node = GUIElementFactoryList[i]->addGUIElement(elementName, parent);
 
 

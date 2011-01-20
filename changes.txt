@@ -1,5 +1,9 @@
 Changes in 1.8 (??.??.2011)
 
+ - The loader selection process now consistently checks loader lists in reverse order, so new loaders added to Irrlicht override the internal ones. This applies when adding external mesh, image, scene and archive loaders, image writers, plus node, animator and GUI element factories. 
+
+ - Added getters to retrieve mesh, scene and archive loaders.
+
  - Added ISceneLoader interface and .irr loader. Users can now add their own scene loaders to the scene manager and use them by calling loadScene.
 
  - Renamed IGUIElement::bringToBack to sendToBack, like in Windows

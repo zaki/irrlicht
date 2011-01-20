@@ -2053,7 +2053,7 @@ u32 CSceneManager::getRegisteredSceneNodeFactoryCount() const
 //! Returns a scene node factory by index
 ISceneNodeFactory* CSceneManager::getSceneNodeFactory(u32 index)
 {
-	if (index<SceneNodeFactoryList.size())
+	if (index < SceneNodeFactoryList.size())
 		return SceneNodeFactoryList[index];
 
 	return 0;
@@ -2351,7 +2351,7 @@ const c8* CSceneManager::getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type)
 {
 	const char* name = 0;
 
-	for (u32 i=0; !name && i<SceneNodeAnimatorFactoryList.size(); ++i)
+	for (s32 i=SceneNodeAnimatorFactoryList.size()-1; !name && i >= 0; --i)
 		name = SceneNodeAnimatorFactoryList[i]->getCreateableSceneNodeAnimatorTypeName(type);
 
 	return name;
