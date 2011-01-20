@@ -34,7 +34,7 @@ bool CSceneLoaderIrr::isALoadableFileExtension(const io::path& filename) const
 }
 
 //! Returns true if the class might be able to load this file.
-bool CSceneLoaderIrr::isALoadableFileType(io::IReadFile *file) const
+bool CSceneLoaderIrr::isALoadableFileFormat(io::IReadFile *file) const
 {
 	// todo: check inside the file
 	return true;

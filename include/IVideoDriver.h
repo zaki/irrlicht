@@ -336,7 +336,7 @@ namespace video
 		//! Retrieve the given image loader
 		/** \param n The index of the loader to retrieve. This parameter is an 0-based
 		array index.
-		\return A pointer to the specified loader, 0 if the index is uncorrect. */
+		\return A pointer to the specified loader, 0 if the index is incorrect. */
 		virtual IImageLoader* getImageLoader(u32 n) = 0;
 
 		//! Retrieve the number of image writers
@@ -346,7 +346,7 @@ namespace video
 		//! Retrieve the given image writer
 		/** \param n The index of the writer to retrieve. This parameter is an 0-based
 		array index.
-		\return A pointer to the specified writer, 0 if the index is uncorrect. */
+		\return A pointer to the specified writer, 0 if the index is incorrect. */
 		virtual IImageWriter* getImageWriter(u32 n) = 0;
 
 		//! Sets a material.

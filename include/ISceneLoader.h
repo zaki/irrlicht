@@ -34,7 +34,7 @@ public:
 	/** This decision will be based on a quick look at the contents of the file.
 	\param file The file to test.
 	\return True if the extension is a recognised type. */
-	virtual bool isALoadableFileType(io::IReadFile* file) const = 0;
+	virtual bool isALoadableFileFormat(io::IReadFile* file) const = 0;
 
 	//! Loads the scene into the scene manager.
 	/** \param file File which contains the scene.
