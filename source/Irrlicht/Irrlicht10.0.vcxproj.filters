@@ -1279,6 +1279,12 @@
       <Filter>include\scene</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="CSceneLoaderIrr.h">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ISceneLoader.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2197,6 +2203,9 @@
     </ClCompile>
     <ClCompile Include="CGUIWindow.cpp">
       <Filter>Irrlicht\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneLoaderIrr.cpp">
+      <Filter>Irrlicht\scene\loaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

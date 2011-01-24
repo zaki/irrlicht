@@ -695,6 +695,7 @@
     <Lib>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\lib\Win32-visualstudio\Irrlicht.lib</OutputFile>
+      <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'">
@@ -1280,7 +1281,7 @@
     <ClCompile Include="CTerrainTriangleSelector.cpp" />
     <ClCompile Include="CTriangleBBSelector.cpp" />
     <ClCompile Include="CTriangleSelector.cpp" />
-    <ClInclude Include="CSceneLoaderIrr.cpp" />
+    <ClCompile Include="CSceneLoaderIrr.cpp" />
     <ClCompile Include="CSceneNodeAnimatorCameraFPS.cpp" />
     <ClCompile Include="CSceneNodeAnimatorCameraMaya.cpp" />
     <ClCompile Include="CSceneNodeAnimatorCollisionResponse.cpp" />
