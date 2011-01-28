@@ -18,8 +18,8 @@ namespace irr
 namespace scene
 {
 
-	
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -58,10 +58,10 @@ namespace scene
 
 		vec3_hl eyeposition;	// ideal eye position
 		vec3_hl min;			// ideal movement hull size
-		vec3_hl max;			
+		vec3_hl max;
 
 		vec3_hl bbmin;			// clipping bounding box
-		vec3_hl bbmax;		
+		vec3_hl bbmax;
 
 		s32	flags;
 
@@ -72,7 +72,7 @@ namespace scene
 		u32	bonecontrollerindex;
 
 		u32	numhitboxes;			// complex bounding boxes
-		u32	hitboxindex;			
+		u32	hitboxindex;
 
 		u32	numseq;				// animation sequences
 		u32	seqindex;
@@ -88,7 +88,7 @@ namespace scene
 		u32	numskinfamilies;
 		u32	skinindex;
 
-		u32	numbodyparts;		
+		u32	numbodyparts;
 		u32	bodypartindex;
 
 		u32	numattachments;		// queryable attachable points
@@ -104,7 +104,7 @@ namespace scene
 	};
 
 	// header for demand loaded sequence group data
-	typedef struct 
+	typedef struct
 	{
 		s32 id;
 		s32 version;
@@ -142,7 +142,7 @@ namespace scene
 		s32 bone;
 		s32 group;			// intersection group
 		vec3_hl bbmin;		// bounding box
-		vec3_hl bbmax;		
+		vec3_hl bbmax;
 	};
 
 #ifndef ZONE_H
@@ -163,7 +163,7 @@ namespace scene
 	{
 		c8 label[32];	// sequence label
 
-		f32 fps;		// frames per second	
+		f32 fps;		// frames per second
 		s32 flags;		// looping/non-looping flags
 
 		s32 activity;
@@ -177,14 +177,14 @@ namespace scene
 		u32 numpivots;	// number of foot pivots
 		u32 pivotindex;
 
-		s32 motiontype;	
+		s32 motiontype;
 		s32 motionbone;
 		vec3_hl linearmovement;
 		s32 automoveposindex;
 		s32 automoveangleindex;
 
 		vec3_hl bbmin;		// per sequence bounding box
-		vec3_hl bbmax;		
+		vec3_hl bbmax;
 
 		s32 numblends;
 		s32 animindex;		// SHalflifeAnimOffset pointer relative to start of sequence group data
@@ -205,7 +205,7 @@ namespace scene
 	};
 
 	// events
-	typedef struct 
+	typedef struct
 	{
 		s32 frame;
 		s32 event;
@@ -215,7 +215,7 @@ namespace scene
 
 
 	// pivots
-	typedef struct 
+	typedef struct
 	{
 		vec3_hl org;	// pivot point
 		s32 start;
@@ -296,7 +296,7 @@ namespace scene
 
 
 	// meshes
-	typedef struct 
+	typedef struct
 	{
 		u32	numtris;
 		u32	triindex;
@@ -312,7 +312,7 @@ namespace scene
 
 			// motion flags
 	#define STUDIO_X		0x0001
-	#define STUDIO_Y		0x0002	
+	#define STUDIO_Y		0x0002
 	#define STUDIO_Z		0x0004
 	#define STUDIO_XR		0x0008
 	#define STUDIO_YR		0x0010
@@ -342,7 +342,7 @@ namespace scene
 	#define STUDIO_TO_RAD		(M_PI/32768.0)
 
 		// Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 #undef PACK_STRUCT
@@ -390,6 +390,96 @@ namespace scene
 		core::array < TextureAtlasEntry > atlas;
 		video::IImage * Master;
 	};
+
+
+	//! Possible types of Animation Type
+	enum E_ANIMATION_TYPE
+	{
+		//! No Animation
+		EAMT_STILL,
+		//! From Start to End, then Stop ( Limited Line )
+		EAMT_WAYPOINT,
+		//! Linear Cycling Animation	 ( Sawtooth )
+		EAMT_LOOPING,
+		//! Linear bobbing				 ( Triangle )
+		EAMT_PINGPONG
+	};
+
+	//! Names for Animation Type
+	const c8* const MeshAnimationTypeNames[] =
+	{
+		"still",
+		"waypoint",
+		"looping",
+		"pingpong",
+		0
+	};
+
+
+	//! Data for holding named Animation Info
+	struct KeyFrameInterpolation
+	{
+		core::stringc Name;		// Name of the current Animation/Bone
+		E_ANIMATION_TYPE AnimationType;	// Type of Animation ( looping, usw..)
+
+		f32 CurrentFrame;		// Current Frame
+		s32 NextFrame;			// Frame which will be used next. For blending
+
+		s32 StartFrame;			// Absolute Frame where the current animation start
+		s32 Frames;				// Relative Frames how much Frames this animation have
+		s32 LoopingFrames;		// How much of Frames sould be looped
+		s32 EndFrame;			// Absolute Frame where the current animation ends End = start + frames - 1
+
+		f32 FramesPerSecond;	// Speed in Frames/Seconds the animation is played
+		f32 RelativeSpeed;		// Factor Original fps is modified
+
+		u32 BeginTime;			// Animation started at this thime
+		u32 EndTime;			// Animation end at this time
+		u32 LastTime;			// Last Keyframe was done at this time
+
+		KeyFrameInterpolation ( const c8 * name = "", s32 start = 0, s32 frames = 0, s32 loopingframes = 0,
+								f32 fps = 0.f, f32 relativefps = 1.f  )
+			: Name ( name ), AnimationType ( loopingframes ? EAMT_LOOPING : EAMT_WAYPOINT),
+			CurrentFrame ( (f32) start ), NextFrame ( start ), StartFrame ( start ),
+			Frames ( frames ), LoopingFrames ( loopingframes ), EndFrame ( start + frames - 1 ),
+			FramesPerSecond ( fps ), RelativeSpeed ( relativefps ),
+			BeginTime ( 0 ), EndTime ( 0 ), LastTime ( 0 )
+		{
+		}
+
+		// linear search
+		bool operator == ( const KeyFrameInterpolation & other ) const
+		{
+			return Name.equals_ignore_case ( other.Name );
+		}
+
+	};
+
+
+	//! a List holding named Animations
+	typedef core::array < KeyFrameInterpolation > IAnimationList;
+
+	//! a List holding named Skins
+	typedef core::array < core::stringc > ISkinList;
+
+
+	// Current Model per Body
+	struct SubModel
+	{
+		core::stringc name;
+		u32 startBuffer;
+		u32 endBuffer;
+		u32 state;
+	};
+
+	struct BodyPart
+	{
+		core::stringc name;
+		u32 defaultModel;
+		core::array < SubModel > model;
+	};
+	//! a List holding named Models and SubModels
+	typedef core::array < BodyPart > IBodyList;
 
 
 	class CAnimatedMeshHalfLife : public IAnimatedMesh
@@ -502,7 +592,7 @@ namespace scene
 		STextureAtlas TextureAtlas;
 		video::ITexture *TextureMaster;
 #endif
-		
+
 	};
 
 
