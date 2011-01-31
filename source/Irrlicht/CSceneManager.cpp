@@ -98,6 +98,10 @@
 #include "CPLYMeshFileLoader.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_SMF_LOADER_
+#include "CSMFMeshFileLoader.h"
+#endif
+
 #ifdef _IRR_COMPILE_WITH_IRR_SCENE_LOADER_
 #include "CSceneLoaderIrr.h"
 #endif
@@ -228,6 +232,9 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	#endif
 	#ifdef _IRR_COMPILE_WITH_PLY_LOADER_
 	MeshLoaderList.push_back(new CPLYMeshFileLoader());
+	#endif
+	#ifdef _IRR_COMPILE_WITH_SMF_LOADER_
+	MeshLoaderList.push_back(new CSMFMeshFileLoader(Driver));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_OCT_LOADER_
 	MeshLoaderList.push_back(new COCTLoader(this, FileSystem));
@@ -1727,7 +1734,7 @@ void CSceneManager::addExternalMeshLoader(IMeshLoader* externalLoader)
 }
 
 //! Returns the number of mesh loaders supported by Irrlicht at this time
-u32 CSceneManager::getMeshLoaderCount() const 
+u32 CSceneManager::getMeshLoaderCount() const
 {
 	return MeshLoaderList.size();
 }
@@ -1739,7 +1746,7 @@ IMeshLoader* CSceneManager::getMeshLoader(u32 index) const
 	if (index < MeshLoaderList.size())
 		return MeshLoaderList[index];
 	else
-		return 0; 
+		return 0;
 }
 
 //! Adds an external scene loader.
@@ -1753,7 +1760,7 @@ void CSceneManager::addExternalSceneLoader(ISceneLoader* externalLoader)
 }
 
 //! Returns the number of scene loaders
-u32 CSceneManager::getSceneLoaderCount() const 
+u32 CSceneManager::getSceneLoaderCount() const
 {
 	return SceneLoaderList.size();
 }
@@ -1765,7 +1772,7 @@ ISceneLoader* CSceneManager::getSceneLoader(u32 index) const
 	if (index < SceneLoaderList.size())
 		return SceneLoaderList[index];
 	else
-		return 0; 
+		return 0;
 }
 
 //! Returns a pointer to the scene collision manager.

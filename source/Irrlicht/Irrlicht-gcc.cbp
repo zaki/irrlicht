@@ -890,6 +890,8 @@
 		<Unit filename="CQuake3ShaderSceneNode.h" />
 		<Unit filename="CReadFile.cpp" />
 		<Unit filename="CReadFile.h" />
+		<Unit filename="CSMFMeshFileLoader.cpp" />
+		<Unit filename="CSMFMeshFileLoader.h" />
 		<Unit filename="CSTLMeshFileLoader.cpp" />
 		<Unit filename="CSTLMeshFileLoader.h" />
 		<Unit filename="CSTLMeshWriter.cpp" />

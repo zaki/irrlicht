@@ -431,6 +431,11 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_PLY_LOADER_
 #undef _IRR_COMPILE_WITH_PLY_LOADER_
 #endif
+//! Define _IRR_COMPILE_WITH_SMF_LOADER_ if you want to load 3D World Studio mesh files
+#define _IRR_COMPILE_WITH_SMF_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_SMF_LOADER_
+#undef _IRR_COMPILE_WITH_SMF_LOADER_
+#endif
 
 //! Define _IRR_COMPILE_WITH_IRR_WRITER_ if you want to write static .irrMesh files
 #define _IRR_COMPILE_WITH_IRR_WRITER_
