@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Added SMF mesh loader, loads meshes from 3D World Studio. Originally written by Joseph Ellis
+
  - The loader selection process now consistently checks loader lists in reverse order, so new loaders added to Irrlicht override the internal ones. This applies when adding external mesh, image, scene and archive loaders, image writers, plus node, animator and GUI element factories. 
 
  - Added getters to retrieve mesh, scene and archive loaders.
@@ -4134,6 +4136,7 @@ Changes in version 0.4.2: (13 Dec 2003)
 
 -------------------------------------------------------------------------------------
 Changes in version 0.4.1: (18 Sep 2003)
+
 
 - Input events are now processed faster than repaint and window events. This
   means that input commands now effect things directly, in earlier versions
