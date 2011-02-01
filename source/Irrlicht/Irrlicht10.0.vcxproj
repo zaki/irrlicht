@@ -974,6 +974,7 @@
     <ClInclude Include="CMeshManipulator.h" />
     <ClInclude Include="CSceneManager.h" />
     <ClInclude Include="Octree.h" />
+    <ClInclude Include="CSMFMeshFileLoader.h" />
     <ClInclude Include="C3DSMeshFileLoader.h" />
     <ClInclude Include="CAnimatedMeshHalfLife.h" />
     <ClInclude Include="CAnimatedMeshMD2.h" />
@@ -1220,6 +1221,7 @@
     <ClCompile Include="CMeshManipulator.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
     <ClCompile Include="C3DSMeshFileLoader.cpp" />
+    <ClCompile Include="CSMFMeshFileLoader.cpp" />
     <ClCompile Include="CAnimatedMeshHalfLife.cpp" />
     <ClCompile Include="CAnimatedMeshMD2.cpp" />
     <ClCompile Include="CAnimatedMeshMD3.cpp" />

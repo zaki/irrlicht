@@ -853,6 +853,12 @@
 				RelativePath=".\C3DSMeshFileLoader.h">
 			</File>
 			<File
+				RelativePath="CSMFMeshFileLoader.cpp">
+			</File>
+			<File
+				RelativePath="CSMFMeshFileLoader.h">
+			</File>
+			<File
 				RelativePath=".\CAnimatedMeshMD2.cpp">
 			</File>
 			<File
