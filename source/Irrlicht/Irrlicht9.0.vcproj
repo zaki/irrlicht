@@ -1412,6 +1412,14 @@
 						>
 					</File>
 					<File
+						RelativePath="CSMFMeshFileLoader.cpp"
+						>
+					</File>
+					<File
+						RelativePath="CSMFMeshFileLoader.h"
+						>
+					</File>
+					<File
 						RelativePath=".\CAnimatedMeshHalfLife.cpp"
 						>
 					</File>
