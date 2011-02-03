@@ -256,6 +256,18 @@ bool CGUIStaticText::isWordWrapEnabled() const
 }
 
 
+void CGUIStaticText::setRightToLeft(bool rtl)
+{
+	RightToLeft = rtl;
+}
+
+
+bool CGUIStaticText::isRightToLeft() const
+{
+	return RightToLeft;
+}
+
+
 //! Breaks the single text line.
 void CGUIStaticText::breakText()
 {
@@ -275,87 +287,179 @@ void CGUIStaticText::breakText()
 
 	LastBreakFont = font;
 
-	core::stringw line;
-	core::stringw word;
-	core::stringw whitespace;
-	s32 size = Text.size();
-	s32 length = 0;
-	s32 elWidth = RelativeRect.getWidth() - 6;
-	wchar_t c;
-
-	for (s32 i=0; i<size; ++i)
+	// We have to deal with right-to-left and left-to-right differently
+	// However, most parts of the following code is the same, it's just
+	// some order and boundaries which change.
+	if (!RightToLeft)
 	{
-		c = Text[i];
-		bool lineBreak = false;
+		// regular (left-to-right)
+		core::stringw line;
+		core::stringw word;
+		core::stringw whitespace;
+		s32 size = Text.size();
+		s32 length = 0;
+		s32 elWidth = RelativeRect.getWidth() - 6;
+		wchar_t c;
 
-		if (c == L'\r') // Mac or Windows breaks
+		for (s32 i=0; i<size; ++i)
 		{
-			lineBreak = true;
-			if (Text[i+1] == L'\n') // Windows breaks
+			c = Text[i];
+			bool lineBreak = false;
+
+			if (c == L'\r') // Mac or Windows breaks
 			{
-				Text.erase(i+1);
-				--size;
-			}
-			c = '\0';
-		}
-		else if (c == L'\n') // Unix breaks
-		{
-			lineBreak = true;
-			c = '\0';
-		}
-
-		if (c == L' ' || c == 0 || i == (size-1))
-		{
-			if (word.size())
-			{
-				// here comes the next whitespace, look if
-				// we must break the last word to the next line.
-				const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
-				const s32 wordlgth = font->getDimension(word.c_str()).Width;
-
-				if (length && (length + wordlgth + whitelgth > elWidth))
+				lineBreak = true;
+				if (Text[i+1] == L'\n') // Windows breaks
 				{
-					// break to next line
-					BrokenText.push_back(line);
-					length = wordlgth;
-					line = word;
+					Text.erase(i+1);
+					--size;
 				}
-				else
+				c = '\0';
+			}
+			else if (c == L'\n') // Unix breaks
+			{
+				lineBreak = true;
+				c = '\0';
+			}
+
+			if (c==L' ' || c==0 || i==(size-1))
+			{
+				if (word.size())
 				{
-					// add word to line
+					// here comes the next whitespace, look if
+					// we must break the last word to the next line.
+					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
+					const s32 wordlgth = font->getDimension(word.c_str()).Width;
+
+					if (length && (length + wordlgth + whitelgth > elWidth))
+					{
+						// break to next line
+						BrokenText.push_back(line);
+						length = wordlgth;
+						line = word;
+					}
+					else
+					{
+						// add word to line
+						line += whitespace;
+						line += word;
+						length += whitelgth + wordlgth;
+					}
+
+					word = L"";
+					whitespace = L"";
+				}
+
+				whitespace += c;
+
+				// compute line break
+				if (lineBreak)
+				{
 					line += whitespace;
 					line += word;
-					length += whitelgth + wordlgth;
+					BrokenText.push_back(line);
+					line = L"";
+					word = L"";
+					whitespace = L"";
+					length = 0;
+				}
+			}
+			else
+			{
+				// yippee this is a word..
+				word += c;
+			}
+		}
+
+		line += whitespace;
+		line += word;
+		BrokenText.push_back(line);
+	}
+	else
+	{
+		// right-to-left
+		core::stringw line;
+		core::stringw word;
+		core::stringw whitespace;
+		s32 size = Text.size();
+		s32 length = 0;
+		s32 elWidth = RelativeRect.getWidth() - 6;
+		wchar_t c;
+
+		for (s32 i=size; i>=0; --i)
+		{
+			c = Text[i];
+			bool lineBreak = false;
+
+			if (c == L'\r') // Mac or Windows breaks
+			{
+				lineBreak = true;
+				if ((i>0) && Text[i-1] == L'\n') // Windows breaks
+				{
+					Text.erase(i-1);
+					--size;
+				}
+				c = '\0';
+			}
+			else if (c == L'\n') // Unix breaks
+			{
+				lineBreak = true;
+				c = '\0';
+			}
+
+			if (c==L' ' || c==0 || i==0)
+			{
+				if (word.size())
+				{
+					// here comes the next whitespace, look if
+					// we must break the last word to the next line.
+					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
+					const s32 wordlgth = font->getDimension(word.c_str()).Width;
+
+					if (length && (length + wordlgth + whitelgth > elWidth))
+					{
+						// break to next line
+						BrokenText.push_back(line);
+						length = wordlgth;
+						line = word;
+					}
+					else
+					{
+						// add word to line
+						line = whitespace + line;
+						line = word + line;
+						length += whitelgth + wordlgth;
+					}
+
+					word = L"";
+					whitespace = L"";
 				}
 
-				word = L"";
-				whitespace = L"";
+				whitespace = core::stringw(&c, 1) + whitespace;
+
+				// compute line break
+				if (lineBreak)
+				{
+					line = whitespace + line;
+					line = word + line;
+					BrokenText.push_back(line);
+					line = L"";
+					word = L"";
+					whitespace = L"";
+					length = 0;
+				}
 			}
-
-			whitespace += c;
-
-			// compute line break
-			if (lineBreak)
+			else
 			{
-				line += whitespace;
-				line += word;
-				BrokenText.push_back(line);
-				line = L"";
-				word = L"";
-				whitespace = L"";
-				length = 0;
+				// yippee this is a word..
+				word = core::stringw(&c, 1) + word;
 			}
 		}
-		else
-		{
-			// yippee this is a word..
-			word += c;
-		}
-	}
 
-	line += whitespace;
-	line += word;
-	BrokenText.push_back(line);
+		line = whitespace + line;
+		line = word + line;
+		BrokenText.push_back(line);
+	}
 }
 
 
@@ -445,6 +549,7 @@ void CGUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 	out->addBool	("OverrideBGColorEnabled",OverrideBGColorEnabled);
 	out->addBool	("WordWrap",		WordWrap);
 	out->addBool	("Background",          Background);
+	out->addBool	("RightToLeft",         RightToLeft);
 	out->addBool	("RestrainTextInside",  RestrainTextInside);
 	out->addColor	("OverrideColor",       OverrideColor);
 	out->addColor	("BGColor",       	BGColor);
@@ -465,6 +570,7 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	OverrideBGColorEnabled = in->getAttributeAsBool("OverrideBGColorEnabled");
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
 	Background = in->getAttributeAsBool("Background");
+	RightToLeft = in->getAttributeAsBool("RightToLeft");
 	RestrainTextInside = in->getAttributeAsBool("RestrainTextInside");
 	OverrideColor = in->getAttributeAsColor("OverrideColor");
 	BGColor = in->getAttributeAsColor("BGColor");
