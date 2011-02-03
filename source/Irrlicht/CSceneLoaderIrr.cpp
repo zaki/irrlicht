@@ -221,8 +221,8 @@ void CSceneLoaderIrr::readAnimators(io::IXMLReader* reader, ISceneNode* node)
 					ISceneNodeAnimator* anim = 0;
 
 					// todo: need a method to add animator by name in the scene manager. This loader and others like it
-					// have no business messing with the animator factories! 
-					for (s32 i=SceneManager->getRegisteredSceneNodeAnimatorFactoryCount(); i >=0 && !anim; --i)
+					// have no business messing with the animator factories!
+					for (s32 i=SceneManager->getRegisteredSceneNodeAnimatorFactoryCount()-1; i >=0 && !anim; --i)
 						anim = SceneManager->getSceneNodeAnimatorFactory(i)->createSceneNodeAnimator(typeName.c_str(), node);
 
 					if (anim)

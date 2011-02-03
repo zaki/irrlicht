@@ -869,8 +869,6 @@ void STextureAtlas::getScale(core::vector2df& scale)
 */
 void STextureAtlas::getTranslation ( const c8 * name, core::vector2di &pos )
 {
-	u32 i = 0;
-
 	for ( u32 i = 0; i < atlas.size(); ++i)
 	{
 		if ( atlas[i].name == name )

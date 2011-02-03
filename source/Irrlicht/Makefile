@@ -2,6 +2,7 @@ VERSION_MAJOR = 1
 VERSION_MINOR = 8
 VERSION_RELEASE = 0-SVN
 VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
+COMPATIBILITY_VERSION = $(VERSION_MAJOR).$(VERSION_MINOR)
 # Irrlicht Engine 1.7.0-SVN
 # Makefile for Linux
 #
@@ -132,7 +133,7 @@ staticlib_win32: $(STATIC_LIB)
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/MacOSX
 sharedlib_osx: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).$(COMPATIBILITY_VERSION) -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Installs Irrlicht if it was created as shared lib
@@ -141,7 +142,8 @@ install install_osx:
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
 	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht/
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
-	cd $(INSTALL_DIR) && ln -s -f $(SHARED_LIB).$(VERSION) $(SHARED_LIB)
+	cd $(INSTALL_DIR) && ln -s -f $(SHARED_LIB).$(VERSION) $(COMPATIBILITY_VERSION)
+
 #	ldconfig -n $(INSTALL_DIR)
 
 TAGS:
