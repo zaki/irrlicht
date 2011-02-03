@@ -867,7 +867,7 @@ void STextureAtlas::getScale(core::vector2df& scale)
 
 /*!
 */
-void STextureAtlas::getTranslation ( const c8 * name, core::vector2di &pos )
+void STextureAtlas::getTranslation(const c8* name, core::vector2di& pos)
 {
 	for ( u32 i = 0; i < atlas.size(); ++i)
 	{
@@ -881,7 +881,7 @@ void STextureAtlas::getTranslation ( const c8 * name, core::vector2di &pos )
 
 /*!
 */
-void STextureAtlas::create ( u32 border, E_TEXTURE_CLAMP texmode)
+void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 {
 	u32 i = 0;
 	u32 w = 0;
@@ -953,17 +953,16 @@ void STextureAtlas::create ( u32 border, E_TEXTURE_CLAMP texmode)
 	// build image
 	core::dimension2d<u32> dim = core::dimension2d<u32>( wsum, hsum ).getOptimalSize();
 	IImage* master = new CImage( format, dim );
-	master->fill ( 0 );
-
+	master->fill(0);
 
 	video::SColor col[2];
 
 	static const u8 wrap[][4] =
 	{
-		{1, 0 },	// ETC_REPEAT
-		{0, 1 },	// ETC_CLAMP
-		{0, 1 },	// ETC_CLAMP_TO_EDGE
-		{0, 1 }	// ETC_MIRROR
+		{1, 0},	// ETC_REPEAT
+		{0, 1},	// ETC_CLAMP
+		{0, 1},	// ETC_CLAMP_TO_EDGE
+		{0, 1}	// ETC_MIRROR
 	};
 
 	s32 a,b;
@@ -1002,7 +1001,7 @@ void STextureAtlas::create ( u32 border, E_TEXTURE_CLAMP texmode)
 
 /*!
 */
-SHalflifeHeader * CAnimatedMeshHalfLife::loadModel( io::IReadFile* file, const io::path &filename )
+SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io::path& filename)
 {
 	bool closefile = false;
 
@@ -1099,7 +1098,7 @@ SHalflifeHeader * CAnimatedMeshHalfLife::loadModel( io::IReadFile* file, const i
 		store = io::path ( "c:/h2/convert/" ) + fname + ".bmp";
 		SceneManager->getVideoDriver()->writeImageToFile ( TextureAtlas.Master, store );
 	#endif
-		TextureAtlas.release ();
+		TextureAtlas.release();
 #endif
 	}
 
@@ -1172,7 +1171,6 @@ f32 CAnimatedMeshHalfLife::SetController( s32 controllerIndex, f32 value )
 }
 
 
-
 /*!
 */
 u32 CAnimatedMeshHalfLife::SetSkin( u32 value )
@@ -1208,13 +1206,11 @@ bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
 		OwnTexModel = false;
 	}
 
-	u32 i;
-
 	// preload animations
 	if (Header->numseqgroups > 1)
 	{
 		c8 seq[8];
-		for ( i = 1; i < Header->numseqgroups; i++)
+		for (u32 i = 1; i < Header->numseqgroups; i++)
 		{
 			snprintf( seq, 8, "%02d.mdl", i );
 			submodel = path + texname + seq;
@@ -1227,7 +1223,6 @@ bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
 
 	return true;
 }
-
 
 
 /*!
@@ -1265,7 +1260,6 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 			hdr->numtransitions);
 		return;
 	}
-
 
 	printf("id: %c%c%c%c\n", phdr[0], phdr[1], phdr[2], phdr[3]);
 	printf("version: %d\n", hdr->version);
@@ -1389,18 +1383,15 @@ void CAnimatedMeshHalfLife::ExtractBbox( s32 sequence, core::aabbox3df &box )
 */
 void CAnimatedMeshHalfLife::calcBoneAdj()
 {
-	u32 j;
-	s32 i;
-	f32 value;
-	SHalflifeBoneController *bonecontroller;
+	SHalflifeBoneController *bonecontroller =
+		(SHalflifeBoneController *)((u8*) Header + Header->bonecontrollerindex);
 
-	bonecontroller = (SHalflifeBoneController *)((u8*) Header + Header->bonecontrollerindex);
-
-	for (j = 0; j < Header->numbonecontrollers; j++)
+	for (u32 j = 0; j < Header->numbonecontrollers; j++)
 	{
-		i = bonecontroller[j].index;
+		s32 i = bonecontroller[j].index;
 		f32 range = i <= 3 ? 255.f : 64.f;
 		// check for 360% wrapping
+		f32 value;
 		if (bonecontroller[j].type & STUDIO_RLOOP)
 		{
 			value = BoneController[i] * (360.f/256.f) + bonecontroller[j].start;
