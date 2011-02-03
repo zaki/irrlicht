@@ -18,6 +18,12 @@
 
 #include "os.h"
 
+// We need this include for the case of skinned mesh support without
+// any such loader
+#ifdef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+#include "CSkinnedMesh.h"
+#endif
+
 #ifdef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
 #include "CIrrMeshFileLoader.h"
 #endif
