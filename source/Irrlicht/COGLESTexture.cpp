@@ -277,12 +277,12 @@ void COGLES1Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 
 //! lock function
-void* COGLES1Texture::lock(bool readOnly, u32 mipmapLevel)
+void* COGLES1Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
 
-	ReadOnlyLock |= readOnly;
+	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
 
 	if (!Image)
