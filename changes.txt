@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Added ISceneManager::createSceneNodeAnimator to create animators by name
+
  - The Makefile now creates a symlink from the soname to the binary name during install. Binary compatibility is only confirmed between minor releases, so the only useful symlink is from libIrrlicht.so.1.8 to libIrrlicht.so.1.8.0; others should rightly fail.
 
  - Added SMF mesh loader, loads meshes from 3D World Studio. Originally written by Joseph Ellis
@@ -1831,6 +1833,7 @@ Changes in version 1.4.1 (04 Jun 2008)
  - Fixed 2d initialisation in opengl and d3d9 driver. This should fix problems with render states mixing up and distrubing, e.g. skin effects.
 
  - Avoid a crash when passing setSkin the current skin
+
 
  - Fixed current frame calculation for non-looped animations. Bug reported by greenya.
 

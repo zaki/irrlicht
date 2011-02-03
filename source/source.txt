@@ -6,9 +6,9 @@ the Irrlicht Engine. Instead, please use the .dll in the \bin directory, the
 .lib in the \lib directory and the header files in the \include directory.
 
 You will find a good tutorial how to set up your development environment and to
-use the engine in the \examples directory. (Try 1.helloworld)
+use the engine in the \examples directory. (Try 01.helloworld)
 
-The source of the engine is only included because of the following reasons:
+The source of the engine is included because for the following reasons:
 
 	- To let developers be able to debug the engine.
 	- To let developers be able to make changes to the engine.
