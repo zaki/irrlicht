@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - The Makefile now creates a symlink from the soname to the binary name during install. Binary compatibility is only confirmed between minor releases, so the only useful symlink is from libIrrlicht.so.1.8 to libIrrlicht.so.1.8.0; others should rightly fail.
+
  - Added SMF mesh loader, loads meshes from 3D World Studio. Originally written by Joseph Ellis
 
  - The loader selection process now consistently checks loader lists in reverse order, so new loaders added to Irrlicht override the internal ones. This applies when adding external mesh, image, scene and archive loaders, image writers, plus node, animator and GUI element factories. 
@@ -884,6 +886,7 @@ Changes in 1.6 (23.09.2009)
     wrong size of Matrices copy.
     renamed E_TRANSFORMATION_STATE_2 to E_TRANSFORMATION_STATE_FRUSTUM
     therefore also changed SViewFrustum::setTransformState to not tap
+
     in the pitfall again of wrong memory...
 
   - moved
