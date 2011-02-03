@@ -2335,7 +2335,7 @@ const c8* CSceneManager::getSceneNodeTypeName(ESCENE_NODE_TYPE type)
 {
 	const char* name = 0;
 
-	for (int i=(int)SceneNodeFactoryList.size()-1; !name && i>=0; --i)
+	for (s32 i=(s32)SceneNodeFactoryList.size()-1; !name && i>=0; --i)
 		name = SceneNodeFactoryList[i]->getCreateableSceneNodeTypeName(type);
 
 	return name;
@@ -2346,10 +2346,20 @@ ISceneNode* CSceneManager::addSceneNode(const char* sceneNodeTypeName, ISceneNod
 {
 	ISceneNode* node = 0;
 
-	for (int i=(int)SceneNodeFactoryList.size()-1; i>=0 && !node; --i)
+	for (s32 i=(s32)SceneNodeFactoryList.size()-1; i>=0 && !node; --i)
 			node = SceneNodeFactoryList[i]->addSceneNode(sceneNodeTypeName, parent);
 
 	return node;
+}
+
+ISceneNodeAnimator* CSceneManager::createSceneNodeAnimator(const char* typeName, ISceneNode* target)
+{
+	ISceneNodeAnimator *animator = 0;
+
+	for (s32 i=(s32)SceneNodeAnimatorFactoryList.size()-1; i>=0 && !animator; --i)
+		animator = SceneNodeAnimatorFactoryList[i]->createSceneNodeAnimator(typeName, target);
+
+	return animator;
 }
 
 

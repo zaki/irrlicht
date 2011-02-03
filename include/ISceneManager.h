@@ -1489,6 +1489,13 @@ namespace scene
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0) = 0;
 
+		//! creates a scene node animator based on its type name
+		/** \param typeName: Type of the scene node animator to add.
+		\param target: Target scene node of the new animator.
+		\return Returns pointer to the new scene node animator or null if not successful. You need to
+		drop this pointer after calling this, see IReferenceCounted::drop() for details. */
+		virtual ISceneNodeAnimator* createSceneNodeAnimator(const char* typeName, ISceneNode* target=0) = 0;
+
 		//! Creates a new scene manager.
 		/** This can be used to easily draw and/or store two
 		independent scenes at the same time. The mesh cache will be
