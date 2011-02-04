@@ -98,7 +98,7 @@ int main()
 	we are able to read from the files in that archive as if they are
 	directly stored on the disk.
 	*/
-	device->getFileSystem()->addZipFileArchive("../../media/map-20kdm2.pk3");
+	device->getFileSystem()->addFileArchive("../../media/map-20kdm2.pk3");
 
 	/*
 	Now we can load the mesh by calling
