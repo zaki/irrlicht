@@ -172,7 +172,7 @@ void CFileSystem::addArchiveLoader(IArchiveLoader* loader)
 }
 
 //! Returns the total number of archive loaders added.
-u32 CFileSystem::getArchiveLoaderCount() const 
+u32 CFileSystem::getArchiveLoaderCount() const
 {
 	return ArchiveLoader.size();
 }
@@ -217,20 +217,9 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	IFileArchive* archive = 0;
 	bool ret = false;
 
-	// check if the archive was already loaded
-	for (u32 idx = 0; idx < FileArchives.size(); ++idx)
-	{
-		// TODO: This should go into a path normalization method
-		// We need to check for directory names with trailing slash and without
-		const core::stringc absPath = getAbsolutePath(filename);
-		const core::stringc arcPath = FileArchives[idx]->getFileList()->getPath();
-		if ((absPath == arcPath) || ((absPath+"/") == arcPath))
-		{
-			if (password.size())
-				FileArchives[idx]->Password=password;
-			return true;
-		}
-	}
+	// see if archive is already added
+	if (changeArchivePassword(filename, password))
+		return true;
 
 	s32 i;
 
@@ -323,6 +312,105 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
+}
+
+// don't expose!
+bool CFileSystem::changeArchivePassword(const path& filename, const core::stringc& password)
+{
+	for (s32 idx = 0; idx < (s32)FileArchives.size(); ++idx)
+	{
+		// TODO: This should go into a path normalization method
+		// We need to check for directory names with trailing slash and without
+		const core::stringc absPath = getAbsolutePath(filename);
+		const core::stringc arcPath = FileArchives[idx]->getFileList()->getPath();
+		if ((absPath == arcPath) || ((absPath+"/") == arcPath))
+		{
+			if (password.size())
+				FileArchives[idx]->Password=password;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CFileSystem::addFileArchive(IReadFile* file, bool ignoreCase, bool ignorePaths,
+			E_FILE_ARCHIVE_TYPE archiveType, const core::stringc& password)
+{
+	if (!file || archiveType == EFAT_FOLDER)
+		return false;
+
+	if (file)
+	{
+		if (changeArchivePassword(file->getFileName(), password))
+			return true;
+
+		IFileArchive* archive = 0;
+		s32 i;
+
+		if (archiveType == EFAT_UNKNOWN)
+		{
+			// try to load archive based on file name
+			for (i = ArchiveLoader.size()-1; i >=0 ; --i)
+			{
+				if (ArchiveLoader[i]->isALoadableFileFormat(file->getFileName()))
+				{
+					archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
+					if (archive)
+						break;
+				}
+			}
+
+			// try to load archive based on content
+			if (!archive)
+			{
+				for (i = ArchiveLoader.size()-1; i >= 0; --i)
+				{
+					file->seek(0);
+					if (ArchiveLoader[i]->isALoadableFileFormat(file))
+					{
+						file->seek(0);
+						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
+						if (archive)
+							break;
+					}
+				}
+			}
+		}
+		else
+		{
+			// try to open archive based on archive loader type
+			for (i = ArchiveLoader.size()-1; i >= 0; --i)
+			{
+				if (ArchiveLoader[i]->isALoadableFileFormat(archiveType))
+				{
+					// attempt to open archive
+					file->seek(0);
+					if (ArchiveLoader[i]->isALoadableFileFormat(file))
+					{
+						file->seek(0);
+						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
+						if (archive)
+							break;
+					}
+				}
+			}
+		}
+
+		if (archive)
+		{
+			FileArchives.push_back(archive);
+			if (password.size())
+				archive->Password=password;
+			return true;
+		}
+		else
+		{
+			os::Printer::log("Could not create archive for", file->getFileName(), ELL_ERROR);
+		}
+	}
+
+	return false;
 }
 
 

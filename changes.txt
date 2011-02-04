@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Added the ability to open an archive from an IReadFile*, added a FileToHeader tool with instructions of how to make a portable app that consists of a single executable file.
+
  - Added ISceneManager::createSceneNodeAnimator to create animators by name
 
  - The Makefile now creates a symlink from the soname to the binary name during install. Binary compatibility is only confirmed between minor releases, so the only useful symlink is from libIrrlicht.so.1.8 to libIrrlicht.so.1.8.0; others should rightly fail.
@@ -2524,6 +2526,7 @@ Font improvements:
   of Animation name...
 
 - changed spelling "frustrum" to "frustum"
+
   -> changed also SViewFrustrum.h to SViewFrustum.h
 
 - changed Parameter AutomaticCulling from bool to enum E_CULLING_TYPE

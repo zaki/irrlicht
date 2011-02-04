@@ -117,6 +117,32 @@ public:
 			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
 			const core::stringc& password="") =0;
 
+	//! Adds an archive to the file system.
+	/** After calling this, the Irrlicht Engine will also search and open
+	files directly from this archive. This is useful for hiding data from
+	the end user, speeding up file access and making it possible to access
+	for example Quake3 .pk3 files, which are just renamed .zip files. By
+	default Irrlicht supports ZIP, PAK, TAR, PNK, and directories as
+	archives. You can provide your own archive types by implementing
+	IArchiveLoader and passing an instance to addArchiveLoader.
+	Irrlicht supports AES-encrypted zip files, and the advanced compression
+	techniques lzma and bzip2.
+	\param file: Archive to add to the file system.
+	\param ignoreCase: If set to true, files in the archive can be accessed without
+	writing all letters in the right case.
+	\param ignorePaths: If set to true, files in the added archive can be accessed
+	without its complete path.
+	\param archiveType: If no specific E_FILE_ARCHIVE_TYPE is selected then
+	the type of archive will depend on the extension of the file name. If
+	you use a different extension then you can use this parameter to force
+	a specific type of archive.
+	\param password An optional password, which is used in case of encrypted archives.
+	\return True if the archive was added successfully, false if not. */
+	virtual bool addFileArchive(IReadFile* file, bool ignoreCase=true,
+			bool ignorePaths=true,
+			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
+			const core::stringc& password="") =0;
+
 	//! Get the number of archives currently attached to the file system
 	virtual u32 getFileArchiveCount() const =0;
 

@@ -51,6 +51,12 @@ public:
 			E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN,
 			const core::stringc& password="");
 
+	//! Adds an archive to the file system.
+	virtual bool addFileArchive(IReadFile* file, bool ignoreCase=true,
+			bool ignorePaths=true,
+			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
+			const core::stringc& password="");
+
 	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
 	virtual bool moveFileArchive( u32 sourceIndex, s32 relative );
 
@@ -135,6 +141,9 @@ public:
 	virtual IAttributes* createEmptyAttributes(video::IVideoDriver* driver);
 
 private:
+
+	// don't expose, needs refactoring
+	bool changeArchivePassword(const path& filename, const core::stringc& password);
 
 	//! Currently used FileSystemType
 	EFileSystemType FileSystemType;
