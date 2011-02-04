@@ -2,7 +2,7 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Build all examples">
 		<Project filename="01.HelloWorld/HelloWorld.cbp" />
-		<Project filename="02.Quake3Map/Quake3Map.cbp" />
+		<Project filename="02.Quake3Map/Quake3Map.cbp" active="1" />
 		<Project filename="03.CustomSceneNode/CustomSceneNode.cbp" />
 		<Project filename="04.Movement/Movement.cbp" />
 		<Project filename="05.UserInterface/UserInterface.cbp" />
@@ -15,7 +15,7 @@
 		<Project filename="12.TerrainRendering/TerrainRendering.cbp" />
 		<Project filename="13.RenderToTexture/RenderToTexture.cbp" />
 		<Project filename="14.Win32Window/Win32Window.cbp" />
-		<Project filename="15.LoadIrrFile/LoadIrrFile.cbp" active="1" />
+		<Project filename="15.LoadIrrFile/LoadIrrFile.cbp" />
 		<Project filename="16.Quake3MapShader/Quake3MapShader.cbp" />
 		<Project filename="18.SplitScreen/SplitScreen.cbp" />
 		<Project filename="19.MouseAndJoystick/MouseAndJoystick.cbp" />
@@ -26,5 +26,6 @@
 		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" />
 		<Project filename="../tools/MeshConverter/MeshConverter.cbp" />
 		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" />
+		<Project filename="../tools/FileToHeader/FileToHeader.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
