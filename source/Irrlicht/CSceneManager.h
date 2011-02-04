@@ -518,7 +518,7 @@ namespace scene
 		void clearDeletionList();
 
 		//! writes a scene node
-		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer, const c8* currentPath=0, bool init=false);
+		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer, const fschar_t* currentPath=0, bool init=false);
 
 		struct DefaultNodeEntry
 		{

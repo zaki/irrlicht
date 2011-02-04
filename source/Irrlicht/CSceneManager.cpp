@@ -2205,7 +2205,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 
 //! writes a scene node
 void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer,
-		const c8* currentPath, bool init)
+		const fschar_t* currentPath, bool init)
 {
 	if (!writer || !node || node->isDebugObject())
 		return;
