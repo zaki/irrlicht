@@ -25,9 +25,9 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 		core::dimension2d<u32>(512, 384), 16, false, false, false, this);
 
 	if (MenuDevice->getFileSystem()->existFile("irrlicht.dat"))
-		MenuDevice->getFileSystem()->addZipFileArchive("irrlicht.dat");
+		MenuDevice->getFileSystem()->addFileArchive("irrlicht.dat");
 	else
-		MenuDevice->getFileSystem()->addZipFileArchive("../../media/irrlicht.dat");
+		MenuDevice->getFileSystem()->addFileArchive("../../media/irrlicht.dat");
 
 	video::IVideoDriver* driver = MenuDevice->getVideoDriver();
 	scene::ISceneManager* smgr = MenuDevice->getSceneManager();
