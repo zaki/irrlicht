@@ -16,7 +16,7 @@
 #if !defined(_IRR_XBOX_PLATFORM_)
 	#include <windows.h>
 	#include <mmsystem.h> // For JOYCAPS
-	#include <Windowsx.h>
+	#include <windowsx.h>
 #endif
 #if !defined(GET_X_LPARAM)
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))

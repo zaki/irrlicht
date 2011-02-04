@@ -77,7 +77,7 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 
 	if (CreationParams.Fullscreen)
 	{
-#if _WIN32_WINNT >= 0x0501
+#if (_WIN32_WINNT >= 0x0501)
 		if (SetConsoleDisplayMode(WindowsSTDOut, CONSOLE_FULLSCREEN_MODE, Dimensions))
 		{
 			CreationParams.WindowSize.Width = Dimensions->X;
