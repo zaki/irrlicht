@@ -129,6 +129,8 @@ void CMountPointReader::buildDirectory()
 		else
 		{
 			const io::path rel = list->getFileName(i);
+			RealFileNames.push_back(list->getFullFileName(i));
+
 			io::path pwd  = Parent->getWorkingDirectory();
 			if (pwd.lastChar() != '/')
 				pwd.append('/');
