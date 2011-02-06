@@ -44,7 +44,7 @@ namespace scene
 
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor color);
-		
+
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TEXT; }
 
@@ -61,7 +61,7 @@ namespace scene
 	{
 	public:
 
-		CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
+		CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			gui::IGUIFont* font,const wchar_t* text,
 			const core::vector3df& position, const core::dimension2d<f32>& size,
 			video::SColor colorTop, video::SColor shade_bottom);
@@ -69,6 +69,10 @@ namespace scene
 		//! destructor
 		virtual ~CBillboardTextSceneNode();
 
+		//! sets the vertex positions etc
+		virtual void OnAnimate(u32 timeMs);
+
+		//! registers the node into the transparent pass
 		virtual void OnRegisterSceneNode();
 
 		//! renders the node.
@@ -82,7 +86,7 @@ namespace scene
 
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor color);
-		
+
 		//! sets the size of the billboard
 		virtual void setSize(const core::dimension2d<f32>& size);
 
@@ -90,7 +94,7 @@ namespace scene
 		virtual const core::dimension2d<f32>& getSize() const;
 
 		virtual video::SMaterial& getMaterial(u32 i);
-		
+
 		//! returns amount of materials used by this scene node.
 		virtual u32 getMaterialCount() const;
 

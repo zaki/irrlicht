@@ -236,7 +236,7 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 
 
 //! pre render event
-void CBillboardTextSceneNode::OnRegisterSceneNode()
+void CBillboardTextSceneNode::OnAnimate(u32 timeMs)
 {
 	if (!IsVisible || !Font || !Mesh)
 		return;
@@ -256,7 +256,7 @@ void CBillboardTextSceneNode::OnRegisterSceneNode()
 	if (textLength<0.0f)
 		textLength=1.0f;
 
-//	const core::matrix4 &m = camera->getViewFrustum()->Matrices[ video::ETS_VIEW ];
+	//const core::matrix4 &m = camera->getViewFrustum()->Matrices[ video::ETS_VIEW ];
 
 	// make billboard look to camera
 	core::vector3df pos = getAbsolutePosition();
@@ -319,7 +319,10 @@ void CBillboardTextSceneNode::OnRegisterSceneNode()
 	BBox = Mesh->getBoundingBox();
 	core::matrix4 mat( getAbsoluteTransformation(), core::matrix4::EM4CONST_INVERSE );
 	mat.transformBoxEx(BBox);
+}
 
+void CBillboardTextSceneNode::OnRegisterSceneNode()
+{
 	SceneManager->registerNodeForRendering(this, ESNRP_TRANSPARENT);
 	ISceneNode::OnRegisterSceneNode();
 }
