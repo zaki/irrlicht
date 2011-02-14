@@ -1217,7 +1217,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
+		_IRR_DEPRECATED_ virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
 
 		//! Creates a software image from a part of another image.
 		/** \deprecated Create an empty image and use copyTo()
@@ -1227,7 +1227,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImage(IImage* imageToCopy,
+		_IRR_DEPRECATED_ virtual IImage* createImage(IImage* imageToCopy,
 				const core::position2d<s32>& pos,
 				const core::dimension2d<u32>& size) =0;
 
