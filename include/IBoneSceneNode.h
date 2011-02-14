@@ -61,7 +61,7 @@ namespace scene
 
 		//! Get the name of the bone
 		/** \deprecated Use getName instead. */
-		virtual const c8* getBoneName() const { return getName(); }
+		_IRR_DEPRECATED_ virtual const c8* getBoneName() const { return getName(); }
 
 		//! Get the index of the bone
 		virtual u32 getBoneIndex() const = 0;

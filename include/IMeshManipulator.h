@@ -94,7 +94,7 @@ namespace scene
 		/** \deprecated Use scale() instead
 		\param mesh Mesh on which the operation is performed.
 		\param factor Scale factor for each axis. */
-		void scaleMesh(IMesh* mesh, const core::vector3df& factor) const {return scale(mesh,factor);}
+		_IRR_DEPRECATED_ void scaleMesh(IMesh* mesh, const core::vector3df& factor) const {return scale(mesh,factor);}
 
 		//! Scale the texture coords of a mesh.
 		/** \param mesh Mesh on which the operation is performed.
@@ -134,7 +134,7 @@ namespace scene
 		/** \deprecated Use transform() instead
 		\param mesh Mesh on which the operation is performed.
 		\param m transformation matrix. */
-		virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const {return transform(mesh,m);}
+		_IRR_DEPRECATED_ virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const {return transform(mesh,m);}
 
 		//! Clones a static IMesh into a modifiable SMesh.
 		/** All meshbuffers in the returned SMesh
