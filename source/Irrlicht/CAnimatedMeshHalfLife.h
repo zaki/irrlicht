@@ -101,7 +101,7 @@ namespace scene
 
 		s32 numtransitions;		// animation node to animation node transition graph
 		s32	transitionindex;
-	};
+	} PACK_STRUCT;
 
 	// header for demand loaded sequence group data
 	typedef struct
@@ -111,7 +111,7 @@ namespace scene
 
 		c8 name[64];
 		s32 length;
-	} studioseqhdr_t;
+	} PACK_STRUCT studioseqhdr_t;
 
 	// bones
 	struct SHalflifeBone
@@ -122,7 +122,7 @@ namespace scene
 		s32 bonecontroller[6];	// bone controller index, -1 == none
 		f32 value[6];	// default DoF values
 		f32 scale[6];   // scale for delta DoF values
-	};
+	} PACK_STRUCT;
 
 
 	// bone controllers
@@ -134,7 +134,7 @@ namespace scene
 		f32 end;
 		s32 rest;	// byte index value at rest
 		s32 index;	// 0-3 user set controller, 4 mouth
-	};
+	} PACK_STRUCT;
 
 	// intersection boxes
 	struct SHalflifeBBox
@@ -143,7 +143,7 @@ namespace scene
 		s32 group;			// intersection group
 		vec3_hl bbmin;		// bounding box
 		vec3_hl bbmax;
-	};
+	} PACK_STRUCT;
 
 #ifndef ZONE_H
 	typedef void *cache_user_t;
@@ -156,7 +156,7 @@ namespace scene
 		c8 name[64];	// file name
 		cache_user_t cache;		// cache index pointer
 		s32 data;		// hack for group 0
-	};
+	} PACK_STRUCT;
 
 	// sequence descriptions
 	struct SHalflifeSequence
@@ -202,7 +202,7 @@ namespace scene
 		s32 nodeflags;		// transition rules
 
 		s32 nextseq;		// auto advancing sequences
-	};
+	} PACK_STRUCT;
 
 	// events
 	typedef struct
@@ -211,7 +211,7 @@ namespace scene
 		s32 event;
 		s32 type;
 		c8 options[64];
-	} mstudioevent_t;
+	} PACK_STRUCT mstudioevent_t;
 
 
 	// pivots
@@ -220,7 +220,7 @@ namespace scene
 		vec3_hl org;	// pivot point
 		s32 start;
 		s32 end;
-	} mstudiopivot_t;
+	} PACK_STRUCT mstudiopivot_t;
 
 	// attachment
 	struct SHalfelifeAttachment
@@ -230,12 +230,12 @@ namespace scene
 		s32 bone;
 		vec3_hl org;	// attachment point
 		vec3_hl vectors[3];
-	};
+	} PACK_STRUCT;
 
 	struct SHalflifeAnimOffset
 	{
 		u16	offset[6];
-	};
+	} PACK_STRUCT;
 
 	// animation frames
 	union SHalfelifeAnimationFrame
@@ -243,9 +243,9 @@ namespace scene
 		struct {
 			u8	valid;
 			u8	total;
-		} num;
+		} PACK_STRUCT num;
 		s16		value;
-	};
+	} PACK_STRUCT;
 
 
 	// body part index
@@ -255,7 +255,7 @@ namespace scene
 		u32 nummodels;
 		u32 base;
 		u32 modelindex; // index into models array
-	};
+	} PACK_STRUCT;
 
 
 	// skin info
@@ -266,7 +266,7 @@ namespace scene
 		s32 width;
 		s32 height;
 		s32 index;
-	};
+	} PACK_STRUCT;
 
 
 	// skin families
@@ -292,7 +292,7 @@ namespace scene
 
 		u32	numgroups;		// deformation groups
 		u32	groupindex;
-	};
+	} PACK_STRUCT;
 
 
 	// meshes
@@ -303,14 +303,14 @@ namespace scene
 		u32	skinref;
 		u32	numnorms;		// per mesh normals
 		u32	normindex;		// normal vec3_hl
-	} SHalflifeMesh;
+	} PACK_STRUCT SHalflifeMesh;
 
-			// lighting options
+	// lighting options
 	#define STUDIO_NF_FLATSHADE		0x0001
 	#define STUDIO_NF_CHROME		0x0002
 	#define STUDIO_NF_FULLBRIGHT	0x0004
 
-			// motion flags
+	// motion flags
 	#define STUDIO_X		0x0001
 	#define STUDIO_Y		0x0002
 	#define STUDIO_Z		0x0004
@@ -329,10 +329,10 @@ namespace scene
 	#define STUDIO_TYPES	0x7FFF
 	#define STUDIO_RLOOP	0x8000	// controller that wraps shortest distance
 
-			// sequence flags
+	// sequence flags
 	#define STUDIO_LOOPING	0x0001
 
-			// bone flags
+	// bone flags
 	#define STUDIO_HAS_NORMALS	0x0001
 	#define STUDIO_HAS_VERTICES 0x0002
 	#define STUDIO_HAS_BBOX		0x0004
@@ -341,7 +341,7 @@ namespace scene
 	#define RAD_TO_STUDIO		(32768.0/M_PI)
 	#define STUDIO_TO_RAD		(M_PI/32768.0)
 
-		// Default alignment
+// Default alignment
 #if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
