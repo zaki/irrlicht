@@ -39,7 +39,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Linux;" />
+			<Add alias="All" targets="Windows;Linux;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-W" />
