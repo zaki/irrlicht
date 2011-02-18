@@ -186,7 +186,7 @@ public:
 
 	//! Adds a zip archive to the file system.
 	/** \deprecated This function is provided for compatibility
-	with older versions of Irrlicht and may be removed in future versions,
+	with older versions of Irrlicht and may be removed in Irrlicht 1.9,
 	you should use addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
@@ -204,7 +204,7 @@ public:
 
 	//! Adds an unzipped archive (or basedirectory with subdirectories..) to the file system.
 	/** \deprecated This function is provided for compatibility
-	with older versions of Irrlicht and may be removed in future versions,
+	with older versions of Irrlicht and may be removed in Irrlicht 1.9,
 	you should use addFileArchive instead.
 	Useful for handling data which will be in a zip file
 	\param filename: Filename of the unzipped zip archive base directory to add to the file system.
@@ -220,7 +220,7 @@ public:
 
 	//! Adds a pak archive to the file system.
 	/** \deprecated This function is provided for compatibility
-	with older versions of Irrlicht and may be removed in future versions,
+	with older versions of Irrlicht and may be removed in Irrlicht 1.9,
 	you should use addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
