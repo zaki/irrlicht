@@ -565,7 +565,7 @@ namespace scene
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
 
 		//! Adds a scene node for rendering using a octree to the scene graph.
-		/** \deprecated Use addOctreeSceneNode instead. */
+		/** \deprecated Use addOctreeSceneNode instead. This method may be removed by Irrlicht 1.9. */
 		_IRR_DEPRECATED_ IMeshSceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false)
 		{
@@ -589,7 +589,7 @@ namespace scene
 			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
 
 		//! Adds a scene node for rendering using a octree to the scene graph.
-		/** \deprecated Use addOctreeSceneNode instead. */
+		/** \deprecated Use addOctreeSceneNode instead. This method may be removed by Irrlicht 1.9. */
 		_IRR_DEPRECATED_ IMeshSceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false)
 		{
@@ -1333,7 +1333,7 @@ namespace scene
 			ISceneNode* node, s32 minimalPolysPerNode=32) = 0;
 
 		//! //! Creates a Triangle Selector, optimized by an octree.
-		/** \deprecated Use createOctreeTriangleSelector instead. */
+		/** \deprecated Use createOctreeTriangleSelector instead. This method may be removed by Irrlicht 1.9. */
 		_IRR_DEPRECATED_ ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode=32)
 		{

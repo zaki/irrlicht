@@ -512,7 +512,8 @@ namespace video
 		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
-		to release 1.5 and is provided for backwards compatibility only.*/
+		to release 1.5 and is provided for backwards compatibility only. 
+		This parameter may be removed by Irrlicht 1.9. */
 		virtual void makeColorKeyTexture(video::ITexture* texture,
 						video::SColor color,
 						bool zeroTexels = false) const =0;
@@ -528,7 +529,8 @@ namespace video
 		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
-		to release 1.5 and is provided for backwards compatibility only.*/
+		to release 1.5 and is provided for backwards compatibility only.
+		This parameter may be removed by Irrlicht 1.9. */
 		virtual void makeColorKeyTexture(video::ITexture* texture,
 				core::position2d<s32> colorKeyPixelPos,
 				bool zeroTexels = false) const =0;
@@ -1211,7 +1213,7 @@ namespace video
 		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) =0;
 
 		//! Creates a software image by converting it to given format from another image.
-		/** \deprecated Create an empty image and use copyTo()
+		/** \deprecated Create an empty image and use copyTo(). This method may be removed by Irrlicht 1.9.
 		\param format Desired color format of the image.
 		\param imageToCopy Image to copy to the new image.
 		\return The created image.
@@ -1220,7 +1222,7 @@ namespace video
 		_IRR_DEPRECATED_ virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
 
 		//! Creates a software image from a part of another image.
-		/** \deprecated Create an empty image and use copyTo()
+		/** \deprecated Create an empty image and use copyTo(). This method may be removed by Irrlicht 1.9.
 		\param imageToCopy Image to copy to the new image in part.
 		\param pos Position of rectangle to copy.
 		\param size Extents of rectangle to copy.
