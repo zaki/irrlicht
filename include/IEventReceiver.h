@@ -245,11 +245,12 @@ namespace irr
 			//! A tree view node was expanded. See IGUITreeView::getLastEventNode().
 			EGET_TREEVIEW_NODE_EXPAND,
 
-			//! deprecated - use EGET_TREEVIEW_NODE_COLLAPSE instead
-			EGET_TREEVIEW_NODE_COLLAPS,
-
 			//! A tree view node was collapsed. See IGUITreeView::getLastEventNode().
-			EGET_TREEVIEW_NODE_COLLAPSE = EGET_TREEVIEW_NODE_COLLAPS,
+			EGET_TREEVIEW_NODE_COLLAPSE,
+
+			//! deprecated - use EGET_TREEVIEW_NODE_COLLAPSE instead. This 
+			//! may be removed by Irrlicht 1.9 
+			EGET_TREEVIEW_NODE_COLLAPS = EGET_TREEVIEW_NODE_COLLAPSE,
 
 			//! No real event. Just for convenience to get number of events
 			EGET_COUNT
