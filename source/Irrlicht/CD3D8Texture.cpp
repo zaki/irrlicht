@@ -251,7 +251,7 @@ void* CD3D8Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 			os::Printer::log("Could not lock DIRECT3D8 Texture.", "Data copy failed.", ELL_ERROR);
 			return 0;
 		}
-		hr = RTTSurface->LockRect(&rect, 0, readOnly?D3DLOCK_READONLY:0);
+		hr = RTTSurface->LockRect(&rect, 0, (mode==ETLM_READ_ONLY)?D3DLOCK_READONLY:0);
 		if(FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D8 Texture.", "LockRect failed.", ELL_ERROR);
