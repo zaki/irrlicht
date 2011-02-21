@@ -32,7 +32,9 @@ CGUIFont::CGUIFont(IGUIEnvironment *env, const io::path& filename)
 		// don't grab environment, to avoid circular references
 		Driver = Environment->getVideoDriver();
 
-		SpriteBank = Environment->addEmptySpriteBank(filename);
+		SpriteBank = Environment->getSpriteBank(filename);
+		if (!SpriteBank)	// could be default-font which has no file
+			SpriteBank = Environment->addEmptySpriteBank(filename);
 		if (SpriteBank)
 			SpriteBank->grab();
 	}
@@ -51,7 +53,13 @@ CGUIFont::~CGUIFont()
 		Driver->drop();
 
 	if (SpriteBank)
+	{
 		SpriteBank->drop();
+		// TODO: spritebank still exists in gui-environment and should be removed here when it's
+		// reference-count is 1. Just can't do that from here at the moment.
+		// But spritebank would not be able to drop textures anyway because those are in texture-cache
+		// where they can't be removed unless materials start reference-couting 'em.
+	}
 }
 
 
@@ -60,6 +68,8 @@ bool CGUIFont::load(io::IXMLReader* xml)
 {
 	if (!SpriteBank)
 		return false;
+
+	SpriteBank->clear();
 
 	while (xml->read())
 	{
@@ -191,6 +201,9 @@ bool CGUIFont::load(io::IXMLReader* xml)
 
 void CGUIFont::setMaxHeight()
 {
+	if ( !SpriteBank )
+		return;
+
 	MaxHeight = 0;
 	s32 t;
 
@@ -231,7 +244,7 @@ bool CGUIFont::load(const io::path& filename)
 //! load & prepare font from ITexture
 bool CGUIFont::loadTexture(video::IImage* image, const io::path& name)
 {
-	if (!image)
+	if (!image || !SpriteBank)
 		return false;
 
 	s32 lowerRightPositions = 0;
@@ -293,6 +306,9 @@ bool CGUIFont::loadTexture(video::IImage* image, const io::path& name)
 
 void CGUIFont::readPositions(video::IImage* image, s32& lowerRightPositions)
 {
+	if (!SpriteBank )
+		return;
+
 	const core::dimension2d<u32> size = image->getDimension();
 
 	video::SColor colorTopLeft = image->getPixel(0,0);
@@ -467,7 +483,7 @@ void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 					bool hcenter, bool vcenter, const core::rect<s32>* clip
 				)
 {
-	if (!Driver)
+	if (!Driver || !SpriteBank)
 		return;
 
 	core::dimension2d<s32> textDimension;	// NOTE: don't make this u32 or the >> later on can fail when the dimension width is < position width
