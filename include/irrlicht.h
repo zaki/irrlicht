@@ -129,6 +129,7 @@
 #include "path.h"
 #include "irrXML.h"
 #include "ISceneCollisionManager.h"
+#include "ISceneLoader.h"
 #include "ISceneManager.h"
 #include "ISceneNode.h"
 #include "ISceneNodeAnimator.h"
