@@ -229,6 +229,14 @@ void CGUITable::setColumnWidth(u32 columnIndex, u32 width)
 	recalculateWidths();
 }
 
+//! Get the width of a column
+u32 CGUITable::getColumnWidth(u32 columnIndex) const
+{
+	if ( columnIndex >= Columns.size() )
+		return 0;
+
+	return Columns[columnIndex].Width;
+}
 
 void CGUITable::setResizableColumns(bool resizable)
 {
