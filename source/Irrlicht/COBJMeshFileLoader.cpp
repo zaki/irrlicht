@@ -219,7 +219,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				Idx[1] = Idx[2] = -1;
 
 				// read in next vertex's data
-				u32 wlength = copyWord(vertexWord, linePtr, WORD_BUFFER_LENGTH, bufEnd);
+				u32 wlength = copyWord(vertexWord, linePtr, WORD_BUFFER_LENGTH, endPtr);
 				// this function will also convert obj's 1-based index to c++'s 0-based index
 				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer.size(), textureCoordBuffer.size(), normalsBuffer.size());
 				v.Pos = vertexBuffer[Idx[0]];
@@ -830,7 +830,8 @@ core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* bufEnd)
 			break;
 		++ptr;
 	}
-	return core::stringc(inBuf, (u32)(ptr-inBuf+1));
+	// we must avoid the +1 in case the array is used up
+	return core::stringc(inBuf, (u32)(ptr-inBuf+((ptr < bufEnd) ? 1 : 0)));
 }
 
 
