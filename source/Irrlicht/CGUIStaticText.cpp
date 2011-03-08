@@ -330,8 +330,33 @@ void CGUIStaticText::breakText()
 					// we must break the last word to the next line.
 					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
 					const s32 wordlgth = font->getDimension(word.c_str()).Width;
-
-					if (length && (length + wordlgth + whitelgth > elWidth))
+					
+					if (wordlgth > elWidth)
+					{
+						// This word is too long to fit in the available space, look for
+						// the Unicode Soft HYphen (SHY / 00AD) character for a place to
+						// break the word at
+						int where = word.findFirst( wchar_t(0x00AD) );
+						if (where != -1)
+						{
+							core::stringw first  = word.subString(0, where);
+							core::stringw second = word.subString(where, word.size() - where);
+							BrokenText.push_back(line + first + L"-");
+							const s32 secondLength = font->getDimension(second.c_str()).Width;
+							
+							length = secondLength;
+							line = second;
+						}
+						else
+						{
+							// No soft hyphen found, so there's nothing more we can do
+							// break to next line
+							BrokenText.push_back(line);
+							length = wordlgth;
+							line = word;
+						}
+					}
+					else if (length && (length + wordlgth + whitelgth > elWidth))
 					{
 						// break to next line
 						BrokenText.push_back(line);
