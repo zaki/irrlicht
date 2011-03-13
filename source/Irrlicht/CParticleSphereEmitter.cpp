@@ -59,7 +59,7 @@ s32 CParticleSphereEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& ou
 		for(u32 i=0; i<amount; ++i)
 		{
 			// Random distance from center
-			const f32 distance = os::Randomizer::rand() * Radius;
+			const f32 distance = os::Randomizer::frand() * Radius;
 
 			// Random direction from center
 			p.pos.set(Center + distance);
