@@ -641,8 +641,10 @@ void CGUITabControl::draw()
 			skin->draw3DTabButton(this, false, frameRect, &AbsoluteClippingRect, VerticalAlignment);
 
 			// draw text
+			core::rect<s32> textClipRect(frameRect);	// TODO: exact size depends on borders in draw3DTabButton which we don't get with current interface
+			textClipRect.clipAgainst(AbsoluteClippingRect);
 			font->draw(text, frameRect, Tabs[i]->getTextColor(),
-				true, true, &frameRect);
+				true, true, &textClipRect);
 		}
 	}
 
@@ -659,8 +661,10 @@ void CGUITabControl::draw()
 			skin->draw3DTabButton(this, true, frameRect, &AbsoluteClippingRect, VerticalAlignment);
 
 			// draw text
+			core::rect<s32> textClipRect(frameRect);	// TODO: exact size depends on borders in draw3DTabButton which we don't get with current interface
+			textClipRect.clipAgainst(AbsoluteClippingRect);
 			font->draw(activeTab->getText(), frameRect, activeTab->getTextColor(),
-				true, true, &frameRect);
+				true, true, &textClipRect);
 
 			tr.UpperLeftCorner.X = AbsoluteRect.UpperLeftCorner.X;
 			tr.LowerRightCorner.X = left - 1;

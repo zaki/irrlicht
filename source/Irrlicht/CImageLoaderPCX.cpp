@@ -90,14 +90,14 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 
 		u8 *tempPalette = new u8[768];
 		paletteData = new s32[256];
-		memset(paletteData, 0xFF, 256*sizeof(s32));
 		file->read( tempPalette, 768 );
 
 		for( s32 i=0; i<256; i++ )
 		{
-			paletteData[i] = (tempPalette[i*3+0] << 16) |
-					 (tempPalette[i*3+1] << 8) |
-					 (tempPalette[i*3+2] );
+			paletteData[i] = (0xff000000 |
+					(tempPalette[i*3+0] << 16) |
+					(tempPalette[i*3+1] << 8) |
+					(tempPalette[i*3+2]));
 		}
 
 		delete [] tempPalette;
@@ -107,12 +107,12 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 	else if( header.BitsPerPixel == 4 )
 	{
 		paletteData = new s32[16];
-		memset(paletteData, 0, 16*sizeof(s32));
-		for( s32 i=0; i<256; i++ )
+		for( s32 i=0; i<16; i++ )
 		{
-			paletteData[i] = (header.Palette[i*3+0] << 16) |
-					 (header.Palette[i*3+1] << 8) |
-					 (header.Palette[i*3+2]);
+			paletteData[i] = (0xff000000 |
+					(header.Palette[i*3+0] << 16) |
+					(header.Palette[i*3+1] << 8) |
+					(header.Palette[i*3+2]));
 		}
 	}
 
