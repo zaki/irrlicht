@@ -896,13 +896,10 @@ void CGUITable::draw()
 	// area of for the items (without header and without scrollbars)
 	core::rect<s32> clientClip(tableRect);
 	clientClip.UpperLeftCorner.Y = headerBottom + 1;
-
-	core::rect<s32>* clipRect = 0;
-	if (Clip)
-		clipRect = &AbsoluteClippingRect;
+	clientClip.clipAgainst(AbsoluteClippingRect);
 
 	// draw background for whole element
-	skin->draw3DSunkenPane(this, skin->getColor(EGDC_3D_HIGH_LIGHT), true, DrawBack, AbsoluteRect, clipRect);
+	skin->draw3DSunkenPane(this, skin->getColor(EGDC_3D_HIGH_LIGHT), true, DrawBack, AbsoluteRect, &AbsoluteClippingRect);
 
 	// scrolledTableClient is the area where the table items would be if it could be drawn completely
 	core::rect<s32> scrolledTableClient(tableRect);
@@ -973,6 +970,9 @@ void CGUITable::draw()
 	core::rect<s32> columnSeparator(clientClip);
 	pos = scrolledTableClient.UpperLeftCorner.X;
 
+	core::rect<s32> tableClip(tableRect);
+	tableClip.clipAgainst(AbsoluteClippingRect);
+
 	for (u32 i = 0 ; i < Columns.size() ; ++i )
 	{
 		const wchar_t* text = Columns[i].Name.c_str();
@@ -983,19 +983,19 @@ void CGUITable::draw()
 		core::rect<s32> columnrect(pos, tableRect.UpperLeftCorner.Y, pos + colWidth, headerBottom);
 
 		// draw column background
-		skin->draw3DButtonPaneStandard(this, columnrect, &tableRect);
+		skin->draw3DButtonPaneStandard(this, columnrect, &tableClip);
 
 		// draw column seperator
 		if ( DrawFlags & EGTDF_COLUMNS )
 		{
 			columnSeparator.UpperLeftCorner.X = pos;
 			columnSeparator.LowerRightCorner.X = pos + 1;
-			driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), columnSeparator, &tableRect);
+			driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), columnSeparator, &tableClip);
 		}
 
 		// draw header column text
 		columnrect.UpperLeftCorner.X += CellWidthPadding;
-		font->draw(text, columnrect, skin->getColor( isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &tableRect);
+		font->draw(text, columnrect, skin->getColor( isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &tableClip);
 
 		// draw icon for active column tab
 		if ( (s32)i == ActiveTab )
@@ -1004,13 +1004,13 @@ void CGUITable::draw()
 			{
 				columnrect.UpperLeftCorner.X = columnrect.LowerRightCorner.X - CellWidthPadding - ARROW_PAD / 2 + 2;
 				columnrect.UpperLeftCorner.Y += 7;
-				skin->drawIcon(this,EGDI_CURSOR_UP,columnrect.UpperLeftCorner,0,0,false,&tableRect);
+				skin->drawIcon(this,EGDI_CURSOR_UP,columnrect.UpperLeftCorner,0,0,false,&tableClip);
 			}
 			else
 			{
 				columnrect.UpperLeftCorner.X = columnrect.LowerRightCorner.X - CellWidthPadding - ARROW_PAD / 2 + 2;
 				columnrect.UpperLeftCorner.Y += 7;
-				skin->drawIcon(this,EGDI_CURSOR_DOWN,columnrect.UpperLeftCorner,0,0,false,&tableRect);
+				skin->drawIcon(this,EGDI_CURSOR_DOWN,columnrect.UpperLeftCorner,0,0,false,&tableClip);
 			}
 		}
 
@@ -1019,7 +1019,7 @@ void CGUITable::draw()
 
 	// fill up header background up to the right side
 	core::rect<s32> columnrect(pos, tableRect.UpperLeftCorner.Y, tableRect.LowerRightCorner.X , headerBottom);
-	skin->draw3DButtonPaneStandard(this, columnrect, &tableRect);
+	skin->draw3DButtonPaneStandard(this, columnrect, &tableClip);
 
 	IGUIElement::draw();
 }

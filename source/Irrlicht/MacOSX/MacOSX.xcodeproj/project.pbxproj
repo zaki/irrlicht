@@ -1062,6 +1062,13 @@
 		0E2E3D3C1103E3F4002DE8D7 /* ManagedLights.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ManagedLights.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E2E3D681103E6C6002DE8D7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0E2E3D791103E6E4002DE8D7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		0E2E3E1B1103F773002DE8D7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		0E2E3E1D1103F773002DE8D7 /* q3factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = q3factory.cpp; sourceTree = "<group>"; };
+		0E2E3E1E1103F773002DE8D7 /* q3factory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = q3factory.h; sourceTree = "<group>"; };
+		0E2E3E261103F773002DE8D7 /* sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sound.cpp; sourceTree = "<group>"; };
+		0E2E3E271103F773002DE8D7 /* sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sound.h; sourceTree = "<group>"; };
+		0E2E3E291103F773002DE8D7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		0E2E3E321103F773002DE8D7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3430E4D41022C391006271FD /* CTarReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTarReader.h; sourceTree = "<group>"; };
 		3430E4D51022C391006271FD /* CTarReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CTarReader.cpp; sourceTree = "<group>"; };
 		344FD4A41039E98C0045FD3F /* CMountPointReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMountPointReader.cpp; sourceTree = "<group>"; };
@@ -2679,6 +2686,34 @@
 			path = 20.ManagedLights;
 			sourceTree = "<group>";
 		};
+		0E2E3E1A1103F773002DE8D7 /* 21.Quake3Explorer */ = {
+			isa = PBXGroup;
+			children = (
+				0E2E3E1B1103F773002DE8D7 /* main.cpp */,
+				0E2E3E1D1103F773002DE8D7 /* q3factory.cpp */,
+				0E2E3E1E1103F773002DE8D7 /* q3factory.h */,
+				0E2E3E261103F773002DE8D7 /* sound.cpp */,
+				0E2E3E271103F773002DE8D7 /* sound.h */,
+			);
+			path = 21.Quake3Explorer;
+			sourceTree = "<group>";
+		};
+		0E2E3E281103F773002DE8D7 /* 22.MaterialViewer */ = {
+			isa = PBXGroup;
+			children = (
+				0E2E3E291103F773002DE8D7 /* main.cpp */,
+			);
+			path = 22.MaterialViewer;
+			sourceTree = "<group>";
+		};
+		0E2E3E311103F773002DE8D7 /* 23.SMeshHandling */ = {
+			isa = PBXGroup;
+			children = (
+				0E2E3E321103F773002DE8D7 /* main.cpp */,
+			);
+			path = 23.SMeshHandling;
+			sourceTree = "<group>";
+		};
 		34EF91900F65F9AD000B5651 /* loader */ = {
 			isa = PBXGroup;
 			children = (
@@ -2870,6 +2905,9 @@
 				0E2E3D671103E6C6002DE8D7 /* 18.SplitScreen */,
 				0946CC980EC99B8B00D945A5 /* 19.MouseAndJoystick */,
 				0E2E3D781103E6E4002DE8D7 /* 20.ManagedLights */,
+				0E2E3E1A1103F773002DE8D7 /* 21.Quake3Explorer */,
+				0E2E3E281103F773002DE8D7 /* 22.MaterialViewer */,
+				0E2E3E311103F773002DE8D7 /* 23.SMeshHandling */,
 				4C0054C40A48470500C844C2 /* Demo */,
 			);
 			name = examples;

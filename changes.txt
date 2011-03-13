@@ -261,6 +261,10 @@ The following names can be queried for the given types:
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
 
+ - Fix clipping in CGUITabControl
+
+ - Fix clipping in CGUITable, reported by ceyron
+
  - Skip bone weights and additional information in ms3d file if no joint was defined before.
 
  - Fix mem leak in CImage, found by mloren.
