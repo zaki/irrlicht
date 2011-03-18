@@ -84,11 +84,11 @@ namespace video
 		ETS_COUNT
 	};
 
-	//! enumeration for signalling ressources which were lost after the last render cycle
-	/** These values can be signalled by the driver, telling the app that some ressources
+	//! enumeration for signaling resources which were lost after the last render cycle
+	/** These values can be signaled by the driver, telling the app that some resources
 	were lost and need to be recreated. Irrlicht will sometimes recreate the actual objects,
 	but the content needs to be recreated by the application. */
-	enum E_LOST_RESSOURCE
+	enum E_LOST_RESOURCE
 	{
 		//! The whole device/driver is lost
 		ELR_DEVICE = 1,
