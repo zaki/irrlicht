@@ -129,6 +129,8 @@ f32 CGUISpinBox::getValue() const
 
 void CGUISpinBox::setRange(f32 min, f32 max)
 {
+	if (max<min)
+		core::swap(min, max);
 	RangeMin = min;
 	RangeMax = max;
 	verifyValueRange();
