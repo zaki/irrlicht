@@ -16,6 +16,7 @@
 #include "IFileList.h"
 #include "os.h"
 #include "CImage.h"
+#include "fast_atof.h"
 
 namespace irr
 {
@@ -25,26 +26,30 @@ namespace gui
 const s32 CSD_WIDTH = 350;
 const s32 CSD_HEIGHT = 300;
 
-struct sTemplate
+namespace
+{
+
+struct subElementPredefines
 {
 	const wchar_t *pre;
 	const wchar_t *init;
-	const wchar_t *pos;
+	const wchar_t *post;
 	int x, y;
 	int range_down ,range_up;
 };
 
-static const sTemplate Template [] =
+static const subElementPredefines Template [] =
 {
-	{ L"A:", L"0", 0,20,165, 0, 255 },
+	{ L"A:", L"0", 0,50,165, 0, 255 },
 	{ L"R:", L"0", 0,20,205, 0, 255 },
 	{ L"G:", L"0", 0,20,230, 0, 255 },
 	{ L"B:", L"0", 0,20,255, 0, 255 },
-	{ L"H:", L"0", L"°",180,205, 0, 360 },
-	{ L"S:", L"0", L"%",180,230, 0, 100 },
-	{ L"L:", L"0", L"%",180,255, 0, 100 },
+	{ L"H:", L"0", L"°",80,205, 0, 360 },
+	{ L"S:", L"0", L"%",80,230, 0, 100 },
+	{ L"L:", L"0", L"%",80,255, 0, 100 },
 };
 
+}
 
 //! constructor
 CGUIColorSelectDialog::CGUIColorSelectDialog(const wchar_t* title, IGUIEnvironment* environment, IGUIElement* parent, s32 id)
@@ -107,7 +112,7 @@ CGUIColorSelectDialog::CGUIColorSelectDialog(const wchar_t* title, IGUIEnvironme
 	ColorRing.Control->setSubElement(true);
 	ColorRing.Control->grab();
 
-	for ( u32 i = 0; i != sizeof (Template) / sizeof ( sTemplate ); ++i )
+	for ( u32 i = 0; i != sizeof (Template) / sizeof ( subElementPredefines ); ++i )
 	{
 		if ( Template[i].pre )
 		{
@@ -119,41 +124,28 @@ CGUIColorSelectDialog::CGUIColorSelectDialog(const wchar_t* title, IGUIEnvironme
 			t->setSubElement(true);
 		}
 
-		if ( Template[i].pos )
+		if ( Template[i].post )
 		{
-			r.UpperLeftCorner.X = Template[i].x + 52;
+			r.UpperLeftCorner.X = Template[i].x + 56;
 			r.UpperLeftCorner.Y = Template[i].y;
 			r.LowerRightCorner.X = r.UpperLeftCorner.X + 15;
 			r.LowerRightCorner.Y = r.UpperLeftCorner.Y + 20;
-			IGUIElement *t = Environment->addStaticText( Template[i].pos, r, false, false, this);
+			IGUIElement *t = Environment->addStaticText( Template[i].post, r, false, false, this);
 			t->setSubElement(true);
 		}
 
-		SBatteryItem item;
-		item.Incoming=0.f;
-		item.Outgoing=0.f;
-
 		r.UpperLeftCorner.X = Template[i].x + 15;
-		r.UpperLeftCorner.Y = Template[i].y;
-		r.LowerRightCorner.X = r.UpperLeftCorner.X + 35;
+		r.UpperLeftCorner.Y = Template[i].y-2;
+		r.LowerRightCorner.X = r.UpperLeftCorner.X + 40;
 		r.LowerRightCorner.Y = r.UpperLeftCorner.Y + 20;
 
-		item.Edit = Environment->addEditBox( Template[i].init, r, true, this);
-		item.Edit->setSubElement(true);
-		item.Edit->grab();
+		gui::IGUISpinBox* spin = Environment->addSpinBox( Template[i].init, r, true, this);
+		spin->setSubElement(true);
+		spin->setDecimalPlaces(0);
+		spin->setRange((f32)Template[i].range_down, (f32)Template[i].range_up);
+		spin->grab();
 
-		r.UpperLeftCorner.X = Template[i].x + 70;
-		r.UpperLeftCorner.Y = Template[i].y + 4;
-		r.LowerRightCorner.X = r.UpperLeftCorner.X + 60;
-		r.LowerRightCorner.Y = r.UpperLeftCorner.Y + 12;
-
-		item.Scrollbar = Environment->addScrollBar(true, r, this);
-		item.Scrollbar->grab ();
-		item.Scrollbar->setSubElement(true);
-		item.Scrollbar->setMax ( Template[i].range_up - Template[i].range_down );
-		item.Scrollbar->setSmallStep ( 1 );
-
-		Battery.push_back ( item );
+		Battery.push_back(spin);
 	}
 
 	bringToFront(CancelButton);
@@ -173,11 +165,8 @@ CGUIColorSelectDialog::~CGUIColorSelectDialog()
 	if (CancelButton)
 		CancelButton->drop();
 
-	for ( u32 i = 0; i != Battery.size ();++i )
-	{
-		Battery[i].Edit->drop();
-		Battery[i].Scrollbar->drop();
-	}
+	for (u32 i = 0; i != Battery.size(); ++i)
+		Battery[i]->drop();
 
 	if (ColorRing.Control)
 		ColorRing.Control->drop();
@@ -195,10 +184,10 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, 
 	const s32 radiusOut = ( d.Width / 2 ) - 4;
 	const s32 fullR2 = radiusOut * radiusOut;
 
-	video::SColor rgb(0xFF000000);
+	video::SColorf rgb(0,0,0);
 	video::SColorHSL hsl;
-	hsl.Luminance = 0.5f;
-	hsl.Saturation = 1.f;
+	hsl.Luminance = 50;
+	hsl.Saturation = 100;
 
 	core::position2d<s32> p;
 	for ( p.Y = -radiusOut;  p.Y <= radiusOut;  p.Y += 1  )
@@ -221,68 +210,58 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, 
 				// normalize, dotproduct = xnorm
 				const f32 xn = r == 0.f ? 0.f : -p.X * core::reciprocal(r);
 
-				hsl.Hue = acosf(xn);
+				hsl.Hue = acosf(xn)*core::RADTODEG;
 				if ( p.Y > 0 )
-					hsl.Hue = (2.f * core::PI ) - hsl.Hue;
-
-				hsl.Hue -= core::PI / 2.f;
+					hsl.Hue = 360 - hsl.Hue;
+				hsl.Hue -= 90;
 
 				const f32 rTest = r / radiusOut;
-/*
-				if ( rTest < 0.25f )
+#if 0
+				if (rTest < 0.33f)
 				{
-					hsl.Luminance = rTest / 0.25f;
+					// luminance from 0 to 50
+					hsl.Luminance = 50*(rTest/0.33);
 					hsl.Saturation = 0.f;
-					hsl.toRGB  ( rgb );
-					*dst = rgb.color;
-				}
-				else
-				if ( rTest < 0.4f )
-				{
-					hsl.Saturation = ( rTest - 0.25f ) / 0.15f;
-					hsl.Luminance = 1.f - ( hsl.Saturation / 2.4f );
-					hsl.Luminance = 0.5f;
-					hsl.toRGB  ( rgb );
-					// *dst = rgb.color;
-				}
-				else
-				if ( rTest < 0.75f )
-				{
-					hsl.Luminance = 0.5f;
-					hsl.Saturation = 1.f;
-					hsl.toRGB  ( rgb );
-					*dst = rgb.color;
-				}
-				else
-				if ( rTest < 0.98f )
-				{
-					hsl.Luminance = 0.5f - ( ( rTest - 0.75f ) / 0.75f );
-					hsl.Saturation = 1.f;
-					hsl.toRGB  ( rgb );
-					*dst = rgb.color;
-				}
-*/
-
-				if ( rTest >= 0.5f )
-				{
-					hsl.Luminance = 0.5f;
-					hsl.Saturation = 1.f;
 					hsl.toRGB(rgb);
-
-					if ( rTest <= 0.55f )
-					{
-						const u32 alpha = (u32) ( (rTest - 0.5f ) * ( 255.f / 0.05f ) );
-						rgb.setAlpha(alpha);
-					}
-					else if ( rTest >= 0.95f )
-					{
-						const u32 alpha = (u32) ( (rTest - 0.95f ) * ( 255.f / 0.05f ) );
-						rgb.setAlpha(255-alpha);
-					}
-					else
-						rgb.setAlpha(255);
-					RawTexture->setPixel(4+p.X+radiusOut, 4+p.Y+radiusOut, rgb);
 				}
+				else
+				if ( rTest < 0.66f )
+				{
+					// saturation from 0 to 100
+					hsl.Saturation = 100*(( rTest - 0.33f ) / 0.33f);
+					hsl.Luminance = 50;
+					hsl.toRGB(rgb);
+				}
+				else
+				{
+					// luminance from 50 to 100
+					hsl.Luminance = 100*(0.5f + ( ( rTest - 0.66f ) / .66f ));
+					hsl.Saturation = 100;
+					hsl.toRGB(rgb);
+				}
+				// borders should be slightly transparent
+				if ( rTest >= 0.95f )
+					rgb.a = (1.f-rTest)*20;
+				else
+					rgb.a=1.f;
+#else
+				if ( rTest > 0.5f )
+				{
+					hsl.Saturation = 100;
+					hsl.Luminance = 50;
+					hsl.toRGB(rgb);
+				}
+				// borders should be slightly transparent
+				if ( rTest < 0.5f )
+					rgb.a = 0;
+				else if ( rTest >= 0.95f )
+					rgb.a = (1.f-rTest)*20;
+				else if ( rTest <= 0.55f )
+					rgb.a = (rTest-0.5f)*20;
+				else
+					rgb.a=1.f;
+#endif
+				RawTexture->setPixel(4+p.X+radiusOut, 4+p.Y+radiusOut, rgb.toSColor());
 			}
 		}
 	}
@@ -319,43 +298,63 @@ bool CGUIColorSelectDialog::OnEvent(const SEvent& event)
 			case EET_GUI_EVENT:
 			switch(event.GUIEvent.EventType)
 			{
-				case EGET_SCROLL_BAR_CHANGED:
+				case EGET_SPINBOX_CHANGED:
 				{
 					for ( u32 i = 0; i!= Battery.size (); ++i )
 					{
-						if ( event.GUIEvent.Caller == Battery[i].Scrollbar )
+						if ( event.GUIEvent.Caller == Battery[i] )
 						{
-							const s32 value = Template[i].range_down + Battery[i].Scrollbar->getPos();
-							Battery[i].Edit->setText(core::stringw(value).c_str());
+							if (i<4)
+							{
+								video::SColor rgb((u32)Battery[0]->getValue(), (u32)Battery[1]->getValue(),
+									(u32)Battery[2]->getValue(), (u32)Battery[3]->getValue());
+								video::SColorHSL hsl;
+								video::SColorf rgb2(rgb);
+								hsl.fromRGB(rgb2);
+								Battery[4]->setValue(hsl.Hue);
+								Battery[5]->setValue(hsl.Saturation);
+								Battery[6]->setValue(hsl.Luminance);
+							}
+							else
+							{
+								video::SColorHSL hsl(Battery[4]->getValue(), Battery[5]->getValue(),
+									Battery[6]->getValue());
+								video::SColorf rgb2;
+								hsl.toRGB(rgb2);
+								video::SColor rgb = rgb2.toSColor();
+								Battery[1]->setValue((f32)rgb.getRed());
+								Battery[2]->setValue((f32)rgb.getGreen());
+								Battery[3]->setValue((f32)rgb.getBlue());
+							}
 						}
 					}
 					return true;
 				}
 
-			case EGET_ELEMENT_FOCUS_LOST:
-				Dragging = false;
-				break;
-			case EGET_BUTTON_CLICKED:
-				if (event.GUIEvent.Caller == CloseButton ||
-					event.GUIEvent.Caller == CancelButton)
-				{
-					sendCancelEvent();
-					remove();
-					return true;
-				}
-				else
-				if (event.GUIEvent.Caller == OKButton)
-				{
-					sendSelectedEvent();
-					remove();
-					return true;
-				}
-				break;
+				case EGET_ELEMENT_FOCUS_LOST:
+					Dragging = false;
+					break;
+				case EGET_BUTTON_CLICKED:
+					if (event.GUIEvent.Caller == CloseButton ||
+						event.GUIEvent.Caller == CancelButton)
+					{
+						sendCancelEvent();
+						remove();
+						return true;
+					}
+					else
+					if (event.GUIEvent.Caller == OKButton)
+					{
+						sendSelectedEvent();
+						remove();
+						return true;
+					}
+					break;
 
-			case EGET_LISTBOX_CHANGED:
-			case EGET_LISTBOX_SELECTED_AGAIN:
-			default:
-				break;
+				case EGET_LISTBOX_CHANGED:
+				case EGET_LISTBOX_SELECTED_AGAIN:
+				default:
+					break;
 			}
 			break;
 		case EET_MOUSE_INPUT_EVENT:
@@ -420,14 +419,40 @@ void CGUIColorSelectDialog::draw()
 			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true,
 			&AbsoluteClippingRect);
 	}
-	IGUIFont* font = Environment->getBuiltInFont();
-	if (font)
-		font->draw(L"+", core::rect<s32>(20,20,50,50), video::SColor(), false, false,
-		&AbsoluteClippingRect);
 
 	IGUIElement::draw();
+
+	// draw color selector after the window elements
+	core::vector2di pos(ColorRing.Control->getAbsolutePosition().UpperLeftCorner);
+	pos.X += ColorRing.Texture->getOriginalSize().Width/2;
+	pos.Y += ColorRing.Texture->getOriginalSize().Height/2;
+#if 0
+	const f32 h = Battery[4]->getValue();
+	const f32 s = Battery[5]->getValue();
+	const f32 l = Battery[6]->getValue();
+	const f32 factor = 58.f*(((s==0)&&(l<50))?(l*0.33f/50):(
+		(s<100)?((.33f+(s*0.33f/100))):((0.66f+(l-50)*0.33f/50))));
+
+#else
+	const f32 factor = 44;
+#endif
+	pos.X += core::round32(sinf(Battery[4]->getValue()*core::DEGTORAD)*factor);
+	pos.Y -= core::round32(cosf(Battery[4]->getValue()*core::DEGTORAD)*factor);
+	Environment->getVideoDriver()->draw2DPolygon(pos, 4, 0xffffffff, 4);
 }
 
+
+video::SColor CGUIColorSelectDialog::getColor()
+{
+	return video::SColor((u32)Battery[0]->getValue(), (u32)Battery[1]->getValue(),
+						(u32)Battery[2]->getValue(), (u32)Battery[3]->getValue());
+}
+
+video::SColorHSL CGUIColorSelectDialog::getColorHSL()
+{
+	return video::SColorHSL(Battery[4]->getValue(), Battery[5]->getValue(),
+							Battery[6]->getValue());
+}
 
 //! sends the event that the file has been selected.
 void CGUIColorSelectDialog::sendSelectedEvent()
@@ -457,4 +482,3 @@ void CGUIColorSelectDialog::sendCancelEvent()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
-

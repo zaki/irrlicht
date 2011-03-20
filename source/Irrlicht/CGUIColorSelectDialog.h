@@ -10,8 +10,7 @@
 
 #include "IGUIColorSelectDialog.h"
 #include "IGUIButton.h"
-#include "IGUIEditBox.h"
-#include "IGUIScrollBar.h"
+#include "IGUISpinBox.h"
 #include "IGUIImage.h"
 #include "irrArray.h"
 
@@ -37,6 +36,9 @@ namespace gui
 		//! draws the element and its children
 		virtual void draw();
 
+		virtual video::SColor getColor();
+		virtual video::SColorHSL getColorHSL();
+
 	private:
 
 		//! sends the event that the file has been selected.
@@ -51,14 +53,7 @@ namespace gui
 		IGUIButton* OKButton;
 		IGUIButton* CancelButton;
 
-		struct SBatteryItem
-		{
-			f32 Incoming;
-			f32 Outgoing;
-			IGUIEditBox * Edit;
-			IGUIScrollBar *Scrollbar;
-		};
-		core::array< SBatteryItem > Battery;
+		core::array<IGUISpinBox*> Battery;
 
 		struct SColorCircle
 		{
@@ -77,4 +72,3 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif // __C_GUI_COLOR_SELECT_DIALOG_H_INCLUDED__
-
