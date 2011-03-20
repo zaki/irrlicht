@@ -31,7 +31,7 @@ to ask the user for a driver type using the console.
 #endif
 
 #ifdef IRRLICHT_QUAKE3_ARENA
-	#define QUAKE3_STORAGE_FORMAT	addZipFileArchive
+	#define QUAKE3_STORAGE_FORMAT	addFileArchive
 	#define QUAKE3_STORAGE_1	"../../media/map-20kdm2.pk3"
 	#define QUAKE3_MAP_NAME			"maps/20kdm2.bsp"
 #endif
@@ -145,7 +145,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
 	//! add our private media directory to the file system
-	device->getFileSystem()->addFolderFileArchive("../../media/");
+	device->getFileSystem()->addFileArchive("../../media/");
 
 	/*
 	To display the Quake 3 map, we first need to load it. Quake 3 maps
