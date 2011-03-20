@@ -1888,7 +1888,7 @@ void CQuake3EventHandler::createParticleImpacts( u32 now )
 
 			pas->setMaterialFlag(video::EMF_LIGHTING, false);
 			pas->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-			pas->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA );
+			pas->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
 			pas->setMaterialTexture(0, Game->Device->getVideoDriver()->getTexture( smoke[g].texture ));
 		}
 

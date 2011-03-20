@@ -328,7 +328,7 @@ int main()
 		// scale the mesh by factor 50
 		core::matrix4 m;
 		m.setScale ( core::vector3df(50,50,50) );
-		manipulator->transformMesh( tangentSphereMesh, m );
+		manipulator->transform( tangentSphereMesh, m );
 
 		earth = smgr->addMeshSceneNode(tangentSphereMesh);
 
@@ -427,7 +427,7 @@ int main()
 		core::aabbox3d<f32>(-3,0,-3,3,1,3),
 		core::vector3df(0.0f,0.03f,0.0f),
 		80,100,
-		video::SColor(0,255,255,255), video::SColor(0,255,255,255),
+		video::SColor(10,255,255,255), video::SColor(10,255,255,255),
 		400,1100);
 	em->setMinStartSize(core::dimension2d<f32>(30.0f, 40.0f));
 	em->setMaxStartSize(core::dimension2d<f32>(30.0f, 40.0f));
@@ -444,7 +444,7 @@ int main()
 	ps->setMaterialFlag(video::EMF_LIGHTING, false);
 	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	ps->setMaterialTexture(0, driver->getTexture("../../media/fireball.bmp"));
-	ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+	ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 
 	MyEventReceiver receiver(room, earth, env, driver);
 	device->setEventReceiver(&receiver);

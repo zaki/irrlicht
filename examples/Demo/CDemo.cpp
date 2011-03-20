@@ -525,7 +525,7 @@ void CDemo::loadSceneData()
 	scene::IParticleEmitter* em = campFire->createBoxEmitter(
 		core::aabbox3d<f32>(-7,0,-7,7,1,7),
 		core::vector3df(0.0f,0.06f,0.0f),
-		80,100, video::SColor(0,255,255,255),video::SColor(0,255,255,255), 800,2000);
+		80,100, video::SColor(1,255,255,255),video::SColor(1,255,255,255), 800,2000);
 
 	em->setMinStartSize(core::dimension2d<f32>(20.0f, 10.0f));
 	em->setMaxStartSize(core::dimension2d<f32>(20.0f, 10.0f));
@@ -539,7 +539,8 @@ void CDemo::loadSceneData()
 	campFire->setMaterialFlag(video::EMF_LIGHTING, false);
 	campFire->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	campFire->setMaterialTexture(0, driver->getTexture("../../media/fireball.bmp"));
-	campFire->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+	campFire->setMaterialType(video::EMT_ONETEXTURE_BLEND);
+	campFire->getMaterial(0).MaterialTypeParam=video::pack_texureBlendFunc(video::EBF_ONE, video::EBF_ONE_MINUS_SRC_ALPHA, video::EMFN_MODULATE_1X, video::EAS_VERTEX_COLOR);
 
 	// load music
 
