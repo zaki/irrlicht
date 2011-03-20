@@ -151,9 +151,6 @@ namespace scene
 	{
 	public:
 
-		//! Destructor
-		virtual ~ISceneManager() {}
-
 		//! Get pointer to an animateable mesh. Loads the file if not loaded already.
 		/**
 		 * If you want to remove a loaded mesh from the cache again, use removeMesh().
