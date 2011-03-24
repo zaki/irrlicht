@@ -37,10 +37,7 @@ namespace scene
 	: ITerrainSceneNode(parent, mgr, id, position, rotation, scale),
 	TerrainData(patchSize, maxLOD, position, rotation, scale), RenderBuffer(0),
 	VerticesToRender(0), IndicesToRender(0), DynamicSelectorUpdate(false),
-	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(false),
-	OldCameraPosition(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
-	OldCameraRotation(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
-	OldCameraUp(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
+	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(true),
 	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),CameraFOVDelta(0.1f),
 	TCoordScale1(1.0f), TCoordScale2(1.0f), FileSystem(fs)
 	{
@@ -168,7 +165,7 @@ namespace scene
 				vertex.Normal.set(0.0f, 1.0f, 0.0f);
 				vertex.Color = vertexColor;
 				vertex.Pos.X = fx;
-				vertex.Pos.Y = (f32) heightMap->getPixel(TerrainData.Size-x-1,z).getLuminance();
+				vertex.Pos.Y = (f32) heightMap->getPixel(TerrainData.Size-x-1,z).getLightness();
 				vertex.Pos.Z = fz;
 
 				vertex.TCoords.X = vertex.TCoords2.X = 1.f-fx2;
@@ -1274,54 +1271,57 @@ namespace scene
 	void CTerrainSceneNode::calculatePatchData()
 	{
 		// Reset the Terrains Bounding Box for re-calculation
-		TerrainData.BoundingBox = core::aabbox3df(999999.9f, 999999.9f, 999999.9f, -999999.9f, -999999.9f, -999999.9f);
+		TerrainData.BoundingBox.reset(RenderBuffer->getPosition(0));
 
 		for (s32 x = 0; x < TerrainData.PatchCount; ++x)
 		{
 			for (s32 z = 0; z < TerrainData.PatchCount; ++z)
 			{
 				const s32 index = x * TerrainData.PatchCount + z;
-				TerrainData.Patches[index].CurrentLOD = 0;
+				SPatch& patch = TerrainData.Patches[index];
+				patch.CurrentLOD = 0;
 
+				const s32 xstart = x*TerrainData.CalcPatchSize;
+				const s32 xend = xstart+TerrainData.CalcPatchSize;
+				const s32 zstart = z*TerrainData.CalcPatchSize;
+				const s32 zend = zstart+TerrainData.CalcPatchSize;
 				// For each patch, calculate the bounding box (mins and maxes)
-				TerrainData.Patches[index].BoundingBox = core::aabbox3df(999999.9f, 999999.9f, 999999.9f,
-					-999999.9f, -999999.9f, -999999.9f);
+				patch.BoundingBox.reset(RenderBuffer->getPosition(xstart*TerrainData.Size + zstart));
 
-				for (s32 xx = x*(TerrainData.CalcPatchSize); xx <= (x + 1) * TerrainData.CalcPatchSize; ++xx)
-					for (s32 zz = z*(TerrainData.CalcPatchSize); zz <= (z + 1) * TerrainData.CalcPatchSize; ++zz)
-						TerrainData.Patches[index].BoundingBox.addInternalPoint(RenderBuffer->getVertexBuffer()[xx * TerrainData.Size + zz].Pos);
-
+				for (s32 xx = xstart; xx <= xend; ++xx)
+					for (s32 zz = zstart; zz <= zend; ++zz)
+						patch.BoundingBox.addInternalPoint(RenderBuffer->getVertexBuffer()[xx * TerrainData.Size + zz].Pos);
 
 				// Reconfigure the bounding box of the terrain as a whole
-				TerrainData.BoundingBox.addInternalBox(TerrainData.Patches[index].BoundingBox);
+				TerrainData.BoundingBox.addInternalBox(patch.BoundingBox);
 
 				// get center of Patch
-				TerrainData.Patches[index].Center = TerrainData.Patches[index].BoundingBox.getCenter();
+				patch.Center = patch.BoundingBox.getCenter();
 
 				// Assign Neighbours
 				// Top
 				if (x > 0)
-					TerrainData.Patches[index].Top = &TerrainData.Patches[(x-1) * TerrainData.PatchCount + z];
+					patch.Top = &TerrainData.Patches[(x-1) * TerrainData.PatchCount + z];
 				else
-					TerrainData.Patches[index].Top = 0;
+					patch.Top = 0;
 
 				// Bottom
 				if (x < TerrainData.PatchCount - 1)
-					TerrainData.Patches[index].Bottom = &TerrainData.Patches[(x+1) * TerrainData.PatchCount + z];
+					patch.Bottom = &TerrainData.Patches[(x+1) * TerrainData.PatchCount + z];
 				else
-					TerrainData.Patches[index].Bottom = 0;
+					patch.Bottom = 0;
 
 				// Left
 				if (z > 0)
-					TerrainData.Patches[index].Left = &TerrainData.Patches[x * TerrainData.PatchCount + z - 1];
+					patch.Left = &TerrainData.Patches[x * TerrainData.PatchCount + z - 1];
 				else
-					TerrainData.Patches[index].Left = 0;
+					patch.Left = 0;
 
 				// Right
 				if (z < TerrainData.PatchCount - 1)
-					TerrainData.Patches[index].Right = &TerrainData.Patches[x * TerrainData.PatchCount + z + 1];
+					patch.Right = &TerrainData.Patches[x * TerrainData.PatchCount + z + 1];
 				else
-					TerrainData.Patches[index].Right = 0;
+					patch.Right = 0;
 			}
 		}
 
@@ -1378,8 +1378,6 @@ namespace scene
 		if (!Mesh->getMeshBufferCount())
 			return 0;
 
-		f32 height = -999999.9f;
-
 		core::matrix4 rotMatrix;
 		rotMatrix.setRotationDegrees(TerrainData.Rotation);
 		core::vector3df pos(x, 0.0f, z);
@@ -1390,6 +1388,7 @@ namespace scene
 		s32 X(core::floor32(pos.X));
 		s32 Z(core::floor32(pos.Z));
 
+		f32 height = -FLT_MAX;
 		if (X >= 0 && X < TerrainData.Size-1 &&
 				Z >= 0 && Z < TerrainData.Size-1)
 		{
