@@ -1594,7 +1594,7 @@ bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 
 //! Create occlusion query.
 /** Use node for identification and mesh for occlusion test. */
-void CNullDriver::createOcclusionQuery(scene::ISceneNode* node, const scene::IMesh* mesh)
+void CNullDriver::addOcclusionQuery(scene::ISceneNode* node, const scene::IMesh* mesh)
 {
 	if (!node)
 		return;

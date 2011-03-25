@@ -101,7 +101,7 @@ namespace video
 
 		//! Create occlusion query.
 		/** Use node for identification and mesh for occlusion test. */
-		virtual void createOcclusionQuery(scene::ISceneNode* node,
+		virtual void addOcclusionQuery(scene::ISceneNode* node,
 				const scene::IMesh* mesh=0);
 
 		//! Remove occlusion query.
