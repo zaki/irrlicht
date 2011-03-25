@@ -1248,13 +1248,13 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 
 //! Create occlusion query.
 /** Use node for identification and mesh for occlusion test. */
-void COpenGLDriver::createOcclusionQuery(scene::ISceneNode* node,
+void COpenGLDriver::addOcclusionQuery(scene::ISceneNode* node,
 		const scene::IMesh* mesh)
 {
 	if (!queryFeature(EVDF_OCCLUSION_QUERY))
 		return;
 
-	CNullDriver::createOcclusionQuery(node, mesh);
+	CNullDriver::addOcclusionQuery(node, mesh);
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
 	if ((index != -1) && (OcclusionQueries[index].UID == 0))
 		extGlGenQueries(1, reinterpret_cast<GLuint*>(&OcclusionQueries[index].UID));

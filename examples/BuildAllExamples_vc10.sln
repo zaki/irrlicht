@@ -134,6 +134,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FontTool", "..\tools\IrrFon
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshConverter", "..\tools\MeshConverter\MeshConverter_vc10.vcxproj", "{E72B637E-4AA6-46F3-885F-AC67B4B470ED}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "26.OcclusionQuery", "26.OcclusionQuery\OcclusionQuery_vc10.vcxproj", "{5CE0E2E7-879D-4152-B61D-24E7D0707B45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -256,6 +258,10 @@ Global
 		{E72B637E-4AA6-46F3-885F-AC67B4B470ED}.Debug|Win32.Build.0 = Debug|Win32
 		{E72B637E-4AA6-46F3-885F-AC67B4B470ED}.Release|Win32.ActiveCfg = Release|Win32
 		{E72B637E-4AA6-46F3-885F-AC67B4B470ED}.Release|Win32.Build.0 = Release|Win32
+		{5CE0E2E7-879D-4152-B61D-24E7D0707B45}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5CE0E2E7-879D-4152-B61D-24E7D0707B45}.Debug|Win32.Build.0 = Debug|Win32
+		{5CE0E2E7-879D-4152-B61D-24E7D0707B45}.Release|Win32.ActiveCfg = Release|Win32
+		{5CE0E2E7-879D-4152-B61D-24E7D0707B45}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1265,12 +1265,12 @@ void CD3D9Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 
 //! Create occlusion query.
 /** Use node for identification and mesh for occlusion test. */
-void CD3D9Driver::createOcclusionQuery(scene::ISceneNode* node,
+void CD3D9Driver::addOcclusionQuery(scene::ISceneNode* node,
 		const scene::IMesh* mesh)
 {
 	if (!queryFeature(EVDF_OCCLUSION_QUERY))
 		return;
-	CNullDriver::createOcclusionQuery(node, mesh);
+	CNullDriver::addOcclusionQuery(node, mesh);
 	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
 	if ((index != -1) && (OcclusionQueries[index].PID == 0))
 		pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, reinterpret_cast<IDirect3DQuery9**>(&OcclusionQueries[index].PID));

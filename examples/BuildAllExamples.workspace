@@ -22,6 +22,10 @@
 		<Project filename="20.ManagedLights/ManagedLights.cbp" />
 		<Project filename="21.Quake3Explorer/Quake3Explorer.cbp" />
 		<Project filename="22.MaterialViewer/MaterialViewer.cbp" />
+		<Project filename="23.SMeshHandling/SMeshHandling.cbp" />
+		<Project filename="24.CursorControl/CursorControl.cbp" />
+		<Project filename="25.XmlHandling/XmlHandling.cbp" />
+		<Project filename="26.OcclusionQuery/OcclusionQuery.cbp" />
 		<Project filename="Demo/demo.cbp" />
 		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" />
 		<Project filename="../tools/MeshConverter/MeshConverter.cbp" />
