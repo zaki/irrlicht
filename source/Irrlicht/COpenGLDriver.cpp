@@ -1400,7 +1400,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	if (vertices)
 	{
-#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
+//due to missing defines in OSX headers, we have to be more specific with this check
+//#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
+#ifdef GL_BGRA
 		if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		{
 			switch (vType)
@@ -1418,7 +1420,11 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		}
 		else
 #endif
+		{
+			// avoid passing broken pointer to OpenGL
+			_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 			glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+		}
 	}
 
 	switch (vType)
