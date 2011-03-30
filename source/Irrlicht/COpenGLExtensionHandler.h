@@ -299,6 +299,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_EXT_texture_shared_exponent",
 	"GL_EXT_texture_snorm",
 	"GL_EXT_texture_sRGB",
+	"GL_EXT_texture_sRGB_decode",
 	"GL_EXT_texture_swizzle",
 	"GL_EXT_timer_query",
 	"GL_EXT_transform_feedback",
@@ -698,6 +699,7 @@ class COpenGLExtensionHandler
 		IRR_EXT_texture_shared_exponent,
 		IRR_EXT_texture_snorm,
 		IRR_EXT_texture_sRGB,
+		IRR_EXT_texture_sRGB_decode,
 		IRR_EXT_texture_swizzle,
 		IRR_EXT_timer_query,
 		IRR_EXT_transform_feedback,
@@ -1044,10 +1046,10 @@ class COpenGLExtensionHandler
 	void extGlGetQueryObjectiv(GLuint id, GLenum pname, GLint *params);
 	void extGlGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params);
 
-	protected:
 	// the global feature array
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
 
+	protected:
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		PFNGLACTIVETEXTUREARBPROC pGlActiveTextureARB;
 		PFNGLCLIENTACTIVETEXTUREARBPROC	pGlClientActiveTextureARB;
