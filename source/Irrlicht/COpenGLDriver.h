@@ -492,19 +492,19 @@ namespace video
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
 		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-			CIrrDeviceWin32 *Device;
+			CIrrDeviceWin32 *Win32Device;
 		#endif
 		#endif
 		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 			GLXDrawable Drawable;
 			Display* X11Display;
-			CIrrDeviceLinux *Device;
+			CIrrDeviceLinux *X11Device;
 		#endif
 		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-			CIrrDeviceMacOSX *Device;
+			CIrrDeviceMacOSX *OSXDevice;
 		#endif
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
-			CIrrDeviceSDL *Device;
+			CIrrDeviceSDL *SDLDevice;
 		#endif
 
 		E_DEVICE_TYPE DeviceType;
