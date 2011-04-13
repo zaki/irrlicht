@@ -81,7 +81,7 @@ static inline float old_fast_atof(const char* c)
 }
 
 
-static bool testCalculation(const char * valueString)
+static bool testCalculation_atof(const char * valueString)
 {
 	const f32 newFastValue = fast_atof(valueString);
 	const f32 oldFastValue = old_fast_atof(valueString);
@@ -98,37 +98,54 @@ static bool testCalculation(const char * valueString)
 	return accurate;
 }
 
+static bool testCalculation_strtol(const char * valueString)
+{
+	const s32 newFastValue = strtol10(valueString);
+	const s32 oldFastValue = old_strtol10(valueString);
+	const s32 strtolValue = (s32)strtol(valueString, 0, 10);
+
+	logTestString("\n String '%s'\n New fast %d\n Old fast %d\n     strtol %d\n",
+		valueString, newFastValue, oldFastValue, strtolValue);
+
+	bool accurate = (newFastValue == strtolValue) || (oldFastValue != strtolValue);
+
+	if(!accurate)
+		logTestString("*** ERROR - wrong calculation in new method ***\n\n");
+
+	return accurate;
+}
+
 //! Test both the accuracy and speed of Irrlicht's fast_atof() implementation.
-bool fast_atof(void)
+bool test_fast_atof(void)
 {
 	bool accurate = true;
 
-	accurate &= testCalculation("340282346638528859811704183484516925440.000000");
-	accurate &= testCalculation("3.402823466e+38F");
-	accurate &= testCalculation("3402823466e+29F");
-	accurate &= testCalculation("-340282346638528859811704183484516925440.000000");
-	accurate &= testCalculation("-3.402823466e+38F");
-	accurate &= testCalculation("-3402823466e+29F");
-	accurate &= testCalculation("34028234663852885981170418348451692544.000000");
-	accurate &= testCalculation("3.402823466e+37F");
-	accurate &= testCalculation("3402823466e+28F");
-	accurate &= testCalculation("-34028234663852885981170418348451692544.000000");
-	accurate &= testCalculation("-3.402823466e+37F");
-	accurate &= testCalculation("-3402823466e+28F");
-	accurate &= testCalculation(".00234567");
-	accurate &= testCalculation("-.00234567");
-	accurate &= testCalculation("0.00234567");
-	accurate &= testCalculation("-0.00234567");
-	accurate &= testCalculation("1.175494351e-38F");
-	accurate &= testCalculation("1175494351e-47F");
-	accurate &= testCalculation("1.175494351e-37F");
-	accurate &= testCalculation("1.175494351e-36F");
-	accurate &= testCalculation("-1.175494351e-36F");
-	accurate &= testCalculation("123456.789");
-	accurate &= testCalculation("-123456.789");
-	accurate &= testCalculation("0000123456.789");
-	accurate &= testCalculation("-0000123456.789");
-	accurate &= testCalculation("-0.0690462109446526");
+	accurate &= testCalculation_atof("340282346638528859811704183484516925440.000000");
+	accurate &= testCalculation_atof("3.402823466e+38F");
+	accurate &= testCalculation_atof("3402823466e+29F");
+	accurate &= testCalculation_atof("-340282346638528859811704183484516925440.000000");
+	accurate &= testCalculation_atof("-3.402823466e+38F");
+	accurate &= testCalculation_atof("-3402823466e+29F");
+	accurate &= testCalculation_atof("34028234663852885981170418348451692544.000000");
+	accurate &= testCalculation_atof("3.402823466e+37F");
+	accurate &= testCalculation_atof("3402823466e+28F");
+	accurate &= testCalculation_atof("-34028234663852885981170418348451692544.000000");
+	accurate &= testCalculation_atof("-3.402823466e+37F");
+	accurate &= testCalculation_atof("-3402823466e+28F");
+	accurate &= testCalculation_atof(".00234567");
+	accurate &= testCalculation_atof("-.00234567");
+	accurate &= testCalculation_atof("0.00234567");
+	accurate &= testCalculation_atof("-0.00234567");
+	accurate &= testCalculation_atof("1.175494351e-38F");
+	accurate &= testCalculation_atof("1175494351e-47F");
+	accurate &= testCalculation_atof("1.175494351e-37F");
+	accurate &= testCalculation_atof("1.175494351e-36F");
+	accurate &= testCalculation_atof("-1.175494351e-36F");
+	accurate &= testCalculation_atof("123456.789");
+	accurate &= testCalculation_atof("-123456.789");
+	accurate &= testCalculation_atof("0000123456.789");
+	accurate &= testCalculation_atof("-0000123456.789");
+	accurate &= testCalculation_atof("-0.0690462109446526");
 
 	if(!accurate)
 	{
@@ -141,7 +158,7 @@ bool fast_atof(void)
 		return false;
 	ITimer* timer = device->getTimer();
 
-	enum { ITERATIONS = 100000 };
+	const int ITERATIONS = 100000;
 	int i;
 
 	f32 value;
@@ -161,7 +178,7 @@ bool fast_atof(void)
 		value = old_fast_atof("-340282346638528859811704183484516925440.000000");
 	const u32 oldFastAtofTime = timer->getRealTime() - then;
 
-	logTestString("         atof time = %d\n    fast_atof Time = %d\nold fast_atof time = %d\n",
+	logTestString("Speed test\n         atof time = %d\n    fast_atof Time = %d\nold fast_atof time = %d\n",
 		atofTime, fastAtofTime, oldFastAtofTime);
 
 	device->closeDevice();
@@ -175,4 +192,88 @@ bool fast_atof(void)
 	}
 
 	return true;
+}
+
+//! Test both the accuracy and speed of Irrlicht's strtol10() implementation.
+bool test_strtol(void)
+{
+	bool accurate = true;
+
+	accurate &= testCalculation_strtol("340282346638528859811704183484516925440");
+	accurate &= testCalculation_strtol("3402823466");
+	accurate &= testCalculation_strtol("3402823466e+29F");
+	accurate &= testCalculation_strtol("-340282346638528859811704183484516925440");
+	accurate &= testCalculation_strtol("-3402823466");
+	accurate &= testCalculation_strtol("-3402823466e+29F");
+	accurate &= testCalculation_strtol("402823466385288598117");
+	accurate &= testCalculation_strtol("402823466");
+	accurate &= testCalculation_strtol("402823466e+28F");
+	accurate &= testCalculation_strtol("402823466385288598117");
+	accurate &= testCalculation_strtol("-402823466");
+	accurate &= testCalculation_strtol("-402823466e+28F");
+	accurate &= testCalculation_strtol(".00234567");
+	accurate &= testCalculation_strtol("-234567");
+	accurate &= testCalculation_strtol("234567");
+	accurate &= testCalculation_strtol("-234567");
+	accurate &= testCalculation_strtol("1175494351");
+	accurate &= testCalculation_strtol("11754943512");
+	accurate &= testCalculation_strtol("11754943513");
+	accurate &= testCalculation_strtol("11754943514");
+	accurate &= testCalculation_strtol("-1175494351");
+	accurate &= testCalculation_strtol("123456789");
+	accurate &= testCalculation_strtol("-123456789");
+	accurate &= testCalculation_strtol("123456.789");
+	accurate &= testCalculation_strtol("-123456.789");
+	accurate &= testCalculation_strtol("-109446526");
+
+	if(!accurate)
+	{
+		logTestString("Calculation is not accurate, so the speed is irrelevant\n");
+		return false;
+	}
+
+	IrrlichtDevice* device = createDevice(video::EDT_NULL);
+	if (!device)
+		return false;
+	ITimer* timer = device->getTimer();
+
+	const int ITERATIONS = 1000000;
+	int i;
+
+	s32 value;
+	u32 then = timer->getRealTime();
+	for(i = 0; i < ITERATIONS; ++i)
+		value = strtol("-3402823466", 0, 10);
+
+	const u32 strtolTime = timer->getRealTime() - then;
+
+	then += strtolTime;
+	for(i = 0; i < ITERATIONS; ++i)
+		value = strtol10("-3402823466");
+	const u32 strtol10Time = timer->getRealTime() - then;
+
+	then += strtol10Time;
+	for(i = 0; i < ITERATIONS; ++i)
+		value = old_strtol10("-3402823466");
+	const u32 oldstrtol10Time = timer->getRealTime() - then;
+
+	logTestString("Speed test\n      strtol time = %d\n    strtol10 Time = %d\nold strtol10 time = %d\n",
+		strtolTime, strtol10Time, oldstrtol10Time);
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	if(strtol10Time > (1.2f*strtolTime))
+	{
+		logTestString("The fast method is slower than atof()\n");
+		return false;
+	}
+
+	return true;
+}
+
+bool fast_atof(void)
+{
+	return test_fast_atof() && test_strtol();
 }
