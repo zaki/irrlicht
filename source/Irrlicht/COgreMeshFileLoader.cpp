@@ -467,12 +467,12 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 		if ((materialName==Materials[k].Name)&&(Materials[k].Techniques.size())&&(Materials[k].Techniques[0].Passes.size()))
 		{
 			material=Materials[k].Techniques[0].Passes[0].Material;
-			if (Materials[k].Techniques[0].Passes[0].Texture.Filename.size())
+			for (u32 i=0; i<Materials[k].Techniques[0].Passes[0].Texture.Filename.size(); ++i)
 			{
-				if (FileSystem->existFile(Materials[k].Techniques[0].Passes[0].Texture.Filename))
-					material.setTexture(0, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename));
+				if (FileSystem->existFile(Materials[k].Techniques[0].Passes[0].Texture.Filename[i]))
+					material.setTexture(i, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename[i]));
 				else
-					material.setTexture(0, Driver->getTexture((CurrentlyLoadingFromPath+"/"+FileSystem->getFileBasename(Materials[k].Techniques[0].Passes[0].Texture.Filename))));
+					material.setTexture(i, Driver->getTexture((CurrentlyLoadingFromPath+"/"+FileSystem->getFileBasename(Materials[k].Techniques[0].Passes[0].Texture.Filename[i]))));
 			}
 			break;
 		}
@@ -604,11 +604,15 @@ scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
+					// make sure we have data for a second texture coord
+					const bool secondCoord = (eSize>ePos+3);
 					for (s32 k=0; k<geom.NumVertex; ++k)
 					{
 						mb->Vertices[k].TCoords.set(geom.Buffers[j].Data[ePos], geom.Buffers[j].Data[ePos+1]);
-						mb->Vertices[k].TCoords2.set(geom.Buffers[j].Data[ePos+2], geom.Buffers[j].Data[ePos+3]);
-
+						if (secondCoord)
+							mb->Vertices[k].TCoords2.set(geom.Buffers[j].Data[ePos+2], geom.Buffers[j].Data[ePos+3]);
+						else
+							mb->Vertices[k].TCoords2.set(geom.Buffers[j].Data[ePos], geom.Buffers[j].Data[ePos+1]);
 						ePos += eSize;
 					}
 				}
@@ -688,12 +692,18 @@ scene::IMeshBuffer* COgreMeshFileLoader::composeMeshBufferSkinned(scene::CSkinne
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
+					// make sure we have data for a second texture coord
+					const bool secondCoord = (eSize>ePos+3);
 					for (s32 k=0; k<geom.NumVertex; ++k)
 					{
 						mb->getTCoords(k).set(geom.Buffers[j].Data[ePos], geom.Buffers[j].Data[ePos+1]);
 						if (NumUV>1)
-							mb->Vertices_2TCoords[k].TCoords2.set(geom.Buffers[j].Data[ePos+2], geom.Buffers[j].Data[ePos+3]);
-
+						{
+							if (secondCoord)
+								mb->Vertices_2TCoords[k].TCoords2.set(geom.Buffers[j].Data[ePos+2], geom.Buffers[j].Data[ePos+3]);
+							else
+								mb->Vertices_2TCoords[k].TCoords2.set(geom.Buffers[j].Data[ePos], geom.Buffers[j].Data[ePos+1]);
+						}
 						ePos += eSize;
 					}
 				}
@@ -1090,13 +1100,17 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 			{
 				if (token=="texture")
 				{
-					getMaterialToken(file, pass.Texture.Filename);
+					getMaterialToken(file, token);
+					pass.Texture.Filename.push_back(token);
 #ifdef IRR_OGRE_LOADER_DEBUG
-					os::Printer::log("Read Texture", pass.Texture.Filename.c_str(), ELL_DEBUG);
+					os::Printer::log("Read Texture", token, ELL_DEBUG);
 #endif
 					getMaterialToken(file, pass.Texture.CoordsType, true);
 					getMaterialToken(file, pass.Texture.MipMaps, true);
 					getMaterialToken(file, pass.Texture.Alpha, true);
+					// Hmm, we might need more hints for other material types using two textures...
+					if (textureUnit>0)
+						pass.Material.MaterialType=video::EMT_LIGHTMAP;
 				}
 				else if (token=="filtering")
 				{
