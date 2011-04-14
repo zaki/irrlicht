@@ -440,14 +440,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
-#ifdef WGL_EXT_swap_control
-	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
-	// vsync extension
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-	// set vsync
-	if (wglSwapIntervalEXT)
-		wglSwapIntervalEXT(params.Vsync ? 1 : 0);
-#endif
+	extGlSwapInterval(params.Vsync ? 1 : 0);
 	return true;
 }
 
@@ -542,16 +535,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
 	// set vsync
-	//TODO: Check GLX_EXT_swap_control and GLX_MESA_swap_control
-#ifdef GLX_SGI_swap_control
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (params.Vsync && glxSwapIntervalSGI)
-		glxSwapIntervalSGI(1);
-#else
-	if (params.Vsync)
-		glXSwapIntervalSGI(1);
-#endif
-#endif
+	extGlSwapInterval(params.Vsync ? 1 : 0);
 	return true;
 }
 

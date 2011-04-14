@@ -1046,6 +1046,9 @@ class COpenGLExtensionHandler
 	void extGlGetQueryObjectiv(GLuint id, GLenum pname, GLint *params);
 	void extGlGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params);
 
+	// generic vsync setting method for several extensions
+	void extGlSwapInterval(int interval);
+
 	// the global feature array
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
 
@@ -1106,9 +1109,6 @@ class COpenGLExtensionHandler
 		PFNGLSTENCILFUNCSEPARATEATIPROC pGlStencilFuncSeparateATI;
 		PFNGLSTENCILOPSEPARATEATIPROC pGlStencilOpSeparateATI;
 		PFNGLCOMPRESSEDTEXIMAGE2DPROC pGlCompressedTexImage2D;
-		#if defined(_IRR_LINUX_PLATFORM_) && defined(GLX_SGI_swap_control)
-		PFNGLXSWAPINTERVALSGIPROC glxSwapIntervalSGI;
-		#endif
 		PFNGLBINDFRAMEBUFFEREXTPROC pGlBindFramebufferEXT;
 		PFNGLDELETEFRAMEBUFFERSEXTPROC pGlDeleteFramebuffersEXT;
 		PFNGLGENFRAMEBUFFERSEXTPROC pGlGenFramebuffersEXT;
@@ -1157,6 +1157,18 @@ class COpenGLExtensionHandler
 		PFNGLENDOCCLUSIONQUERYNVPROC pGlEndOcclusionQueryNV;
 		PFNGLGETOCCLUSIONQUERYIVNVPROC pGlGetOcclusionQueryivNV;
 		PFNGLGETOCCLUSIONQUERYUIVNVPROC pGlGetOcclusionQueryuivNV;
+		#if defined(WGL_EXT_swap_control)
+		PFNWGLSWAPINTERVALEXTPROC pWglSwapIntervalEXT;
+		#endif
+		#if defined(GLX_SGI_swap_control)
+		PFNGLXSWAPINTERVALSGIPROC pGlxSwapIntervalSGI;
+		#endif
+		#if defined(GLX_EXT_swap_control)
+		PFNGLXSWAPINTERVALEXTPROC pGlxSwapIntervalEXT;
+		#endif
+		#if defined(GLX_MESA_swap_control)
+		PFNGLXSWAPINTERVALMESAPROC pGlxSwapIntervalMESA;
+		#endif
 	#endif
 };
 
@@ -2299,6 +2311,47 @@ inline void COpenGLExtensionHandler::extGlGetQueryObjectuiv(GLuint id, GLenum pn
 	glGetOcclusionQueryuivNV(id, pname, params);
 #else
 	os::Printer::log("glGetQueryObjectuiv not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlSwapInterval(int interval)
+{
+	// we have wglext, so try to use that
+#if defined(_IRR_WINDOWS_API_) && defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+#ifdef WGL_EXT_swap_control
+	if (pWglSwapIntervalEXT)
+		pWglSwapIntervalEXT(interval);
+#endif
+#endif
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+	//TODO: Check GLX_EXT_swap_control and GLX_MESA_swap_control
+#ifdef GLX_SGI_swap_control
+	// does not work with interval==0
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (interval && pGlxSwapIntervalSGI)
+		pGlxSwapIntervalSGI(interval);
+#else
+	if (interval)
+		glXSwapIntervalSGI(interval);
+#endif
+#elif defined(GLX_EXT_swap_control)
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	Display *dpy = glXGetCurrentDisplay();
+	GLXDrawable drawable = glXGetCurrentDrawable();
+
+	if (pGlxSwapIntervalEXT)
+		pGlxSwapIntervalEXT(dpy, drawable, interval);
+#else
+	pGlXSwapIntervalEXT(dpy, drawable, interval);
+#endif
+#elif defined(GLX_MESA_swap_control)
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlxSwapIntervalMESA)
+		pGlxSwapIntervalMESA(interval);
+#else
+	pGlXSwapIntervalMESA(interval);
+#endif
+#endif
 #endif
 }
 
