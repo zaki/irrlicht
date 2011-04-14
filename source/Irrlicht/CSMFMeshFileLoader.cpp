@@ -155,11 +155,13 @@ void CSMFMeshFileLoader::loadLimb(io::IReadFile* file, SMesh* mesh, const core::
 	}
 
 	// triangles
-	u16 triangleCount;
-	io::BinaryFile::read(file, triangleCount);
-	mb->Indices.reallocate(mb->Indices.size() + triangleCount * 3);
+	u32 triangleCount;
+	// vertexCount used as temporary
+	io::BinaryFile::read(file, vertexCount);
+	triangleCount=3*vertexCount;
+	mb->Indices.reallocate(mb->Indices.size() + triangleCount);
 
-	for (i=0; i < triangleCount*3; ++i)
+	for (i=0; i < triangleCount; ++i)
 	{
 		u16 index;
 		io::BinaryFile::read(file, index);
