@@ -285,7 +285,7 @@ void CAnimatedMeshHalfLife::setDirty(E_BUFFER_TYPE buffer)
 
 
 static vec3_hl TransformedVerts[MAXSTUDIOVERTS];	// transformed vertices
-static vec3_hl TransformedNormals[MAXSTUDIOVERTS];	// light surface normals
+//static vec3_hl TransformedNormals[MAXSTUDIOVERTS];	// light surface normals
 
 
 /*!
@@ -562,16 +562,16 @@ void CAnimatedMeshHalfLife::buildVertices ()
 			const SHalflifeModel *model = (SHalflifeModel *)((u8*) Header + body->modelindex) + modelnr;
 
 			const u8 *vertbone = ((u8*)Header + model->vertinfoindex);
-			const u8 *normbone = ((u8*)Header + model->norminfoindex);
 
 			const vec3_hl *studioverts = (vec3_hl *)((u8*)Header + model->vertindex);
-			const vec3_hl *studionorms = (vec3_hl *)((u8*)Header + model->normindex);
 
 			for ( i = 0; i < model->numverts; i++)
 			{
 				VectorTransform ( studioverts[i],  BoneTransform[vertbone[i]], TransformedVerts[i]  );
 			}
 	/*
+			const u8 *normbone = ((u8*)Header + model->norminfoindex);
+			const vec3_hl *studionorms = (vec3_hl *)((u8*)Header + model->normindex);
 			for ( i = 0; i < model->numnorms; i++)
 			{
 				VectorTransform ( studionorms[i],  BoneTransform[normbone[i]], TransformedNormals[i]  );
@@ -734,7 +734,7 @@ IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFr
 {
 	f32 frame = frameInt + (detailLevel * 0.001f);
 	u32 frameA = core::floor32 ( frame );
-	f32 blend = core::fract ( frame );
+//	f32 blend = core::fract ( frame );
 
 	u32 i;
 
