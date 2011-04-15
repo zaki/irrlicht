@@ -135,6 +135,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshConverter", "..\tools\MeshConverter\MeshConverter_vc10.vcxproj", "{E72B637E-4AA6-46F3-885F-AC67B4B470ED}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "26.OcclusionQuery", "26.OcclusionQuery\OcclusionQuery_vc10.vcxproj", "{5CE0E2E7-879D-4152-B61D-24E7D0707B45}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "25.XmlHandling_vc9", "25.XmlHandling\XmlHandling_vc10.vcxproj", "{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -262,6 +267,10 @@ Global
 		{5CE0E2E7-879D-4152-B61D-24E7D0707B45}.Debug|Win32.Build.0 = Debug|Win32
 		{5CE0E2E7-879D-4152-B61D-24E7D0707B45}.Release|Win32.ActiveCfg = Release|Win32
 		{5CE0E2E7-879D-4152-B61D-24E7D0707B45}.Release|Win32.Build.0 = Release|Win32
+		{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}.Debug|Win32.Build.0 = Debug|Win32
+		{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}.Release|Win32.ActiveCfg = Release|Win32
+		{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
