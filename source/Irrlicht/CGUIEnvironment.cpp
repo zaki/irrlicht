@@ -1520,10 +1520,9 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 		return Banks[index].Bank;
 
 	// we don't have this sprite bank, we should load it
-
 	if (!FileSystem->existFile(b.NamedPath.getPath()))
 	{
-		os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_ERROR);
+		os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_DEBUG);
 		return 0;
 	}
 
