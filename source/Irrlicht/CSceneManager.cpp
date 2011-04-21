@@ -1638,7 +1638,6 @@ video::SColor CSceneManager::getShadowColor() const
 }
 
 
-
 //! creates a rotation animator, which rotates the attached scene node around itself.
 ISceneNodeAnimator* CSceneManager::createRotationAnimator(const core::vector3df& rotationPerSecond)
 {
@@ -1647,7 +1646,6 @@ ISceneNodeAnimator* CSceneManager::createRotationAnimator(const core::vector3df&
 
 	return anim;
 }
-
 
 
 //! creates a fly circle animator, which lets the attached scene node fly around a center.
@@ -1699,8 +1697,6 @@ ISceneNodeAnimator* CSceneManager::createDeleteAnimator(u32 when)
 }
 
 
-
-
 //! Creates a special scene node animator for doing automatic collision detection
 //! and response.
 ISceneNodeAnimatorCollisionResponse* CSceneManager::createCollisionResponseAnimator(
@@ -1728,7 +1724,6 @@ ISceneNodeAnimator* CSceneManager::createFollowSplineAnimator(s32 startTime,
 }
 
 
-
 //! Adds an external mesh loader.
 void CSceneManager::addExternalMeshLoader(IMeshLoader* externalLoader)
 {
@@ -1738,6 +1733,7 @@ void CSceneManager::addExternalMeshLoader(IMeshLoader* externalLoader)
 	externalLoader->grab();
 	MeshLoaderList.push_back(externalLoader);
 }
+
 
 //! Returns the number of mesh loaders supported by Irrlicht at this time
 u32 CSceneManager::getMeshLoaderCount() const
@@ -1755,6 +1751,7 @@ IMeshLoader* CSceneManager::getMeshLoader(u32 index) const
 		return 0;
 }
 
+
 //! Adds an external scene loader.
 void CSceneManager::addExternalSceneLoader(ISceneLoader* externalLoader)
 {
@@ -1764,6 +1761,7 @@ void CSceneManager::addExternalSceneLoader(ISceneLoader* externalLoader)
 	externalLoader->grab();
 	SceneLoaderList.push_back(externalLoader);
 }
+
 
 //! Returns the number of scene loaders
 u32 CSceneManager::getSceneLoaderCount() const
@@ -1780,6 +1778,7 @@ ISceneLoader* CSceneManager::getSceneLoader(u32 index) const
 	else
 		return 0;
 }
+
 
 //! Returns a pointer to the scene collision manager.
 ISceneCollisionManager* CSceneManager::getSceneCollisionManager()
@@ -1815,6 +1814,7 @@ ITriangleSelector* CSceneManager::createTriangleSelector(IAnimatedMeshSceneNode*
 	return new CTriangleSelector(node);
 }
 
+
 //! Creates a simple dynamic ITriangleSelector, based on a axis aligned bounding box.
 ITriangleSelector* CSceneManager::createTriangleSelectorFromBoundingBox(ISceneNode* node)
 {
@@ -1827,8 +1827,7 @@ ITriangleSelector* CSceneManager::createTriangleSelectorFromBoundingBox(ISceneNo
 
 //! Creates a simple ITriangleSelector, based on a mesh.
 ITriangleSelector* CSceneManager::createOctreeTriangleSelector(IMesh* mesh,
-																ISceneNode* node,
-																s32 minimalPolysPerNode)
+							ISceneNode* node, s32 minimalPolysPerNode)
 {
 	if (!mesh)
 		return 0;
@@ -1837,13 +1836,11 @@ ITriangleSelector* CSceneManager::createOctreeTriangleSelector(IMesh* mesh,
 }
 
 
-
 //! Creates a meta triangle selector.
 IMetaTriangleSelector* CSceneManager::createMetaTriangleSelector()
 {
 	return new CMetaTriangleSelector();
 }
-
 
 
 //! Creates a triangle selector which can select triangles from a terrain scene node
@@ -1953,6 +1950,7 @@ ISceneNode* CSceneManager::getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, IS
 	return 0;
 }
 
+
 //! returns scene nodes by type.
 void CSceneManager::getSceneNodesFromType(ESCENE_NODE_TYPE type, core::array<scene::ISceneNode*>& outNodes, ISceneNode* start)
 {
@@ -2016,7 +2014,6 @@ E_SCENE_NODE_RENDER_PASS CSceneManager::getSceneNodeRenderPass() const
 {
 	return CurrentRendertime;
 }
-
 
 
 //! Returns an interface to the mesh cache which is shared beween all existing scene managers.

@@ -373,4 +373,3 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 
 
 #endif // _IRR_COMPILE_WITH_MD2_LOADER_
-
