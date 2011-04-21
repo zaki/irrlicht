@@ -22,6 +22,11 @@ namespace irr
 namespace video
 {
 
+namespace
+{
+	inline DWORD F2DW( FLOAT f ) { return *((DWORD*)&f); }
+}
+
 //! constructor
 CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 				bool fullscreen, bool stencilbuffer,
@@ -659,6 +664,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_MRTPOSTPIXELSHADERBLENDING) != 0;
 	case EVDF_OCCLUSION_QUERY:
 		return OcclusionQuerySupport;
+	case EVDF_POLYGON_OFFSET:
+		return (Caps.RasterCaps & (D3DPRASTERCAPS_DEPTHBIAS|D3DPRASTERCAPS_SLOPESCALEDEPTHBIAS)) != 0;
 	default:
 		return false;
 	};
@@ -1446,13 +1453,13 @@ void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 			if (pType==scene::EPT_POINT_SPRITES)
 				pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
 			pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE, F2DW(tmp));
 			tmp=1.0f;
-			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
-			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
-			pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, F2DW(tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, F2DW(tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, F2DW(tmp));
 			tmp=0.0f;
-			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, F2DW(tmp));
 
 			if (!vertices)
 			{
@@ -2246,6 +2253,31 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flag);
 	}
 
+	// Polygon offset
+	if (queryFeature(EVDF_POLYGON_OFFSET) && (resetAllRenderstates ||
+		lastmaterial.PolygonOffsetDirection != material.PolygonOffsetDirection ||
+		lastmaterial.PolygonOffsetFactor != material.PolygonOffsetFactor))
+	{
+		if (material.PolygonOffsetFactor)
+		{
+			if (material.PolygonOffsetDirection==EPO_BACK)
+			{
+				pID3DDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(1.f));
+				pID3DDevice->SetRenderState(D3DRS_DEPTHBIAS, F2DW((FLOAT)material.PolygonOffsetFactor));
+			}
+			else
+			{
+				pID3DDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(-1.f));
+				pID3DDevice->SetRenderState(D3DRS_DEPTHBIAS, F2DW((FLOAT)-material.PolygonOffsetFactor));
+			}
+		}
+		else
+		{
+			pID3DDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, 0);
+			pID3DDevice->SetRenderState(D3DRS_DEPTHBIAS, 0);
+		}
+	}
+
 	// Anti Aliasing
 	if (resetAllRenderstates || lastmaterial.AntiAliasing != material.AntiAliasing)
 	{
@@ -2282,7 +2314,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	// thickness
 	if (resetAllRenderstates || lastmaterial.Thickness != material.Thickness)
 	{
-		pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *((DWORD*)&material.Thickness));
+		pID3DDevice->SetRenderState(D3DRS_POINTSIZE, F2DW(material.Thickness));
 	}
 
 	// texture address mode
@@ -2291,7 +2323,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].LODBias != material.TextureLayer[st].LODBias)
 		{
 			const float tmp = material.TextureLayer[st].LODBias * 0.125f;
-			pID3DDevice->SetSamplerState(st, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)(&tmp));
+			pID3DDevice->SetSamplerState(st, D3DSAMP_MIPMAPLODBIAS, F2DW(tmp));
 		}
 
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapU != material.TextureLayer[st].TextureWrapU)
@@ -2796,11 +2828,11 @@ void CD3D9Driver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 
 	if (fogType==EFT_FOG_LINEAR)
 	{
-		pID3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&start));
-		pID3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&end));
+		pID3DDevice->SetRenderState(D3DRS_FOGSTART, F2DW(start));
+		pID3DDevice->SetRenderState(D3DRS_FOGEND, F2DW(end));
 	}
 	else
-		pID3DDevice->SetRenderState(D3DRS_FOGDENSITY, *(DWORD*)(&density));
+		pID3DDevice->SetRenderState(D3DRS_FOGDENSITY, F2DW(density));
 
 	if(!pixelFog)
 		pID3DDevice->SetRenderState(D3DRS_RANGEFOGENABLE, rangeFog);
