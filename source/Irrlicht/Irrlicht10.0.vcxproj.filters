@@ -1285,6 +1285,9 @@
     <ClInclude Include="..\..\include\ISceneLoader.h">
       <Filter>include\scene</Filter>
     </ClInclude>
+    <ClInclude Include="CSMFMeshFileLoader.h">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2205,6 +2208,9 @@
       <Filter>Irrlicht\gui</Filter>
     </ClCompile>
     <ClCompile Include="CSceneLoaderIrr.cpp">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CSMFMeshFileLoader.cpp">
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClCompile>
   </ItemGroup>
