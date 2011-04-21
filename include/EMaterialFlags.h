@@ -78,7 +78,13 @@ namespace video
 		EMF_COLOR_MATERIAL = 0x10000,
 
 		//! Flag for enabling/disabling mipmap usage
-		EMF_USE_MIP_MAPS = 0x20000
+		EMF_USE_MIP_MAPS = 0x20000,
+
+		//! Flag for blend operation
+		EMF_BLEND_OPERATION = 0x40000,
+
+		//! Flag for polygon offset
+		EMF_POLYGON_OFFSET = 0x80000
 	};
 
 } // end namespace video
