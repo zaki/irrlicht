@@ -63,7 +63,7 @@ struct SMD3Shader
 
 //! Constructor
 CAnimatedMeshMD3::CAnimatedMeshMD3()
-:Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f)
+:Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f), FramesPerSecond(25.f)
 {
 #ifdef _DEBUG
 	setDebugName("CAnimatedMeshMD3");
@@ -71,7 +71,7 @@ CAnimatedMeshMD3::CAnimatedMeshMD3()
 
 	Mesh = new SMD3Mesh();
 
-	setInterpolationShift ( 0, 0 );
+	setInterpolationShift(0, 0);
 }
 
 
@@ -119,7 +119,7 @@ SMD3QuaternionTagList *CAnimatedMeshMD3::getTagList(s32 frame, s32 detailLevel, 
 	if ( 0 == Mesh )
 		return 0;
 
-	getMesh ( frame, detailLevel, startFrameLoop, endFrameLoop );
+	getMesh(frame, detailLevel, startFrameLoop, endFrameLoop);
 	return &TagListIPol;
 }
 
@@ -129,8 +129,6 @@ IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 {
 	if ( 0 == Mesh )
 		return 0;
-
-	u32 i;
 
 	//! check if we have the mesh in our private cache
 	SCacheInfo candidate ( frame, startFrameLoop, endFrameLoop );
@@ -173,12 +171,11 @@ IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 	}
 
 	// build current vertex
-	for ( i = 0; i!= Mesh->Buffer.size (); ++i )
+	for (u32 i = 0; i!= Mesh->Buffer.size (); ++i)
 	{
 		buildVertexArray(frameA, frameB, iPol,
 					Mesh->Buffer[i],
-					(SMeshBufferLightMap*) MeshIPol.getMeshBuffer(i)
-				);
+					(SMeshBufferLightMap*) MeshIPol.getMeshBuffer(i));
 	}
 	MeshIPol.recalculateBoundingBox();
 
@@ -192,7 +189,7 @@ IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 
 //! create a Irrlicht MeshBuffer for a MD3 MeshBuffer
 IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer(const SMD3MeshBuffer* source,
-												 io::IFileSystem* fs, video::IVideoDriver * driver)
+							 io::IFileSystem* fs, video::IVideoDriver * driver)
 {
 	SMeshBufferLightMap * dest = new SMeshBufferLightMap();
 	dest->Vertices.set_used( source->MeshHeader.numVertices );
@@ -203,9 +200,9 @@ IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer(const SMD3MeshBuffer* source,
 	// fill in static face info
 	for ( i = 0; i < source->Indices.size(); i += 3 )
 	{
-		dest->Indices[i + 0 ] = (u16) source->Indices[i + 0];
-		dest->Indices[i + 1 ] = (u16) source->Indices[i + 1];
-		dest->Indices[i + 2 ] = (u16) source->Indices[i + 2];
+		dest->Indices[i + 0] = (u16) source->Indices[i + 0];
+		dest->Indices[i + 1] = (u16) source->Indices[i + 1];
+		dest->Indices[i + 2] = (u16) source->Indices[i + 2];
 	}
 
 	// fill in static vertex info
@@ -294,7 +291,7 @@ void CAnimatedMeshMD3::buildTagArray ( u32 frameA, u32 frameB, f32 interpolate )
 	loads a model
 */
 bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file,
-									 io::IFileSystem* fs, video::IVideoDriver * driver)
+						 io::IFileSystem* fs, video::IVideoDriver * driver)
 {
 	if (!file)
 		return false;
@@ -448,4 +445,3 @@ E_ANIMATED_MESH_TYPE CAnimatedMeshMD3::getMeshType() const
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_MD3_LOADER_
-
