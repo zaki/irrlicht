@@ -536,11 +536,10 @@ namespace scene
 		if (!Mesh->getMeshBufferCount())
 			return;
 
-		TerrainData.Position = TerrainData.Position;
-		s32 vtxCount = Mesh->getMeshBuffer(0)->getVertexCount();
 		core::matrix4 rotMatrix;
 		rotMatrix.setRotationDegrees(TerrainData.Rotation);
 
+		const s32 vtxCount = Mesh->getMeshBuffer(0)->getVertexCount();
 		for (s32 i = 0; i < vtxCount; ++i)
 		{
 			RenderBuffer->getVertexBuffer()[i].Pos = Mesh->getMeshBuffer(0)->getPosition(i) * TerrainData.Scale + TerrainData.Position;
