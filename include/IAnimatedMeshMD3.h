@@ -213,20 +213,20 @@ namespace scene
 	//! holds a associative list of named quaternions
 	struct SMD3QuaternionTagList
 	{
-		SMD3QuaternionTagList ()
+		SMD3QuaternionTagList()
 		{
-			Container.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE );
+			Container.setAllocStrategy(core::ALLOC_STRATEGY_SAFE);
 		}
 
 		// construct copy constructor
-		SMD3QuaternionTagList( const SMD3QuaternionTagList & copyMe )
+		SMD3QuaternionTagList(const SMD3QuaternionTagList& copyMe)
 		{
 			*this = copyMe;
 		}
 
-		virtual ~SMD3QuaternionTagList () {}
+		virtual ~SMD3QuaternionTagList() {}
 
-		SMD3QuaternionTag* get ( const core::stringc& name )
+		SMD3QuaternionTag* get(const core::stringc& name)
 		{
 			SMD3QuaternionTag search ( name );
 			s32 index = Container.linear_search ( search );
@@ -240,14 +240,14 @@ namespace scene
 			return Container.size();
 		}
 
-		void set_used ( u32 new_size)
+		void set_used(u32 new_size)
 		{
-			s32 diff = (s32) new_size - (s32) Container.allocated_size ();
+			s32 diff = (s32) new_size - (s32) Container.allocated_size();
 			if ( diff > 0 )
 			{
-				SMD3QuaternionTag e ( "" );
+				SMD3QuaternionTag e("");
 				for ( s32 i = 0; i < diff; ++i )
-					Container.push_back ( e );
+					Container.push_back(e);
 			}
 		}
 
@@ -261,9 +261,9 @@ namespace scene
 			return Container[index];
 		}
 
-		void push_back ( const SMD3QuaternionTag& other )
+		void push_back(const SMD3QuaternionTag& other)
 		{
-			Container.push_back ( other );
+			Container.push_back(other);
 		}
 
 		SMD3QuaternionTagList& operator = (const SMD3QuaternionTagList & copyMe)
@@ -292,7 +292,7 @@ namespace scene
 		}
 
 		core::stringc Name;
-		core::array < SMD3MeshBuffer * > Buffer;
+		core::array<SMD3MeshBuffer*> Buffer;
 		SMD3QuaternionTagList TagList;
 		SMD3Header MD3Header;
 	};
@@ -304,13 +304,13 @@ namespace scene
 	public:
 
 		//! tune how many frames you want to render inbetween.
-		virtual void setInterpolationShift ( u32 shift, u32 loopMode ) = 0;
+		virtual void setInterpolationShift(u32 shift, u32 loopMode) =0;
 
 		//! get the tag list of the mesh.
-		virtual SMD3QuaternionTagList *getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) = 0;
+		virtual SMD3QuaternionTagList* getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) =0;
 
 		//! get the original md3 mesh.
-		virtual SMD3Mesh * getOriginalMesh () = 0;
+		virtual SMD3Mesh* getOriginalMesh() =0;
 	};
 
 } // end namespace scene
