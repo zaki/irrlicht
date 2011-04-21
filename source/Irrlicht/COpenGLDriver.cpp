@@ -2913,6 +2913,57 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 	}
 
+	if (queryFeature(EVDF_BLEND_OPERATIONS) &&
+		(resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation))
+	{
+		if (EBO_NONE)
+			glDisable(GL_BLEND);
+		else
+		{
+			glEnable(GL_BLEND);
+#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op) || defined(GL_VERSION_1_2)
+			switch (material.BlendOperation)
+			{
+			case EBO_MAX:
+#if defined(GL_EXT_blend_minmax)
+				extGlBlendEquation(GL_MAX_EXT);
+#elif defined(GL_VERSION_1_2)
+				extGlBlendEquation(GL_MAX);
+#endif
+				break;
+			case EBO_MIN:
+#if defined(GL_EXT_blend_minmax)
+				extGlBlendEquation(GL_MIN_EXT);
+#elif defined(GL_VERSION_1_2)
+				extGlBlendEquation(GL_MIN);
+#endif
+				break;
+			case EBO_SUBTRACT:
+#if defined(GL_EXT_blend_subtract)
+				extGlBlendEquation(GL_FUNC_SUBTRACT_EXT);
+#elif defined(GL_VERSION_1_2)
+				extGlBlendEquation(GL_FUNC_SUBTRACT);
+#endif
+				break;
+			case EBO_REVSUBTRACT:
+#if defined(GL_EXT_blend_subtract)
+				extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
+#elif defined(GL_VERSION_1_2)
+				extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+#endif
+				break;
+			default:
+#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
+				extGlBlendEquation(GL_FUNC_ADD_EXT);
+#elif defined(GL_VERSION_1_2)
+				extGlBlendEquation(GL_FUNC_ADD);
+#endif
+				break;
+			}
+#endif
+		}
+	}
+
 	// Polygon Offset
 	if (queryFeature(EVDF_POLYGON_OFFSET) && (resetAllRenderStates ||
 		lastmaterial.PolygonOffsetDirection != material.PolygonOffsetDirection ||

@@ -1049,6 +1049,9 @@ class COpenGLExtensionHandler
 	// generic vsync setting method for several extensions
 	void extGlSwapInterval(int interval);
 
+	// blend operations
+	void extGlBlendEquation(GLenum mode);
+
 	// the global feature array
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
 
@@ -1157,6 +1160,8 @@ class COpenGLExtensionHandler
 		PFNGLENDOCCLUSIONQUERYNVPROC pGlEndOcclusionQueryNV;
 		PFNGLGETOCCLUSIONQUERYIVNVPROC pGlGetOcclusionQueryivNV;
 		PFNGLGETOCCLUSIONQUERYUIVNVPROC pGlGetOcclusionQueryuivNV;
+		PFNGLBLENDEQUATIONEXTPROC pGlBlendEquationEXT;
+		PFNGLBLENDEQUATIONPROC pGlBlendEquation;
 		#if defined(WGL_EXT_swap_control)
 		PFNWGLSWAPINTERVALEXTPROC pWglSwapIntervalEXT;
 		#endif
@@ -2352,6 +2357,22 @@ inline void COpenGLExtensionHandler::extGlSwapInterval(int interval)
 	pGlXSwapIntervalMESA(interval);
 #endif
 #endif
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBlendEquation(GLenum mode)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBlendEquation)
+		pGlBlendEquation(mode);
+	else if (pGlBlendEquationEXT)
+		pGlBlendEquationEXT(mode);
+#elif defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_logic_op)
+	glBlendEquationEXT(mode);
+#elif defined(GL_VERSION_1_2)
+	glBlendEquation(mode);
+#else
+	os::Printer::log("glBlendEquation not supported", ELL_ERROR);
 #endif
 }
 

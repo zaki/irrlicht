@@ -824,6 +824,9 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_POLYGON_OFFSET:
 		// both features supported with OpenGL 1.1
 		return Version>=110;
+	case EVDF_BLEND_OPERATIONS:
+		return (Version>=120) || FeatureAvailable[IRR_EXT_blend_minmax] ||
+			FeatureAvailable[IRR_EXT_blend_subtract] || FeatureAvailable[IRR_EXT_blend_logic_op];
 	default:
 		return false;
 	};
