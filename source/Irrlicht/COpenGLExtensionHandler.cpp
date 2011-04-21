@@ -80,7 +80,8 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlGenOcclusionQueriesNV(0), pGlDeleteOcclusionQueriesNV(0),
 	pGlIsOcclusionQueryNV(0), pGlBeginOcclusionQueryNV(0),
 	pGlEndOcclusionQueryNV(0), pGlGetOcclusionQueryivNV(0),
-	pGlGetOcclusionQueryuivNV(0)
+	pGlGetOcclusionQueryuivNV(0),
+	pGlBlendEquationEXT(0), pGlBlendEquation(0)
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -267,6 +268,11 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlEndOcclusionQueryNV = (PFNGLENDOCCLUSIONQUERYNVPROC) wglGetProcAddress("glEndOcclusionQueryNV");
 	pGlGetOcclusionQueryivNV = (PFNGLGETOCCLUSIONQUERYIVNVPROC) wglGetProcAddress("glGetOcclusionQueryivNV");
 	pGlGetOcclusionQueryuivNV = (PFNGLGETOCCLUSIONQUERYUIVNVPROC) wglGetProcAddress("glGetOcclusionQueryuivNV");
+
+	// blend equation
+	pGlBlendEquationEXT = (PFNGLBLENDEQUATIONEXTPROC) wglGetProcAddress("glBlendEquationEXT");
+	pGlBlendEquation = (PFNGLBLENDEQUATIONPROC) wglGetProcAddress("glBlendEquation");
+
 	#if defined(WGL_EXT_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 		// get vsync extension
 		pWglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT");
@@ -615,6 +621,12 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	pGlGetOcclusionQueryuivNV = (PFNGLGETOCCLUSIONQUERYUIVNVPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetOcclusionQueryuivNV"));
+
+	// blend equation
+	pGlBlendEquationEXT = (PFNGLBLENDEQUATIONEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationEXT");
+	pGlBlendEquation = (PFNGLBLENDEQUATIONPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquation");
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
