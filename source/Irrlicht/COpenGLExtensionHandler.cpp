@@ -821,6 +821,9 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_ARB_draw_buffers_blend] || FeatureAvailable[IRR_AMD_draw_buffers_blend];
 	case EVDF_OCCLUSION_QUERY:
 		return FeatureAvailable[IRR_ARB_occlusion_query] && OcclusionQuerySupport;
+	case EVDF_POLYGON_OFFSET:
+		// both features supported with OpenGL 1.1
+		return Version>=110;
 	default:
 		return false;
 	};

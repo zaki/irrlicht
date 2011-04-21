@@ -1562,6 +1562,14 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flag);
 	}
 
+	// Polygon offset
+	if (queryFeature(EVDF_POLYGON_OFFSET) && (resetAllRenderstates ||
+		lastmaterial.PolygonOffsetDirection != material.PolygonOffsetDirection ||
+		lastmaterial.PolygonOffsetFactor != material.PolygonOffsetFactor))
+	{
+		pID3DDevice->SetRenderState(D3DRS_ZBIAS, material.PolygonOffsetFactor);
+	}
+
 	// thickness
 	if (resetAllRenderstates || lastmaterial.Thickness != material.Thickness)
 	{
