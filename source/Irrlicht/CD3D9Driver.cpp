@@ -666,6 +666,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return OcclusionQuerySupport;
 	case EVDF_POLYGON_OFFSET:
 		return (Caps.RasterCaps & (D3DPRASTERCAPS_DEPTHBIAS|D3DPRASTERCAPS_SLOPESCALEDEPTHBIAS)) != 0;
+	case EVDF_BLEND_OPERATIONS:
+		return true;
 	default:
 		return false;
 	};
@@ -2251,6 +2253,35 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			((material.ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
 			((material.ColorMask & ECP_ALPHA)?D3DCOLORWRITEENABLE_ALPHA:0);
 		pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flag);
+	}
+
+	if (queryFeature(EVDF_BLEND_OPERATIONS) &&
+		(resetAllRenderstates|| lastmaterial.BlendOperation != material.BlendOperation))
+	{
+		if (EBO_NONE)
+			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		else
+		{
+			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+			switch (material.BlendOperation)
+			{
+			case EBO_MAX:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
+				break;
+			case EBO_MIN:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
+				break;
+			case EBO_SUBTRACT:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
+				break;
+			case EBO_REVSUBTRACT:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+				break;
+			default:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				break;
+			}
+		}
 	}
 
 	// Polygon offset
