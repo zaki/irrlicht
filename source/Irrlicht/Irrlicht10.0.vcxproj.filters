@@ -1288,6 +1288,9 @@
     <ClInclude Include="CSMFMeshFileLoader.h">
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\EDriverFeatures.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
