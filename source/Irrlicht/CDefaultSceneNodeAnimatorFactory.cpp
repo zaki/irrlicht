@@ -42,11 +42,13 @@ CDefaultSceneNodeAnimatorFactory::CDefaultSceneNodeAnimatorFactory(ISceneManager
 		CursorControl->grab();
 }
 
+
 CDefaultSceneNodeAnimatorFactory::~CDefaultSceneNodeAnimatorFactory()
 {
 	if (CursorControl)
 		CursorControl->drop();
 }
+
 
 //! creates a scene node animator based on its type id
 ISceneNodeAnimator* CDefaultSceneNodeAnimatorFactory::createSceneNodeAnimator(ESCENE_NODE_ANIMATOR_TYPE type, ISceneNode* target)

@@ -74,6 +74,8 @@ bool CSceneLoaderIrr::loadScene(io::IReadFile* file, ISceneUserDataSerializer* u
 	reader->drop();
 	return true;
 }
+
+
 //! Reads the next node
 void CSceneLoaderIrr::readSceneNode(io::IXMLReader* reader, ISceneNode* parent,
 	ISceneUserDataSerializer* userDataSerializer)
