@@ -112,6 +112,7 @@
     <ClCompile Include="loadTextures.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="makeColorKeyTexture.cpp" />
+    <ClCompile Include="material.cpp" />
     <ClCompile Include="matrixOps.cpp" />
     <ClCompile Include="md2Animation.cpp" />
     <ClCompile Include="meshLoaders.cpp" />

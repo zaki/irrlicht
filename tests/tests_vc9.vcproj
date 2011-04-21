@@ -296,6 +296,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\material.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\matrixOps.cpp"
 				>
 			</File>
