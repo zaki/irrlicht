@@ -109,6 +109,9 @@ namespace video
 		//! Supports occlusion queries
 		EVDF_OCCLUSION_QUERY,
 
+		//! Supports polygon offset/depth bias for avoiding z-fighting
+		EVDF_POLYGON_OFFSET,
+
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT
 	};

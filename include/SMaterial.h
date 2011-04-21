@@ -35,6 +35,17 @@ namespace video
 		EBF_SRC_ALPHA_SATURATE		//!< src	(min(srcA, 1-destA), idem, ...)
 	};
 
+	//! Values defining the blend operation used when blend is enabled
+	enum E_BLEND_OPERATION
+	{
+		EBO_NONE = 0,	//!< No blending happens
+		EBO_ADD,		//!< Default blending adds the color values
+		EBO_SUBTRACT,	//!< This mode subtracts the color values
+		EBO_REVSUBTRACT,//!< This modes subtracts destination from source
+		EBO_MIN,		//!< Choose minimum value of each color channel
+		EBO_MAX			//!< Choose maximum value of each color channel
+	};
+
 	//! MaterialTypeParam: e.g. DirectX: D3DTOP_MODULATE, D3DTOP_MODULATE2X, D3DTOP_MODULATE4X
 	enum E_MODULATE_FUNC
 	{
@@ -182,6 +193,19 @@ namespace video
 		ECM_DIFFUSE_AND_AMBIENT
 	};
 
+	//! Flags for the definition of the polygon offset feature
+	/** These flags define whether the offset should be into the screen, or towards the eye. */
+	enum E_POLYGON_OFFSET
+	{
+		//! Push pixel towards the far plane, away from the eye
+		/** This is typically used for rendering inner areas. */
+		EPO_BACK=0,
+		//! Pull pixels towards the camera.
+		/** This is typically used for polygons which should appear on top
+		of other elements, such as decals. */
+		EPO_FRONT=1
+	};
+
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;
 
@@ -195,9 +219,11 @@ namespace video
 			EmissiveColor(0,0,0,0), SpecularColor(255,255,255,255),
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE), ColorMask(ECP_ALL),
-			ColorMaterial(ECM_DIFFUSE),
-			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true), ZWriteEnable(true),
-			BackfaceCulling(true), FrontfaceCulling(false), FogEnable(false), NormalizeNormals(false), UseMipMaps(true)
+			ColorMaterial(ECM_DIFFUSE), BlendOperation(EBO_ADD),
+			PolygonOffsetFactor(0), PolygonOffsetDirection(EPO_FRONT),
+			Wireframe(false), PointCloud(false), GouraudShading(true),
+			Lighting(true), ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
+			FogEnable(false), NormalizeNormals(false), UseMipMaps(true)
 		{ }
 
 		//! Copy constructor
@@ -246,6 +272,9 @@ namespace video
 			AntiAliasing = other.AntiAliasing;
 			ColorMask = other.ColorMask;
 			ColorMaterial = other.ColorMaterial;
+			BlendOperation = other.BlendOperation;
+			PolygonOffsetFactor = other.PolygonOffsetFactor;
+			PolygonOffsetDirection = other.PolygonOffsetDirection;
 			UseMipMaps = other.UseMipMaps;
 
 			return *this;
@@ -343,6 +372,20 @@ namespace video
 		diffuse light behavior of each face. The default, ECM_DIFFUSE, will result in
 		a very similar rendering as with lighting turned off, just with light shading. */
 		u8 ColorMaterial:3;
+
+		//! Store the blend operation of choice
+		/** Values to be chosen from E_BLEND_OPERATION. The actual way to use this value
+		is not yet determined, so ignore it for now. */
+		E_BLEND_OPERATION BlendOperation:3;
+
+		//! Factor specifying how far the polygon offset should be made
+		/** Specifying 0 disables the polygon offset. The direction is specified spearately.
+		The factor can be from 0 to 7.*/
+		u8 PolygonOffsetFactor:3;
+
+		//! Flag defining the direction the polygon offset is applied to.
+		/** Can be to front or to back, specififed by values from E_POLYGON_OFFSET. */
+		E_POLYGON_OFFSET PolygonOffsetDirection:1;
 
 		//! Draw as wireframe or filled triangles? Default: false
 		/** The user can access a material flag using
@@ -489,16 +532,19 @@ namespace video
 				}
 				break;
 				case EMF_ANTI_ALIASING:
-					AntiAliasing = value?EAAM_SIMPLE:EAAM_OFF;
-					break;
+					AntiAliasing = value?EAAM_SIMPLE:EAAM_OFF; break;
 				case EMF_COLOR_MASK:
-					ColorMask = value?ECP_ALL:ECP_NONE;
-					break;
+					ColorMask = value?ECP_ALL:ECP_NONE; break;
 				case EMF_COLOR_MATERIAL:
-					ColorMaterial = value?ECM_DIFFUSE:ECM_NONE;
-					break;
+					ColorMaterial = value?ECM_DIFFUSE:ECM_NONE; break;
 				case EMF_USE_MIP_MAPS:
-					UseMipMaps = value;
+					UseMipMaps = value; break;
+				case EMF_BLEND_OPERATION:
+					BlendOperation = value?EBO_ADD:EBO_NONE; break;
+				case EMF_POLYGON_OFFSET:
+					PolygonOffsetFactor = value?1:0;
+					PolygonOffsetDirection = EPO_BACK;
+					break;
 				default:
 					break;
 			}
@@ -554,6 +600,10 @@ namespace video
 					return (ColorMaterial != ECM_NONE);
 				case EMF_USE_MIP_MAPS:
 					return UseMipMaps;
+				case EMF_BLEND_OPERATION:
+					return BlendOperation != EBO_NONE;
+				case EMF_POLYGON_OFFSET:
+					return PolygonOffsetFactor != 0;
 			}
 
 			return false;
@@ -587,6 +637,9 @@ namespace video
 				AntiAliasing != b.AntiAliasing ||
 				ColorMask != b.ColorMask ||
 				ColorMaterial != b.ColorMaterial ||
+				BlendOperation != b.BlendOperation ||
+				PolygonOffsetFactor != b.PolygonOffsetFactor ||
+				PolygonOffsetDirection != b.PolygonOffsetDirection ||
 				UseMipMaps != b.UseMipMaps;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
 			{
