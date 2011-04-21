@@ -104,6 +104,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(drawRectOutline);
 	TEST(guiDisabledMenu);
 	TEST(makeColorKeyTexture);
+	TEST(material);
 	TEST(renderTargetTexture);
 	TEST(textureFeatures);
 	TEST(textureRenderStates);
