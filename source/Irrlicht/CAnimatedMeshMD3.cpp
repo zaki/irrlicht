@@ -63,7 +63,7 @@ struct SMD3Shader
 
 //! Constructor
 CAnimatedMeshMD3::CAnimatedMeshMD3()
-:Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f), FramesPerSecond(25.f)
+:Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f)//, FramesPerSecond(25.f)
 {
 #ifdef _DEBUG
 	setDebugName("CAnimatedMeshMD3");
