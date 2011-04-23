@@ -624,9 +624,9 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	// blend equation
 	pGlBlendEquationEXT = (PFNGLBLENDEQUATIONEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationEXT");
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationEXT"));
 	pGlBlendEquation = (PFNGLBLENDEQUATIONPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquation");
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquation"));
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
