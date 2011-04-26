@@ -73,6 +73,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0),
 	pGlColorMaskIndexedEXT(0), pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0),
 	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0),
+	pGlBlendEquationIndexedAMD(0), pGlBlendEquationiARB(0),
 	pGlProgramParameteriARB(0), pGlProgramParameteriEXT(0),
 	pGlGenQueriesARB(0), pGlDeleteQueriesARB(0), pGlIsQueryARB(0),
 	pGlBeginQueryARB(0), pGlEndQueryARB(0), pGlGetQueryivARB(0),
@@ -249,6 +250,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC) wglGetProcAddress("glDisableIndexedEXT");
 	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC) wglGetProcAddress("glBlendFuncIndexedAMD");
 	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC) wglGetProcAddress("glBlendFunciARB");
+	pGlBlendEquationIndexedAMD= (PFNGLBLENDEQUATIONINDEXEDAMDPROC) wglGetProcAddress("glBlendEquationIndexedAMD");
+	pGlBlendEquationiARB= (PFNGLBLENDEQUATIONIPROC) wglGetProcAddress("glBlendEquationiARB");
 	pGlProgramParameteriARB= (PFNGLPROGRAMPARAMETERIARBPROC) wglGetProcAddress("glProgramParameteriARB");
 	pGlProgramParameteriEXT= (PFNGLPROGRAMPARAMETERIEXTPROC) wglGetProcAddress("glProgramParameteriEXT");
 
@@ -571,6 +574,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFuncIndexedAMD"));
 	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFunciARB"));
+	pGlBlendEquationIndexedAMD= (PFNGLBLENDEQUATIONINDEXEDAMDPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationIndexedAMD"));
+	pGlBlendEquationiARB= (PFNGLBLENDEQUATIONIPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationiARB"));
 	pGlProgramParameteriARB = (PFNGLPROGRAMPARAMETERIARBPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriARB"));
 	pGlProgramParameteriEXT = (PFNGLPROGRAMPARAMETERIEXTPROC)
