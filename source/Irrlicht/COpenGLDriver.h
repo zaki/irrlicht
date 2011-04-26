@@ -423,7 +423,7 @@ namespace video
 		void assignHardwareLight(u32 lightIndex);
 
 		//! helper function for render setup.
-		void createColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType);
+		void getColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType);
 
 		//! helper function doing the actual rendering.
 		void renderArray(const void* indexList, u32 primitiveCount,
