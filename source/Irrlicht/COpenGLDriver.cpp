@@ -78,7 +78,6 @@ bool COpenGLDriver::changeRenderContext(const SExposedVideoData& videoData, CIrr
 	return true;
 }
 
-
 //! inits the open gl driver
 bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceWin32* device)
 {
@@ -235,7 +234,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		return false;
 	}
 
-	io::path wglExtensions;
+	core::stringc wglExtensions;
 #ifdef WGL_ARB_extensions_string
 	PFNWGLGETEXTENSIONSSTRINGARBPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	if (irrGetExtensionsString)
@@ -248,13 +247,15 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	const bool pixel_format_supported = (wglExtensions.find("WGL_ARB_pixel_format") != -1);
 	const bool multi_sample_supported = ((wglExtensions.find("WGL_ARB_multisample") != -1) ||
 		(wglExtensions.find("WGL_EXT_multisample") != -1) || (wglExtensions.find("WGL_3DFX_multisample") != -1) );
+	const bool framebuffer_srgb_supported = ((wglExtensions.find("WGL_ARB_framebuffer_sRGB") != -1) ||
+		(wglExtensions.find("WGL_EXT_framebuffer_sRGB") != -1) );
 #ifdef _DEBUG
 	os::Printer::log("WGL_extensions", wglExtensions);
 #endif
 
 #ifdef WGL_ARB_pixel_format
 	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-	if (pixel_format_supported && multi_sample_supported && wglChoosePixelFormat_ARB)
+	if (pixel_format_supported && wglChoosePixelFormat_ARB)
 	{
 		// This value determines the number of samples used for antialiasing
 		// My experience is that 8 does not show a big
@@ -276,41 +277,48 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
 			WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
 			WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
-#ifdef WGL_ARB_multisample
-			WGL_SAMPLE_BUFFERS_ARB, 1,
-			WGL_SAMPLES_ARB,AntiAlias, // 20,21
-#elif defined(WGL_EXT_multisample)
-			WGL_SAMPLE_BUFFERS_EXT, 1,
-			WGL_SAMPLES_EXT,AntiAlias, // 20,21
-#elif defined(WGL_3DFX_multisample)
-			WGL_SAMPLE_BUFFERS_3DFX, 1,
-			WGL_SAMPLES_3DFX,AntiAlias, // 20,21
-#endif
 			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-			// other possible values:
-			// WGL_ARB_pixel_format_float: WGL_TYPE_RGBA_FLOAT_ARB
-			// WGL_EXT_pixel_format_packed_float: WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT
+#ifdef WGL_ARB_multisample
+			WGL_SAMPLES_ARB,AntiAlias, // 20,21
+			WGL_SAMPLE_BUFFERS_ARB, 1,
+#elif defined(WGL_EXT_multisample)
+			WGL_SAMPLES_EXT,AntiAlias, // 20,21
+			WGL_SAMPLE_BUFFERS_EXT, 1,
+#elif defined(WGL_3DFX_multisample)
+			WGL_SAMPLES_3DFX,AntiAlias, // 20,21
+			WGL_SAMPLE_BUFFERS_3DFX, 1,
+#endif
 #if 0
-#ifdef WGL_EXT_framebuffer_sRGB
-			WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_FALSE,
+#ifdef WGL_ARB_framebuffer_sRGB
+			WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB, GL_TRUE,
+#elif defined(WGL_EXT_framebuffer_sRGB)
+			WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_TRUE,
 #endif
 #endif
 			0,0
 		};
+		if (!multi_sample_supported)
+		{
+			iAttributes[20]=0;
+			iAttributes[21]=0;
+			iAttributes[22]=0;
+			iAttributes[23]=0;
+		}
 
 		s32 rv=0;
 		// Try to get an acceptable pixel format
-		while(rv==0 && iAttributes[21]>1)
+		do
 		{
-			s32 pixelFormat=0;
-			u32 numFormats=0;
-			const s32 valid = wglChoosePixelFormat_ARB(HDc,iAttributes,fAttributes,1,&pixelFormat,&numFormats);
+			int pixelFormat=0;
+			UINT numFormats=0;
+			const BOOL valid = wglChoosePixelFormat_ARB(HDc,iAttributes,fAttributes,1,&pixelFormat,&numFormats);
 
 			if (valid && numFormats>0)
 				rv = pixelFormat;
 			else
 				iAttributes[21] -= 1;
 		}
+		while(rv==0 && iAttributes[21]>1);
 		if (rv)
 		{
 			PixelFormat=rv;
@@ -336,7 +344,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	}
 
 	// search for pixel format the simple way
-	if (AntiAlias < 2)
+	if (PixelFormat==0 || (!SetPixelFormat(HDc, PixelFormat, &pfd)))
 	{
 		for (u32 i=0; i<5; ++i)
 		{
