@@ -4067,14 +4067,32 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 					(targets[i].ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
-				if (targets[i].BlendEnable)
-					extGlEnableIndexed(GL_BLEND, i);
-				else
+				if (targets[i].BlendOp==EBO_NONE)
 					extGlDisableIndexed(GL_BLEND, i);
+				else
+					extGlEnableIndexed(GL_BLEND, i);
 			}
 			if (FeatureAvailable[IRR_AMD_draw_buffers_blend] || FeatureAvailable[IRR_ARB_draw_buffers_blend])
 			{
 				extGlBlendFuncIndexed(i, getGLBlend(targets[i].BlendFuncSrc), getGLBlend(targets[i].BlendFuncDst));
+				switch(targets[i].BlendOp)
+				{
+				case EBO_SUBTRACT:
+					extGlBlendEquationIndexed(i, GL_FUNC_SUBTRACT);
+					break;
+				case EBO_REVSUBTRACT:
+					extGlBlendEquationIndexed(i, GL_FUNC_REVERSE_SUBTRACT);
+					break;
+				case EBO_MIN:
+					extGlBlendEquationIndexed(i, GL_MIN);
+					break;
+				case EBO_MAX:
+					extGlBlendEquationIndexed(i, GL_MAX);
+					break;
+				default:
+					extGlBlendEquationIndexed(i, GL_FUNC_ADD);
+					break;
+				}
 			}
 			if (targets[i].TargetType==ERT_RENDER_TEXTURE)
 			{
@@ -4319,7 +4337,7 @@ GLenum COpenGLDriver::primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const
 
 GLenum COpenGLDriver::getGLBlend (E_BLEND_FACTOR factor) const
 {
-	u32 r = 0;
+	GLenum r = 0;
 	switch (factor)
 	{
 		case EBF_ZERO:			r = GL_ZERO; break;
