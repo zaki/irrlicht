@@ -893,6 +893,8 @@ class COpenGLExtensionHandler
 	//! show all features with availablity
 	void dump() const;
 
+	void dumpFramebufferFormats() const;
+
 	// Some variables for properties
 	bool StencilBuffer;
 	bool MultiTextureExtension;
