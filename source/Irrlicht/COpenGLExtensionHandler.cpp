@@ -50,18 +50,6 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
 	pGlCompressedTexImage2D(0),
-#if defined(GLX_SGI_swap_control)
-	pGlxSwapIntervalSGI(0),
-#endif
-#if defined(GLX_EXT_swap_control)
-	pGlxSwapIntervalEXT(0),
-#endif
-#if defined(GLX_MESA_swap_control)
-	pGlxSwapIntervalMESA(0),
-#endif
-#if defined(WGL_EXT_swap_control)
-	pWglSwapIntervalEXT(0),
-#endif
 	pGlBindFramebufferEXT(0), pGlDeleteFramebuffersEXT(0), pGlGenFramebuffersEXT(0),
 	pGlCheckFramebufferStatusEXT(0), pGlFramebufferTexture2DEXT(0),
 	pGlBindRenderbufferEXT(0), pGlDeleteRenderbuffersEXT(0), pGlGenRenderbuffersEXT(0),
@@ -83,6 +71,18 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlEndOcclusionQueryNV(0), pGlGetOcclusionQueryivNV(0),
 	pGlGetOcclusionQueryuivNV(0),
 	pGlBlendEquationEXT(0), pGlBlendEquation(0)
+#if defined(GLX_SGI_swap_control)
+	,pGlxSwapIntervalSGI(0)
+#endif
+#if defined(GLX_EXT_swap_control)
+	,pGlxSwapIntervalEXT(0)
+#endif
+#if defined(WGL_EXT_swap_control)
+	,pWglSwapIntervalEXT(0)
+#endif
+#if defined(GLX_MESA_swap_control)
+	,pGlxSwapIntervalMESA(0)
+#endif
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -151,139 +151,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	TextureCompressionExtension = FeatureAvailable[IRR_ARB_texture_compression];
 	StencilBuffer=stencilBuffer;
 
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
 #ifdef _IRR_WINDOWS_API_
-	// get multitexturing function pointers
-	pGlActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress("glActiveTextureARB");
-	pGlClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress("glClientActiveTextureARB");
-
-	// get fragment and vertex program function pointers
-	pGlGenProgramsARB = (PFNGLGENPROGRAMSARBPROC) wglGetProcAddress("glGenProgramsARB");
-	pGlGenProgramsNV = (PFNGLGENPROGRAMSNVPROC) wglGetProcAddress("glGenProgramsNV");
-	pGlBindProgramARB = (PFNGLBINDPROGRAMARBPROC) wglGetProcAddress("glBindProgramARB");
-	pGlBindProgramNV = (PFNGLBINDPROGRAMNVPROC) wglGetProcAddress("glBindProgramNV");
-	pGlProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC) wglGetProcAddress("glProgramStringARB");
-	pGlLoadProgramNV = (PFNGLLOADPROGRAMNVPROC) wglGetProcAddress("glLoadProgramNV");
-	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC) wglGetProcAddress("glDeleteProgramsARB");
-	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC) wglGetProcAddress("glDeleteProgramsNV");
-	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC) wglGetProcAddress("glProgramLocalParameter4fvARB");
-	pGlCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress("glCreateShaderObjectARB");
-	pGlCreateShader = (PFNGLCREATESHADERPROC) wglGetProcAddress("glCreateShader");
-	pGlShaderSourceARB = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress("glShaderSourceARB");
-	pGlShaderSource = (PFNGLSHADERSOURCEPROC) wglGetProcAddress("glShaderSource");
-	pGlCompileShaderARB = (PFNGLCOMPILESHADERARBPROC) wglGetProcAddress("glCompileShaderARB");
-	pGlCompileShader = (PFNGLCOMPILESHADERPROC) wglGetProcAddress("glCompileShader");
-	pGlCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress("glCreateProgramObjectARB");
-	pGlCreateProgram = (PFNGLCREATEPROGRAMPROC) wglGetProcAddress("glCreateProgram");
-	pGlAttachObjectARB = (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress("glAttachObjectARB");
-	pGlAttachShader = (PFNGLATTACHSHADERPROC) wglGetProcAddress("glAttachShader");
-	pGlLinkProgramARB = (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress("glLinkProgramARB");
-	pGlLinkProgram = (PFNGLLINKPROGRAMPROC) wglGetProcAddress("glLinkProgram");
-	pGlUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress("glUseProgramObjectARB");
-	pGlUseProgram = (PFNGLUSEPROGRAMPROC) wglGetProcAddress("glUseProgram");
-	pGlDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress("glDeleteObjectARB");
-	pGlDeleteProgram = (PFNGLDELETEPROGRAMPROC) wglGetProcAddress("glDeleteProgram");
-	pGlDeleteShader = (PFNGLDELETESHADERPROC) wglGetProcAddress("glDeleteShader");
-	pGlGetAttachedShaders = (PFNGLGETATTACHEDSHADERSPROC) wglGetProcAddress("glGetAttachedShaders");
-	pGlGetAttachedObjectsARB = (PFNGLGETATTACHEDOBJECTSARBPROC) wglGetProcAddress("glGetAttachedObjectsARB");
-	pGlGetInfoLogARB = (PFNGLGETINFOLOGARBPROC) wglGetProcAddress("glGetInfoLogARB");
-	pGlGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC) wglGetProcAddress("glGetShaderInfoLog");
-	pGlGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC) wglGetProcAddress("glGetProgramInfoLog");
-	pGlGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress("glGetObjectParameterivARB");
-	pGlGetShaderiv = (PFNGLGETSHADERIVPROC) wglGetProcAddress("glGetShaderiv");
-	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC) wglGetProcAddress("glGetProgramiv");
-	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC) wglGetProcAddress("glGetUniformLocationARB");
-	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) wglGetProcAddress("glGetUniformLocation");
-	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress("glUniform4fvARB");
-	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC) wglGetProcAddress("glUniform1ivARB");
-	pGlUniform1fvARB = (PFNGLUNIFORM1FVARBPROC) wglGetProcAddress("glUniform1fvARB");
-	pGlUniform2fvARB = (PFNGLUNIFORM2FVARBPROC) wglGetProcAddress("glUniform2fvARB");
-	pGlUniform3fvARB = (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress("glUniform3fvARB");
-	pGlUniformMatrix2fvARB = (PFNGLUNIFORMMATRIX2FVARBPROC) wglGetProcAddress("glUniformMatrix2fvARB");
-	pGlUniformMatrix3fvARB = (PFNGLUNIFORMMATRIX3FVARBPROC) wglGetProcAddress("glUniformMatrix3fvARB");
-	pGlUniformMatrix4fvARB = (PFNGLUNIFORMMATRIX4FVARBPROC) wglGetProcAddress("glUniformMatrix4fvARB");
-	pGlGetActiveUniformARB = (PFNGLGETACTIVEUNIFORMARBPROC) wglGetProcAddress("glGetActiveUniformARB");
-	pGlGetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC) wglGetProcAddress("glGetActiveUniform");
-
-	// get point parameter extension
-	pGlPointParameterfARB = (PFNGLPOINTPARAMETERFARBPROC) wglGetProcAddress("glPointParameterfARB");
-	pGlPointParameterfvARB = (PFNGLPOINTPARAMETERFVARBPROC) wglGetProcAddress("glPointParameterfvARB");
-
-	// get stencil extension
-	pGlStencilFuncSeparate = (PFNGLSTENCILFUNCSEPARATEPROC) wglGetProcAddress("glStencilFuncSeparate");
-	pGlStencilOpSeparate = (PFNGLSTENCILOPSEPARATEPROC) wglGetProcAddress("glStencilOpSeparate");
-	pGlStencilFuncSeparateATI = (PFNGLSTENCILFUNCSEPARATEATIPROC) wglGetProcAddress("glStencilFuncSeparateATI");
-	pGlStencilOpSeparateATI = (PFNGLSTENCILOPSEPARATEATIPROC) wglGetProcAddress("glStencilOpSeparateATI");
-
-	// compressed textures
-	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) wglGetProcAddress("glCompressedTexImage2D");
-
-	// FrameBufferObjects
-	pGlBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) wglGetProcAddress("glBindFramebufferEXT");
-	pGlDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) wglGetProcAddress("glDeleteFramebuffersEXT");
-	pGlGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC) wglGetProcAddress("glGenFramebuffersEXT");
-	pGlCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) wglGetProcAddress("glCheckFramebufferStatusEXT");
-	pGlFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) wglGetProcAddress("glFramebufferTexture2DEXT");
-	pGlBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) wglGetProcAddress("glBindRenderbufferEXT");
-	pGlDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC) wglGetProcAddress("glDeleteRenderbuffersEXT");
-	pGlGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) wglGetProcAddress("glGenRenderbuffersEXT");
-	pGlRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) wglGetProcAddress("glRenderbufferStorageEXT");
-	pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) wglGetProcAddress("glFramebufferRenderbufferEXT");
-	pGlDrawBuffersARB = (PFNGLDRAWBUFFERSARBPROC) wglGetProcAddress("glDrawBuffersARB");
-	pGlDrawBuffersATI = (PFNGLDRAWBUFFERSATIPROC) wglGetProcAddress("glDrawBuffersATI");
-
-	// get vertex buffer extension
-	pGlGenBuffersARB = (PFNGLGENBUFFERSARBPROC) wglGetProcAddress("glGenBuffersARB");
-	pGlBindBufferARB = (PFNGLBINDBUFFERARBPROC) wglGetProcAddress("glBindBufferARB");
-	pGlBufferDataARB = (PFNGLBUFFERDATAARBPROC) wglGetProcAddress("glBufferDataARB");
-	pGlDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC) wglGetProcAddress("glDeleteBuffersARB");
-	pGlBufferSubDataARB= (PFNGLBUFFERSUBDATAARBPROC) wglGetProcAddress("glBufferSubDataARB");
-	pGlGetBufferSubDataARB= (PFNGLGETBUFFERSUBDATAARBPROC)wglGetProcAddress("glGetBufferSubDataARB");
-	pGlMapBufferARB= (PFNGLMAPBUFFERARBPROC) wglGetProcAddress("glMapBufferARB");
-	pGlUnmapBufferARB= (PFNGLUNMAPBUFFERARBPROC) wglGetProcAddress("glUnmapBufferARB");
-	pGlIsBufferARB= (PFNGLISBUFFERARBPROC) wglGetProcAddress("glIsBufferARB");
-	pGlGetBufferParameterivARB= (PFNGLGETBUFFERPARAMETERIVARBPROC) wglGetProcAddress("glGetBufferParameterivARB");
-	pGlGetBufferPointervARB= (PFNGLGETBUFFERPOINTERVARBPROC) wglGetProcAddress("glGetBufferPointervARB");
-	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC) wglGetProcAddress("glProvokingVertex");
-	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC) wglGetProcAddress("glProvokingVertexEXT");
-	pGlColorMaskIndexedEXT= (PFNGLCOLORMASKINDEXEDEXTPROC) wglGetProcAddress("glColorMaskIndexedEXT");
-	pGlEnableIndexedEXT= (PFNGLENABLEINDEXEDEXTPROC) wglGetProcAddress("glEnableIndexedEXT");
-	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC) wglGetProcAddress("glDisableIndexedEXT");
-	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC) wglGetProcAddress("glBlendFuncIndexedAMD");
-	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC) wglGetProcAddress("glBlendFunciARB");
-	pGlBlendEquationIndexedAMD= (PFNGLBLENDEQUATIONINDEXEDAMDPROC) wglGetProcAddress("glBlendEquationIndexedAMD");
-	pGlBlendEquationiARB= (PFNGLBLENDEQUATIONIPROC) wglGetProcAddress("glBlendEquationiARB");
-	pGlProgramParameteriARB= (PFNGLPROGRAMPARAMETERIARBPROC) wglGetProcAddress("glProgramParameteriARB");
-	pGlProgramParameteriEXT= (PFNGLPROGRAMPARAMETERIEXTPROC) wglGetProcAddress("glProgramParameteriEXT");
-
-	// occlusion query
-	pGlGenQueriesARB = (PFNGLGENQUERIESARBPROC) wglGetProcAddress("glGenQueriesARB");
-	pGlDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC) wglGetProcAddress("glDeleteQueriesARB");
-	pGlIsQueryARB = (PFNGLISQUERYARBPROC) wglGetProcAddress("glIsQueryARB");
-	pGlBeginQueryARB = (PFNGLBEGINQUERYARBPROC) wglGetProcAddress("glBeginQueryARB");
-	pGlEndQueryARB = (PFNGLENDQUERYARBPROC) wglGetProcAddress("glEndQueryARB");
-	pGlGetQueryivARB = (PFNGLGETQUERYIVARBPROC) wglGetProcAddress("glGetQueryivARB");
-	pGlGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC) wglGetProcAddress("glGetQueryObjectivARB");
-	pGlGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC) wglGetProcAddress("glGetQueryObjectuivARB");
-	pGlGenOcclusionQueriesNV = (PFNGLGENOCCLUSIONQUERIESNVPROC) wglGetProcAddress("glGenOcclusionQueriesNV");
-	pGlDeleteOcclusionQueriesNV = (PFNGLDELETEOCCLUSIONQUERIESNVPROC) wglGetProcAddress("glDeleteOcclusionQueriesNV");
-	pGlIsOcclusionQueryNV = (PFNGLISOCCLUSIONQUERYNVPROC) wglGetProcAddress("glIsOcclusionQueryNV");
-	pGlBeginOcclusionQueryNV = (PFNGLBEGINOCCLUSIONQUERYNVPROC) wglGetProcAddress("glBeginOcclusionQueryNV");
-	pGlEndOcclusionQueryNV = (PFNGLENDOCCLUSIONQUERYNVPROC) wglGetProcAddress("glEndOcclusionQueryNV");
-	pGlGetOcclusionQueryivNV = (PFNGLGETOCCLUSIONQUERYIVNVPROC) wglGetProcAddress("glGetOcclusionQueryivNV");
-	pGlGetOcclusionQueryuivNV = (PFNGLGETOCCLUSIONQUERYUIVNVPROC) wglGetProcAddress("glGetOcclusionQueryuivNV");
-
-	// blend equation
-	pGlBlendEquationEXT = (PFNGLBLENDEQUATIONEXTPROC) wglGetProcAddress("glBlendEquationEXT");
-	pGlBlendEquation = (PFNGLBLENDEQUATIONPROC) wglGetProcAddress("glBlendEquation");
-
-	#if defined(WGL_EXT_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-		// get vsync extension
-		pWglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT");
-	#endif
-
+	#define IRR_OGL_LOAD_EXTENSION(x) wglGetProcAddress(reinterpret_cast<const char*>(x))
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
-	#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-
 	#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_) && !defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 		#define IRR_OGL_LOAD_EXTENSION(x) SDL_GL_GetProcAddress(reinterpret_cast<const char*>(x))
 	#else
@@ -297,345 +168,163 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	// #define _IRR_GETPROCADDRESS_WORKAROUND_
 
 	#ifndef _IRR_GETPROCADDRESS_WORKAROUND_
-	__GLXextFuncPtr (*IRR_OGL_LOAD_EXTENSION)(const GLubyte*)=0;
+	__GLXextFuncPtr (*IRR_OGL_LOAD_EXTENSION_FUNCP)(const GLubyte*)=0;
 	#ifdef GLX_VERSION_1_4
 		int major=0,minor=0;
 		if (glXGetCurrentDisplay())
 			glXQueryVersion(glXGetCurrentDisplay(), &major, &minor);
 		if ((major>1) || (minor>3))
-			IRR_OGL_LOAD_EXTENSION=glXGetProcAddress;
+			IRR_OGL_LOAD_EXTENSION_FUNCP=glXGetProcAddress;
 		else
 	#endif
-			IRR_OGL_LOAD_EXTENSION=glXGetProcAddressARB;
+			IRR_OGL_LOAD_EXTENSION_FUNCP=glXGetProcAddressARB;
+		#define IRR_OGL_LOAD_EXTENSION(X) IRR_OGL_LOAD_EXTENSION_FUNCP(reinterpret_cast<const GLubyte*>(X))
 	#else
-		#define IRR_OGL_LOAD_EXTENSION glXGetProcAddressARB
+		#define IRR_OGL_LOAD_EXTENSION(X) glXGetProcAddressARB(reinterpret_cast<const GLubyte*>(X))
 	#endif
 	#endif
+#endif
 
-	pGlActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glActiveTextureARB"));
-
-	pGlClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glClientActiveTextureARB"));
+	// get multitexturing function pointers
+	pGlActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC) IRR_OGL_LOAD_EXTENSION("glActiveTextureARB");
+	pGlClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC) IRR_OGL_LOAD_EXTENSION("glClientActiveTextureARB");
 
 	// get fragment and vertex program function pointers
-	pGlGenProgramsARB = (PFNGLGENPROGRAMSARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenProgramsARB"));
-
-	pGlGenProgramsNV = (PFNGLGENPROGRAMSNVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenProgramsNV"));
-
-	pGlBindProgramARB = (PFNGLBINDPROGRAMARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindProgramARB"));
-
-	pGlBindProgramNV = (PFNGLBINDPROGRAMNVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindProgramNV"));
-
-	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsARB"));
-
-	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsNV"));
-
-	pGlProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramStringARB"));
-
-	pGlLoadProgramNV = (PFNGLLOADPROGRAMNVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glLoadProgramNV"));
-
-	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramLocalParameter4fvARB"));
-
-	pGlCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateShaderObjectARB"));
-
-	pGlCreateShader = (PFNGLCREATESHADERPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateShader"));
-
-	pGlShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glShaderSourceARB"));
-
-	pGlShaderSource = (PFNGLSHADERSOURCEPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glShaderSource"));
-
-	pGlCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompileShaderARB"));
-
-	pGlCompileShader = (PFNGLCOMPILESHADERPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompileShader"));
-
-	pGlCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateProgramObjectARB"));
-
-	pGlCreateProgram = (PFNGLCREATEPROGRAMPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCreateProgram"));
-
-	pGlAttachObjectARB = (PFNGLATTACHOBJECTARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glAttachObjectARB"));
-
-	pGlAttachShader = (PFNGLATTACHSHADERPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glAttachShader"));
-
-	pGlLinkProgramARB = (PFNGLLINKPROGRAMARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glLinkProgram"));
-
-	pGlLinkProgram = (PFNGLLINKPROGRAMPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glLinkProgramARB"));
-
-	pGlUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUseProgramObjectARB"));
-
-	pGlUseProgram = (PFNGLUSEPROGRAMPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUseProgram"));
-
-	pGlDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteObjectARB"));
-
-	pGlDeleteProgram = (PFNGLDELETEPROGRAMPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgram"));
-
-	pGlDeleteShader = (PFNGLDELETESHADERPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteShader"));
-
-	pGlGetAttachedObjectsARB = (PFNGLGETATTACHEDOBJECTSARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetAttachedObjectsARB"));
-
-	pGlGetAttachedShaders = (PFNGLGETATTACHEDSHADERSPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetAttachedShaders"));
-
-	pGlGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetInfoLogARB"));
-
-	pGlGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetShaderInfoLog"));
-
-	pGlGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetProgramInfoLog"));
-
-	pGlGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetObjectParameterivARB"));
-
-	pGlGetShaderiv = (PFNGLGETSHADERIVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetShaderiv"));
-
-	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetProgramiv"));
-
-	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetUniformLocationARB"));
-
-	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetUniformLocation"));
-
-	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniform4fvARB"));
-
-	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniform1ivARB"));
-
-	pGlUniform1fvARB = (PFNGLUNIFORM1FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniform1fvARB"));
-
-	pGlUniform2fvARB = (PFNGLUNIFORM2FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniform2fvARB"));
-
-	pGlUniform3fvARB = (PFNGLUNIFORM3FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniform3fvARB"));
-
-	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniform4fvARB"));
-
-	pGlUniformMatrix2fvARB = (PFNGLUNIFORMMATRIX2FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniformMatrix2fvARB"));
-
-	pGlUniformMatrix3fvARB = (PFNGLUNIFORMMATRIX3FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniformMatrix3fvARB"));
-
-	pGlUniformMatrix4fvARB = (PFNGLUNIFORMMATRIX4FVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUniformMatrix4fvARB"));
-
-	pGlGetActiveUniformARB = (PFNGLGETACTIVEUNIFORMARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetActiveUniformARB"));
-
-	pGlGetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetActiveUniform"));
+	pGlGenProgramsARB = (PFNGLGENPROGRAMSARBPROC) IRR_OGL_LOAD_EXTENSION("glGenProgramsARB");
+	pGlGenProgramsNV = (PFNGLGENPROGRAMSNVPROC) IRR_OGL_LOAD_EXTENSION("glGenProgramsNV");
+	pGlBindProgramARB = (PFNGLBINDPROGRAMARBPROC) IRR_OGL_LOAD_EXTENSION("glBindProgramARB");
+	pGlBindProgramNV = (PFNGLBINDPROGRAMNVPROC) IRR_OGL_LOAD_EXTENSION("glBindProgramNV");
+	pGlProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC) IRR_OGL_LOAD_EXTENSION("glProgramStringARB");
+	pGlLoadProgramNV = (PFNGLLOADPROGRAMNVPROC) IRR_OGL_LOAD_EXTENSION("glLoadProgramNV");
+	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC) IRR_OGL_LOAD_EXTENSION("glDeleteProgramsARB");
+	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC) IRR_OGL_LOAD_EXTENSION("glDeleteProgramsNV");
+	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glProgramLocalParameter4fvARB");
+	pGlCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC) IRR_OGL_LOAD_EXTENSION("glCreateShaderObjectARB");
+	pGlCreateShader = (PFNGLCREATESHADERPROC) IRR_OGL_LOAD_EXTENSION("glCreateShader");
+	pGlShaderSourceARB = (PFNGLSHADERSOURCEARBPROC) IRR_OGL_LOAD_EXTENSION("glShaderSourceARB");
+	pGlShaderSource = (PFNGLSHADERSOURCEPROC) IRR_OGL_LOAD_EXTENSION("glShaderSource");
+	pGlCompileShaderARB = (PFNGLCOMPILESHADERARBPROC) IRR_OGL_LOAD_EXTENSION("glCompileShaderARB");
+	pGlCompileShader = (PFNGLCOMPILESHADERPROC) IRR_OGL_LOAD_EXTENSION("glCompileShader");
+	pGlCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC) IRR_OGL_LOAD_EXTENSION("glCreateProgramObjectARB");
+	pGlCreateProgram = (PFNGLCREATEPROGRAMPROC) IRR_OGL_LOAD_EXTENSION("glCreateProgram");
+	pGlAttachObjectARB = (PFNGLATTACHOBJECTARBPROC) IRR_OGL_LOAD_EXTENSION("glAttachObjectARB");
+	pGlAttachShader = (PFNGLATTACHSHADERPROC) IRR_OGL_LOAD_EXTENSION("glAttachShader");
+	pGlLinkProgramARB = (PFNGLLINKPROGRAMARBPROC) IRR_OGL_LOAD_EXTENSION("glLinkProgramARB");
+	pGlLinkProgram = (PFNGLLINKPROGRAMPROC) IRR_OGL_LOAD_EXTENSION("glLinkProgram");
+	pGlUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC) IRR_OGL_LOAD_EXTENSION("glUseProgramObjectARB");
+	pGlUseProgram = (PFNGLUSEPROGRAMPROC) IRR_OGL_LOAD_EXTENSION("glUseProgram");
+	pGlDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC) IRR_OGL_LOAD_EXTENSION("glDeleteObjectARB");
+	pGlDeleteProgram = (PFNGLDELETEPROGRAMPROC) IRR_OGL_LOAD_EXTENSION("glDeleteProgram");
+	pGlDeleteShader = (PFNGLDELETESHADERPROC) IRR_OGL_LOAD_EXTENSION("glDeleteShader");
+	pGlGetAttachedShaders = (PFNGLGETATTACHEDSHADERSPROC) IRR_OGL_LOAD_EXTENSION("glGetAttachedShaders");
+	pGlGetAttachedObjectsARB = (PFNGLGETATTACHEDOBJECTSARBPROC) IRR_OGL_LOAD_EXTENSION("glGetAttachedObjectsARB");
+	pGlGetInfoLogARB = (PFNGLGETINFOLOGARBPROC) IRR_OGL_LOAD_EXTENSION("glGetInfoLogARB");
+	pGlGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC) IRR_OGL_LOAD_EXTENSION("glGetShaderInfoLog");
+	pGlGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC) IRR_OGL_LOAD_EXTENSION("glGetProgramInfoLog");
+	pGlGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC) IRR_OGL_LOAD_EXTENSION("glGetObjectParameterivARB");
+	pGlGetShaderiv = (PFNGLGETSHADERIVPROC) IRR_OGL_LOAD_EXTENSION("glGetShaderiv");
+	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC) IRR_OGL_LOAD_EXTENSION("glGetProgramiv");
+	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC) IRR_OGL_LOAD_EXTENSION("glGetUniformLocationARB");
+	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) IRR_OGL_LOAD_EXTENSION("glGetUniformLocation");
+	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform4fvARB");
+	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1ivARB");
+	pGlUniform1fvARB = (PFNGLUNIFORM1FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1fvARB");
+	pGlUniform2fvARB = (PFNGLUNIFORM2FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform2fvARB");
+	pGlUniform3fvARB = (PFNGLUNIFORM3FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform3fvARB");
+	pGlUniformMatrix2fvARB = (PFNGLUNIFORMMATRIX2FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix2fvARB");
+	pGlUniformMatrix3fvARB = (PFNGLUNIFORMMATRIX3FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix3fvARB");
+	pGlUniformMatrix4fvARB = (PFNGLUNIFORMMATRIX4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix4fvARB");
+	pGlGetActiveUniformARB = (PFNGLGETACTIVEUNIFORMARBPROC) IRR_OGL_LOAD_EXTENSION("glGetActiveUniformARB");
+	pGlGetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC) IRR_OGL_LOAD_EXTENSION("glGetActiveUniform");
 
 	// get point parameter extension
-	pGlPointParameterfARB = (PFNGLPOINTPARAMETERFARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glPointParameterfARB"));
-	pGlPointParameterfvARB = (PFNGLPOINTPARAMETERFVARBPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glPointParameterfvARB"));
+	pGlPointParameterfARB = (PFNGLPOINTPARAMETERFARBPROC) IRR_OGL_LOAD_EXTENSION("glPointParameterfARB");
+	pGlPointParameterfvARB = (PFNGLPOINTPARAMETERFVARBPROC) IRR_OGL_LOAD_EXTENSION("glPointParameterfvARB");
 
 	// get stencil extension
-	pGlStencilFuncSeparate = (PFNGLSTENCILFUNCSEPARATEPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glStencilFuncSeparate"));
-	pGlStencilOpSeparate = (PFNGLSTENCILOPSEPARATEPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glStencilOpSeparate"));
-	pGlStencilFuncSeparateATI = (PFNGLSTENCILFUNCSEPARATEATIPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glStencilFuncSeparateATI"));
-	pGlStencilOpSeparateATI = (PFNGLSTENCILOPSEPARATEATIPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glStencilOpSeparateATI"));
+	pGlStencilFuncSeparate = (PFNGLSTENCILFUNCSEPARATEPROC) IRR_OGL_LOAD_EXTENSION("glStencilFuncSeparate");
+	pGlStencilOpSeparate = (PFNGLSTENCILOPSEPARATEPROC) IRR_OGL_LOAD_EXTENSION("glStencilOpSeparate");
+	pGlStencilFuncSeparateATI = (PFNGLSTENCILFUNCSEPARATEATIPROC) IRR_OGL_LOAD_EXTENSION("glStencilFuncSeparateATI");
+	pGlStencilOpSeparateATI = (PFNGLSTENCILOPSEPARATEATIPROC) IRR_OGL_LOAD_EXTENSION("glStencilOpSeparateATI");
 
 	// compressed textures
-	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompressedTexImage2D"));
-
-	// get vsync extension
-	#if defined(GLX_SGI_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-		pGlxSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glXSwapIntervalSGI"));
-	#endif
-	#if defined(GLX_EXT_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-		pGlxSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glXSwapIntervalEXT"));
-	#endif
-	#if defined(GLX_MESA_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-		pGlxSwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC)IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glXSwapIntervalMESA"));
-	#endif
+	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) IRR_OGL_LOAD_EXTENSION("glCompressedTexImage2D");
 
 	// FrameBufferObjects
-	pGlBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindFramebufferEXT"));
+	pGlBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glBindFramebufferEXT");
+	pGlDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glDeleteFramebuffersEXT");
+	pGlGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenFramebuffersEXT");
+	pGlCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) IRR_OGL_LOAD_EXTENSION("glCheckFramebufferStatusEXT");
+	pGlFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferTexture2DEXT");
+	pGlBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glBindRenderbufferEXT");
+	pGlDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glDeleteRenderbuffersEXT");
+	pGlGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenRenderbuffersEXT");
+	pGlRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) IRR_OGL_LOAD_EXTENSION("glRenderbufferStorageEXT");
+	pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferRenderbufferEXT");
+	pGlDrawBuffersARB = (PFNGLDRAWBUFFERSARBPROC) IRR_OGL_LOAD_EXTENSION("glDrawBuffersARB");
+	pGlDrawBuffersATI = (PFNGLDRAWBUFFERSATIPROC) IRR_OGL_LOAD_EXTENSION("glDrawBuffersATI");
 
-	pGlDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteFramebuffersEXT"));
-
-	pGlGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenFramebuffersEXT"));
-
-	pGlCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCheckFramebufferStatusEXT"));
-
-	pGlFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glFramebufferTexture2DEXT"));
-
-	pGlBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindRenderbufferEXT"));
-
-	pGlDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteRenderbuffersEXT"));
-
-	pGlGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenRenderbuffersEXT"));
-
-	pGlRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glRenderbufferStorageEXT"));
-
-	pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glFramebufferRenderbufferEXT"));
-
-	pGlDrawBuffersARB = (PFNGLDRAWBUFFERSARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDrawBuffersARB"));
-
-	pGlDrawBuffersATI = (PFNGLDRAWBUFFERSATIPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDrawBuffersATI"));
-
-	pGlGenBuffersARB = (PFNGLGENBUFFERSARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenBuffersARB"));
-
-	pGlBindBufferARB = (PFNGLBINDBUFFERARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindBufferARB"));
-
-	pGlBufferDataARB = (PFNGLBUFFERDATAARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBufferDataARB"));
-
-	pGlDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteBuffersARB"));
-
-	pGlBufferSubDataARB = (PFNGLBUFFERSUBDATAARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBufferSubDataARB"));
-
-	pGlGetBufferSubDataARB = (PFNGLGETBUFFERSUBDATAARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetBufferSubDataARB"));
-
-	pGlMapBufferARB = (PFNGLMAPBUFFERARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glMapBufferARB"));
-
-	pGlUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glUnmapBufferARB"));
-
-	pGlIsBufferARB = (PFNGLISBUFFERARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glIsBufferARB"));
-
-	pGlGetBufferParameterivARB = (PFNGLGETBUFFERPARAMETERIVARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetBufferParameterivARB"));
-
-	pGlGetBufferPointervARB = (PFNGLGETBUFFERPOINTERVARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetBufferPointervARB"));
-	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertex"));
-	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertexEXT"));
-	pGlColorMaskIndexedEXT= (PFNGLCOLORMASKINDEXEDEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glColorMaskIndexedEXT"));
-	pGlEnableIndexedEXT= (PFNGLENABLEINDEXEDEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glEnableIndexedEXT"));
-	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDisableIndexedEXT"));
-	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFuncIndexedAMD"));
-	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFunciARB"));
-	pGlBlendEquationIndexedAMD= (PFNGLBLENDEQUATIONINDEXEDAMDPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationIndexedAMD"));
-	pGlBlendEquationiARB= (PFNGLBLENDEQUATIONIPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationiARB"));
-	pGlProgramParameteriARB = (PFNGLPROGRAMPARAMETERIARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriARB"));
-	pGlProgramParameteriEXT = (PFNGLPROGRAMPARAMETERIEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriEXT"));
+	// get vertex buffer extension
+	pGlGenBuffersARB = (PFNGLGENBUFFERSARBPROC) IRR_OGL_LOAD_EXTENSION("glGenBuffersARB");
+	pGlBindBufferARB = (PFNGLBINDBUFFERARBPROC) IRR_OGL_LOAD_EXTENSION("glBindBufferARB");
+	pGlBufferDataARB = (PFNGLBUFFERDATAARBPROC) IRR_OGL_LOAD_EXTENSION("glBufferDataARB");
+	pGlDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC) IRR_OGL_LOAD_EXTENSION("glDeleteBuffersARB");
+	pGlBufferSubDataARB= (PFNGLBUFFERSUBDATAARBPROC) IRR_OGL_LOAD_EXTENSION("glBufferSubDataARB");
+	pGlGetBufferSubDataARB= (PFNGLGETBUFFERSUBDATAARBPROC)IRR_OGL_LOAD_EXTENSION("glGetBufferSubDataARB");
+	pGlMapBufferARB= (PFNGLMAPBUFFERARBPROC) IRR_OGL_LOAD_EXTENSION("glMapBufferARB");
+	pGlUnmapBufferARB= (PFNGLUNMAPBUFFERARBPROC) IRR_OGL_LOAD_EXTENSION("glUnmapBufferARB");
+	pGlIsBufferARB= (PFNGLISBUFFERARBPROC) IRR_OGL_LOAD_EXTENSION("glIsBufferARB");
+	pGlGetBufferParameterivARB= (PFNGLGETBUFFERPARAMETERIVARBPROC) IRR_OGL_LOAD_EXTENSION("glGetBufferParameterivARB");
+	pGlGetBufferPointervARB= (PFNGLGETBUFFERPOINTERVARBPROC) IRR_OGL_LOAD_EXTENSION("glGetBufferPointervARB");
+	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC) IRR_OGL_LOAD_EXTENSION("glProvokingVertex");
+	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC) IRR_OGL_LOAD_EXTENSION("glProvokingVertexEXT");
+	pGlColorMaskIndexedEXT= (PFNGLCOLORMASKINDEXEDEXTPROC) IRR_OGL_LOAD_EXTENSION("glColorMaskIndexedEXT");
+	pGlEnableIndexedEXT= (PFNGLENABLEINDEXEDEXTPROC) IRR_OGL_LOAD_EXTENSION("glEnableIndexedEXT");
+	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC) IRR_OGL_LOAD_EXTENSION("glDisableIndexedEXT");
+	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC) IRR_OGL_LOAD_EXTENSION("glBlendFuncIndexedAMD");
+	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC) IRR_OGL_LOAD_EXTENSION("glBlendFunciARB");
+	pGlBlendEquationIndexedAMD= (PFNGLBLENDEQUATIONINDEXEDAMDPROC) IRR_OGL_LOAD_EXTENSION("glBlendEquationIndexedAMD");
+	pGlBlendEquationiARB= (PFNGLBLENDEQUATIONIPROC) IRR_OGL_LOAD_EXTENSION("glBlendEquationiARB");
+	pGlProgramParameteriARB= (PFNGLPROGRAMPARAMETERIARBPROC) IRR_OGL_LOAD_EXTENSION("glProgramParameteriARB");
+	pGlProgramParameteriEXT= (PFNGLPROGRAMPARAMETERIEXTPROC) IRR_OGL_LOAD_EXTENSION("glProgramParameteriEXT");
 
 	// occlusion query
-	pGlGenQueriesARB = (PFNGLGENQUERIESARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenQueriesARB"));
- 
-	pGlDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteQueriesARB"));
- 
-	pGlIsQueryARB = (PFNGLISQUERYARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glIsQueryARB"));
- 
-	pGlBeginQueryARB = (PFNGLBEGINQUERYARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBeginQueryARB"));
-
-	pGlEndQueryARB = (PFNGLENDQUERYARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glEndQueryARB"));
-
-	pGlGetQueryivARB = (PFNGLGETQUERYIVARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetQueryivARB"));
-
-	pGlGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetQueryObjectivARB"));
-
-	pGlGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetQueryObjectuivARB"));
-
-	pGlGenOcclusionQueriesNV = (PFNGLGENOCCLUSIONQUERIESNVPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenOcclusionQueriesNV"));
-
-	pGlDeleteOcclusionQueriesNV = (PFNGLDELETEOCCLUSIONQUERIESNVPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteOcclusionQueriesNV"));
-
-	pGlIsOcclusionQueryNV = (PFNGLISOCCLUSIONQUERYNVPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glIsOcclusionQueryNV"));
-
-	pGlBeginOcclusionQueryNV = (PFNGLBEGINOCCLUSIONQUERYNVPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBeginOcclusionQueryNV"));
-
-	pGlEndOcclusionQueryNV = (PFNGLENDOCCLUSIONQUERYNVPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glEndOcclusionQueryNV"));
-
-	pGlGetOcclusionQueryivNV = (PFNGLGETOCCLUSIONQUERYIVNVPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetOcclusionQueryivNV"));
-
-	pGlGetOcclusionQueryuivNV = (PFNGLGETOCCLUSIONQUERYUIVNVPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetOcclusionQueryuivNV"));
+	pGlGenQueriesARB = (PFNGLGENQUERIESARBPROC) IRR_OGL_LOAD_EXTENSION("glGenQueriesARB");
+	pGlDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC) IRR_OGL_LOAD_EXTENSION("glDeleteQueriesARB");
+	pGlIsQueryARB = (PFNGLISQUERYARBPROC) IRR_OGL_LOAD_EXTENSION("glIsQueryARB");
+	pGlBeginQueryARB = (PFNGLBEGINQUERYARBPROC) IRR_OGL_LOAD_EXTENSION("glBeginQueryARB");
+	pGlEndQueryARB = (PFNGLENDQUERYARBPROC) IRR_OGL_LOAD_EXTENSION("glEndQueryARB");
+	pGlGetQueryivARB = (PFNGLGETQUERYIVARBPROC) IRR_OGL_LOAD_EXTENSION("glGetQueryivARB");
+	pGlGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC) IRR_OGL_LOAD_EXTENSION("glGetQueryObjectivARB");
+	pGlGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC) IRR_OGL_LOAD_EXTENSION("glGetQueryObjectuivARB");
+	pGlGenOcclusionQueriesNV = (PFNGLGENOCCLUSIONQUERIESNVPROC) IRR_OGL_LOAD_EXTENSION("glGenOcclusionQueriesNV");
+	pGlDeleteOcclusionQueriesNV = (PFNGLDELETEOCCLUSIONQUERIESNVPROC) IRR_OGL_LOAD_EXTENSION("glDeleteOcclusionQueriesNV");
+	pGlIsOcclusionQueryNV = (PFNGLISOCCLUSIONQUERYNVPROC) IRR_OGL_LOAD_EXTENSION("glIsOcclusionQueryNV");
+	pGlBeginOcclusionQueryNV = (PFNGLBEGINOCCLUSIONQUERYNVPROC) IRR_OGL_LOAD_EXTENSION("glBeginOcclusionQueryNV");
+	pGlEndOcclusionQueryNV = (PFNGLENDOCCLUSIONQUERYNVPROC) IRR_OGL_LOAD_EXTENSION("glEndOcclusionQueryNV");
+	pGlGetOcclusionQueryivNV = (PFNGLGETOCCLUSIONQUERYIVNVPROC) IRR_OGL_LOAD_EXTENSION("glGetOcclusionQueryivNV");
+	pGlGetOcclusionQueryuivNV = (PFNGLGETOCCLUSIONQUERYUIVNVPROC) IRR_OGL_LOAD_EXTENSION("glGetOcclusionQueryuivNV");
 
 	// blend equation
-	pGlBlendEquationEXT = (PFNGLBLENDEQUATIONEXTPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquationEXT"));
-	pGlBlendEquation = (PFNGLBLENDEQUATIONPROC)
-	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendEquation"));
+	pGlBlendEquationEXT = (PFNGLBLENDEQUATIONEXTPROC) IRR_OGL_LOAD_EXTENSION("glBlendEquationEXT");
+	pGlBlendEquation = (PFNGLBLENDEQUATIONPROC) IRR_OGL_LOAD_EXTENSION("glBlendEquation");
 
-	#endif // _IRR_OPENGL_USE_EXTPOINTER_
+	#if defined(WGL_EXT_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+		// get vsync extension
+		pWglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) IRR_OGL_LOAD_EXTENSION("wglSwapIntervalEXT");
+	#endif
+
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
+	// get vsync extension
+	#if defined(GLX_SGI_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+		pGlxSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)IRR_OGL_LOAD_EXTENSION("glXSwapIntervalSGI");
+	#endif
+	#if defined(GLX_EXT_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+		pGlxSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)IRR_OGL_LOAD_EXTENSION("glXSwapIntervalEXT");
+	#endif
+	#if defined(GLX_MESA_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+		pGlxSwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC)IRR_OGL_LOAD_EXTENSION("glXSwapIntervalMESA");
+	#endif
 #endif // _IRR_WINDOWS_API_
 
 	GLint num;
