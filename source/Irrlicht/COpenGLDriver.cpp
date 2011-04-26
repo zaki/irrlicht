@@ -1382,7 +1382,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
-		createColorBuffer(vertices, vertexCount, vType);
+		getColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
 	setRenderStates3DMode();
@@ -1539,7 +1539,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 }
 
 
-void COpenGLDriver::createColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType)
+void COpenGLDriver::getColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType)
 {
 	// convert colors to gl color format.
 	vertexCount *= 4; //reused as color component count
@@ -1702,7 +1702,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 	if (vertices && !FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
-		createColorBuffer(vertices, vertexCount, vType);
+		getColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
 	this->setActiveTexture(0, Material.getTexture(0));
