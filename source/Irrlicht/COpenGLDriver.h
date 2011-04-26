@@ -397,8 +397,8 @@ namespace video
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
-		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
-		inline void createGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
+		inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
+		inline void getGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 
 		//! Set GL pipeline to desired texture wrap modes of the material
 		void setWrapMode(const SMaterial& material);

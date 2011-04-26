@@ -922,9 +922,9 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			{
 				GLfloat glmat[16];
 				if (isRTT)
-					createGLTextureMatrix(glmat, mat * TextureFlipMatrix);
+					getGLTextureMatrix(glmat, mat * TextureFlipMatrix);
 				else
-					createGLTextureMatrix(glmat, mat);
+					getGLTextureMatrix(glmat, mat);
 				glLoadMatrixf(glmat);
 			}
 			break;
@@ -2390,14 +2390,14 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 
 
 //! creates a matrix in supplied GLfloat array to pass to OpenGL
-inline void COpenGLDriver::createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m)
+inline void COpenGLDriver::getGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m)
 {
 	memcpy(gl_matrix, m.pointer(), 16 * sizeof(f32));
 }
 
 
 //! creates a opengltexturematrix from a D3D style texture matrix
-inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4& m)
+inline void COpenGLDriver::getGLTextureMatrix(GLfloat *o, const core::matrix4& m)
 {
 	o[0] = m[0];
 	o[1] = m[1];
