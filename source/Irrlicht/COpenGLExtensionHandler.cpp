@@ -104,6 +104,219 @@ void COpenGLExtensionHandler::dump() const
 		os::Printer::log(OpenGLFeatureStrings[i], FeatureAvailable[i]?" true":" false");
 }
 
+
+void COpenGLExtensionHandler::dumpFramebufferFormats() const
+{
+#ifdef _IRR_WINDOWS_API_
+	HDC hdc=wglGetCurrentDC();
+	core::stringc wglExtensions;
+#ifdef WGL_ARB_extensions_string
+	PFNWGLGETEXTENSIONSSTRINGARBPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+	if (irrGetExtensionsString)
+		wglExtensions = irrGetExtensionsString(hdc);
+#elif defined(WGL_EXT_extensions_string)
+	PFNWGLGETEXTENSIONSSTRINGEXTPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+	if (irrGetExtensionsString)
+		wglExtensions = irrGetExtensionsString(hdc);
+#endif
+	const bool pixel_format_supported = (wglExtensions.find("WGL_ARB_pixel_format") != -1);
+	const bool multi_sample_supported = ((wglExtensions.find("WGL_ARB_multisample") != -1) ||
+		(wglExtensions.find("WGL_EXT_multisample") != -1) || (wglExtensions.find("WGL_3DFX_multisample") != -1) );
+#ifdef _DEBUG
+	os::Printer::log("WGL_extensions", wglExtensions);
+#endif
+
+#ifdef WGL_ARB_pixel_format
+	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+	if (pixel_format_supported && wglChoosePixelFormat_ARB)
+	{
+		// This value determines the number of samples used for antialiasing
+		// My experience is that 8 does not show a big
+		// improvement over 4, but 4 shows a big improvement
+		// over 2.
+
+		PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribiv_ARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
+		if (wglGetPixelFormatAttribiv_ARB)
+		{
+			int vals[128];
+			int atts[] = {
+				WGL_NUMBER_PIXEL_FORMATS_ARB,
+				WGL_DRAW_TO_BITMAP_ARB,
+				WGL_ACCELERATION_ARB,
+				WGL_NEED_PALETTE_ARB,
+				WGL_NEED_SYSTEM_PALETTE_ARB,
+				WGL_SWAP_LAYER_BUFFERS_ARB,
+				WGL_SWAP_METHOD_ARB,
+				WGL_NUMBER_OVERLAYS_ARB,
+				WGL_NUMBER_UNDERLAYS_ARB,
+				WGL_TRANSPARENT_ARB,
+				WGL_TRANSPARENT_RED_VALUE_ARB,
+				WGL_TRANSPARENT_GREEN_VALUE_ARB,
+				WGL_TRANSPARENT_BLUE_VALUE_ARB,
+				WGL_TRANSPARENT_ALPHA_VALUE_ARB,
+				WGL_TRANSPARENT_INDEX_VALUE_ARB,
+				WGL_SHARE_DEPTH_ARB,
+				WGL_SHARE_STENCIL_ARB,
+				WGL_SHARE_ACCUM_ARB,
+				WGL_SUPPORT_GDI_ARB,
+				WGL_SUPPORT_OPENGL_ARB,
+				WGL_DOUBLE_BUFFER_ARB,
+				WGL_STEREO_ARB,
+				WGL_PIXEL_TYPE_ARB,
+				WGL_COLOR_BITS_ARB,
+				WGL_RED_BITS_ARB,
+				WGL_RED_SHIFT_ARB,
+				WGL_GREEN_BITS_ARB,
+				WGL_GREEN_SHIFT_ARB,
+				WGL_BLUE_BITS_ARB,
+				WGL_BLUE_SHIFT_ARB,
+				WGL_ALPHA_BITS_ARB,
+				WGL_ALPHA_SHIFT_ARB,
+				WGL_ACCUM_BITS_ARB,
+				WGL_ACCUM_RED_BITS_ARB,
+				WGL_ACCUM_GREEN_BITS_ARB,
+				WGL_ACCUM_BLUE_BITS_ARB,
+				WGL_ACCUM_ALPHA_BITS_ARB,
+				WGL_DEPTH_BITS_ARB,
+				WGL_STENCIL_BITS_ARB,
+				WGL_AUX_BUFFERS_ARB
+#ifdef WGL_ARB_render_texture
+				,WGL_BIND_TO_TEXTURE_RGB_ARB //40
+				,WGL_BIND_TO_TEXTURE_RGBA_ARB
+#endif
+#ifdef WGL_ARB_pbuffer
+				,WGL_DRAW_TO_PBUFFER_ARB //42
+				,WGL_MAX_PBUFFER_PIXELS_ARB
+				,WGL_MAX_PBUFFER_WIDTH_ARB
+				,WGL_MAX_PBUFFER_HEIGHT_ARB
+#endif
+#ifdef WGL_ARB_framebuffer_sRGB
+				,WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB //46
+#endif
+#ifdef WGL_ARB_multisample
+				,WGL_SAMPLES_ARB //47
+				,WGL_SAMPLE_BUFFERS_ARB
+#endif
+#ifdef WGL_EXT_depth_float
+				,WGL_DEPTH_FLOAT_EXT //49
+#endif
+				,0,0,0,0
+			};
+			size_t nums = sizeof(atts)/sizeof(int)-4;
+			const bool depth_float_supported= (wglExtensions.find("WGL_EXT_depth_float") != -1);
+			if (!depth_float_supported)
+			{
+				memmove(&atts[49], &atts[50], (nums-49)*4);
+				nums -= 1;
+			}
+			if (!multi_sample_supported)
+			{
+				memmove(&atts[47], &atts[49], (nums-47)*4);
+				nums -= 2;
+			}
+			const bool framebuffer_sRGB_supported= (wglExtensions.find("WGL_ARB_framebuffer_sRGB") != -1);
+			if (!framebuffer_sRGB_supported)
+			{
+				memmove(&atts[46], &atts[47], (nums-46)*4);
+				nums -= 1;
+			}
+			const bool pbuffer_supported = (wglExtensions.find("WGL_ARB_pbuffer") != -1);
+			if (!pbuffer_supported)
+			{
+				memmove(&atts[42], &atts[46], (nums-42)*4);
+				nums -= 4;
+			}
+			const bool render_texture_supported = (wglExtensions.find("WGL_ARB_render_texture") != -1);
+			if (!render_texture_supported)
+			{
+				memmove(&atts[40], &atts[42], (nums-40)*4);
+				nums -= 2;
+			}
+			wglGetPixelFormatAttribiv_ARB(hdc,0,0,1,atts,vals);
+			const int count = vals[0];
+			atts[0]=WGL_DRAW_TO_WINDOW_ARB;
+			for (int i=1; i<count; ++i)
+			{
+				memset(vals,0,sizeof(vals));
+#define tmplog(x,y) os::Printer::log(x, core::stringc(y).c_str())
+				const BOOL res = wglGetPixelFormatAttribiv_ARB(hdc,i,0,nums,atts,vals);
+				tmplog("Pixel format ",i);
+				u32 j=0;
+				tmplog("Draw to window " , vals[j]);
+				tmplog("Draw to bitmap " , vals[++j]);
+				++j;
+				tmplog("Acceleration " , (vals[j]==WGL_NO_ACCELERATION_ARB?"No":
+					vals[j]==WGL_GENERIC_ACCELERATION_ARB?"Generic":vals[j]==WGL_FULL_ACCELERATION_ARB?"Full":"ERROR"));
+				tmplog("Need palette " , vals[++j]);
+				tmplog("Need system palette " , vals[++j]);
+				tmplog("Swap layer buffers " , vals[++j]);
+				++j;
+				tmplog("Swap method " , (vals[j]==WGL_SWAP_EXCHANGE_ARB?"Exchange":
+					vals[j]==WGL_SWAP_COPY_ARB?"Copy":vals[j]==WGL_SWAP_UNDEFINED_ARB?"Undefined":"ERROR"));
+				tmplog("Number of overlays " , vals[++j]);
+				tmplog("Number of underlays " , vals[++j]);
+				tmplog("Transparent " , vals[++j]);
+				tmplog("Transparent red value " , vals[++j]);
+				tmplog("Transparent green value " , vals[++j]);
+				tmplog("Transparent blue value " , vals[++j]);
+				tmplog("Transparent alpha value " , vals[++j]);
+				tmplog("Transparent index value " , vals[++j]);
+				tmplog("Share depth " , vals[++j]);
+				tmplog("Share stencil " , vals[++j]);
+				tmplog("Share accum " , vals[++j]);
+				tmplog("Support GDI " , vals[++j]);
+				tmplog("Support OpenGL " , vals[++j]);
+				tmplog("Double Buffer " , vals[++j]);
+				tmplog("Stereo Buffer " , vals[++j]);
+				tmplog("Pixel type " , vals[++j]);
+				tmplog("Color bits" , vals[++j]);
+				tmplog("Red bits " , vals[++j]);
+				tmplog("Red shift " , vals[++j]);
+				tmplog("Green bits " , vals[++j]);
+				tmplog("Green shift " , vals[++j]);
+				tmplog("Blue bits " , vals[++j]);
+				tmplog("Blue shift " , vals[++j]);
+				tmplog("Alpha bits " , vals[++j]);
+				tmplog("Alpha Shift " , vals[++j]);
+				tmplog("Accum bits " , vals[++j]);
+				tmplog("Accum red bits " , vals[++j]);
+				tmplog("Accum green bits " , vals[++j]);
+				tmplog("Accum blue bits " , vals[++j]);
+				tmplog("Accum alpha bits " , vals[++j]);
+				tmplog("Depth bits " , vals[++j]);
+				tmplog("Stencil bits " , vals[++j]);
+				tmplog("Aux buffers " , vals[++j]);
+				if (render_texture_supported)
+				{
+					tmplog("Bind to texture RGB" , vals[++j]);
+					tmplog("Bind to texture RGBA" , vals[++j]);
+				}
+				if (pbuffer_supported)
+				{
+					tmplog("Draw to pbuffer" , vals[++j]);
+					tmplog("Max pbuffer pixels " , vals[++j]);
+					tmplog("Max pbuffer width" , vals[++j]);
+					tmplog("Max pbuffer height" , vals[++j]);
+				}
+				if (framebuffer_sRGB_supported)
+					tmplog("Framebuffer sRBG capable" , vals[++j]);
+				if (multi_sample_supported)
+				{
+					tmplog("Samples " , vals[++j]);
+					tmplog("Sample buffers " , vals[++j]);
+				}
+				if (depth_float_supported)
+					tmplog("Depth float" , vals[++j]);
+#undef tmplog
+			}
+		}
+	}
+#endif
+#elif defined(IRR_LINUX_DEVICE)
+#endif
+}
+
+
 void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 {
 	const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
