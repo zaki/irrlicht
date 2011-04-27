@@ -104,12 +104,12 @@ static bool testCalculation_strtol(const char * valueString)
 	const s32 oldFastValue = old_strtol10(valueString);
 	const s32 strtolValue = (s32)strtol(valueString, 0, 10);
 
-	logTestString("\n String '%s'\n New fast %d\n Old fast %d\n     strtol %d\n",
+	logTestString("\n String '%s'\n New fast %d\n Old fast %d\n   strtol %d\n",
 		valueString, newFastValue, oldFastValue, strtolValue);
 
 	bool accurate = (newFastValue == strtolValue) || (oldFastValue != strtolValue);
 
-	if(!accurate)
+	if (!accurate)
 		logTestString("*** ERROR - wrong calculation in new method ***\n\n");
 
 	return accurate;
@@ -147,7 +147,7 @@ bool test_fast_atof(void)
 	accurate &= testCalculation_atof("-0000123456.789");
 	accurate &= testCalculation_atof("-0.0690462109446526");
 
-	if(!accurate)
+	if (!accurate)
 	{
 		logTestString("Calculation is not accurate, so the speed is irrelevant\n");
 		return false;
@@ -257,16 +257,16 @@ bool test_strtol(void)
 		value = old_strtol10("-3402823466");
 	const u32 oldstrtol10Time = timer->getRealTime() - then;
 
-	logTestString("Speed test\n      strtol time = %d\n    strtol10 Time = %d\nold strtol10 time = %d\n",
+	logTestString("Speed test\n      strtol time = %d\n    strtol10 time = %d\nold strtol10 time = %d\n",
 		strtolTime, strtol10Time, oldstrtol10Time);
 
 	device->closeDevice();
 	device->run();
 	device->drop();
 
-	if(strtol10Time > (1.2f*strtolTime))
+	if (strtol10Time > (1.2f*strtolTime))
 	{
-		logTestString("The fast method is slower than atof()\n");
+		logTestString("The fast method is slower than strtol()\n");
 		return false;
 	}
 
