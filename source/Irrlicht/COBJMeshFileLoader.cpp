@@ -166,7 +166,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				if (core::stringc("off")==smooth)
 					smoothingGroup=0;
 				else
-					smoothingGroup=core::strtol10(smooth, 0);
+					smoothingGroup=core::strtoul10(smooth);
 			}
 			break;
 
@@ -862,10 +862,9 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* vertexData, s32* idx, const c
 			// number is completed. Convert and store it
 			word[i] = '\0';
 			// if no number was found index will become 0 and later on -1 by decrement
-			if (word[0]=='-')
+			idx[idxType] = core::strtol10(word);
+			if (idx[idxType]<0)
 			{
-				idx[idxType] = core::strtol10(word+1,0);
-				idx[idxType] *= -1;
 				switch (idxType)
 				{
 					case 0:
@@ -880,7 +879,7 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* vertexData, s32* idx, const c
 				}
 			}
 			else
-				idx[idxType] = core::strtol10(word,0)-1;
+				idx[idxType]-=1;
 
 			// reset the word
 			word[0] = '\0';

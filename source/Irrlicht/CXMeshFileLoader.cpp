@@ -423,14 +423,14 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 
 	//! read minor and major version, e.g. 0302 or 0303
 	c8 tmp[3];
-	tmp[2] = 0x0;
 	tmp[0] = Buffer[4];
 	tmp[1] = Buffer[5];
-	MajorVersion = core::strtol10(tmp);
+	tmp[2] = 0x0;
+	MajorVersion = core::strtoul10(tmp);
 
 	tmp[0] = Buffer[6];
 	tmp[1] = Buffer[7];
-	MinorVersion = core::strtol10(tmp);
+	MinorVersion = core::strtoul10(tmp);
 
 	//! read format
 	if (strncmp(&Buffer[8], "txt ", 4) ==0)
@@ -2307,7 +2307,7 @@ u32 CXMeshFileLoader::readInt()
 	else
 	{
 		findNextNoneWhiteSpaceNumber();
-		return core::strtol10(P, &P);
+		return core::strtoul10(P, &P);
 	}
 }
 
