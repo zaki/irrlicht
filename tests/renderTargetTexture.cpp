@@ -139,11 +139,10 @@ bool rttAndZBuffer(video::E_DRIVER_TYPE driverType)
 	rtMat.TextureLayer[0].TextureWrapU =
 		rtMat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 
-	ILightSceneNode* light = sm->addLightSceneNode(NULL, vector3df(0, 50, 0),
+	sm->addLightSceneNode(NULL, vector3df(0, 50, 0),
 		SColorf(1, 1, 1), 100);
-	SLight& lightData = light->getLightData();
 
-	ICameraSceneNode* cam = sm->addCameraSceneNode(NULL, vector3df(0, 10, 0));
+	sm->addCameraSceneNode(NULL, vector3df(0, 10, 0));
 
 	const IGeometryCreator* geom = sm->getGeometryCreator();
 	IMeshManipulator* manip = sm->getMeshManipulator();
@@ -323,7 +322,6 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 
 	dimension2du dim_txt = dimension2du(160/2, 120/2);
 
-	ITexture* rt0 = NULL;
 	ITexture* rt1 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt1", device->getColorFormat());
 	ITexture* rt2 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt2", device->getColorFormat());
 	ITexture* rt3 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt3", video::ECF_A8R8G8B8);//device->getColorFormat());
@@ -344,6 +342,7 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 	device->getVideoDriver()->draw2DImage(rt3, core::position2di(0,60));
 	device->getVideoDriver()->draw2DImage(rt4, core::position2di(80,60));
 #else
+	ITexture* rt0 = NULL;
 	Render(device, rt0, pos1, pos2, sphereMesh, pos3, pos4);
 #endif
 	st->draw();

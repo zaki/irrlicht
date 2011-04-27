@@ -42,8 +42,6 @@ static bool addBlend2d(video::E_DRIVER_TYPE type)
 
 	gui::IGUIEnvironment* env = device->getGUIEnvironment();
 	{
-		gui::IGUIElement* root = env->getRootGUIElement();
-
 		// create the toolbox window
 		gui::IGUIWindow* wnd = env->addWindow(core::rect<s32>(0,0,800,480),
 			false, L"Toolset", 0, 100);

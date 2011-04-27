@@ -13,7 +13,6 @@ bool skinnedMesh(void)
 	if (!device)
 		return false;
 
-	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
 	logTestString("Testing setMesh()\n");
