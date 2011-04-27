@@ -32,7 +32,7 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 		core::vector3df(0,0,20), core::vector3df(270,0,0));
 	plane2->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
-	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
+	smgr->addCameraSceneNode();
 
 	// test back plane to back
 	plane->getMaterial(0).PolygonOffsetDirection=video::EPO_BACK;

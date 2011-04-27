@@ -18,7 +18,6 @@ static bool saveScene(void)
 	if (!device)
 		return false;
 
-	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
 	ISkinnedMesh* mesh = (ISkinnedMesh*)smgr->getMesh("../media/ninja.b3d");
@@ -75,12 +74,12 @@ static bool saveScene(void)
 
 static bool loadScene(void)
 {
-    IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
+	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
 										core::dimension2du(160,120), 32);
-    if (!device)
-        return false;
+	if (!device)
+		return false;
 
-    IVideoDriver* driver = device->getVideoDriver();
+	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
 	// load scene from example, with correct relative path
 	device->getFileSystem()->changeWorkingDirectoryTo("results");
@@ -88,8 +87,8 @@ static bool loadScene(void)
 	smgr->addCameraSceneNode(0, core::vector3df(0,0,-50));
 	device->getFileSystem()->changeWorkingDirectoryTo("..");
 
-    bool result = false;
-    device->run();
+	bool result = false;
+	device->run();
 	if (driver->beginScene(true, true, video::SColor(0, 80, 80, 80)))
 	{
 		smgr->drawAll();
@@ -115,9 +114,9 @@ static bool loadScene(void)
 
 	device->closeDevice();
 	device->run();
-    device->drop();
+	device->drop();
 
-    return result;
+	return result;
 }
 
 bool ioScene(void)
