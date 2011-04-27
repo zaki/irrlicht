@@ -1067,7 +1067,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		else if (token=="max_lights")
 		{
 			getMaterialToken(file, token);
-			pass.MaxLights=strtol(token.c_str(),NULL,10);
+			pass.MaxLights=core::strtoul10(token.c_str());
 		}
 		else if (token=="point_size")
 		{
@@ -1082,12 +1082,12 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		else if (token=="point_size_min")
 		{
 			getMaterialToken(file, token);
-			pass.PointSizeMin=strtol(token.c_str(),NULL,10);
+			pass.PointSizeMin=core::strtoul10(token.c_str());
 		}
 		else if (token=="point_size_max")
 		{
 			getMaterialToken(file, token);
-			pass.PointSizeMax=strtol(token.c_str(),NULL,10);
+			pass.PointSizeMax=core::strtoul10(token.c_str());
 		}
 		else if (token=="texture_unit")
 		{
@@ -1149,7 +1149,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 				else if (token=="max_anisotropy")
 				{
 					getMaterialToken(file, token);
-					pass.Material.TextureLayer[textureUnit].AnisotropicFilter=(u8)core::strtol10(token.c_str());
+					pass.Material.TextureLayer[textureUnit].AnisotropicFilter=(u8)core::strtoul10(token.c_str());
 				}
 				else if (token=="texture_alias")
 				{
