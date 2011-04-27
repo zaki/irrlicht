@@ -258,7 +258,11 @@ bool CGUIStaticText::isWordWrapEnabled() const
 
 void CGUIStaticText::setRightToLeft(bool rtl)
 {
-	RightToLeft = rtl;
+	if (RightToLeft != rtl)
+	{
+		RightToLeft = rtl;
+		breakText();
+	}
 }
 
 
@@ -460,7 +464,8 @@ void CGUIStaticText::breakText()
 					whitespace = L"";
 				}
 
-				whitespace = core::stringw(&c, 1) + whitespace;
+				if (c != 0)
+					whitespace = core::stringw(&c, 1) + whitespace;
 
 				// compute line break
 				if (lineBreak)
