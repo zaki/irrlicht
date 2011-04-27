@@ -24,7 +24,7 @@ using namespace gui;
  *	and manages the options.
  *
  *
- *	The class makes  use of irrMap which is a an associative arrays using a red-black tree
+ *	The class makes use of irrMap which is a an associative arrays using a red-black tree
  *	it allows easy mapping of a key to a value, along the way there is some information on how to use it
  *
  */
@@ -39,26 +39,24 @@ public:
 	SettingManager(const stringw& settings_file): SettingsFile(settings_file), NullDevice(0)
 	{
 		// Irrlicht null device, we want to load settings before we actually created our device, therefore, nulldevice
-		NullDevice	= irr::createDevice(irr::video::EDT_NULL);
-
+		NullDevice = irr::createDevice(irr::video::EDT_NULL);
 
 		//DriverOptions is an irrlicht map,
 		//we can insert values in the map in two ways by calling insert(key,value) or by using the [key] operator
 		//the [] operator overrides values if they already exist
-		DriverOptions.insert(L"Software",		EDT_SOFTWARE			);
-		DriverOptions.insert(L"OpenGL",			EDT_OPENGL				);
-		DriverOptions.insert(L"Direct3D9",		EDT_DIRECT3D9			);
+		DriverOptions.insert(L"Software", EDT_SOFTWARE);
+		DriverOptions.insert(L"OpenGL", EDT_OPENGL);
+		DriverOptions.insert(L"Direct3D9", EDT_DIRECT3D9);
 
 		//some resolution options
-		ResolutionOptions.insert(L"640x480",	dimension2du(640,480) );
-		ResolutionOptions.insert(L"800x600",	dimension2du(800,600) );
-		ResolutionOptions.insert(L"1024x768",	dimension2du(1024,768) );
+		ResolutionOptions.insert(L"640x480", dimension2du(640,480));
+		ResolutionOptions.insert(L"800x600", dimension2du(800,600));
+		ResolutionOptions.insert(L"1024x768", dimension2du(1024,768));
 
 		//our preferred defaults
-		SettingMap.insert(L"driver",			L"Direct3D9");		//0 is software
-		SettingMap.insert(L"resolution",		L"640x480");		//0 is 640x480
-		SettingMap.insert(L"fullscreen",		L"0");				//0 is false
-
+		SettingMap.insert(L"driver", L"Direct3D9");
+		SettingMap.insert(L"resolution", L"640x480");
+		SettingMap.insert(L"fullscreen", L"0"); //0 is false
 	}
 
 	/**
@@ -67,7 +65,7 @@ public:
 	 */
 	~SettingManager()
 	{
-		if(NullDevice)
+		if (NullDevice)
 		{
 			NullDevice->closeDevice();
 			NullDevice->drop();
@@ -91,28 +89,28 @@ public:
 	bool load()
 	{
 		//if not able to create device dont attempt to load
-		if(!NullDevice)
+		if (!NullDevice)
 			return false;
 
 		irr::io::IXMLReader* xml = NullDevice->getFileSystem()->createXMLReader(SettingsFile);	//create xml reader
-		if ( !xml )
+		if (!xml)
 			return false;
 
-		const stringw settingTag(L"setting");	//we'll be looking for this tag in the xml
-		stringw currentSection;					//keep track of our currentsection
-		const stringw videoTag(L"video");		//constant for videotag
+		const stringw settingTag(L"setting"); //we'll be looking for this tag in the xml
+		stringw currentSection; //keep track of our currentsection
+		const stringw videoTag(L"video"); //constant for videotag
 
 		//while there is more to read
-		while(xml->read())
+		while (xml->read())
 		{
 			//check the node type
-			switch(xml->getNodeType())
+			switch (xml->getNodeType())
 			{
 				//we found a new element
 				case irr::io::EXN_ELEMENT:
 				{
 					//we currently are in the empty or mygame section and find the video tag so we set our current section to video
-					if(currentSection.empty() && videoTag.equals_ignore_case(xml->getNodeName()))
+					if (currentSection.empty() && videoTag.equals_ignore_case(xml->getNodeName()))
 					{
 						currentSection = videoTag;
 					}
@@ -120,21 +118,20 @@ public:
 					else if (currentSection.equals_ignore_case(videoTag) && settingTag.equals_ignore_case(xml->getNodeName() ))
 					{
 						//read in the key
-						stringw key =  xml->getAttributeValueSafe(L"name");
+						stringw key = xml->getAttributeValueSafe(L"name");
 						//if there actually is a key to set
-						if( !key.empty())
+						if (!key.empty())
 						{
 							//set the setting in the map to the value,
 							//the [] operator overrides values if they already exist or inserts a new key value
 							//pair into the settings map if it was not defined yet
-							SettingMap[ key ] = xml->getAttributeValueSafe(L"value");
+							SettingMap[key] = xml->getAttributeValueSafe(L"value");
 						}
 					}
 
 					//..
 					// You can add your own sections and tags to read in here
 					//..
-
 				}
 				break;
 
@@ -160,12 +157,12 @@ public:
 	{
 
 		//if not able to create device don't attempt to save
-		if(!NullDevice)
+		if (!NullDevice)
 			return false;
 
 		//create xml writer
 		irr::io::IXMLWriter* xwriter = NullDevice->getFileSystem()->createXMLWriter( SettingsFile );
-		if(!xwriter)
+		if (!xwriter)
 			return false;
 
 		//write out the obligatory xml header. Each xml-file needs to have exactly one of those.
@@ -227,8 +224,8 @@ public:
 
 	/**
 	 *	Get setting as string
-	 *	@param	key	name of setting
-	 *	@return	empty string if the settings is not found, else value of the setting
+	 *	@param key Name of setting
+	 *	@return	Empty string if the settings is not found, else value of the setting
 	 */
 	stringw getSetting(const stringw& key) const
 	{
@@ -240,18 +237,17 @@ public:
 			return n->getValue();
 		else
 			return L"";
-
 	}
 
 	/**
 	 *	Get setting as bool
-	 *	@param	key	name of setting
-	 *  @return	false if the key cannot be found, else true if the setting  == 1
+	 *	@param key Name of setting
+	 *	@return	False if the key cannot be found, else true if the setting == 1
 	 */
 	bool getSettingAsBoolean(const stringw& key ) const
 	{
 		stringw s = getSetting(key);
-		if(s.empty())
+		if (s.empty())
 			return false;
 		return s.equals_ignore_case(L"1");
 	}
@@ -259,33 +255,29 @@ public:
 	/**
 	 *	Get setting as integer NOTE: function is not used in example but provided for completeness
 	 *	@param	key	name of setting
-	 *  @return	0 if the key cannot be found, else the setting converted to an integer
+	 *	@return	0 if the key cannot be found, else the setting converted to an integer
 	 */
-	s32 getSettingAsInteger(const stringw& key ) const
+	s32 getSettingAsInteger(const stringw& key) const
 	{
 		//we implicitly cast to string instead of stringw because strtol10 does not accept wide strings
-		stringc s = getSetting(key);
-		if(s.empty())
+		const stringc s = getSetting(key);
+		if (s.empty())
 			return 0;
 
 		return strtol10(s.c_str());
-
-
 	}
 
 public:
-	map<stringw,	s32>				DriverOptions;		//available options for driver config
-	map<stringw,	dimension2du>		ResolutionOptions;	//available options for resolution config
+	map<stringw, s32> DriverOptions; //available options for driver config
+	map<stringw, dimension2du> ResolutionOptions; //available options for resolution config
 private:
-
-	SettingManager(const SettingManager& other);			// defined but not implemented
+	SettingManager(const SettingManager& other); // defined but not implemented
 	SettingManager& operator=(const SettingManager& other); // defined but not implemented
 
-	map<stringw, stringw>	SettingMap;						//current config
+	map<stringw, stringw> SettingMap; //current config
 
-	stringw					SettingsFile;					// location of the xml, usually the
-	irr::IrrlichtDevice*	NullDevice;
-
+	stringw SettingsFile; // location of the xml, usually the
+	irr::IrrlichtDevice* NullDevice;
 };
 
 /**
@@ -295,35 +287,35 @@ struct SAppContext
 {
 	SAppContext()
 		: Device(0),Gui(0), Driver(0), Settings(0), ShouldQuit(false),
-		ButtonSave(0), ButtonExit(0),  ListboxDriver(0),
+		ButtonSave(0), ButtonExit(0), ListboxDriver(0),
 		ListboxResolution(0), CheckboxFullscreen(0)
 	{
 	}
 
 	~SAppContext()
 	{
-		if(Settings)
+		if (Settings)
 			delete Settings;
 
-		if(Device)
+		if (Device)
 		{
 			Device->closeDevice();
 			Device->drop();
 		}
 	}
 
-	IrrlichtDevice *	Device;
-	IGUIEnvironment*	Gui;
-	IVideoDriver*		Driver;
-	SettingManager*		Settings;
-	bool				ShouldQuit;
+	IrrlichtDevice* Device;
+	IGUIEnvironment* Gui;
+	IVideoDriver* Driver;
+	SettingManager* Settings;
+	bool ShouldQuit;
 
 	//settings dialog
-	IGUIButton*			ButtonSave;
-	IGUIButton*			ButtonExit;
-	IGUIListBox*		ListboxDriver;
-	IGUIListBox*		ListboxResolution;
-	IGUICheckBox*		CheckboxFullscreen;
+	IGUIButton* ButtonSave;
+	IGUIButton* ButtonExit;
+	IGUIListBox* ListboxDriver;
+	IGUIListBox* ListboxResolution;
+	IGUICheckBox* CheckboxFullscreen;
 };
 
 /*
@@ -347,23 +339,23 @@ public:
 					if ( event.GUIEvent.Caller == App.ButtonSave )
 					{
 						//if there is a selection write it
-						if( App.ListboxDriver->getSelected() != -1)
+						if ( App.ListboxDriver->getSelected() != -1)
 							App.Settings->setSetting(L"driver",	App.ListboxDriver->getListItem(App.ListboxDriver->getSelected()));
 
 						//if there is a selection write it
-						if( App.ListboxResolution->getSelected() != -1)
+						if ( App.ListboxResolution->getSelected() != -1)
 							App.Settings->setSetting(L"resolution", App.ListboxResolution->getListItem(App.ListboxResolution->getSelected()));
 
 						App.Settings->setSetting(L"fullscreen",	App.CheckboxFullscreen->isChecked());
 
 
-						if(App.Settings->save())
+						if (App.Settings->save())
 						{
 							App.Gui->addMessageBox(L"settings save",L"settings saved, please restart for settings to change effect","",true);
 						}
 					}
 					// cancel/exit button clicked, tell the application to exit
-					else if( event.GUIEvent.Caller == App.ButtonExit)
+					else if ( event.GUIEvent.Caller == App.ButtonExit)
 					{
 						App.ShouldQuit = true;
 					}
@@ -412,7 +404,7 @@ void createSettingsDialog(SAppContext& app)
 
 	// add listbox for resolution choice
 	app.Gui->addStaticText (L"Resolution", rect< s32 >(10,130, 200, 140), false, true, windowSettings);
-	app.ListboxResolution  = app.Gui->addListBox(rect<s32>(10,140,220,200), windowSettings, 1,true);
+	app.ListboxResolution = app.Gui->addListBox(rect<s32>(10,140,220,200), windowSettings, 1,true);
 
 	//add all available options tothe resolution listbox
 	map<stringw, dimension2du>::Iterator ri = app.Settings->ResolutionOptions.getIterator();
@@ -423,16 +415,20 @@ void createSettingsDialog(SAppContext& app)
 	app.ListboxResolution->setSelected(app.Settings->getSetting("resolution").c_str());
 
 	//add checkbox to toggle fullscreen, initially set to loaded setting
-	app.CheckboxFullscreen = app.Gui->addCheckBox(app.Settings->getSettingAsBoolean("fullscreen"),
-													rect<s32>(10,220,220,240),
-													windowSettings, -1,
-													L"Fullscreen");
+	app.CheckboxFullscreen = app.Gui->addCheckBox(
+			app.Settings->getSettingAsBoolean("fullscreen"),
+			rect<s32>(10,220,220,240), windowSettings, -1,
+			L"Fullscreen");
 
 	//last but not least add save button
-	app.ButtonSave = app.Gui->addButton(rect<s32>(80,250,150,270), windowSettings, 2, L"Save video settings");
+	app.ButtonSave = app.Gui->addButton(
+			rect<s32>(80,250,150,270), windowSettings, 2,
+			L"Save video settings");
 
 	//exit/cancel button
-	app.ButtonExit = app.Gui->addButton(rect<s32>(160,250,240,270), windowSettings, 2, L"Cancel and exit");
+	app.ButtonExit = app.Gui->addButton(
+			rect<s32>(160,250,240,270), windowSettings, 2,
+			L"Cancel and exit");
 }
 
 int main()
@@ -446,12 +442,12 @@ int main()
 	param.WindowSize.set(640,480);
 
 	/**
-	 *  Try to load config.
+	 *	Try to load config.
 	 *	I leave it as an exercise of the reader to store the configuration in the local application data folder,
 	 *	the only logical place to store config data for games. For all other operating systems I redirect to your manuals
 	 */
 	app.Settings = new SettingManager("../../media/settings.xml");
-	if( !app.Settings->load() )
+	if ( !app.Settings->load() )
 	{
 		// ...
 		// Here add your own exception handling, for now we continue because there are defaults set in SettingManager constructor
@@ -467,9 +463,9 @@ int main()
 		//see DriverOptions in the settingmanager class for details
 		map<stringw, s32>::Node* driver = app.Settings->DriverOptions.find( app.Settings->getSetting("driver") );
 
-		if(driver)
+		if (driver)
 		{
-			if( irr::IrrlichtDevice::isDriverSupported( static_cast<E_DRIVER_TYPE>( driver->getValue() )))
+			if ( irr::IrrlichtDevice::isDriverSupported( static_cast<E_DRIVER_TYPE>( driver->getValue() )))
 			{
 				// selected driver is supported, so we use it.
 				param.DriverType = static_cast<E_DRIVER_TYPE>( driver->getValue());
@@ -478,7 +474,7 @@ int main()
 
 		//map resolution setting to dimension in a similar way as demonstrated above
 		map<stringw, dimension2du>::Node* res = app.Settings->ResolutionOptions.find( app.Settings->getSetting("resolution") );
-		if(res)
+		if (res)
 		{
 			param.WindowSize = res->getValue();
 		}
@@ -506,9 +502,9 @@ int main()
 	app.Device->setEventReceiver(&receiver);
 
 	//enter main loop
-	while(!app.ShouldQuit && app.Device->run())
+	while (!app.ShouldQuit && app.Device->run())
 	{
-		if(app.Device->isWindowActive())
+		if (app.Device->isWindowActive())
 		{
 			app.Driver->beginScene(true, true, SColor(0,200,200,200));
 			app.Gui->drawAll();
@@ -521,3 +517,4 @@ int main()
 
 	return 0;
 }
+

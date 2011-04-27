@@ -227,41 +227,37 @@ protected:
 	{
 		video::SColor col;
 
-		u32 alpha=col.getAlpha();
-		if ( EditAlpha )
+		if (EditAlpha)
 		{
-			alpha = (u32)core::strtol10(  core::stringc( EditAlpha->getText() ).c_str(), 0);
-			if ( alpha > 255 )
+			u32 alpha = core::strtoul10(core::stringc(EditAlpha->getText()).c_str());
+			if (alpha > 255)
 				alpha = 255;
+			col.setAlpha(alpha);
 		}
-		col.setAlpha(alpha);
 
-		u32 red=col.getRed();
-		if ( EditRed )
+		if (EditRed)
 		{
-			red = (u32)core::strtol10( core::stringc( EditRed->getText() ).c_str(), 0);
-			if ( red > 255 )
+			u32 red = core::strtoul10(core::stringc(EditRed->getText()).c_str());
+			if (red > 255)
 				red = 255;
+			col.setRed(red);
 		}
-		col.setRed(red);
 
-		u32 green=col.getGreen();
-		if ( EditGreen )
+		if (EditGreen)
 		{
-			green = (u32)core::strtol10( core::stringc( EditGreen->getText() ).c_str(), 0);
-			if ( green > 255 )
+			u32 green = core::strtoul10(core::stringc(EditGreen->getText()).c_str());
+			if (green > 255)
 				green = 255;
+			col.setGreen(green);
 		}
-		col.setGreen(green);
 
-		u32 blue=col.getBlue();
-		if ( EditBlue )
+		if (EditBlue)
 		{
-			blue = (u32)core::strtol10( core::stringc( EditBlue->getText() ).c_str(), 0);
-			if ( blue > 255 )
+			u32 blue = core::strtoul10(core::stringc(EditBlue->getText()).c_str());
+			if (blue > 255)
 				blue = 255;
+			col.setBlue(blue);
 		}
-		col.setBlue(blue);
 
 		return col;
 	}
