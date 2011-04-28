@@ -2273,10 +2273,12 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 				break;
 			case EBO_MIN:
 			case EBO_MIN_FACTOR:
+			case EBO_MIN_ALPHA:
 				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
 				break;
 			case EBO_MAX:
 			case EBO_MAX_FACTOR:
+			case EBO_MAX_ALPHA:
 				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
 				break;
 			default:
