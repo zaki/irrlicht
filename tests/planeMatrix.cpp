@@ -56,7 +56,7 @@ static bool drawScaledOctree(void)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
-	bool added = device->getFileSystem()->addZipFileArchive("../media/map-20kdm2.pk3");
+	bool added = device->getFileSystem()->addFileArchive("../media/map-20kdm2.pk3");
 	assert(added);
 
 	if(added)

@@ -21,7 +21,7 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 	ISceneManager * smgr = device->getSceneManager();
 
 	bool result = true;
-	bool added = device->getFileSystem()->addZipFileArchive("../media/map-20kdm2.pk3");
+	bool added = device->getFileSystem()->addFileArchive("../media/map-20kdm2.pk3");
 	assert(added);
 
 	if(added)

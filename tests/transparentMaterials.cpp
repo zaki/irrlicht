@@ -13,7 +13,7 @@ using namespace video;
 bool testTransparentAlphaChannelRef(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<u32>(160, 120), 32);
-	if(!device)
+	if (!device)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -53,7 +53,7 @@ bool testTransparentAlphaChannelRef(video::E_DRIVER_TYPE driverType)
 bool testTransparentAlphaChannel(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<u32>(160, 120), 32);
-	if(!device)
+	if (!device)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -93,7 +93,7 @@ bool testTransparentAlphaChannel(video::E_DRIVER_TYPE driverType)
 bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<u32>(160, 120), 32);
-	if(!device)
+	if (!device)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -140,7 +140,7 @@ bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 bool testTransparentReflection2Layer(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<u32>(160, 120), 32);
-	if(!device)
+	if (!device)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -190,7 +190,7 @@ bool testTransparentReflection2Layer(video::E_DRIVER_TYPE driverType)
 bool testTransparentAddColor(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<u32>(160, 120), 32);
-	if(!device)
+	if (!device)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -229,6 +229,8 @@ bool testTransparentAddColor(video::E_DRIVER_TYPE driverType)
 bool testTransparentVertexAlphaMore(E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice *device = createDevice(driverType, dimension2d<u32>(160, 120));
+	if (!device)
+		return true;
 
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
