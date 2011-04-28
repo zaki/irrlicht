@@ -17,6 +17,7 @@
 #include "CD3D8ShaderMaterialRenderer.h"
 #include "CD3D8NormalMapRenderer.h"
 #include "CD3D8ParallaxMapRenderer.h"
+#include "SIrrCreationParameters.h"
 
 namespace irr
 {
@@ -2410,16 +2411,14 @@ namespace video
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 //! creates a video driver
-IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize,
-		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
-		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-		bool vsync, u8 antiAlias, u32 displayAdapter)
+IVideoDriver* createDirectX8Driver(const SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, HWND window)
 {
-	CD3D8Driver* dx8 = new CD3D8Driver(screenSize, window, fullscreen,
-					stencilbuffer, io, pureSoftware);
+	const bool pureSoftware = false;
+	CD3D8Driver* dx8 = new CD3D8Driver(params.WindowSize, window, params.Fullscreen, params.Stencilbuffer, io, pureSoftware);
 
-	if (!dx8->initDriver(screenSize, window, bits, fullscreen,
-			pureSoftware, highPrecisionFPU, vsync, antiAlias, displayAdapter))
+	if (!dx8->initDriver(params.WindowSize, window, params.Bits, params.Fullscreen, pureSoftware, params.HighPrecisionFPU,
+		params.Vsync, params.AntiAlias, params.DisplayAdapter))
 	{
 		dx8->drop();
 		dx8 = 0;
