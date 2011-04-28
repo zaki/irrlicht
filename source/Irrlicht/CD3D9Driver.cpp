@@ -16,6 +16,7 @@
 #include "CD3D9NormalMapRenderer.h"
 #include "CD3D9ParallaxMapRenderer.h"
 #include "CD3D9HLSLMaterialRenderer.h"
+#include "SIrrCreationParameters.h"
 
 namespace irr
 {
@@ -3493,13 +3494,13 @@ namespace video
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 //! creates a video driver
-IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize,
-		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
-		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-		bool vsync, u8 antiAlias, u32 displayAdapter)
+IVideoDriver* createDirectX9Driver(const SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, HWND window)
 {
-	CD3D9Driver* dx9 = new CD3D9Driver(screenSize, window, fullscreen, stencilbuffer, io, pureSoftware);
-	if (!dx9->initDriver(screenSize, window, bits, fullscreen, pureSoftware, highPrecisionFPU, vsync, antiAlias, displayAdapter))
+	const bool pureSoftware = false;
+	CD3D9Driver* dx9 = new CD3D9Driver(params.WindowSize, window, params.Fullscreen, params.Stencilbuffer, io, pureSoftware);
+	if (!dx9->initDriver(params.WindowSize, window, params.Bits, params.Fullscreen, pureSoftware, params.HighPrecisionFPU,
+		params.Vsync, params.AntiAlias, params.DisplayAdapter))
 	{
 		dx9->drop();
 		dx9 = 0;

@@ -23,15 +23,13 @@ namespace irr
 	namespace video
 	{
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
-		IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
+		IVideoDriver* createDirectX8Driver(const irr::SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, HWND window);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
-		IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
+		IVideoDriver* createDirectX9Driver(const irr::SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, HWND window);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -668,10 +666,7 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_DIRECT3D8:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 
-		VideoDriver = video::createDirectX8Driver(CreationParams.WindowSize, HWnd,
-			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
-			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
-			CreationParams.AntiAlias, CreationParams.DisplayAdapter);
+		VideoDriver = video::createDirectX8Driver(CreationParams, FileSystem, HWnd);
 
 		if (!VideoDriver)
 		{
@@ -686,10 +681,7 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_DIRECT3D9:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 
-		VideoDriver = video::createDirectX9Driver(CreationParams.WindowSize, HWnd,
-			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
-			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
-			CreationParams.AntiAlias, CreationParams.DisplayAdapter);
+		VideoDriver = video::createDirectX9Driver(CreationParams, FileSystem, HWnd);
 
 		if (!VideoDriver)
 		{
