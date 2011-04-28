@@ -2996,6 +2996,26 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 					extGlBlendEquation(GL_MAX);
 #endif
 				break;
+			case EBO_MIN_ALPHA:
+#if defined(GL_SGIX_blend_alpha_minmax)
+				if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
+					extGlBlendEquation(GL_ALPHA_MIN_SGIX);
+				// fallback in case of missing extension
+				else
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						extGlBlendEquation(GL_MIN_EXT);
+#endif
+				break;
+			case EBO_MAX_ALPHA:
+#if defined(GL_SGIX_blend_alpha_minmax)
+				if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
+					extGlBlendEquation(GL_ALPHA_MAX_SGIX);
+				// fallback in case of missing extension
+				else
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						extGlBlendEquation(GL_MAX_EXT);
+#endif
+				break;
 			default:
 #if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
 				extGlBlendEquation(GL_FUNC_ADD_EXT);
@@ -4135,6 +4155,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 					extGlBlendEquationIndexed(i, GL_MAX);
 					break;
 				case EBO_MIN_FACTOR:
+				case EBO_MIN_ALPHA:
 #if defined(GL_AMD_blend_minmax_factor)
 					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
 						extGlBlendEquationIndexed(i, GL_FACTOR_MIN_AMD);
@@ -4144,6 +4165,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 						extGlBlendEquation(GL_MIN);
 					break;
 				case EBO_MAX_FACTOR:
+				case EBO_MAX_ALPHA:
 #if defined(GL_AMD_blend_minmax_factor)
 					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
 						extGlBlendEquationIndexed(i, GL_FACTOR_MAX_AMD);

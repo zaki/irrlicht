@@ -45,7 +45,9 @@ namespace video
 		EBO_MIN,		//!< Choose minimum value of each color channel
 		EBO_MAX,		//!< Choose maximum value of each color channel
 		EBO_MIN_FACTOR,	//!< Choose minimum value of each color channel after applying blend factors, not widely supported
-		EBO_MAX_FACTOR	//!< Choose maximum value of each color channel after applying blend factors, not widely supported
+		EBO_MAX_FACTOR,	//!< Choose maximum value of each color channel after applying blend factors, not widely supported
+		EBO_MIN_ALPHA,	//!< Choose minimum value of each color channel based on alpha value, not widely supported
+		EBO_MAX_ALPHA	//!< Choose maximum value of each color channel based on alpha value, not widely supported
 	};
 
 	//! MaterialTypeParam: e.g. DirectX: D3DTOP_MODULATE, D3DTOP_MODULATE2X, D3DTOP_MODULATE4X
