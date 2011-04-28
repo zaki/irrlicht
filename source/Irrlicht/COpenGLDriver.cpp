@@ -2932,32 +2932,68 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 #if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op) || defined(GL_VERSION_1_2)
 			switch (material.BlendOperation)
 			{
-			case EBO_MAX:
-#if defined(GL_EXT_blend_minmax)
-				extGlBlendEquation(GL_MAX_EXT);
-#elif defined(GL_VERSION_1_2)
-				extGlBlendEquation(GL_MAX);
-#endif
-				break;
-			case EBO_MIN:
-#if defined(GL_EXT_blend_minmax)
-				extGlBlendEquation(GL_MIN_EXT);
-#elif defined(GL_VERSION_1_2)
-				extGlBlendEquation(GL_MIN);
-#endif
-				break;
 			case EBO_SUBTRACT:
 #if defined(GL_EXT_blend_subtract)
-				extGlBlendEquation(GL_FUNC_SUBTRACT_EXT);
+				if (FeatureAvailable[IRR_EXT_blend_subtract] || (Version>=120))
+					extGlBlendEquation(GL_FUNC_SUBTRACT_EXT);
 #elif defined(GL_VERSION_1_2)
-				extGlBlendEquation(GL_FUNC_SUBTRACT);
+				if (Version>=120)
+					extGlBlendEquation(GL_FUNC_SUBTRACT);
 #endif
 				break;
 			case EBO_REVSUBTRACT:
 #if defined(GL_EXT_blend_subtract)
-				extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
+				if (FeatureAvailable[IRR_EXT_blend_subtract] || (Version>=120))
+					extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
 #elif defined(GL_VERSION_1_2)
-				extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+				if (Version>=120)
+					extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+#endif
+				break;
+			case EBO_MIN:
+#if defined(GL_EXT_blend_minmax)
+				if (FeatureAvailable[IRR_EXT_blend_minmax] || (Version>=120))
+					extGlBlendEquation(GL_MIN_EXT);
+#elif defined(GL_VERSION_1_2)
+				if (Version>=120)
+					extGlBlendEquation(GL_MIN);
+#endif
+				break;
+			case EBO_MAX:
+#if defined(GL_EXT_blend_minmax)
+				if (FeatureAvailable[IRR_EXT_blend_minmax] || (Version>=120))
+					extGlBlendEquation(GL_MAX_EXT);
+#elif defined(GL_VERSION_1_2)
+				if (Version>=120)
+					extGlBlendEquation(GL_MAX);
+#endif
+				break;
+			case EBO_MIN_FACTOR:
+#if defined(GL_AMD_blend_minmax_factor)
+				if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+					extGlBlendEquation(GL_FACTOR_MIN_AMD);
+#endif
+				// fallback in case of missing extension
+#if defined(GL_VERSION_1_2)
+#if defined(GL_AMD_blend_minmax_factor)
+				else
+#endif
+				if (Version>=120)
+					extGlBlendEquation(GL_MIN);
+#endif
+				break;
+			case EBO_MAX_FACTOR:
+#if defined(GL_AMD_blend_minmax_factor)
+				if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+					extGlBlendEquation(GL_FACTOR_MAX_AMD);
+#endif
+				// fallback in case of missing extension
+#if defined(GL_VERSION_1_2)
+#if defined(GL_AMD_blend_minmax_factor)
+				else
+#endif
+				if (Version>=120)
+					extGlBlendEquation(GL_MAX);
 #endif
 				break;
 			default:
@@ -4080,6 +4116,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 				else
 					extGlEnableIndexed(GL_BLEND, i);
 			}
+#if defined(GL_AMD_draw_buffers_blend) || defined(GL_ARB_draw_buffers_blend)
 			if (FeatureAvailable[IRR_AMD_draw_buffers_blend] || FeatureAvailable[IRR_ARB_draw_buffers_blend])
 			{
 				extGlBlendFuncIndexed(i, getGLBlend(targets[i].BlendFuncSrc), getGLBlend(targets[i].BlendFuncDst));
@@ -4097,11 +4134,30 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 				case EBO_MAX:
 					extGlBlendEquationIndexed(i, GL_MAX);
 					break;
+				case EBO_MIN_FACTOR:
+#if defined(GL_AMD_blend_minmax_factor)
+					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+						extGlBlendEquationIndexed(i, GL_FACTOR_MIN_AMD);
+					// fallback in case of missing extension
+					else
+#endif
+						extGlBlendEquation(GL_MIN);
+					break;
+				case EBO_MAX_FACTOR:
+#if defined(GL_AMD_blend_minmax_factor)
+					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+						extGlBlendEquationIndexed(i, GL_FACTOR_MAX_AMD);
+					// fallback in case of missing extension
+					else
+#endif
+						extGlBlendEquation(GL_MAX);
+				break;
 				default:
 					extGlBlendEquationIndexed(i, GL_FUNC_ADD);
 					break;
 				}
 			}
+#endif
 			if (targets[i].TargetType==ERT_RENDER_TEXTURE)
 			{
 				GLenum attachment = GL_NONE;

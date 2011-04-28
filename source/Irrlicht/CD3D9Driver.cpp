@@ -2265,17 +2265,19 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 			switch (material.BlendOperation)
 			{
-			case EBO_MAX:
-				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
-				break;
-			case EBO_MIN:
-				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
-				break;
 			case EBO_SUBTRACT:
 				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
 				break;
 			case EBO_REVSUBTRACT:
 				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+				break;
+			case EBO_MIN:
+			case EBO_MIN_FACTOR:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
+				break;
+			case EBO_MAX:
+			case EBO_MAX_FACTOR:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
 				break;
 			default:
 				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
