@@ -60,7 +60,7 @@ bool loadFromFileFolder(void)
 	readFile->drop();
 
 	// adding  a folder archive
-	device->getFileSystem()->addFolderFileArchive( "../media/" );
+	device->getFileSystem()->addFileArchive( "../media/" );
 
 	ITexture * tex3 = driver->getTexture("tools.png");
 	assert(tex3);

@@ -159,7 +159,7 @@ bool filesystem(void)
 	assert(changed);
 	
 	// adding  a folder archive which just should not really change anything
-	device->getFileSystem()->addFolderFileArchive( "./" );
+	device->getFileSystem()->addFileArchive( "./" );
 	
 	if ( fs->existFile(empty) )
 	{
