@@ -380,7 +380,7 @@ namespace video
 		//! Store the blend operation of choice
 		/** Values to be chosen from E_BLEND_OPERATION. The actual way to use this value
 		is not yet determined, so ignore it for now. */
-		E_BLEND_OPERATION BlendOperation:3;
+		E_BLEND_OPERATION BlendOperation:4;
 
 		//! Factor specifying how far the polygon offset should be made
 		/** Specifying 0 disables the polygon offset. The direction is specified spearately.
