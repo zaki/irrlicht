@@ -202,34 +202,34 @@ void COpenGLExtensionHandler::dumpFramebufferFormats() const
 #endif
 				,0,0,0,0
 			};
-			size_t nums = sizeof(atts)/sizeof(int)-4;
+			size_t nums = sizeof(atts)/sizeof(int);
 			const bool depth_float_supported= (wglExtensions.find("WGL_EXT_depth_float") != -1);
 			if (!depth_float_supported)
 			{
-				memmove(&atts[49], &atts[50], (nums-49)*4);
+				memmove(&atts[49], &atts[50], (nums-50)*sizeof(int));
 				nums -= 1;
 			}
 			if (!multi_sample_supported)
 			{
-				memmove(&atts[47], &atts[49], (nums-47)*4);
+				memmove(&atts[47], &atts[49], (nums-49)*sizeof(int));
 				nums -= 2;
 			}
 			const bool framebuffer_sRGB_supported= (wglExtensions.find("WGL_ARB_framebuffer_sRGB") != -1);
 			if (!framebuffer_sRGB_supported)
 			{
-				memmove(&atts[46], &atts[47], (nums-46)*4);
+				memmove(&atts[46], &atts[47], (nums-47)*sizeof(int));
 				nums -= 1;
 			}
 			const bool pbuffer_supported = (wglExtensions.find("WGL_ARB_pbuffer") != -1);
 			if (!pbuffer_supported)
 			{
-				memmove(&atts[42], &atts[46], (nums-42)*4);
+				memmove(&atts[42], &atts[46], (nums-46)*sizeof(int));
 				nums -= 4;
 			}
 			const bool render_texture_supported = (wglExtensions.find("WGL_ARB_render_texture") != -1);
 			if (!render_texture_supported)
 			{
-				memmove(&atts[40], &atts[42], (nums-40)*4);
+				memmove(&atts[40], &atts[42], (nums-42)*sizeof(int));
 				nums -= 2;
 			}
 			wglGetPixelFormatAttribiv_ARB(hdc,0,0,1,atts,vals);
