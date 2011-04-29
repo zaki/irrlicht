@@ -355,7 +355,8 @@ void CGUIStaticText::breakText()
 						{
 							// No soft hyphen found, so there's nothing more we can do
 							// break to next line
-							BrokenText.push_back(line);
+							if (length)
+								BrokenText.push_back(line);
 							length = wordlgth;
 							line = word;
 						}
