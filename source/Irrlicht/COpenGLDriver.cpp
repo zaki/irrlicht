@@ -2781,7 +2781,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 			(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
-		if (material.getTexture(i) && material.getTexture(i)->hasMipMaps() && material.UseMipMaps)
+		if (material.UseMipMaps && CurrentTexture[i]->hasMipMaps())
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
 				material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
