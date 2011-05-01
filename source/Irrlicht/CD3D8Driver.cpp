@@ -809,13 +809,21 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 
 //! Creates a render target texture.
-ITexture* CD3D8Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-											  const io::path& name,
-											  const ECOLOR_FORMAT format)
+ITexture* CD3D8Driver::addRenderTargetTexture(
+		const core::dimension2d<u32>& size, const io::path& name,
+		const ECOLOR_FORMAT format)
 {
-	ITexture* tex = new CD3D8Texture(this, size, name);
-	addTexture(tex);
-	tex->drop();
+	CD3D8Texture* tex = new CD3D8Texture(this, size, name);
+	if (tex)
+	{
+		if (!tex->Texture)
+		{
+			tex->drop();
+			return 0;
+		}
+		addTexture(tex);
+		tex->drop();
+	}
 	return tex;
 }
 

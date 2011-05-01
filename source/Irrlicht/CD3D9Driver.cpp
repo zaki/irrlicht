@@ -3156,9 +3156,14 @@ ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size
 											  const io::path& name,
 											  const ECOLOR_FORMAT format)
 {
-	ITexture* tex = new CD3D9Texture(this, size, name, format);
+	CD3D9Texture* tex = new CD3D9Texture(this, size, name, format);
 	if (tex)
 	{
+		if (!tex->Texture)
+		{
+			tex->drop();
+			return 0;
+		}
 		checkDepthBuffer(tex);
 		addTexture(tex);
 		tex->drop();
