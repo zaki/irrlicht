@@ -1506,6 +1506,7 @@ inline void COpenGLExtensionHandler::extGlDeleteShader(GLuint shader)
 
 inline void COpenGLExtensionHandler::extGlGetAttachedObjects(GLhandleARB program, GLsizei maxcount, GLsizei* count, GLhandleARB* shaders)
 {
+	*count=0;
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetAttachedObjectsARB)
 		pGlGetAttachedObjectsARB(program, maxcount, count, shaders);
@@ -1518,6 +1519,7 @@ inline void COpenGLExtensionHandler::extGlGetAttachedObjects(GLhandleARB program
 
 inline void COpenGLExtensionHandler::extGlGetAttachedShaders(GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders)
 {
+	*count=0;
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetAttachedShaders)
 		pGlGetAttachedShaders(program, maxcount, count, shaders);
