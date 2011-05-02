@@ -578,15 +578,35 @@ inline void quaternion::toEuler(vector3df& euler) const
 	const f64 sqx = X*X;
 	const f64 sqy = Y*Y;
 	const f64 sqz = Z*Z;
+	const f64 test = 2.0 * (Y*W - X*Z);
 
-	// heading = rotation about z-axis
-	euler.Z = (f32) (atan2(2.0 * (X*Y +Z*W),(sqx - sqy - sqz + sqw)));
-
-	// bank = rotation about x-axis
-	euler.X = (f32) (atan2(2.0 * (Y*Z +X*W),(-sqx - sqy + sqz + sqw)));
-
-	// attitude = rotation about y-axis
-	euler.Y = asinf( clamp(-2.0f * (X*Z - Y*W), -1.0f, 1.0f) );
+	if (core::equals(test, 1.0, 0.000001))
+	{
+		// heading = rotation about z-axis
+		euler.Z = (f32) (-2.0*atan2(X, W));
+		// bank = rotation about x-axis
+		euler.X = 0;
+		// attitude = rotation about y-axis
+		euler.Y = (f32) (core::PI64/2.0);
+	}
+	else if (core::equals(test, -1.0, 0.000001))
+	{
+		// heading = rotation about z-axis
+		euler.Z = (f32) (2.0*atan2(X, W));
+		// bank = rotation about x-axis
+		euler.X = 0;
+		// attitude = rotation about y-axis
+		euler.Y = (f32) (core::PI64/-2.0);
+	}
+	else
+	{
+		// heading = rotation about z-axis
+		euler.Z = (f32) atan2(2.0 * (X*Y +Z*W),(sqx - sqy - sqz + sqw));
+		// bank = rotation about x-axis
+		euler.X = (f32) atan2(2.0 * (Y*Z +X*W),(-sqx - sqy + sqz + sqw));
+		// attitude = rotation about y-axis
+		euler.Y = (f32) asin( clamp(test, -1.0, 1.0) );
+	}
 }
 
 
