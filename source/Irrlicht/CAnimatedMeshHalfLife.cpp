@@ -21,19 +21,19 @@ namespace scene
 
 	using namespace video;
 
-	void AngleQuaternion( const vec3_hl angles, vec4_hl quaternion )
+	void AngleQuaternion(const core::vector3df& angles, vec4_hl quaternion)
 	{
 		f32		angle;
 		f32		sr, sp, sy, cr, cp, cy;
 
 		// FIXME: rescale the inputs to 1/2 angle
-		angle = angles[2] * 0.5f;
+		angle = angles.Z * 0.5f;
 		sy = sin(angle);
 		cy = cos(angle);
-		angle = angles[1] * 0.5f;
+		angle = angles.Y * 0.5f;
 		sp = sin(angle);
 		cp = cos(angle);
-		angle = angles[0] * 0.5f;
+		angle = angles.X * 0.5f;
 		sr = sin(angle);
 		cr = cos(angle);
 
@@ -122,39 +122,16 @@ namespace scene
 		out[2][3] = in1[2][0] * in2[0][3] + in1[2][1] * in2[1][3] + in1[2][2] * in2[2][3] + in1[2][3];
 	}
 
-	#define	EQUAL_EPSILON	0.001
-	s32 VectorCompare (vec3_hl v1, vec3_hl v2)
-	{
-		s32		i;
-
-		for (i=0 ; i<3 ; i++)
-			if (fabs(v1[i]-v2[i]) > EQUAL_EPSILON)
-				return false;
-
-		return true;
-	}
-
-
 	#define DotProduct(x,y) ((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2])
 
-
-	inline void VectorTransform (const vec3_hl in1, const f32 in2[3][4], vec3_hl out)
-	{
-		out[0] = DotProduct(in1, in2[0]) + in2[0][3];
-		out[1] = DotProduct(in1, in2[1]) + in2[1][3];
-		out[2] = DotProduct(in1, in2[2]) + in2[2][3];
-	}
-
-	inline void VectorTransform2 (core::vector3df &out, const vec3_hl in1, const f32 in2[3][4])
+	inline void VectorTransform(const vec3_hl in1, const f32 in2[3][4], core::vector3df& out)
 	{
 		out.X = DotProduct(in1, in2[0]) + in2[0][3];
-		out.Z = DotProduct(in1, in2[1]) + in2[1][3];
-		out.Y = DotProduct(in1, in2[2]) + in2[2][3];
+		out.Y = DotProduct(in1, in2[1]) + in2[1][3];
+		out.Z = DotProduct(in1, in2[2]) + in2[2][3];
 	}
 
-
 	static f32 BoneTransform[MAXSTUDIOBONES][3][4];	// bone transformation matrix
-
 
 	void getBoneVector ( core::vector3df &out, u32 index )
 	{
@@ -185,12 +162,12 @@ namespace scene
 
 
 //! Constructor
-CHalflifeMDLMeshFileLoader::CHalflifeMDLMeshFileLoader( scene::ISceneManager* smgr )
+CHalflifeMDLMeshFileLoader::CHalflifeMDLMeshFileLoader(
+		scene::ISceneManager* smgr) : SceneManager(smgr)
 {
 #ifdef _DEBUG
 	setDebugName("CHalflifeMDLMeshFileLoader");
 #endif
-	SceneManager = smgr;
 }
 
 
@@ -198,7 +175,7 @@ CHalflifeMDLMeshFileLoader::CHalflifeMDLMeshFileLoader( scene::ISceneManager* sm
 //! based on the file extension (e.g. ".bsp")
 bool CHalflifeMDLMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
-	return core::hasFileExtension ( filename, "mdl" );
+	return core::hasFileExtension(filename, "mdl");
 }
 
 
@@ -211,14 +188,14 @@ IAnimatedMesh* CHalflifeMDLMeshFileLoader::createMesh(io::IReadFile* file)
 	CAnimatedMeshHalfLife* msh = new CAnimatedMeshHalfLife();
 	if (msh)
 	{
-		if ( msh->loadModelFile ( file, SceneManager ) )
+		if (msh->loadModelFile(file, SceneManager))
 			return msh;
-
 		msh->drop();
 	}
 
 	return 0;
 }
+
 
 //! Constructor
 CAnimatedMeshHalfLife::CAnimatedMeshHalfLife()
@@ -226,40 +203,42 @@ CAnimatedMeshHalfLife::CAnimatedMeshHalfLife()
 #ifdef _DEBUG
 	setDebugName("CAnimatedMeshHalfLife");
 #endif
-
-	initData ();
+	initData();
 }
 
 /*!
 	loads a complete model
 */
-bool CAnimatedMeshHalfLife::loadModelFile( io::IReadFile* file,ISceneManager * smgr )
+bool CAnimatedMeshHalfLife::loadModelFile(io::IReadFile* file,
+		ISceneManager* smgr)
 {
 	if (!file)
 		return false;
 
-	bool r = false;
-
 	SceneManager = smgr;
 
-	if ( loadModel ( file, file->getFileName() ) )
+	if ( loadModel(file, file->getFileName()) )
 	{
 		if ( postLoadModel ( file->getFileName() ) )
 		{
 			initModel ();
 			//dumpModelInfo ( 1 );
-			r = true;
+			return true;
 		}
 	}
-	return r;
+	return false;
 }
-
 
 
 //! Destructor
 CAnimatedMeshHalfLife::~CAnimatedMeshHalfLife()
 {
-	freeModel ();
+	delete [] (u8*) Header;
+	if (OwnTexModel)
+		delete [] (u8*) TextureHeader;
+
+	for (u32 i = 0; i < 32; ++i)
+		delete [] (u8*) AnimationHeader[i];
 }
 
 
@@ -282,15 +261,13 @@ void CAnimatedMeshHalfLife::setDirty(E_BUFFER_TYPE buffer)
 }
 
 
-
-
-static vec3_hl TransformedVerts[MAXSTUDIOVERTS];	// transformed vertices
-//static vec3_hl TransformedNormals[MAXSTUDIOVERTS];	// light surface normals
+static core::vector3df TransformedVerts[MAXSTUDIOVERTS];	// transformed vertices
+//static core::vector3df TransformedNormals[MAXSTUDIOVERTS];	// light surface normals
 
 
 /*!
 */
-void CAnimatedMeshHalfLife::initModel ()
+void CAnimatedMeshHalfLife::initModel()
 {
 	// init Sequences to Animation
 	KeyFrameInterpolation ipol;
@@ -337,7 +314,7 @@ void CAnimatedMeshHalfLife::initModel ()
 	u32 meshBuffer = 0;
 	BodyList.clear();
 	SHalflifeBody *body = (SHalflifeBody *) ((u8*) Header + Header->bodypartindex);
-	for ( i = 0; i < Header->numbodyparts; ++i)
+	for (i=0; i < Header->numbodyparts; ++i)
 	{
 		BodyPart part;
 		part.name = body[i].name;
@@ -360,38 +337,32 @@ void CAnimatedMeshHalfLife::initModel ()
 	SequenceIndex = 0;
 	CurrentFrame = 0.f;
 
-	SetController (0, 0.f);
-	SetController (1, 0.f);
-	SetController (2, 0.f);
-	SetController (3, 0.f);
-	SetController (MOUTH_CONTROLLER, 0.f);
+	SetController(0, 0.f);
+	SetController(1, 0.f);
+	SetController(2, 0.f);
+	SetController(3, 0.f);
+	SetController(MOUTH_CONTROLLER, 0.f);
 
 	SetSkin (0);
 
 	// init Meshbuffers
-	io::path store;
-
 	const SHalflifeTexture *tex = (SHalflifeTexture *) ((u8*) TextureHeader + TextureHeader->textureindex);
 	const u16 *skinref = (u16 *)((u8*)TextureHeader + TextureHeader->skinindex);
-	if (SkinGroupSelection != 0 && SkinGroupSelection < TextureHeader->numskinfamilies)
+	if ((SkinGroupSelection != 0) && (SkinGroupSelection < TextureHeader->numskinfamilies))
 		skinref += (SkinGroupSelection * TextureHeader->numskinref);
-
-	io::path fname;
-	io::path ext;
-
 
 	core::vector2df tex_scale;
 	core::vector2di tex_trans ( 0, 0 );
 
 #ifdef HL_TEXTURE_ATLAS
-	TextureAtlas.getScale ( tex_scale );
+	TextureAtlas.getScale(tex_scale);
 #endif
 
-	for ( u32 bodypart=0 ; bodypart < Header->numbodyparts ; ++bodypart)
+	for (u32 bodypart=0 ; bodypart < Header->numbodyparts ; ++bodypart)
 	{
 		const SHalflifeBody *body = (SHalflifeBody *)((u8*) Header + Header->bodypartindex) + bodypart;
 
-		for ( u32 modelnr = 0; modelnr < body->nummodels; ++modelnr )
+		for (u32 modelnr = 0; modelnr < body->nummodels; ++modelnr)
 		{
 			const SHalflifeModel *model = (SHalflifeModel *)((u8*) Header + body->modelindex) + modelnr;
 #if 0
@@ -522,10 +493,12 @@ void CAnimatedMeshHalfLife::initModel ()
 				}
 
 #ifdef HL_TEXTURE_ATLAS
-				store = TextureBaseName + "atlas";
+				io::path store = TextureBaseName + "atlas";
 #else
+				io::path fname;
+				io::path ext;
 				core::splitFilename ( currentex->name, 0, &fname, &ext );
-				store = TextureBaseName + fname;
+				io::path store = TextureBaseName + fname;
 #endif
 				m.TextureLayer[0].Texture = SceneManager->getVideoDriver()->getTexture ( store );
 				m.Lighting = false;
@@ -535,7 +508,6 @@ void CAnimatedMeshHalfLife::initModel ()
 			} // mesh
 		} // model
 	} // body part
-
 }
 
 
@@ -593,15 +565,11 @@ void CAnimatedMeshHalfLife::buildVertices ()
 					for ( g = 0; g < c; ++g, v += 1, tricmd += 4 )
 					{
 						// fill vertex
-						const f32 *av = TransformedVerts[tricmd[0]];
-						v->Pos.X = av[0];
-						v->Pos.Z = av[1];
-						v->Pos.Y = av[2];
+						const core::vector3df& av = TransformedVerts[tricmd[0]];
+						v->Pos = av;
 	/*
-						av = TransformedNormals[tricmd[1]];
-						v->Normal.X = av[0];
-						v->Normal.Z = av[1];
-						v->Normal.Y = av[2];
+						const core::vector3df& an = TransformedNormals[tricmd[1]];
+						v->Normal = an;
 						//v->Normal.normalize();
 	*/
 					}
@@ -612,18 +580,17 @@ void CAnimatedMeshHalfLife::buildVertices ()
 }
 
 
-
 /*!
 	render Bones
 */
-void CAnimatedMeshHalfLife::renderModel (  u32 param, IVideoDriver * driver, const core::matrix4 &absoluteTransformation)
+void CAnimatedMeshHalfLife::renderModel(u32 param, IVideoDriver * driver, const core::matrix4 &absoluteTransformation)
 {
 	SHalflifeBone *bone = (SHalflifeBone *) ((u8 *) Header + Header->boneindex);
 
-	video::SColor blue ( 0xFF000080 );
-	video::SColor red ( 0xFF800000 );
-	video::SColor yellow ( 0xFF808000 );
-	video::SColor cyan ( 0xFF008080 );
+	video::SColor blue(0xFF000080);
+	video::SColor red(0xFF800000);
+	video::SColor yellow(0xFF808000);
+	video::SColor cyan(0xFF008080);
 
 	core::aabbox3df box;
 
@@ -654,7 +621,7 @@ void CAnimatedMeshHalfLife::renderModel (  u32 param, IVideoDriver * driver, con
 	}
 
 	// attachements
-	SHalfelifeAttachment *attach = (SHalfelifeAttachment *) ((u8*) Header + Header->attachmentindex);
+	SHalflifeAttachment *attach = (SHalflifeAttachment *) ((u8*) Header + Header->attachmentindex);
 	core::vector3df v[8];
 	for ( i = 0; i < Header->numattachments; i++)
 	{
@@ -729,6 +696,7 @@ void CAnimatedMeshHalfLife::renderModel (  u32 param, IVideoDriver * driver, con
 	}
 }
 
+
 //! Returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail.
 IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
 {
@@ -736,13 +704,11 @@ IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFr
 	u32 frameA = core::floor32 ( frame );
 //	f32 blend = core::fract ( frame );
 
-	u32 i;
-
 	SHalflifeSequence *seq = (SHalflifeSequence*) ((u8*) Header + Header->seqindex);
 
 	// find SequenceIndex from summed list
 	u32 frameCount = 0;
-	for ( i = 0; i < Header->numseq; i++)
+	for (u32 i = 0; i < Header->numseq; ++i)
 	{
 		u32 val = core::max_ ( 1, seq[i].numframes - 1 );
 		if ( frameCount + val > frameA  )
@@ -770,6 +736,7 @@ IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFr
 
 	return &MeshIPol;
 }
+
 
 /*!
 */
@@ -805,19 +772,6 @@ void CAnimatedMeshHalfLife::initData ()
 #endif
 }
 
-/*!
-*/
-void CAnimatedMeshHalfLife::freeModel ()
-{
-	delete [] (u8*) Header;
-	if (OwnTexModel )
-		delete [] (u8*) TextureHeader;
-
-	for ( u32 i = 0; i < 32; ++i )
-		delete [] (u8*) AnimationHeader[i];
-}
-
-
 
 /*!
 */
@@ -834,6 +788,7 @@ void STextureAtlas::release ()
 	Master = 0;
 }
 
+
 /*!
 */
 void STextureAtlas::addSource ( const c8 * name, video::IImage * image )
@@ -847,6 +802,7 @@ void STextureAtlas::addSource ( const c8 * name, video::IImage * image )
 	entry.pos.Y = 0;
 	atlas.push_back ( entry );
 }
+
 
 /*!
 */
@@ -865,6 +821,7 @@ void STextureAtlas::getScale(core::vector2df& scale)
 	scale.Y = 1.f;
 }
 
+
 /*!
 */
 void STextureAtlas::getTranslation(const c8* name, core::vector2di& pos)
@@ -878,6 +835,7 @@ void STextureAtlas::getTranslation(const c8* name, core::vector2di& pos)
 		}
 	}
 }
+
 
 /*!
 */
@@ -1005,22 +963,24 @@ SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io:
 {
 	bool closefile = false;
 
+	// if secondary files are needed, open here and mark for closing
 	if ( 0 == file )
 	{
-		file = SceneManager->getFileSystem()->createAndOpenFile ( filename );
+		file = SceneManager->getFileSystem()->createAndOpenFile(filename);
 		closefile = true;
 	}
 
 	if ( 0 == file )
 		return 0;
 
-	u8 * pin = new u8 [ file->getSize() ];
-	file->read ( pin, file->getSize() );
+	// read into memory
+	u8* pin = new u8[file->getSize()];
+	file->read(pin, file->getSize());
 
-	SHalflifeHeader * header = (SHalflifeHeader*) pin;
+	SHalflifeHeader* header = (SHalflifeHeader*) pin;
 
-	const bool idst = 0 == strncmp ( header->id, "IDST", 4);
-	const bool idsq = 0 == strncmp ( header->id, "IDSQ", 4);
+	const bool idst = (0 == strncmp(header->id, "IDST", 4));
+	const bool idsq = (0 == strncmp(header->id, "IDSQ", 4));
 
 	if ( (!idst && !idsq) || (idsq && !Header) )
 	{
@@ -1031,25 +991,22 @@ SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io:
 			file = 0;
 		}
 		delete [] pin;
-		return false;
+		return 0;
 	}
 
 	// don't know the real header.. idsg might be different
 	if (header->textureindex && idst )
 	{
+		io::path path;
 		io::path fname;
 		io::path ext;
-		io::path path;
-		io::path store;
 
-		core::splitFilename ( file->getFileName(), &path, &fname, &ext );
+		core::splitFilename(file->getFileName(), &path, &fname, &ext);
 		TextureBaseName = path + fname + "_";
 
 		SHalflifeTexture *tex = (SHalflifeTexture *)(pin + header->textureindex);
-		u32 i;
-
 		u32 *palette = new u32[256];
-		for (i = 0; i < header->numtextures; i++)
+		for (u32 i = 0; i < header->numtextures; ++i)
 		{
 			const u8 *src = pin + tex[i].index;
 
@@ -1063,25 +1020,16 @@ SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io:
 				}
 			}
 
-			IImage* image = new CImage( ECF_R8G8B8, core::dimension2d<u32> ( tex[i].width, tex[i].height ) );
+			IImage* image = new CImage( ECF_R8G8B8, core::dimension2d<u32>(tex[i].width, tex[i].height) );
 
 			CColorConverter::convert8BitTo24Bit(src, (u8*)image->lock(), tex[i].width, tex[i].height, (u8*) palette, 0, false);
 			image->unlock();
-
-
-#if 0
-			core::splitFilename ( tex[i].name, 0, &fname, 0 );
-			io::path store = io::path ( "c:/h2/convert/" ) + fname + ".bmp";
-			SceneManager->getVideoDriver()->writeImageToFile ( image, store );
-#endif
 
 #ifdef HL_TEXTURE_ATLAS
 			TextureAtlas.addSource ( tex[i].name, image );
 #else
 			core::splitFilename ( tex[i].name, 0, &fname, &ext );
-			store = TextureBaseName + fname;
-
-			SceneManager->getVideoDriver()->addTexture ( store, image );
+			SceneManager->getVideoDriver()->addTexture ( TextureBaseName + fname, image );
 			image->drop();
 #endif
 		}
@@ -1089,15 +1037,7 @@ SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io:
 
 #ifdef HL_TEXTURE_ATLAS
 		TextureAtlas.create ( 2 * 2 + 1, ETC_CLAMP );
-
-		store = TextureBaseName + "atlas";
-		SceneManager->getVideoDriver()->addTexture ( store, TextureAtlas.Master );
-
-	#if 0
-		core::splitFilename ( store, 0, &fname, 0 );
-		store = io::path ( "c:/h2/convert/" ) + fname + ".bmp";
-		SceneManager->getVideoDriver()->writeImageToFile ( TextureAtlas.Master, store );
-	#endif
+		SceneManager->getVideoDriver()->addTexture ( TextureBaseName + "atlas", TextureAtlas.Master );
 		TextureAtlas.release();
 #endif
 	}
@@ -1181,6 +1121,7 @@ u32 CAnimatedMeshHalfLife::SetSkin( u32 value )
 	return SkinGroupSelection;
 }
 
+
 /*!
 */
 bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
@@ -1192,10 +1133,11 @@ bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
 	core::splitFilename ( filename ,&path, &texname, 0 );
 
 	// preload textures
+	// if no textures are stored in main file, use texfile
 	if (Header->numtextures == 0)
 	{
 		submodel = path + texname + "T.mdl";
-		TextureHeader = loadModel( 0, submodel );
+		TextureHeader = loadModel(0, submodel);
 		if (!TextureHeader)
 			return false;
 		OwnTexModel = true;
@@ -1215,7 +1157,7 @@ bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
 			snprintf( seq, 8, "%02d.mdl", i );
 			submodel = path + texname + seq;
 
-			AnimationHeader[i] = loadModel( 0, submodel );
+			AnimationHeader[i] = loadModel(0, submodel);
 			if (!AnimationHeader[i])
 				return false;
 		}
@@ -1343,7 +1285,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	printf("\nnumattachments: %d\n", hdr->numattachments);
 	for (i = 0; i < hdr->numattachments; i++)
 	{
-		SHalfelifeAttachment *attach = (SHalfelifeAttachment *) ((u8*) hdr + hdr->attachmentindex);
+		SHalflifeAttachment *attach = (SHalflifeAttachment *) ((u8*) hdr + hdr->attachmentindex);
 		printf("attachment %d.name: \"%s\"\n", i + 1, attach[i].name);
 	}
 
@@ -1362,6 +1304,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	}
 }
 
+
 /*!
 */
 void CAnimatedMeshHalfLife::ExtractBbox( s32 sequence, core::aabbox3df &box )
@@ -1376,7 +1319,6 @@ void CAnimatedMeshHalfLife::ExtractBbox( s32 sequence, core::aabbox3df &box )
 	box.MaxEdge.Y = seq[0].bbmax[1];
 	box.MaxEdge.Z = seq[0].bbmax[2];
 }
-
 
 
 /*!
@@ -1420,98 +1362,80 @@ void CAnimatedMeshHalfLife::calcBoneAdj()
 	}
 }
 
+
 /*!
 */
-void CAnimatedMeshHalfLife::calcBoneQuaternion( s32 frame, f32 s, SHalflifeBone *bone, SHalflifeAnimOffset *anim, f32 *q ) const
+void CAnimatedMeshHalfLife::calcBoneQuaternion(const s32 frame, const SHalflifeBone * const bone,
+		SHalflifeAnimOffset *anim, const u32 j, f32& angle1, f32& angle2) const
 {
-	s32					j, k;
-	vec4_hl				q1, q2;
-	vec3_hl				angle1, angle2;
-	SHalfelifeAnimationFrame	*animvalue;
-
-	for (j = 0; j < 3; j++)
+	// three vector components
+	if (anim->offset[j+3] == 0)
 	{
-		if (anim->offset[j+3] == 0)
-		{
-			angle2[j] = angle1[j] = bone->value[j+3]; // default;
-		}
-		else
-		{
-			animvalue = (SHalfelifeAnimationFrame *)((u8*)anim + anim->offset[j+3]);
-			k = frame;
-			while (animvalue->num.total <= k)
-			{
-				k -= animvalue->num.total;
-				animvalue += animvalue->num.valid + 1;
-			}
-			// Bah, missing blend!
-			if (animvalue->num.valid > k)
-			{
-				angle1[j] = animvalue[k+1].value;
-
-				if (animvalue->num.valid > k + 1)
-				{
-					angle2[j] = animvalue[k+2].value;
-				}
-				else
-				{
-					if (animvalue->num.total > k + 1)
-						angle2[j] = angle1[j];
-					else
-						angle2[j] = animvalue[animvalue->num.valid+2].value;
-				}
-			}
-			else
-			{
-				angle1[j] = animvalue[animvalue->num.valid].value;
-				if (animvalue->num.total > k + 1)
-				{
-					angle2[j] = angle1[j];
-				}
-				else
-				{
-					angle2[j] = animvalue[animvalue->num.valid + 2].value;
-				}
-			}
-			angle1[j] = bone->value[j+3] + angle1[j] * bone->scale[j+3];
-			angle2[j] = bone->value[j+3] + angle2[j] * bone->scale[j+3];
-		}
-
-		if (bone->bonecontroller[j+3] != -1)
-		{
-			angle1[j] += BoneAdj[bone->bonecontroller[j+3]];
-			angle2[j] += BoneAdj[bone->bonecontroller[j+3]];
-		}
-	}
-
-	if (!VectorCompare( angle1, angle2 ))
-	{
-		AngleQuaternion( angle1, q1 );
-		AngleQuaternion( angle2, q2 );
-		QuaternionSlerp( q1, q2, s, q );
+		angle2 = angle1 = bone->value[j+3]; // default
 	}
 	else
 	{
-		AngleQuaternion( angle1, q );
+		SHalflifeAnimationFrame *animvalue = (SHalflifeAnimationFrame *)((u8*)anim + anim->offset[j+3]);
+		s32 k = frame;
+		while (animvalue->num.total <= k)
+		{
+			k -= animvalue->num.total;
+			animvalue += animvalue->num.valid + 1;
+		}
+		// Bah, missing blend!
+		if (animvalue->num.valid > k)
+		{
+			angle1 = animvalue[k+1].value;
+
+			if (animvalue->num.valid > k + 1)
+			{
+				angle2 = animvalue[k+2].value;
+			}
+			else
+			{
+				if (animvalue->num.total > k + 1)
+					angle2 = angle1;
+				else
+					angle2 = animvalue[animvalue->num.valid+2].value;
+			}
+		}
+		else
+		{
+			angle1 = animvalue[animvalue->num.valid].value;
+			if (animvalue->num.total > k + 1)
+			{
+				angle2 = angle1;
+			}
+			else
+			{
+				angle2 = animvalue[animvalue->num.valid + 2].value;
+			}
+		}
+		angle1 = bone->value[j+3] + angle1 * bone->scale[j+3];
+		angle2 = bone->value[j+3] + angle2 * bone->scale[j+3];
+	}
+
+	if (bone->bonecontroller[j+3] != -1)
+	{
+		angle1 += BoneAdj[bone->bonecontroller[j+3]];
+		angle2 += BoneAdj[bone->bonecontroller[j+3]];
 	}
 }
 
 
 /*!
 */
-void CAnimatedMeshHalfLife::calcBonePosition( s32 frame, f32 s, SHalflifeBone *bone, SHalflifeAnimOffset *anim, f32 *pos ) const
+void CAnimatedMeshHalfLife::calcBonePosition(const s32 frame, f32 s,
+		const SHalflifeBone * const bone, SHalflifeAnimOffset *anim, f32 *pos) const
 {
-	s32					j, k;
-	SHalfelifeAnimationFrame	*animvalue;
-
-	for (j = 0; j < 3; j++)
+	for (s32 j = 0; j < 3; ++j)
 	{
 		pos[j] = bone->value[j]; // default;
 		if (anim->offset[j] != 0)
 		{
-			animvalue = (SHalfelifeAnimationFrame *)((u8*)anim + anim->offset[j]);
+			SHalflifeAnimationFrame	*animvalue = (SHalflifeAnimationFrame *)((u8*)anim + anim->offset[j]);
 
-			k = frame;
+			s32 k = frame;
 			// find span of values that includes the frame we want
 			while (animvalue->num.total <= k)
 			{
@@ -1551,25 +1475,39 @@ void CAnimatedMeshHalfLife::calcBonePosition( s32 frame, f32 s, SHalflifeBone *b
 	}
 }
 
+
 /*!
 */
-void CAnimatedMeshHalfLife::calcRotations ( vec3_hl *pos, vec4_hl *q, SHalflifeSequence *seq, SHalflifeAnimOffset *anim, f32 f )
+void CAnimatedMeshHalfLife::calcRotations(vec3_hl *pos, vec4_hl *q,
+		SHalflifeSequence *seq, SHalflifeAnimOffset *anim, f32 f)
 {
-	s32 frame;
-	SHalflifeBone *bone;
-	f32 s;
-
-	frame = (s32)f;
-	s = (f - frame);
+	s32 frame = (s32)f;
+	f32 s = (f - frame);
 
 	// add in programatic controllers
-	calcBoneAdj( );
+	calcBoneAdj();
 
-	bone = (SHalflifeBone *)((u8 *)Header + Header->boneindex);
+	SHalflifeBone *bone = (SHalflifeBone *)((u8 *)Header + Header->boneindex);
 	for ( u32 i = 0; i < Header->numbones; i++, bone++, anim++)
 	{
-		calcBoneQuaternion( frame, s, bone, anim, q[i] );
-		calcBonePosition( frame, s, bone, anim, pos[i] );
+		core::vector3df angle1, angle2;
+		calcBoneQuaternion(frame, bone, anim, 0, angle1.X, angle2.X);
+		calcBoneQuaternion(frame, bone, anim, 1, angle1.Y, angle2.Y);
+		calcBoneQuaternion(frame, bone, anim, 2, angle1.Z, angle2.Z);
+
+		if (!angle1.equals(angle2))
+		{
+			vec4_hl q1, q2;
+			AngleQuaternion( angle1, q1 );
+			AngleQuaternion( angle2, q2 );
+			QuaternionSlerp( q1, q2, s, q[i] );
+		}
+		else
+		{
+			AngleQuaternion( angle1, q[i] );
+		}
+
+		calcBonePosition(frame, s, bone, anim, pos[i]);
 	}
 
 	if (seq->motiontype & STUDIO_X)
@@ -1580,12 +1518,12 @@ void CAnimatedMeshHalfLife::calcRotations ( vec3_hl *pos, vec4_hl *q, SHalflifeS
 		pos[seq->motionbone][2] = 0.f;
 }
 
+
 /*!
 */
 SHalflifeAnimOffset * CAnimatedMeshHalfLife::getAnim( SHalflifeSequence *seq )
 {
-	SHalflifeSequenceGroup	*seqgroup;
-	seqgroup = (SHalflifeSequenceGroup *)((u8*)Header + Header->seqgroupindex) + seq->seqgroup;
+	SHalflifeSequenceGroup *seqgroup = (SHalflifeSequenceGroup *)((u8*)Header + Header->seqgroupindex) + seq->seqgroup;
 
 	if (seq->seqgroup == 0)
 	{
@@ -1598,18 +1536,18 @@ SHalflifeAnimOffset * CAnimatedMeshHalfLife::getAnim( SHalflifeSequence *seq )
 
 /*!
 */
-void CAnimatedMeshHalfLife::slerpBones( vec4_hl q1[], vec3_hl pos1[], vec4_hl q2[], vec3_hl pos2[], f32 s )
+void CAnimatedMeshHalfLife::slerpBones(vec4_hl q1[], vec3_hl pos1[], vec4_hl q2[], vec3_hl pos2[], f32 s)
 {
-	vec4_hl q3;
-	f32 s1;
+	if (s < 0)
+		s = 0;
+	else if (s > 1.f)
+		s = 1.f;
 
-	if (s < 0) s = 0;
-	else if (s > 1.f) s = 1.f;
-
-	s1 = 1.f - s;
+	f32 s1 = 1.f - s;
 
 	for ( u32 i = 0; i < Header->numbones; i++)
 	{
+		vec4_hl q3;
 		QuaternionSlerp( q1[i], q2[i], s, q3 );
 		q1[i][0] = q3[0];
 		q1[i][1] = q3[1];
@@ -1621,14 +1559,11 @@ void CAnimatedMeshHalfLife::slerpBones( vec4_hl q1[], vec3_hl pos1[], vec4_hl q2
 	}
 }
 
+
 /*!
 */
-void CAnimatedMeshHalfLife::setUpBones ()
+void CAnimatedMeshHalfLife::setUpBones()
 {
-	SHalflifeBone		*bone;
-	SHalflifeSequence	*seq;
-	SHalflifeAnimOffset	*anim;
-
 	static vec3_hl pos[MAXSTUDIOBONES];
 	f32 bonematrix[3][4];
 	static vec4_hl q[MAXSTUDIOBONES];
@@ -1643,18 +1578,16 @@ void CAnimatedMeshHalfLife::setUpBones ()
 	if (SequenceIndex >= Header->numseq)
 		SequenceIndex = 0;
 
-	seq = (SHalflifeSequence *)((u8*) Header + Header->seqindex) + SequenceIndex;
+	SHalflifeSequence *seq = (SHalflifeSequence *)((u8*) Header + Header->seqindex) + SequenceIndex;
 
-	anim = getAnim( seq );
-	calcRotations( pos, q, seq, anim, CurrentFrame );
+	SHalflifeAnimOffset *anim = getAnim(seq);
+	calcRotations(pos, q, seq, anim, CurrentFrame);
 
 	if (seq->numblends > 1)
 	{
-		f32 s;
-
 		anim += Header->numbones;
 		calcRotations( pos2, q2, seq, anim, CurrentFrame );
-		s = Blending[0] / 255.f;
+		f32 s = Blending[0] / 255.f;
 
 		slerpBones( q, pos, q2, pos2, s );
 
@@ -1674,7 +1607,7 @@ void CAnimatedMeshHalfLife::setUpBones ()
 		}
 	}
 
-	bone = (SHalflifeBone *)((u8*) Header + Header->boneindex);
+	SHalflifeBone *bone = (SHalflifeBone *)((u8*) Header + Header->boneindex);
 
 	for (u32 i = 0; i < Header->numbones; i++)
 	{
@@ -1692,7 +1625,6 @@ void CAnimatedMeshHalfLife::setUpBones ()
 		}
 	}
 }
-
 
 
 //! Returns an axis aligned bounding box
@@ -1715,10 +1647,11 @@ u32 CAnimatedMeshHalfLife::getMeshBufferCount() const
 	return MeshIPol.getMeshBufferCount();
 }
 
+
 //! returns pointer to a mesh buffer
 IMeshBuffer* CAnimatedMeshHalfLife::getMeshBuffer(u32 nr) const
 {
-	return MeshIPol.getMeshBuffer ( nr );
+	return MeshIPol.getMeshBuffer(nr);
 }
 
 
@@ -1726,15 +1659,17 @@ IMeshBuffer* CAnimatedMeshHalfLife::getMeshBuffer(u32 nr) const
 /** \param material: material to search for
 \return Returns the pointer to the mesh buffer or
 NULL if there is no such mesh buffer. */
-IMeshBuffer* CAnimatedMeshHalfLife::getMeshBuffer( const video::SMaterial &material) const
+IMeshBuffer* CAnimatedMeshHalfLife::getMeshBuffer(const video::SMaterial &material) const
 {
-	return MeshIPol.getMeshBuffer ( material );
+	return MeshIPol.getMeshBuffer(material);
 }
+
 
 void CAnimatedMeshHalfLife::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 {
 	MeshIPol.setMaterialFlag ( flag, newvalue );
 }
+
 
 //! set user axis aligned bounding box
 void CAnimatedMeshHalfLife::setBoundingBox(const core::aabbox3df& box)

@@ -223,7 +223,7 @@ namespace scene
 	} PACK_STRUCT mstudiopivot_t;
 
 	// attachment
-	struct SHalfelifeAttachment
+	struct SHalflifeAttachment
 	{
 		c8 name[32];
 		s32 type;
@@ -238,7 +238,7 @@ namespace scene
 	} PACK_STRUCT;
 
 	// animation frames
-	union SHalfelifeAnimationFrame
+	union SHalflifeAnimationFrame
 	{
 		struct {
 			u8	valid;
@@ -487,7 +487,7 @@ namespace scene
 	public:
 
 		//! constructor
-		CAnimatedMeshHalfLife( );
+		CAnimatedMeshHalfLife();
 
 		//! destructor
 		virtual ~CAnimatedMeshHalfLife();
@@ -539,7 +539,6 @@ namespace scene
 		//! return a Mesh per frame
 		SMesh MeshIPol;
 
-
 		ISceneManager *SceneManager;
 
 		SHalflifeHeader *Header;
@@ -548,7 +547,6 @@ namespace scene
 		SHalflifeHeader *AnimationHeader[32];	// sequences named model01.mdl, model02.mdl
 
 		void initData ();
-		void freeModel ();
 		SHalflifeHeader * loadModel( io::IReadFile* file, const io::path &filename );
 		bool postLoadModel( const io::path &filename );
 
@@ -556,20 +554,18 @@ namespace scene
 		f32 CurrentFrame;	// Current Frame
 
 		#define MOUTH_CONTROLLER	4
-		u8  BoneController[4 + 1 ];	// bone controllers + mouth position
-		u8	Blending[2];		// animation blending
+		u8 BoneController[4 + 1 ]; // bone controllers + mouth position
+		u8 Blending[2]; // animation blending
 
 		f32 SetController( s32 controllerIndex, f32 value );
 
-
-		u32	SkinGroupSelection;			// skin group selection
+		u32 SkinGroupSelection; // skin group selection
 		u32 SetSkin( u32 value );
 
 		void initModel ();
 		void dumpModelInfo ( u32 level);
 
 		void ExtractBbox( s32 sequence, core::aabbox3df &box );
-
 
 		void setUpBones ();
 		SHalflifeAnimOffset * getAnim( SHalflifeSequence *seq );
@@ -578,15 +574,14 @@ namespace scene
 
 		vec4_hl BoneAdj;
 		void calcBoneAdj();
-		void calcBoneQuaternion( s32 frame, f32 s, SHalflifeBone *bone, SHalflifeAnimOffset *anim, f32 *q ) const;
-		void calcBonePosition( s32 frame, f32 s, SHalflifeBone *bone, SHalflifeAnimOffset *anim, f32 *pos ) const;
+		void calcBoneQuaternion(const s32 frame, const SHalflifeBone *bone, SHalflifeAnimOffset *anim, const u32 j, f32& angle1, f32& angle2) const;
+		void calcBonePosition(const s32 frame, f32 s, const SHalflifeBone *bone, SHalflifeAnimOffset *anim, f32 *pos ) const;
 
 		void buildVertices ();
 
 		io::path TextureBaseName;
 
 #define HL_TEXTURE_ATLAS
-
 
 #ifdef HL_TEXTURE_ATLAS
 		STextureAtlas TextureAtlas;
@@ -605,13 +600,14 @@ namespace scene
 		CHalflifeMDLMeshFileLoader( scene::ISceneManager* smgr );
 
 		//! returns true if the file maybe is able to be loaded by this class
-		//! based on the file extension (e.g. ".bsp")
+		/** based on the file extension (e.g. ".bsp") */
 		virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 		//! creates/loads an animated mesh from the file.
-		//! \return Pointer to the created mesh. Returns 0 if loading failed.
-		//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
-		//! See IReferenceCounted::drop() for more information.
+		/** \return Pointer to the created mesh. Returns 0 if loading failed.
+		If you no longer need the mesh, you should call IAnimatedMesh::drop().
+		See IReferenceCounted::drop() for more information.
+		*/
 		virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 	private:
