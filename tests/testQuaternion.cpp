@@ -31,7 +31,6 @@ inline bool compareQ(const core::vector3df& v, const core::vector3df& turn=core:
 }
 
 core::vector3df vals[] = {
-#if 0
 	core::vector3df(0.f, 0.f, 0.f),
 	core::vector3df(0.f, 0.f, 24.04f),
 	core::vector3df(0.f, 0.f, 71.f),
@@ -67,7 +66,6 @@ core::vector3df vals[] = {
 	core::vector3df(173.58f, 348.13f, 132.25f),
 	core::vector3df(115.52f, 89.04f, 205.51f),
 	core::vector3df(179.3f, 359.18f, 0.58f),
-#endif
 	core::vector3df(180.09f, 270.06f, 0.f),
 	core::vector3df(180.41f, 359.94f, 179.69f),
 	core::vector3df(180.92f, 10.79f, 144.53f),
