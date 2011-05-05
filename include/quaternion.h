@@ -121,7 +121,7 @@ class quaternion
 		quaternion& makeInverse();
 
 		//! Set this quaternion to the result of the linear interpolation between two quaternions
-		quaternion& quaternion::lerp(quaternion q1, quaternion q2, f32 time);
+		quaternion& lerp(quaternion q1, quaternion q2, f32 time);
 
 		//! Set this quaternion to the result of the spherical interpolation between two quaternions
 		quaternion& slerp( quaternion q1, quaternion q2, f32 interpolate );
