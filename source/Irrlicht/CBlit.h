@@ -591,7 +591,7 @@ static void executeBlit_TextureCopy_24_to_16( const SBlitJob * job )
 		for ( u32 dy = 0; dy != h; ++dy )
 		{
 			const u8* s = src;
-			for ( u32 dx = 0; dx != job->width; ++dx )
+			for ( u32 dx = 0; dx != w; ++dx )
 			{
 				dst[dx] = video::RGBA16(s[0], s[1], s[2]);
 				s += 3;
