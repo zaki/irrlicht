@@ -12,6 +12,7 @@
 #include "CSoftware2MaterialRenderer.h"
 #include "S3DVertex.h"
 #include "S4DVertex.h"
+#include "CBlit.h"
 
 
 #define MAT_TEXTURE(tex) ( (video::CSoftwareTexture2*) Material.org.getTexture ( tex ) )
@@ -2249,6 +2250,28 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 }
 
 
+//! Draws a part of the texture into the rectangle.
+void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
+		const video::SColor* const colors, bool useAlphaChannelOfTexture)
+{
+	if (texture)
+	{
+		if (texture->getDriverType() != EDT_BURNINGSVIDEO)
+		{
+			os::Printer::log("Fatal Error: Tried to copy from a surface not owned by this driver.", ELL_ERROR);
+			return;
+		}
+	
+	if (useAlphaChannelOfTexture)
+		StretchBlit(BLITTER_TEXTURE_ALPHA_BLEND, RenderTargetSurface, &destRect, &sourceRect,
+			    ((CSoftwareTexture2*)texture)->getImage(), (colors ? colors[0].color : 0));
+	else
+		StretchBlit(BLITTER_TEXTURE, RenderTargetSurface, &destRect, &sourceRect,
+			    ((CSoftwareTexture2*)texture)->getImage(), (colors ? colors[0].color : 0));
+	}
+}
+    
 //! Draws a 2d line.
 void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
