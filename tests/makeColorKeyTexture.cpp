@@ -65,21 +65,10 @@ bool makeColorKeyTexture(void)
 {
 	bool result = true;
 	
-	//result &= doTestWith(EDT_DIRECT3D9, false);
-	//result &= doTestWith(EDT_BURNINGSVIDEO, false);
-	result &= doTestWith(EDT_SOFTWARE, false);
-	//result &= doTestWith(EDT_OPENGL, false);
-
-	//result &= doTestWith(EDT_DIRECT3D9, true);
-	//result &= doTestWith(EDT_BURNINGSVIDEO, true);
-	result &= doTestWith(EDT_SOFTWARE, true);
-	//result &= doTestWith(EDT_OPENGL, true);
-
-/*
-	bool result = doTestWith(EDT_SOFTWARE, false);
 	result &= doTestWith(EDT_BURNINGSVIDEO, false);
-	result &= doTestWith(EDT_SOFTWARE, true);
+	result &= doTestWith(EDT_SOFTWARE, false);
 	result &= doTestWith(EDT_BURNINGSVIDEO, true);
-*/
+	result &= doTestWith(EDT_SOFTWARE, true);
+
 	return result;
 }
