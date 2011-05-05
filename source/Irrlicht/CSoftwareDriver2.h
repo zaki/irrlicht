@@ -89,6 +89,11 @@ namespace video
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
+	//! Draws a part of the texture into the rectangle.
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+				const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+				const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
+
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
 			const core::vector3df& end, SColor color = SColor(255,255,255,255));
