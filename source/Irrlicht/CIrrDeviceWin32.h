@@ -25,6 +25,8 @@
 
 namespace irr
 {
+	struct SJoystickWin32Control;
+
 	class CIrrDeviceWin32 : public CIrrDeviceStub, video::IImagePresenter
 	{
 	public:
@@ -383,8 +385,6 @@ namespace irr
 
 		void resizeIfNecessary();
 
-		void pollJoysticks();
-
 		HWND HWnd;
 
 		bool ChangedToFullScreen;
@@ -393,14 +393,7 @@ namespace irr
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
 
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-		struct JoystickInfo
-		{
-			u32		Index;
-			JOYCAPS Caps;
-		};
-		core::array<JoystickInfo> ActiveJoysticks;
-#endif
+		SJoystickWin32Control* JoyControl;
 	};
 
 } // end namespace irr
