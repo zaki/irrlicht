@@ -29,6 +29,7 @@ namespace irr
 
 	class CIrrDeviceWin32 : public CIrrDeviceStub, video::IImagePresenter
 	{
+	friend struct SJoystickWin32Control;
 	public:
 
 		//! constructor
