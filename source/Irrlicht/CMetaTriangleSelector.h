@@ -24,7 +24,7 @@ public:
 	//! destructor
 	virtual ~CMetaTriangleSelector();
 
-	//! Returns amount of all available triangles in this selector
+	//! Get amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const;
 
 	//! Gets all triangles.
@@ -51,8 +51,14 @@ public:
 	//! Removes all triangle selectors from the collection.
 	virtual void removeAllTriangleSelectors();
 
-	//! Return the scene node associated with a given triangle.
+	//! Get the scene node associated with a given triangle.
 	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const;
+
+	// Get the number of TriangleSelectors that are part of this one
+	virtual const u32 getSelectorCount() const;
+
+	// Get the TriangleSelector based on index based on getSelectorCount
+	virtual const ITriangleSelector* getSelector(u32 index) const;
 
 private:
 
