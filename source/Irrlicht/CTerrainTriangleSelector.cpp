@@ -34,11 +34,8 @@ CTerrainTriangleSelector::~CTerrainTriangleSelector()
 //! Clears and sets triangle data
 void CTerrainTriangleSelector::setTriangleData(ITerrainSceneNode* node, s32 LOD)
 {
-	core::triangle3df tri;
-	core::array<u32> indices;
-
 	// Get pointer to the GeoMipMaps vertices
-	video::S3DVertex2TCoords* vertices = static_cast<video::S3DVertex2TCoords*>(node->getRenderBuffer()->getVertices());
+	const video::S3DVertex2TCoords* vertices = static_cast<const video::S3DVertex2TCoords*>(node->getRenderBuffer()->getVertices());
 
 	// Clear current data
 	const s32 count = (static_cast<CTerrainSceneNode*>(node))->TerrainData.PatchCount;
@@ -49,6 +46,8 @@ void CTerrainTriangleSelector::setTriangleData(ITerrainSceneNode* node, s32 LOD)
 	for (s32 o=0; o<TrianglePatches.NumPatches; ++o)
 		TrianglePatches.TrianglePatchArray.push_back(SGeoMipMapTrianglePatch());
 
+	core::triangle3df tri;
+	core::array<u32> indices;
 	s32 tIndex = 0;
 	for(s32 x = 0; x < count; ++x )
 	{
@@ -74,9 +73,11 @@ void CTerrainTriangleSelector::setTriangleData(ITerrainSceneNode* node, s32 LOD)
 	}
 }
 
+
 //! Gets all triangles.
-void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::matrix4* transform) const
+void CTerrainTriangleSelector::getTriangles(core::triangle3df* triangles,
+			s32 arraySize, s32& outTriangleCount,
+			const core::matrix4* transform) const
 {
 	s32 count = TrianglePatches.TotalTriangles;
 
@@ -110,9 +111,9 @@ void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 
 
 
 //! Gets all triangles which lie within a specific bounding box.
-void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::aabbox3d<f32>& box,
-	const core::matrix4* transform) const
+void CTerrainTriangleSelector::getTriangles(core::triangle3df* triangles,
+		s32 arraySize, s32& outTriangleCount,
+		const core::aabbox3d<f32>& box, const core::matrix4* transform) const
 {
 	s32 count = TrianglePatches.TotalTriangles;
 
@@ -145,10 +146,11 @@ void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 
 	outTriangleCount = tIndex;
 }
 
+
 //! Gets all triangles which have or may have contact with a 3d line.
-void CTerrainTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::line3d<f32>& line,
-	const core::matrix4* transform) const
+void CTerrainTriangleSelector::getTriangles(core::triangle3df* triangles,
+		s32 arraySize, s32& outTriangleCount, const core::line3d<f32>& line,
+		const core::matrix4* transform) const
 {
 	const s32 count = core::min_((s32)TrianglePatches.TotalTriangles, arraySize);
 
@@ -180,17 +182,41 @@ void CTerrainTriangleSelector::getTriangles(core::triangle3df* triangles, s32 ar
 	outTriangleCount = tIndex;
 }
 
+
 //! Returns amount of all available triangles in this selector
 s32 CTerrainTriangleSelector::getTriangleCount() const
 {
 	return TrianglePatches.TotalTriangles;
 }
 
-ISceneNode* CTerrainTriangleSelector::getSceneNodeForTriangle(u32 triangleIndex) const
+
+ISceneNode* CTerrainTriangleSelector::getSceneNodeForTriangle(
+		u32 triangleIndex) const
 {
 	return SceneNode;
 }
 
+
+/* Get the number of TriangleSelectors that are part of this one.
+Only useful for MetaTriangleSelector others return 1
+*/
+const u32 CTerrainTriangleSelector::getSelectorCount() const
+{
+	return 1;
+}
+
+
+/* Get the TriangleSelector based on index based on getSelectorCount.
+Only useful for MetaTriangleSelector others return 'this' or 0
+*/
+const ITriangleSelector* CTerrainTriangleSelector::getSelector(u32 index) const
+{
+	if (index)
+		return 0;
+	else
+		return this;
+}
+
+
 } // end namespace scene
 } // end namespace irr
-

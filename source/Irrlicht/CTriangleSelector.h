@@ -54,6 +54,12 @@ public:
 	//! Return the scene node associated with a given triangle.
 	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const { return SceneNode; }
 
+	// Get the number of TriangleSelectors that are part of this one
+	virtual const u32 getSelectorCount() const;
+
+	// Get the TriangleSelector based on index based on getSelectorCount
+	virtual const ITriangleSelector* getSelector(u32 index) const;
+
 protected:
 	//! Create from a mesh
 	virtual void createFromMesh(const IMesh* mesh);

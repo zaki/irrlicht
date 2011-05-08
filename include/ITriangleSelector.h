@@ -29,10 +29,7 @@ class ITriangleSelector : public virtual IReferenceCounted
 {
 public:
 
-	//! Destructor
-	virtual ~ITriangleSelector() {}
-
-	//! Returns amount of all available triangles in this selector
+	//! Get amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const = 0;
 
 	//! Gets the triangles for one associated node.
@@ -41,19 +38,19 @@ public:
 	selector.  If there is more than one scene node associated (e.g. for
 	an IMetaTriangleSelector) this this function may be called multiple
 	times to retrieve all triangles.
-	\param triangles: Array where the resulting triangles will be
+	\param triangles Array where the resulting triangles will be
 	written to.
-	\param arraySize: Size of the target array.
+	\param arraySize Size of the target array.
 	\param outTriangleCount: Amount of triangles which have been written
 	into the array.
-	\param transform: Pointer to matrix for transforming the triangles
+	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
 	transformation will be done. */
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::matrix4* transform=0) const = 0;
 
-	//! Gets the triangles for one associated node which lie or may lie within a specific bounding box.
+	//! Gets the triangles for one associated node which may lie within a specific bounding box.
 	/**
 	This returns all triangles for one scene node associated with this
 	selector.  If there is more than one scene node associated (e.g. for
@@ -62,14 +59,14 @@ public:
 
 	This method will return at least the triangles that intersect the box,
 	but may return other triangles as well.
-	\param triangles: Array where the resulting triangles will be written
+	\param triangles Array where the resulting triangles will be written
 	to.
-	\param arraySize: Size of the target array.
-	\param outTriangleCount: Amount of triangles which have been written
+	\param arraySize Size of the target array.
+	\param outTriangleCount Amount of triangles which have been written
 	into the array.
-	\param box: Only triangles which are in this axis aligned bounding box
+	\param box Only triangles which are in this axis aligned bounding box
 	will be written into the array.
-	\param transform: Pointer to matrix for transforming the triangles
+	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
 	transformation will be done. */
@@ -86,14 +83,14 @@ public:
 
 	Please note that unoptimized triangle selectors also may return
 	triangles which are not in contact at all with the 3d line.
-	\param triangles: Array where the resulting triangles will be written
+	\param triangles Array where the resulting triangles will be written
 	to.
-	\param arraySize: Size of the target array.
-	\param outTriangleCount: Amount of triangles which have been written
+	\param arraySize Size of the target array.
+	\param outTriangleCount Amount of triangles which have been written
 	into the array.
-	\param line: Only triangles which may be in contact with this 3d line
+	\param line Only triangles which may be in contact with this 3d line
 	will be written into the array.
-	\param transform: Pointer to matrix for transforming the triangles
+	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
 	transformation will be done. */
@@ -101,9 +98,9 @@ public:
 		s32& outTriangleCount, const core::line3d<f32>& line,
 		const core::matrix4* transform=0) const = 0;
 
-	//! Return the scene node associated with a given triangle.
+	//! Get scene node associated with a given triangle.
 	/**
-	This allows you to find which scene node (potentially of several) is
+	This allows to find which scene node (potentially of several) is
 	associated with a specific triangle.
 
 	\param triangleIndex: the index of the triangle for which you want to find
@@ -112,11 +109,18 @@ public:
 	*/
 	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const = 0;
 
+	//! Get number of TriangleSelectors that are part of this one
+	/** Only useful for MetaTriangleSelector, others return 1
+	*/
+	virtual const u32 getSelectorCount() const = 0;
+
+	//! Get TriangleSelector based on index based on getSelectorCount
+	/** Only useful for MetaTriangleSelector, others return 'this' or 0
+	*/
+	virtual const ITriangleSelector* getSelector(u32 index) const = 0;
 };
 
 } // end namespace scene
 } // end namespace irr
 
-
 #endif
-
