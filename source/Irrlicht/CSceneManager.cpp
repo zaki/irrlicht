@@ -2254,7 +2254,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 		for (u32 i=0; i < node->getMaterialCount(); ++i)
 		{
 			io::IAttributes* tmp_attr =
-				getVideoDriver()->createAttributesFromMaterial(node->getMaterial(i));
+				getVideoDriver()->createAttributesFromMaterial(node->getMaterial(i), &options);
 			tmp_attr->write(writer);
 			tmp_attr->drop();
 		}
