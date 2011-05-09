@@ -97,6 +97,8 @@ void CSceneLoaderIrr::readSceneNode(io::IXMLReader* reader, ISceneNode* parent,
 		if (!node)
 			os::Printer::log("Could not create scene node of unknown type", attrName.c_str());
 	}
+	else
+		node=parent;
 
 	// read attributes
 	while(reader->read())
