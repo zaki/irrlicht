@@ -1797,8 +1797,8 @@ class CTextureAttribute : public IAttribute
 {
 public:
 
-	CTextureAttribute(const char* name, video::ITexture* value, video::IVideoDriver* driver)
-		: Value(0), Driver(driver)
+	CTextureAttribute(const char* name, video::ITexture* value, video::IVideoDriver* driver, const io::path& filename)
+		: Value(0), Driver(driver), OverrideName(filename)
 	{
 		if (Driver)
 			Driver->grab();
@@ -1828,13 +1828,15 @@ public:
 
 	virtual core::stringw getStringW()
 	{
-		return core::stringw(Value ? Value->getName().getPath().c_str() : 0);
+		return core::stringw(OverrideName.size()?OverrideName:
+			Value ? Value->getName().getPath().c_str() : 0);
 	}
 
 	virtual core::stringc getString()
 	{
 		// since texture names can be stringw we are careful with the types
-		return core::stringc(Value ? Value->getName().getPath().c_str() : 0);
+		return core::stringc(OverrideName.size()?OverrideName:
+			Value ? Value->getName().getPath().c_str() : 0);
 	}
 
 	virtual void setString(const char* text)
@@ -1842,7 +1844,10 @@ public:
 		if (Driver)
 		{
 			if (text && *text)
+			{
 				setTexture(Driver->getTexture(text));
+				OverrideName=text;
+			}
 			else
 				setTexture(0);
 		}
@@ -1875,6 +1880,7 @@ public:
 
 	video::ITexture* Value;
 	video::IVideoDriver* Driver;
+	io::path OverrideName;
 };
 
 

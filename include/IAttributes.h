@@ -24,6 +24,7 @@
 #include "irrArray.h"
 #include "IXMLReader.h"
 #include "EAttributes.h"
+#include "path.h"
 
 namespace irr
 {
@@ -636,10 +637,10 @@ public:
 	*/
 
 	//! Adds an attribute as texture reference
-	virtual void addTexture(const c8* attributeName, video::ITexture* texture) = 0;
+	virtual void addTexture(const c8* attributeName, video::ITexture* texture, const io::path& filename = "") = 0;
 
 	//! Sets an attribute as texture reference
-	virtual void setAttribute(const c8* attributeName, video::ITexture* texture ) = 0;
+	virtual void setAttribute(const c8* attributeName, video::ITexture* texture, const io::path& filename = "") = 0;
 
 	//! Gets an attribute as texture reference
 	//! \param attributeName: Name of the attribute to get.
@@ -650,7 +651,7 @@ public:
 	virtual video::ITexture* getAttributeAsTexture(s32 index) = 0;
 
 	//! Sets an attribute as texture reference
-	virtual void setAttribute(s32 index, video::ITexture* texture) = 0;
+	virtual void setAttribute(s32 index, video::ITexture* texture, const io::path& filename = "") = 0;
 
 
 	/*

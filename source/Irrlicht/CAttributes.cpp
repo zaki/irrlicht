@@ -509,13 +509,13 @@ void CAttributes::getAttributeEnumerationLiteralsOfEnumeration(const c8* attribu
 }
 
 //! Sets an attribute as texture reference
-void CAttributes::setAttribute(const c8* attributeName, video::ITexture* value )
+void CAttributes::setAttribute(const c8* attributeName, video::ITexture* value, const io::path& filename)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
-		att->setTexture(value);
+		att->setTexture(value, filename);
 	else
-		Attributes.push_back(new CTextureAttribute(attributeName, value, Driver));
+		Attributes.push_back(new CTextureAttribute(attributeName, value, Driver, filename));
 }
 
 
@@ -818,9 +818,9 @@ void CAttributes::addBinary(const c8* attributeName, void* data, s32 dataSizeInB
 }
 
 //! Adds an attribute as texture reference
-void CAttributes::addTexture(const c8* attributeName, video::ITexture* texture)
+void CAttributes::addTexture(const c8* attributeName, video::ITexture* texture, const io::path& filename)
 {
-	Attributes.push_back(new CTextureAttribute(attributeName, texture, Driver));
+	Attributes.push_back(new CTextureAttribute(attributeName, texture, Driver, filename));
 }
 
 //! Returns if an attribute with a name exists
@@ -918,10 +918,10 @@ void CAttributes::setAttribute(s32 index, const char* enumValue, const char* con
 
 
 //! Sets an attribute as texture reference
-void CAttributes::setAttribute(s32 index, video::ITexture* texture)
+void CAttributes::setAttribute(s32 index, video::ITexture* texture, const io::path& filename)
 {
 	if ((u32)index < Attributes.size())
-		Attributes[index]->setTexture(texture);
+		Attributes[index]->setTexture(texture, filename);
 }
 
 

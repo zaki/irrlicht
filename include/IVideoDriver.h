@@ -25,6 +25,7 @@ namespace irr
 namespace io
 {
 	class IAttributes;
+	struct SAttributeReadWriteOptions;
 	class IReadFile;
 	class IWriteFile;
 } // end namespace io
@@ -1310,9 +1311,12 @@ namespace video
 		renderer names from getMaterialRendererName() to write out the
 		material type name, so they should be set before.
 		\param material The material to serialize.
+		\param options Additional options which might influence the
+		serialization.
 		\return The io::IAttributes container holding the material
 		properties. */
-		virtual io::IAttributes* createAttributesFromMaterial(const video::SMaterial& material) =0;
+		virtual io::IAttributes* createAttributesFromMaterial(const video::SMaterial& material,
+			io::SAttributeReadWriteOptions* options=0) =0;
 
 		//! Fills an SMaterial structure from attributes.
 		/** Please note that for setting material types of the
