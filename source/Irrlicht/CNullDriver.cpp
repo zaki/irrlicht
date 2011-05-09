@@ -14,6 +14,7 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "CMeshManipulator.h"
 #include "CColorConverter.h"
+#include "IAttributeExchangingObject.h"
 
 
 namespace irr
@@ -1790,7 +1791,8 @@ void CNullDriver::setMaterialRendererName(s32 idx, const char* name)
 
 
 //! Creates material attributes list from a material, usable for serialization and more.
-io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMaterial& material)
+io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMaterial& material,
+	io::SAttributeReadWriteOptions* options)
 {
 	io::CAttributes* attr = new io::CAttributes(this);
 
@@ -1808,7 +1810,16 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	core::stringc prefix="Texture";
 	u32 i;
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i));
+	{
+		if (options && (options->Flags&io::EARWF_USE_RELATIVE_PATHS) && options->Filename && material.getTexture(i))
+		{
+			io::path path = FileSystem->getRelativeFilename(
+				FileSystem->getAbsolutePath(material.getTexture(i)->getName()), options->Filename);
+			attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i), path);
+		}
+		else
+			attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i));
+	}
 
 	attr->addBool("Wireframe", material.Wireframe);
 	attr->addBool("GouraudShading", material.GouraudShading);
