@@ -312,6 +312,7 @@ void createToolBox()
 	env->addStaticText(L":", core::rect<s32>(10,240,150,265), true, false, t1);
 	env->addStaticText(L"Framerate:",
 			core::rect<s32>(12,240,75,265), false, false, t1);
+	// current frame info
 	env->addStaticText(L"", core::rect<s32>(75,240,200,265), false, false, t1,
 			GUI_ID_ANIMATION_INFO);
 	scrollbar = env->addScrollBar(true,
@@ -703,7 +704,7 @@ int main(int argc, char* argv[])
 		video::SColorf(1.0f,1.0f,1.0f),2000);
 	smgr->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));
 	// add our media directory as "search path"
-	Device->getFileSystem()->addFolderFileArchive("../../media/");
+	Device->getFileSystem()->addFileArchive("../../media/");
 
 	/*
 	The next step is to read the configuration file. It is stored in the xml
