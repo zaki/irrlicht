@@ -209,6 +209,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 		cinfo.out_color_space=JCS_RGB;
 		cinfo.out_color_components=3;
 	}
+	cinfo.output_gamma=2.2;
 	cinfo.do_fancy_upsampling=FALSE;
 
 	// Start decompressor
