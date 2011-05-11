@@ -58,6 +58,9 @@ public:
 	virtual const u32 getSelectorCount() const;
 
 	// Get the TriangleSelector based on index based on getSelectorCount
+	virtual ITriangleSelector* getSelector(u32 index);
+
+	// Get the TriangleSelector based on index based on getSelectorCount
 	virtual const ITriangleSelector* getSelector(u32 index) const;
 
 protected:
