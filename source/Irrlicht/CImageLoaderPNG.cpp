@@ -184,19 +184,6 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	if (ColorType==PNG_COLOR_TYPE_GRAY || ColorType==PNG_COLOR_TYPE_GRAY_ALPHA)
 		png_set_gray_to_rgb(png_ptr);
 
-	// Update the changes
-	png_read_update_info(png_ptr, info_ptr);
-	{
-		// Use temporary variables to avoid passing casted pointers
-		png_uint_32 w,h;
-		// Extract info
-		png_get_IHDR(png_ptr, info_ptr,
-			&w, &h,
-			&BitDepth, &ColorType, NULL, NULL, NULL);
-		Width=w;
-		Height=h;
-	}
-
 	// Convert RGBA to BGRA
 	if (ColorType==PNG_COLOR_TYPE_RGB_ALPHA)
 	{
@@ -207,7 +194,22 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 #endif
 	}
 
+	int intent;
+	const double screen_gamma = 2.2;
+
+	if (png_get_sRGB(png_ptr, info_ptr, &intent))
+		png_set_gamma(png_ptr, screen_gamma, 0.45455);
+	else
+	{
+		double image_gamma;
+		if (png_get_gAMA(png_ptr, info_ptr, &image_gamma))
+			png_set_gamma(png_ptr, screen_gamma, image_gamma);
+		else
+			png_set_gamma(png_ptr, screen_gamma, 0.45455);
+	}
+
 	// Update the changes
+	png_read_update_info(png_ptr, info_ptr);
 	{
 		// Use temporary variables to avoid passing casted pointers
 		png_uint_32 w,h;
