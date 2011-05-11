@@ -164,9 +164,20 @@ const u32 CMetaTriangleSelector::getSelectorCount() const
 /* Returns the TriangleSelector based on index based on getSelectorCount
 Only useful for MetaTriangleSelector others return 'this'
 */
+ITriangleSelector* CMetaTriangleSelector::getSelector(u32 index)
+{
+	if (index >= TriangleSelectors.size())
+		return 0;
+	return TriangleSelectors[index];
+}
+
+
+/* Returns the TriangleSelector based on index based on getSelectorCount
+Only useful for MetaTriangleSelector others return 'this'
+*/
 const ITriangleSelector* CMetaTriangleSelector::getSelector(u32 index) const
 {
-	if(index >= TriangleSelectors.size())
+	if (index >= TriangleSelectors.size())
 		return 0;
 	return TriangleSelectors[index];
 }

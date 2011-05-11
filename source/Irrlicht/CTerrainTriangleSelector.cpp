@@ -209,6 +209,18 @@ const u32 CTerrainTriangleSelector::getSelectorCount() const
 /* Get the TriangleSelector based on index based on getSelectorCount.
 Only useful for MetaTriangleSelector others return 'this' or 0
 */
+ITriangleSelector* CTerrainTriangleSelector::getSelector(u32 index)
+{
+	if (index)
+		return 0;
+	else
+		return this;
+}
+
+
+/* Get the TriangleSelector based on index based on getSelectorCount.
+Only useful for MetaTriangleSelector others return 'this' or 0
+*/
 const ITriangleSelector* CTerrainTriangleSelector::getSelector(u32 index) const
 {
 	if (index)

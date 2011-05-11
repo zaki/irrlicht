@@ -117,6 +117,11 @@ public:
 	//! Get TriangleSelector based on index based on getSelectorCount
 	/** Only useful for MetaTriangleSelector, others return 'this' or 0
 	*/
+	virtual ITriangleSelector* getSelector(u32 index) = 0;
+
+	//! Get TriangleSelector based on index based on getSelectorCount
+	/** Only useful for MetaTriangleSelector, others return 'this' or 0
+	*/
 	virtual const ITriangleSelector* getSelector(u32 index) const = 0;
 };
 
