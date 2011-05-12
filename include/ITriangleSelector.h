@@ -112,7 +112,7 @@ public:
 	//! Get number of TriangleSelectors that are part of this one
 	/** Only useful for MetaTriangleSelector, others return 1
 	*/
-	virtual const u32 getSelectorCount() const = 0;
+	virtual u32 getSelectorCount() const = 0;
 
 	//! Get TriangleSelector based on index based on getSelectorCount
 	/** Only useful for MetaTriangleSelector, others return 'this' or 0
