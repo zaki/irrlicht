@@ -17,9 +17,8 @@
 #include "dimension2d.h"
 #include "IGUISpriteBank.h"
 #include <winuser.h>
-#define USE_DIRECTINPUT
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-#ifdef USE_DIRECTINPUT
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #ifdef _MSC_VER
@@ -60,14 +59,14 @@ struct SJoystickWin32Control
 {
 	CIrrDeviceWin32* Device;
 
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(USE_DIRECTINPUT)
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
 	IDirectInput8* DirectInputDevice;
 #endif
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	struct JoystickInfo
 	{
 		u32 Index;
-#ifdef USE_DIRECTINPUT
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 		core::stringc Name;
 		GUID guid;
 		LPDIRECTINPUTDEVICE8 lpdijoy;
@@ -82,7 +81,7 @@ struct SJoystickWin32Control
 
 	SJoystickWin32Control(CIrrDeviceWin32* dev) : Device(dev)
 	{
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(USE_DIRECTINPUT)
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
 		DirectInputDevice=0;
 		if (DI_OK != (DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&DirectInputDevice, NULL)))
 		{
@@ -93,7 +92,7 @@ struct SJoystickWin32Control
 	}
 	~SJoystickWin32Control()
 	{
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(USE_DIRECTINPUT)
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
 		for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 		{
 			LPDIRECTINPUTDEVICE8 dev = ActiveJoysticks[joystick].lpdijoy;
@@ -109,7 +108,7 @@ struct SJoystickWin32Control
 #endif
 	}
 
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(USE_DIRECTINPUT)
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
 	static BOOL CALLBACK EnumJoysticks(LPCDIDEVICEINSTANCE lpddi, LPVOID cp)
 	{
 		SJoystickWin32Control* p=(SJoystickWin32Control*)cp;
@@ -191,7 +190,7 @@ struct SJoystickWin32Control
 void pollJoysticks()
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-#ifdef USE_DIRECTINPUT
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
  	if(0 == ActiveJoysticks.size())
  		return;
  
@@ -363,7 +362,7 @@ void pollJoysticks()
 bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-#ifdef USE_DIRECTINPUT
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 	if (!DirectInputDevice || (DirectInputDevice->EnumDevices(DI8DEVCLASS_GAMECTRL, SJoystickWin32Control::EnumJoysticks, this, DIEDFL_ATTACHEDONLY )))
 	{
 		os::Printer::log("Could not enum DirectInput8 controllers", ELL_WARNING);
