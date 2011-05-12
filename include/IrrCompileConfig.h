@@ -11,7 +11,7 @@
 #define IRRLICHT_VERSION_REVISION 0
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
-#define IRRLICHT_VERSION_SVN -beta
+#define IRRLICHT_VERSION_SVN -alpha
 #define IRRLICHT_SDK_VERSION "1.8.0-alpha"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
@@ -110,6 +110,14 @@
 #define _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #ifdef NO_IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#endif
+
+//! Define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_ if you want to use DirectInput for joystick handling.
+/** This only applies to Windows devices, currently only supported under Win32 device.
+If not defined, Windows Multimedia library is used, which offers also broad support for joystick devices. */
+#define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#ifdef NO_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #endif
 
 
