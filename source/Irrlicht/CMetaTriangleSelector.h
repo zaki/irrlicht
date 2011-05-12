@@ -55,7 +55,7 @@ public:
 	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const;
 
 	// Get the number of TriangleSelectors that are part of this one
-	virtual const u32 getSelectorCount() const;
+	virtual u32 getSelectorCount() const;
 
 	// Get the TriangleSelector based on index based on getSelectorCount
 	virtual ITriangleSelector* getSelector(u32 index);

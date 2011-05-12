@@ -234,7 +234,7 @@ s32 CTriangleSelector::getTriangleCount() const
 /* Get the number of TriangleSelectors that are part of this one.
 Only useful for MetaTriangleSelector others return 1
 */
-const u32 CTriangleSelector::getSelectorCount() const
+u32 CTriangleSelector::getSelectorCount() const
 {
 	return 1;
 }
