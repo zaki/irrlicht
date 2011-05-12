@@ -63,18 +63,16 @@ class CMyLightManager : public scene::ILightManager, public IEventReceiver
 	// These data represent the state information that this light manager
 	// is interested in.
 	scene::ISceneManager * SceneManager;
-	core::array<scene::ILightSceneNode*> * SceneLightList;
+	core::array<scene::ISceneNode*> * SceneLightList;
 	scene::E_SCENE_NODE_RENDER_PASS CurrentRenderPass;
 	scene::ISceneNode * CurrentSceneNode;
 
 public:
 	CMyLightManager(scene::ISceneManager* sceneManager)
 		: Mode(NO_MANAGEMENT), RequestedMode(NO_MANAGEMENT),
-		SceneManager(sceneManager),  SceneLightList(0),
+		SceneManager(sceneManager), SceneLightList(0),
 		CurrentRenderPass(scene::ESNRP_NONE), CurrentSceneNode(0)
 	{ }
-
-	virtual ~CMyLightManager(void) { }
 
 	// The input receiver interface, which just switches light management strategy
 	bool OnEvent(const SEvent & event)
@@ -111,7 +109,7 @@ public:
 
 
 	// This is called before the first scene node is rendered.
-	virtual void OnPreRender(core::array<scene::ILightSceneNode*> & lightList)
+	virtual void OnPreRender(core::array<scene::ISceneNode*> & lightList)
 	{
 		// Update the mode; changing it here ensures that it's consistent throughout a render
 		Mode = RequestedMode;
@@ -127,7 +125,7 @@ public:
 		// lights on to ensure that they are in a consistent state. You wouldn't normally have
 		// to do this when using a light manager, since you'd continue to do light management
 		// yourself.
-		for(u32 i = 0; i < SceneLightList->size(); i++)
+		for (u32 i = 0; i < SceneLightList->size(); i++)
 			(*SceneLightList)[i]->setVisible(true);
 	}
 
@@ -140,9 +138,9 @@ public:
 	virtual void OnRenderPassPostRender(scene::E_SCENE_NODE_RENDER_PASS renderPass)
 	{
 		// I only want solid nodes to be lit, so after the solid pass, turn all lights off.
-		if(scene::ESNRP_SOLID == renderPass)
+		if (scene::ESNRP_SOLID == renderPass)
 		{
-			for(u32 i = 0; i < SceneLightList->size(); ++i)
+			for (u32 i = 0; i < SceneLightList->size(); ++i)
 				(*SceneLightList)[i]->setVisible(false);
 		}
 	}
@@ -178,8 +176,8 @@ public:
 			u32 i;
 			for(i = 0; i < SceneLightList->size(); ++i)
 			{
-				scene::ILightSceneNode* lightNode = (*SceneLightList)[i];
-				f64 distance = lightNode->getAbsolutePosition().getDistanceFromSQ(nodePosition);
+				scene::ISceneNode* lightNode = (*SceneLightList)[i];
+				const f64 distance = lightNode->getAbsolutePosition().getDistanceFromSQ(nodePosition);
 				sortingArray.push_back(LightDistanceElement(lightNode, distance));
 			}
 
@@ -189,7 +187,6 @@ public:
 			// Turn on the three nearest lights, and turn the others off.
 			for(i = 0; i < sortingArray.size(); ++i)
 				sortingArray[i].node->setVisible(i < 3);
-
 		}
 		else if(LIGHTS_IN_ZONE == Mode)
 		{
@@ -200,7 +197,9 @@ public:
 			// knowledge of how this particular scene graph is organised.
 			for (u32 i = 0; i < SceneLightList->size(); ++i)
 			{
-				scene::ILightSceneNode* lightNode = (*SceneLightList)[i];
+				if ((*SceneLightList)[i]->getType() != scene::ESNT_LIGHT)
+					continue;
+				scene::ILightSceneNode* lightNode = static_cast<scene::ILightSceneNode*>((*SceneLightList)[i]);
 				video::SLight & lightData = lightNode->getLightData();
 
 				if (video::ELT_DIRECTIONAL != lightData.Type)
@@ -224,10 +223,10 @@ private:
 	// Find the empty scene node that is the parent of the specified node
 	scene::ISceneNode * findZone(scene::ISceneNode * node)
 	{
-		if(!node)
+		if (!node)
 			return 0;
 
-		if(node->getType() == scene::ESNT_EMPTY)
+		if (node->getType() == scene::ESNT_EMPTY)
 			return node;
 
 		return findZone(node->getParent());
@@ -239,11 +238,10 @@ private:
 	{
 		core::list<scene::ISceneNode*> const & children = node->getChildren();
 		for (core::list<scene::ISceneNode*>::ConstIterator child = children.begin();
-			child != children.end();
-			++child)
+			child != children.end(); ++child)
 		{
-			if((*child)->getType() == scene::ESNT_LIGHT)
-				static_cast<scene::ILightSceneNode*>(*child)->setVisible(true);
+			if ((*child)->getType() == scene::ESNT_LIGHT)
+				(*child)->setVisible(true);
 			else // Assume that lights don't have any children that are also lights
 				turnOnZoneLights(*child);
 		}
@@ -256,10 +254,10 @@ private:
 	public:
 		LightDistanceElement() {};
 
-		LightDistanceElement(scene::ILightSceneNode* n, f64 d)
+		LightDistanceElement(scene::ISceneNode* n, f64 d)
 			: node(n), distance(d) { }
 
-		scene::ILightSceneNode* node;
+		scene::ISceneNode* node;
 		f64 distance;
 
 		// Lower distance elements are sorted to the start of the array

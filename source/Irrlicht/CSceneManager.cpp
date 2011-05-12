@@ -1256,7 +1256,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 		// Lighting model in irrlicht has to be redone..
 		//if (!isCulled(node))
 		{
-			LightList.push_back(static_cast<ILightSceneNode*>(node));
+			LightList.push_back(node);
 			taken = 1;
 		}
 		break;
@@ -1433,7 +1433,7 @@ void CSceneManager::drawAll()
 			SortedLights.sort();
 
 			for(s32 light = (s32)LightList.size() - 1; light >= 0; --light)
-				LightList[light] = static_cast<ILightSceneNode*>(SortedLights[light].Node);
+				LightList[light] = SortedLights[light].Node;
 		}
 
 		Driver->deleteAllDynamicLights();
