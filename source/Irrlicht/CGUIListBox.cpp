@@ -125,6 +125,23 @@ void CGUIListBox::removeItem(u32 id)
 }
 
 
+s32 CGUIListBox::getItemAt(s32 xpos, s32 ypos) const
+{
+	if ( 	xpos < AbsoluteRect.UpperLeftCorner.X || xpos >= AbsoluteRect.LowerRightCorner.X
+		||	ypos < AbsoluteRect.UpperLeftCorner.Y || ypos >= AbsoluteRect.LowerRightCorner.Y
+		)
+		return -1;
+
+	if ( ItemHeight == 0 )
+		return -1;
+
+	s32 item = ((ypos - AbsoluteRect.UpperLeftCorner.Y - 1) + ScrollBar->getPos()) / ItemHeight;
+	if ( item < 0 || item >= (s32)Items.size())
+		return -1;
+
+	return item;
+}
+
 //! clears the list
 void CGUIListBox::clear()
 {
@@ -438,15 +455,9 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 	u32 now = os::Timer::getTime();
 	s32 oldSelected = Selected;
 
-	// find new selected item.
-	if (ItemHeight!=0)
-		Selected = ((ypos - AbsoluteRect.UpperLeftCorner.Y - 1) + ScrollBar->getPos()) / ItemHeight;
-
-	if (Selected<0)
+	Selected = getItemAt(AbsoluteRect.UpperLeftCorner.X, ypos);
+	if (Selected<0 && !Items.empty())
 		Selected = 0;
-	else
-	if ((u32)Selected >= Items.size())
-		Selected = Items.size() - 1;
 
 	recalculateScrollPos();
 

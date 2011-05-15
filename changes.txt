@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Added IGUIListBox::getItemAt
+
  - Added IGUITable::getColumnWidth
 
  - Added the ability to open an archive from an IReadFile*, added a FileToHeader tool with instructions of how to make a portable app that consists of a single executable file.
