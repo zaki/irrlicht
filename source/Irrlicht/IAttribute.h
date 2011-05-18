@@ -92,7 +92,7 @@ public:
 	virtual void setUserPointer(void* v)	{};
 
 	virtual void setEnum(const char* enumValue, const char* const* enumerationLiterals) {};
-	virtual void setTexture(video::ITexture*)	{};
+	virtual void setTexture(video::ITexture*, const path& filename)	{};
 
 	core::stringc Name;
 

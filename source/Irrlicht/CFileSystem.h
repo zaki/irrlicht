@@ -51,11 +51,23 @@ public:
 			E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN,
 			const core::stringc& password="");
 
+	//! Adds an archive to the file system.
+	virtual bool addFileArchive(IReadFile* file, bool ignoreCase=true,
+			bool ignorePaths=true,
+			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
+			const core::stringc& password="");
+
 	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
 	virtual bool moveFileArchive( u32 sourceIndex, s32 relative );
 
 	//! Adds an external archive loader to the engine.
 	virtual void addArchiveLoader(IArchiveLoader* loader);
+
+	//! Returns the total number of archive loaders added.
+	virtual u32 getArchiveLoaderCount() const;
+
+	//! Gets the archive loader by index.
+	virtual IArchiveLoader* getArchiveLoader(u32 index) const;
 
 	//! gets the file archive count
 	virtual u32 getFileArchiveCount() const;
@@ -129,6 +141,9 @@ public:
 	virtual IAttributes* createEmptyAttributes(video::IVideoDriver* driver);
 
 private:
+
+	// don't expose, needs refactoring
+	bool changeArchivePassword(const path& filename, const core::stringc& password);
 
 	//! Currently used FileSystemType
 	EFileSystemType FileSystemType;

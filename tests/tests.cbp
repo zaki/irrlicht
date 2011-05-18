@@ -70,6 +70,7 @@
 		<Unit filename="loadTextures.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />
+		<Unit filename="material.cpp" />
 		<Unit filename="matrixOps.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="meshLoaders.cpp" />

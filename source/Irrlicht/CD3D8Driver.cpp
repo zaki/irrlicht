@@ -17,6 +17,7 @@
 #include "CD3D8ShaderMaterialRenderer.h"
 #include "CD3D8NormalMapRenderer.h"
 #include "CD3D8ParallaxMapRenderer.h"
+#include "SIrrCreationParameters.h"
 
 namespace irr
 {
@@ -605,6 +606,8 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
 	case EVDF_COLOR_MASK:
 		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) != 0;
+	case EVDF_BLEND_OPERATIONS:
+		return true;
 	default:
 		return false;
 	};
@@ -806,13 +809,21 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 
 //! Creates a render target texture.
-ITexture* CD3D8Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-											  const io::path& name,
-											  const ECOLOR_FORMAT format)
+ITexture* CD3D8Driver::addRenderTargetTexture(
+		const core::dimension2d<u32>& size, const io::path& name,
+		const ECOLOR_FORMAT format)
 {
-	ITexture* tex = new CD3D8Texture(this, size, name);
-	addTexture(tex);
-	tex->drop();
+	CD3D8Texture* tex = new CD3D8Texture(this, size, name);
+	if (tex)
+	{
+		if (!tex->Texture)
+		{
+			tex->drop();
+			return 0;
+		}
+		addTexture(tex);
+		tex->drop();
+	}
 	return tex;
 }
 
@@ -1560,6 +1571,47 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			((material.ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
 			((material.ColorMask & ECP_ALPHA)?D3DCOLORWRITEENABLE_ALPHA:0);
 		pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flag);
+	}
+
+	if (queryFeature(EVDF_BLEND_OPERATIONS) &&
+		(resetAllRenderstates|| lastmaterial.BlendOperation != material.BlendOperation))
+	{
+		if (EBO_NONE)
+			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		else
+		{
+			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+			switch (material.BlendOperation)
+			{
+			case EBO_MAX:
+			case EBO_MAX_FACTOR:
+			case EBO_MAX_ALPHA:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
+				break;
+			case EBO_MIN:
+			case EBO_MIN_FACTOR:
+			case EBO_MIN_ALPHA:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
+				break;
+			case EBO_SUBTRACT:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
+				break;
+			case EBO_REVSUBTRACT:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+				break;
+			default:
+				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				break;
+			}
+		}
+	}
+
+	// Polygon offset
+	if (queryFeature(EVDF_POLYGON_OFFSET) && (resetAllRenderstates ||
+		lastmaterial.PolygonOffsetDirection != material.PolygonOffsetDirection ||
+		lastmaterial.PolygonOffsetFactor != material.PolygonOffsetFactor))
+	{
+		pID3DDevice->SetRenderState(D3DRS_ZBIAS, material.PolygonOffsetFactor);
 	}
 
 	// thickness
@@ -2367,16 +2419,14 @@ namespace video
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 //! creates a video driver
-IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize,
-		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
-		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-		bool vsync, u8 antiAlias, u32 displayAdapter)
+IVideoDriver* createDirectX8Driver(const SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, HWND window)
 {
-	CD3D8Driver* dx8 = new CD3D8Driver(screenSize, window, fullscreen,
-					stencilbuffer, io, pureSoftware);
+	const bool pureSoftware = false;
+	CD3D8Driver* dx8 = new CD3D8Driver(params.WindowSize, window, params.Fullscreen, params.Stencilbuffer, io, pureSoftware);
 
-	if (!dx8->initDriver(screenSize, window, bits, fullscreen,
-			pureSoftware, highPrecisionFPU, vsync, antiAlias, displayAdapter))
+	if (!dx8->initDriver(params.WindowSize, window, params.Bits, params.Fullscreen, pureSoftware, params.HighPrecisionFPU,
+		params.Vsync, params.AntiAlias, params.DisplayAdapter))
 	{
 		dx8->drop();
 		dx8 = 0;

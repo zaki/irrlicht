@@ -18,7 +18,6 @@ static bool saveScene(void)
 	if (!device)
 		return false;
 
-	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
 	ISkinnedMesh* mesh = (ISkinnedMesh*)smgr->getMesh("../media/ninja.b3d");
@@ -59,9 +58,11 @@ static bool saveScene(void)
 
 	smgr->addCameraSceneNode();
 
+	logTestString("Test scene.irr");
 	smgr->saveScene("results/scene.irr");
 	bool result = binaryCompareFiles("results/scene.irr", "media/scene.irr");
 
+	logTestString("Test scene2.irr");
 	smgr->saveScene("results/scene2.irr", 0, node3);
 	result &= binaryCompareFiles("results/scene2.irr", "media/scene2.irr");
 
@@ -69,18 +70,17 @@ static bool saveScene(void)
 	device->run();
 	device->drop();
 
-	// TODO: The relative texture names are not yet fixed, so ignore this test
-	return true;
+	return result;
 }
 
 static bool loadScene(void)
 {
-    IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
+	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
 										core::dimension2du(160,120), 32);
-    if (!device)
-        return false;
+	if (!device)
+		return false;
 
-    IVideoDriver* driver = device->getVideoDriver();
+	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
 	// load scene from example, with correct relative path
 	device->getFileSystem()->changeWorkingDirectoryTo("results");
@@ -88,8 +88,8 @@ static bool loadScene(void)
 	smgr->addCameraSceneNode(0, core::vector3df(0,0,-50));
 	device->getFileSystem()->changeWorkingDirectoryTo("..");
 
-    bool result = false;
-    device->run();
+	bool result = false;
+	device->run();
 	if (driver->beginScene(true, true, video::SColor(0, 80, 80, 80)))
 	{
 		smgr->drawAll();
@@ -115,9 +115,9 @@ static bool loadScene(void)
 
 	device->closeDevice();
 	device->run();
-    device->drop();
+	device->drop();
 
-    return result;
+	return result;
 }
 
 bool ioScene(void)
@@ -125,3 +125,4 @@ bool ioScene(void)
 	bool result = saveScene();
 	result &= loadScene();
 	return result;
+}

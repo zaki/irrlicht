@@ -1592,6 +1592,7 @@
 					RelativePath="CTRTextureBlend.cpp"
 					>
 				</File>
+
 				<File
 					RelativePath="CTRTextureDetailMap2.cpp"
 					>
@@ -1738,6 +1739,14 @@
 				</File>
 				<File
 					RelativePath="C3DSMeshFileLoader.h"
+					>
+				</File>
+				<File
+					RelativePath="CSMFMeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CSMFMeshFileLoader.h"
 					>
 				</File>
 				<File

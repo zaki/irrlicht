@@ -129,6 +129,8 @@ f32 CGUISpinBox::getValue() const
 
 void CGUISpinBox::setRange(f32 min, f32 max)
 {
+	if (max<min)
+		core::swap(min, max);
 	RangeMin = min;
 	RangeMax = max;
 	verifyValueRange();
@@ -215,7 +217,7 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 					changeEvent = true;
 				}
 			}
-			if ( event.GUIEvent.EventType == EGET_EDITBOX_CHANGED )
+			if (event.GUIEvent.EventType == EGET_EDITBOX_CHANGED || event.GUIEvent.EventType == EGET_EDITBOX_ENTER)
 			{
 				if (event.GUIEvent.Caller == EditBox)
 				{

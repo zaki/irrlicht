@@ -330,7 +330,7 @@ bool GetDMFMaterials(const StringList& RawFile,
 		materials[i].pathName.replace('\\','/');
 		materials[i].pathName += "/";
 		// temp[3] is reserved, temp[4] is the number of texture layers
-		materials[i].textureLayers = core::strtol10(temp[4].c_str());
+		materials[i].textureLayers = core::strtoul10(temp[4].c_str());
 		// Three values are separated by commas
 		temp1=SubdivideString(temp[5],",");
 
@@ -449,7 +449,7 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 		offs++;
 		// load vertices
 		core::array<core::vector3df> pos;
-		const u32 posCount = core::strtol10(RawFile[offs].c_str());
+		const u32 posCount = core::strtoul10(RawFile[offs].c_str());
 		++offs;
 		pos.reallocate(posCount);
 		for (u32 i=0; i<posCount; ++i)
@@ -461,27 +461,27 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 			++offs;
 		}
 
-		const s32 numFaces=atoi(RawFile[offs].c_str());
+		const u32 numFaces=core::strtoul10(RawFile[offs].c_str());
 		offs++;
 		if(!(wat1[0]=="water" && wat[2]=="0"))
 		{
-			for(s32 j=0; j<numFaces; ++j)
+			for(u32 j=0; j<numFaces; ++j)
 			{
 				temp=SubdivideString(RawFile[offs+j],";");
 
 				//first value is vertices number for this face
-				const s32 vert=core::strtol10(temp[0].c_str());
+				const u32 vert=core::strtoul10(temp[0].c_str());
 				faces[face_cnt].numVerts=vert;
 				//second is material ID
-				faces[face_cnt].materialID=atoi(temp[1].c_str());
+				faces[face_cnt].materialID=core::strtoul10(temp[1].c_str());
 				//vertices are ordined
 				faces[face_cnt].firstVert=vert_cnt;
 
 				//now we'll create vertices structure
-				for(s32 k=0; k<vert; ++k)
+				for(u32 k=0; k<vert; ++k)
 				{
 					//copy position
-					vertices[vert_cnt].pos.set(pos[core::strtol10(temp[2+k].c_str())]);
+					vertices[vert_cnt].pos.set(pos[core::strtoul10(temp[2+k].c_str())]);
 					//get uv coords for tex and light if any
 					vertices[vert_cnt].tc.set(core::fast_atof(temp[2+vert+(2*k)].c_str()),
 							core::fast_atof(temp[2+vert+(2*k)+1].c_str()));

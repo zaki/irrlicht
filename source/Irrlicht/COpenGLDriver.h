@@ -101,7 +101,7 @@ namespace video
 
 		//! Create occlusion query.
 		/** Use node for identification and mesh for occlusion test. */
-		virtual void createOcclusionQuery(scene::ISceneNode* node,
+		virtual void addOcclusionQuery(scene::ISceneNode* node,
 				const scene::IMesh* mesh=0);
 
 		//! Remove occlusion query.
@@ -397,8 +397,8 @@ namespace video
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
-		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
-		inline void createGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
+		inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
+		inline void getGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 
 		//! Set GL pipeline to desired texture wrap modes of the material
 		void setWrapMode(const SMaterial& material);
@@ -423,7 +423,7 @@ namespace video
 		void assignHardwareLight(u32 lightIndex);
 
 		//! helper function for render setup.
-		void createColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType);
+		void getColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType);
 
 		//! helper function doing the actual rendering.
 		void renderArray(const void* indexList, u32 primitiveCount,
@@ -492,19 +492,19 @@ namespace video
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
 		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-			CIrrDeviceWin32 *Device;
+			CIrrDeviceWin32 *Win32Device;
 		#endif
 		#endif
 		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 			GLXDrawable Drawable;
 			Display* X11Display;
-			CIrrDeviceLinux *Device;
+			CIrrDeviceLinux *X11Device;
 		#endif
 		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-			CIrrDeviceMacOSX *Device;
+			CIrrDeviceMacOSX *OSXDevice;
 		#endif
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
-			CIrrDeviceSDL *Device;
+			CIrrDeviceSDL *SDLDevice;
 		#endif
 
 		E_DEVICE_TYPE DeviceType;

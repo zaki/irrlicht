@@ -16,13 +16,20 @@
 #if !defined(_IRR_XBOX_PLATFORM_)
 	#include <windows.h>
 	#include <mmsystem.h> // For JOYCAPS
-	#include <Windowsx.h>
+	#include <windowsx.h>
+#endif
+#if !defined(GET_X_LPARAM)
+#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
+#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 #endif
 
 namespace irr
 {
+	struct SJoystickWin32Control;
+
 	class CIrrDeviceWin32 : public CIrrDeviceStub, video::IImagePresenter
 	{
+	friend struct SJoystickWin32Control;
 	public:
 
 		//! constructor
@@ -379,8 +386,6 @@ namespace irr
 
 		void resizeIfNecessary();
 
-		void pollJoysticks();
-
 		HWND HWnd;
 
 		bool ChangedToFullScreen;
@@ -389,14 +394,7 @@ namespace irr
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
 
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-		struct JoystickInfo
-		{
-			u32		Index;
-			JOYCAPS Caps;
-		};
-		core::array<JoystickInfo> ActiveJoysticks;
-#endif
+		SJoystickWin32Control* JoyControl;
 	};
 
 } // end namespace irr

@@ -885,7 +885,7 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 	}
 #endif
 	os::Printer::log("FBO error", ELL_ERROR);
-	_IRR_DEBUG_BREAK_IF(true);
+//	_IRR_DEBUG_BREAK_IF(true);
 	return false;
 }
 

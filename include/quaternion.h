@@ -120,7 +120,10 @@ class quaternion
 		//! Inverts this quaternion
 		quaternion& makeInverse();
 
-		//! Set this quaternion to the result of the interpolation between two quaternions
+		//! Set this quaternion to the result of the linear interpolation between two quaternions
+		quaternion& lerp(quaternion q1, quaternion q2, f32 time);
+
+		//! Set this quaternion to the result of the spherical interpolation between two quaternions
 		quaternion& slerp( quaternion q1, quaternion q2, f32 interpolate );
 
 		//! Create quaternion from rotation angle and rotation axis.
@@ -490,43 +493,37 @@ inline quaternion& quaternion::normalize()
 }
 
 
+// set this quaternion to the result of the linear interpolation between two quaternions
+inline quaternion& quaternion::lerp(quaternion q1, quaternion q2, f32 time)
+{
+	const f32 scale = 1.0f - time;
+	const f32 invscale = time;
+	return (*this = (q1*scale) + (q2*invscale));
+}
+
+
 // set this quaternion to the result of the interpolation between two quaternions
 inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time)
 {
 	f32 angle = q1.dotProduct(q2);
 
+	// make sure we use the short rotation
 	if (angle < 0.0f)
 	{
 		q1 *= -1.0f;
 		angle *= -1.0f;
 	}
 
-	f32 scale;
-	f32 invscale;
-
-	if ((angle + 1.0f) > 0.05f)
+	if (angle <= 0.95f) // spherical interpolation
 	{
-		if ((1.0f - angle) >= 0.05f) // spherical interpolation
-		{
-			const f32 theta = acosf(angle);
-			const f32 invsintheta = reciprocal(sinf(theta));
-			scale = sinf(theta * (1.0f-time)) * invsintheta;
-			invscale = sinf(theta * time) * invsintheta;
-		}
-		else // linear interploation
-		{
-			scale = 1.0f - time;
-			invscale = time;
-		}
+		const f32 theta = acosf(angle);
+		const f32 invsintheta = reciprocal(sinf(theta));
+		const f32 scale = sinf(theta * (1.0f-time)) * invsintheta;
+		const f32 invscale = sinf(theta * time) * invsintheta;
+		return (*this = (q1*scale) + (q2*invscale));
 	}
-	else
-	{
-		q2.set(-q1.Y, q1.X, -q1.W, q1.Z);
-		scale = sinf(PI * (0.5f - time));
-		invscale = sinf(PI * time);
-	}
-
-	return (*this = (q1*scale) + (q2*invscale));
+	else // linear interploation
+		return lerp(q1,q2,time);
 }
 
 
@@ -578,15 +575,35 @@ inline void quaternion::toEuler(vector3df& euler) const
 	const f64 sqx = X*X;
 	const f64 sqy = Y*Y;
 	const f64 sqz = Z*Z;
+	const f64 test = 2.0 * (Y*W - X*Z);
 
-	// heading = rotation about z-axis
-	euler.Z = (f32) (atan2(2.0 * (X*Y +Z*W),(sqx - sqy - sqz + sqw)));
-
-	// bank = rotation about x-axis
-	euler.X = (f32) (atan2(2.0 * (Y*Z +X*W),(-sqx - sqy + sqz + sqw)));
-
-	// attitude = rotation about y-axis
-	euler.Y = asinf( clamp(-2.0f * (X*Z - Y*W), -1.0f, 1.0f) );
+	if (core::equals(test, 1.0, 0.000001))
+	{
+		// heading = rotation about z-axis
+		euler.Z = (f32) (-2.0*atan2(X, W));
+		// bank = rotation about x-axis
+		euler.X = 0;
+		// attitude = rotation about y-axis
+		euler.Y = (f32) (core::PI64/2.0);
+	}
+	else if (core::equals(test, -1.0, 0.000001))
+	{
+		// heading = rotation about z-axis
+		euler.Z = (f32) (2.0*atan2(X, W));
+		// bank = rotation about x-axis
+		euler.X = 0;
+		// attitude = rotation about y-axis
+		euler.Y = (f32) (core::PI64/-2.0);
+	}
+	else
+	{
+		// heading = rotation about z-axis
+		euler.Z = (f32) atan2(2.0 * (X*Y +Z*W),(sqx - sqy - sqz + sqw));
+		// bank = rotation about x-axis
+		euler.X = (f32) atan2(2.0 * (Y*Z +X*W),(-sqx - sqy + sqz + sqw));
+		// attitude = rotation about y-axis
+		euler.Y = (f32) asin( clamp(test, -1.0, 1.0) );
+	}
 }
 
 

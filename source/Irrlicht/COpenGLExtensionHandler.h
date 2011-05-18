@@ -82,6 +82,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_3DFX_multisample",
 	"GL_3DFX_tbuffer",
 	"GL_3DFX_texture_compression_FXT1",
+	"GL_AMD_blend_minmax_factor",
 	"GL_AMD_conservative_depth",
 	"GL_AMD_debug_output",
 	"GL_AMD_depth_clamp_separate",
@@ -299,6 +300,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_EXT_texture_shared_exponent",
 	"GL_EXT_texture_snorm",
 	"GL_EXT_texture_sRGB",
+	"GL_EXT_texture_sRGB_decode",
 	"GL_EXT_texture_swizzle",
 	"GL_EXT_timer_query",
 	"GL_EXT_transform_feedback",
@@ -374,6 +376,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_NV_texture_compression_vtc",
 	"GL_NV_texture_env_combine4",
 	"GL_NV_texture_expand_normal",
+	"GL_NV_texture_multisample",
 	"GL_NV_texture_rectangle",
 	"GL_NV_texture_shader",
 	"GL_NV_texture_shader2",
@@ -481,6 +484,7 @@ class COpenGLExtensionHandler
 		IRR_3DFX_multisample = 0,
 		IRR_3DFX_tbuffer,
 		IRR_3DFX_texture_compression_FXT1,
+		IRR_AMD_blend_minmax_factor,
 		IRR_AMD_conservative_depth,
 		IRR_AMD_debug_output,
 		IRR_AMD_depth_clamp_separate,
@@ -698,6 +702,7 @@ class COpenGLExtensionHandler
 		IRR_EXT_texture_shared_exponent,
 		IRR_EXT_texture_snorm,
 		IRR_EXT_texture_sRGB,
+		IRR_EXT_texture_sRGB_decode,
 		IRR_EXT_texture_swizzle,
 		IRR_EXT_timer_query,
 		IRR_EXT_transform_feedback,
@@ -773,6 +778,7 @@ class COpenGLExtensionHandler
 		IRR_NV_texture_compression_vtc,
 		IRR_NV_texture_env_combine4,
 		IRR_NV_texture_expand_normal,
+		IRR_NV_texture_multisample,
 		IRR_NV_texture_rectangle,
 		IRR_NV_texture_shader,
 		IRR_NV_texture_shader2,
@@ -890,6 +896,8 @@ class COpenGLExtensionHandler
 
 	//! show all features with availablity
 	void dump() const;
+
+	void dumpFramebufferFormats() const;
 
 	// Some variables for properties
 	bool StencilBuffer;
@@ -1032,6 +1040,7 @@ class COpenGLExtensionHandler
 	void extGlEnableIndexed(GLenum target, GLuint index);
 	void extGlDisableIndexed(GLenum target, GLuint index);
 	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
+	void extGlBlendEquationIndexed(GLuint buf, GLenum mode);
 	void extGlProgramParameteri(GLuint program, GLenum pname, GLint value);
 
 	// occlusion query
@@ -1044,10 +1053,16 @@ class COpenGLExtensionHandler
 	void extGlGetQueryObjectiv(GLuint id, GLenum pname, GLint *params);
 	void extGlGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params);
 
-	protected:
+	// generic vsync setting method for several extensions
+	void extGlSwapInterval(int interval);
+
+	// blend operations
+	void extGlBlendEquation(GLenum mode);
+
 	// the global feature array
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
 
+	protected:
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		PFNGLACTIVETEXTUREARBPROC pGlActiveTextureARB;
 		PFNGLCLIENTACTIVETEXTUREARBPROC	pGlClientActiveTextureARB;
@@ -1104,9 +1119,6 @@ class COpenGLExtensionHandler
 		PFNGLSTENCILFUNCSEPARATEATIPROC pGlStencilFuncSeparateATI;
 		PFNGLSTENCILOPSEPARATEATIPROC pGlStencilOpSeparateATI;
 		PFNGLCOMPRESSEDTEXIMAGE2DPROC pGlCompressedTexImage2D;
-		#if defined(_IRR_LINUX_PLATFORM_) && defined(GLX_SGI_swap_control)
-		PFNGLXSWAPINTERVALSGIPROC glxSwapIntervalSGI;
-		#endif
 		PFNGLBINDFRAMEBUFFEREXTPROC pGlBindFramebufferEXT;
 		PFNGLDELETEFRAMEBUFFERSEXTPROC pGlDeleteFramebuffersEXT;
 		PFNGLGENFRAMEBUFFERSEXTPROC pGlGenFramebuffersEXT;
@@ -1138,6 +1150,8 @@ class COpenGLExtensionHandler
 		PFNGLDISABLEINDEXEDEXTPROC pGlDisableIndexedEXT;
 		PFNGLBLENDFUNCINDEXEDAMDPROC pGlBlendFuncIndexedAMD;
 		PFNGLBLENDFUNCIPROC pGlBlendFunciARB;
+		PFNGLBLENDEQUATIONINDEXEDAMDPROC pGlBlendEquationIndexedAMD;
+		PFNGLBLENDEQUATIONIPROC pGlBlendEquationiARB;
 		PFNGLPROGRAMPARAMETERIARBPROC pGlProgramParameteriARB;
 		PFNGLPROGRAMPARAMETERIEXTPROC pGlProgramParameteriEXT;
 		PFNGLGENQUERIESARBPROC pGlGenQueriesARB;
@@ -1155,6 +1169,20 @@ class COpenGLExtensionHandler
 		PFNGLENDOCCLUSIONQUERYNVPROC pGlEndOcclusionQueryNV;
 		PFNGLGETOCCLUSIONQUERYIVNVPROC pGlGetOcclusionQueryivNV;
 		PFNGLGETOCCLUSIONQUERYUIVNVPROC pGlGetOcclusionQueryuivNV;
+		PFNGLBLENDEQUATIONEXTPROC pGlBlendEquationEXT;
+		PFNGLBLENDEQUATIONPROC pGlBlendEquation;
+		#if defined(WGL_EXT_swap_control)
+		PFNWGLSWAPINTERVALEXTPROC pWglSwapIntervalEXT;
+		#endif
+		#if defined(GLX_SGI_swap_control)
+		PFNGLXSWAPINTERVALSGIPROC pGlxSwapIntervalSGI;
+		#endif
+		#if defined(GLX_EXT_swap_control)
+		PFNGLXSWAPINTERVALEXTPROC pGlxSwapIntervalEXT;
+		#endif
+		#if defined(GLX_MESA_swap_control)
+		PFNGLXSWAPINTERVALMESAPROC pGlxSwapIntervalMESA;
+		#endif
 	#endif
 };
 
@@ -1478,6 +1506,7 @@ inline void COpenGLExtensionHandler::extGlDeleteShader(GLuint shader)
 
 inline void COpenGLExtensionHandler::extGlGetAttachedObjects(GLhandleARB program, GLsizei maxcount, GLsizei* count, GLhandleARB* shaders)
 {
+	*count=0;
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetAttachedObjectsARB)
 		pGlGetAttachedObjectsARB(program, maxcount, count, shaders);
@@ -1490,6 +1519,7 @@ inline void COpenGLExtensionHandler::extGlGetAttachedObjects(GLhandleARB program
 
 inline void COpenGLExtensionHandler::extGlGetAttachedShaders(GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders)
 {
+	*count=0;
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetAttachedShaders)
 		pGlGetAttachedShaders(program, maxcount, count, shaders);
@@ -2155,6 +2185,23 @@ inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum sr
 }
 
 
+inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenum mode)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendEquationiARB)
+		pGlBlendEquationiARB(buf, mode);
+	if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendEquationIndexedAMD)
+		pGlBlendEquationIndexedAMD(buf, mode);
+#elif defined(GL_ARB_draw_buffers_blend)
+	glBlendEquationiARB(buf, src, dst);
+#elif defined(GL_AMD_draw_buffers_blend)
+	glBlendEquationIndexedAMD(buf, src, dst);
+#else
+	os::Printer::log("glBlendEquationIndexed not supported", ELL_ERROR);
+#endif
+}
+
+
 inline void COpenGLExtensionHandler::extGlProgramParameteri(GLuint program, GLenum pname, GLint value)
 {
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
@@ -2297,6 +2344,63 @@ inline void COpenGLExtensionHandler::extGlGetQueryObjectuiv(GLuint id, GLenum pn
 	glGetOcclusionQueryuivNV(id, pname, params);
 #else
 	os::Printer::log("glGetQueryObjectuiv not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlSwapInterval(int interval)
+{
+	// we have wglext, so try to use that
+#if defined(_IRR_WINDOWS_API_) && defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+#ifdef WGL_EXT_swap_control
+	if (pWglSwapIntervalEXT)
+		pWglSwapIntervalEXT(interval);
+#endif
+#endif
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+	//TODO: Check GLX_EXT_swap_control and GLX_MESA_swap_control
+#ifdef GLX_SGI_swap_control
+	// does not work with interval==0
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (interval && pGlxSwapIntervalSGI)
+		pGlxSwapIntervalSGI(interval);
+#else
+	if (interval)
+		glXSwapIntervalSGI(interval);
+#endif
+#elif defined(GLX_EXT_swap_control)
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	Display *dpy = glXGetCurrentDisplay();
+	GLXDrawable drawable = glXGetCurrentDrawable();
+
+	if (pGlxSwapIntervalEXT)
+		pGlxSwapIntervalEXT(dpy, drawable, interval);
+#else
+	pGlXSwapIntervalEXT(dpy, drawable, interval);
+#endif
+#elif defined(GLX_MESA_swap_control)
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlxSwapIntervalMESA)
+		pGlxSwapIntervalMESA(interval);
+#else
+	pGlXSwapIntervalMESA(interval);
+#endif
+#endif
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBlendEquation(GLenum mode)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBlendEquation)
+		pGlBlendEquation(mode);
+	else if (pGlBlendEquationEXT)
+		pGlBlendEquationEXT(mode);
+#elif defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_logic_op)
+	glBlendEquationEXT(mode);
+#elif defined(GL_VERSION_1_2)
+	glBlendEquation(mode);
+#else
+	os::Printer::log("glBlendEquation not supported", ELL_ERROR);
 #endif
 }
 

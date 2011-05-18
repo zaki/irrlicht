@@ -18,21 +18,33 @@
 #include "IGUISpriteBank.h"
 #include <winuser.h>
 #include "SExposedVideoData.h"
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+#ifdef _MSC_VER
+#pragma comment(lib, "dinput8.lib")
+#pragma comment(lib, "dxguid.lib")
+#endif
+#endif
+#else
+#ifdef _MSC_VER
+#pragma comment(lib, "winmm.lib")
+#endif
+#endif
 
 namespace irr
 {
 	namespace video
 	{
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
-		IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
+		IVideoDriver* createDirectX8Driver(const irr::SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, HWND window);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
-		IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
+		IVideoDriver* createDirectX9Driver(const irr::SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, HWND window);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -48,6 +60,390 @@ namespace irr
 		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io);
 		#endif
 	}
+} // end namespace irr
+
+namespace irr
+{
+struct SJoystickWin32Control
+{
+	CIrrDeviceWin32* Device;
+
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
+	IDirectInput8* DirectInputDevice;
+#endif
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	struct JoystickInfo
+	{
+		u32 Index;
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+		core::stringc Name;
+		GUID guid;
+		LPDIRECTINPUTDEVICE8 lpdijoy;
+		DIDEVCAPS devcaps;
+		u8 axisValid[8];
+#else
+		JOYCAPS Caps;
+#endif
+	};
+	core::array<JoystickInfo> ActiveJoysticks;
+#endif
+
+	SJoystickWin32Control(CIrrDeviceWin32* dev) : Device(dev)
+	{
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
+		DirectInputDevice=0;
+		if (DI_OK != (DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&DirectInputDevice, NULL)))
+		{
+			os::Printer::log("Could not create DirectInput8 Object", ELL_WARNING);
+			return;
+		}
+#endif
+	}
+	~SJoystickWin32Control()
+	{
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
+		for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+		{
+			LPDIRECTINPUTDEVICE8 dev = ActiveJoysticks[joystick].lpdijoy;
+			if (dev)
+			{
+				dev->Unacquire();
+			}
+			dev->Release();
+		}
+
+		if (DirectInputDevice)
+			DirectInputDevice->Release();
+#endif
+	}
+
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
+	static BOOL CALLBACK EnumJoysticks(LPCDIDEVICEINSTANCE lpddi, LPVOID cp)
+	{
+		SJoystickWin32Control* p=(SJoystickWin32Control*)cp;
+		p->directInputAddJoystick(lpddi);
+		return DIENUM_CONTINUE;
+	}
+	void directInputAddJoystick(LPCDIDEVICEINSTANCE lpddi)
+	{
+		//Get the GUID of the joystuck
+		const GUID guid = lpddi->guidInstance;
+
+		JoystickInfo activeJoystick;
+		activeJoystick.Index=ActiveJoysticks.size();
+		activeJoystick.guid=guid;
+		activeJoystick.Name=lpddi->tszProductName;
+		if (FAILED(DirectInputDevice->CreateDevice(guid, &activeJoystick.lpdijoy, NULL)))
+		{
+			os::Printer::log("Could not create DirectInput device", ELL_WARNING);
+			return;
+		}
+
+		activeJoystick.devcaps.dwSize=sizeof(activeJoystick.devcaps);
+		if (FAILED(activeJoystick.lpdijoy->GetCapabilities(&activeJoystick.devcaps)))
+		{
+			os::Printer::log("Could not create DirectInput device", ELL_WARNING);
+			return;
+		}
+
+		if (FAILED(activeJoystick.lpdijoy->SetCooperativeLevel(Device->HWnd, DISCL_BACKGROUND | DISCL_EXCLUSIVE)))
+		{ 
+			os::Printer::log("Could not set DirectInput device cooperative level", ELL_WARNING);
+			return;
+		}
+
+		if (FAILED(activeJoystick.lpdijoy->SetDataFormat(&c_dfDIJoystick2)))
+		{ 
+			os::Printer::log("Could not set DirectInput device data format", ELL_WARNING);
+			return;
+		}
+
+		if (FAILED(activeJoystick.lpdijoy->Acquire()))
+		{
+			os::Printer::log("Could not set DirectInput cooperative level", ELL_WARNING);
+			return;
+		}
+
+		DIJOYSTATE2 info;
+		if (FAILED(activeJoystick.lpdijoy->GetDeviceState(sizeof(info),&info)))
+		{
+			os::Printer::log("Could not read DirectInput device state", ELL_WARNING);
+			return;
+		}
+
+		ZeroMemory(activeJoystick.axisValid,sizeof(activeJoystick.axisValid));
+		activeJoystick.axisValid[0]= (info.lX!=0) ? 1 : 0;
+		activeJoystick.axisValid[1]= (info.lY!=0) ? 1 : 0;
+		activeJoystick.axisValid[2]= (info.lZ!=0) ? 1 : 0;
+		activeJoystick.axisValid[3]= (info.lRx!=0) ? 1 : 0;
+		activeJoystick.axisValid[4]= (info.lRy!=0) ? 1 : 0;
+		activeJoystick.axisValid[5]= (info.lRz!=0) ? 1 : 0;
+
+		int caxis=0;
+		for (u8 i=0; i<6; i++)
+		{
+			if (activeJoystick.axisValid[i])
+				caxis++;
+		}
+
+		for (u8 i=0; i<(activeJoystick.devcaps.dwAxes)-caxis; i++)
+		{
+			if (i+caxis < 8)
+				activeJoystick.axisValid[i+caxis]=1;
+		}
+
+		ActiveJoysticks.push_back(activeJoystick);
+	}
+#endif
+
+void pollJoysticks()
+{
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+ 	if(0 == ActiveJoysticks.size())
+ 		return;
+ 
+ 	u32 joystick;
+	DIJOYSTATE2 info;
+ 
+ 	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+ 	{
+ 		// needs to be reset for each joystick
+ 		// request ALL values and POV as continuous if possible
+
+		const DIDEVCAPS & caps = ActiveJoysticks[joystick].devcaps;
+ 		// if no POV is available don't ask for POV values
+
+		if (!FAILED(ActiveJoysticks[joystick].lpdijoy->GetDeviceState(sizeof(info),&info)))
+ 		{
+ 			SEvent event;
+ 
+ 			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
+ 			event.JoystickEvent.Joystick = (u8)joystick;
+ 
+			event.JoystickEvent.POV = (u16)info.rgdwPOV[0];
+ 			// set to undefined if no POV value was returned or the value
+ 			// is out of range
+			if ((caps.dwPOVs==0) || (event.JoystickEvent.POV > 35900))
+ 				event.JoystickEvent.POV = 65535;
+ 
+ 			for(int axis = 0; axis < SEvent::SJoystickEvent::NUMBER_OF_AXES; ++axis)
+ 				event.JoystickEvent.Axis[axis] = 0;
+ 
+			u16 dxAxis=0;
+			u16 irrAxis=0;
+
+			while (dxAxis < 6 && irrAxis <caps.dwAxes)
+ 			{
+				bool axisFound=0;
+				s32 axisValue=0;
+
+				switch (dxAxis)
+				{
+				case 0:
+					axisValue=info.lX;
+					break;
+				case 1:
+					axisValue=info.lY;
+					break;
+				case 2:
+					axisValue=info.lZ;
+					break;
+				case 3:
+					axisValue=info.lRx;
+					break;
+				case 4:
+					axisValue=info.lRy;
+					break;
+				case 5:
+					axisValue=info.lRz;
+					break;
+				case 6:
+					axisValue=info.rglSlider[0];
+					break;
+				case 7:
+					axisValue=info.rglSlider[1];
+					break;
+				default:
+					break;
+				}
+
+				if (ActiveJoysticks[joystick].axisValid[dxAxis]>0)
+					axisFound=1;
+
+				if (axisFound)
+				{
+					s32 val=axisValue - 32768;
+
+					if (val <-32767) val=-32767;
+					if (val > 32767) val=32767;
+					event.JoystickEvent.Axis[irrAxis]=(s16)(val);
+					irrAxis++;
+				}
+
+				dxAxis++;
+			}
+
+			u32 buttons=0;
+			BYTE* bytebuttons=info.rgbButtons;
+			for (u16 i=0; i<32; i++)
+			{
+				if (bytebuttons[i] >0)
+				{
+					buttons |= (1 << i);
+				}
+			}
+			event.JoystickEvent.ButtonStates = buttons;
+
+ 			(void)Device->postEventFromUser(event);
+ 		}
+ 	}
+#else
+	if (0 == ActiveJoysticks.size())
+		return;
+
+	u32 joystick;
+	JOYINFOEX info;
+
+	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		// needs to be reset for each joystick
+		// request ALL values and POV as continuous if possible
+		info.dwSize = sizeof(info);
+		info.dwFlags = JOY_RETURNALL|JOY_RETURNPOVCTS;
+		const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
+		// if no POV is available don't ask for POV values
+		if (!(caps.wCaps & JOYCAPS_HASPOV))
+			info.dwFlags &= ~(JOY_RETURNPOV|JOY_RETURNPOVCTS);
+		if(JOYERR_NOERROR == joyGetPosEx(ActiveJoysticks[joystick].Index, &info))
+		{
+			SEvent event;
+
+			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
+			event.JoystickEvent.Joystick = (u8)joystick;
+
+			event.JoystickEvent.POV = (u16)info.dwPOV;
+			// set to undefined if no POV value was returned or the value
+			// is out of range
+			if (!(info.dwFlags & JOY_RETURNPOV) || (event.JoystickEvent.POV > 35900))
+				event.JoystickEvent.POV = 65535;
+
+			for(int axis = 0; axis < SEvent::SJoystickEvent::NUMBER_OF_AXES; ++axis)
+				event.JoystickEvent.Axis[axis] = 0;
+
+			event.JoystickEvent.ButtonStates = info.dwButtons;
+
+			switch(caps.wNumAxes)
+			{
+			default:
+			case 6:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V] =
+					(s16)((65535 * (info.dwVpos - caps.wVmin)) / (caps.wVmax - caps.wVmin) - 32768);
+
+			case 5:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U] =
+					(s16)((65535 * (info.dwUpos - caps.wUmin)) / (caps.wUmax - caps.wUmin) - 32768);
+
+			case 4:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_R] =
+					(s16)((65535 * (info.dwRpos - caps.wRmin)) / (caps.wRmax - caps.wRmin) - 32768);
+
+			case 3:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z] =
+					(s16)((65535 * (info.dwZpos - caps.wZmin)) / (caps.wZmax - caps.wZmin) - 32768);
+
+			case 2:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y] =
+					(s16)((65535 * (info.dwYpos - caps.wYmin)) / (caps.wYmax - caps.wYmin) - 32768);
+
+			case 1:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X] =
+					(s16)((65535 * (info.dwXpos - caps.wXmin)) / (caps.wXmax - caps.wXmin) - 32768);
+			}
+
+			(void)Device->postEventFromUser(event);
+		}
+	}
+#endif
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+}
+
+bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
+{
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+	if (!DirectInputDevice || (DirectInputDevice->EnumDevices(DI8DEVCLASS_GAMECTRL, SJoystickWin32Control::EnumJoysticks, this, DIEDFL_ATTACHEDONLY )))
+	{
+		os::Printer::log("Could not enum DirectInput8 controllers", ELL_WARNING);
+		return false;
+	}
+
+	for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		JoystickInfo& activeJoystick = ActiveJoysticks[joystick];
+		SJoystickInfo info;
+		info.Axes=activeJoystick.devcaps.dwAxes;
+		info.Buttons=activeJoystick.devcaps.dwButtons;
+		info.Name=activeJoystick.Name;
+		info.PovHat = (activeJoystick.devcaps.dwPOVs  != 0)
+				? SJoystickInfo::POV_HAT_PRESENT : SJoystickInfo::POV_HAT_ABSENT;
+		joystickInfo.push_back(info);
+	}
+	return true;
+#else
+	joystickInfo.clear();
+	ActiveJoysticks.clear();
+
+	const u32 numberOfJoysticks = ::joyGetNumDevs();
+	JOYINFOEX info;
+	info.dwSize = sizeof(info);
+	info.dwFlags = JOY_RETURNALL;
+
+	JoystickInfo activeJoystick;
+	SJoystickInfo returnInfo;
+
+	joystickInfo.reallocate(numberOfJoysticks);
+	ActiveJoysticks.reallocate(numberOfJoysticks);
+
+	u32 joystick = 0;
+	for(; joystick < numberOfJoysticks; ++joystick)
+	{
+		if(JOYERR_NOERROR == joyGetPosEx(joystick, &info)
+			&&
+			JOYERR_NOERROR == joyGetDevCaps(joystick,
+											&activeJoystick.Caps,
+											sizeof(activeJoystick.Caps)))
+		{
+			activeJoystick.Index = joystick;
+			ActiveJoysticks.push_back(activeJoystick);
+
+			returnInfo.Joystick = (u8)joystick;
+			returnInfo.Axes = activeJoystick.Caps.wNumAxes;
+			returnInfo.Buttons = activeJoystick.Caps.wNumButtons;
+			returnInfo.Name = activeJoystick.Caps.szPname;
+			returnInfo.PovHat = ((activeJoystick.Caps.wCaps & JOYCAPS_HASPOV) == JOYCAPS_HASPOV)
+								? SJoystickInfo::POV_HAT_PRESENT : SJoystickInfo::POV_HAT_ABSENT;
+
+			joystickInfo.push_back(returnInfo);
+		}
+	}
+
+	for(joystick = 0; joystick < joystickInfo.size(); ++joystick)
+	{
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+			joystick, joystickInfo[joystick].Axes,
+			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
+		os::Printer::log(logString, ELL_INFORMATION);
+	}
+
+	return true;
+#endif
+#else
+	return false;
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+}
+};
 } // end namespace irr
 
 // Get the codepage from the locale language id
@@ -514,7 +910,7 @@ namespace irr
 CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 : CIrrDeviceStub(params), HWnd(0), ChangedToFullScreen(false),
 	IsNonNTWindows(false), Resized(false),
-	ExternalWindow(false), Win32CursorControl(0)
+	ExternalWindow(false), Win32CursorControl(0), JoyControl(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceWin32");
@@ -619,6 +1015,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 	Win32CursorControl = new CCursorControl(this, CreationParams.WindowSize, HWnd, CreationParams.Fullscreen);
 	CursorControl = Win32CursorControl;
+	JoyControl = new SJoystickWin32Control(this);
 
 	// initialize doubleclicks with system values
 	MouseMultiClicks.DoubleClickTime = GetDoubleClickTime();
@@ -653,6 +1050,8 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 //! destructor
 CIrrDeviceWin32::~CIrrDeviceWin32()
 {
+	delete JoyControl;
+
 	// unregister environment
 
 	irr::core::list<SEnvMapper>::Iterator it = EnvMap.begin();
@@ -677,10 +1076,7 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_DIRECT3D8:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 
-		VideoDriver = video::createDirectX8Driver(CreationParams.WindowSize, HWnd,
-			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
-			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
-			CreationParams.AntiAlias, CreationParams.DisplayAdapter);
+		VideoDriver = video::createDirectX8Driver(CreationParams, FileSystem, HWnd);
 
 		if (!VideoDriver)
 		{
@@ -695,10 +1091,7 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_DIRECT3D9:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 
-		VideoDriver = video::createDirectX9Driver(CreationParams.WindowSize, HWnd,
-			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
-			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
-			CreationParams.AntiAlias, CreationParams.DisplayAdapter);
+		VideoDriver = video::createDirectX9Driver(CreationParams, FileSystem, HWnd);
 
 		if (!VideoDriver)
 		{
@@ -823,8 +1216,8 @@ bool CIrrDeviceWin32::run()
 	if (!Close)
 		resizeIfNecessary();
 
-	if(!Close)
-		pollJoysticks();
+	if(!Close && JoyControl)
+		JoyControl->pollJoysticks();
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return !Close;
@@ -1102,6 +1495,9 @@ video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 // Needed for old windows apis
+// depending on the SDK version and compilers some defines might be available
+// or not
+#ifndef PRODUCT_ULTIMATE
 #define PRODUCT_ULTIMATE                            0x00000001
 #define PRODUCT_HOME_BASIC                          0x00000002
 #define PRODUCT_HOME_PREMIUM                        0x00000003
@@ -1109,19 +1505,26 @@ typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 #define PRODUCT_HOME_BASIC_N                        0x00000005
 #define PRODUCT_BUSINESS                            0x00000006
 #define PRODUCT_STARTER                             0x0000000B
+#endif
+#ifndef PRODUCT_ULTIMATE_N
 #define PRODUCT_BUSINESS_N                          0x00000010
 #define PRODUCT_HOME_PREMIUM_N                      0x0000001A
 #define PRODUCT_ENTERPRISE_N                        0x0000001B
 #define PRODUCT_ULTIMATE_N                          0x0000001C
 #define PRODUCT_STARTER_N                           0x0000002F
+#endif
+#ifndef PRODUCT_PROFESSIONAL
 #define PRODUCT_PROFESSIONAL                        0x00000030
 #define PRODUCT_PROFESSIONAL_N                      0x00000031
+#endif
+#ifndef PRODUCT_ULTIMATE_E
 #define PRODUCT_STARTER_E                           0x00000042
 #define PRODUCT_HOME_BASIC_E                        0x00000043
 #define PRODUCT_HOME_PREMIUM_E                      0x00000044
 #define PRODUCT_PROFESSIONAL_E                      0x00000045
 #define PRODUCT_ENTERPRISE_E                        0x00000046
 #define PRODUCT_ULTIMATE_E                          0x00000047
+#endif
 
 void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 {
@@ -1389,129 +1792,12 @@ void CIrrDeviceWin32::restoreWindow()
 
 bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
-#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-	joystickInfo.clear();
-	ActiveJoysticks.clear();
-
-	const u32 numberOfJoysticks = ::joyGetNumDevs();
-	JOYINFOEX info;
-	info.dwSize = sizeof(info);
-	info.dwFlags = JOY_RETURNALL;
-
-	JoystickInfo activeJoystick;
-	SJoystickInfo returnInfo;
-
-	joystickInfo.reallocate(numberOfJoysticks);
-	ActiveJoysticks.reallocate(numberOfJoysticks);
-
-	u32 joystick = 0;
-	for(; joystick < numberOfJoysticks; ++joystick)
-	{
-		if(JOYERR_NOERROR == joyGetPosEx(joystick, &info)
-			&&
-			JOYERR_NOERROR == joyGetDevCaps(joystick,
-											&activeJoystick.Caps,
-											sizeof(activeJoystick.Caps)))
-		{
-			activeJoystick.Index = joystick;
-			ActiveJoysticks.push_back(activeJoystick);
-
-			returnInfo.Joystick = (u8)joystick;
-			returnInfo.Axes = activeJoystick.Caps.wNumAxes;
-			returnInfo.Buttons = activeJoystick.Caps.wNumButtons;
-			returnInfo.Name = activeJoystick.Caps.szPname;
-			returnInfo.PovHat = ((activeJoystick.Caps.wCaps & JOYCAPS_HASPOV) == JOYCAPS_HASPOV)
-								? SJoystickInfo::POV_HAT_PRESENT : SJoystickInfo::POV_HAT_ABSENT;
-
-			joystickInfo.push_back(returnInfo);
-		}
-	}
-
-	for(joystick = 0; joystick < joystickInfo.size(); ++joystick)
-	{
-		char logString[256];
-		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
-			joystick, joystickInfo[joystick].Axes,
-			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
-		os::Printer::log(logString, ELL_INFORMATION);
-	}
-
-	return true;
-#else
-	return false;
-#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	if (JoyControl)
+		return JoyControl->activateJoysticks(joystickInfo);
+	else
+		return false;
 }
 
-void CIrrDeviceWin32::pollJoysticks()
-{
-#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-	if(0 == ActiveJoysticks.size())
-		return;
-
-	u32 joystick;
-	JOYINFOEX info;
-
-	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
-	{
-		// needs to be reset for each joystick
-		// request ALL values and POV as continuous if possible
-		info.dwSize = sizeof(info);
-		info.dwFlags = JOY_RETURNALL|JOY_RETURNPOVCTS;
-		const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
-		// if no POV is available don't ask for POV values
-		if (!(caps.wCaps & JOYCAPS_HASPOV))
-			info.dwFlags &= ~(JOY_RETURNPOV|JOY_RETURNPOVCTS);
-		if(JOYERR_NOERROR == joyGetPosEx(ActiveJoysticks[joystick].Index, &info))
-		{
-			SEvent event;
-
-			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
-			event.JoystickEvent.Joystick = (u8)joystick;
-
-			event.JoystickEvent.POV = (u16)info.dwPOV;
-			// set to undefined if no POV value was returned or the value
-			// is out of range
-			if (!(info.dwFlags & JOY_RETURNPOV) || (event.JoystickEvent.POV > 35900))
-				event.JoystickEvent.POV = 65535;
-
-			for(int axis = 0; axis < SEvent::SJoystickEvent::NUMBER_OF_AXES; ++axis)
-				event.JoystickEvent.Axis[axis] = 0;
-
-			switch(caps.wNumAxes)
-			{
-			default:
-			case 6:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V] =
-					(s16)((65535 * (info.dwVpos - caps.wVmin)) / (caps.wVmax - caps.wVmin) - 32768);
-
-			case 5:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U] =
-					(s16)((65535 * (info.dwUpos - caps.wUmin)) / (caps.wUmax - caps.wUmin) - 32768);
-
-			case 4:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_R] =
-					(s16)((65535 * (info.dwRpos - caps.wRmin)) / (caps.wRmax - caps.wRmin) - 32768);
-
-			case 3:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z] =
-					(s16)((65535 * (info.dwZpos - caps.wZmin)) / (caps.wZmax - caps.wZmin) - 32768);
-
-			case 2:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y] =
-					(s16)((65535 * (info.dwYpos - caps.wYmin)) / (caps.wYmax - caps.wYmin) - 32768);
-
-			case 1:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X] =
-					(s16)((65535 * (info.dwXpos - caps.wXmin)) / (caps.wXmax - caps.wXmin) - 32768);
-			}
-
-			event.JoystickEvent.ButtonStates = info.dwButtons;
-
-			(void)postEventFromUser(event);
-		}
-	}
-#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-}
 
 //! Set the current Gamma Value for the Display
 bool CIrrDeviceWin32::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast )

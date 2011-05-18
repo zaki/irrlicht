@@ -49,8 +49,6 @@ namespace video
 
 namespace scene
 {
-	class IMeshWriter;
-
 	//! Enumeration for render passes.
 	/** A parameter passed to the registerNodeForRendering() method of the ISceneManager,
 	specifying when the node wants to be drawn in relation to the other nodes. */
@@ -96,33 +94,35 @@ namespace scene
 		ESNRP_SHADOW =64
 	};
 
+	class IAnimatedMesh;
+	class IAnimatedMeshSceneNode;
+	class IBillboardSceneNode;
+	class IBillboardTextSceneNode;
+	class ICameraSceneNode;
+	class IDummyTransformationSceneNode;
+	class ILightManager;
+	class ILightSceneNode;
 	class IMesh;
 	class IMeshBuffer;
-	class IAnimatedMesh;
 	class IMeshCache;
+	class IMeshLoader;
+	class IMeshManipulator;
+	class IMeshSceneNode;
+	class IMeshWriter;
+	class IMetaTriangleSelector;
+	class IParticleSystemSceneNode;
+	class ISceneCollisionManager;
+	class ISceneLoader;
 	class ISceneNode;
-	class ICameraSceneNode;
-	class IAnimatedMeshSceneNode;
 	class ISceneNodeAnimator;
 	class ISceneNodeAnimatorCollisionResponse;
-	class ILightSceneNode;
-	class IBillboardSceneNode;
-	class ITerrainSceneNode;
-	class IMeshSceneNode;
-	class IMeshLoader;
-	class ISceneCollisionManager;
-	class IParticleSystemSceneNode;
-	class IDummyTransformationSceneNode;
-	class ITriangleSelector;
-	class IMetaTriangleSelector;
-	class IMeshManipulator;
-	class ITextSceneNode;
-	class IBillboardTextSceneNode;
-	class IVolumeLightSceneNode;
-	class ISceneNodeFactory;
 	class ISceneNodeAnimatorFactory;
+	class ISceneNodeFactory;
 	class ISceneUserDataSerializer;
-	class ILightManager;
+	class ITerrainSceneNode;
+	class ITextSceneNode;
+	class ITriangleSelector;
+	class IVolumeLightSceneNode;
 
 	namespace quake3
 	{
@@ -144,15 +144,12 @@ namespace scene
 	character on a moving platform on a moving ship.
 	The SceneManager is also able to load 3d mesh files of different
 	formats. Take a look at getMesh() to find out what formats are
-	supported. And if these formats are not enough use
+	supported. If these formats are not enough, use
 	addExternalMeshLoader() to add new formats to the engine.
 	*/
 	class ISceneManager : public virtual IReferenceCounted
 	{
 	public:
-
-		//! Destructor
-		virtual ~ISceneManager() {}
 
 		//! Get pointer to an animateable mesh. Loads the file if not loaded already.
 		/**
@@ -167,12 +164,22 @@ namespace scene
 		 *    <TD>3D Studio (.3ds)</TD>
 		 *    <TD>Loader for 3D-Studio files which lots of 3D packages
 		 *      are able to export. Only static meshes are currently
-		 *      supported by this importer. </TD>
+		 *      supported by this importer.</TD>
+		 *  </TR>
+		 *  <TR>
+		 *    <TD>3D World Studio (.smf)</TD>
+		 *    <TD>Loader for Leadwerks SMF mesh files, a simple mesh format
+		 *    containing static geometry for games. The proprietary .STF texture format
+		 *    is not supported yet. This loader was originally written by Joseph Ellis. </TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Bliz Basic B3D (.b3d)</TD>
 		 *    <TD>Loader for blitz basic files, developed by Mark
-		 *      Sibly, also supports animations.</TD>
+		 *      Sibly. This is the ideal animated mesh format for game
+		 *      characters as it is both rigidly defined and widely
+		 *      supported by modeling and animation software.
+		 *      As this format supports skeletal animations, an
+		 *      ISkinnedMesh will be returned by this importer.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Cartography shop 4 (.csm)</TD>
@@ -203,7 +210,7 @@ namespace scene
 		 *        behaves like the other loaders and does not create
 		 *        instances, but it can be switched into this mode by
 		 *        using
-		 *        SceneManager->getParameters()->setAttribute(COLLADA_CREATE_SCENE_INSTANCES, true);
+		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(COLLADA_CREATE_SCENE_INSTANCES, true);
 		 *        Created scene nodes will be named as the names of the
 		 *        nodes in the COLLADA file. The returned mesh is just
 		 *        a dummy object in this mode. Meshes included in the
@@ -211,6 +218,8 @@ namespace scene
 		 *        following naming scheme:
 		 *        "path/to/file/file.dea#meshname". The loading of such
 		 *        meshes is logged. Currently, this loader is able to
+
+
 		 *        create meshes (made of only polygons), lights, and
 		 *        cameras. Materials and animations are currently not
 		 *        supported but this will change with future releases.
@@ -244,8 +253,28 @@ namespace scene
 		 *      and there are several tools for them available, e.g.
 		 *      the Maya exporter included in the DX SDK.
 		 *      .x files can include skeletal animations and Irrlicht
-		 *      is able to play and display them. Currently, Irrlicht
-		 *      only supports uncompressed .x files.</TD>
+		 *      is able to play and display them, users can manipulate
+		 *      the joints via the ISkinnedMesh interface. Currently,
+		 *      Irrlicht only supports uncompressed .x files.</TD>
+		 *  </TR>
+		 *  <TR>
+		 *    <TD>Half-Life model (.mdl)</TD>
+		 *    <TD>This loader opens Half-life 1 models, it was contributed
+		 *        by Fabio Concas and adapted by Thomas Alten.</TD>
+		 *  </TR>
+		 *  <TR>
+		 *    <TD>Irrlicht Mesh (.irrMesh)</TD>
+		 *    <TD>This is a static mesh format written in XML, native
+		 *      to Irrlicht and written by the irr mesh writer.
+		 *      This format is exported by the CopperCube engine's
+		 *      lightmapper.</TD>
+		 *  </TR>
+		 *  <TR>
+		 *    <TD>LightWave (.lwo)</TD>
+		 *    <TD>Native to NewTek's LightWave 3D, the LWO format is well
+		 *      known and supported by many exporters. This loader will
+		 *      import LWO2 models including lightmaps, bumpmaps and
+		 *      reflection textures.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Maya (.obj)</TD>
@@ -258,8 +287,8 @@ namespace scene
 		 *    <TD>Milkshape (.ms3d)</TD>
 		 *    <TD>.MS3D files contain models and sometimes skeletal
 		 *      animations from the Milkshape 3D modeling and animation
-		 *      software. This importer for Irrlicht can display and/or
-		 *      animate these files. </TD>
+		 *      software. Like the other skeletal mesh loaders, oints
+		 *      are exposed via the ISkinnedMesh animated mesh type.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *  <TD>My3D (.my3d)</TD>
@@ -330,6 +359,29 @@ namespace scene
 		 *      <TD>Quake 2 models are characters with morph target
 		 *        animation. Irrlicht can read, display and animate
 		 *        them directly with this importer. </TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Quake 3 models (.md3)</TD>
+		 *      <TD>Quake 3 models are characters with morph target
+		 *        animation, they contain mount points for weapons and body
+		 *        parts and are typically made of several sections which are
+		 *        manually joined together.</TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Stanford Triangle (.ply)</TD>
+		 *      <TD>Invented by Stanford University and known as the native
+		 *        format of the infamous "Stanford Bunny" model, this is a
+		 *        popular static mesh format used by 3D scanning hardware
+		 *        and software. This loader supports extremely large models
+		 *        in both ASCII and binary format, but only has rudimentary
+		 *        material support in the form of vertex colors and texture
+		 *        coordinates.</TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Stereolithography (.stl)</TD>
+		 *      <TD>The STL format is used for rapid prototyping and
+		 *        computer-aided manufacturing, thus has no support for
+		 *        materials.</TD>
 		 *    </TR>
 		 *  </TABLE>
 		 *
@@ -510,7 +562,7 @@ namespace scene
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
 
 		//! Adds a scene node for rendering using a octree to the scene graph.
-		/** \deprecated Use addOctreeSceneNode instead. */
+		/** \deprecated Use addOctreeSceneNode instead. This method may be removed by Irrlicht 1.9. */
 		_IRR_DEPRECATED_ IMeshSceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false)
 		{
@@ -534,7 +586,7 @@ namespace scene
 			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
 
 		//! Adds a scene node for rendering using a octree to the scene graph.
-		/** \deprecated Use addOctreeSceneNode instead. */
+		/** \deprecated Use addOctreeSceneNode instead. This method may be removed by Irrlicht 1.9. */
 		_IRR_DEPRECATED_ IMeshSceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false)
 		{
@@ -1278,7 +1330,7 @@ namespace scene
 			ISceneNode* node, s32 minimalPolysPerNode=32) = 0;
 
 		//! //! Creates a Triangle Selector, optimized by an octree.
-		/** \deprecated Use createOctreeTriangleSelector instead. */
+		/** \deprecated Use createOctreeTriangleSelector instead. This method may be removed by Irrlicht 1.9. */
 		_IRR_DEPRECATED_ ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode=32)
 		{
@@ -1309,9 +1361,36 @@ namespace scene
 		file formats it currently is not able to load (e.g. .cob), just implement
 		the IMeshLoader interface in your loading class and add it with this method.
 		Using this method it is also possible to override built-in mesh loaders with
-		newer or updated versions without the need of recompiling the engine.
+		newer or updated versions without the need to recompile the engine.
 		\param externalLoader: Implementation of a new mesh loader. */
 		virtual void addExternalMeshLoader(IMeshLoader* externalLoader) = 0;
+
+		//! Returns the number of mesh loaders supported by Irrlicht at this time
+		virtual u32 getMeshLoaderCount() const = 0;
+
+		//! Retrieve the given mesh loader
+		/** \param index The index of the loader to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified loader, 0 if the index is incorrect. */
+		virtual IMeshLoader* getMeshLoader(u32 index) const = 0;
+
+		//! Adds an external scene loader for extending the engine with new file formats.
+		/** If you want the engine to be extended with
+		file formats it currently is not able to load (e.g. .vrml), just implement
+		the ISceneLoader interface in your loading class and add it with this method.
+		Using this method it is also possible to override the built-in scene loaders
+		with newer or updated versions without the need to recompile the engine.
+		\param externalLoader: Implementation of a new mesh loader. */
+		virtual void addExternalSceneLoader(ISceneLoader* externalLoader) = 0;
+
+		//! Returns the number of scene loaders supported by Irrlicht at this time
+		virtual u32 getSceneLoaderCount() const = 0;
+
+		//! Retrieve the given scene loader
+		/** \param index The index of the loader to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified loader, 0 if the index is incorrect. */
+		virtual ISceneLoader* getSceneLoader(u32 index) const = 0;
 
 		//! Get pointer to the scene collision manager.
 		/** \return Pointer to the collision manager
@@ -1407,6 +1486,13 @@ namespace scene
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0) = 0;
 
+		//! creates a scene node animator based on its type name
+		/** \param typeName: Type of the scene node animator to add.
+		\param target: Target scene node of the new animator.
+		\return Returns pointer to the new scene node animator or null if not successful. You need to
+		drop this pointer after calling this, see IReferenceCounted::drop() for details. */
+		virtual ISceneNodeAnimator* createSceneNodeAnimator(const char* typeName, ISceneNode* target=0) = 0;
+
 		//! Creates a new scene manager.
 		/** This can be used to easily draw and/or store two
 		independent scenes at the same time. The mesh cache will be
@@ -1459,7 +1545,8 @@ namespace scene
 		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		/** The scene is usually load from an .irr file, an xml based format. .irr files can
+		/** The scene is usually loaded from an .irr file, an xml based format, but other scene formats
+		can be added to the engine via ISceneManager::addExternalSceneLoader. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
 		saved directly by the engine using ISceneManager::saveScene().
 		\param filename: Name of the file.
@@ -1468,13 +1555,14 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
-		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		\param rootNode Node which is taken as the root node of the scene. Pass 0 to add the scene
 		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		/** The scene is usually load from an .irr file, an xml based format. .irr files can
+		/** The scene is usually loaded from an .irr file, an xml based format, but other scene formats
+		can be added to the engine via ISceneManager::addExternalSceneLoader. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
 		saved directly by the engine using ISceneManager::saveScene().
 		\param file: File where the scene is going to be saved into.
@@ -1483,10 +1571,10 @@ namespace scene
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
-		\param node Node which is taken as the root node of the scene. Pass 0 to add the scene
+		\param rootNode Node which is taken as the root node of the scene. Pass 0 to add the scene
 		directly to the scene manager (which is also the default).
 		\return True if successful. */
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) = 0;
 
 		//! Get a mesh writer implementation if available
 		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()

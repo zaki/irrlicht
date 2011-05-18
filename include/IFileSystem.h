@@ -117,10 +117,31 @@ public:
 			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
 			const core::stringc& password="") =0;
 
-	//! Adds an external archive loader to the engine.
-	/** Use this function to add support for new archive types to the
-	engine, for example proprietary or encrypted file storage. */
-	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
+	//! Adds an archive to the file system.
+	/** After calling this, the Irrlicht Engine will also search and open
+	files directly from this archive. This is useful for hiding data from
+	the end user, speeding up file access and making it possible to access
+	for example Quake3 .pk3 files, which are just renamed .zip files. By
+	default Irrlicht supports ZIP, PAK, TAR, PNK, and directories as
+	archives. You can provide your own archive types by implementing
+	IArchiveLoader and passing an instance to addArchiveLoader.
+	Irrlicht supports AES-encrypted zip files, and the advanced compression
+	techniques lzma and bzip2.
+	\param file: Archive to add to the file system.
+	\param ignoreCase: If set to true, files in the archive can be accessed without
+	writing all letters in the right case.
+	\param ignorePaths: If set to true, files in the added archive can be accessed
+	without its complete path.
+	\param archiveType: If no specific E_FILE_ARCHIVE_TYPE is selected then
+	the type of archive will depend on the extension of the file name. If
+	you use a different extension then you can use this parameter to force
+	a specific type of archive.
+	\param password An optional password, which is used in case of encrypted archives.
+	\return True if the archive was added successfully, false if not. */
+	virtual bool addFileArchive(IReadFile* file, bool ignoreCase=true,
+			bool ignorePaths=true,
+			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
+			const core::stringc& password="") =0;
 
 	//! Get the number of archives currently attached to the file system
 	virtual u32 getFileArchiveCount() const =0;
@@ -149,9 +170,23 @@ public:
 	//! Get the archive at a given index.
 	virtual IFileArchive* getFileArchive(u32 index) =0;
 
+	//! Adds an external archive loader to the engine.
+	/** Use this function to add support for new archive types to the
+	engine, for example proprietary or encrypted file storage. */
+	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
+
+	//! Gets the number of archive loaders currently added
+	virtual u32 getArchiveLoaderCount() const = 0;
+
+	//! Retrieve the given archive loader
+	/** \param index The index of the loader to retrieve. This parameter is an 0-based
+	array index.
+	\return A pointer to the specified loader, 0 if the index is incorrect. */
+	virtual IArchiveLoader* getArchiveLoader(u32 index) const = 0;
+
 	//! Adds a zip archive to the file system.
 	/** \deprecated This function is provided for compatibility
-	with older versions of Irrlicht and may be removed in future versions,
+	with older versions of Irrlicht and may be removed in Irrlicht 1.9,
 	you should use addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
@@ -162,14 +197,14 @@ public:
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
 	\return True if the archive was added successfully, false if not. */
-	virtual bool addZipFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
+	_IRR_DEPRECATED_ virtual bool addZipFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
 		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_ZIP);
 	}
 
 	//! Adds an unzipped archive (or basedirectory with subdirectories..) to the file system.
 	/** \deprecated This function is provided for compatibility
-	with older versions of Irrlicht and may be removed in future versions,
+	with older versions of Irrlicht and may be removed in Irrlicht 1.9,
 	you should use addFileArchive instead.
 	Useful for handling data which will be in a zip file
 	\param filename: Filename of the unzipped zip archive base directory to add to the file system.
@@ -178,14 +213,14 @@ public:
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
 	\return True if the archive was added successful, false if not. */
-	virtual bool addFolderFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
+	_IRR_DEPRECATED_ virtual bool addFolderFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
 		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_FOLDER);
 	}
 
 	//! Adds a pak archive to the file system.
 	/** \deprecated This function is provided for compatibility
-	with older versions of Irrlicht and may be removed in future versions,
+	with older versions of Irrlicht and may be removed in Irrlicht 1.9,
 	you should use addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
@@ -196,7 +231,7 @@ public:
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.(should not use with Quake2 paks
 	\return True if the archive was added successful, false if not. */
-	virtual bool addPakFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
+	_IRR_DEPRECATED_ virtual bool addPakFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
 		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_PAK);
 	}

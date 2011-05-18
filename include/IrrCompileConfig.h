@@ -11,7 +11,7 @@
 #define IRRLICHT_VERSION_REVISION 0
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
-#define IRRLICHT_VERSION_SVN -beta
+#define IRRLICHT_VERSION_SVN -alpha
 #define IRRLICHT_SDK_VERSION "1.8.0-alpha"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
@@ -120,6 +120,14 @@
 #define _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #ifdef NO_IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#endif
+
+//! Define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_ if you want to use DirectInput for joystick handling.
+/** This only applies to Windows devices, currently only supported under Win32 device.
+If not defined, Windows Multimedia library is used, which offers also broad support for joystick devices. */
+#define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#ifdef NO_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #endif
 
 
@@ -363,6 +371,13 @@ tool <http://developer.nvidia.com/object/nvperfhud_home.html>. */
 //! Uncomment the following line if you want to ignore the deprecated warnings
 //#define IGNORE_DEPRECATED_WARNING
 
+//! Define _IRR_COMPILE_WITH_IRR_SCENE_LOADER_ if you want to be able to load
+/** .irr scenes using ISceneManager::loadScene */
+#define _IRR_COMPILE_WITH_IRR_SCENE_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_IRR_SCENE_LOADER_
+#undef _IRR_COMPILE_WITH_IRR_SCENE_LOADER_
+#endif
+
 //! Define _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_ if you want to use bone based
 /** animated meshes. If you compile without this, you will be unable to load
 B3D, MS3D or X meshes */
@@ -473,6 +488,11 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_PLY_LOADER_
 #ifdef NO_IRR_COMPILE_WITH_PLY_LOADER_
 #undef _IRR_COMPILE_WITH_PLY_LOADER_
+#endif
+//! Define _IRR_COMPILE_WITH_SMF_LOADER_ if you want to load 3D World Studio mesh files
+#define _IRR_COMPILE_WITH_SMF_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_SMF_LOADER_
+#undef _IRR_COMPILE_WITH_SMF_LOADER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_IRR_WRITER_ if you want to write static .irrMesh files

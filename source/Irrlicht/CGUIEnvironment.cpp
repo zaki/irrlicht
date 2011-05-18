@@ -696,7 +696,7 @@ IGUIElement* CGUIEnvironment::addGUIElement(const c8* elementName, IGUIElement* 
 	if (!parent)
 		parent = this;
 
-	for (u32 i=0; i<GUIElementFactoryList.size() && !node; ++i)
+	for (s32 i=GUIElementFactoryList.size()-1; i>=0 && !node; --i)
 		node = GUIElementFactoryList[i]->addGUIElement(elementName, parent);
 
 
@@ -1520,10 +1520,9 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 		return Banks[index].Bank;
 
 	// we don't have this sprite bank, we should load it
-
 	if (!FileSystem->existFile(b.NamedPath.getPath()))
 	{
-		os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_ERROR);
+		os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_DEBUG);
 		return 0;
 	}
 

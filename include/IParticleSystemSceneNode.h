@@ -454,7 +454,7 @@ public:
 	//! Creates a fade out particle affector.
 	/** This affector modifies the color of every particle and and reaches
 	the final color when the particle dies. This affector looks really
-	good, if the EMT_TRANSPARENT_VERTEX_ALPHA material is used and the
+	good, if the EMT_TRANSPARENT_ADD_COLOR material is used and the
 	targetColor is video::SColor(0,0,0,0): Particles are fading out into
 	void with this setting.
 	\param targetColor: Color whereto the color of the particle is changed.

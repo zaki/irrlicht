@@ -771,14 +771,19 @@ namespace quake3
 				io::IFileSystem *fileSystem,
 				video::IVideoDriver* driver)
 	{
-		static const char * extension[2] =
+		static const char* extension[] =
 		{
 			".jpg",
-			".tga"
+			".jpeg",
+			".png",
+			".dds",
+			".tga",
+			".bmp",
+			".pcx"
 		};
 
 		tStringList stringList;
-		getAsStringList ( stringList, -1, name, startPos );
+		getAsStringList(stringList, -1, name, startPos);
 
 		textures.clear();
 
@@ -786,7 +791,7 @@ namespace quake3
 		for ( u32 i = 0; i!= stringList.size (); ++i )
 		{
 			video::ITexture* texture = 0;
-			for ( u32 g = 0; g != 2 ; ++g )
+			for (u32 g = 0; g != 7 ; ++g)
 			{
 				core::cutFilenameExtension ( loadFile, stringList[i] );
 

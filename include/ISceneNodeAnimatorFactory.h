@@ -28,8 +28,6 @@ namespace scene
 	{
 	public:
 
-		virtual ~ISceneNodeAnimatorFactory() {}
-
 		//! creates a scene node animator based on its type id
 		/** \param type: Type of the scene node animator to add.
 		\param target: Target scene node of the new animator.

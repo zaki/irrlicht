@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="7.10"
 	Name="22.MaterialViewer"
 	ProjectGUID="{4E6C2F8D-BA92-4C5B-96FD-72D4FE8BD7FA}"
 	TargetFrameworkVersion="131072"

@@ -113,6 +113,9 @@ namespace gui
 		//! Set the width of a column
 		virtual void setColumnWidth(u32 columnIndex, u32 width) = 0;
 
+		//! Get the width of a column
+		virtual u32 getColumnWidth(u32 columnIndex) const = 0;
+
 		//! columns can be resized by drag 'n drop
 		virtual void setResizableColumns(bool resizable) = 0;
 

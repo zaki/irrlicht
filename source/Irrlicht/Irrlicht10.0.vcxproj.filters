@@ -1327,6 +1327,18 @@
     <ClInclude Include="..\..\include\driverChoice.h">
       <Filter>include\video</Filter>
     </ClInclude>
+    <ClInclude Include="CSceneLoaderIrr.h">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ISceneLoader.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CSMFMeshFileLoader.h">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EDriverFeatures.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2278,6 +2290,12 @@
     </ClCompile>
     <ClCompile Include="COGLES2Texture.cpp">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
+    </ClCompile>
+    <ClCompile Include="CSceneLoaderIrr.cpp">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CSMFMeshFileLoader.cpp">
+      <Filter>Irrlicht\scene\loaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

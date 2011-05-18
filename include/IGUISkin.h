@@ -31,8 +31,10 @@ namespace gui
 	{
 		//! Default windows look and feel
 		EGST_WINDOWS_CLASSIC=0,
+
 		//! Like EGST_WINDOWS_CLASSIC, but with metallic shaded windows and buttons
 		EGST_WINDOWS_METALLIC,
+
 		//! Burning's skin
 		EGST_BURNING_SKIN,
 
@@ -155,9 +157,9 @@ namespace gui
 		EGDS_WINDOW_BUTTON_WIDTH,
 		//! width of a checkbox check
 		EGDS_CHECK_BOX_WIDTH,
-		//! deprecated
+		//! \deprecated This may be removed by Irrlicht 1.9
 		EGDS_MESSAGE_BOX_WIDTH,
-		//! deprecated
+		//! \deprecated This may be removed by Irrlicht 1.9
 		EGDS_MESSAGE_BOX_HEIGHT,
 		//! width of a default button
 		EGDS_BUTTON_WIDTH,
@@ -177,8 +179,6 @@ namespace gui
 		EGDS_MESSAGE_BOX_MIN_TEXT_WIDTH,
 		//! maximal space to reserve for messagebox text-width
 		EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH,
-		//! deprecated - this was a typo. Should be removed for 1.8
-		EGDS_MESSAGE_BOX_MAX_TEST_WIDTH = EGDS_MESSAGE_BOX_MAX_TEXT_WIDTH,
 		//! minimal space to reserve for messagebox text-height
 		EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT,
 		//! maximal space to reserve for messagebox text-height
@@ -294,6 +294,7 @@ namespace gui
 		EGDI_MORE_DOWN,
 		//! plus icon for trees
 		EGDI_EXPAND,
+
 		//! minus icon for trees
 		EGDI_COLLAPSE,
 		//! file icon for file selection

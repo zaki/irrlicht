@@ -24,8 +24,8 @@ bool terrainSceneNode(void)
 
     ICameraSceneNode* camera = smgr->addCameraSceneNode();
 
-    const core::vector3df center (terrain->getBoundingBox().getCenter());
-    camera->setTarget (center);
+    const core::vector3df center(terrain->getBoundingBox().getCenter());
+    camera->setTarget(center);
 
     // yes, Y is intentionally being set to X here
     const core::vector3df above (center.X, center.X, center.Z);
@@ -50,7 +50,6 @@ bool terrainSceneNode(void)
 	{
 		logTestString("Small camera up rotation caused bad recalc.\n");
 	}
-
 
 	// This is big enough to cause a recalc
 	camera->setUpVector(vector3df(1.f, 0.f, .1f).normalize());

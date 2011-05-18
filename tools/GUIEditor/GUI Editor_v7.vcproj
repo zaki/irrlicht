@@ -40,7 +40,7 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib/Win32-visualstudio"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/TestProject.pdb"
+				ProgramDatabaseFile="$(OutDir)/GUIEditor.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool

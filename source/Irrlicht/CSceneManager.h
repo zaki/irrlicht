@@ -371,6 +371,21 @@ namespace scene
 		//! Adds an external mesh loader.
 		virtual void addExternalMeshLoader(IMeshLoader* externalLoader);
 
+		//! Returns the number of mesh loaders supported by Irrlicht at this time
+		virtual u32 getMeshLoaderCount() const;
+
+		//! Retrieve the given mesh loader
+		virtual IMeshLoader* getMeshLoader(u32 index) const;
+
+		//! Adds an external scene loader.
+		virtual void addExternalSceneLoader(ISceneLoader* externalLoader);
+
+		//! Returns the number of scene loaders supported by Irrlicht at this time
+		virtual u32 getSceneLoaderCount() const;
+
+		//! Retrieve the given scene loader
+		virtual ISceneLoader* getSceneLoader(u32 index) const;
+
 		//! Returns a pointer to the scene collision manager.
 		virtual ISceneCollisionManager* getSceneCollisionManager();
 
@@ -443,6 +458,9 @@ namespace scene
 		//! Adds a scene node to the scene by name
 		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0);
 
+		//! creates a scene node animator based on its type name
+		virtual ISceneNodeAnimator* createSceneNodeAnimator(const char* typeName, ISceneNode* target=0);
+
 		//! Returns the default scene node animator factory which can create all built-in scene node animators
 		virtual ISceneNodeAnimatorFactory* getDefaultSceneNodeAnimatorFactory();
 
@@ -456,18 +474,16 @@ namespace scene
 		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index);
 
 		//! Saves the current scene into a file.
-		//! \param filename: Name of the file .
 		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Saves the current scene into a file.
 		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		//! \param filename: Name of the file .
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0);
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -502,19 +518,7 @@ namespace scene
 		void clearDeletionList();
 
 		//! writes a scene node
-		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer, const c8* currentPath=0, bool init=false);
-
-		//! reads a scene node
-		void readSceneNode(io::IXMLReader* reader, ISceneNode* parent, ISceneUserDataSerializer* userDataSerializer);
-
-		//! read materials
-		void readMaterials(io::IXMLReader* reader, ISceneNode* node);
-
-		//! reads animators of a node
-		void readAnimators(io::IXMLReader* reader, ISceneNode* node);
-
-		//! reads user data of a node
-		void readUserData(io::IXMLReader* reader, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer);
+		void writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer, const fschar_t* currentPath=0, bool init=false);
 
 		struct DefaultNodeEntry
 		{
@@ -597,7 +601,7 @@ namespace scene
 
 		//! render pass lists
 		core::array<ISceneNode*> CameraList;
-		core::array<ILightSceneNode*> LightList;
+		core::array<ISceneNode*> LightList;
 		core::array<ISceneNode*> ShadowNodeList;
 		core::array<ISceneNode*> SkyBoxList;
 		core::array<DefaultNodeEntry> SolidNodeList;
@@ -605,6 +609,7 @@ namespace scene
 		core::array<TransparentNodeEntry> TransparentEffectNodeList;
 
 		core::array<IMeshLoader*> MeshLoaderList;
+		core::array<ISceneLoader*> SceneLoaderList;
 		core::array<ISceneNode*> DeletionList;
 		core::array<ISceneNodeFactory*> SceneNodeFactoryList;
 		core::array<ISceneNodeAnimatorFactory*> SceneNodeAnimatorFactoryList;

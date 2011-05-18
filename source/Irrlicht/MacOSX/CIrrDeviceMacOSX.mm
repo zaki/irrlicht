@@ -378,22 +378,18 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
 	createDriver();
 
-	if (IsSoftwareRenderer && CreationParams.DriverType != video::EDT_NULL)
-	{
-		// create context for rendering raw bitmap
-	}
-
 	createGUIAndScene();
 }
 
 CIrrDeviceMacOSX::~CIrrDeviceMacOSX()
 {
+	[SoftwareDriverTarget release];
 	SetSystemUIMode(kUIModeNormal, 0);
 	closeDevice();
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-	for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	for (u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 	{
-		if(ActiveJoysticks[joystick].interface)
+		if (ActiveJoysticks[joystick].interface)
 			closeJoystickDevice(&ActiveJoysticks[joystick]);
 	}
 #endif
@@ -450,7 +446,8 @@ bool CIrrDeviceMacOSX::createWindow()
 	CFDictionaryRef         displaymode, olddisplaymode;
 	GLint                   numPixelFormats, newSwapInterval;
 
-	int alphaSize = CreationParams.WithAlphaChannel?4:0, depthSize = CreationParams.ZBufferBits;
+	int alphaSize = CreationParams.WithAlphaChannel?4:0;
+	int depthSize = CreationParams.ZBufferBits;
 	if (CreationParams.WithAlphaChannel && (CreationParams.Bits == 32))
 		alphaSize = 8;
 
@@ -583,15 +580,12 @@ bool CIrrDeviceMacOSX::createWindow()
 				error = CGDisplaySwitchToMode(display,displaymode);
 				if (error == CGDisplayNoErr)
 				{
-					pixelFormat = NULL;
-					numPixelFormats = 0;
-
-					int index = 0;
 					CGLPixelFormatAttribute	fullattribs[] =
 					{
 						kCGLPFAFullScreen,
 						kCGLPFADisplayMask, (CGLPixelFormatAttribute)CGDisplayIDToOpenGLDisplayMask(display),
 						kCGLPFADoubleBuffer,
+						kCGLPFANoRecovery,
 						kCGLPFAAccelerated,
 						kCGLPFADepthSize, (CGLPixelFormatAttribute)depthSize,
 						kCGLPFAColorSize, (CGLPixelFormatAttribute)CreationParams.Bits,
@@ -602,6 +596,8 @@ bool CIrrDeviceMacOSX::createWindow()
 						(CGLPixelFormatAttribute)NULL
 					};
 
+					pixelFormat = NULL;
+					numPixelFormats = 0;
 					CGLChoosePixelFormat(fullattribs,&pixelFormat,&numPixelFormats);
 
 					if (pixelFormat != NULL)
@@ -620,6 +616,8 @@ bool CIrrDeviceMacOSX::createWindow()
 						result = true;
 					}
 				}
+				if (!result)
+					CGReleaseAllDisplays();
 			}
 		}
 	}
@@ -632,6 +630,11 @@ bool CIrrDeviceMacOSX::createWindow()
 		CGLSetCurrentContext(CGLContext);
 		newSwapInterval = (CreationParams.Vsync) ? 1 : 0;
 		CGLSetParameter(CGLContext,kCGLCPSwapInterval,&newSwapInterval);
+		if (IsSoftwareRenderer && CreationParams.DriverType != video::EDT_NULL)
+		{
+			long order = -1; // below window
+			CGLSetParameter(CGLContext, kCGLCPSurfaceOrder, &order);
+		}
 	}
 
 	return (result);
@@ -657,6 +660,7 @@ void CIrrDeviceMacOSX::setResize(int width, int height)
 	if (CreationParams.WindowId && OGLContext)
 		[(NSOpenGLContext *)OGLContext update];
 }
+
 
 void CIrrDeviceMacOSX::createDriver()
 {
@@ -720,7 +724,7 @@ bool CIrrDeviceMacOSX::run()
 	os::Timer::tick();
 	storeMouseLocation();
 
-	event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:nil inMode:NSDefaultRunLoopMode dequeue:YES];
+	event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES];
 	if (event != nil)
 	{
 		bzero(&ievent,sizeof(ievent));
@@ -839,7 +843,6 @@ bool CIrrDeviceMacOSX::run()
 				break;
 		}
 	}
-	[event release];
 
 	pollJoysticks();
 
@@ -850,7 +853,6 @@ bool CIrrDeviceMacOSX::run()
 //! Pause the current process for the minimum time allowed only to allow other processes to execute
 void CIrrDeviceMacOSX::yield()
 {
-	// TODO: Does this work or maybe is there a better way?
 	struct timespec ts = {0,0};
 	nanosleep(&ts, NULL);
 }
@@ -859,8 +861,6 @@ void CIrrDeviceMacOSX::yield()
 //! Pause execution and let other processes to run for a specified amount of time.
 void CIrrDeviceMacOSX::sleep(u32 timeMs, bool pauseTimer=false)
 {
-	// TODO: Does this work or maybe is there a better way?
-
 	bool wasStopped = Timer ? Timer->isStopped() : true;
 
 	struct timespec ts;
@@ -1055,13 +1055,10 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 
 void CIrrDeviceMacOSX::setCursorVisible(bool visible)
 {
-	CGDirectDisplayID	display;
-
-	display = CGMainDisplayID();
 	if (visible)
-		CGDisplayShowCursor(display);
+		CGDisplayShowCursor(CGMainDisplayID());
 	else
-		CGDisplayHideCursor(display);
+		CGDisplayHideCursor(CGMainDisplayID());
 }
 
 
@@ -1118,27 +1115,33 @@ void CIrrDeviceMacOSX::setResizable(bool resize)
 #endif
 }
 
+
 bool CIrrDeviceMacOSX::isResizable() const
 {
 	return IsResizable;
 }
 
+	
 void CIrrDeviceMacOSX::minimizeWindow()
 {
-	[Window miniaturize:[NSApp self]];
+	if (Window != NULL)
+		[Window miniaturize:[NSApp self]];
 }
 
+	
 //! Maximizes the window if possible.
 void CIrrDeviceMacOSX::maximizeWindow()
 {
 	// todo: implement
 }
 
+
 //! Restore the window to normal size if possible.
 void CIrrDeviceMacOSX::restoreWindow()
 {
 	[Window deminiaturize:[NSApp self]];
 }
+
 
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {
@@ -1149,12 +1152,14 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 
 	if (IsSoftwareRenderer)
 	{
+		const u32 colorSamples=3;
 		// do we need to change the size?
-		bool updateSize = !SoftwareDriverTarget ||
-		s32([SoftwareDriverTarget size].width) != surface->getDimension().Width ||
-		s32([SoftwareDriverTarget size].height) != surface->getDimension().Height;
+		const bool updateSize = !SoftwareDriverTarget ||
+				s32([SoftwareDriverTarget size].width) != surface->getDimension().Width ||
+				s32([SoftwareDriverTarget size].height) != surface->getDimension().Height;
 
 		NSRect areaRect = NSMakeRect(0.0, 0.0, surface->getDimension().Width, surface->getDimension().Height);
+		const u32 destPitch = (colorSamples * areaRect.size.width);
 
 		// create / update the target
 		if (updateSize)
@@ -1166,29 +1171,35 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 					pixelsWide: areaRect.size.width
 					pixelsHigh: areaRect.size.height
 					bitsPerSample: 8
-					samplesPerPixel: 3
+					samplesPerPixel: colorSamples
 					hasAlpha: NO
 					isPlanar: NO
 					colorSpaceName: NSCalibratedRGBColorSpace
-					bytesPerRow: (3 * areaRect.size.width)
-					bitsPerPixel: 24];
+					bytesPerRow: destPitch
+					bitsPerPixel: 8*colorSamples];
 		}
 
-		const u32 destwidth = areaRect.size.width;
-		const u32 minWidth = core::min_(surface->getDimension().Width, destwidth);
-		const u32 destPitch = (3 * areaRect.size.width);
+		if (SoftwareDriverTarget==nil)
+			return false;
 
 		// get pointer to image data
 		unsigned char* imgData = (unsigned char*)surface->lock();
 
 		u8* srcdata = reinterpret_cast<u8*>(imgData);
 		u8* destData = reinterpret_cast<u8*>([SoftwareDriverTarget bitmapData]);
-		const u32 destheight = areaRect.size.height;
-		const u32 srcheight = core::min_(surface->getDimension().Height, destheight);
+		const u32 srcheight = core::min_(surface->getDimension().Height, (u32)areaRect.size.height);
 		const u32 srcPitch = surface->getPitch();
+		const u32 minWidth = core::min_(surface->getDimension().Width, (u32)areaRect.size.width);
 		for (u32 y=0; y!=srcheight; ++y)
 		{
+#if 0
+			if (surface->getColorFormat() == video::ECF_A8R8G8B8)
+				video::CColorConverter::convert_A8R8G8B8toB8G8R8(srcdata, minWidth, destData);
+			else
+				video::CColorConverter::convert_A1R5G5B5toB8G8R8(srcdata, minWidth, destData);
+#else
 			video::CColorConverter::convert_viaFormat(srcdata, surface->getColorFormat(), minWidth, destData, video::ECF_R8G8B8);
+#endif
 			srcdata += srcPitch;
 			destData += destPitch;
 		}
@@ -1202,6 +1213,7 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 
 	return false;
 }
+
 
 #if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 static void joystickRemovalCallback(void * target,

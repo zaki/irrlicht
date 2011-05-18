@@ -527,6 +527,7 @@
 		<Unit filename="../../include/IReadFile.h" />
 		<Unit filename="../../include/IReferenceCounted.h" />
 		<Unit filename="../../include/ISceneCollisionManager.h" />
+		<Unit filename="../../include/ISceneLoader.h" />
 		<Unit filename="../../include/ISceneManager.h" />
 		<Unit filename="../../include/ISceneNode.h" />
 		<Unit filename="../../include/ISceneNodeAnimator.h" />
@@ -889,12 +890,16 @@
 		<Unit filename="CQuake3ShaderSceneNode.h" />
 		<Unit filename="CReadFile.cpp" />
 		<Unit filename="CReadFile.h" />
+		<Unit filename="CSMFMeshFileLoader.cpp" />
+		<Unit filename="CSMFMeshFileLoader.h" />
 		<Unit filename="CSTLMeshFileLoader.cpp" />
 		<Unit filename="CSTLMeshFileLoader.h" />
 		<Unit filename="CSTLMeshWriter.cpp" />
 		<Unit filename="CSTLMeshWriter.h" />
 		<Unit filename="CSceneCollisionManager.cpp" />
 		<Unit filename="CSceneCollisionManager.h" />
+		<Unit filename="CSceneLoaderIrr.cpp" />
+		<Unit filename="CSceneLoaderIrr.h" />
 		<Unit filename="CSceneManager.cpp" />
 		<Unit filename="CSceneManager.h" />
 		<Unit filename="CSceneNodeAnimatorCameraFPS.cpp" />

@@ -64,10 +64,10 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 
 	core::stringc token;
 	getNextToken(file, token);
-	const u32 width = core::strtol10(token.c_str());
+	const u32 width = core::strtoul10(token.c_str());
 
 	getNextToken(file, token);
-	const u32 height = core::strtol10(token.c_str());
+	const u32 height = core::strtoul10(token.c_str());
 
 	u8* data = 0;
 	const u32 size = width*height;
@@ -106,7 +106,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 	else
 	{
 		getNextToken(file, token);
-		const u32 maxDepth = core::strtol10(token.c_str());
+		const u32 maxDepth = core::strtoul10(token.c_str());
 		if (maxDepth > 255) // no double bytes yet
 			return 0;
 
@@ -144,7 +144,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
-						const u8 num = (u8)core::strtol10(token.c_str());
+						const u8 num = (u8)core::strtoul10(token.c_str());
 						*ptr++ = num;
 						*ptr++ = num;
 						*ptr++ = num;
@@ -186,11 +186,11 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
-						*ptr++ = (u8)core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtoul10(token.c_str());
 						getNextToken(file, token);
-						*ptr++ = (u8)core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtoul10(token.c_str());
 						getNextToken(file, token);
-						*ptr++ = (u8)core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtoul10(token.c_str());
 						*ptr++ = 255;
 					}
 				}

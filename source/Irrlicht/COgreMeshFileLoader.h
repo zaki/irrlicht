@@ -81,9 +81,7 @@ private:
 
 	struct OgreTexture
 	{
-		OgreTexture() : Filename("") {}
-
-		core::stringc Filename;
+		core::array<core::stringc> Filename;
 		core::stringc Alias;
 		core::stringc CoordsType;
 		core::stringc MipMaps;
