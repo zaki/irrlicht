@@ -1448,6 +1448,9 @@ video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 // Needed for old windows apis
+// depending on the SDK version and compilers some defines might be available
+// or not
+#ifndef PRODUCT_ULTIMATE
 #define PRODUCT_ULTIMATE                            0x00000001
 #define PRODUCT_HOME_BASIC                          0x00000002
 #define PRODUCT_HOME_PREMIUM                        0x00000003
@@ -1455,19 +1458,26 @@ typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 #define PRODUCT_HOME_BASIC_N                        0x00000005
 #define PRODUCT_BUSINESS                            0x00000006
 #define PRODUCT_STARTER                             0x0000000B
+#endif
+#ifndef PRODUCT_ULTIMATE_N
 #define PRODUCT_BUSINESS_N                          0x00000010
 #define PRODUCT_HOME_PREMIUM_N                      0x0000001A
 #define PRODUCT_ENTERPRISE_N                        0x0000001B
 #define PRODUCT_ULTIMATE_N                          0x0000001C
 #define PRODUCT_STARTER_N                           0x0000002F
+#endif
+#ifndef PRODUCT_PROFESSIONAL
 #define PRODUCT_PROFESSIONAL                        0x00000030
 #define PRODUCT_PROFESSIONAL_N                      0x00000031
+#endif
+#ifndef PRODUCT_ULTIMATE_E
 #define PRODUCT_STARTER_E                           0x00000042
 #define PRODUCT_HOME_BASIC_E                        0x00000043
 #define PRODUCT_HOME_PREMIUM_E                      0x00000044
 #define PRODUCT_PROFESSIONAL_E                      0x00000045
 #define PRODUCT_ENTERPRISE_E                        0x00000046
 #define PRODUCT_ULTIMATE_E                          0x00000047
+#endif
 
 void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 {

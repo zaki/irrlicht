@@ -263,6 +263,8 @@ The following names can be queried for the given types:
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
 
+ - CGUIScrollBar passes unused mousemove-events now to parent element. Fixes focus-bug in ComboBox reported by REDDemon here: http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=43474&highlight=
+
  - Fix clipping in CGUITabControl
 
  - Fix clipping in CGUITable, reported by ceyron
