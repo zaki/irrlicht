@@ -178,7 +178,11 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 					Dragging = false;
 
 				if ( !Dragging )
+				{
+					if ( event.MouseInput.Event == EMIE_MOUSE_MOVED )
+						break;
 					return isInside;
+				}
 
 				if ( event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP )
 					Dragging = false;

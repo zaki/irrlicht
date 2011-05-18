@@ -214,6 +214,8 @@ public:
 
 		// don't use getLength here to avoid precision loss with s32 vectors
 		f64 tmp = Y / sqrt((f64)(X*X + Y*Y));
+		if ( tmp > 1.0 ) //   avoid floating-point trouble as sqrt(y*y) is occasionally larger y
+			tmp = 1.0;
 		tmp = atan( core::squareroot(1 - tmp*tmp) / tmp) * RADTODEG64;
 
 		if (X>0 && Y>0)
@@ -244,6 +246,8 @@ public:
 		tmp = tmp / core::squareroot((f64)((X*X + Y*Y) * (b.X*b.X + b.Y*b.Y)));
 		if (tmp < 0.0)
 			tmp = -tmp;
+		if ( tmp > 1.0 ) //   avoid floating-point trouble
+			tmp = 1.0;			
 
 		return atan(sqrt(1 - tmp*tmp) / tmp) * RADTODEG64;
 	}
