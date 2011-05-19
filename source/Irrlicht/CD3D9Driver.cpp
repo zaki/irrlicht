@@ -570,7 +570,7 @@ bool CD3D9Driver::endScene()
 
 	IDirect3DSwapChain9* swChain;
 	hr = pID3DDevice->GetSwapChain(0, &swChain);
-	DWORD flags = (Caps.Caps3&D3DCAPS3_LINEAR_TO_SRGB_PRESENTATION)?D3DPRESENT_LINEAR_CONTENT:0;
+	DWORD flags = (Params.HandleSRGB && (Caps.Caps3&D3DCAPS3_LINEAR_TO_SRGB_PRESENTATION))?D3DPRESENT_LINEAR_CONTENT:0;
 	hr = swChain->Present(srcRct, NULL, WindowId, NULL, flags);
 
 	if (SUCCEEDED(hr))
