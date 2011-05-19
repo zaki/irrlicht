@@ -38,7 +38,6 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
 	DeviceType(EIDT_WIN32)
 {
@@ -472,7 +471,6 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	OSXDevice(device), DeviceType(EIDT_OSX)
 {
 	#ifdef _DEBUG
@@ -495,7 +493,6 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	X11Device(device), DeviceType(EIDT_X11)
 {
 	#ifdef _DEBUG
@@ -568,7 +565,6 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	SDLDevice(device), DeviceType(EIDT_SDL)
 {
 	#ifdef _DEBUG
@@ -3942,16 +3938,16 @@ bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTar
 		return false;
 	}
 
-	if (Stereo && (ERT_STEREO_RIGHT_BUFFER == target))
+	if (Params.Stereobuffer && (ERT_STEREO_RIGHT_BUFFER == target))
 	{
-		if (Doublebuffer)
+		if (Params.Doublebuffer)
 			glDrawBuffer(GL_BACK_RIGHT);
 		else
 			glDrawBuffer(GL_FRONT_RIGHT);
 	}
-	else if (Stereo && ERT_STEREO_BOTH_BUFFERS == target)
+	else if (Params.Stereobuffer && ERT_STEREO_BOTH_BUFFERS == target)
 	{
-		if (Doublebuffer)
+		if (Params.Doublebuffer)
 			glDrawBuffer(GL_BACK);
 		else
 			glDrawBuffer(GL_FRONT);
@@ -3962,7 +3958,7 @@ bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTar
 	}
 	else
 	{
-		if (Doublebuffer)
+		if (Params.Doublebuffer)
 			glDrawBuffer(GL_BACK_LEFT);
 		else
 			glDrawBuffer(GL_FRONT_LEFT);
@@ -4029,7 +4025,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 			RenderTargetTexture = 0;
 			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 			CurrentTarget=ERT_FRAME_BUFFER;
-			glDrawBuffer(Doublebuffer?GL_BACK_LEFT:GL_FRONT_LEFT);
+			glDrawBuffer(Params.Doublebuffer?GL_BACK_LEFT:GL_FRONT_LEFT);
 		}
 		// we need to update the matrices due to the rendersize change.
 		Transformation3DChanged=true;

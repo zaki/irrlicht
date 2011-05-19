@@ -474,8 +474,6 @@ namespace video
 		E_RENDER_TARGET CurrentTarget;
 
 		SIrrlichtCreationParameters Params;
-		bool Doublebuffer;
-		bool Stereo;
 
 		//! All the lights that have been requested; a hardware limited
 		//! number of them will be used at once.
