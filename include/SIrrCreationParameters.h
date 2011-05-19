@@ -29,6 +29,7 @@ namespace irr
 			Stencilbuffer(false),
 			Vsync(false),
 			AntiAlias(0),
+			HandleSRGB(false),
 			WithAlphaChannel(false),
 			Doublebuffer(true),
 			IgnoreInput(false),
@@ -62,6 +63,7 @@ namespace irr
 			Stencilbuffer = other.Stencilbuffer;
 			Vsync = other.Vsync;
 			AntiAlias = other.AntiAlias;
+			HandleSRGB = other.HandleSRGB;
 			WithAlphaChannel = other.WithAlphaChannel;
 			Doublebuffer = other.Doublebuffer;
 			IgnoreInput = other.IgnoreInput;
@@ -139,6 +141,21 @@ namespace irr
 		NONMASKABLE.
 		Default value: 0 - disabled */
 		u8 AntiAlias;
+
+		//! Flag to enable proper sRGB and linear color handling
+		/** In most situations, it is desireable to have the color handling in
+		non-linear sRGB color space, and only do the intermediate color
+		calculations in linear RGB space. If this flag is enabled, the device and
+		driver try to assure that all color input and output are color corrected
+		and only the internal color representation is linear. This means, that
+		the color output is properly gamma-adjusted to provide the brighter
+		colors for monitor display. And that blending and lighting give a more
+		natural look, due to proper conversion from non-linear colors into linear
+		color space for blend operations. If this flag is enabled, all texture colors
+		(which are usually in sRGB space) are correctly displayed. However vertex colors
+		and other explicitly set values have to be manually encoded in linear color space.
+		Default value: false. */
+		bool HandleSRGB;
 
 		//! Whether the main framebuffer uses an alpha channel.
 		/** In some situations it might be desireable to get a color

@@ -33,19 +33,20 @@ namespace video
 
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
+		friend class COpenGLTexture;
 	public:
 
 		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device);
 		//! inits the windows specific parts of the open gl driver
-		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceWin32* device);
+		bool initDriver(CIrrDeviceWin32* device);
 		bool changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceWin32* device);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceLinux* device);
 		//! inits the GLX specific parts of the open gl driver
-		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceLinux* device);
+		bool initDriver(CIrrDeviceLinux* device);
 		bool changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceLinux* device);
 		#endif
 
@@ -392,7 +393,7 @@ namespace video
 		void uploadClipPlane(u32 index);
 
 		//! inits the parts of the open gl driver used on all platforms
-		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
+		bool genericDriverInit();
 		//! returns a device dependent texture from a software surface (IImage)
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
 
@@ -472,6 +473,7 @@ namespace video
 		//! Render target type for render operations
 		E_RENDER_TARGET CurrentTarget;
 
+		SIrrlichtCreationParameters Params;
 		bool Doublebuffer;
 		bool Stereo;
 

@@ -29,20 +29,17 @@ namespace
 }
 
 //! constructor
-CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
-				bool fullscreen, bool stencilbuffer,
-				io::IFileSystem* io, bool pureSoftware)
-: CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
+CD3D9Driver::CD3D9Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io)
+	: CNullDriver(io, params.WindowSize), CurrentRenderMode(ERM_NONE),
 	ResetRenderStates(true), Transformation3DChanged(false),
-	StencilBuffer(stencilbuffer), AntiAliasing(0),
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), VendorID(0),
 	MaxTextureUnits(0), MaxUserClipPlanes(0), MaxMRTs(1), NumSetMRTs(1),
 	MaxLightDistance(0.f), LastSetLight(-1), Cached2DModeSignature(0),
 	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
-	Fullscreen(fullscreen), DriverWasReset(true), OcclusionQuerySupport(false),
-	AlphaToCoverageSupport(false), DisplayAdapter(0)
+	DriverWasReset(true), OcclusionQuerySupport(false),
+	AlphaToCoverageSupport(false), Params(params)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Driver");
@@ -164,15 +161,8 @@ void CD3D9Driver::createMaterialRenderers()
 
 
 //! initialises the Direct3D API
-bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
-		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
-		bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter)
+bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 {
-	HRESULT hr;
-	Fullscreen = fullScreen;
-	CurrentDepthBufferSize = screenSize;
-	DisplayAdapter = displayAdapter;
-
 	if (!pID3D)
 	{
 		D3DLibrary = LoadLibrary( __TEXT("d3d9.dll") );
@@ -204,7 +194,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	// print device information
 	D3DADAPTER_IDENTIFIER9 dai;
-	if (!FAILED(pID3D->GetAdapterIdentifier(DisplayAdapter, 0, &dai)))
+	if (!FAILED(pID3D->GetAdapterIdentifier(Params.DisplayAdapter, 0, &dai)))
 	{
 		char tmp[512];
 
@@ -232,8 +222,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	}
 
 	D3DDISPLAYMODE d3ddm;
-	hr = pID3D->GetAdapterDisplayMode(DisplayAdapter, &d3ddm);
-	if (FAILED(hr))
+	if (FAILED(pID3D->GetAdapterDisplayMode(Params.DisplayAdapter, &d3ddm)))
 	{
 		os::Printer::log("Error: Could not get Adapter Display mode.", ELL_ERROR);
 		return false;
@@ -241,19 +230,19 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	ZeroMemory(&present, sizeof(present));
 
-	present.BackBufferCount		= 1;
-	present.EnableAutoDepthStencil	= TRUE;
-	if (vsync)
+	present.BackBufferCount = 1;
+	present.EnableAutoDepthStencil = TRUE;
+	if (Params.Vsync)
 		present.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 	else
 		present.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-	if (fullScreen)
+	if (Params.Fullscreen)
 	{
-		present.BackBufferWidth = screenSize.Width;
-		present.BackBufferHeight = screenSize.Height;
+		present.BackBufferWidth = Params.WindowSize.Width;
+		present.BackBufferHeight = Params.WindowSize.Height;
 		// request 32bit mode if user specified 32 bit, added by Thomas Stuefe
-		if (bits == 32)
+		if (Params.Bits == 32)
 			present.BackBufferFormat = D3DFMT_X8R8G8B8;
 		else
 			present.BackBufferFormat = D3DFMT_R5G6B5;
@@ -268,7 +257,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		present.Windowed		= TRUE;
 	}
 
-	UINT adapter = DisplayAdapter;
+	UINT adapter = Params.DisplayAdapter;
 	D3DDEVTYPE devtype = D3DDEVTYPE_HAL;
 	#ifndef _IRR_D3D_NO_SHADER_DEBUGGING
 	devtype = D3DDEVTYPE_REF;
@@ -287,36 +276,35 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	#endif
 
 	// enable anti alias if possible and desired
-	if (antiAlias > 0)
+	if (Params.AntiAlias > 0)
 	{
-		if(antiAlias > 16)
-			antiAlias = 16;
+		if (Params.AntiAlias > 32)
+			Params.AntiAlias = 32;
 
 		DWORD qualityLevels = 0;
 
-		while(antiAlias > 0)
+		while(Params.AntiAlias > 0)
 		{
 			if(SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
-				devtype, present.BackBufferFormat, !fullScreen,
-				(D3DMULTISAMPLE_TYPE)antiAlias, &qualityLevels)))
+				devtype, present.BackBufferFormat, !Params.Fullscreen,
+				(D3DMULTISAMPLE_TYPE)Params.AntiAlias, &qualityLevels)))
 			{
-				present.MultiSampleType	= (D3DMULTISAMPLE_TYPE)antiAlias;
+				present.MultiSampleType	= (D3DMULTISAMPLE_TYPE)Params.AntiAlias;
 				present.MultiSampleQuality = qualityLevels-1;
 				present.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
 				break;
 			}
-			--antiAlias;
+			--Params.AntiAlias;
 		}
 
-		if(antiAlias==0)
+		if (Params.AntiAlias==0)
 		{
 			os::Printer::log("Anti aliasing disabled because hardware/driver lacks necessary caps.", ELL_WARNING);
 		}
 	}
-	AntiAliasing = antiAlias;
 
 	// check stencil buffer compatibility
-	if (StencilBuffer)
+	if (Params.Stencilbuffer)
 	{
 		present.AutoDepthStencilFormat = D3DFMT_D24S8;
 		if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
@@ -334,7 +322,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
 					os::Printer::log("Device does not support stencilbuffer, disabling stencil buffer.", ELL_WARNING);
-					StencilBuffer = false;
+					Params.Stencilbuffer = false;
 				}
 			}
 		}
@@ -343,11 +331,11 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 			present.BackBufferFormat, present.BackBufferFormat, present.AutoDepthStencilFormat)))
 		{
 			os::Printer::log("Depth-stencil format is not compatible with display format, disabling stencil buffer.", ELL_WARNING);
-			StencilBuffer = false;
+			Params.Stencilbuffer = false;
 		}
 	}
 	// do not use else here to cope with flag change in previous block
-	if (!StencilBuffer)
+	if (!Params.Stencilbuffer)
 	{
 		present.AutoDepthStencilFormat = D3DFMT_D32;
 		if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
@@ -373,18 +361,16 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	// create device
 
-	DWORD fpuPrecision = highPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
+	DWORD fpuPrecision = Params.HighPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
 	if (pureSoftware)
 	{
-		hr = pID3D->CreateDevice(DisplayAdapter, D3DDEVTYPE_REF, hwnd,
-				fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
-
-		if (FAILED(hr))
+		if (FAILED(pID3D->CreateDevice(Params.DisplayAdapter, D3DDEVTYPE_REF, hwnd,
+				fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice)))
 			os::Printer::log("Was not able to create Direct3D9 software device.", ELL_ERROR);
 	}
 	else
 	{
-		hr = pID3D->CreateDevice(adapter, devtype, hwnd,
+		HRESULT hr = pID3D->CreateDevice(adapter, devtype, hwnd,
 				fpuPrecision | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if(FAILED(hr))
@@ -409,13 +395,13 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	pID3DDevice->GetDeviceCaps(&Caps);
 
 	// disable stencilbuffer if necessary
-	if (StencilBuffer &&
+	if (Params.Stencilbuffer &&
 		(!(Caps.StencilCaps & D3DSTENCILCAPS_DECRSAT) ||
 		!(Caps.StencilCaps & D3DSTENCILCAPS_INCRSAT) ||
 		!(Caps.StencilCaps & D3DSTENCILCAPS_KEEP)))
 	{
 		os::Printer::log("Device not able to use stencil buffer, disabling stencil buffer.", ELL_WARNING);
-		StencilBuffer = false;
+		Params.Stencilbuffer = false;
 	}
 
 	// set default vertex shader
@@ -440,7 +426,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
 
 	if (VendorID==0x10DE)//NVidia
-		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(DisplayAdapter, D3DDEVTYPE_HAL,
+		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(Params.DisplayAdapter, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A', 'T', 'O', 'C')) == S_OK);
 	else if (VendorID==0x1002)//ATI
@@ -461,7 +447,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16);
 	DriverAttributes->setAttribute("Version", 901);
 	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
-	DriverAttributes->setAttribute("AntiAlias", AntiAliasing);
+	DriverAttributes->setAttribute("AntiAlias", Params.AntiAlias);
 
 	// set the renderstates
 	setRenderStates3DMode();
@@ -537,7 +523,7 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	if (zBuffer)
 		flags |= D3DCLEAR_ZBUFFER;
 
-	if (StencilBuffer)
+	if (Params.Stencilbuffer)
 		flags |= D3DCLEAR_STENCIL;
 
 	if (flags)
@@ -582,7 +568,10 @@ bool CD3D9Driver::endScene()
 		sourceRectData.bottom = SceneSourceRect->LowerRightCorner.Y;
 	}
 
-	hr = pID3DDevice->Present(srcRct, NULL, WindowId, NULL);
+	IDirect3DSwapChain9* swChain;
+	hr = pID3DDevice->GetSwapChain(0, &swChain);
+	DWORD flags = (Caps.Caps3&D3DCAPS3_LINEAR_TO_SRGB_PRESENTATION)?D3DPRESENT_LINEAR_CONTENT:0;
+	hr = swChain->Present(srcRct, NULL, WindowId, NULL, flags);
 
 	if (SUCCEEDED(hr))
 		return true;
@@ -630,7 +619,7 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		// this but actually don't do this at all.
 		return false; //(Caps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) != 0;
 	case EVDF_STENCIL_BUFFER:
-		return StencilBuffer && Caps.StencilCaps;
+		return Params.Stencilbuffer && Caps.StencilCaps;
 	case EVDF_VERTEX_SHADER_1_1:
 		return Caps.VertexShaderVersion >= D3DVS_VERSION(1,1);
 	case EVDF_VERTEX_SHADER_2_0:
@@ -2096,6 +2085,10 @@ D3DTEXTUREADDRESS CD3D9Driver::getTextureWrapMode(const u8 clamp)
 void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 	bool resetAllRenderstates)
 {
+	// This needs only to be updated onresets
+	if (Params.HandleSRGB && resetAllRenderstates)
+		pID3DDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, TRUE);
+
 	if (resetAllRenderstates ||
 		lastmaterial.AmbientColor != material.AmbientColor ||
 		lastmaterial.DiffuseColor != material.DiffuseColor ||
@@ -2334,7 +2327,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		}
 
 		// enable antialiasing
-		if (AntiAliasing)
+		if (Params.AntiAlias)
 		{
 			if (material.AntiAliasing & (EAAM_SIMPLE|EAAM_QUALITY))
 				pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
@@ -2356,6 +2349,9 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	// texture address mode
 	for (u32 st=0; st<MaxTextureUnits; ++st)
 	{
+		if (resetAllRenderstates && Params.HandleSRGB)
+			pID3DDevice->SetSamplerState(st, D3DSAMP_SRGBTEXTURE, TRUE);
+
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].LODBias != material.TextureLayer[st].LODBias)
 		{
 			const float tmp = material.TextureLayer[st].LODBias * 0.125f;
@@ -2767,7 +2763,7 @@ const wchar_t* CD3D9Driver::getName() const
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
 void CD3D9Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
 {
-	if (!StencilBuffer || !count)
+	if (!Params.Stencilbuffer || !count)
 		return;
 
 	setRenderStatesStencilShadowMode(zfail);
@@ -2809,7 +2805,7 @@ void CD3D9Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 
 void CD3D9Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 			video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
-	if (!StencilBuffer)
+	if (!Params.Stencilbuffer)
 		return;
 
 	S3DVertex vtx[4];
@@ -3503,9 +3499,8 @@ IVideoDriver* createDirectX9Driver(const SIrrlichtCreationParameters& params,
 			io::IFileSystem* io, HWND window)
 {
 	const bool pureSoftware = false;
-	CD3D9Driver* dx9 = new CD3D9Driver(params.WindowSize, window, params.Fullscreen, params.Stencilbuffer, io, pureSoftware);
-	if (!dx9->initDriver(params.WindowSize, window, params.Bits, params.Fullscreen, pureSoftware, params.HighPrecisionFPU,
-		params.Vsync, params.AntiAlias, params.DisplayAdapter))
+	CD3D9Driver* dx9 = new CD3D9Driver(params, io);
+	if (!dx9->initDriver(window, pureSoftware))
 	{
 		dx9->drop();
 		dx9 = 0;

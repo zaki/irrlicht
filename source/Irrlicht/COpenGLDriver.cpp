@@ -37,7 +37,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
 	DeviceType(EIDT_WIN32)
@@ -79,7 +79,7 @@ bool COpenGLDriver::changeRenderContext(const SExposedVideoData& videoData, CIrr
 }
 
 //! inits the open gl driver
-bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceWin32* device)
+bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 {
 	// Create a window to test antialiasing support
 	const fschar_t* ClassName = __TEXT("GLCIrrDeviceWin32");
@@ -105,11 +105,11 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	RECT clientSize;
 	clientSize.top = 0;
 	clientSize.left = 0;
-	clientSize.right = params.WindowSize.Width;
-	clientSize.bottom = params.WindowSize.Height;
+	clientSize.right = Params.WindowSize.Width;
+	clientSize.bottom = Params.WindowSize.Height;
 
 	DWORD style = WS_POPUP;
-	if (!params.Fullscreen)
+	if (!Params.Fullscreen)
 		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 
 	AdjustWindowRect(&clientSize, style, FALSE);
@@ -138,17 +138,17 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		1,                                         // Version Number
 		PFD_DRAW_TO_WINDOW |                       // Format Must Support Window
 		PFD_SUPPORT_OPENGL |                       // Format Must Support OpenGL
-		(params.Doublebuffer?PFD_DOUBLEBUFFER:0) | // Must Support Double Buffering
-		(params.Stereobuffer?PFD_STEREO:0),        // Must Support Stereo Buffer
+		(Params.Doublebuffer?PFD_DOUBLEBUFFER:0) | // Must Support Double Buffering
+		(Params.Stereobuffer?PFD_STEREO:0),        // Must Support Stereo Buffer
 		PFD_TYPE_RGBA,                             // Request An RGBA Format
-		params.Bits,                               // Select Our Color Depth
+		Params.Bits,                               // Select Our Color Depth
 		0, 0, 0, 0, 0, 0,                          // Color Bits Ignored
 		0,                                         // No Alpha Buffer
 		0,                                         // Shift Bit Ignored
 		0,                                         // No Accumulation Buffer
 		0, 0, 0, 0,	                               // Accumulation Bits Ignored
-		params.ZBufferBits,                        // Z-Buffer (Depth Buffer)
-		params.Stencilbuffer ? 1 : 0,              // Stencil Buffer Depth
+		Params.ZBufferBits,                        // Z-Buffer (Depth Buffer)
+		Params.Stencilbuffer ? 1 : 0,              // Stencil Buffer Depth
 		0,                                         // No Auxiliary Buffer
 		PFD_MAIN_PLANE,                            // Main Drawing Layer
 		0,                                         // Reserved
@@ -161,10 +161,10 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	{
 		if (i == 1)
 		{
-			if (params.Stencilbuffer)
+			if (Params.Stencilbuffer)
 			{
 				os::Printer::log("Cannot create a GL device with stencil buffer, disabling stencil shadows.", ELL_WARNING);
-				params.Stencilbuffer = false;
+				Params.Stencilbuffer = false;
 				pfd.cStencilBits = 0;
 			}
 			else
@@ -177,7 +177,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		}
 		if (i == 3)
 		{
-			if (params.Bits!=16)
+			if (Params.Bits!=16)
 				pfd.cDepthBits = 16;
 			else
 				continue;
@@ -186,7 +186,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		if (i == 4)
 		{
 			// try single buffer
-			if (params.Doublebuffer)
+			if (Params.Doublebuffer)
 				pfd.dwFlags &= ~PFD_DOUBLEBUFFER;
 			else
 				continue;
@@ -268,15 +268,15 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		f32 fAttributes[] = {0.0, 0.0};
 		s32 iAttributes[] =
 		{
-			WGL_DRAW_TO_WINDOW_ARB,GL_TRUE,
-			WGL_SUPPORT_OPENGL_ARB,GL_TRUE,
+			WGL_DRAW_TO_WINDOW_ARB,1,
+			WGL_SUPPORT_OPENGL_ARB,1,
 			WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
-			WGL_COLOR_BITS_ARB,(params.Bits==32) ? 24 : 15,
-			WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
-			WGL_DEPTH_BITS_ARB,params.ZBufferBits, // 10,11
-			WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
-			WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
-			WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
+			WGL_COLOR_BITS_ARB,(Params.Bits==32) ? 24 : 15,
+			WGL_ALPHA_BITS_ARB,(Params.Bits==32) ? 8 : 1,
+			WGL_DEPTH_BITS_ARB,Params.ZBufferBits, // 10,11
+			WGL_STENCIL_BITS_ARB,Params.Stencilbuffer ? 1 : 0,
+			WGL_DOUBLE_BUFFER_ARB,Params.Doublebuffer ? 1 : 0,
+			WGL_STEREO_ARB,Params.Stereobuffer ? 1 : 0,
 			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
 #ifdef WGL_ARB_multisample
 			WGL_SAMPLES_ARB,AntiAlias, // 20,21
@@ -288,21 +288,26 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			WGL_SAMPLES_3DFX,AntiAlias, // 20,21
 			WGL_SAMPLE_BUFFERS_3DFX, 1,
 #endif
-#if 0
 #ifdef WGL_ARB_framebuffer_sRGB
-			WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB, GL_TRUE,
+			WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB, Params.HandleSRGB ? 1:0,
 #elif defined(WGL_EXT_framebuffer_sRGB)
-			WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_TRUE,
+			WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, Params.HandleSRGB ? 1:0,
 #endif
-#endif
-			0,0
+//			WGL_DEPTH_FLOAT_EXT, 1,
+			0,0,0,0
 		};
+		int iAttrSize = sizeof(iAttributes)/sizeof(int);
+		const bool framebuffer_srgb_supported = ((wglExtensions.find("WGL_ARB_framebuffer_sRGB") != -1) ||
+			(wglExtensions.find("WGL_EXT_framebuffer_sRGB") != -1));
+		if (!framebuffer_srgb_supported)
+		{
+			memmove(&iAttributes[24],&iAttributes[26],sizeof(int)*(iAttrSize-26));
+			iAttrSize -= 2;
+		}
 		if (!multi_sample_supported)
 		{
-			iAttributes[20]=0;
-			iAttributes[21]=0;
-			iAttributes[22]=0;
-			iAttributes[23]=0;
+			memmove(&iAttributes[20],&iAttributes[24],sizeof(int)*(iAttrSize-24));
+			iAttrSize -= 4;
 		}
 
 		s32 rv=0;
@@ -313,7 +318,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			UINT numFormats=0;
 			const BOOL valid = wglChoosePixelFormat_ARB(HDc,iAttributes,fAttributes,1,&pixelFormat,&numFormats);
 
-			if (valid && numFormats>0)
+			if (valid && numFormats)
 				rv = pixelFormat;
 			else
 				iAttributes[21] -= 1;
@@ -350,10 +355,10 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		{
 			if (i == 1)
 			{
-				if (params.Stencilbuffer)
+				if (Params.Stencilbuffer)
 				{
 					os::Printer::log("Cannot create a GL device with stencil buffer, disabling stencil shadows.", ELL_WARNING);
-					params.Stencilbuffer = false;
+					Params.Stencilbuffer = false;
 					pfd.cStencilBits = 0;
 				}
 				else
@@ -366,7 +371,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			}
 			if (i == 3)
 			{
-				if (params.Bits!=16)
+				if (Params.Bits!=16)
 					pfd.cDepthBits = 16;
 				else
 					continue;
@@ -391,6 +396,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		os::Printer::log("Cannot set the pixel format.", ELL_ERROR);
 		return false;
 	}
+	os::Printer::log("Pixel Format", core::stringc(PixelFormat).c_str(), ELL_DEBUG);
 
 	// create rendering context
 #ifdef WGL_ARB_create_context
@@ -446,9 +452,9 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			ColorFormat = ECF_R5G6B5;
 	}
 
-	genericDriverInit(params.WindowSize, params.Stencilbuffer);
+	genericDriverInit();
 
-	extGlSwapInterval(params.Vsync ? 1 : 0);
+	extGlSwapInterval(Params.Vsync ? 1 : 0);
 	return true;
 }
 
@@ -465,14 +471,14 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	OSXDevice(device), DeviceType(EIDT_OSX)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
-	genericDriverInit(params.WindowSize, params.Stencilbuffer);
+	genericDriverInit();
 }
 
 #endif
@@ -488,7 +494,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	X11Device(device), DeviceType(EIDT_X11)
 {
@@ -532,18 +538,18 @@ bool COpenGLDriver::changeRenderContext(const SExposedVideoData& videoData, CIrr
 
 
 //! inits the open gl driver
-bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceLinux* device)
+bool COpenGLDriver::initDriver(CIrrDeviceLinux* device)
 {
 	ExposedData.OpenGLLinux.X11Context = glXGetCurrentContext();
 	ExposedData.OpenGLLinux.X11Display = glXGetCurrentDisplay();
-	ExposedData.OpenGLLinux.X11Window = (unsigned long)params.WindowId;
+	ExposedData.OpenGLLinux.X11Window = (unsigned long)Params.WindowId;
 	Drawable = glXGetCurrentDrawable();
 	X11Display = (Display*)ExposedData.OpenGLLinux.X11Display;
 
-	genericDriverInit(params.WindowSize, params.Stencilbuffer);
+	genericDriverInit();
 
 	// set vsync
-	extGlSwapInterval(params.Vsync ? 1 : 0);
+	extGlSwapInterval(Params.Vsync ? 1 : 0);
 	return true;
 }
 
@@ -561,7 +567,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	SDLDevice(device), DeviceType(EIDT_SDL)
 {
@@ -569,7 +575,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	setDebugName("COpenGLDriver");
 	#endif
 
-	genericDriverInit(params.WindowSize, params.Stencilbuffer);
+	genericDriverInit();
 }
 
 #endif // _IRR_COMPILE_WITH_SDL_DEVICE_
@@ -612,7 +618,7 @@ COpenGLDriver::~COpenGLDriver()
 // METHODS
 // -----------------------------------------------------------------------
 
-bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer)
+bool COpenGLDriver::genericDriverInit()
 {
 	Name=L"OpenGL ";
 	Name.append(glGetString(GL_VERSION));
@@ -634,7 +640,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		CurrentTexture[i]=0;
 	// load extensions
-	initExtensions(stencilBuffer);
+	initExtensions(Params.Stencilbuffer);
 	if (queryFeature(EVDF_ARB_GLSL))
 	{
 		char buf[32];
@@ -662,7 +668,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 	// Reset The Current Viewport
-	glViewport(0, 0, screenSize.Width, screenSize.Height);
+	glViewport(0, 0, Params.WindowSize.Width, Params.WindowSize.Height);
 
 	UserClipPlanes.reallocate(MaxUserClipPlanes);
 	for (i=0; i<MaxUserClipPlanes; ++i)
@@ -677,6 +683,13 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 #endif
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+
+	Params.HandleSRGB &= ((FeatureAvailable[IRR_ARB_framebuffer_sRGB] || FeatureAvailable[IRR_EXT_framebuffer_sRGB]) &&
+		FeatureAvailable[IRR_EXT_texture_sRGB]);
+#if defined(GL_ARB_framebuffer_sRGB) || defined(GL_EXT_framebuffer_sRGB)
+	if (Params.HandleSRGB)
+		glEnable(GL_FRAMEBUFFER_SRGB);
+#endif
 
 // This is a fast replacement for NORMALIZE_NORMALS
 //	if ((Version>101) || FeatureAvailable[IRR_EXT_rescale_normal])
@@ -4421,7 +4434,7 @@ GLenum COpenGLDriver::primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const
 }
 
 
-GLenum COpenGLDriver::getGLBlend (E_BLEND_FACTOR factor) const
+GLenum COpenGLDriver::getGLBlend(E_BLEND_FACTOR factor) const
 {
 	GLenum r = 0;
 	switch (factor)
@@ -4462,7 +4475,7 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 	COpenGLDriver* ogl =  new COpenGLDriver(params, io, device);
-	if (!ogl->initDriver(params, device))
+	if (!ogl->initDriver(device))
 	{
 		ogl->drop();
 		ogl = 0;
@@ -4498,7 +4511,7 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 	COpenGLDriver* ogl =  new COpenGLDriver(params, io, device);
-	if (!ogl->initDriver(params, device))
+	if (!ogl->initDriver(device))
 	{
 		ogl->drop();
 		ogl = 0;

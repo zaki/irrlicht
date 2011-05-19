@@ -135,26 +135,31 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 	filtering = GL_LINEAR;
 	colorformat = GL_RGBA;
 	type = GL_UNSIGNED_BYTE;
+	GLenum internalformat = GL_RGBA;
 
 	switch(format)
 	{
 		case ECF_A1R5G5B5:
 			colorformat=GL_BGRA_EXT;
 			type=GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			return GL_RGBA;
+			internalformat =  GL_RGBA;
+			break;
 		case ECF_R5G6B5:
 			colorformat=GL_BGR;
 			type=GL_UNSIGNED_SHORT_5_6_5_REV;
-			return GL_RGB;
+			internalformat =  GL_RGB;
+			break;
 		case ECF_R8G8B8:
 			colorformat=GL_BGR;
 			type=GL_UNSIGNED_BYTE;
-			return GL_RGB;
+			internalformat =  GL_RGB;
+			break;
 		case ECF_A8R8G8B8:
 			colorformat=GL_BGRA_EXT;
 			if (Driver->Version > 101)
 				type=GL_UNSIGNED_INT_8_8_8_8_REV;
-			return GL_RGBA;
+			internalformat =  GL_RGBA;
+			break;
 		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
 		case ECF_R16F:
 		{
@@ -163,11 +168,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_R16F;
+			internalformat =  GL_R16F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_G16R16F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -175,11 +181,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RG16F;
+			internalformat =  GL_RG16F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_A16B16G16R16F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -187,11 +194,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RGBA;
 			type = GL_FLOAT;
 
-			return GL_RGBA16F_ARB;
+			internalformat =  GL_RGBA16F_ARB;
 #else
-			return GL_RGBA8;
+			internalformat =  GL_RGBA8;
 #endif
 		}
+			break;
 		case ECF_R32F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -199,11 +207,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_R32F;
+			internalformat =  GL_R32F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_G32R32F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -211,11 +220,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RG32F;
+			internalformat =  GL_RG32F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_A32B32G32R32F:
 		{
 #ifdef GL_ARB_texture_float
@@ -223,17 +233,28 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RGBA;
 			type = GL_FLOAT;
 
-			return GL_RGBA32F_ARB;
+			internalformat =  GL_RGBA32F_ARB;
 #else
-			return GL_RGBA8;
+			internalformat =  GL_RGBA8;
 #endif
 		}
+			break;
 		default:
 		{
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
-			return GL_RGBA8;
+			internalformat =  GL_RGBA8;
 		}
 	}
+#if defined(GL_ARB_framebuffer_sRGB) || defined(GL_EXT_framebuffer_sRGB)
+	if (Driver->Params.HandleSRGB)
+	{
+		if (internalformat==GL_RGBA)
+			internalformat=GL_SRGB_ALPHA_EXT;
+		else if (internalformat==GL_RGB)
+			internalformat=GL_SRGB_EXT;
+	}
+#endif
+	return internalformat;
 }
 
 
