@@ -9,13 +9,13 @@
 
 #include "IImageLoader.h"
 
-
+#define _IRR_COMPILE_WITH_DDS_LOADER_
 namespace irr
 {
 namespace video
 {
 
-#if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_WRITER_)
+#if defined(_IRR_COMPILE_WITH_DDS_LOADER_)
 
 // byte-align structures
 #if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
@@ -195,13 +195,6 @@ struct ddsColor
 } PACK_STRUCT;
 
 
-
-/* public functions */
-s32	DDSGetInfo( ddsBuffer *dds, s32 *width, s32 *height, eDDSPixelFormat *pf );
-s32 DDSDecompress( ddsBuffer *dds, u8 *pixels );
-
-
-
 /* endian tomfoolery */
 typedef union
 {
@@ -295,7 +288,7 @@ floatSwapUnion;
 #ifdef _IRR_COMPILE_WITH_DDS_LOADER_
 
 /*!
-	Surface Loader for targa images
+	Surface Loader for DDS images
 */
 class CImageLoaderDDS : public IImageLoader
 {
@@ -315,7 +308,7 @@ private:
 
 };
 
-#endif // compiled with loader
+#endif // compiled with DDS loader
 
 } // end namespace video
 } // end namespace irr

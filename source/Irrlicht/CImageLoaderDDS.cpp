@@ -28,21 +28,21 @@ namespace irr
 namespace video
 {
 
+namespace
+{
+
 /*!
 	DDSDecodePixelFormat()
 	determines which pixel format the dds texture is in
 */
 void DDSDecodePixelFormat( ddsBuffer *dds, eDDSPixelFormat *pf )
 {
-	u32	fourCC;
-
-
 	/* dummy check */
 	if(	dds == NULL || pf == NULL )
 		return;
 
 	/* extract fourCC */
-	fourCC = dds->pixelFormat.fourCC;
+	const u32 fourCC = dds->pixelFormat.fourCC;
 
 	/* test it */
 	if( fourCC == 0 )
@@ -60,7 +60,6 @@ void DDSDecodePixelFormat( ddsBuffer *dds, eDDSPixelFormat *pf )
 	else
 		*pf = DDS_PF_UNKNOWN;
 }
-
 
 
 /*!
@@ -91,7 +90,6 @@ s32 DDSGetInfo( ddsBuffer *dds, s32 *width, s32 *height, eDDSPixelFormat *pf )
 	/* return ok */
 	return 0;
 }
-
 
 
 /*!
@@ -188,14 +186,13 @@ void DDSGetColorBlockColors( ddsColorBlock *block, ddsColor colors[ 4 ] )
 }
 
 
-
 /*
 DDSDecodeColorBlock()
 decodes a dds color block
 fixme: make endian-safe
 */
 
-static void DDSDecodeColorBlock( u32 *pixel, ddsColorBlock *block, s32 width, u32 colors[ 4 ] )
+void DDSDecodeColorBlock( u32 *pixel, ddsColorBlock *block, s32 width, u32 colors[ 4 ] )
 {
 	s32				r, n;
 	u32	bits;
@@ -246,13 +243,11 @@ static void DDSDecodeColorBlock( u32 *pixel, ddsColorBlock *block, s32 width, u3
 }
 
 
-
 /*
 DDSDecodeAlphaExplicit()
 decodes a dds explicit alpha block
 */
-
-static void DDSDecodeAlphaExplicit( u32 *pixel, ddsAlphaBlockExplicit *alphaBlock, s32 width, u32 alphaZero )
+void DDSDecodeAlphaExplicit( u32 *pixel, ddsAlphaBlockExplicit *alphaBlock, s32 width, u32 alphaZero )
 {
 	s32				row, pix;
 	u16	word;
@@ -279,7 +274,6 @@ static void DDSDecodeAlphaExplicit( u32 *pixel, ddsAlphaBlockExplicit *alphaBloc
 			*pixel |= *((u32*) &color);
 			word >>= 4;		/* move next bits to lowest 4 */
 			pixel++;		/* move to next pixel in the row */
-
 		}
 	}
 }
@@ -290,16 +284,14 @@ static void DDSDecodeAlphaExplicit( u32 *pixel, ddsAlphaBlockExplicit *alphaBloc
 DDSDecodeAlpha3BitLinear()
 decodes interpolated alpha block
 */
-
-static void DDSDecodeAlpha3BitLinear( u32 *pixel, ddsAlphaBlock3BitLinear *alphaBlock, s32 width, u32 alphaZero )
+void DDSDecodeAlpha3BitLinear( u32 *pixel, ddsAlphaBlock3BitLinear *alphaBlock, s32 width, u32 alphaZero )
 {
 
-	s32					row, pix;
-	u32		stuff;
-	u8		bits[ 4 ][ 4 ];
-	u16		alphas[ 8 ];
-	ddsColor			aColors[ 4 ][ 4 ];
-
+	s32 row, pix;
+	u32 stuff;
+	u8 bits[ 4 ][ 4 ];
+	u16 alphas[ 8 ];
+	ddsColor aColors[ 4 ][ 4 ];
 
 	/* get initial alphas */
 	alphas[ 0 ] = alphaBlock->alpha0;
@@ -397,18 +389,16 @@ static void DDSDecodeAlpha3BitLinear( u32 *pixel, ddsAlphaBlock3BitLinear *alpha
 }
 
 
-
 /*
 DDSDecompressDXT1()
 decompresses a dxt1 format texture
 */
 s32 DDSDecompressDXT1( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
-	s32				x, y, xBlocks, yBlocks;
-	u32	*pixel;
-	ddsColorBlock	*block;
-	ddsColor		colors[ 4 ];
-
+	s32 x, y, xBlocks, yBlocks;
+	u32 *pixel;
+	ddsColorBlock *block;
+	ddsColor colors[ 4 ];
 
 	/* setup */
 	xBlocks = width / 4;
@@ -418,7 +408,7 @@ s32 DDSDecompressDXT1( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 	for( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block */
-		block = (ddsColorBlock*) ((u32) dds->data + y * xBlocks * 8);
+		block = (ddsColorBlock*) (dds->data + y * xBlocks * 8);
 
 		/* walk x */
 		for( x = 0; x < xBlocks; x++, block++ )
@@ -434,7 +424,6 @@ s32 DDSDecompressDXT1( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 }
 
 
-
 /*
 DDSDecompressDXT3()
 decompresses a dxt3 format texture
@@ -442,12 +431,11 @@ decompresses a dxt3 format texture
 
 s32 DDSDecompressDXT3( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
-	s32						x, y, xBlocks, yBlocks;
-	u32			*pixel, alphaZero;
-	ddsColorBlock			*block;
-	ddsAlphaBlockExplicit	*alphaBlock;
-	ddsColor				colors[ 4 ];
-
+	s32 x, y, xBlocks, yBlocks;
+	u32 *pixel, alphaZero;
+	ddsColorBlock *block;
+	ddsAlphaBlockExplicit *alphaBlock;
+	ddsColor colors[ 4 ];
 
 	/* setup */
 	xBlocks = width / 4;
@@ -464,7 +452,7 @@ s32 DDSDecompressDXT3( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 	for( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = (ddsColorBlock*) ((u32) dds->data + y * xBlocks * 16);
+		block = (ddsColorBlock*) (dds->data + y * xBlocks * 16);
 
 		/* walk x */
 		for( x = 0; x < xBlocks; x++, block++ )
@@ -490,19 +478,17 @@ s32 DDSDecompressDXT3( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 }
 
 
-
 /*
 DDSDecompressDXT5()
 decompresses a dxt5 format texture
 */
 s32 DDSDecompressDXT5( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
-	s32							x, y, xBlocks, yBlocks;
-	u32				*pixel, alphaZero;
-	ddsColorBlock				*block;
-	ddsAlphaBlock3BitLinear	*alphaBlock;
-	ddsColor					colors[ 4 ];
-
+	s32 x, y, xBlocks, yBlocks;
+	u32 *pixel, alphaZero;
+	ddsColorBlock *block;
+	ddsAlphaBlock3BitLinear *alphaBlock;
+	ddsColor colors[ 4 ];
 
 	/* setup */
 	xBlocks = width / 4;
@@ -519,7 +505,7 @@ s32 DDSDecompressDXT5( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 	for( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = (ddsColorBlock*) ((u32) dds->data + y * xBlocks * 16);
+		block = (ddsColorBlock*) (dds->data + y * xBlocks * 16);
 
 		/* walk x */
 		for( x = 0; x < xBlocks; x++, block++ )
@@ -545,23 +531,18 @@ s32 DDSDecompressDXT5( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 }
 
 
-
 /*
 DDSDecompressDXT2()
 decompresses a dxt2 format texture (fixme: un-premultiply alpha)
 */
 s32 DDSDecompressDXT2( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
-	s32		r;
-
-
 	/* decompress dxt3 first */
-	r = DDSDecompressDXT3( dds, width, height, pixels );
+	const s32 r = DDSDecompressDXT3( dds, width, height, pixels );
 
 	/* return to sender */
 	return r;
 }
-
 
 
 /*
@@ -570,16 +551,12 @@ decompresses a dxt4 format texture (fixme: un-premultiply alpha)
 */
 s32 DDSDecompressDXT4( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
-	s32		r;
-
-
 	/* decompress dxt5 first */
-	r = DDSDecompressDXT5( dds, width, height, pixels );
+	const s32 r = DDSDecompressDXT5( dds, width, height, pixels );
 
 	/* return to sender */
 	return r;
 }
-
 
 
 /*
@@ -588,19 +565,15 @@ decompresses an argb 8888 format texture
 */
 s32 DDSDecompressARGB8888( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
-	s32							x, y;
-	u8				*in, *out;
-
-
 	/* setup */
-	in = dds->data;
-	out = pixels;
+	u8* in = dds->data;
+	u8* out = pixels;
 
 	/* walk y */
-	for( y = 0; y < height; y++ )
+	for(s32 y = 0; y < height; y++)
 	{
 		/* walk x */
-		for( x = 0; x < width; x++ )
+		for(s32 x = 0; x < width; x++)
 		{
 			*out++ = *in++;
 			*out++ = *in++;
@@ -614,20 +587,18 @@ s32 DDSDecompressARGB8888( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 }
 
 
-
 /*
 DDSDecompress()
 decompresses a dds texture into an rgba image buffer, returns 0 on success
 */
 s32 DDSDecompress( ddsBuffer *dds, u8 *pixels )
 {
-	s32			width, height, r;
-	eDDSPixelFormat		pf;
-
+	s32 width, height;
+	eDDSPixelFormat pf;
 
 	/* get dds info */
-	r = DDSGetInfo( dds, &width, &height, &pf );
-	if( r )
+	s32 r = DDSGetInfo( dds, &width, &height, &pf );
+	if ( r )
 		return r;
 
 	/* decompress */
@@ -669,14 +640,15 @@ s32 DDSDecompress( ddsBuffer *dds, u8 *pixels )
 	return r;
 }
 
+} // end anonymous namespace
+
+
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
 bool CImageLoaderDDS::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "dds" );
 }
-
-
 
 
 //! returns true if the file maybe is able to be loaded by this class
@@ -691,9 +663,8 @@ bool CImageLoaderDDS::isALoadableFileFormat(io::IReadFile* file) const
 	s32 width, height;
 	eDDSPixelFormat pixelFormat;
 
-	return 0 == DDSGetInfo( &header, &width, &height, &pixelFormat);
+	return (0 == DDSGetInfo( &header, &width, &height, &pixelFormat));
 }
-
 
 
 //! creates a surface from the file
@@ -727,7 +698,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 }
 
 
-//! creates a loader which is able to load tgas
+//! creates a loader which is able to load dds images
 IImageLoader* createImageLoaderDDS()
 {
 	return new CImageLoaderDDS();
@@ -738,4 +709,3 @@ IImageLoader* createImageLoaderDDS()
 } // end namespace irr
 
 #endif
-
