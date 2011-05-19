@@ -2924,7 +2924,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	if (queryFeature(EVDF_BLEND_OPERATIONS) &&
 		(resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation))
 	{
-		if (EBO_NONE)
+		if (material.BlendOperation==EBO_NONE)
 			glDisable(GL_BLEND);
 		else
 		{

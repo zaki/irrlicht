@@ -565,23 +565,23 @@ namespace scene
 	{
 		if (!IsVisible || !SceneManager->getActiveCamera())
 			return;
-
-		preRenderLODCalculations();
-		preRenderIndicesCalculations();
+    
+    SceneManager->registerNodeForRendering(this);
+    
+    preRenderCalculationsIfNeeded();
+    
+    // Do Not call ISceneNode::OnRegisterSceneNode(), this node should have no children (luke: is this comment still true, as ISceneNode::OnRegisterSceneNode() is called?)
+    
 		ISceneNode::OnRegisterSceneNode();
 		ForceRecalculation = false;
 	}
-
-
-	void CTerrainSceneNode::preRenderLODCalculations()
-	{
-		scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
+  
+  void CTerrainSceneNode::preRenderCalculationsIfNeeded()
+  {
+    scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
 		if(!camera)
 			return;
-
-		SceneManager->registerNodeForRendering(this);
-		// Do Not call ISceneNode::OnRegisterSceneNode(), this node should have no children
-
+    
 		// Determine the camera rotation, based on the camera direction.
 		const core::vector3df cameraPosition = camera->getAbsolutePosition();
 		const core::vector3df cameraRotation = core::line3d<f32>(cameraPosition, camera->getTarget()).getVector().getHorizontalAngle();
@@ -607,13 +607,31 @@ namespace scene
 				}
 			}
 		}
-
+		
+    //we need to redo calculations...
+    
 		OldCameraPosition = cameraPosition;
 		OldCameraRotation = cameraRotation;
 		OldCameraUp = cameraUp;
 		OldCameraFOV = CameraFOV;
-
-		const SViewFrustum* frustum = SceneManager->getActiveCamera()->getViewFrustum();
+    
+    
+    preRenderLODCalculations();
+		preRenderIndicesCalculations();
+    
+    
+  }
+  
+	void CTerrainSceneNode::preRenderLODCalculations()
+	{
+    scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
+    
+    if(!camera)
+			return;
+    
+    const core::vector3df cameraPosition = camera->getAbsolutePosition();
+    
+		const SViewFrustum* frustum = camera->getViewFrustum();
 
 		// Determine each patches LOD based on distance from camera (and whether or not they are in
 		// the view frustum).

@@ -2259,7 +2259,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	if (queryFeature(EVDF_BLEND_OPERATIONS) &&
 		(resetAllRenderstates|| lastmaterial.BlendOperation != material.BlendOperation))
 	{
-		if (EBO_NONE)
+		if (material.BlendOperation==EBO_NONE)
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		else
 		{
