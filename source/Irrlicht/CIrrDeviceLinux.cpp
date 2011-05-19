@@ -411,6 +411,11 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_SAMPLE_BUFFERS_SGIS, 1,
 					GLX_SAMPLES_SGIS, CreationParams.AntiAlias, // 18,19
 #endif
+#ifdef GL_ARB_framebuffer_sRGB
+					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB:GLX_USE_GL,
+#elif defined(GL_EXT_framebuffer_sRGB)
+					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT:GLX_USE_GL,
+#endif
 					GLX_STEREO, CreationParams.Stereobuffer?True:False,
 					None
 				};
@@ -545,7 +550,7 @@ bool CIrrDeviceLinux::createWindow()
 				// attribute array for the draw buffer
 				int visualAttrBuffer[] =
 				{
-					GLX_RGBA, GL_TRUE,
+					GLX_RGBA, GLX_USE_GL,
 					GLX_RED_SIZE, 4,
 					GLX_GREEN_SIZE, 4,
 					GLX_BLUE_SIZE, 4,
@@ -557,6 +562,11 @@ bool CIrrDeviceLinux::createWindow()
 					// GLX_USE_GL, which is silently ignored by glXChooseVisual
 					CreationParams.Doublebuffer?GLX_DOUBLEBUFFER:GLX_USE_GL, // 14
 					CreationParams.Stereobuffer?GLX_STEREO:GLX_USE_GL, // 15
+#ifdef GL_ARB_framebuffer_sRGB
+					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB:GLX_USE_GL,
+#elif defined(GL_EXT_framebuffer_sRGB)
+					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT:GLX_USE_GL,
+#endif
 					None
 				};
 
@@ -613,7 +623,7 @@ bool CIrrDeviceLinux::createWindow()
 	}
 #ifdef _DEBUG
 	else
-		os::Printer::log("Visual chosen: ", core::stringc(static_cast<u32>(visual->visualid)).c_str(), ELL_INFORMATION);
+		os::Printer::log("Visual chosen: ", core::stringc(static_cast<u32>(visual->visualid)).c_str(), ELL_DEBUG);
 #endif
 
 	// create color map
