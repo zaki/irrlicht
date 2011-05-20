@@ -2514,6 +2514,10 @@ void COpenGLDriver::setRenderStates3DMode()
 		glLoadMatrixf(Matrices[ETS_PROJECTION].pointer());
 
 		ResetRenderStates = true;
+#ifdef GL_EXT_clip_volume_hint
+		if (FeatureAvailable[IRR_EXT_clip_volume_hint])
+			glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT, GL_NICEST);
+#endif
 	}
 
 	if (ResetRenderStates || LastMaterial != Material)
@@ -3168,12 +3172,15 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			LastMaterial = InitMaterial2D;
 		}
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#ifdef GL_EXT_clip_volume_hint
+		if (FeatureAvailable[IRR_EXT_clip_volume_hint])
+			glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT, GL_FASTEST);
+#endif
+
 	}
 	if (OverrideMaterial2DEnabled)
 	{
 		OverrideMaterial2D.Lighting=false;
-		OverrideMaterial2D.ZBuffer=ECFN_NEVER;
-		OverrideMaterial2D.ZWriteEnable=false;
 		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
 		LastMaterial = OverrideMaterial2D;
 	}
