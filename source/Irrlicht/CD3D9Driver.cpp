@@ -394,6 +394,8 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	// get caps
 	pID3DDevice->GetDeviceCaps(&Caps);
 
+	os::Printer::log("Currently available Video Memory", core::stringc(pID3DDevice->GetAvailableTextureMem()).c_str());
+
 	// disable stencilbuffer if necessary
 	if (Params.Stencilbuffer &&
 		(!(Caps.StencilCaps & D3DSTENCILCAPS_DECRSAT) ||
@@ -2014,6 +2016,7 @@ bool CD3D9Driver::setRenderStates3DMode()
 		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)&Matrices[ETS_PROJECTION]));
 
 		pID3DDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+		pID3DDevice->SetRenderState(D3DRS_CLIPPING, TRUE);
 
 		ResetRenderStates = true;
 	}
@@ -2569,13 +2572,13 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		m.setTranslation(core::vector3df(-1,1,0));
 		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)m.pointer()));
 
+		pID3DDevice->SetRenderState(D3DRS_CLIPPING, FALSE);
+
 		Transformation3DChanged = false;
 	}
 	if (OverrideMaterial2DEnabled)
 	{
 		OverrideMaterial2D.Lighting=false;
-		OverrideMaterial2D.ZBuffer=ECFN_NEVER;
-		OverrideMaterial2D.ZWriteEnable=false;
 		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
 		LastMaterial = OverrideMaterial2D;
 	}
