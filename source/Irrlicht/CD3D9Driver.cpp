@@ -843,6 +843,7 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 			os::Printer::log("Error: Could not set new depth buffer.", ELL_ERROR);
 		}
 	}
+	Transformation3DChanged=true;
 
 	if (clearBackBuffer || clearZBuffer)
 	{

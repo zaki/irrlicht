@@ -790,6 +790,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 		CurrentRendertargetSize = tex->getSize();
 	}
+	Transformation3DChanged = true; 
 
 	if (clearBackBuffer || clearZBuffer)
 	{
