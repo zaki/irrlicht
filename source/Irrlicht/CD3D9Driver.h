@@ -451,8 +451,6 @@ namespace video
 			EC2D_ALPHA_CHANNEL = 0x4
 		};
 
-		u32 Cached2DModeSignature;
-
 		ECOLOR_FORMAT ColorFormat;
 		D3DFORMAT D3DColorFormat;
 		bool DeviceLost;
