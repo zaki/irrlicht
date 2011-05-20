@@ -59,7 +59,7 @@ bool testWithPNG(video::E_DRIVER_TYPE driverType)
 	driver->draw2DImage(tex, core::recti(0,0,160,120), core::recti(0,0,256,256), 0, 0, true);
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-draw2DImagePNG.png");
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-draw2DImagePNG.png", 98.f);
 
 	device->closeDevice();
 	device->run();
