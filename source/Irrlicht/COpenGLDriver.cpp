@@ -3178,6 +3178,9 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		LastMaterial = OverrideMaterial2D;
 	}
 
+	// no alphaChannel without texture
+	alphaChannel &= texture;
+
 	if (alphaChannel || alpha)
 	{
 		glEnable(GL_BLEND);

@@ -36,7 +36,7 @@ CD3D9Driver::CD3D9Driver(const SIrrlichtCreationParameters& params, io::IFileSys
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), VendorID(0),
 	MaxTextureUnits(0), MaxUserClipPlanes(0), MaxMRTs(1), NumSetMRTs(1),
-	MaxLightDistance(0.f), LastSetLight(-1), Cached2DModeSignature(0),
+	MaxLightDistance(0.f), LastSetLight(-1),
 	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
 	DriverWasReset(true), OcclusionQuerySupport(false),
 	AlphaToCoverageSupport(false), Params(params)
@@ -2552,7 +2552,6 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		{
 			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
 			LastMaterial=InitMaterial2D;
-			Cached2DModeSignature=0;
 
 			// fix everything that is wrongly set by InitMaterial2D default
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -2579,82 +2578,58 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		OverrideMaterial2D.ZWriteEnable=false;
 		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
 		LastMaterial = OverrideMaterial2D;
-		Cached2DModeSignature=0;
 	}
 
-	u32 current2DSignature = 0;
-	current2DSignature |= alpha ? EC2D_ALPHA : 0;
-	current2DSignature |= texture ? EC2D_TEXTURE : 0;
-	current2DSignature |= alphaChannel ? EC2D_ALPHA_CHANNEL : 0;
+	// no alphaChannel without texture
+	alphaChannel &= texture;
 
-	if (CurrentRenderMode != ERM_2D || current2DSignature != Cached2DModeSignature)
+	if (alpha || alphaChannel)
 	{
-		if (texture)
+		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	}
+	else
+		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	pID3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	pID3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pID3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	if (texture)
+	{
+		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
+		// Due to the transformation change, the previous line would call a reset each frame
+		// but we can safely reset the variable as it was false before
+		Transformation3DChanged=false;
+	}
+	if (alphaChannel)
+	{
+		pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+
+		if (alpha)
 		{
-			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
-			if (alphaChannel)
-			{
-				pID3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-				pID3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-				pID3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-				pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-
-				if (alpha)
-				{
-					pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-					pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-				}
-				else
-				{
-					pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-				}
-
-				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-			}
-			else
-			{
-				pID3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-				if (alpha)
-				{
-					pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-					pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-					pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-					pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-				}
-				else
-				{
-					pID3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-					pID3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-					pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-				}
-			}
+			pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+			pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 		}
 		else
 		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-			if (alpha)
-			{
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-			}
-			else
-			{
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-			}
+			pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+		}
+	}
+	else
+	{
+		pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+		if (alpha)
+		{
+			pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+		}
+		else
+		{
+			pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+			pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 		}
 	}
 
 	CurrentRenderMode = ERM_2D;
-	Cached2DModeSignature = current2DSignature;
 }
 
 
