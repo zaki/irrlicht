@@ -161,6 +161,14 @@ static bool doTests()
 			tmp.getAngle(), ref.getAngle());
 		return false;
 	}
+	tmp = core::vector2d<T>(-1.53080559e-16, 2.49999523);
+	ref = core::vector2d<f64>(-1.53080559e-16, 2.49999523);
+	if (!equals(tmp.getAngle(),ref.getAngle()))
+	{
+		logTestString("\nERROR: angle %.16f != angle %.16f\n",
+			tmp.getAngle(), ref.getAngle());
+		return false;
+	}
 
 	core::vector2d<T> zeroZero(0, 0);
 	core::vector2d<T> oneOne(1, 1);
