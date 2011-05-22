@@ -138,6 +138,14 @@ namespace video
 				SColor color=SColor(255,255,255,255),
 				bool useAlphaChannelOfTexture=false);
 
+		//! draws a set of 2d images, using a color and the alpha channel of the texture if desired.
+		virtual void draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect=0,
+				SColor color=SColor(255,255,255,255),
+				bool useAlphaChannelOfTexture=false);
+
 		//! Draws a part of the texture into the rectangle.
 		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,

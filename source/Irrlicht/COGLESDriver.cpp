@@ -1301,7 +1301,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 	core::array<S3DVertex> vertices;
 	core::array<u16> quadIndices;
 	vertices.reallocate(indices.size()*4);
-	quadIndices.reallocate(indices.size()*3);
+	quadIndices.reallocate(indices.size()*6);
 	for (u32 i=0; i<indices.size(); ++i)
 	{
 		const s32 currentIndex = indices[i];
@@ -1316,16 +1316,161 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 
 		const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
 
+		const u32 vstart = vertices.size();
+
 		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
 		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
 		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
 		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
 
+		indices.push_back(vstart);
+		indices.push_back(vstart+1);
+		indices.push_back(vstart+2);
+		indices.push_back(vstart);
+		indices.push_back(vstart+2);
+		indices.push_back(vstart+3);
+
 		targetPos.X += sourceRects[currentIndex].getWidth();
 	}
-	drawVertexPrimitiveList2d3d(vertices.pointer(), 4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
+	drawVertexPrimitiveList2d3d(vertices.pointer(), indices.size()*4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
+}
+
+
+//! draws a set of 2d images, using a color and the alpha channel of the texture if desired.
+void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect,
+				SColor color,
+				bool useAlphaChannelOfTexture)
+{
+	if (!texture)
+		return;
+
+	const u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
+
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
+	const f32 invW = 1.f / static_cast<f32>(ss.Width);
+	const f32 invH = 1.f / static_cast<f32>(ss.Height);
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+
+	disableTextures(1);
+	if (!setActiveTexture(0, texture))
+		return;
+	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
+
+	core::array<S3DVertex> vertices;
+	core::array<u16> quadIndices;
+	vertices.reallocate(drawCount*4);
+	quadIndices.reallocate(drawCount*6);
+
+	for (u32 i=0; i<drawCount; ++i)
+	{
+		if (!sourceRects[i].isValid())
+			continue;
+
+		core::position2d<s32> targetPos(positions[i]);
+		core::position2d<s32> sourcePos(sourceRects[i].UpperLeftCorner);
+		// This needs to be signed as it may go negative.
+		core::dimension2d<s32> sourceSize(sourceRects[i].getSize());
+		if (clipRect)
+		{
+			if (targetPos.X < clipRect->UpperLeftCorner.X)
+			{
+				sourceSize.Width += targetPos.X - clipRect->UpperLeftCorner.X;
+				if (sourceSize.Width <= 0)
+					continue;
+
+				sourcePos.X -= targetPos.X - clipRect->UpperLeftCorner.X;
+				targetPos.X = clipRect->UpperLeftCorner.X;
+			}
+
+			if (targetPos.X + sourceSize.Width > clipRect->LowerRightCorner.X)
+			{
+				sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
+				if (sourceSize.Width <= 0)
+					continue;
+			}
+
+			if (targetPos.Y < clipRect->UpperLeftCorner.Y)
+			{
+				sourceSize.Height += targetPos.Y - clipRect->UpperLeftCorner.Y;
+				if (sourceSize.Height <= 0)
+					continue;
+
+				sourcePos.Y -= targetPos.Y - clipRect->UpperLeftCorner.Y;
+				targetPos.Y = clipRect->UpperLeftCorner.Y;
+			}
+
+			if (targetPos.Y + sourceSize.Height > clipRect->LowerRightCorner.Y)
+			{
+				sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
+				if (sourceSize.Height <= 0)
+					continue;
+			}
+		}
+
+		// clip these coordinates
+
+		if (targetPos.X<0)
+		{
+			sourceSize.Width += targetPos.X;
+			if (sourceSize.Width <= 0)
+				continue;
+
+			sourcePos.X -= targetPos.X;
+			targetPos.X = 0;
+		}
+
+		if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
+		{
+			sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
+			if (sourceSize.Width <= 0)
+				continue;
+		}
+
+		if (targetPos.Y<0)
+		{
+			sourceSize.Height += targetPos.Y;
+			if (sourceSize.Height <= 0)
+				continue;
+
+			sourcePos.Y -= targetPos.Y;
+			targetPos.Y = 0;
+		}
+
+		if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
+		{
+			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
+			if (sourceSize.Height <= 0)
+				continue;
+		}
+
+		// ok, we've clipped everything.
+
+		const core::rect<f32> tcoords(
+				sourcePos.X * invW,
+				sourcePos.Y * invH,
+				(sourcePos.X + sourceSize.Width) * invW,
+				(sourcePos.Y + sourceSize.Height) * invH);
+
+		const core::rect<s32> poss(targetPos, sourceSize);
+
+		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
+		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
+		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
+		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+
+		indices.push_back(vstart);
+		indices.push_back(vstart+1);
+		indices.push_back(vstart+2);
+		indices.push_back(vstart);
+		indices.push_back(vstart+2);
+		indices.push_back(vstart+3);
+	}
+	drawVertexPrimitiveList2d3d(vertices.pointer(), 4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
 }
 
 
@@ -2018,31 +2163,42 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-			SMaterial mat;
-			mat.ZBuffer=ECFN_NEVER;
-			mat.Lighting=false;
-			mat.TextureLayer[0].BilinearFilter=false;
-			setBasicRenderStates(mat, mat, true);
-			LastMaterial = mat;
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
+		if (Transformation3DChanged)
+		{
+			glMatrixMode(GL_PROJECTION);
 
-		glMatrixMode(GL_PROJECTION);
+			const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+			core::matrix4 m;
+			m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
+			m.setTranslation(core::vector3df(-1,1,0));
+			glLoadMatrixf(m.pointer());
 
-		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-		core::matrix4 m;
-		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
-		m.setTranslation(core::vector3df(-1,1,0));
-		glLoadMatrixf(m.pointer());
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glTranslatef(0.375, 0.375, 0.0);
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glTranslatef(0.375, 0.375, 0.0);
+			// Make sure we set first texture matrix
+			if (MultiTextureExtension)
+				extGlActiveTexture(GL_TEXTURE0_ARB);
 
-		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
+			glMatrixMode(GL_TEXTURE);
+			glLoadIdentity();
 
-		Transformation3DChanged = false;
+			Transformation3DChanged = false;
+		}
+		if (!OverrideMaterial2DEnabled)
+		{
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+			LastMaterial = InitMaterial2D;
+		}
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	if (OverrideMaterial2DEnabled)
+	{
+		OverrideMaterial2D.Lighting=false;
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
+		LastMaterial = OverrideMaterial2D;
 	}
 
 	if (alphaChannel || alpha)
@@ -2059,11 +2215,19 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (texture)
 	{
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		if (!OverrideMaterial2D)
+		{
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
 
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
+		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
+		// Due to the transformation change, the previous line would call a reset each frame
+		// but we can safely reset the variable as it was false before
+		Transformation3DChanged=false;
 
 		if (alphaChannel)
 		{
