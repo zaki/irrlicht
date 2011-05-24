@@ -921,7 +921,7 @@ void CSoftwareDriver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* CSoftwareDriver::createScreenShot()
+IImage* CSoftwareDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 {
 	if (BackBuffer)
 	{

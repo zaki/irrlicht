@@ -3160,7 +3160,7 @@ void CD3D9Driver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* CD3D9Driver::createScreenShot()
+IImage* CD3D9Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 {
 	HRESULT hr;
 

@@ -3528,7 +3528,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),&triangles[0]);
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
-	glPolygonOffset(1.f,1.f);
+	glPolygonOffset(-1.f,-1.f);
 	glEnable(GL_POLYGON_OFFSET_FILL);
 
 	GLenum incr = GL_INCR;
@@ -4259,16 +4259,10 @@ void COpenGLDriver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* COpenGLDriver::createScreenShot()
+IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 {
-	IImage* newImage = new CImage(ECF_R8G8B8, ScreenSize);
-
-	u8* pixels = static_cast<u8*>(newImage->lock());
-	if (!pixels)
-	{
-		newImage->drop();
+	if (target==video::ERT_MULTI_RENDER_TEXTURES || target==video::ERT_RENDER_TEXTURE || target==video::ERT_STEREO_BOTH_BUFFERS)
 		return 0;
-	}
 
 	// allows to read pixels in top-to-bottom order
 #ifdef GL_MESA_pack_invert
@@ -4276,16 +4270,42 @@ IImage* COpenGLDriver::createScreenShot()
 		glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
 #endif
 
-	// We want to read the front buffer to get the latest render finished.
-	glReadBuffer(GL_FRONT);
-	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-	glReadBuffer(GL_BACK);
+	if (format==video::ECF_UNKNOWN)
+		format=video::ECF_A8R8G8B8;
+	IImage* newImage = new CImage(format, ScreenSize);
+
+	u8* pixels = static_cast<u8*>(newImage->lock());
+	if (pixels)
+	{
+		GLenum tgt=GL_FRONT;
+		switch (target)
+		{
+		case video::ERT_FRAME_BUFFER:
+			break;
+		case video::ERT_STEREO_LEFT_BUFFER:
+			tgt=GL_FRONT_LEFT;
+			break;
+		case video::ERT_STEREO_RIGHT_BUFFER:
+			tgt=GL_FRONT_RIGHT;
+			break;
+		default:
+			tgt=GL_AUX0+(target-video::ERT_AUX_BUFFER0);
+			break;
+		}
+		GLenum fmt = (format==video::ECF_A8R8G8B8 || format==video::ECF_A1R5G5B5)?GL_RGBA:GL_RGB;
+		// We want to read the front buffer to get the latest render finished.
+		glReadBuffer(tgt);
+		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, GL_UNSIGNED_BYTE, pixels);
+		glReadBuffer(GL_BACK);
+	}
+
 
 #ifdef GL_MESA_pack_invert
 	if (FeatureAvailable[IRR_MESA_pack_invert])
 		glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
 	else
 #endif
+	if (pixels)
 	{
 		// opengl images are horizontally flipped, so we have to fix that here.
 		const s32 pitch=newImage->getPitch();
@@ -4294,7 +4314,15 @@ IImage* COpenGLDriver::createScreenShot()
 		for (u32 i=0; i < ScreenSize.Height; i += 2)
 		{
 			memcpy(tmpBuffer, pixels, pitch);
+//			for (u32 j=0; j<pitch; ++j)
+//			{
+//				pixels[j]=(u8)(p2[j]*255.f);
+//			}
 			memcpy(pixels, p2, pitch);
+//			for (u32 j=0; j<pitch; ++j)
+//			{
+//				p2[j]=(u8)(tmpBuffer[j]*255.f);
+//			}
 			memcpy(p2, tmpBuffer, pitch);
 			pixels += pitch;
 			p2 -= pitch;
@@ -4304,7 +4332,7 @@ IImage* COpenGLDriver::createScreenShot()
 
 	newImage->unlock();
 
-	if (testGLError())
+	if (testGLError() || !pixels)
 	{
 		newImage->drop();
 		return 0;

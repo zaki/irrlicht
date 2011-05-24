@@ -1357,7 +1357,7 @@ namespace video
 
 		//! Make a screenshot of the last rendered frame.
 		/** \return An image created from the last rendered frame. */
-		virtual IImage* createScreenShot() =0;
+		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) =0;
 
 		//! Check if the image is already loaded.
 		/** Works similar to getTexture(), but does not load the texture
