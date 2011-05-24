@@ -4292,7 +4292,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 			tgt=GL_AUX0+(target-video::ERT_AUX_BUFFER0);
 			break;
 		}
-		GLenum fmt = (format==video::ECF_A8R8G8B8 || format==video::ECF_A1R5G5B5)?GL_RGBA:GL_RGB;
+		GLenum fmt = (format==video::ECF_A8R8G8B8 || format==video::ECF_A1R5G5B5)?GL_BGRA:GL_RGB;
 		// We want to read the front buffer to get the latest render finished.
 		glReadBuffer(tgt);
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, GL_UNSIGNED_BYTE, pixels);
