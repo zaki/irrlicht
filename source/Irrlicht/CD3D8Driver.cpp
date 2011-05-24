@@ -2238,7 +2238,7 @@ void CD3D8Driver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* CD3D8Driver::createScreenShot()
+IImage* CD3D8Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 {
 #if defined( _IRR_XBOX_PLATFORM_)
 	return 0;

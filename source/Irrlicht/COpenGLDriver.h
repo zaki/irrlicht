@@ -345,7 +345,7 @@ namespace video
 		virtual void clearZBuffer();
 
 		//! Returns an image created from the last rendered frame.
-		virtual IImage* createScreenShot();
+		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER);
 
 		//! checks if an OpenGL error has happend and prints it
 		//! for performance reasons only available in debug mode

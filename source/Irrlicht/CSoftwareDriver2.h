@@ -136,7 +136,7 @@ namespace video
 		virtual void clearZBuffer();
 
 		//! Returns an image created from the last rendered frame.
-		virtual IImage* createScreenShot();
+		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER);
 
 		//! Returns the maximum amount of primitives (mostly vertices) which
 		//! the device is able to render with one drawIndexedTriangleList
