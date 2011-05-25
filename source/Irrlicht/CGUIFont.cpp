@@ -11,7 +11,6 @@
 #include "IReadFile.h"
 #include "IVideoDriver.h"
 #include "IGUISpriteBank.h"
-#include "CImage.h"
 
 namespace irr
 {
@@ -254,7 +253,7 @@ bool CGUIFont::loadTexture(video::IImage* image, const io::path& name)
 	switch(image->getColorFormat())
 	{
 	case video::ECF_R5G6B5:
-		tmpImage =  new video::CImage(video::ECF_A1R5G5B5,image->getDimension());
+		tmpImage =  Driver->createImage(video::ECF_A1R5G5B5,image->getDimension());
 		image->copyTo(tmpImage);
 		deleteTmpImage=true;
 		break;
@@ -262,7 +261,7 @@ bool CGUIFont::loadTexture(video::IImage* image, const io::path& name)
 	case video::ECF_A8R8G8B8:
 		break;
 	case video::ECF_R8G8B8:
-		tmpImage = new video::CImage(video::ECF_A8R8G8B8,image->getDimension());
+		tmpImage = Driver->createImage(video::ECF_A8R8G8B8,image->getDimension());
 		image->copyTo(tmpImage);
 		deleteTmpImage=true;
 		break;
