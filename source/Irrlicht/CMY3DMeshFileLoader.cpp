@@ -17,8 +17,6 @@
 #include "SMeshBuffer.h"
 #include "IReadFile.h"
 #include "IAttributes.h"
-#include "CImage.h"
-#include "CColorConverter.h"
 
 #include "CMY3DHelper.h"
 #include "os.h"
