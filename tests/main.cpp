@@ -100,6 +100,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(ioScene);
 	// all driver checks
 	TEST(videoDriver);
+	TEST(screenshot);
 	TEST(drawPixel);
 	TEST(drawRectOutline);
 	TEST(guiDisabledMenu);

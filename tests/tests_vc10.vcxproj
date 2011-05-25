@@ -125,6 +125,7 @@
     <ClCompile Include="renderTargetTexture.cpp" />
     <ClCompile Include="sceneCollisionManager.cpp" />
     <ClCompile Include="sceneNodeAnimator.cpp" />
+    <ClCompile Include="screenshot.cpp" />
     <ClCompile Include="serializeAttributes.cpp" />
     <ClCompile Include="skinnedMesh.cpp" />
     <ClCompile Include="softwareDevice.cpp" />

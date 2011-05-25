@@ -4285,7 +4285,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		break;
 	case ECF_R8G8B8:
 		fmt = GL_BGR;
-		type = GL_RGB;
+		type = GL_UNSIGNED_BYTE;
 		break;
 	case ECF_A8R8G8B8:
 		fmt = GL_BGRA;
@@ -4365,7 +4365,9 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 	}
 	IImage* newImage = createImage(format, ScreenSize);
 
-	u8* pixels = static_cast<u8*>(newImage->lock());
+	u8* pixels = 0;
+	if (newImage)
+		pixels = static_cast<u8*>(newImage->lock());
 	if (pixels)
 	{
 		GLenum tgt=GL_FRONT;
@@ -4418,14 +4420,15 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		delete [] tmpBuffer;
 	}
 
-	newImage->unlock();
-
-	if (testGLError() || !pixels)
+	if (newImage)
 	{
-		newImage->drop();
-		return 0;
+		newImage->unlock();
+		if (testGLError() || !pixels)
+		{
+			newImage->drop();
+			return 0;
+		}
 	}
-
 	return newImage;
 }
 
