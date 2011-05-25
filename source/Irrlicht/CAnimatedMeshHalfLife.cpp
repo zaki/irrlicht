@@ -910,7 +910,7 @@ void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 
 	// build image
 	core::dimension2d<u32> dim = core::dimension2d<u32>( wsum, hsum ).getOptimalSize();
-	IImage* master = new CImage( format, dim );
+	IImage* master = new CImage(format, dim);
 	master->fill(0);
 
 	video::SColor col[2];
@@ -1020,7 +1020,7 @@ SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io:
 				}
 			}
 
-			IImage* image = new CImage( ECF_R8G8B8, core::dimension2d<u32>(tex[i].width, tex[i].height) );
+			IImage* image = SceneManager->getVideoDriver()->createImage(ECF_R8G8B8, core::dimension2d<u32>(tex[i].width, tex[i].height));
 
 			CColorConverter::convert8BitTo24Bit(src, (u8*)image->lock(), tex[i].width, tex[i].height, (u8*) palette, 0, false);
 			image->unlock();

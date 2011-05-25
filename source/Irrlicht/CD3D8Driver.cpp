@@ -12,7 +12,6 @@
 #include "os.h"
 #include "S3DVertex.h"
 #include "CD3D8Texture.h"
-#include "CImage.h"
 #include "CD3D8MaterialRenderer.h"
 #include "CD3D8ShaderMaterialRenderer.h"
 #include "CD3D8NormalMapRenderer.h"
@@ -2294,7 +2293,7 @@ IImage* CD3D8Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_REND
 	shotSize.Height = core::min_( ScreenSize.Height, (u32)(clientRect.bottom-clientRect.top) );
 
 	// this could throw, but we aren't going to worry about that case very much
-	IImage* newImage = new CImage(ECF_A8R8G8B8, shotSize);
+	IImage* newImage = createImage(ECF_A8R8G8B8, shotSize);
 
 	// d3d pads the image, so we need to copy the correct number of bytes
 	u32* dP = (u32*)newImage->lock();
