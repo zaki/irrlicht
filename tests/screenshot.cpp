@@ -5,8 +5,7 @@
 
 using namespace irr;
 
-// Tests screenshots.
-/** At the moment, this just verifies that the last frame of the animation produces the expected bitmap. */
+// Tests screenshots features
 bool testShots(video::E_DRIVER_TYPE type)
 {
 	IrrlichtDevice *device = createDevice(type, core::dimension2d<u32>(160, 120), 32);
@@ -31,7 +30,6 @@ bool testShots(video::E_DRIVER_TYPE type)
 
 	(void)smgr->addCameraSceneNode();
 
-	// Just jump to the last frame since that's all we're interested in.
 	node->setMD2Animation(scene::EMAT_DEATH_FALLBACK);
 	node->setCurrentFrame((f32)(node->getEndFrame()));
 	node->setAnimationSpeed(0);
