@@ -161,7 +161,7 @@ static bool doTests()
 			tmp.getAngle(), ref.getAngle());
 		return false;
 	}
-	tmp = core::vector2d<T>(-1.53080559e-16, 2.49999523);
+	tmp = core::vector2d<T>(static_cast<T>(-1.53080559e-16), static_cast<T>(2.49999523));
 	ref = core::vector2d<f64>(-1.53080559e-16, 2.49999523);
 	if (!equals(tmp.getAngle(),ref.getAngle()))
 	{
