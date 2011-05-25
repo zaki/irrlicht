@@ -14,7 +14,6 @@
 #include "COpenGLSLMaterialRenderer.h"
 #include "COpenGLNormalMapRenderer.h"
 #include "COpenGLParallaxMapRenderer.h"
-#include "CImage.h"
 #include "os.h"
 
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
@@ -4272,7 +4271,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 
 	if (format==video::ECF_UNKNOWN)
 		format=video::ECF_A8R8G8B8;
-	IImage* newImage = new CImage(format, ScreenSize);
+	IImage* newImage = createImage(format, ScreenSize);
 
 	u8* pixels = static_cast<u8*>(newImage->lock());
 	if (pixels)

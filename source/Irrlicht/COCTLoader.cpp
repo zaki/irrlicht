@@ -19,7 +19,6 @@
 #include "SAnimatedMesh.h"
 #include "SMeshBufferLightMap.h"
 #include "irrString.h"
-#include "CImage.h"
 #include "ISceneManager.h"
 
 namespace irr
@@ -224,7 +223,8 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 	bool oldMipMapState = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
-	video::CImage tmpImage(video::ECF_R8G8B8, lmapsize);
+	video::IImage* tmpImage;
+	SceneManager->getVideoDriver()->createImage(video::ECF_R8G8B8, lmapsize);
 	for (i = 1; i < (header.numLightmaps + 1); ++i)
 	{
 		core::stringc lightmapname = file->getFileName();
@@ -237,7 +237,7 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		{
 			for (u32 y=0; y<lightmapHeight; ++y)
 			{
-				tmpImage.setPixel(x, y,
+				tmpImage->setPixel(x, y,
 						video::SColor(255,
 						lm->data[x][y][2],
 						lm->data[x][y][1],
@@ -245,8 +245,9 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 			}
 		}
 
-		lig[i] = SceneManager->getVideoDriver()->addTexture(lightmapname.c_str(), &tmpImage);
+		lig[i] = SceneManager->getVideoDriver()->addTexture(lightmapname.c_str(), tmpImage);
 	}
+	tmpImage->drop();
 	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
 
 	// Free stuff

@@ -2566,7 +2566,7 @@ const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE st
 ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
 		const io::path& name, const ECOLOR_FORMAT format)
 {
-	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
+	IImage* img = createImage(BURNINGSHADER_COLOR_FORMAT, size);
 	ITexture* tex = new CSoftwareTexture2(img, name, CSoftwareTexture2::IS_RENDERTARGET );
 	img->drop();
 	addTexture(tex);
@@ -2588,7 +2588,7 @@ IImage* CBurningVideoDriver::createScreenShot(video::ECOLOR_FORMAT format, video
 {
 	if (BackBuffer)
 	{
-		CImage* tmp = new CImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
+		IImage* tmp = createImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
 		BackBuffer->copyTo(tmp);
 		return tmp;
 	}

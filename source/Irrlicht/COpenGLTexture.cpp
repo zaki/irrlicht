@@ -10,7 +10,6 @@
 #include "COpenGLTexture.h"
 #include "COpenGLDriver.h"
 #include "os.h"
-#include "CImage.h"
 #include "CColorConverter.h"
 
 #include "irrString.h"
@@ -39,12 +38,12 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 	if (ImageSize==TextureSize)
 	{
-		Image = new CImage(ColorFormat, ImageSize);
+		Driver->createImage(ColorFormat, ImageSize);
 		origImage->copyTo(Image);
 	}
 	else
 	{
-		Image = new CImage(ColorFormat, TextureSize);
+		Driver->createImage(ColorFormat, TextureSize);
 		// scale texture
 		origImage->copyToScaling(Image);
 	}
@@ -402,10 +401,10 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 					++i;
 				}
 				while (i != mipmapLevel);
-				MipImage = image = new CImage(ECF_A8R8G8B8, core::dimension2du(width,height));
+				MipImage = image = Driver->createImage(ECF_A8R8G8B8, core::dimension2du(width,height));
 			}
 			else
-				Image = image = new CImage(ECF_A8R8G8B8, ImageSize);
+				Image = image = Driver->createImage(ECF_A8R8G8B8, ImageSize);
 			ColorFormat = ECF_A8R8G8B8;
 		}
 		if (!image)

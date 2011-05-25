@@ -283,7 +283,7 @@ bool CSoftwareDriver::setRenderTarget(video::ITexture* texture, bool clearBackBu
 			ZBuffer->clear();
 
 		if (clearBackBuffer)
-			((video::CImage*)RenderTargetSurface)->fill( color );
+			RenderTargetSurface->fill(color);
 	}
 
 	return true;
@@ -903,7 +903,7 @@ ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& 
 												  const io::path& name,
 												  const ECOLOR_FORMAT format)
 {
-	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
+	IImage* img = createImage(video::ECF_A1R5G5B5, size);
 	ITexture* tex = new CSoftwareTexture(img, name, true);
 	img->drop();
 	addTexture(tex);
@@ -925,7 +925,7 @@ IImage* CSoftwareDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_
 {
 	if (BackBuffer)
 	{
-		CImage* tmp = new CImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
+		IImage* tmp = createImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
 		BackBuffer->copyTo(tmp);
 		return tmp;
 	}
