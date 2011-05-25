@@ -4270,7 +4270,99 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 #endif
 
 	if (format==video::ECF_UNKNOWN)
-		format=video::ECF_A8R8G8B8;
+		format=getColorFormat();
+	GLenum fmt;
+	GLenum type;
+	switch (format)
+	{
+	case ECF_A1R5G5B5:
+		fmt = GL_BGRA;
+		type = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+		break;
+	case ECF_R5G6B5:
+		fmt = GL_BGR;
+		type = GL_UNSIGNED_SHORT_5_6_5_REV;
+		break;
+	case ECF_R8G8B8:
+		fmt = GL_BGR;
+		type = GL_RGB;
+		break;
+	case ECF_A8R8G8B8:
+		fmt = GL_BGRA;
+		if (Version > 101)
+			type = GL_UNSIGNED_INT_8_8_8_8_REV;
+		else
+			type = GL_UNSIGNED_BYTE;
+		break;
+	case ECF_R16F:
+		if (FeatureAvailable[IRR_ARB_texture_rg])
+			fmt = GL_RED;
+		else
+			fmt = GL_LUMINANCE;
+#ifdef GL_ARB_half_float_pixel
+		if (FeatureAvailable[IRR_ARB_half_float_pixel])
+			type = GL_HALF_FLOAT;
+		else
+#endif
+		{
+			type = GL_FLOAT;
+			format = ECF_R32F;
+		}
+		break;
+	case ECF_G16R16F:
+#ifdef GL_ARB_texture_rg
+		if (FeatureAvailable[IRR_ARB_texture_rg])
+			fmt = GL_RG;
+		else
+#endif
+			fmt = GL_LUMINANCE_ALPHA;
+#ifdef GL_ARB_half_float_pixel
+		if (FeatureAvailable[IRR_ARB_half_float_pixel])
+			type = GL_HALF_FLOAT;
+		else
+#endif
+		{
+			type = GL_FLOAT;
+			format = ECF_G32R32F;
+		}
+		break;
+	case ECF_A16B16G16R16F:
+		fmt = GL_BGRA;
+#ifdef GL_ARB_half_float_pixel
+		if (FeatureAvailable[IRR_ARB_half_float_pixel])
+			type = GL_HALF_FLOAT;
+		else
+#endif
+		{
+			type = GL_FLOAT;
+			format = ECF_A32B32G32R32F;
+		}
+		break;
+	case ECF_R32F:
+		if (FeatureAvailable[IRR_ARB_texture_rg])
+			fmt = GL_RED;
+		else
+			fmt = GL_LUMINANCE;
+		type = GL_FLOAT;
+		break;
+	case ECF_G32R32F:
+#ifdef GL_ARB_texture_rg
+		if (FeatureAvailable[IRR_ARB_texture_rg])
+			fmt = GL_RG;
+		else
+#endif
+			fmt = GL_LUMINANCE_ALPHA;
+		type = GL_FLOAT;
+		break;
+	case ECF_A32B32G32R32F:
+		fmt = GL_BGRA;
+		type = GL_FLOAT;
+		break;
+	default:
+		fmt = GL_BGRA;
+		type = GL_UNSIGNED_BYTE;
+		break;
+	}
 	IImage* newImage = createImage(format, ScreenSize);
 
 	u8* pixels = static_cast<u8*>(newImage->lock());
@@ -4291,13 +4383,10 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 			tgt=GL_AUX0+(target-video::ERT_AUX_BUFFER0);
 			break;
 		}
-		GLenum fmt = (format==video::ECF_A8R8G8B8 || format==video::ECF_A1R5G5B5)?GL_BGRA:GL_RGB;
-		// We want to read the front buffer to get the latest render finished.
 		glReadBuffer(tgt);
-		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, GL_UNSIGNED_BYTE, pixels);
+		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, type, pixels);
 		glReadBuffer(GL_BACK);
 	}
-
 
 #ifdef GL_MESA_pack_invert
 	if (FeatureAvailable[IRR_MESA_pack_invert])
