@@ -2242,13 +2242,18 @@ IImage* CD3D8Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_REND
 #if defined( _IRR_XBOX_PLATFORM_)
 	return 0;
 #else
-	HRESULT hr;
+	if (target != video::ERT_FRAME_BUFFER)
+		return 0;
 
 	// query the screen dimensions of the current adapter
 	D3DDISPLAYMODE displayMode;
 	pID3DDevice->GetDisplayMode(&displayMode);
 
+	if (format==video::ECF_UNKNOWN)
+		format=video::ECF_A8R8G8B8;
+
 	// create the image surface to store the front buffer image [always A8R8G8B8]
+	HRESULT hr;
 	LPDIRECT3DSURFACE8 lpSurface;
 	if (FAILED(hr = pID3DDevice->CreateImageSurface(displayMode.Width, displayMode.Height, D3DFMT_A8R8G8B8, &lpSurface)))
 		return 0;
@@ -2293,41 +2298,42 @@ IImage* CD3D8Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_REND
 	shotSize.Height = core::min_( ScreenSize.Height, (u32)(clientRect.bottom-clientRect.top) );
 
 	// this could throw, but we aren't going to worry about that case very much
-	IImage* newImage = createImage(ECF_A8R8G8B8, shotSize);
+	IImage* newImage = createImage(format, shotSize);
 
-	// d3d pads the image, so we need to copy the correct number of bytes
-	u32* dP = (u32*)newImage->lock();
-	u8 * sP = (u8 *)lockedRect.pBits;
-
-	// If the display mode format doesn't promise anything about the Alpha value
-	// and it appears that it's not presenting 255, then we should manually
-	// set each pixel alpha value to 255.
-	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
+	if (newImage)
 	{
-		for (u32 y = 0; y < shotSize.Height; ++y)
+		// d3d pads the image, so we need to copy the correct number of bytes
+		u32* dP = (u32*)newImage->lock();
+		u8 * sP = (u8 *)lockedRect.pBits;
+
+		// If the display mode format doesn't promise anything about the Alpha value
+		// and it appears that it's not presenting 255, then we should manually
+		// set each pixel alpha value to 255.
+		if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
 		{
-			for(u32 x = 0; x < shotSize.Width; ++x)
+			for (u32 y = 0; y < shotSize.Height; ++y)
 			{
-				*dP = *((u32*)sP) | 0xFF000000;
-				dP++;
-				sP += 4;
+				for(u32 x = 0; x < shotSize.Width; ++x)
+				{
+					newImage->setPixel(x,y,*((u32*)sP) | 0xFF000000);
+					sP += 4;
+				}
+
+				sP += lockedRect.Pitch - (4 * shotSize.Width);
 			}
-
-			sP += lockedRect.Pitch - (4 * shotSize.Width);
 		}
-	}
-	else
-	{
-		for (u32 y = 0; y < shotSize.Height; ++y)
+		else
 		{
-			memcpy(dP, sP, shotSize.Width * 4);
-
-			sP += lockedRect.Pitch;
-			dP += shotSize.Width;
+			for (u32 y = 0; y < shotSize.Height; ++y)
+			{
+				convertColor(sP, video::ECF_A8R8G8B8, shotSize.Width, dP, format);
+				sP += lockedRect.Pitch;
+				dP += shotSize.Width;
+			}
 		}
-	}
 
-	newImage->unlock();
+		newImage->unlock();
+	}
 
 	// we can unlock and release the surface
 	lpSurface->UnlockRect();
