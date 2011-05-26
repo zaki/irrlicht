@@ -575,7 +575,11 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 		break;
 	case EET_KEY_INPUT_EVENT:
 		{
-			// send focus changing event
+			if (Focus && Focus->OnEvent(event))
+				return true;
+
+			// For keys we handle the event before changing focus to give elements the chance for catching the TAB
+			// Send focus changing event
 			if (event.EventType == EET_KEY_INPUT_EVENT &&
 				event.KeyInput.PressedDown &&
 				event.KeyInput.Key == KEY_TAB)
@@ -587,11 +591,7 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 						return true;
 				}
 			}
-			if (Focus)
-			{
-				_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-				return Focus->OnEvent(event);
-			}
+
 		}
 		break;
 	default:
