@@ -141,11 +141,13 @@ static bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 	if (!result)
 		logTestString("mipmap lock after init with driver %ls failed.\n", driver->getName());
 
+	// test with updating a lower level, and reading upper and lower
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 3);
 	bits[0]=0xff00ff00;
 	bits[1]=0xff00ff00;
 	tex->unlock();
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 4);
+	result &= (bits[0].color==0x001212ff);
 	tex->unlock();
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
 	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color==0xc2c200fe));
@@ -153,6 +155,21 @@ static bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 
 	if (!result)
 		logTestString("mipmap lock after mipmap write with driver %ls failed.\n", driver->getName());
+
+	// now test locking level 0
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 0);
+	bits[0]=0xff00ff00;
+	bits[1]=0xff00ff00;
+	tex->unlock();
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 4);
+	result &= (bits[0].color==0x001212ff);
+	tex->unlock();
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 0);
+	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color==0xff0000fd));
+	tex->unlock();
+
+	if (!result)
+		logTestString("mipmap lock at level 0 after mipmap write with driver %ls failed.\n", driver->getName());
 	else
 		logTestString("Passed\n");
 
