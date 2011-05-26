@@ -843,7 +843,8 @@ bool CIrrDeviceLinux::run()
 
 #ifdef _IRR_COMPILE_WITH_X11_
 
-	static_cast<CCursorControl*>(CursorControl)->update();
+	if ( CursorControl )
+		static_cast<CCursorControl*>(CursorControl)->update();
 
 	if ((CreationParams.DriverType != video::EDT_NULL) && display)
 	{
