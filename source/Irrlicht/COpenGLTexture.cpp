@@ -38,12 +38,12 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 	if (ImageSize==TextureSize)
 	{
-		Driver->createImage(ColorFormat, ImageSize);
+		Image = Driver->createImage(ColorFormat, ImageSize);
 		origImage->copyTo(Image);
 	}
 	else
 	{
-		Driver->createImage(ColorFormat, TextureSize);
+		Image = Driver->createImage(ColorFormat, TextureSize);
 		// scale texture
 		origImage->copyToScaling(Image);
 	}
