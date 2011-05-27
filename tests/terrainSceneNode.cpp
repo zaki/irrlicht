@@ -3,18 +3,23 @@
 
 using namespace irr;
 using namespace core;
-using namespace scene;
-using namespace video;
 
-bool terrainSceneNode(void)
+namespace
+{
+
+// test camera changes with terrain scene node recalculation
+bool terrainRecalc(void)
 {
     IrrlichtDevice *device =
         createDevice(video::EDT_OPENGL, dimension2du(160, 120), 32);
 
-    IVideoDriver* driver = device->getVideoDriver();
-    ISceneManager* smgr = device->getSceneManager();
+	if (!device)
+		return true;
 
-    ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
+    video::IVideoDriver* driver = device->getVideoDriver();
+    scene::ISceneManager* smgr = device->getSceneManager();
+
+    scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
         "../media/terrain-heightmap.bmp");
     terrain->setScale(core::vector3df(40.f, .1f, 40.f));
 
@@ -22,7 +27,7 @@ bool terrainSceneNode(void)
     terrain->setMaterialTexture(0, driver->getTexture("../media/terrain-texture.jpg"));
     terrain->setDebugDataVisible(scene::EDS_FULL);
 
-    ICameraSceneNode* camera = smgr->addCameraSceneNode();
+    scene::ICameraSceneNode* camera = smgr->addCameraSceneNode();
 
     const core::vector3df center(terrain->getBoundingBox().getCenter());
     camera->setTarget(center);
@@ -68,4 +73,55 @@ bool terrainSceneNode(void)
 	device->run();
 	device->drop();
     return result;
+}
+
+bool terrainGaps()
+{
+	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, dimension2d<u32>(160, 120));
+	if (!device)
+		return true;
+
+	video::IVideoDriver * irrVideo = device->getVideoDriver();
+	scene::ISceneManager* irrScene = device->getSceneManager();
+
+	// Add camera
+	scene::ICameraSceneNode* camera = irrScene->addCameraSceneNode();
+	camera->setPosition(vector3df(20000, 500, 12800));
+	camera->setTarget(vector3df(16800, 0, 12800));
+	camera->setFarValue(42000.0f);
+
+	// Add terrain scene node
+	for (u32 i = 0; i < 2; i++)
+	{
+		const char* name="media/ter1.png";
+		scene::ITerrainSceneNode* terrain = irrScene->addTerrainSceneNode(
+				name, 0, -1,
+				vector3df((f32)(256*50), 0.f, (f32)(i*256*50)),// position 12800(==imgsize*scale)
+				vector3df(0.f, 0.f, 0.f), // rotation
+				vector3df(50.f, 15.0f, 50.f) // scale 50 15 50
+		);
+
+		terrain->setMaterialFlag(video::EMF_LIGHTING, false);
+		terrain->setMaterialFlag(video::EMF_WIREFRAME, !terrain->getMaterial(0).Wireframe);
+	}
+   
+	irrVideo->beginScene(true, true, video::SColor(0,150,150,150));
+	irrScene->drawAll();
+	irrVideo->endScene();
+
+	bool result = takeScreenshotAndCompareAgainstReference(irrVideo, "-terrainGap.png");
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+    return true;
+}
+
+}
+
+bool terrainSceneNode()
+{
+	bool result = terrainRecalc();
+	result &= terrainGaps();
+	return result;
 }
