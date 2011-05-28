@@ -380,6 +380,17 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
+	if (!ReadOnlyLock && mipmapLevel)
+	{
+#ifdef GL_SGIS_generate_mipmap
+		if (Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		{
+			// do not automatically generate and update mipmaps
+			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		}
+#endif
+		AutomaticMipmapUpdate=false;
+	}
 
 	// if data not available or might have changed on GPU download it
 	if (!image || IsRenderTarget)
