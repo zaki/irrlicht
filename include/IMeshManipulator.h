@@ -44,6 +44,14 @@ namespace scene
 			apply(scene::SVertexColorSetAlphaManipulator(alpha), mesh);
 		}
 
+		//! Sets the alpha vertex color value of the whole mesh to a new value.
+		/** \param buffer Meshbuffer on which the operation is performed.
+		\param alpha New alpha value. Must be a value between 0 and 255. */
+		void setVertexColorAlpha(IMeshBuffer* buffer, s32 alpha) const
+		{
+			apply(scene::SVertexColorSetAlphaManipulator(alpha), buffer);
+		}
+
 		//! Sets the colors of all vertices to one color
 		/** \param mesh Mesh on which the operation is performed.
 		\param color New color. */
@@ -52,17 +60,27 @@ namespace scene
 			apply(scene::SVertexColorSetManipulator(color), mesh);
 		}
 
+		//! Sets the colors of all vertices to one color
+		/** \param buffer Meshbuffer on which the operation is performed.
+		\param color New color. */
+		void setVertexColors(IMeshBuffer* buffer, video::SColor color) const
+		{
+			apply(scene::SVertexColorSetManipulator(color), buffer);
+		}
+
 		//! Recalculates all normals of the mesh.
 		/** \param mesh: Mesh on which the operation is performed.
 		\param smooth: If the normals shall be smoothed.
 		\param angleWeighted: If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision. */
-		virtual void recalculateNormals(IMesh* mesh, bool smooth = false, bool angleWeighted = false) const = 0;
+		virtual void recalculateNormals(IMesh* mesh, bool smooth = false,
+				bool angleWeighted = false) const=0;
 
 		//! Recalculates all normals of the mesh buffer.
 		/** \param buffer: Mesh buffer on which the operation is performed.
 		\param smooth: If the normals shall be smoothed.
 		\param angleWeighted: If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision. */
-		virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const = 0;
+		virtual void recalculateNormals(IMeshBuffer* buffer,
+				bool smooth = false, bool angleWeighted = false) const=0;
 
 		//! Recalculates tangents, requires a tangent mesh
 		/** \param mesh Mesh on which the operation is performed.
@@ -71,6 +89,16 @@ namespace scene
 		\param angleWeighted If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision.
 		*/
 		virtual void recalculateTangents(IMesh* mesh,
+				bool recalculateNormals=false, bool smooth=false,
+				bool angleWeighted=false) const=0;
+
+		//! Recalculates tangents, requires a tangent mesh buffer
+		/** \param buffer Meshbuffer on which the operation is performed.
+		\param recalculateNormals If the normals shall be recalculated, otherwise original normals of the buffer are used unchanged.
+		\param smooth If the normals shall be smoothed.
+		\param angleWeighted If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision.
+		*/
+		virtual void recalculateTangents(IMeshBuffer* buffer,
 				bool recalculateNormals=false, bool smooth=false,
 				bool angleWeighted=false) const=0;
 
@@ -136,28 +164,31 @@ namespace scene
 		\param m transformation matrix. */
 		_IRR_DEPRECATED_ virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const {return transform(mesh,m);}
 
-		//! Clones a static IMesh into a modifiable SMesh.
-		/** All meshbuffers in the returned SMesh
-		are of type SMeshBuffer or SMeshBufferLightMap.
-		\param mesh Mesh to copy.
-		\return Cloned mesh. If you no longer need the
-		cloned mesh, you should call SMesh::drop(). See
-		IReferenceCounted::drop() for more information. */
-		virtual SMesh* createMeshCopy(IMesh* mesh) const = 0;
-
 		//! Creates a planar texture mapping on the mesh
 		/** \param mesh: Mesh on which the operation is performed.
 		\param resolution: resolution of the planar mapping. This is
 		the value specifying which is the relation between world space
 		and texture coordinate space. */
-		virtual void makePlanarTextureMapping(IMesh* mesh, f32 resolution=0.001f) const =0;
+		virtual void makePlanarTextureMapping(IMesh* mesh, f32 resolution=0.001f) const=0;
 
 		//! Creates a planar texture mapping on the meshbuffer
 		/** \param meshbuffer: Buffer on which the operation is performed.
 		\param resolution: resolution of the planar mapping. This is
 		the value specifying which is the relation between world space
 		and texture coordinate space. */
-		virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const =0;
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const=0;
+
+		//! Creates a planar texture mapping on the buffer
+		/** This method is currently implemented towards the LWO planar mapping. A more general biasing might be required.
+		\param mesh Mesh on which the operation is performed.
+		\param resolutionS Resolution of the planar mapping in horizontal direction. This is the ratio between object space and texture space.
+		\param resolutionT Resolution of the planar mapping in vertical direction. This is the ratio between object space and texture space.
+		\param axis The axis along which the texture is projected. The allowed values are 0 (X), 1(Y), and 2(Z).
+		\param offset Vector added to the vertex positions (in object coordinates).
+		*/
+		virtual void makePlanarTextureMapping(scene::IMesh* mesh,
+				f32 resolutionS, f32 resolutionT,
+				u8 axis, const core::vector3df& offset) const=0;
 
 		//! Creates a planar texture mapping on the meshbuffer
 		/** This method is currently implemented towards the LWO planar mapping. A more general biasing might be required.
@@ -167,7 +198,18 @@ namespace scene
 		\param axis The axis along which the texture is projected. The allowed values are 0 (X), 1(Y), and 2(Z).
 		\param offset Vector added to the vertex positions (in object coordinates).
 		*/
-		virtual void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const =0;
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* buffer,
+				f32 resolutionS, f32 resolutionT,
+				u8 axis, const core::vector3df& offset) const=0;
+
+		//! Clones a static IMesh into a modifiable SMesh.
+		/** All meshbuffers in the returned SMesh
+		are of type SMeshBuffer or SMeshBufferLightMap.
+		\param mesh Mesh to copy.
+		\return Cloned mesh. If you no longer need the
+		cloned mesh, you should call SMesh::drop(). See
+		IReferenceCounted::drop() for more information. */
+		virtual SMesh* createMeshCopy(IMesh* mesh) const = 0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 		/** This is useful if you want to draw tangent space normal
@@ -186,7 +228,9 @@ namespace scene
 		you no longer need the cloned mesh, you should call
 		IMesh::drop(). See IReferenceCounted::drop() for more
 		information. */
-		virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false, bool recalculateTangents=true) const = 0;
+		virtual IMesh* createMeshWithTangents(IMesh* mesh,
+				bool recalculateNormals=false, bool smooth=false,
+				bool angleWeighted=false, bool recalculateTangents=true) const=0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertex2TCoord vertices.
 		/** \param mesh Input mesh
