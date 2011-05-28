@@ -6,8 +6,10 @@
 using namespace irr;
 using namespace core;
 
+namespace
+{
 //! check miplevels by visual test
-static bool renderMipLevels(video::E_DRIVER_TYPE driverType)
+bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
 	if (!device)
@@ -76,7 +78,7 @@ static bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 
 
 //! Tests locking miplevels
-static bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
+bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
 	if (!device)
@@ -181,6 +183,84 @@ static bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 }
 
 
+//! Tests locking miplevels after texture was created with auto mipmap update
+bool lockWithAutoMipmap(video::E_DRIVER_TYPE driverType)
+{
+	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
+	if (!device)
+		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+	scene::ISceneManager * smgr = device->getSceneManager();
+
+	scene::ISceneNode* n = smgr->addCubeSceneNode();
+
+	if (n)
+	{
+		// create the texture
+		u32 texData[16*16];
+		for (u32 i=0; i<16*16; ++i)
+			texData[i]=0xff0000ff-i;
+		video::IImage* image = driver->createImageFromData(video::ECF_A8R8G8B8, core::dimension2du(16,16), texData, false);
+
+		video::ITexture* tex = driver->addTexture("miptest", image);
+		if (!tex)
+			return false;
+		else
+			n->setMaterialTexture(0, tex);
+		image->drop();
+	}
+	(void)smgr->addCameraSceneNode();
+
+	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	smgr->drawAll();
+	driver->endScene();
+
+	video::ITexture* tex = driver->findTexture("miptest");
+	video::SColor* bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 0);
+	bool result = (bits[0].color==0xff0000ff);
+	tex->unlock();
+	if (!result)
+		logTestString("mipmap lock after init with driver %ls failed.\n", driver->getName());
+
+	// test with updating a lower level, and reading upper and lower
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 3);
+	bits[0]=0xff00ff00;
+	bits[1]=0xff00ff00;
+	tex->unlock();
+	// lock another texture just to invalidate caches in the driver
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 4);
+	tex->unlock();
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
+	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color!=0xff00ff00));
+	tex->unlock();
+
+	if (!result)
+		logTestString("mipmap lock after mipmap write with driver %ls failed.\n", driver->getName());
+
+	// now test locking level 0
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 0);
+	bits[0]=0x00ff00ff;
+	bits[1]=0x00ff00ff;
+	tex->unlock();
+	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
+	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color!=0xff00ff00));
+	tex->unlock();
+
+	if (!result)
+		logTestString("mipmap lock at level 0 after mipmap write with driver %ls failed.\n", driver->getName());
+	else
+		logTestString("Passed\n");
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
+}
+
+
 bool textureFeatures(void)
 {
 	bool passed = true;
@@ -188,15 +268,19 @@ bool textureFeatures(void)
 	logTestString("OpenGL\n");
 	passed &= renderMipLevels(video::EDT_OPENGL);
 	passed &= lockAllMipLevels(video::EDT_OPENGL);
+	passed &= lockWithAutoMipmap(video::EDT_OPENGL);
 	logTestString("Burnings Video\n");
 	passed &= renderMipLevels(video::EDT_BURNINGSVIDEO);
 	passed &= lockAllMipLevels(video::EDT_BURNINGSVIDEO);
+	passed &= lockWithAutoMipmap(video::EDT_BURNINGSVIDEO);
 	logTestString("Direct3D9\n");
 	passed &= renderMipLevels(video::EDT_DIRECT3D9);
 	passed &= lockAllMipLevels(video::EDT_DIRECT3D9);
+	passed &= lockWithAutoMipmap(video::EDT_DIRECT3D9);
 	logTestString("Direct3D8\n");
 	passed &= renderMipLevels(video::EDT_DIRECT3D8);
 	passed &= lockAllMipLevels(video::EDT_DIRECT3D8);
+	passed &= lockWithAutoMipmap(video::EDT_DIRECT3D8);
 
 	return passed;
 }
