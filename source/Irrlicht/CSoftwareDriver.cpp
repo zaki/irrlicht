@@ -8,6 +8,7 @@
 #ifdef _IRR_COMPILE_WITH_SOFTWARE_
 
 #include "CSoftwareTexture.h"
+#include "CBlit.h"
 #include "os.h"
 #include "S3DVertex.h"
 
@@ -820,7 +821,7 @@ void CSoftwareDriver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end,
 				SColor color)
 {
-	RenderTargetSurface->drawLine(start, end, color );
+	drawLine(RenderTargetSurface, start, end, color );
 }
 
 
@@ -844,14 +845,14 @@ void CSoftwareDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 		if(!p.isValid())
 			return;
 
-		RenderTargetSurface->drawRectangle(p, color);
+		drawRectangle(RenderTargetSurface, p, color);
 	}
 	else
 	{
 		if(!pos.isValid())
 			return;
 
-		RenderTargetSurface->drawRectangle(pos, color);
+		drawRectangle(RenderTargetSurface, pos, color);
 	}
 }
 
