@@ -2277,7 +2277,7 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color)
 {
-	BackBuffer->drawLine(start, end, color );
+	drawLine(BackBuffer, start, end, color );
 }
 
 
@@ -2301,14 +2301,14 @@ void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& p
 		if(!p.isValid())
 			return;
 
-		BackBuffer->drawRectangle(p, color);
+		drawRectangle(BackBuffer, p, color);
 	}
 	else
 	{
 		if(!pos.isValid())
 			return;
 
-		BackBuffer->drawRectangle(pos, color);
+		drawRectangle(BackBuffer, pos, color);
 	}
 }
 

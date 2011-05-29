@@ -2268,6 +2268,10 @@
 					Name="Null"
 					>
 					<File
+						RelativePath=".\CBlit.h"
+						>
+					</File>
+					<File
 						RelativePath="CColorConverter.cpp"
 						>
 					</File>
