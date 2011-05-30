@@ -427,13 +427,13 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
 
 	if (VendorID==0x10DE)//NVidia
-		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(Params.DisplayAdapter, D3DDEVTYPE_HAL,
+		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(adapter, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A', 'T', 'O', 'C')) == S_OK);
 	else if (VendorID==0x1002)//ATI
 		AlphaToCoverageSupport = true; // TODO: Check unknown
 #if 0
-		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(DisplayAdapter, D3DDEVTYPE_HAL,
+		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(adapter, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
 #endif
