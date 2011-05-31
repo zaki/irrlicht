@@ -709,7 +709,7 @@ path CFileSystem::getRelativeFilename(const path& filename, const path& director
 		core::list<io::path>::ConstIterator it1,it2;
 		it1=list1.begin();
 		it2=list2.begin();
-		for (; i<list1.size() && (*it1==*it2); ++i)
+		for (; i<list1.size() && i<list2.size() && (*it1==*it2); ++i)
 		{
 			++it1;
 			++it2;
