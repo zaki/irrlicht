@@ -318,6 +318,7 @@ int main()
 	node->setPosition(core::vector3df(0,-10,50));
 	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 	node->setMaterialType((video::E_MATERIAL_TYPE)newMaterialType2);
 
 	smgr->addTextSceneNode(gui->getBuiltInFont(),
