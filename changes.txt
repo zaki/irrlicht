@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Added IGUITabControl::insertTab, IGUITabControl::removeTab, IGUITabControl::clear and IGUITabControl::getTabAt
+
  - Added IGUIListBox::getItemAt
 
  - Added IGUITable::getColumnWidth
