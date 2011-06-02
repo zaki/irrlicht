@@ -29,7 +29,7 @@ namespace irr
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 // constructor  linux
-	COSOperator::COSOperator(const core::stringc& osversion, CIrrDeviceLinux* device)
+	COSOperator::COSOperator(const core::stringc& osVersion, CIrrDeviceLinux* device)
 : OperatingSystem(osVersion), IrrDeviceLinux(device)
 {
 }
