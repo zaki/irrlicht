@@ -101,7 +101,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	linuxversion += " ";
 	linuxversion += LinuxInfo.machine;
 
-	Operator = new COSOperator(linuxversion.c_str(), this);
+	Operator = new COSOperator(linuxversion, this);
 	os::Printer::log(linuxversion.c_str(), ELL_INFORMATION);
 
 	// create keymap

@@ -94,7 +94,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	sdlversion += ".";
 	sdlversion += Info.version.patch;
 
-	Operator = new COSOperator(sdlversion.c_str());
+	Operator = new COSOperator(sdlversion);
 	os::Printer::log(sdlversion.c_str(), ELL_INFORMATION);
 
 	// create keymap
