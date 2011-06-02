@@ -25,10 +25,10 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 #endif
-#endif
 #else
 #ifdef _MSC_VER
 #pragma comment(lib, "winmm.lib")
+#endif
 #endif
 #endif
 
