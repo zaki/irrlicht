@@ -6,12 +6,12 @@
 #include "OSXClipboard.h"
 #import <Cocoa/Cocoa.h>
 
-void	OSXCopyToClipboard(const char *text)
+void OSXCopyToClipboard(const char *text)
 {
-	NSString		*str;
-	NSPasteboard	*board;
+	NSString *str;
+	NSPasteboard *board;
 
-	if (text != NULL && strlen(text) > 0)
+	if ((text != NULL) && (strlen(text) > 0))
 	{
 		str = [NSString stringWithCString:text encoding:NSWindowsCP1252StringEncoding];
 		board = [NSPasteboard generalPasteboard];
@@ -20,15 +20,17 @@ void	OSXCopyToClipboard(const char *text)
 	}
 }
 
-char*	OSXCopyFromClipboard()
+char* OSXCopyFromClipboard()
 {
-	NSString		*str;
-	NSPasteboard	*board;
-	char			*result;
-	
+	NSString* str;
+	NSPasteboard* board;
+	char* result;
+
 	result = NULL;
 	board = [NSPasteboard generalPasteboard];
 	str = [board stringForType:NSStringPboardType];
-	if (str != nil) result = (char*)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
+	if (str != nil)
+		result = (char*)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
 	return (result);
 }
+
