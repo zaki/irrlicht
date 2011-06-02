@@ -43,7 +43,7 @@ struct SAttributeReadWriteOptions
 	s32 Flags;
 
 	//! Optional filename
-	const c8* Filename;
+	const fschar_t* Filename;
 };
 
 
