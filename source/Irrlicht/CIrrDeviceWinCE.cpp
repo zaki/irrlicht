@@ -346,7 +346,7 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
 
 	core::stringc winversion;
 	getWindowsVersion(winversion);
-	Operator = new COSOperator(winversion.c_str());
+	Operator = new COSOperator(winversion);
 	os::Printer::log(winversion.c_str(), ELL_INFORMATION);
 
 	HINSTANCE hInstance = GetModuleHandle(0);

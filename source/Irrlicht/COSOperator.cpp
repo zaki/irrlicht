@@ -29,14 +29,14 @@ namespace irr
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 // constructor  linux
-COSOperator::COSOperator(const c8* osversion, CIrrDeviceLinux* device)
-: IrrDeviceLinux(device)
+	COSOperator::COSOperator(const core::stringc& osversion, CIrrDeviceLinux* device)
+: OperatingSystem(osVersion), IrrDeviceLinux(device)
 {
 }
 #endif
 
 // constructor
-COSOperator::COSOperator(const c8* osVersion) : OperatingSystem(osVersion)
+COSOperator::COSOperator(const core::stringc& osVersion) : OperatingSystem(osVersion)
 {
 	#ifdef _DEBUG
 	setDebugName("COSOperator");
@@ -45,9 +45,9 @@ COSOperator::COSOperator(const c8* osVersion) : OperatingSystem(osVersion)
 
 
 //! returns the current operating system version as string.
-const wchar_t* COSOperator::getOperationSystemVersion() const
+const core::stringc& COSOperator::getOperatingSystemVersion() const
 {
-	return OperatingSystem.c_str();
+	return OperatingSystem;
 }
 
 

@@ -6,8 +6,6 @@
 #define __C_OS_OPERATOR_H_INCLUDED__
 
 #include "IOSOperator.h"
-#include "irrString.h"
-#include "IrrCompileConfig.h"
 
 namespace irr
 {
@@ -21,12 +19,12 @@ public:
 
 	// constructor
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-    COSOperator(const c8* osversion, CIrrDeviceLinux* device);
+	COSOperator(const core::stringc& osversion, CIrrDeviceLinux* device);
 #endif
- 	COSOperator(const c8* osversion);
+ 	COSOperator(const core::stringc& osversion);
 
 	//! returns the current operation system version as string.
-	virtual const wchar_t* getOperationSystemVersion() const;
+	virtual const core::stringc& getOperatingSystemVersion() const;
 
 	//! copies text to the clipboard
 	virtual void copyToClipboard(const c8* text) const;
@@ -48,7 +46,7 @@ public:
 
 private:
 
-	core::stringw OperatingSystem;
+	core::stringc OperatingSystem;
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     CIrrDeviceLinux * IrrDeviceLinux;

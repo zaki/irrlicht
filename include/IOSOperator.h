@@ -6,6 +6,7 @@
 #define __I_OS_OPERATOR_H_INCLUDED__
 
 #include "IReferenceCounted.h"
+#include "irrString.h"
 
 namespace irr
 {
@@ -14,12 +15,15 @@ namespace irr
 class IOSOperator : public virtual IReferenceCounted
 {
 public:
-
-	//! Destructor
-	virtual ~IOSOperator() {}
+	//! Get the current operation system version as string.
+	virtual const core::stringc& getOperatingSystemVersion() const = 0;
 
 	//! Get the current operation system version as string.
-	virtual const wchar_t* getOperationSystemVersion() const = 0;
+	/** \deprecated Use getOperatingSystemVersion instead. This method will be removed in Irrlicht 1.9. */
+	_IRR_DEPRECATED_ const wchar_t* getOperationSystemVersion() const
+	{
+		return core::stringw(getOperatingSystemVersion()).c_str();
+	}
 
 	//! Copies text to the clipboard
 	virtual void copyToClipboard(const c8* text) const = 0;
@@ -44,4 +48,3 @@ public:
 } // end namespace
 
 #endif
-
