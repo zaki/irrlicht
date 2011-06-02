@@ -1323,12 +1323,12 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
 		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
 
-		indices.push_back(vstart);
-		indices.push_back(vstart+1);
-		indices.push_back(vstart+2);
-		indices.push_back(vstart);
-		indices.push_back(vstart+2);
-		indices.push_back(vstart+3);
+		quadIndices.push_back(vstart);
+		quadIndices.push_back(vstart+1);
+		quadIndices.push_back(vstart+2);
+		quadIndices.push_back(vstart);
+		quadIndices.push_back(vstart+2);
+		quadIndices.push_back(vstart+3);
 
 		targetPos.X += sourceRects[currentIndex].getWidth();
 	}
@@ -1339,7 +1339,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 
 
 //! draws a set of 2d images, using a color and the alpha channel of the texture if desired.
-void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
+void COGLES1Driver::draw2DImageBatch(const video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
@@ -1463,14 +1463,14 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
 		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
 
-		indices.push_back(vstart);
-		indices.push_back(vstart+1);
-		indices.push_back(vstart+2);
-		indices.push_back(vstart);
-		indices.push_back(vstart+2);
-		indices.push_back(vstart+3);
+		quadIndices.push_back(vstart);
+		quadIndices.push_back(vstart+1);
+		quadIndices.push_back(vstart+2);
+		quadIndices.push_back(vstart);
+		quadIndices.push_back(vstart+2);
+		quadIndices.push_back(vstart+3);
 	}
-	drawVertexPrimitiveList2d3d(vertices.pointer(), 4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
+	drawVertexPrimitiveList2d3d(vertices.pointer(), 4*drawCount, quadIndices.pointer(), 2*drawCount, video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
 }
 
 
@@ -2180,7 +2180,7 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 			// Make sure we set first texture matrix
 			if (MultiTextureExtension)
-				extGlActiveTexture(GL_TEXTURE0_ARB);
+				extGlActiveTexture(GL_TEXTURE0);
 
 			glMatrixMode(GL_TEXTURE);
 			glLoadIdentity();
@@ -2217,8 +2217,8 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	{
 		if (!OverrideMaterial2D)
 		{
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
