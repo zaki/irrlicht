@@ -130,8 +130,10 @@ strings
 */
 #if defined(_IRR_WCHAR_FILESYSTEM)
 	typedef wchar_t fschar_t;
+	#define _IRR_TEXT(X) L##X
 #else
 	typedef char fschar_t;
+	#define _IRR_TEXT(X) X
 #endif
 
 } // end namespace irr

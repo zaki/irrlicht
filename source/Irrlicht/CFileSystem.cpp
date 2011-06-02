@@ -129,7 +129,7 @@ IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len,
 		return 0;
 	else
 		return new CMemoryFile(memory, len, fileName, deleteMemoryWhenDropped);
-}
+			}
 
 
 //! Creates an IReadFile interface for reading files inside files
@@ -321,9 +321,9 @@ bool CFileSystem::changeArchivePassword(const path& filename, const core::string
 	{
 		// TODO: This should go into a path normalization method
 		// We need to check for directory names with trailing slash and without
-		const core::stringc absPath = getAbsolutePath(filename);
-		const core::stringc arcPath = FileArchives[idx]->getFileList()->getPath();
-		if ((absPath == arcPath) || ((absPath+"/") == arcPath))
+		const path absPath = getAbsolutePath(filename);
+		const path arcPath = FileArchives[idx]->getFileList()->getPath();
+		if ((absPath == arcPath) || ((absPath+_IRR_TEXT("/")) == arcPath))
 		{
 			if (password.size())
 				FileArchives[idx]->Password=password;
@@ -533,7 +533,8 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 	if (FileSystemType != FILESYSTEM_NATIVE)
 	{
 		WorkingDirectory[FILESYSTEM_VIRTUAL] = newDirectory;
-		flattenFilename(WorkingDirectory[FILESYSTEM_VIRTUAL], "");
+		// is this empty string constant really intended?
+		flattenFilename(WorkingDirectory[FILESYSTEM_VIRTUAL], _IRR_TEXT(""));
 		success = 1;
 	}
 	else
@@ -591,7 +592,7 @@ io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 			return io::path(fpath);
 	}
 	if (filename[filename.size()-1]=='/')
-		return io::path(p)+"/";
+		return io::path(p)+_IRR_TEXT("/");
 	else
 		return io::path(p);
 #else
@@ -613,7 +614,7 @@ io::path CFileSystem::getFileDir(const io::path& filename) const
 	if ((u32)lastSlash < filename.size())
 		return filename.subString(0, lastSlash);
 	else
-		return ".";
+		return _IRR_TEXT(".");
 }
 
 
@@ -666,7 +667,7 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 	{
 		subdir = directory.subString(lastpos, pos - lastpos + 1);
 
-		if (subdir == "../")
+		if (subdir == _IRR_TEXT("../"))
 		{
 			if (lastWasRealDir)
 			{
@@ -679,11 +680,11 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 				lastWasRealDir=false;
 			}
 		}
-		else if (subdir == "/")
+		else if (subdir == _IRR_TEXT("/"))
 		{
 			dir = root;
 		}
-		else if (subdir != "./" )
+		else if (subdir != _IRR_TEXT("./"))
 		{
 			dir.append(subdir);
 			lastWasRealDir=true;
@@ -699,12 +700,12 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 //! Get the relative filename, relative to the given directory
 path CFileSystem::getRelativeFilename(const path& filename, const path& directory) const
 {
-		io::path path, file, ext;
-		core::splitFilename(getAbsolutePath(filename), &path, &file, &ext);
+		io::path path1, file, ext;
+		core::splitFilename(getAbsolutePath(filename), &path1, &file, &ext);
 		io::path path2(getAbsolutePath(directory));
 		core::list<io::path> list1, list2;
-		path.split(list1, "/\\", 2);
-		path2.split(list2, "/\\", 2);
+		path1.split(list1, _IRR_TEXT("/\\"), 2);
+		path2.split(list2, _IRR_TEXT("/\\"), 2);
 		u32 i=0;
 		core::list<io::path>::ConstIterator it1,it2;
 		it1=list1.begin();
@@ -714,21 +715,21 @@ path CFileSystem::getRelativeFilename(const path& filename, const path& director
 			++it1;
 			++it2;
 		}
-		path="";
+		path1=_IRR_TEXT("");
 		for (; i<list2.size(); ++i)
-			path += "../";
+			path1 += _IRR_TEXT("../");
 		while (it1 != list1.end())
 		{
-			path += *it1++;
-			path += "/";
+			path1 += *it1++;
+			path1 += _IRR_TEXT('/');
 		}
-		path += file;
+		path1 += file;
 		if (ext.size())
 		{
-			path += ".";
-			path += ext;
+			path1 += _IRR_TEXT('.');
+			path1 += ext;
 		}
-		return path;
+		return path1;
 }
 
 
@@ -788,7 +789,7 @@ IFileList* CFileSystem::createFileList()
 
 		r = new CFileList(Path, false, false);
 
-		r->addItem(Path + "..", 0, 0, true, 0);
+		r->addItem(Path + _IRR_TEXT(".."), 0, 0, true, 0);
 
 		//! We use the POSIX compliant methods instead of scandir
 		DIR* dirHandle=opendir(Path.c_str());
@@ -835,10 +836,10 @@ IFileList* CFileSystem::createFileList()
 		SFileListEntry e3;
 
 		//! PWD
-		r->addItem(Path + ".", 0, 0, true, 0);
+		r->addItem(Path + _IRR_TEXT("."), 0, 0, true, 0);
 
 		//! parent
-		r->addItem(Path + "..", 0, 0, true, 0);
+		r->addItem(Path + _IRR_TEXT(".."), 0, 0, true, 0);
 
 		//! merge archives
 		for (u32 i=0; i < FileArchives.size(); ++i)
