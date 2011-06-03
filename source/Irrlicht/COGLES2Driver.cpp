@@ -999,7 +999,7 @@ namespace video
 		const core::rect<s32> poss(targetPos, sourceSize);
 
 		disableTextures(1);
-		if (!setTexture(0, texture))
+		if (!setActiveTexture(0, texture))
 			return;
 		setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
 
@@ -1022,7 +1022,7 @@ namespace video
 		if (!texture)
 			return;
 
-		if (!setTexture(0, const_cast<video::ITexture*>(texture)))
+		if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
 			return;
 
 		const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
@@ -1189,7 +1189,7 @@ namespace video
 		const video::SColor* const useColor = colors ? colors : temp;
 
 		disableTextures(1);
-		setTexture(0, texture);
+		setActiveTexture(0, texture);
 		setRenderStates2DMode(useColor[0].getAlpha() < 255 || useColor[1].getAlpha() < 255 ||
 							   useColor[2].getAlpha() < 255 || useColor[3].getAlpha() < 255,
 							   true, useAlphaChannelOfTexture);
@@ -1231,7 +1231,7 @@ namespace video
 			return;
 
 		disableTextures(1);
-		if (!setTexture(0, texture))
+		if (!setActiveTexture(0, texture))
 			return;
 		setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
 
@@ -1357,7 +1357,7 @@ namespace video
 	}
 
 
-	bool COGLES2Driver::setTexture(u32 stage, const video::ITexture* texture)
+	bool COGLES2Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	{
 		if (stage >= MaxTextureUnits)
 			return false;
@@ -1393,7 +1393,7 @@ namespace video
 	{
 		bool result = true;
 		for (u32 i = fromStage; i < MaxTextureUnits; ++i)
-			result &= setTexture(i, 0);
+			result &= setActiveTexture(i, 0);
 		return result;
 	}
 
@@ -1445,7 +1445,7 @@ namespace video
 
 		for (s32 i = MaxTextureUnits - 1; i >= 0; --i)
 		{
-			setTexture(i, Material.getTexture(i));
+			setActiveTexture(i, Material.getTexture(i));
 			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i),
 						 Material.getTextureMatrix(i));
 		}
@@ -2350,7 +2350,7 @@ namespace video
 
 		// check if we should set the previous RT back
 
-		setTexture(0, 0);
+		setActiveTexture(0, 0);
 		ResetRenderStates = true;
 		if (RenderTargetTexture != 0)
 		{

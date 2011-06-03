@@ -211,7 +211,7 @@ void COGLES1Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!newTexture)
 		InternalFormat=oldInternalFormat;
 
-	Driver->setTexture(0, this);
+	Driver->setActiveTexture(0, this);
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 

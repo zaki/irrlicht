@@ -15,53 +15,53 @@
 
 namespace irr
 {
-    namespace video
-    {
+namespace video
+{
 
-//! Class for rendering normal maps with OGLES2
-        class COGLES2ParallaxMapRenderer : public COGLES2SLMaterialRenderer, public IShaderConstantSetCallBack
-        {
-        public:
+	//! Class for rendering normal maps with OGLES2
+	class COGLES2ParallaxMapRenderer : public COGLES2SLMaterialRenderer, public IShaderConstantSetCallBack
+	{
+	public:
 
-            //! Constructor
-            COGLES2ParallaxMapRenderer( video::COGLES2Driver* driver, io::IFileSystem* fs,
-                                        s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial );
+		//! Constructor
+		COGLES2ParallaxMapRenderer( video::COGLES2Driver* driver, io::IFileSystem* fs,
+									s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial );
 
-            //! Destructor
-            virtual ~COGLES2ParallaxMapRenderer();
+		//! Destructor
+		virtual ~COGLES2ParallaxMapRenderer();
 
-            //! Called by the engine when the vertex and/or pixel shader constants for an
-            //! material renderer should be set.
-            virtual void OnSetConstants( IMaterialRendererServices* services, s32 userData );
+		//! Called by the engine when the vertex and/or pixel shader constants for an
+		//! material renderer should be set.
+		virtual void OnSetConstants( IMaterialRendererServices* services, s32 userData );
 
-            virtual void OnSetMaterial( const SMaterial& material ) { }
-            virtual void OnSetMaterial( const video::SMaterial& material,
-                                        const video::SMaterial& lastMaterial,
-                                        bool resetAllRenderstates, video::IMaterialRendererServices* services );
+		virtual void OnSetMaterial( const SMaterial& material ) { }
+		virtual void OnSetMaterial( const video::SMaterial& material,
+									const video::SMaterial& lastMaterial,
+									bool resetAllRenderstates, video::IMaterialRendererServices* services );
 
-        protected:
+	protected:
 
-            bool CompiledShaders;
-            f32 CurrentScale;
+		bool CompiledShaders;
+		f32 CurrentScale;
 
-        private:
-            enum SHADER_UNIFORM
-            {
-                MVP_MATRIX = 0,
-                LIGHT_POSITION,
-                LIGHT_COLOR,
-                EYE_POSITION,
-                TEXTURE_UNIT0,
-                TEXTURE_UNIT1,
-                LIGHT_DIFFUSE,
-                HEIGHT_SCALE,
-                UNIFORM_COUNT
-            };
-            static const char* const sBuiltInShaderUniformNames[];
-        };
+	private:
+		enum SHADER_UNIFORM
+		{
+			MVP_MATRIX = 0,
+			LIGHT_POSITION,
+			LIGHT_COLOR,
+			EYE_POSITION,
+			TEXTURE_UNIT0,
+			TEXTURE_UNIT1,
+			LIGHT_DIFFUSE,
+			HEIGHT_SCALE,
+			UNIFORM_COUNT
+		};
+		static const char* const sBuiltInShaderUniformNames[];
+	};
 
 
-    } // end namespace video
+} // end namespace video
 } // end namespace irr
 
 #endif

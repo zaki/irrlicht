@@ -1082,7 +1082,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 	if (false && FeatureAvailable[IRR_OES_draw_texture])
 	{
 		disableTextures(1);
-		if (!setTexture(0, texture))
+		if (!setActiveTexture(0, texture))
 			return;
 		setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 		const int crop[] = {sourceRect.UpperLeftCorner.X, sourceRect.LowerRightCorner.Y, sourceRect.getWidth(), sourceRect.getHeight()};
@@ -1191,7 +1191,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
-	if (!setTexture(0, texture))
+	if (!setActiveTexture(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1235,7 +1235,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	disableTextures(1);
-	setTexture(0, texture);
+	setActiveTexture(0, texture);
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
@@ -1276,7 +1276,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 		return;
 
 	disableTextures(1);
-	if (!setTexture(0, texture))
+	if (!setActiveTexture(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1458,6 +1458,8 @@ void COGLES1Driver::draw2DImageBatch(const video::ITexture* texture,
 
 		const core::rect<s32> poss(targetPos, sourceSize);
 
+		const u32 vstart = vertices.size();
+
 		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
 		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
 		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
@@ -1546,7 +1548,7 @@ void COGLES1Driver::draw2DLine(const core::position2d<s32>& start,
 
 
 
-bool COGLES1Driver::setTexture(u32 stage, const video::ITexture* texture)
+bool COGLES1Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
 	if (stage >= MaxTextureUnits)
 		return false;
@@ -1586,7 +1588,7 @@ bool COGLES1Driver::disableTextures(u32 fromStage)
 {
 	bool result=true;
 	for (u32 i=fromStage; i<MaxTextureUnits; ++i)
-		result &= setTexture(i, 0);
+		result &= setActiveTexture(i, 0);
 	return result;
 }
 
@@ -2843,7 +2845,7 @@ bool COGLES1Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	// check if we should set the previous RT back
 
-	setTexture(0, 0);
+	setActiveTexture(0, 0);
 	ResetRenderStates=true;
 	if (RenderTargetTexture!=0)
 	{

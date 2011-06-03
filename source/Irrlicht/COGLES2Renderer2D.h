@@ -12,43 +12,45 @@
 
 namespace irr
 {
-    namespace io
-    {
-        class IFileSystem;
-    }
-    namespace video
-    {
-        class COGLES2Driver;
-
-        class COGLES2Renderer2d : public COGLES2SLMaterialRenderer
-        {
-        public:
-            COGLES2Renderer2d( COGLES2Driver* driver, io::IFileSystem* fs );
-            virtual ~COGLES2Renderer2d() {};
-
-            void useTexture( bool param );
-            void useAlphaTest( bool param );
-            void setAlphaTestValue( float param );
-            void setOrthoMatrix( const core::matrix4& matrix );
-        private :
-            bool  UseTexture;
-            bool  UseAlphaTest;
-            float AlphaTestValue;
-            core::matrix4 OrthoMatrix;
-        private:
-            enum SHADER_UNIFORM
-            {
-                ORTHO_MATRIX = 0,
-                USE_TEXTURE,
-                TEXTURE_UNIT,
-                ALPHA_TEST,
-                ALPHA_VALUE,
-                UNIFORM_COUNT
-            };
-            static const char* const sBuiltInShaderUniformNames[];
-        };
-
-    }
+namespace io
+{
+	class IFileSystem;
 }
+namespace video
+{
+	class COGLES2Driver;
+
+	class COGLES2Renderer2d : public COGLES2SLMaterialRenderer
+	{
+	public:
+		COGLES2Renderer2d( COGLES2Driver* driver, io::IFileSystem* fs );
+		virtual ~COGLES2Renderer2d() {};
+
+		void useTexture( bool param );
+		void useAlphaTest( bool param );
+		void setAlphaTestValue( float param );
+		void setOrthoMatrix( const core::matrix4& matrix );
+	private :
+		bool  UseTexture;
+		bool  UseAlphaTest;
+		float AlphaTestValue;
+		core::matrix4 OrthoMatrix;
+	private:
+		enum SHADER_UNIFORM
+		{
+			ORTHO_MATRIX = 0,
+			USE_TEXTURE,
+			TEXTURE_UNIT,
+			ALPHA_TEST,
+			ALPHA_VALUE,
+			UNIFORM_COUNT
+		};
+		static const char* const sBuiltInShaderUniformNames[];
+	};
+
+}
+}
+
 #endif
 #endif
+

@@ -14,150 +14,152 @@
 
 namespace irr
 {
-    namespace video
-    {
+namespace video
+{
 
-        class COGLES2Driver;
-//! OGLES21 texture.
-        class COGLES2Texture : public ITexture
-        {
-        public:
+	class COGLES2Driver;
 
-            //! constructor
-            COGLES2Texture( IImage* surface, const io::path& name, COGLES2Driver* driver = 0 );
+	//! OGLES2 texture.
+	class COGLES2Texture : public ITexture
+	{
+	public:
 
-            //! destructor
-            virtual ~COGLES2Texture();
+		//! constructor
+		COGLES2Texture( IImage* surface, const io::path& name, COGLES2Driver* driver = 0 );
 
-            //! lock function
-            virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0);
+		//! destructor
+		virtual ~COGLES2Texture();
 
-            //! unlock function
-            virtual void unlock();
+		//! lock function
+		virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0);
 
-            //! Returns original size of the texture (image).
-            virtual const core::dimension2d<u32>& getOriginalSize() const;
+		//! unlock function
+		virtual void unlock();
 
-            //! Returns size of the texture.
-            virtual const core::dimension2d<u32>& getSize() const;
+		//! Returns original size of the texture (image).
+		virtual const core::dimension2d<u32>& getOriginalSize() const;
 
-            //! returns driver type of texture (=the driver, that created it)
-            virtual E_DRIVER_TYPE getDriverType() const;
+		//! Returns size of the texture.
+		virtual const core::dimension2d<u32>& getSize() const;
 
-            //! returns color format of texture
-            virtual ECOLOR_FORMAT getColorFormat() const;
+		//! returns driver type of texture (=the driver, that created it)
+		virtual E_DRIVER_TYPE getDriverType() const;
 
-            //! returns pitch of texture (in bytes)
-            virtual u32 getPitch() const;
+		//! returns color format of texture
+		virtual ECOLOR_FORMAT getColorFormat() const;
 
-            //! return open gl texture name
-            u32 getOGLES2TextureName() const;
+		//! returns pitch of texture (in bytes)
+		virtual u32 getPitch() const;
 
-            //! return whether this texture has mipmaps
-            virtual bool hasMipMaps() const;
+		//! return open gl texture name
+		u32 getOGLES2TextureName() const;
 
-            //! Regenerates the mip map levels of the texture.
-            virtual void regenerateMipMapLevels(void* mipmapData=0);
+		//! return whether this texture has mipmaps
+		virtual bool hasMipMaps() const;
 
-            //! Is it a render target?
-            virtual bool isRenderTarget() const;
+		//! Regenerates the mip map levels of the texture.
+		virtual void regenerateMipMapLevels(void* mipmapData=0);
 
-            //! Is it a FrameBufferObject?
-            virtual bool isFrameBufferObject() const;
+		//! Is it a render target?
+		virtual bool isRenderTarget() const;
 
-            //! Bind RenderTargetTexture
-            void bindRTT();
+		//! Is it a FrameBufferObject?
+		virtual bool isFrameBufferObject() const;
 
-            //! Unbind RenderTargetTexture
-            void unbindRTT();
+		//! Bind RenderTargetTexture
+		void bindRTT();
 
-            //! sets whether this texture is intended to be used as a render target.
-            void setIsRenderTarget( bool isTarget );
+		//! Unbind RenderTargetTexture
+		void unbindRTT();
 
-        protected:
+		//! sets whether this texture is intended to be used as a render target.
+		void setIsRenderTarget( bool isTarget );
 
-            //! protected constructor with basic setup, no GL texture name created, for derived classes
-            COGLES2Texture( const io::path& name, COGLES2Driver* driver );
+	protected:
 
-            //! get the desired color format based on texture creation flags and the input format.
-            ECOLOR_FORMAT getBestColorFormat( ECOLOR_FORMAT format );
+		//! protected constructor with basic setup, no GL texture name created, for derived classes
+		COGLES2Texture( const io::path& name, COGLES2Driver* driver );
 
-            //! convert the image into an internal image with better properties for this driver.
-            void getImageData( IImage* image );
+		//! get the desired color format based on texture creation flags and the input format.
+		ECOLOR_FORMAT getBestColorFormat( ECOLOR_FORMAT format );
 
-            //! copies the the texture into an open gl texture.
-            void copyTexture( bool newTexture = true );
+		//! convert the image into an internal image with better properties for this driver.
+		void getImageData( IImage* image );
 
-            core::dimension2d<u32> ImageSize;
-            COGLES2Driver* Driver;
-            IImage* Image;
+		//! copies the the texture into an open gl texture.
+		void copyTexture( bool newTexture = true );
 
-            u32 TextureName;
-            s32 InternalFormat;
-            u32 PixelFormat;
-            u32 PixelType;
+		core::dimension2d<u32> ImageSize;
+		COGLES2Driver* Driver;
+		IImage* Image;
 
-            bool HasMipMaps;
-            bool IsRenderTarget;
-            bool AutomaticMipmapUpdate;
-            bool UseStencil;
-            bool ReadOnlyLock;
-        };
+		u32 TextureName;
+		s32 InternalFormat;
+		u32 PixelFormat;
+		u32 PixelType;
 
-
-//! OGLES21 FBO texture.
-        class COGLES2FBOTexture : public COGLES2Texture
-        {
-        public:
-
-            //! FrameBufferObject constructor
-            COGLES2FBOTexture( const core::dimension2d<u32>& size, const io::path& name, COGLES2Driver* driver = 0, ECOLOR_FORMAT format = ECF_UNKNOWN );
-
-            //! destructor
-            virtual ~COGLES2FBOTexture();
-
-            //! Is it a FrameBufferObject?
-            virtual bool isFrameBufferObject() const;
-
-            //! Bind RenderTargetTexture
-            virtual void bindRTT();
-
-            //! Unbind RenderTargetTexture
-            virtual void unbindRTT();
-
-            ITexture* DepthTexture;
-        protected:
-            u32 ColorFrameBuffer;
-        };
+		bool HasMipMaps;
+		bool IsRenderTarget;
+		bool AutomaticMipmapUpdate;
+		bool UseStencil;
+		bool ReadOnlyLock;
+	};
 
 
-//! OGLES21 FBO depth texture.
-        class COGLES2FBODepthTexture : public COGLES2FBOTexture
-        {
-        public:
-            //! FrameBufferObject depth constructor
-            COGLES2FBODepthTexture( const core::dimension2d<u32>& size, const io::path& name, COGLES2Driver* driver = 0, bool useStencil = false );
+	//! OGLES2 FBO texture.
+	class COGLES2FBOTexture : public COGLES2Texture
+	{
+	public:
 
-            //! destructor
-            virtual ~COGLES2FBODepthTexture();
+		//! FrameBufferObject constructor
+		COGLES2FBOTexture( const core::dimension2d<u32>& size, const io::path& name, COGLES2Driver* driver = 0, ECOLOR_FORMAT format = ECF_UNKNOWN );
 
-            //! Bind RenderTargetTexture
-            virtual void bindRTT();
+		//! destructor
+		virtual ~COGLES2FBOTexture();
 
-            //! Unbind RenderTargetTexture
-            virtual void unbindRTT();
+		//! Is it a FrameBufferObject?
+		virtual bool isFrameBufferObject() const;
 
-            void attach( ITexture* );
+		//! Bind RenderTargetTexture
+		virtual void bindRTT();
 
-        protected:
-            u32 DepthRenderBuffer;
-            u32 StencilRenderBuffer;
-            bool UseStencil;
-        };
+		//! Unbind RenderTargetTexture
+		virtual void unbindRTT();
+
+		ITexture* DepthTexture;
+	protected:
+		u32 ColorFrameBuffer;
+	};
 
 
-    } // end namespace video
+	//! OGLES2 FBO depth texture.
+	class COGLES2FBODepthTexture : public COGLES2FBOTexture
+	{
+	public:
+		//! FrameBufferObject depth constructor
+		COGLES2FBODepthTexture( const core::dimension2d<u32>& size, const io::path& name, COGLES2Driver* driver = 0, bool useStencil = false );
+
+		//! destructor
+		virtual ~COGLES2FBODepthTexture();
+
+		//! Bind RenderTargetTexture
+		virtual void bindRTT();
+
+		//! Unbind RenderTargetTexture
+		virtual void unbindRTT();
+
+		void attach( ITexture* );
+
+	protected:
+		u32 DepthRenderBuffer;
+		u32 StencilRenderBuffer;
+		bool UseStencil;
+	};
+
+
+} // end namespace video
 } // end namespace irr
 
 #endif
 #endif // _IRR_COMPILE_WITH_OGLES2_
+

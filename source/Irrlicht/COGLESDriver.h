@@ -236,7 +236,7 @@ namespace video
 		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
 
 		//! sets the current Texture
-		bool setTexture(u32 stage, const video::ITexture* texture);
+		bool setActiveTexture(u32 stage, const video::ITexture* texture);
 
 		//! disables all textures beginning with fromStage.
 		bool disableTextures(u32 fromStage=0);

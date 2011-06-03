@@ -14,47 +14,47 @@
 
 namespace irr
 {
-    namespace video
-    {
+namespace video
+{
 
-//! Class for rendering normal maps with OGLES2
-        class COGLES2NormalMapRenderer : public COGLES2SLMaterialRenderer, public IShaderConstantSetCallBack
-        {
-        public:
+	//! Class for rendering normal maps with OGLES2
+	class COGLES2NormalMapRenderer : public COGLES2SLMaterialRenderer, public IShaderConstantSetCallBack
+	{
+	public:
 
-            //! Constructor
-            COGLES2NormalMapRenderer( video::COGLES2Driver* driver, io::IFileSystem* fs,
-                                      s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial );
+		//! Constructor
+		COGLES2NormalMapRenderer( video::COGLES2Driver* driver, io::IFileSystem* fs,
+								  s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial );
 
-            //! Destructor
-            virtual ~COGLES2NormalMapRenderer();
+		//! Destructor
+		virtual ~COGLES2NormalMapRenderer();
 
-            //! Called by the engine when the vertex and/or pixel shader constants for an
-            //! material renderer should be set.
-            virtual void OnSetConstants( IMaterialRendererServices* services, s32 userData );
+		//! Called by the engine when the vertex and/or pixel shader constants for an
+		//! material renderer should be set.
+		virtual void OnSetConstants( IMaterialRendererServices* services, s32 userData );
 
-            //! Returns the render capability of the material.
-            virtual s32 getRenderCapability() const;
+		//! Returns the render capability of the material.
+		virtual s32 getRenderCapability() const;
 
-        protected:
+	protected:
 
-            bool CompiledShaders;
+		bool CompiledShaders;
 
-        private:
-            enum SHADER_UNIFORM
-            {
-                MVP_MATRIX = 0,
-                LIGHT_POSITION,
-                LIGHT_COLOR,
-                TEXTURE_UNIT0,
-                TEXTURE_UNIT1,
-                UNIFORM_COUNT
-            };
-            static const char* const sBuiltInShaderUniformNames[];
-        };
+	private:
+		enum SHADER_UNIFORM
+		{
+			MVP_MATRIX = 0,
+			LIGHT_POSITION,
+			LIGHT_COLOR,
+			TEXTURE_UNIT0,
+			TEXTURE_UNIT1,
+			UNIFORM_COUNT
+		};
+		static const char* const sBuiltInShaderUniformNames[];
+	};
 
 
-    } // end namespace video
+} // end namespace video
 } // end namespace irr
 
 #endif

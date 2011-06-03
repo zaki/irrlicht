@@ -251,7 +251,7 @@ namespace video
 		virtual bool setVertexShaderPointer(const c8* name, const void* pointer, s32 size = 3, bool normalized = false, u16 stride = 0);
 
 		//! sets the current Texture
-		bool setTexture(u32 stage, const video::ITexture* texture);
+		bool setActiveTexture(u32 stage, const video::ITexture* texture);
 
 		//! disables all textures beginning with fromStage.
 		bool disableTextures(u32 fromStage = 0);
