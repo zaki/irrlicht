@@ -7,11 +7,7 @@
 
 #include "IrrCompileConfig.h"
 
-#if defined(_IRR_WINDOWS_API_)
-	// include windows headers for HWND
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 	#include "MacOSX/CIrrDeviceMacOSX.h"
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	#include "CIrrDeviceIPhone.h"
