@@ -20,11 +20,6 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
-#ifndef GL_BGRA
-// we need to do this for the IMG_BGRA8888 extension
-int GL_BGRA = GL_RGBA;
-#endif
-
 namespace irr
 {
 namespace video

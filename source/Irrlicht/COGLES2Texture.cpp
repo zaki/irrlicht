@@ -20,6 +20,14 @@
 #include <GLES2/gl2ext.h>
 #include <EGL/egl.h>
 
+namespace
+{
+#ifndef GL_BGRA
+// we need to do this for the IMG_BGRA8888 extension
+int GL_BGRA = GL_RGBA;
+#endif
+}
+
 namespace irr
 {
 namespace video
@@ -143,9 +151,16 @@ namespace video
 	}
 
 
-	//! copies the the texture into an open gl texture.
+	//! copies the texture into an opengl-es2 texture.
 	void COGLES2Texture::copyTexture( bool newTexture )
 	{
+#ifndef GL_BGRA
+		// whoa, pretty badly implemented extension...
+		if ( Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888] || Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888] )
+			GL_BGRA = 0x80E1;
+		else
+			GL_BGRA = GL_RGBA;
+#endif
 		if ( !Image )
 		{
 			os::Printer::log( "No image for OGLES2 texture to upload", ELL_ERROR );

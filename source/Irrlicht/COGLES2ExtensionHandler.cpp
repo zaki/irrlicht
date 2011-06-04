@@ -147,13 +147,6 @@ namespace irr
 
                 delete [] str;
             }
-#ifndef GL_BGRA
-            // whoa, pretty badly implemented extension...
-            if ( FeatureAvailable[IRR_IMG_texture_format_BGRA8888] || FeatureAvailable[IRR_EXT_texture_format_BGRA8888] )
-                GL_BGRA = 0x80E1;
-            else
-                GL_BGRA = GL_RGBA;
-#endif
 
             GLint val = 0;
             glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, &val );

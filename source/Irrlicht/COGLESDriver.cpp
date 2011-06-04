@@ -8,11 +8,6 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
-#ifndef GL_BGRA
-// we need to do this for the IMG_BGRA8888 extension
-int GL_BGRA=GL_RGBA;
-#endif
-
 #include "COGLESTexture.h"
 #include "COGLESMaterialRenderer.h"
 #include "CImage.h"

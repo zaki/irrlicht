@@ -20,11 +20,6 @@
 #include "os.h"
 #include "EDriverFeatures.h"
 
-#ifndef GL_BGRA
-// we need to do this for the IMG_BGRA8888 extension
-extern int GL_BGRA;
-#endif
-
 namespace irr
 {
 namespace video

@@ -817,11 +817,9 @@ precision will be lower but speed higher. currently X86 only
 // OpenGL-ES usually interferes with OpenGL
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 	#undef _IRR_COMPILE_WITH_OPENGL_
-	#undef _IRR_COMPILE_WITH_OGLES1_
 #endif
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 	#undef _IRR_COMPILE_WITH_OPENGL_
-	#undef _IRR_COMPILE_WITH_OGLES2_
 #endif
 
 #ifndef _IRR_WINDOWS_API_

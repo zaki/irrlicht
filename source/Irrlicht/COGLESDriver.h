@@ -42,6 +42,7 @@ namespace video
 
 	class COGLES1Driver : public CNullDriver, public IMaterialRendererServices, public COGLES1ExtensionHandler
 	{
+		friend class COGLES1Texture;
 	public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_)
 		COGLES1Driver(const SIrrlichtCreationParameters& params,

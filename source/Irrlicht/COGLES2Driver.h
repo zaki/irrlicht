@@ -25,10 +25,6 @@
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
 #include <EGL/eglplatform.h>
-#ifndef GL_BGRA
-// we need to do this for the IMG_BGRA8888 extension
-extern int GL_BGRA;
-#endif
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -52,6 +48,7 @@ namespace video
 
 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
 	{
+		friend class COGLES2Texture;
 	public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
 		COGLES2Driver(const SIrrlichtCreationParameters& params,

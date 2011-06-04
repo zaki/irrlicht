@@ -15,6 +15,14 @@
 
 #include "irrString.h"
 
+namespace
+{
+#ifndef GL_BGRA
+// we need to do this for the IMG_BGRA8888 extension
+int GL_BGRA=GL_RGBA;
+#endif
+}
+
 namespace irr
 {
 namespace video
@@ -162,6 +170,14 @@ void COGLES1Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		os::Printer::log("No image for OGLES1 texture to upload", ELL_ERROR);
 		return;
 	}
+
+#ifndef GL_BGRA
+	// whoa, pretty badly implemented extension...
+	if (Driver->FeatureAvailable[COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888] || Driver->FeatureAvailable[COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888])
+		GL_BGRA=0x80E1;
+	else
+		GL_BGRA=GL_RGBA;
+#endif
 
 	GLenum oldInternalFormat = InternalFormat;
 	void(*convert)(const void*, s32, void*)=0;
