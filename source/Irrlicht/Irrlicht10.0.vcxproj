@@ -290,7 +290,7 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_PCEMULATION_2.07.27.0484\Builds\OGLES2\WindowsPC\Lib;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WC:\Imagination Technologies\POWERVR C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\WindowsX86\Lib;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\WindowsX86\Lib;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
