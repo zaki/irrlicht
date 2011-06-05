@@ -1640,6 +1640,18 @@ namespace video
 			//Thibault : strange Blue artifact on textures in exemple 02
 			glActiveTexture(GL_TEXTURE0 + i);
 
+#ifdef GL_EXT_texture_lod_bias
+			if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+			{
+				if (material.TextureLayer[i].LODBias)
+				{
+					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
+				}
+				else
+					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
+			}
+#endif
 			if (material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1649,7 +1661,7 @@ namespace video
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			}
 
-			if (material.getTexture(i) && material.getTexture(i)->hasMipMaps())
+			if (material.getTexture(i) && CurrentTexture[i]->hasMipMaps())
 			{
 				if (material.TextureLayer[i].TrilinearFilter)
 				{
@@ -1781,6 +1793,81 @@ namespace video
 				(material.ColorMask & ECP_ALPHA) ? GL_TRUE : GL_FALSE);
 		}
 		testGLError();
+
+		if (resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation)
+		{
+			if (EBO_NONE)
+				glDisable(GL_BLEND);
+			else
+			{
+				glEnable(GL_BLEND);
+				switch (material.BlendOperation)
+				{
+				case EBO_SUBTRACT:
+					glBlendEquation(GL_FUNC_SUBTRACT);
+					break;
+				case EBO_REVSUBTRACT:
+					glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+					break;
+				case EBO_MIN:
+	#if defined(GL_EXT_blend_minmax)
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						glBlendEquation(GL_MIN_EXT);
+	#endif
+					break;
+				case EBO_MAX:
+	#if defined(GL_EXT_blend_minmax)
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						glBlendEquation(GL_MAX_EXT);
+	#endif
+					break;
+				case EBO_MIN_FACTOR:
+					// fallback in case of missing extension
+	#if defined(GL_EXT_blend_minmax)
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						glBlendEquation(GL_MIN_EXT);
+	#endif
+					break;
+				case EBO_MAX_FACTOR:
+					// fallback in case of missing extension
+	#if defined(GL_EXT_blend_minmax)
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						glBlendEquation(GL_MAX_EXT);
+	#endif
+					break;
+				case EBO_MIN_ALPHA:
+	#if defined(GL_EXT_blend_minmax)
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						glBlendEquation(GL_MIN_EXT);
+	#endif
+					break;
+				case EBO_MAX_ALPHA:
+	#if defined(GL_EXT_blend_minmax)
+					if (FeatureAvailable[IRR_EXT_blend_minmax])
+						glBlendEquation(GL_MAX_EXT);
+	#endif
+					break;
+				default:
+					glBlendEquation(GL_FUNC_ADD);
+					break;
+				}
+			}
+		}
+
+		// Polygon Offset
+		if (queryFeature(EVDF_POLYGON_OFFSET) && (resetAllRenderStates ||
+			lastmaterial.PolygonOffsetDirection != material.PolygonOffsetDirection ||
+			lastmaterial.PolygonOffsetFactor != material.PolygonOffsetFactor))
+		{
+			if (material.PolygonOffsetFactor)
+				glEnable(GL_POLYGON_OFFSET_FILL);
+			else
+				glDisable(GL_POLYGON_OFFSET_FILL);
+			if (material.PolygonOffsetDirection==EPO_BACK)
+				glPolygonOffset(1.0f, (GLfloat)material.PolygonOffsetFactor);
+			else
+				glPolygonOffset(-1.0f, (GLfloat)-material.PolygonOffsetFactor);
+		}
 
 		// thickness
 		if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
