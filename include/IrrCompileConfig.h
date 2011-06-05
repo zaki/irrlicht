@@ -243,6 +243,14 @@ define out. */
 #endif
 #endif
 
+//! Define _IRR_OGLES2_USE_EXTPOINTER_ if the OpenGL-ES 2.x driver should use extensions via function pointers.
+/** This should usually be enabled, but also depends on the specific
+	architecture. You can simply uncomment the define and recompile.
+*/
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+#define _IRR_OGLES2_USE_EXTPOINTER_
+#endif
+
 //! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
 //! to remove the dependencies such that Irrlicht will compile on those systems, too.
 //! If you don't need colored cursors you can also disable the Xcursor extension
