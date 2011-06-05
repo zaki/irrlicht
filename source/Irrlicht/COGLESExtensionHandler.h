@@ -15,7 +15,11 @@
 #else
 #include <GLES/egl.h>
 #include <GLES/gl.h>
+// seems to be missing...
+typedef char GLchar;
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 #include "gles-ext.h"
+#endif
 #endif
 #include "os.h"
 #include "EDriverFeatures.h"
