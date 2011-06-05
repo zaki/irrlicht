@@ -109,19 +109,34 @@ namespace irr
                 switch ( feature )
                 {
                     case EVDF_RENDER_TO_TARGET:
+					case EVDF_HARDWARE_TL:
                         return true;
                     case EVDF_MULTITEXTURE:
                         return MultiTextureExtension;
                     case EVDF_BILINEAR_FILTER:
-                        return true;
                     case EVDF_MIP_MAP:
-                        return true;
                     case EVDF_MIP_MAP_AUTO_UPDATE:
-                        return Version > 100; // Supported in version 1.1
+                        return true;
                     case EVDF_STENCIL_BUFFER:
                         return StencilBuffer;
                     case EVDF_TEXTURE_NSQUARE:
                         return true; // non-square is always supported
+					case EVDF_ARB_GLSL:
+					case EVDF_TEXTURE_NPOT:
+					case EVDF_FRAMEBUFFER_OBJECT:
+					case EVDF_VERTEX_BUFFER_OBJECT:
+					case EVDF_ALPHA_TO_COVERAGE:
+					case EVDF_COLOR_MASK:
+					case EVDF_POLYGON_OFFSET:
+					case EVDF_BLEND_OPERATIONS:
+						return true;
+					case EVDF_MULTIPLE_RENDER_TARGETS:
+					case EVDF_MRT_BLEND:
+					case EVDF_MRT_COLOR_MASK:
+					case EVDF_MRT_BLEND_FUNC:
+					case EVDF_GEOMETRY_SHADER:
+					case EVDF_OCCLUSION_QUERY:
+						return false;
                     default:
                         return false;
                 }
