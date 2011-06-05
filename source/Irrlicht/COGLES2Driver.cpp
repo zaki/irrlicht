@@ -2288,9 +2288,9 @@ namespace video
 
 		video::ITexture* rtt = 0;
 
-#if defined(GL_OES_framebuffer_object)
 		// if driver supports FrameBufferObjects, use them
-		if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
+		// TODO: Currently broken, so disabled
+		if (false && queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 		{
 			rtt = new COGLES2FBOTexture(size, name, this, format);
 			if (rtt)
@@ -2306,7 +2306,6 @@ namespace video
 			}
 		}
 		else
-#endif
 		{
 			// the simple texture is only possible for size <= screensize
 			// we try to find an optimal size with the original constraints
