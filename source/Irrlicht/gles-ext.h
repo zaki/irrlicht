@@ -1,7 +1,7 @@
 #ifndef __glext_h_
 #define __glext_h_
 
-/* $Revision: 9496 $ on $Date:: 2009-10-30 13:04:05 -0700 #$ */
+/* $Revision: 13240 $ on $Date:: 2010-12-17 15:16:00 -0800 #$ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,6 +66,19 @@ extern "C" {
 /* GL_OES_EGL_image */
 #ifndef GL_OES_EGL_image
 typedef void* GLeglImageOES;
+#endif
+
+/* GL_OES_EGL_image_external */
+#ifndef GL_OES_EGL_image_external
+/* GLeglImageOES defined in GL_OES_EGL_image already. */
+#define GL_TEXTURE_EXTERNAL_OES                                 0x8D65
+#define GL_TEXTURE_BINDING_EXTERNAL_OES                         0x8D67
+#define GL_REQUIRED_TEXTURE_IMAGE_UNITS_OES                     0x8D68
+#endif
+
+/* GL_OES_element_index_uint */
+#ifndef GL_OES_element_index_uint
+#define GL_UNSIGNED_INT                                         0x1405
 #endif
 
 /* GL_OES_fixed_point */
@@ -201,6 +214,11 @@ typedef void* GLeglImageOES;
 #define GL_MIRRORED_REPEAT_OES                                  0x8370
 #endif
 
+/* GL_OES_vertex_array_object */
+#ifndef GL_OES_vertex_array_object
+#define GL_VERTEX_ARRAY_BINDING_OES                             0x85B5
+#endif
+
 /*------------------------------------------------------------------------*
  * AMD extension tokens
  *------------------------------------------------------------------------*/
@@ -223,6 +241,34 @@ typedef void* GLeglImageOES;
  *------------------------------------------------------------------------*/
 
 /* GL_APPLE_texture_2D_limited_npot */
+/* No new tokens introduced by this extension. */
+
+/* GL_APPLE_framebuffer_multisample */
+#ifndef GL_APPLE_framebuffer_multisample
+#define GL_RENDERBUFFER_SAMPLES_APPLE                           0x8CAB
+#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_APPLE             0x8D56
+#define GL_MAX_SAMPLES_APPLE                                    0x8D57
+#define GL_READ_FRAMEBUFFER_APPLE                               0x8CA8
+#define GL_DRAW_FRAMEBUFFER_APPLE                               0x8CA9
+#define GL_DRAW_FRAMEBUFFER_BINDING_APPLE                       0x8CA6
+#define GL_READ_FRAMEBUFFER_BINDING_APPLE                       0x8CAA
+#endif
+
+/* GL_APPLE_texture_format_BGRA8888 */
+#ifndef GL_APPLE_texture_format_BGRA8888
+#define GL_BGRA_EXT                                             0x80E1
+#endif
+
+/* GL_APPLE_texture_max_level */
+#ifndef GL_APPLE_texture_max_level
+#define GL_TEXTURE_MAX_LEVEL_APPLE                              0x813D
+#endif
+
+/*------------------------------------------------------------------------*
+ * ARM extension tokens
+ *------------------------------------------------------------------------*/
+
+/* GL_ARM_rgba8 */
 /* No new tokens introduced by this extension. */
 
 /*------------------------------------------------------------------------*
@@ -310,6 +356,14 @@ typedef void* GLeglImageOES;
 #define GL_MAX_CLIP_PLANES_IMG                                  0x0D32
 #endif
 
+/* GL_IMG_multisampled_render_to_texture */
+#ifndef GL_IMG_multisampled_render_to_texture
+#define GL_RENDERBUFFER_SAMPLES_IMG                             0x9133
+#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_IMG               0x9134
+#define GL_MAX_SAMPLES_IMG                                      0x9135
+#define GL_TEXTURE_SAMPLES_IMG                                  0x9136
+#endif
+
 /*------------------------------------------------------------------------*
  * NV extension tokens
  *------------------------------------------------------------------------*/
@@ -354,6 +408,42 @@ typedef void* GLeglImageOES;
 /* GL_QCOM_writeonly_rendering */
 #ifndef GL_QCOM_writeonly_rendering
 #define GL_WRITEONLY_RENDERING_QCOM                             0x8823
+#endif
+
+/* GL_QCOM_tiled_rendering */
+#ifndef GL_QCOM_tiled_rendering
+#define GL_COLOR_BUFFER_BIT0_QCOM                               0x00000001
+#define GL_COLOR_BUFFER_BIT1_QCOM                               0x00000002
+#define GL_COLOR_BUFFER_BIT2_QCOM                               0x00000004
+#define GL_COLOR_BUFFER_BIT3_QCOM                               0x00000008
+#define GL_COLOR_BUFFER_BIT4_QCOM                               0x00000010
+#define GL_COLOR_BUFFER_BIT5_QCOM                               0x00000020
+#define GL_COLOR_BUFFER_BIT6_QCOM                               0x00000040
+#define GL_COLOR_BUFFER_BIT7_QCOM                               0x00000080
+#define GL_DEPTH_BUFFER_BIT0_QCOM                               0x00000100
+#define GL_DEPTH_BUFFER_BIT1_QCOM                               0x00000200
+#define GL_DEPTH_BUFFER_BIT2_QCOM                               0x00000400
+#define GL_DEPTH_BUFFER_BIT3_QCOM                               0x00000800
+#define GL_DEPTH_BUFFER_BIT4_QCOM                               0x00001000
+#define GL_DEPTH_BUFFER_BIT5_QCOM                               0x00002000
+#define GL_DEPTH_BUFFER_BIT6_QCOM                               0x00004000
+#define GL_DEPTH_BUFFER_BIT7_QCOM                               0x00008000
+#define GL_STENCIL_BUFFER_BIT0_QCOM                             0x00010000
+#define GL_STENCIL_BUFFER_BIT1_QCOM                             0x00020000
+#define GL_STENCIL_BUFFER_BIT2_QCOM                             0x00040000
+#define GL_STENCIL_BUFFER_BIT3_QCOM                             0x00080000
+#define GL_STENCIL_BUFFER_BIT4_QCOM                             0x00100000
+#define GL_STENCIL_BUFFER_BIT5_QCOM                             0x00200000
+#define GL_STENCIL_BUFFER_BIT6_QCOM                             0x00400000
+#define GL_STENCIL_BUFFER_BIT7_QCOM                             0x00800000
+#define GL_MULTISAMPLE_BUFFER_BIT0_QCOM                         0x01000000
+#define GL_MULTISAMPLE_BUFFER_BIT1_QCOM                         0x02000000
+#define GL_MULTISAMPLE_BUFFER_BIT2_QCOM                         0x04000000
+#define GL_MULTISAMPLE_BUFFER_BIT3_QCOM                         0x08000000
+#define GL_MULTISAMPLE_BUFFER_BIT4_QCOM                         0x10000000
+#define GL_MULTISAMPLE_BUFFER_BIT5_QCOM                         0x20000000
+#define GL_MULTISAMPLE_BUFFER_BIT6_QCOM                         0x40000000
+#define GL_MULTISAMPLE_BUFFER_BIT7_QCOM                         0x80000000
 #endif
 
 /*------------------------------------------------------------------------*
@@ -443,6 +533,12 @@ GL_API void GL_APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum target, G
 #endif
 typedef void (GL_APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, GLeglImageOES image);
 typedef void (GL_APIENTRYP PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC) (GLenum target, GLeglImageOES image);
+#endif
+
+/* GL_OES_EGL_image_external */
+#ifndef GL_OES_EGL_image_external
+#define GL_OES_EGL_image_external 1
+/* glEGLImageTargetTexture2DOES defined in GL_OES_EGL_image already. */
 #endif
 
 /* GL_OES_element_index_uint */
@@ -588,11 +684,11 @@ typedef void (GL_APIENTRYP PFNGLGENERATEMIPMAPOESPROC) (GLenum target);
 #ifdef GL_GLEXT_PROTOTYPES
 GL_API void* GL_APIENTRY glMapBufferOES (GLenum target, GLenum access);
 GL_API GLboolean GL_APIENTRY glUnmapBufferOES (GLenum target);
-GL_API void GL_APIENTRY glGetBufferPointervOES (GLenum target, GLenum pname, void** params);
+GL_API void GL_APIENTRY glGetBufferPointervOES (GLenum target, GLenum pname, GLvoid ** params);
 #endif
 typedef void* (GL_APIENTRYP PFNGLMAPBUFFEROESPROC) (GLenum target, GLenum access);
 typedef GLboolean (GL_APIENTRYP PFNGLUNMAPBUFFEROESPROC) (GLenum target);
-typedef void (GL_APIENTRYP PFNGLGETBUFFERPOINTERVOESPROC) (GLenum target, GLenum pname, void** params);
+typedef void (GL_APIENTRYP PFNGLGETBUFFERPOINTERVOESPROC) (GLenum target, GLenum pname, GLvoid ** params);
 #endif
 
 /* GL_OES_matrix_get */
@@ -708,6 +804,21 @@ typedef void (GL_APIENTRYP PFNGLGETTEXGENXVOESPROC) (GLenum coord, GLenum pname,
 #define GL_OES_texture_mirrored_repeat 1
 #endif
 
+/* GL_OES_vertex_array_object */
+#ifndef GL_OES_vertex_array_object
+#define GL_OES_vertex_array_object 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void GL_APIENTRY glBindVertexArrayOES (GLuint array);
+GL_API void GL_APIENTRY glDeleteVertexArraysOES (GLsizei n, const GLuint *arrays);
+GL_API void GL_APIENTRY glGenVertexArraysOES (GLsizei n, GLuint *arrays);
+GL_API GLboolean GL_APIENTRY glIsVertexArrayOES (GLuint array);
+#endif
+typedef void (GL_APIENTRYP PFNGLBINDVERTEXARRAYOESPROC) (GLuint array);
+typedef void (GL_APIENTRYP PFNGLDELETEVERTEXARRAYSOESPROC) (GLsizei n, const GLuint *arrays);
+typedef void (GL_APIENTRYP PFNGLGENVERTEXARRAYSOESPROC) (GLsizei n, GLuint *arrays);
+typedef GLboolean (GL_APIENTRYP PFNGLISVERTEXARRAYOESPROC) (GLuint array);
+#endif
+
 /*------------------------------------------------------------------------*
  * AMD extension functions
  *------------------------------------------------------------------------*/
@@ -729,6 +840,36 @@ typedef void (GL_APIENTRYP PFNGLGETTEXGENXVOESPROC) (GLenum coord, GLenum pname,
 /* GL_APPLE_texture_2D_limited_npot */
 #ifndef GL_APPLE_texture_2D_limited_npot
 #define GL_APPLE_texture_2D_limited_npot 1
+#endif
+
+/* GL_APPLE_framebuffer_multisample */
+#ifndef GL_APPLE_framebuffer_multisample
+#define GL_APPLE_framebuffer_multisample 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void GL_APIENTRY glRenderbufferStorageMultisampleAPPLE (GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+GL_API void GL_APIENTRY glResolveMultisampleFramebufferAPPLE (void);
+#endif /* GL_GLEXT_PROTOTYPES */
+typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEMULTISAMPLEAPPLEPROC) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (GL_APIENTRYP PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC) (void);
+#endif
+
+/* GL_APPLE_texture_format_BGRA8888 */
+#ifndef GL_APPLE_texture_format_BGRA8888
+#define GL_APPLE_texture_format_BGRA8888 1
+#endif
+
+/* GL_APPLE_texture_max_level */
+#ifndef GL_APPLE_texture_max_level
+#define GL_APPLE_texture_max_level 1
+#endif
+
+/*------------------------------------------------------------------------*
+ * ARM extension functions
+ *------------------------------------------------------------------------*/
+
+/* GL_ARM_rgba8 */
+#ifndef GL_ARM_rgba8
+#define GL_ARM_rgba8 1
 #endif
 
 /*------------------------------------------------------------------------*
@@ -810,6 +951,17 @@ typedef void (GL_APIENTRYP PFNGLCLIPPLANEFIMGPROC) (GLenum p, const GLfloat *eqn
 typedef void (GL_APIENTRYP PFNGLCLIPPLANEXIMGPROC) (GLenum p, const GLfixed *eqn);
 #endif
 
+/* GL_IMG_multisampled_render_to_texture */
+#ifndef GL_IMG_multisampled_render_to_texture
+#define GL_IMG_multisampled_render_to_texture 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void GL_APIENTRY glRenderbufferStorageMultisampleIMG (GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+GL_API void GL_APIENTRY glFramebufferTexture2DMultisampleIMG (GLenum, GLenum, GLenum, GLuint, GLint, GLsizei);
+#endif
+typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLsizei samples);
+#endif
+
 /*------------------------------------------------------------------------*
  * NV extension functions
  *------------------------------------------------------------------------*/
@@ -844,12 +996,12 @@ typedef void (GL_APIENTRYP PFNGLSETFENCENVPROC) (GLuint fence, GLenum condition)
 #define GL_QCOM_driver_control 1
 #ifdef GL_GLEXT_PROTOTYPES
 GL_API void GL_APIENTRY glGetDriverControlsQCOM (GLint *num, GLsizei size, GLuint *driverControls);
-GL_API void GL_APIENTRY glGetDriverControlStringQCOM (GLuint driverControl, GLsizei bufSize, GLsizei *length, char *driverControlString);
+GL_API void GL_APIENTRY glGetDriverControlStringQCOM (GLuint driverControl, GLsizei bufSize, GLsizei *length, GLchar *driverControlString);
 GL_API void GL_APIENTRY glEnableDriverControlQCOM (GLuint driverControl);
 GL_API void GL_APIENTRY glDisableDriverControlQCOM (GLuint driverControl);
 #endif
 typedef void (GL_APIENTRYP PFNGLGETDRIVERCONTROLSQCOMPROC) (GLint *num, GLsizei size, GLuint *driverControls);
-typedef void (GL_APIENTRYP PFNGLGETDRIVERCONTROLSTRINGQCOMPROC) (GLuint driverControl, GLsizei bufSize, GLsizei *length, char *driverControlString);
+typedef void (GL_APIENTRYP PFNGLGETDRIVERCONTROLSTRINGQCOMPROC) (GLuint driverControl, GLsizei bufSize, GLsizei *length, GLchar *driverControlString);
 typedef void (GL_APIENTRYP PFNGLENABLEDRIVERCONTROLQCOMPROC) (GLuint driverControl);
 typedef void (GL_APIENTRYP PFNGLDISABLEDRIVERCONTROLQCOMPROC) (GLuint driverControl);
 #endif
@@ -864,8 +1016,8 @@ GL_API void GL_APIENTRY glExtGetRenderbuffersQCOM (GLuint *renderbuffers, GLint 
 GL_API void GL_APIENTRY glExtGetFramebuffersQCOM (GLuint *framebuffers, GLint maxFramebuffers, GLint *numFramebuffers);
 GL_API void GL_APIENTRY glExtGetTexLevelParameterivQCOM (GLuint texture, GLenum face, GLint level, GLenum pname, GLint *params);
 GL_API void GL_APIENTRY glExtTexObjectStateOverrideiQCOM (GLenum target, GLenum pname, GLint param);
-GL_API void GL_APIENTRY glExtGetTexSubImageQCOM (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, void *texels);
-GL_API void GL_APIENTRY glExtGetBufferPointervQCOM (GLenum target, void **params);
+GL_API void GL_APIENTRY glExtGetTexSubImageQCOM (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid *texels);
+GL_API void GL_APIENTRY glExtGetBufferPointervQCOM (GLenum target, GLvoid **params);
 #endif
 typedef void (GL_APIENTRYP PFNGLEXTGETTEXTURESQCOMPROC) (GLuint *textures, GLint maxTextures, GLint *numTextures);
 typedef void (GL_APIENTRYP PFNGLEXTGETBUFFERSQCOMPROC) (GLuint *buffers, GLint maxBuffers, GLint *numBuffers);
@@ -873,8 +1025,8 @@ typedef void (GL_APIENTRYP PFNGLEXTGETRENDERBUFFERSQCOMPROC) (GLuint *renderbuff
 typedef void (GL_APIENTRYP PFNGLEXTGETFRAMEBUFFERSQCOMPROC) (GLuint *framebuffers, GLint maxFramebuffers, GLint *numFramebuffers);
 typedef void (GL_APIENTRYP PFNGLEXTGETTEXLEVELPARAMETERIVQCOMPROC) (GLuint texture, GLenum face, GLint level, GLenum pname, GLint *params);
 typedef void (GL_APIENTRYP PFNGLEXTTEXOBJECTSTATEOVERRIDEIQCOMPROC) (GLenum target, GLenum pname, GLint param);
-typedef void (GL_APIENTRYP PFNGLEXTGETTEXSUBIMAGEQCOMPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, void *texels);
-typedef void (GL_APIENTRYP PFNGLEXTGETBUFFERPOINTERVQCOMPROC) (GLenum target, void **params);
+typedef void (GL_APIENTRYP PFNGLEXTGETTEXSUBIMAGEQCOMPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid *texels);
+typedef void (GL_APIENTRYP PFNGLEXTGETBUFFERPOINTERVQCOMPROC) (GLenum target, GLvoid **params);
 #endif
 
 /* GL_QCOM_extended_get2 */
@@ -884,12 +1036,12 @@ typedef void (GL_APIENTRYP PFNGLEXTGETBUFFERPOINTERVQCOMPROC) (GLenum target, vo
 GL_API void GL_APIENTRY glExtGetShadersQCOM (GLuint *shaders, GLint maxShaders, GLint *numShaders);
 GL_API void GL_APIENTRY glExtGetProgramsQCOM (GLuint *programs, GLint maxPrograms, GLint *numPrograms);
 GL_API GLboolean GL_APIENTRY glExtIsProgramBinaryQCOM (GLuint program);
-GL_API void GL_APIENTRY glExtGetProgramBinarySourceQCOM (GLuint program, GLenum shadertype, char *source, GLint *length);
+GL_API void GL_APIENTRY glExtGetProgramBinarySourceQCOM (GLuint program, GLenum shadertype, GLchar *source, GLint *length);
 #endif
 typedef void (GL_APIENTRYP PFNGLEXTGETSHADERSQCOMPROC) (GLuint *shaders, GLint maxShaders, GLint *numShaders);
 typedef void (GL_APIENTRYP PFNGLEXTGETPROGRAMSQCOMPROC) (GLuint *programs, GLint maxPrograms, GLint *numPrograms);
 typedef GLboolean (GL_APIENTRYP PFNGLEXTISPROGRAMBINARYQCOMPROC) (GLuint program);
-typedef void (GL_APIENTRYP PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC) (GLuint program, GLenum shadertype, char *source, GLint *length);
+typedef void (GL_APIENTRYP PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC) (GLuint program, GLenum shadertype, GLchar *source, GLint *length);
 #endif
 
 /* GL_QCOM_perfmon_global_mode */
@@ -900,6 +1052,17 @@ typedef void (GL_APIENTRYP PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC) (GLuint progr
 /* GL_QCOM_writeonly_rendering */
 #ifndef GL_QCOM_writeonly_rendering
 #define GL_QCOM_writeonly_rendering 1
+#endif
+
+/* GL_QCOM_tiled_rendering */
+#ifndef GL_QCOM_tiled_rendering
+#define GL_QCOM_tiled_rendering 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void GL_APIENTRY glStartTilingQCOM (GLuint x, GLuint y, GLuint width, GLuint height, GLbitfield preserveMask);
+GL_API void GL_APIENTRY glEndTilingQCOM (GLbitfield preserveMask);
+#endif
+typedef void (GL_APIENTRYP PFNGLSTARTTILINGQCOMPROC) (GLuint x, GLuint y, GLuint width, GLuint height, GLbitfield preserveMask);
+typedef void (GL_APIENTRYP PFNGLENDTILINGQCOMPROC) (GLbitfield preserveMask);
 #endif
 
 #ifdef __cplusplus
