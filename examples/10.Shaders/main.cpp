@@ -177,6 +177,10 @@ int main()
 		}
 		break;
 
+	case video::EDT_OGLES1:
+	case video::EDT_OGLES2:
+		UseHighLevelShaders=true;
+		// fallthrough!
 	case video::EDT_OPENGL:
 		if (UseHighLevelShaders)
 		{
