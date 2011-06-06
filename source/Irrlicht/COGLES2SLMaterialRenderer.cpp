@@ -466,6 +466,22 @@ namespace video
 			case GL_FLOAT_VEC4:
 				glUniform4fv( ui.location, count, static_cast<const GLfloat*>( data ) );
 				break;
+			case GL_INT:
+			case GL_BOOL:
+				glUniform1iv( ui.location, count, static_cast<const GLint*>( data ) );
+				break;
+			case GL_INT_VEC2:
+			case GL_BOOL_VEC2:
+				glUniform2iv( ui.location, count, static_cast<const GLint*>( data ) );
+				break;
+			case GL_INT_VEC3:
+			case GL_BOOL_VEC3:
+				glUniform3iv( ui.location, count, static_cast<const GLint*>( data ) );
+				break;
+			case GL_INT_VEC4:
+			case GL_BOOL_VEC4:
+				glUniform4iv( ui.location, count, static_cast<const GLint*>( data ) );
+				break;
 			case GL_FLOAT_MAT2:
 				glUniformMatrix2fv( ui.location, count, false, static_cast<const GLfloat*>( data ) );
 				break;
@@ -475,7 +491,7 @@ namespace video
 			case GL_FLOAT_MAT4:
 				glUniformMatrix4fv( ui.location, count, false, static_cast<const GLfloat*>( data ) );
 				break;
-			default:
+			default: // sampler
 				glUniform1iv( ui.location, count, static_cast<const GLint*>( data ) );
 				break;
 		}
