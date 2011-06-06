@@ -112,14 +112,6 @@
 #undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #endif
 
-//! Define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_ if you want to use DirectInput for joystick handling.
-/** This only applies to Windows devices, currently only supported under Win32 device.
-If not defined, Windows Multimedia library is used, which offers also broad support for joystick devices. */
-#define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
-#ifdef NO_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
-#undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
-#endif
-
 
 //! Maximum number of texture an SMaterial can have, up to 8 are supported by Irrlicht.
 #define _IRR_MATERIAL_MAX_TEXTURES_ 4
@@ -140,6 +132,14 @@ with D3D8 support, then you will have to source a DXSDK with the appropriate
 headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
 */
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
+
+//! Define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_ if you want to use DirectInput for joystick handling.
+/** This only applies to Windows devices, currently only supported under Win32 device.
+If not defined, Windows Multimedia library is used, which offers also broad support for joystick devices. */
+#define _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#ifdef NO_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#endif
 
 //! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004
 // #define _IRR_COMPILE_WITH_DIRECT3D_8_
