@@ -66,6 +66,13 @@
 	#include "glxext.h"
 	#endif
 #endif
+
+#ifndef GL_ARB_shader_objects
+/* GL types for program/shader text and shader object handles */
+typedef char GLcharARB;
+typedef unsigned int GLhandleARB;
+#endif
+
 #ifndef GL_VERSION_2_0
 /* GL type for program/shader text */
 typedef char GLchar;
@@ -1041,7 +1048,7 @@ class COpenGLExtensionHandler
 	void extGlDisableIndexed(GLenum target, GLuint index);
 	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
 	void extGlBlendEquationIndexed(GLuint buf, GLenum mode);
-	void extGlProgramParameteri(GLuint program, GLenum pname, GLint value);
+	void extGlProgramParameteri(GLhandleARB program, GLenum pname, GLint value);
 
 	// occlusion query
 	void extGlGenQueries(GLsizei n, GLuint *ids);
@@ -2202,7 +2209,7 @@ inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenu
 }
 
 
-inline void COpenGLExtensionHandler::extGlProgramParameteri(GLuint program, GLenum pname, GLint value)
+inline void COpenGLExtensionHandler::extGlProgramParameteri(GLhandleARB program, GLenum pname, GLint value)
 {
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	if (queryFeature(EVDF_GEOMETRY_SHADER))
@@ -2223,6 +2230,7 @@ inline void COpenGLExtensionHandler::extGlProgramParameteri(GLuint program, GLen
 #endif
 }
 
+
 inline void COpenGLExtensionHandler::extGlGenQueries(GLsizei n, GLuint *ids)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -2239,6 +2247,7 @@ inline void COpenGLExtensionHandler::extGlGenQueries(GLsizei n, GLuint *ids)
 #endif
 }
  
+
 inline void COpenGLExtensionHandler::extGlDeleteQueries(GLsizei n, const GLuint *ids)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
