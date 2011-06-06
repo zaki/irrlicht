@@ -677,7 +677,7 @@ void CIrrDeviceMacOSX::createDriver()
 
 		case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-			VideoDriver = video::createSoftwareDriver2(CreationParams, FileSystem, this);
+			VideoDriver = video::createBurningVideoDriver(CreationParams, FileSystem, this);
 			IsSoftwareRenderer = true;
 		#else
 			os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
