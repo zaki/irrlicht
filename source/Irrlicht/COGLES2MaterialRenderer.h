@@ -107,6 +107,10 @@ namespace video
 				FixedPipeline->setAlphaValue( 0.f );
 				Driver->enableBlend();
 				Driver->blendFunc( srcFact, dstFact );
+				if (alphaSource&EAS_TEXTURE)
+					FixedPipeline->setRenderMode( EMT_TRANSPARENT_ALPHA_CHANNEL );
+				else
+					FixedPipeline->setRenderMode( EMT_TRANSPARENT_VERTEX_ALPHA );
 
 				if ( textureBlendFunc_hasAlpha( srcFact ) || textureBlendFunc_hasAlpha( dstFact ) )
 				{
