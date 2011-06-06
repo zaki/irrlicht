@@ -1637,6 +1637,8 @@ namespace video
 		// Filtering has to be set for each texture layer
 		for (u32 i = 0; i < MaxTextureUnits; ++i)
 		{
+			if (!CurrentTexture[i])
+				continue;
 			//Thibault : strange Blue artifact on textures in exemple 02
 			glActiveTexture(GL_TEXTURE0 + i);
 
