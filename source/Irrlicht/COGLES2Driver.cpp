@@ -1932,6 +1932,14 @@ namespace video
 				if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 					MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			}
+			if (!OverrideMaterial2DEnabled)
+			{
+				setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+				LastMaterial = InitMaterial2D;
+			}
+
+			TwoDRenderer->useProgram(); //Fixed Pipeline Shader needed to render 2D
+
 			if (Transformation3DChanged)
 			{
 				const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
@@ -1943,13 +1951,6 @@ namespace video
 
 				Transformation3DChanged = false;
 			}
-			if (!OverrideMaterial2DEnabled)
-			{
-				setBasicRenderStates(InitMaterial2D, LastMaterial, true);
-				LastMaterial = InitMaterial2D;
-			}
-
-			TwoDRenderer->useProgram(); //Fixed Pipeline Shader needed to render 2D
 		}
 		if (OverrideMaterial2DEnabled)
 		{
