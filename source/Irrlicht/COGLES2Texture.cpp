@@ -154,7 +154,8 @@ namespace video
 	{
 #ifndef GL_BGRA
 		// whoa, pretty badly implemented extension...
-		if ( Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888] || Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888] )
+		if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888) ||
+			Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
 			GL_BGRA = 0x80E1;
 		else
 			GL_BGRA = GL_RGBA;
@@ -187,16 +188,17 @@ namespace video
 				break;
 			case ECF_A8R8G8B8:
 				PixelType = GL_UNSIGNED_BYTE;
-				if ( !Driver->queryOpenGLFeature( COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888 ) && !Driver->queryOpenGLFeature( COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888 ) )
+				if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888) ||
+					Driver->queryOpenGLFeature( COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
+				{
+					InternalFormat = GL_BGRA;
+					PixelFormat = GL_BGRA;
+				}
+				else
 				{
 					convert = CColorConverter::convert_A8R8G8B8toA8B8G8R8;
 					InternalFormat = GL_RGBA;
 					PixelFormat = GL_RGBA;
-				}
-				else
-				{
-					InternalFormat = GL_BGRA;
-					PixelFormat = GL_BGRA;
 				}
 				break;
 			default:
@@ -451,7 +453,7 @@ namespace video
 		switch ( col )
 		{
 			case ECF_A8R8G8B8:
-				InternalFormat = GL_RGB;
+				InternalFormat = GL_RGBA;
 				PixelFormat = GL_RGBA;
 				PixelType = GL_UNSIGNED_BYTE;
 				break;
@@ -496,6 +498,11 @@ namespace video
 		glFramebufferTexture2D( GL_FRAMEBUFFER,
 				GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
 				TextureName, 0 );
+		// check the status
+		if ( !checkFBOStatus( Driver ) )
+		{
+			os::Printer::log( "FBO incomplete" );
+		}
 		unbindRTT();
 	}
 
@@ -538,76 +545,72 @@ namespace video
 	//! RTT DepthBuffer constructor
 	COGLES2FBODepthTexture::COGLES2FBODepthTexture(
 			const core::dimension2d<u32>& size, const io::path& name,
-			COGLES2Driver* driver, bool useStencil )
-		: COGLES2FBOTexture( size, name, driver ), DepthRenderBuffer( 0 ),
-			StencilRenderBuffer( 0 ), UseStencil( useStencil )
+			COGLES2Driver* driver, bool useStencil)
+		: COGLES2FBOTexture(size, name, driver), DepthRenderBuffer(0),
+		StencilRenderBuffer(0), UseStencil(useStencil)
 	{
 #ifdef _DEBUG
 		setDebugName( "COGLES2TextureFBO_Depth" );
 #endif
 
-		ImageSize = size;
-#ifdef GL_OES_depth24
-		InternalFormat = GL_DEPTH_COMPONENT24_OES;
-#elif defined(GL_OES_depth32)
-		InternalFormat = GL_DEPTH_COMPONENT32_OES;
-#else
-		InternalFormat = GL_DEPTH_COMPONENT16_OES;
+#if defined(GL_OES_depth24)
+		if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth24))
+			InternalFormat = GL_DEPTH_COMPONENT24_OES;
+		else
 #endif
-
-		PixelFormat = GL_RGBA;
+#if defined(GL_OES_depth32)
+		if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth32))
+			InternalFormat = GL_DEPTH_COMPONENT32_OES;
+		else
+#endif
+		InternalFormat = GL_DEPTH_COMPONENT16;
+		PixelFormat = GL_RGB;
 		PixelType = GL_UNSIGNED_BYTE;
 		HasMipMaps = false;
 
-		if ( useStencil )
+		if ( UseStencil )
 		{
+			glGenRenderbuffers( 1, &StencilRenderBuffer );
+			glBindRenderbuffer( GL_RENDERBUFFER, StencilRenderBuffer );
 #ifdef GL_OES_packed_depth_stencil
-			glGenTextures( 1, &DepthRenderBuffer );
-			glBindTexture( GL_TEXTURE_2D, DepthRenderBuffer );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-			if ( Driver->queryOpenGLFeature( COGLES2ExtensionHandler::IRR_OES_packed_depth_stencil ) )
+			if (Driver->queryOpenGLFeature( COGLES2ExtensionHandler::IRR_OES_packed_depth_stencil))
 			{
 				// generate packed depth stencil texture
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL_OES, ImageSize.Width,
-							  ImageSize.Height, 0, GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES, 0 );
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,
+					ImageSize.Width, ImageSize.Height);
 				StencilRenderBuffer = DepthRenderBuffer; // stencil is packed with depth
 				return;
 			}
 #endif
-#if defined(GL_OES_stencil1) || defined(GL_OES_stencil4) || defined(GL_OES_stencil8)
 			// generate stencil buffer
-			glGenRenderbuffers( 1, &StencilRenderBuffer );
-			glBindRenderbuffer( GL_RENDERBUFFER, StencilRenderBuffer );
-			glRenderbufferStorage( GL_RENDERBUFFER,
-#if defined(GL_OES_stencil8)
-											  GL_STENCIL_INDEX8_OES,
-#elif defined(GL_OES_stencil4)
-											  GL_STENCIL_INDEX4_OES,
-#elif defined(GL_OES_stencil1)
-											  GL_STENCIL_INDEX1_OES,
+			GLenum internalf = GL_STENCIL_INDEX8;
+#if 0 // only of use if we can reduce the stencil precision by parameters
+#if defined(GL_OES_stencil4)
+			if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_stencil4))
+				internalf=GL_STENCIL_INDEX4_OES;
 #endif
-											  ImageSize.Width, ImageSize.Height );
+#if defined(GL_OES_stencil1)
+			if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_stencil1))
+				internalf=GL_STENCIL_INDEX1_OES;
 #endif
+#endif
+			glRenderbufferStorage(GL_RENDERBUFFER, internalf,
+				ImageSize.Width, ImageSize.Height);
 		}
 		// generate depth buffer
-		glGenRenderbuffers( 1, &DepthRenderBuffer );
-		glBindRenderbuffer( GL_RENDERBUFFER, DepthRenderBuffer );
-		glRenderbufferStorage( GL_RENDERBUFFER,
-										  InternalFormat, ImageSize.Width, ImageSize.Height );
+		glGenRenderbuffers(1, &DepthRenderBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, DepthRenderBuffer);
+		glRenderbufferStorage(GL_RENDERBUFFER,
+			InternalFormat, ImageSize.Width, ImageSize.Height);
 	}
 
 
 	//! destructor
 	COGLES2FBODepthTexture::~COGLES2FBODepthTexture()
 	{
-		if ( DepthRenderBuffer && UseStencil )
-			glDeleteTextures( 1, &DepthRenderBuffer );
-		else
-			Driver->deleteRenderbuffers( 1, &DepthRenderBuffer );
-		if ( StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer )
-			glDeleteTextures( 1, &StencilRenderBuffer );
+		Driver->deleteRenderbuffers(1, &DepthRenderBuffer);
+		if ( StencilRenderBuffer && (StencilRenderBuffer != DepthRenderBuffer))
+			Driver->deleteRenderbuffers(1, &StencilRenderBuffer);
 	}
 
 
@@ -621,23 +624,15 @@ namespace video
 		if ( UseStencil )
 		{
 			// attach stencil texture to stencil buffer
-			glFramebufferTexture2D( GL_FRAMEBUFFER,
-					GL_STENCIL_ATTACHMENT,
-					GL_TEXTURE_2D,
-					StencilRenderBuffer, 0 );
-
-			// attach depth texture to depth buffer
-			glFramebufferTexture2D( GL_FRAMEBUFFER,
-					GL_DEPTH_ATTACHMENT,
-					GL_TEXTURE_2D, DepthRenderBuffer, 0 );
-		}
-		else
-		{
-			// attach depth renderbuffer to depth buffer
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER,
-					GL_DEPTH_ATTACHMENT,
-					GL_RENDERBUFFER, DepthRenderBuffer);
+					GL_STENCIL_ATTACHMENT,
+					GL_RENDERBUFFER, StencilRenderBuffer);
+
 		}
+		// attach depth renderbuffer to depth buffer
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+				GL_DEPTH_ATTACHMENT,
+				GL_RENDERBUFFER, DepthRenderBuffer);
 		// check the status
 		if ( !checkFBOStatus( Driver ) )
 		{

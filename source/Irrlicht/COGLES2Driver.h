@@ -42,13 +42,11 @@ namespace irr
 namespace video
 {
 	class COGLES2Texture;
-	class COGLESWrapper;
 	class COGLES2FixedPipelineShader;
 	class COGLES2Renderer2d;
 
 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
 	{
-		friend class COGLES2Texture;
 	public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
 		COGLES2Driver(const SIrrlichtCreationParameters& params,

@@ -2376,7 +2376,6 @@ namespace video
 		video::ITexture* rtt = 0;
 
 		// if driver supports FrameBufferObjects, use them
-		// TODO: Currently broken, so disabled
 		if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 		{
 			rtt = new COGLES2FBOTexture(size, name, this, format);
