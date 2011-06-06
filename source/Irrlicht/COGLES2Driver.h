@@ -348,6 +348,7 @@ namespace video
 
 		void enableBlend();
 		void disableBlend();
+		u32 COGLES2Driver::getGLBlend(E_BLEND_FACTOR factor);
 		void blendFunc(E_BLEND_FACTOR sFactor, E_BLEND_FACTOR dFactor);
 
 	private:

@@ -1639,7 +1639,6 @@ namespace video
 		{
 			if (!CurrentTexture[i])
 				continue;
-			//Thibault : strange Blue artifact on textures in exemple 02
 			glActiveTexture(GL_TEXTURE0 + i);
 
 #ifdef GL_EXT_texture_lod_bias
@@ -1695,10 +1694,8 @@ namespace video
 		}
 		testGLError();
 
-// TODO ogl-es
 		// fillmode
-//  if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
-//	  glPolygonMode(GL_FRONT_AND_BACK, material.Wireframe ? GL_LINE : material.PointCloud? GL_POINT : GL_FILL);
+		// for ogl-es this is emulated by other polygon primitives during rendering
 
 		// shademode
 		if (resetAllRenderStates || (lastmaterial.GouraudShading != material.GouraudShading))
@@ -1752,7 +1749,7 @@ namespace video
 		testGLError();
 
 		// zwrite
-//  if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
+//		if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 		{
 			if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
 			{
@@ -1884,38 +1881,18 @@ namespace video
 		// Anti aliasing
 		if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing)
 		{
-//	  if (FeatureAvailable[IRR_ARB_multisample])
 			{
 				if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
 					glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 				else if (lastmaterial.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
 					glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-
-				//TODO : OpenGL ES 2.0 Port GL_MULTISAMPLE
-				//if ((AntiAlias >= 2) && (material.AntiAliasing & (EAAM_SIMPLE|EAAM_QUALITY)))
-				//  glEnable(GL_MULTISAMPLE);
-				//else
-				//  glDisable(GL_MULTISAMPLE);
-			}
-			if (AntiAlias >= 2)
-			{
-				//TODO : OpenGL ES 2.0 Port GL_LINE_SMOOTH
-				//if (material.AntiAliasing & EAAM_LINE_SMOOTH)
-				//  glEnable(GL_LINE_SMOOTH);
-				//else if (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH)
-				//  glDisable(GL_LINE_SMOOTH);
-				//if (material.AntiAliasing & EAAM_POINT_SMOOTH)
-				//  // often in software, and thus very slow
-				//  glEnable(GL_POINT_SMOOTH);
-				//else if (lastmaterial.AntiAliasing & EAAM_POINT_SMOOTH)
-				//  glDisable(GL_POINT_SMOOTH);
+				// other settings cannot be changed in ogl-es
 			}
 		}
 		testGLError();
 
 		setWrapMode(material);
 
-		//Thibault : Strange blue Artifact in exemple 01
 		glActiveTexture(GL_TEXTURE0);
 		testGLError();
 	}
@@ -2174,11 +2151,6 @@ namespace video
 //			GLint shadeModel;
 		//TODO : OpenGL ES 2.0 Port glGetIntegerv
 		//glGetIntegerv(GL_SHADE_MODEL, &shadeModel);
-//			GLint blendSrc, blendDst;
-		//TODO : OpenGL ES 2.0 Port glGetIntegerv
-		//glGetIntegerv(GL_BLEND_SRC, &blendSrc);
-		//glGetIntegerv(GL_BLEND_DST, &blendDst);
-
 
 		glDepthMask(GL_FALSE);
 
@@ -2227,10 +2199,9 @@ namespace video
 		glDepthMask(depthMask);
 		//TODO : OpenGL ES 2.0 Port glShadeModel
 		//glShadeModel(shadeModel);
-		if (! BlendEnabled)
+		if (!BlendEnabled)
 			glDisable(GL_BLEND);
-		//TODO :
-		//glBlendFunc(blendSrc, blendDst);
+		glBlendFunc(getGLBlend(SourceFactor), getGLBlend(DestFactor));
 		testGLError();
 	}
 
@@ -2654,7 +2625,7 @@ namespace video
 		}
 	}
 
-	u32 getGLBlend(E_BLEND_FACTOR factor)
+	u32 COGLES2Driver::getGLBlend(E_BLEND_FACTOR factor)
 	{
 		u32 r = 0;
 		switch (factor)

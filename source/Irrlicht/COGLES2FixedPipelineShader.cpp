@@ -107,29 +107,20 @@ namespace irr
 
             /* Matrices Upload */
             core::matrix4 world = Driver->getTransform( ETS_WORLD );
-            //statusOk &= setVertexShaderConstant( "uWorldMatrix", world.pointer(), 16 );
-            //glUniformMatrix4fv(locWorldMatrix, 1, false, world.pointer() );
             setUniform( WORLD_MATRIX, world.pointer() );
 
             core::matrix4 worldViewProj = Driver->getTransform( video::ETS_PROJECTION );
             worldViewProj *= Driver->getTransform( video::ETS_VIEW );
             worldViewProj *= Driver->getTransform( ETS_WORLD );
-            //statusOk &= setVertexShaderConstant( "uMvpMatrix", worldViewProj.pointer(), 16 );
-            //glUniformMatrix4fv(locMvpMatrix, 1, false, worldViewProj.pointer());
             setUniform( MVP_MATRIX, worldViewProj.pointer() );
 
             /* Textures Upload */
             //statusOk &= setVertexShaderConstant("uTextureUnit", (f32*)TextureUnits, MAX_TEXTURE_UNITS);
-            //statusOk &= setVertexShaderConstant( "uTextureUnit0", ( f32* ) & TextureUnits[0], 1 );
             setUniform( TEXTURE_UNIT0, &TextureUnits[0] );
-            //statusOk &= setVertexShaderConstant( "uTextureUnit1", ( f32* ) & TextureUnits[1], 1 );
             setUniform( TEXTURE_UNIT1, &TextureUnits[1] );
 
-            //statusOk &= setVertexShaderConstant( "uUseTexture", ( f32* )UseTexture, MAX_TEXTURE_UNITS );
             setUniform( USE_TEXTURE, UseTexture, MAX_TEXTURE_UNITS );
-            //statusOk &= setVertexShaderConstant( "uUseTexMatrix", ( f32* )UseTexMatrix, MAX_TEXTURE_UNITS );
             setUniform( USE_TEXTURE_MATRIX, UseTexMatrix, MAX_TEXTURE_UNITS );
-            //statusOk &= setVertexShaderConstant( "uTextureMatrix", ( f32* )TextureMatrix, MAX_TEXTURE_UNITS * 16 );
             setUniform( TEXTURE_MATRIX, TextureMatrix, MAX_TEXTURE_UNITS );
             core::matrix4 invWorld;
 
@@ -180,23 +171,14 @@ namespace irr
                     }
                 }
                 //statusOk &= setVertexShaderConstant( "uLighting", ( f32* ) & Lighting, 1 );
-                //statusOk &= setVertexShaderConstant( "uUseLight", ( f32* )UseLight, MAX_LIGHTS );
                 setUniform( USE_LIGHT, UseLight, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightPosition", ( f32* )LightPosition,    MAX_LIGHTS * 4 );
                 setUniform( LIGHT_POSITION, LightPosition, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightDirection", ( f32* )LightDirection,   MAX_LIGHTS * 3 );
                 setUniform( LIGHT_DIRECTION, LightDirection, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightAmbient", ( f32* )LightAmbient,     MAX_LIGHTS * 4 );
                 setUniform( LIGHT_AMBIENT, LightAmbient, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightDiffuse", ( f32* )LightDiffuse,     MAX_LIGHTS * 4 );
                 setUniform( LIGHT_DIFFUSE, LightDiffuse, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightSpecular", ( f32* )LightSpecular,    MAX_LIGHTS * 4 );
                 setUniform( LIGHT_SPECULAR, LightSpecular, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightAttenuation", ( f32* )LightAttenuation, MAX_LIGHTS * 3 );
                 setUniform( LIGHT_ATTENUATION, LightAttenuation, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightExponent", LightExponent, MAX_LIGHTS );
                 setUniform( LIGHT_EXPONENT, LightExponent, MAX_LIGHTS );
-                //statusOk &= setVertexShaderConstant( "uLightCutoff",   LightCutoff,   MAX_LIGHTS );
                 setUniform( LIGHT_CUTOFF, LightCutoff, MAX_LIGHTS );
 
                 AmbientColor = Driver->getAmbientLight();
@@ -224,7 +206,7 @@ namespace irr
             }
 
             /* Eye/Camera Position in ObjectSpace */
-            if ( Clip || RenderMode == 10 || RenderMode == 11 ) // Need clipping or reflection
+            if ( Clip || RenderMode == EMT_SPHERE_MAP || RenderMode == EMT_REFLECTION_2_LAYER ) // Need clipping or reflection
             {
                 if ( !Lighting )
                     Driver->getTransform( ETS_WORLD ).getInverse( invWorld );
@@ -233,17 +215,12 @@ namespace irr
                 Driver->getTransform( video::ETS_VIEW ).getInverse( inverseView );
                 inverseView.transformVect( viewPos );
                 invWorld.transformVect( viewPos );
-                //setVertexShaderConstant( "uEyePos", &viewPos.X, 3 );
                 setUniform( EYE_POSITION, &viewPos.X );
             }
 
-            //statusOk &= setVertexShaderConstant( "uClip", ( f32* ) & Clip );
             setUniform( CLIP, &Clip );
-            //statusOk &= setVertexShaderConstant( "uClipPlane", ( f32* ) & ClipPlane );
             setUniform( CLIP_PLANE, &ClipPlane );
-            //statusOk &= setVertexShaderConstant( "uRenderMode", ( f32* ) & RenderMode );
             setUniform( RENDER_MODE, &RenderMode );
-            //statusOk &= setVertexShaderConstant( "uNormalize", ( f32* ) & Normalize, 1 );
 
             return statusOk ;
         };
@@ -273,7 +250,7 @@ namespace irr
                 if ( UseTexture[i] )
                 {
                     UseTexMatrix[i] = false;
-                    core::matrix4 texMat = material.getTextureMatrix( i );
+                    const core::matrix4& texMat = material.getTextureMatrix( i );
                     if ( !texMat.isIdentity() )
                     {
                         UseTexMatrix[i] = true;
@@ -287,7 +264,6 @@ namespace irr
             {
                 ColorMaterial = material.ColorMaterial;
                 setUniform( COLOR_MATERIAL, &ColorMaterial );
-
             }
             if ( MaterialAmbient != material.AmbientColor )
             {

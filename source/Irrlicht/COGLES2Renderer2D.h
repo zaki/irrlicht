@@ -24,7 +24,6 @@ namespace video
 	{
 	public:
 		COGLES2Renderer2d( COGLES2Driver* driver, io::IFileSystem* fs );
-		virtual ~COGLES2Renderer2d() {};
 
 		void useTexture( bool param );
 		void useAlphaTest( bool param );
