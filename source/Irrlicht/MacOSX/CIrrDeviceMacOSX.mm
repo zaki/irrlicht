@@ -632,7 +632,7 @@ bool CIrrDeviceMacOSX::createWindow()
 		CGLSetParameter(CGLContext,kCGLCPSwapInterval,&newSwapInterval);
 		if (IsSoftwareRenderer && CreationParams.DriverType != video::EDT_NULL)
 		{
-			long order = -1; // below window
+			GLint order = -1; // below window
 			CGLSetParameter(CGLContext, kCGLCPSurfaceOrder, &order);
 		}
 	}
@@ -677,7 +677,7 @@ void CIrrDeviceMacOSX::createDriver()
 
 		case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-			VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
+			VideoDriver = video::createSoftwareDriver2(CreationParams, FileSystem, this);
 			IsSoftwareRenderer = true;
 		#else
 			os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);

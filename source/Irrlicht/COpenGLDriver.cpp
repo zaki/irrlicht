@@ -681,9 +681,12 @@ bool COpenGLDriver::genericDriverInit()
 
 	Params.HandleSRGB &= ((FeatureAvailable[IRR_ARB_framebuffer_sRGB] || FeatureAvailable[IRR_EXT_framebuffer_sRGB]) &&
 		FeatureAvailable[IRR_EXT_texture_sRGB]);
-#if defined(GL_ARB_framebuffer_sRGB) || defined(GL_EXT_framebuffer_sRGB)
+#if defined(GL_ARB_framebuffer_sRGB)
 	if (Params.HandleSRGB)
 		glEnable(GL_FRAMEBUFFER_SRGB);
+#elif defined(GL_EXT_framebuffer_sRGB)
+	if (Params.HandleSRGB)
+		glEnable(GL_FRAMEBUFFER_SRGB_EXT);
 #endif
 
 // This is a fast replacement for NORMALIZE_NORMALS
@@ -4301,7 +4304,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 			fmt = GL_LUMINANCE;
 #ifdef GL_ARB_half_float_pixel
 		if (FeatureAvailable[IRR_ARB_half_float_pixel])
-			type = GL_HALF_FLOAT;
+			type = GL_HALF_FLOAT_ARB;
 		else
 #endif
 		{
@@ -4318,7 +4321,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 			fmt = GL_LUMINANCE_ALPHA;
 #ifdef GL_ARB_half_float_pixel
 		if (FeatureAvailable[IRR_ARB_half_float_pixel])
-			type = GL_HALF_FLOAT;
+			type = GL_HALF_FLOAT_ARB;
 		else
 #endif
 		{
@@ -4330,7 +4333,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		fmt = GL_BGRA;
 #ifdef GL_ARB_half_float_pixel
 		if (FeatureAvailable[IRR_ARB_half_float_pixel])
-			type = GL_HALF_FLOAT;
+			type = GL_HALF_FLOAT_ARB;
 		else
 #endif
 		{
