@@ -212,20 +212,9 @@ namespace video
 
 		if ( newTexture )
 		{
-#ifndef DISABLE_MIPMAPPING
-			{
-				AutomaticMipmapUpdate = false;
-				regenerateMipMapLevels();
-			}
-#else
-			HasMipMaps = false;
-			os::Printer::log( "Did not create OGLES2 texture mip maps.", ELL_ERROR );
-#endif
-			{
-				// enable bilinear filter without mipmaps
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			}
+			// enable bilinear filter without mipmaps
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		}
 
 		void* source = 0;
@@ -255,6 +244,19 @@ namespace video
 
 		if ( Driver->testGLError() )
 			os::Printer::log( "Could not glTexImage2D", ELL_ERROR );
+
+		if ( newTexture )
+		{
+#ifndef DISABLE_MIPMAPPING
+			{
+				AutomaticMipmapUpdate = false;
+				regenerateMipMapLevels();
+			}
+#else
+			HasMipMaps = false;
+			os::Printer::log( "Did not create OGLES2 texture mip maps.", ELL_ERROR );
+#endif
+		}
 	}
 
 
@@ -378,12 +380,17 @@ namespace video
 			return;
 		if (( Image->getDimension().Width == 1 ) && ( Image->getDimension().Height == 1 ) )
 			return;
+		if (!mipmapData)
+		{
+			glGenerateMipmap(GL_TEXTURE_2D);
+			return;
+		}
 
 		// Manually create mipmaps
 		u32 width = Image->getDimension().Width;
 		u32 height = Image->getDimension().Height;
 		u32 i = 0;
-		u8* target = new u8[Image->getImageDataSizeInBytes()];
+		u8* target = static_cast<u8*>(mipmapData);
 		do
 		{
 			if ( width > 1 )
@@ -391,13 +398,16 @@ namespace video
 			if ( height > 1 )
 				height >>= 1;
 			++i;
-			Image->copyToScaling( target, width, height, Image->getColorFormat() );
 			glTexImage2D( GL_TEXTURE_2D, i, InternalFormat, width, height,
-						  0, PixelFormat, PixelType, target );
+						  0, PixelFormat, PixelType, mipmapData);
+			// get next prepared mipmap data if available
+			if (mipmapData)
+			{
+				mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();
+				target = static_cast<u8*>(mipmapData);
+			}
 		}
 		while ( width != 1 || height != 1 );
-		delete [] target;
-		Image->unlock();
 	}
 
 
