@@ -2377,19 +2377,30 @@ namespace video
 
 		// if driver supports FrameBufferObjects, use them
 		// TODO: Currently broken, so disabled
-		if (false && queryFeature(EVDF_FRAMEBUFFER_OBJECT))
+		if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 		{
 			rtt = new COGLES2FBOTexture(size, name, this, format);
 			if (rtt)
 			{
+				bool success = false;
 				addTexture(rtt);
+
 				ITexture* tex = createDepthTexture(rtt);
 				if (tex)
 				{
-					static_cast<video::COGLES2FBODepthTexture*>(tex)->attach(rtt);
+					success = static_cast<video::COGLES2FBODepthTexture*>(tex)->attach(rtt);
+					if ( !success )
+					{
+						removeDepthTexture(tex);
+					}
 					tex->drop();
 				}
 				rtt->drop();
+				if (!success)
+				{
+					removeTexture(rtt);
+					rtt=0;
+				}
 			}
 		}
 		else

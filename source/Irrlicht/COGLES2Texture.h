@@ -148,7 +148,7 @@ namespace video
 		//! Unbind RenderTargetTexture
 		virtual void unbindRTT();
 
-		void attach( ITexture* );
+		bool attach(ITexture* rtt);
 
 	protected:
 		u32 DepthRenderBuffer;

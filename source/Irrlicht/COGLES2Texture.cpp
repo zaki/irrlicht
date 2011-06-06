@@ -264,7 +264,7 @@ namespace video
 
 		if ( !Image )
 			Image = new CImage( ECF_A8R8G8B8, ImageSize );
-		if ( IsRenderTarget )
+		if (mode != ETLM_WRITE_ONLY)
 		{
 			u8* pPixels = static_cast<u8*>( Image->lock() );
 			if ( !pPixels )
@@ -277,7 +277,7 @@ namespace video
 			glBindTexture( GL_TEXTURE_2D, TextureName );
 
 			// TODO ogl-es
-			//  glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, pPixels);
+			// glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, pPixels);
 
 			// opengl images are horizontally flipped, so we have to fix that here.
 			const u32 pitch = Image->getPitch();
@@ -451,33 +451,29 @@ namespace video
 		switch ( col )
 		{
 			case ECF_A8R8G8B8:
-#ifdef GL_OES_rgb8_rgba8
-				if ( driver->queryOpenGLFeature( video::COGLES2ExtensionHandler::IRR_OES_rgb8_rgba8 ) )
-					InternalFormat = GL_RGBA8_OES;
-				else
-#endif
-					InternalFormat = GL_RGB5_A1;
+				InternalFormat = GL_RGB;
+				PixelFormat = GL_RGBA;
+				PixelType = GL_UNSIGNED_BYTE;
 				break;
 			case ECF_R8G8B8:
-#ifdef GL_OES_rgb8_rgba8
-				if ( driver->queryOpenGLFeature( video::COGLES2ExtensionHandler::IRR_OES_rgb8_rgba8 ) )
-					InternalFormat = GL_RGB8_OES;
-				else
-#endif
-					InternalFormat = GL_RGB565;
+				InternalFormat = GL_RGB;
+				PixelFormat = GL_RGB;
+				PixelType = GL_UNSIGNED_BYTE;
 				break;
 			case ECF_A1R5G5B5:
-				InternalFormat = GL_RGB5_A1;
+				InternalFormat = GL_RGBA;
+				PixelFormat = GL_RGBA;
+				PixelType = GL_UNSIGNED_SHORT_5_5_5_1;
 				break;
 			case ECF_R5G6B5:
-				InternalFormat = GL_RGB565;
+				InternalFormat = GL_RGB;
+				PixelFormat = GL_RGB;
+				PixelType = GL_UNSIGNED_SHORT_5_6_5;
 				break;
 			default:
 				os::Printer::log( "color format not handled", ELL_WARNING );
 				break;
 		}
-		PixelFormat = GL_RGBA;
-		PixelType = GL_UNSIGNED_BYTE;
 		ImageSize = size;
 		HasMipMaps = false;
 		IsRenderTarget = true;
@@ -490,6 +486,7 @@ namespace video
 		glGenTextures( 1, &TextureName );
 		glBindTexture( GL_TEXTURE_2D, TextureName );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
@@ -615,10 +612,10 @@ namespace video
 
 
 	//! combine depth texture and rtt
-	void COGLES2FBODepthTexture::attach( ITexture* renderTex )
+	bool COGLES2FBODepthTexture::attach(ITexture* renderTex)
 	{
 		if ( !renderTex )
-			return;
+			return false;
 		video::COGLES2FBOTexture* rtt = static_cast<video::COGLES2FBOTexture*>( renderTex );
 		rtt->bindRTT();
 		if ( UseStencil )
@@ -643,10 +640,14 @@ namespace video
 		}
 		// check the status
 		if ( !checkFBOStatus( Driver ) )
+		{
 			os::Printer::log( "FBO incomplete" );
+			return false;
+		}
 		rtt->DepthTexture = this;
 		grab(); // grab the depth buffer, not the RTT
 		rtt->unbindRTT();
+		return true;
 	}
 
 
