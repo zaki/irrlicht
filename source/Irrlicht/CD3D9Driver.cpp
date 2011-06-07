@@ -448,7 +448,7 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	DriverAttributes->setAttribute("MaxTextureSize", (s32)core::min_(Caps.MaxTextureHeight,Caps.MaxTextureWidth));
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16);
 	DriverAttributes->setAttribute("Version", 901);
-	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
+	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)(((0x00ff00 & Caps.VertexShaderVersion)>>8)*100 + (Caps.VertexShaderVersion&0xff)));
 	DriverAttributes->setAttribute("AntiAlias", Params.AntiAlias);
 
 	// set the renderstates
