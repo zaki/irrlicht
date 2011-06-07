@@ -17,6 +17,15 @@ bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
+	if (!driver->queryFeature(video::EVDF_MIP_MAP))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	scene::ISceneNode* n = smgr->addCubeSceneNode();
 	scene::ISceneNode* n2 = smgr->addCubeSceneNode(10, 0, -1, core::vector3df(20,0,30), core::vector3df(0,45,0));
@@ -86,6 +95,16 @@ bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
+
+	if (!driver->queryFeature(video::EVDF_MIP_MAP))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	scene::ISceneNode* n = smgr->addCubeSceneNode();
 
@@ -193,6 +212,16 @@ bool lockWithAutoMipmap(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
+	if (!driver->queryFeature(video::EVDF_MIP_MAP))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	scene::ISceneNode* n = smgr->addCubeSceneNode();
 
 	if (n)
@@ -263,24 +292,11 @@ bool lockWithAutoMipmap(video::E_DRIVER_TYPE driverType)
 
 bool textureFeatures(void)
 {
-	bool passed = true;
+	bool result = true;
 
-	logTestString("OpenGL\n");
-	passed &= renderMipLevels(video::EDT_OPENGL);
-	passed &= lockAllMipLevels(video::EDT_OPENGL);
-	passed &= lockWithAutoMipmap(video::EDT_OPENGL);
-	logTestString("Burnings Video\n");
-	passed &= renderMipLevels(video::EDT_BURNINGSVIDEO);
-	passed &= lockAllMipLevels(video::EDT_BURNINGSVIDEO);
-	passed &= lockWithAutoMipmap(video::EDT_BURNINGSVIDEO);
-	logTestString("Direct3D9\n");
-	passed &= renderMipLevels(video::EDT_DIRECT3D9);
-	passed &= lockAllMipLevels(video::EDT_DIRECT3D9);
-	passed &= lockWithAutoMipmap(video::EDT_DIRECT3D9);
-	logTestString("Direct3D8\n");
-	passed &= renderMipLevels(video::EDT_DIRECT3D8);
-	passed &= lockAllMipLevels(video::EDT_DIRECT3D8);
-	passed &= lockWithAutoMipmap(video::EDT_DIRECT3D8);
+	TestWithAllDrivers(renderMipLevels);
+	TestWithAllDrivers(lockAllMipLevels);
+	TestWithAllDrivers(lockWithAutoMipmap);
 
-	return passed;
+	return result;
 }

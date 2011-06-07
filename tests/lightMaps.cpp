@@ -20,6 +20,15 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
+	logTestString("Testing driver %ls\n", driver->getName());
+	if (driver->getDriverAttributes().getAttributeAsInt("MaxTextures")<2)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
 	bool result = true;
 	bool added = device->getFileSystem()->addFileArchive("../media/map-20kdm2.pk3");
 	assert(added);
@@ -55,13 +64,8 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 bool lightMaps(void)
 {
-	bool passed = true;
-
-	passed &= runTestWithDriver(EDT_OPENGL);
-	passed &= runTestWithDriver(EDT_BURNINGSVIDEO);
-	passed &= runTestWithDriver(EDT_DIRECT3D9);
-	passed &= runTestWithDriver(EDT_DIRECT3D8);
-
-	return passed;
+	bool result = true;
+	TestWithAllDrivers(runTestWithDriver);
+	return result;
 }
 

@@ -61,7 +61,7 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 
 bool material()
 {
-	bool result = polygonOffset(video::EDT_OPENGL);
-	result &= polygonOffset(video::EDT_DIRECT3D9);
+	bool result = true;
+	TestWithAllDrivers(polygonOffset);
 	return result;
 }

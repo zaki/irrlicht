@@ -14,6 +14,9 @@ static bool manyTextures(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	(void)smgr->addCameraSceneNode();
 
 	scene::SMeshBufferLightMap* mesh = new scene::SMeshBufferLightMap;
@@ -73,6 +76,8 @@ static bool renderAndLoad(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	video::ITexture* tex1 = driver->getTexture("../media/wall.bmp");
 
 	(void)smgr->addCameraSceneNode();
@@ -107,6 +112,8 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->beginScene (true, true, video::SColor(255, 0, 255, 0));
 	smgr->drawAll();
@@ -155,6 +162,16 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	scene::ISceneManager* sceneManager = device->getSceneManager();
 	gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
+	if (!driver->queryFeature(video::EVDF_TEXTURE_MATRIX))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNode();
 	camera->setPosition(vector3df(0,10,0));
 
@@ -199,6 +216,16 @@ static bool textureMatrix(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* sceneManager = device->getSceneManager();
+
+	if (!driver->queryFeature(video::EVDF_TEXTURE_MATRIX))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNode();
 	camera->setPosition(vector3df(0,0,-10));
@@ -248,35 +275,13 @@ static bool textureMatrix(video::E_DRIVER_TYPE driverType)
 
 bool textureRenderStates(void)
 {
-	bool passed = true;
+	bool result = true;
 
-	passed &= renderAndLoad(video::EDT_OPENGL);
-	passed &= renderAndLoad(video::EDT_SOFTWARE);
-	passed &= renderAndLoad(video::EDT_BURNINGSVIDEO);
-	passed &= renderAndLoad(video::EDT_DIRECT3D9);
-	passed &= renderAndLoad(video::EDT_DIRECT3D8);
+	TestWithAllDrivers(renderAndLoad);
+	TestWithAllDrivers(renderAndRemove);
+	TestWithAllDrivers(testTextureMatrixInMixedScenes);
+	TestWithAllDrivers(manyTextures);
+	TestWithAllDrivers(textureMatrix);
 
-	passed &= renderAndRemove(video::EDT_OPENGL);
-	passed &= renderAndRemove(video::EDT_SOFTWARE);
-	passed &= renderAndRemove(video::EDT_BURNINGSVIDEO);
-	passed &= renderAndRemove(video::EDT_DIRECT3D9);
-	passed &= renderAndRemove(video::EDT_DIRECT3D8);
-
-	passed &= testTextureMatrixInMixedScenes(video::EDT_OPENGL);
-	passed &= testTextureMatrixInMixedScenes(video::EDT_SOFTWARE);
-	passed &= testTextureMatrixInMixedScenes(video::EDT_BURNINGSVIDEO);
-	passed &= testTextureMatrixInMixedScenes(video::EDT_DIRECT3D9);
-	passed &= testTextureMatrixInMixedScenes(video::EDT_DIRECT3D8);
-
-	passed &= manyTextures(video::EDT_OPENGL);
-	passed &= manyTextures(video::EDT_SOFTWARE);
-	passed &= manyTextures(video::EDT_BURNINGSVIDEO);
-	passed &= manyTextures(video::EDT_DIRECT3D9);
-	passed &= manyTextures(video::EDT_DIRECT3D8);
-
-	passed &= textureMatrix(video::EDT_OPENGL);
-	passed &= textureMatrix(video::EDT_DIRECT3D9);
-
-	return passed;
+	return result;
 }
-

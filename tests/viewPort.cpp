@@ -29,6 +29,8 @@ static bool viewPortText(E_DRIVER_TYPE driverType)
 	IGUIEnvironment* env = smgr->getGUIEnvironment();
 	env->addCheckBox(true, core::recti(10,60,28,82));
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	IBillboardSceneNode * bnode = smgr->addBillboardSceneNode(0,dimension2d<f32>(32,32),core::vector3df(0,0,10));
 	bnode->setMaterialFlag(video::EMF_LIGHTING, false);
 	bnode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
@@ -63,21 +65,12 @@ static bool viewPortText(E_DRIVER_TYPE driverType)
 
 bool viewPort(void)
 {
-	bool passed = true;
+	bool result = true;
 
-	logTestString("Check OpenGL driver\n");
-	passed &= viewPortText(EDT_OPENGL);
 	// TODO: software driver and burnings don't use view port for
 	// 2d rendering, so result is pretty wrong.
-	logTestString("Check Software driver\n");
-	passed &= viewPortText(EDT_SOFTWARE);
-	logTestString("Check Burning's Video driver\n");
-	passed &= viewPortText(EDT_BURNINGSVIDEO);
-	logTestString("Check Direct3D9 driver\n");
-	passed &= viewPortText(EDT_DIRECT3D9);
-	logTestString("Check Direct3D8 driver\n");
-	passed &= viewPortText(EDT_DIRECT3D8);
+	TestWithAllDrivers(viewPortText);
 
-	return passed;
+	return result;
 }
 

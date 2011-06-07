@@ -645,6 +645,16 @@ static bool draw2DImage4c(video::E_DRIVER_TYPE type)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 
+	if (!driver->queryFeature(video::EVDF_BILINEAR_FILTER))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
     driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS,true);
     driver->setTextureCreationFlag(video::ETCF_OPTIMIZED_FOR_QUALITY,true);
 
@@ -739,6 +749,16 @@ static bool addBlend2d(video::E_DRIVER_TYPE type)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	if (!driver->queryFeature(video::EVDF_BILINEAR_FILTER))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	scene::IAnimatedMesh* mesh = smgr->getMesh("../media/sydney.md2");
 	if (!mesh)
 	{
@@ -816,6 +836,16 @@ static bool moreFilterTests(video::E_DRIVER_TYPE type)
     video::IVideoDriver* driver = device->getVideoDriver();
     gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
+	if (!driver->queryFeature(video::EVDF_BILINEAR_FILTER))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 	video::ITexture* tex = driver->getTexture("../media/irrlichtlogo.jpg");
     gui::IGUIImage* image = gui->addImage(core::recti(0,0,64,64));
@@ -857,20 +887,9 @@ static bool moreFilterTests(video::E_DRIVER_TYPE type)
 
 bool twodmaterial()
 {
-	bool result = addBlend2d(video::EDT_OPENGL);
-	result &= addBlend2d(video::EDT_DIRECT3D9);
-	result &= addBlend2d(video::EDT_DIRECT3D8);
-	result &= addBlend2d(video::EDT_BURNINGSVIDEO);
-
-	result &= moreFilterTests(video::EDT_OPENGL);
-	result &= moreFilterTests(video::EDT_DIRECT3D9);
-	result &= moreFilterTests(video::EDT_DIRECT3D8);
-	result &= moreFilterTests(video::EDT_BURNINGSVIDEO);
-
-	result &= draw2DImage4c(video::EDT_OPENGL);
-	result &= draw2DImage4c(video::EDT_DIRECT3D9);
-	result &= draw2DImage4c(video::EDT_DIRECT3D8);
-	result &= draw2DImage4c(video::EDT_BURNINGSVIDEO);
-
+	bool result = true;
+	TestWithAllDrivers(addBlend2d);
+	TestWithAllDrivers(moreFilterTests);
+	TestWithAllDrivers(draw2DImage4c);
 	return result;
 }

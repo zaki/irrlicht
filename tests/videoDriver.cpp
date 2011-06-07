@@ -28,7 +28,7 @@ bool testVideoDriver(video::E_DRIVER_TYPE driverType)
 	logTestString("MaxTextureSize: %d\n", driver->getDriverAttributes().getAttributeAsInt("MaxTextureSize"));
 	logTestString("MaxGeometryVerticesOut: %d\n", driver->getDriverAttributes().getAttributeAsInt("MaxGeometryVerticesOut"));
 	logTestString("Version: %d\n", driver->getDriverAttributes().getAttributeAsInt("Version"));
-	logTestString("ShaderLanguageVersion: %d\n", driver->getDriverAttributes().getAttributeAsInt("ShaderLanguageVersion"));
+	logTestString("ShaderLanguageVersion: %d\n\n", driver->getDriverAttributes().getAttributeAsInt("ShaderLanguageVersion"));
 
 	device->closeDevice();
 	device->run();
@@ -38,11 +38,7 @@ bool testVideoDriver(video::E_DRIVER_TYPE driverType)
 
 bool videoDriver()
 {
-	bool result = testVideoDriver(video::EDT_OPENGL);
-	result &= testVideoDriver(video::EDT_DIRECT3D9);
-	result &= testVideoDriver(video::EDT_DIRECT3D8);
-	result &= testVideoDriver(video::EDT_BURNINGSVIDEO);
-	result &= testVideoDriver(video::EDT_SOFTWARE);
-	result &= testVideoDriver(video::EDT_NULL);
+	bool result = true;
+	TestWithAllDrivers(testVideoDriver);
 	return result;
 }

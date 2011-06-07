@@ -2,11 +2,11 @@
 
 using namespace irr;
 
-static bool testImageCreation(video::E_DRIVER_TYPE driverType)
+static bool testImageCreation()
 {
 	// create device
 
-	IrrlichtDevice *device = createDevice(driverType, core::dimension2d<u32>(160,120));
+	IrrlichtDevice *device = createDevice(video::EDT_SOFTWARE, core::dimension2d<u32>(160,120));
 
 	if (device == 0)
 		return true; // could not create selected driver.
@@ -37,6 +37,6 @@ static bool testImageCreation(video::E_DRIVER_TYPE driverType)
 
 bool createImage()
 {
-	bool result = testImageCreation(video::EDT_SOFTWARE);
+	bool result = testImageCreation();
 	return result;
 }

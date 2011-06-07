@@ -72,14 +72,8 @@ bool testWithPNG(video::E_DRIVER_TYPE driverType)
 
 bool draw2DImage()
 {
-	bool result = testWithRenderTarget(video::EDT_DIRECT3D9);
-	result &= testWithRenderTarget(video::EDT_DIRECT3D8);
-	result &= testWithRenderTarget(video::EDT_OPENGL);
-	result &= testWithRenderTarget(video::EDT_BURNINGSVIDEO);
-	result &= testWithRenderTarget(video::EDT_SOFTWARE);
-
-	result &= testWithPNG(video::EDT_DIRECT3D9);
-	result &= testWithPNG(video::EDT_OPENGL);
-
+	bool result = true;
+	TestWithAllDrivers(testWithRenderTarget);
+	TestWithAllHWDrivers(testWithPNG);
 	return result;
 }

@@ -5,6 +5,13 @@
 #include "irrlicht.h"
 #include <assert.h>
 
+#define TestWithAllDrivers(X, ...) \
+	for (u32 i=1; i<video::EDT_COUNT; ++i) \
+		result &= X(video::E_DRIVER_TYPE(i), __VA_ARGS__)
+#define TestWithAllHWDrivers(X, ...) \
+	for (u32 i=video::EDT_DIRECT3D8; i<video::EDT_COUNT; ++i) \
+		result &= X(video::E_DRIVER_TYPE(i), __VA_ARGS__)
+
 //! Compare two files
 /** \param fileName1 The first file for comparison.
 	\param fileName1 The second file for comparison.
