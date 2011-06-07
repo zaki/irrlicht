@@ -440,6 +440,7 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 
 	DriverAttributes->setAttribute("MaxTextures", (s32)MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Caps.MaxSimultaneousTextures);
+	DriverAttributes->setAttribute("MaxLights", (s32)Caps.MaxActiveLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", (s32)Caps.MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxUserClipPlanes", (s32)Caps.MaxUserClipPlanes);
 	DriverAttributes->setAttribute("MaxMultipleRenderTargets", (s32)Caps.NumSimultaneousRTs);
@@ -658,6 +659,7 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_POLYGON_OFFSET:
 		return (Caps.RasterCaps & (D3DPRASTERCAPS_DEPTHBIAS|D3DPRASTERCAPS_SLOPESCALEDEPTHBIAS)) != 0;
 	case EVDF_BLEND_OPERATIONS:
+	case EVDF_TEXTURE_MATRIX:
 		return true;
 	default:
 		return false;

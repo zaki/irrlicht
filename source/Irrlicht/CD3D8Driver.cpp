@@ -393,6 +393,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	DriverAttributes->setAttribute("MaxTextures", (s32)MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Caps.MaxSimultaneousTextures);
+	DriverAttributes->setAttribute("MaxLights", (s32)Caps.MaxActiveLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", (s32)Caps.MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxUserClipPlanes", (s32)Caps.MaxUserClipPlanes);
 	DriverAttributes->setAttribute("MaxIndices", (s32)Caps.MaxVertexIndex);
@@ -606,6 +607,7 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_COLOR_MASK:
 		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) != 0;
 	case EVDF_BLEND_OPERATIONS:
+	case EVDF_TEXTURE_MATRIX:
 		return true;
 	default:
 		return false;

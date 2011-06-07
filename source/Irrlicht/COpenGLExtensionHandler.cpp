@@ -748,6 +748,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_BLEND_OPERATIONS:
 		return (Version>=120) || FeatureAvailable[IRR_EXT_blend_minmax] ||
 			FeatureAvailable[IRR_EXT_blend_subtract] || FeatureAvailable[IRR_EXT_blend_logic_op];
+	case EVDF_TEXTURE_MATRIX:
+		return true;
 	default:
 		return false;
 	};

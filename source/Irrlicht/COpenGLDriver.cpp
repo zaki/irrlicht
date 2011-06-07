@@ -647,7 +647,7 @@ bool COpenGLDriver::genericDriverInit()
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
 	DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxSupportedTextures", MaxSupportedTextures);
-//	DriverAttributes->setAttribute("MaxLights", MaxLights);
+	DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
 	DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
