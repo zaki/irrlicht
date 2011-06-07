@@ -92,6 +92,8 @@ int main(int argumentCount, char * arguments[])
 	TEST(createImage);
 	TEST(cursorSetVisible);
 	TEST(flyCircleAnimator);
+	TEST(guiDisabledMenu);
+	TEST(makeColorKeyTexture);
 	TEST(md2Animation);
 	TEST(meshTransform);
 	TEST(skinnedMesh);
@@ -103,8 +105,6 @@ int main(int argumentCount, char * arguments[])
 	TEST(screenshot);
 	TEST(drawPixel);
 	TEST(drawRectOutline);
-	TEST(guiDisabledMenu);
-	TEST(makeColorKeyTexture);
 	TEST(material);
 	TEST(renderTargetTexture);
 	TEST(textureFeatures);
@@ -139,9 +139,9 @@ int main(int argumentCount, char * arguments[])
 		{
 			for (unsigned int i=0; i<tests.size(); ++i)
 			{
-				printf("%3d: %s\n", i, tests[i].testName);
+				logTestString("%3d: %s\n", i, tests[i].testName);
 			}
-			printf("\n");
+			logTestString("\n");
 			return 0;
 		}
 

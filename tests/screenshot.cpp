@@ -15,6 +15,8 @@ bool testShots(video::E_DRIVER_TYPE type)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	scene::IAnimatedMesh* mesh = smgr->getMesh("../media/sydney.md2");
 	scene::IAnimatedMeshSceneNode* node;
 
@@ -55,7 +57,7 @@ bool testShots(video::E_DRIVER_TYPE type)
 
 bool screenshot()
 {
-	testShots(video::EDT_OPENGL);
-	testShots(video::EDT_DIRECT3D9);
-	return true;
+	bool result = true;
+	TestWithAllHWDrivers(testShots);
+	return result;
 }

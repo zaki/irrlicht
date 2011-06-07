@@ -24,6 +24,8 @@ static bool lineRender(E_DRIVER_TYPE driverType)
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	// Draw a cube background so that we can check that the pixels' alpha is working.
 	ISceneNode * cube = smgr->addCubeSceneNode(50.f, 0, -1, vector3df(0, 0, 60));
 	cube->setMaterialTexture(0, driver->getTexture("../media/wall.bmp"));
@@ -63,6 +65,8 @@ static bool pixelAccuracy(E_DRIVER_TYPE driverType)
 		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
 
 	IVideoDriver* driver = device->getVideoDriver();
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	device->getSceneManager()->addCameraSceneNode();
 
@@ -108,30 +112,10 @@ static bool pixelAccuracy(E_DRIVER_TYPE driverType)
 
 bool drawPixel(void)
 {
-	bool passed = true;
+	bool result = true;
 
-	logTestString("Check OpenGL driver\n");
-	passed &= lineRender(EDT_OPENGL);
-	logTestString("Check Software driver\n");
-	passed &= lineRender(EDT_SOFTWARE);
-	logTestString("Check Burning's Video driver\n");
-	passed &= lineRender(EDT_BURNINGSVIDEO);
-	logTestString("Check Direct3D9 driver\n");
-	passed &= lineRender(EDT_DIRECT3D9);
-	logTestString("Check Direct3D8 driver\n");
-	passed &= lineRender(EDT_DIRECT3D8);
+	TestWithAllDrivers(lineRender);
+	TestWithAllDrivers(pixelAccuracy);
 
-	logTestString("Check OpenGL driver\n");
-	passed &= pixelAccuracy(EDT_OPENGL);
-	logTestString("Check Software driver\n");
-	passed &= pixelAccuracy(EDT_SOFTWARE);
-	logTestString("Check Burning's Video driver\n");
-	passed &= pixelAccuracy(EDT_BURNINGSVIDEO);
-	logTestString("Check Direct3D9 driver\n");
-	passed &= pixelAccuracy(EDT_DIRECT3D9);
-	logTestString("Check Direct3D8 driver\n");
-	passed &= pixelAccuracy(EDT_DIRECT3D8);
-
-	return passed;
+	return result;
 }
-

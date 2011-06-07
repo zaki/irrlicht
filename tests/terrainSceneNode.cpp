@@ -11,7 +11,7 @@ namespace
 bool terrainRecalc(void)
 {
     IrrlichtDevice *device =
-        createDevice(video::EDT_OPENGL, dimension2du(160, 120), 32);
+        createDevice(video::EDT_BURNINGSVIDEO, dimension2du(160, 120), 32);
 
 	if (!device)
 		return true;
@@ -77,7 +77,7 @@ bool terrainRecalc(void)
 
 bool terrainGaps()
 {
-	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, dimension2d<u32>(160, 120));
+	IrrlichtDevice* device = createDevice(video::EDT_BURNINGSVIDEO, dimension2d<u32>(160, 120));
 	if (!device)
 		return true;
 

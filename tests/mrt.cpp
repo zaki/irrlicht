@@ -17,6 +17,8 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 //	if (driver->getDriverAttributes().getAttributeAsInt("ShaderLanguageVersion")<=100)
 //		return true;
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	const char* const ps1="struct PS_INPUT\n {\n float4 Position      : POSITION0;\n };\n\n struct PS_OUTPUT\n {\n float4   Color      : COLOR0;\n float4   Normal      : COLOR1;\n float4   Depth      : COLOR2;\n };\n PS_OUTPUT pixelMain( PS_INPUT Input )\n {\n PS_OUTPUT Output;\n Output.Color = float4(1.0,1.0,1.0,1.0);\n Output.Normal = float4(0.0,1.0,0.0,1.0);\n Output.Depth = float4(0.0,0.0,1.0,1.0);\n return Output;\n }";
 	const char* const ps2="void main(void)\n {\n gl_FragData[0] = vec4(1.0,1.0,1.0,1.0);\n gl_FragData[1] = vec4(0.0,1.0,0.0,1.0);\n gl_FragData[2] = vec4(0.0,0.0,1.0,1.0);\n }";
 
@@ -95,10 +97,9 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 bool mrt(void)
 {
-	bool passed = true;
+	bool result = true;
 
-	passed &= testWithDriver(video::EDT_OPENGL);
-	passed &= testWithDriver(video::EDT_DIRECT3D9);
+	TestWithAllHWDrivers(testWithDriver);
 
-	return passed;
+	return result;
 }

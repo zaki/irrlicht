@@ -456,7 +456,7 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 /** Test functionality of the sceneCollisionManager */
 bool sceneCollisionManager(void)
 {
-	IrrlichtDevice * device = irr::createDevice(video::EDT_OPENGL, dimension2d<u32>(160, 120));
+	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(160, 120));
 	assert(device);
 	if(!device)
 		return false;
