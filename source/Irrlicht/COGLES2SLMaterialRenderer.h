@@ -3,6 +3,7 @@
 // and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 #ifndef __C_OGLES2_SL_MATERIAL_RENDERER_H_INCLUDED__
 #define __C_OGLES2_SL_MATERIAL_RENDERER_H_INCLUDED__
 
@@ -51,11 +52,11 @@ namespace video
 		//! Destructor
 		virtual ~COGLES2SLMaterialRenderer();
 
-		virtual void OnSetMaterial( const SMaterial& material, const SMaterial& lastMaterial,
-				bool resetAllRenderstates, IMaterialRendererServices* services );
+		virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
+				bool resetAllRenderstates, IMaterialRendererServices* services);
 
-		virtual bool OnRender( IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype );
-		virtual bool PostRender( IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype );
+		virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
+		virtual bool PostRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
 		virtual void OnUnsetMaterial();
 
@@ -63,22 +64,22 @@ namespace video
 		virtual bool isTransparent() const;
 
 		// implementations for the render services
-		virtual void setBasicRenderStates( const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates );
-		virtual bool setVertexShaderConstant( const c8* name, const f32* floats, int count );
-		virtual void setVertexShaderConstant( const f32* data, s32 startRegister, s32 constantAmount = 1 );
-		virtual bool setPixelShaderConstant( const c8* name, const f32* floats, int count );
-		virtual void setPixelShaderConstant( const f32* data, s32 startRegister, s32 constantAmount = 1 );
+		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates);
+		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
+		virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount = 1);
+		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
+		virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount = 1);
 
-		bool setUniform( int index, const void* data, int count = 1 );
+		bool setUniform(int index, const void* data, int count = 1);
 
-		virtual bool setVertexShaderPointer( const c8* name, const void* pointer, s32 size = 3, bool normalized = false, u16 stride = 0 );
-		virtual void enableVertexShaderPointer( const c8* name );
-		virtual void disableVertexShaderPointer( const c8* name );
+		virtual bool setVertexShaderPointer(const c8* name, const void* pointer, s32 size = 3, bool normalized = false, u16 stride = 0);
+		virtual void enableVertexShaderPointer(const c8* name);
+		virtual void disableVertexShaderPointer(const c8* name);
 
-		bool setTextureUnit( const c8* name, int unit );
+		bool setTextureUnit(const c8* name, int unit);
 
-		virtual bool enableMaterialTexture( const c8* name, int materialId );
-		virtual bool disableMaterialTexture( int materialId );
+		virtual bool enableMaterialTexture(const c8* name, int materialId);
+		virtual bool disableMaterialTexture(int materialId);
 
 		virtual IVideoDriver* getVideoDriver();
 
@@ -88,33 +89,33 @@ namespace video
 
 		//! constructor only for use by derived classes who want to
 		//! create a fall back material for example.
-		COGLES2SLMaterialRenderer( COGLES2Driver* driver,
-					   io::IFileSystem* fs,
-					   IShaderConstantSetCallBack* callback,
-					   IMaterialRenderer* baseMaterial,
-					   const char* const* uniformStringTable,
-					   const u32& uniformCount,
-					   s32 userData = 0 );
+		COGLES2SLMaterialRenderer(COGLES2Driver* driver,
+				io::IFileSystem* fs,
+				IShaderConstantSetCallBack* callback,
+				IMaterialRenderer* baseMaterial,
+				const char* const* uniformStringTable,
+				const u32& uniformCount,
+				s32 userData = 0);
 
-		void init( s32& outMaterialTypeNr,
-			   const c8* vertexShaderProgram,
-			   const c8* pixelShaderProgram,
-			   bool registerMaterial = true );
+		void init(s32& outMaterialTypeNr,
+			const c8* vertexShaderProgram,
+			const c8* pixelShaderProgram,
+			bool registerMaterial = true);
 
-		void initFromFiles( s32& outMaterialTypeNr,
+		void initFromFiles(s32& outMaterialTypeNr,
 				const c8* vertexShaderFile,
 				const c8* pixelShaderFile,
-				bool registerMaterial = true );
+				bool registerMaterial = true);
 
-		void reloadFromFiles( const c8* vertexShaderFile,
-				  const c8* pixelShaderFile );
+		void reloadFromFiles(const c8* vertexShaderFile,
+				const c8* pixelShaderFile);
 
-		bool readVertexShader( const c8* vertexShaderFile );
-		bool readFragmentShader( const c8* fragmentShaderFile );
-		bool readShader( u32 shaderType, const c8* shaderFile );
+		bool readVertexShader(const c8* vertexShaderFile);
+		bool readFragmentShader(const c8* fragmentShaderFile);
+		bool readShader(u32 shaderType, const c8* shaderFile);
 
 		bool createProgram();
-		bool createShader( u32 shaderType, const char* shader, const char* shaderFile );
+		bool createShader(u32 shaderType, const char* shader, const char* shaderFile);
 		bool linkProgram();
 
 		COGLES2Driver* Driver;

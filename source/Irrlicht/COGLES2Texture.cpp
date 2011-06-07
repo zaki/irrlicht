@@ -229,11 +229,11 @@ namespace video
 			source = dest;
 		}
 		if ( newTexture )
-			glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat, Image->getDimension().Width,
-						  Image->getDimension().Height, 0, PixelFormat, PixelType, source );
+			glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Image->getDimension().Width,
+						Image->getDimension().Height, 0, PixelFormat, PixelType, source);
 		else
-			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, Image->getDimension().Width,
-							 Image->getDimension().Height, PixelFormat, PixelType, source );
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Image->getDimension().Width,
+							 Image->getDimension().Height, PixelFormat, PixelType, source);
 		if ( convert )
 		{
 			tmpImage->unlock();
@@ -398,8 +398,8 @@ namespace video
 			if ( height > 1 )
 				height >>= 1;
 			++i;
-			glTexImage2D( GL_TEXTURE_2D, i, InternalFormat, width, height,
-						  0, PixelFormat, PixelType, mipmapData);
+			glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
+					0, PixelFormat, PixelType, mipmapData);
 			// get next prepared mipmap data if available
 			if (mipmapData)
 			{
@@ -495,19 +495,18 @@ namespace video
 		glBindFramebuffer( GL_FRAMEBUFFER, ColorFrameBuffer );
 
 		// generate color texture
-		glGenTextures( 1, &TextureName );
-		glBindTexture( GL_TEXTURE_2D, TextureName );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
-					  ImageSize.Height, 0, PixelFormat, PixelType, 0 );
+		glGenTextures(1, &TextureName);
+		glBindTexture(GL_TEXTURE_2D, TextureName);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
+				ImageSize.Height, 0, PixelFormat, PixelType, 0);
 
 		// attach color texture to frame buffer
-		glFramebufferTexture2D( GL_FRAMEBUFFER,
-				GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-				TextureName, 0 );
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+				GL_TEXTURE_2D, TextureName, 0);
 		// check the status
 		if ( !checkFBOStatus( Driver ) )
 		{
@@ -732,3 +731,4 @@ namespace video
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_OGLES2_
+

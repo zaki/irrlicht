@@ -63,7 +63,7 @@ namespace video
 
 			Program = nmr->Program;
 
-			UniformInfo   = nmr->UniformInfo;
+			UniformInfo = nmr->UniformInfo;
 			AttributeInfo = nmr->AttributeInfo;
 
 			outMaterialTypeNr = driver->addMaterialRenderer( this );
@@ -99,7 +99,7 @@ namespace video
 	s32 COGLES2NormalMapRenderer::getRenderCapability() const
 	{
 		if ( Driver->queryFeature( video::EVDF_ARB_FRAGMENT_PROGRAM_1 ) &&
-			 Driver->queryFeature( video::EVDF_ARB_VERTEX_PROGRAM_1 ) )
+			Driver->queryFeature( video::EVDF_ARB_VERTEX_PROGRAM_1 ) )
 			return 0;
 
 		return 1;

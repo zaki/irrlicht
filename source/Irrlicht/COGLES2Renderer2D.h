@@ -3,6 +3,7 @@
 // and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 #ifndef __C_OGLES2_RENDERER_2D_H_INCLUDED__
 #define __C_OGLES2_RENDERER_2D_H_INCLUDED__
 
@@ -30,8 +31,8 @@ namespace video
 		void setAlphaTestValue( float param );
 		void setOrthoMatrix( const core::matrix4& matrix );
 	private :
-		bool  UseTexture;
-		bool  UseAlphaTest;
+		bool UseTexture;
+		bool UseAlphaTest;
 		float AlphaTestValue;
 		core::matrix4 OrthoMatrix;
 	private:

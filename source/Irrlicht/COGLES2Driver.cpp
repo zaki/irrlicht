@@ -3,6 +3,7 @@
 // and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 #include "COGLES2Driver.h"
 // needed here also because of the create methods' parameters
 #include "CNullDriver.h"
@@ -349,7 +350,7 @@ namespace video
 		{
 			const f32 inv = 1.0f / 255.0f;
 			glClearColor(color.getRed() * inv, color.getGreen() * inv,
-						  color.getBlue() * inv, color.getAlpha() * inv);
+						color.getBlue() * inv, color.getAlpha() * inv);
 
 			mask |= GL_COLOR_BUFFER_BIT;
 		}
@@ -505,7 +506,7 @@ namespace video
 		if (HWBuffer->Mapped_Vertex != scene::EHM_NEVER)
 		{
 			if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex()
-				 || !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
+				|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
 			{
 
 				HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
@@ -518,7 +519,7 @@ namespace video
 		if (HWBuffer->Mapped_Index != scene::EHM_NEVER)
 		{
 			if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
-				 || !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID)
+				|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID)
 			{
 
 				HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
@@ -613,9 +614,10 @@ namespace video
 		}
 
 
-		drawVertexPrimitiveList(vertices, mb->getVertexCount(), indexList,
-								 mb->getIndexCount() / 3, mb->getVertexType(),
-								 scene::EPT_TRIANGLES, mb->getIndexType());
+		drawVertexPrimitiveList(vertices, mb->getVertexCount(),
+				indexList, mb->getIndexCount() / 3,
+				mb->getVertexType(), scene::EPT_TRIANGLES,
+				mb->getIndexType());
 
 		if (HWBuffer->Mapped_Vertex != scene::EHM_NEVER)
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -634,8 +636,8 @@ namespace video
 
 	//! draws a vertex primitive list
 	void COGLES2Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-												 const void* indexList, u32 primitiveCount,
-												 E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+			const void* indexList, u32 primitiveCount,
+			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 	{
 		testGLError();
 		if (!checkPrimitiveCount(primitiveCount))
@@ -779,7 +781,7 @@ namespace video
 			{
 #ifdef GL_OES_element_index_uint
 #ifndef GL_UNSIGNED_INT
-#define GL_UNSIGNED_INT				   0x1405
+#define GL_UNSIGNED_INT 0x1405
 #endif
 				if (FeatureAvailable[IRR_OES_element_index_uint])
 					indexSize = GL_UNSIGNED_INT;
@@ -808,9 +810,9 @@ namespace video
 //						float maxParticleSize = 1.0f;
 					//TODO : OpenGL ES 2.0 Port GL_POINT_SIZE_MAX
 					//glGetFloatv(GL_POINT_SIZE_MAX, &maxParticleSize);
-//			  maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
-//			  glPointParameterf(GL_POINT_SIZE_MAX,maxParticleSize);
-//			  glPointParameterf(GL_POINT_SIZE_MIN,Material.Thickness);
+//			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
+//			glPointParameterf(GL_POINT_SIZE_MAX,maxParticleSize);
+//			glPointParameterf(GL_POINT_SIZE_MIN,Material.Thickness);
 					//TODO : OpenGL ES 2.0 Port GL_POINT_FADE_THRESHOLD_SIZE
 					//glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, 60.0f);
 					//glPointSize(Material.Thickness);
@@ -849,15 +851,15 @@ namespace video
 				break;
 			case scene::EPT_QUAD_STRIP:
 // TODO ogl-es
-//		  glDrawElements(GL_QUAD_STRIP, primitiveCount*2+2, indexSize, indexList);
+//		glDrawElements(GL_QUAD_STRIP, primitiveCount*2+2, indexSize, indexList);
 				break;
 			case scene::EPT_QUADS:
 // TODO ogl-es
-//		  glDrawElements(GL_QUADS, primitiveCount*4, indexSize, indexList);
+//		glDrawElements(GL_QUADS, primitiveCount*4, indexSize, indexList);
 				break;
 			case scene::EPT_POLYGON:
 // TODO ogl-es
-//		  glDrawElements(GL_POLYGON, primitiveCount, indexSize, indexList);
+//		glDrawElements(GL_POLYGON, primitiveCount, indexSize, indexList);
 				break;
 		}
 
@@ -1121,17 +1123,17 @@ namespace video
 			setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
 
 			vtx.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
-									 0.0f, 0.0f, 0.0f, color,
-									 tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
+					0.0f, 0.0f, 0.0f, color,
+					tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
 			vtx.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
-									 0.0f, 0.0f, 0.0f, color,
-									 tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
+					0.0f, 0.0f, 0.0f, color,
+					tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
 			vtx.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
-									 0.0f, 0.0f, 0.0f, color,
-									 tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
+					0.0f, 0.0f, 0.0f, color,
+					tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
 			vtx.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
-									 0.0f, 0.0f, 0.0f, color,
-									 tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+					0.0f, 0.0f, 0.0f, color,
+					tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
 
 			const u32 curPos = vtx.size() - 4;
 			indices.push_back(0 + curPos);
@@ -1186,8 +1188,8 @@ namespace video
 		disableTextures(1);
 		setActiveTexture(0, texture);
 		setRenderStates2DMode(useColor[0].getAlpha() < 255 || useColor[1].getAlpha() < 255 ||
-							   useColor[2].getAlpha() < 255 || useColor[3].getAlpha() < 255,
-							   true, useAlphaChannelOfTexture);
+							useColor[2].getAlpha() < 255 || useColor[3].getAlpha() < 255,
+							true, useAlphaChannelOfTexture);
 
 		if (clipRect)
 		{
@@ -1197,7 +1199,7 @@ namespace video
 			glEnable(GL_SCISSOR_TEST);
 			const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 			glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height - clipRect->LowerRightCorner.Y,
-					   clipRect->getWidth(), clipRect->getHeight());
+					clipRect->getWidth(), clipRect->getHeight());
 		}
 
 		u16 indices[] = {0, 1, 2, 3};
@@ -1238,7 +1240,7 @@ namespace video
 			glEnable(GL_SCISSOR_TEST);
 			const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 			glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height - clipRect->LowerRightCorner.Y,
-					   clipRect->getWidth(), clipRect->getHeight());
+					clipRect->getWidth(), clipRect->getHeight());
 		}
 
 		const core::dimension2du& ss = texture->getOriginalSize();
@@ -1376,7 +1378,7 @@ namespace video
 				return false;
 			}
 			glBindTexture(GL_TEXTURE_2D,
-						   static_cast<const COGLES2Texture*>(texture)->getOGLES2TextureName());
+						static_cast<const COGLES2Texture*>(texture)->getOGLES2TextureName());
 		}
 		testGLError();
 		return true;
@@ -1442,7 +1444,7 @@ namespace video
 		{
 			setActiveTexture(i, Material.getTexture(i));
 			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i),
-						 Material.getTextureMatrix(i));
+					Material.getTextureMatrix(i));
 		}
 	}
 
@@ -1553,7 +1555,7 @@ namespace video
 			// unset old material
 
 			if (LastMaterial.MaterialType != Material.MaterialType &&
-				 static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
+				static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 
 			// set new material.
@@ -1579,12 +1581,12 @@ namespace video
 		switch (clamp)
 		{
 			case ETC_CLAMP:
-				//  mode=GL_CLAMP; not supported in ogl-es
+				// mode=GL_CLAMP; not supported in ogl-es
 				return GL_CLAMP_TO_EDGE;
 			case ETC_CLAMP_TO_EDGE:
 				return GL_CLAMP_TO_EDGE;
 			case ETC_CLAMP_TO_BORDER:
-				//  mode=GL_CLAMP_TO_BORDER; not supported in ogl-es
+				// mode=GL_CLAMP_TO_BORDER; not supported in ogl-es
 				return GL_CLAMP_TO_EDGE;
 			case ETC_MIRROR:
 #ifdef GL_OES_texture_mirrored_repeat
@@ -1628,8 +1630,8 @@ namespace video
 
 
 	//! Can be called by an IMaterialRenderer to make its work easier.
-	void COGLES2Driver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-											  bool resetAllRenderStates)
+	void COGLES2Driver::setBasicRenderStates(const SMaterial& material,
+			const SMaterial& lastmaterial, bool resetAllRenderStates)
 	{
 		testGLError();
 		// Texture filter
@@ -1689,7 +1691,7 @@ namespace video
 #ifdef GL_EXT_texture_filter_anisotropic
 			if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-								 static_cast<GLfloat>(material.TextureLayer[i].AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1));
+						static_cast<GLfloat>(material.TextureLayer[i].AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1));
 #endif
 		}
 		testGLError();
@@ -1702,9 +1704,9 @@ namespace video
 		{
 			//TODO : OpenGL ES 2.0 Port glShadeModel
 			//if (material.GouraudShading)
-			//  glShadeModel(GL_SMOOTH);
+			// glShadeModel(GL_SMOOTH);
 			//else
-			//  glShadeModel(GL_FLAT);
+			// glShadeModel(GL_FLAT);
 		}
 		testGLError();
 
@@ -2060,7 +2062,7 @@ namespace video
 
 		// unset last 3d material
 		if (CurrentRenderMode == ERM_3D &&
-			 static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
+			static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
 		{
 			MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
 			ResetRenderStates = true;
@@ -2137,8 +2139,9 @@ namespace video
 	}
 
 
-	void COGLES2Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
-										   video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
+	void COGLES2Driver::drawStencilShadow(bool clearStencilBuffer,
+			video::SColor leftUpEdge, video::SColor rightUpEdge,
+			video::SColor leftDownEdge, video::SColor rightDownEdge)
 	{
 		if (!StencilBuffer)
 			return;
@@ -2362,7 +2365,7 @@ namespace video
 				if (tex)
 				{
 					success = static_cast<video::COGLES2FBODepthTexture*>(tex)->attach(rtt);
-					if ( !success )
+					if (!success)
 					{
 						removeDepthTexture(tex);
 					}
@@ -2441,7 +2444,7 @@ namespace video
 		{
 			const f32 inv = 1.0f / 255.0f;
 			glClearColor(color.getRed() * inv, color.getGreen() * inv,
-						  color.getBlue() * inv, color.getAlpha() * inv);
+						color.getBlue() * inv, color.getAlpha() * inv);
 
 			mask |= GL_COLOR_BUFFER_BIT;
 		}
@@ -2672,7 +2675,7 @@ namespace video
 		if (sFactor != SourceFactor || dFactor != DestFactor)
 		{
 			SourceFactor = sFactor;
-			DestFactor   = dFactor;
+			DestFactor = dFactor;
 			glBlendFunc(getGLBlend(sFactor), getGLBlend(dFactor));
 		}
 	}
@@ -2751,7 +2754,7 @@ namespace video
 		return new COGLES2Driver(params, io, device);
 #else
 		return 0;
-#endif //  _IRR_COMPILE_WITH_OGLES2_
+#endif // _IRR_COMPILE_WITH_OGLES2_
 	}
 #endif // _IRR_COMPILE_WITH_OSX_DEVICE_
 

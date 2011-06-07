@@ -54,12 +54,9 @@ namespace video
 	//! constructor only for use by derived classes who want to
 	//! create a fall back material for example.
 	COGLES2SLMaterialRenderer::COGLES2SLMaterialRenderer( COGLES2Driver* driver,
-														  io::IFileSystem* fs,
-														  IShaderConstantSetCallBack* callback,
-														  IMaterialRenderer* baseMaterial,
-														  const char* const * uniformStringTable,
-														  const u32& uniformCount,
-														  s32 userData )
+			io::IFileSystem* fs, IShaderConstantSetCallBack* callback,
+			IMaterialRenderer* baseMaterial, const char* const * uniformStringTable,
+			const u32& uniformCount, s32 userData )
 			: Driver( driver ), CallBack( callback ), BaseMaterial( baseMaterial ), FileSystem( fs ),
 			Program( 0 ), UserData( userData ), UniformStringTable( uniformStringTable ),
 			UniformCount( uniformCount )
@@ -252,10 +249,10 @@ namespace video
 				CallBack->OnSetMaterial( material );
 		}
 		//if (BaseMaterial)
-		//BaseMaterial->OnSetMaterial(material, material, true, this);
+		//	BaseMaterial->OnSetMaterial(material, material, true, this);
 
 		//for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		//  Driver->setActiveTexture(i, material.getTexture(i));
+		//	Driver->setActiveTexture(i, material.getTexture(i));
 		Driver->setBasicRenderStates( material, lastMaterial, resetAllRenderstates );
 	}
 
@@ -265,7 +262,7 @@ namespace video
 		glUseProgram( 0 );
 
 		//if (BaseMaterial)
-		//  BaseMaterial->OnUnsetMaterial();
+		//	BaseMaterial->OnUnsetMaterial();
 	}
 
 	//! Returns if the material is transparent.

@@ -281,7 +281,7 @@ namespace video
 			Driver->setBasicRenderStates( material, lastMaterial, resetAllRenderstates );
 
 			if ( material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates
-				 || material.MaterialTypeParam != lastMaterial.MaterialTypeParam )
+				|| material.MaterialTypeParam != lastMaterial.MaterialTypeParam )
 			{
 				Driver->blendFunc( EBF_SRC_ALPHA, EBF_ONE_MINUS_SRC_ALPHA );
 				Driver->enableBlend();
@@ -453,7 +453,7 @@ namespace video
 	};
 
 
-	//! detail map  material renderer
+	//! detail map material renderer
 	class COGLES2MaterialRenderer_DETAIL_MAP : public COGLES2MaterialRenderer
 	{
 	public:

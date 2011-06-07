@@ -50,19 +50,19 @@ namespace video
 	public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
-					   const SExposedVideoData& data,
-					   io::IFileSystem* io);
+					const SExposedVideoData& data,
+					io::IFileSystem* io);
 #endif
 
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
-					   io::IFileSystem* io, CIrrDeviceMacOSX *device);
+					io::IFileSystem* io, CIrrDeviceMacOSX *device);
 #endif
 
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
-					   const SExposedVideoData& data,
-					   io::IFileSystem* io, MIrrIPhoneDevice const & device);
+					const SExposedVideoData& data,
+					io::IFileSystem* io, MIrrIPhoneDevice const & device);
 #endif
 
 		//! destructor
@@ -389,9 +389,9 @@ namespace video
 		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
 		enum E_RENDER_MODE
 		{
-			ERM_NONE = 0,   // no render state has been set yet.
-			ERM_2D,	 // 2d drawing rendermode
-			ERM_3D	  // 3d rendering mode
+			ERM_NONE = 0, // no render state has been set yet.
+			ERM_2D, // 2d drawing rendermode
+			ERM_3D // 3d rendering mode
 		};
 
 		E_RENDER_MODE CurrentRenderMode;
@@ -429,8 +429,8 @@ namespace video
 			RequestedLight(SLight const & lightData)
 					: LightData(lightData), DesireToBeOn(true) { }
 
-			SLight  LightData;
-			bool	DesireToBeOn;
+			SLight LightData;
+			bool DesireToBeOn;
 		};
 
 		core::array<RequestedLight> RequestedLights;

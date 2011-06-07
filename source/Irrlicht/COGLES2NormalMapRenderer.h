@@ -3,6 +3,7 @@
 // and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 #ifndef __C_OGLES2_NORMAL_MAP_RENDERER_H_INCLUDED__
 #define __C_OGLES2_NORMAL_MAP_RENDERER_H_INCLUDED__
 
@@ -23,15 +24,15 @@ namespace video
 	public:
 
 		//! Constructor
-		COGLES2NormalMapRenderer( video::COGLES2Driver* driver, io::IFileSystem* fs,
-								  s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial );
+		COGLES2NormalMapRenderer(video::COGLES2Driver* driver, io::IFileSystem* fs,
+				s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial);
 
 		//! Destructor
 		virtual ~COGLES2NormalMapRenderer();
 
 		//! Called by the engine when the vertex and/or pixel shader constants for an
 		//! material renderer should be set.
-		virtual void OnSetConstants( IMaterialRendererServices* services, s32 userData );
+		virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData);
 
 		//! Returns the render capability of the material.
 		virtual s32 getRenderCapability() const;

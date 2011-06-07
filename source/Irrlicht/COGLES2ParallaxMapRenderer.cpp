@@ -35,7 +35,7 @@ namespace video
 	};
 
 	// Irrlicht Engine OGLES2 render path normal map vertex shader
-	const c8 VertexShaderFile[]   = IRR_OGLES2_SHADER_PATH "COGLES2ParallaxMap.vsh";
+	const c8 VertexShaderFile[] = IRR_OGLES2_SHADER_PATH "COGLES2ParallaxMap.vsh";
 	const c8 FragmentShaderFile[] = IRR_OGLES2_SHADER_PATH "COGLES2ParallaxMap.fsh";
 
 	//! Constructor
@@ -68,7 +68,7 @@ namespace video
 
 			Program = pmr->Program;
 
-			UniformInfo   = pmr->UniformInfo;
+			UniformInfo = pmr->UniformInfo;
 			AttributeInfo = pmr->AttributeInfo;
 
 			outMaterialTypeNr = driver->addMaterialRenderer( this );
@@ -108,8 +108,8 @@ namespace video
 			const video::SMaterial& material, const video::SMaterial& lastMaterial,
 			bool resetAllRenderstates, video::IMaterialRendererServices* services )
 	{
-		COGLES2SLMaterialRenderer::OnSetMaterial( material, lastMaterial,
-												  resetAllRenderstates, services );
+		COGLES2SLMaterialRenderer::OnSetMaterial(material, lastMaterial,
+				resetAllRenderstates, services);
 
 		CurrentScale = material.MaterialTypeParam;
 	}

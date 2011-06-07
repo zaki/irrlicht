@@ -3,6 +3,7 @@
 // and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 #ifndef __C_OGLES2_FIXED_PIPELINE_SHADER_H_INCLUDED__
 #define __C_OGLES2_FIXED_PIPELINE_SHADER_H_INCLUDED__
 
@@ -16,179 +17,178 @@
 
 namespace irr
 {
-    namespace video
-    {
+namespace video
+{
 #define MAX_LIGHTS 8
-#define MAX_TEXTURE_UNITS 4
 
-        enum AlphaFunc
-        {
-            ALPHA_GREATER = 0
-        };
+	enum AlphaFunc
+	{
+		ALPHA_GREATER = 0
+	};
 
-        class COGLES2FixedPipelineShader : public COGLES2SLMaterialRenderer
-        {
+	class COGLES2FixedPipelineShader : public COGLES2SLMaterialRenderer
+	{
 
-        public:
+	public:
 
-            COGLES2FixedPipelineShader( video::COGLES2Driver* driver, io::IFileSystem* fs );
+		COGLES2FixedPipelineShader(video::COGLES2Driver* driver, io::IFileSystem* fs);
 
-            void updateMatrices();
-            void bindTexture();
-            virtual bool OnRender( IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype );
+		void updateMatrices();
+		void bindTexture();
+		virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
-        public:
-            /*void enableNormalize()  { Normalize = true;  }
-            void disableNormalize() { Normalize = false; }*/
+	public:
+		/*void enableNormalize() {Normalize = true;}
+		void disableNormalize() {Normalize = false;}*/
 
-            void enableAlphaTest()
-            {
-                AlphaTest = true;
-            }
-            void disableAlphaTest()
-            {
-                AlphaTest = false;
-            }
-            void setAlphaValue( float value )
-            {
-                AlphaValue = value;
-            }
+		void enableAlphaTest()
+		{
+			AlphaTest = true;
+		}
+		void disableAlphaTest()
+		{
+			AlphaTest = false;
+		}
+		void setAlphaValue(float value)
+		{
+			AlphaValue = value;
+		}
 
-            /*void enableLighting()    { Lighting = true;  }
-            void disableLighting()   { Lighting = false; }
-            bool isLightingEnabled() { return (Lighting == 1);  }*/
-            void setAmbientLight( const SColorf& color );
+		/*void enableLighting()	{Lighting = true;}
+		void disableLighting() {Lighting = false;}
+		bool isLightingEnabled() {return (Lighting == 1);}*/
+		void setAmbientLight(const SColorf& color);
 
-            void enableFog()
-            {
-                Fog = true;
-            }
-            void disableFog()
-            {
-                Fog = false;
-            }
-            bool isFogEnabled()
-            {
-                return ( Fog == 1 );
-            }
-            void setFog( E_FOG_TYPE type, const SColor& color, f32 start, f32 end, f32 density );
+		void enableFog()
+		{
+			Fog = true;
+		}
+		void disableFog()
+		{
+			Fog = false;
+		}
+		bool isFogEnabled()
+		{
+			return (Fog == 1);
+		}
+		void setFog(E_FOG_TYPE type, const SColor& color, f32 start, f32 end, f32 density);
 
-            void setMaterial( const SMaterial& material );
+		void setMaterial(const SMaterial& material);
 
-            void setRenderMode( E_MATERIAL_TYPE mode )
-            {
-                RenderMode = mode;
-            }
+		void setRenderMode(E_MATERIAL_TYPE mode)
+		{
+			RenderMode = mode;
+		}
 
-            void reload();
+		void reload();
 
-        private:
+	private:
 
-            void initData();
+		void initData();
 
-        private:
+	private:
 
-            struct vec3
-            {
-                float data[3];
-            };
-            struct vec4
-            {
-                float data[4];
-            };
-            struct mat4
-            {
-                float data[16];
-            };
+		struct vec3
+		{
+			float data[3];
+		};
+		struct vec4
+		{
+			float data[4];
+		};
+		struct mat4
+		{
+			float data[16];
+		};
 
-            float Normalize;
-
-
-            int   TextureUnits[MAX_TEXTURE_UNITS];
-            int  UseTexture[MAX_TEXTURE_UNITS];
-            mat4  TextureMatrix[MAX_TEXTURE_UNITS];
-            int  UseTexMatrix[MAX_TEXTURE_UNITS];
+		float Normalize;
 
 
-            float  AlphaTest;
-            float AlphaValue;
-            AlphaFunc AlphaFunction;
+		int TextureUnits[MATERIAL_MAX_TEXTURES];
+		int UseTexture[MATERIAL_MAX_TEXTURES];
+		mat4 TextureMatrix[MATERIAL_MAX_TEXTURES];
+		int UseTexMatrix[MATERIAL_MAX_TEXTURES];
 
-            int Lighting;
-            int UseLight[MAX_LIGHTS];
-            vec4 LightPosition     [MAX_LIGHTS];
-            SColorf LightAmbient   [MAX_LIGHTS];
-            SColorf LightDiffuse   [MAX_LIGHTS];
-            SColorf LightSpecular  [MAX_LIGHTS];
-            core::vector3df LightDirection[MAX_LIGHTS];
-            core::vector3df LightAttenuation[MAX_LIGHTS];
-            float LightExponent    [MAX_LIGHTS];
-            float LightCutoff      [MAX_LIGHTS];
-            SColorf AmbientColor;
 
-            int   Fog;
-            int   FogType;
-            float FogColor[4];
-            float FogStart;
-            float FogEnd;
-            float FogDensity;
+		float AlphaTest;
+		float AlphaValue;
+		AlphaFunc AlphaFunction;
 
-            int   Clip;
-            core::plane3df ClipPlane;
+		int Lighting;
+		int UseLight[MAX_LIGHTS];
+		vec4 LightPosition[MAX_LIGHTS];
+		SColorf LightAmbient[MAX_LIGHTS];
+		SColorf LightDiffuse[MAX_LIGHTS];
+		SColorf LightSpecular[MAX_LIGHTS];
+		core::vector3df LightDirection[MAX_LIGHTS];
+		core::vector3df LightAttenuation[MAX_LIGHTS];
+		float LightExponent[MAX_LIGHTS];
+		float LightCutoff[MAX_LIGHTS];
+		SColorf AmbientColor;
 
-            u32 ColorMaterial;
-            SColorf MaterialAmbient;
-            SColorf MaterialEmission;
-            SColorf MaterialDiffuse;
-            SColorf MaterialSpecular;
-            float MaterialShininess;
+		int Fog;
+		int FogType;
+		float FogColor[4];
+		float FogStart;
+		float FogEnd;
+		float FogDensity;
 
-            E_MATERIAL_TYPE RenderMode;
-        private :
-            enum SHADER_UNIFORM
-            {
-                RENDER_MODE = 0,
-                MVP_MATRIX,
-                WORLD_MATRIX,
-                NORMALIZE,
-                EYE_POSITION,
-                USE_LIGHT,
-                LIGHT_POSITION,
-                LIGHT_AMBIENT,
-                LIGHT_DIFFUSE,
-                LIGHT_SPECULAR,
-                LIGHT_DIRECTION,
-                LIGHT_ATTENUATION,
-                LIGHT_EXPONENT,
-                LIGHT_CUTOFF,
-                AMBIENT_COLOR,
-                LIGHTING,
-                MATERIAL_AMBIENT,
-                MATERIAL_EMISSION,
-                MATERIAL_DIFFUSE,
-                MATERIAL_SPECULAR,
-                MATERIAL_SHININESS,
-                COLOR_MATERIAL,
-                USE_TEXTURE,
-                TEXTURE_MATRIX,
-                USE_TEXTURE_MATRIX,
-                CLIP,
-                CLIP_PLANE,
-                ALPHA_TEST,
-                ALPHA_VALUE,
-                FOG,
-                FOG_TYPE,
-                FOG_COLOR,
-                FOG_START,
-                FOG_END,
-                FOG_DENSITY,
-                TEXTURE_UNIT0,
-                TEXTURE_UNIT1,
-                UNIFORM_COUNT
-            };
-            static const char* const sBuiltInShaderUniformNames[];
-        };
-    }
+		int Clip;
+		core::plane3df ClipPlane;
+
+		u32 ColorMaterial;
+		SColorf MaterialAmbient;
+		SColorf MaterialEmission;
+		SColorf MaterialDiffuse;
+		SColorf MaterialSpecular;
+		float MaterialShininess;
+
+		E_MATERIAL_TYPE RenderMode;
+	private :
+		enum SHADER_UNIFORM
+		{
+			RENDER_MODE = 0,
+			MVP_MATRIX,
+			WORLD_MATRIX,
+			NORMALIZE,
+			EYE_POSITION,
+			USE_LIGHT,
+			LIGHT_POSITION,
+			LIGHT_AMBIENT,
+			LIGHT_DIFFUSE,
+			LIGHT_SPECULAR,
+			LIGHT_DIRECTION,
+			LIGHT_ATTENUATION,
+			LIGHT_EXPONENT,
+			LIGHT_CUTOFF,
+			AMBIENT_COLOR,
+			LIGHTING,
+			MATERIAL_AMBIENT,
+			MATERIAL_EMISSION,
+			MATERIAL_DIFFUSE,
+			MATERIAL_SPECULAR,
+			MATERIAL_SHININESS,
+			COLOR_MATERIAL,
+			USE_TEXTURE,
+			TEXTURE_MATRIX,
+			USE_TEXTURE_MATRIX,
+			CLIP,
+			CLIP_PLANE,
+			ALPHA_TEST,
+			ALPHA_VALUE,
+			FOG,
+			FOG_TYPE,
+			FOG_COLOR,
+			FOG_START,
+			FOG_END,
+			FOG_DENSITY,
+			TEXTURE_UNIT0,
+			TEXTURE_UNIT1,
+			UNIFORM_COUNT
+		};
+		static const char* const sBuiltInShaderUniformNames[];
+	};
+}
 }
 
 #endif //_IRR_COMPILE_WITH_OGLES2_

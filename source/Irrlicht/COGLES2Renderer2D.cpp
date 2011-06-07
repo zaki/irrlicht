@@ -3,6 +3,7 @@
 // and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 #include "COGLES2Renderer2D.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
@@ -22,7 +23,7 @@ namespace video
 		0
 	};
 
-	static const char* vertexShaderFile   = IRR_OGLES2_SHADER_PATH "COGLES2Renderer2D.vsh";
+	static const char* vertexShaderFile = IRR_OGLES2_SHADER_PATH "COGLES2Renderer2D.vsh";
 	static const char* fragmentShaderFile = IRR_OGLES2_SHADER_PATH "COGLES2Renderer2D.fsh";
 
 	COGLES2Renderer2d::COGLES2Renderer2d( irr::video::COGLES2Driver *driver, irr::io::IFileSystem *fs )
