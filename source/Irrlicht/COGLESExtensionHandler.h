@@ -32,7 +32,7 @@ namespace video
 	class COGLES1ExtensionHandler
 	{
 	public:
-		enum EOGLES2Features
+		enum EOGLESFeatures
 		{
 			IRR_AMD_compressed_3DC_texture = 0, //39
 			IRR_AMD_compressed_ATC_texture, //40
