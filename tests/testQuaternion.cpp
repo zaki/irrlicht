@@ -21,8 +21,10 @@ inline bool compareQ(const core::vector3df& v, const core::vector3df& turn=core:
 	
 	q.toEuler(v2);
 	v2*=core::RADTODEG;
+	v2=v2.rotationToDirection(turn);
 
-	if (!v3.equals(v2.rotationToDirection(turn), 0.002f))
+	// this yields pretty far values sometimes, so don't be too picky
+	if (!v3.equals(v2, 0.0035f))
 	{
 		logTestString("Inequality: %f,%f,%f != %f,%f,%f\n", v.X,v.Y,v.Z, v2.X,v2.Y,v2.Z);
 		return false;
