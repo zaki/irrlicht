@@ -10,9 +10,6 @@
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-#include "os.h"
-#include "EDriverFeatures.h"
-
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 // seems to be missing...
@@ -20,6 +17,8 @@ typedef char GLchar;
 #if defined(_IRR_OGLES2_USE_EXTPOINTER_)
 #include "gles2-ext.h"
 #endif
+#include "os.h"
+#include "EDriverFeatures.h"
 
 namespace irr
 {
@@ -201,5 +200,6 @@ namespace video
 } // end namespace irr
 
 
-#endif // _IRR_COMPILE_WITH_OGLES21_
+#endif // _IRR_COMPILE_WITH_OGLES2_
 #endif
+
