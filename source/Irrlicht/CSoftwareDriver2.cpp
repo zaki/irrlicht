@@ -361,8 +361,9 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 	DriverAttributes->setAttribute("MaxTextures", 2);
 	DriverAttributes->setAttribute("MaxIndices", 1<<16);
 	DriverAttributes->setAttribute("MaxTextureSize", 1024);
+	DriverAttributes->setAttribute("MaxLights", glsl::gl_MaxLights);
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
-	DriverAttributes->setAttribute("Version", 45);
+	DriverAttributes->setAttribute("Version", 47);
 
 	// create triangle renderers
 

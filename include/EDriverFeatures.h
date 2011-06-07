@@ -115,6 +115,9 @@ namespace video
 		//! Support for different blend functions. Without, only ADD is available
 		EVDF_BLEND_OPERATIONS,
 
+		//! Support for texture coord transformation via texture matrix
+		EVDF_TEXTURE_MATRIX,
+
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT
 	};
