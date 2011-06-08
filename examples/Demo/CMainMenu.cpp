@@ -16,10 +16,12 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 			bool& outAdditive, bool& outVSync, bool& outAA,
 			video::E_DRIVER_TYPE& outDriver)
 {
-	//video::E_DRIVER_TYPE driverType = video::EDT_DIRECT3D9;
-	//video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
 	video::E_DRIVER_TYPE driverType = video::EDT_BURNINGSVIDEO;
-	//video::E_DRIVER_TYPE driverType = video::EDT_SOFTWARE;
+		driverType = video::EDT_OPENGL;
+	if (!IrrlichtDevice::isDriverSupported(video::EDT_OPENGL))
+		driverType = video::EDT_DIRECT3D9;
+	if (!IrrlichtDevice::isDriverSupported(video::EDT_DIRECT3D9))
+		driverType = video::EDT_SOFTWARE;
 
 	MenuDevice = createDevice(driverType,
 		core::dimension2d<u32>(512, 384), 16, false, false, false, this);
@@ -60,11 +62,16 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	// add list box
 
 	gui::IGUIListBox* box = guienv->addListBox(core::rect<int>(10,10,220,120), optTab, 1);
-	box->addItem(L"OpenGL 1.5");
-	box->addItem(L"Direct3D 8.1");
-	box->addItem(L"Direct3D 9.0c");
-	box->addItem(L"Burning's Video 0.47");
-	box->addItem(L"Irrlicht Software Renderer 1.0");
+	const wchar_t* const names[] =
+		{L"Software Renderer", L"Burning's Video",
+		L"Direct3D 8", L"Direct3D 9",
+		L"OpenGL 1.x-4.x", L"OpenGL-ES 1.x", L"OpenGL-ES 2.x"};
+	for (u32 i=1; i<video::EDT_COUNT; ++i)
+	{
+		if (IrrlichtDevice::isDriverSupported(video::E_DRIVER_TYPE(i)))
+			box->addItem(names[i-1]);
+	}
+
 	box->setSelected(selected);
 
 	// add button
@@ -250,13 +257,17 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	outVSync = vsync;
 	outAA = aa;
 
-	switch(selected)
+	for (u32 i=1; i<video::EDT_COUNT; ++i)
 	{
-	case 0:	outDriver = video::EDT_OPENGL; break;
-	case 1:	outDriver = video::EDT_DIRECT3D8; break;
-	case 2:	outDriver = video::EDT_DIRECT3D9; break;
-	case 3:	outDriver = video::EDT_BURNINGSVIDEO; break;
-	case 4:	outDriver = video::EDT_OGLES1; break;
+		if (IrrlichtDevice::isDriverSupported(video::E_DRIVER_TYPE(i)))
+		{
+			if (!selected)
+			{
+				outDriver=video::E_DRIVER_TYPE(i);
+				break;
+			}
+			--selected;
+		}
 	}
 
 	return start;
