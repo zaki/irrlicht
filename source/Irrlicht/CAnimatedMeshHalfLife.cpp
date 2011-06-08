@@ -127,8 +127,8 @@ namespace scene
 	inline void VectorTransform(const vec3_hl in1, const f32 in2[3][4], core::vector3df& out)
 	{
 		out.X = DotProduct(in1, in2[0]) + in2[0][3];
-		out.Y = DotProduct(in1, in2[1]) + in2[1][3];
-		out.Z = DotProduct(in1, in2[2]) + in2[2][3];
+		out.Z = DotProduct(in1, in2[1]) + in2[1][3];
+		out.Y = DotProduct(in1, in2[2]) + in2[2][3];
 	}
 
 	static f32 BoneTransform[MAXSTUDIOBONES][3][4];	// bone transformation matrix
