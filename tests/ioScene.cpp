@@ -94,7 +94,10 @@ static bool loadScene(void)
 	{
 		smgr->drawAll();
 		driver->endScene();
-		result = takeScreenshotAndCompareAgainstReference(driver, "-loadScene.png", 98.91f);
+		// we need to be very sloppy, because the animators will produce a different
+		// start depending on the actual loading time. 97% seems to be safe, as removing
+		// an object produces values around 95%
+		result = takeScreenshotAndCompareAgainstReference(driver, "-loadScene.png", 97.4f);
 		if (!result)
 			logTestString("Rendering the loaded scene failed.\n");
 	}
