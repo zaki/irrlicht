@@ -68,6 +68,8 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	{
 		os::Printer::log("Could not initialize OpenGL-ES1 display.");
 	}
+	else
+		os::Printer::log("EGL version", core::stringc(majorVersion+(minorVersion/10.f)).c_str());
 
 	EGLint attribs[] =
 	{
@@ -82,15 +84,97 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		EGL_STENCIL_SIZE, params.Stencilbuffer,
 		EGL_SAMPLE_BUFFERS, params.AntiAlias?1:0,
 		EGL_SAMPLES, params.AntiAlias,
+#ifdef EGL_VERSION_1_3
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+#endif
 		EGL_NONE, 0
 	};
+	EGLint contextAttrib[] =
+	{
+#ifdef EGL_VERSION_1_3
+		EGL_CONTEXT_CLIENT_VERSION, 1,
+#endif
+		EGL_NONE, 0
+	};
+
 	EGLConfig config;
 	EGLint num_configs;
-	if (!eglChooseConfig(EglDisplay, attribs, &config, 1, &num_configs))
+	u32 steps=5;
+	while (!eglChooseConfig(EglDisplay, attribs, &config, 1, &num_configs) || !num_configs)
 	{
-		os::Printer::log("Could not get config for OpenGL-ES1 display.");
+		switch (steps)
+		{
+		case 5: // samples
+			if (attribs[19]>2)
+			{
+				--attribs[19];
+			}
+			else
+			{
+				attribs[17]=0;
+				attribs[19]=0;
+				--steps;
+			}
+			break;
+		case 4: // alpha
+			if (attribs[7])
+			{
+				attribs[7]=0;
+				if (params.AntiAlias)
+				{
+					attribs[17]=1;
+					attribs[19]=params.AntiAlias;
+					steps=5;
+				}
+			}
+			else
+				--steps;
+			break;
+		case 3: // stencil
+			if (attribs[15])
+			{
+				attribs[15]=0;
+				if (params.AntiAlias)
+				{
+					attribs[17]=1;
+					attribs[19]=params.AntiAlias;
+					steps=5;
+				}
+			}
+			else
+				--steps;
+			break;
+		case 2: // depth size
+			if (attribs[13]>16)
+			{
+				attribs[13]-=8;
+			}
+			else
+				--steps;
+			break;
+		case 1: // buffer size
+			if (attribs[9]>16)
+			{
+				attribs[9]-=8;
+			}
+			else
+				--steps;
+			break;
+		default:
+			os::Printer::log("Could not get config for OpenGL-ES1 display.");
+			return;
+		}
 	}
+	if (params.AntiAlias && !attribs[17])
+		os::Printer::log("No multisampling.");
+	if (params.WithAlphaChannel && !attribs[7])
+		os::Printer::log("No alpha.");
+	if (params.Stencilbuffer && !attribs[15])
+		os::Printer::log("No stencil buffer.");
+	if (params.ZBufferBits > attribs[13])
+		os::Printer::log("No full depth buffer.");
+	if (params.Bits > attribs[9])
+		os::Printer::log("No full color buffer.");
 
 	EglSurface = eglCreateWindowSurface(EglDisplay, config, EglWindow, NULL);
 	if (EGL_NO_SURFACE==EglSurface)
@@ -102,9 +186,10 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	}
 
 #ifdef EGL_VERSION_1_2
-	eglBindAPI(EGL_OPENGL_ES_API);
+	if (minorVersion>1)
+		eglBindAPI(EGL_OPENGL_ES_API);
 #endif
-	EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, NULL);
+	EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, contextAttrib);
 	if (testEGLError())
 	{
 		os::Printer::log("Could not create Context for OpenGL-ES1 display.");

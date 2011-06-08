@@ -92,42 +92,104 @@ namespace video
 			EGL_GREEN_SIZE, 5,
 			EGL_BLUE_SIZE, 5,
 			EGL_ALPHA_SIZE, params.WithAlphaChannel ? 1 : 0,
-			EGL_BUFFER_SIZE, 16,//params.Bits,
+			EGL_BUFFER_SIZE, params.Bits,
 			EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
 			//EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
 			EGL_DEPTH_SIZE, params.ZBufferBits,
 			EGL_STENCIL_SIZE, params.Stencilbuffer,
 			EGL_SAMPLE_BUFFERS, params.AntiAlias ? 1 : 0,
 			EGL_SAMPLES, params.AntiAlias,
+#ifdef EGL_VERSION_1_3
 			EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+#endif
 			EGL_NONE, 0
 		};
-		/*EGLint attribs[] =
-		{
-			EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-			EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-			EGL_NONE, 0
-		};*/
-
 		EGLint contextAttrib[] =
 		{
+#ifdef EGL_VERSION_1_3
 			EGL_CONTEXT_CLIENT_VERSION, 2,
+#endif
 			EGL_NONE, 0
 		};
-
 
 		EGLConfig config;
 		EGLint num_configs;
-		if (!eglChooseConfig(EglDisplay, attribs, &config, 1, &num_configs))
+		u32 steps=5;
+		while (!eglChooseConfig(EglDisplay, attribs, &config, 1, &num_configs) || !num_configs)
 		{
-			os::Printer::log("Could not get config for OpenGL-ES2 display.");
+			switch (steps)
+			{
+			case 5: // samples
+				if (attribs[19]>2)
+				{
+					--attribs[19];
+				}
+				else
+				{
+					attribs[17]=0;
+					attribs[19]=0;
+					--steps;
+				}
+				break;
+			case 4: // alpha
+				if (attribs[7])
+				{
+					attribs[7]=0;
+					if (params.AntiAlias)
+					{
+						attribs[17]=1;
+						attribs[19]=params.AntiAlias;
+						steps=5;
+					}
+				}
+				else
+					--steps;
+				break;
+			case 3: // stencil
+				if (attribs[15])
+				{
+					attribs[15]=0;
+					if (params.AntiAlias)
+					{
+						attribs[17]=1;
+						attribs[19]=params.AntiAlias;
+						steps=5;
+					}
+				}
+				else
+					--steps;
+				break;
+			case 2: // depth size
+				if (attribs[13]>16)
+				{
+					attribs[13]-=8;
+				}
+				else
+					--steps;
+				break;
+			case 1: // buffer size
+				if (attribs[9]>16)
+				{
+					attribs[9]-=8;
+				}
+				else
+					--steps;
+				break;
+			default:
+				os::Printer::log("Could not get config for OpenGL-ES2 display.");
+				return;
+			}
 		}
-		else
-		{
-			char log[64];
-			snprintf(log, 64, "Got %d configs.\n", num_configs);
-			os::Printer::log(log);
-		}
+		if (params.AntiAlias && !attribs[17])
+			os::Printer::log("No multisampling.");
+		if (params.WithAlphaChannel && !attribs[7])
+			os::Printer::log("No alpha.");
+		if (params.Stencilbuffer && !attribs[15])
+			os::Printer::log("No stencil buffer.");
+		if (params.ZBufferBits > attribs[13])
+			os::Printer::log("No full depth buffer.");
+		if (params.Bits > attribs[9])
+			os::Printer::log("No full color buffer.");
 		os::Printer::log(" Creating EglSurface with nativeWindow...");
 		EglSurface = eglCreateWindowSurface(EglDisplay, config, EglWindow, NULL);
 		if (EGL_NO_SURFACE == EglSurface)
@@ -147,7 +209,8 @@ namespace video
 			os::Printer::log("SUCCESS\n");
 
 #ifdef EGL_VERSION_1_2
-		eglBindAPI(EGL_OPENGL_ES_API);
+		if (minorVersion>1)
+			eglBindAPI(EGL_OPENGL_ES_API);
 #endif
 		os::Printer::log("Creating EglContext...");
 		EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, contextAttrib);
