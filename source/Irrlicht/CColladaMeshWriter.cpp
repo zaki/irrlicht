@@ -170,70 +170,22 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		s32 attridx = attributes->findAttribute("Emissive");
 		if ( attridx >= 0 )
 		{
-			Writer->writeElement(L"emission", false);
-			Writer->writeLineBreak();
-			Writer->writeElement(L"color", false);
-			Writer->writeLineBreak();
-
-			str = attributes->getAttributeAsString(attridx);
-			str.replace(',',' ');
-			Writer->writeText(core::stringw(str.c_str()).c_str());
-
-			Writer->writeClosingTag(L"color");
-			Writer->writeLineBreak();
-			Writer->writeClosingTag(L"emission");
-			Writer->writeLineBreak();
+			writeColorAttribute(L"emission", attributes, attridx);
 		}
 		attridx = attributes->findAttribute("Ambient");
 		if ( attridx >= 0 )
 		{
-			Writer->writeElement(L"ambient", false);
-			Writer->writeLineBreak();
-			Writer->writeElement(L"color", false);
-			Writer->writeLineBreak();
-
-			str = attributes->getAttributeAsString(attridx);
-			str.replace(',',' ');
-			Writer->writeText(core::stringw(str.c_str()).c_str());
-
-			Writer->writeClosingTag(L"color");
-			Writer->writeLineBreak();
-			Writer->writeClosingTag(L"ambient");
-			Writer->writeLineBreak();
+			writeColorAttribute(L"ambient", attributes, attridx);
 		}
 		attridx = attributes->findAttribute("Diffuse");
 		if ( attridx >= 0 )
 		{
-			Writer->writeElement(L"diffuse", false);
-			Writer->writeLineBreak();
-			Writer->writeElement(L"color", false);
-			Writer->writeLineBreak();
-
-			str = attributes->getAttributeAsString(attridx);
-			str.replace(',',' ');
-			Writer->writeText(core::stringw(str.c_str()).c_str());
-
-			Writer->writeClosingTag(L"color");
-			Writer->writeLineBreak();
-			Writer->writeClosingTag(L"diffuse");
-			Writer->writeLineBreak();
+			writeColorAttribute(L"diffuse", attributes, attridx);
 		}
 		attridx = attributes->findAttribute("Specular");
 		if ( attridx >= 0 )
 		{
-			Writer->writeElement(L"specular", false);
-			Writer->writeLineBreak();
-			Writer->writeElement(L"color", false);
-			Writer->writeLineBreak();
-
-			str = attributes->getAttributeAsString(attridx);
-			str.replace(',',' ');
-			Writer->writeText(core::stringw(str.c_str()).c_str());
-
-			Writer->writeClosingTag(L"color");
-			Writer->writeLineBreak();
-			Writer->writeClosingTag(L"specular");
-			Writer->writeLineBreak();
+			writeColorAttribute(L"specular", attributes, attridx);
 		}
 		attridx = attributes->findAttribute("Shininess");
 		if ( attridx >= 0 )
@@ -241,7 +193,6 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 			Writer->writeElement(L"shininess", false);
 			Writer->writeLineBreak();
 			Writer->writeElement(L"float", false);
-			Writer->writeLineBreak();
 
 			Writer->writeText(core::stringw(attributes->getAttributeAsString(attridx).c_str()).c_str());
 
@@ -761,22 +712,46 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) 
 
 irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector3df& vec) const
 {
-	core::stringw str;
-	str += vec.X;
-	str += " ";
-	str += vec.Y;
-	str += " ";
-	str += vec.Z;
+	c8 tmpbuf[255];
+	snprintf(tmpbuf, 255, "%f %f %f", vec.X, vec.Y, vec.Z);
+	core::stringw str  = tmpbuf;
+
 	return str;
 }
 
 irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector2df& vec) const
 {
-	core::stringw str;
-	str += vec.X;
-	str += " ";
-	str += vec.Y;
+	c8 tmpbuf[255];
+	snprintf(tmpbuf, 255, "%f %f", vec.X, vec.Y);
+	core::stringw str  = tmpbuf;
+
 	return str;
+}
+
+inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf& colorf) const
+{
+	c8 tmpbuf[255];
+	snprintf(tmpbuf, 255, "%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
+	core::stringw str = tmpbuf;
+
+	return str;
+}
+
+void CColladaMeshWriter::writeColorAttribute(wchar_t * parentTag, io::IAttributes* attributes, s32 attridx)
+{
+	Writer->writeElement(parentTag, false);
+	Writer->writeLineBreak();
+
+	Writer->writeElement(L"color", false);
+
+	irr::core::stringw str( toString(attributes->getAttributeAsColorf(attridx)) );
+	Writer->writeText(str.c_str());
+
+	Writer->writeClosingTag(L"color");
+	Writer->writeLineBreak();
+
+	Writer->writeClosingTag(parentTag);
+	Writer->writeLineBreak();
 }
 
 } // end namespace
