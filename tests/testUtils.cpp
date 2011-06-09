@@ -184,7 +184,7 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 	//     maybe you sould take the getDriverType Info for this
 	if (driverName.find("OpenGL ES 2") > -1)
 		driverName = "OGLES2";
-	else if (driverName.find("OpenGL ES 1") > -1)
+	else if (driverName.find("OpenGL ES") > -1)
 		driverName = "OGLES1";
 	else if (driverName.find("OpenGL") > -1)
 		driverName = "OpenGL";
