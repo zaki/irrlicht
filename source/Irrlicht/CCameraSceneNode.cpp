@@ -301,7 +301,7 @@ void CCameraSceneNode::recalculateViewArea()
 //! Writes attributes of the scene node.
 void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
-	ISceneNode::serializeAttributes(out, options);
+	ICameraSceneNode::serializeAttributes(out, options);
 
 	out->addVector3d("Target", Target);
 	out->addVector3d("UpVector", UpVector);
@@ -310,13 +310,13 @@ void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeR
 	out->addFloat("ZNear", ZNear);
 	out->addFloat("ZFar", ZFar);
 	out->addBool("Binding", TargetAndRotationAreBound);
+	out->addBool("ReceiveInput", InputReceiverEnabled);
 }
-
 
 //! Reads attributes of the scene node.
 void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	ISceneNode::deserializeAttributes(in, options);
+	ICameraSceneNode::deserializeAttributes(in, options);
 
 	Target = in->getAttributeAsVector3d("Target");
 	UpVector = in->getAttributeAsVector3d("UpVector");
@@ -325,6 +325,8 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	ZNear = in->getAttributeAsFloat("ZNear");
 	ZFar = in->getAttributeAsFloat("ZFar");
 	TargetAndRotationAreBound = in->getAttributeAsBool("Binding");
+	if ( in->findAttribute("ReceiveInput") )
+		InputReceiverEnabled = in->getAttributeAsBool("InputReceiverEnabled");
 
 	recalculateProjectionMatrix();
 	recalculateViewArea();
@@ -348,6 +350,8 @@ bool CCameraSceneNode::getTargetAndRotationBinding(void) const
 //! Creates a clone of this scene node and its children.
 ISceneNode* CCameraSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
 {
+	ICameraSceneNode::clone(newParent, newManager);
+
 	if (!newParent)
 		newParent = Parent;
 	if (!newManager)
@@ -356,7 +360,19 @@ ISceneNode* CCameraSceneNode::clone(ISceneNode* newParent, ISceneManager* newMan
 	CCameraSceneNode* nb = new CCameraSceneNode(newParent,
 		newManager, ID, RelativeTranslation, Target);
 
-	nb->cloneMembers(this, newManager);
+	nb->ISceneNode::cloneMembers(this, newManager);
+	nb->ICameraSceneNode::cloneMembers(this);
+
+	nb->Target = Target;
+	nb->UpVector = UpVector;
+	nb->Fovy = Fovy;
+	nb->Aspect = Aspect;
+	nb->ZNear = ZNear;
+	nb->ZFar = ZFar;
+	nb->ViewArea = ViewArea;
+	nb->Affector = Affector;
+	nb->InputReceiverEnabled = InputReceiverEnabled;
+	nb->TargetAndRotationAreBound = TargetAndRotationAreBound;
 
 	if ( newParent )
 		nb->drop();
