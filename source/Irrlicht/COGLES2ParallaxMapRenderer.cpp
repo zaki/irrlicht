@@ -76,12 +76,14 @@ namespace video
 		else
 		{
 			// compile shaders on our own
-			initFromFiles( outMaterialTypeNr, VertexShaderFile, FragmentShaderFile );
-			useProgram();
-			int dummy = 0;
-			setUniform( TEXTURE_UNIT0, &dummy );
-			dummy = 1;
-			setUniform( TEXTURE_UNIT1, &dummy );
+			if (initFromFiles( outMaterialTypeNr, VertexShaderFile, FragmentShaderFile))
+			{
+				useProgram();
+				int dummy = 0;
+				setUniform( TEXTURE_UNIT0, &dummy );
+				dummy = 1;
+				setUniform( TEXTURE_UNIT1, &dummy );
+			}
 		}
 
 		// fallback if compilation has failed

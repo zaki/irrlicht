@@ -89,7 +89,7 @@ namespace video
 			BaseMaterial->drop();
 	}
 
-	void COGLES2SLMaterialRenderer::init(s32& outMaterialTypeNr,
+	bool COGLES2SLMaterialRenderer::init(s32& outMaterialTypeNr,
 			const c8* vertexShaderProgram,
 			const c8* pixelShaderProgram,
 			bool registerMaterial )
@@ -97,32 +97,35 @@ namespace video
 		outMaterialTypeNr = -1;
 
 		if ( Program == 0 && !createProgram() )
-			return;
+			return false;
 
 		if ( vertexShaderProgram )
 			if ( !createShader( GL_VERTEX_SHADER, vertexShaderProgram, "" ) )
-				return;
+				return false;
 
 		if ( pixelShaderProgram )
 			if ( !createShader( GL_FRAGMENT_SHADER, pixelShaderProgram, "" ) )
-				return;
+				return false;
 
 		if ( !linkProgram() )
-			return;
+			return false;
 
 		// register myself as new material
 		if ( registerMaterial )
 			outMaterialTypeNr = Driver->addMaterialRenderer( this );
+		return true;
 	}
 
-	void COGLES2SLMaterialRenderer::initFromFiles( s32 &outMaterialTypeNr,
+	bool COGLES2SLMaterialRenderer::initFromFiles( s32 &outMaterialTypeNr,
 			const c8 *vertexShaderFile,
 			const c8 *pixelShaderFile,
 			bool registerMaterial )
 	{
+		outMaterialTypeNr = -1;
 		if ( !createProgram() )
 		{
 			os::Printer::log( "Could not create shader program.", ELL_ERROR );
+			return false;
 		}
 
 		if ( !readVertexShader( vertexShaderFile ) )
@@ -141,13 +144,15 @@ namespace video
 		if ( !linkProgram() )
 		{
 			os::Printer::log( "Error linking fixed pipeline shader program.", ELL_ERROR );
+			return false;
 		}
 
 		if ( registerMaterial )
 			outMaterialTypeNr = Driver->addMaterialRenderer( this );
+		return true;
 	}
 
-	void COGLES2SLMaterialRenderer::reloadFromFiles( const c8 *vertexShaderFile,
+	bool COGLES2SLMaterialRenderer::reloadFromFiles( const c8 *vertexShaderFile,
 			const c8 *pixelShaderFile )
 	{
 		GLsizei shaderCount;
@@ -170,7 +175,10 @@ namespace video
 		if ( !linkProgram() )
 		{
 			os::Printer::log( "Error linking fixed pipeline shader program.", ELL_ERROR );
+			return false;
 		}
+		else
+			return true;
 	}
 
 
@@ -446,6 +454,8 @@ namespace video
 
 	bool COGLES2SLMaterialRenderer::setUniform( int index, const void* data, int count )
 	{
+		if ((u32)index>=UniformInfo.size())
+			return false;
 		SUniformInfo& ui = UniformInfo[index];
 		if ( ui.location == -1 )
 			return false;

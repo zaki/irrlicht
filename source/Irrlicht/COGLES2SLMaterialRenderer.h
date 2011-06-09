@@ -97,17 +97,17 @@ namespace video
 				const u32& uniformCount,
 				s32 userData = 0);
 
-		void init(s32& outMaterialTypeNr,
+		bool init(s32& outMaterialTypeNr,
 			const c8* vertexShaderProgram,
 			const c8* pixelShaderProgram,
 			bool registerMaterial = true);
 
-		void initFromFiles(s32& outMaterialTypeNr,
+		bool initFromFiles(s32& outMaterialTypeNr,
 				const c8* vertexShaderFile,
 				const c8* pixelShaderFile,
 				bool registerMaterial = true);
 
-		void reloadFromFiles(const c8* vertexShaderFile,
+		bool reloadFromFiles(const c8* vertexShaderFile,
 				const c8* pixelShaderFile);
 
 		bool readVertexShader(const c8* vertexShaderFile);

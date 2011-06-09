@@ -33,7 +33,8 @@ namespace video
 		setDebugName( "COGLES2Renderer2d" );
 #endif
 		s32 dummy = -1;
-		initFromFiles( dummy, vertexShaderFile, fragmentShaderFile, false );
+		if (!initFromFiles( dummy, vertexShaderFile, fragmentShaderFile, false))
+			return;
 		useProgram();
 		int texUnit = 0;
 		setUniform( TEXTURE_UNIT, &texUnit );
