@@ -8,6 +8,60 @@
 using namespace irr;
 using namespace core;
 
+core::map<int, int> countReferences;
+
+struct SDummy
+{
+	SDummy(int a) : x(a) 
+	{
+		countReferences.insert(x,1);
+	}
+
+	SDummy() : x(0)
+	{
+		countReferences.insert(x,1);
+	}
+
+	SDummy(const SDummy& other) 
+	{
+		x = other.x;
+		countReferences[x] = countReferences[x] + 1;
+	}
+
+	~SDummy()
+	{
+		countReferences[x] = countReferences[x] - 1;
+	}
+
+	int x;
+};
+
+static bool testErase()
+{
+	{
+		core::array<SDummy> aaa;
+		aaa.push_back(SDummy(0));
+		aaa.push_back(SDummy(1));
+		aaa.push_back(SDummy(2));
+		aaa.push_back(SDummy(3));
+		aaa.push_back(SDummy(4));
+		aaa.push_back(SDummy(5));
+
+		aaa.erase(0,2);
+	}
+
+	for ( core::map<int,int>::Iterator it = countReferences.getIterator(); !it.atEnd(); it++ )
+	{
+		if ( it->getValue() != 0 )
+		{
+			logTestString("testErase: wrong count for %d, it's: %d\n", it->getKey(), it->getValue());
+			return false;
+		}
+	}
+	return true;
+}
+
+
 struct VarArray
 {
 	core::array < int, core::irrAllocatorFast<int> > MyArray;
@@ -69,6 +123,7 @@ bool testIrrArray(void)
 	crashTestFastAlloc();
 	allExpected &= testSelfAssignment();
 	allExpected &= testSwap();
+	allExpected &= testErase();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");

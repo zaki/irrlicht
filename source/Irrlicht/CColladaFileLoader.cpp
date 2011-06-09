@@ -2191,7 +2191,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				}
 				else
 				{
-					for (u32 ind = 0; i+2 < indices.size(); ++ind)
+					for (u32 ind = 0; ind+2 < indices.size(); ++ind)
 					{
 						mbuffer->Indices.push_back(indices[0]);
 						mbuffer->Indices.push_back(indices[ind+1]);

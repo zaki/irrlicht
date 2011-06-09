@@ -558,12 +558,12 @@ public:
 
 		for (i=index+count; i<used; ++i)
 		{
-			if (i > index+count)
+			if (i-count >= index+count)	// not already destructed before loop
 				allocator.destruct(&data[i-count]);
 
 			allocator.construct(&data[i-count], data[i]); // data[i-count] = data[i];
 
-			if (i >= used-count)
+			if (i >= used-count)	// those which are not overwritten
 				allocator.destruct(&data[i]);
 		}
 
