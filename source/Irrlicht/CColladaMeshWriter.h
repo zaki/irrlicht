@@ -76,6 +76,7 @@ protected:
 	video::IVideoDriver* VideoDriver;
 	io::IXMLWriter* Writer;
 	core::array<video::ITexture*> LibraryImages;
+	io::path Directory;
 };
 
 
