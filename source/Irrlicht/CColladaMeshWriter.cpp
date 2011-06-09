@@ -68,6 +68,8 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		return false;
 	}
 
+	Directory = FileSystem->getFileDir(FileSystem->getAbsolutePath( file->getFileName() ));
+
 	os::Printer::log("Writing mesh", file->getFileName());
 
 	// write COLLADA header
@@ -187,7 +189,8 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
     
 		//          <init_from>internal_texturename</init_from>
 					Writer->writeElement(L"init_from", false);
-					Writer->writeText(pathToNCName(layer.Texture->getName().getInternalName()).c_str());
+					irr::io::path p(FileSystem->getRelativeFilename(layer.Texture->getName().getPath(), Directory));
+					Writer->writeText(pathToNCName(p).c_str());
 					Writer->writeClosingTag(L"init_from");
 					Writer->writeLineBreak();
 
@@ -354,13 +357,14 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 		for ( irr::u32 i=0; i<LibraryImages.size(); ++i )
 		{
+			irr::io::path p(FileSystem->getRelativeFilename(LibraryImages[i]->getName().getPath(), Directory));
 			//<image name="rose01"> 
-			Writer->writeElement(L"image", false, L"name", pathToNCName(LibraryImages[i]->getName().getInternalName()).c_str());
+			Writer->writeElement(L"image", false, L"name", pathToNCName(p).c_str());
 			Writer->writeLineBreak();
 			//  <init_from>../flowers/rose01.jpg</init_from> 
 				Writer->writeElement(L"init_from", false);
 				// TODO: path needs some conversion into collada URI-format (replace whitespaces)
-				Writer->writeText(irr::core::stringw(LibraryImages[i]->getName().getPath()).c_str());
+				Writer->writeText(irr::core::stringw(p).c_str());
 				Writer->writeClosingTag(L"init_from");
 				Writer->writeLineBreak();
 	 		//  </image> 
@@ -975,7 +979,7 @@ bool CColladaMeshWriter::isXmlNameChar(wchar_t c) const
 // Restrict the characters to a set of allowed characters in xs::NCName.
 irr::core::stringw CColladaMeshWriter::pathToNCName(const irr::io::path& path) const
 {
-	irr::core::stringw result(L"_");	// ensure id starts with a valid char
+	irr::core::stringw result(L"_NCNAME_");	// ensure id starts with a valid char and reduce chance of name-conflicts
 	if ( path.empty() )
 		return result;
 
