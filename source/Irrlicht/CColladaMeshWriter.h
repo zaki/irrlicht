@@ -44,9 +44,12 @@ protected:
 	inline irr::core::stringw toString(const irr::video::SColorf& colorf) const;
 	inline irr::core::stringw toString(const irr::video::ECOLOR_FORMAT format) const;
 	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
-	inline irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
-	inline irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
-	inline void writeColorElement(const video::SColor & col);
+	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
+	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
+	irr::core::stringw pathToNCName(const irr::io::path& path) const;
+	inline bool isXmlNameStartChar(wchar_t c) const;
+	inline bool isXmlNameChar(wchar_t c) const;
+	void writeColorElement(const video::SColor & col);
 
 	struct SComponentGlobalStartPos
 	{
