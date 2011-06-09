@@ -1417,6 +1417,23 @@ namespace video
 	}
 
 
+	//! Draws a pixel
+	void COGLES2Driver::drawPixel(u32 x, u32 y, const SColor &color)
+	{
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+		if (x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
+			return;
+
+		disableTextures();
+		setRenderStates2DMode(color.getAlpha() < 255, false, false);
+
+		u16 indices[] = {0};
+		S3DVertex vertices[1];
+		vertices[0] = S3DVertex((f32)x, (f32)y, 0, 0, 0, 1, color, 0, 0);
+		drawVertexPrimitiveList2d3d(vertices, 1, indices, 1, video::EVT_STANDARD, scene::EPT_POINTS, EIT_16BIT, false);
+	}
+
+
 	bool COGLES2Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	{
 		if (stage >= MaxTextureUnits)
@@ -2558,17 +2575,17 @@ namespace video
 		if (target==video::ERT_MULTI_RENDER_TEXTURES || target==video::ERT_RENDER_TEXTURE || target==video::ERT_STEREO_BOTH_BUFFERS)
 			return 0;
 
-		int internalformat = GL_RGBA;
-		int type = GL_UNSIGNED_BYTE;
-		if (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format])
+		GLint internalformat = GL_RGBA;
+		GLint type = GL_UNSIGNED_BYTE;
 		{
-#ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
-			glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, &format);
-			glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES, &type);
-#endif
+//			glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT, &internalformat);
+//			glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &type);
 			// there's a format we don't support ATM
 			if (GL_UNSIGNED_SHORT_4_4_4_4 == type)
-				type = GL_UNSIGNED_SHORT_5_5_5_1;
+			{
+				internalformat = GL_RGBA;
+				type = GL_UNSIGNED_BYTE;
+			}
 		}
 
 		IImage* newImage = 0;
@@ -2587,14 +2604,19 @@ namespace video
 				newImage = new CImage(ECF_R5G6B5, ScreenSize);
 		}
 
+		if (!newImage)
+			return 0;
+
 		u8* pixels = static_cast<u8*>(newImage->lock());
 		if (!pixels)
 		{
+			newImage->unlock();
 			newImage->drop();
 			return 0;
 		}
 
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, internalformat, type, pixels);
+		testGLError();
 
 		// opengl images are horizontally flipped, so we have to fix that here.
 		const s32 pitch = newImage->getPitch();
