@@ -302,6 +302,19 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 			stencilBuffer);
 	StencilBuffer=stencilBuffer;
 
+	DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", MaxSupportedTextures);
+	DriverAttributes->setAttribute("MaxLights", MaxLights);
+	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
+	DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
+	DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
+	DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
+	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
+	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
+	DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
+	DriverAttributes->setAttribute("Version", Version);
+	DriverAttributes->setAttribute("AntiAlias", AntiAlias);
+
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 	// Reset The Current Viewport
@@ -2999,12 +3012,12 @@ IImage* COGLES1Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 {
 	if (target==video::ERT_MULTI_RENDER_TEXTURES || target==video::ERT_RENDER_TEXTURE || target==video::ERT_STEREO_BOTH_BUFFERS)
 		return 0;
-	int internalformat=GL_RGBA;
-	int type=GL_UNSIGNED_BYTE;
-	if (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format] || FeatureAvailable[IRR_EXT_read_format_bgra])
+	GLint internalformat=GL_RGBA;
+	GLint type=GL_UNSIGNED_BYTE;
+	if (false && (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format] || FeatureAvailable[IRR_EXT_read_format_bgra]))
 	{
 #ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
-		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, &format);
+		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, &internalformat);
 		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES, &type);
 #endif
 		// there are formats we don't support ATM

@@ -141,6 +141,7 @@ namespace video
 		u16 EGLVersion;
 		u16 Version;
 		u8 MaxTextureUnits;
+		u8 MaxSupportedTextures;
 		u8 MaxLights;
 		u8 MaxAnisotropy;
 		u8 MaxUserClipPlanes;

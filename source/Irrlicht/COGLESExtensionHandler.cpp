@@ -208,7 +208,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 
 	GLint val=0;
 	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &val);
-	MaxTextureUnits = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
+	MaxSupportedTextures = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
 	MultiTextureExtension = true;
 	glGetIntegerv(GL_MAX_LIGHTS, &val);
 	MaxLights = static_cast<u8>(val);
@@ -238,6 +238,8 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 	glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
 	glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, DimSmoothedLine);
 	glGetFloatv(GL_SMOOTH_POINT_SIZE_RANGE, DimSmoothedPoint);
+
+	MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	if (FeatureAvailable[IRR_OES_draw_texture])
