@@ -1640,6 +1640,22 @@ void COGLES1Driver::draw2DLine(const core::position2d<s32>& start,
 }
 
 
+//! Draws a pixel
+void COGLES1Driver::drawPixel(u32 x, u32 y, const SColor &color)
+{
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+	if (x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
+		return;
+
+	disableTextures();
+	setRenderStates2DMode(color.getAlpha() < 255, false, false);
+
+	u16 indices[] = {0};
+	S3DVertex vertices[1];
+	vertices[0] = S3DVertex((f32)x, (f32)y, 0, 0, 0, 1, color, 0, 0);
+	drawVertexPrimitiveList2d3d(vertices, 1, indices, 1, video::EVT_STANDARD, scene::EPT_POINTS, EIT_16BIT, false);
+}
+
 
 bool COGLES1Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
