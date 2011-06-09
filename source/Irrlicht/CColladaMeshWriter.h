@@ -42,7 +42,11 @@ protected:
 	inline irr::core::stringw toString(const irr::core::vector3df& vec) const;
 	inline irr::core::stringw toString(const irr::core::vector2df& vec) const;
 	inline irr::core::stringw toString(const irr::video::SColorf& colorf) const;
-	inline void writeColorAttribute(wchar_t * parentTag, io::IAttributes* attributes, s32 attridx);
+	inline irr::core::stringw toString(const irr::video::ECOLOR_FORMAT format) const;
+	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
+	inline irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
+	inline irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
+	inline void writeColorElement(const video::SColor & col);
 
 	struct SComponentGlobalStartPos
 	{
@@ -68,6 +72,7 @@ protected:
 	io::IFileSystem* FileSystem;
 	video::IVideoDriver* VideoDriver;
 	io::IXMLWriter* Writer;
+	core::array<video::ITexture*> LibraryImages;
 };
 
 
