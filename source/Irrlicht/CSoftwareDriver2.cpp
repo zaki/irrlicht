@@ -359,8 +359,9 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 	DriverAttributes->setAttribute("MaxTextures", 2);
 	DriverAttributes->setAttribute("MaxIndices", 1<<16);
 	DriverAttributes->setAttribute("MaxTextureSize", 1024);
+	DriverAttributes->setAttribute("MaxLights", glsl::gl_MaxLights);
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
-	DriverAttributes->setAttribute("Version", 45);
+	DriverAttributes->setAttribute("Version", 47);
 
 	// create triangle renderers
 
@@ -2275,7 +2276,7 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color)
 {
-	BackBuffer->drawLine(start, end, color );
+	drawLine(BackBuffer, start, end, color );
 }
 
 
@@ -2299,14 +2300,14 @@ void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& p
 		if(!p.isValid())
 			return;
 
-		BackBuffer->drawRectangle(p, color);
+		drawRectangle(BackBuffer, p, color);
 	}
 	else
 	{
 		if(!pos.isValid())
 			return;
 
-		BackBuffer->drawRectangle(pos, color);
+		drawRectangle(BackBuffer, pos, color);
 	}
 }
 
@@ -2564,7 +2565,7 @@ const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE st
 ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
 		const io::path& name, const ECOLOR_FORMAT format)
 {
-	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
+	IImage* img = createImage(BURNINGSHADER_COLOR_FORMAT, size);
 	ITexture* tex = new CSoftwareTexture2(img, name, CSoftwareTexture2::IS_RENDERTARGET );
 	img->drop();
 	addTexture(tex);
@@ -2582,17 +2583,19 @@ void CBurningVideoDriver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* CBurningVideoDriver::createScreenShot()
+IImage* CBurningVideoDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 {
+	if (target != video::ERT_FRAME_BUFFER)
+		return 0;
+
 	if (BackBuffer)
 	{
-		CImage* tmp = new CImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
+		IImage* tmp = createImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
 		BackBuffer->copyTo(tmp);
 		return tmp;
 	}
 	else
 		return 0;
-
 }
 
 

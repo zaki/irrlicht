@@ -103,12 +103,6 @@ public:
 	//! fills the surface with given color
 	virtual void fill(const SColor &color);
 
-	//! draws a rectangle
-	void drawRectangle(const core::rect<s32>& rect, const SColor &color);
-
-	//! draws a line from to
-	void drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color);
-
 private:
 
 	//! assumes format and size has been set and creates the rest

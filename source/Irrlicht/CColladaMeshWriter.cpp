@@ -79,7 +79,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		L"version", L"1.4.1");
 	Writer->writeLineBreak();
 
-	// write asset data
+	// write asset data 
 
 	Writer->writeElement(L"asset", false);
 	Writer->writeLineBreak();
@@ -165,92 +165,41 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		io::IAttributes* attributes = VideoDriver->createAttributesFromMaterial(
 			mesh->getMeshBuffer(i)->getMaterial());
 
-		u32 count = attributes->getAttributeCount();
-		for (u32 attridx=0; attridx<count; ++attridx)
+		// attributes must be written in fixed order
+		core::stringc str;
+		s32 attridx = attributes->findAttribute("Emissive");
+		if ( attridx >= 0 )
 		{
-			core::stringc str = attributes->getAttributeName(attridx);
-			if (str=="Emissive")
-			{
-				Writer->writeElement(L"emission", false);
-				Writer->writeLineBreak();
-				Writer->writeElement(L"color", false);
-				Writer->writeLineBreak();
+			writeColorAttribute(L"emission", attributes, attridx);
+		}
+		attridx = attributes->findAttribute("Ambient");
+		if ( attridx >= 0 )
+		{
+			writeColorAttribute(L"ambient", attributes, attridx);
+		}
+		attridx = attributes->findAttribute("Diffuse");
+		if ( attridx >= 0 )
+		{
+			writeColorAttribute(L"diffuse", attributes, attridx);
+		}
+		attridx = attributes->findAttribute("Specular");
+		if ( attridx >= 0 )
+		{
+			writeColorAttribute(L"specular", attributes, attridx);
+		}
+		attridx = attributes->findAttribute("Shininess");
+		if ( attridx >= 0 )
+		{
+			Writer->writeElement(L"shininess", false);
+			Writer->writeLineBreak();
+			Writer->writeElement(L"float", false);
 
-				str = attributes->getAttributeAsString(attridx);
-				str.replace(',',' ');
-				Writer->writeText(core::stringw(str.c_str()).c_str());
+			Writer->writeText(core::stringw(attributes->getAttributeAsString(attridx).c_str()).c_str());
 
-				Writer->writeClosingTag(L"color");
-				Writer->writeLineBreak();
-				Writer->writeClosingTag(L"emission");
-				Writer->writeLineBreak();
-			}
-			else
-			if (str=="Ambient")
-			{
-				Writer->writeElement(L"ambient", false);
-				Writer->writeLineBreak();
-				Writer->writeElement(L"color", false);
-				Writer->writeLineBreak();
-
-				str = attributes->getAttributeAsString(attridx);
-				str.replace(',',' ');
-				Writer->writeText(core::stringw(str.c_str()).c_str());
-
-				Writer->writeClosingTag(L"color");
-				Writer->writeLineBreak();
-				Writer->writeClosingTag(L"ambient");
-				Writer->writeLineBreak();
-			}
-			else
-			if (str=="Diffuse")
-			{
-				Writer->writeElement(L"diffuse", false);
-				Writer->writeLineBreak();
-				Writer->writeElement(L"color", false);
-				Writer->writeLineBreak();
-
-				str = attributes->getAttributeAsString(attridx);
-				str.replace(',',' ');
-				Writer->writeText(core::stringw(str.c_str()).c_str());
-
-				Writer->writeClosingTag(L"color");
-				Writer->writeLineBreak();
-				Writer->writeClosingTag(L"diffuse");
-				Writer->writeLineBreak();
-			}
-			else
-			if (str=="Specular")
-			{
-				Writer->writeElement(L"specular", false);
-				Writer->writeLineBreak();
-				Writer->writeElement(L"color", false);
-				Writer->writeLineBreak();
-
-				str = attributes->getAttributeAsString(attridx);
-				str.replace(',',' ');
-				Writer->writeText(core::stringw(str.c_str()).c_str());
-
-				Writer->writeClosingTag(L"color");
-				Writer->writeLineBreak();
-				Writer->writeClosingTag(L"specular");
-				Writer->writeLineBreak();
-			}
-			else
-			if (str=="Shininess")
-			{
-				Writer->writeElement(L"shininess", false);
-				Writer->writeLineBreak();
-				Writer->writeElement(L"float", false);
-				Writer->writeLineBreak();
-
-				Writer->writeText(core::stringw(attributes->getAttributeAsString(attridx).c_str()).c_str());
-
-				Writer->writeClosingTag(L"float");
-				Writer->writeLineBreak();
-				Writer->writeClosingTag(L"shininess");
-				Writer->writeLineBreak();
-			}
+			Writer->writeClosingTag(L"float");
+			Writer->writeLineBreak();
+			Writer->writeClosingTag(L"shininess");
+			Writer->writeLineBreak();
 		}
 
 		attributes->drop();
@@ -332,14 +281,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].Pos.X;
-					str += " ";
-					str += vtx[j].Pos.Y;
-					str += " ";
-					str += vtx[j].Pos.Z;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].Pos).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -349,14 +291,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].Pos.X;
-					str += " ";
-					str += vtx[j].Pos.Y;
-					str += " ";
-					str += vtx[j].Pos.Z;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].Pos).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -366,14 +301,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].Pos.X;
-					str += " ";
-					str += vtx[j].Pos.Y;
-					str += " ";
-					str += vtx[j].Pos.Z;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].Pos).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -439,12 +367,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].TCoords.X;
-					str += " ";
-					str += vtx[j].TCoords.Y;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].TCoords).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -454,12 +377,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].TCoords.X;
-					str += " ";
-					str += vtx[j].TCoords.Y;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].TCoords).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -469,12 +387,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].TCoords.X;
-					str += " ";
-					str += vtx[j].TCoords.Y;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].TCoords).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -494,9 +407,9 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 					L"count", vertexCountStr.c_str(), L"stride", L"2");
 		Writer->writeLineBreak();
 
-			Writer->writeElement(L"param", true, L"name", L"U", L"type", L"float", L"flow", L"OUT");
+			Writer->writeElement(L"param", true, L"name", L"U", L"type", L"float");
 			Writer->writeLineBreak();
-			Writer->writeElement(L"param", true, L"name", L"V", L"type", L"float", L"flow", L"OUT");
+			Writer->writeElement(L"param", true, L"name", L"V", L"type", L"float");
 			Writer->writeLineBreak();
 
 		Writer->writeClosingTag(L"accessor");
@@ -538,14 +451,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].Normal.X;
-					str += " ";
-					str += vtx[j].Normal.Y;
-					str += " ";
-					str += vtx[j].Normal.Z;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].Normal).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -555,14 +461,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].Normal.X;
-					str += " ";
-					str += vtx[j].Normal.Y;
-					str += " ";
-					str += vtx[j].Normal.Z;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].Normal).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -572,14 +471,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
 				for (u32 j=0; j<vertexCount; ++j)
 				{
-					core::stringw str;
-					str += vtx[j].Normal.X;
-					str += " ";
-					str += vtx[j].Normal.Y;
-					str += " ";
-					str += vtx[j].Normal.Z;
-
-					Writer->writeText(str.c_str());
+					Writer->writeText(toString(vtx[j].Normal).c_str());
 					Writer->writeLineBreak();
 				}
 			}
@@ -599,11 +491,11 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 								L"count", vertexCountStr.c_str(), L"stride", L"3");
 		Writer->writeLineBreak();
 
-			Writer->writeElement(L"param", true, L"name", L"X", L"type", L"float", L"flow", L"OUT");
+			Writer->writeElement(L"param", true, L"name", L"X", L"type", L"float");
 			Writer->writeLineBreak();
-			Writer->writeElement(L"param", true, L"name", L"Y", L"type", L"float", L"flow", L"OUT");
+			Writer->writeElement(L"param", true, L"name", L"Y", L"type", L"float");
 			Writer->writeLineBreak();
-			Writer->writeElement(L"param", true, L"name", L"Z", L"type", L"float", L"flow", L"OUT");
+			Writer->writeElement(L"param", true, L"name", L"Z", L"type", L"float");
 			Writer->writeLineBreak();
 
 		Writer->writeClosingTag(L"accessor");
@@ -649,12 +541,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 						video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 						for (u32 j=0; j<vertexCount; ++j)
 						{
-							core::stringw str;
-							str += vtx[j].TCoords2.X;
-							str += " ";
-							str += vtx[j].TCoords2.Y;
-
-							Writer->writeText(str.c_str());
+							Writer->writeText(toString(vtx[j].TCoords2).c_str());
 							Writer->writeLineBreak();
 						}
 					}
@@ -677,9 +564,9 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 									L"count", vertexCountStr.c_str(), L"stride", L"2");
 			Writer->writeLineBreak();
 
-				Writer->writeElement(L"param", true, L"name", L"U", L"type", L"float", L"flow", L"OUT");
+				Writer->writeElement(L"param", true, L"name", L"U", L"type", L"float");
 				Writer->writeLineBreak();
-				Writer->writeElement(L"param", true, L"name", L"V", L"type", L"float", L"flow", L"OUT");
+				Writer->writeElement(L"param", true, L"name", L"V", L"type", L"float");
 				Writer->writeLineBreak();
 
 			Writer->writeClosingTag(L"accessor");
@@ -715,18 +602,18 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 		const u32 polyCount = buffer->getIndexCount() / 3;
 		core::stringw strPolyCount(polyCount);
-		core::stringw strMat = "#mat";
+		core::stringw strMat = "mat";
 		strMat += i;
 
 		Writer->writeElement(L"triangles", false, L"count", strPolyCount.c_str(),
 								L"material", strMat.c_str());
 		Writer->writeLineBreak();
 
-		Writer->writeElement(L"input", true, L"semantic", L"VERTEX", L"source", L"#mesh-Vtx", L"idx", L"0");
+		Writer->writeElement(L"input", true, L"semantic", L"VERTEX", L"source", L"#mesh-Vtx", L"offset", L"0");
 		Writer->writeLineBreak();
-		Writer->writeElement(L"input", true, L"semantic", L"TEXCOORD", L"source", L"#mesh-TexCoord0", L"idx", L"1");
+		Writer->writeElement(L"input", true, L"semantic", L"TEXCOORD", L"source", L"#mesh-TexCoord0", L"offset", L"1");
 		Writer->writeLineBreak();
-		Writer->writeElement(L"input", true, L"semantic", L"NORMAL", L"source", L"#mesh-Normal", L"idx", L"2");
+		Writer->writeElement(L"input", true, L"semantic", L"NORMAL", L"source", L"#mesh-Normal", L"offset", L"2");
 		Writer->writeLineBreak();
 
 		bool has2ndTexCoords = hasSecondTextureCoordinates(buffer->getVertexType());
@@ -823,6 +710,49 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) 
 	return type == video::EVT_2TCOORDS;
 }
 
+irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector3df& vec) const
+{
+	c8 tmpbuf[255];
+	snprintf(tmpbuf, 255, "%f %f %f", vec.X, vec.Y, vec.Z);
+	core::stringw str  = tmpbuf;
+
+	return str;
+}
+
+irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector2df& vec) const
+{
+	c8 tmpbuf[255];
+	snprintf(tmpbuf, 255, "%f %f", vec.X, vec.Y);
+	core::stringw str  = tmpbuf;
+
+	return str;
+}
+
+inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf& colorf) const
+{
+	c8 tmpbuf[255];
+	snprintf(tmpbuf, 255, "%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
+	core::stringw str = tmpbuf;
+
+	return str;
+}
+
+void CColladaMeshWriter::writeColorAttribute(wchar_t * parentTag, io::IAttributes* attributes, s32 attridx)
+{
+	Writer->writeElement(parentTag, false);
+	Writer->writeLineBreak();
+
+	Writer->writeElement(L"color", false);
+
+	irr::core::stringw str( toString(attributes->getAttributeAsColorf(attridx)) );
+	Writer->writeText(str.c_str());
+
+	Writer->writeClosingTag(L"color");
+	Writer->writeLineBreak();
+
+	Writer->writeClosingTag(parentTag);
+	Writer->writeLineBreak();
+}
 
 } // end namespace
 } // end namespace

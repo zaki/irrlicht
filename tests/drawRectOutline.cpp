@@ -11,6 +11,8 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	driver->beginScene(true, true, video::SColor(255,100,101,140));
 
 	core::recti r;
@@ -40,10 +42,7 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 bool drawRectOutline(void)
 {
 	// TODO: Only OpenGL supports thick lines
-	bool result = testWithDriver(video::EDT_BURNINGSVIDEO);
-	result &= testWithDriver(video::EDT_DIRECT3D8);
-	result &= testWithDriver(video::EDT_DIRECT3D9);
-	result &= testWithDriver(video::EDT_OPENGL);
-	result &= testWithDriver(video::EDT_SOFTWARE);
+	bool result = true;
+	TestWithAllDrivers(testWithDriver);
 	return result;
 }

@@ -83,6 +83,7 @@
 		<Unit filename="renderTargetTexture.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="sceneNodeAnimator.cpp" />
+		<Unit filename="screenshot.cpp" />
 		<Unit filename="serializeAttributes.cpp" />
 		<Unit filename="skinnedMesh.cpp" />
 		<Unit filename="softwareDevice.cpp" />

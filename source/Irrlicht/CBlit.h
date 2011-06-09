@@ -1233,6 +1233,57 @@ static s32 StretchBlit(eBlitter operation,
 	return 1;
 }
 
+
+// Methods for Software drivers
+//! draws a rectangle
+static void drawRectangle(video::IImage* img, const core::rect<s32>& rect, const video::SColor &color)
+{
+	Blit(color.getAlpha() == 0xFF ? BLITTER_COLOR : BLITTER_COLOR_ALPHA,
+			img, 0, &rect.UpperLeftCorner, 0, &rect, color.color);
+}
+
+
+//! draws a line from to with color
+static void drawLine(video::IImage* img, const core::position2d<s32>& from,
+					 const core::position2d<s32>& to, const video::SColor &color)
+{
+	AbsRectangle clip;
+	GetClip(clip, img);
+
+	core::position2d<s32> p[2];
+	if (ClipLine( clip, p[0], p[1], from, to))
+	{
+		u32 alpha = extractAlpha(color.color);
+
+		switch(img->getColorFormat())
+		{
+		case video::ECF_A1R5G5B5:
+				if (alpha == 256)
+				{
+					RenderLine16_Decal(img, p[0], p[1], video::A8R8G8B8toA1R5G5B5(color.color));
+				}
+				else
+				{
+					RenderLine16_Blend(img, p[0], p[1], video::A8R8G8B8toA1R5G5B5(color.color), alpha >> 3);
+				}
+				break;
+		case video::ECF_A8R8G8B8:
+				if (alpha == 256)
+				{
+					RenderLine32_Decal(img, p[0], p[1], color.color);
+				}
+				else
+				{
+					RenderLine32_Blend(img, p[0], p[1], color.color, alpha);
+				}
+				break;
+		default:
+				break;
+		}
+	}
+}
+
+
 }
 
 #endif

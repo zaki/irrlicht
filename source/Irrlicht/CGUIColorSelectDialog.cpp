@@ -15,7 +15,6 @@
 #include "IGUISpriteBank.h"
 #include "IFileList.h"
 #include "os.h"
-#include "CImage.h"
 #include "fast_atof.h"
 
 namespace irr
@@ -177,7 +176,9 @@ CGUIColorSelectDialog::~CGUIColorSelectDialog()
 void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, s32 supersample, const video::SColor& borderColor )
 {
 	const core::dimension2d<u32> d(dim.Width * supersample, dim.Height * supersample);
-	video::CImage *RawTexture = new video::CImage(video::ECF_A8R8G8B8, d);
+	video::IVideoDriver* driver = Environment->getVideoDriver();
+
+	video::IImage *RawTexture = driver->createImage(video::ECF_A8R8G8B8, d);
 
 	RawTexture->fill ( 0x00808080 );
 
@@ -270,13 +271,11 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, 
 
 	if ( supersample > 1 )
 	{
-		video::CImage * filter = new video::CImage(video::ECF_A8R8G8B8, dim );
+		video::IImage * filter = driver->createImage(video::ECF_A8R8G8B8, dim );
 		RawTexture->copyToScalingBoxFilter(filter);
 		RawTexture->drop();
 		RawTexture = filter;
 	}
-
-	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	bool generateMipLevels = driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	driver->setTextureCreationFlag( video::ETCF_CREATE_MIP_MAPS, false);

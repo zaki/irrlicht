@@ -722,19 +722,23 @@ namespace scene
 
 		//! Adds a billboard scene node to the scene graph.
 		/** A billboard is like a 3d sprite: A 2d element,
-		which always looks to the camera. It is usually used for things like explosions, fire,
-		lensflares and things like that.
-		\param parent: Parent scene node of the billboard. Can be null. If the parent moves,
-		the billboard will move too.
-		\param position: Position of the space relative to its parent
+		which always looks to the camera. It is usually used for things
+		like explosions, fire, lensflares and things like that.
+		\param parent Parent scene node of the billboard. Can be null.
+		If the parent moves, the billboard will move too.
+		\param size Size of the billboard. This size is 2 dimensional
+		because a billboard only has width and height.
+		\param position Position of the space relative to its parent
 		where the billboard will be placed.
-		\param size: Size of the billboard. This size is 2 dimensional because a billboard only has
-		width and height.
-		\param id: An id of the node. This id can be used to identify the node.
-		\param colorTop: The color of the vertices at the top of the billboard (default: white).
-		\param colorBottom: The color of the vertices at the bottom of the billboard (default: white).
+		\param id An id of the node. This id can be used to identify
+		the node.
+		\param colorTop The color of the vertices at the top of the
+		billboard (default: white).
+		\param colorBottom The color of the vertices at the bottom of
+		the billboard (default: white).
 		\return Pointer to the billboard if successful, otherwise NULL.
-		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		This pointer should not be dropped. See
+		IReferenceCounted::drop() for more information. */
 		virtual IBillboardSceneNode* addBillboardSceneNode(ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,

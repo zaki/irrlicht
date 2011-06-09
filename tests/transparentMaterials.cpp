@@ -19,6 +19,16 @@ bool testTransparentAlphaChannelRef(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	if (driver->getColorFormat() != video::ECF_A8R8G8B8)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
 	ISceneNode * backCube = smgr->addCubeSceneNode();
@@ -59,6 +69,16 @@ bool testTransparentAlphaChannel(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	if (driver->getColorFormat() != video::ECF_A8R8G8B8)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
 	ISceneNode * backCube = smgr->addCubeSceneNode();
@@ -98,6 +118,16 @@ bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
+
+	if (driver->getColorFormat() != video::ECF_A8R8G8B8)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
@@ -145,6 +175,16 @@ bool testTransparentReflection2Layer(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
+
+	if (driver->getColorFormat() != video::ECF_A8R8G8B8)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
@@ -196,6 +236,16 @@ bool testTransparentAddColor(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	if (driver->getColorFormat() != video::ECF_A8R8G8B8)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
 	ISceneNode * backCube = smgr->addCubeSceneNode();
@@ -234,6 +284,16 @@ bool testTransparentVertexAlphaMore(E_DRIVER_TYPE driverType)
 
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
+
+	if (driver->getColorFormat() != video::ECF_A8R8G8B8)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	IAnimatedMesh* mesh = smgr->getMesh("../media/sydney.md2");
 	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
@@ -279,37 +339,21 @@ bool testTransparentVertexAlphaMore(E_DRIVER_TYPE driverType)
 
 bool transparentMaterials(void)
 {
-	bool result = testTransparentAlphaChannel(EDT_DIRECT3D9);
-	result &= testTransparentAlphaChannel(EDT_OPENGL);
-	result &= testTransparentAlphaChannel(EDT_BURNINGSVIDEO);
-
-	result &= testTransparentAlphaChannelRef(EDT_DIRECT3D9);
-	result &= testTransparentAlphaChannelRef(EDT_OPENGL);
+	bool result = true;
+	TestWithAllDrivers(testTransparentAlphaChannel);
 	// FIXME Rogerborg 8-January-2011. Burning's video currently produces unexpected results,
 	// blending using the full alpha value instead of using a boolean mask. This test is being
 	// added now anyway to help verify the fix when it's done; it should just require an
 	// update of the reference image.
-	result &= testTransparentAlphaChannelRef(EDT_BURNINGSVIDEO);
-
-	result &= testTransparentVertexAlpha(EDT_DIRECT3D9);
-	result &= testTransparentVertexAlpha(EDT_OPENGL);
+	TestWithAllDrivers(testTransparentAlphaChannelRef);
 	// This type seems to be broken as well for Burning's video.
-	result &= testTransparentVertexAlpha(EDT_BURNINGSVIDEO);
-
-	result &= testTransparentAddColor(EDT_DIRECT3D9);
-	result &= testTransparentAddColor(EDT_OPENGL);
-	result &= testTransparentAddColor(EDT_BURNINGSVIDEO);
-
+	TestWithAllDrivers(testTransparentVertexAlpha);
+	TestWithAllDrivers(testTransparentAddColor);
 	// TODO: this simply does not work in OpenGL due to the sphere map
 	// at least it creates different results, and also varies across drivers
-//	result &= testTransparentReflection2Layer(EDT_OPENGL);
-	result &= testTransparentReflection2Layer(EDT_DIRECT3D9);
-	result &= testTransparentReflection2Layer(EDT_BURNINGSVIDEO);
-
-	result &= testTransparentVertexAlphaMore(EDT_DIRECT3D9);
-	result &= testTransparentVertexAlphaMore(EDT_OPENGL);
+	TestWithAllDrivers(testTransparentReflection2Layer);
 	// This type seems to be broken as well for Burning's video.
-	result &= testTransparentVertexAlphaMore(EDT_BURNINGSVIDEO);
+	TestWithAllDrivers(testTransparentVertexAlphaMore);
 
 	return result;
 }

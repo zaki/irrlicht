@@ -13,9 +13,17 @@ static bool testWith2DImage(video::E_DRIVER_TYPE driverType)
 	if (!device)
 		return true; // No error if device does not exist
 
-	device->setWindowCaption (L"Irrlicht - RTT Bug report");
 	video::IVideoDriver *driver = device->getVideoDriver ();
 	scene::ISceneManager *smgr = device->getSceneManager ();
+
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture *image = driver->getTexture ("../media/irrlichtlogo2.png");
 	video::ITexture *RTT_texture = driver->addRenderTargetTexture (core::dimension2d < u32 > (128, 128));
@@ -101,6 +109,8 @@ bool rttAndZBuffer(video::E_DRIVER_TYPE driverType)
 
 	IrrlichtDevice* nullDevice = createDevice(video::EDT_NULL);
 	cp.WindowSize = nullDevice->getVideoModeList()->getDesktopResolution();
+	nullDevice->closeDevice();
+	nullDevice->run();
 	nullDevice->drop();
 
 	cp.WindowSize -= core::dimension2d<u32>(100, 100);
@@ -113,7 +123,14 @@ bool rttAndZBuffer(video::E_DRIVER_TYPE driverType)
 	scene::ISceneManager* sm = device->getSceneManager();
 
 	if	(!vd->queryFeature(video::EVDF_RENDER_TO_TARGET))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
 		return true;
+	}
+
+	logTestString("Testing driver %ls\n", vd->getName());
 
 	video::ITexture* rt = vd->addRenderTargetTexture(cp.WindowSize, "rt", video::ECF_A32B32G32R32F);
 	video::S3DVertex vertices[4];
@@ -196,10 +213,24 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	gui::IGUIEnvironment* guienv = device->getGUIEnvironment();
 
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	//RTT
 	video::ITexture* rt = driver->addRenderTargetTexture(core::dimension2d<u32>(256, 256), "rt");
 	if (!rt)
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
 		return false;
+	}
 
 	driver->beginScene(true, true, video::SColor(255,255, 255, 255));
 	driver->setRenderTarget(rt, true, true, video::SColor(255,255,0,255));
@@ -245,7 +276,8 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 static void Render(IrrlichtDevice* device, video::ITexture* rt, core::vector3df& pos1, 
 				   core::vector3df& pos2, scene::IAnimatedMesh* sphereMesh, core::vector3df& pos3, core::vector3df& pos4)
 {
-	device->getVideoDriver()->setRenderTarget(rt);
+	video::IVideoDriver* driver = device->getVideoDriver();
+	driver->setRenderTarget(rt);
 	device->getSceneManager()->drawAll();
 
 	video::SMaterial mat;
@@ -257,27 +289,27 @@ static void Render(IrrlichtDevice* device, video::ITexture* rt, core::vector3df&
 
 	core::matrix4 m;
 	m.setTranslation(pos1);
-	device->getVideoDriver()->setTransform(video::ETS_WORLD, m);
-	device->getVideoDriver()->setMaterial(mat);
-	device->getVideoDriver()->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
+	driver->setTransform(video::ETS_WORLD, m);
+	driver->setMaterial(mat);
+	driver->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
 
 	m.setTranslation(pos2);
 	mat.Shininess=0.f;
-	device->getVideoDriver()->setTransform(video::ETS_WORLD, m);
-	device->getVideoDriver()->setMaterial(mat);		
-	device->getVideoDriver()->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
+	driver->setTransform(video::ETS_WORLD, m);
+	driver->setMaterial(mat);		
+	driver->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
 
 	m.setTranslation(pos3);
 	mat.Shininess=8.f;
-	device->getVideoDriver()->setTransform(video::ETS_WORLD, m);
-	device->getVideoDriver()->setMaterial(mat);
-	device->getVideoDriver()->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
+	driver->setTransform(video::ETS_WORLD, m);
+	driver->setMaterial(mat);
+	driver->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
 
 	m.setTranslation(pos4);
 	mat.Shininess=0.f;
-	device->getVideoDriver()->setTransform(video::ETS_WORLD, m);
-	device->getVideoDriver()->setMaterial(mat);
-	device->getVideoDriver()->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
+	driver->setTransform(video::ETS_WORLD, m);
+	driver->setMaterial(mat);
+	driver->drawMeshBuffer(sphereMesh->getMeshBuffer(0));
 }
 
 bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
@@ -293,6 +325,16 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
+	if ((driver->getDriverAttributes().getAttributeAsInt("AntiAlias")<2) ||
+		(!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
+		return true;
+	}
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	// sphere mesh
 	scene::IAnimatedMesh* sphereMesh = device->getSceneManager()->addSphereMesh("atom", 1, 32, 32);
@@ -320,11 +362,11 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 
 	video::ITexture* rt1 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt1", device->getColorFormat());
 	video::ITexture* rt2 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt2", device->getColorFormat());
-	video::ITexture* rt3 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt3", video::ECF_A8R8G8B8);//device->getColorFormat());
+	video::ITexture* rt3 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt3", video::ECF_A8R8G8B8);
 	video::ITexture* rt4 = device->getVideoDriver()->addRenderTargetTexture(dim_txt, "rt4", device->getColorFormat());
 
 	device->getSceneManager()->setActiveCamera(cam);
-	device->getVideoDriver()->beginScene(); //true, true, SColor(0, 30, 40, 60));
+	device->getVideoDriver()->beginScene();
 #if 1
 	st->setText(L"Texture Rendering");
 	Render(device, rt1, pos1, pos2, sphereMesh, pos3, pos4);
@@ -364,6 +406,8 @@ bool rttFormats(video::E_DRIVER_TYPE driverType)
 		return true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
+
+	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture* tex = 0;
 	
@@ -517,41 +561,19 @@ bool rttFormats(video::E_DRIVER_TYPE driverType)
 
 bool renderTargetTexture(void)
 {
-	bool passed = true;
+	bool result = true;
 
-	passed &= testWith2DImage(video::EDT_OPENGL);
-	passed &= testWith2DImage(video::EDT_SOFTWARE);
-	passed &= testWith2DImage(video::EDT_BURNINGSVIDEO);
-	passed &= testWith2DImage(video::EDT_DIRECT3D9);
-	passed &= testWith2DImage(video::EDT_DIRECT3D8);
+	TestWithAllDrivers(testWith2DImage);
 
 #if 0
-	passed &= rttAndZBuffer(video::EDT_OPENGL);
-	passed &= rttAndZBuffer(video::EDT_SOFTWARE);
-	passed &= rttAndZBuffer(video::EDT_BURNINGSVIDEO);
-	passed &= rttAndZBuffer(video::EDT_DIRECT3D9);
-	passed &= rttAndZBuffer(video::EDT_DIRECT3D8);
+	TestWithAllDrivers(rttAndZBuffer);
 #endif
 
-	passed &= rttAndAntiAliasing(video::EDT_OPENGL);
-//	passed &= rttAndAntiAliasing(video::EDT_SOFTWARE);
-	passed &= rttAndAntiAliasing(video::EDT_BURNINGSVIDEO);
-	passed &= rttAndAntiAliasing(video::EDT_DIRECT3D9);
-	passed &= rttAndAntiAliasing(video::EDT_DIRECT3D8);
-
-	passed &= rttAndText(video::EDT_OPENGL);
-	passed &= rttAndText(video::EDT_DIRECT3D9);
-	passed &= rttAndText(video::EDT_DIRECT3D8);
-	passed &= rttAndText(video::EDT_BURNINGSVIDEO);
-	passed &= rttAndText(video::EDT_SOFTWARE);
+	TestWithAllDrivers(rttAndAntiAliasing);
+	TestWithAllDrivers(rttAndText);
 
 	logTestString("Test RTT format support\n");
-	logTestString("OpenGL:\n");
-	passed &= rttFormats(video::EDT_OPENGL);
-	logTestString("D3D9:\n");
-	passed &= rttFormats(video::EDT_DIRECT3D9);
-	logTestString("D3D8:\n");
-	passed &= rttFormats(video::EDT_DIRECT3D8);
+	TestWithAllHWDrivers(rttFormats);
 
-	return passed;
+	return result;
 }

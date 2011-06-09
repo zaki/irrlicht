@@ -349,6 +349,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\screenshot.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\serializeAttributes.cpp"
 				>
 			</File>

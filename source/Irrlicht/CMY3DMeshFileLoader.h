@@ -6,7 +6,6 @@
 // I (Nikolaus Gebhardt) did some few changes to this:
 // - replaced logging calls to their os:: counterparts
 // - removed some logging calls
-// - enabled image dropping of CImage again, because that bug has been fixed now
 // - removed setTexture path and replaced it with the directory of the mesh
 // - added EAMT_MY3D file type
 // - fixed a memory leak when decompressing RLE data.

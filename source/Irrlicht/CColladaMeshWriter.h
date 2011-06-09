@@ -35,9 +35,14 @@ public:
 	//! writes a mesh
 	virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE);
 
+
 protected:
 
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
+	inline irr::core::stringw toString(const irr::core::vector3df& vec) const;
+	inline irr::core::stringw toString(const irr::core::vector2df& vec) const;
+	inline irr::core::stringw toString(const irr::video::SColorf& colorf) const;
+	inline void writeColorAttribute(wchar_t * parentTag, io::IAttributes* attributes, s32 attridx);
 
 	struct SComponentGlobalStartPos
 	{

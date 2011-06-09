@@ -19,6 +19,8 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 	IVideoDriver* driver = device->getVideoDriver();
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	bool result = true;
 
 	driver->beginScene(true, false, SColor(255,0,0,0));
@@ -73,14 +75,10 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 bool projectionMatrix(void)
 {
-	bool passed = true;
+	bool result = true;
 
 	// TODO: Seems that software driver does not handle this projection matrix
-//	passed &= runTestWithDriver(EDT_SOFTWARE);
-	passed &= runTestWithDriver(EDT_BURNINGSVIDEO);
-	passed &= runTestWithDriver(EDT_DIRECT3D9);
-	passed &= runTestWithDriver(EDT_DIRECT3D8);
-	passed &= runTestWithDriver(EDT_OPENGL);
+	TestWithAllDrivers(runTestWithDriver);
 
-	return passed;
+	return result;
 }

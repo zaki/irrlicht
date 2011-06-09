@@ -10,7 +10,6 @@
 #include "COpenGLTexture.h"
 #include "COpenGLDriver.h"
 #include "os.h"
-#include "CImage.h"
 #include "CColorConverter.h"
 
 #include "irrString.h"
@@ -39,12 +38,12 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 	if (ImageSize==TextureSize)
 	{
-		Image = new CImage(ColorFormat, ImageSize);
+		Image = Driver->createImage(ColorFormat, ImageSize);
 		origImage->copyTo(Image);
 	}
 	else
 	{
-		Image = new CImage(ColorFormat, TextureSize);
+		Image = Driver->createImage(ColorFormat, TextureSize);
 		// scale texture
 		origImage->copyToScaling(Image);
 	}
@@ -135,26 +134,31 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 	filtering = GL_LINEAR;
 	colorformat = GL_RGBA;
 	type = GL_UNSIGNED_BYTE;
+	GLenum internalformat = GL_RGBA;
 
 	switch(format)
 	{
 		case ECF_A1R5G5B5:
 			colorformat=GL_BGRA_EXT;
 			type=GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			return GL_RGBA;
+			internalformat =  GL_RGBA;
+			break;
 		case ECF_R5G6B5:
 			colorformat=GL_BGR;
 			type=GL_UNSIGNED_SHORT_5_6_5_REV;
-			return GL_RGB;
+			internalformat =  GL_RGB;
+			break;
 		case ECF_R8G8B8:
 			colorformat=GL_BGR;
 			type=GL_UNSIGNED_BYTE;
-			return GL_RGB;
+			internalformat =  GL_RGB;
+			break;
 		case ECF_A8R8G8B8:
 			colorformat=GL_BGRA_EXT;
 			if (Driver->Version > 101)
 				type=GL_UNSIGNED_INT_8_8_8_8_REV;
-			return GL_RGBA;
+			internalformat =  GL_RGBA;
+			break;
 		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
 		case ECF_R16F:
 		{
@@ -163,11 +167,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_R16F;
+			internalformat =  GL_R16F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_G16R16F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -175,11 +180,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RG16F;
+			internalformat =  GL_RG16F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_A16B16G16R16F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -187,11 +193,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RGBA;
 			type = GL_FLOAT;
 
-			return GL_RGBA16F_ARB;
+			internalformat =  GL_RGBA16F_ARB;
 #else
-			return GL_RGBA8;
+			internalformat =  GL_RGBA8;
 #endif
 		}
+			break;
 		case ECF_R32F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -199,11 +206,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_R32F;
+			internalformat =  GL_R32F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_G32R32F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -211,11 +219,12 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RG32F;
+			internalformat =  GL_RG32F;
 #else
-			return GL_RGB8;
+			internalformat =  GL_RGB8;
 #endif
 		}
+			break;
 		case ECF_A32B32G32R32F:
 		{
 #ifdef GL_ARB_texture_float
@@ -223,17 +232,28 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			colorformat = GL_RGBA;
 			type = GL_FLOAT;
 
-			return GL_RGBA32F_ARB;
+			internalformat =  GL_RGBA32F_ARB;
 #else
-			return GL_RGBA8;
+			internalformat =  GL_RGBA8;
 #endif
 		}
+			break;
 		default:
 		{
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
-			return GL_RGBA8;
+			internalformat =  GL_RGBA8;
 		}
 	}
+#if defined(GL_ARB_framebuffer_sRGB) || defined(GL_EXT_framebuffer_sRGB)
+	if (Driver->Params.HandleSRGB)
+	{
+		if (internalformat==GL_RGBA)
+			internalformat=GL_SRGB_ALPHA_EXT;
+		else if (internalformat==GL_RGB)
+			internalformat=GL_SRGB_EXT;
+	}
+#endif
+	return internalformat;
 }
 
 
@@ -360,6 +380,17 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
+	if (!ReadOnlyLock && mipmapLevel)
+	{
+#ifdef GL_SGIS_generate_mipmap
+		if (Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		{
+			// do not automatically generate and update mipmaps
+			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		}
+#endif
+		AutomaticMipmapUpdate=false;
+	}
 
 	// if data not available or might have changed on GPU download it
 	if (!image || IsRenderTarget)
@@ -381,10 +412,10 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 					++i;
 				}
 				while (i != mipmapLevel);
-				MipImage = image = new CImage(ECF_A8R8G8B8, core::dimension2du(width,height));
+				MipImage = image = Driver->createImage(ECF_A8R8G8B8, core::dimension2du(width,height));
 			}
 			else
-				Image = image = new CImage(ECF_A8R8G8B8, ImageSize);
+				Image = image = Driver->createImage(ECF_A8R8G8B8, ImageSize);
 			ColorFormat = ECF_A8R8G8B8;
 		}
 		if (!image)
@@ -401,34 +432,41 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
 			glBindTexture(GL_TEXTURE_2D, TextureName);
 
+			// we need to flip textures vertical
+			// however, it seems that this does not hold for mipmap
+			// textures, for unknown reasons.
+
 			// allows to read pixels in top-to-bottom order
-	#ifdef GL_MESA_pack_invert
-			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
+#ifdef GL_MESA_pack_invert
+			if (!mipmapLevel && Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
 				glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
-	#endif
+#endif
 
 			// download GPU data as ARGB8 to pixels;
 			glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
 
-	#ifdef GL_MESA_pack_invert
-			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
-				glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
-			else
-	#endif
+			if (!mipmapLevel)
 			{
-				// opengl images are horizontally flipped, so we have to fix that here.
-				const s32 pitch=image->getPitch();
-				u8* p2 = pixels + (image->getDimension().Height - 1) * pitch;
-				u8* tmpBuffer = new u8[pitch];
-				for (u32 i=0; i < image->getDimension().Height; i += 2)
+#ifdef GL_MESA_pack_invert
+				if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
+					glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
+				else
+#endif
 				{
-					memcpy(tmpBuffer, pixels, pitch);
-					memcpy(pixels, p2, pitch);
-					memcpy(p2, tmpBuffer, pitch);
-					pixels += pitch;
-					p2 -= pitch;
+					// opengl images are horizontally flipped, so we have to fix that here.
+					const s32 pitch=image->getPitch();
+					u8* p2 = pixels + (image->getDimension().Height - 1) * pitch;
+					u8* tmpBuffer = new u8[pitch];
+					for (u32 i=0; i < image->getDimension().Height; i += 2)
+					{
+						memcpy(tmpBuffer, pixels, pitch);
+						memcpy(pixels, p2, pitch);
+						memcpy(p2, tmpBuffer, pitch);
+						pixels += pitch;
+						p2 -= pitch;
+					}
+					delete [] tmpBuffer;
 				}
-				delete [] tmpBuffer;
 			}
 			image->unlock();
 

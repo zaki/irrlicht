@@ -25,6 +25,8 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 		return true;
 	}
 
+	logTestString("Testing driver %ls\n", driver->getName());
+
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	scene::IAnimatedMesh* mesh = smgr->getMesh("../media/sydney.md2");
@@ -62,7 +64,7 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 
 bool antiAliasing()
 {
-	bool result = testLineRendering(video::EDT_OPENGL);
-	result &= testLineRendering(video::EDT_DIRECT3D9);
+	bool result = true;
+	TestWithAllHWDrivers(testLineRendering);
 	return result;
 }

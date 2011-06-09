@@ -26,10 +26,10 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 #endif
-#endif
 #else
 #ifdef _MSC_VER
 #pragma comment(lib, "winmm.lib")
+#endif
 #endif
 #endif
 
@@ -919,7 +919,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	// get windows version and create OS operator
 	core::stringc winversion;
 	getWindowsVersion(winversion);
-	Operator = new COSOperator(winversion.c_str());
+	Operator = new COSOperator(winversion);
 	os::Printer::log(winversion.c_str(), ELL_INFORMATION);
 
 	// get handle to exe file

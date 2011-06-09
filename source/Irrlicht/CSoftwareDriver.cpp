@@ -8,6 +8,7 @@
 #ifdef _IRR_COMPILE_WITH_SOFTWARE_
 
 #include "CSoftwareTexture.h"
+#include "CBlit.h"
 #include "os.h"
 #include "S3DVertex.h"
 
@@ -283,7 +284,7 @@ bool CSoftwareDriver::setRenderTarget(video::ITexture* texture, bool clearBackBu
 			ZBuffer->clear();
 
 		if (clearBackBuffer)
-			((video::CImage*)RenderTargetSurface)->fill( color );
+			RenderTargetSurface->fill(color);
 	}
 
 	return true;
@@ -820,7 +821,7 @@ void CSoftwareDriver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end,
 				SColor color)
 {
-	RenderTargetSurface->drawLine(start, end, color );
+	drawLine(RenderTargetSurface, start, end, color );
 }
 
 
@@ -844,14 +845,14 @@ void CSoftwareDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 		if(!p.isValid())
 			return;
 
-		RenderTargetSurface->drawRectangle(p, color);
+		drawRectangle(RenderTargetSurface, p, color);
 	}
 	else
 	{
 		if(!pos.isValid())
 			return;
 
-		RenderTargetSurface->drawRectangle(pos, color);
+		drawRectangle(RenderTargetSurface, pos, color);
 	}
 }
 
@@ -903,7 +904,7 @@ ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& 
 												  const io::path& name,
 												  const ECOLOR_FORMAT format)
 {
-	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
+	IImage* img = createImage(video::ECF_A1R5G5B5, size);
 	ITexture* tex = new CSoftwareTexture(img, name, true);
 	img->drop();
 	addTexture(tex);
@@ -921,11 +922,14 @@ void CSoftwareDriver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* CSoftwareDriver::createScreenShot()
+IImage* CSoftwareDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 {
+	if (target != video::ERT_FRAME_BUFFER)
+		return 0;
+
 	if (BackBuffer)
 	{
-		CImage* tmp = new CImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
+		IImage* tmp = createImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
 		BackBuffer->copyTo(tmp);
 		return tmp;
 	}

@@ -15,6 +15,7 @@
 #endif
 
 #include "CNullDriver.h"
+#include "SIrrCreationParameters.h"
 #include "IMaterialRendererServices.h"
 #if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #include "irrMath.h"    // needed by borland for sqrtf define
@@ -50,8 +51,7 @@ namespace video
 		friend class CD3D9Texture;
 
 		//! constructor
-		CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window, bool fullscreen,
-			bool stencibuffer, io::IFileSystem* io, bool pureSoftware=false);
+		CD3D9Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
 
 		//! destructor
 		virtual ~CD3D9Driver();
@@ -191,9 +191,7 @@ namespace video
 			const core::vector3df& end, SColor color = SColor(255,255,255,255));
 
 		//! initialises the Direct3D API
-		bool initDriver(const core::dimension2d<u32>& screenSize, HWND hwnd,
-				u32 bits, bool fullScreen, bool pureSoftware,
-				bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter);
+		bool initDriver(HWND hwnd, bool pureSoftware);
 
 		//! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 		//! driver, it would return "Direct3D8.1".
@@ -280,7 +278,7 @@ namespace video
 		virtual void clearZBuffer();
 
 		//! Returns an image created from the last rendered frame.
-		virtual IImage* createScreenShot();
+		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER);
 
 		//! Set/unset a clipping plane.
 		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false);
@@ -412,8 +410,6 @@ namespace video
 		SMaterial Material, LastMaterial;
 		bool ResetRenderStates; // bool to make all renderstates be reseted if set.
 		bool Transformation3DChanged;
-		bool StencilBuffer;
-		u8 AntiAliasing;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		bool LastTextureMipMapsAvailable[MATERIAL_MAX_TEXTURES];
 		core::matrix4 Matrices[ETS_COUNT]; // matrizes of the 3d mode we need to restore when we switch back from the 2d mode.
@@ -424,12 +420,13 @@ namespace video
 
 		IDirect3DSurface9* PrevRenderTarget;
 		core::dimension2d<u32> CurrentRendertargetSize;
-		core::dimension2d<u32> CurrentDepthBufferSize;
 
 		HWND WindowId;
 		core::rect<s32>* SceneSourceRect;
 
 		D3DCAPS9 Caps;
+
+		SIrrlichtCreationParameters Params;
 
 		E_VERTEX_TYPE LastVertexType;
 
@@ -454,17 +451,12 @@ namespace video
 			EC2D_ALPHA_CHANNEL = 0x4
 		};
 
-		u32 Cached2DModeSignature;
-
 		ECOLOR_FORMAT ColorFormat;
 		D3DFORMAT D3DColorFormat;
 		bool DeviceLost;
-		bool Fullscreen;
 		bool DriverWasReset;
 		bool OcclusionQuerySupport;
 		bool AlphaToCoverageSupport;
-
-		u32 DisplayAdapter;
 	};
 
 

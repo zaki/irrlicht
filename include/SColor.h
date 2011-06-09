@@ -540,7 +540,7 @@ namespace video
 
 			return SColorf (r * mul0 + c1.r * mul1 + c2.r * mul2,
 					g * mul0 + c1.g * mul1 + c2.g * mul2,
-					g * mul0 + c1.b * mul1 + c2.b * mul2,
+					b * mul0 + c1.b * mul1 + c2.b * mul2,
 					a * mul0 + c1.a * mul1 + c2.a * mul2);
 		}
 

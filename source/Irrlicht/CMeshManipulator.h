@@ -43,13 +43,19 @@ public:
 	\param resolution: resolution of the planar mapping. This is the value
 	specifying which is the relation between world space and 
 	texture coordinate space. */
-	virtual void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution) const;
+	virtual void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution=0.001f) const;
 
 	//! Creates a planar texture mapping on the meshbuffer
 	virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const;
 
 	//! Creates a planar texture mapping on the meshbuffer
 	void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const;
+
+	//! Creates a planar texture mapping on the mesh
+	void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const;
+
+	//! Recalculates tangents, requires a tangent mesh buffer
+	virtual void recalculateTangents(IMeshBuffer* buffer, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const;
 
 	//! Recalculates tangents, requires a tangent mesh
 	virtual void recalculateTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const;
@@ -77,14 +83,6 @@ public:
 
 	//! create a new AnimatedMesh and adds the mesh to it
 	virtual IAnimatedMesh * createAnimatedMesh(scene::IMesh* mesh,scene::E_ANIMATED_MESH_TYPE type) const;
-
-private:
-
-	static void calculateTangents(core::vector3df& normal, 
-		core::vector3df& tangent, 
-		core::vector3df& binormal, 
-		const core::vector3df& vt1, const core::vector3df& vt2, const core::vector3df& vt3,
-		const core::vector2df& tc1, const core::vector2df& tc2, const core::vector2df& tc3);
 };
 
 } // end namespace scene
