@@ -2553,9 +2553,12 @@ namespace video
 	// We want to read the front buffer to get the latest render finished.
 	// This is not possible under ogl-es, though, so one has to call this method
 	// outside of the render loop only.
-	IImage* COGLES2Driver::createScreenShot()
+	IImage* COGLES2Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 	{
-		int format = GL_RGBA;
+		if (target==video::ERT_MULTI_RENDER_TEXTURES || target==video::ERT_RENDER_TEXTURE || target==video::ERT_STEREO_BOTH_BUFFERS)
+			return 0;
+
+		int internalformat = GL_RGBA;
 		int type = GL_UNSIGNED_BYTE;
 		if (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format])
 		{
@@ -2569,7 +2572,7 @@ namespace video
 		}
 
 		IImage* newImage = 0;
-		if (GL_RGBA == format)
+		if (GL_RGBA == internalformat)
 		{
 			if (GL_UNSIGNED_BYTE == type)
 				newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
@@ -2591,7 +2594,7 @@ namespace video
 			return 0;
 		}
 
-		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, format, type, pixels);
+		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, internalformat, type, pixels);
 
 		// opengl images are horizontally flipped, so we have to fix that here.
 		const s32 pitch = newImage->getPitch();
