@@ -332,10 +332,6 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
 
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
-#ifdef GL_EXT_separate_specular_color
-	if (FeatureAvailable[IRR_EXT_separate_specular_color])
-		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-#endif
 // TODO ogl-es
 //	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 

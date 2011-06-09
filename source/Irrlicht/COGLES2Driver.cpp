@@ -280,21 +280,32 @@ namespace video
 
 		StencilBuffer = stencilBuffer;
 
+		DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
+		DriverAttributes->setAttribute("MaxSupportedTextures", MaxSupportedTextures);
+		DriverAttributes->setAttribute("MaxLights", MaxLights);
+		DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
+		DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
+//		DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
+//		DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
+		DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
+		DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
+		DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
+		DriverAttributes->setAttribute("Version", Version);
+		DriverAttributes->setAttribute("AntiAlias", AntiAlias);
+
 		FixedPipeline = new COGLES2FixedPipelineShader(this, FileSystem);
 		FixedPipeline->useProgram(); //For setting the default uniforms (Alpha)
 
 		TwoDRenderer = new COGLES2Renderer2d(this, FileSystem);
 
-		glPixelStorei(GL_PACK_ALIGNMENT, 2);
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 		// Reset The Current Viewport
 		glViewport(0, 0, screenSize.Width, screenSize.Height);
 
+		UserClipPlane.reallocate(0);
+
 		setAmbientLight(SColorf(0.0f, 0.0f, 0.0f, 0.0f));
-#ifdef GL_separate_specular_color
-		if (FeatureAvailable[IRR_separate_specular_color])
-			glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-#endif
 		glClearDepthf(1.0f);
 
 		//TODO : OpenGL ES 2.0 Port : GL_PERSPECTIVE_CORRECTION_HINT
@@ -302,8 +313,6 @@ namespace video
 		glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
 		glDepthFunc(GL_LEQUAL);
 		glFrontFace(GL_CW);
-
-		UserClipPlane.reallocate(0);
 
 		// create material renderers
 		createMaterialRenderers();

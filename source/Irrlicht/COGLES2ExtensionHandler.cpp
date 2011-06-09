@@ -118,8 +118,9 @@ namespace video
 
 
 	COGLES2ExtensionHandler::COGLES2ExtensionHandler() :
-			EGLVersion(0), Version(0), MaxTextureUnits(0), MaxLights(0), MaxAnisotropy(1),
-			MaxUserClipPlanes(1), MaxTextureSize(1), CommonProfile(false), MultiTextureExtension(false),
+			EGLVersion(0), Version(0), MaxTextureUnits(0), MaxSupportedTextures(0),
+			MaxLights(0), MaxAnisotropy(1), MaxUserClipPlanes(6), MaxTextureSize(1),
+			MaxIndices(0xffff), MaxTextureLODBias(0.f), MultiTextureExtension(false),
 			MultiSamplingExtension(false), StencilBuffer(false)
 	{
 		for (u32 i=0; i<IRR_OGLES2_Feature_Count; ++i)
@@ -137,18 +138,17 @@ namespace video
 	void COGLES2ExtensionHandler::initExtensions(COGLES2Driver* driver,
 			EGLDisplay display, bool withStencil)
 	{
-#ifdef EGL_VERSION_1_0
 		const f32 egl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
 		EGLVersion = static_cast<u16>(core::floor32(egl_ver) * 100 + core::round32(core::fract(egl_ver) * 10.0f));
 		core::stringc eglExtensions = eglQueryString(display, EGL_EXTENSIONS);
 		os::Printer::log(eglExtensions.c_str());
-#endif
+
 		const core::stringc stringVer(glGetString(GL_VERSION));
-		//CommonProfile = (stringVer[11] == 'M');
-		const f32 ogl_ver = core::fast_atof(stringVer.c_str() + 13);
+		const f32 ogl_ver = core::fast_atof(stringVer.c_str() + 10);
 		Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver) * 10.0f));
 		core::stringc extensions = glGetString(GL_EXTENSIONS);
 		os::Printer::log(extensions.c_str());
+
 		// typo in the simulator (note the postfixed s)
 		if (extensions.find("GL_IMG_user_clip_planes"))
 			FeatureAvailable[IRR_IMG_user_clip_plane] = true;
@@ -184,11 +184,11 @@ namespace video
 
 		GLint val = 0;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &val);
-		MaxTextureUnits = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
+		MaxSupportedTextures = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
 		MultiTextureExtension = true;
 		//TODO : OpenGL ES 2.0 Port
 		//glGetIntegerv(GL_MAX_LIGHTS, &val);
-		MaxLights = static_cast<u8>(val);
+		MaxLights = 8;
 #ifdef GL_EXT_texture_filter_anisotropic
 		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
 		{
@@ -198,13 +198,11 @@ namespace video
 #endif
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
 		MaxTextureSize=static_cast<u32>(val);
-		if ((Version > 100) || FeatureAvailable[IRR_IMG_user_clip_plane] )
-		{
-			//TODO : OpenGL ES 2.0 Port
-			//glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
-			val = 6;
-			MaxUserClipPlanes = static_cast<u8>(val);
-		}
+#ifdef GL_EXT_texture_lod_bias
+		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+			glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
+#endif
+		MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
 	}
 
 } // end namespace video

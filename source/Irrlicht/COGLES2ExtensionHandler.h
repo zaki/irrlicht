@@ -185,11 +185,14 @@ namespace video
 		u16 EGLVersion;
 		u16 Version;
 		u8 MaxTextureUnits;
+		u8 MaxSupportedTextures;
 		u8 MaxLights;
 		u8 MaxAnisotropy;
 		u8 MaxUserClipPlanes;
 		u32 MaxTextureSize;
-		bool CommonProfile;
+		u32 MaxIndices;
+		f32 MaxTextureLODBias;
+
 		bool MultiTextureExtension;
 		bool MultiSamplingExtension;
 		bool StencilBuffer;
