@@ -187,7 +187,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
     
 		//          <init_from>internal_texturename</init_from>
 					Writer->writeElement(L"init_from", false);
-					Writer->writeText(irr::core::stringw(layer.Texture->getName().getInternalName()).c_str());
+					Writer->writeText(pathToNCName(layer.Texture->getName().getInternalName()).c_str());
 					Writer->writeClosingTag(L"init_from");
 					Writer->writeLineBreak();
 
@@ -355,11 +355,11 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		for ( irr::u32 i=0; i<LibraryImages.size(); ++i )
 		{
 			//<image name="rose01"> 
-			Writer->writeElement(L"image", false, L"name", irr::core::stringw(LibraryImages[i]->getName().getInternalName()).c_str());
+			Writer->writeElement(L"image", false, L"name", pathToNCName(LibraryImages[i]->getName().getInternalName()).c_str());
 			Writer->writeLineBreak();
 			//  <init_from>../flowers/rose01.jpg</init_from> 
 				Writer->writeElement(L"init_from", false);
-				// TODO: path might need some conversion into collada URI-format to replace whitespaces etc.
+				// TODO: path needs some conversion into collada URI-format (replace whitespaces)
 				Writer->writeText(irr::core::stringw(LibraryImages[i]->getName().getPath()).c_str());
 				Writer->writeClosingTag(L"init_from");
 				Writer->writeLineBreak();
@@ -940,6 +940,57 @@ inline irr::core::stringw CColladaMeshWriter::magTexfilterToString(bool bilinear
 		return core::stringw(L"LINEAR");
 
 	return core::stringw(L"NONE");
+}
+
+bool CColladaMeshWriter::isXmlNameStartChar(wchar_t c) const
+{
+	return		(c >= 'A' && c <= 'Z')
+			||	c == L'_'
+			||	(c >= 'a' && c <= 'z')
+			||	(c >= 0xC0 && c <= 0xD6)
+			||	(c >= 0xD8 && c <= 0xF6)
+			||	(c >= 0xF8 && c <= 0x2FF)
+			||  (c >= 0x370 && c <= 0x37D)
+			||  (c >= 0x37F && c <= 0x1FFF)
+			||  (c >= 0x200C && c <= 0x200D)
+			||  (c >= 0x2070 && c <= 0x218F)
+			||  (c >= 0x2C00 && c <= 0x2FEF) 
+			||  (c >= 0x3001 && c <= 0xD7FF)
+			||  (c >= 0xF900 && c <= 0xFDCF)
+			||  (c >= 0xFDF0 && c <= 0xFFFD)
+			||  (c >= 0x10000 && c <= 0xEFFFF);
+}
+
+bool CColladaMeshWriter::isXmlNameChar(wchar_t c) const
+{
+	return isXmlNameStartChar(c)
+		||	c == L'-' 
+		||	c == L'.'
+		||	(c >= '0' && c <= '9')
+		||	c == 0xB7 
+		||	(c >= 0x0300 && c <= 0x036F)
+		||	(c >= 0x203F && c <= 0x2040);
+}
+
+// Restrict the characters to a set of allowed characters in xs::NCName.
+irr::core::stringw CColladaMeshWriter::pathToNCName(const irr::io::path& path) const
+{
+	irr::core::stringw result(L"_");	// ensure id starts with a valid char
+	if ( path.empty() )
+		return result;
+
+	result.append( irr::core::stringw(path) );
+
+	// We replace all characters not allowed by a replacement char
+	const wchar_t REPLACMENT = L'-';
+	for ( irr::u32 i=1; i < result.size(); ++i )
+	{
+		if ( result[i] == L':' || !isXmlNameChar(result[i]) )
+		{
+			result[i] = REPLACMENT;
+		}
+	}
+	return result;
 }
 
 void CColladaMeshWriter::writeColorElement(const video::SColor & col)
