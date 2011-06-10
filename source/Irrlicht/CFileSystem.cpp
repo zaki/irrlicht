@@ -700,36 +700,66 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 //! Get the relative filename, relative to the given directory
 path CFileSystem::getRelativeFilename(const path& filename, const path& directory) const
 {
-		io::path path1, file, ext;
-		core::splitFilename(getAbsolutePath(filename), &path1, &file, &ext);
-		io::path path2(getAbsolutePath(directory));
-		core::list<io::path> list1, list2;
-		path1.split(list1, _IRR_TEXT("/\\"), 2);
-		path2.split(list2, _IRR_TEXT("/\\"), 2);
-		u32 i=0;
-		core::list<io::path>::ConstIterator it1,it2;
-		it1=list1.begin();
-		it2=list2.begin();
-		for (; i<list1.size() && i<list2.size() && (*it1==*it2); ++i)
-		{
-			++it1;
-			++it2;
-		}
-		path1=_IRR_TEXT("");
-		for (; i<list2.size(); ++i)
-			path1 += _IRR_TEXT("../");
-		while (it1 != list1.end())
-		{
-			path1 += *it1++;
-			path1 += _IRR_TEXT('/');
-		}
-		path1 += file;
-		if (ext.size())
-		{
-			path1 += _IRR_TEXT('.');
-			path1 += ext;
-		}
-		return path1;
+	if ( filename.empty() || directory.empty() )
+		return filename;
+
+	io::path path1, file, ext;
+	core::splitFilename(getAbsolutePath(filename), &path1, &file, &ext);
+	io::path path2(getAbsolutePath(directory));
+	core::list<io::path> list1, list2;
+	path1.split(list1, _IRR_TEXT("/\\"), 2);
+	path2.split(list2, _IRR_TEXT("/\\"), 2);
+	u32 i=0;
+	core::list<io::path>::ConstIterator it1,it2;
+	it1=list1.begin();
+	it2=list2.begin();
+
+	#if defined (_IRR_WINDOWS_API_)
+	fschar_t partition1 = 0, partition2 = 0;
+	io::path prefix1, prefix2;
+	if ( it1 != list1.end() )
+		prefix1 = *it1;
+	if ( it2 != list2.end() )
+		prefix2 = *it2;
+	if ( prefix1.size() > 1 && prefix1[1] == _IRR_TEXT(':') )
+		partition1 = core::locale_lower(prefix1[0]);
+	if ( prefix2.size() > 1 && prefix2[1] == _IRR_TEXT(':') )
+		partition2 = core::locale_lower(prefix2[0]);
+
+	// must have the same prefix or we can't resolve it to a relative filename
+	if ( partition1 != partition2 )
+	{
+		return filename;
+	}
+	#endif
+
+
+	for (; i<list1.size() && i<list2.size() 
+#if defined (_IRR_WINDOWS_API_)
+		&& (io::path(*it1).make_lower()==io::path(*it2).make_lower())
+#else
+		&& (*it1==*it2)
+#endif
+		; ++i)
+	{
+		++it1;
+		++it2;
+	}
+	path1=_IRR_TEXT("");
+	for (; i<list2.size(); ++i)
+		path1 += _IRR_TEXT("../");
+	while (it1 != list1.end())
+	{
+		path1 += *it1++;
+		path1 += _IRR_TEXT('/');
+	}
+	path1 += file;
+	if (ext.size())
+	{
+		path1 += _IRR_TEXT('.');
+		path1 += ext;
+	}
+	return path1;
 }
 
 
