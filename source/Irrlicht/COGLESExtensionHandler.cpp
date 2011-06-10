@@ -117,7 +117,7 @@ namespace video
 
 
 COGLES1ExtensionHandler::COGLES1ExtensionHandler() : 
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 		pGlDrawTexiOES(0), pGlDrawTexfOES(0),
 		pGlDrawTexivOES(0), pGlDrawTexfvOES(0),
 		pGlBindRenderbufferOES(0), pGlDeleteRenderbuffersOES(0),
@@ -241,7 +241,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 
 	MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
 
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 	if (FeatureAvailable[IRR_OES_draw_texture])
 	{
 		pGlDrawTexiOES = (PFNGLDRAWTEXIOES) eglGetProcAddress("glDrawTexiOES");
