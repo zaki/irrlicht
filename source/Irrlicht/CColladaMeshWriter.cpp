@@ -19,6 +19,36 @@ namespace irr
 namespace scene
 {
 
+//! Which lighting model should be used in the technique (FX) section when exporting effects (materials)
+E_COLLADA_TECHNIQUE_FX CColladaMeshWriterProperties::getTechniqueFx(const video::SMaterial& material) const
+{
+	return ECTF_BLINN;
+}
+
+//! Which texture index should be used when setting the emissive texture
+s32 CColladaMeshWriterProperties::getEmissiveTextureIdx(const video::SMaterial& material) const
+{
+	return 0;
+}
+
+//! Which texture index should be used when setting the ambient texture
+s32 CColladaMeshWriterProperties::getAmbientTextureIdx(const video::SMaterial& material) const
+{
+	return 1;
+}
+
+//! Which texture index should be used when setting the diffuse texture
+s32 CColladaMeshWriterProperties::getDiffuseTextureIdx(const video::SMaterial& material) const
+{
+	return 2;
+}
+
+//! Which texture index should be used when setting the specular texture
+s32 CColladaMeshWriterProperties::getSpecularTextureIdx(const video::SMaterial& material) const
+{
+	return 3;
+}
+
 
 CColladaMeshWriter::CColladaMeshWriter(video::IVideoDriver* driver,
 					io::IFileSystem* fs)
@@ -34,6 +64,11 @@ CColladaMeshWriter::CColladaMeshWriter(video::IVideoDriver* driver,
 
 	if (FileSystem)
 		FileSystem->grab();
+
+	CColladaMeshWriterProperties * p = new CColladaMeshWriterProperties();
+	setDefaultProperties(p);
+	setProperties(p);
+	p->drop();
 }
 
 
@@ -162,182 +197,119 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 		video::SMaterial & material = mesh->getMeshBuffer(i)->getMaterial();
 
-		// write texture surfaces and samplers and buffer all used imagess
 		int numTextures = 0;
-		for ( int t=0; t<4; ++t )
+		if ( getWriteTextures() )
 		{
-			video::SMaterialLayer& layer  = material.TextureLayer[t];
-			if ( !layer.Texture )
-				break;
-			++numTextures;
+			// write texture surfaces and samplers and buffer all used imagess
+			for ( int t=0; t<4; ++t )
+			{
+				video::SMaterialLayer& layer  = material.TextureLayer[t];
+				if ( !layer.Texture )
+					break;
+				++numTextures;
 
-			if ( LibraryImages.linear_search(layer.Texture) < 0 )
-				 LibraryImages.push_back( layer.Texture );
+				if ( LibraryImages.linear_search(layer.Texture) < 0 )
+					 LibraryImages.push_back( layer.Texture );
 
-			irr::core::stringw texName("tex");
-			texName += irr::core::stringw(t);
+				irr::core::stringw texName("tex");
+				texName += irr::core::stringw(t);
 
-			// write texture surface
-			//<newparam sid="tex0-surface">
-			irr::core::stringw texSurface(texName);
-			texSurface += L"-surface";
-			Writer->writeElement(L"newparam", false, L"sid", texSurface.c_str());
-			Writer->writeLineBreak();
-			//  <surface type="2D">
-				Writer->writeElement(L"surface", false, L"type", L"2D");
+				// write texture surface
+				//<newparam sid="tex0-surface">
+				irr::core::stringw texSurface(texName);
+				texSurface += L"-surface";
+				Writer->writeElement(L"newparam", false, L"sid", texSurface.c_str());
 				Writer->writeLineBreak();
+				//  <surface type="2D">
+					Writer->writeElement(L"surface", false, L"type", L"2D");
+					Writer->writeLineBreak();
     
-		//          <init_from>internal_texturename</init_from>
-					Writer->writeElement(L"init_from", false);
-					irr::io::path p(FileSystem->getRelativeFilename(layer.Texture->getName().getPath(), Directory));
-					Writer->writeText(pathToNCName(p).c_str());
-					Writer->writeClosingTag(L"init_from");
-					Writer->writeLineBreak();
-
-		//          <format>A8R8G8B8</format>
-					Writer->writeElement(L"format", false);
-					video::ECOLOR_FORMAT format = layer.Texture->getColorFormat();
-					Writer->writeText(toString(format).c_str());
-					Writer->writeClosingTag(L"format");
-					Writer->writeLineBreak();
-		//      </surface>
-				Writer->writeClosingTag(L"surface");
-				Writer->writeLineBreak();
-		//  </newparam>
-			Writer->writeClosingTag(L"newparam");
-			Writer->writeLineBreak();
-
-			// write texture sampler
-		//  <newparam sid="tex0-sampler">
-			irr::core::stringw texSampler(texName);
-			texSampler += L"-sampler";
-			Writer->writeElement(L"newparam", false, L"sid", texSampler.c_str());
-			Writer->writeLineBreak();
-		//      <sampler2D>
-				Writer->writeElement(L"sampler2D", false);
-				Writer->writeLineBreak();
-
-		//          <source>tex0-surface</source>
-					Writer->writeElement(L"source", false);
-					Writer->writeText(texSurface.c_str());
-					Writer->writeClosingTag(L"source");
-					Writer->writeLineBreak();
-
-		//			<wrap_s>WRAP</wrap_s>
-					Writer->writeElement(L"wrap_s", false);
-					Writer->writeText(toString((video::E_TEXTURE_CLAMP)layer.TextureWrapU).c_str());
-					Writer->writeClosingTag(L"wrap_s");
-					Writer->writeLineBreak();
-
-		//			<wrap_t>WRAP</wrap_t>
-					Writer->writeElement(L"wrap_t", false);
-					Writer->writeText(toString((video::E_TEXTURE_CLAMP)layer.TextureWrapV).c_str());
-					Writer->writeClosingTag(L"wrap_t");
-					Writer->writeLineBreak();
-
-		//			<minfilter>LINEAR_MIPMAP_LINEAR</minfilter> 
-					Writer->writeElement(L"minfilter", false);
-					Writer->writeText(minTexfilterToString(layer.BilinearFilter, layer.TrilinearFilter).c_str());
-					Writer->writeClosingTag(L"minfilter");
-					Writer->writeLineBreak();
-
-		//			<magfilter>LINEAR</magfilter>
-					Writer->writeElement(L"magfilter", false);
-					Writer->writeText(magTexfilterToString(layer.BilinearFilter, layer.TrilinearFilter).c_str());
-					Writer->writeClosingTag(L"magfilter");
-					Writer->writeLineBreak();
-
-					// TBD - actually not sure how anisotropic should be written, so for now it writes in a way
-					// that works with the way the loader reads it again.
-					if ( layer.AnisotropicFilter )
-					{
-		//			<mipfilter>LINEAR_MIPMAP_LINEAR</mipfilter>
-						Writer->writeElement(L"mipfilter", false);
-						Writer->writeText(L"LINEAR_MIPMAP_LINEAR");
-						Writer->writeClosingTag(L"mipfilter");
+			//          <init_from>internal_texturename</init_from>
+						Writer->writeElement(L"init_from", false);
+						irr::io::path p(FileSystem->getRelativeFilename(layer.Texture->getName().getPath(), Directory));
+						Writer->writeText(pathToNCName(p).c_str());
+						Writer->writeClosingTag(L"init_from");
 						Writer->writeLineBreak();
-					}
 
-		//     </sampler2D>
-				Writer->writeClosingTag(L"sampler2D");
+			//          <format>A8R8G8B8</format>
+						Writer->writeElement(L"format", false);
+						video::ECOLOR_FORMAT format = layer.Texture->getColorFormat();
+						Writer->writeText(toString(format).c_str());
+						Writer->writeClosingTag(L"format");
+						Writer->writeLineBreak();
+			//      </surface>
+					Writer->writeClosingTag(L"surface");
+					Writer->writeLineBreak();
+			//  </newparam>
+				Writer->writeClosingTag(L"newparam");
 				Writer->writeLineBreak();
-		//  </newparam>
-			Writer->writeClosingTag(L"newparam");
-			Writer->writeLineBreak();
+
+				// write texture sampler
+			//  <newparam sid="tex0-sampler">
+				irr::core::stringw texSampler(texName);
+				texSampler += L"-sampler";
+				Writer->writeElement(L"newparam", false, L"sid", texSampler.c_str());
+				Writer->writeLineBreak();
+			//      <sampler2D>
+					Writer->writeElement(L"sampler2D", false);
+					Writer->writeLineBreak();
+
+			//          <source>tex0-surface</source>
+						Writer->writeElement(L"source", false);
+						Writer->writeText(texSurface.c_str());
+						Writer->writeClosingTag(L"source");
+						Writer->writeLineBreak();
+
+			//			<wrap_s>WRAP</wrap_s>
+						Writer->writeElement(L"wrap_s", false);
+						Writer->writeText(toString((video::E_TEXTURE_CLAMP)layer.TextureWrapU).c_str());
+						Writer->writeClosingTag(L"wrap_s");
+						Writer->writeLineBreak();
+
+			//			<wrap_t>WRAP</wrap_t>
+						Writer->writeElement(L"wrap_t", false);
+						Writer->writeText(toString((video::E_TEXTURE_CLAMP)layer.TextureWrapV).c_str());
+						Writer->writeClosingTag(L"wrap_t");
+						Writer->writeLineBreak();
+
+			//			<minfilter>LINEAR_MIPMAP_LINEAR</minfilter> 
+						Writer->writeElement(L"minfilter", false);
+						Writer->writeText(minTexfilterToString(layer.BilinearFilter, layer.TrilinearFilter).c_str());
+						Writer->writeClosingTag(L"minfilter");
+						Writer->writeLineBreak();
+
+			//			<magfilter>LINEAR</magfilter>
+						Writer->writeElement(L"magfilter", false);
+						Writer->writeText(magTexfilterToString(layer.BilinearFilter, layer.TrilinearFilter).c_str());
+						Writer->writeClosingTag(L"magfilter");
+						Writer->writeLineBreak();
+
+						// TBD - actually not sure how anisotropic should be written, so for now it writes in a way
+						// that works with the way the loader reads it again.
+						if ( layer.AnisotropicFilter )
+						{
+			//			<mipfilter>LINEAR_MIPMAP_LINEAR</mipfilter>
+							Writer->writeElement(L"mipfilter", false);
+							Writer->writeText(L"LINEAR_MIPMAP_LINEAR");
+							Writer->writeClosingTag(L"mipfilter");
+							Writer->writeLineBreak();
+						}
+
+			//     </sampler2D>
+					Writer->writeClosingTag(L"sampler2D");
+					Writer->writeLineBreak();
+			//  </newparam>
+				Writer->writeClosingTag(L"newparam");
+				Writer->writeLineBreak();
+			}
 		}
 
 		Writer->writeElement(L"technique", false, L"sid", L"common");
 		Writer->writeLineBreak();
-		Writer->writeElement(L"blinn", false);
-		Writer->writeLineBreak();
 
-		{
-			// write all interesting material parameters 
-			// attributes must be written in fixed order
-			Writer->writeElement(L"emission", false);
-			Writer->writeLineBreak();
-			if ( numTextures < 1 )
-				writeColorElement(material.EmissiveColor);
-			else
-			{
-				// <texture texture="sampler" texcoord="texCoord"/>
-				Writer->writeElement(L"texture", true, L"texture", L"tex0-sampler", L"texcoord", L"mesh-TexCoord0" );
-				Writer->writeLineBreak();
-			}
-			Writer->writeClosingTag(L"emission");
-			Writer->writeLineBreak();
+		E_COLLADA_TECHNIQUE_FX techFx = getProperties() ? getProperties()->getTechniqueFx(material) : ECTF_BLINN;
+		writeFxElement(material, techFx);
 
-			Writer->writeElement(L"ambient", false);
-			Writer->writeLineBreak();
-			if ( numTextures < 2 )
-				writeColorElement(material.AmbientColor);
-			else
-			{
-				// <texture texture="sampler" texcoord="texCoord"/>
-				Writer->writeElement(L"texture", true, L"texture", L"tex1-sampler", L"texcoord", L"mesh-TexCoord0" );
-				Writer->writeLineBreak();
-			}
-			Writer->writeClosingTag(L"ambient");
-			Writer->writeLineBreak();
-
-			Writer->writeElement(L"diffuse", false);
-			Writer->writeLineBreak();
-			if ( numTextures < 3 )
-				writeColorElement(material.DiffuseColor);
-			else
-			{
-				// <texture texture="sampler" texcoord="texCoord"/>
-				Writer->writeElement(L"texture", true, L"texture", L"tex2-sampler", L"texcoord", L"mesh-TexCoord0" );
-				Writer->writeLineBreak();
-			}
-			Writer->writeClosingTag(L"diffuse");
-			Writer->writeLineBreak();
-
-			Writer->writeElement(L"specular", false);
-			Writer->writeLineBreak();
-			if ( numTextures < 4 )
-				writeColorElement(material.SpecularColor);
-			else
-			{
-				// <texture texture="sampler" texcoord="texCoord"/>
-				Writer->writeElement(L"texture", true, L"texture", L"tex3-sampler", L"texcoord", L"mesh-TexCoord0" );
-				Writer->writeLineBreak();
-			}
-			Writer->writeClosingTag(L"specular");
-			Writer->writeLineBreak();
-
-			Writer->writeElement(L"shininess", false);
-			Writer->writeLineBreak();
-			Writer->writeElement(L"float", false);
-			Writer->writeText(core::stringw(material.Shininess).c_str());
-			Writer->writeClosingTag(L"float");
-			Writer->writeLineBreak();
-			Writer->writeClosingTag(L"shininess");
-			Writer->writeLineBreak();
-		}
-
-		Writer->writeClosingTag(L"blinn");
-		Writer->writeLineBreak();
 		Writer->writeClosingTag(L"technique");
 		Writer->writeLineBreak();
 		Writer->writeClosingTag(L"profile_COMMON");
@@ -350,7 +322,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeLineBreak();
 
 	// images
-	if ( !LibraryImages.empty() )
+	if ( getWriteTextures() && !LibraryImages.empty() )
 	{
 		Writer->writeElement(L"library_images", false);
 		Writer->writeLineBreak();
@@ -359,12 +331,12 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		{
 			irr::io::path p(FileSystem->getRelativeFilename(LibraryImages[i]->getName().getPath(), Directory));
 			//<image name="rose01"> 
-			Writer->writeElement(L"image", false, L"name", pathToNCName(p).c_str());
+			irr::core::stringw ncname(pathToNCName(p));
+			Writer->writeElement(L"image", false, L"id", ncname.c_str(), L"name", ncname.c_str());
 			Writer->writeLineBreak();
 			//  <init_from>../flowers/rose01.jpg</init_from> 
 				Writer->writeElement(L"init_from", false);
-				// TODO: path needs some conversion into collada URI-format (replace whitespaces)
-				Writer->writeText(irr::core::stringw(p).c_str());
+				Writer->writeText(pathToURI(p).c_str());
 				Writer->writeClosingTag(L"init_from");
 				Writer->writeLineBreak();
 	 		//  </image> 
@@ -853,6 +825,80 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeClosingTag(L"library_geometries");
 	Writer->writeLineBreak();
 
+
+	// write scene_library
+	if ( getWriteScene() )
+	{
+		Writer->writeElement(L"library_visual_scenes", false);
+		Writer->writeLineBreak();
+
+			Writer->writeElement(L"visual_scene", false, L"id", L"default_scene");
+			Writer->writeLineBreak();
+
+				Writer->writeElement(L"node", false);
+				Writer->writeLineBreak();
+
+					//<instance_geometry url="#mesh">
+					Writer->writeElement(L"instance_geometry", false, L"url", L"#mesh");
+					Writer->writeLineBreak();
+
+						Writer->writeElement(L"bind_material", false);
+						Writer->writeLineBreak();
+
+							Writer->writeElement(L"technique_common", false);
+							Writer->writeLineBreak();
+						
+							// instance materials
+							// <instance_material symbol="leaf" target="#MidsummerLeaf01"/> 
+							for (i=0; i<mesh->getMeshBufferCount(); ++i)
+							{
+								core::stringw strMat = "mat";
+								strMat += i;
+								core::stringw strMatInst(L"#");
+								strMatInst += strMat;
+								Writer->writeElement(L"instance_material", false, L"symbol", strMat.c_str(), L"target", strMatInst.c_str());
+								Writer->writeLineBreak();
+
+									// <bind_vertex_input semantic="mesh-TexCoord0" input_semantic="TEXCOORD"/>
+									Writer->writeElement(L"bind_vertex_input", true, L"semantic", L"mesh-TexCoord0", L"input_semantic", L"TEXCOORD" );
+									Writer->writeLineBreak();
+
+								Writer->writeClosingTag(L"instance_material");
+								Writer->writeLineBreak();
+							}
+						
+							Writer->writeClosingTag(L"technique_common");
+							Writer->writeLineBreak();
+
+						Writer->writeClosingTag(L"bind_material");
+						Writer->writeLineBreak();
+
+					Writer->writeClosingTag(L"instance_geometry");
+					Writer->writeLineBreak();
+
+				Writer->writeClosingTag(L"node");
+				Writer->writeLineBreak();
+
+			Writer->writeClosingTag(L"visual_scene");
+			Writer->writeLineBreak();
+
+
+		Writer->writeClosingTag(L"library_visual_scenes");
+		Writer->writeLineBreak();
+
+
+		// write scene
+		Writer->writeElement(L"scene", false);
+		Writer->writeLineBreak();
+
+			Writer->writeElement(L"instance_visual_scene", true, L"url", L"#default_scene");
+			Writer->writeLineBreak();
+
+		Writer->writeClosingTag(L"scene");
+		Writer->writeLineBreak();
+	}
+
+
 	// close everything
 
 	Writer->writeClosingTag(L"COLLADA");
@@ -997,6 +1043,30 @@ irr::core::stringw CColladaMeshWriter::pathToNCName(const irr::io::path& path) c
 	return result;
 }
 
+irr::core::stringw CColladaMeshWriter::pathToURI(const irr::io::path& path) const
+{
+	irr::core::stringw result;
+
+	// is this a relative path?
+	if ( path.size() > 1 
+		&& path[0] != _IRR_TEXT('/') 
+		&& path[0] != _IRR_TEXT('\\')
+		&& path[1] != _IRR_TEXT(':') )
+	{
+		// not already starting with "./" ?
+		if (	path[0] != _IRR_TEXT('.') 
+			||	path[1] != _IRR_TEXT('/') )
+		{
+			result.append(L"./");
+		}
+	}
+	result.append(path);
+
+	// TODO: make correct URI (without whitespaces)
+
+	return result;
+}
+
 void CColladaMeshWriter::writeColorElement(const video::SColor & col)
 {
 	Writer->writeElement(L"color", false);
@@ -1008,6 +1078,147 @@ void CColladaMeshWriter::writeColorElement(const video::SColor & col)
 	Writer->writeLineBreak();
 }
 
+bool CColladaMeshWriter::writeTextureSampler(const video::SMaterial & material, video::E_COLOR_MATERIAL cm)
+{
+	if (	!getWriteTextures()
+		||	!getProperties() )
+		return false;
+
+	s32 idx = -1;
+	switch ( cm )
+	{
+		case video::ECM_DIFFUSE:
+			idx = getProperties()->getDiffuseTextureIdx(material);
+			break;
+		case video::ECM_AMBIENT:
+			idx = getProperties()->getAmbientTextureIdx(material);
+			break;
+		case video::ECM_EMISSIVE:
+			idx = getProperties()->getEmissiveTextureIdx(material);
+			break;
+		case video::ECM_SPECULAR:
+			idx = getProperties()->getSpecularTextureIdx(material);
+			break;
+		default:
+			break;
+	}
+
+	if ( idx < 0 || !material.TextureLayer[idx].Texture )
+		return false;
+
+	irr::core::stringw sampler(L"tex");
+	sampler += irr::core::stringw(idx);
+	sampler += L"-sampler";
+
+	// <texture texture="sampler" texcoord="texCoord"/>
+	Writer->writeElement(L"texture", true, L"texture", sampler.c_str(), L"texcoord", L"mesh-TexCoord0" );
+	Writer->writeLineBreak();
+
+	return true;
+}
+
+void CColladaMeshWriter::writeFxElement(const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx)
+{
+	core::stringw fxLabel;
+	bool writeEmission = true;
+	bool writeAmbient = true;
+	bool writeDiffuse = true;
+	bool writeSpecular = true;
+	bool writeShininess = true;
+	bool writeReflective = true;
+	bool writeReflectivity = true;
+	bool writeTransparent = true;
+	bool writeTransparency = true;
+	bool writeIndexOfRefraction = true;
+	switch ( techFx )
+	{
+		case ECTF_BLINN:
+			fxLabel = L"blinn";
+			break;
+		case ECTF_PHONG:
+			fxLabel = L"phong";
+			break;
+		case ECTF_LAMBERT:
+			fxLabel = L"lambert";
+			writeSpecular = false;
+			writeShininess = false;
+			break;
+		case ECTF_CONSTANT:
+			fxLabel = L"constant";
+			writeAmbient = false;
+			writeDiffuse = false;
+			writeSpecular = false;
+			writeShininess = false;
+			break;
+	}
+
+	Writer->writeElement(fxLabel.c_str(), false);
+	Writer->writeLineBreak();
+
+	// write all interesting material parameters 
+	// attributes must be written in fixed order
+	if ( writeEmission )
+	{
+		Writer->writeElement(L"emission", false);
+		Writer->writeLineBreak();
+		if ( !writeTextureSampler(material, video::ECM_EMISSIVE) )
+			writeColorElement(material.EmissiveColor);
+		Writer->writeClosingTag(L"emission");
+		Writer->writeLineBreak();
+	}
+
+	if ( writeAmbient )
+	{
+		Writer->writeElement(L"ambient", false);
+		Writer->writeLineBreak();
+		if ( !writeTextureSampler(material, video::ECM_AMBIENT) )
+			writeColorElement(material.AmbientColor);
+		Writer->writeClosingTag(L"ambient");
+		Writer->writeLineBreak();
+	}
+
+	if ( writeDiffuse )
+	{
+		Writer->writeElement(L"diffuse", false);
+		Writer->writeLineBreak();
+		if ( !writeTextureSampler(material, video::ECM_DIFFUSE) )
+			writeColorElement(material.DiffuseColor);
+		Writer->writeClosingTag(L"diffuse");
+		Writer->writeLineBreak();
+	}
+
+	if ( writeSpecular )
+	{
+		Writer->writeElement(L"specular", false);
+		Writer->writeLineBreak();
+		if ( !writeTextureSampler(material, video::ECM_SPECULAR) )
+			writeColorElement(material.SpecularColor);
+		Writer->writeClosingTag(L"specular");
+		Writer->writeLineBreak();
+	}
+
+	if ( writeShininess )
+	{
+		Writer->writeElement(L"shininess", false);
+		Writer->writeLineBreak();
+		Writer->writeElement(L"float", false);
+		Writer->writeText(core::stringw(material.Shininess).c_str());
+		Writer->writeClosingTag(L"float");
+		Writer->writeLineBreak();
+		Writer->writeClosingTag(L"shininess");
+		Writer->writeLineBreak();
+	}
+
+		// missing:
+		// reflective
+		// reflectivity
+		// transparent
+		// transparency
+		// index_of_refraction>
+
+	Writer->writeClosingTag(fxLabel.c_str());
+	Writer->writeLineBreak();
+}
 
 } // end namespace
 } // end namespace
