@@ -49,6 +49,27 @@ s32 CColladaMeshWriterProperties::getSpecularTextureIdx(const video::SMaterial& 
 	return 3;
 }
 
+//! Which texture index should be used when writing the transparent texture
+s32 CColladaMeshWriterProperties::getTransparentTextureIdx( const video::SMaterial& material) const
+{
+	// TODO
+	return -1;
+}
+
+//! Return the settings for transparence
+E_COLLADA_TRANSPARENT_FX CColladaMeshWriterProperties::getTransparentFx(const video::SMaterial& material) const
+{
+	// TODO
+	return ECOF_A_ONE;
+}
+
+//! Transparency value for the material. 
+f32 CColladaMeshWriterProperties::getTransparency(const video::SMaterial& material) const
+{
+	// TODO
+	return -1.f;
+}
+
 
 CColladaMeshWriter::CColladaMeshWriter(video::IVideoDriver* driver,
 					io::IFileSystem* fs)
@@ -933,7 +954,7 @@ irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector2df& vec)
 	return str;
 }
 
-inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf& colorf) const
+irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf& colorf) const
 {
 	c8 tmpbuf[255];
 	snprintf(tmpbuf, 255, "%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
@@ -942,7 +963,7 @@ inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf
 	return str;
 }
 
-inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::ECOLOR_FORMAT format) const
+irr::core::stringw CColladaMeshWriter::toString(const irr::video::ECOLOR_FORMAT format) const
 {
 	switch ( format )
 	{
@@ -954,7 +975,7 @@ inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::ECOLOR_
 	}
 }
 
-inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::E_TEXTURE_CLAMP clamp) const
+irr::core::stringw CColladaMeshWriter::toString(const irr::video::E_TEXTURE_CLAMP clamp) const
 {
 	switch ( clamp )
 	{
@@ -974,7 +995,15 @@ inline irr::core::stringw CColladaMeshWriter::toString(const irr::video::E_TEXTU
 	return core::stringw(L"NONE");
 }
 
-inline irr::core::stringw CColladaMeshWriter::minTexfilterToString(bool bilinear, bool trilinear) const
+irr::core::stringw CColladaMeshWriter::toString(const irr::scene::E_COLLADA_TRANSPARENT_FX transparent) const
+{
+	if ( transparent & ECOF_RGB_ZERO )
+		return core::stringw(L"RGB_ZERO");
+	else
+		return core::stringw(L"A_ONE");
+}
+
+irr::core::stringw CColladaMeshWriter::minTexfilterToString(bool bilinear, bool trilinear) const
 {
 	if ( trilinear )
 		return core::stringw(L"LINEAR_MIPMAP_LINEAR");
@@ -1078,36 +1107,45 @@ void CColladaMeshWriter::writeColorElement(const video::SColor & col)
 	Writer->writeLineBreak();
 }
 
-bool CColladaMeshWriter::writeTextureSampler(const video::SMaterial & material, video::E_COLOR_MATERIAL cm)
+s32 CColladaMeshWriter::getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs)
 {
 	if (	!getWriteTextures()
 		||	!getProperties() )
-		return false;
+		return -1;
 
 	s32 idx = -1;
-	switch ( cm )
+	switch ( cs )
 	{
-		case video::ECM_DIFFUSE:
+		case ECS_DIFFUSE:
 			idx = getProperties()->getDiffuseTextureIdx(material);
 			break;
-		case video::ECM_AMBIENT:
+		case ECS_AMBIENT:
 			idx = getProperties()->getAmbientTextureIdx(material);
 			break;
-		case video::ECM_EMISSIVE:
+		case ECS_EMISSIVE:
 			idx = getProperties()->getEmissiveTextureIdx(material);
 			break;
-		case video::ECM_SPECULAR:
+		case ECS_SPECULAR:
 			idx = getProperties()->getSpecularTextureIdx(material);
 			break;
-		default:
+		case ECS_TRANSPARENT:
+			idx = getProperties()->getTransparentTextureIdx(material);
 			break;
 	}
 
-	if ( idx < 0 || !material.TextureLayer[idx].Texture )
+	if ( idx >= 0 && !material.TextureLayer[idx].Texture )
+		return -1;
+
+	return idx;
+}
+
+bool CColladaMeshWriter::writeTextureSampler(s32 textureIdx)
+{
+	if ( textureIdx < 0 )
 		return false;
 
 	irr::core::stringw sampler(L"tex");
-	sampler += irr::core::stringw(idx);
+	sampler += irr::core::stringw(textureIdx);
 	sampler += L"-sampler";
 
 	// <texture texture="sampler" texcoord="texCoord"/>
@@ -1161,7 +1199,7 @@ void CColladaMeshWriter::writeFxElement(const video::SMaterial & material, E_COL
 	{
 		Writer->writeElement(L"emission", false);
 		Writer->writeLineBreak();
-		if ( !writeTextureSampler(material, video::ECM_EMISSIVE) )
+		if ( !writeTextureSampler( getTextureIdx(material, ECS_EMISSIVE)) )
 			writeColorElement(material.EmissiveColor);
 		Writer->writeClosingTag(L"emission");
 		Writer->writeLineBreak();
@@ -1171,7 +1209,7 @@ void CColladaMeshWriter::writeFxElement(const video::SMaterial & material, E_COL
 	{
 		Writer->writeElement(L"ambient", false);
 		Writer->writeLineBreak();
-		if ( !writeTextureSampler(material, video::ECM_AMBIENT) )
+		if ( !writeTextureSampler( getTextureIdx(material, ECS_AMBIENT)) )
 			writeColorElement(material.AmbientColor);
 		Writer->writeClosingTag(L"ambient");
 		Writer->writeLineBreak();
@@ -1181,7 +1219,7 @@ void CColladaMeshWriter::writeFxElement(const video::SMaterial & material, E_COL
 	{
 		Writer->writeElement(L"diffuse", false);
 		Writer->writeLineBreak();
-		if ( !writeTextureSampler(material, video::ECM_DIFFUSE) )
+		if ( !writeTextureSampler( getTextureIdx(material, ECS_DIFFUSE)) )
 			writeColorElement(material.DiffuseColor);
 		Writer->writeClosingTag(L"diffuse");
 		Writer->writeLineBreak();
@@ -1191,7 +1229,7 @@ void CColladaMeshWriter::writeFxElement(const video::SMaterial & material, E_COL
 	{
 		Writer->writeElement(L"specular", false);
 		Writer->writeLineBreak();
-		if ( !writeTextureSampler(material, video::ECM_SPECULAR) )
+		if ( !writeTextureSampler( getTextureIdx(material, ECS_SPECULAR)) )
 			writeColorElement(material.SpecularColor);
 		Writer->writeClosingTag(L"specular");
 		Writer->writeLineBreak();
@@ -1201,22 +1239,73 @@ void CColladaMeshWriter::writeFxElement(const video::SMaterial & material, E_COL
 	{
 		Writer->writeElement(L"shininess", false);
 		Writer->writeLineBreak();
-		Writer->writeElement(L"float", false);
-		Writer->writeText(core::stringw(material.Shininess).c_str());
-		Writer->writeClosingTag(L"float");
-		Writer->writeLineBreak();
+		writeFloatElement(material.Shininess);
 		Writer->writeClosingTag(L"shininess");
 		Writer->writeLineBreak();
 	}
 
-		// missing:
-		// reflective
-		// reflectivity
-		// transparent
-		// transparency
-		// index_of_refraction>
+	if ( writeReflective )
+	{
+		// TODO reflective
+	}
+	if ( writeReflectivity )
+	{
+		// TODO reflectivity
+	}
+
+	if ( writeTransparent )
+	{
+		s32 textureIdx = getTextureIdx(material, ECS_TRANSPARENT);
+		E_COLLADA_TRANSPARENT_FX transparentFx = getProperties() ? getProperties()->getTransparentFx(material) : ECOF_A_ONE;
+		if ( textureIdx >= 0 || transparentFx >= ECOF_TRANSPARENT_DIFFUSE )
+		{
+			Writer->writeElement(L"transparent", false, L"opaque", toString(transparentFx).c_str());
+			Writer->writeLineBreak();
+			if ( !writeTextureSampler(textureIdx) )
+			{
+				if ( transparentFx & ECOF_TRANSPARENT_DIFFUSE )
+					writeColorElement(material.DiffuseColor);
+				else if ( transparentFx & ECOF_TRANSPARENT_AMBIENT)
+					writeColorElement(material.AmbientColor);
+				else if ( transparentFx & ECOF_TRANSPARENT_EMISSIVE )
+					writeColorElement(material.EmissiveColor);
+				else if ( transparentFx & ECOF_TRANSPARENT_SPECULAR )
+					writeColorElement(material.SpecularColor);
+			}
+			Writer->writeClosingTag(L"transparent");
+			Writer->writeLineBreak();
+		}
+	}
+
+	if ( writeTransparency && getProperties() )
+	{
+		f32 t = getProperties()->getTransparency(material);
+		if ( t >= 0.f )
+		{
+			// <transparency>  <float>1.000000</float> </transparency> 
+			Writer->writeElement(L"transparency", false);
+			Writer->writeLineBreak();
+			writeFloatElement(t);
+			Writer->writeClosingTag(L"transparency");
+			Writer->writeLineBreak();
+		}
+	}
+
+	if ( writeIndexOfRefraction )
+	{
+		// TODO index_of_refraction>
+	}
+	
 
 	Writer->writeClosingTag(fxLabel.c_str());
+	Writer->writeLineBreak();
+}
+
+void CColladaMeshWriter::writeFloatElement(irr::f32 value)
+{
+	Writer->writeElement(L"float", false);
+	Writer->writeText(core::stringw(value).c_str());
+	Writer->writeClosingTag(L"float");
 	Writer->writeLineBreak();
 }
 

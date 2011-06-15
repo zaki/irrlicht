@@ -41,6 +41,20 @@ namespace scene
 		//! Which texture index should be used when setting the specular texture
 		/** \return the index to the texture-layer or -1 if that texture should never be exported */
 		virtual s32 getSpecularTextureIdx(const video::SMaterial& material) const;
+
+		//! Which texture index should be used when writing the transparent texture
+		/** Note: By default the alpha channel is used, if you want to use RGB you have to set
+		the ECOF_RGB_ZERO flag in getTransparentFx.
+		\return the index to the texture-layer or -1 if that texture should never be exported */
+		virtual s32 getTransparentTextureIdx( const video::SMaterial& material) const;
+
+		//! Return the settings for transparence
+		virtual E_COLLADA_TRANSPARENT_FX getTransparentFx(const video::SMaterial& material) const;
+
+		//! Transparency value for the material. 
+		/** This value is additional to transparent settings, if both are set they will be multiplicated.
+		\return 1.0 for fully transparent, 0.0 for not transparent and not written at all when < 0.f */
+		virtual f32 getTransparency(const video::SMaterial& material) const;
 	};
 
 
@@ -62,6 +76,15 @@ public:
 
 
 protected:
+	
+	enum E_COLLADA_COLOR_SAMPLER
+	{
+		ECS_DIFFUSE,
+		ECS_AMBIENT,
+		ECS_EMISSIVE,
+		ECS_SPECULAR,
+		ECS_TRANSPARENT
+	};
 
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
 	inline irr::core::stringw toString(const irr::core::vector3df& vec) const;
@@ -69,15 +92,18 @@ protected:
 	inline irr::core::stringw toString(const irr::video::SColorf& colorf) const;
 	inline irr::core::stringw toString(const irr::video::ECOLOR_FORMAT format) const;
 	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
+	inline irr::core::stringw toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;
 	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw pathToNCName(const irr::io::path& path) const;
 	irr::core::stringw pathToURI(const irr::io::path& path) const;
 	inline bool isXmlNameStartChar(wchar_t c) const;
 	inline bool isXmlNameChar(wchar_t c) const;
+	s32 getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs);
 	void writeColorElement(const video::SColor & col);
-	bool writeTextureSampler(const video::SMaterial & material, video::E_COLOR_MATERIAL cm);
+	bool writeTextureSampler(s32 textureIdx);
 	void writeFxElement(const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx);
+	void writeFloatElement(irr::f32 value);
 
 	struct SComponentGlobalStartPos
 	{
