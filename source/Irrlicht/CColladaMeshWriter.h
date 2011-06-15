@@ -5,7 +5,7 @@
 #ifndef __IRR_C_COLLADA_MESH_WRITER_H_INCLUDED__
 #define __IRR_C_COLLADA_MESH_WRITER_H_INCLUDED__
 
-#include "IMeshWriter.h"
+#include "IColladaMeshWriter.h"
 #include "S3DVertex.h"
 #include "IVideoDriver.h"
 
@@ -19,10 +19,35 @@ namespace io
 namespace scene
 {
 
+	//! Callback interface for properties which can be used to influence collada writing
+	class CColladaMeshWriterProperties  : public virtual IColladaMeshWriterProperties
+	{
+	public:
+		//! Which lighting model should be used in the technique (FX) section when exporting effects (materials)
+		virtual E_COLLADA_TECHNIQUE_FX getTechniqueFx(const video::SMaterial& material) const;
+
+		//! Which texture index should be used when setting the emissive texture
+		/** \return the index to the texture-layer or -1 if that texture should never be exported */
+		virtual s32 getEmissiveTextureIdx(const video::SMaterial& material) const;
+
+		//! Which texture index should be used when setting the ambient texture
+		/** \return the index to the texture-layer or -1 if that texture should never be exported */
+		virtual s32 getAmbientTextureIdx(const video::SMaterial& material) const;
+
+		//! Which texture index should be used when setting the diffuse texture
+		/** \return the index to the texture-layer or -1 if that texture should never be exported */
+		virtual s32 getDiffuseTextureIdx(const video::SMaterial& material) const;
+
+		//! Which texture index should be used when setting the specular texture
+		/** \return the index to the texture-layer or -1 if that texture should never be exported */
+		virtual s32 getSpecularTextureIdx(const video::SMaterial& material) const;
+	};
+
+
 //! class to write meshes, implementing a COLLADA (.dae, .xml) writer
 /** This writer implementation has been originally developed for irrEdit and then
 merged out to the Irrlicht Engine */
-class CColladaMeshWriter : public IMeshWriter
+class CColladaMeshWriter : public IColladaMeshWriter
 {
 public:
 
@@ -47,9 +72,12 @@ protected:
 	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw pathToNCName(const irr::io::path& path) const;
+	irr::core::stringw pathToURI(const irr::io::path& path) const;
 	inline bool isXmlNameStartChar(wchar_t c) const;
 	inline bool isXmlNameChar(wchar_t c) const;
 	void writeColorElement(const video::SColor & col);
+	bool writeTextureSampler(const video::SMaterial & material, video::E_COLOR_MATERIAL cm);
+	void writeFxElement(const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx);
 
 	struct SComponentGlobalStartPos
 	{
@@ -84,4 +112,5 @@ protected:
 } // end namespace
 
 #endif
+
 

@@ -112,6 +112,7 @@
 #include "IMeshManipulator.h"
 #include "IMeshSceneNode.h"
 #include "IMeshWriter.h"
+#include "IColladaMeshWriter.h"
 #include "IMetaTriangleSelector.h"
 #include "IOSOperator.h"
 #include "IParticleSystemSceneNode.h" // also includes all emitters and attractors
