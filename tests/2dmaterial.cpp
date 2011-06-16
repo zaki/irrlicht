@@ -264,7 +264,7 @@ public:
 		core::dimension2d<s32> text_dimension;
 
 		// When we use the "tab" hack, disable right-alignment, it messes up everything
-		bool has_tab = (text.findFirst(L'\t') != -1);
+//		bool has_tab = (text.findFirst(L'\t') != -1);
 		// ---- collect character locations
 		const unsigned int text_size = text.size();
 		core::array<s32>               indices(text_size);
