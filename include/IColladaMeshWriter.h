@@ -60,7 +60,7 @@ namespace scene
 		ECOF_TRANSPARENT_EMISSIVE = 8, 
 
 		//! Write specular material color as transparent
-		ECOF_TRANSPARENT_SPECULAR = 16,
+		ECOF_TRANSPARENT_SPECULAR = 16
 	};
 
 	//! Callback interface for properties which can be used to influence collada writing
