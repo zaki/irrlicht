@@ -44,6 +44,25 @@ core::matrix4 CDummyTransformationSceneNode::getRelativeTransformation() const
 	return RelativeTransformationMatrix;
 }
 
+//! Creates a clone of this scene node and its children.
+ISceneNode* CDummyTransformationSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
+{
+	if (!newParent)
+		newParent = Parent;
+	if (!newManager)
+		newManager = SceneManager;
+
+	CDummyTransformationSceneNode* nb = new CDummyTransformationSceneNode(newParent,
+		newManager, ID);
+
+	nb->cloneMembers(this, newManager);
+	nb->RelativeTransformationMatrix = RelativeTransformationMatrix;
+	nb->Box = Box;
+
+	if ( newParent )
+		nb->drop();
+	return nb;
+}
 
 } // end namespace scene
 } // end namespace irr
