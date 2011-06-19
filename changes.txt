@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - CGUISkin::draw3DSunkenPane no longer ignores fillBackGround in non-flat mode. Also borderlines are no longer drawn overlapping to avoid ugly corners.
+
  - CDummyTransformationSceneNode::clone() added.
 
  - IParticleSystemSceneNode::doParticleSystem now public to allow rendering outside scenegraph. 
