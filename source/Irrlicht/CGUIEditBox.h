@@ -44,6 +44,9 @@ namespace gui
 		/** \return true if the override color is enabled, false otherwise */
 		virtual bool isOverrideColorEnabled(void) const;
 
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw);
+
 		//! Turns the border on or off
 		virtual void setDrawBorder(bool border);
 
@@ -135,6 +138,7 @@ namespace gui
 
 		bool MouseMarking;
 		bool Border;
+		bool Background;
 		bool OverrideColorEnabled;
 		s32 MarkBegin;
 		s32 MarkEnd;

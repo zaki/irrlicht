@@ -51,6 +51,9 @@ namespace gui
 		/** \return true if the override color is enabled, false otherwise */
 		virtual bool isOverrideColorEnabled(void) const = 0;
 
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw) = 0;
+
 		//! Turns the border on or off
 		/** \param border: true if you want the border to be drawn, false if not */
 		virtual void setDrawBorder(bool border) = 0;

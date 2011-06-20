@@ -204,7 +204,7 @@ void CGUIStaticText::setTextRestrainedInside(bool restrainTextInside)
 {
 	RestrainTextInside = restrainTextInside;
 }
- 
+
 
 bool CGUIStaticText::isTextRestrainedInside() const
 {
@@ -334,7 +334,7 @@ void CGUIStaticText::breakText()
 					// we must break the last word to the next line.
 					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
 					const s32 wordlgth = font->getDimension(word.c_str()).Width;
-					
+
 					if (wordlgth > elWidth)
 					{
 						// This word is too long to fit in the available space, look for
@@ -347,7 +347,7 @@ void CGUIStaticText::breakText()
 							core::stringw second = word.subString(where, word.size() - where);
 							BrokenText.push_back(line + first + L"-");
 							const s32 secondLength = font->getDimension(second.c_str()).Width;
-							
+
 							length = secondLength;
 							line = second;
 						}

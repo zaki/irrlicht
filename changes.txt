@@ -1,5 +1,13 @@
 Changes in 1.8 (??.??.2011)
 
+ - IGUIEditBox: added missing serialization for Border
+
+ - IGUIEditBox: remove bug that added spaces to the end of each line 
+
+ - IGUIEditBox: fix crash that happened when wordwrapping was enabled, spaces were entered beyond the border and then cursor-key was pressed.
+
+ - IGUIEditBox::setDrawBackground added.
+
  - CGUISkin::draw3DSunkenPane no longer ignores fillBackGround in non-flat mode. Also borderlines are no longer drawn overlapping to avoid ugly corners.
 
  - CDummyTransformationSceneNode::clone() added.
