@@ -34,7 +34,7 @@ namespace scene
 		//! Return the settings for transparence
 		virtual E_COLLADA_TRANSPARENT_FX getTransparentFx(const video::SMaterial& material) const;
 
-		//! Transparency value for the material. 
+		//! Transparency value for the material.
 		/** This value is additional to transparent settings, if both are set they will be multiplicated.
 		\return 1.0 for fully transparent, 0.0 for not transparent and not written at all when < 0.f */
 		virtual f32 getTransparency(const video::SMaterial& material) const;
@@ -68,7 +68,7 @@ public:
 
 
 protected:
-	
+
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
 	inline irr::core::stringw toString(const irr::core::vector3df& vec) const;
 	inline irr::core::stringw toString(const irr::core::vector2df& vec) const;
@@ -138,7 +138,7 @@ protected:
 		ColladaMesh() : MaterialWritten(false), EffectWritten(false), GeometryWritten(false)
 		{
 		}
-			 
+
 		irr::core::stringw Name;
 		bool MaterialWritten;
 		bool EffectWritten;
