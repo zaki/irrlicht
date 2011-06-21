@@ -287,9 +287,7 @@ void CGUIButton::draw()
 
 	if (Text.size())
 	{
-		IGUIFont* font = OverrideFont;
-		if (!OverrideFont)
-			font = skin->getFont(EGDF_BUTTON);
+		IGUIFont* font = getActiveFont();
 
 		core::rect<s32> rect = AbsoluteRect;
 		if (Pressed)
@@ -320,6 +318,22 @@ void CGUIButton::setOverrideFont(IGUIFont* font)
 		OverrideFont->grab();
 }
 
+//! Gets the override font (if any)
+IGUIFont * CGUIButton::getOverrideFont() const
+{
+	return OverrideFont;
+}
+
+//! Get the font which is used right now for drawing
+IGUIFont* CGUIButton::getActiveFont() const
+{
+	if ( OverrideFont )
+		return OverrideFont;
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		return skin->getFont();
+	return 0;
+}
 
 //! Sets an image which should be displayed on the button when it is in normal state.
 void CGUIButton::setImage(video::ITexture* image)

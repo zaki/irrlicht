@@ -82,9 +82,7 @@ void CGUIStaticText::draw()
 	// draw the text
 	if (Text.size())
 	{
-		IGUIFont* font = OverrideFont;
-		if (!OverrideFont)
-			font = skin->getFont();
+		IGUIFont* font = getActiveFont();
 
 		if (font)
 		{
@@ -162,12 +160,22 @@ void CGUIStaticText::setOverrideFont(IGUIFont* font)
 	breakText();
 }
 
-
+//! Gets the override font (if any)
 IGUIFont * CGUIStaticText::getOverrideFont() const
 {
 	return OverrideFont;
 }
 
+//! Get the font which is used right now for drawing
+IGUIFont* CGUIStaticText::getActiveFont() const
+{
+	if ( OverrideFont )
+		return OverrideFont;
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		return skin->getFont();
+	return 0;
+}
 
 //! Sets another color for the text.
 void CGUIStaticText::setOverrideColor(video::SColor color)
@@ -275,17 +283,12 @@ bool CGUIStaticText::isRightToLeft() const
 //! Breaks the single text line.
 void CGUIStaticText::breakText()
 {
-	IGUISkin* skin = Environment->getSkin();
-
-	if (!WordWrap || !skin)
+	if (!WordWrap)
 		return;
 
 	BrokenText.clear();
 
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
-		font = skin->getFont();
-
+	IGUIFont* font = getActiveFont();
 	if (!font)
 		return;
 
@@ -512,15 +515,7 @@ void CGUIStaticText::updateAbsolutePosition()
 //! Returns the height of the text in pixels when it is drawn.
 s32 CGUIStaticText::getTextHeight() const
 {
-	IGUISkin* skin = Environment->getSkin();
-
-	if (!skin)
-		return 0;
-
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
-		font = skin->getFont();
-
+	IGUIFont* font = getActiveFont();
 	if (!font)
 		return 0;
 
@@ -535,15 +530,7 @@ s32 CGUIStaticText::getTextHeight() const
 
 s32 CGUIStaticText::getTextWidth() const
 {
-	IGUIFont * font = OverrideFont;
-
-	if(!OverrideFont)
-	{
-		IGUISkin * skin = Environment->getSkin();
-		if(skin)
-			font = skin->getFont();
-	}
-
+	IGUIFont * font = getActiveFont();
 	if(!font)
 		return 0;
 

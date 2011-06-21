@@ -34,7 +34,10 @@ namespace gui
 		virtual void setOverrideFont(IGUIFont* font=0);
 
 		//! Gets the override font (if any)
-		virtual IGUIFont * getOverrideFont() const;
+		virtual IGUIFont* getOverrideFont() const;
+
+		//! Get the font which is used right now for drawing
+		virtual IGUIFont* getActiveFont() const;
 
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
@@ -63,7 +66,7 @@ namespace gui
 
 		//! Set whether the text in this label should be clipped if it goes outside bounds
 		virtual void setTextRestrainedInside(bool restrainedInside);
-		
+
 		//! Checks if the text in this label should be clipped if it goes outside bounds
 		virtual bool isTextRestrainedInside() const;
 

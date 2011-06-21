@@ -1,5 +1,9 @@
 Changes in 1.8 (??.??.2011)
 
+ - Add getActiveFont to all elements which have setOverrideFont for cleaner code
+
+ - Add getOverrideFont to all elements which have setOverrideFont to have a consistent interface
+
  - IGUIEditBox: added missing serialization for Border
 
  - IGUIEditBox: remove bug that added spaces to the end of each line 
