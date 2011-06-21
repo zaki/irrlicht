@@ -222,9 +222,9 @@ namespace os
 	}
 
 	//! resets the randomizer
-	void Randomizer::reset()
+	void Randomizer::reset(s32 value)
 	{
-		seed = 0x0f0f0f0f;
+		seed = value;
 	}
 
 
