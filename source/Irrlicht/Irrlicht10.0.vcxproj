@@ -825,6 +825,7 @@
     <ClInclude Include="..\..\include\IEventReceiver.h" />
     <ClInclude Include="..\..\include\ILogger.h" />
     <ClInclude Include="..\..\include\IOSOperator.h" />
+    <ClInclude Include="..\..\include\IRandomizer.h" />
     <ClInclude Include="..\..\include\IReferenceCounted.h" />
     <ClInclude Include="..\..\include\IrrCompileConfig.h" />
     <ClInclude Include="..\..\include\irrlicht.h" />
