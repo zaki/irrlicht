@@ -6,6 +6,8 @@
 #define __IRR_I_COLLADA_MESH_WRITER_H_INCLUDED__
 
 #include "IMeshWriter.h"
+#include "ISceneNode.h"
+#include "IAnimatedMesh.h"
 #include "SMaterial.h"
 
 namespace irr
@@ -63,7 +65,18 @@ namespace scene
 		ECOF_TRANSPARENT_SPECULAR = 16
 	};
 
+	//! For mapping irrlicht textures indices to collada color-types
+	enum E_COLLADA_COLOR_SAMPLER
+	{
+		ECCS_DIFFUSE,
+		ECCS_AMBIENT,
+		ECCS_EMISSIVE,
+		ECCS_SPECULAR,
+		ECCS_TRANSPARENT
+	};
+
 	//! Callback interface for properties which can be used to influence collada writing
+	//! NOTE: Interface is still work in process and might change some more before 1.8 release
 	class IColladaMeshWriterProperties  : public virtual IReferenceCounted
 	{
 	public:
@@ -72,27 +85,11 @@ namespace scene
 		//! Which lighting model should be used in the technique (FX) section when exporting effects (materials)
 		virtual E_COLLADA_TECHNIQUE_FX getTechniqueFx(const video::SMaterial& material) const = 0;
 
-		//! Which texture index should be used when writing the emissive texture
-		/** \return the index to the texture-layer or -1 if that texture should never be exported */
-		virtual s32 getEmissiveTextureIdx(const video::SMaterial& material) const	= 0;
-
-		//! Which texture index should be used when writing the ambient texture
-		/** \return the index to the texture-layer or -1 if that texture should never be exported */
-		virtual s32 getAmbientTextureIdx(const video::SMaterial& material) const 	= 0;
-
-		//! Which texture index should be used when writing the diffuse texture
-		/** \return the index to the texture-layer or -1 if that texture should never be exported */
-		virtual s32 getDiffuseTextureIdx(const video::SMaterial& material) const 	= 0;
-
-		//! Which texture index should be used when writing the specular texture
-		/** \return the index to the texture-layer or -1 if that texture should never be exported */
-		virtual s32 getSpecularTextureIdx(const video::SMaterial& material) const 	= 0;
-
-		//! Which texture index should be used when writing the transparent texture
-		/** Note: By default the alpha channel is used, if you want to use RGB you have to set
-		the ECOF_RGB_ZERO flag in getTransparentFx.
-		\return the index to the texture-layer or -1 if that texture should never be exported */
-		virtual s32 getTransparentTextureIdx( const video::SMaterial& material) const 	= 0;
+		//! Which texture index should be used when writing the texture of the given sampler color.
+		/** \return the index to the texture-layer or -1 if that texture should never be exported 
+			Note: for ECCS_TRANSPARENT by default the alpha channel is used, if you want to use RGB you have to set
+			also the ECOF_RGB_ZERO flag in getTransparentFx.  */
+		virtual s32 getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const = 0;
 
 		//! Return the settings for transparence
 		virtual E_COLLADA_TRANSPARENT_FX getTransparentFx(const video::SMaterial& material) const = 0;
@@ -101,6 +98,14 @@ namespace scene
 		/** This value is additional to transparent settings, if both are set they will be multiplicated.
 		\return 1.0 for fully transparent, 0.0 for not transparent and not written at all when < 0.f */
 		virtual f32 getTransparency(const video::SMaterial& material) const = 0;
+
+		//! Should node be used in scene export? 
+		//! By default all visible nodes are exported.
+		virtual bool isExportable(const irr::scene::ISceneNode * node) const = 0;
+
+		//! Return the mesh for the given node. If it has no mesh or shouldn't export it's mesh return 0
+		//! then only the transformation matrix of the node will be used.
+		virtual IMesh* getMesh(irr::scene::ISceneNode * node) = 0;
 	};
 
 
@@ -109,8 +114,7 @@ namespace scene
 	{
 	public:
 
-		IColladaMeshWriter() : Properties(0), DefaultProperties(0), WriteTextures(true), WriteScene(false)
-
+		IColladaMeshWriter() : Properties(0), DefaultProperties(0), WriteTextures(true), WriteDefaultScene(false)
 		{
 		}
 
@@ -122,6 +126,10 @@ namespace scene
 			if ( DefaultProperties )
 				DefaultProperties->drop();
 		}
+
+		//! writes a scene starting with the given node
+		virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root) = 0;
+
 
 		//! Set if texture information should be written
 		virtual void setWriteTextures(bool write)
@@ -135,19 +143,20 @@ namespace scene
 			return WriteTextures;
 		}
 
-		//! Set if a default scene should be written
+		//! Set if a default scene should be written when writing meshes.
 		/** Many collada readers fail to read a mesh if the collada files doesn't contain a scene as well.
 		The scene is doing an instantiation of the mesh.
+		When using writeScene this flag is ignored (as we have scene there already)
 		*/
-		virtual void setWriteScene(bool write)
+		virtual void setWriteDefaultScene(bool write)
 		{
-			WriteScene = write;
+			WriteDefaultScene = write;
 		}
 
 		//! Get if a default scene should be written
-		virtual bool getWriteScene() const
+		virtual bool getWriteDefaultScene() const
 		{
-			return WriteScene;
+			return WriteDefaultScene;
 		}
 
 		//! Set properties to use by the meshwriter instead of it's default properties.
@@ -194,7 +203,7 @@ namespace scene
 		IColladaMeshWriterProperties * Properties;
 		IColladaMeshWriterProperties * DefaultProperties;
 		bool WriteTextures;
-		bool WriteScene;
+		bool WriteDefaultScene;
 	};
 
 

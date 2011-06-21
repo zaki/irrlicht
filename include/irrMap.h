@@ -58,6 +58,12 @@ class map
 			return Value;
 		}
 
+		ValueTypeRB& getValue()
+		{
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			return Value;
+		}
+
 		KeyTypeRB getKey() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
