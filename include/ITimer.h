@@ -14,10 +14,6 @@ namespace irr
 class ITimer : public virtual IReferenceCounted
 {
 public:
-
-	//! destructor
-	virtual ~ITimer() {}
-
 	//! Returns current real time in milliseconds of the system.
 	/** This value does not start with 0 when the application starts.
 	For example in one implementation the value returned could be the
@@ -105,4 +101,3 @@ public:
 } // end namespace irr
 
 #endif
-
