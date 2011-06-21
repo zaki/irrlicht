@@ -30,6 +30,15 @@ namespace gui
 		//! Sets another skin independent font.
 		virtual void setOverrideFont(IGUIFont* font=0);
 
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont() const;
+
+		//! Get the font which is used right now for drawing
+		/** Currently this is the override font when one is set and the
+		font of the active skin otherwise */
+		virtual IGUIFont* getActiveFont() const;
+
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
 

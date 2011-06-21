@@ -100,6 +100,22 @@ void CGUIEditBox::setOverrideFont(IGUIFont* font)
 	breakText();
 }
 
+//! Gets the override font (if any)
+IGUIFont * CGUIEditBox::getOverrideFont() const
+{
+	return OverrideFont;
+}
+
+//! Get the font which is used right now for drawing
+IGUIFont* CGUIEditBox::getActiveFont() const
+{
+	if ( OverrideFont )
+		return OverrideFont;
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		return skin->getFont();
+	return 0;
+}
 
 //! Sets another color for the text.
 void CGUIEditBox::setOverrideColor(video::SColor color)
@@ -733,9 +749,7 @@ void CGUIEditBox::draw()
 
 	// draw the text
 
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
-		font = skin->getFont();
+	IGUIFont* font = getActiveFont();
 
 	s32 cursorLine = 0;
 	s32 charcursorpos = 0;
@@ -1033,10 +1047,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 
 s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 {
-	IGUIFont* font = OverrideFont;
-	IGUISkin* skin = Environment->getSkin();
-	if (!OverrideFont)
-		font = skin->getFont();
+	IGUIFont* font = getActiveFont();
 
 	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 
@@ -1082,18 +1093,13 @@ s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 //! Breaks the single text line.
 void CGUIEditBox::breakText()
 {
-	IGUISkin* skin = Environment->getSkin();
-
-	if ((!WordWrap && !MultiLine) || !skin)
+	if ((!WordWrap && !MultiLine))
 		return;
 
 	BrokenText.clear(); // need to reallocate :/
 	BrokenTextPositions.set_used(0);
 
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
-		font = skin->getFont();
-
+	IGUIFont* font = getActiveFont();
 	if (!font)
 		return;
 
@@ -1198,12 +1204,7 @@ void CGUIEditBox::setTextRect(s32 line)
 	if ( line < 0 )
 		return;
 
-	IGUISkin* skin = Environment->getSkin();
-	if (!skin)
-		return;
-
-	IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
-
+	IGUIFont* font = getActiveFont();
 	if (!font)
 		return;
 
@@ -1344,10 +1345,7 @@ void CGUIEditBox::calculateScrollPos()
 	if (!WordWrap)
 	{
 		// get cursor position
-		IGUISkin* skin = Environment->getSkin();
-		if (!skin)
-			return;
-		IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
+		IGUIFont* font = getActiveFont();
 		if (!font)
 			return;
 
