@@ -34,7 +34,7 @@ E_COLLADA_TECHNIQUE_FX CColladaMeshWriterProperties::getTechniqueFx(const video:
 s32 CColladaMeshWriterProperties::getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const
 {
 	// So far we just export in a way which is similar to how we import colladas.
-	// There might be better ways to do this, but I suppose it depends a lot for which target 
+	// There might be better ways to do this, but I suppose it depends a lot for which target
 	// application we export, so in most cases it will have to be done in user-code anyway.
 	switch ( cs )
 	{
@@ -59,7 +59,7 @@ E_COLLADA_TRANSPARENT_FX CColladaMeshWriterProperties::getTransparentFx(const vi
 	return ECOF_A_ONE;
 }
 
-//! Transparency value for the material. 
+//! Transparency value for the material.
 f32 CColladaMeshWriterProperties::getTransparency(const video::SMaterial& material) const
 {
 	// TODO
@@ -77,7 +77,7 @@ IMesh* CColladaMeshWriterProperties::getMesh(irr::scene::ISceneNode * node)
 		return 0;
 	if ( node->getType() == ESNT_ANIMATED_MESH )
 		return static_cast<IAnimatedMeshSceneNode*>(node)->getMesh()->getMesh(0);
-	if (	node->getType() == ESNT_MESH 
+	if (	node->getType() == ESNT_MESH
 		||	node->getType() == ESNT_CUBE
 		||	node->getType() == ESNT_SPHERE
 		||	node->getType() == ESNT_WATER_SURFACE
@@ -160,7 +160,7 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 		L"version", L"1.4.1");
 	Writer->writeLineBreak();
 
-	// write asset data 
+	// write asset data
 	writeAsset();
 
 	// write all materials
@@ -236,7 +236,7 @@ void CColladaMeshWriter::makeMeshNames(irr::scene::ISceneNode * node)
 	}
 
 	const core::list<ISceneNode*>& children = node->getChildren();
-	for ( auto it = children.begin(); it != children.end(); ++it )
+	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
 	{
 		makeMeshNames(*it);
 	}
@@ -259,7 +259,7 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 	}
 
 	const core::list<ISceneNode*>& children = node->getChildren();
-	for ( auto it = children.begin(); it != children.end(); ++it )
+	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
 	{
 		writeNodeMaterials( *it );
 	}
@@ -292,7 +292,7 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 	}
 
 	const core::list<ISceneNode*>& children = node->getChildren();
-	for ( auto it = children.begin(); it != children.end(); ++it )
+	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
 	{
 		writeNodeEffects( *it );
 	}
@@ -315,7 +315,7 @@ void CColladaMeshWriter::writeNodeGeometries(irr::scene::ISceneNode * node)
 	}
 
 	const core::list<ISceneNode*>& children = node->getChildren();
-	for ( auto it = children.begin(); it != children.end(); ++it )
+	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
 	{
 		writeNodeGeometries( *it );
 	}
@@ -343,11 +343,11 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	{
 		MeshNode * n = Meshes.find(mesh);
 		if ( n )
-			writeMeshInstanceGeometry(n->getValue().Name, mesh);	
+			writeMeshInstanceGeometry(n->getValue().Name, mesh);
 	}
 
 	const core::list<ISceneNode*>& children = node->getChildren();
-	for ( auto it = children.begin(); it != children.end(); ++it )
+	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
 	{
 		writeSceneNode( *it );
 	}
@@ -383,9 +383,9 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		L"version", L"1.4.1");
 	Writer->writeLineBreak();
 
-	// write asset data 
+	// write asset data
 	writeAsset();
-		
+
 	// write all materials
 
 	Writer->writeElement(L"library_materials", false);
@@ -476,9 +476,9 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 
 			Writer->writeElement(L"technique_common", false);
 			Writer->writeLineBreak();
-						
+
 			// instance materials
-			// <instance_material symbol="leaf" target="#MidsummerLeaf01"/> 
+			// <instance_material symbol="leaf" target="#MidsummerLeaf01"/>
 			for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 			{
 				core::stringw strMat = "mat";
@@ -499,7 +499,7 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 				Writer->writeClosingTag(L"instance_material");
 				Writer->writeLineBreak();
 			}
-						
+
 			Writer->writeClosingTag(L"technique_common");
 			Writer->writeLineBreak();
 
@@ -558,7 +558,7 @@ irr::core::stringw CColladaMeshWriter::toString(const irr::video::E_TEXTURE_CLAM
 {
 	switch ( clamp )
 	{
-		case video::ETC_REPEAT:	
+		case video::ETC_REPEAT:
 			return core::stringw(L"WRAP");
 		case video::ETC_CLAMP:
 		case video::ETC_CLAMP_TO_EDGE:
@@ -567,8 +567,8 @@ irr::core::stringw CColladaMeshWriter::toString(const irr::video::E_TEXTURE_CLAM
 			return core::stringw(L"BORDER");
 		case video::ETC_MIRROR:
 		case video::ETC_MIRROR_CLAMP:
-		case video::ETC_MIRROR_CLAMP_TO_EDGE:	
-		case video::ETC_MIRROR_CLAMP_TO_BORDER:	
+		case video::ETC_MIRROR_CLAMP_TO_EDGE:
+		case video::ETC_MIRROR_CLAMP_TO_BORDER:
 			return core::stringw(L"MIRROR");
 	}
 	return core::stringw(L"NONE");
@@ -608,7 +608,7 @@ irr::core::stringw CColladaMeshWriter::minTexfilterToString(bool bilinear, bool 
 		return core::stringw(L"LINEAR_MIPMAP_LINEAR");
 	else if ( bilinear )
 		return core::stringw(L"LINEAR_MIPMAP_NEAREST");
-	
+
 	return core::stringw(L"NONE");
 }
 
@@ -632,7 +632,7 @@ bool CColladaMeshWriter::isXmlNameStartChar(wchar_t c) const
 			||  (c >= 0x37F && c <= 0x1FFF)
 			||  (c >= 0x200C && c <= 0x200D)
 			||  (c >= 0x2070 && c <= 0x218F)
-			||  (c >= 0x2C00 && c <= 0x2FEF) 
+			||  (c >= 0x2C00 && c <= 0x2FEF)
 			||  (c >= 0x3001 && c <= 0xD7FF)
 			||  (c >= 0xF900 && c <= 0xFDCF)
 			||  (c >= 0xFDF0 && c <= 0xFFFD)
@@ -642,10 +642,10 @@ bool CColladaMeshWriter::isXmlNameStartChar(wchar_t c) const
 bool CColladaMeshWriter::isXmlNameChar(wchar_t c) const
 {
 	return isXmlNameStartChar(c)
-		||	c == L'-' 
+		||	c == L'-'
 		||	c == L'.'
 		||	(c >= '0' && c <= '9')
-		||	c == 0xB7 
+		||	c == 0xB7
 		||	(c >= 0x0300 && c <= 0x036F)
 		||	(c >= 0x203F && c <= 0x2040);
 }
@@ -676,13 +676,13 @@ irr::core::stringw CColladaMeshWriter::pathToURI(const irr::io::path& path) cons
 	irr::core::stringw result;
 
 	// is this a relative path?
-	if ( path.size() > 1 
-		&& path[0] != _IRR_TEXT('/') 
+	if ( path.size() > 1
+		&& path[0] != _IRR_TEXT('/')
 		&& path[0] != _IRR_TEXT('\\')
 		&& path[1] != _IRR_TEXT(':') )
 	{
 		// not already starting with "./" ?
-		if (	path[0] != _IRR_TEXT('.') 
+		if (	path[0] != _IRR_TEXT('.')
 			||	path[1] != _IRR_TEXT('/') )
 		{
 			result.append(L"./");
@@ -788,7 +788,7 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& meshname,
 			//  <surface type="2D">
 				Writer->writeElement(L"surface", false, L"type", L"2D");
 				Writer->writeLineBreak();
-    
+
 		//          <init_from>internal_texturename</init_from>
 					Writer->writeElement(L"init_from", false);
 					irr::io::path p(FileSystem->getRelativeFilename(layer.Texture->getName().getPath(), Directory));
@@ -837,7 +837,7 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& meshname,
 					Writer->writeClosingTag(L"wrap_t");
 					Writer->writeLineBreak();
 
-		//			<minfilter>LINEAR_MIPMAP_LINEAR</minfilter> 
+		//			<minfilter>LINEAR_MIPMAP_LINEAR</minfilter>
 					Writer->writeElement(L"minfilter", false);
 					Writer->writeText(minTexfilterToString(layer.BilinearFilter, layer.TrilinearFilter).c_str());
 					Writer->writeClosingTag(L"minfilter");
@@ -1397,16 +1397,16 @@ void CColladaMeshWriter::writeLibraryImages()
 		for ( irr::u32 i=0; i<LibraryImages.size(); ++i )
 		{
 			irr::io::path p(FileSystem->getRelativeFilename(LibraryImages[i]->getName().getPath(), Directory));
-			//<image name="rose01"> 
+			//<image name="rose01">
 			irr::core::stringw ncname(pathToNCName(p));
 			Writer->writeElement(L"image", false, L"id", ncname.c_str(), L"name", ncname.c_str());
 			Writer->writeLineBreak();
-			//  <init_from>../flowers/rose01.jpg</init_from> 
+			//  <init_from>../flowers/rose01.jpg</init_from>
 				Writer->writeElement(L"init_from", false);
 				Writer->writeText(pathToURI(p).c_str());
 				Writer->writeClosingTag(L"init_from");
 				Writer->writeLineBreak();
-	 		//  </image> 
+	 		//  </image>
 			Writer->writeClosingTag(L"image");
 			Writer->writeLineBreak();
 		}
@@ -1497,7 +1497,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 	Writer->writeElement(fxLabel.c_str(), false);
 	Writer->writeLineBreak();
 
-	// write all interesting material parameters 
+	// write all interesting material parameters
 	// attributes must be written in fixed order
 	if ( writeEmission )
 	{
@@ -1586,7 +1586,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 		f32 t = getProperties()->getTransparency(material);
 		if ( t >= 0.f )
 		{
-			// <transparency>  <float>1.000000</float> </transparency> 
+			// <transparency>  <float>1.000000</float> </transparency>
 			Writer->writeElement(L"transparency", false);
 			Writer->writeLineBreak();
 			writeFloatElement(t);
@@ -1599,7 +1599,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 	{
 		// TODO index_of_refraction>
 	}
-	
+
 
 	Writer->writeClosingTag(fxLabel.c_str());
 	Writer->writeLineBreak();
