@@ -1291,6 +1291,9 @@
     <ClInclude Include="..\..\include\EDriverFeatures.h">
       <Filter>include\video</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IRandomizer.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
