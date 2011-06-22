@@ -48,21 +48,64 @@ s32 CColladaMeshWriterProperties::getTextureIdx(const video::SMaterial & materia
 			return 3;
 		case ECCS_TRANSPARENT:
 			return -1;
+		case ECCS_REFLECTIVE:
+			return -1;
 	};
 	return -1;
 }
 
+E_COLLADA_IRR_COLOR CColladaMeshWriterProperties::getColorMapping(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const
+{
+	switch ( cs )
+	{
+		case ECCS_DIFFUSE:
+			return ECIC_DIFFUSE;
+		case ECCS_AMBIENT:
+			return ECIC_AMBIENT;
+		case ECCS_EMISSIVE:
+			return ECIC_EMISSIVE;
+		case ECCS_SPECULAR:
+			return ECIC_SPECULAR;
+		case ECCS_TRANSPARENT:
+			return ECIC_NONE;
+		case ECCS_REFLECTIVE:
+			return ECIC_CUSTOM;
+	};
+
+	return ECIC_NONE;
+}
+
+//! Return custom colors for certain color types requested by collada. 
+video::SColor CColladaMeshWriterProperties::getCustomColor(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const
+{
+	return video::SColor(255, 0, 0, 0);
+}
+
+
 //! Return the settings for transparence
 E_COLLADA_TRANSPARENT_FX CColladaMeshWriterProperties::getTransparentFx(const video::SMaterial& material) const
 {
-	// TODO
+	// TODO: figure out best default mapping
 	return ECOF_A_ONE;
 }
 
 //! Transparency value for the material.
 f32 CColladaMeshWriterProperties::getTransparency(const video::SMaterial& material) const
 {
-	// TODO
+	// TODO: figure out best default mapping
+	return -1.f;
+}
+
+//! Reflectivity value for that material
+f32 CColladaMeshWriterProperties::getReflectivity(const video::SMaterial& material) const
+{
+	// TODO: figure out best default mapping
+	return 0.f;
+}
+
+//! Return index of refraction for that material
+f32 CColladaMeshWriterProperties::getIndexOfRefraction(const video::SMaterial& material) const
+{
 	return -1.f;
 }
 
@@ -596,7 +639,8 @@ irr::core::stringw CColladaMeshWriter::uniqueNameForMesh(const scene::IMesh* mes
 
 irr::core::stringw CColladaMeshWriter::uniqueNameForNode(const scene::ISceneNode* node) const
 {
-	irr::core::stringw name((int)node);
+	irr::core::stringw name(L"id");	// (prefix, because xs::ID can't start with a number)
+	name += irr::core::stringw((int)node);
 	if ( node )
 		name += irr::core::stringw(node->getName());
 	return name;
@@ -1427,7 +1471,7 @@ void CColladaMeshWriter::writeColorElement(const video::SColor & col)
 	Writer->writeLineBreak();
 }
 
-s32 CColladaMeshWriter::getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs)
+s32 CColladaMeshWriter::getCheckedTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs)
 {
 	if (	!getWriteTextures()
 		||	!getProperties() )
@@ -1440,11 +1484,30 @@ s32 CColladaMeshWriter::getTextureIdx(const video::SMaterial & material, E_COLLA
 	return idx;
 }
 
-bool CColladaMeshWriter::writeTextureSampler(const irr::core::stringw& meshname, s32 textureIdx)
+video::SColor CColladaMeshWriter::getColorMapping(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs, E_COLLADA_IRR_COLOR colType)
 {
-	if ( textureIdx < 0 )
-		return false;
+	switch ( colType )
+	{
+		case ECIC_CUSTOM:
+			return getProperties()->getCustomColor(material, cs);
 
+		case ECIC_DIFFUSE:
+			return material.DiffuseColor;
+
+		case ECIC_AMBIENT:
+			return material.AmbientColor;
+
+		case ECIC_EMISSIVE:
+			return material.EmissiveColor;
+
+		case ECIC_SPECULAR:
+			return material.SpecularColor;
+	}
+	return video::SColor(255, 0, 0, 0);
+}
+
+void CColladaMeshWriter::writeTextureSampler(const irr::core::stringw& meshname, s32 textureIdx)
+{
 	irr::core::stringw sampler(L"tex");
 	sampler += irr::core::stringw(textureIdx);
 	sampler += L"-sampler";
@@ -1455,8 +1518,6 @@ bool CColladaMeshWriter::writeTextureSampler(const irr::core::stringw& meshname,
 	meshTexCoordId += L"-TexCoord0";	// TODO: need to handle second UV-set
 	Writer->writeElement(L"texture", true, L"texture", sampler.c_str(), L"texcoord", meshTexCoordId.c_str() );
 	Writer->writeLineBreak();
-
-	return true;
 }
 
 void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx)
@@ -1499,110 +1560,110 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 
 	// write all interesting material parameters
 	// attributes must be written in fixed order
-	if ( writeEmission )
+	if ( getProperties() )
 	{
-		Writer->writeElement(L"emission", false);
-		Writer->writeLineBreak();
-		if ( !writeTextureSampler( meshname, getTextureIdx(material, ECCS_EMISSIVE)) )
-			writeColorElement(material.EmissiveColor);
-		Writer->writeClosingTag(L"emission");
-		Writer->writeLineBreak();
-	}
-
-	if ( writeAmbient )
-	{
-		Writer->writeElement(L"ambient", false);
-		Writer->writeLineBreak();
-		if ( !writeTextureSampler( meshname, getTextureIdx(material, ECCS_AMBIENT)) )
-			writeColorElement(material.AmbientColor);
-		Writer->writeClosingTag(L"ambient");
-		Writer->writeLineBreak();
-	}
-
-	if ( writeDiffuse )
-	{
-		Writer->writeElement(L"diffuse", false);
-		Writer->writeLineBreak();
-		if ( !writeTextureSampler( meshname, getTextureIdx(material, ECCS_DIFFUSE)) )
-			writeColorElement(material.DiffuseColor);
-		Writer->writeClosingTag(L"diffuse");
-		Writer->writeLineBreak();
-	}
-
-	if ( writeSpecular )
-	{
-		Writer->writeElement(L"specular", false);
-		Writer->writeLineBreak();
-		if ( !writeTextureSampler( meshname, getTextureIdx(material, ECCS_SPECULAR)) )
-			writeColorElement(material.SpecularColor);
-		Writer->writeClosingTag(L"specular");
-		Writer->writeLineBreak();
-	}
-
-	if ( writeShininess )
-	{
-		Writer->writeElement(L"shininess", false);
-		Writer->writeLineBreak();
-		writeFloatElement(material.Shininess);
-		Writer->writeClosingTag(L"shininess");
-		Writer->writeLineBreak();
-	}
-
-	if ( writeReflective )
-	{
-		// TODO reflective
-	}
-	if ( writeReflectivity )
-	{
-		// TODO reflectivity
-	}
-
-	if ( writeTransparent )
-	{
-		s32 textureIdx = getTextureIdx(material, ECCS_TRANSPARENT);
-		E_COLLADA_TRANSPARENT_FX transparentFx = getProperties() ? getProperties()->getTransparentFx(material) : ECOF_A_ONE;
-		if ( textureIdx >= 0 || transparentFx >= ECOF_TRANSPARENT_DIFFUSE )
+		if ( writeEmission )
 		{
-			Writer->writeElement(L"transparent", false, L"opaque", toString(transparentFx).c_str());
+			writeColorFx(meshname, material, L"emission", ECCS_EMISSIVE);
+		}
+
+		if ( writeAmbient )
+		{
+			writeColorFx(meshname, material, L"ambient", ECCS_AMBIENT);
+		}
+
+		if ( writeDiffuse )
+		{
+			writeColorFx(meshname, material, L"diffuse", ECCS_DIFFUSE);
+		}
+
+		if ( writeSpecular )
+		{
+			writeColorFx(meshname, material, L"specular", ECCS_SPECULAR);
+		}
+
+		if ( writeShininess )
+		{
+			Writer->writeElement(L"shininess", false);
 			Writer->writeLineBreak();
-			if ( !writeTextureSampler(meshname, textureIdx) )
+			writeFloatElement(material.Shininess);
+			Writer->writeClosingTag(L"shininess");
+			Writer->writeLineBreak();
+		}
+
+		if ( writeReflective )
+		{
+			writeColorFx(meshname, material, L"reflective", ECCS_REFLECTIVE);
+		}
+
+		if ( writeReflectivity )
+		{
+			f32 t = getProperties()->getReflectivity(material);
+			if ( t >= 0.f )
 			{
-				if ( transparentFx & ECOF_TRANSPARENT_DIFFUSE )
-					writeColorElement(material.DiffuseColor);
-				else if ( transparentFx & ECOF_TRANSPARENT_AMBIENT)
-					writeColorElement(material.AmbientColor);
-				else if ( transparentFx & ECOF_TRANSPARENT_EMISSIVE )
-					writeColorElement(material.EmissiveColor);
-				else if ( transparentFx & ECOF_TRANSPARENT_SPECULAR )
-					writeColorElement(material.SpecularColor);
+				// <transparency>  <float>1.000000</float> </transparency> 
+				Writer->writeElement(L"reflectivity", false);
+				Writer->writeLineBreak();
+				writeFloatElement(t);
+				Writer->writeClosingTag(L"reflectivity");
+				Writer->writeLineBreak();
 			}
-			Writer->writeClosingTag(L"transparent");
-			Writer->writeLineBreak();
 		}
-	}
 
-	if ( writeTransparency && getProperties() )
-	{
-		f32 t = getProperties()->getTransparency(material);
-		if ( t >= 0.f )
+		if ( writeTransparent )
 		{
-			// <transparency>  <float>1.000000</float> </transparency>
-			Writer->writeElement(L"transparency", false);
-			Writer->writeLineBreak();
-			writeFloatElement(t);
-			Writer->writeClosingTag(L"transparency");
-			Writer->writeLineBreak();
+			E_COLLADA_TRANSPARENT_FX transparentFx = getProperties()->getTransparentFx(material);
+			writeColorFx(meshname, material, L"transparent", ECCS_TRANSPARENT, L"opaque", toString(transparentFx).c_str());
 		}
-	}
 
-	if ( writeIndexOfRefraction )
-	{
-		// TODO index_of_refraction>
+		if ( writeTransparency  )
+		{
+			f32 t = getProperties()->getTransparency(material);
+			if ( t >= 0.f )
+			{
+				// <transparency>  <float>1.000000</float> </transparency> 
+				Writer->writeElement(L"transparency", false);
+				Writer->writeLineBreak();
+				writeFloatElement(t);
+				Writer->writeClosingTag(L"transparency");
+				Writer->writeLineBreak();
+			}
+		}
+
+		if ( writeIndexOfRefraction )
+		{
+			f32 t = getProperties()->getIndexOfRefraction(material);
+			if ( t >= 0.f )
+			{
+				Writer->writeElement(L"index_of_refraction", false);
+				Writer->writeLineBreak();
+				writeFloatElement(t);
+				Writer->writeClosingTag(L"index_of_refraction");
+				Writer->writeLineBreak();
+			}
+		}
 	}
 
 
 	Writer->writeClosingTag(fxLabel.c_str());
 	Writer->writeLineBreak();
+}
+
+void CColladaMeshWriter::writeColorFx(const irr::core::stringw& meshname, const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name, const wchar_t* attr1Value)
+{
+	irr::s32 idx = getCheckedTextureIdx(material, cs);
+	E_COLLADA_IRR_COLOR colType = idx < 0 ? getProperties()->getColorMapping(material, cs) : ECIC_NONE;
+	if ( idx >= 0 || colType != ECIC_NONE )
+	{
+		Writer->writeElement(colorname, false, attr1Name, attr1Value);
+		Writer->writeLineBreak();
+		if ( idx >= 0 )
+			writeTextureSampler( meshname, idx);
+		else
+			writeColorElement(getColorMapping(material, cs, colType));
+		Writer->writeClosingTag(colorname);
+		Writer->writeLineBreak();
+	}
 }
 
 void CColladaMeshWriter::writeFloatElement(irr::f32 value)
