@@ -21,29 +21,39 @@ namespace scene
 {
 
 	//! Callback interface for properties which can be used to influence collada writing
+	// (Implementer note: keep namespace labels here to make it easier for users copying this one)
 	class CColladaMeshWriterProperties  : public virtual IColladaMeshWriterProperties
 	{
 	public:
 		//! Which lighting model should be used in the technique (FX) section when exporting effects (materials)
-		virtual E_COLLADA_TECHNIQUE_FX getTechniqueFx(const video::SMaterial& material) const;
+		virtual irr::scene::E_COLLADA_TECHNIQUE_FX getTechniqueFx(const irr::video::SMaterial& material) const;
 
 		//! Which texture index should be used when writing the texture of the given sampler color.
-		/** \return the index to the texture-layer or -1 if that texture should never be exported */
-		virtual s32 getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const;
+		virtual irr::s32 getTextureIdx(const irr::video::SMaterial & material, irr::scene::E_COLLADA_COLOR_SAMPLER cs) const;
+
+		//! Return which color from Irrlicht should be used for the color requested by collada
+		virtual irr::scene::E_COLLADA_IRR_COLOR getColorMapping(const irr::video::SMaterial & material, irr::scene::E_COLLADA_COLOR_SAMPLER cs) const;
+
+		//! Return custom colors for certain color types requested by collada. 
+		virtual irr::video::SColor getCustomColor(const irr::video::SMaterial & material, irr::scene::E_COLLADA_COLOR_SAMPLER cs) const;
 
 		//! Return the settings for transparence
-		virtual E_COLLADA_TRANSPARENT_FX getTransparentFx(const video::SMaterial& material) const;
+		virtual irr::scene::E_COLLADA_TRANSPARENT_FX getTransparentFx(const irr::video::SMaterial& material) const;
 
-		//! Transparency value for the material.
-		/** This value is additional to transparent settings, if both are set they will be multiplicated.
-		\return 1.0 for fully transparent, 0.0 for not transparent and not written at all when < 0.f */
-		virtual f32 getTransparency(const video::SMaterial& material) const;
+		//! Transparency value for that material. 
+		virtual irr::f32 getTransparency(const irr::video::SMaterial& material) const;
+
+		//! Reflectivity value for that material
+		virtual irr::f32 getReflectivity(const irr::video::SMaterial& material) const;
+
+		//! Return index of refraction for that material
+		virtual irr::f32 getIndexOfRefraction(const irr::video::SMaterial& material) const;
 
 		//! Should node be used in scene export? By default all visible nodes are exported.
 		virtual bool isExportable(const irr::scene::ISceneNode * node) const;
 
 		//! Return the mesh for the given nod. If it has no mesh or shouldn't export it's mesh return 0.
-		virtual IMesh* getMesh(irr::scene::ISceneNode * node);
+		virtual irr::scene::IMesh* getMesh(irr::scene::ISceneNode * node);
 	};
 
 
@@ -85,7 +95,8 @@ protected:
 	irr::core::stringw pathToURI(const irr::io::path& path) const;
 	inline bool isXmlNameStartChar(wchar_t c) const;
 	inline bool isXmlNameChar(wchar_t c) const;
-	s32 getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs);
+	s32 getCheckedTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs);
+	video::SColor getColorMapping(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs, E_COLLADA_IRR_COLOR colType);
 	void writeAsset();
 	void makeMeshNames(irr::scene::ISceneNode * node);
 	void writeNodeMaterials(irr::scene::ISceneNode * node);
@@ -98,8 +109,9 @@ protected:
 	void writeMeshGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
 	void writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
 	void writeLibraryImages();
+	void writeColorFx(const irr::core::stringw& meshname, const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name=0, const wchar_t* attr1Value=0);
 	void writeColorElement(const video::SColor & col);
-	bool writeTextureSampler(const irr::core::stringw& meshname, s32 textureIdx);
+	void writeTextureSampler(const irr::core::stringw& meshname, s32 textureIdx);
 	void writeFxElement(const irr::core::stringw& meshname, const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx);
 	void writeFloatElement(irr::f32 value);
 	void writeRotateElement(const irr::core::vector3df& axis, irr::f32 angle);

@@ -33,46 +33,47 @@ namespace scene
 		ECTF_CONSTANT
 	};
 
-	//! How to export opacity to collada
-	/** Note that there is also a check for transparent textures in IColladaMeshWriterProperties
-	which will be evaluated additionally to the flags:
-	No ECOF_TRANSPARENT_* flag and no texture => <transparent> will not be written at all.
-	No ECOF_TRANSPARENT_* flag but a valid texture => texture will be written.
-	ECOF_TRANSPARENT_* flag is set and no texture => A color will be written.
-	Both, a ECOF_TRANSPARENT_* flag and a valid texture => only the texture will be written.
-
-	You can only have either ECOF_A_ONE or ECOF_RGB_ZERO otherwise ECOF_RGB_ZERO is used.
-	You can only have one of the ECOF_TRANSPARENT_* flags otherwise the first is used.
-	*/
+	//! How to interpret the opacity in collada
 	enum E_COLLADA_TRANSPARENT_FX
 	{
-		//! default - only alpha channel of color or texture is used. Can't be used together with ECOF_RGB_ZERO.
+		//! default - only alpha channel of color or texture is used.
 		ECOF_A_ONE = 0,
 
-		//! Alpha values for each RGB channel of color or texture are used. Can't be used together with ECOF_A_ONE.
+		//! Alpha values for each RGB channel of color or texture are used. 
 		ECOF_RGB_ZERO = 1,
-
-		//! Write diffuse material color as transparent
-		ECOF_TRANSPARENT_DIFFUSE = 2,
-
-		//! Write ambient material color as transparent
-		ECOF_TRANSPARENT_AMBIENT = 4,
-
-		//! Write emissive material color as transparent
-		ECOF_TRANSPARENT_EMISSIVE = 8, 
-
-		//! Write specular material color as transparent
-		ECOF_TRANSPARENT_SPECULAR = 16
 	};
 
-	//! For mapping irrlicht textures indices to collada color-types
+	//! Color names collada uses in it's color samplers
 	enum E_COLLADA_COLOR_SAMPLER
 	{
 		ECCS_DIFFUSE,
 		ECCS_AMBIENT,
 		ECCS_EMISSIVE,
 		ECCS_SPECULAR,
-		ECCS_TRANSPARENT
+		ECCS_TRANSPARENT,
+		ECCS_REFLECTIVE,
+	};
+
+	//! Irrlicht colors which can be mapped to E_COLLADA_COLOR_SAMPLER values
+	enum E_COLLADA_IRR_COLOR
+	{
+		//! Don't write this element at all
+		ECIC_NONE,
+
+		//! Check IColladaMeshWriterProperties for custom color
+		ECIC_CUSTOM,
+
+		//! Use SMaterial::DiffuseColor
+		ECIC_DIFFUSE,
+
+		//! Use SMaterial::AmbientColor
+		ECIC_AMBIENT,
+
+		//! Use SMaterial::EmissiveColor
+		ECIC_EMISSIVE,
+
+		//! Use SMaterial::SpecularColor
+		ECIC_SPECULAR
 	};
 
 	//! Callback interface for properties which can be used to influence collada writing
@@ -91,20 +92,42 @@ namespace scene
 			also the ECOF_RGB_ZERO flag in getTransparentFx.  */
 		virtual s32 getTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const = 0;
 
-		//! Return the settings for transparence
+		//! Return which color from Irrlicht should be used for the color requested by collada
+		/** Note that collada allows exporting either texture or color, not both. 
+			So color mapping is only checked if we have no valid texture already.
+			By default we try to return best fits when possible. For example ECCS_DIFFUSE is mapped to ECIC_DIFFUSE.
+			When ECIC_CUSTOM is returned then the result of getCustomColor will be used. */
+		virtual E_COLLADA_IRR_COLOR getColorMapping(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const = 0;
+
+		//! Return custom colors for certain color types requested by collada. 
+		/** Only used when getColorMapping returns ECIC_CUSTOM for the same paramters. */
+		virtual video::SColor getCustomColor(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const = 0;
+
+		//! Return the transparence color interpretation.
+		/** Not this is only about ECCS_TRANSPARENT and does not affect getTransparency. */
 		virtual E_COLLADA_TRANSPARENT_FX getTransparentFx(const video::SMaterial& material) const = 0;
 
-		//! Transparency value for the material. 
+		//! Transparency value for that material. 
 		/** This value is additional to transparent settings, if both are set they will be multiplicated.
 		\return 1.0 for fully transparent, 0.0 for not transparent and not written at all when < 0.f */
 		virtual f32 getTransparency(const video::SMaterial& material) const = 0;
 
-		//! Should node be used in scene export? 
+		//! Reflectivity value for that material
+		/** The amount of perfect mirror reflection to be added to the reflected light 
+		\return 0.0 - 1.0 for reflectivity and element is not written at all when < 0.f */
+		virtual f32 getReflectivity(const video::SMaterial& material) const = 0;
+
+		//! Return index of refraction for that material
+		/**	By default we don't write that.
+		\return a value >= 0.f to write <index_of_refraction> when it's < 0 nothing will be written */
+		virtual f32 getIndexOfRefraction(const video::SMaterial& material) const = 0;
+
+		//! Should node be used in scene export? (only needed for scene-writing, ignored in mesh-writing)
 		//! By default all visible nodes are exported.
 		virtual bool isExportable(const irr::scene::ISceneNode * node) const = 0;
 
-		//! Return the mesh for the given node. If it has no mesh or shouldn't export it's mesh return 0
-		//! then only the transformation matrix of the node will be used.
+		//! Return the mesh for the given node. If it has no mesh or shouldn't export it's mesh 
+		//! you can return 0 in which case only the transformation matrix of the node will be used.
 		virtual IMesh* getMesh(irr::scene::ISceneNode * node) = 0;
 	};
 
