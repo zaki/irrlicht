@@ -75,7 +75,7 @@ E_COLLADA_IRR_COLOR CColladaMeshWriterProperties::getColorMapping(const video::S
 	return ECIC_NONE;
 }
 
-//! Return custom colors for certain color types requested by collada. 
+//! Return custom colors for certain color types requested by collada.
 video::SColor CColladaMeshWriterProperties::getCustomColor(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const
 {
 	return video::SColor(255, 0, 0, 0);
@@ -634,13 +634,13 @@ irr::core::stringw CColladaMeshWriter::toRef(const irr::core::stringw& source) c
 
 irr::core::stringw CColladaMeshWriter::uniqueNameForMesh(const scene::IMesh* mesh) const
 {
-	return irr::core::stringw( (int)mesh );
+	return irr::core::stringw((long)mesh);
 }
 
 irr::core::stringw CColladaMeshWriter::uniqueNameForNode(const scene::ISceneNode* node) const
 {
 	irr::core::stringw name(L"id");	// (prefix, because xs::ID can't start with a number)
-	name += irr::core::stringw((int)node);
+	name += irr::core::stringw((long)node);
 	if ( node )
 		name += irr::core::stringw(node->getName());
 	return name;
@@ -1488,6 +1488,9 @@ video::SColor CColladaMeshWriter::getColorMapping(const video::SMaterial & mater
 {
 	switch ( colType )
 	{
+		case ECIC_NONE:
+			return video::SColor(255, 0, 0, 0);
+
 		case ECIC_CUSTOM:
 			return getProperties()->getCustomColor(material, cs);
 
@@ -1601,7 +1604,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 			f32 t = getProperties()->getReflectivity(material);
 			if ( t >= 0.f )
 			{
-				// <transparency>  <float>1.000000</float> </transparency> 
+				// <transparency>  <float>1.000000</float> </transparency>
 				Writer->writeElement(L"reflectivity", false);
 				Writer->writeLineBreak();
 				writeFloatElement(t);
@@ -1621,7 +1624,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 			f32 t = getProperties()->getTransparency(material);
 			if ( t >= 0.f )
 			{
-				// <transparency>  <float>1.000000</float> </transparency> 
+				// <transparency>  <float>1.000000</float> </transparency>
 				Writer->writeElement(L"transparency", false);
 				Writer->writeLineBreak();
 				writeFloatElement(t);

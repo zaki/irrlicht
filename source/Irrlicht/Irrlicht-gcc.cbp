@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Win32 - Debug - dll">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/win32-gcc-debug-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -52,7 +52,7 @@
 			</Target>
 			<Target title="Win32 - Release - accurate math - dll">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/win32-gcc-release-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -94,7 +94,7 @@
 			</Target>
 			<Target title="Win32 - Release - fast math - dll">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/win32-gcc-release-fast-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -455,6 +455,7 @@
 		<Unit filename="../../include/IBillboardTextSceneNode.h" />
 		<Unit filename="../../include/IBoneSceneNode.h" />
 		<Unit filename="../../include/ICameraSceneNode.h" />
+		<Unit filename="../../include/IColladaMeshWriter.h" />
 		<Unit filename="../../include/ICursorControl.h" />
 		<Unit filename="../../include/IDummyTransformationSceneNode.h" />
 		<Unit filename="../../include/IDynamicMeshBuffer.h" />
