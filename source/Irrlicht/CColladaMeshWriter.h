@@ -64,7 +64,7 @@ class CColladaMeshWriter : public IColladaMeshWriter
 {
 public:
 
-	CColladaMeshWriter(video::IVideoDriver* driver, io::IFileSystem* fs);
+	CColladaMeshWriter(ISceneManager * smgr, video::IVideoDriver* driver, io::IFileSystem* fs);
 	virtual ~CColladaMeshWriter();
 
 	//! Returns the type of the mesh writer
@@ -82,12 +82,13 @@ protected:
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
 	inline irr::core::stringw toString(const irr::core::vector3df& vec) const;
 	inline irr::core::stringw toString(const irr::core::vector2df& vec) const;
-	inline irr::core::stringw toString(const irr::video::SColorf& colorf) const;
+	inline irr::core::stringw toString(const irr::video::SColorf& colorf, bool writeAlpha=true) const;
 	inline irr::core::stringw toString(const irr::video::ECOLOR_FORMAT format) const;
 	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
 	inline irr::core::stringw toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;
 	inline irr::core::stringw toRef(const irr::core::stringw& source) const;
 	irr::core::stringw uniqueNameForMesh(const scene::IMesh* mesh) const;
+	irr::core::stringw uniqueNameForLight(const scene::ISceneNode* lightNode) const;
 	irr::core::stringw uniqueNameForNode(const scene::ISceneNode* node) const;
 	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
@@ -101,6 +102,7 @@ protected:
 	void makeMeshNames(irr::scene::ISceneNode * node);
 	void writeNodeMaterials(irr::scene::ISceneNode * node);
 	void writeNodeEffects(irr::scene::ISceneNode * node);
+	void writeNodeLights(irr::scene::ISceneNode * node);
 	void writeNodeGeometries(irr::scene::ISceneNode * node);
 	void writeSceneNode(irr::scene::ISceneNode * node);
 	void writeMeshMaterials(const irr::core::stringw& meshname, scene::IMesh* mesh);
@@ -108,9 +110,12 @@ protected:
 	void writeMaterialEffect(const irr::core::stringw& meshname, const irr::core::stringw& materialname, const video::SMaterial & material);
 	void writeMeshGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
 	void writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
+	void writeLightInstance(const irr::core::stringw& lightName);
 	void writeLibraryImages();
 	void writeColorFx(const irr::core::stringw& meshname, const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name=0, const wchar_t* attr1Value=0);
-	void writeColorElement(const video::SColor & col);
+	void writeAmbientLightElement(const video::SColorf & col);
+	void writeColorElement(const video::SColor & col, bool writeAlpha=true);
+	void writeColorElement(const video::SColorf & col, bool writeAlpha=true);
 	void writeTextureSampler(const irr::core::stringw& meshname, s32 textureIdx);
 	void writeFxElement(const irr::core::stringw& meshname, const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx);
 	void writeFloatElement(irr::f32 value);
@@ -158,6 +163,14 @@ protected:
 	};
 	typedef core::map<IMesh*, ColladaMesh>::Node MeshNode;
 	core::map<IMesh*, ColladaMesh> Meshes;
+
+	struct ColladaLight
+	{
+		ColladaLight()	{}
+		irr::core::stringw Name;
+	};
+	typedef core::map<ISceneNode*, ColladaLight>::Node LightNode;
+	core::map<ISceneNode*, ColladaLight> LightNodes;
 };
 
 
