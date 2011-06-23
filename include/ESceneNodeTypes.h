@@ -18,6 +18,8 @@ namespace scene
 	name clashes with external scene nodes.*/
 	enum ESCENE_NODE_TYPE
 	{
+		ESNT_SCENE_MANAGER	= MAKE_IRR_ID('s','m','n','g'),
+
 		//! simple cube scene node
 		ESNT_CUBE           = MAKE_IRR_ID('c','u','b','e'),
 
