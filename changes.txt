@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Scenemanager switches from type ESNT_UNKNOWN to type ESNT_SCENE_MANAGER.
+
  - Add getActiveFont to all elements which have setOverrideFont for cleaner code
 
  - Add getOverrideFont to all elements which have setOverrideFont to have a consistent interface
