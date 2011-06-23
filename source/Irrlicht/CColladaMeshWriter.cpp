@@ -18,6 +18,8 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "IMeshSceneNode.h"
 #include "ITerrainSceneNode.h"
+#include "ILightSceneNode.h"
+#include "ISceneManager.h"
 
 namespace irr
 {
@@ -134,7 +136,7 @@ IMesh* CColladaMeshWriterProperties::getMesh(irr::scene::ISceneNode * node)
 
 
 
-CColladaMeshWriter::CColladaMeshWriter(video::IVideoDriver* driver,
+CColladaMeshWriter::CColladaMeshWriter(	ISceneManager * smgr, video::IVideoDriver* driver,
 					io::IFileSystem* fs)
 	: FileSystem(fs), VideoDriver(driver), Writer(0)
 {
@@ -148,6 +150,9 @@ CColladaMeshWriter::CColladaMeshWriter(video::IVideoDriver* driver,
 
 	if (FileSystem)
 		FileSystem->grab();
+
+	if ( smgr )
+		setAmbientLight( smgr->getAmbientLight() );
 
 	CColladaMeshWriterProperties * p = new CColladaMeshWriterProperties();
 	setDefaultProperties(p);
@@ -175,7 +180,7 @@ EMESH_WRITER_TYPE CColladaMeshWriter::getType() const
 //! writes a scene starting with the given node
 bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* root)
 {
-	if (!file)
+	if (!file || !root)
 		return false;
 
 	Writer = FileSystem->createXMLWriter(file);
@@ -224,6 +229,17 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	// images
 	writeLibraryImages();
 
+	// lights
+	Writer->writeElement(L"library_lights", false);
+	Writer->writeLineBreak();
+
+	writeAmbientLightElement( getAmbientLight() );
+	writeNodeLights(root);
+
+	Writer->writeClosingTag(L"library_lights");
+	Writer->writeLineBreak();
+
+
 	// write meshes
 	Writer->writeElement(L"library_geometries", false);
 	Writer->writeLineBreak();
@@ -236,7 +252,19 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	Writer->writeLineBreak();
 	Writer->writeElement(L"visual_scene", false, L"id", L"default_scene");
 	Writer->writeLineBreak();
-	writeSceneNode(root);
+
+		// ambient light
+		Writer->writeElement(L"node", false);
+		Writer->writeLineBreak();
+		Writer->writeElement(L"instance_light", true, L"url", L"#ambientlight");
+		Writer->writeLineBreak();
+
+			// scenegraph
+			writeSceneNode(root);
+
+		Writer->writeClosingTag(L"node");
+		Writer->writeLineBreak();
+
 	Writer->writeClosingTag(L"visual_scene");
 	Writer->writeLineBreak();
 	Writer->writeClosingTag(L"library_visual_scenes");
@@ -341,6 +369,109 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 	}
 }
 
+void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
+{
+	if ( !node )
+		return;
+
+	if ( node->getType() == ESNT_LIGHT )
+	{
+		ILightSceneNode * lightNode = static_cast<ILightSceneNode*>(node);
+		const video::SLight& lightData = lightNode->getLightData();
+
+		ColladaLight cLight;
+		cLight.Name = uniqueNameForLight(node);
+		LightNodes.insert(node, cLight);
+
+		Writer->writeElement(L"light", false, L"id", cLight.Name.c_str());
+		Writer->writeLineBreak();
+
+		Writer->writeElement(L"technique_common", false);
+		Writer->writeLineBreak();			
+
+		switch ( lightNode->getLightType() )
+		{
+			case video::ELT_POINT:
+				Writer->writeElement(L"point", false);
+				Writer->writeLineBreak();
+
+				writeColorElement(lightData.DiffuseColor, false);
+
+				Writer->writeElement(L"constant_attenuation ", false);
+				Writer->writeText( irr::core::stringw(lightData.Attenuation.X).c_str() );
+				Writer->writeClosingTag(L"constant_attenuation ");
+				Writer->writeLineBreak();
+				Writer->writeElement(L"linear_attenuation  ", false);
+				Writer->writeText( irr::core::stringw(lightData.Attenuation.Y).c_str() );
+				Writer->writeClosingTag(L"linear_attenuation  ");
+				Writer->writeLineBreak();
+				Writer->writeElement(L"quadratic_attenuation", false);
+				Writer->writeText( irr::core::stringw(lightData.Attenuation.Z).c_str() );
+				Writer->writeClosingTag(L"quadratic_attenuation");
+				Writer->writeLineBreak();
+
+				Writer->writeClosingTag(L"point");
+				Writer->writeLineBreak();
+				break;
+
+			case video::ELT_SPOT:
+				Writer->writeElement(L"spot", false);
+				Writer->writeLineBreak();
+
+				writeColorElement(lightData.DiffuseColor, false);
+
+				Writer->writeElement(L"constant_attenuation ", false);
+				Writer->writeText( irr::core::stringw(lightData.Attenuation.X).c_str() );
+				Writer->writeClosingTag(L"constant_attenuation ");
+				Writer->writeLineBreak();
+				Writer->writeElement(L"linear_attenuation  ", false);
+				Writer->writeText( irr::core::stringw(lightData.Attenuation.Y).c_str() );
+				Writer->writeClosingTag(L"linear_attenuation  ");
+				Writer->writeLineBreak();
+				Writer->writeElement(L"quadratic_attenuation", false);
+				Writer->writeText( irr::core::stringw(lightData.Attenuation.Z).c_str() );
+				Writer->writeClosingTag(L"quadratic_attenuation");
+				Writer->writeLineBreak();
+
+				Writer->writeElement(L"falloff_angle", false);
+				Writer->writeText( irr::core::stringw(lightData.OuterCone * core::RADTODEG).c_str() );
+				Writer->writeClosingTag(L"falloff_angle");
+				Writer->writeLineBreak();
+				Writer->writeElement(L"falloff_exponent", false);
+				Writer->writeText( irr::core::stringw(lightData.Falloff).c_str() );
+				Writer->writeClosingTag(L"falloff_exponent");
+				Writer->writeLineBreak();
+					
+				Writer->writeClosingTag(L"spot");
+				Writer->writeLineBreak();
+				break;
+
+			case video::ELT_DIRECTIONAL:
+				Writer->writeElement(L"directional", false);
+				Writer->writeLineBreak();
+
+				writeColorElement(lightData.DiffuseColor, false);
+
+				Writer->writeClosingTag(L"directional");
+				Writer->writeLineBreak();
+				break;
+		}
+
+		Writer->writeClosingTag(L"technique_common");
+		Writer->writeLineBreak();
+
+		Writer->writeClosingTag(L"light");
+		Writer->writeLineBreak();
+
+	}
+
+	const core::list<ISceneNode*>& children = node->getChildren();
+	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
+	{
+		writeNodeLights( *it );
+	}
+}
+
 void CColladaMeshWriter::writeNodeGeometries(irr::scene::ISceneNode * node)
 {
 	if ( !node || !getProperties() || !getProperties()->isExportable(node) )
@@ -381,6 +512,7 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z );
 	writeScaleElement( node->getScale() );
 
+	// instance geometry
 	IMesh* mesh = getProperties()->getMesh(node);
 	if ( mesh )
 	{
@@ -388,6 +520,16 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 		if ( n )
 			writeMeshInstanceGeometry(n->getValue().Name, mesh);
 	}
+
+	// instance light
+	if ( node->getType() == ESNT_LIGHT )
+	{
+		LightNode * n = LightNodes.find(node);
+		if ( n )
+			writeLightInstance(n->getValue().Name);
+	}
+
+	// TODO instance cameras
 
 	const core::list<ISceneNode*>& children = node->getChildren();
 	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
@@ -434,7 +576,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"library_materials", false);
 	Writer->writeLineBreak();
 
-	irr::core::stringw meshname(L"name");
+	irr::core::stringw meshname(uniqueNameForMesh(mesh));
 	writeMeshMaterials(meshname, mesh);
 
 	Writer->writeClosingTag(L"library_materials");
@@ -509,8 +651,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh)
 {
 	//<instance_geometry url="#mesh">
-	core::stringw meshId("mesh-");
-	meshId += meshname;
+	core::stringw meshId(meshname);
 	Writer->writeElement(L"instance_geometry", false, L"url", toRef(meshId).c_str());
 	Writer->writeLineBreak();
 
@@ -533,8 +674,7 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 				Writer->writeLineBreak();
 
 					// <bind_vertex_input semantic="mesh-TexCoord0" input_semantic="TEXCOORD"/>
-					core::stringw meshTexCoordId("mesh-");
-					meshTexCoordId += meshname;
+					core::stringw meshTexCoordId(meshname);
 					meshTexCoordId += L"-TexCoord0";	// TODO: need to handle second UV-set
 					Writer->writeElement(L"bind_vertex_input", true, L"semantic", meshTexCoordId.c_str(), L"input_semantic", L"TEXCOORD" );
 					Writer->writeLineBreak();
@@ -550,6 +690,12 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 		Writer->writeLineBreak();
 
 	Writer->writeClosingTag(L"instance_geometry");
+	Writer->writeLineBreak();
+}
+
+void CColladaMeshWriter::writeLightInstance(const irr::core::stringw& lightName)
+{
+	Writer->writeElement(L"instance_light", true, L"url", toRef(lightName).c_str());
 	Writer->writeLineBreak();
 }
 
@@ -576,10 +722,13 @@ irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector2df& vec)
 	return str;
 }
 
-irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf& colorf) const
+irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf& colorf, bool writeAlpha) const
 {
 	c8 tmpbuf[255];
-	snprintf(tmpbuf, 255, "%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
+	if ( writeAlpha )
+		snprintf(tmpbuf, 255, "%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
+	else
+		snprintf(tmpbuf, 255, "%f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue());
 	core::stringw str = tmpbuf;
 
 	return str;
@@ -634,12 +783,21 @@ irr::core::stringw CColladaMeshWriter::toRef(const irr::core::stringw& source) c
 
 irr::core::stringw CColladaMeshWriter::uniqueNameForMesh(const scene::IMesh* mesh) const
 {
-	return irr::core::stringw((long)mesh);
+	irr::core::stringw name(L"mesh");
+	name += irr::core::stringw((long)mesh);
+	return name;
+}
+
+irr::core::stringw CColladaMeshWriter::uniqueNameForLight(const scene::ISceneNode* lightNode) const
+{
+	irr::core::stringw name(L"light");	// (prefix, because xs::ID can't start with a number)
+	name += irr::core::stringw((long)lightNode);
+	return name;
 }
 
 irr::core::stringw CColladaMeshWriter::uniqueNameForNode(const scene::ISceneNode* node) const
 {
-	irr::core::stringw name(L"id");	// (prefix, because xs::ID can't start with a number)
+	irr::core::stringw name(L"node");	// (prefix, because xs::ID can't start with a number)
 	name += irr::core::stringw((long)node);
 	if ( node )
 		name += irr::core::stringw(node->getName());
@@ -943,8 +1101,7 @@ void CColladaMeshWriter::writeMeshEffects(const irr::core::stringw& meshname, sc
 
 void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh)
 {
-	core::stringw meshId("mesh-");
-	meshId += meshname;
+	core::stringw meshId(meshname);
 
 	Writer->writeElement(L"geometry", false, L"id", meshId.c_str(), L"name", meshId.c_str());
 	Writer->writeLineBreak();
@@ -1460,14 +1617,42 @@ void CColladaMeshWriter::writeLibraryImages()
 	}
 }
 
-void CColladaMeshWriter::writeColorElement(const video::SColor & col)
+void CColladaMeshWriter::writeColorElement(const video::SColorf & col, bool writeAlpha)
 {
 	Writer->writeElement(L"color", false);
 
-	irr::core::stringw str( toString(video::SColorf(col)) );
+	irr::core::stringw str( toString(col, writeAlpha) );
 	Writer->writeText(str.c_str());
 
 	Writer->writeClosingTag(L"color");
+	Writer->writeLineBreak();
+}
+
+void CColladaMeshWriter::writeColorElement(const video::SColor & col, bool writeAlpha)
+{
+	writeColorElement( video::SColorf(col), writeAlpha );
+}
+
+void CColladaMeshWriter::writeAmbientLightElement(const video::SColorf & col)
+{
+	Writer->writeElement(L"light", false, L"id", L"ambientlight");
+	Writer->writeLineBreak();
+
+		Writer->writeElement(L"technique_common", false);
+		Writer->writeLineBreak();			
+
+			Writer->writeElement(L"ambient", false);
+			Writer->writeLineBreak();
+					
+				writeColorElement(col, false);
+
+			Writer->writeClosingTag(L"ambient");
+			Writer->writeLineBreak();
+
+		Writer->writeClosingTag(L"technique_common");
+		Writer->writeLineBreak();
+
+	Writer->writeClosingTag(L"light");
 	Writer->writeLineBreak();
 }
 
@@ -1516,8 +1701,7 @@ void CColladaMeshWriter::writeTextureSampler(const irr::core::stringw& meshname,
 	sampler += L"-sampler";
 
 	// <texture texture="sampler" texcoord="texCoord"/>
-	core::stringw meshTexCoordId("mesh-");
-	meshTexCoordId += meshname;
+	core::stringw meshTexCoordId(meshname);
 	meshTexCoordId += L"-TexCoord0";	// TODO: need to handle second UV-set
 	Writer->writeElement(L"texture", true, L"texture", sampler.c_str(), L"texcoord", meshTexCoordId.c_str() );
 	Writer->writeLineBreak();

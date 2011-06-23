@@ -137,7 +137,7 @@ namespace scene
 	{
 	public:
 
-		IColladaMeshWriter() : Properties(0), DefaultProperties(0), WriteTextures(true), WriteDefaultScene(false)
+		IColladaMeshWriter() : Properties(0), DefaultProperties(0), WriteTextures(true), WriteDefaultScene(false), AmbientLight(0.f, 0.f, 0.f, 1.f)
 		{
 		}
 
@@ -180,6 +180,18 @@ namespace scene
 		virtual bool getWriteDefaultScene() const
 		{
 			return WriteDefaultScene;
+		}
+
+		//! Sets ambient color of the scene to write
+		virtual void setAmbientLight(const video::SColorf &ambientColor)
+		{
+			AmbientLight = ambientColor;
+		}
+
+		//! Return ambient light of the scene which is written
+		virtual video::SColorf getAmbientLight() const
+		{
+			return AmbientLight;
 		}
 
 		//! Set properties to use by the meshwriter instead of it's default properties.
@@ -227,6 +239,7 @@ namespace scene
 		IColladaMeshWriterProperties * DefaultProperties;
 		bool WriteTextures;
 		bool WriteDefaultScene;
+		video::SColorf AmbientLight;
 	};
 
 
