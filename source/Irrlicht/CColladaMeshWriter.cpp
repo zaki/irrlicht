@@ -713,6 +713,12 @@ irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector3df& vec)
 	return str;
 }
 
+irr::core::stringw CColladaMeshWriter::uvToString(const irr::core::vector2df& vec) const
+{
+	// change handedness
+	return toString( core::vector2df(vec.X, 1.f-vec.Y) );
+}
+
 irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector2df& vec) const
 {
 	c8 tmpbuf[255];
@@ -1255,7 +1261,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].TCoords).c_str());
+						Writer->writeText(uvToString(vtx[j].TCoords).c_str());
 						Writer->writeLineBreak();
 					}
 				}
@@ -1265,7 +1271,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].TCoords).c_str());
+						Writer->writeText(uvToString(vtx[j].TCoords).c_str());
 						Writer->writeLineBreak();
 					}
 				}
@@ -1275,7 +1281,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].TCoords).c_str());
+						Writer->writeText(uvToString(vtx[j].TCoords).c_str());
 						Writer->writeLineBreak();
 					}
 				}
