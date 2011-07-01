@@ -40,7 +40,7 @@ namespace scene
 		ECOF_A_ONE = 0,
 
 		//! Alpha values for each RGB channel of color or texture are used. 
-		ECOF_RGB_ZERO = 1,
+		ECOF_RGB_ZERO = 1
 	};
 
 	//! Color names collada uses in it's color samplers
@@ -51,7 +51,7 @@ namespace scene
 		ECCS_EMISSIVE,
 		ECCS_SPECULAR,
 		ECCS_TRANSPARENT,
-		ECCS_REFLECTIVE,
+		ECCS_REFLECTIVE
 	};
 
 	//! Irrlicht colors which can be mapped to E_COLLADA_COLOR_SAMPLER values
