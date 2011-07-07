@@ -286,6 +286,8 @@ The following names can be queried for the given types:
 
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
+ - Fix problems in Textwrapping in CGUIStaticText. Did use wrong size and did ignore last word of the text in wrapping (thx @ Reiko for bugreport)
+ 
  - Fix crash in collada (.dae) loading
   
  - Fix memory-leaks in example 22 MaterialViewer

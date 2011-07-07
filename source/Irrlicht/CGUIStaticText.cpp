@@ -288,11 +288,22 @@ void CGUIStaticText::breakText()
 
 	BrokenText.clear();
 
+	IGUISkin* skin = Environment->getSkin();
 	IGUIFont* font = getActiveFont();
 	if (!font)
 		return;
 
 	LastBreakFont = font;
+
+	core::stringw line;
+	core::stringw word;
+	core::stringw whitespace;
+	s32 size = Text.size();
+	s32 length = 0;
+	s32 elWidth = RelativeRect.getWidth();
+	if (Border)
+		elWidth -= 2*skin->getSize(EGDS_TEXT_DISTANCE_X);
+	wchar_t c;
 
 	// We have to deal with right-to-left and left-to-right differently
 	// However, most parts of the following code is the same, it's just
@@ -300,14 +311,6 @@ void CGUIStaticText::breakText()
 	if (!RightToLeft)
 	{
 		// regular (left-to-right)
-		core::stringw line;
-		core::stringw word;
-		core::stringw whitespace;
-		s32 size = Text.size();
-		s32 length = 0;
-		s32 elWidth = RelativeRect.getWidth() - 6;
-		wchar_t c;
-
 		for (s32 i=0; i<size; ++i)
 		{
 			c = Text[i];
@@ -329,7 +332,14 @@ void CGUIStaticText::breakText()
 				c = '\0';
 			}
 
-			if (c==L' ' || c==0 || i==(size-1))
+			bool isWhitespace = (c == L' ' || c == 0);
+			if ( !isWhitespace )
+			{
+				// part of a word
+				word += c;
+			}
+
+			if ( isWhitespace || i == (size-1))
 			{
 				if (word.size())
 				{
@@ -383,7 +393,10 @@ void CGUIStaticText::breakText()
 					whitespace = L"";
 				}
 
-				whitespace += c;
+				if ( isWhitespace )
+				{
+					whitespace += c;
+				}
 
 				// compute line break
 				if (lineBreak)
@@ -397,11 +410,6 @@ void CGUIStaticText::breakText()
 					length = 0;
 				}
 			}
-			else
-			{
-				// yippee this is a word..
-				word += c;
-			}
 		}
 
 		line += whitespace;
@@ -411,14 +419,6 @@ void CGUIStaticText::breakText()
 	else
 	{
 		// right-to-left
-		core::stringw line;
-		core::stringw word;
-		core::stringw whitespace;
-		s32 size = Text.size();
-		s32 length = 0;
-		s32 elWidth = RelativeRect.getWidth() - 6;
-		wchar_t c;
-
 		for (s32 i=size; i>=0; --i)
 		{
 			c = Text[i];
