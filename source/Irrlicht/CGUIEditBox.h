@@ -136,6 +136,8 @@ namespace gui
 		void inputChar(wchar_t c);
 		//! calculates the current scroll position
 		void calculateScrollPos();
+		//! calculated the FrameRect
+		void calculateFrameRect();
 		//! send some gui event to parent
 		void sendGuiEvent(EGUI_EVENT_TYPE type);
 		//! set text markers

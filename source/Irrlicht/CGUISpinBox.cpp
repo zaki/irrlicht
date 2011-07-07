@@ -189,7 +189,7 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 			{
 			case EMIE_MOUSE_WHEEL:
 				{
-					f32 val = getValue() + (StepSize * event.MouseInput.Wheel);
+					f32 val = getValue() + (StepSize * (event.MouseInput.Wheel < 0 ? -1.f : 1.f));
 					setValue(val);
 					changeEvent = true;
 				}

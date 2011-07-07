@@ -181,6 +181,8 @@ void CBillboardSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttrib
 	Size.Height = in->getAttributeAsFloat("Height");
 	vertices[1].Color = in->getAttributeAsColor ( "Shade_Top" );
 	vertices[0].Color = in->getAttributeAsColor ( "Shade_Down" );
+	vertices[2].Color = vertices[1].Color;
+	vertices[3].Color = vertices[0].Color;
 
 	setSize(Size);
 }
