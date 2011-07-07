@@ -286,7 +286,16 @@ The following names can be queried for the given types:
 
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
- - Fix problems in Textwrapping in CGUIStaticText. Did use wrong size and did ignore last word of the text in wrapping (thx @ Reiko for bugreport)
+
+ - Recalculate FrameRect and ScrollPos in CGUIEditBox when AbsoluteRect gets changed (thx @ serengeor for report + testcase)
+ 
+ - Fix 'k' in bigfont.png (thx @ Scrappi for reporting)
+
+ - fix serialization for CBillboardSceneNode, it had missed 2 color (thx for finding + patch from pc0de)
+
+ - EMIE_MOUSE_WHEEL messages now handled correctly in several gui-element when wheel isn't just 1.0 or -1.0 (thx @ Reiko for reporting)
+
+ - Fix problems in Textwrapping in CGUIStaticText. Did use wrong size and did ignore last word of the text (thx @ Reiko for bugreport)
  
  - Fix crash in collada (.dae) loading
   

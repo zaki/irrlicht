@@ -583,7 +583,7 @@ bool CGUITable::OnEvent(const SEvent &event)
 				switch(event.MouseInput.Event)
 				{
 				case EMIE_MOUSE_WHEEL:
-					VerticalScrollBar->setPos(VerticalScrollBar->getPos() + (s32)event.MouseInput.Wheel*-10);
+					VerticalScrollBar->setPos(VerticalScrollBar->getPos() + (event.MouseInput.Wheel < 0 ? -1 : 1)*-10);
 					return true;
 
 				case EMIE_LMOUSE_PRESSED_DOWN:
