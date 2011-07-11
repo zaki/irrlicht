@@ -35,10 +35,10 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 		Logger = new CLogger(UserReceiver);
 		os::Printer::Logger = Logger;
 	}
-	Logger->setLogLevel( CreationParams.LoggingLevel );
+	Logger->setLogLevel(CreationParams.LoggingLevel);
 
 	os::Printer::Logger = Logger;
-	setRandomizer(createDefaultRandomizer());
+	Randomizer = createDefaultRandomizer();
 
 	FileSystem = io::createFileSystem();
 	core::stringc s = "Irrlicht Engine version ";
