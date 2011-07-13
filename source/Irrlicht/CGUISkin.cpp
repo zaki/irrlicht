@@ -47,9 +47,9 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 		Colors[EGDC_ICON]               = video::SColor(200,255,255,255);
 		Colors[EGDC_ICON_HIGH_LIGHT]    = video::SColor(200,8,36,107);
 		Colors[EGDC_GRAY_WINDOW_SYMBOL] = video::SColor(240,100,100,100);
-		Colors[EGDC_EDITABLE] 			= video::SColor(101,255,255,255);
-		Colors[EGDC_GRAY_EDITABLE]		= video::SColor(101,200,200,200);
-		Colors[EGDC_FOCUSED_EDITABLE]	= video::SColor(101,230,230,255);
+		Colors[EGDC_EDITABLE] 			= video::SColor(240,180,180,180);
+		Colors[EGDC_GRAY_EDITABLE]		= video::SColor(240,120,120,120);
+		Colors[EGDC_FOCUSED_EDITABLE]	= video::SColor(240,150,150,150);
 
 
 		Sizes[EGDS_SCROLLBAR_SIZE] = 14;
