@@ -55,6 +55,12 @@ namespace gui
 		\param vertical: EGUIA_UPPERLEFT to align with top edge,
 		EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical) = 0;
+
+		//! Set the maximal number of rows for the selection listbox
+		virtual void setMaxSelectionRows(u32 max) = 0;
+
+		//! Get the maximimal number of rows for the selection listbox
+		virtual u32 getMaxSelectionRows() const = 0;
 	};
 
 
