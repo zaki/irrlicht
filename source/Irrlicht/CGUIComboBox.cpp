@@ -428,7 +428,7 @@ void CGUIComboBox::openCloseMenu()
 			Parent->bringToFront(this);
 
 		IGUISkin* skin = Environment->getSkin();
-		s32 h = Items.size();
+		u32 h = Items.size();
 
 		if (h > getMaxSelectionRows())
 			h = getMaxSelectionRows();
@@ -470,6 +470,7 @@ void CGUIComboBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadW
 
 	out->addEnum ("HTextAlign", HAlign, GUIAlignmentNames);
 	out->addEnum ("VTextAlign", VAlign, GUIAlignmentNames);
+	out->addInt("MaxSelectionRows", (s32)MaxSelectionRows );
 
 	out->addInt	("Selected",	Selected );
 	out->addInt	("ItemCount",	Items.size());
@@ -490,6 +491,7 @@ void CGUIComboBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRead
 
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
                       (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
+	setMaxSelectionRows( (u32)(in->getAttributeAsInt("MaxSelectionRows")) );
 
 	// clear the list
 	clear();
