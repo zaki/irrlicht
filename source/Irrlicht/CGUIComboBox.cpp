@@ -24,7 +24,7 @@ CGUIComboBox::CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 	s32 id, core::rect<s32> rectangle)
 	: IGUIComboBox(environment, parent, id, rectangle),
 	ListButton(0), SelectedText(0), ListBox(0), LastFocus(0),
-	Selected(-1), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER), HasFocus(false)
+	Selected(-1), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER), MaxSelectionRows(5), HasFocus(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIComboBox");
@@ -78,6 +78,26 @@ void CGUIComboBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT ve
 	HAlign = horizontal;
 	VAlign = vertical;
 	SelectedText->setTextAlignment(horizontal, vertical);
+}
+
+
+//! Set the maximal number of rows for the selection listbox
+void CGUIComboBox::setMaxSelectionRows(u32 max)
+{
+	MaxSelectionRows = max;
+
+	// force recalculation of open listbox
+	if (ListBox)
+	{
+		openCloseMenu();
+		openCloseMenu();
+	}
+}
+
+//! Get the maximimal number of rows for the selection listbox
+u32 CGUIComboBox::getMaxSelectionRows() const
+{
+	return MaxSelectionRows;
 }
 
 
@@ -410,8 +430,8 @@ void CGUIComboBox::openCloseMenu()
 		IGUISkin* skin = Environment->getSkin();
 		s32 h = Items.size();
 
-		if (h > 5)
-			h = 5;
+		if (h > getMaxSelectionRows())
+			h = getMaxSelectionRows();
 		if (h == 0)
 			h = 1;
 
