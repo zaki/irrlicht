@@ -18,7 +18,9 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
-					<Add library="Irrlicht" />
+					<Add library="Xxf86vm" />
+					<Add library="Xcursor" />
+					<Add library="GL" />
 					<Add directory="../../lib/Linux" />
 				</Linker>
 			</Target>
@@ -27,7 +29,7 @@
 			<Add directory="../../include" />
 		</Compiler>
 		<Linker>
-			<Add option="../../lib/Win32-gcc/libIrrlicht.a" />
+			<Add library="Irrlicht" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
