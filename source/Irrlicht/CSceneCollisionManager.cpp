@@ -889,7 +889,7 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 	if (useViewPort)
 		dim.set(Driver->getViewPort().getWidth(), Driver->getViewPort().getHeight());
 	else
-		dim=(Driver->getScreenSize());
+		dim=(Driver->getCurrentRenderTargetSize());
 
 	dim.Width /= 2;
 	dim.Height /= 2;
