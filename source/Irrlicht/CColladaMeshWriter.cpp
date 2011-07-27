@@ -673,10 +673,10 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 				Writer->writeElement(L"instance_material", false, L"symbol", strMat.c_str(), L"target", strMatInst.c_str());
 				Writer->writeLineBreak();
 
-					// <bind_vertex_input semantic="mesh-TexCoord0" input_semantic="TEXCOORD"/>
+					// <bind_vertex_input semantic="mesh-TexCoord0" input_semantic="TEXCOORD" input_set="0"/>
 					core::stringw meshTexCoordId(meshname);
 					meshTexCoordId += L"-TexCoord0";	// TODO: need to handle second UV-set
-					Writer->writeElement(L"bind_vertex_input", true, L"semantic", meshTexCoordId.c_str(), L"input_semantic", L"TEXCOORD" );
+					Writer->writeElement(L"bind_vertex_input", true, L"semantic", meshTexCoordId.c_str(), L"input_semantic", L"TEXCOORD", L"input_set", L"0" );
 					Writer->writeLineBreak();
 
 				Writer->writeClosingTag(L"instance_material");
@@ -1513,7 +1513,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 
 		Writer->writeElement(L"input", true, L"semantic", L"VERTEX", L"source", toRef(meshVtxId).c_str(), L"offset", L"0");
 		Writer->writeLineBreak();
-		Writer->writeElement(L"input", true, L"semantic", L"TEXCOORD", L"source", toRef(meshTexCoord0Id).c_str(), L"offset", L"1");
+		Writer->writeElement(L"input", true, L"semantic", L"TEXCOORD", L"source", toRef(meshTexCoord0Id).c_str(), L"offset", L"1", L"set", L"0");
 		Writer->writeLineBreak();
 		Writer->writeElement(L"input", true, L"semantic", L"NORMAL", L"source", toRef(meshNormalId).c_str(), L"offset", L"2");
 		Writer->writeLineBreak();
