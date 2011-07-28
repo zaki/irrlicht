@@ -358,6 +358,9 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 	}
 
 	s32 totalcnt = selector->getTriangleCount();
+	if ( totalcnt <= 0 )
+		return false;
+
 	Triangles.set_used(totalcnt);
 
 	s32 cnt = 0;
