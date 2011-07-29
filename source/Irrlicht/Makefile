@@ -18,6 +18,10 @@ COMPATIBILITY_VERSION = $(VERSION_MAJOR).$(VERSION_MINOR)
 # make sharedlib
 # make install
 #
+# If you want to compile in release mode run:
+#
+# make NDEBUG=1
+#
 # For cross-compilation for Win32 under Linux, just use the win32 targets. You have to set
 # at least CXX, CC, and AR to the proper binaries.
 #
