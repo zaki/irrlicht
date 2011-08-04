@@ -1,9 +1,7 @@
 VERSION_MAJOR = 1
 VERSION_MINOR = 8
 VERSION_RELEASE = 0-SVN
-VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
-COMPATIBILITY_VERSION = $(VERSION_MAJOR).$(VERSION_MINOR)
-# Irrlicht Engine 1.7.0-SVN
+# Irrlicht Engine 1.8.0-SVN
 # Makefile for Linux
 #
 # To use, just run:
@@ -107,15 +105,19 @@ sharedlib_win32: LDFLAGS += -lgdi32 -lopengl32 -ld3dx9d -lwinmm
 sharedlib_win32 staticlib_win32: CPPFLAGS += -DIRR_COMPILE_WITH_DX9_DEV_PACK -D__GNUWIN32__ -D_WIN32 -DWIN32 -D_WINDOWS -D_MBCS -D_USRDLL
 staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 
+VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
+SHARED_FULLNAME = $(SHARED_LIB).$(VERSION)
+SONAME = $(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR)
+
 ####################
 # All target, builds Irrlicht as static lib (libIrrlicht.a) and copies it into lib/Linux
 all linux: staticlib
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into lib/Linux
 sharedlib: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE) -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SONAME) -o $(SHARED_FULLNAME) $^ $(LDFLAGS)
 	mkdir -p $(LIB_PATH)
-	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
+	cp $(SHARED_FULLNAME) $(LIB_PATH)
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
 $(STATIC_LIB): $(LINKOBJ)
@@ -137,17 +139,17 @@ staticlib_win32: $(STATIC_LIB)
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/MacOSX
 sharedlib_osx: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).$(COMPATIBILITY_VERSION) -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
-	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SONAME) -o $(SHARED_FULLNAME) $^ $(LDFLAGS)
+	cp $(SHARED_FULLNAME) $(LIB_PATH)
 
 # Installs Irrlicht if it was created as shared lib
 install install_osx:
 	$(RM) -r $(INSTALL_DIR)/../include/irrlicht
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
 	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht/
-	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
-	cd $(INSTALL_DIR) && ln -s -f $(SHARED_LIB).$(VERSION) $(COMPATIBILITY_VERSION)
-
+	cp $(LIB_PATH)/$(SHARED_FULLNAME) $(INSTALL_DIR)
+	cd $(INSTALL_DIR) && ln -s -f $(SHARED_FULLNAME) $(SONAME)
+	cd $(INSTALL_DIR) && ln -s -f $(SONAME) $(SHARED_LIB)
 #	ldconfig -n $(INSTALL_DIR)
 
 TAGS:
@@ -182,7 +184,7 @@ help:
 
 # Cleans all temporary files and compilation results.
 clean:
-	$(RM) $(LINKOBJ) $(SHARED_LIB).$(VERSION) $(STATIC_LIB) $(LINKOBJ:.o=.d)
+	$(RM) $(LINKOBJ) $(SHARED_FULLNAME) $(STATIC_LIB) $(LINKOBJ:.o=.d)
 
 .PHONY: all sharedlib staticlib sharedlib_win32 staticlib_win32 help install clean
 
