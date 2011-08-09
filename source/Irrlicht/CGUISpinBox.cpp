@@ -133,6 +133,14 @@ void CGUISpinBox::setRange(f32 min, f32 max)
 		core::swap(min, max);
 	RangeMin = min;
 	RangeMax = max;
+
+	// we have to round the range - otherwise we can get into an infinte setValue/verifyValueRange cycle.
+	wchar_t str[100];
+	swprintf(str, 99, FormatString.c_str(), RangeMin);
+	RangeMin = core::fast_atof(core::stringc(str).c_str());
+	swprintf(str, 99, FormatString.c_str(), RangeMax);
+	RangeMax = core::fast_atof(core::stringc(str).c_str());
+
 	verifyValueRange();
 }
 
@@ -173,6 +181,7 @@ void CGUISpinBox::setDecimalPlaces(s32 places)
 		FormatString += places;
 		FormatString += "f";
 	}
+	setRange( RangeMin, RangeMax );
 	setValue(getValue());
 }
 
