@@ -32,7 +32,7 @@ inline bool compareQ(const core::vector3df& v, const core::vector3df& turn=core:
 	return true;
 }
 
-core::vector3df vals[] = {
+const core::vector3df vals[] = {
 	core::vector3df(0.f, 0.f, 0.f),
 	core::vector3df(0.f, 0.f, 24.04f),
 	core::vector3df(0.f, 0.f, 71.f),
@@ -100,39 +100,52 @@ bool testEulerConversion()
 bool testRotationFromTo()
 {
 	bool result = true;
-	core::quaternion q1;
-	core::matrix4 mat;
-	core::quaternion q4(mat);
+	core::quaternion q;
 
-	q4.rotationFromTo(core::vector3df(1.f,0.f,0.f), core::vector3df(1.f,0.f,0.f));
-	if (q4 != q1)
+	q.rotationFromTo(core::vector3df(1.f,0.f,0.f), core::vector3df(1.f,0.f,0.f));
+	if (q != core::quaternion())
 	{
 		logTestString("Quaternion rotationFromTo method did not yield identity.\n");
 		result = false;
 	}
 
-	q1.set(0.f,0.f,core::PI);
-	core::quaternion q2(0.f,core::PI,0.f);
-	q4.rotationFromTo(core::vector3df(1.f,0.f,0.f), core::vector3df(-1.f,0.f,0.f));
-	if ((q4 != q1)&&(q4 != q2))
+	core::vector3df from(1.f,0.f,0.f);
+	q.rotationFromTo(from, core::vector3df(-1.f,0.f,0.f));
+	from=q*from;
+	if (from != core::vector3df(-1.f,0.f,0.f))
 	{
 		logTestString("Quaternion rotationFromTo method did not yield x flip.\n");
 		result = false;
 	}
-	q4.rotationFromTo(core::vector3df(10.f,20.f,30.f), core::vector3df(-10.f,-20.f,-30.f));
-	if ((q4 != q1)&&(q4 != q2))
+
+	from.set(1.f,2.f,3.f);
+	q.rotationFromTo(from, core::vector3df(-1.f,-2.f,-3.f));
+	from=q*from;
+	if (from != core::vector3df(-1.f,-2.f,-3.f))
 	{
 		logTestString("Quaternion rotationFromTo method did not yield x flip for non-axis.\n");
 		result = false;
 	}
 
-	q1.set(0.f,0.f,core::PI/2);
-	q4.rotationFromTo(core::vector3df(1.f,0.f,0.f), core::vector3df(0.f,1.f,0.f));
-	if (!q4.equals(q1))
+	from.set(1.f,0.f,0.f);
+	q.rotationFromTo(from, core::vector3df(0.f,1.f,0.f));
+	from=q*from;
+	if (from != core::vector3df(0.f,1.f,0.f))
 	{
 		logTestString("Quaternion rotationFromTo method did not yield 90 degree rotation.\n");
 		result = false;
 	}
+
+	for (u32 i=1; i<sizeof(vals)/sizeof(vals[0])-1; ++i)
+	{
+		from.set(vals[i]).normalize();
+		core::vector3df to(vals[i+1]);
+		to.normalize();
+		q.rotationFromTo(from, to);
+		from = q*from;
+		result &= (from.equals(to, 0.00012f));
+	}
+
 	return result;
 }
 
