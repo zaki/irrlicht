@@ -163,7 +163,7 @@ class map
 			return Cur==0;
 		}
 
-		Node* getNode()
+		Node* getNode() const
 		{
 			return Cur;
 		}
@@ -185,13 +185,12 @@ class map
 			dec();
 		}
 
-
-		Node* operator -> ()
+		Node* operator->()
 		{
 			return getNode();
 		}
 
-		Node& operator* ()
+		Node& operator*()
 		{
 			_IRR_DEBUG_BREAK_IF(atEnd()) // access violation
 
@@ -200,14 +199,14 @@ class map
 
 	private:
 
-		Node* getMin(Node* n)
+		Node* getMin(Node* n) const
 		{
 			while(n && n->getLeftChild())
 				n = n->getLeftChild();
 			return n;
 		}
 
-		Node* getMax(Node* n)
+		Node* getMax(Node* n) const
 		{
 			while(n && n->getRightChild())
 				n = n->getRightChild();
@@ -281,6 +280,153 @@ class map
 		Node* Cur;
 	}; // Iterator
 
+	//! Const Iterator
+	class ConstIterator
+	{
+	public:
+
+		ConstIterator() : Root(0), Cur(0) {}
+
+		// Constructor(Node*)
+		ConstIterator(const Node* root) : Root(root)
+		{
+			reset();
+		}
+
+		// Copy constructor
+		ConstIterator(const ConstIterator& src) : Root(src.Root), Cur(src.Cur) {}
+		ConstIterator(const Iterator& src) : Root(src.Root), Cur(src.Cur) {}
+
+		void reset(bool atLowest=true)
+		{
+			if (atLowest)
+				Cur = getMin(Root);
+			else
+				Cur = getMax(Root);
+		}
+
+		bool atEnd() const
+		{
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			return Cur==0;
+		}
+
+		const Node* getNode() const
+		{
+			return Cur;
+		}
+
+		ConstIterator& operator=(const ConstIterator& src)
+		{
+			Root = src.Root;
+			Cur = src.Cur;
+			return (*this);
+		}
+
+		void operator++(int)
+		{
+			inc();
+		}
+
+		void operator--(int)
+		{
+			dec();
+		}
+
+		const Node* operator->()
+		{
+			return getNode();
+		}
+
+		const Node& operator*()
+		{
+			_IRR_DEBUG_BREAK_IF(atEnd()) // access violation
+
+			return *Cur;
+		}
+
+	private:
+
+		const Node* getMin(const Node* n) const
+		{
+			while(n && n->getLeftChild())
+				n = n->getLeftChild();
+			return n;
+		}
+
+		const Node* getMax(const Node* n) const
+		{
+			while(n && n->getRightChild())
+				n = n->getRightChild();
+			return n;
+		}
+
+		void inc()
+		{
+			// Already at end?
+			if (Cur==0)
+				return;
+
+			if (Cur->getRightChild())
+			{
+				// If current node has a right child, the next higher node is the
+				// node with lowest key beneath the right child.
+				Cur = getMin(Cur->getRightChild());
+			}
+			else if (Cur->isLeftChild())
+			{
+				// No right child? Well if current node is a left child then
+				// the next higher node is the parent
+				Cur = Cur->getParent();
+			}
+			else
+			{
+				// Current node neither is left child nor has a right child.
+				// Ie it is either right child or root
+				// The next higher node is the parent of the first non-right
+				// child (ie either a left child or the root) up in the
+				// hierarchy. Root's parent is 0.
+				while(Cur->isRightChild())
+					Cur = Cur->getParent();
+				Cur = Cur->getParent();
+			}
+		}
+
+		void dec()
+		{
+			// Already at end?
+			if (Cur==0)
+				return;
+
+			if (Cur->getLeftChild())
+			{
+				// If current node has a left child, the next lower node is the
+				// node with highest key beneath the left child.
+				Cur = getMax(Cur->getLeftChild());
+			}
+			else if (Cur->isRightChild())
+			{
+				// No left child? Well if current node is a right child then
+				// the next lower node is the parent
+				Cur = Cur->getParent();
+			}
+			else
+			{
+				// Current node neither is right child nor has a left child.
+				// Ie it is either left child or root
+				// The next higher node is the parent of the first non-left
+				// child (ie either a right child or the root) up in the
+				// hierarchy. Root's parent is 0.
+
+				while(Cur->isLeftChild())
+					Cur = Cur->getParent();
+				Cur = Cur->getParent();
+			}
+		}
+
+		const Node* Root;
+		const Node* Cur;
+	}; // ConstIterator
 
 
 	//! Parent First Iterator.
@@ -292,11 +438,7 @@ class map
 	{
 	public:
 
-
-	ParentFirstIterator() : Root(0), Cur(0)
-	{
-	}
-
+	ParentFirstIterator() : Root(0), Cur(0)	{}
 
 	explicit ParentFirstIterator(Node* root) : Root(root), Cur(0)
 	{
@@ -307,7 +449,6 @@ class map
 	{
 		Cur = Root;
 	}
-
 
 	bool atEnd() const
 	{
@@ -320,7 +461,6 @@ class map
 		return Cur;
 	}
 
-
 	ParentFirstIterator& operator=(const ParentFirstIterator& src)
 	{
 		Root = src.Root;
@@ -328,12 +468,10 @@ class map
 		return (*this);
 	}
 
-
 	void operator++(int)
 	{
 		inc();
 	}
-
 
 	Node* operator -> ()
 	{
@@ -801,27 +939,36 @@ class map
 	//------------------------------
 
 	//! Returns an iterator
-	Iterator getIterator()
+	Iterator getIterator() const
 	{
 		Iterator it(getRoot());
 		return it;
 	}
+
+	//! Returns a Constiterator
+	ConstIterator getConstIterator() const
+	{
+		Iterator it(getRoot());
+		return it;
+	}
+
 	//! Returns a ParentFirstIterator.
 	//! Traverses the tree from top to bottom. Typical usage is
 	//! when storing the tree structure, because when reading it
 	//! later (and inserting elements) the tree structure will
 	//! be the same.
-	ParentFirstIterator getParentFirstIterator()
+	ParentFirstIterator getParentFirstIterator() const
 	{
 		ParentFirstIterator it(getRoot());
 		return it;
 	}
+
 	//! Returns a ParentLastIterator to traverse the tree from
 	//! bottom to top.
 	//! Typical usage is when deleting all elements in the tree
 	//! because you must delete the children before you delete
 	//! their parent.
-	ParentLastIterator getParentLastIterator()
+	ParentLastIterator getParentLastIterator() const
 	{
 		ParentLastIterator it(getRoot());
 		return it;
