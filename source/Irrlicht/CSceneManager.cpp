@@ -2475,7 +2475,7 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 #endif
 	case EMWT_COLLADA:
 #ifdef _IRR_COMPILE_WITH_COLLADA_WRITER_
-		return new CColladaMeshWriter(Driver, FileSystem);
+		return new CColladaMeshWriter(this, Driver, FileSystem);
 #else
 		return 0;
 #endif

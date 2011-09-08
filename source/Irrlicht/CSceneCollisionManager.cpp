@@ -358,6 +358,9 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 	}
 
 	s32 totalcnt = selector->getTriangleCount();
+	if ( totalcnt <= 0 )
+		return false;
+
 	Triangles.set_used(totalcnt);
 
 	s32 cnt = 0;
@@ -889,7 +892,7 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 	if (useViewPort)
 		dim.set(Driver->getViewPort().getWidth(), Driver->getViewPort().getHeight());
 	else
-		dim=(Driver->getScreenSize());
+		dim=(Driver->getCurrentRenderTargetSize());
 
 	dim.Width /= 2;
 	dim.Height /= 2;

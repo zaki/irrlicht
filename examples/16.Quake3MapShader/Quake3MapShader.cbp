@@ -24,8 +24,8 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-W" />
 					<Add option="-g" />
+					<Add option="-W" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add directory="../../lib/Linux" />
 				</Compiler>
@@ -33,7 +33,7 @@
 					<Add library="Xxf86vm" />
 					<Add library="Xcursor" />
 					<Add library="GL" />
-					<Add directory="../../lib/gcc" />
+					<Add directory="../../lib/Linux" />
 				</Linker>
 			</Target>
 		</Build>

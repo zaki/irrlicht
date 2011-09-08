@@ -1053,7 +1053,7 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 		}
 
 		DWORD flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
-		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
+		if (hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC;
 
 		if (FAILED(pID3DDevice->CreateVertexBuffer(bufSize, flags, FVF, D3DPOOL_DEFAULT, &hwBuffer->vertexBuffer, NULL)))
@@ -1061,7 +1061,7 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 		hwBuffer->vertexBufferSize = bufSize;
 
 		flags = 0; // SIO2: Reset flags before Lock
-		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
+		if (hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags = D3DLOCK_DISCARD;
 
 		void* lockedBuffer = 0;
@@ -1187,7 +1187,9 @@ bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *hwBuffer)
 //! Create hardware buffer from meshbuffer
 CD3D9Driver::SHWBufferLink *CD3D9Driver::createHardwareBuffer(const scene::IMeshBuffer* mb)
 {
-	if (!mb || (mb->getHardwareMappingHint_Index()==scene::EHM_NEVER && mb->getHardwareMappingHint_Vertex()==scene::EHM_NEVER))
+	// Looks like d3d does not support only partial buffering, so refuse
+	// in any case of NEVER
+	if (!mb || (mb->getHardwareMappingHint_Index()==scene::EHM_NEVER || mb->getHardwareMappingHint_Vertex()==scene::EHM_NEVER))
 		return 0;
 
 	SHWBufferLink_d3d9 *hwBuffer=new SHWBufferLink_d3d9(mb);
@@ -1252,12 +1254,20 @@ void CD3D9Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const E_VERTEX_TYPE vType = mb->getVertexType();
 	const u32 stride = getVertexPitchFromType(vType);
+	const void* vPtr = mb->getVertices();
+	const void* iPtr = mb->getIndices();
 	if (HWBuffer->vertexBuffer)
+	{
 		pID3DDevice->SetStreamSource(0, HWBuffer->vertexBuffer, 0, stride);
+		vPtr=0;
+	}
 	if (HWBuffer->indexBuffer)
+	{
 		pID3DDevice->SetIndices(HWBuffer->indexBuffer);
+		iPtr=0;
+	}
 
-	drawVertexPrimitiveList(0, mb->getVertexCount(), 0, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
+	drawVertexPrimitiveList(vPtr, mb->getVertexCount(), iPtr, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
 
 	if (HWBuffer->vertexBuffer)
 		pID3DDevice->SetStreamSource(0, 0, 0, 0);
@@ -2563,9 +2573,15 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 			pID3DDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE);
 		}
-		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D9);
-
 		core::matrix4 m;
+// this fixes some problems with pixel exact rendering, but also breaks nice texturing
+// moreover, it would have to be tested in each call, as the texture flag can change each time
+//		if (!texture)
+//			m.setTranslation(core::vector3df(0.5f,0.5f,0));
+		pID3DDevice->SetTransform(D3DTS_WORLD, (D3DMATRIX*)((void*)m.pointer()));
+
+		// adjust the view such that pixel center aligns with texels
+		// Otherwise, subpixel artifacts will occur
 		m.setTranslation(core::vector3df(-0.5f,-0.5f,0));
 		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)m.pointer()));
 
@@ -2574,6 +2590,7 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		m.setTranslation(core::vector3df(-1,1,0));
 		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)m.pointer()));
 
+		// 2d elements are clipped in software
 		pID3DDevice->SetRenderState(D3DRS_CLIPPING, FALSE);
 
 		Transformation3DChanged = false;

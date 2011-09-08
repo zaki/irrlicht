@@ -65,6 +65,15 @@ namespace gui
 		\param font: New font to set. */
 		virtual void setOverrideFont(IGUIFont* font=0) = 0;
 
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont(void) const = 0;
+
+		//! Get the font which is used right now for drawing
+		/** Currently this is the override font when one is set and the
+		font of the active skin otherwise */
+		virtual IGUIFont* getActiveFont() const = 0;
+
 		//! Sets an image which should be displayed on the button when it is in normal state.
 		/** \param image: Image to be displayed */
 		virtual void setImage(video::ITexture* image=0) = 0;

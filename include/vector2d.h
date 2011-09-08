@@ -246,7 +246,7 @@ public:
 		if (tmp < 0.0)
 			tmp = -tmp;
 		if ( tmp > 1.0 ) //   avoid floating-point trouble
-			tmp = 1.0;			
+			tmp = 1.0;
 
 		return atan(sqrt(1 - tmp*tmp) / tmp) * RADTODEG64;
 	}

@@ -28,14 +28,7 @@ CWaterSurfaceSceneNode::CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f3
 	setDebugName("CWaterSurfaceSceneNode");
 	#endif
 
-	// create copy of the mesh
-	if (mesh)
-	{
-		// Mesh is set in CMeshSceneNode constructor, now it is moved to OriginalMesh
-		IMesh* clone = SceneManager->getMeshManipulator()->createMeshCopy(mesh);
-		OriginalMesh = Mesh;
-		Mesh = clone;
-	}
+	setMesh(mesh);
 }
 
 
@@ -71,6 +64,7 @@ void CWaterSurfaceSceneNode::OnAnimate(u32 timeMs)
 					OriginalMesh->getMeshBuffer(b)->getPosition(i),
 					time);
 		}// end for all mesh buffers
+		Mesh->setDirty(scene::EBT_VERTEX);
 
 		SceneManager->getMeshManipulator()->recalculateNormals(Mesh);
 	}
@@ -88,6 +82,8 @@ void CWaterSurfaceSceneNode::setMesh(IMesh* mesh)
 	IMesh* clone = SceneManager->getMeshManipulator()->createMeshCopy(mesh);
 	OriginalMesh = mesh;
 	Mesh = clone;
+	Mesh->setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_INDEX);
+//	Mesh->setHardwareMappingHint(scene::EHM_STREAM, scene::EBT_VERTEX);
 }
 
 

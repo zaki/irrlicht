@@ -82,9 +82,7 @@ void CGUIStaticText::draw()
 	// draw the text
 	if (Text.size())
 	{
-		IGUIFont* font = OverrideFont;
-		if (!OverrideFont)
-			font = skin->getFont();
+		IGUIFont* font = getActiveFont();
 
 		if (font)
 		{
@@ -162,12 +160,22 @@ void CGUIStaticText::setOverrideFont(IGUIFont* font)
 	breakText();
 }
 
-
+//! Gets the override font (if any)
 IGUIFont * CGUIStaticText::getOverrideFont() const
 {
 	return OverrideFont;
 }
 
+//! Get the font which is used right now for drawing
+IGUIFont* CGUIStaticText::getActiveFont() const
+{
+	if ( OverrideFont )
+		return OverrideFont;
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		return skin->getFont();
+	return 0;
+}
 
 //! Sets another color for the text.
 void CGUIStaticText::setOverrideColor(video::SColor color)
@@ -204,7 +212,7 @@ void CGUIStaticText::setTextRestrainedInside(bool restrainTextInside)
 {
 	RestrainTextInside = restrainTextInside;
 }
- 
+
 
 bool CGUIStaticText::isTextRestrainedInside() const
 {
@@ -275,21 +283,27 @@ bool CGUIStaticText::isRightToLeft() const
 //! Breaks the single text line.
 void CGUIStaticText::breakText()
 {
-	IGUISkin* skin = Environment->getSkin();
-
-	if (!WordWrap || !skin)
+	if (!WordWrap)
 		return;
 
 	BrokenText.clear();
 
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
-		font = skin->getFont();
-
+	IGUISkin* skin = Environment->getSkin();
+	IGUIFont* font = getActiveFont();
 	if (!font)
 		return;
 
 	LastBreakFont = font;
+
+	core::stringw line;
+	core::stringw word;
+	core::stringw whitespace;
+	s32 size = Text.size();
+	s32 length = 0;
+	s32 elWidth = RelativeRect.getWidth();
+	if (Border)
+		elWidth -= 2*skin->getSize(EGDS_TEXT_DISTANCE_X);
+	wchar_t c;
 
 	// We have to deal with right-to-left and left-to-right differently
 	// However, most parts of the following code is the same, it's just
@@ -297,14 +311,6 @@ void CGUIStaticText::breakText()
 	if (!RightToLeft)
 	{
 		// regular (left-to-right)
-		core::stringw line;
-		core::stringw word;
-		core::stringw whitespace;
-		s32 size = Text.size();
-		s32 length = 0;
-		s32 elWidth = RelativeRect.getWidth() - 6;
-		wchar_t c;
-
 		for (s32 i=0; i<size; ++i)
 		{
 			c = Text[i];
@@ -326,7 +332,14 @@ void CGUIStaticText::breakText()
 				c = '\0';
 			}
 
-			if (c==L' ' || c==0 || i==(size-1))
+			bool isWhitespace = (c == L' ' || c == 0);
+			if ( !isWhitespace )
+			{
+				// part of a word
+				word += c;
+			}
+
+			if ( isWhitespace || i == (size-1))
 			{
 				if (word.size())
 				{
@@ -334,7 +347,7 @@ void CGUIStaticText::breakText()
 					// we must break the last word to the next line.
 					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
 					const s32 wordlgth = font->getDimension(word.c_str()).Width;
-					
+
 					if (wordlgth > elWidth)
 					{
 						// This word is too long to fit in the available space, look for
@@ -347,7 +360,7 @@ void CGUIStaticText::breakText()
 							core::stringw second = word.subString(where, word.size() - where);
 							BrokenText.push_back(line + first + L"-");
 							const s32 secondLength = font->getDimension(second.c_str()).Width;
-							
+
 							length = secondLength;
 							line = second;
 						}
@@ -380,7 +393,10 @@ void CGUIStaticText::breakText()
 					whitespace = L"";
 				}
 
-				whitespace += c;
+				if ( isWhitespace )
+				{
+					whitespace += c;
+				}
 
 				// compute line break
 				if (lineBreak)
@@ -394,11 +410,6 @@ void CGUIStaticText::breakText()
 					length = 0;
 				}
 			}
-			else
-			{
-				// yippee this is a word..
-				word += c;
-			}
 		}
 
 		line += whitespace;
@@ -408,14 +419,6 @@ void CGUIStaticText::breakText()
 	else
 	{
 		// right-to-left
-		core::stringw line;
-		core::stringw word;
-		core::stringw whitespace;
-		s32 size = Text.size();
-		s32 length = 0;
-		s32 elWidth = RelativeRect.getWidth() - 6;
-		wchar_t c;
-
 		for (s32 i=size; i>=0; --i)
 		{
 			c = Text[i];
@@ -512,15 +515,7 @@ void CGUIStaticText::updateAbsolutePosition()
 //! Returns the height of the text in pixels when it is drawn.
 s32 CGUIStaticText::getTextHeight() const
 {
-	IGUISkin* skin = Environment->getSkin();
-
-	if (!skin)
-		return 0;
-
-	IGUIFont* font = OverrideFont;
-	if (!OverrideFont)
-		font = skin->getFont();
-
+	IGUIFont* font = getActiveFont();
 	if (!font)
 		return 0;
 
@@ -535,15 +530,7 @@ s32 CGUIStaticText::getTextHeight() const
 
 s32 CGUIStaticText::getTextWidth() const
 {
-	IGUIFont * font = OverrideFont;
-
-	if(!OverrideFont)
-	{
-		IGUISkin * skin = Environment->getSkin();
-		if(skin)
-			font = skin->getFont();
-	}
-
+	IGUIFont * font = getActiveFont();
 	if(!font)
 		return 0;
 

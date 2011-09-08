@@ -15,8 +15,7 @@ namespace scene
 {
 
 const s32 MD2_FRAME_SHIFT	= 2;
-const f32 MD2_FRAME_SHIFT_RECIPROCAL = 1.f / ( 1 << MD2_FRAME_SHIFT );
-
+const f32 MD2_FRAME_SHIFT_RECIPROCAL = 1.f / (1 << MD2_FRAME_SHIFT);
 
 const s32 Q2_VERTEX_NORMAL_TABLE_SIZE = 162;
 
@@ -194,27 +193,27 @@ struct SMD2AnimationType
 
 static const SMD2AnimationType MD2AnimationTypeList[21] =
 {
-    {   0,  39,  9 },   // STAND
-    {  40,  45, 10 },   // RUN
-    {  46,  53, 10 },   // ATTACK
-    {  54,  57,  7 },   // PAIN_A
-    {  58,  61,  7 },   // PAIN_B
-    {  62,  65,  7 },   // PAIN_C
-    {  66,  71,  7 },   // JUMP
-    {  72,  83,  7 },   // FLIP
-    {  84,  94,  7 },   // SALUTE
-    {  95, 111, 10 },   // FALLBACK
-    { 112, 122,  7 },   // WAVE
-    { 123, 134,  6 },   // POINT
-    { 135, 153, 10 },   // CROUCH_STAND
-    { 154, 159,  7 },   // CROUCH_WALK
-    { 160, 168, 10 },   // CROUCH_ATTACK
-    { 169, 172,  7 },   // CROUCH_PAIN
-    { 173, 177,  5 },   // CROUCH_DEATH
-    { 178, 183,  7 },   // DEATH_FALLBACK
-    { 184, 189,  7 },   // DEATH_FALLFORWARD
-    { 190, 197,  7 },   // DEATH_FALLBACKSLOW
-    { 198, 198,  5 },   // BOOM
+	{  0,  39,  9}, // STAND
+	{ 40,  45, 10}, // RUN
+	{ 46,  53, 10}, // ATTACK
+	{ 54,  57,  7}, // PAIN_A
+	{ 58,  61,  7}, // PAIN_B
+	{ 62,  65,  7}, // PAIN_C
+	{ 66,  71,  7}, // JUMP
+	{ 72,  83,  7}, // FLIP
+	{ 84,  94,  7}, // SALUTE
+	{ 95, 111, 10}, // FALLBACK
+	{112, 122,  7}, // WAVE
+	{123, 134,  6}, // POINT
+	{135, 153, 10}, // CROUCH_STAND
+	{154, 159,  7}, // CROUCH_WALK
+	{160, 168, 10}, // CROUCH_ATTACK
+	{169, 172,  7}, // CROUCH_PAIN
+	{173, 177,  5}, // CROUCH_DEATH
+	{178, 183,  7}, // DEATH_FALLBACK
+	{184, 189,  7}, // DEATH_FALLFORWARD
+	{190, 197,  7}, // DEATH_FALLBACKSLOW
+	{198, 198,  5}, // BOOM
 };
 
 
@@ -237,6 +236,7 @@ CAnimatedMeshMD2::~CAnimatedMeshMD2()
 	if (InterpolationBuffer)
 		InterpolationBuffer->drop();
 }
+
 
 //! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
 u32 CAnimatedMeshMD2::getFrameCount() const
@@ -294,7 +294,6 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 {
 	u32 firstFrame, secondFrame;
 	f32 div;
-	core::vector3df* NormalTable = (core::vector3df*)&Q2_VERTEX_NORMAL_TABLE;
 
 	// TA: resolve missing ipol in loop between end-start
 
@@ -311,10 +310,10 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 		u32 e = endFrameLoop >> MD2_FRAME_SHIFT;
 
 		firstFrame = frame >> MD2_FRAME_SHIFT;
-		secondFrame = core::if_c_a_else_b ( firstFrame + 1 > e, s, firstFrame + 1 );
+		secondFrame = core::if_c_a_else_b(firstFrame + 1 > e, s, firstFrame + 1);
 
-		firstFrame = core::s32_min ( FrameCount - 1, firstFrame );
-		secondFrame = core::s32_min ( FrameCount - 1, secondFrame );
+		firstFrame = core::s32_min(FrameCount - 1, firstFrame);
+		secondFrame = core::s32_min(FrameCount - 1, secondFrame);
 
 		//div = (frame % (1<<MD2_FRAME_SHIFT)) / (f32)(1<<MD2_FRAME_SHIFT);
 		frame &= (1<<MD2_FRAME_SHIFT) - 1;
@@ -322,24 +321,29 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 	}
 
 	video::S3DVertex* target = static_cast<video::S3DVertex*>(InterpolationBuffer->getVertices());
-	SMD2Vert*         first  = FrameList[firstFrame].pointer();
-	SMD2Vert*         second = FrameList[secondFrame].pointer();
+	SMD2Vert* first = FrameList[firstFrame].pointer();
+	SMD2Vert* second = FrameList[secondFrame].pointer();
 
 	// interpolate both frames
 	const u32 count = FrameList[firstFrame].size();
 	for (u32 i=0; i<count; ++i)
 	{
-		core::vector3df one, two;
-		one.X = f32(first->Pos.X) * FrameTransforms[firstFrame].scale.X + FrameTransforms[firstFrame].translate.X;
-		one.Y = f32(first->Pos.Y) * FrameTransforms[firstFrame].scale.Y + FrameTransforms[firstFrame].translate.Y;
-		one.Z = f32(first->Pos.Z) * FrameTransforms[firstFrame].scale.Z + FrameTransforms[firstFrame].translate.Z;
-		two.X = f32(second->Pos.X) * FrameTransforms[secondFrame].scale.X + FrameTransforms[secondFrame].translate.X;
-		two.Y = f32(second->Pos.Y) * FrameTransforms[secondFrame].scale.Y + FrameTransforms[secondFrame].translate.Y;
-		two.Z = f32(second->Pos.Z) * FrameTransforms[secondFrame].scale.Z + FrameTransforms[secondFrame].translate.Z;
-		target->Pos    = (two - one) * div + one;
-
-		target->Normal = (NormalTable[second->NormalIdx] - NormalTable[first->NormalIdx]) * div 
-			           +  NormalTable[first->NormalIdx];
+		const core::vector3df one = core::vector3df(f32(first->Pos.X) * FrameTransforms[firstFrame].scale.X + FrameTransforms[firstFrame].translate.X,
+				f32(first->Pos.Y) * FrameTransforms[firstFrame].scale.Y + FrameTransforms[firstFrame].translate.Y,
+				f32(first->Pos.Z) * FrameTransforms[firstFrame].scale.Z + FrameTransforms[firstFrame].translate.Z);
+		const core::vector3df two = core::vector3df(f32(second->Pos.X) * FrameTransforms[secondFrame].scale.X + FrameTransforms[secondFrame].translate.X,
+				f32(second->Pos.Y) * FrameTransforms[secondFrame].scale.Y + FrameTransforms[secondFrame].translate.Y,
+				f32(second->Pos.Z) * FrameTransforms[secondFrame].scale.Z + FrameTransforms[secondFrame].translate.Z);
+		target->Pos = two.getInterpolated(one, div);
+		const core::vector3df n1(
+				Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][0],
+				Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][2],
+				Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][1]);
+		const core::vector3df n2(
+				Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][0],
+				Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][2],
+				Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][1]);
+		target->Normal = n2.getInterpolated(n1, div);
 		++target;
 		++first;
 		++second;
@@ -381,7 +385,7 @@ const core::aabbox3d<f32>& CAnimatedMeshMD2::getBoundingBox() const
 
 
 //! set user axis aligned bounding box
-void CAnimatedMeshMD2::setBoundingBox( const core::aabbox3df& box)
+void CAnimatedMeshMD2::setBoundingBox(const core::aabbox3df& box)
 {
 	InterpolationBuffer->BoundingBox = box;
 }
@@ -396,7 +400,7 @@ E_ANIMATED_MESH_TYPE CAnimatedMeshMD2::getMeshType() const
 
 //! Returns frame loop data for a special MD2 animation type.
 void CAnimatedMeshMD2::getFrameLoop(EMD2_ANIMATION_TYPE l,
-									s32& outBegin, s32& outEnd, s32& outFPS) const
+				s32& outBegin, s32& outEnd, s32& outFPS) const
 {
 	if (l < 0 || l >= EMAT_COUNT)
 		return;
@@ -405,7 +409,7 @@ void CAnimatedMeshMD2::getFrameLoop(EMD2_ANIMATION_TYPE l,
 	outEnd = MD2AnimationTypeList[l].end << MD2_FRAME_SHIFT;
 
 	// correct to anim between last->first frame
-	outEnd += MD2_FRAME_SHIFT == 0 ? 1 : ( 1 << MD2_FRAME_SHIFT ) - 1;
+	outEnd += MD2_FRAME_SHIFT == 0 ? 1 : (1 << MD2_FRAME_SHIFT) - 1;
 	outFPS = MD2AnimationTypeList[l].fps << MD2_FRAME_SHIFT;
 }
 
@@ -420,7 +424,7 @@ bool CAnimatedMeshMD2::getFrameLoop(const c8* name,
 		{
 			outBegin = AnimationData[i].begin << MD2_FRAME_SHIFT;
 			outEnd = AnimationData[i].end << MD2_FRAME_SHIFT;
-			outEnd += MD2_FRAME_SHIFT == 0 ? 1 : ( 1 << MD2_FRAME_SHIFT ) - 1;
+			outEnd += MD2_FRAME_SHIFT == 0 ? 1 : (1 << MD2_FRAME_SHIFT) - 1;
 			outFPS = AnimationData[i].fps << MD2_FRAME_SHIFT;
 			return true;
 		}

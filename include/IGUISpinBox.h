@@ -50,6 +50,7 @@ namespace gui
 		virtual void setStepSize(f32 step=1.f) = 0;
 
 		//! Sets the number of decimal places to display.
+		//! Note that this also rounds the range to the same number of decimal places.
 		/** \param places: The number of decimal places to display, use -1 to reset */
 		virtual void setDecimalPlaces(s32 places) = 0;
 

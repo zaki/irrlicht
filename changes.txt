@@ -1,5 +1,27 @@
 Changes in 1.8 (??.??.2011)
 
+ - Add IGUIComboBox::setMaxSelectionRows and IGUIComboBox::getMaxSelectionRows
+
+ - Scenemanager switches from type ESNT_UNKNOWN to type ESNT_SCENE_MANAGER.
+
+ - Add getActiveFont to all elements which have setOverrideFont for cleaner code
+
+ - Add getOverrideFont to all elements which have setOverrideFont to have a consistent interface
+
+ - IGUIEditBox: added missing serialization for Border
+
+ - IGUIEditBox: remove bug that added spaces to the end of each line 
+
+ - IGUIEditBox: fix crash that happened when wordwrapping was enabled, spaces were entered beyond the border and then cursor-key was pressed.
+
+ - IGUIEditBox::setDrawBackground added.
+
+ - CGUISkin::draw3DSunkenPane no longer ignores fillBackGround in non-flat mode. Also borderlines are no longer drawn overlapping to avoid ugly corners.
+
+ - CDummyTransformationSceneNode::clone() added.
+
+ - IParticleSystemSceneNode::doParticleSystem now public to allow rendering outside scenegraph. 
+
  - Renamed IOSOperator::getOperationSystemVersion to getOperatingSystemVersion. Changed return type from wchar_t to core::stringc, as that's the internal representation the name is built on.
 
  - Added IGUITabControl::insertTab, IGUITabControl::removeTab, IGUITabControl::clear and IGUITabControl::getTabAt
@@ -12,7 +34,7 @@ Changes in 1.8 (??.??.2011)
 
  - Added ISceneManager::createSceneNodeAnimator to create animators by name
 
- - The Makefile now creates a symlink from the soname to the binary name during install. Binary compatibility is only confirmed between minor releases, so the only useful symlink is from libIrrlicht.so.1.8 to libIrrlicht.so.1.8.0; others should rightly fail.
+ - The Makefile now creates a symlink from the soname to the binary name during install. Binary compatibility is only confirmed between same minor releases.
 
  - Added SMF mesh loader, loads meshes from 3D World Studio. Originally written by Joseph Ellis
 
@@ -266,6 +288,27 @@ The following names can be queried for the given types:
 
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
+
+ - editbox no longer moves text into next line when it fails wrapping creating senseless empty lines which mess up scrolling.
+
+ - Fix crash in editbox when scrolling up with empty first lines caused by textwrapping.
+
+ - triangle3d::isPointInside can now work with larger integers, old version failed already with values in the 3-digit range. It got also faster. (thx @ Eigen for report + testcase and REDDemon for patch proposal).
+
+ - Fix focus problem when removing an unfocused modal dialog reported by Reiko here: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=44358
+
+ - Add integer template specialization for vector3d::getSphericalCoordinateAngles which rounds angles to nearest integer now.
+
+ - Recalculate FrameRect and ScrollPos in CGUIEditBox when AbsoluteRect gets changed (thx @ serengeor for report + testcase)
+ 
+ - Fix 'k' in bigfont.png (thx @ Scrappi for reporting)
+
+ - fix serialization for CBillboardSceneNode, it had missed 2 color (thx for finding + patch from pc0de)
+
+ - EMIE_MOUSE_WHEEL messages now handled correctly in several gui-element when wheel isn't just 1.0 or -1.0 (thx @ Reiko for reporting)
+
+ - Fix problems in Textwrapping in CGUIStaticText. Did use wrong size and did ignore last word of the text (thx @ Reiko for bugreport)
+ 
  - Fix crash in collada (.dae) loading
   
  - Fix memory-leaks in example 22 MaterialViewer

@@ -30,6 +30,15 @@ namespace gui
 		//! Sets another skin independent font.
 		virtual void setOverrideFont(IGUIFont* font=0);
 
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont() const;
+
+		//! Get the font which is used right now for drawing
+		/** Currently this is the override font when one is set and the
+		font of the active skin otherwise */
+		virtual IGUIFont* getActiveFont() const;
+
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
 
@@ -43,6 +52,9 @@ namespace gui
 		//! Checks if an override color is enabled
 		/** \return true if the override color is enabled, false otherwise */
 		virtual bool isOverrideColorEnabled(void) const;
+
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw);
 
 		//! Turns the border on or off
 		virtual void setDrawBorder(bool border);
@@ -124,6 +136,8 @@ namespace gui
 		void inputChar(wchar_t c);
 		//! calculates the current scroll position
 		void calculateScrollPos();
+		//! calculated the FrameRect
+		void calculateFrameRect();
 		//! send some gui event to parent
 		void sendGuiEvent(EGUI_EVENT_TYPE type);
 		//! set text markers
@@ -135,6 +149,7 @@ namespace gui
 
 		bool MouseMarking;
 		bool Border;
+		bool Background;
 		bool OverrideColorEnabled;
 		s32 MarkBegin;
 		s32 MarkEnd;

@@ -28,6 +28,15 @@ namespace gui
 		\param font: New font to set. */
 		virtual void setOverrideFont(IGUIFont* font=0) = 0;
 
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont() const = 0;
+
+		//! Get the font which is used right now for drawing
+		/** Currently this is the override font when one is set and the
+		font of the active skin otherwise */
+		virtual IGUIFont* getActiveFont() const = 0;
+
 		//! Sets another color for the text.
 		/** If set, the edit box does not use the EGDC_BUTTON_TEXT color defined
 		in the skin, but the set color instead. You don't need to call
@@ -50,6 +59,9 @@ namespace gui
 		//! Checks if an override color is enabled
 		/** \return true if the override color is enabled, false otherwise */
 		virtual bool isOverrideColorEnabled(void) const = 0;
+
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw) = 0;
 
 		//! Turns the border on or off
 		/** \param border: true if you want the border to be drawn, false if not */

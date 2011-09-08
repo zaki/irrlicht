@@ -648,24 +648,20 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 	else if (d <= -1.0f) // exactly opposite
 	{
 		core::vector3df axis(1.0f, 0.f, 0.f);
-		axis = axis.crossProduct(core::vector3df(X,Y,Z));
+		axis = axis.crossProduct(v0);
 		if (axis.getLength()==0)
 		{
 			axis.set(0.f,1.f,0.f);
-			axis.crossProduct(core::vector3df(X,Y,Z));
+			axis.crossProduct(v0);
 		}
-		return this->fromAngleAxis(core::PI, axis);
+		// same as fromAngleAxis(core::PI, axis).normalize();
+		return set(axis.X, axis.Y, axis.Z, 0).normalize();
 	}
 
 	const f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
 	const f32 invs = 1.f / s;
 	const vector3df c = v0.crossProduct(v1)*invs;
-	X = c.X;
-	Y = c.Y;
-	Z = c.Z;
-	W = s * 0.5f;
-
-	return *this;
+	return set(c.X, c.Y, c.Z, s * 0.5f).normalize();
 }
 
 

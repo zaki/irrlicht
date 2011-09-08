@@ -10,41 +10,41 @@ namespace
 // test camera changes with terrain scene node recalculation
 bool terrainRecalc(void)
 {
-    IrrlichtDevice *device =
-        createDevice(video::EDT_BURNINGSVIDEO, dimension2du(160, 120), 32);
+	IrrlichtDevice *device =
+		createDevice(video::EDT_BURNINGSVIDEO, dimension2du(160, 120), 32);
 
 	if (!device)
 		return true;
 
-    video::IVideoDriver* driver = device->getVideoDriver();
-    scene::ISceneManager* smgr = device->getSceneManager();
+	video::IVideoDriver* driver = device->getVideoDriver();
+	scene::ISceneManager* smgr = device->getSceneManager();
 
-    scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
-        "../media/terrain-heightmap.bmp");
-    terrain->setScale(core::vector3df(40.f, .1f, 40.f));
+	scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
+		"../media/terrain-heightmap.bmp");
+	terrain->setScale(core::vector3df(40.f, .1f, 40.f));
 
-    terrain->setMaterialFlag(video::EMF_LIGHTING, false);
-    terrain->setMaterialTexture(0, driver->getTexture("../media/terrain-texture.jpg"));
-    terrain->setDebugDataVisible(scene::EDS_FULL);
+	terrain->setMaterialFlag(video::EMF_LIGHTING, false);
+	terrain->setMaterialTexture(0, driver->getTexture("../media/terrain-texture.jpg"));
+	terrain->setDebugDataVisible(scene::EDS_FULL);
 
-    scene::ICameraSceneNode* camera = smgr->addCameraSceneNode();
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode();
 
-    const core::vector3df center(terrain->getBoundingBox().getCenter());
-    camera->setTarget(center);
+	const core::vector3df center(terrain->getBoundingBox().getCenter());
+	camera->setTarget(center);
 
-    // yes, Y is intentionally being set to X here
-    const core::vector3df above (center.X, center.X, center.Z);
-    camera->setPosition (above);
+	// yes, Y is intentionally being set to X here
+	const core::vector3df above (center.X, center.X, center.Z);
+	camera->setPosition (above);
 	camera->setUpVector(vector3df(1.f, 0.f, 0.f));
-    camera->setFarValue(above.Y);
+	camera->setFarValue(above.Y);
 
-    device->run();
-    smgr->drawAll();
+	device->run();
+	smgr->drawAll();
 
 
 	// This shouldn't cause a recalc
 	camera->setUpVector(vector3df(1.f, 0.f, .01f).normalize());
-    device->run();
+	device->run();
 	driver->beginScene(true, true, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->endScene();
@@ -58,7 +58,7 @@ bool terrainRecalc(void)
 
 	// This is big enough to cause a recalc
 	camera->setUpVector(vector3df(1.f, 0.f, .1f).normalize());
-    device->run();
+	device->run();
 	driver->beginScene(true, true, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->endScene();
@@ -72,7 +72,7 @@ bool terrainRecalc(void)
 	device->closeDevice();
 	device->run();
 	device->drop();
-    return result;
+	return result;
 }
 
 bool terrainGaps()
@@ -114,7 +114,7 @@ bool terrainGaps()
 	device->closeDevice();
 	device->run();
 	device->drop();
-    return true;
+	return result;
 }
 
 }
@@ -125,3 +125,4 @@ bool terrainSceneNode()
 	result &= terrainGaps();
 	return result;
 }
+

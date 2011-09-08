@@ -51,7 +51,7 @@ namespace os
 	public:
 
 		//! resets the randomizer
-		static void reset();
+		static void reset(s32 value=0x0f0f0f0f);
 
 		//! generates a pseudo random number in the range 0..randMax()
 		static s32 rand();

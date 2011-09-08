@@ -33,7 +33,7 @@ bool CGUIModalScreen::canTakeFocus(IGUIElement* target) const
 {
     return (target && ((const IGUIElement*)target == this // this element can take it
                         || isMyChild(target)    // own children also
-                        || (target->getType() == EGUIET_MODAL_SCREEN )// other modals also fine
+                        || (target->getType() == EGUIET_MODAL_SCREEN )	// other modals also fine (is now on top or explicitely requested)
                         || (target->getParent() && target->getParent()->getType() == EGUIET_MODAL_SCREEN )))   // children of other modals will do
             ;
 }
@@ -86,6 +86,13 @@ bool CGUIModalScreen::OnEvent(const SEvent& event)
 		switch(event.GUIEvent.EventType)
 		{
 		case EGET_ELEMENT_FOCUSED:
+			if ( event.GUIEvent.Caller == this && isMyChild(event.GUIEvent.Element) )
+			{
+				Environment->removeFocus(0);	// can't setFocus otherwise at it still has focus here
+				Environment->setFocus(event.GUIEvent.Element);
+				MouseDownTime = os::Timer::getTime();
+				return true;
+			}			
 			if ( !canTakeFocus(event.GUIEvent.Caller))
 			{
 				if ( !Children.empty() )

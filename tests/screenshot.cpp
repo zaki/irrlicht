@@ -41,7 +41,7 @@ bool testShots(video::E_DRIVER_TYPE type)
 	smgr->drawAll();
 	driver->endScene();
 
-	for (u32 i=0; i<video::ECF_UNKNOWN; ++i)
+	for (s32 i=0; i<video::ECF_UNKNOWN; ++i)
 	{
 		video::IImage* img = driver->createScreenShot((video::ECOLOR_FORMAT)i);
 		logTestString("Color Format %d %ssupported\n", i, (img && img->getColorFormat() == i)?"":"un");

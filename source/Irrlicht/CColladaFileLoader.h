@@ -135,6 +135,8 @@ struct SColladaEffect
 	f32 Transparency;
 	core::array<core::stringc> Textures;
 	video::SMaterial Mat;
+	// TODO: Parameters looks somewhat lazy workaround, I think we should really read all parameters correct.
+	io::IAttributes * Parameters;	
 
 	inline bool operator< (const SColladaEffect & other) const
 	{
@@ -298,7 +300,7 @@ private:
 	//! clears all loaded data
 	void clearData();
 
-	//! parses all collada parameters inside an element and stores them in Parameters
+	//! parses all collada parameters inside an element and stores them in ColladaParameters
 	void readColladaParameters(io::IXMLReaderUTF8* reader, const core::stringc& parentName);
 
 	//! returns a collada parameter or none if not found
@@ -332,10 +334,10 @@ private:
 	void readBindMaterialSection(io::IXMLReaderUTF8* reader, const core::stringc & id);
 
 	//! create an Irrlicht texture from the SColladaImage
-	video::ITexture* getTextureFromImage(core::stringc uri);
+	video::ITexture* getTextureFromImage(core::stringc uri, SColladaEffect * effect);
 
 	//! read a parameter and value
-	void readParameter(io::IXMLReaderUTF8* reader);
+	void readParameter(io::IXMLReaderUTF8* reader, io::IAttributes* parameters);
 
 	scene::ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
@@ -360,7 +362,6 @@ private:
 	core::map<core::stringc,u32> MaterialsToBind;
 	//! Array of buffers for each material binding
 	core::array< core::array<irr::scene::IMeshBuffer*> > MeshesToBind;
-	io::CAttributes Parameters;
 
 	bool CreateInstances;
 };

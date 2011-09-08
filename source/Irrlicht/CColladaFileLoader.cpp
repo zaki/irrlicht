@@ -1272,7 +1272,7 @@ void CColladaFileLoader::readTexture(io::IXMLReaderUTF8* reader)
 		if (input)
 		{
 			const core::stringc imageName = input->Source;
-			texture.Texture = getTextureFromImage(imageName);
+			texture.Texture = getTextureFromImage(imageName, NULL);
 		}
 	}
 }
@@ -1370,6 +1370,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	{
 		Effects.push_back(SColladaEffect());
 		effect = &Effects.getLast();
+		effect->Parameters = new io::CAttributes();
 		effect->Id = readId(reader);
 		effect->Transparency = 1.f;
 		effect->Mat.Lighting=true;
@@ -1388,7 +1389,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 				readEffect(reader,effect);
 			else
 			if (newParamName == reader->getNodeName())
-				readParameter(reader);
+				readParameter(reader, effect->Parameters);
 			else
 			// these are the actual materials inside technique
 			if (constantNode == reader->getNodeName() ||
@@ -1538,10 +1539,10 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 		effect->Mat.MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		effect->Mat.ZWriteEnable = false;
 	}
-	effect->Mat.setFlag(video::EMF_TEXTURE_WRAP, !Parameters.getAttributeAsBool("wrap_s"));
-	effect->Mat.setFlag(video::EMF_BILINEAR_FILTER, Parameters.getAttributeAsBool("bilinear"));
-	effect->Mat.setFlag(video::EMF_TRILINEAR_FILTER, Parameters.getAttributeAsBool("trilinear"));
-	effect->Mat.setFlag(video::EMF_ANISOTROPIC_FILTER, Parameters.getAttributeAsBool("anisotropic"));
+	effect->Mat.setFlag(video::EMF_TEXTURE_WRAP, !effect->Parameters->getAttributeAsBool("wrap_s"));
+	effect->Mat.setFlag(video::EMF_BILINEAR_FILTER, effect->Parameters->getAttributeAsBool("bilinear"));
+	effect->Mat.setFlag(video::EMF_TRILINEAR_FILTER, effect->Parameters->getAttributeAsBool("trilinear"));
+	effect->Mat.setFlag(video::EMF_ANISOTROPIC_FILTER, effect->Parameters->getAttributeAsBool("anisotropic"));
 }
 
 
@@ -1569,7 +1570,7 @@ const SColladaMaterial* CColladaFileLoader::findMaterial(const core::stringc& ma
 			// found the effect, instantiate by copying into the material
 			Materials[mat].Mat = Effects[effect].Mat;
 			if (Effects[effect].Textures.size())
-				Materials[mat].Mat.setTexture(0, getTextureFromImage(Effects[effect].Textures[0]));
+				Materials[mat].Mat.setTexture(0, getTextureFromImage(Effects[effect].Textures[0], &(Effects[effect])));
 			Materials[mat].Transparency = Effects[effect].Transparency;
 			// and indicate the material is instantiated by removing the effect ref
 			Materials[mat].InstanceEffectId = "";
@@ -2494,7 +2495,7 @@ void CColladaFileLoader::readColladaInputs(io::IXMLReaderUTF8* reader, const cor
 	} // end while reader->read();
 }
 
-//! parses all collada parameters inside an element and stores them in Parameters
+//! parses all collada parameters inside an element and stores them in ColladaParameters
 void CColladaFileLoader::readColladaParameters(io::IXMLReaderUTF8* reader,
 		const core::stringc& parentName)
 {
@@ -2719,6 +2720,8 @@ void CColladaFileLoader::clearData()
 	Inputs.clear();
 
 	// clear all effects
+	for ( u32 i=0; i<Effects.size(); ++i )
+		Effects[i].Parameters->drop();
 	Effects.clear();
 
 	// clear all the materials to bind
@@ -2751,7 +2754,7 @@ core::stringc CColladaFileLoader::readId(io::IXMLReaderUTF8* reader)
 
 
 //! create an Irrlicht texture from the reference
-video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
+video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri, SColladaEffect * effect)
 {
 	#ifdef COLLADA_READER_DEBUG
 	os::Printer::log("COLLADA searching texture", uri);
@@ -2792,9 +2795,9 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 				break;
 			}
 		}
-		if (Parameters.getAttributeType(uri.c_str())==io::EAT_STRING)
+		if (effect && effect->Parameters->getAttributeType(uri.c_str())==io::EAT_STRING)
 		{
-			uri = Parameters.getAttributeAsString(uri.c_str());
+			uri = effect->Parameters->getAttributeAsString(uri.c_str());
 #ifdef COLLADA_READER_DEBUG
 			os::Printer::log("COLLADA now searching texture", uri.c_str());
 #endif
@@ -2807,11 +2810,14 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 
 
 //! read a parameter and value
-void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
+void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader, io::IAttributes* parameters)
 {
 	#ifdef COLLADA_READER_DEBUG
 	os::Printer::log("COLLADA reading parameter");
 	#endif
+
+	if ( !parameters )
+		return;
 
 	const core::stringc name = reader->getAttributeValue("sid");
 	if (!reader->isEmptyElement())
@@ -2823,7 +2829,7 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
 				if (floatNodeName == reader->getNodeName())
 				{
 					const f32 f = readFloatNode(reader);
-					Parameters.addFloat(name.c_str(), f);
+					parameters->addFloat(name.c_str(), f);
 				}
 				else
 				if (float2NodeName == reader->getNodeName())
@@ -2837,14 +2843,14 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
 				{
 					f32 f[3];
 					readFloatsInsideElement(reader, f, 3);
-					Parameters.addVector3d(name.c_str(), core::vector3df(f[0],f[1],f[2]));
+					parameters->addVector3d(name.c_str(), core::vector3df(f[0],f[1],f[2]));
 				}
 				else
 				if ((initFromName == reader->getNodeName()) ||
 					(sourceSectionName == reader->getNodeName()))
 				{
 					reader->read();
-					Parameters.addString(name.c_str(), reader->getNodeData());
+					parameters->addString(name.c_str(), reader->getNodeData());
 				}
 				else
 				if (wrapsName == reader->getNodeName())
@@ -2852,7 +2858,7 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
 					reader->read();
 					const core::stringc val = reader->getNodeData();
 					if (val == "WRAP")
-						Parameters.addBool("wrap_s", true);
+						parameters->addBool("wrap_s", true);
 				}
 				else
 				if (wraptName == reader->getNodeName())
@@ -2860,7 +2866,7 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
 					reader->read();
 					const core::stringc val = reader->getNodeData();
 					if (val == "WRAP")
-						Parameters.addBool("wrap_t", true);
+						parameters->addBool("wrap_t", true);
 				}
 				else
 				if (minfilterName == reader->getNodeName())
@@ -2868,10 +2874,10 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
 					reader->read();
 					const core::stringc val = reader->getNodeData();
 					if (val == "LINEAR_MIPMAP_LINEAR")
-						Parameters.addBool("trilinear", true);
+						parameters->addBool("trilinear", true);
 					else
 					if (val == "LINEAR_MIPMAP_NEAREST")
-						Parameters.addBool("bilinear", true);
+						parameters->addBool("bilinear", true);
 				}
 				else
 				if (magfilterName == reader->getNodeName())
@@ -2880,14 +2886,14 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
 					const core::stringc val = reader->getNodeData();
 					if (val != "LINEAR")
 					{
-						Parameters.addBool("bilinear", false);
-						Parameters.addBool("trilinear", false);
+						parameters->addBool("bilinear", false);
+						parameters->addBool("trilinear", false);
 					}
 				}
 				else
 				if (mipfilterName == reader->getNodeName())
 				{
-					Parameters.addBool("anisotropic", true);
+					parameters->addBool("anisotropic", true);
 				}
 			}
 			else

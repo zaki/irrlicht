@@ -62,6 +62,12 @@ namespace gui
 		//! sets the text alignment of the text part
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
+		//! Set the maximal number of rows for the selection listbox
+		virtual void setMaxSelectionRows(u32 max);
+
+		//! Get the maximimal number of rows for the selection listbox
+		virtual u32 getMaxSelectionRows() const;
+
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
 
@@ -97,6 +103,7 @@ namespace gui
 
 		s32 Selected;
 		EGUI_ALIGNMENT HAlign, VAlign;
+		u32 MaxSelectionRows;
 		bool HasFocus;
 	};
 
