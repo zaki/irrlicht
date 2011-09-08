@@ -90,7 +90,7 @@ namespace scene
 		//! Transparent effect scene nodes, drawn after Transparent nodes. They are sorted from back to front and drawn in that order.
 		ESNRP_TRANSPARENT_EFFECT =32,
 
-		//! Drawn after the transparent nodes, the time for drawing shadow volumes
+		//! Drawn after the solid nodes, before the transparent nodes, the time for drawing shadow volumes
 		ESNRP_SHADOW =64
 	};
 

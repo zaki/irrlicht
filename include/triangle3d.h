@@ -81,21 +81,39 @@ namespace core
 			return d2 < d3 ? rbc : rca;
 		}
 
-		//! Check if a point is inside the triangle
+		//! Check if a point is inside the triangle (border-points count also as inside)
 		/** \param p Point to test. Assumes that this point is already
 		on the plane of the triangle.
 		\return True if the point is inside the triangle, otherwise false. */
 		bool isPointInside(const vector3d<T>& p) const
 		{
-			return (isOnSameSide(p, pointA, pointB, pointC) &&
-				isOnSameSide(p, pointB, pointA, pointC) &&
-				isOnSameSide(p, pointC, pointA, pointB));
+			const vector3d<T> a = pointC - pointA;
+			const vector3d<T> b = pointB - pointA;
+			const vector3d<T> c = p - pointA;
+			
+			const f64 dotAA = a.dotProduct( a);
+			const f64 dotAB = a.dotProduct( b);
+			const f64 dotAC = a.dotProduct( c);
+			const f64 dotBB = b.dotProduct( b);
+			const f64 dotBC = b.dotProduct( c);
+			 
+			// get coordinates in barycentric coordinate system
+			const f64 invDenom =  1/(dotAA * dotBB - dotAB * dotAB); 
+			const f64 u = (dotBB * dotAC - dotAB * dotBC) * invDenom;
+			const f64 v = (dotAA * dotBC - dotAB * dotAC ) * invDenom;
+		 
+			// We count border-points as inside to keep downward compatibility.
+			// That's why we use >= and <= instead of > and < as more commonly seen on the web.
+			return (u >= 0) && (v >= 0) && (u + v <= 1);
 		}
 
 		//! Check if a point is inside the triangle.
 		/** This method is an implementation of the example used in a
 		paper by Kasper Fauerby original written by Keidy from
 		Mr-Gamemaker.
+		This was once faster than an old isPointInside implementation, but the  
+		current isPointInside is usualy as fast, sometimes even faster. 
+		Border-points in isPointInsideFast are not defined, some are inside and some outside.
 		\param p Point to test. Assumes that this point is already
 		on the plane of the triangle.
 		\return True if point is inside the triangle, otherwise false. */

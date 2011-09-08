@@ -421,6 +421,26 @@ namespace core
 	template <>
 	inline vector3d<s32>& vector3d<s32>::operator /=(s32 val) {X/=val;Y/=val;Z/=val; return *this;}
 
+	template <>
+	inline vector3d<s32> vector3d<s32>::getSphericalCoordinateAngles()
+	{
+		vector3d<s32> angle;
+		const f64 length = X*X + Y*Y + Z*Z;
+
+		if (length)
+		{
+			if (X!=0)
+			{
+				angle.Y = round32((f32)(atan2((f64)Z,(f64)X) * RADTODEG64));
+			}
+			else if (Z<0)
+				angle.Y=180;
+
+			angle.X = round32((f32)(acos(Y * core::reciprocal_squareroot(length)) * RADTODEG64));
+		}
+		return angle;
+	}
+
 	//! Typedef for a f32 3d vector.
 	typedef vector3d<f32> vector3df;
 
