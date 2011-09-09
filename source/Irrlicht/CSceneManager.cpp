@@ -237,7 +237,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CSTLMeshFileLoader());
 	#endif
 	#ifdef _IRR_COMPILE_WITH_PLY_LOADER_
-	MeshLoaderList.push_back(new CPLYMeshFileLoader());
+	MeshLoaderList.push_back(new CPLYMeshFileLoader(this));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_SMF_LOADER_
 	MeshLoaderList.push_back(new CSMFMeshFileLoader(Driver));
