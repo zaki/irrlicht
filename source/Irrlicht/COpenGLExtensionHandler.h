@@ -1126,6 +1126,18 @@ class COpenGLExtensionHandler
 		PFNGLSTENCILFUNCSEPARATEATIPROC pGlStencilFuncSeparateATI;
 		PFNGLSTENCILOPSEPARATEATIPROC pGlStencilOpSeparateATI;
 		PFNGLCOMPRESSEDTEXIMAGE2DPROC pGlCompressedTexImage2D;
+		// ARB framebuffer object
+		PFNGLBINDFRAMEBUFFERPROC pGlBindFramebuffer;
+		PFNGLDELETEFRAMEBUFFERSPROC pGlDeleteFramebuffers;
+		PFNGLGENFRAMEBUFFERSPROC pGlGenFramebuffers;
+		PFNGLCHECKFRAMEBUFFERSTATUSPROC pGlCheckFramebufferStatus;
+		PFNGLFRAMEBUFFERTEXTURE2DPROC pGlFramebufferTexture2D;
+		PFNGLBINDRENDERBUFFERPROC pGlBindRenderbuffer;
+		PFNGLDELETERENDERBUFFERSPROC pGlDeleteRenderbuffers;
+		PFNGLGENRENDERBUFFERSPROC pGlGenRenderbuffers;
+		PFNGLRENDERBUFFERSTORAGEPROC pGlRenderbufferStorage;
+		PFNGLFRAMEBUFFERRENDERBUFFERPROC pGlFramebufferRenderbuffer;
+		// EXT framebuffer object
 		PFNGLBINDFRAMEBUFFEREXTPROC pGlBindFramebufferEXT;
 		PFNGLDELETEFRAMEBUFFERSEXTPROC pGlDeleteFramebuffersEXT;
 		PFNGLGENFRAMEBUFFERSEXTPROC pGlGenFramebuffersEXT;
@@ -1831,8 +1843,12 @@ inline void COpenGLExtensionHandler::extGlCompressedTexImage2D (GLenum target, G
 inline void COpenGLExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint framebuffer)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlBindFramebufferEXT)
+	if (pGlBindFramebuffer)
+		pGlBindFramebuffer(target, framebuffer);
+	else if (pGlBindFramebufferEXT)
 		pGlBindFramebufferEXT(target, framebuffer);
+#elif defined(GL_ARB_framebuffer_object)
+	glBindFramebufferARB(target, framebuffer);
 #elif defined(GL_EXT_framebuffer_object)
 	glBindFramebufferEXT(target, framebuffer);
 #else
@@ -1843,8 +1859,12 @@ inline void COpenGLExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint 
 inline void COpenGLExtensionHandler::extGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlDeleteFramebuffersEXT)
+	if (pGlDeleteFramebuffers)
+		pGlDeleteFramebuffers(n, framebuffers);
+	else if (pGlDeleteFramebuffersEXT)
 		pGlDeleteFramebuffersEXT(n, framebuffers);
+#elif defined(GL_ARB_framebuffer_object)
+	glDeleteFramebuffersARB(n, framebuffers);
 #elif defined(GL_EXT_framebuffer_object)
 	glDeleteFramebuffersEXT(n, framebuffers);
 #else
@@ -1855,8 +1875,12 @@ inline void COpenGLExtensionHandler::extGlDeleteFramebuffers(GLsizei n, const GL
 inline void COpenGLExtensionHandler::extGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlGenFramebuffersEXT)
+	if (pGlGenFramebuffers)
+		pGlGenFramebuffers(n, framebuffers);
+	else if (pGlGenFramebuffersEXT)
 		pGlGenFramebuffersEXT(n, framebuffers);
+#elif defined(GL_ARB_framebuffer_object)
+	glGenFramebuffersARB(n, framebuffers);
 #elif defined(GL_EXT_framebuffer_object)
 	glGenFramebuffersEXT(n, framebuffers);
 #else
@@ -1867,10 +1891,14 @@ inline void COpenGLExtensionHandler::extGlGenFramebuffers(GLsizei n, GLuint *fra
 inline GLenum COpenGLExtensionHandler::extGlCheckFramebufferStatus(GLenum target)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlCheckFramebufferStatusEXT)
+	if (pGlCheckFramebufferStatus)
+		return pGlCheckFramebufferStatus(target);
+	else if (pGlCheckFramebufferStatusEXT)
 		return pGlCheckFramebufferStatusEXT(target);
 	else
 		return 0;
+#elif defined(GL_ARB_framebuffer_object)
+	return glCheckFramebufferStatusARB(target);
 #elif defined(GL_EXT_framebuffer_object)
 	return glCheckFramebufferStatusEXT(target);
 #else
@@ -1882,8 +1910,12 @@ inline GLenum COpenGLExtensionHandler::extGlCheckFramebufferStatus(GLenum target
 inline void COpenGLExtensionHandler::extGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlFramebufferTexture2DEXT)
+	if (pGlFramebufferTexture2D)
+		pGlFramebufferTexture2D(target, attachment, textarget, texture, level);
+	else if (pGlFramebufferTexture2DEXT)
 		pGlFramebufferTexture2DEXT(target, attachment, textarget, texture, level);
+#elif defined(GL_ARB_framebuffer_object)
+	glFramebufferTexture2DARB(target, attachment, textarget, texture, level);
 #elif defined(GL_EXT_framebuffer_object)
 	glFramebufferTexture2DEXT(target, attachment, textarget, texture, level);
 #else
@@ -1894,8 +1926,12 @@ inline void COpenGLExtensionHandler::extGlFramebufferTexture2D(GLenum target, GL
 inline void COpenGLExtensionHandler::extGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlBindRenderbufferEXT)
+	if (pGlBindRenderbuffer)
+		pGlBindRenderbuffer(target, renderbuffer);
+	else if (pGlBindRenderbufferEXT)
 		pGlBindRenderbufferEXT(target, renderbuffer);
+#elif defined(GL_ARB_framebuffer_object)
+	glBindRenderbufferARB(target, renderbuffer);
 #elif defined(GL_EXT_framebuffer_object)
 	glBindRenderbufferEXT(target, renderbuffer);
 #else
@@ -1906,8 +1942,12 @@ inline void COpenGLExtensionHandler::extGlBindRenderbuffer(GLenum target, GLuint
 inline void COpenGLExtensionHandler::extGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlDeleteRenderbuffersEXT)
+	if (pGlDeleteRenderbuffers)
+		pGlDeleteRenderbuffers(n, renderbuffers);
+	else if (pGlDeleteRenderbuffersEXT)
 		pGlDeleteRenderbuffersEXT(n, renderbuffers);
+#elif defined(GL_ARB_framebuffer_object)
+	glDeleteRenderbuffersARB(n, renderbuffers);
 #elif defined(GL_EXT_framebuffer_object)
 	glDeleteRenderbuffersEXT(n, renderbuffers);
 #else
@@ -1918,8 +1958,12 @@ inline void COpenGLExtensionHandler::extGlDeleteRenderbuffers(GLsizei n, const G
 inline void COpenGLExtensionHandler::extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlGenRenderbuffersEXT)
+	if (pGlGenRenderbuffers)
+		pGlGenRenderbuffers(n, renderbuffers);
+	else if (pGlGenRenderbuffersEXT)
 		pGlGenRenderbuffersEXT(n, renderbuffers);
+#elif defined(GL_ARB_framebuffer_object)
+	glGenRenderbuffersARB(n, renderbuffers);
 #elif defined(GL_EXT_framebuffer_object)
 	glGenRenderbuffersEXT(n, renderbuffers);
 #else
@@ -1930,8 +1974,12 @@ inline void COpenGLExtensionHandler::extGlGenRenderbuffers(GLsizei n, GLuint *re
 inline void COpenGLExtensionHandler::extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlRenderbufferStorageEXT)
+	if (pGlRenderbufferStorage)
+		pGlRenderbufferStorage(target, internalformat, width, height);
+	else if (pGlRenderbufferStorageEXT)
 		pGlRenderbufferStorageEXT(target, internalformat, width, height);
+#elif defined(GL_ARB_framebuffer_object)
+	glRenderbufferStorageARB(target, internalformat, width, height);
 #elif defined(GL_EXT_framebuffer_object)
 	glRenderbufferStorageEXT(target, internalformat, width, height);
 #else
@@ -1942,8 +1990,12 @@ inline void COpenGLExtensionHandler::extGlRenderbufferStorage(GLenum target, GLe
 inline void COpenGLExtensionHandler::extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlFramebufferRenderbufferEXT)
+	if (pGlFramebufferRenderbuffer)
+		pGlFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+	else if (pGlFramebufferRenderbufferEXT)
 		pGlFramebufferRenderbufferEXT(target, attachment, renderbuffertarget, renderbuffer);
+#elif defined(GL_ARB_framebuffer_object)
+	glFramebufferRenderbufferARB(target, attachment, renderbuffertarget, renderbuffer);
 #elif defined(GL_EXT_framebuffer_object)
 	glFramebufferRenderbufferEXT(target, attachment, renderbuffertarget, renderbuffer);
 #else
