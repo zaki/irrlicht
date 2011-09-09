@@ -794,9 +794,12 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 			SizeT tmpDstSize = uncompressedSize;
 			SizeT tmpSrcSize = decryptedSize;
 
+			unsigned int propSize = (pcData[3]<<8)+pcData[2];
 			int err = LzmaDecode((Byte*)pBuf, &tmpDstSize,
-					pcData, &tmpSrcSize,
-					0, 0, LZMA_FINISH_END, &status, &lzmaAlloc);
+					pcData+4+propSize, &tmpSrcSize,
+					pcData+4, propSize,
+					e.header.GeneralBitFlag&0x1?LZMA_FINISH_END:LZMA_FINISH_ANY, &status,
+					&lzmaAlloc);
 			uncompressedSize = tmpDstSize; // may be different to expected value
 
 			if (decrypted)
@@ -806,8 +809,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 
 			if (err != SZ_OK)
 			{
-				swprintf ( buf, 64, L"Error decompressing %s", Files[index].FullName.c_str() );
-				os::Printer::log( buf, ELL_ERROR);
+				os::Printer::log( "Error decompressing", Files[index].FullName, ELL_ERROR);
 				delete [] pBuf;
 				return 0;
 			}
