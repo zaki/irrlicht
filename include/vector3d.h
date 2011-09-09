@@ -422,7 +422,7 @@ namespace core
 	inline vector3d<s32>& vector3d<s32>::operator /=(s32 val) {X/=val;Y/=val;Z/=val; return *this;}
 
 	template <>
-	inline vector3d<s32> vector3d<s32>::getSphericalCoordinateAngles()
+	inline vector3d<s32> vector3d<s32>::getSphericalCoordinateAngles() const
 	{
 		vector3d<s32> angle;
 		const f64 length = X*X + Y*Y + Z*Z;
