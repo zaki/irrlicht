@@ -6,6 +6,7 @@
 #define __C_PLY_MESH_FILE_LOADER_H_INCLUDED__
 
 #include "IMeshLoader.h"
+#include "ISceneManager.h"
 #include "CDynamicMeshBuffer.h"
 
 namespace irr
@@ -30,7 +31,7 @@ class CPLYMeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	CPLYMeshFileLoader();
+	CPLYMeshFileLoader(scene::ISceneManager* smgr);
 
 	//! Destructor
 	virtual ~CPLYMeshFileLoader();
@@ -132,6 +133,7 @@ private:
 
 	core::array<SPLYElement*> ElementList;
 
+	scene::ISceneManager* SceneManager;
 	io::IReadFile *File;
 	c8 *Buffer;
 	bool IsBinaryFile, IsWrongEndian, EndOfFile;
