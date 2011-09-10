@@ -156,8 +156,14 @@ public:
 	//! Removes an archive from the file system.
 	/** This will close the archive and free any file handles, but will not
 	close resources which have already been loaded and are now cached, for
-	example textures and meshes.
-	\param filename The archive of the given name will be removed
+	example textures and meshes. Note that a relative filename might be
+	interpreted differently on each call, depending on the current working
+	directory. In case you want to remove an archive that was added using
+	a relative path name, you have to change to the same working directory
+	again. This means, that the filename given on creation is not an identifier
+	for the archive, but just a usual filename that is used for locating the
+	archive to work with.
+	\param filename The archive pointed to by the name will be removed
 	\return True on success, false on failure */
 	virtual bool removeFileArchive(const path& filename) =0;
 

@@ -4,6 +4,9 @@ using namespace irr;
 using namespace core;
 using namespace io;
 
+namespace
+{
+
 bool testArchive(IFileSystem* fs, const io::path& archiveName)
 {
 	// make sure there is no archive mounted
@@ -387,6 +390,43 @@ static bool testMountFile(IFileSystem* fs)
 	return result;
 }
 
+bool testAddRemove(IFileSystem* fs, const io::path& archiveName)
+{
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+	{
+		logTestString("Already mounted archives found\n");
+		return false;
+	}
+
+	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	{
+		logTestString("Mounting archive failed\n");
+		return false;
+	}
+
+	// make sure there is an archive mounted
+	if ( !fs->getFileArchiveCount() )
+	{
+		logTestString("Mounted archive not in list\n");
+		return false;
+	}
+
+	if (!fs->removeFileArchive(archiveName))
+	{
+		logTestString("Couldn't remove archive.\n");
+		return false;
+	}
+
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+		return false;
+
+	return true;
+}
+}
+
+
 bool archiveReader()
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(1, 1));
@@ -418,6 +458,8 @@ bool archiveReader()
 	ret &= testSpecialZip(fs, "media/lzmadata.zip", "tahoma10_.xml", buf);
 //	logTestString("Testing complex mount file.\n");
 //	ret &= testMountFile(fs);
+	logTestString("Testing add/remove with filenames.\n");
+	testAddRemove(fs, "media/file_with_path.zip");
 
 	device->closeDevice();
 	device->run();
