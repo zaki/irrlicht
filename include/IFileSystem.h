@@ -127,6 +127,10 @@ public:
 	IArchiveLoader and passing an instance to addArchiveLoader.
 	Irrlicht supports AES-encrypted zip files, and the advanced compression
 	techniques lzma and bzip2.
+	If you want to add a directory as an archive, prefix its name with a
+	slash in order to let Irrlicht recognize it as a folder mount (mypath/).
+	Using this technique one can build up a search order, because archives
+	are read first, and can be used more easily with relative filenames.
 	\param file: Archive to add to the file system.
 	\param ignoreCase: If set to true, files in the archive can be accessed without
 	writing all letters in the right case.
