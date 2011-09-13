@@ -73,9 +73,10 @@ namespace os
 		tmp += L"\n";
 		OutputDebugStringW(tmp.c_str());
 #else
-		OutputDebugStringA(message);
-		OutputDebugStringA("\n");
-		printf("%s\n", message);
+		core::stringc tmp(message);
+		tmp += "\n";
+		OutputDebugStringA(tmp.c_str());
+		printf("%s", tmp.c_str());
 #endif
 	}
 
