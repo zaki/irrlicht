@@ -143,7 +143,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				c8 grp[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(grp, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 #ifdef _IRR_DEBUG_OBJ_LOADER_
-	os::Printer::log("Loaded group start",grp);
+	os::Printer::log("Loaded group start",grp, ELL_DEBUG);
 #endif
 				if (useGroups)
 				{
@@ -161,7 +161,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				c8 smooth[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(smooth, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 #ifdef _IRR_DEBUG_OBJ_LOADER_
-	os::Printer::log("Loaded smoothing group start",smooth);
+	os::Printer::log("Loaded smoothing group start",smooth, ELL_DEBUG);
 #endif
 				if (core::stringc("off")==smooth)
 					smoothingGroup=0;
@@ -176,7 +176,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				c8 matName[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(matName, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 #ifdef _IRR_DEBUG_OBJ_LOADER_
-	os::Printer::log("Loaded material start",matName);
+	os::Printer::log("Loaded material start",matName, ELL_DEBUG);
 #endif
 				mtlName=matName;
 				mtlChanged=true;
