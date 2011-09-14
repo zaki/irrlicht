@@ -37,11 +37,11 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	if (!keyMapArray || !keyMapSize)
 	{
 		// create default key map
-		KeyMap.push_back(SCamKeyMap(EKA_MOVE_FORWARD, irr::KEY_UP));
-		KeyMap.push_back(SCamKeyMap(EKA_MOVE_BACKWARD, irr::KEY_DOWN));
-		KeyMap.push_back(SCamKeyMap(EKA_STRAFE_LEFT, irr::KEY_LEFT));
-		KeyMap.push_back(SCamKeyMap(EKA_STRAFE_RIGHT, irr::KEY_RIGHT));
-		KeyMap.push_back(SCamKeyMap(EKA_JUMP_UP, irr::KEY_KEY_J));
+		KeyMap.push_back(SKeyMap(EKA_MOVE_FORWARD, irr::KEY_UP));
+		KeyMap.push_back(SKeyMap(EKA_MOVE_BACKWARD, irr::KEY_DOWN));
+		KeyMap.push_back(SKeyMap(EKA_STRAFE_LEFT, irr::KEY_LEFT));
+		KeyMap.push_back(SKeyMap(EKA_STRAFE_RIGHT, irr::KEY_RIGHT));
+		KeyMap.push_back(SKeyMap(EKA_JUMP_UP, irr::KEY_KEY_J));
 	}
 	else
 	{
@@ -71,9 +71,9 @@ bool CSceneNodeAnimatorCameraFPS::OnEvent(const SEvent& evt)
 	case EET_KEY_INPUT_EVENT:
 		for (u32 i=0; i<KeyMap.size(); ++i)
 		{
-			if (KeyMap[i].keycode == evt.KeyInput.Key)
+			if (KeyMap[i].KeyCode == evt.KeyInput.Key)
 			{
-				CursorKeys[KeyMap[i].action] = evt.KeyInput.PressedDown;
+				CursorKeys[KeyMap[i].Action] = evt.KeyInput.PressedDown;
 				return true;
 			}
 		}
@@ -257,7 +257,7 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 void CSceneNodeAnimatorCameraFPS::allKeysUp()
 {
-	for (u32 i=0; i<6; ++i)
+	for (u32 i=0; i<EKA_COUNT; ++i)
 		CursorKeys[i] = false;
 }
 
@@ -299,22 +299,18 @@ void CSceneNodeAnimatorCameraFPS::setKeyMap(SKeyMap *map, u32 count)
 	// add actions
 	for (u32 i=0; i<count; ++i)
 	{
-		switch(map[i].Action)
-		{
-		case EKA_MOVE_FORWARD: KeyMap.push_back(SCamKeyMap(EKA_MOVE_FORWARD, map[i].KeyCode));
-			break;
-		case EKA_MOVE_BACKWARD: KeyMap.push_back(SCamKeyMap(EKA_MOVE_BACKWARD, map[i].KeyCode));
-			break;
-		case EKA_STRAFE_LEFT: KeyMap.push_back(SCamKeyMap(EKA_STRAFE_LEFT, map[i].KeyCode));
-			break;
-		case EKA_STRAFE_RIGHT: KeyMap.push_back(SCamKeyMap(EKA_STRAFE_RIGHT, map[i].KeyCode));
-			break;
-		case EKA_JUMP_UP: KeyMap.push_back(SCamKeyMap(EKA_JUMP_UP, map[i].KeyCode));
-			break;
-		default:
-			break;
-		}
+		KeyMap.push_back(map[i]);
 	}
+}
+
+void CSceneNodeAnimatorCameraFPS::setKeyMap(const core::array<SKeyMap>& keymap)
+{
+	KeyMap=keymap;
+}
+
+const core::array<SKeyMap>& CSceneNodeAnimatorCameraFPS::getKeyMap() const
+{
+	return KeyMap;
 }
 
 
@@ -342,12 +338,6 @@ ISceneNodeAnimator* CSceneNodeAnimatorCameraFPS::createClone(ISceneNode* node, I
 											0, 0, NoVerticalMovement);
 	newAnimator->setKeyMap(KeyMap);
 	return newAnimator;
-}
-
-
-void CSceneNodeAnimatorCameraFPS::setKeyMap(const core::array<SCamKeyMap>& keymap)
-{
-	KeyMap=keymap;
 }
 
 
