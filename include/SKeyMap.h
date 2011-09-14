@@ -28,6 +28,9 @@ namespace irr
 	//! Struct storing which key belongs to which action.
 	struct SKeyMap
 	{
+		SKeyMap() {}
+		SKeyMap(EKEY_ACTION action, EKEY_CODE keyCode) : Action(action), KeyCode(keyCode) {}
+
 		EKEY_ACTION Action;
 		EKEY_CODE KeyCode;
 	};

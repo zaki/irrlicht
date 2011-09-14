@@ -53,10 +53,17 @@ namespace scene
 		//! Set the rotation speed
 		virtual void setRotateSpeed(f32 rotateSpeed);
 
-		//! Sets the keyboard mapping for this animator
+		//! Sets the keyboard mapping for this animator (old style)
 		//! \param keymap: an array of keyboard mappings, see SKeyMap
 		//! \param count: the size of the keyboard map array
 		virtual void setKeyMap(SKeyMap *map, u32 count);
+
+		//! Sets the keyboard mapping for this animator
+		//!	\param keymap The new keymap array 
+		virtual void setKeyMap(const core::array<SKeyMap>& keymap);
+
+		//! Gets the keyboard mapping for this animator
+		virtual const core::array<SKeyMap>& getKeyMap() const;
 
 		//! Sets whether vertical movement should be allowed.
 		virtual void setVerticalMovement(bool allow);
@@ -84,20 +91,6 @@ namespace scene
 		done with it. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
-		struct SCamKeyMap
-		{
-			SCamKeyMap() {};
-			SCamKeyMap(s32 a, EKEY_CODE k) : action(a), keycode(k) {}
-
-			s32 action;
-			EKEY_CODE keycode;
-		};
-
-		//! Sets the keyboard mapping for this animator
-		/** Helper function for the clone method.
-		\param keymap the new keymap array */
-		void setKeyMap(const core::array<SCamKeyMap>& keymap);
-
 	private:
 		void allKeysUp();
 
@@ -113,10 +106,10 @@ namespace scene
 
 		s32 LastAnimationTime;
 
-		core::array<SCamKeyMap> KeyMap;
+		core::array<SKeyMap> KeyMap;
 		core::position2d<f32> CenterCursor, CursorPos;
 
-		bool CursorKeys[6];
+		bool CursorKeys[EKA_COUNT];
 
 		bool firstUpdate;
 		bool NoVerticalMovement;
