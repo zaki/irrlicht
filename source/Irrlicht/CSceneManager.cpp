@@ -2169,6 +2169,7 @@ bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer
 	if (!ret)
 		os::Printer::log("Could not load scene file, perhaps the format is unsupported: ", filename.c_str(), ELL_ERROR);
 
+	file->drop();
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
