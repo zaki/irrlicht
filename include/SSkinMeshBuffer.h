@@ -99,7 +99,10 @@ struct SSkinMeshBuffer : public IMeshBuffer
 
 	//! Get type of index data which is stored in this meshbuffer.
 	/** \return Index type of this buffer. */
-	virtual video::E_INDEX_TYPE getIndexType() const { return video::EIT_16BIT; }
+	virtual video::E_INDEX_TYPE getIndexType() const
+	{
+		return video::EIT_16BIT;
+	}
 
 	//! Get pointer to index array
 	virtual const u16* getIndices() const
