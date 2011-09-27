@@ -88,6 +88,12 @@ namespace scene
 			return Indices.size();
 		}
 
+		//! Get type of index data which is stored in this meshbuffer.
+		virtual video::E_INDEX_TYPE getIndexType() const
+		{
+			return video::EIT_16BIT;
+		}
+
 		//! returns an axis aligned bounding box
 		virtual const core::aabbox3d<f32>& getBoundingBox() const
 		{
@@ -117,6 +123,54 @@ namespace scene
 				for (u32 i=1; i<Indices.size(); ++i)
 					BoundingBox.addInternalPoint((*Vertices)[Indices[i]].Pos);
 			}
+		}
+
+		//! returns position of vertex i
+		virtual const core::vector3df& getPosition(u32 i) const
+		{
+			if (Vertices)
+				return (*Vertices)[Indices[i]].Pos;
+			else
+				return core::vector3df();
+		}
+
+		//! returns position of vertex i
+		virtual core::vector3df& getPosition(u32 i)
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Pos;
+		}
+
+		//! returns normal of vertex i
+		virtual const core::vector3df& getNormal(u32 i) const
+		{
+			if (Vertices)
+				return (*Vertices)[Indices[i]].Normal;
+			else
+				return core::vector3df();
+		}
+
+		//! returns normal of vertex i
+		virtual core::vector3df& getNormal(u32 i)
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Normal;
+		}
+
+		//! returns texture coord of vertex i
+		virtual const core::vector2df& getTCoords(u32 i) const
+		{
+			if (Vertices)
+				return (*Vertices)[Indices[i]].TCoords;
+			else
+				return core::vector2df();
+		}
+
+		//! returns texture coord of vertex i
+		virtual core::vector2df& getTCoords(u32 i)
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].TCoords;
 		}
 
 		//! append the vertices and indices to the current buffer

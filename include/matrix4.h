@@ -1619,7 +1619,7 @@ namespace core
 		M[12] = 0;
 		M[13] = 0;
 		M[14] = (T)(zNear/(zNear-zFar));
-		M[15] = -1;
+		M[15] = 1;
 
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
