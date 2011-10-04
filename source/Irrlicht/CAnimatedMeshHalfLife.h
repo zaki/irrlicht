@@ -564,10 +564,10 @@ namespace scene
 		u32 SkinGroupSelection; // skin group selection
 		u32 SetSkin( u32 value );
 
-		void initModel ();
-		void dumpModelInfo ( u32 level);
+		void initModel();
+		void dumpModelInfo(u32 level) const;
 
-		void ExtractBbox( s32 sequence, core::aabbox3df &box );
+		void ExtractBbox(s32 sequence, core::aabbox3df &box) const;
 
 		void setUpBones ();
 		SHalflifeAnimOffset * getAnim( SHalflifeSequence *seq );
