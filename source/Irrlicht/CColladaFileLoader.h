@@ -207,7 +207,7 @@ private:
 	void readLibrarySection(io::IXMLReaderUTF8* reader);
 
 	//! reads a <visual_scene> element and stores it as a prefab
-	void readVisualSceneLibrary(io::IXMLReaderUTF8* reader);
+	void readVisualScene(io::IXMLReaderUTF8* reader);
 
 	//! reads a <scene> section and its content
 	void readSceneSection(io::IXMLReaderUTF8* reader);
