@@ -504,8 +504,10 @@ void CAnimatedMeshHalfLife::initModel()
 				m.Lighting = false;
 
 				MeshIPol.addMeshBuffer ( buffer );
+				buffer->recalculateBoundingBox();
 				buffer->drop ();
 			} // mesh
+			MeshIPol.recalculateBoundingBox();
 		} // model
 	} // body part
 }
@@ -1169,13 +1171,13 @@ bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
 
 /*!
 */
-void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
+void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 {
-	u8 *phdr = (u8*) Header;
-	SHalflifeHeader * hdr = Header;
+	const u8 *phdr = (const u8*) Header;
+	const SHalflifeHeader * hdr = Header;
 	u32 i;
 
-	if ( level == 0 )
+	if (level == 0)
 	{
 		printf (
 			"Bones: %d\n"
@@ -1219,7 +1221,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	printf("numbones: %d\n", hdr->numbones);
 	for (i = 0; i < hdr->numbones; i++)
 	{
-		SHalflifeBone *bone = (SHalflifeBone *) (phdr + hdr->boneindex);
+		const SHalflifeBone *bone = (const SHalflifeBone *) (phdr + hdr->boneindex);
 		printf("bone %d.name: \"%s\"\n", i + 1, bone[i].name);
 		printf("bone %d.parent: %d\n", i + 1, bone[i].parent);
 		printf("bone %d.flags: %d\n", i + 1, bone[i].flags);
@@ -1229,7 +1231,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	}
 
 	printf("\nnumbonecontrollers: %d\n", hdr->numbonecontrollers);
-	SHalflifeBoneController *bonecontrollers = (SHalflifeBoneController *) (phdr + hdr->bonecontrollerindex);
+	const SHalflifeBoneController *bonecontrollers = (const SHalflifeBoneController *) (phdr + hdr->bonecontrollerindex);
 	for (i = 0; i < hdr->numbonecontrollers; i++)
 	{
 		printf("bonecontroller %d.bone: %d\n", i + 1, bonecontrollers[i].bone);
@@ -1241,7 +1243,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	}
 
 	printf("\nnumhitboxes: %d\n", hdr->numhitboxes);
-	SHalflifeBBox *box = (SHalflifeBBox *) (phdr + hdr->hitboxindex);
+	const SHalflifeBBox *box = (const SHalflifeBBox *) (phdr + hdr->hitboxindex);
 	for (i = 0; i < hdr->numhitboxes; i++)
 	{
 		printf("hitbox %d.bone: %d\n", i + 1, box[i].bone);
@@ -1251,7 +1253,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	}
 
 	printf("\nnumseq: %d\n", hdr->numseq);
-	SHalflifeSequence *seq = (SHalflifeSequence *) (phdr + hdr->seqindex);
+	const SHalflifeSequence *seq = (const SHalflifeSequence *) (phdr + hdr->seqindex);
 	for (i = 0; i < hdr->numseq; i++)
 	{
 		printf("seqdesc %d.label: \"%s\"\n", i + 1, seq[i].label);
@@ -1263,7 +1265,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	printf("\nnumseqgroups: %d\n", hdr->numseqgroups);
 	for (i = 0; i < hdr->numseqgroups; i++)
 	{
-		SHalflifeSequenceGroup *group = (SHalflifeSequenceGroup *) (phdr + hdr->seqgroupindex);
+		const SHalflifeSequenceGroup *group = (const SHalflifeSequenceGroup *) (phdr + hdr->seqgroupindex);
 		printf("\nseqgroup %d.label: \"%s\"\n", i + 1, group[i].label);
 		printf("\nseqgroup %d.namel: \"%s\"\n", i + 1, group[i].name);
 		printf("\nseqgroup %d.data: %d\n", i + 1, group[i].data);
@@ -1273,7 +1275,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	printf("numskinfamilies: %d\n", hdr->numskinfamilies);
 
 	printf("\nnumbodyparts: %d\n", hdr->numbodyparts);
-	SHalflifeBody *pbodyparts = (SHalflifeBody*) ((u8*) hdr + hdr->bodypartindex);
+	const SHalflifeBody *pbodyparts = (const SHalflifeBody*) ((const u8*) hdr + hdr->bodypartindex);
 	for (i = 0; i < hdr->numbodyparts; i++)
 	{
 		printf("bodypart %d.name: \"%s\"\n", i + 1, pbodyparts[i].name);
@@ -1285,7 +1287,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	printf("\nnumattachments: %d\n", hdr->numattachments);
 	for (i = 0; i < hdr->numattachments; i++)
 	{
-		SHalflifeAttachment *attach = (SHalflifeAttachment *) ((u8*) hdr + hdr->attachmentindex);
+		const SHalflifeAttachment *attach = (const SHalflifeAttachment *) ((const u8*) hdr + hdr->attachmentindex);
 		printf("attachment %d.name: \"%s\"\n", i + 1, attach[i].name);
 	}
 
@@ -1293,7 +1295,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 	printf("\nnumtextures: %d\n", hdr->numtextures);
 	printf("textureindex: %d\n", hdr->textureindex);
 	printf("texturedataindex: %d\n", hdr->texturedataindex);
-	SHalflifeTexture *ptextures = (SHalflifeTexture *) ((u8*) hdr + hdr->textureindex);
+	const SHalflifeTexture *ptextures = (const SHalflifeTexture *) ((const u8*) hdr + hdr->textureindex);
 	for (i = 0; i < hdr->numtextures; i++)
 	{
 		printf("texture %d.name: \"%s\"\n", i + 1, ptextures[i].name);
@@ -1307,9 +1309,9 @@ void CAnimatedMeshHalfLife::dumpModelInfo ( u32 level )
 
 /*!
 */
-void CAnimatedMeshHalfLife::ExtractBbox( s32 sequence, core::aabbox3df &box )
+void CAnimatedMeshHalfLife::ExtractBbox(s32 sequence, core::aabbox3df &box) const
 {
-	SHalflifeSequence *seq = (SHalflifeSequence *)((u8*)Header + Header->seqindex) + sequence;
+	const SHalflifeSequence *seq = (const SHalflifeSequence *)((const u8*)Header + Header->seqindex) + sequence;
 
 	box.MinEdge.X = seq[0].bbmin[0];
 	box.MinEdge.Y = seq[0].bbmin[1];
@@ -1325,13 +1327,12 @@ void CAnimatedMeshHalfLife::ExtractBbox( s32 sequence, core::aabbox3df &box )
 */
 void CAnimatedMeshHalfLife::calcBoneAdj()
 {
-	SHalflifeBoneController *bonecontroller =
-		(SHalflifeBoneController *)((u8*) Header + Header->bonecontrollerindex);
+	const SHalflifeBoneController *bonecontroller =
+		(const SHalflifeBoneController *)((const u8*) Header + Header->bonecontrollerindex);
 
 	for (u32 j = 0; j < Header->numbonecontrollers; j++)
 	{
-		s32 i = bonecontroller[j].index;
-		f32 range = i <= 3 ? 255.f : 64.f;
+		const s32 i = bonecontroller[j].index;
 		// check for 360% wrapping
 		f32 value;
 		if (bonecontroller[j].type & STUDIO_RLOOP)
@@ -1340,9 +1341,8 @@ void CAnimatedMeshHalfLife::calcBoneAdj()
 		}
 		else
 		{
-			value = BoneController[i] / range;
-			if (value < 0.f) value = 0.f;
-			if (value > 1.f) value = 1.f;
+			const f32 range = i <= 3 ? 255.f : 64.f;
+			value = core::clamp(BoneController[i] / range,0.f,1.f);
 			value = (1.f - value) * bonecontroller[j].start + value * bonecontroller[j].end;
 		}
 
@@ -1351,7 +1351,7 @@ void CAnimatedMeshHalfLife::calcBoneAdj()
 		case STUDIO_XR:
 		case STUDIO_YR:
 		case STUDIO_ZR:
-			BoneAdj[j] = value * (core::PI / 180.f);
+			BoneAdj[j] = value * core::DEGTORAD;
 			break;
 		case STUDIO_X:
 		case STUDIO_Y:
@@ -1674,7 +1674,7 @@ void CAnimatedMeshHalfLife::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool ne
 //! set user axis aligned bounding box
 void CAnimatedMeshHalfLife::setBoundingBox(const core::aabbox3df& box)
 {
-	return;
+	MeshIPol.setBoundingBox(box);
 }
 
 
