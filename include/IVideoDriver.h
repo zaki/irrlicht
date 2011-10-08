@@ -183,18 +183,23 @@ namespace video
 						case EMF_ZWRITE_ENABLE: material.ZWriteEnable = Material.ZWriteEnable; break;
 						case EMF_BACK_FACE_CULLING: material.BackfaceCulling = Material.BackfaceCulling; break;
 						case EMF_FRONT_FACE_CULLING: material.FrontfaceCulling = Material.FrontfaceCulling; break;
-						case EMF_FOG_ENABLE: material.FogEnable = Material.FogEnable; break;
-						case EMF_NORMALIZE_NORMALS: material.NormalizeNormals = Material.NormalizeNormals; break;
-						case EMF_ANTI_ALIASING: material.AntiAliasing = Material.AntiAliasing; break;
-						case EMF_COLOR_MASK: material.ColorMask = Material.ColorMask; break;
-						case EMF_USE_MIP_MAPS: material.UseMipMaps = Material.UseMipMaps; break;
 						case EMF_BILINEAR_FILTER: material.TextureLayer[0].BilinearFilter = Material.TextureLayer[0].BilinearFilter; break;
 						case EMF_TRILINEAR_FILTER: material.TextureLayer[0].TrilinearFilter = Material.TextureLayer[0].TrilinearFilter; break;
 						case EMF_ANISOTROPIC_FILTER: material.TextureLayer[0].AnisotropicFilter = Material.TextureLayer[0].AnisotropicFilter; break;
+						case EMF_FOG_ENABLE: material.FogEnable = Material.FogEnable; break;
+						case EMF_NORMALIZE_NORMALS: material.NormalizeNormals = Material.NormalizeNormals; break;
 						case EMF_TEXTURE_WRAP:
 							material.TextureLayer[0].TextureWrapU = Material.TextureLayer[0].TextureWrapU;
 							material.TextureLayer[0].TextureWrapV = Material.TextureLayer[0].TextureWrapV;
 							break;
+						case EMF_ANTI_ALIASING: material.AntiAliasing = Material.AntiAliasing; break;
+						case EMF_COLOR_MASK: material.ColorMask = Material.ColorMask; break;
+						case EMF_COLOR_MATERIAL: material.ColorMaterial = Material.ColorMaterial; break;
+						case EMF_USE_MIP_MAPS: material.UseMipMaps = Material.UseMipMaps; break;
+						case EMF_BLEND_OPERATION: material.BlendOperation = Material.BlendOperation; break;
+						case EMF_POLYGON_OFFSET:
+							material.PolygonOffsetDirection = Material.PolygonOffsetDirection;
+							material.PolygonOffsetFactor = Material.PolygonOffsetFactor; break;
 						}
 					}
 				}
