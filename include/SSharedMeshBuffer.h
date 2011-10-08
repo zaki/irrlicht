@@ -128,10 +128,8 @@ namespace scene
 		//! returns position of vertex i
 		virtual const core::vector3df& getPosition(u32 i) const
 		{
-			if (Vertices)
-				return (*Vertices)[Indices[i]].Pos;
-			else
-				return core::vector3df();
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Pos;
 		}
 
 		//! returns position of vertex i
@@ -144,10 +142,8 @@ namespace scene
 		//! returns normal of vertex i
 		virtual const core::vector3df& getNormal(u32 i) const
 		{
-			if (Vertices)
-				return (*Vertices)[Indices[i]].Normal;
-			else
-				return core::vector3df();
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Normal;
 		}
 
 		//! returns normal of vertex i
@@ -160,10 +156,8 @@ namespace scene
 		//! returns texture coord of vertex i
 		virtual const core::vector2df& getTCoords(u32 i) const
 		{
-			if (Vertices)
-				return (*Vertices)[Indices[i]].TCoords;
-			else
-				return core::vector2df();
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].TCoords;
 		}
 
 		//! returns texture coord of vertex i
