@@ -95,10 +95,10 @@ namespace gui
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 		//! set all item colors at given index to color
-		virtual void setItemOverrideColor(u32 index, const video::SColor &color);
+		virtual void setItemOverrideColor(u32 index, video::SColor color);
 
 		//! set all item colors of specified type at given index to color
-		virtual void setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color);
+		virtual void setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, video::SColor color);
 
 		//! clear all item colors at index
 		virtual void clearItemOverrideColor(u32 index);

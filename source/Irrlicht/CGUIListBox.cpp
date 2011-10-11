@@ -811,7 +811,7 @@ void CGUIListBox::swapItems(u32 index1, u32 index2)
 }
 
 
-void CGUIListBox::setItemOverrideColor(u32 index, const video::SColor &color)
+void CGUIListBox::setItemOverrideColor(u32 index, video::SColor color)
 {
 	for ( u32 c=0; c < EGUI_LBC_COUNT; ++c )
 	{
@@ -821,7 +821,7 @@ void CGUIListBox::setItemOverrideColor(u32 index, const video::SColor &color)
 }
 
 
-void CGUIListBox::setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color)
+void CGUIListBox::setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, video::SColor color)
 {
 	if ( index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
 		return;
