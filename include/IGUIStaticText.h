@@ -69,7 +69,7 @@ namespace gui
 
 		//! Gets the background color
 		/** \return: The background color */
-		virtual video::SColor const& getBackgroundColor() const = 0;
+		virtual video::SColor getBackgroundColor() const = 0;
 
 		//! Checks if background drawing is enabled
 		/** \return true if background drawing is enabled, false otherwise */
