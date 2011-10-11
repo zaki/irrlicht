@@ -48,7 +48,7 @@ namespace gui
 		virtual void setOverrideColor(video::SColor color) = 0;
 
 		//! Gets the override color
-		virtual video::SColor const & getOverrideColor() const = 0;
+		virtual video::SColor getOverrideColor() const = 0;
 
 		//! Sets if the text should use the override color or the color in the gui skin.
 		/** \param enable: If set to true, the override color, which can be set
