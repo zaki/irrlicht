@@ -202,7 +202,7 @@ void CGUIStaticText::setDrawBackground(bool draw)
 
 
 //! Gets the background color
-video::SColor const& CGUIStaticText::getBackgroundColor() const
+video::SColor CGUIStaticText::getBackgroundColor() const
 {
 	return BGColor;
 }

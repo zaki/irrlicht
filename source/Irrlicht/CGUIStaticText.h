@@ -49,7 +49,7 @@ namespace gui
 		virtual void setDrawBackground(bool draw);
 
 		//! Gets the background color
-		virtual video::SColor const& getBackgroundColor() const;
+		virtual video::SColor getBackgroundColor() const;
 
 		//! Checks if background drawing is enabled
 		virtual bool isDrawBackgroundEnabled() const;
