@@ -48,14 +48,23 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw);
 
+		//! Gets the background color
+		virtual video::SColor const& getBackgroundColor() const;
+
+		//! Checks if background drawing is enabled
+		virtual bool isDrawBackgroundEnabled() const;
+
 		//! Sets whether to draw the border
 		virtual void setDrawBorder(bool draw);
+
+		//! Checks if border drawing is enabled
+		virtual bool isDrawBorderEnabled() const;
 
 		//! Sets alignment mode for text
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
 		//! Gets the override color
-		virtual video::SColor const & getOverrideColor() const;
+		virtual video::SColor getOverrideColor() const;
 
 		//! Sets if the static text should use the overide color or the
 		//! color in the gui skin.
