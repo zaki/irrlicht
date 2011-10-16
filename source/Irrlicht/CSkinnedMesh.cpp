@@ -19,7 +19,8 @@ namespace scene
 //! constructor
 CSkinnedMesh::CSkinnedMesh()
 : SkinningBuffers(0), AnimationFrames(0.f), FramesPerSecond(25.f),
-	LastAnimatedFrame(0.f),	InterpolationMode(EIM_LINEAR),
+	LastAnimatedFrame(-1), SkinnedLastFrame(false),
+	InterpolationMode(EIM_LINEAR),
 	HasAnimation(false), PreparedForSkinning(false),
 	AnimateNormals(true), HardwareSkinning(false)
 {
@@ -96,6 +97,7 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		return;
 
 	LastAnimatedFrame=frame;
+	SkinnedLastFrame=false;
 
 	if (blend<=0.f)
 		return; //No need to animate
@@ -213,6 +215,7 @@ void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 			joint->LocalAnimatedMatrix=joint->LocalMatrix;
 		}
 	}
+	SkinnedLastFrame=false;
 }
 
 
@@ -442,7 +445,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *joint,
 //! Preforms a software skin on this mesh based of joint positions
 void CSkinnedMesh::skinMesh()
 {
-	if (!HasAnimation)
+	if (!HasAnimation || SkinnedLastFrame)
 		return;
 
 	//----------------
@@ -450,6 +453,7 @@ void CSkinnedMesh::skinMesh()
 	buildAllGlobalAnimatedMatrices();
 	//-----------------
 
+	SkinnedLastFrame=true;
 	if (!HardwareSkinning)
 	{
 		//Software skin....
@@ -763,6 +767,7 @@ void CSkinnedMesh::calculateGlobalMatrices(SJoint *joint,SJoint *parentJoint)
 
 	for (u32 j=0; j<joint->Children.size(); ++j)
 		calculateGlobalMatrices(joint->Children[j],joint);
+	SkinnedLastFrame=false;
 }
 
 
@@ -871,6 +876,7 @@ void CSkinnedMesh::checkForAnimation()
 		// normalize weights
 		normalizeWeights();
 	}
+	SkinnedLastFrame=false;
 }
 
 
@@ -881,6 +887,7 @@ void CSkinnedMesh::finalize()
 
 	// Make sure we recalc the next frame
 	LastAnimatedFrame=-1;
+	SkinnedLastFrame=false;
 
 	//calculate bounding box
 	for (i=0; i<LocalBuffers.size(); ++i)
@@ -1300,6 +1307,7 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &join
 	}
 	// Make sure we recalc the next frame
 	LastAnimatedFrame=-1;
+	SkinnedLastFrame=false;
 }
 
 
@@ -1314,6 +1322,7 @@ void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNod
 		joint->scaleHint=node->scaleHint;
 		joint->rotationHint=node->rotationHint;
 	}
+	SkinnedLastFrame=false;
 }
 
 
@@ -1357,6 +1366,7 @@ void CSkinnedMesh::addJoints(core::array<IBoneSceneNode*> &jointChildSceneNodes,
 
 		bone->drop();
 	}
+	SkinnedLastFrame=false;
 }
 
 

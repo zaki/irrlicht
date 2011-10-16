@@ -1,5 +1,5 @@
 
-Libpng 1.4.4 - September 23, 2010
+Libpng 1.5.5 - September 22, 2011
 
 This is a public release of libpng, intended for use in production codes.
 
@@ -8,58 +8,84 @@ Files available for download:
 Source files with LF line endings (for Unix/Linux) and with a
 "configure" script
 
-   libpng-1.4.4.tar.xz (LZMA-compressed, recommended)
-   libpng-1.4.4.tar.gz
-   libpng-1.4.4.tar.bz2
+   libpng-1.5.5.tar.xz (LZMA-compressed, recommended)
+   libpng-1.5.5.tar.gz
+   libpng-1.5.5.tar.bz2
 
 Source files with CRLF line endings (for Windows), without the
 "configure" script
 
-   lpng144.zip
-   lpng144.7z
+   lpng155.7z  (LZMA-compressed, recommended)
+   lpng155.zip
 
 Other information:
 
-   libpng-1.4.4-README.txt
-   libpng-1.4.4-LICENSE.txt
+   libpng-1.5.5-README.txt
+   libpng-1.5.5-LICENSE.txt
 
-Changes since the last public release (1.4.3):
-  Removed extraneous new_push_process_row.c file.
-  Revised the "SEE ALSO" style of libpng.3, libpngpf.3, and png.5
-  Removed some newly-added TAB characters from pngpread.c.
-  Fixed some indentation in pngpread.c and pngrutil.c
-  Changed "extern PNG_EXPORT" to "PNG_EXPORT" in png.h (Jan Nijtmans)
-  Changed "extern" to "PNG_EXTERN" in pngpriv.h (except for the 'extern "C" {')
-  Put "#ifndef PNG_EXTERN, #endif" around "#define PNG_EXTERN" in pngpriv.h
-  Added -DNO_PNG_SNPRINTF to CFLAGS in scripts/makefile.dj2
-  Moved the definition of png_snprintf() outside of the enclosing
-    #ifdef blocks in pngconf.h
-  Made a special case "#define PNGAPI" in pngconf.h for WATCOM.
-  Removed reference to cbuilder5/* from Makefile.in and Makefile.am
-  Updated the read macros and functions from 1.5.0beta38.
-  Updated projects/visualc71 so it can find scripts/pnglibconf.h
-  Removed unused png_mem_* defines from pngconf.h.
-  Correct use of _WINDOWS_ in pngconf.h
-  Don't try to use version-script with cygwin/mingw.
-  Revised contrib/gregbook to work under cygwin/mingw.
-  Updated prebuilt aclocal.m4 and ltmain.sh
-  Add .dll.a to the list of extensions to be symlinked by Makefile.am (Yaakov)
-  Updated CMakelists.txt to use CMAKE_INSTALL_LIBDIR variable; useful for
-    installing libpng in /usr/lib64 (Funda Wang).
-  Revised CMakeLists.txt to put the man pages in share/man/man* not man/man*
-  Revised CMakeLists.txt to make symlinks instead of copies when installing.
-  Moved "#include pngusr.h" ahead of PNG_USER_PRIVATEBUILD test in pngconf.h
-  Eliminated a deprecated reference to png_ptr->io_ptr in pngtest.c
-  Eliminated new unnecessary #if tests regarding the sCAL chunk from pngrutil.c
-  Updated the xcode project to work with libpng-1.4.x and added iOS targets
-    for simulator and device (Philippe Hausler).
-  Revised autogen.sh to recognize and use $AUTOCONF, $AUTOMAKE, $AUTOHEADER,
-    $AUTOPOINT, $ACLOCAL and $LIBTOOLIZE
-  Rebuilt configure scripts with automake-1.11.1 instead of automake-1.11.
-  Removed unused mkinstalldirs file.
+Changes since the last public release (1.5.4):
 
-Send comments/corrections/commendations to glennrp at users.sourceforge.net
-or to png-mng-implement at lists.sf.net (subscription required; visit
-https://lists.sourceforge.net/lists/listinfo/png-mng-implement).
+  Fixed some typos and made other minor changes in the manual.
+  Updated contrib/pngminus/makefile.std (Samuli Souminen)
+  Revised Makefile.am and Makefile.in to look in the right directory for
+    pnglibconf.h.prebuilt
+  Enabled compilation with g++ compiler.  This compiler does not recognize
+    the file extension, so it always compiles with C++ rules.  Made minor
+    changes to pngrutil.c to cast results where C++ expects it but C does not.
+  Minor editing of libpng.3 and libpng-manual.txt.
+  Revised CMakeLists.txt (Clifford Yapp)
+  Updated commentary about the png_rgb_to_gray() default coefficients
+    in the manual and in pngrtran.c
+  Prevent unexpected API exports from non-libpng DLLs on Windows.  The "_DLL"
+    is removed from the test of whether a DLL is being built (this erroneously
+    caused the libpng APIs to be marked as DLL exports in static builds under
+    Microsoft Visual Studio).  Almost all of the libpng building configuration
+    is moved from pngconf.h to pngpriv.h, but PNG_DLL_EXPORT remains in
+    pngconf.h, though, so that it is colocated with the import definition (it
+    is no longer used anywhere in the installed headers).  The VStudio project
+    definitions have been cleaned up: "_USRDLL" has been removed from the
+    static library builds (this was incorrect), and PNG_USE_DLL has been added
+    to pngvalid to test the functionality (pngtest does not supply it,
+    deliberately).  The spurious "_EXPORTS" has been removed from the
+    libpng build (all these errors were a result of copy/paste between project
+    configurations.)
+  Added new types and internal functions for CIE RGB end point handling to
+    pngpriv.h (functions yet to be implemented).
+  Ensure the CMAKE_LIBRARY_OUTPUT_DIRECTORY is set in CMakeLists.txt
+    (Clifford Yap)
+  Fixes to rgb_to_gray and cHRM XYZ APIs (John Bowler):
+    The rgb_to_gray code had errors when combined with gamma correction.
+    Some pixels were treated as true grey when they weren't and such pixels
+    and true grey ones were not gamma corrected (the original value of the
+    red component was used instead).  APIs to get and set cHRM using color
+    space end points have been added and the rgb_to_gray code that defaults
+    based on cHRM, and the divide-by-zero bug in png_handle_cHRM (CERT
+    VU#477046, CVE-2011-3328, introduced in 1.5.4) have been corrected.
+  A considerable number of tests has been added to pngvalid for the
+    rgb_to_gray transform.
+  Arithmetic errors in rgb_to_gray whereby the calculated gray value was
+    truncated to the bit depth rather than rounded have been fixed except in
+    the 8-bit non-gamma-corrected case (where consistency seems more important
+    than correctness.)  The code still has considerable inaccuracies in the
+    8-bit case because 8-bit linear arithmetic is used.
+  Added "$(ARCH)" option to makefile.darwin
+  Added SunOS support to configure.ac and Makefile.am
+  Changed png_chunk_benign_error() to png_warning() in png.c, in
+    png_XYZ_from_xy_checked().
+  Fixed 64-bit compilation errors (gcc). The errors fixed relate
+    to conditions where types that are 32 bits in the GCC 32-bit
+    world (uLong and png_size_t) become 64 bits in the 64-bit
+    world.  This produces potential truncation errors that the
+    compiler correctly flags.
+  Constant changes for 64-bit compatibility (removal of L suffixes). The
+    16-bit cases still use "L" as we don't have a 16-bit test system.
+
+Send comments/corrections/commendations to png-mng-implement at lists.sf.net
+(subscription required; visit
+https://lists.sourceforge.net/lists/listinfo/png-mng-implement
+to subscribe)
+or to glennrp at users.sourceforge.net
 
 Glenn R-P
+*/ }
+#endif

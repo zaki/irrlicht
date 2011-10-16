@@ -201,10 +201,33 @@ void CGUIStaticText::setDrawBackground(bool draw)
 }
 
 
+//! Gets the background color
+video::SColor CGUIStaticText::getBackgroundColor() const
+{
+	return BGColor;
+}
+
+
+//! Checks if background drawing is enabled
+bool CGUIStaticText::isDrawBackgroundEnabled() const
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return Background;
+}
+
+
 //! Sets whether to draw the border
 void CGUIStaticText::setDrawBorder(bool draw)
 {
 	Border = draw;
+}
+
+
+//! Checks if border drawing is enabled
+bool CGUIStaticText::isDrawBorderEnabled() const
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return Border;
 }
 
 
@@ -227,7 +250,7 @@ void CGUIStaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT 
 }
 
 
-video::SColor const& CGUIStaticText::getOverrideColor() const
+video::SColor CGUIStaticText::getOverrideColor() const
 {
 	return OverrideColor;
 }

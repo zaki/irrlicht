@@ -89,10 +89,10 @@ namespace gui
 		virtual bool isAutoScrollEnabled() const = 0;
 
 		//! set all item colors at given index to color
-		virtual void setItemOverrideColor(u32 index, const video::SColor &color) = 0;
+		virtual void setItemOverrideColor(u32 index, video::SColor color) = 0;
 
 		//! set all item colors of specified type at given index to color
-		virtual void setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color) = 0;
+		virtual void setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, video::SColor color) = 0;
 
 		//! clear all item colors at index
 		virtual void clearItemOverrideColor(u32 index) = 0;

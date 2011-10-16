@@ -237,7 +237,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CSTLMeshFileLoader());
 	#endif
 	#ifdef _IRR_COMPILE_WITH_PLY_LOADER_
-	MeshLoaderList.push_back(new CPLYMeshFileLoader());
+	MeshLoaderList.push_back(new CPLYMeshFileLoader(this));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_SMF_LOADER_
 	MeshLoaderList.push_back(new CSMFMeshFileLoader(Driver));
@@ -992,7 +992,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 
 	const bool debugBorders=false;
 	IMesh* mesh = GeometryCreator->createTerrainMesh(texture, heightmap,
-			stretchSize, maxHeight, getVideoDriver(),
+			stretchSize, maxHeight, Driver,
 			defaultVertexBlockSize, debugBorders);
 	if (!mesh)
 		return 0;
@@ -1358,18 +1358,13 @@ void CSceneManager::drawAll()
 	u32 i; // new ISO for scoping problem in some compilers
 
 	// reset all transforms
-	video::IVideoDriver* driver = getVideoDriver();
-	if (driver)
-	{
-		driver->setMaterial(video::SMaterial());
-		driver->setTransform ( video::ETS_PROJECTION, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_VIEW, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
-		for (i=video::ETS_COUNT-1; i>=video::ETS_TEXTURE_0; --i)
-			driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
-	}
-
-	driver->setAllowZWriteOnTransparent(Parameters.getAttributeAsBool( ALLOW_ZWRITE_ON_TRANSPARENT) );
+	Driver->setMaterial(video::SMaterial());
+	Driver->setTransform ( video::ETS_PROJECTION, core::IdentityMatrix );
+	Driver->setTransform ( video::ETS_VIEW, core::IdentityMatrix );
+	Driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
+	for (i=video::ETS_COUNT-1; i>=video::ETS_TEXTURE_0; --i)
+		Driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
+	Driver->setAllowZWriteOnTransparent(Parameters.getAttributeAsBool( ALLOW_ZWRITE_ON_TRANSPARENT) );
 
 	// do animations and other stuff.
 	OnAnimate(os::Timer::getTime());
@@ -2169,6 +2164,7 @@ bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer
 	if (!ret)
 		os::Printer::log("Could not load scene file, perhaps the format is unsupported: ", filename.c_str(), ELL_ERROR);
 
+	file->drop();
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
@@ -2244,7 +2240,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 
 	// write materials
 
-	if (node->getMaterialCount() && getVideoDriver())
+	if (node->getMaterialCount() && Driver)
 	{
 		const wchar_t* materialElement = L"materials";
 
@@ -2254,7 +2250,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 		for (u32 i=0; i < node->getMaterialCount(); ++i)
 		{
 			io::IAttributes* tmp_attr =
-				getVideoDriver()->createAttributesFromMaterial(node->getMaterial(i), &options);
+				Driver->createAttributesFromMaterial(node->getMaterial(i), &options);
 			tmp_attr->write(writer);
 			tmp_attr->drop();
 		}

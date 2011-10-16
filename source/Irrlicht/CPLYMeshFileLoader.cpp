@@ -23,8 +23,8 @@ namespace scene
 #define PLY_INPUT_BUFFER_SIZE 51200 // file is loaded in 50k chunks
 
 // constructor
-CPLYMeshFileLoader::CPLYMeshFileLoader()
-: File(0), Buffer(0)
+CPLYMeshFileLoader::CPLYMeshFileLoader(scene::ISceneManager* smgr)
+: SceneManager(smgr), File(0), Buffer(0)
 {
 }
 
@@ -233,6 +233,7 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 			mb->getIndexBuffer().reallocate(vertCount);
 			mb->setHardwareMappingHint(EHM_STATIC);
 
+			bool hasNormals=true;
 			// loop through each of the elements
 			for (u32 i=0; i<ElementList.size(); ++i)
 			{
@@ -241,7 +242,7 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 				{
 					// loop through vertex properties
 					for (u32 j=0; j < ElementList[i]->Count; ++j)
-						readVertex(*ElementList[i], mb);
+						hasNormals &= readVertex(*ElementList[i], mb);
 				}
 				else if (ElementList[i]->Name == "face")
 				{
@@ -257,6 +258,8 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 				}
 			}
 			mb->recalculateBoundingBox();
+			if (!hasNormals)
+				SceneManager->getMeshManipulator()->recalculateNormals(mb);
 			SMesh* m = new SMesh();
 			m->addMeshBuffer(mb);
 			m->recalculateBoundingBox();
@@ -292,6 +295,7 @@ bool CPLYMeshFileLoader::readVertex(const SPLYElement &Element, scene::CDynamicM
 	vert.Normal.Y = 1.0f;
 	vert.Normal.Z = 0.0f;
 
+	bool result=false;
 	for (u32 i=0; i < Element.Properties.size(); ++i)
 	{
 		E_PLY_PROPERTY_TYPE t = Element.Properties[i].Type;
@@ -303,11 +307,20 @@ bool CPLYMeshFileLoader::readVertex(const SPLYElement &Element, scene::CDynamicM
 		else if (Element.Properties[i].Name == "z")
 			vert.Pos.Y = getFloat(t);
 		else if (Element.Properties[i].Name == "nx")
+		{
 			vert.Normal.X = getFloat(t);
+			result=true;
+		}
 		else if (Element.Properties[i].Name == "ny")
+		{
 			vert.Normal.Z = getFloat(t);
+			result=true;
+		}
 		else if (Element.Properties[i].Name == "nz")
+		{
 			vert.Normal.Y = getFloat(t);
+			result=true;
+		}
 		else if (Element.Properties[i].Name == "u")
 			vert.TCoords.X = getFloat(t);
 		else if (Element.Properties[i].Name == "v")
@@ -338,7 +351,7 @@ bool CPLYMeshFileLoader::readVertex(const SPLYElement &Element, scene::CDynamicM
 
 	mb->getVertexBuffer().push_back(vert);
 
-	return true;
+	return result;
 }
 
 bool CPLYMeshFileLoader::readFace(const SPLYElement &Element, scene::CDynamicMeshBuffer* mb)

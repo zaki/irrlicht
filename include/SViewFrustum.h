@@ -19,7 +19,7 @@ namespace scene
 
 	//! Defines the view frustum. That's the space visible by the camera.
 	/** The view frustum is enclosed by 6 planes. These six planes share
-	four points. A bounding box around these four points is also stored in
+	eight points. A bounding box around these eight points is also stored in
 	this structure.
 	*/
 	struct SViewFrustum

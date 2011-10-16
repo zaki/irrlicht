@@ -349,6 +349,32 @@ void updateToolBox()
 	}
 }
 
+void onKillFocus()
+{
+	// Avoid that the FPS-camera continues moving when the user presses alt-tab while 
+	// moving the camera. 
+	const core::list<scene::ISceneNodeAnimator*>& animators = Camera[1]->getAnimators();
+	core::list<irr::scene::ISceneNodeAnimator*>::ConstIterator iter = animators.begin();
+	while ( iter != animators.end() )
+	{
+		if ( (*iter)->getType() == scene::ESNAT_CAMERA_FPS )
+		{
+			// we send a key-down event for all keys used by this animator
+			scene::ISceneNodeAnimatorCameraFPS * fpsAnimator = static_cast<scene::ISceneNodeAnimatorCameraFPS*>(*iter);
+			const core::array<SKeyMap>& keyMap = fpsAnimator->getKeyMap();
+			for ( irr::u32 i=0; i< keyMap.size(); ++i )
+			{
+				irr::SEvent event;
+				event.EventType = EET_KEY_INPUT_EVENT;
+				event.KeyInput.Key = keyMap[i].KeyCode;
+				event.KeyInput.PressedDown = false;
+				fpsAnimator->OnEvent(event);
+			}
+		}
+		++iter;
+	}
+}
+
 /*
 To get all the events sent by the GUI Elements, we need to create an event
 receiver. This one is really simple. If an event occurs, it checks the id of
@@ -930,10 +956,19 @@ int main(int argc, char* argv[])
 	img->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT,
 			EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 
+	// remember state so we notice when the window does lose the focus
+	bool hasFocus = Device->isWindowFocused();
+
 	// draw everything
 
 	while(Device->run() && driver)
 	{
+		// Catch focus changes (workaround until Irrlicht has events for this)
+		bool focused = Device->isWindowFocused();
+		if ( hasFocus && !focused )
+			onKillFocus();
+		hasFocus = focused;
+
 		if (Device->isWindowActive())
 		{
 			driver->beginScene(true, true, video::SColor(150,50,50,50));

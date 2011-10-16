@@ -88,6 +88,12 @@ namespace scene
 			return Indices.size();
 		}
 
+		//! Get type of index data which is stored in this meshbuffer.
+		virtual video::E_INDEX_TYPE getIndexType() const
+		{
+			return video::EIT_16BIT;
+		}
+
 		//! returns an axis aligned bounding box
 		virtual const core::aabbox3d<f32>& getBoundingBox() const
 		{
@@ -119,12 +125,53 @@ namespace scene
 			}
 		}
 
+		//! returns position of vertex i
+		virtual const core::vector3df& getPosition(u32 i) const
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Pos;
+		}
+
+		//! returns position of vertex i
+		virtual core::vector3df& getPosition(u32 i)
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Pos;
+		}
+
+		//! returns normal of vertex i
+		virtual const core::vector3df& getNormal(u32 i) const
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Normal;
+		}
+
+		//! returns normal of vertex i
+		virtual core::vector3df& getNormal(u32 i)
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].Normal;
+		}
+
+		//! returns texture coord of vertex i
+		virtual const core::vector2df& getTCoords(u32 i) const
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].TCoords;
+		}
+
+		//! returns texture coord of vertex i
+		virtual core::vector2df& getTCoords(u32 i)
+		{
+			_IRR_DEBUG_BREAK_IF(!Vertices);
+			return (*Vertices)[Indices[i]].TCoords;
+		}
+
 		//! append the vertices and indices to the current buffer
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) {}
 
 		//! append the meshbuffer to the current buffer
 		virtual void append(const IMeshBuffer* const other) {}
-
 
 		//! get the current hardware mapping hint
 		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
@@ -146,7 +193,6 @@ namespace scene
 			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_INDEX)
 				MappingHintIndex=NewMappingHint;
 		}
-
 
 		//! flags the mesh as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
@@ -186,7 +232,6 @@ namespace scene
 		//! hardware mapping hint
 		E_HARDWARE_MAPPING MappingHintVertex;
 		E_HARDWARE_MAPPING MappingHintIndex;
-
 	};
 
 

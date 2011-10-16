@@ -50,10 +50,17 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
 	pGlCompressedTexImage2D(0),
+	// ARB framebuffer object
+	pGlBindFramebuffer(0), pGlDeleteFramebuffers(0), pGlGenFramebuffers(0),
+	pGlCheckFramebufferStatus(0), pGlFramebufferTexture2D(0),
+	pGlBindRenderbuffer(0), pGlDeleteRenderbuffers(0), pGlGenRenderbuffers(0),
+	pGlRenderbufferStorage(0), pGlFramebufferRenderbuffer(0),
+	// EXT framebuffer object
 	pGlBindFramebufferEXT(0), pGlDeleteFramebuffersEXT(0), pGlGenFramebuffersEXT(0),
 	pGlCheckFramebufferStatusEXT(0), pGlFramebufferTexture2DEXT(0),
 	pGlBindRenderbufferEXT(0), pGlDeleteRenderbuffersEXT(0), pGlGenRenderbuffersEXT(0),
 	pGlRenderbufferStorageEXT(0), pGlFramebufferRenderbufferEXT(0),
+	// MRTs
 	pGlDrawBuffersARB(0), pGlDrawBuffersATI(0),
 	pGlGenBuffersARB(0), pGlBindBufferARB(0), pGlBufferDataARB(0), pGlDeleteBuffersARB(0),
 	pGlBufferSubDataARB(0), pGlGetBufferSubDataARB(0), pGlMapBufferARB(0), pGlUnmapBufferARB(0),
@@ -463,7 +470,18 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	// compressed textures
 	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) IRR_OGL_LOAD_EXTENSION("glCompressedTexImage2D");
 
-	// FrameBufferObjects
+	// ARB FrameBufferObjects
+	pGlBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC) IRR_OGL_LOAD_EXTENSION("glBindFramebuffer");
+	pGlDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC) IRR_OGL_LOAD_EXTENSION("glDeleteFramebuffers");
+	pGlGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC) IRR_OGL_LOAD_EXTENSION("glGenFramebuffers");
+	pGlCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC) IRR_OGL_LOAD_EXTENSION("glCheckFramebufferStatus");
+	pGlFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferTexture2D");
+	pGlBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC) IRR_OGL_LOAD_EXTENSION("glBindRenderbuffer");
+	pGlDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC) IRR_OGL_LOAD_EXTENSION("glDeleteRenderbuffers");
+	pGlGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC) IRR_OGL_LOAD_EXTENSION("glGenRenderbuffers");
+	pGlRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC) IRR_OGL_LOAD_EXTENSION("glRenderbufferStorage");
+	pGlFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferRenderbuffer");
+	// EXT FrameBufferObjects
 	pGlBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glBindFramebufferEXT");
 	pGlDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glDeleteFramebuffersEXT");
 	pGlGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenFramebuffersEXT");

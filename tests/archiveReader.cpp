@@ -4,6 +4,9 @@ using namespace irr;
 using namespace core;
 using namespace io;
 
+namespace
+{
+
 bool testArchive(IFileSystem* fs, const io::path& archiveName)
 {
 	// make sure there is no archive mounted
@@ -280,7 +283,7 @@ bool testEncryptedZip(IFileSystem* fs)
 	return true;
 }
 
-bool testSpecialZip(IFileSystem* fs)
+bool testSpecialZip(IFileSystem* fs, const char* archiveName, const char* filename, const void* content)
 {
 	// make sure there is no archive mounted
 	if ( fs->getFileArchiveCount() )
@@ -289,7 +292,6 @@ bool testSpecialZip(IFileSystem* fs)
 		return false;
 	}
 
-	const char* archiveName = "media/Monty.zip";
 	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
 	{
 		logTestString("Mounting archive failed\n");
@@ -312,7 +314,6 @@ bool testSpecialZip(IFileSystem* fs)
 		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
 	}
 	
-	io::path filename("monty/license.txt");
 	if (!fs->existFile(filename))
 	{
 		logTestString("existFile failed\n");
@@ -330,7 +331,7 @@ bool testSpecialZip(IFileSystem* fs)
 
 	char tmp[6] = {'\0'};
 	readFile->read(tmp, 5);
-	if (strcmp(tmp, "Monty"))
+	if (memcmp(tmp, content, 5))
 	{
 		logTestString("Read bad data from archive: %s\n", tmp);
 		readFile->drop();
@@ -389,6 +390,43 @@ static bool testMountFile(IFileSystem* fs)
 	return result;
 }
 
+bool testAddRemove(IFileSystem* fs, const io::path& archiveName)
+{
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+	{
+		logTestString("Already mounted archives found\n");
+		return false;
+	}
+
+	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	{
+		logTestString("Mounting archive failed\n");
+		return false;
+	}
+
+	// make sure there is an archive mounted
+	if ( !fs->getFileArchiveCount() )
+	{
+		logTestString("Mounted archive not in list\n");
+		return false;
+	}
+
+	if (!fs->removeFileArchive(archiveName))
+	{
+		logTestString("Couldn't remove archive.\n");
+		return false;
+	}
+
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+		return false;
+
+	return true;
+}
+}
+
+
 bool archiveReader()
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(1, 1));
@@ -414,9 +452,14 @@ bool archiveReader()
 	logTestString("Testing encrypted zip files.\n");
 	ret &= testEncryptedZip(fs);
 	logTestString("Testing special zip files.\n");
-	ret &= testSpecialZip(fs);
+	ret &= testSpecialZip(fs, "media/Monty.zip", "monty/license.txt", "Monty");
+	logTestString("Testing special zip files lzma.\n");
+	const u8 buf[] = {0xff, 0xfe, 0x3c, 0x00, 0x3f};
+	ret &= testSpecialZip(fs, "media/lzmadata.zip", "tahoma10_.xml", buf);
 //	logTestString("Testing complex mount file.\n");
 //	ret &= testMountFile(fs);
+	logTestString("Testing add/remove with filenames.\n");
+	testAddRemove(fs, "media/file_with_path.zip");
 
 	device->closeDevice();
 	device->run();

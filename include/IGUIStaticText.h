@@ -49,7 +49,7 @@ namespace gui
 
 		//! Gets the override color
 		/** \return: The override color */
-		virtual video::SColor const& getOverrideColor(void) const = 0;
+		virtual video::SColor getOverrideColor(void) const = 0;
 
 		//! Sets if the static text should use the overide color or the color in the gui skin.
 		/** \param enable: If set to true, the override color, which can be set
@@ -67,8 +67,20 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw) = 0;
 
+		//! Gets the background color
+		/** \return: The background color */
+		virtual video::SColor getBackgroundColor() const = 0;
+
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
+
 		//! Sets whether to draw the border
 		virtual void setDrawBorder(bool draw) = 0;
+
+		//! Checks if border drawing is enabled
+		/** \return true if border drawing is enabled, false otherwise */
+		virtual bool isDrawBorderEnabled() const = 0;
 
 		//! Sets text justification mode
 		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default),
