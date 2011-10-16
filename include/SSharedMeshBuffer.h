@@ -173,7 +173,6 @@ namespace scene
 		//! append the meshbuffer to the current buffer
 		virtual void append(const IMeshBuffer* const other) {}
 
-
 		//! get the current hardware mapping hint
 		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
 		{
@@ -194,7 +193,6 @@ namespace scene
 			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_INDEX)
 				MappingHintIndex=NewMappingHint;
 		}
-
 
 		//! flags the mesh as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
@@ -234,7 +232,6 @@ namespace scene
 		//! hardware mapping hint
 		E_HARDWARE_MAPPING MappingHintVertex;
 		E_HARDWARE_MAPPING MappingHintIndex;
-
 	};
 
 
