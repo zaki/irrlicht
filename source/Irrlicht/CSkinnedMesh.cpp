@@ -93,7 +93,7 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 //! blend: {0-old position, 1-New position}
 void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 {
-	if ( !HasAnimation  || LastAnimatedFrame==frame)
+	if (!HasAnimation || LastAnimatedFrame==frame)
 		return;
 
 	LastAnimatedFrame=frame;
@@ -104,7 +104,9 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 
 	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
-		//To Bitplane: The joints can be animated here with no input from their parents, but for setAnimationMode extra checks are needed to their parents
+		//The joints can be animated here with no input from their
+		//parents, but for setAnimationMode extra checks are needed
+		//to their parents
 		SJoint *joint = AllJoints[i];
 
 		const core::vector3df oldPosition = joint->Animatedposition;
@@ -137,8 +139,8 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 	}
 
 	//Note:
-	//_LocalAnimatedMatrix needs to be built at some point, but this function may be called lots of times for
-	//one render (to play two animations at the same time) _LocalAnimatedMatrix only needs to be built once.
+	//LocalAnimatedMatrix needs to be built at some point, but this function may be called lots of times for
+	//one render (to play two animations at the same time) LocalAnimatedMatrix only needs to be built once.
 	//a call to buildAllLocalAnimatedMatrices is needed before skinning the mesh, and before the user gets the joints to move
 
 	//----------------
@@ -163,6 +165,8 @@ void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 			 joint->UseAnimationFrom->ScaleKeys.size() ||
 			 joint->UseAnimationFrom->RotationKeys.size() ))
 		{
+			joint->GlobalSkinningSpace=false;
+
 			joint->LocalAnimatedMatrix=joint->Animatedrotation.getMatrix();
 
 			// --- joint->LocalAnimatedMatrix *= joint->Animatedrotation.getMatrix() ---
@@ -181,8 +185,6 @@ void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 			m1[13] += Pos.Y*m1[15];
 			m1[14] += Pos.Z*m1[15];
 			// -----------------------------------
-
-			joint->GlobalSkinningSpace=false;
 
 			if (joint->ScaleKeys.size())
 			{
@@ -207,7 +209,6 @@ void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 				mat[10] *= joint->Animatedscale.Z;
 				mat[11] *= joint->Animatedscale.Z;
 				// -----------------------------------
-
 			}
 		}
 		else
@@ -234,7 +235,6 @@ void CSkinnedMesh::buildAllGlobalAnimatedMatrices(SJoint *joint, SJoint *parentJ
 			joint->GlobalAnimatedMatrix = joint->LocalAnimatedMatrix;
 		else
 			joint->GlobalAnimatedMatrix = parentJoint->GlobalAnimatedMatrix * joint->LocalAnimatedMatrix;
-
 	}
 
 	for (u32 j=0; j<joint->Children.size(); ++j)
