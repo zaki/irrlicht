@@ -37,7 +37,7 @@ CShadowVolumeSceneNode::~CShadowVolumeSceneNode()
 }
 
 
-void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
+void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bool isDirectional)
 {
 	SShadowVolume* svp = 0;
 
@@ -57,30 +57,32 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 	svp->reallocate(IndexCount*5);
 	++ShadowVolumesUsed;
 
+	// We use triangle lists
 	const u32 faceCount = IndexCount / 3;
 
 	if (faceCount * 6 > Edges.size())
 		Edges.set_used(faceCount*6);
 
 	u32 numEdges = 0;
-	const core::vector3df ls = light * Infinity; // light scaled
 
 	//if (UseZFailMethod)
-	//	createZFailVolume(faceCount, numEdges, light, svp);
+	//	numEdges=createZFailVolume(faceCount, light, svp);
 	//else
-	//	createZPassVolume(faceCount, numEdges, light, svp, false);
+	//	numEdges=createZPassVolume(faceCount, light, svp, false);
 
 	// the createZFailVolume does currently not work 100% correctly,
 	// so we create createZPassVolume with caps if the zfail method
 	// is used
-	createZPassVolume(faceCount, numEdges, light, svp, UseZFailMethod);
+	numEdges=createZPassVolume(faceCount, light, svp, UseZFailMethod);
 
+	const core::vector3df ls = light * Infinity; // light scaled
+	// for all edges add the near->far quads
 	for (u32 i=0; i<numEdges; ++i)
 	{
-		core::vector3df &v1 = Vertices[Edges[2*i+0]];
-		core::vector3df &v2 = Vertices[Edges[2*i+1]];
-		core::vector3df v3(v1 - ls);
-		core::vector3df v4(v2 - ls);
+		const core::vector3df &v1 = Vertices[Edges[2*i+0]];
+		const core::vector3df &v2 = Vertices[Edges[2*i+1]];
+		const core::vector3df v3(v1 - ls);
+		const core::vector3df v4(v2 - ls);
 
 		// Add a quad (two triangles) to the vertex list
 		if (svp->size() < svp->allocated_size()-5)
@@ -97,11 +99,12 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 }
 
 
-void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, u32& numEdges,
+u32 CShadowVolumeSceneNode::createZFailVolume(u32 faceCount,
 						const core::vector3df& light,
 						SShadowVolume* svp)
 {
-	s32 i;
+	u32 i;
+	u32 numEdges=0;
 	const core::vector3df ls = light * Infinity;
 
 	// Check every face if it is front or back facing the light.
@@ -116,7 +119,7 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, u32& numEdges,
 		{
 			if (svp->size() < svp->allocated_size()-5)
 			{
-				// add front cap
+				// add front cap from light-facing faces
 				svp->push_back(v0);
 				svp->push_back(v2);
 				svp->push_back(v1);
@@ -129,8 +132,10 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, u32& numEdges,
 		}
 	}
 
+	// Create edges
 	for(i=0; i<faceCount; ++i)
 	{
+		// check all front facing faces
 		if (FaceData[i] == true)
 		{
 			const u16 wFace0 = Indices[3*i+0];
@@ -166,19 +171,20 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, u32& numEdges,
 			}
 		}
 	}
+	return numEdges;
 }
 
 
-void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
-						u32& numEdges,
+u32 CShadowVolumeSceneNode::createZPassVolume(u32 faceCount,
 						core::vector3df light,
 						SShadowVolume* svp, bool caps)
 {
+	u32 numEdges=0;
 	light *= Infinity;
 	if (light == core::vector3df(0,0,0))
 		light = core::vector3df(0.0001f,0.0001f,0.0001f);
 
-	for (s32 i=0; i<faceCount; ++i)
+	for (u32 i=0; i<faceCount; ++i)
 	{
 		const u16 wFace0 = Indices[3*i+0];
 		const u16 wFace1 = Indices[3*i+1];
@@ -210,18 +216,22 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 			}
 		}
 	}
+	return numEdges;
 }
 
 
 void CShadowVolumeSceneNode::setShadowMesh(const IMesh* mesh)
 {
-    if ( ShadowMesh == mesh )
-        return;
+    if (ShadowMesh == mesh)
+		return;
 	if (ShadowMesh)
 		ShadowMesh->drop();
 	ShadowMesh = mesh;
 	if (ShadowMesh)
+	{
 		ShadowMesh->grab();
+		Box = ShadowMesh->getBoundingBox();
+	}
 }
 
 
@@ -230,15 +240,21 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 	const u32 oldIndexCount = IndexCount;
 	const u32 oldVertexCount = VertexCount;
 
-	VertexCount = 0;
-	IndexCount = 0;
-	ShadowVolumesUsed = 0;
-
 	const IMesh* const mesh = ShadowMesh;
 	if (!mesh)
 		return;
 
+	// create as much shadow volumes as there are lights but
+	// do not ignore the max light settings.
+	const u32 lights = SceneManager->getVideoDriver()->getDynamicLightCount();
+	if (!lights)
+		return;
+
 	// calculate total amount of vertices and indices
+
+	VertexCount = 0;
+	IndexCount = 0;
+	ShadowVolumesUsed = 0;
 
 	u32 i;
 	u32 totalVertices = 0;
@@ -254,19 +270,13 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 
 	// allocate memory if necessary
 
-	if (totalVertices > Vertices.size())
-		Vertices.set_used(totalVertices);
+	Vertices.set_used(totalVertices);
+	Indices.set_used(totalIndices);
 
-	if (totalIndices > Indices.size())
-	{
-		Indices.set_used(totalIndices);
-
-		if (UseZFailMethod)
-			FaceData.set_used(totalIndices / 3);
-	}
+	if (UseZFailMethod)
+		FaceData.set_used(totalIndices / 3);
 
 	// copy mesh
-
 	for (i=0; i<bufcnt; ++i)
 	{
 		const IMeshBuffer* buf = mesh->getMeshBuffer(i);
@@ -285,10 +295,6 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 	if (oldVertexCount != VertexCount && oldIndexCount != IndexCount && UseZFailMethod)
 		calculateAdjacency();
 
-	// create as much shadow volumes as there are lights but
-	// do not ignore the max light settings.
-
-	const u32 lights = SceneManager->getVideoDriver()->getDynamicLightCount();
 	core::matrix4 mat = Parent->getAbsoluteTransformation();
 	mat.makeInverse();
 	const core::vector3df parentpos = Parent->getAbsolutePosition();
@@ -354,8 +360,8 @@ void CShadowVolumeSceneNode::calculateAdjacency()
 	{
 		for (u32 edge = 0; edge<3; ++edge)
 		{
-			core::vector3df v1 = Vertices[Indices[f+edge]];
-			core::vector3df v2 = Vertices[Indices[f+((edge+1)%3)]];
+			const core::vector3df v1 = Vertices[Indices[f+edge]];
+			const core::vector3df v2 = Vertices[Indices[f+((edge+1)%3)]];
 
 			// now we search an_O_ther _F_ace with these two
 			// vertices, which is not the current face.
@@ -385,7 +391,7 @@ void CShadowVolumeSceneNode::calculateAdjacency()
 				}
 			}
 
-			// no adjacent edges
+			// no adjacent edges -> store face number, else store adjacent face
 			if (of >= IndexCount)
 				Adjacency[f + edge] = f/3;
 			else
