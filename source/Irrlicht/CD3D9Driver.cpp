@@ -2760,8 +2760,9 @@ const wchar_t* CD3D9Driver::getName() const
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: Frist, draw all geometry. Then use this method, to draw the shadow
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void CD3D9Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+void CD3D9Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail)
 {
+	const u32 count = triangles.size();
 	if (!Params.Stencilbuffer || !count)
 		return;
 
@@ -2774,12 +2775,12 @@ void CD3D9Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 
 		// Draw front-side of shadow volume in stencil/z only
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 
 		// Now reverse cull order so front sides of shadow volume are written.
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_DECR);
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 	}
 	else
 	{
@@ -2788,12 +2789,12 @@ void CD3D9Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 
 		// Draw front-side of shadow volume in stencil/z only
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCR);
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 
 		// Now reverse cull order so front sides of shadow volume are written.
 		pID3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW);
 		pID3DDevice->SetRenderState( D3DRS_STENCILZFAIL, D3DSTENCILOP_DECR);
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 	}
 }
 
