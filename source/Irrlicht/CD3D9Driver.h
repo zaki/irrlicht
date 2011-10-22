@@ -219,7 +219,7 @@ namespace video
 		virtual void setAmbientLight(const SColorf& color);
 
 		//! Draws a shadow volume into the stencil buffer.
-		virtual void drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail);
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail);
 
 		//! Fills the stencil shadow with color.
 		virtual void drawStencilShadow(bool clearStencilBuffer=false,

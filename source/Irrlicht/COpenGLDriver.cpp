@@ -3502,8 +3502,9 @@ void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Next use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail)
 {
+	const u32 count=triangles.size();
 	if (!StencilBuffer || !count)
 		return;
 
@@ -3523,11 +3524,12 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glDisable(GL_FOG);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_FALSE); // no depth buffer writing
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no color buffer drawing
 	glEnable(GL_STENCIL_TEST);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),&triangles[0]);
+	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),triangles.const_pointer());
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
 	glPolygonOffset(-1.f,-1.f);
