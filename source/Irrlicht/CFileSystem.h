@@ -49,16 +49,21 @@ public:
 	virtual bool addFileArchive(const io::path& filename,
 			bool ignoreCase = true, bool ignorePaths = true,
 			E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN,
-			const core::stringc& password="");
+			const core::stringc& password="",
+			IFileArchive** retArchive = 0);
 
 	//! Adds an archive to the file system.
 	virtual bool addFileArchive(IReadFile* file, bool ignoreCase=true,
 			bool ignorePaths=true,
 			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
-			const core::stringc& password="");
+			const core::stringc& password="",
+			IFileArchive** retArchive = 0);
+
+	//! Adds an archive to the file system.
+	virtual bool addFileArchive(IFileArchive* archive);
 
 	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
-	virtual bool moveFileArchive( u32 sourceIndex, s32 relative );
+	virtual bool moveFileArchive(u32 sourceIndex, s32 relative);
 
 	//! Adds an external archive loader to the engine.
 	virtual void addArchiveLoader(IArchiveLoader* loader);
@@ -80,6 +85,9 @@ public:
 
 	//! removes an archive from the file system.
 	virtual bool removeFileArchive(const io::path& filename);
+
+	//! Removes an archive from the file system.
+	virtual bool removeFileArchive(const IFileArchive* archive);
 
 	//! Returns the string of the current working directory
 	virtual const io::path& getWorkingDirectory();
@@ -143,7 +151,9 @@ public:
 private:
 
 	// don't expose, needs refactoring
-	bool changeArchivePassword(const path& filename, const core::stringc& password);
+	bool changeArchivePassword(const path& filename,
+			const core::stringc& password,
+			IFileArchive** archive = 0);
 
 	//! Currently used FileSystemType
 	EFileSystemType FileSystemType;
