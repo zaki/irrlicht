@@ -146,7 +146,7 @@ u32 CShadowVolumeSceneNode::createZFailVolume(u32 faceCount,
 			const u16 adj1 = Adjacency[3*i+1];
 			const u16 adj2 = Adjacency[3*i+2];
 
-			if (adj0 != (u16)-1 && FaceData[adj0] == false)
+			if (adj0 == i || FaceData[adj0] == false)
 			{
 				// add edge v0-v1
 				Edges[2*numEdges+0] = wFace0;
@@ -154,7 +154,7 @@ u32 CShadowVolumeSceneNode::createZFailVolume(u32 faceCount,
 				++numEdges;
 			}
 
-			if (adj1 != (u16)-1 && FaceData[adj1] == false)
+			if (adj1 == i || FaceData[adj1] == false)
 			{
 				// add edge v1-v2
 				Edges[2*numEdges+0] = wFace1;
@@ -162,7 +162,7 @@ u32 CShadowVolumeSceneNode::createZFailVolume(u32 faceCount,
 				++numEdges;
 			}
 
-			if (adj2 != (u16)-1 && FaceData[adj2] == false)
+			if (adj2 == i || FaceData[adj2] == false)
 			{
 				// add edge v2-v0
 				Edges[2*numEdges+0] = wFace2;
@@ -292,19 +292,18 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 	}
 
 	// recalculate adjacency if necessary
-	if (oldVertexCount != VertexCount && oldIndexCount != IndexCount && UseZFailMethod)
+	if ((oldVertexCount != VertexCount || oldIndexCount != IndexCount) && UseZFailMethod)
 		calculateAdjacency();
 
 	core::matrix4 mat = Parent->getAbsoluteTransformation();
 	mat.makeInverse();
 	const core::vector3df parentpos = Parent->getAbsolutePosition();
-	core::vector3df lpos;
 
 	// TODO: Only correct for point lights.
 	for (i=0; i<lights; ++i)
 	{
 		const video::SLight& dl = SceneManager->getVideoDriver()->getDynamicLight(i);
-		lpos = dl.Position;
+		core::vector3df lpos = dl.Position;
 		if (dl.CastShadows &&
 			fabs((lpos - parentpos).getLengthSQ()) <= (dl.Radius*dl.Radius*4.0f))
 		{
@@ -360,8 +359,8 @@ void CShadowVolumeSceneNode::calculateAdjacency()
 	{
 		for (u32 edge = 0; edge<3; ++edge)
 		{
-			const core::vector3df v1 = Vertices[Indices[f+edge]];
-			const core::vector3df v2 = Vertices[Indices[f+((edge+1)%3)]];
+			const core::vector3df& v1 = Vertices[Indices[f+edge]];
+			const core::vector3df& v2 = Vertices[Indices[f+((edge+1)%3)]];
 
 			// now we search an_O_ther _F_ace with these two
 			// vertices, which is not the current face.
@@ -372,21 +371,19 @@ void CShadowVolumeSceneNode::calculateAdjacency()
 				// only other faces
 				if (of != f)
 				{
-					s32 cnt1 = 0;
-					s32 cnt2 = 0;
+					bool cnt1 = false;
+					bool cnt2 = false;
 
 					for (s32 e=0; e<3; ++e)
 					{
-						const f32 t1 = v1.getDistanceFromSQ(Vertices[Indices[of+e]]);
-						if (core::iszero(t1))
-							++cnt1;
+						if (v1.equals(Vertices[Indices[of+e]]))
+							cnt1=true;
 
-						const f32 t2 = v2.getDistanceFromSQ(Vertices[Indices[of+e]]);
-						if (core::iszero(t2))
-							++cnt2;
+						if (v2.equals(Vertices[Indices[of+e]]))
+							cnt2=true;
 					}
 					// exactly one match for each vertex, i.e. edge is the same
-					if (cnt1 == 1 && cnt2 == 1)
+					if (cnt1 && cnt2)
 						break;
 				}
 			}
