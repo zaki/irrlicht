@@ -212,13 +212,14 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 //! Adds an archive to the file system.
 bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 			  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType,
-			  const core::stringc& password)
+			  const core::stringc& password,
+			  IFileArchive** retArchive)
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
 
 	// see if archive is already added
-	if (changeArchivePassword(filename, password))
+	if (changeArchivePassword(filename, password, retArchive))
 		return true;
 
 	s32 i;
@@ -303,6 +304,8 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 		FileArchives.push_back(archive);
 		if (password.size())
 			archive->Password=password;
+		if (retArchive)
+			*retArchive = archive;
 		ret = true;
 	}
 	else
@@ -315,7 +318,9 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 }
 
 // don't expose!
-bool CFileSystem::changeArchivePassword(const path& filename, const core::stringc& password)
+bool CFileSystem::changeArchivePassword(const path& filename,
+		const core::stringc& password,
+		IFileArchive** archive)
 {
 	for (s32 idx = 0; idx < (s32)FileArchives.size(); ++idx)
 	{
@@ -327,6 +332,8 @@ bool CFileSystem::changeArchivePassword(const path& filename, const core::string
 		{
 			if (password.size())
 				FileArchives[idx]->Password=password;
+			if (archive)
+				*archive = FileArchives[idx];
 			return true;
 		}
 	}
@@ -334,15 +341,16 @@ bool CFileSystem::changeArchivePassword(const path& filename, const core::string
 	return false;
 }
 
-bool CFileSystem::addFileArchive(IReadFile* file, bool ignoreCase, bool ignorePaths,
-			E_FILE_ARCHIVE_TYPE archiveType, const core::stringc& password)
+bool CFileSystem::addFileArchive(IReadFile* file, bool ignoreCase,
+		bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType,
+		const core::stringc& password, IFileArchive** retArchive)
 {
 	if (!file || archiveType == EFAT_FOLDER)
 		return false;
 
 	if (file)
 	{
-		if (changeArchivePassword(file->getFileName(), password))
+		if (changeArchivePassword(file->getFileName(), password, retArchive))
 			return true;
 
 		IFileArchive* archive = 0;
@@ -402,6 +410,8 @@ bool CFileSystem::addFileArchive(IReadFile* file, bool ignoreCase, bool ignorePa
 			FileArchives.push_back(archive);
 			if (password.size())
 				archive->Password=password;
+			if (retArchive)
+				*retArchive = archive;
 			return true;
 		}
 		else
@@ -411,6 +421,22 @@ bool CFileSystem::addFileArchive(IReadFile* file, bool ignoreCase, bool ignorePa
 	}
 
 	return false;
+}
+
+
+//! Adds an archive to the file system.
+bool CFileSystem::addFileArchive(IFileArchive* archive)
+{
+	for (u32 i=0; i < FileArchives.size(); ++i)
+	{
+		if (archive == FileArchives[i])
+		{
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			return false;
+		}
+	}
+	FileArchives.push_back(archive);
+	return true;
 }
 
 
@@ -436,6 +462,22 @@ bool CFileSystem::removeFileArchive(const io::path& filename)
 	{
 		if (filename == FileArchives[i]->getFileList()->getPath())
 			return removeFileArchive(i);
+	}
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return false;
+}
+
+
+//! Removes an archive from the file system.
+bool CFileSystem::removeFileArchive(const IFileArchive* archive)
+{
+	for (u32 i=0; i < FileArchives.size(); ++i)
+	{
+		if (archive == FileArchives[i])
+		{
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			return removeFileArchive(i);
+		}
 	}
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return false;
@@ -535,7 +577,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 		WorkingDirectory[FILESYSTEM_VIRTUAL] = newDirectory;
 		// is this empty string constant really intended?
 		flattenFilename(WorkingDirectory[FILESYSTEM_VIRTUAL], _IRR_TEXT(""));
-		success = 1;
+		success = true;
 	}
 	else
 	{
@@ -545,12 +587,12 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 		success = true;
 #elif defined(_MSC_VER)
 	#if defined(_IRR_WCHAR_FILESYSTEM)
-		success=(_wchdir(newDirectory.c_str()) == 0);
+		success = (_wchdir(newDirectory.c_str()) == 0);
 	#else
-		success=(_chdir(newDirectory.c_str()) == 0);
+		success = (_chdir(newDirectory.c_str()) == 0);
 	#endif
 #else
-		success=(chdir(newDirectory.c_str()) == 0);
+		success = (chdir(newDirectory.c_str()) == 0);
 #endif
 	}
 
