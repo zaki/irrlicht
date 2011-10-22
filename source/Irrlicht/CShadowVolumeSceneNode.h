@@ -50,8 +50,7 @@ namespace scene
 		typedef core::array<core::vector3df> SShadowVolume;
 
 		void createShadowVolume(const core::vector3df& pos, bool isDirectional=false);
-		u32 createZPassVolume(core::vector3df light, SShadowVolume* svp);
-		u32 createZFailVolume(const core::vector3df& light, SShadowVolume* svp);
+		u32 createEdgesAndCaps(core::vector3df light, SShadowVolume* svp);
 
 		//! Generates adjacency information based on mesh indices.
 		void calculateAdjacency();

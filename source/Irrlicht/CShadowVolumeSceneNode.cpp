@@ -62,15 +62,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 	Edges.set_used(IndexCount*2);
 	u32 numEdges = 0;
 
-	// the createZFailVolume does currently not work 100% correctly,
-	// so we create createZPassVolume with caps if the zfail method
-	// is used
-#if 0
-	if (UseZFailMethod)
-		numEdges=createZFailVolume(light, svp);
-	else
-#endif
-		numEdges=createZPassVolume(light, svp);
+	numEdges=createEdgesAndCaps(light, svp);
 
 	const core::vector3df ls = light * Infinity; // light scaled
 	// for all edges add the near->far quads
@@ -97,12 +89,16 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 }
 
 
-u32 CShadowVolumeSceneNode::createZFailVolume(const core::vector3df& light,
+#define IRR_USE_ADJACENCY
+
+u32 CShadowVolumeSceneNode::createEdgesAndCaps(core::vector3df light,
 					SShadowVolume* svp)
 {
 	u32 numEdges=0;
 	const u32 faceCount = IndexCount / 3;
-	const core::vector3df ls = light * Infinity;
+	light *= Infinity;
+	if (light == core::vector3df(0,0,0))
+		light = core::vector3df(0.0001f,0.0001f,0.0001f);
 
 	// Check every face if it is front or back facing the light.
 	for (u32 i=0; i<faceCount; ++i)
@@ -112,7 +108,7 @@ u32 CShadowVolumeSceneNode::createZFailVolume(const core::vector3df& light,
 		const core::vector3df v2 = Vertices[Indices[3*i+2]];
 
 		FaceData[i]=core::triangle3df(v0,v1,v2).isFrontFacing(light);
-		if (FaceData[i])
+		if (UseZFailMethod && FaceData[i])
 		{
 #ifdef _DEBUG
 			if (svp->size() >= svp->allocated_size()-5)
@@ -124,9 +120,9 @@ u32 CShadowVolumeSceneNode::createZFailVolume(const core::vector3df& light,
 			svp->push_back(v1);
 
 			// add back cap
-			svp->push_back(v0-ls);
-			svp->push_back(v1-ls);
-			svp->push_back(v2-ls);
+			svp->push_back(v0-light);
+			svp->push_back(v1-light);
+			svp->push_back(v2-light);
 		}
 	}
 
@@ -146,7 +142,9 @@ u32 CShadowVolumeSceneNode::createZFailVolume(const core::vector3df& light,
 
 			// add edges if face is adjacent to back-facing face
 			// or if no adjacent face was found
+#ifdef IRR_USE_ADJACENCY
 			if (adj0 == i || FaceData[adj0] == false)
+#endif
 			{
 				// add edge v0-v1
 				Edges[2*numEdges+0] = wFace0;
@@ -154,7 +152,9 @@ u32 CShadowVolumeSceneNode::createZFailVolume(const core::vector3df& light,
 				++numEdges;
 			}
 
+#ifdef IRR_USE_ADJACENCY
 			if (adj1 == i || FaceData[adj1] == false)
+#endif
 			{
 				// add edge v1-v2
 				Edges[2*numEdges+0] = wFace1;
@@ -162,61 +162,14 @@ u32 CShadowVolumeSceneNode::createZFailVolume(const core::vector3df& light,
 				++numEdges;
 			}
 
+#ifdef IRR_USE_ADJACENCY
 			if (adj2 == i || FaceData[adj2] == false)
+#endif
 			{
 				// add edge v2-v0
 				Edges[2*numEdges+0] = wFace2;
 				Edges[2*numEdges+1] = wFace0;
 				++numEdges;
-			}
-		}
-	}
-	return numEdges;
-}
-
-
-u32 CShadowVolumeSceneNode::createZPassVolume(core::vector3df light,
-					SShadowVolume* svp)
-{
-	const u32 faceCount = IndexCount / 3;
-	u32 numEdges=0;
-	light *= Infinity;
-	if (light == core::vector3df(0,0,0))
-		light = core::vector3df(0.0001f,0.0001f,0.0001f);
-
-	for (u32 i=0; i<faceCount; ++i)
-	{
-		const u16 wFace0 = Indices[3*i+0];
-		const u16 wFace1 = Indices[3*i+1];
-		const u16 wFace2 = Indices[3*i+2];
-
-		if (core::triangle3df(Vertices[wFace0],Vertices[wFace1],Vertices[wFace2]).isFrontFacing(light))
-		{
-			Edges[2*numEdges+0] = wFace0;
-			Edges[2*numEdges+1] = wFace1;
-			++numEdges;
-
-			Edges[2*numEdges+0] = wFace1;
-			Edges[2*numEdges+1] = wFace2;
-			++numEdges;
-
-			Edges[2*numEdges+0] = wFace2;
-			Edges[2*numEdges+1] = wFace0;
-			++numEdges;
-
-			if (UseZFailMethod)
-			{
-#ifdef _DEBUG
-				if (svp->size() >= svp->allocated_size()-5)
-					os::Printer::log("Allocation too small.", ELL_DEBUG);
-#endif
-				svp->push_back(Vertices[wFace0]);
-				svp->push_back(Vertices[wFace2]);
-				svp->push_back(Vertices[wFace1]);
-
-				svp->push_back(Vertices[wFace0] - light);
-				svp->push_back(Vertices[wFace1] - light);
-				svp->push_back(Vertices[wFace2] - light);
 			}
 		}
 	}
