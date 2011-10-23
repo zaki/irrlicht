@@ -74,6 +74,8 @@ class string
 {
 public:
 
+	typedef T char_type;
+
 	//! Default constructor
 	string()
 	: array(0), allocated(1), used(1)
