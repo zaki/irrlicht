@@ -1185,11 +1185,13 @@ IGUITreeView* CGUIEnvironment::addTreeView(const core::rect<s32>& rectangle,
 
 //! adds a file open dialog. The returned pointer must not be dropped.
 IGUIFileOpenDialog* CGUIEnvironment::addFileOpenDialog(const wchar_t* title,
-				bool modal, IGUIElement* parent, s32 id)
+				bool modal, IGUIElement* parent, s32 id,
+				bool restoreCWD, io::path::char_type* startDir)
 {
 	parent = parent ? parent : this;
 
-	IGUIFileOpenDialog* d = new CGUIFileOpenDialog(title, this, parent, id);
+	IGUIFileOpenDialog* d = new CGUIFileOpenDialog(title, this, parent, id,
+			restoreCWD, startDir);
 	d->drop();
 
 	if (modal)

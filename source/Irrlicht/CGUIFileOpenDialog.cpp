@@ -28,7 +28,8 @@ const s32 FOD_HEIGHT = 250;
 
 //! constructor
 CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
-		IGUIEnvironment* environment, IGUIElement* parent, s32 id)
+		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
+		bool restoreCWD, io::path::char_type* startDir)
 : IGUIFileOpenDialog(environment, parent, id,
 		core::rect<s32>((parent->getAbsolutePosition().getWidth()-FOD_WIDTH)/2,
 					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2,
@@ -42,16 +43,33 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 
 	Text = title;
 
-	IGUISkin* skin = Environment->getSkin();
+	FileSystem = Environment?Environment->getFileSystem():0;
+
+	if (FileSystem)
+	{
+		FileSystem->grab();
+
+		if (restoreCWD)
+			RestoreDirectory = FileSystem->getWorkingDirectory();
+		if (startDir)
+		{
+			StartDirectory = startDir;
+			FileSystem->changeWorkingDirectoryTo(startDir);
+		}
+	}
+	else
+		return;
+
 	IGUISpriteBank* sprites = 0;
 	video::SColor color(255,255,255,255);
+	IGUISkin* skin = Environment->getSkin();
 	if (skin)
 	{
 		sprites = skin->getSpriteBank();
 		color = skin->getColor(EGDC_WINDOW_SYMBOL);
 	}
 
-	const s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	const s32 buttonw = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 	const s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
 	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
@@ -91,11 +109,6 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 	FileNameText->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	FileNameText->grab();
 
-	FileSystem = Environment->getFileSystem();
-
-	if (FileSystem)
-		FileSystem->grab();
-
 	setTabGroup(true);
 
 	fillListBox();
@@ -121,7 +134,12 @@ CGUIFileOpenDialog::~CGUIFileOpenDialog()
 		FileNameText->drop();
 
 	if (FileSystem)
+	{
+		// revert to original CWD if path was set in constructor
+		if (RestoreDirectory.size())
+			FileSystem->changeWorkingDirectoryTo(RestoreDirectory);
 		FileSystem->drop();
+	}
 
 	if (FileList)
 		FileList->drop();
@@ -312,6 +330,36 @@ void CGUIFileOpenDialog::draw()
 }
 
 
+//! Writes attributes of the element.
+/* Not sure if this will really work out properly. Saving paths can be
+rather problematic. */
+void CGUIFileOpenDialog::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
+{
+	IGUIFileOpenDialog::serializeAttributes(out,options);
+
+	out->addString("StartDirectory", StartDirectory.c_str());
+	out->addBool("RestoreDirectory", (RestoreDirectory.size()!=0));
+}
+
+
+//! Reads attributes of the element
+/* Note that thiese paths changes will happen at arbitrary places upon
+load of the gui description. This may be undesired. */
+void CGUIFileOpenDialog::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
+{
+	StartDirectory = in->getAttributeAsString("StartDirectory");
+	const bool restore = in->getAttributeAsBool("RestoreDirectory");
+	if (restore)
+		RestoreDirectory = FileSystem->getWorkingDirectory();
+	else
+		RestoreDirectory = "";
+	if (StartDirectory.size())
+		FileSystem->changeWorkingDirectoryTo(StartDirectory);
+
+	IGUIFileOpenDialog::deserializeAttributes(in,options);
+}
+
+
 //! fills the listbox with files.
 void CGUIFileOpenDialog::fillListBox()
 {
@@ -396,4 +444,3 @@ void CGUIFileOpenDialog::sendCancelEvent()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
-

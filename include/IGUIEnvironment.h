@@ -156,7 +156,8 @@ public:
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUIImageList* createImageList( video::ITexture* texture,
-					core::dimension2d<s32>	imageSize, bool useAlphaChannel ) = 0;
+					core::dimension2d<s32> imageSize,
+					bool useAlphaChannel ) = 0;
 
 	//! Returns pointer to the font with the specified filename.
 	/** Loads the font if it was not loaded before.
@@ -198,8 +199,8 @@ public:
 
 	//! Returns the root gui element.
 	/** This is the first gui element, the (direct or indirect) parent of all
-	other gui elements.  It is a valid IGUIElement, with dimensions the same
-	size as the screen.	You should not need to use this method directly, unless
+	other gui elements. It is a valid IGUIElement, with dimensions the same
+	size as the screen. You should not need to use this method directly, unless
 	you wish to reparent GUI elements to the top level.
 	\return Pointer to the root element of the GUI. The returned pointer
 	should not be dropped. See IReferenceCounted::drop() for more
@@ -353,11 +354,16 @@ public:
 	until this messagebox is removed.
 	\param parent Parent gui element of the dialog.
 	\param id Id to identify the gui element.
+	\param restoreCWD If set to true, the current workingn directory will be
+	restored after the dialog is closed in some way. Otherwise the working
+	directory will be the one that the file dialog was last showing.
+	\param startDir Optional path for which the file dialog will be opened.
 	\return Pointer to the created file open dialog. Returns 0 if an error
 	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
-	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title = 0,
-		bool modal=true, IGUIElement* parent=0, s32 id=-1) = 0;
+	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title=0,
+		bool modal=true, IGUIElement* parent=0, s32 id=-1,
+		bool restoreCWD=false, io::path::char_type* startDir=0) = 0;
 
 	//! Adds a color select dialog.
 	/** \param title The title of the dialog.
