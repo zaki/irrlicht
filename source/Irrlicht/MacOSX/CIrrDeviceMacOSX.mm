@@ -49,7 +49,7 @@
 /*
  *  Summary:
  *	Virtual keycodes
- *  
+ *
  *  Discussion:
  *	These constants are the virtual keycodes defined originally in
  *	Inside Mac Volume V, pg. V-191. They identify physical keys on a
@@ -201,10 +201,9 @@ struct JoystickInfo
 	irr::core::array <JoystickComponent> buttonComp;
 	irr::core::array <JoystickComponent> hatComp;
 
-	int	hats;
-	int	axes;
-	int	buttons;
-
+	int hats;
+	int axes;
+	int buttons;
 	int numActiveJoysticks;
 
 	irr::SEvent persistentData;
@@ -212,8 +211,8 @@ struct JoystickInfo
 	IOHIDDeviceInterface ** interface;
 	bool removed;
 	char joystickName[256];
-	long usage;								// usage page from IOUSBHID Parser.h which defines general usage
-	long usagePage;							// usage within above page from IOUSBHID Parser.h which defines specific usage
+	long usage; // usage page from IOUSBHID Parser.h which defines general usage
+	long usagePage; // usage within above page from IOUSBHID Parser.h which defines specific usage
 
 	JoystickInfo() : hats(0), axes(0), buttons(0), interface(0), removed(false), usage(0), usagePage(0), numActiveJoysticks(0)
 	{
@@ -277,7 +276,6 @@ static void addJoystickComponent (CFTypeRef refElement, JoystickInfo* joyInfo)
 	CFTypeRef refElementType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementTypeKey));
 	CFTypeRef refUsagePage = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementUsagePageKey));
 	CFTypeRef refUsage = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementUsageKey));
-
 
 	if ((refElementType) && (CFNumberGetValue ((CFNumberRef)refElementType, kCFNumberLongType, &elementType)))
 	{
@@ -349,7 +347,6 @@ static void addJoystickComponent (CFTypeRef refElement, JoystickInfo* joyInfo)
 			}
 		}
 	}
-
 }
 
 static void getJoystickComponentArrayHandler (const void * value, void * parameter)
@@ -1134,8 +1131,14 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 	}
 	else
 	{
-		ievent.MouseInput.X = (int)[NSEvent mouseLocation].x;
-		ievent.MouseInput.Y = DeviceHeight - (int)[NSEvent mouseLocation].y;
+		CGEventRef ourEvent = CGEventCreate(NULL);
+		CGPoint point = CGEventGetLocation(ourEvent);
+
+		ievent.MouseInput.X = (int)point.x;
+		ievent.MouseInput.Y = (int)point.y;
+
+		if (ievent.MouseInput.Y < 0)
+			post = false;
 	}
 
 	if (post)
@@ -1147,22 +1150,35 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 
 void CIrrDeviceMacOSX::storeMouseLocation()
 {
-	NSPoint	p;
-	int	x,y;
-
-	p = [NSEvent mouseLocation];
+	int x,y;
 
 	if (Window != NULL)
 	{
+		NSPoint	p;
+		p = [NSEvent mouseLocation];
 		p = [Window convertScreenToBase:p];
 		x = (int)p.x;
 		y = DeviceHeight - (int)p.y;
 	}
 	else
 	{
-		x = (int)p.x;
-		y = (int)p.y;
-		y -= (ScreenHeight - DeviceHeight);
+		CGEventRef ourEvent = CGEventCreate(NULL);
+		CGPoint point = CGEventGetLocation(ourEvent);
+
+		x = (int)point.x;
+		y = (int)point.y;
+
+		const core::position2di& curr = ((CCursorControl *)CursorControl)->getPosition();
+		if (curr.X != x || curr.Y != y)
+		{
+			// In fullscreen mode, events are not sent regularly so rely on polling
+			irr::SEvent ievent;
+			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+			ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+			ievent.MouseInput.X = x;
+			ievent.MouseInput.Y = y;
+			postEventFromUser(ievent);
+		}
 	}
 
 	((CCursorControl *)CursorControl)->updateInternalCursorPosition(x,y);
@@ -1251,7 +1267,7 @@ void CIrrDeviceMacOSX::initKeycodes()
 	KeyCodes[kVK_Shift]                = irr::KEY_SHIFT;
 	KeyCodes[kVK_RightShift]           = irr::KEY_RSHIFT;
 	KeyCodes[kVK_Space]                = irr::KEY_SPACE;
-   
+
 	KeyCodes[kVK_ANSI_A] = irr::KEY_KEY_A;
 	KeyCodes[kVK_ANSI_B] = irr::KEY_KEY_B;
 	KeyCodes[kVK_ANSI_C] = irr::KEY_KEY_C;
@@ -1279,7 +1295,7 @@ void CIrrDeviceMacOSX::initKeycodes()
 	KeyCodes[kVK_ANSI_X] = irr::KEY_KEY_X;
 	KeyCodes[kVK_ANSI_Y] = irr::KEY_KEY_Y;
 	KeyCodes[kVK_ANSI_Z] = irr::KEY_KEY_Z;
-	
+
 	KeyCodes[kVK_ANSI_0] = irr::KEY_KEY_0;
 	KeyCodes[kVK_ANSI_1] = irr::KEY_KEY_1;
 	KeyCodes[kVK_ANSI_2] = irr::KEY_KEY_2;
@@ -1311,14 +1327,14 @@ bool CIrrDeviceMacOSX::isResizable() const
 	return IsResizable;
 }
 
-	
+
 void CIrrDeviceMacOSX::minimizeWindow()
 {
 	if (Window != NULL)
 		[Window miniaturize:[NSApp self]];
 }
 
-	
+
 //! Maximizes the window if possible.
 void CIrrDeviceMacOSX::maximizeWindow()
 {
