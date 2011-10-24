@@ -819,6 +819,13 @@ class map
 	bool remove(const KeyType& k)
 	{
 		Node* p = find(k);
+		return remove(p);
+	}
+
+	//! Removes a node from the tree and deletes it.
+	/** \return True if the node was found and deleted */
+	bool remove(Node* p)
+	{
 		if (p == 0)
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
