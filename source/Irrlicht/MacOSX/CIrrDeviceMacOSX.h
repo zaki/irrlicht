@@ -71,10 +71,10 @@ namespace irr
 
 		//! Minimizes the window if possible
 		virtual void minimizeWindow();
-		
+
 		//! Maximizes the window if possible.
 		virtual void maximizeWindow();
-		
+
 		//! Restore the window to normal size if possible.
 		virtual void restoreWindow();
 
@@ -225,21 +225,21 @@ namespace irr
 		void postKeyEvent(void *event, irr::SEvent &ievent, bool pressed);
 		void pollJoysticks();
 
-		NSWindow           *Window;
-		CGLContextObj       CGLContext;
-		NSOpenGLContext    *OGLContext;
-		int	                DeviceWidth,
-		                    DeviceHeight;
-		std::map<int,int>	KeyCodes;
-		int                 ScreenWidth,
-		                    ScreenHeight;
-		bool                IsActive;
-		NSBitmapImageRep   *SoftwareDriverTarget;
-		bool                IsSoftwareRenderer,
-		                    IsShiftDown,
-		                    IsControlDown,
-		                    IsResizable;
-		u32                 MouseButtonStates;
+		NSWindow *Window;
+		CGLContextObj CGLContext;
+		NSOpenGLContext *OGLContext;
+		NSBitmapImageRep *SoftwareDriverTarget;
+		std::map<int,int> KeyCodes;
+		int DeviceWidth;
+		int DeviceHeight;
+		int ScreenWidth;
+		int ScreenHeight;
+		u32 MouseButtonStates;
+		bool IsActive;
+		bool IsSoftwareRenderer;
+		bool IsShiftDown;
+		bool IsControlDown;
+		bool IsResizable;
 	};
 
 

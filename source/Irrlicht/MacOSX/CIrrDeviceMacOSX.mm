@@ -472,12 +472,14 @@ namespace irr
 {
 //! constructor
 CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
-	: CIrrDeviceStub(param), Window(NULL), IsActive(true), OGLContext(NULL), CGLContext(NULL),
-	SoftwareDriverTarget(0), IsSoftwareRenderer(false), IsResizable(false),
-	IsShiftDown(false), IsControlDown(false), MouseButtonStates(0)
+	: CIrrDeviceStub(param), Window(NULL), CGLContext(NULL), OGLContext(NULL),
+	SoftwareDriverTarget(0), DeviceWidth(0), DeviceHeight(0),
+	ScreenWidth(0), ScreenHeight(0), MouseButtonStates(0),
+	IsActive(true), IsSoftwareRenderer(false),
+	IsShiftDown(false), IsControlDown(false), IsResizable(false)
 {
 	struct utsname name;
-	NSString	*path;
+	NSString *path;
 
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceMacOSX");
@@ -506,14 +508,16 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	os::Printer::log(name.version,ELL_INFORMATION);
 
 	initKeycodes();
+	bool success = true;
 	if (CreationParams.DriverType != video::EDT_NULL)
-		createWindow();
+		success = createWindow();
+	// in case of failure, one can check VideoDriver for initialization
+	if (!success)
+		return;
 
 	setResizable(false);
-
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
 	createDriver();
-
 	createGUIAndScene();
 }
 
@@ -592,170 +596,180 @@ bool CIrrDeviceMacOSX::createWindow()
 
 	VideoModeList.setDesktop(CreationParams.Bits, core::dimension2d<u32>(ScreenWidth, ScreenHeight));
 
-	if (!CreationParams.Fullscreen)
+	// we need to check where the exceptions may happen and work at them
+	// for now we will just catch them to be able to avoid an app exit
+	@try
 	{
-		if(!CreationParams.WindowId) //create another window when WindowId is null
+		if (!CreationParams.Fullscreen)
 		{
-			Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
-		}
-
-		if (Window != NULL || CreationParams.WindowId)
-		{
-			NSOpenGLPixelFormatAttribute windowattribs[] =
+			if(!CreationParams.WindowId) //create another window when WindowId is null
 			{
-					NSOpenGLPFANoRecovery,
-					NSOpenGLPFAAccelerated,
-					NSOpenGLPFADepthSize,     (NSOpenGLPixelFormatAttribute)depthSize,
-					NSOpenGLPFAColorSize,     (NSOpenGLPixelFormatAttribute)CreationParams.Bits,
-					NSOpenGLPFAAlphaSize,     (NSOpenGLPixelFormatAttribute)alphaSize,
-					NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
-					NSOpenGLPFASamples,       (NSOpenGLPixelFormatAttribute)CreationParams.AntiAlias,
-					NSOpenGLPFAStencilSize,   (NSOpenGLPixelFormatAttribute)(CreationParams.Stencilbuffer?1:0),
-					NSOpenGLPFADoubleBuffer,
-					(NSOpenGLPixelFormatAttribute)nil
-			};
-
-			if (CreationParams.AntiAlias<2)
-			{
-				windowattribs[ 9] = (NSOpenGLPixelFormatAttribute)0;
-				windowattribs[11] = (NSOpenGLPixelFormatAttribute)0;
+				Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
 			}
 
-			NSOpenGLPixelFormat *format;
-			for (int i=0; i<3; ++i)
+			if (Window != NULL || CreationParams.WindowId)
 			{
-				if (1==i)
+				NSOpenGLPixelFormatAttribute windowattribs[] =
 				{
-					// Second try without stencilbuffer
-					if (CreationParams.Stencilbuffer)
-					{
-						windowattribs[13]=(NSOpenGLPixelFormatAttribute)0;
-					}
-					else
-						continue;
-				}
-				else if (2==i)
+						NSOpenGLPFANoRecovery,
+						NSOpenGLPFAAccelerated,
+						NSOpenGLPFADepthSize,     (NSOpenGLPixelFormatAttribute)depthSize,
+						NSOpenGLPFAColorSize,     (NSOpenGLPixelFormatAttribute)CreationParams.Bits,
+						NSOpenGLPFAAlphaSize,     (NSOpenGLPixelFormatAttribute)alphaSize,
+						NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
+						NSOpenGLPFASamples,       (NSOpenGLPixelFormatAttribute)CreationParams.AntiAlias,
+						NSOpenGLPFAStencilSize,   (NSOpenGLPixelFormatAttribute)(CreationParams.Stencilbuffer?1:0),
+						NSOpenGLPFADoubleBuffer,
+						(NSOpenGLPixelFormatAttribute)nil
+				};
+
+				if (CreationParams.AntiAlias<2)
 				{
-					// Third try without Doublebuffer
-					os::Printer::log("No doublebuffering available.", ELL_WARNING);
-					windowattribs[14]=(NSOpenGLPixelFormatAttribute)nil;
+					windowattribs[ 9] = (NSOpenGLPixelFormatAttribute)0;
+					windowattribs[11] = (NSOpenGLPixelFormatAttribute)0;
 				}
 
-				format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
-				if (format == NULL)
+				NSOpenGLPixelFormat *format;
+				for (int i=0; i<3; ++i)
 				{
-					if (CreationParams.AntiAlias>1)
+					if (1==i)
 					{
-						while (!format && windowattribs[12]>1)
+						// Second try without stencilbuffer
+						if (CreationParams.Stencilbuffer)
 						{
-							windowattribs[12] = (NSOpenGLPixelFormatAttribute)((int)windowattribs[12]-1);
-							format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+							windowattribs[13]=(NSOpenGLPixelFormatAttribute)0;
 						}
+						else
+							continue;
+					}
+					else if (2==i)
+					{
+						// Third try without Doublebuffer
+						os::Printer::log("No doublebuffering available.", ELL_WARNING);
+						windowattribs[14]=(NSOpenGLPixelFormatAttribute)nil;
+					}
 
-						if (!format)
+					format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+					if (format == NULL)
+					{
+						if (CreationParams.AntiAlias>1)
 						{
-							windowattribs[9] = (NSOpenGLPixelFormatAttribute)0;
-							windowattribs[11] = (NSOpenGLPixelFormatAttribute)0;
-							format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+							while (!format && windowattribs[12]>1)
+							{
+								windowattribs[12] = (NSOpenGLPixelFormatAttribute)((int)windowattribs[12]-1);
+								format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+							}
+
 							if (!format)
 							{
-								// reset values for next try
-								windowattribs[9] = (NSOpenGLPixelFormatAttribute)1;
-								windowattribs[11] = (NSOpenGLPixelFormatAttribute)CreationParams.AntiAlias;
-							}
-							else
-							{
-								os::Printer::log("No FSAA available.", ELL_WARNING);
-							}
+								windowattribs[9] = (NSOpenGLPixelFormatAttribute)0;
+								windowattribs[11] = (NSOpenGLPixelFormatAttribute)0;
+								format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+								if (!format)
+								{
+									// reset values for next try
+									windowattribs[9] = (NSOpenGLPixelFormatAttribute)1;
+									windowattribs[11] = (NSOpenGLPixelFormatAttribute)CreationParams.AntiAlias;
+								}
+								else
+								{
+									os::Printer::log("No FSAA available.", ELL_WARNING);
+								}
 
+							}
 						}
 					}
+					else
+						break;
 				}
-				else
-					break;
-			}
-			CreationParams.AntiAlias = windowattribs[11];
-			CreationParams.Stencilbuffer=(windowattribs[13]==1);
+				CreationParams.AntiAlias = windowattribs[11];
+				CreationParams.Stencilbuffer=(windowattribs[13]==1);
 
-			if (format != NULL)
-			{
-				OGLContext = [[NSOpenGLContext alloc] initWithFormat:format shareContext:NULL];
-				[format release];
-			}
-
-			if (OGLContext != NULL)
-			{
-				if (!CreationParams.WindowId)
+				if (format != NULL)
 				{
-					[Window center];
-					[Window setDelegate:[NSApp delegate]];
-					[OGLContext setView:[Window contentView]];
-					[Window setAcceptsMouseMovedEvents:TRUE];
-					[Window setIsVisible:TRUE];
-					[Window makeKeyAndOrderFront:nil];
+					OGLContext = [[NSOpenGLContext alloc] initWithFormat:format shareContext:NULL];
+					[format release];
 				}
-				else //use another window for drawing
-					[OGLContext setView:(NSView*)CreationParams.WindowId];
 
-				CGLContext = (CGLContextObj) [OGLContext CGLContextObj];
-				DeviceWidth = CreationParams.WindowSize.Width;
-				DeviceHeight = CreationParams.WindowSize.Height;
-				result = true;
+				if (OGLContext != NULL)
+				{
+					if (!CreationParams.WindowId)
+					{
+						[Window center];
+						[Window setDelegate:[NSApp delegate]];
+						[OGLContext setView:[Window contentView]];
+						[Window setAcceptsMouseMovedEvents:TRUE];
+						[Window setIsVisible:TRUE];
+						[Window makeKeyAndOrderFront:nil];
+					}
+					else //use another window for drawing
+						[OGLContext setView:(NSView*)CreationParams.WindowId];
+
+					CGLContext = (CGLContextObj) [OGLContext CGLContextObj];
+					DeviceWidth = CreationParams.WindowSize.Width;
+					DeviceHeight = CreationParams.WindowSize.Height;
+					result = true;
+				}
+			}
+		}
+		else
+		{
+			displaymode = CGDisplayBestModeForParameters(display,CreationParams.Bits,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height,NULL);
+			if (displaymode != NULL)
+			{
+				olddisplaymode = CGDisplayCurrentMode(display);
+				error = CGCaptureAllDisplays();
+				if (error == CGDisplayNoErr)
+				{
+					error = CGDisplaySwitchToMode(display,displaymode);
+					if (error == CGDisplayNoErr)
+					{
+						CGLPixelFormatAttribute	fullattribs[] =
+						{
+							kCGLPFAFullScreen,
+							kCGLPFADisplayMask, (CGLPixelFormatAttribute)CGDisplayIDToOpenGLDisplayMask(display),
+							kCGLPFADoubleBuffer,
+							kCGLPFANoRecovery,
+							kCGLPFAAccelerated,
+							kCGLPFADepthSize, (CGLPixelFormatAttribute)depthSize,
+							kCGLPFAColorSize, (CGLPixelFormatAttribute)CreationParams.Bits,
+							kCGLPFAAlphaSize, (CGLPixelFormatAttribute)alphaSize,
+							kCGLPFASampleBuffers, (CGLPixelFormatAttribute)(CreationParams.AntiAlias?1:0),
+							kCGLPFASamples, (CGLPixelFormatAttribute)CreationParams.AntiAlias,
+							kCGLPFAStencilSize, (CGLPixelFormatAttribute)(CreationParams.Stencilbuffer?1:0),
+							(CGLPixelFormatAttribute)NULL
+						};
+
+						pixelFormat = NULL;
+						numPixelFormats = 0;
+						CGLChoosePixelFormat(fullattribs,&pixelFormat,&numPixelFormats);
+
+						if (pixelFormat != NULL)
+						{
+							CGLCreateContext(pixelFormat,NULL,&CGLContext);
+							CGLDestroyPixelFormat(pixelFormat);
+						}
+
+						if (CGLContext != NULL)
+						{
+							CGLSetFullScreen(CGLContext);
+							displayRect = CGDisplayBounds(display);
+							ScreenWidth = DeviceWidth = (int)displayRect.size.width;
+							ScreenHeight = DeviceHeight = (int)displayRect.size.height;
+							CreationParams.WindowSize.set(ScreenWidth, ScreenHeight);
+							result = true;
+						}
+					}
+					if (!result)
+						CGReleaseAllDisplays();
+				}
 			}
 		}
 	}
-	else
+	@catch (NSException *exception)
 	{
-		displaymode = CGDisplayBestModeForParameters(display,CreationParams.Bits,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height,NULL);
-		if (displaymode != NULL)
-		{
-			olddisplaymode = CGDisplayCurrentMode(display);
-			error = CGCaptureAllDisplays();
-			if (error == CGDisplayNoErr)
-			{
-				error = CGDisplaySwitchToMode(display,displaymode);
-				if (error == CGDisplayNoErr)
-				{
-					CGLPixelFormatAttribute	fullattribs[] =
-					{
-						kCGLPFAFullScreen,
-						kCGLPFADisplayMask, (CGLPixelFormatAttribute)CGDisplayIDToOpenGLDisplayMask(display),
-						kCGLPFADoubleBuffer,
-						kCGLPFANoRecovery,
-						kCGLPFAAccelerated,
-						kCGLPFADepthSize, (CGLPixelFormatAttribute)depthSize,
-						kCGLPFAColorSize, (CGLPixelFormatAttribute)CreationParams.Bits,
-						kCGLPFAAlphaSize, (CGLPixelFormatAttribute)alphaSize,
-						kCGLPFASampleBuffers, (CGLPixelFormatAttribute)(CreationParams.AntiAlias?1:0),
-						kCGLPFASamples, (CGLPixelFormatAttribute)CreationParams.AntiAlias,
-						kCGLPFAStencilSize, (CGLPixelFormatAttribute)(CreationParams.Stencilbuffer?1:0),
-						(CGLPixelFormatAttribute)NULL
-					};
-
-					pixelFormat = NULL;
-					numPixelFormats = 0;
-					CGLChoosePixelFormat(fullattribs,&pixelFormat,&numPixelFormats);
-
-					if (pixelFormat != NULL)
-					{
-						CGLCreateContext(pixelFormat,NULL,&CGLContext);
-						CGLDestroyPixelFormat(pixelFormat);
-					}
-
-					if (CGLContext != NULL)
-					{
-						CGLSetFullScreen(CGLContext);
-						displayRect = CGDisplayBounds(display);
-						ScreenWidth = DeviceWidth = (int)displayRect.size.width;
-						ScreenHeight = DeviceHeight = (int)displayRect.size.height;
-						CreationParams.WindowSize.set(ScreenWidth, ScreenHeight);
-						result = true;
-					}
-				}
-				if (!result)
-					CGReleaseAllDisplays();
-			}
-		}
+		// FIXME: cleanup may be needed here
+		result = false;
 	}
 
 	if (result)
