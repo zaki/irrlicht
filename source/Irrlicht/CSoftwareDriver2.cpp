@@ -2625,7 +2625,7 @@ u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Next use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void CBurningVideoDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail)
+void CBurningVideoDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
 	const u32 count = triangles.size();
 	IBurningShader *shader = BurningShader [ ETR_STENCIL_SHADOW ];

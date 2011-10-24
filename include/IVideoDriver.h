@@ -984,7 +984,7 @@ namespace video
 		\param count Amount of triangles in the array.
 		\param zfail If set to true, zfail method is used, otherwise
 		zpass. */
-		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true) =0;
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0) =0;
 
 		//! Fills the stencil shadow with color.
 		/** After the shadow volume has been drawn into the stencil
