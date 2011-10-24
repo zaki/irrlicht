@@ -219,7 +219,7 @@ namespace video
 		virtual void setAmbientLight(const SColorf& color);
 
 		//! Draws a shadow volume into the stencil buffer.
-		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail);
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0);
 
 		//! Fills the stencil shadow with color.
 		virtual void drawStencilShadow(bool clearStencilBuffer=false,
@@ -341,7 +341,7 @@ namespace video
 		void setRenderStatesStencilFillMode(bool alpha);
 
 		//! sets the needed renderstates
-		void setRenderStatesStencilShadowMode(bool zfail);
+		void setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisible);
 
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, const video::ITexture* texture);

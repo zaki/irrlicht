@@ -2414,12 +2414,19 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 
 
 //! sets the needed renderstates
-void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail)
+void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisible)
 {
 	if ((CurrentRenderMode != ERM_SHADOW_VOLUME_ZFAIL &&
 		CurrentRenderMode != ERM_SHADOW_VOLUME_ZPASS) ||
 		Transformation3DChanged)
 	{
+		// unset last 3d material
+		if (CurrentRenderMode == ERM_3D &&
+			static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
+		{
+			MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+			ResetRenderStates = true;
+		}
 		// switch back the matrices
 		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)&Matrices[ETS_VIEW]));
 		pID3DDevice->SetTransform(D3DTS_WORLD, (D3DMATRIX*)((void*)&Matrices[ETS_WORLD]));
@@ -2437,53 +2444,37 @@ void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail)
 		pID3DDevice->SetFVF(D3DFVF_XYZ);
 		LastVertexType = (video::E_VERTEX_TYPE)(-1);
 
-		pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
-		pID3DDevice->SetRenderState( D3DRS_STENCILENABLE, TRUE );
-		pID3DDevice->SetRenderState( D3DRS_SHADEMODE, D3DSHADE_FLAT);
-
-		// unset last 3d material
-		if (CurrentRenderMode == ERM_3D &&
-			Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-			MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
-
+		pID3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		pID3DDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+		pID3DDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_FLAT);
 		//pID3DDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
 		//pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+
+		pID3DDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+		pID3DDevice->SetRenderState(D3DRS_STENCILREF, 0x0);
+		pID3DDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff);
+		pID3DDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);
+
+		if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
+			pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0);
+		if ((debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY))
+			pID3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 
 	if (CurrentRenderMode != ERM_SHADOW_VOLUME_ZPASS && !zfail)
 	{
 		// USE THE ZPASS METHOD
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILFUNC, D3DCMP_ALWAYS );
-		pID3DDevice->SetRenderState( D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState( D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState( D3DRS_STENCILPASS, D3DSTENCILOP_INCR );
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILREF, 0x0 );
-		pID3DDevice->SetRenderState( D3DRS_STENCILMASK, 0xffffffff );
-		pID3DDevice->SetRenderState( D3DRS_STENCILWRITEMASK, 0xffffffff );
-
-		pID3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
-		pID3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ZERO );
-		pID3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
 	}
 	else
 	if (CurrentRenderMode != ERM_SHADOW_VOLUME_ZFAIL && zfail)
 	{
 		// USE THE ZFAIL METHOD
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILFUNC, D3DCMP_ALWAYS );
-		pID3DDevice->SetRenderState( D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState( D3DRS_STENCILZFAIL, D3DSTENCILOP_INCR );
-		pID3DDevice->SetRenderState( D3DRS_STENCILPASS, D3DSTENCILOP_KEEP );
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILREF, 0x0 );
-		pID3DDevice->SetRenderState( D3DRS_STENCILMASK, 0xffffffff );
-		pID3DDevice->SetRenderState( D3DRS_STENCILWRITEMASK, 0xffffffff );
-
-		pID3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-		pID3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ZERO );
-		pID3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCR);
+		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
 	}
 
 	CurrentRenderMode = zfail ? ERM_SHADOW_VOLUME_ZFAIL : ERM_SHADOW_VOLUME_ZPASS;
@@ -2509,11 +2500,11 @@ void CD3D9Driver::setRenderStatesStencilFillMode(bool alpha)
 		pID3DDevice->SetRenderState(D3DRS_STENCILREF, 0x1);
 		pID3DDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_LESSEQUAL);
 		//pID3DDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_GREATEREQUAL);
-		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff );
-		pID3DDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff );
+		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff);
+		pID3DDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);
 
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
@@ -2528,7 +2519,7 @@ void CD3D9Driver::setRenderStatesStencilFillMode(bool alpha)
 		{
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
 		else
 		{
@@ -2758,21 +2749,21 @@ const wchar_t* CD3D9Driver::getName() const
 
 
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
-//! this: Frist, draw all geometry. Then use this method, to draw the shadow
+//! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void CD3D9Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail)
+void CD3D9Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
 	const u32 count = triangles.size();
 	if (!Params.Stencilbuffer || !count)
 		return;
 
-	setRenderStatesStencilShadowMode(zfail);
+	setRenderStatesStencilShadowMode(zfail, debugDataVisible);
 
 	if (!zfail)
 	{
 		// ZPASS Method
 
-		// Draw front-side of shadow volume in stencil/z only
+		// Draw front-side of shadow volume in stencil only
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
 		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
@@ -2786,7 +2777,7 @@ void CD3D9Driver::drawStencilShadowVolume(const core::array<core::vector3df>& tr
 	{
 		// ZFAIL Method
 
-		// Draw front-side of shadow volume in stencil/z only
+		// Draw front-side of shadow volume in stencil only
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCR);
 		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));

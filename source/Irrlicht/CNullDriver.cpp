@@ -915,7 +915,7 @@ const wchar_t* CNullDriver::getName() const
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: Frist, draw all geometry. Then use this method, to draw the shadow
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void CNullDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail)
+void CNullDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
 }
 

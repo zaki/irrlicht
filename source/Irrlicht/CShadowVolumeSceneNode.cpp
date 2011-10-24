@@ -292,7 +292,7 @@ void CShadowVolumeSceneNode::render()
 
 	for (u32 i=0; i<ShadowVolumesUsed; ++i)
 	{
-		driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod);
+		driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod, DebugDataVisible);
 	}
 }
 

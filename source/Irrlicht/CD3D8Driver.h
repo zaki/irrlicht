@@ -138,7 +138,7 @@ namespace video
 		//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 		//! this: Frist, draw all geometry. Then use this method, to draw the shadow
 		//! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail);
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0);
 
 		//! Fills the stencil shadow with color. After the shadow volume has been drawn
 		//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
@@ -244,7 +244,7 @@ namespace video
 		void setRenderStatesStencilFillMode(bool alpha);
 
 		//! sets the needed renderstates
-		void setRenderStatesStencilShadowMode(bool zfail);
+		void setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisible);
 
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, const video::ITexture* texture);
