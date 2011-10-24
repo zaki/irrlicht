@@ -768,7 +768,7 @@ bool CIrrDeviceMacOSX::createWindow()
 	}
 	@catch (NSException *exception)
 	{
-		// FIXME: cleanup may be needed here
+		closeDevice();
 		result = false;
 	}
 
