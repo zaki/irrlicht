@@ -52,7 +52,7 @@ class map
 		RBTree* getRightChild() const	{ return RightChild; }
 		RBTree* getParent() const		{ return Parent; }
 
-		ValueTypeRB getValue() const
+		const ValueTypeRB& getValue() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return Value;
@@ -64,7 +64,7 @@ class map
 			return Value;
 		}
 
-		KeyTypeRB getKey() const
+		const KeyTypeRB& getKey() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return Key;
