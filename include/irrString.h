@@ -422,24 +422,24 @@ public:
 
 
 	//! Equality operator
-	bool operator ==(const T* const str) const
+	bool operator==(const T* const str) const
 	{
 		if (!str)
 			return false;
 
 		u32 i;
-		for(i=0; array[i] && str[i]; ++i)
+		for (i=0; array[i] && str[i]; ++i)
 			if (array[i] != str[i])
 				return false;
 
-		return !array[i] && !str[i];
+		return (!array[i] && !str[i]);
 	}
 
 
 	//! Equality operator
-	bool operator ==(const string<T,TAlloc>& other) const
+	bool operator==(const string<T,TAlloc>& other) const
 	{
-		for(u32 i=0; array[i] && other.array[i]; ++i)
+		for (u32 i=0; array[i] && other.array[i]; ++i)
 			if (array[i] != other.array[i])
 				return false;
 
@@ -448,28 +448,28 @@ public:
 
 
 	//! Is smaller comparator
-	bool operator <(const string<T,TAlloc>& other) const
+	bool operator<(const string<T,TAlloc>& other) const
 	{
-		for(u32 i=0; array[i] && other.array[i]; ++i)
+		for (u32 i=0; array[i] && other.array[i]; ++i)
 		{
-			s32 diff = array[i] - other.array[i];
-			if ( diff )
-				return diff < 0;
+			const s32 diff = array[i] - other.array[i];
+			if (diff)
+				return (diff < 0);
 		}
 
-		return used < other.used;
+		return (used < other.used);
 	}
 
 
 	//! Inequality operator
-	bool operator !=(const T* const str) const
+	bool operator!=(const T* const str) const
 	{
 		return !(*this == str);
 	}
 
 
 	//! Inequality operator
-	bool operator !=(const string<T,TAlloc>& other) const
+	bool operator!=(const string<T,TAlloc>& other) const
 	{
 		return !(*this == other);
 	}
