@@ -424,6 +424,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\triangleSelector.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\vectorPositionDimension2d.cpp"
 				>
 			</File>
