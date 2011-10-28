@@ -124,7 +124,8 @@ int main(int argumentCount, char * arguments[])
 	// q3 maps are slow
 	TEST(planeMatrix);
 	TEST(terrainSceneNode);
-	TEST(lightMaps); 
+	TEST(lightMaps);
+	TEST(triangleSelector);
 
 	unsigned int numberOfTests = tests.size();
 	unsigned int testToRun = 0;

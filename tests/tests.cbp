@@ -102,6 +102,7 @@
 		<Unit filename="textureRenderStates.cpp" />
 		<Unit filename="timer.cpp" />
 		<Unit filename="transparentMaterials.cpp" />
+		<Unit filename="triangleSelector.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />
 		<Unit filename="videoDriver.cpp" />
 		<Unit filename="viewPort.cpp" />
