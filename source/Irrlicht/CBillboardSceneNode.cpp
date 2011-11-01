@@ -81,6 +81,7 @@ void CBillboardSceneNode::render()
 		horizontal.set(up.Y,up.X,up.Z);
 	}
 	horizontal.normalize();
+	core::vector3df topHorizontal = horizontal * 0.5f * TopEdgeWidth;
 	horizontal *= 0.5f * Size.Width;
 
 	core::vector3df vertical = horizontal.crossProduct(view);
@@ -92,14 +93,24 @@ void CBillboardSceneNode::render()
 	for (s32 i=0; i<4; ++i)
 		vertices[i].Normal = view;
 
-	vertices[0].Pos = pos + horizontal + vertical;
+	/* Vertices are:
+	3--0
+	| /|
+	|/ |
+	2--1
+	*/
+	vertices[0].Pos = pos + topHorizontal + vertical;
+	vertices[0].Normal = up;
 	vertices[1].Pos = pos + horizontal - vertical;
+	vertices[1].Normal = up;
 	vertices[2].Pos = pos - horizontal - vertical;
-	vertices[3].Pos = pos - horizontal + vertical;
+	vertices[2].Normal = up;
+	vertices[3].Pos = pos - topHorizontal + vertical;
+	vertices[3].Normal = up;
 
 	// draw
 
-	if ( DebugDataVisible & scene::EDS_BBOX )
+	if (DebugDataVisible & scene::EDS_BBOX)
 	{
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		video::SMaterial m;
@@ -128,13 +139,31 @@ void CBillboardSceneNode::setSize(const core::dimension2d<f32>& size)
 {
 	Size = size;
 
-	if (Size.Width == 0.0f)
+	if (core::equals(Size.Width, 0.0f))
 		Size.Width = 1.0f;
+	TopEdgeWidth = Size.Width;
 
-	if (Size.Height == 0.0f )
+	if (core::equals(Size.Height, 0.0f))
 		Size.Height = 1.0f;
 
-	f32 avg = (size.Width + size.Height)/6;
+	const f32 avg = (Size.Width + Size.Height)/6;
+	BBox.MinEdge.set(-avg,-avg,-avg);
+	BBox.MaxEdge.set(avg,avg,avg);
+}
+
+
+void CBillboardSceneNode::setWidths(f32 bottomEdgeWidth, f32 topEdgeWidth)
+{
+	Size.Width = bottomEdgeWidth;
+	TopEdgeWidth = topEdgeWidth;
+ 
+	if (core::equals(Size.Width, 0.f))
+		Size.Width = 1.0f;
+
+	if (core::equals(TopEdgeWidth, 0.f))
+		TopEdgeWidth = 1.0f;
+
+	const f32 avg = (core::max_(Size.Width,TopEdgeWidth) + Size.Height)/6;
 	BBox.MinEdge.set(-avg,-avg,-avg);
 	BBox.MaxEdge.set(avg,avg,avg);
 }
@@ -160,12 +189,22 @@ const core::dimension2d<f32>& CBillboardSceneNode::getSize() const
 }
 
 
+//! Gets the widths of the top and bottom edges of the billboard.
+void CBillboardSceneNode::getWidths(f32& bottomEdgeWidth,
+		f32& topEdgeWidth) const
+{
+	bottomEdgeWidth = Size.Width;
+	topEdgeWidth = TopEdgeWidth;
+}
+ 
+
 //! Writes attributes of the scene node.
 void CBillboardSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	IBillboardSceneNode::serializeAttributes(out, options);
 
 	out->addFloat("Width", Size.Width);
+	out->addFloat("TopEdgeWidth", TopEdgeWidth);
 	out->addFloat("Height", Size.Height);
 	out->addColor ("Shade_Top", vertices[1].Color );
 	out->addColor ("Shade_Down", vertices[0].Color );
@@ -179,18 +218,24 @@ void CBillboardSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttrib
 
 	Size.Width = in->getAttributeAsFloat("Width");
 	Size.Height = in->getAttributeAsFloat("Height");
-	vertices[1].Color = in->getAttributeAsColor ( "Shade_Top" );
-	vertices[0].Color = in->getAttributeAsColor ( "Shade_Down" );
-	vertices[2].Color = vertices[1].Color;
-	vertices[3].Color = vertices[0].Color;
 
 	setSize(Size);
+	if (in->existsAttribute("TopEdgeWidth"))
+	{
+		TopEdgeWidth = in->getAttributeAsFloat("TopEdgeWidth");
+		if (Size.Width != TopEdgeWidth)
+			setWidths(Size.Width, TopEdgeWidth);
+	}
+	vertices[1].Color = in->getAttributeAsColor("Shade_Top");
+	vertices[0].Color = in->getAttributeAsColor("Shade_Down");
+	vertices[2].Color = vertices[1].Color;
+	vertices[3].Color = vertices[0].Color;
 }
 
 
 //! Set the color of all vertices of the billboard
 //! \param overallColor: the color to set
-void CBillboardSceneNode::setColor(const video::SColor & overallColor)
+void CBillboardSceneNode::setColor(const video::SColor& overallColor)
 {
 	for(u32 vertex = 0; vertex < 4; ++vertex)
 		vertices[vertex].Color = overallColor;
@@ -200,7 +245,8 @@ void CBillboardSceneNode::setColor(const video::SColor & overallColor)
 //! Set the color of the top and bottom vertices of the billboard
 //! \param topColor: the color to set the top vertices
 //! \param bottomColor: the color to set the bottom vertices
-void CBillboardSceneNode::setColor(const video::SColor & topColor, const video::SColor & bottomColor)
+void CBillboardSceneNode::setColor(const video::SColor& topColor,
+		const video::SColor& bottomColor)
 {
 	vertices[0].Color = bottomColor;
 	vertices[1].Color = topColor;
@@ -212,7 +258,8 @@ void CBillboardSceneNode::setColor(const video::SColor & topColor, const video::
 //! Gets the color of the top and bottom vertices of the billboard
 //! \param[out] topColor: stores the color of the top vertices
 //! \param[out] bottomColor: stores the color of the bottom vertices
-void CBillboardSceneNode::getColor(video::SColor & topColor, video::SColor & bottomColor) const
+void CBillboardSceneNode::getColor(video::SColor& topColor,
+		video::SColor& bottomColor) const
 {
 	bottomColor = vertices[0].Color;
 	topColor = vertices[1].Color;
@@ -232,6 +279,7 @@ ISceneNode* CBillboardSceneNode::clone(ISceneNode* newParent, ISceneManager* new
 
 	nb->cloneMembers(this, newManager);
 	nb->Material = Material;
+	nb->TopEdgeWidth = this->TopEdgeWidth;
 
 	if ( newParent )
 		nb->drop();
