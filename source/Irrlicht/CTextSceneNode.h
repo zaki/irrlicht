@@ -115,6 +115,17 @@ namespace scene
 		//! \param bottomColor: stores the color of the bottom vertices
 		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const;
 
+		virtual void setWidths(f32 bottomEdgeWidth, f32 topEdgeWidth)
+		{
+			setSize(core::dimension2df(bottomEdgeWidth, Size.Height));
+		}
+
+		virtual void getWidths(f32& bottomEdgeWidth, f32& topEdgeWidth) const
+		{
+			bottomEdgeWidth = Size.Width;
+			topEdgeWidth = Size.Width;
+		}
+
 	private:
 
 		core::stringw Text;
