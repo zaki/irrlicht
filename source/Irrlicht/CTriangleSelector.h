@@ -8,6 +8,7 @@
 #include "ITriangleSelector.h"
 #include "IMesh.h"
 #include "irrArray.h"
+#include "aabbox3d.h"
 
 namespace irr
 {
@@ -77,6 +78,7 @@ protected:
 
 	ISceneNode* SceneNode;
 	mutable core::array<core::triangle3df> Triangles; // (mutable for CTriangleBBSelector)
+	mutable core::aabbox3df BoundingBox; // Allows for trivial rejection
 
 	IAnimatedMeshSceneNode* AnimatedNode;
 	mutable s32 LastMeshFrame;
