@@ -28,6 +28,9 @@ rem for /F %%i in ('dir ..\..\..\examples\[01]*\main.cpp') DO ..\sed.exe -f tuto
 ..\sed.exe -f tutorials.sed ..\..\..\examples\21.Quake3Explorer\main.cpp >>tut.txt
 ..\sed.exe -f tutorials.sed ..\..\..\examples\22.MaterialViewer\main.cpp >>tut.txt
 ..\sed.exe -f tutorials.sed ..\..\..\examples\23.SMeshHandling\main.cpp >>tut.txt
+..\sed.exe -f tutorials.sed ..\..\..\examples\24.CursorControl\main.cpp >>tut.txt
+..\sed.exe -f tutorials.sed ..\..\..\examples\25.XmlHandling\main.cpp >>tut.txt
+..\sed.exe -f tutorials.sed ..\..\..\examples\26.OcclusionQuery\main.cpp >>tut.txt
 
 ..\doxygen.exe doxygen.cfg
 
