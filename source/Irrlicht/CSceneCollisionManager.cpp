@@ -919,22 +919,23 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root)
 {
 	// check if solution exists
-	f32 determinant = b*b - 4.0f*a*c;
+	const f32 determinant = b*b - 4.0f*a*c;
 
 	// if determinant is negative, no solution
-	if (determinant < 0.0f || a == 0.f ) return false;
+	if (determinant < 0.0f || a == 0.f )
+		return false;
 
 	// calculate two roots: (if det==0 then x1==x2
 	// but lets disregard that slight optimization)
-	// burningwater: sqrt( 0) is an illegal operation.... smth should be done...
 
-	f32 sqrtD = (f32)sqrt(determinant);
-
-	f32 r1 = (-b - sqrtD) / (2*a);
-	f32 r2 = (-b + sqrtD) / (2*a);
+	const f32 sqrtD = sqrtf(determinant);
+	const f32 invDA = core::reciprocal(2*a);
+	f32 r1 = (-b - sqrtD) * invDA;
+	f32 r2 = (-b + sqrtD) * invDA;
 
 	// sort so x1 <= x2
-	if (r1 > r2) { f32 tmp=r2; r2=r1; r1=tmp; }
+	if (r1 > r2)
+		core::swap(r1,r2);
 
 	// get lowest root
 	if (r1 > 0 && r1 < maxR)
