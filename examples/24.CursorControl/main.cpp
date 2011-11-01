@@ -1,4 +1,4 @@
-/** Example 024 Cursor Control
+/** Example 024 CursorControl
 
 Show how to modify cursors and offer some useful tool-functions for creating cursors.
 It can also be used for experiments with the mouse in general.
