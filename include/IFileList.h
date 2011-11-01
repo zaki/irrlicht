@@ -77,7 +77,7 @@ public:
 	//! Add as a file or folder to the list
 	/** \param fullPath The file name including path, from the root of the file list.
 	\param isDirectory True if this is a directory rather than a file.
-	\param offset, The file offset inside an archive
+	\param offset The file offset inside an archive
 	\param size The size of the file in bytes.
 	\param id The ID of the file in the archive which owns it */
 	virtual u32 addItem(const io::path& fullPath, u32 offset, u32 size, bool isDirectory, u32 id=0) = 0;
