@@ -26,7 +26,7 @@ public:
 	//! Returns true if the class might be able to load this file.
 	/** This decision should be based on the file extension (e.g. ".vrml")
 	only.
-	\param fileName Name of the file to test.
+	\param filename Name of the file to test.
 	\return True if the extension is a recognised type. */
 	virtual bool isALoadableFileExtension(const io::path& filename) const = 0;
 
