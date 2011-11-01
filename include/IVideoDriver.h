@@ -979,11 +979,13 @@ namespace video
 		Please note that the code for the opengl version of the method
 		is based on free code sent in by Philipp Dortmann, lots of
 		thanks go to him!
-		\param triangles Pointer to array of 3d vectors, specifying the
-		shadow volume.
-		\param count Amount of triangles in the array.
+		\param triangles Array of 3d vectors, specifying the shadow
+		volume.
 		\param zfail If set to true, zfail method is used, otherwise
-		zpass. */
+		zpass.
+		\param debugDataVisible The debug data that is enabled for this
+		shadow node
+		*/
 		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0) =0;
 
 		//! Fills the stencil shadow with color.
@@ -1091,7 +1093,7 @@ namespace video
 
 		//! Returns light data which was previously set by IVideoDriver::addDynamicLight().
 		/** \param idx Zero based index of the light. Must be 0 or
-		greater and smaller than IVideoDriver()::getDynamicLightCount.
+		greater and smaller than IVideoDriver::getDynamicLightCount.
 		\return Light data. */
 		virtual const SLight& getDynamicLight(u32 idx) const =0;
 

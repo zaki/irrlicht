@@ -885,9 +885,9 @@ public:
 
 
 	//! Returns a substring
-	/** \param begin: Start of substring.
-	\param length: Length of substring.
-	\param make_lower, copy only lower case */
+	/** \param begin Start of substring.
+	\param length Length of substring.
+	\param make_lower copy only lower case */
 	string<T> subString(u32 begin, s32 length, bool make_lower = false ) const
 	{
 		// if start after string
