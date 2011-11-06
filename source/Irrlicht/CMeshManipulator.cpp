@@ -106,14 +106,15 @@ void recalculateNormalsT(IMeshBuffer* buffer, bool smooth, bool angleWeighted)
 			const core::vector3df& v1 = buffer->getPosition(idx[i+0]);
 			const core::vector3df& v2 = buffer->getPosition(idx[i+1]);
 			const core::vector3df& v3 = buffer->getPosition(idx[i+2]);
-			core::vector3df normal = core::plane3d<f32>(v1, v2, v3).Normal;
+			const core::vector3df normal = core::plane3d<f32>(v1, v2, v3).Normal;
 
+			core::vector3df weight(1.f,1.f,1.f);
 			if (angleWeighted)
-				normal *= getAngleWeight(v1,v2,v3);
+				weight = getAngleWeight(v1,v2,v3);
 
-			buffer->getNormal(idx[i+0]) += normal;
-			buffer->getNormal(idx[i+1]) += normal;
-			buffer->getNormal(idx[i+2]) += normal;
+			buffer->getNormal(idx[i+0]) += weight.X*normal;
+			buffer->getNormal(idx[i+1]) += weight.Y*normal;
+			buffer->getNormal(idx[i+2]) += weight.Z*normal;
 		}
 
 		for ( i = 0; i!= vtxcnt; ++i )
