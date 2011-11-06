@@ -1320,6 +1320,31 @@ void CIrrDeviceMacOSX::initKeycodes()
 	KeyCodes[kVK_ANSI_7] = irr::KEY_KEY_7;
 	KeyCodes[kVK_ANSI_8] = irr::KEY_KEY_8;
 	KeyCodes[kVK_ANSI_9] = irr::KEY_KEY_9;
+
+	KeyCodes[kVK_ANSI_Slash] = irr::KEY_DIVIDE;
+	KeyCodes[kVK_ANSI_Comma] = irr::KEY_COMMA;
+	KeyCodes[kVK_ANSI_Period] = irr::KEY_PERIOD;
+	KeyCodes[kVK_PageUp] = irr::KEY_PRIOR;
+	KeyCodes[kVK_PageDown] = irr::KEY_NEXT;
+
+	KeyCodes[kVK_ANSI_Keypad0] = irr::KEY_NUMPAD0;
+	KeyCodes[kVK_ANSI_Keypad1] = irr::KEY_NUMPAD1;
+	KeyCodes[kVK_ANSI_Keypad2] = irr::KEY_NUMPAD2;
+	KeyCodes[kVK_ANSI_Keypad3] = irr::KEY_NUMPAD3;
+	KeyCodes[kVK_ANSI_Keypad4] = irr::KEY_NUMPAD4;
+	KeyCodes[kVK_ANSI_Keypad5] = irr::KEY_NUMPAD5;
+	KeyCodes[kVK_ANSI_Keypad6] = irr::KEY_NUMPAD6;
+	KeyCodes[kVK_ANSI_Keypad7] = irr::KEY_NUMPAD7;
+	KeyCodes[kVK_ANSI_Keypad8] = irr::KEY_NUMPAD8;
+	KeyCodes[kVK_ANSI_Keypad9] = irr::KEY_NUMPAD9;
+
+	KeyCodes[kVK_ANSI_KeypadDecimal] = irr::KEY_DECIMAL;
+	KeyCodes[kVK_ANSI_KeypadMultiply] = irr::KEY_MULTIPLY;
+	KeyCodes[kVK_ANSI_KeypadPlus] = irr::KEY_PLUS;
+	KeyCodes[kVK_ANSI_KeypadClear] = irr::KEY_OEM_CLEAR;
+	KeyCodes[kVK_ANSI_KeypadDivide] = irr::KEY_DIVIDE;
+	KeyCodes[kVK_ANSI_KeypadEnter] = irr::KEY_RETURN;
+	KeyCodes[kVK_ANSI_KeypadMinus] = irr::KEY_SUBTRACT;
 }
 
 
