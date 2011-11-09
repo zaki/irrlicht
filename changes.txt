@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Add support for bsp brush entities. Written by Hendu.
+
  - Add IGUIComboBox::setMaxSelectionRows and IGUIComboBox::getMaxSelectionRows
 
  - Scenemanager switches from type ESNT_UNKNOWN to type ESNT_SCENE_MANAGER.

@@ -69,6 +69,11 @@ namespace scene
 		//! get's an interface to the entities
 		virtual quake3::tQ3EntityList & getEntityList();
 
+		//! returns the requested brush entity
+		virtual IMesh* getBrushEntityMesh(s32 num) const;
+
+		//! returns the requested brush entity
+		virtual IMesh* getBrushEntityMesh(quake3::IEntity &ent) const;
 
 		//Link to held meshes? ...
 
@@ -116,6 +121,7 @@ namespace scene
 		void constructMesh();
 		void solveTJunction();
 		void loadTextures();
+		scene::SMesh** buildMesh(s32 num);
 
 		struct STexShader
 		{
@@ -372,6 +378,9 @@ namespace scene
 		tBSPFace* Faces;
 		s32 NumFaces;
 
+		tBSPModel* Models;
+		s32 NumModels;
+
 		tBSPPlane* Planes;
 		s32 NumPlanes;
 
@@ -389,6 +398,8 @@ namespace scene
 
 		tBSPBrush* Brushes;
 		s32 NumBrushes;
+
+		scene::SMesh** BrushEntities;
 
 		scene::SMesh* Mesh[quake3::E_Q3_MESH_SIZE];
 		video::IVideoDriver* Driver;
@@ -452,6 +463,7 @@ namespace scene
 		};
 
 		void cleanMeshes();
+		void cleanMesh(SMesh *m, const bool texture0important = false);
 		void cleanLoader ();
 		void calcBoundingBoxes();
 		c8 buf[128];
