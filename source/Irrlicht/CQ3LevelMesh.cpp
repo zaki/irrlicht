@@ -1812,7 +1812,7 @@ void CQ3LevelMesh::cleanMesh(SMesh *m, const bool texture0important)
 
 	u32 i = 0;
 	s32 blockstart = -1;
-	s32 blockcount;
+	s32 blockcount = 0;
 
 	while( i < m->MeshBuffers.size())
 	{
