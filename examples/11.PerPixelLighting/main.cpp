@@ -379,7 +379,7 @@ int main()
 	anim->drop();
 
 	// attach billboard to the light
-	scene::ISceneNode* bill =
+	scene::IBillboardSceneNode* bill =
 		smgr->addBillboardSceneNode(light1, core::dimension2d<f32>(60, 60));
 
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
