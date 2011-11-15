@@ -29,11 +29,12 @@ public:
 	//! Sets the size of the billboard, making it rectangular.
 	virtual void setSize(const core::dimension2d<f32>& size) = 0;
 
-	//! Sets the widths of the bottom and top edges of the billboard independently.
-	/** \param[in] startEdgeWidth The width of the start (bottom) edge of the billboard.
-	\param[in] endEdgeWidth   The width of the end (top) edge of the billboard.
+	//! Sets the size of the billboard with independent widths of the bottom and top edges.
+	/** \param[in] height The height of the billboard.
+	\param[in] bottomEdgeWidth The width of the bottom edge of the billboard.
+	\param[in] topEdgeWidth The width of the top edge of the billboard.
 	*/
-	virtual void setWidths(f32 startEdgeWidth, f32 endEdgeWidth) = 0;
+	virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth) = 0;
 
 	//! Returns the size of the billboard.
 	/** This will return the width of the bottom edge of the billboard.
@@ -42,11 +43,12 @@ public:
 	*/
 	virtual const core::dimension2d<f32>& getSize() const = 0;
 
-	//! Gets the widths of the top and bottom edges of the billboard.
-	/** \param[out] startEdgeWidth The width of the start (bottom) edge of the billboard.
-	\param[out] endEdgeWidth   The width of the end (top) edge of the billboard.
+	//! Gets the size of the the billboard and handles independent top and bottom edge widths correctly.
+	/** \param[out] height The height of the billboard.
+	\param[out] bottomEdgeWidth The width of the bottom edge of the billboard.
+	\param[out] topEdgeWidth The width of the top edge of the billboard.
 	*/
-	virtual void getWidths(f32& startEdgeWidth, f32& endEdgeWidth) const =0;
+	virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const =0;
 
 	//! Set the color of all vertices of the billboard
 	/** \param[in] overallColor Color to set */
