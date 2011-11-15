@@ -152,16 +152,19 @@ void CBillboardSceneNode::setSize(const core::dimension2d<f32>& size)
 }
 
 
-void CBillboardSceneNode::setWidths(f32 bottomEdgeWidth, f32 topEdgeWidth)
+void CBillboardSceneNode::setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth)
 {
-	Size.Width = bottomEdgeWidth;
+	Size.set(bottomEdgeWidth, height);
 	TopEdgeWidth = topEdgeWidth;
  
-	if (core::equals(Size.Width, 0.f))
-		Size.Width = 1.0f;
+	if (core::equals(Size.Height, 0.0f))
+		Size.Height = 1.0f;
 
-	if (core::equals(TopEdgeWidth, 0.f))
+	if (core::equals(Size.Width, 0.f) && core::equals(TopEdgeWidth, 0.f))
+	{
+		Size.Width = 1.0f;
 		TopEdgeWidth = 1.0f;
+	}
 
 	const f32 avg = (core::max_(Size.Width,TopEdgeWidth) + Size.Height)/6;
 	BBox.MinEdge.set(-avg,-avg,-avg);
@@ -190,9 +193,10 @@ const core::dimension2d<f32>& CBillboardSceneNode::getSize() const
 
 
 //! Gets the widths of the top and bottom edges of the billboard.
-void CBillboardSceneNode::getWidths(f32& bottomEdgeWidth,
+void CBillboardSceneNode::getSize(f32& height, f32& bottomEdgeWidth,
 		f32& topEdgeWidth) const
 {
+	height = Size.Height;
 	bottomEdgeWidth = Size.Width;
 	topEdgeWidth = TopEdgeWidth;
 }
@@ -206,8 +210,8 @@ void CBillboardSceneNode::serializeAttributes(io::IAttributes* out, io::SAttribu
 	out->addFloat("Width", Size.Width);
 	out->addFloat("TopEdgeWidth", TopEdgeWidth);
 	out->addFloat("Height", Size.Height);
-	out->addColor ("Shade_Top", vertices[1].Color );
-	out->addColor ("Shade_Down", vertices[0].Color );
+	out->addColor("Shade_Top", vertices[1].Color);
+	out->addColor("Shade_Down", vertices[0].Color);
 }
 
 
@@ -219,13 +223,14 @@ void CBillboardSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttrib
 	Size.Width = in->getAttributeAsFloat("Width");
 	Size.Height = in->getAttributeAsFloat("Height");
 
-	setSize(Size);
 	if (in->existsAttribute("TopEdgeWidth"))
 	{
 		TopEdgeWidth = in->getAttributeAsFloat("TopEdgeWidth");
 		if (Size.Width != TopEdgeWidth)
-			setWidths(Size.Width, TopEdgeWidth);
+			setSize(Size.Height, Size.Width, TopEdgeWidth);
 	}
+	else
+		setSize(Size);
 	vertices[1].Color = in->getAttributeAsColor("Shade_Top");
 	vertices[0].Color = in->getAttributeAsColor("Shade_Down");
 	vertices[2].Color = vertices[1].Color;
