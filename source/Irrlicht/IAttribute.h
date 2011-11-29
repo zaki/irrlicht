@@ -14,6 +14,7 @@
 #include "triangle3d.h"
 #include "position2d.h"
 #include "rect.h"
+#include "dimension2d.h"
 #include "matrix4.h"
 #include "quaternion.h"
 #include "plane3d.h"

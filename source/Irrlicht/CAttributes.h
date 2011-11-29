@@ -375,6 +375,32 @@ public:
 	//! Sets an attribute as vector
 	virtual void setAttribute(s32 index, core::vector3df v);
 
+
+	/*
+
+		Vector2d Attribute
+
+	*/
+
+	//! Adds an attribute as 2d vector
+	virtual void addVector2d(const c8* attributeName, core::vector2df value);
+
+	//! Sets a attribute as 2d vector
+	virtual void setAttribute(const c8* attributeName, core::vector2df v);
+
+	//! Gets an attribute as 2d vector
+	//! \param attributeName: Name of the attribute to get.
+	//! \return Returns value of the attribute previously set by setAttribute()
+	virtual core::vector2df getAttributeAsVector2d(const c8* attributeName);
+
+	//! Gets an attribute as 3d vector
+	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	virtual core::vector2df getAttributeAsVector2d(s32 index);
+
+	//! Sets an attribute as vector
+	virtual void setAttribute(s32 index, core::vector2df v);
+
+
 	/*
 
 		Position2d Attribute
@@ -422,6 +448,31 @@ public:
 
 	//! Sets an attribute as rectangle
 	virtual void setAttribute(s32 index, core::rect<s32> v);
+
+
+	/*
+
+		Dimension2d Attribute
+
+	*/
+
+	//! Adds an attribute as dimension2d
+	virtual void addDimension2d(const c8* attributeName, core::dimension2d<u32> value);
+
+	//! Sets an attribute as dimension2d
+	virtual void setAttribute(const c8* attributeName, core::dimension2d<u32> v);
+
+	//! Gets an attribute as dimension2d
+	//! \param attributeName: Name of the attribute to get.
+	//! \return Returns value of the attribute previously set by setAttribute()
+	virtual core::dimension2d<u32> getAttributeAsDimension2d(const c8* attributeName);
+
+	//! Gets an attribute as dimension2d
+	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index);
+
+	//! Sets an attribute as dimension2d
+	virtual void setAttribute(s32 index, core::dimension2d<u32> v);
 
 
 	/*
