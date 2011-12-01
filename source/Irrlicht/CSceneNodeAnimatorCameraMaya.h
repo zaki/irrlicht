@@ -80,29 +80,27 @@ namespace scene
 
 		void allKeysUp();
 		void animate();
-		bool isMouseKeyDown(s32 key);
+		bool isMouseKeyDown(s32 key) const;
 
 		bool MouseKeys[3];
 
 		gui::ICursorControl *CursorControl;
-		core::vector3df Pos;
+		scene::ICameraSceneNode* OldCamera;
+		core::vector3df OldTarget;
+		core::vector3df LastCameraTarget;	// to find out if the camera target was moved outside this animator
+		core::position2df RotateStart;
+		core::position2df ZoomStart;
+		core::position2df TranslateStart;
+		core::position2df MousePos;
+		f32 ZoomSpeed;
+		f32 RotateSpeed;
+		f32 TranslateSpeed;
+		f32 CurrentZoom;
+		f32 RotX, RotY;
 		bool Zooming;
 		bool Rotating;
 		bool Moving;
 		bool Translating;
-		f32 ZoomSpeed;
-		f32 RotateSpeed;
-		f32 TranslateSpeed;
-		core::position2df RotateStart;
-		core::position2df ZoomStart;
-		core::position2df TranslateStart;
-		f32 CurrentZoom;
-		f32 RotX, RotY;
-		core::vector3df OldTarget;
-		core::vector3df LastCameraTarget;	// to find out if the camera target was moved outside this animator
-		scene::ICameraSceneNode* OldCamera;
-
-		core::position2df MousePos;
 	};
 
 } // end namespace scene

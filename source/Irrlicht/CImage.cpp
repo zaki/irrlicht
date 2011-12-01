@@ -408,11 +408,10 @@ void CImage::fill(const SColor &color)
 			return;
 		}
 		break;
+		default:
+		// TODO: Handle other formats
+			return;
 	}
-	if (Format != ECF_A1R5G5B5 && Format != ECF_R5G6B5 &&
-			Format != ECF_A8R8G8B8)
-		return;
-
 	memset32( Data, c, getImageDataSizeInBytes() );
 }
 
