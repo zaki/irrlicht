@@ -903,7 +903,7 @@ class map
 
 		while(pNode!=0)
 		{
-			KeyType key(pNode->getKey());
+			const KeyType& key=pNode->getKey();
 
 			if (keyToFind == key)
 				return pNode;
@@ -1031,10 +1031,10 @@ class map
 		else
 		{
 			Node* pNode = Root;
-			KeyType keyNew = newNode->getKey();
+			const KeyType& keyNew = newNode->getKey();
 			while (pNode)
 			{
-				KeyType key(pNode->getKey());
+				const KeyType& key=pNode->getKey();
 
 				if (keyNew == key)
 				{
