@@ -81,7 +81,7 @@ protected:
 	mutable core::aabbox3df BoundingBox; // Allows for trivial rejection
 
 	IAnimatedMeshSceneNode* AnimatedNode;
-	mutable s32 LastMeshFrame;
+	mutable u32 LastMeshFrame;
 };
 
 } // end namespace scene
