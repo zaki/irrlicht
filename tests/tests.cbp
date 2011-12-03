@@ -44,6 +44,7 @@
 		<Unit filename="anti-aliasing.cpp" />
 		<Unit filename="archiveReader.cpp" />
 		<Unit filename="b3dAnimation.cpp" />
+		<Unit filename="billboards.cpp" />
 		<Unit filename="burningsVideo.cpp" />
 		<Unit filename="collisionResponseAnimator.cpp" />
 		<Unit filename="color.cpp" />
