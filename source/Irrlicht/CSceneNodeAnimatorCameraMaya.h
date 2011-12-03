@@ -28,8 +28,8 @@ namespace scene
 	{
 	public:
 		//! Constructor
-		CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor, f32 rotateSpeed = -1500.0f, 
-			f32 zoomSpeed = 200.0f, f32 translationSpeed = 1500.0f);
+		CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor, f32 rotateSpeed = -1500.f, 
+			f32 zoomSpeed = 200.f, f32 translationSpeed = 1500.f, f32 distance=70.f);
 
 		//! Destructor
 		virtual ~CSceneNodeAnimatorCameraMaya();
@@ -57,6 +57,12 @@ namespace scene
 
 		//! Set the zoom speed
 		virtual void setZoomSpeed(f32 zoomSpeed);
+
+		//! Returns the current distance, i.e. orbit radius
+		virtual f32 getDistance() const;
+
+		//! Set the distance
+		virtual void setDistance(f32 distance);
 
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const
