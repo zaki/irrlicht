@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\billboards.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\burningsVideo.cpp"
 				>
 			</File>

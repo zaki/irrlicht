@@ -90,6 +90,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
 	TEST(burningsVideo);
+	TEST(billboards);
 	TEST(createImage);
 	TEST(cursorSetVisible);
 	TEST(flyCircleAnimator);
