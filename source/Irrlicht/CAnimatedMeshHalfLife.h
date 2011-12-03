@@ -539,7 +539,7 @@ namespace scene
 		IBodyList BodyList;
 
 		//! return a Mesh per frame
-		SMesh MeshIPol;
+		SMesh* MeshIPol;
 
 		ISceneManager *SceneManager;
 
@@ -559,6 +559,7 @@ namespace scene
 		u8 BoneController[4 + 1 ]; // bone controllers + mouth position
 		u8 Blending[2]; // animation blending
 
+		vec4_hl BoneAdj;
 		f32 SetController( s32 controllerIndex, f32 value );
 
 		u32 SkinGroupSelection; // skin group selection
@@ -574,7 +575,6 @@ namespace scene
 		void slerpBones( vec4_hl q1[], vec3_hl pos1[], vec4_hl q2[], vec3_hl pos2[], f32 s );
 		void calcRotations ( vec3_hl *pos, vec4_hl *q, SHalflifeSequence *seq, SHalflifeAnimOffset *anim, f32 f );
 
-		vec4_hl BoneAdj;
 		void calcBoneAdj();
 		void calcBoneQuaternion(const s32 frame, const SHalflifeBone *bone, SHalflifeAnimOffset *anim, const u32 j, f32& angle1, f32& angle2) const;
 		void calcBonePosition(const s32 frame, f32 s, const SHalflifeBone *bone, SHalflifeAnimOffset *anim, f32 *pos ) const;
