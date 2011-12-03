@@ -139,9 +139,9 @@ namespace scene
 		//! Adds a camera scene node which is able to be controlle with the mouse similar
 		//! like in the 3D Software Maya by Alias Wavefront.
 		//! The returned pointer must not be dropped.
-		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
-			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
-			f32 translationSpeed = 1500.0f, s32 id=-1,
+		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent=0,
+			f32 rotateSpeed=-1500.f, f32 zoomSpeed=200.f,
+			f32 translationSpeed=1500.f, s32 id=-1, f32 distance=70.f,
 			bool makeActive=true);
 
 		//! Adds a camera scene node which is able to be controled with the mouse and keys

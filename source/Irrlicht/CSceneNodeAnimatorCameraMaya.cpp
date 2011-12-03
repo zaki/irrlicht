@@ -14,10 +14,11 @@ namespace scene
 {
 
 //! constructor
-CSceneNodeAnimatorCameraMaya::CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor, f32 rotate, f32 zoom, f32 translate)
+CSceneNodeAnimatorCameraMaya::CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor,
+	f32 rotateSpeed, f32 zoomSpeed, f32 translateSpeed, f32 distance)
 	: CursorControl(cursor), OldCamera(0), MousePos(0.5f, 0.5f),
-	ZoomSpeed(zoom), RotateSpeed(rotate), TranslateSpeed(translate),
-	CurrentZoom(70.0f), RotX(0.0f), RotY(0.0f),
+	ZoomSpeed(zoomSpeed), RotateSpeed(rotateSpeed), TranslateSpeed(translateSpeed),
+	CurrentZoom(distance), RotX(0.0f), RotY(0.0f),
 	Zooming(false), Rotating(false), Moving(false), Translating(false)
 {
 	#ifdef _DEBUG
@@ -269,6 +270,13 @@ void CSceneNodeAnimatorCameraMaya::setZoomSpeed(f32 speed)
 }
 
 
+//! Set the distance
+void CSceneNodeAnimatorCameraMaya::setDistance(f32 distance)
+{
+	CurrentZoom=distance;
+}
+
+		
 //! Gets the rotation speed
 f32 CSceneNodeAnimatorCameraMaya::getRotateSpeed() const
 {
@@ -287,6 +295,13 @@ f32 CSceneNodeAnimatorCameraMaya::getMoveSpeed() const
 f32 CSceneNodeAnimatorCameraMaya::getZoomSpeed() const
 {
 	return ZoomSpeed;
+}
+
+
+//! Returns the current distance, i.e. orbit radius
+f32 CSceneNodeAnimatorCameraMaya::getDistance() const
+{
+	return CurrentZoom;
 }
 
 
