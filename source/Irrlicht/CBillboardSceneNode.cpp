@@ -100,13 +100,9 @@ void CBillboardSceneNode::render()
 	2--1
 	*/
 	vertices[0].Pos = pos + topHorizontal + vertical;
-	vertices[0].Normal = up;
 	vertices[1].Pos = pos + horizontal - vertical;
-	vertices[1].Normal = up;
 	vertices[2].Pos = pos - horizontal - vertical;
-	vertices[2].Normal = up;
 	vertices[3].Pos = pos - topHorizontal + vertical;
-	vertices[3].Normal = up;
 
 	// draw
 
