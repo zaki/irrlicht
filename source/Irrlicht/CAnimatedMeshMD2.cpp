@@ -219,7 +219,7 @@ static const SMD2AnimationType MD2AnimationTypeList[21] =
 
 //! constructor
 CAnimatedMeshMD2::CAnimatedMeshMD2()
-: InterpolationBuffer(0), FrameList(0), FrameCount(0)
+	: InterpolationBuffer(0), FrameList(0), FrameCount(0), FramesPerSecond((f32)(MD2AnimationTypeList[0].fps << MD2_FRAME_SHIFT))
 {
 	#ifdef _DEBUG
 	IAnimatedMesh::setDebugName("CAnimatedMeshMD2 IAnimatedMesh");
@@ -455,4 +455,3 @@ const c8* CAnimatedMeshMD2::getAnimationName(s32 nr) const
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_MD2_LOADER_
-

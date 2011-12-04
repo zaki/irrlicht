@@ -200,7 +200,7 @@ IAnimatedMesh* CHalflifeMDLMeshFileLoader::createMesh(io::IReadFile* file)
 //! Constructor
 CAnimatedMeshHalfLife::CAnimatedMeshHalfLife()
 	: FrameCount(0), MeshIPol(0), SceneManager(0), Header(0), TextureHeader(0),
-	OwnTexModel(false), SequenceIndex(0), CurrentFrame(0),
+	OwnTexModel(false), SequenceIndex(0), CurrentFrame(0), FramesPerSecond(25.f),
 	SkinGroupSelection(0)
 #ifdef HL_TEXTURE_ATLAS
 	, TextureMaster(0)
