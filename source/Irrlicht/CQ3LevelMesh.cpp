@@ -28,10 +28,11 @@ namespace scene
 CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr,
 				const Q3LevelLoadParameter &loadParam)
 	: LoadParam(loadParam), Textures(0), NumTextures(0), LightMaps(0), NumLightMaps(0),
-	Vertices(0), NumVertices(0), Faces(0), NumFaces(0),	Models(0), NumModels(0),
+	Vertices(0), NumVertices(0), Faces(0), NumFaces(0), Models(0), NumModels(0),
 	Planes(0), NumPlanes(0), Nodes(0), NumNodes(0), Leafs(0), NumLeafs(0),
 	LeafFaces(0), NumLeafFaces(0), MeshVerts(0), NumMeshVerts(0),
-	Brushes(0), NumBrushes(0), BrushEntities(0), FileSystem(fs), SceneManager(smgr)
+	Brushes(0), NumBrushes(0), BrushEntities(0), FileSystem(fs),
+	SceneManager(smgr), FramesPerSecond(25.f)
 {
 	#ifdef _DEBUG
 	IReferenceCounted::setDebugName("CQ3LevelMesh");

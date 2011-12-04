@@ -522,6 +522,21 @@ namespace scene
 		//! set user axis aligned bounding box
 		virtual void setBoundingBox(const core::aabbox3df& box);
 
+		//! Gets the default animation speed of the animated mesh.
+		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
+		virtual f32 getAnimationSpeed() const
+		{
+			return FramesPerSecond;
+		}
+
+		//! Gets the frame count of the animated mesh.
+		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
+		The actual speed is set in the scene node the mesh is instantiated in.*/
+		virtual void setAnimationSpeed(f32 fps)
+		{
+			FramesPerSecond=fps;
+		}
+
 		//! Get the Animation List
 		virtual IAnimationList* getAnimList () { return &AnimList; }
 
@@ -554,6 +569,7 @@ namespace scene
 
 		u32 SequenceIndex;	// sequence index
 		f32 CurrentFrame;	// Current Frame
+		f32 FramesPerSecond;
 
 		#define MOUTH_CONTROLLER	4
 		u8 BoneController[4 + 1 ]; // bone controllers + mouth position

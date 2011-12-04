@@ -403,6 +403,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 	if (framesPerSecond<1.f)
 		framesPerSecond=1.f;
+	AnimatedMesh->setAnimationSpeed(framesPerSecond);
 
 // ignore, calculated inside SkinnedMesh
 //	s32 frameCount = *(int*)pPtr;

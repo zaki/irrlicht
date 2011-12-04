@@ -38,6 +38,21 @@ namespace scene
 		//! is 1, it is a static (=non animated) mesh.
 		virtual u32 getFrameCount() const;
 
+		//! Gets the default animation speed of the animated mesh.
+		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
+		virtual f32 getAnimationSpeed() const
+		{
+			return FramesPerSecond;
+		}
+
+		//! Gets the frame count of the animated mesh.
+		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
+		The actual speed is set in the scene node the mesh is instantiated in.*/
+		virtual void setAnimationSpeed(f32 fps)
+		{
+			FramesPerSecond=fps;
+		}
+
 		//! returns the animated mesh based on a detail level. 0 is the
 		//! lowest, 255 the highest detail. Note, that some Meshes will
 		//! ignore the detail level.
@@ -49,7 +64,6 @@ namespace scene
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 		virtual void setBoundingBox( const core::aabbox3df& box);
-
 
 		//! Returns the type of the animated mesh.
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
@@ -467,6 +481,7 @@ namespace scene
 		void cleanLoader ();
 		void calcBoundingBoxes();
 		c8 buf[128];
+		f32 FramesPerSecond;
 	};
 
 } // end namespace scene
