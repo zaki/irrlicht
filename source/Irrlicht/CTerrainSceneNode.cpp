@@ -565,23 +565,23 @@ namespace scene
 	{
 		if (!IsVisible || !SceneManager->getActiveCamera())
 			return;
-    
-    SceneManager->registerNodeForRendering(this);
-    
-    preRenderCalculationsIfNeeded();
-    
-    // Do Not call ISceneNode::OnRegisterSceneNode(), this node should have no children (luke: is this comment still true, as ISceneNode::OnRegisterSceneNode() is called?)
-    
+
+		SceneManager->registerNodeForRendering(this);
+
+		preRenderCalculationsIfNeeded();
+
+		// Do Not call ISceneNode::OnRegisterSceneNode(), this node should have no children (luke: is this comment still true, as ISceneNode::OnRegisterSceneNode() is called?)
+
 		ISceneNode::OnRegisterSceneNode();
 		ForceRecalculation = false;
 	}
-  
-  void CTerrainSceneNode::preRenderCalculationsIfNeeded()
-  {
-    scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
-		if(!camera)
+
+	void CTerrainSceneNode::preRenderCalculationsIfNeeded()
+	{
+		scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
+		if (!camera)
 			return;
-    
+
 		// Determine the camera rotation, based on the camera direction.
 		const core::vector3df cameraPosition = camera->getAbsolutePosition();
 		const core::vector3df cameraRotation = core::line3d<f32>(cameraPosition, camera->getTarget()).getVector().getHorizontalAngle();
@@ -607,30 +607,27 @@ namespace scene
 				}
 			}
 		}
-		
-    //we need to redo calculations...
-    
+
+		//we need to redo calculations...
+
 		OldCameraPosition = cameraPosition;
 		OldCameraRotation = cameraRotation;
 		OldCameraUp = cameraUp;
 		OldCameraFOV = CameraFOV;
-    
-    
-    preRenderLODCalculations();
+
+		preRenderLODCalculations();
 		preRenderIndicesCalculations();
-    
-    
-  }
-  
+	}
+
 	void CTerrainSceneNode::preRenderLODCalculations()
 	{
-    scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
-    
-    if(!camera)
+		scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
+
+		if (!camera)
 			return;
-    
-    const core::vector3df cameraPosition = camera->getAbsolutePosition();
-    
+
+		const core::vector3df cameraPosition = camera->getAbsolutePosition();
+
 		const SViewFrustum* frustum = camera->getViewFrustum();
 
 		// Determine each patches LOD based on distance from camera (and whether or not they are in
@@ -640,22 +637,15 @@ namespace scene
 		{
 			if (frustum->getBoundingBox().intersectsWithBox(TerrainData.Patches[j].BoundingBox))
 			{
-				const f32 distance = (cameraPosition.X - TerrainData.Patches[j].Center.X) * (cameraPosition.X - TerrainData.Patches[j].Center.X) +
-					(cameraPosition.Y - TerrainData.Patches[j].Center.Y) * (cameraPosition.Y - TerrainData.Patches[j].Center.Y) +
-					(cameraPosition.Z - TerrainData.Patches[j].Center.Z) * (cameraPosition.Z - TerrainData.Patches[j].Center.Z);
+				const f32 distance = cameraPosition.getDistanceFromSQ(TerrainData.Patches[j].Center);
 
-				for (s32 i = TerrainData.MaxLOD - 1; i >= 0; --i)
+				TerrainData.Patches[j].CurrentLOD = 0;
+				for (s32 i = TerrainData.MaxLOD - 1; i>0; --i)
 				{
 					if (distance >= TerrainData.LODDistanceThreshold[i])
 					{
 						TerrainData.Patches[j].CurrentLOD = i;
 						break;
-					}
-					//else if (i == 0)
-					{
-						// If we've turned off a patch from viewing, because of the frustum, and now we turn around and it's
-						// too close, we need to turn it back on, at the highest LOD. The if above doesn't catch this.
-						TerrainData.Patches[j].CurrentLOD = 0;
 					}
 				}
 			}
@@ -1139,8 +1129,8 @@ namespace scene
 					mb->getVertexBuffer()[x + yd].Pos.Y =
 						(mb->getVertexBuffer()[x-1 + yd].Pos.Y + //left
 						mb->getVertexBuffer()[x+1 + yd].Pos.Y + //right
-						mb->getVertexBuffer()[x   + yd - TerrainData.Size].Pos.Y + //above
-						mb->getVertexBuffer()[x   + yd + TerrainData.Size].Pos.Y) * 0.25f; //below
+						mb->getVertexBuffer()[x + yd - TerrainData.Size].Pos.Y + //above
+						mb->getVertexBuffer()[x + yd + TerrainData.Size].Pos.Y) * 0.25f; //below
 				}
 				yd += TerrainData.Size;
 			}
