@@ -496,6 +496,24 @@ public:
 		return v;
 	}
 
+	virtual core::vector2df getVector2d()
+	{
+		core::vector2df v;
+
+		if (IsFloat)
+		{
+			v.X = Count > 0 ? ValueF[0] : 0;
+			v.Y = Count > 1 ? ValueF[1] : 0;
+		}
+		else
+		{
+			v.X = (f32)(Count > 0 ? ValueI[0] : 0);
+			v.Y = (f32)(Count > 1 ? ValueI[1] : 0);
+		}
+
+		return v;
+	}
+
 	virtual video::SColorf getColorf()
 	{
 		video::SColorf c;
