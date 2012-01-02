@@ -210,6 +210,15 @@ namespace video
 		EPO_FRONT=1
 	};
 
+	//! Names for polygon offset direction
+	const c8* const PolygonOffsetDirectionNames[] =
+	{
+		"Back",
+		"Front",
+		0
+	};
+
+
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;
 

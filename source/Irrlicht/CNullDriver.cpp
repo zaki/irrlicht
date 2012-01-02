@@ -1833,6 +1833,9 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addBool("UseMipMaps", material.UseMipMaps);
 	attr->addInt("AntiAliasing", material.AntiAliasing);
 	attr->addInt("ColorMask", material.ColorMask);
+	attr->addInt("ColorMaterial", material.ColorMaterial);
+	attr->addInt("PolygonOffsetFactor", material.PolygonOffsetFactor);
+	attr->addEnum("PolygonOffsetDirection", material.PolygonOffsetDirection, video::PolygonOffsetDirectionNames);
 
 	prefix = "BilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
@@ -1904,6 +1907,12 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.AntiAliasing = attr->getAttributeAsInt("AntiAliasing");
 	if (attr->existsAttribute("ColorMask"))
 		outMaterial.ColorMask = attr->getAttributeAsInt("ColorMask");
+	if (attr->existsAttribute("ColorMaterial"))
+		outMaterial.ColorMaterial = attr->getAttributeAsInt("ColorMaterial");
+	if (attr->existsAttribute("PolygonOffsetFactor"))
+		outMaterial.PolygonOffsetFactor = attr->getAttributeAsInt("PolygonOffsetFactor");
+	if (attr->existsAttribute("PolygonOffsetDirection"))
+		outMaterial.PolygonOffsetDirection = (video::E_POLYGON_OFFSET)attr->getAttributeAsEnumeration("PolygonOffsetDirection", video::PolygonOffsetDirectionNames);
 	prefix = "BilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_BILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
