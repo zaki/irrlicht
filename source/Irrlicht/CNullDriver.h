@@ -372,6 +372,9 @@ namespace video
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb);
 
+		//! Draws the normals of a mesh buffer
+		virtual void drawMeshBufferNormals(const scene::IMeshBuffer* mb, f32 length=10.f, SColor color=0xffffffff);
+
 	protected:
 		struct SHWBufferLink
 		{
