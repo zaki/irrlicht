@@ -63,7 +63,7 @@ CTriangleSelector::CTriangleSelector(IAnimatedMeshSceneNode* node)
 	if (!animatedMesh)
 		return;
 
-	LastMeshFrame = AnimatedNode->getFrameNr();
+	LastMeshFrame = (u32)AnimatedNode->getFrameNr();
 	IMesh* mesh = animatedMesh->getMesh(LastMeshFrame);
 
 	if (mesh)
@@ -137,7 +137,7 @@ void CTriangleSelector::update(void) const
 	if (!AnimatedNode)
 		return; //< harmless no-op
 
-	const u32 currentFrame = AnimatedNode->getFrameNr();
+	const u32 currentFrame = (u32)AnimatedNode->getFrameNr();
 	if (currentFrame == LastMeshFrame)
 		return; //< Nothing to do
 
