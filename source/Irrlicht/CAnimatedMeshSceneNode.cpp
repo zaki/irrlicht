@@ -350,30 +350,15 @@ void CAnimatedMeshSceneNode::render()
 		// show normals
 		if (DebugDataVisible & scene::EDS_NORMALS)
 		{
-			core::vector3df normalizedNormal;
-			const f32 DebugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
-			const video::SColor DebugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+			const f32 debugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
+			const video::SColor debugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+			const u32 count = m->getMeshBufferCount();
 
 			// draw normals
-			for (u32 g=0; g < m->getMeshBufferCount(); ++g)
+			for (u32 g=0; g < count; ++g)
 			{
-				const scene::IMeshBuffer* mb = m->getMeshBuffer(g);
-				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
-				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
-				const bool normalize = mb->getMaterial().NormalizeNormals;
-
-				for (u32 i=0; i != mb->getVertexCount(); ++i)
-				{
-					normalizedNormal = v->Normal;
-					if (normalize)
-						normalizedNormal.normalize();
-
-					driver->draw3DLine(v->Pos, v->Pos + (normalizedNormal * DebugNormalLength), DebugNormalColor);
-
-					v = (const video::S3DVertex*) ( (u8*) v+vSize );
-				}
+				driver->drawMeshBufferNormals(m->getMeshBuffer(g), debugNormalLength, debugNormalColor);
 			}
-			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
 		debug_mat.ZBuffer = video::ECFN_NEVER;
@@ -386,15 +371,13 @@ void CAnimatedMeshSceneNode::render()
 		// show bounding box
 		if (DebugDataVisible & scene::EDS_BBOX_BUFFERS)
 		{
-
 			for (u32 g=0; g< m->getMeshBufferCount(); ++g)
 			{
 				const IMeshBuffer* mb = m->getMeshBuffer(g);
 
 				if (Mesh->getMeshType() == EAMT_SKINNED)
 					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
-				driver->draw3DBox( mb->getBoundingBox(),
-						video::SColor(255,190,128,128) );
+				driver->draw3DBox(mb->getBoundingBox(), video::SColor(255,190,128,128));
 			}
 		}
 
