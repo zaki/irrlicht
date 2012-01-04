@@ -159,38 +159,10 @@ void CSkyDomeSceneNode::render()
 
 		if ( DebugDataVisible & scene::EDS_NORMALS )
 		{
-			IAnimatedMesh * arrow = SceneManager->addArrowMesh (
-					"__debugnormal2", 0xFFECEC00,
-					0xFF999900, 4, 8, 1.f * 40.f, 0.6f * 40.f, 0.05f * 40.f, 0.3f * 40.f);
-			if ( 0 == arrow )
-			{
-				arrow = SceneManager->getMesh ( "__debugnormal2" );
-			}
-			IMesh *mesh = arrow->getMesh(0);
-
-			// find a good scaling factor
-			core::matrix4 m2;
-
 			// draw normals
-			const scene::IMeshBuffer* mb = Buffer;
-			const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
-			const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
-			for ( u32 i=0; i != mb->getVertexCount(); ++i )
-			{
-				// align to v->Normal
-				core::quaternion quatRot(v->Normal.X, 0.f, -v->Normal.X, 1+v->Normal.Y);
-				quatRot.normalize();
-				quatRot.getMatrix(m2, v->Pos);
-
-				m2 = AbsoluteTransformation * m2;
-
-				driver->setTransform(video::ETS_WORLD, m2);
-				for (u32 a = 0; a != mesh->getMeshBufferCount(); ++a)
-					driver->drawMeshBuffer(mesh->getMeshBuffer(a));
-
-				v = (const video::S3DVertex*) ( (u8*) v + vSize );
-			}
-			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+			const f32 debugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
+			const video::SColor debugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+			driver->drawMeshBufferNormals(Buffer, debugNormalLength, debugNormalColor);
 		}
 
 		// show mesh
