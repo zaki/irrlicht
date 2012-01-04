@@ -1015,8 +1015,15 @@ namespace video
 			video::SColor rightDownEdge = video::SColor(255,0,0,0)) =0;
 
 		//! Draws a mesh buffer
-		/** \param mb Buffer to draw; */
+		/** \param mb Buffer to draw */
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb) =0;
+
+		//! Draws normals of a mesh buffer
+		/** \param mb Buffer to draw the normals of
+		\param length length scale factor of the normals
+		\param color Color the normals are rendered with
+		*/
+		virtual void drawMeshBufferNormals(const scene::IMeshBuffer* mb, f32 length=10.f, SColor color=0xffffffff) =0;
 
 		//! Sets the fog mode.
 		/** These are global values attached to each 3d object rendered,

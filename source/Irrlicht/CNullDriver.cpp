@@ -1520,6 +1520,24 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 }
 
 
+//! Draws the normals of a mesh buffer
+void CNullDriver::drawMeshBufferNormals(const scene::IMeshBuffer* mb, f32 length, SColor color)
+{
+	const u32 count = mb->getVertexCount();
+	const bool normalize = mb->getMaterial().NormalizeNormals;
+
+	for (u32 i=0; i < count; ++i)
+	{
+		core::vector3df normalizedNormal = mb->getNormal(i);
+		if (normalize)
+			normalizedNormal.normalize();
+
+		const core::vector3df& pos = mb->getPosition(i);
+		draw3DLine(pos, pos + (normalizedNormal * length), color);
+	}
+}
+
+
 CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
 {
 	if (!mb || !isHardwareBufferRecommend(mb))
