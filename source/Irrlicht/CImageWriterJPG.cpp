@@ -121,6 +121,10 @@ static bool writeJPEGFile(io::IWriteFile* file, IImage* image, u32 quality)
 		case ECF_R5G6B5:
 			format = CColorConverter::convert_R5G6B5toR8G8B8;
 			break;
+#ifndef _DEBUG
+		default:
+			break;
+#endif
 	}
 
 	// couldn't find a color converter
