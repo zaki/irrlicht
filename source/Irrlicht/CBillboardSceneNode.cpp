@@ -84,6 +84,7 @@ void CBillboardSceneNode::render()
 	core::vector3df topHorizontal = horizontal * 0.5f * TopEdgeWidth;
 	horizontal *= 0.5f * Size.Width;
 
+	// pointing down!
 	core::vector3df vertical = horizontal.crossProduct(view);
 	vertical.normalize();
 	vertical *= 0.5f * Size.Height;
@@ -94,15 +95,15 @@ void CBillboardSceneNode::render()
 		vertices[i].Normal = view;
 
 	/* Vertices are:
-	3--0
-	| /|
-	|/ |
 	2--1
+	|\ |
+	| \|
+	3--0
 	*/
-	vertices[0].Pos = pos + topHorizontal + vertical;
-	vertices[1].Pos = pos + horizontal - vertical;
-	vertices[2].Pos = pos - horizontal - vertical;
-	vertices[3].Pos = pos - topHorizontal + vertical;
+	vertices[0].Pos = pos + horizontal + vertical;
+	vertices[1].Pos = pos + topHorizontal - vertical;
+	vertices[2].Pos = pos - topHorizontal - vertical;
+	vertices[3].Pos = pos - horizontal + vertical;
 
 	// draw
 
