@@ -184,7 +184,7 @@ namespace video
 		ITexture* Texture;
 
 		//! Texture Clamp Mode
-		/** Values are tkane from E_TEXTURE_CLAMP. */
+		/** Values are taken from E_TEXTURE_CLAMP. */
 		u8 TextureWrapU:4;
 		u8 TextureWrapV:4;
 
