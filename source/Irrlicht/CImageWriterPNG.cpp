@@ -123,8 +123,22 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 				PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	}
 
-	s32 lineWidth=image->getDimension().Width;
-	u8* tmpImage = new u8[image->getDimension().Height*lineWidth*image->getBytesPerPixel()];
+	s32 lineWidth = image->getDimension().Width;
+	switch(image->getColorFormat())
+	{ 	 
+	case ECF_R8G8B8: 	 
+	case ECF_R5G6B5: 	 
+		lineWidth*=3; 	 
+		break; 	 
+	case ECF_A8R8G8B8: 	 
+	case ECF_A1R5G5B5: 	 
+		lineWidth*=4; 	 
+		break;
+	// TODO: Error handling in case of unsupported color format
+	default:
+		break;
+	} 	 
+	u8* tmpImage = new u8[image->getDimension().Height*lineWidth];
 	if (!tmpImage)
 	{
 		os::Printer::log("PNGWriter: Internal PNG create image failure\n", file->getFileName(), ELL_ERROR);
