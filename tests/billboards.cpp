@@ -5,8 +5,10 @@
 
 using namespace irr;
 
-// Test billboards
-bool billboards(void)
+namespace
+{
+// Test billboard sizing
+bool billboardSize(void)
 {
 	// Use EDT_BURNINGSVIDEO since it is not dependent on (e.g.) OpenGL driver versions.
 	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO, core::dimension2d<u32>(160, 120), 32);
@@ -104,5 +106,49 @@ bool billboards(void)
 	device->run();
 	device->drop();
 
+	return result;
+}
+
+// Test billboard orientation
+bool billboardOrientation(void)
+{
+	// Use EDT_BURNINGSVIDEO since it is not dependent on (e.g.) OpenGL driver versions.
+	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO, core::dimension2d<u32>(160, 120), 32);
+	assert(device);
+	if (!device)
+		return false;
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+	scene::ISceneManager * smgr = device->getSceneManager();
+
+	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
+	scene::IBillboardSceneNode* bill = smgr->addBillboardSceneNode(0, core::dimension2df(40,40));
+	bill->setPosition(core::vector3df(0,-15,10));
+	bill->getMaterial(0).Lighting=false;
+	bill->getMaterial(0).setTexture(0, driver->getTexture("../media/fontcourier.bmp"));
+
+	bool result = false;
+
+	device->run();
+	driver->beginScene(true, true, video::SColor(255, 60, 60, 60));
+	smgr->drawAll();
+	driver->endScene();
+
+	result = takeScreenshotAndCompareAgainstReference(driver, "-billboardOrientation.png");
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
+
+} // end anonymous namespace
+
+// Test billboards
+bool billboards(void)
+{
+	bool result = billboardSize();
+	result &= billboardOrientation();
 	return result;
 }
