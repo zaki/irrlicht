@@ -696,7 +696,7 @@ void CGUITreeView::mouseAction( s32 xpos, s32 ypos, bool onlyHover /*= false*/ )
 {
 	IGUITreeViewNode*		oldSelected = Selected;
 	IGUITreeViewNode*		hitNode = 0;
-	s32						selIdx;
+	s32						selIdx=-1;
 	s32						n;
 	IGUITreeViewNode*		node;
 	SEvent					event;
