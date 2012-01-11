@@ -22,7 +22,7 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 : IGUIButton(environment, parent, id, rectangle),
 	SpriteBank(0), OverrideFont(0), Image(0), PressedImage(0),
 	ClickTime(0), IsPushButton(false), Pressed(false),
-	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false)
+	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false), ButtonState(EGBS_BUTTON_UP)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIButton");
@@ -155,6 +155,17 @@ bool CGUIButton::OnEvent(const SEvent& event)
 		{
 			if (event.GUIEvent.Caller == this && !IsPushButton)
 				setPressed(false);
+			ButtonState = EGBS_BUTTON_NOT_FOCUSED;
+		}
+		else if (event.GUIEvent.EventType == EGET_ELEMENT_HOVERED)
+		{
+			if (event.GUIEvent.Caller == this)
+				ButtonState = EGBS_BUTTON_MOUSE_OVER;
+		}
+		else if (event.GUIEvent.EventType == EGET_ELEMENT_LEFT)
+		{
+			if (event.GUIEvent.Caller == this)
+				ButtonState = EGBS_BUTTON_UP;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -245,12 +256,12 @@ void CGUIButton::draw()
 					ImageRect, &AbsoluteClippingRect,
 					0, UseAlphaChannel);
 		}
-		if (SpriteBank && ButtonSprites[EGBS_BUTTON_UP].Index != -1)
+		if (SpriteBank && ButtonSprites[ButtonState].Index != -1)
 		{
 			// draw pressed sprite
-			SpriteBank->draw2DSprite(ButtonSprites[EGBS_BUTTON_UP].Index, spritePos,
-				&AbsoluteClippingRect, ButtonSprites[EGBS_BUTTON_UP].Color, ClickTime, os::Timer::getTime(),
-				ButtonSprites[EGBS_BUTTON_UP].Loop, true);
+			SpriteBank->draw2DSprite(ButtonSprites[ButtonState].Index, spritePos,
+				&AbsoluteClippingRect, ButtonSprites[ButtonState].Color, ClickTime, os::Timer::getTime(),
+				ButtonSprites[ButtonState].Loop, true);
 		}
 	}
 	else
@@ -263,7 +274,7 @@ void CGUIButton::draw()
 			core::position2d<s32> pos = spritePos;
 			pos.X -= PressedImageRect.getWidth() / 2;
 			pos.Y -= PressedImageRect.getHeight() / 2;
-			// patch by Alan Tyndall/Jonas Petersen
+
 			if (Image == PressedImage && PressedImageRect == ImageRect)
 			{
 				pos.X += 1;
@@ -407,6 +418,8 @@ void CGUIButton::setPressed(bool pressed)
 	{
 		ClickTime = os::Timer::getTime();
 		Pressed = pressed;
+		if (Pressed)
+			ButtonState = EGBS_BUTTON_DOWN;
 	}
 }
 
