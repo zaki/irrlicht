@@ -39,7 +39,7 @@ namespace scene
 	VerticesToRender(0), IndicesToRender(0), DynamicSelectorUpdate(false),
 	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(true),
 	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),CameraFOVDelta(0.1f),
-	TCoordScale1(1.0f), TCoordScale2(1.0f), FileSystem(fs)
+	TCoordScale1(1.0f), TCoordScale2(1.0f), SmoothFactor(0), FileSystem(fs)
 	{
 		#ifdef _DEBUG
 		setDebugName("CTerrainSceneNode");
@@ -91,6 +91,7 @@ namespace scene
 		}
 
 		HeightmapFile = file->getFileName();
+		SmoothFactor = smoothFactor;
 
 		// Get the dimension of the heightmap data
 		TerrainData.Size = heightMap->getDimension().Width;
@@ -1398,6 +1399,7 @@ namespace scene
 		out->addString("Heightmap", HeightmapFile.c_str());
 		out->addFloat("TextureScale1", TCoordScale1);
 		out->addFloat("TextureScale2", TCoordScale2);
+		out->addInt("SmoothFactor", SmoothFactor);
 	}
 
 
@@ -1408,6 +1410,7 @@ namespace scene
 		io::path newHeightmap = in->getAttributeAsString("Heightmap");
 		f32 tcoordScale1 = in->getAttributeAsFloat("TextureScale1");
 		f32 tcoordScale2 = in->getAttributeAsFloat("TextureScale2");
+		s32 smoothFactor = in->getAttributeAsInt("SmoothFactor");
 
 		// set possible new heightmap
 
@@ -1416,7 +1419,7 @@ namespace scene
 			io::IReadFile* file = FileSystem->createAndOpenFile(newHeightmap.c_str());
 			if (file)
 			{
-				loadHeightMap(file, video::SColor(255,255,255,255), 0);
+				loadHeightMap(file, video::SColor(255,255,255,255), smoothFactor);
 				file->drop();
 			}
 			else
