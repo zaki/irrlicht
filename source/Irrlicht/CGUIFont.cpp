@@ -265,6 +265,9 @@ bool CGUIFont::loadTexture(video::IImage* image, const io::path& name)
 		image->copyTo(tmpImage);
 		deleteTmpImage=true;
 		break;
+	default:
+		os::Printer::log("Unknown texture format provided for CGUIFont::loadTexture", ELL_ERROR);
+		return false;
 	}
 	readPositions(tmpImage, lowerRightPositions);
 
