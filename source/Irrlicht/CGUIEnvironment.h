@@ -192,6 +192,9 @@ public:
 	//! Returns the element with the focus
 	virtual IGUIElement* getFocus() const;
 
+	//! Returns the element last known to be under the mouse
+	virtual IGUIElement* getHovered() const;
+
 	//! Adds an element for fading in or out.
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1);
 

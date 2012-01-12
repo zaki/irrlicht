@@ -296,6 +296,12 @@ IGUIElement* CGUIEnvironment::getFocus() const
 	return Focus;
 }
 
+//! returns the element last known to be under the mouse cursor
+IGUIElement* CGUIEnvironment::getHovered() const
+{
+	return Hovered;
+}
+
 
 //! removes the focus from an element
 bool CGUIEnvironment::removeFocus(IGUIElement* element)
@@ -396,7 +402,6 @@ bool CGUIEnvironment::OnEvent(const SEvent& event)
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
-
 
 //
 void CGUIEnvironment::OnPostRender( u32 time )
