@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Add IGUIEnvironment::getHovered to get the element most recently known to be under the mouse cursor
+
  - Add support for bsp brush entities. Written by Hendu.
 
  - Add IGUIComboBox::setMaxSelectionRows and IGUIComboBox::getMaxSelectionRows

@@ -80,6 +80,10 @@ public:
 	/** \return Pointer to the element with focus. */
 	virtual IGUIElement* getFocus() const = 0;
 
+	//! Returns the element which was last under the mouse cursor
+	/** \return Pointer to the element under the mouse. */
+	virtual IGUIElement* getHovered() const = 0;
+
 	//! Removes the focus from an element.
 	/** Causes a EGET_ELEMENT_FOCUS_LOST event. If the event is absorbed
 	then the focus will not be changed.
