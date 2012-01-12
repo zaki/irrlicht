@@ -122,12 +122,10 @@ namespace gui
 		video::ITexture* Image;
 		video::ITexture* PressedImage;
 
-		EGUI_BUTTON_STATE ButtonState;
-
 		core::rect<s32> ImageRect;
 		core::rect<s32> PressedImageRect;
 
-		u32 ClickTime;
+		u32 ClickTime, HoverTime, FocusTime;
 
 		bool IsPushButton;
 		bool Pressed;
