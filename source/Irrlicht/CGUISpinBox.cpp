@@ -31,12 +31,6 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, bool border,IGUIEnvironment* envir
 
 	CurrentIconColor = video::SColor(255,255,255,255);
 	s32 ButtonWidth = 16;
-	IGUISpriteBank *sb = 0;
-	if (environment && environment->getSkin())
-	{
-		ButtonWidth = environment->getSkin()->getSize(EGDS_SCROLLBAR_SIZE);
-		sb = environment->getSkin()->getSpriteBank();
-	}
 
 	ButtonSpinDown = Environment->addButton(
 		core::rect<s32>(rectangle.getWidth() - ButtonWidth, rectangle.getHeight()/2 +1,
