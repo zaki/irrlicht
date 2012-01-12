@@ -255,35 +255,6 @@ void CGUIButton::draw()
 					ImageRect, &AbsoluteClippingRect,
 					0, UseAlphaChannel);
 		}
-		if (SpriteBank)
-		{
-			// pressed / unpressed animation
-			u32 state = Pressed ? (u32)EGBS_BUTTON_DOWN : (u32)EGBS_BUTTON_UP;
-			if (ButtonSprites[state].Index != -1)
-			{
-				SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
-				 	&AbsoluteClippingRect, ButtonSprites[state].Color, ClickTime, os::Timer::getTime(),
-					ButtonSprites[state].Loop, true);
-			}
-
-			// focused / unfocused animation
-			state = Environment->hasFocus(this) ? (u32)EGBS_BUTTON_FOCUSED : (u32)EGBS_BUTTON_NOT_FOCUSED;
-			if (ButtonSprites[state].Index != -1)
-			{
-				SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
-				 	&AbsoluteClippingRect, ButtonSprites[state].Color, FocusTime, os::Timer::getTime(),
-					ButtonSprites[state].Loop, true);
-			}
-
-			// mouse over / off animation
-			state = Environment->getHovered() == this ? (u32)EGBS_BUTTON_MOUSE_OVER : (u32)EGBS_BUTTON_MOUSE_OFF;
-			if (ButtonSprites[state].Index != -1)
-			{
-				SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
-				 	&AbsoluteClippingRect, ButtonSprites[state].Color, HoverTime, os::Timer::getTime(),
-					ButtonSprites[state].Loop, true);
-			}
-		}
 	}
 	else
 	{
@@ -307,13 +278,38 @@ void CGUIButton::draw()
 					PressedImageRect, &AbsoluteClippingRect,
 					0, UseAlphaChannel);
 		}
+	}
 
-		if (SpriteBank && ButtonSprites[EGBS_BUTTON_DOWN].Index != -1)
+	if (SpriteBank)
+	{
+		// pressed / unpressed animation
+		u32 state = Pressed ? (u32)EGBS_BUTTON_DOWN : (u32)EGBS_BUTTON_UP;
+		if (ButtonSprites[state].Index != -1)
 		{
-			// draw sprite
-			SpriteBank->draw2DSprite(ButtonSprites[EGBS_BUTTON_DOWN].Index, spritePos,
-				&AbsoluteClippingRect, ButtonSprites[EGBS_BUTTON_DOWN].Color, ClickTime, os::Timer::getTime(),
-				ButtonSprites[EGBS_BUTTON_DOWN].Loop, true);
+			SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
+			 	&AbsoluteClippingRect, ButtonSprites[state].Color, ClickTime, os::Timer::getTime(),
+				ButtonSprites[state].Loop, true);
+		}
+
+		// focused / unfocused animation
+		state = Environment->hasFocus(this) ? (u32)EGBS_BUTTON_FOCUSED : (u32)EGBS_BUTTON_NOT_FOCUSED;
+		if (ButtonSprites[state].Index != -1)
+		{
+			SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
+			 	&AbsoluteClippingRect, ButtonSprites[state].Color, FocusTime, os::Timer::getTime(),
+				ButtonSprites[state].Loop, true);
+		}
+
+		// mouse over / off animation
+		if (isEnabled())
+		{
+			state = Environment->getHovered() == this ? (u32)EGBS_BUTTON_MOUSE_OVER : (u32)EGBS_BUTTON_MOUSE_OFF;
+			if (ButtonSprites[state].Index != -1)
+			{
+				SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
+				 	&AbsoluteClippingRect, ButtonSprites[state].Color, HoverTime, os::Timer::getTime(),
+					ButtonSprites[state].Loop, true);
+			}
 		}
 	}
 
