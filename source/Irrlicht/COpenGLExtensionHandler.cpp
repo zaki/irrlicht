@@ -54,12 +54,12 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlBindFramebuffer(0), pGlDeleteFramebuffers(0), pGlGenFramebuffers(0),
 	pGlCheckFramebufferStatus(0), pGlFramebufferTexture2D(0),
 	pGlBindRenderbuffer(0), pGlDeleteRenderbuffers(0), pGlGenRenderbuffers(0),
-	pGlRenderbufferStorage(0), pGlFramebufferRenderbuffer(0),
+	pGlRenderbufferStorage(0), pGlFramebufferRenderbuffer(0), pGlGenerateMipmap(0),
 	// EXT framebuffer object
 	pGlBindFramebufferEXT(0), pGlDeleteFramebuffersEXT(0), pGlGenFramebuffersEXT(0),
 	pGlCheckFramebufferStatusEXT(0), pGlFramebufferTexture2DEXT(0),
 	pGlBindRenderbufferEXT(0), pGlDeleteRenderbuffersEXT(0), pGlGenRenderbuffersEXT(0),
-	pGlRenderbufferStorageEXT(0), pGlFramebufferRenderbufferEXT(0),
+	pGlRenderbufferStorageEXT(0), pGlFramebufferRenderbufferEXT(0), pGlGenerateMipmapEXT(0),
 	// MRTs
 	pGlDrawBuffersARB(0), pGlDrawBuffersATI(0),
 	pGlGenBuffersARB(0), pGlBindBufferARB(0), pGlBufferDataARB(0), pGlDeleteBuffersARB(0),
@@ -481,6 +481,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC) IRR_OGL_LOAD_EXTENSION("glGenRenderbuffers");
 	pGlRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC) IRR_OGL_LOAD_EXTENSION("glRenderbufferStorage");
 	pGlFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferRenderbuffer");
+	pGlGenerateMipmap = (PFNGLGENERATEMIPMAPPROC) IRR_OGL_LOAD_EXTENSION("glGenerateMipmap");
+
 	// EXT FrameBufferObjects
 	pGlBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glBindFramebufferEXT");
 	pGlDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glDeleteFramebuffersEXT");
@@ -492,6 +494,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenRenderbuffersEXT");
 	pGlRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) IRR_OGL_LOAD_EXTENSION("glRenderbufferStorageEXT");
 	pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferRenderbufferEXT");
+	pGlGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenerateMipmapEXT");
 	pGlDrawBuffersARB = (PFNGLDRAWBUFFERSARBPROC) IRR_OGL_LOAD_EXTENSION("glDrawBuffersARB");
 	pGlDrawBuffersATI = (PFNGLDRAWBUFFERSATIPROC) IRR_OGL_LOAD_EXTENSION("glDrawBuffersATI");
 
@@ -719,7 +722,7 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_MIP_MAP:
 		return true;
 	case EVDF_MIP_MAP_AUTO_UPDATE:
-		return FeatureAvailable[IRR_SGIS_generate_mipmap];
+		return FeatureAvailable[IRR_SGIS_generate_mipmap] || FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
 	case EVDF_STENCIL_BUFFER:
 		return StencilBuffer;
 	case EVDF_VERTEX_SHADER_1_1:
@@ -742,7 +745,7 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		// return (FeatureAvailable[IRR_ARB_texture_non_power_of_two]||Version>=200);
 		return (FeatureAvailable[IRR_ARB_texture_non_power_of_two]);
 	case EVDF_FRAMEBUFFER_OBJECT:
-		return FeatureAvailable[IRR_EXT_framebuffer_object];
+		return FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
 	case EVDF_VERTEX_BUFFER_OBJECT:
 		return FeatureAvailable[IRR_ARB_vertex_buffer_object];
 	case EVDF_COLOR_MASK:
