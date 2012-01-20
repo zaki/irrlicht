@@ -83,6 +83,9 @@ public:
 
 	//! create a new AnimatedMesh and adds the mesh to it
 	virtual IAnimatedMesh * createAnimatedMesh(scene::IMesh* mesh,scene::E_ANIMATED_MESH_TYPE type) const;
+
+	//! create a mesh optimized for the vertex cache
+	virtual IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh) const;
 };
 
 } // end namespace scene
