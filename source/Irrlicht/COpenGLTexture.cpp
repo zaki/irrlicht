@@ -314,6 +314,8 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
+	bool mipmapLegacyMode = true;
+
 	// mipmap handling for main texture
 	if (!level && newTexture)
 	{
@@ -322,15 +324,20 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		// auto generate if possible and no mipmap data is given
 		if (HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
-			if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_FASTEST);
-			else if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_QUALITY))
-				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
+			if(!Driver->queryFeature(EVDF_FRAMEBUFFER_OBJECT))
+			{
+				if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
+					glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_FASTEST);
+				else if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_QUALITY))
+					glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
+				else
+					glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
+				// automatically generate and update mipmaps
+				glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+				AutomaticMipmapUpdate=true;
+			}
 			else
-				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
-			// automatically generate and update mipmaps
-			glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
-			AutomaticMipmapUpdate=true;
+				mipmapLegacyMode = false;
 		}
 		else
 #endif
@@ -367,6 +374,17 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
 			image->getDimension().Height, PixelFormat, PixelType, source);
 	image->unlock();
+
+	if (!mipmapLegacyMode)
+	{
+		glEnable(GL_TEXTURE_2D);
+		Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		AutomaticMipmapUpdate=true;
+	}
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
@@ -606,13 +624,13 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 
 bool COpenGLTexture::isRenderTarget() const
 {
-	 return IsRenderTarget;
+	return IsRenderTarget;
 }
 
 
 void COpenGLTexture::setIsRenderTarget(bool isTarget)
 {
-	 IsRenderTarget = isTarget;
+	IsRenderTarget = isTarget;
 }
 
 

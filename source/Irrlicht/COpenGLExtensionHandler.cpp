@@ -728,8 +728,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_VERTEX_SHADER_1_1:
 	case EVDF_ARB_VERTEX_PROGRAM_1:
 		return FeatureAvailable[IRR_ARB_vertex_program] || FeatureAvailable[IRR_NV_vertex_program1_1];
-	case EVDF_PIXEL_SHADER_1_1: 
-	case EVDF_PIXEL_SHADER_1_2: 
+	case EVDF_PIXEL_SHADER_1_1:
+	case EVDF_PIXEL_SHADER_1_2:
 	case EVDF_ARB_FRAGMENT_PROGRAM_1:
 		return FeatureAvailable[IRR_ARB_fragment_program] || FeatureAvailable[IRR_NV_fragment_program];
 	case EVDF_PIXEL_SHADER_2_0:
