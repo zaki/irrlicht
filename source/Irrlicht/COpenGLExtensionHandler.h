@@ -2264,7 +2264,6 @@ inline void COpenGLExtensionHandler::extGlEnableIndexed(GLenum target, GLuint in
 #endif
 }
 
-
 inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint index)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -2276,7 +2275,6 @@ inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint i
 	os::Printer::log("glDisableIndexed not supported", ELL_ERROR);
 #endif
 }
-
 
 inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
 {
@@ -2294,7 +2292,6 @@ inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum sr
 #endif
 }
 
-
 inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenum mode)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -2310,7 +2307,6 @@ inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenu
 	os::Printer::log("glBlendEquationIndexed not supported", ELL_ERROR);
 #endif
 }
-
 
 inline void COpenGLExtensionHandler::extGlProgramParameteri(GLhandleARB program, GLenum pname, GLint value)
 {
@@ -2333,7 +2329,6 @@ inline void COpenGLExtensionHandler::extGlProgramParameteri(GLhandleARB program,
 #endif
 }
 
-
 inline void COpenGLExtensionHandler::extGlGenQueries(GLsizei n, GLuint *ids)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -2349,7 +2344,6 @@ inline void COpenGLExtensionHandler::extGlGenQueries(GLsizei n, GLuint *ids)
 	os::Printer::log("glGenQueries not supported", ELL_ERROR);
 #endif
 }
- 
 
 inline void COpenGLExtensionHandler::extGlDeleteQueries(GLsizei n, const GLuint *ids)
 {
@@ -2382,7 +2376,7 @@ inline GLboolean COpenGLExtensionHandler::extGlIsQuery(GLuint id)
 	return false;
 #endif
 }
- 
+
 inline void COpenGLExtensionHandler::extGlBeginQuery(GLenum target, GLuint id)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -2398,7 +2392,7 @@ inline void COpenGLExtensionHandler::extGlBeginQuery(GLenum target, GLuint id)
 	os::Printer::log("glBeginQuery not supported", ELL_ERROR);
 #endif
 }
- 
+
 inline void COpenGLExtensionHandler::extGlEndQuery(GLenum target)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -2414,7 +2408,7 @@ inline void COpenGLExtensionHandler::extGlEndQuery(GLenum target)
 	os::Printer::log("glEndQuery not supported", ELL_ERROR);
 #endif
 }
- 
+
 inline void COpenGLExtensionHandler::extGlGetQueryiv(GLenum target, GLenum pname, GLint *params)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
