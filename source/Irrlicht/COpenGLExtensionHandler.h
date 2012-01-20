@@ -1059,6 +1059,7 @@ class COpenGLExtensionHandler
 	void extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers);
 	void extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 	void extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+	void extGlGenerateMipmap(GLenum target);
 	void extGlActiveStencilFace(GLenum face);
 	void extGlDrawBuffers(GLsizei n, const GLenum *bufs);
 
@@ -1169,6 +1170,7 @@ class COpenGLExtensionHandler
 		PFNGLGENRENDERBUFFERSPROC pGlGenRenderbuffers;
 		PFNGLRENDERBUFFERSTORAGEPROC pGlRenderbufferStorage;
 		PFNGLFRAMEBUFFERRENDERBUFFERPROC pGlFramebufferRenderbuffer;
+		PFNGLGENERATEMIPMAPPROC pGlGenerateMipmap;
 		// EXT framebuffer object
 		PFNGLBINDFRAMEBUFFEREXTPROC pGlBindFramebufferEXT;
 		PFNGLDELETEFRAMEBUFFERSEXTPROC pGlDeleteFramebuffersEXT;
@@ -1180,6 +1182,7 @@ class COpenGLExtensionHandler
 		PFNGLGENRENDERBUFFERSEXTPROC pGlGenRenderbuffersEXT;
 		PFNGLRENDERBUFFERSTORAGEEXTPROC pGlRenderbufferStorageEXT;
 		PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC pGlFramebufferRenderbufferEXT;
+		PFNGLGENERATEMIPMAPEXTPROC pGlGenerateMipmapEXT;
 		PFNGLACTIVESTENCILFACEEXTPROC pGlActiveStencilFaceEXT;
 		PFNGLDRAWBUFFERSARBPROC pGlDrawBuffersARB;
 		PFNGLDRAWBUFFERSATIPROC pGlDrawBuffersATI;
@@ -2032,6 +2035,22 @@ inline void COpenGLExtensionHandler::extGlFramebufferRenderbuffer(GLenum target,
 	glFramebufferRenderbufferEXT(target, attachment, renderbuffertarget, renderbuffer);
 #else
 	os::Printer::log("glFramebufferRenderbuffer not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGenerateMipmap(GLenum target)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGenerateMipmap)
+		pGlGenerateMipmap(target);
+	else if (pGlGenerateMipmapEXT)
+		pGlGenerateMipmapEXT(target);
+#elif defined(GL_ARB_framebuffer_object)
+	glGenerateMipmapARB(target);
+#elif defined(GL_EXT_framebuffer_object)
+	glGenerateMipmapEXT(target);
+#else
+	os::Printer::log("glGenerateMipmap not supported", ELL_ERROR);
 #endif
 }
 
