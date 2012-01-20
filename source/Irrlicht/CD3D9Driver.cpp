@@ -1443,7 +1443,7 @@ void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 			E_BLEND_FACTOR dstFact;
 			E_MODULATE_FUNC modulo;
 			u32 alphaSource;
-			unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+			unpack_textureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
 			setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource&video::EAS_TEXTURE) != 0);
 		}
 		else
@@ -3306,8 +3306,9 @@ bool CD3D9Driver::setClipPlane(u32 index, const core::plane3df& plane, bool enab
 	if (index >= MaxUserClipPlanes)
 		return false;
 
-	pID3DDevice->SetClipPlane(index, (const float*)&plane);
-	enableClipPlane(index, enable);
+	HRESULT ok = pID3DDevice->SetClipPlane(index, (const float*)&plane);
+	if (D3D_OK == ok)
+		enableClipPlane(index, enable);
 	return true;
 }
 
@@ -3318,12 +3319,15 @@ void CD3D9Driver::enableClipPlane(u32 index, bool enable)
 	if (index >= MaxUserClipPlanes)
 		return;
 	DWORD renderstate;
-	pID3DDevice->GetRenderState(D3DRS_CLIPPLANEENABLE, &renderstate);
-	if (enable)
-		renderstate |= (1 << index);
-	else
-		renderstate &= ~(1 << index);
-	pID3DDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, renderstate);
+	HRESULT ok = pID3DDevice->GetRenderState(D3DRS_CLIPPLANEENABLE, &renderstate);
+	if (S_OK == ok)
+	{
+		if (enable)
+			renderstate |= (1 << index);
+		else
+			renderstate &= ~(1 << index);
+		ok = pID3DDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, renderstate);
+	}
 }
 
 
