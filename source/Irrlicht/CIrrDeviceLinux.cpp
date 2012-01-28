@@ -2115,6 +2115,7 @@ CIrrDeviceLinux::CCursorControl::~CCursorControl()
 	// TODO (cutealien): droping cursorcontrol earlier might work, not sure about reason why that's done in stub currently.
 }
 
+#ifdef _IRR_COMPILE_WITH_X11_
 void CIrrDeviceLinux::CCursorControl::clearCursors()
 {
 	for ( u32 i=0; i < Cursors.size(); ++i )
@@ -2126,7 +2127,6 @@ void CIrrDeviceLinux::CCursorControl::clearCursors()
 	}
 }
 
-#ifdef _IRR_COMPILE_WITH_X11_
 void CIrrDeviceLinux::CCursorControl::initCursors()
 {
 	Cursors.push_back( CursorX11(XCreateFontCursor(Device->display, XC_top_left_arrow)) ); //  (or XC_arrow?)
@@ -2159,22 +2159,23 @@ void CIrrDeviceLinux::CCursorControl::update()
 //! Sets the active cursor icon
 void CIrrDeviceLinux::CCursorControl::setActiveIcon(gui::ECURSOR_ICON iconId)
 {
+#ifdef _IRR_COMPILE_WITH_X11_
 	if ( iconId >= (s32)Cursors.size() )
 		return;
 
-#ifdef _IRR_COMPILE_WITH_X11_
 	if ( Cursors[iconId].Frames.size() )
 		XDefineCursor(Device->display, Device->window, Cursors[iconId].Frames[0].IconHW);
-#endif
 
 	ActiveIconStartTime = Device->getTimer()->getRealTime();
 	ActiveIcon = iconId;
+#endif
 }
 
 
 //! Add a custom sprite as cursor icon.
 gui::ECURSOR_ICON CIrrDeviceLinux::CCursorControl::addIcon(const gui::SCursorSprite& icon)
 {
+#ifdef _IRR_COMPILE_WITH_X11_
 	if ( icon.SpriteId >= 0 )
 	{
 		CursorX11 cX11;
@@ -2192,12 +2193,14 @@ gui::ECURSOR_ICON CIrrDeviceLinux::CCursorControl::addIcon(const gui::SCursorSpr
 
 		return (gui::ECURSOR_ICON)(Cursors.size() - 1);
 	}
+#endif
 	return gui::ECI_NORMAL;
 }
 
 //! replace the given cursor icon.
 void CIrrDeviceLinux::CCursorControl::changeIcon(gui::ECURSOR_ICON iconId, const gui::SCursorSprite& icon)
 {
+#ifdef _IRR_COMPILE_WITH_X11_
 	if ( iconId >= (s32)Cursors.size() )
 		return;
 
@@ -2219,14 +2222,16 @@ void CIrrDeviceLinux::CCursorControl::changeIcon(gui::ECURSOR_ICON iconId, const
 
 		Cursors[iconId] = cX11;
 	}
+#endif
 }
 
 irr::core::dimension2di CIrrDeviceLinux::CCursorControl::getSupportedIconSize() const
 {
 	// this returns the closest match that is smaller or same size, so we just pass a value which should be large enough for cursors
-	unsigned int width, height;
+	unsigned int width=0, height=0;
+#ifdef _IRR_COMPILE_WITH_X11_
 	XQueryBestCursor(Device->display, Device->window, 64, 64, &width, &height);
-
+#endif
 	return core::dimension2di(width, height);
 }
 
