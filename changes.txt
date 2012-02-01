@@ -293,11 +293,29 @@ The following names can be queried for the given types:
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
 
+ - Document that triangle3d::isPointInside should not be used with int's.
+
+ - triangle3d::isPointInsideFast handles 'on-border' cases now consistently.
+ 
+ - Bugfix: vector2d.normalize() and vector3d.normalize() had returned wrong results with very short vectors since  Irrlicht 1.5. Thanks to Willem Swart for Bugreport + testcase.
+
+ - Unknown keymappings now use the X11 keycode instead of 0 to make such keys at least usable in games.
+
+ - KeyMapping for KeyInput.Key on X11 ignores states like shift&ctrl now like on Windows.
+
+ - Additional keymappings for X11 (tested with german and us keyboards which seem to work now in all cases).
+
+ - Fix crash in multiline editbox when pasting several lines into it on Windows.
+
+ - example 09.Meshviewer no longer catches keys while a modal dialog is open
+
+ - editbox no longer displays cursor when disabled
+
+ - editbox autoscrolling now at least works good enough to actually show the text which the user is typing in.
+
  - editbox no longer moves text into next line when it fails wrapping creating senseless empty lines which mess up scrolling.
 
  - Fix crash in editbox when scrolling up with empty first lines caused by textwrapping.
-
- - triangle3d::isPointInside can now work with larger integers, old version failed already with values in the 3-digit range. It got also faster. (thx @ Eigen for report + testcase and REDDemon for patch proposal).
 
  - Fix focus problem when removing an unfocused modal dialog reported by Reiko here: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=44358
 

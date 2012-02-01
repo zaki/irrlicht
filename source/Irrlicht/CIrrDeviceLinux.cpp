@@ -70,7 +70,7 @@ const char* wmDeleteWindow = "WM_DELETE_WINDOW";
 
 //! constructor
 CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
- : CIrrDeviceStub(param),
+	: CIrrDeviceStub(param),
 #ifdef _IRR_COMPILE_WITH_X11_
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
 #ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -179,9 +179,9 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-	for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	for (u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 	{
-		if(ActiveJoysticks[joystick].fd >= 0)
+		if (ActiveJoysticks[joystick].fd >= 0)
 		{
 			close(ActiveJoysticks[joystick].fd);
 		}
@@ -658,7 +658,7 @@ bool CIrrDeviceLinux::createWindow()
 		XSetWMProtocols(display, window, &wmDelete, 1);
 		if (CreationParams.Fullscreen)
 		{
- 			XSetInputFocus(display, window, RevertToParent, CurrentTime);
+			XSetInputFocus(display, window, RevertToParent, CurrentTime);
 			int grabKb = XGrabKeyboard(display, window, True, GrabModeAsync,
 				GrabModeAsync, CurrentTime);
 			IrrPrintXGrabError(grabKb, "XGrabKeyboard");
@@ -690,8 +690,8 @@ bool CIrrDeviceLinux::createWindow()
 	}
 
 	WindowMinimized=false;
- 	// Currently broken in X, see Bug ID 2795321
- 	// XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);
+	// Currently broken in X, see Bug ID 2795321
+	// XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -1022,22 +1022,42 @@ bool CIrrDeviceLinux::run()
 					char buf[8]={0};
 					XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
 
-					const s32 idx = KeyMap.binary_search(mp);
-
-					if (idx != -1)
-						irrevent.KeyInput.Key = (EKEY_CODE)KeyMap[idx].Win32Key;
-					else
-					{
-						// Usually you will check keysymdef.h and add the corresponding key to createKeyMap.
-						irrevent.KeyInput.Key = (EKEY_CODE)0;
-						os::Printer::log("Could not find win32 key for x11 key.", core::stringc((int)mp.X11Key).c_str(), ELL_WARNING);
-					}
 					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
 					irrevent.KeyInput.PressedDown = (event.type == KeyPress);
 //					mbtowc(&irrevent.KeyInput.Char, buf, sizeof(buf));
-					irrevent.KeyInput.Char = (reinterpret_cast<wchar_t*>(buf))[0];
+					irrevent.KeyInput.Char = ((wchar_t*)(buf))[0];
 					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 					irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
+
+					event.xkey.state = 0; // ignore shift-ctrl states for figuring out the key
+					XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
+					const s32 idx = KeyMap.binary_search(mp);
+					if (idx != -1)
+					{
+						irrevent.KeyInput.Key = (EKEY_CODE)KeyMap[idx].Win32Key;
+					}
+					else
+					{
+						irrevent.KeyInput.Key = (EKEY_CODE)0;
+					}
+					if (irrevent.KeyInput.Key == 0)
+					{
+						// 1:1 mapping to windows-keys would require testing for keyboard type (us, ger, ...)
+						// So unless we do that we will have some unknown keys here.
+						if (idx == -1)
+						{
+							os::Printer::log("Could not find EKEY_CODE, using orig. X11 keycode instead", core::stringc(event.xkey.keycode).c_str(), ELL_INFORMATION);
+						}
+						else
+						{
+							os::Printer::log("EKEY_CODE is 0, using orig. X11 keycode instead", core::stringc(event.xkey.keycode).c_str(), ELL_INFORMATION);
+						}
+						// Any value is better than none, that allows at least using the keys.
+						// Worst case is that some keys will be identical, still better than _all_
+						// unknown keys being identical.
+						irrevent.KeyInput.Key = (EKEY_CODE)event.xkey.keycode;
+					}
+
 					postEventFromUser(irrevent);
 				}
 				break;
@@ -1071,7 +1091,7 @@ bool CIrrDeviceLinux::run()
 						XChangeProperty (display,
 								req->requestor,
 								req->property, req->target,
-								8,	  // format
+								8, // format
 								PropModeReplace,
 								(unsigned char*) Clipboard.c_str(),
 								Clipboard.size());
@@ -1114,7 +1134,7 @@ bool CIrrDeviceLinux::run()
 	}
 #endif //_IRR_COMPILE_WITH_X11_
 
-	if(!Close)
+	if (!Close)
 		pollJoysticks();
 
 	return !Close;
@@ -1494,11 +1514,11 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_exclam, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_quotedbl, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_section, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_numbersign, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_numbersign, KEY_OEM_2));
 	KeyMap.push_back(SKeyMap(XK_dollar, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_percent, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_ampersand, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_apostrophe, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_apostrophe, KEY_OEM_7));
 	KeyMap.push_back(SKeyMap(XK_parenleft, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_parenright, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_asterisk, 0)); //?
@@ -1506,7 +1526,7 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_comma, KEY_COMMA)); //?
 	KeyMap.push_back(SKeyMap(XK_minus, KEY_MINUS)); //?
 	KeyMap.push_back(SKeyMap(XK_period, KEY_PERIOD)); //?
-	KeyMap.push_back(SKeyMap(XK_slash, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_slash, KEY_OEM_2)); //?
 	KeyMap.push_back(SKeyMap(XK_0, KEY_KEY_0));
 	KeyMap.push_back(SKeyMap(XK_1, KEY_KEY_1));
 	KeyMap.push_back(SKeyMap(XK_2, KEY_KEY_2));
@@ -1518,12 +1538,12 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_8, KEY_KEY_8));
 	KeyMap.push_back(SKeyMap(XK_9, KEY_KEY_9));
 	KeyMap.push_back(SKeyMap(XK_colon, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_semicolon, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_less, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_equal, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_semicolon, KEY_OEM_1));
+	KeyMap.push_back(SKeyMap(XK_less, KEY_OEM_102));
+	KeyMap.push_back(SKeyMap(XK_equal, KEY_PLUS));
 	KeyMap.push_back(SKeyMap(XK_greater, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_question, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_at, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_at, KEY_KEY_2)); //?
 	KeyMap.push_back(SKeyMap(XK_mu, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_EuroSign, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_A, KEY_KEY_A));
@@ -1552,18 +1572,14 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_X, KEY_KEY_X));
 	KeyMap.push_back(SKeyMap(XK_Y, KEY_KEY_Y));
 	KeyMap.push_back(SKeyMap(XK_Z, KEY_KEY_Z));
-	KeyMap.push_back(SKeyMap(XK_Adiaeresis, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_Odiaeresis, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_Udiaeresis, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_bracketleft, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_backslash, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_bracketright, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_asciicircum, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_bracketleft, KEY_OEM_4));
+	KeyMap.push_back(SKeyMap(XK_backslash, KEY_OEM_5));
+	KeyMap.push_back(SKeyMap(XK_bracketright, KEY_OEM_6));
+	KeyMap.push_back(SKeyMap(XK_asciicircum, KEY_OEM_5));
 	KeyMap.push_back(SKeyMap(XK_degree, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_underscore, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_grave, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_acute, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_quoteleft, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_underscore, KEY_MINUS)); //?
+	KeyMap.push_back(SKeyMap(XK_grave, KEY_OEM_3));
+	KeyMap.push_back(SKeyMap(XK_acute, KEY_OEM_6));
 	KeyMap.push_back(SKeyMap(XK_a, KEY_KEY_A));
 	KeyMap.push_back(SKeyMap(XK_b, KEY_KEY_B));
 	KeyMap.push_back(SKeyMap(XK_c, KEY_KEY_C));
@@ -1590,10 +1606,12 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_x, KEY_KEY_X));
 	KeyMap.push_back(SKeyMap(XK_y, KEY_KEY_Y));
 	KeyMap.push_back(SKeyMap(XK_z, KEY_KEY_Z));
-	KeyMap.push_back(SKeyMap(XK_ssharp, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_adiaeresis, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_odiaeresis, 0)); //?
-	KeyMap.push_back(SKeyMap(XK_udiaeresis, 0)); //?
+	KeyMap.push_back(SKeyMap(XK_ssharp, KEY_OEM_4));
+	KeyMap.push_back(SKeyMap(XK_adiaeresis, KEY_OEM_7));
+	KeyMap.push_back(SKeyMap(XK_odiaeresis, KEY_OEM_3));
+	KeyMap.push_back(SKeyMap(XK_udiaeresis, KEY_OEM_1));
+	KeyMap.push_back(SKeyMap(XK_Super_L, KEY_LWIN));
+	KeyMap.push_back(SKeyMap(XK_Super_R, KEY_RWIN));
 
 	KeyMap.sort();
 #endif
@@ -1606,7 +1624,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 	joystickInfo.clear();
 
 	u32 joystick;
-	for(joystick = 0; joystick < 32; ++joystick)
+	for (joystick = 0; joystick < 32; ++joystick)
 	{
 		// The joystick device could be here...
 		core::stringc devName = "/dev/js";
@@ -1616,14 +1634,14 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		JoystickInfo info;
 
 		info.fd = open(devName.c_str(), O_RDONLY);
-		if(-1 == info.fd)
+		if (-1 == info.fd)
 		{
 			// ...but Ubuntu and possibly other distros
 			// create the devices in /dev/input
 			devName = "/dev/input/js";
 			devName += joystick;
 			info.fd = open(devName.c_str(), O_RDONLY);
-			if(-1 == info.fd)
+			if (-1 == info.fd)
 			{
 				// and BSD here
 				devName = "/dev/joy";
@@ -1632,7 +1650,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 			}
 		}
 
-		if(-1 == info.fd)
+		if (-1 == info.fd)
 			continue;
 
 #ifdef __FREE_BSD_
@@ -1668,7 +1686,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		joystickInfo.push_back(returnInfo);
 	}
 
-	for(joystick = 0; joystick < joystickInfo.size(); ++joystick)
+	for (joystick = 0; joystick < joystickInfo.size(); ++joystick)
 	{
 		char logString[256];
 		(void)sprintf(logString, "Found joystick %u, %u axes, %u buttons '%s'",
@@ -1687,36 +1705,36 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 void CIrrDeviceLinux::pollJoysticks()
 {
 #if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-	if(0 == ActiveJoysticks.size())
+	if (0 == ActiveJoysticks.size())
 		return;
 
-	u32 j;
-	for(j= 0; j< ActiveJoysticks.size(); ++j)
+	for (u32 j= 0; j< ActiveJoysticks.size(); ++j)
 	{
 		JoystickInfo & info =  ActiveJoysticks[j];
 
 #ifdef __FREE_BSD_
 		struct joystick js;
-		if( read( info.fd, &js, JS_RETURN ) == JS_RETURN )
+		if (read(info.fd, &js, JS_RETURN) == JS_RETURN)
 		{
 			info.persistentData.JoystickEvent.ButtonStates = js.buttons; /* should be a two-bit field */
 			info.persistentData.JoystickEvent.Axis[0] = js.x; /* X axis */
 			info.persistentData.JoystickEvent.Axis[1] = js.y; /* Y axis */
 #else
 		struct js_event event;
-		while(sizeof(event) == read(info.fd, &event, sizeof(event)))
+		while (sizeof(event) == read(info.fd, &event, sizeof(event)))
 		{
 			switch(event.type & ~JS_EVENT_INIT)
 			{
 			case JS_EVENT_BUTTON:
 				if (event.value)
 						info.persistentData.JoystickEvent.ButtonStates |= (1 << event.number);
-	   			else
-		  				info.persistentData.JoystickEvent.ButtonStates &= ~(1 << event.number);
+				else
+						info.persistentData.JoystickEvent.ButtonStates &= ~(1 << event.number);
 				break;
 
 			case JS_EVENT_AXIS:
-				info.persistentData.JoystickEvent.Axis[event.number] = event.value;
+				if (event.number < SEvent::SJoystickEvent::NUMBER_OF_AXES)
+					info.persistentData.JoystickEvent.Axis[event.number] = event.value;
 				break;
 
 			default:
@@ -1845,16 +1863,16 @@ const c8* CIrrDeviceLinux::getTextFromClipboard() const
 		unsigned long numItems, bytesLeft, dummy;
 		unsigned char *data;
 		XGetWindowProperty (display, ownerWindow,
-				XA_STRING, 	  // property name
-				0,		 // offset
-				0,	  	  // length (we only check for data, so 0)
-				0, 	 	  // Delete 0==false
-				AnyPropertyType,  // AnyPropertyType or property identifier
-				&type,		  // return type
-				&format,	  // return format
-				&numItems,   // number items
-				&bytesLeft,  // remaining bytes for partial reads
-				&data);		// data
+				XA_STRING, // property name
+				0, // offset
+				0, // length (we only check for data, so 0)
+				0, // Delete 0==false
+				AnyPropertyType, // AnyPropertyType or property identifier
+				&type, // return type
+				&format, // return format
+				&numItems, // number items
+				&bytesLeft, // remaining bytes for partial reads
+				&data); // data
 		if ( bytesLeft > 0 )
 		{
 			// there is some data to get
@@ -1907,15 +1925,15 @@ void CIrrDeviceLinux::clearSystemMessages()
 	{
 		XEvent event;
 		int usrArg = ButtonPress;
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) 	{}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) {}
 		usrArg = ButtonRelease;
 		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) {}
 		usrArg = MotionNotify;
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) 	{}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) {}
 		usrArg = KeyRelease;
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True )	{}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) {}
 		usrArg = KeyPress;
-		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True )		{}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, XPointer(&usrArg)) == True ) {}
 	}
 #endif //_IRR_COMPILE_WITH_X11_
 }
@@ -1940,7 +1958,7 @@ Cursor CIrrDeviceLinux::TextureToMonochromeCursor(irr::video::ITexture * tex, co
 										ZPixmap,	// XYBitmap (depth=1), ZPixmap(depth=x)
 										0, 0, sourceRect.getWidth(), sourceRect.getHeight(),
 										32, // bitmap_pad,
-                        				0// bytes_per_line (0 means continuos in memory)
+										0// bytes_per_line (0 means continuos in memory)
 										);
 	sourceImage->data = new char[sourceImage->height * sourceImage->bytes_per_line];
 	XImage * maskImage = XCreateImage(display, visual->visual,
@@ -1948,7 +1966,7 @@ Cursor CIrrDeviceLinux::TextureToMonochromeCursor(irr::video::ITexture * tex, co
 										ZPixmap,
 										0, 0, sourceRect.getWidth(), sourceRect.getHeight(),
 										32, // bitmap_pad,
-                        				0 // bytes_per_line
+										0 // bytes_per_line
 										);
 	maskImage->data = new char[maskImage->height * maskImage->bytes_per_line];
 

@@ -68,8 +68,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testS3DVertex);
 	TEST(testaabbox3d);
     TEST(color);
-	// TODO: Needs to be fixed first
-//	TEST(testTriangle3d);
+	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);
 	// file system checks (with null driver)
 	TEST(filesystem);
