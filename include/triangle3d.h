@@ -82,10 +82,27 @@ namespace core
 		}
 
 		//! Check if a point is inside the triangle (border-points count also as inside)
-		/** \param p Point to test. Assumes that this point is already
+		/** NOTE: When working with T='int' you should prefer isPointInsideFast, as 
+		isPointInside will run into number-overflows already with coordinates in the 3-digit-range.
+		\param p Point to test. Assumes that this point is already
 		on the plane of the triangle.
 		\return True if the point is inside the triangle, otherwise false. */
 		bool isPointInside(const vector3d<T>& p) const
+		{
+			return (isOnSameSide(p, pointA, pointB, pointC) &&
+ 				isOnSameSide(p, pointB, pointA, pointC) &&
+ 				isOnSameSide(p, pointC, pointA, pointB));
+		}
+
+		//! Check if a point is inside the triangle (border-points count also as inside)
+		/** This method uses a barycentric coordinate system. 
+		It is faster than isPointInside but is more susceptible to floating point rounding 
+		errors. This will especially be noticable when the FPU is in single precision mode 
+		(which is for example set on default by Direct3D).
+		\param p Point to test. Assumes that this point is already
+		on the plane of the triangle.
+		\return True if point is inside the triangle, otherwise false. */
+		bool isPointInsideFast(const vector3d<T>& p) const
 		{
 			const vector3d<T> a = pointC - pointA;
 			const vector3d<T> b = pointB - pointA;
@@ -105,38 +122,7 @@ namespace core
 			// We count border-points as inside to keep downward compatibility.
 			// That's why we use >= and <= instead of > and < as more commonly seen on the web.
 			return (u >= 0) && (v >= 0) && (u + v <= 1);
-		}
 
-		//! Check if a point is inside the triangle.
-		/** This method is an implementation of the example used in a
-		paper by Kasper Fauerby original written by Keidy from
-		Mr-Gamemaker.
-		This was once faster than an old isPointInside implementation, but the  
-		current isPointInside is usualy as fast, sometimes even faster. 
-		Border-points in isPointInsideFast are not defined, some are inside and some outside.
-		\param p Point to test. Assumes that this point is already
-		on the plane of the triangle.
-		\return True if point is inside the triangle, otherwise false. */
-		bool isPointInsideFast(const vector3d<T>& p) const
-		{
-			const vector3d<T> f = pointB - pointA;
-			const vector3d<T> g = pointC - pointA;
-
-			const f32 a = f.dotProduct(f);
-			const f32 b = f.dotProduct(g);
-			const f32 c = g.dotProduct(g);
-
-			const vector3d<T> vp = p - pointA;
-			const f32 d = vp.dotProduct(f);
-			const f32 e = vp.dotProduct(g);
-
-			f32 x = (d*c)-(e*b);
-			f32 y = (e*a)-(d*b);
-			const f32 ac_bb = (a*c)-(b*b);
-			f32 z = x+y-ac_bb;
-
-			// return sign(z) && !(sign(x)||sign(y))
-			return (( (IR(z)) & ~((IR(x))|(IR(y))) ) & 0x80000000)!=0;
 		}
 
 

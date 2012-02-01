@@ -168,7 +168,7 @@ namespace core
 		vector3d<T>& normalize()
 		{
 			f64 length = X*X + Y*Y + Z*Z;
-			if (core::equals(length, 0.0)) // this check isn't an optimization but prevents getting NAN in the sqrt.
+			if (length == 0 ) // this check isn't an optimization but prevents getting NAN in the sqrt.
 				return *this;
 			length = core::reciprocal_squareroot(length);
 

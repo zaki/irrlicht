@@ -170,7 +170,7 @@ public:
 	vector2d<T>& normalize()
 	{
 		f32 length = (f32)(X*X + Y*Y);
-		if (core::equals(length, 0.f))
+		if ( length == 0 )
 			return *this;
 		length = core::reciprocal_squareroot ( length );
 		X = (T)(X * length);
