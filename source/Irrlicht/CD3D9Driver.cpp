@@ -15,6 +15,7 @@
 #include "CD3D9NormalMapRenderer.h"
 #include "CD3D9ParallaxMapRenderer.h"
 #include "CD3D9HLSLMaterialRenderer.h"
+#include "CD3D9CgMaterialRenderer.h"
 #include "SIrrCreationParameters.h"
 
 namespace irr
@@ -66,6 +67,10 @@ CD3D9Driver::CD3D9Driver(const SIrrlichtCreationParameters& params, io::IFileSys
 	core::matrix4 mat;
 	UnitMatrixD3D9 = *(D3DMATRIX*)((void*)mat.pointer());
 
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
+	#endif
+
 	// init direct 3d is done in the factory function
 }
 
@@ -90,6 +95,15 @@ CD3D9Driver::~CD3D9Driver()
 
 	if (pID3D)
 		pID3D->Release();
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	cgD3D9SetDevice(0);
+
+	if(CgContext)
+	{
+		cgDestroyContext(CgContext);
+	}
+	#endif
 }
 
 
@@ -482,6 +496,11 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 		bb->Release();
 	}
 	ColorFormat = getColorFormatFromD3DFormat(D3DColorFormat);
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = cgCreateContext();
+	cgD3D9SetDevice(pID3DDevice);
+	#endif
 
 	// so far so good.
 	return true;
@@ -3109,23 +3128,41 @@ s32 CD3D9Driver::addHighLevelShaderMaterial(
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
-		E_MATERIAL_TYPE baseMaterial, s32 userData)
+		E_MATERIAL_TYPE baseMaterial, s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	s32 nr = -1;
 
-	CD3D9HLSLMaterialRenderer* hlsl = new CD3D9HLSLMaterialRenderer(
-		pID3DDevice, this, nr,
-		vertexShaderProgram,
-		vertexShaderEntryPointName,
-		vsCompileTarget,
-		pixelShaderProgram,
-		pixelShaderEntryPointName,
-		psCompileTarget,
-		callback,
-		getMaterialRenderer(baseMaterial),
-		userData);
+	#ifdef _IRR_COMPILE_WITH_CG_
+	if(shadingLang == EGSL_CG)
+	{
+		CD3D9CgMaterialRenderer* r = new CD3D9CgMaterialRenderer(
+			this, nr,
+			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
+			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
+			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
+			inType, outType, verticesOut,
+			callback,getMaterialRenderer(baseMaterial), userData);
 
-	hlsl->drop();
+		r->drop();
+	}
+	else
+	#endif
+	{
+		CD3D9HLSLMaterialRenderer* r = new CD3D9HLSLMaterialRenderer(
+			pID3DDevice, this, nr,
+			vertexShaderProgram,
+			vertexShaderEntryPointName,
+			vsCompileTarget,
+			pixelShaderProgram,
+			pixelShaderEntryPointName,
+			psCompileTarget,
+			callback,
+			getMaterialRenderer(baseMaterial),
+			userData);
+
+		r->drop();
+	}
+
 	return nr;
 }
 
@@ -3480,6 +3517,13 @@ core::dimension2du CD3D9Driver::getMaxTextureSize() const
 {
 	return core::dimension2du(Caps.MaxTextureWidth, Caps.MaxTextureHeight);
 }
+
+#ifdef _IRR_COMPILE_WITH_CG_
+const CGcontext& CD3D9Driver::getCgContext()
+{
+	return CgContext;
+}
+#endif
 
 
 } // end namespace video

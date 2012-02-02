@@ -2052,7 +2052,7 @@ s32 CNullDriver::addHighLevelShaderMaterial(
 	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
-	s32 userData)
+	s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	os::Printer::log("High level shader materials not available (yet) in this driver, sorry");
 	return -1;
@@ -2075,7 +2075,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial,
-		s32 userData)
+		s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	io::IReadFile* vsfile = 0;
 	io::IReadFile* psfile = 0;
@@ -2116,7 +2116,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		psfile, pixelShaderEntryPointName, psCompileTarget,
 		gsfile, geometryShaderEntryPointName, gsCompileTarget,
 		inType, outType, verticesOut,
-		callback, baseMaterial, userData);
+		callback, baseMaterial, userData, shadingLang);
 
 	if (psfile)
 		psfile->drop();
@@ -2147,7 +2147,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial,
-		s32 userData)
+		s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	c8* vs = 0;
 	c8* ps = 0;
@@ -2198,7 +2198,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		ps, pixelShaderEntryPointName, psCompileTarget,
 		gs, geometryShaderEntryPointName, gsCompileTarget,
 		inType, outType, verticesOut,
-		callback, baseMaterial, userData);
+		callback, baseMaterial, userData, shadingLang);
 
 	delete [] vs;
 	delete [] ps;
