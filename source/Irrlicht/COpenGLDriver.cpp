@@ -12,6 +12,7 @@
 #include "COpenGLMaterialRenderer.h"
 #include "COpenGLShaderMaterialRenderer.h"
 #include "COpenGLSLMaterialRenderer.h"
+#include "COpenGLCgMaterialRenderer.h"
 #include "COpenGLNormalMapRenderer.h"
 #include "COpenGLParallaxMapRenderer.h"
 #include "os.h"
@@ -42,6 +43,10 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
+	#endif
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
 	#endif
 }
 
@@ -475,6 +480,11 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
+	#endif
+
 	genericDriverInit();
 }
 
@@ -496,6 +506,10 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
+	#endif
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
 	#endif
 }
 
@@ -570,6 +584,10 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	setDebugName("COpenGLDriver");
 	#endif
 
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
+	#endif
+
 	genericDriverInit();
 }
 
@@ -579,6 +597,11 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 //! destructor
 COpenGLDriver::~COpenGLDriver()
 {
+	#ifdef _IRR_COMPILE_WITH_CG_
+	if (CgContext)
+		cgDestroyContext(CgContext);
+	#endif
+
 	RequestedLights.clear();
 
 	deleteMaterialRenders();
@@ -721,6 +744,10 @@ bool COpenGLDriver::genericDriverInit()
 	// We need to reset once more at the beginning of the first rendering.
 	// This fixes problems with intermediate changes to the material during texture load.
 	ResetRenderStates = true;
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = cgCreateContext();
+	#endif
 
 	return true;
 }
@@ -3848,18 +3875,37 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
-	s32 userData)
+	s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	s32 nr = -1;
 
-	COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
-		this, nr,
-		vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
-		pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
-		geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
-		inType, outType, verticesOut,
-		callback,getMaterialRenderer(baseMaterial), userData);
-	r->drop();
+	#ifdef _IRR_COMPILE_WITH_CG_
+	if (shadingLang == EGSL_CG)
+	{
+		COpenGLCgMaterialRenderer* r = new COpenGLCgMaterialRenderer(
+			this, nr,
+			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
+			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
+			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
+			inType, outType, verticesOut,
+			callback,getMaterialRenderer(baseMaterial), userData);
+
+		r->drop();
+	}
+	else
+	#endif
+	{
+		COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
+			this, nr,
+			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
+			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
+			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
+			inType, outType, verticesOut,
+			callback,getMaterialRenderer(baseMaterial), userData);
+
+		r->drop();
+	}
+
 	return nr;
 }
 
@@ -4587,6 +4633,13 @@ GLenum COpenGLDriver::getGLBlend(E_BLEND_FACTOR factor) const
 	}
 	return r;
 }
+
+#ifdef _IRR_COMPILE_WITH_CG_
+const CGcontext& COpenGLDriver::getCgContext()
+{
+	return CgContext;
+}
+#endif
 
 
 } // end namespace

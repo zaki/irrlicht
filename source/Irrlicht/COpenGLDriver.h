@@ -24,6 +24,10 @@ namespace irr
 // also includes the OpenGL stuff
 #include "COpenGLExtensionHandler.h"
 
+#ifdef _IRR_COMPILE_WITH_CG_
+#include "Cg/cg.h"
+#endif
+
 namespace irr
 {
 
@@ -315,7 +319,8 @@ namespace video
 				u32 verticesOut = 0,
 				IShaderConstantSetCallBack* callback = 0,
 				E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-				s32 userData = 0);
+				s32 userData = 0,
+				E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
 
 		//! Returns a pointer to the IVideoDriver interface. (Implementation for
 		//! IMaterialRendererServices)
@@ -381,6 +386,11 @@ namespace video
 
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
+
+		//! Get Cg context
+		#ifdef _IRR_COMPILE_WITH_CG_
+		const CGcontext& getCgContext();
+		#endif
 
 	private:
 
@@ -505,6 +515,9 @@ namespace video
 		#endif
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 			CIrrDeviceSDL *SDLDevice;
+		#endif
+		#ifdef _IRR_COMPILE_WITH_CG_
+		CGcontext CgContext;
 		#endif
 
 		E_DEVICE_TYPE DeviceType;

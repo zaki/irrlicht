@@ -1015,6 +1015,12 @@
 		<Filter
 			Name="video impl">
 			<File
+				RelativePath="CCgMaterialRenderer.cpp">
+			</File>
+			<File
+				RelativePath="CCgMaterialRenderer.h">
+			</File>
+			<File
 				RelativePath="CVideoModeList.cpp">
 			</File>
 			<File
@@ -1085,6 +1091,12 @@
 			</Filter>
 			<Filter
 				Name="OpenGL">
+				<File
+					RelativePath=".\COpenGLCgMaterialRenderer.cpp">
+				</File>
+				<File
+					RelativePath=".\COpenGLCgMaterialRenderer.h">
+				</File>
 				<File
 					RelativePath="COpenGLDriver.cpp">
 				</File>
@@ -1301,6 +1313,12 @@
 			</Filter>
 			<Filter
 				Name="Direct3D9">
+				<File
+					RelativePath="CD3D9CgMaterialRenderer.cpp">
+				</File>
+				<File
+					RelativePath="CD3D9CgMaterialRenderer.h">
+				</File>
 				<File
 					RelativePath="CD3D9Driver.cpp">
 				</File>

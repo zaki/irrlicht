@@ -290,6 +290,15 @@ to provide the user with the proper DLL. That's why it's disabled by default. */
 #undef _IRR_D3D_USE_LEGACY_HLSL_COMPILER
 #endif
 
+//! Define _IRR_COMPILE_WITH_CG_ to enable Cg Shading Language support
+//#define _IRR_COMPILE_WITH_CG_
+#ifdef NO_IRR_COMPILE_WITH_CG_
+#undef _IRR_COMPILE_WITH_CG_
+#endif
+#if !defined(_IRR_COMPILE_WITH_OPENGL_) && !defined(_IRR_COMPILE_WITH_DIRECT3D_9_)
+#undef _IRR_COMPILE_WITH_CG_
+#endif
+
 //! Define _IRR_USE_NVIDIA_PERFHUD_ to opt-in to using the nVidia PerHUD tool
 /** Enable, by opting-in, to use the nVidia PerfHUD performance analysis driver
 tool <http://developer.nvidia.com/object/nvperfhud_home.html>. */

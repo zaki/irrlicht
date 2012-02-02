@@ -22,6 +22,11 @@
 #endif
 #include <d3d9.h>
 
+#ifdef _IRR_COMPILE_WITH_CG_
+#include "Cg/cg.h"
+#include "Cg/cgD3D9.h"
+#endif
+
 namespace irr
 {
 namespace video
@@ -315,6 +320,11 @@ namespace video
 		//! Get Irrlicht color format from D3D color format.
 		ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format) const;
 
+		//! Get Cg context
+		#ifdef _IRR_COMPILE_WITH_CG_
+		const CGcontext& getCgContext();
+		#endif
+
 	private:
 
 		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -382,7 +392,8 @@ namespace video
 			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData=0);
+			s32 userData = 0,
+			E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
 
 		void createMaterialRenderers();
 
@@ -457,6 +468,10 @@ namespace video
 		bool DriverWasReset;
 		bool OcclusionQuerySupport;
 		bool AlphaToCoverageSupport;
+
+		#ifdef _IRR_COMPILE_WITH_CG_
+		CGcontext CgContext;
+		#endif
 	};
 
 
