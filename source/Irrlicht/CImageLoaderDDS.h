@@ -9,7 +9,6 @@
 
 #include "IImageLoader.h"
 
-#define _IRR_COMPILE_WITH_DDS_LOADER_
 namespace irr
 {
 namespace video
