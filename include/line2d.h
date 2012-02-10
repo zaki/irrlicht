@@ -60,7 +60,7 @@ class line2d
 		/** \return center of the line. */
 		vector2d<T> getMiddle() const
 		{
-			return (start + end) * (T)0.5;
+			return (start + end)/(T)2;
 		}
 
 		//! Get the vector of the line.
