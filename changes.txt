@@ -294,6 +294,10 @@ The following names can be queried for the given types:
 -----------------------------
 Changes in 1.7.3 (??.??.2011)
 
+ - GUIEditor attributes have now scrollbar to be editable
+
+ - Remove warning when compiling line2d::intersectWith with other types than f32.
+ 
  - Document that triangle3d::isPointInside should not be used with int's.
 
  - triangle3d::isPointInsideFast handles 'on-border' cases now consistently.
