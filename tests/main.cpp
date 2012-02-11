@@ -98,7 +98,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(md2Animation);
 	TEST(meshTransform);
 	TEST(skinnedMesh);
-	TEST(testGeometryCreator); 
+	TEST(testGeometryCreator);
 	TEST(writeImageToFile);
 	TEST(ioScene);
 	// all driver checks

@@ -78,13 +78,13 @@ class line2d
 		{
 			// Uses the method given at:
 			// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
-			const f32 commonDenominator = (l.end.Y - l.start.Y)*(end.X - start.X) -
+			const f32 commonDenominator = (f32)(l.end.Y - l.start.Y)*(end.X - start.X) -
 											(l.end.X - l.start.X)*(end.Y - start.Y);
 
-			const f32 numeratorA = (l.end.X - l.start.X)*(start.Y - l.start.Y) -
+			const f32 numeratorA = (f32)(l.end.X - l.start.X)*(start.Y - l.start.Y) -
 											(l.end.Y - l.start.Y)*(start.X -l.start.X);
 
-			const f32 numeratorB = (end.X - start.X)*(start.Y - l.start.Y) -
+			const f32 numeratorB = (f32)(end.X - start.X)*(start.Y - l.start.Y) -
 											(end.Y - start.Y)*(start.X -l.start.X);
 
 			if(equals(commonDenominator, 0.f))
@@ -142,7 +142,8 @@ class line2d
 							out += l.start;
 						if (l.end != maxp && l.end != minp)
 							out += l.end;
-						out *= 0.5f;
+						out.X = (T)(out.X*0.5f);
+						out.Y = (T)(out.Y*0.5f);
 					}
 
 					return true; // coincident
@@ -162,8 +163,8 @@ class line2d
 				return false; // Outside the line segment
 
 			// Calculate the intersection point.
-			out.X = start.X + uA * (end.X - start.X);
-			out.Y = start.Y + uA * (end.Y - start.Y);
+			out.X = (T)(start.X + uA * (end.X - start.X));
+			out.Y = (T)(start.Y + uA * (end.Y - start.Y));
 			return true;
 		}
 

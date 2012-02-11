@@ -50,7 +50,7 @@ static bool manyTextures(video::E_DRIVER_TYPE driverType)
 	smgr->drawAll();
 	// draw meshbuffer
 	driver->setMaterial(mat);
-	driver->drawMeshBuffer(mesh); 
+	driver->drawMeshBuffer(mesh);
 	driver->endScene();
 	mesh->drop();
 
@@ -198,14 +198,14 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	gui->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.34f);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.33f);
 
 	device->closeDevice();
 	device->run();
 	device->drop();
 
 	return result;
-} 
+}
 
 // animated texture matrix test.
 static bool textureMatrix(video::E_DRIVER_TYPE driverType)
