@@ -111,6 +111,7 @@ bool testExactPlacement(video::E_DRIVER_TYPE driverType)
 
 	video::IImage* img = driver->createImage(rt, core::vector2di(), rt->getSize());
 	driver->writeImageToFile(img, "results/fireball.png");
+	img->drop();
 	bool result = binaryCompareFiles("media/fireball.png", "results/fireball.png");
 
 	device->closeDevice();
