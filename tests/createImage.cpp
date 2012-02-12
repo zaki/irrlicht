@@ -15,8 +15,12 @@ static bool testImageCreation()
 	video::ITexture* tex=driver->getTexture("../media/water.jpg");
 	video::IImage* img1=driver->createImage(tex, core::vector2di(0,0), core::dimension2du(32,32));
 	video::ITexture* tex1=driver->addTexture("new1", img1);
+	img1->drop();
+	img1=0;
 	video::IImage* img2=driver->createImage(tex, core::vector2di(0,0), tex->getSize());
 	video::ITexture* tex2=driver->addTexture("new2", img2);
+	img2->drop();
+	img2 = 0;
 
 	driver->beginScene(true, true, video::SColor(255,255,0,255));//Backbuffer background is pink
 

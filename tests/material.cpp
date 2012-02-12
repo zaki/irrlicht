@@ -11,7 +11,12 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	if (!driver->queryFeature(video::EVDF_POLYGON_OFFSET))
+	{
+		device->closeDevice();
+		device->run();
+		device->drop();
 		return true;
+	}
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	// create first plane
