@@ -58,6 +58,22 @@ void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
 	CTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount,	transform);
 }
 
+void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
+					s32 arraySize, s32& outTriangleCount,
+					const core::aabbox3d<f32>& box,
+					const core::matrix4* transform) const
+{
+	return getTriangles(triangles, arraySize, outTriangleCount, transform);
+}
+
+void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
+					s32 arraySize, s32& outTriangleCount,
+					const core::line3d<f32>& line,
+					const core::matrix4* transform) const
+{
+	return getTriangles(triangles, arraySize, outTriangleCount, transform);
+}
+
 
 } // end namespace scene
 } // end namespace irr
