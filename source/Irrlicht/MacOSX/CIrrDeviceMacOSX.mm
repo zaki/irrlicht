@@ -9,7 +9,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/gl.h>
+#ifndef __MAC_10_6
 #import <Carbon/Carbon.h>
+#endif
 
 #include "CIrrDeviceMacOSX.h"
 #include "IEventReceiver.h"
@@ -42,6 +44,7 @@
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDKeys.h>
 
+#ifndef __MAC_10_6
 // Contents from Events.h from Carbon/HIToolbox but we need it with Cocoa too
 // and for some reason no Cocoa equivalent of these constants seems provided.
 // So I'm doing like everyone else and using copy-and-paste.
@@ -179,7 +182,7 @@ enum {
 	kVK_DownArrow     = 0x7D,
 	kVK_UpArrow       = 0x7E
 };
-
+#endif
 
 struct JoystickComponent
 {
@@ -508,6 +511,9 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	os::Printer::log(name.version,ELL_INFORMATION);
 
 	initKeycodes();
+    
+    VideoModeList.setDesktop(CreationParams.Bits, core::dimension2d<u32>([[NSScreen mainScreen] frame].size.width, [[NSScreen mainScreen] frame].size.height));
+    
 	bool success = true;
 	if (CreationParams.DriverType != video::EDT_NULL)
 		success = createWindow();
@@ -524,7 +530,11 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 CIrrDeviceMacOSX::~CIrrDeviceMacOSX()
 {
 	[SoftwareDriverTarget release];
-	SetSystemUIMode(kUIModeNormal, 0);
+#ifdef __MAC_10_6
+    [NSApp setPresentationOptions:(NSApplicationPresentationDefault)];
+#else
+    SetSystemUIMode(kUIModeNormal, kUIOptionAutoShowMenuBar);
+#endif
 	closeDevice();
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	for (u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
@@ -583,7 +593,12 @@ bool CIrrDeviceMacOSX::createWindow()
 	CGDirectDisplayID       display=CGMainDisplayID();
 	CGLPixelFormatObj       pixelFormat;
 	CGRect                  displayRect;
-	CFDictionaryRef         displaymode, olddisplaymode;
+#ifdef __MAC_10_6
+    CGDisplayModeRef        displaymode, olddisplaymode;
+#else
+    CFDictionaryRef         displaymode, olddisplaymode;
+#endif
+    
 	GLint                   numPixelFormats, newSwapInterval;
 
 	int alphaSize = CreationParams.WithAlphaChannel?4:0;
@@ -593,8 +608,6 @@ bool CIrrDeviceMacOSX::createWindow()
 
 	ScreenWidth = (int) CGDisplayPixelsWide(display);
 	ScreenHeight = (int) CGDisplayPixelsHigh(display);
-
-	VideoModeList.setDesktop(CreationParams.Bits, core::dimension2d<u32>(ScreenWidth, ScreenHeight));
 
 	// we need to check where the exceptions may happen and work at them
 	// for now we will just catch them to be able to avoid an app exit
@@ -714,14 +727,56 @@ bool CIrrDeviceMacOSX::createWindow()
 		}
 		else
 		{
-			displaymode = CGDisplayBestModeForParameters(display,CreationParams.Bits,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height,NULL);
+#ifdef __MAC_10_6
+            displaymode = CGDisplayCopyDisplayMode(display);
+
+            CFArrayRef Modes = CGDisplayCopyAllDisplayModes(display, NULL);
+
+            for(int i = 0; i < CFArrayGetCount(Modes); ++i)
+            {
+                CGDisplayModeRef CurrentMode = (CGDisplayModeRef)CFArrayGetValueAtIndex(Modes, i);
+                
+                u8 Depth = 0;
+                
+                CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(CurrentMode);
+                
+                if(CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                    Depth = 32;
+                else
+                if(CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                    Depth = 16;
+                else
+                if(CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                    Depth = 8;
+
+                if(Depth == CreationParams.Bits)
+                    if((CGDisplayModeGetWidth(CurrentMode) == CreationParams.WindowSize.Width) && (CGDisplayModeGetHeight(CurrentMode) == CreationParams.WindowSize.Height))
+                    {
+                        displaymode = CurrentMode;
+                        break;
+                    }
+            }
+#else
+            displaymode = CGDisplayBestModeForParameters(display,CreationParams.Bits,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height,NULL);
+#endif
+            
 			if (displaymode != NULL)
 			{
+#ifdef __MAC_10_6
+                olddisplaymode = CGDisplayCopyDisplayMode(display);
+#else
 				olddisplaymode = CGDisplayCurrentMode(display);
+#endif
+                
 				error = CGCaptureAllDisplays();
 				if (error == CGDisplayNoErr)
 				{
-					error = CGDisplaySwitchToMode(display,displaymode);
+#ifdef __MAC_10_6
+                    error = CGDisplaySetDisplayMode(display, displaymode, NULL);
+#else
+                    error = CGDisplaySwitchToMode(display, displaymode);
+#endif
+                    
 					if (error == CGDisplayNoErr)
 					{
 						CGLPixelFormatAttribute	fullattribs[] =
@@ -752,7 +807,11 @@ bool CIrrDeviceMacOSX::createWindow()
 
 						if (CGLContext != NULL)
 						{
-							CGLSetFullScreen(CGLContext);
+#ifdef __MAC_10_6
+                            CGLSetFullScreenOnDisplay(CGLContext, CGDisplayIDToOpenGLDisplayMask(display));
+#else
+                            CGLSetFullScreen(CGLContext);
+#endif
 							displayRect = CGDisplayBounds(display);
 							ScreenWidth = DeviceWidth = (int)displayRect.size.width;
 							ScreenHeight = DeviceHeight = (int)displayRect.size.height;
@@ -776,7 +835,12 @@ bool CIrrDeviceMacOSX::createWindow()
 	{
 		// fullscreen?
 		if (Window == NULL && !CreationParams.WindowId) //hide menus in fullscreen mode only
-			SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
+#ifdef __MAC_10_6
+            [NSApp setPresentationOptions:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)];
+#else
+            SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
+#endif
+        
 		CGLSetCurrentContext(CGLContext);
 		newSwapInterval = (CreationParams.Vsync) ? 1 : 0;
 		CGLSetParameter(CGLContext,kCGLCPSwapInterval,&newSwapInterval);
@@ -1036,7 +1100,11 @@ void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	{
 		size = wcstombs(title,text,1024);
 		title[1023] = 0;
-		NSString* name = [NSString stringWithCString:title length:size];
+#ifdef __MAC_10_6
+        NSString* name = [NSString stringWithCString:title encoding:NSUTF8StringEncoding];
+#else
+        NSString* name = [NSString stringWithCString:title length:size];
+#endif
 		[Window setTitle:name];
 		[name release];
 	}
@@ -1147,6 +1215,7 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 	{
 		CGEventRef ourEvent = CGEventCreate(NULL);
 		CGPoint point = CGEventGetLocation(ourEvent);
+        CFRelease(ourEvent);
 
 		ievent.MouseInput.X = (int)point.x;
 		ievent.MouseInput.Y = (int)point.y;
@@ -1178,6 +1247,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 	{
 		CGEventRef ourEvent = CGEventCreate(NULL);
 		CGPoint point = CGEventGetLocation(ourEvent);
+        CFRelease(ourEvent);
 
 		x = (int)point.x;
 		y = (int)point.y;
@@ -1188,7 +1258,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 			// In fullscreen mode, events are not sent regularly so rely on polling
 			irr::SEvent ievent;
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+			ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 			ievent.MouseInput.X = x;
 			ievent.MouseInput.Y = y;
 			postEventFromUser(ievent);
@@ -1220,7 +1290,15 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 
 	c.x = p.x;
 	c.y = p.y;
-	CGSetLocalEventsSuppressionInterval(0);
+    
+#ifdef __MAC_10_6
+    /*CGEventSourceRef SourceRef = CGEventSourceCreate(0); 
+	CGEventSourceSetLocalEventsSuppressionInterval(SourceRef, 0); 
+	CFRelease(SourceRef);*/
+    CGSetLocalEventsSuppressionInterval(0);
+#else
+    CGSetLocalEventsSuppressionInterval(0);
+#endif
 	CGWarpMouseCursorPosition(c);
 }
 
@@ -1707,7 +1785,36 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 		CGDirectDisplayID display;
 		display = CGMainDisplayID();
 
-		CFArrayRef availableModes = CGDisplayAvailableModes(display);
+#ifdef __MAC_10_6
+        CFArrayRef Modes = CGDisplayCopyAllDisplayModes(display, NULL);
+
+        for(int i = 0; i < CFArrayGetCount(Modes); ++i)
+        {
+            CGDisplayModeRef CurrentMode = (CGDisplayModeRef)CFArrayGetValueAtIndex(Modes, i);
+            
+            u8 Depth = 0;
+            
+            CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(CurrentMode);
+            
+            if(CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                Depth = 32;
+            else
+            if(CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                Depth = 16;
+            else
+            if(CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                Depth = 8;
+            
+            if(Depth)
+            {
+                unsigned int Width = CGDisplayModeGetWidth(CurrentMode);
+                unsigned int Height = CGDisplayModeGetHeight(CurrentMode);
+                
+                VideoModeList.addMode(core::dimension2d<u32>(Width, Height), Depth);
+            }
+        }
+#else
+        CFArrayRef availableModes = CGDisplayAvailableModes(display);
 		unsigned int numberOfAvailableModes = CFArrayGetCount(availableModes);
 		for (u32 i= 0; i<numberOfAvailableModes; ++i)
 		{
@@ -1726,6 +1833,7 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 			VideoModeList.addMode(core::dimension2d<u32>(width, height),
 				bitsPerPixel);
 		}
+#endif
 	}
 	return &VideoModeList;
 }
