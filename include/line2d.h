@@ -142,8 +142,8 @@ class line2d
 							out += l.start;
 						if (l.end != maxp && l.end != minp)
 							out += l.end;
-						out.X = (T)(out.X*0.5f);
-						out.Y = (T)(out.Y*0.5f);
+						out.X = (T)(out.X/2);
+						out.Y = (T)(out.Y/2);
 					}
 
 					return true; // coincident
@@ -213,17 +213,17 @@ class line2d
 		//! Get the closest point on this line to a point
 		vector2d<T> getClosestPoint(const vector2d<T>& point) const
 		{
-			vector2d<T> c = point - start;
-			vector2d<T> v = end - start;
-			T d = (T)v.getLength();
+			vector2d<f64> c((f64)(point.X-start.X), (f64)(point.Y- start.Y));
+			vector2d<f64> v((f64)(end.X-start.X), (f64)(end.Y-start.Y));
+			f64 d = v.getLength();
 			v /= d;
-			T t = v.dotProduct(c);
+			f64 t = v.dotProduct(c);
 
-			if (t < (T)0.0) return start;
-			if (t > d) return end;
+			if (t < 0) return vector2d<T>((T)start.X, (T)start.Y);
+			if (t > d) return vector2d<T>((T)end.X, (T)end.Y);
 
 			v *= t;
-			return start + v;
+			return vector2d<T>((T)(start.X + v.X), (T)(start.Y + v.Y));
 		}
 
 		//! Start point of the line.
@@ -231,6 +231,24 @@ class line2d
 		//! End point of the line.
 		vector2d<T> end;
 };
+
+	// partial specialization to optimize <f32> lines 
+	template <>
+	inline vector2df line2d<irr::f32>::getClosestPoint(const vector2df& point) const
+	{
+		vector2df c = point - start;
+		vector2df v = end - start;
+		f32 d = (f32)v.getLength();
+		v /= d;
+		f32 t = v.dotProduct(c);
+
+		if (t < 0) return start;
+		if (t > d) return end;
+
+		v *= t;
+		return start + v;
+	}
+
 
 	//! Typedef for an f32 line.
 	typedef line2d<f32> line2df;

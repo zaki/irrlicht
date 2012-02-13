@@ -1,4 +1,7 @@
 Changes in 1.8 (??.??.2011)
+
+ - line2d::intersectWith and and line2d::getClosestPoint work now also with integers.
+
  - line2d::getMiddle and line3d::getMiddle work now also with integers. But can be slower for compilers which are not optimizing division by 2 to multiplication by 0.5 for floats.
 
  - Add IGUIEnvironment::getHovered to get the element most recently known to be under the mouse cursor
