@@ -264,6 +264,34 @@ bool line2dIntersectWith(void)
 							true, vector2df(2.0f, 1.0f));
 	assert(allExpected);
 
+	if(!allExpected)
+		logTestString("\nline2dIntersectWith failed\n");
+
+	return allExpected;
+}
+
+bool getClosestPoint(void)
+{
+	// testcase that fails when integers are handled like floats
+	irr::core::line2di line(-283, -372, 374, 289);
+	irr::core::vector2di p1 = line.getClosestPoint( irr::core::vector2di(290,372) );
+	irr::core::vector2di p2 = line.getClosestPoint( irr::core::vector2di(135,372) );
+	if( p1 == p2 )
+	{
+		logTestString("\getClosestPoint failed\n");
+		return false;
+	}
+
+	return true;
+}
+
+bool testLine2d(void)
+{
+	bool allExpected = true;
+
+	allExpected &= line2dIntersectWith();
+	allExpected &= getClosestPoint();
+
 	if(allExpected)
 		logTestString("\nAll tests passed\n");
 	else
@@ -271,4 +299,3 @@ bool line2dIntersectWith(void)
 
 	return allExpected;
 }
-

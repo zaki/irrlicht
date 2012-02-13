@@ -59,7 +59,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(exports);
 	TEST(irrCoreEquals);
 	TEST(testIrrString);
-	TEST(line2dIntersectWith);
+	TEST(testLine2d);
 	TEST(matrixOps);
 	TEST(testDimension2d);
 	TEST(testVector2d);
@@ -103,7 +103,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(ioScene);
 	// all driver checks
 	TEST(videoDriver);
-	TEST(screenshot);
+//	TEST(screenshot);
 	TEST(drawPixel);
 	TEST(drawRectOutline);
 	TEST(material);

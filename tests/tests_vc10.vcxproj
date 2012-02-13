@@ -109,7 +109,6 @@
     <ClCompile Include="irrString.cpp" />
     <ClCompile Include="lightMaps.cpp" />
     <ClCompile Include="lights.cpp" />
-    <ClCompile Include="line2dIntersectWith.cpp" />
     <ClCompile Include="loadTextures.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="makeColorKeyTexture.cpp" />
@@ -135,6 +134,7 @@
     <ClCompile Include="testaabbox.cpp" />
     <ClCompile Include="testDimension2d.cpp" />
     <ClCompile Include="testGeometryCreator.cpp" />
+    <ClCompile Include="testLine2d.cpp" />
     <ClCompile Include="testQuaternion.cpp" />
     <ClCompile Include="testS3DVertex.cpp" />
     <ClCompile Include="testUtils.cpp" />
