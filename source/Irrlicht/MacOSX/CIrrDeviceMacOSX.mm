@@ -44,7 +44,8 @@
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDKeys.h>
 
-#ifndef __MAC_10_6
+// only OSX 10.5 seems to not need these defines...
+#if !defined(__MAC_10_5) || defined(__MAC_10_6)
 // Contents from Events.h from Carbon/HIToolbox but we need it with Cocoa too
 // and for some reason no Cocoa equivalent of these constants seems provided.
 // So I'm doing like everyone else and using copy-and-paste.
