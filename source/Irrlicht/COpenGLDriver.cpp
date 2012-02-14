@@ -178,6 +178,7 @@ bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 		{
 			pfd.cDepthBits = 24;
 		}
+		else
 		if (i == 3)
 		{
 			if (Params.Bits!=16)
@@ -4442,6 +4443,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		}
 		glReadBuffer(tgt);
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, type, pixels);
+		testGLError();
 		glReadBuffer(GL_BACK);
 	}
 
