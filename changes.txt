@@ -1,5 +1,9 @@
 Changes in 1.8 (??.??.2011)
 
+ - XML-reader now preserves all whitespace. So even newlines are now returned as EXN_TEXT nodes.
+
+ - CXMLReader initializes IsEmptyElement now.
+
  - line2d::intersectWith and and line2d::getClosestPoint work now also with integers.
 
  - line2d::getMiddle and line3d::getMiddle work now also with integers. But can be slower for compilers which are not optimizing division by 2 to multiplication by 0.5 for floats.
@@ -317,7 +321,7 @@ Changes in 1.7.3 (20.02.2012)
 
  - Additional keymappings for X11 (tested with german and us keyboards which seem to work now in all cases).
 
- - Fix crash in multiline editbox when pasting several lines into it on Windows.
+ - Fix crash in multiline editbox when pasting several lines into it on Windows (found by Reiko)
 
  - example 09.Meshviewer no longer catches keys while a modal dialog is open
 

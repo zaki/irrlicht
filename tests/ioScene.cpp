@@ -60,11 +60,11 @@ static bool saveScene(void)
 
 	logTestString("Test scene.irr");
 	smgr->saveScene("results/scene.irr");
-	bool result = binaryCompareFiles("results/scene.irr", "media/scene.irr");
+	bool result = xmlCompareFiles(device->getFileSystem(), "results/scene.irr", "media/scene.irr");
 
 	logTestString("Test scene2.irr");
 	smgr->saveScene("results/scene2.irr", 0, node3);
-	result &= binaryCompareFiles("results/scene2.irr", "media/scene2.irr");
+	result &= xmlCompareFiles(device->getFileSystem(), "results/scene2.irr", "media/scene2.irr");
 
 	device->closeDevice();
 	device->run();

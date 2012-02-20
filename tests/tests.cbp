@@ -38,6 +38,9 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-fno-exceptions" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-D_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add library="Xxf86vm" />
@@ -83,7 +86,6 @@
 		<Unit filename="irrString.cpp" />
 		<Unit filename="lightMaps.cpp" />
 		<Unit filename="lights.cpp" />
-		<Unit filename="testLine2d.cpp" />
 		<Unit filename="loadTextures.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />
@@ -106,6 +108,7 @@
 		<Unit filename="terrainSceneNode.cpp" />
 		<Unit filename="testDimension2d.cpp" />
 		<Unit filename="testGeometryCreator.cpp" />
+		<Unit filename="testLine2d.cpp" />
 		<Unit filename="testQuaternion.cpp" />
 		<Unit filename="testS3DVertex.cpp" />
 		<Unit filename="testUtils.cpp" />
