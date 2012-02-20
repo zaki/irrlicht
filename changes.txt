@@ -295,7 +295,7 @@ The following names can be queried for the given types:
  - WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
 
 -----------------------------
-Changes in 1.7.3 (??.??.2011)
+Changes in 1.7.3 (20.02.2012)
 
  - GUIEditor attributes have now scrollbar to be editable
 
@@ -305,6 +305,10 @@ Changes in 1.7.3 (??.??.2011)
 
  - triangle3d::isPointInsideFast handles 'on-border' cases now consistently.
  
+ - Some more editbox fixes
+
+ - Harden Linux joystick usage, in case the driver returns illegal values
+
  - Bugfix: vector2d.normalize() and vector3d.normalize() had returned wrong results with very short vectors since  Irrlicht 1.5. Thanks to Willem Swart for Bugreport + testcase.
 
  - Unknown keymappings now use the X11 keycode instead of 0 to make such keys at least usable in games.
@@ -317,6 +321,10 @@ Changes in 1.7.3 (??.??.2011)
 
  - example 09.Meshviewer no longer catches keys while a modal dialog is open
 
+ - Fix SSharedMeshBuffer
+
+ - Fix right handed ortho matrix
+
  - editbox no longer displays cursor when disabled
 
  - editbox autoscrolling now at least works good enough to actually show the text which the user is typing in.
@@ -325,12 +333,20 @@ Changes in 1.7.3 (??.??.2011)
 
  - Fix crash in editbox when scrolling up with empty first lines caused by textwrapping.
 
+ - Fix endianess conversions
+
+ - Changes to isPointInside
+
  - Fix focus problem when removing an unfocused modal dialog reported by Reiko here: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=44358
+
+ - Fix md2 normals problem again
 
  - Add integer template specialization for vector3d::getSphericalCoordinateAngles which rounds angles to nearest integer now.
 
  - Recalculate FrameRect and ScrollPos in CGUIEditBox when AbsoluteRect gets changed (thx @ serengeor for report + testcase)
  
+ - Fix crash in editbox
+
  - Fix 'k' in bigfont.png (thx @ Scrappi for reporting)
 
  - fix serialization for CBillboardSceneNode, it had missed 2 color (thx for finding + patch from pc0de)
@@ -341,6 +357,10 @@ Changes in 1.7.3 (??.??.2011)
  
  - Fix crash in collada (.dae) loading
   
+ - Fix bug handling in case RTT is not properly created
+
+ - Fix SColorf interpolation
+
  - Fix memory-leaks in example 22 MaterialViewer
 
  - Fix array::erase which did destroy objects more than once when used with a range (thx @ RedDragCZ for reporting + testcase).
@@ -350,6 +370,8 @@ Changes in 1.7.3 (??.??.2011)
  - ICameraSceneNode::IsOrthogonal is correctly serialized and cloned now.
 
  - CGUIScrollBar passes unused mousemove-events now to parent element. Fixes focus-bug in ComboBox reported by REDDemon here: http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=43474&highlight=
+
+ - Fix getAngle and getAngleWith
 
  - Fix clipping in CGUITabControl
 

@@ -134,7 +134,7 @@ The Irrlicht Engine SDK version 1.8
   The Irrlicht Engine License
   ===========================
 
-  Copyright (C) 2002-2011 Nikolaus Gebhardt
+  Copyright (C) 2002-2012 Nikolaus Gebhardt
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
