@@ -169,7 +169,10 @@ Now for the real fun. We create an Irrlicht Device and start to setup the scene.
 */
 int main()
 {
-	// let user select driver type
+	// ask user for driver
+	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
+	if (driverType==video::EDT_COUNT)
+		return 1;
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
 	if (driverType==video::EDT_COUNT)
 		return 1;
@@ -181,7 +184,6 @@ int main()
 
 	if (device == 0)
 		return 1; // could not create selected driver.
-
 
 	/*
 	Before we start with the interesting stuff, we do some simple things:
