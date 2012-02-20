@@ -265,9 +265,11 @@ private:
 	//! sets the state that text was found. Returns true if set should be set
 	bool setText(char_type* start, char_type* end)
 	{
-		// check if text is more than 2 characters, and if not, check if there is
-		// only white space, so that this text won't be reported
-		if (end - start < 3)
+		// By default xml preserves all whitespace.
+		// We could add evaluation of xml:space commands some day or maybe add
+		// a flag to preserve/ignore whitespace.
+
+		/* This removes text-nodes which are whitespace only:
 		{
 			char_type* p = start;
 			for(; p != end; ++p)
@@ -277,6 +279,7 @@ private:
 			if (p == end)
 				return false;
 		}
+		*/
 
 		// set current text to the parsed text, and replace xml special characters
 		core::string<char_type> s(start, (int)(end - start));
@@ -801,7 +804,7 @@ private:
 	ETEXT_FORMAT SourceFormat;   // source format of the xml file
 	ETEXT_FORMAT TargetFormat;   // output format of this parser
 
-	core::string<char_type> NodeName;    // name of the node currently in
+	core::string<char_type> NodeName;    // name of the node currently in - also used for text
 	core::string<char_type> EmptyString; // empty string to be returned by getSafe() methods
 
 	bool IsEmptyElement;       // is the currently parsed node empty?

@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Win32 - Debug - dll">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/win32-gcc-debug-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -52,7 +52,7 @@
 			</Target>
 			<Target title="Win32 - Release - accurate math - dll">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/win32-gcc-release-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -94,7 +94,7 @@
 			</Target>
 			<Target title="Win32 - Release - fast math - dll">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/win32-gcc-release-fast-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -137,7 +137,7 @@
 			</Target>
 			<Target title="Win32 - Debug - static">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="../obj/win32-gcc-debug-static" />
 				<Option type="2" />
@@ -176,7 +176,7 @@
 			</Target>
 			<Target title="Win32 - Release - accurate math - static">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="../obj/win32-gcc-release-dll" />
 				<Option type="2" />
@@ -216,7 +216,7 @@
 			</Target>
 			<Target title="Win32 - Release - fast math - static">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Win32-gcc/libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="../obj/win32-gcc-release-fast-static" />
 				<Option type="2" />
@@ -264,13 +264,14 @@
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-W" />
+					<Add option="-Wextra" />
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-W" />
 					<Add option="-O0" />
-					<Add option="-Wextra" />
 					<Add option="-Wno-unused-parameter" />
 					<Add option="-fPIC" />
+					<Add option="-fno-exceptions" />
 					<Add option="-D_DEBUG" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
@@ -294,10 +295,11 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-W" />
 					<Add option="-Wextra" />
+					<Add option="-W" />
 					<Add option="-Wno-unused-parameter" />
 					<Add option="-fPIC" />
+					<Add option="-fno-exceptions" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
@@ -320,10 +322,11 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-W" />
 					<Add option="-Wextra" />
+					<Add option="-W" />
 					<Add option="-Wno-unused-parameter" />
 					<Add option="-ffast-math" />
+					<Add option="-fno-exceptions" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
@@ -345,13 +348,13 @@
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-W" />
+					<Add option="-Wextra" />
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-W" />
 					<Add option="-O0" />
-					<Add option="-Wextra" />
 					<Add option="-Wno-unused-parameter" />
-					<Add option="-fPIC" />
+					<Add option="-fno-exceptions" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_DEBUG" />
 					<Add directory="../../include" />
@@ -375,10 +378,10 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-W" />
 					<Add option="-Wextra" />
+					<Add option="-W" />
 					<Add option="-Wno-unused-parameter" />
-					<Add option="-fPIC" />
+					<Add option="-fno-exceptions" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
@@ -401,11 +404,11 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-W" />
 					<Add option="-Wextra" />
+					<Add option="-W" />
 					<Add option="-Wno-unused-parameter" />
 					<Add option="-ffast-math" />
-					<Add option="-fPIC" />
+					<Add option="-fno-exceptions" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />

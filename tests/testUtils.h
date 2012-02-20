@@ -20,6 +20,13 @@
 	\return true if the files are identical, false on any error or difference. */
 extern bool binaryCompareFiles(const char * fileName1, const char * fileName2);
 
+//! Compare two xml-files (which can have different types of text-encoding)
+/** \param fs Filesystem which should be used.
+	\param fileName1 The first file for comparison.
+	\param fileName2 The second file for comparison.
+	\return true if the files are identical, false on any error or difference. */
+extern bool xmlCompareFiles(irr::io::IFileSystem * fs, const char * fileName1, const char * fileName2);
+
 //! Take a screenshot and compare it against a reference screenshot in the tests/media subdirectory
 /** \param driver The Irrlicht video driver.
 	\param fileName The unique filename suffix that will be appended to the name of the video driver.

@@ -278,7 +278,7 @@ bool getClosestPoint(void)
 	irr::core::vector2di p2 = line.getClosestPoint( irr::core::vector2di(135,372) );
 	if( p1 == p2 )
 	{
-		logTestString("\getClosestPoint failed\n");
+		logTestString("getClosestPoint failed\n");
 		return false;
 	}
 
