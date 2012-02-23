@@ -517,17 +517,34 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 
 bool COpenGLDriver::changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceLinux* device)
 {
-	if (videoData.OpenGLLinux.X11Display && videoData.OpenGLLinux.X11Window && videoData.OpenGLLinux.X11Context)
+	if (videoData.OpenGLLinux.X11Window)
 	{
-		if (!glXMakeCurrent((Display*)videoData.OpenGLLinux.X11Display, videoData.OpenGLLinux.X11Window, (GLXContext)videoData.OpenGLLinux.X11Context))
+		if (videoData.OpenGLLinux.X11Display && videoData.OpenGLLinux.X11Context)
 		{
-			os::Printer::log("Render Context switch failed.");
-			return false;
+			if (!glXMakeCurrent((Display*)videoData.OpenGLLinux.X11Display, videoData.OpenGLLinux.X11Window, (GLXContext)videoData.OpenGLLinux.X11Context))
+			{
+				os::Printer::log("Render Context switch failed.");
+				return false;
+			}
+			else
+			{
+				Drawable = videoData.OpenGLLinux.X11Window;
+				X11Display = (Display*)videoData.OpenGLLinux.X11Display;
+			}
 		}
 		else
 		{
-			Drawable = videoData.OpenGLLinux.X11Window;
-			X11Display = (Display*)videoData.OpenGLLinux.X11Display;
+			// in case we only got a window ID, try with the existing values for display and context
+			if (!glXMakeCurrent((Display*)ExposedData.OpenGLLinux.X11Display, videoData.OpenGLLinux.X11Window, (GLXContext)ExposedData.OpenGLLinux.X11Context))
+			{
+				os::Printer::log("Render Context switch failed.");
+				return false;
+			}
+			else
+			{
+				Drawable = videoData.OpenGLLinux.X11Window;
+				X11Display = (Display*)ExposedData.OpenGLLinux.X11Display;
+			}
 		}
 	}
 	// set back to main context
