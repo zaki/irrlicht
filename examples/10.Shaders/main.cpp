@@ -223,7 +223,7 @@ int main()
 	but not pixel shaders, we create a new material which only uses the
 	vertex shader, and no pixel shader. Otherwise, if we would tell the
 	engine to create this material and the engine sees that the hardware
-	wouldn't be able to fullfill the request completely, it would not
+	wouldn't be able to fulfill the request completely, it would not
 	create any new material at all. So in this example you would see at
 	least the vertex shader in action, without the pixel shader.
 	*/
@@ -260,7 +260,7 @@ int main()
 	names, then you could write the code of the shader directly as string.
 	The following parameter is a pointer to the IShaderConstantSetCallBack
 	class we wrote at the beginning of this tutorial. If you don't want to
-	set constants, set this to 0. The last paramter tells the engine which
+	set constants, set this to 0. The last parameter tells the engine which
 	material it should use as base material.
 
 	To demonstrate this, we create two materials with a different base
