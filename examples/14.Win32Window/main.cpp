@@ -4,7 +4,7 @@ This example only runs under MS Windows and demonstrates that Irrlicht can
 render inside a win32 window. MFC and .NET Windows.Forms windows are possible,
 too.
 
-In the begining, we create a windows window using the windows API. I'm not
+In the beginning, we create a windows window using the windows API. I'm not
 going to explain this code, because it is windows specific. See the MSDN or a
 windows book for details.
 */

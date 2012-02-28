@@ -428,7 +428,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 
 
 		// add collision
-		// find out if shader is marked als nonsolid
+		// find out if shader is marked as nonsolid
 		u8 doCreate = meta !=0  ;
 
 		if ( shader )

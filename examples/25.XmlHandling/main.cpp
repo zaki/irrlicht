@@ -5,7 +5,7 @@ Demonstrates loading and saving of configurations via XML
 @author Y.M. Bosman	\<yoran.bosman@gmail.com\>
 
 This demo features a fully usable system for configuration handling. The code
-can easily be intergrated into own apps.
+can easily be integrated into own apps.
 
 */
 
@@ -89,7 +89,7 @@ public:
 	*/
 	bool load()
 	{
-		//if not able to create device dont attempt to load
+		//if not able to create device don't attempt to load
 		if (!NullDevice)
 			return false;
 
@@ -98,7 +98,7 @@ public:
 			return false;
 
 		const stringw settingTag(L"setting"); //we'll be looking for this tag in the xml
-		stringw currentSection; //keep track of our currentsection
+		stringw currentSection; //keep track of our current section
 		const stringw videoTag(L"video"); //constant for videotag
 
 		//while there is more to read
@@ -388,7 +388,7 @@ void createSettingsDialog(SAppContext& app)
 	app.Gui->addStaticText (L"Resolution", rect< s32 >(10,130, 200, 140), false, true, windowSettings);
 	app.ListboxResolution = app.Gui->addListBox(rect<s32>(10,140,220,200), windowSettings, 1,true);
 
-	//add all available options tothe resolution listbox
+	//add all available options to the resolution listbox
 	map<stringw, dimension2du>::Iterator ri = app.Settings->ResolutionOptions.getIterator();
 	for(; !ri.atEnd(); ri++)
 		app.ListboxResolution->addItem(ri->getKey().c_str());
