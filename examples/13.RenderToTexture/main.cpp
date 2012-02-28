@@ -149,7 +149,7 @@ int main()
 	Nearly finished. Now we need to draw everything. Every frame, we draw
 	the scene twice. Once from the fixed camera into the render target
 	texture and once as usual. When rendering into the render target, we
-	need to disable the visibilty of the test cube, because it has the
+	need to disable the visibility of the test cube, because it has the
 	render target texture applied to it. That's it, wasn't too complicated
 	I hope. :)
 	*/

@@ -460,7 +460,7 @@ int main()
 	context.ButtonSimulateBadFps->setIsPushButton(true);
 	context.ButtonChangeIcon = env->addButton( rect<s32>( 410, 140, 560, 160 ), 0, -1, L"replace cursor icon\n(cursor+sprite must be selected)" );
 
-	// set the names for alll the system cursors
+	// set the names for all the system cursors
 	for ( int i=0; i < (int)gui::ECI_COUNT; ++i )
 	{
 		context.CursorBox->addItem(stringw( GUICursorIconNames[i] ).c_str());
@@ -543,7 +543,7 @@ int main()
 			driver->endScene();
 		}
 
-		// By simulating bad fps we can find out if hardware-support for cusors works or not. If it works the cursor will move as usual,while it otherwise will just update with 2 fps now.
+		// By simulating bad fps we can find out if hardware-support for cursors works or not. If it works the cursor will move as usual,while it otherwise will just update with 2 fps now.
 		if ( context.SimulateBadFps )
 		{
 			device->sleep(500);	// 2 fps
