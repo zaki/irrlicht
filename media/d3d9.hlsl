@@ -65,7 +65,7 @@ struct PS_OUTPUT
 };
 
 
-sampler2D myTexture : register(s0);
+sampler2D myTexture;
 	
 PS_OUTPUT pixelMain(float2 TexCoord : TEXCOORD0,
 					float4 Position : POSITION,
