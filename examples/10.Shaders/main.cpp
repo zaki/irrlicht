@@ -105,11 +105,14 @@ public:
 		if (UseHighLevelShaders)
 		{
 			services->setVertexShaderConstant("mTransWorld", world.pointer(), 16);
-			// set texture
-			f32 TextureLayerID = 0.0f;
-			if (UseHighLevelShaders)
-				services->setVertexShaderConstant("myTexture",
-						reinterpret_cast<f32*>(&TextureLayerID), 1);
+			if(driver->getDriverType() == video::EDT_OPENGL)
+			{
+				// set texture
+				f32 TextureLayerID = 0.0f;
+				if (UseHighLevelShaders)
+					services->setPixelShaderConstant("myTexture",
+							reinterpret_cast<f32*>(&TextureLayerID), 1);
+			}
 		}
 		else
 			services->setVertexShaderConstant(world.pointer(), 10, 4);
