@@ -31,7 +31,7 @@ public:
 
 	//! Constructor
 	CXMLReaderImpl(IFileReadCallBack* callback, bool deleteCallBack = true)
-		: TextData(0), P(0), TextBegin(0), TextSize(0), CurrentNodeType(EXN_NONE),
+		: IgnoreWhitespaceText(true), TextData(0), P(0), TextBegin(0), TextSize(0), CurrentNodeType(EXN_NONE),
 		SourceFormat(ETF_ASCII), TargetFormat(ETF_ASCII), IsEmptyElement(false)
 	{
 		if (!callback)
@@ -265,11 +265,10 @@ private:
 	//! sets the state that text was found. Returns true if set should be set
 	bool setText(char_type* start, char_type* end)
 	{
-		// By default xml preserves all whitespace.
-		// We could add evaluation of xml:space commands some day or maybe add
-		// a flag to preserve/ignore whitespace.
-
-		/* This removes text-nodes which are whitespace only:
+		// By default xml preserves all whitespace. But Irrlicht dropped some whitespace by default 
+		// in the past which did lead to OS dependent behavior. We just ignore all whitespace for now 
+		// as it's the closest to fixing behavior without breaking downward compatibility too much. 
+		if ( IgnoreWhitespaceText )
 		{
 			char_type* p = start;
 			for(; p != end; ++p)
@@ -279,7 +278,6 @@ private:
 			if (p == end)
 				return false;
 		}
-		*/
 
 		// set current text to the parsed text, and replace xml special characters
 		core::string<char_type> s(start, (int)(end - start));
@@ -794,7 +792,7 @@ private:
 
 
 	// instance variables:
-
+	bool IgnoreWhitespaceText;	 // do not return EXN_TEXT nodes for pure whitespace
 	char_type* TextData;         // data block of the text file
 	char_type* P;                // current point in text to parse
 	char_type* TextBegin;        // start of text to parse
