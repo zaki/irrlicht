@@ -14,37 +14,38 @@ namespace irr
 namespace video
 {
 
-CD3D9CgUniformSampler2D::CD3D9CgUniformSampler2D(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+CD3D9CgUniformSampler2D::CD3D9CgUniformSampler2D(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_SAMPLER2D;
 }
 
-void CD3D9CgUniformSampler2D::update(const float* pData, const SMaterial& pMaterial) const
+void CD3D9CgUniformSampler2D::update(const void* data, const SMaterial& material) const
 {
-	int LayerID = (int)*pData;
+	s32* Data = (s32*)data;
+	s32 LayerID = *Data;
 
-	if (pMaterial.TextureLayer[LayerID].Texture)
+	if (material.TextureLayer[LayerID].Texture)
 	{
-		IDirect3DBaseTexture9* Texture = reinterpret_cast<irr::video::CD3D9Texture*>(pMaterial.TextureLayer[LayerID].Texture)->getDX9Texture();
+		IDirect3DBaseTexture9* Texture = reinterpret_cast<irr::video::CD3D9Texture*>(material.TextureLayer[LayerID].Texture)->getDX9Texture();
 
 		cgD3D9SetTextureParameter(Parameter, Texture);
 	}
 }
 
-CD3D9CgMaterialRenderer::CD3D9CgMaterialRenderer(CD3D9Driver* pDriver, s32& pMaterialType,
-	const c8* pVertexProgram, const c8* pVertexEntry, E_VERTEX_SHADER_TYPE pVertexProfile,
-	const c8* pFragmentProgram, const c8* pFragmentEntry, E_PIXEL_SHADER_TYPE pFragmentProfile,
-	const c8* pGeometryProgram, const c8* pGeometryEntry, E_GEOMETRY_SHADER_TYPE pGeometryProfile,
-	scene::E_PRIMITIVE_TYPE pInType, scene::E_PRIMITIVE_TYPE pOutType, u32 pVertices,
-	IShaderConstantSetCallBack* pCallBack, IMaterialRenderer* pBaseMaterial, s32 pUserData) :
-	Driver(pDriver), CCgMaterialRenderer(pCallBack, pBaseMaterial, pUserData)
+CD3D9CgMaterialRenderer::CD3D9CgMaterialRenderer(CD3D9Driver* driver, s32& materialType,
+	const c8* vertexProgram, const c8* vertexEntry, E_VERTEX_SHADER_TYPE vertexProfile,
+	const c8* fragmentProgram, const c8* fragmentEntry, E_PIXEL_SHADER_TYPE fragmentProfile,
+	const c8* geometryProgram, const c8* geometryEntry, E_GEOMETRY_SHADER_TYPE geometryProfile,
+	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType, u32 vertices,
+	IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData) :
+	Driver(driver), CCgMaterialRenderer(callback, baseMaterial, userData)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9CgMaterialRenderer");
 	#endif
 
-	init(pMaterialType, pVertexProgram, pVertexEntry, pVertexProfile, pFragmentProgram, pFragmentEntry, pFragmentProfile,
-		pGeometryProgram, pGeometryEntry, pGeometryProfile, pInType, pOutType, pVertices);
+	init(materialType, vertexProgram, vertexEntry, vertexProfile, fragmentProgram, fragmentEntry, fragmentProfile,
+		geometryProgram, geometryEntry, geometryProfile, inType, outType, vertices);
 }
 
 CD3D9CgMaterialRenderer::~CD3D9CgMaterialRenderer()
@@ -66,11 +67,11 @@ CD3D9CgMaterialRenderer::~CD3D9CgMaterialRenderer()
 	}*/
 }
 
-void CD3D9CgMaterialRenderer::OnSetMaterial(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS, IMaterialRendererServices* pService)
+void CD3D9CgMaterialRenderer::OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services)
 {
-	Material = pMaterial;
+	Material = material;
 
-	if (pMaterial.MaterialType != pLastMaterial.MaterialType || pResetRS)
+	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexProgram)
 			cgD3D9BindProgram(VertexProgram);
@@ -82,16 +83,16 @@ void CD3D9CgMaterialRenderer::OnSetMaterial(const SMaterial& pMaterial, const SM
 			cgD3D9BindProgram(GeometryProgram);*/
 
 		if (BaseMaterial)
-			BaseMaterial->OnSetMaterial(pMaterial, pMaterial, true, this);
+			BaseMaterial->OnSetMaterial(material, material, true, this);
 	}
 
 	if (CallBack)
-		CallBack->OnSetMaterial(pMaterial);
+		CallBack->OnSetMaterial(material);
 
-	Driver->setBasicRenderStates(pMaterial, pLastMaterial, pResetRS);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
-bool CD3D9CgMaterialRenderer::OnRender(IMaterialRendererServices* pService, E_VERTEX_TYPE pVertexType)
+bool CD3D9CgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
 {
 	if (CallBack && (VertexProgram || FragmentProgram || GeometryProgram))
 		CallBack->OnSetConstants(this, UserData);
@@ -114,9 +115,9 @@ void CD3D9CgMaterialRenderer::OnUnsetMaterial()
 	Material = IdentityMaterial;;
 }
 
-void CD3D9CgMaterialRenderer::setBasicRenderStates(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS)
+void CD3D9CgMaterialRenderer::setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates)
 {
-	Driver->setBasicRenderStates(pMaterial, pLastMaterial, pResetRS);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 IVideoDriver* CD3D9CgMaterialRenderer::getVideoDriver()
@@ -124,24 +125,24 @@ IVideoDriver* CD3D9CgMaterialRenderer::getVideoDriver()
 	return Driver;
 }
 
-void CD3D9CgMaterialRenderer::init(s32& pMaterialType,
-	const c8* pVertexProgram, const c8* pVertexEntry, E_VERTEX_SHADER_TYPE pVertexProfile,
-	const c8* pFragmentProgram, const c8* pFragmentEntry, E_PIXEL_SHADER_TYPE pFragmentProfile,
-	const c8* pGeometryProgram, const c8* pGeometryEntry, E_GEOMETRY_SHADER_TYPE pGeometryProfile,
-	scene::E_PRIMITIVE_TYPE pInType, scene::E_PRIMITIVE_TYPE pOutType, u32 pVertices)
+void CD3D9CgMaterialRenderer::init(s32& materialType,
+	const c8* vertexProgram, const c8* vertexEntry, E_VERTEX_SHADER_TYPE vertexProfile,
+	const c8* fragmentProgram, const c8* fragmentEntry, E_PIXEL_SHADER_TYPE fragmentProfile,
+	const c8* geometryProgram, const c8* geometryEntry, E_GEOMETRY_SHADER_TYPE geometryProfile,
+	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType, u32 vertices)
 {
 	bool Status = true;
 	CGerror Error = CG_NO_ERROR;
-	pMaterialType = -1;
+	materialType = -1;
 
 	// TODO: add profile selection
 
-	if (pVertexProgram)
+	if (vertexProgram)
 	{
 		VertexProfile = cgD3D9GetLatestVertexProfile();
 
 		if (VertexProfile)
-			VertexProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, pVertexProgram, VertexProfile, pVertexEntry, 0);
+			VertexProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, vertexProgram, VertexProfile, vertexEntry, 0);
 
 		if (!VertexProgram)
 		{
@@ -155,12 +156,12 @@ void CD3D9CgMaterialRenderer::init(s32& pMaterialType,
 			cgD3D9LoadProgram(VertexProgram, 0, 0);
 	}
 
-	if (pFragmentProgram)
+	if (fragmentProgram)
 	{
 		FragmentProfile = cgD3D9GetLatestPixelProfile();
 
 		if (FragmentProfile)
-			FragmentProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, pFragmentProgram, FragmentProfile, pFragmentEntry, 0);
+			FragmentProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, fragmentProgram, FragmentProfile, fragmentEntry, 0);
 
 		if (!FragmentProgram)
 		{
@@ -174,12 +175,12 @@ void CD3D9CgMaterialRenderer::init(s32& pMaterialType,
 			cgD3D9LoadProgram(FragmentProgram, 0, 0);
 	}
 
-	/*if (pGeometryProgram)
+	/*if (geometryProgram)
 	{
 		GeometryProfile = cgD3D9GetLatestGeometryProfile();
 
 		if (GeometryProfile)
-			GeometryProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, pGeometryProgram, GeometryProfile, pGeometryEntry, 0);
+			GeometryProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, geometryProgram, GeometryProfile, geometryEntry, 0);
 
 		if (!GeometryProgram)
 		{
@@ -212,7 +213,7 @@ void CD3D9CgMaterialRenderer::init(s32& pMaterialType,
 	}
 
 	if (Status)
-		pMaterialType = Driver->addMaterialRenderer(this);
+		materialType = Driver->addMaterialRenderer(this);
 }
 
 }

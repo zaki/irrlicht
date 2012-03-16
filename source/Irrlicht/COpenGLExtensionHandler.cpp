@@ -43,8 +43,9 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlGetInfoLogARB(0), pGlGetShaderInfoLog(0), pGlGetProgramInfoLog(0),
 	pGlGetObjectParameterivARB(0), pGlGetShaderiv(0), pGlGetProgramiv(0),
 	pGlGetUniformLocationARB(0), pGlGetUniformLocation(0),
-	pGlUniform1ivARB(0), pGlUniform1fvARB(0), pGlUniform2fvARB(0), pGlUniform3fvARB(0), pGlUniform4fvARB(0), pGlUniformMatrix2fvARB(0),
-	pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0),
+	pGlUniform1fvARB(0), pGlUniform2fvARB(0), pGlUniform3fvARB(0), pGlUniform4fvARB(0),
+	pGlUniform1ivARB(0), pGlUniform2ivARB(0), pGlUniform3ivARB(0), pGlUniform4ivARB(0),
+	pGlUniformMatrix2fvARB(0), pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0),
 	pGlGetActiveUniformARB(0), pGlGetActiveUniform(0),
 	pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
@@ -446,11 +447,14 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC) IRR_OGL_LOAD_EXTENSION("glGetProgramiv");
 	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC) IRR_OGL_LOAD_EXTENSION("glGetUniformLocationARB");
 	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) IRR_OGL_LOAD_EXTENSION("glGetUniformLocation");
-	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform4fvARB");
-	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1ivARB");
 	pGlUniform1fvARB = (PFNGLUNIFORM1FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1fvARB");
 	pGlUniform2fvARB = (PFNGLUNIFORM2FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform2fvARB");
 	pGlUniform3fvARB = (PFNGLUNIFORM3FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform3fvARB");
+	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform4fvARB");
+	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1ivARB");
+	pGlUniform2ivARB = (PFNGLUNIFORM2IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform2ivARB");
+	pGlUniform3ivARB = (PFNGLUNIFORM3IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform3ivARB");
+	pGlUniform4ivARB = (PFNGLUNIFORM4IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform4ivARB");
 	pGlUniformMatrix2fvARB = (PFNGLUNIFORMMATRIX2FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix2fvARB");
 	pGlUniformMatrix3fvARB = (PFNGLUNIFORMMATRIX3FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix3fvARB");
 	pGlUniformMatrix4fvARB = (PFNGLUNIFORMMATRIX4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix4fvARB");
