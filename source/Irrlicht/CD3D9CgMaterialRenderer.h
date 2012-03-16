@@ -31,46 +31,46 @@ class IShaderConstantSetCallBack;
 class CD3D9CgUniformSampler2D : public CCgUniform
 {
 public:
-	CD3D9CgUniformSampler2D(const CGparameter& pParameter, bool pIsGlobal);
+	CD3D9CgUniformSampler2D(const CGparameter& parameter, bool global);
 
-	void update(const f32* pData, const SMaterial& pMaterial) const;
+	void update(const void* data, const SMaterial& material) const;
 };
 
 class CD3D9CgMaterialRenderer : public CCgMaterialRenderer
 {
 public:
-	CD3D9CgMaterialRenderer(CD3D9Driver* pDriver, s32& pMaterialType,
-		const c8* pVertexProgram = 0, const c8* pVertexEntry = "main",
-		E_VERTEX_SHADER_TYPE pVertexProfile = video::EVST_VS_1_1,
-		const c8* pFragmentProgram = 0, const c8* pFragmentEntry = "main",
-		E_PIXEL_SHADER_TYPE pFragmentProfile = video::EPST_PS_1_1,
-		const c8* pGeometryProgram = 0, const c8* pGeometryEntry = "main",
-		E_GEOMETRY_SHADER_TYPE pGeometryProfile = video::EGST_GS_4_0,
-		scene::E_PRIMITIVE_TYPE pInType = scene::EPT_TRIANGLES,
-		scene::E_PRIMITIVE_TYPE pOutType = scene::EPT_TRIANGLE_STRIP,
-		u32 pVertices = 0, IShaderConstantSetCallBack* pCallBack = 0,
-		IMaterialRenderer* pBaseMaterial = 0, s32 pUserData = 0);
+	CD3D9CgMaterialRenderer(CD3D9Driver* driver, s32& materialType,
+		const c8* vertexProgram = 0, const c8* vertexEntry = "main",
+		E_VERTEX_SHADER_TYPE vertexProfile = video::EVST_VS_1_1,
+		const c8* fragmentProgram = 0, const c8* fragmentEntry = "main",
+		E_PIXEL_SHADER_TYPE fragmentProfile = video::EPST_PS_1_1,
+		const c8* geometryProgram = 0, const c8* geometryEntry = "main",
+		E_GEOMETRY_SHADER_TYPE geometryProfile = video::EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 vertices = 0, IShaderConstantSetCallBack* callback = 0,
+		IMaterialRenderer* baseMaterial = 0, s32 userData = 0);
 
 	virtual ~CD3D9CgMaterialRenderer();
 
-	virtual void OnSetMaterial(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS, IMaterialRendererServices* pService);
-	virtual bool OnRender(IMaterialRendererServices* pService, E_VERTEX_TYPE pVertexType);
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services);
+	virtual bool OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype);
 	virtual void OnUnsetMaterial();
 
-	virtual void setBasicRenderStates(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS);
+	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates);
 	virtual IVideoDriver* getVideoDriver();
 
 protected:
-	void init(s32& pMaterialType,
-		const c8* pVertexProgram = 0, const c8* pVertexEntry = "main",
-		E_VERTEX_SHADER_TYPE pVertexProfile = video::EVST_VS_1_1,
-		const c8* pFragmentProgram = 0, const c8* pFragmentEntry = "main",
-		E_PIXEL_SHADER_TYPE pFragmentProfile = video::EPST_PS_1_1,
-		const c8* pGeometryProgram = 0, const c8* pGeometryEntry = "main",
-		E_GEOMETRY_SHADER_TYPE pGeometryProfile = video::EGST_GS_4_0,
-		scene::E_PRIMITIVE_TYPE pInType = scene::EPT_TRIANGLES,
-		scene::E_PRIMITIVE_TYPE pOutType = scene::EPT_TRIANGLE_STRIP,
-		u32 pVertices = 0);
+	void init(s32& materialType,
+		const c8* vertexProgram = 0, const c8* vertexEntry = "main",
+		E_VERTEX_SHADER_TYPE vertexProfile = video::EVST_VS_1_1,
+		const c8* fragmentProgram = 0, const c8* fragmentEntry = "main",
+		E_PIXEL_SHADER_TYPE fragmentProfile = video::EPST_PS_1_1,
+		const c8* geometryProgram = 0, const c8* geometryEntry = "main",
+		E_GEOMETRY_SHADER_TYPE geometryProfile = video::EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 vertices = 0);
 
 	CD3D9Driver* Driver;
 };

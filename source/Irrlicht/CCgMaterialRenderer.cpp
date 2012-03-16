@@ -12,11 +12,11 @@ namespace irr
 namespace video
 {
 
-CCgUniform::CCgUniform(const CGparameter& pParameter, bool pIsGlobal) : Parameter(pParameter), Type(CG_UNKNOWN_TYPE)
+CCgUniform::CCgUniform(const CGparameter& parameter, bool global) : Parameter(parameter), Type(CG_UNKNOWN_TYPE)
 {
 	Name = cgGetParameterName(Parameter);
 
-	if(pIsGlobal)
+	if(global)
 		Space = CG_GLOBAL;
 	else
 		Space = CG_PROGRAM;
@@ -42,67 +42,116 @@ CGtype CCgUniform::getType() const
 	return Type;
 }
 
-CCgUniform1f::CCgUniform1f(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+CCgUniform1f::CCgUniform1f(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_FLOAT;
 }
 
-void CCgUniform1f::update(const float* pData, const SMaterial& pMaterial) const
+void CCgUniform1f::update(const void* data, const SMaterial& material) const
 {
-	cgSetParameter1f(Parameter, *pData);
+	f32* Data = (f32*)data;
+	cgSetParameter1f(Parameter, *Data);
 }
 
-CCgUniform2f::CCgUniform2f(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+CCgUniform2f::CCgUniform2f(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_FLOAT2;
 }
 
-void CCgUniform2f::update(const float* pData, const SMaterial& pMaterial) const
+void CCgUniform2f::update(const void* data, const SMaterial& material) const
 {
-	cgSetParameter2f(Parameter, *pData, *(pData+1));
+	f32* Data = (f32*)data;
+	cgSetParameter2f(Parameter, *Data, *(Data+1));
 }
 
-CCgUniform3f::CCgUniform3f(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+CCgUniform3f::CCgUniform3f(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_FLOAT3;
 }
 
-void CCgUniform3f::update(const float* pData, const SMaterial& pMaterial) const
+void CCgUniform3f::update(const void* data, const SMaterial& material) const
 {
-	cgSetParameter3f(Parameter, *pData, *(pData+1), *(pData+2));
+	f32* Data = (f32*)data;
+	cgSetParameter3f(Parameter, *Data, *(Data+1), *(Data+2));
 }
 
-CCgUniform4f::CCgUniform4f(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+CCgUniform4f::CCgUniform4f(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_FLOAT4;
 }
 
-void CCgUniform4f::update(const float* pData, const SMaterial& pMaterial) const
+void CCgUniform4f::update(const void* data, const SMaterial& material) const
 {
-	cgSetParameter4f(Parameter, *pData, *(pData+1), *(pData+2), *(pData+3));
+	f32* Data = (f32*)data;
+	cgSetParameter4f(Parameter, *Data, *(Data+1), *(Data+2), *(Data+3));
 }
 
-CCgUniform4x4f::CCgUniform4x4f(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+CCgUniform1i::CCgUniform1i(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
+{
+	Type = CG_INT;
+}
+
+void CCgUniform1i::update(const void* data, const SMaterial& material) const
+{
+	s32* Data = (s32*)data;
+	cgSetParameter1i(Parameter, *Data);
+}
+
+CCgUniform2i::CCgUniform2i(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
+{
+	Type = CG_INT2;
+}
+
+void CCgUniform2i::update(const void* data, const SMaterial& material) const
+{
+	s32* Data = (s32*)data;
+	cgSetParameter2i(Parameter, *Data, *(Data+1));
+}
+
+CCgUniform3i::CCgUniform3i(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
+{
+	Type = CG_INT3;
+}
+
+void CCgUniform3i::update(const void* data, const SMaterial& material) const
+{
+	s32* Data = (s32*)data;
+	cgSetParameter3i(Parameter, *Data, *(Data+1), *(Data+2));
+}
+
+CCgUniform4i::CCgUniform4i(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
+{
+	Type = CG_INT4;
+}
+
+void CCgUniform4i::update(const void* data, const SMaterial& material) const
+{
+	s32* Data = (s32*)data;
+	cgSetParameter4i(Parameter, *Data, *(Data+1), *(Data+2), *(Data+3));
+}
+
+CCgUniform4x4f::CCgUniform4x4f(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_FLOAT4x4;
 }
 
-void CCgUniform4x4f::update(const float* pData, const SMaterial& pMaterial) const
+void CCgUniform4x4f::update(const void* data, const SMaterial& material) const
 {
-	cgSetMatrixParameterfr(Parameter, pData);
+	f32* Data = (f32*)data;
+	cgSetMatrixParameterfr(Parameter, Data);
 }
 
-CCgUniformSampler2D::CCgUniformSampler2D(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+CCgUniformSampler2D::CCgUniformSampler2D(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_SAMPLER2D;
 }
 
-void CCgUniformSampler2D::update(const float* pData, const SMaterial& pMaterial) const
+void CCgUniformSampler2D::update(const void* data, const SMaterial& material) const
 {
 }
 
-CCgMaterialRenderer::CCgMaterialRenderer(IShaderConstantSetCallBack* pCallBack, IMaterialRenderer* pBaseMaterial, s32 pUserData) :
-	CallBack(pCallBack), BaseMaterial(pBaseMaterial), UserData(pUserData),
+CCgMaterialRenderer::CCgMaterialRenderer(IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData) :
+	CallBack(callback), BaseMaterial(baseMaterial), UserData(userData),
 	VertexProgram(0), FragmentProgram(0), GeometryProgram(0), VertexProfile(CG_PROFILE_UNKNOWN), FragmentProfile(CG_PROFILE_UNKNOWN), GeometryProfile(CG_PROFILE_UNKNOWN),
 	Material(IdentityMaterial), Error(CG_NO_ERROR)
 {
@@ -136,30 +185,52 @@ bool CCgMaterialRenderer::isTransparent() const
 	return BaseMaterial ? BaseMaterial->isTransparent() : false;
 }
 
-void CCgMaterialRenderer::setVertexShaderConstant(const f32* pData, s32 pStartRegister, s32 pConstantAmount)
+void CCgMaterialRenderer::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
 	os::Printer::log("Cannot set constant, please use high level shader call instead.", ELL_WARNING);
 }
 
-bool CCgMaterialRenderer::setVertexShaderConstant(const c8* pName, const f32* pData, int pCount)
+bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const f32* floats, int count)
 {
-	return setPixelShaderConstant(pName, pData, pCount);
+	return setPixelShaderConstant(name, floats, count);
 }
 
-void CCgMaterialRenderer::setPixelShaderConstant(const f32* pData, s32 pStartRegister, s32 pConstantAmount)
+bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+{
+	return setPixelShaderConstant(name, ints, count);
+}
+
+void CCgMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
 	os::Printer::log("Cannot set constant, please use high level shader call instead.", ELL_WARNING);
 }
 
-bool CCgMaterialRenderer::setPixelShaderConstant(const c8* pName, const f32* pData, int pCount)
+bool CCgMaterialRenderer::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
 	bool Status = false;
 
 	for(unsigned int i = 0; i < UniformInfo.size(); ++i)
 	{
-		if(UniformInfo[i]->getName() == pName)
+		if(UniformInfo[i]->getName() == name)
 		{
-			UniformInfo[i]->update(pData, Material);
+			UniformInfo[i]->update(floats, Material);
+
+			Status = true;
+		}
+	}
+
+	return Status;
+}
+
+bool CCgMaterialRenderer::setPixelShaderConstant(const c8* name, const s32* ints, int count)
+{
+	bool Status = false;
+
+	for(unsigned int i = 0; i < UniformInfo.size(); ++i)
+	{
+		if(UniformInfo[i]->getName() == name)
+		{
+			UniformInfo[i]->update(ints, Material);
 
 			Status = true;
 		}
@@ -215,8 +286,6 @@ void CCgMaterialRenderer::getUniformList()
 
 						CGtype Type = cgGetParameterType(Parameter);
 
-						// TODO: add more uniform types
-
 						switch(Type)
 						{
 						case CG_FLOAT:
@@ -231,6 +300,19 @@ void CCgMaterialRenderer::getUniformList()
 							break;
 						case CG_FLOAT4:
 							Uniform = new CCgUniform4f(Parameter, IsGlobal);
+							break;
+						case CG_INT:
+						case CG_INT1:
+							Uniform = new CCgUniform1i(Parameter, IsGlobal);
+							break;
+						case CG_INT2:
+							Uniform = new CCgUniform2i(Parameter, IsGlobal);
+							break;
+						case CG_INT3:
+							Uniform = new CCgUniform3i(Parameter, IsGlobal);
+							break;
+						case CG_INT4:
+							Uniform = new CCgUniform4i(Parameter, IsGlobal);
 							break;
 						case CG_FLOAT4x4:
 							Uniform = new CCgUniform4x4f(Parameter, IsGlobal);

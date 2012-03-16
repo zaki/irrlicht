@@ -30,14 +30,14 @@ namespace video
 class CCgUniform
 {
 public:
-	CCgUniform(const CGparameter& pParameter, bool pIsGlobal);
+	CCgUniform(const CGparameter& parameter, bool global);
 
 	const core::stringc& getName() const;
 	const CGparameter& getParameter() const;
 	CGenum getSpace() const;
 	CGtype getType() const;
 
-	virtual void update(const f32* pData, const SMaterial& pMaterial) const = 0;
+	virtual void update(const void* data, const SMaterial& material) const = 0;
 
 protected:
 	core::stringc Name;
@@ -49,68 +49,102 @@ protected:
 class CCgUniform1f : public CCgUniform
 {
 public:
-	CCgUniform1f(const CGparameter& pParameter, bool pIsGlobal);
+	CCgUniform1f(const CGparameter& parameter, bool global);
 
-	void update(const f32* pData, const SMaterial& pMaterial) const;
+	void update(const void* data, const SMaterial& material) const;
 };
 
 class CCgUniform2f : public CCgUniform
 {
 public:
-	CCgUniform2f(const CGparameter& pParameter, bool pIsGlobal);
+	CCgUniform2f(const CGparameter& parameter, bool global);
 
-	void update(const f32* pData, const SMaterial& pMaterial) const;
+	void update(const void* data, const SMaterial& material) const;
 };
 
 class CCgUniform3f : public CCgUniform
 {
 public:
-	CCgUniform3f(const CGparameter& pParameter, bool pIsGlobal);
+	CCgUniform3f(const CGparameter& parameter, bool global);
 
-	void update(const f32* pData, const SMaterial& pMaterial) const;
+	void update(const void* data, const SMaterial& material) const;
 };
 
 class CCgUniform4f : public CCgUniform
 {
 public:
-	CCgUniform4f(const CGparameter& pParameter, bool pIsGlobal);
+	CCgUniform4f(const CGparameter& parameter, bool global);
 
-	void update(const f32* pData, const SMaterial& pMaterial) const;
+	void update(const void* data, const SMaterial& material) const;
+};
+
+class CCgUniform1i : public CCgUniform
+{
+public:
+	CCgUniform1i(const CGparameter& parameter, bool global);
+
+	void update(const void* data, const SMaterial& material) const;
+};
+
+class CCgUniform2i : public CCgUniform
+{
+public:
+	CCgUniform2i(const CGparameter& parameter, bool global);
+
+	void update(const void* data, const SMaterial& material) const;
+};
+
+class CCgUniform3i : public CCgUniform
+{
+public:
+	CCgUniform3i(const CGparameter& parameter, bool global);
+
+	void update(const void* data, const SMaterial& material) const;
+};
+
+class CCgUniform4i : public CCgUniform
+{
+public:
+	CCgUniform4i(const CGparameter& parameter, bool global);
+
+	void update(const void* data, const SMaterial& material) const;
 };
 
 class CCgUniform4x4f : public CCgUniform
 {
 public:
-	CCgUniform4x4f(const CGparameter& pParameter, bool pIsGlobal);
+	CCgUniform4x4f(const CGparameter& parameter, bool global);
 
-	void update(const f32* pData, const SMaterial& pMaterial) const;
+	void update(const void* data, const SMaterial& material) const;
 };
 
 class CCgUniformSampler2D : public CCgUniform
 {
 public:
-	CCgUniformSampler2D(const CGparameter& pParameter, bool pIsGlobal);
+	CCgUniformSampler2D(const CGparameter& parameter, bool global);
 
-	void update(const f32* pData, const SMaterial& pMaterial) const;
+	void update(const void* data, const SMaterial& material) const;
 };
 
 class CCgMaterialRenderer : public IMaterialRenderer, public IMaterialRendererServices
 {
 public:
-	CCgMaterialRenderer(IShaderConstantSetCallBack* pCallBack = 0, IMaterialRenderer* pBaseMaterial = 0, s32 pUserData = 0);
+	CCgMaterialRenderer(IShaderConstantSetCallBack* callback = 0, IMaterialRenderer* baseMaterial = 0, s32 userData = 0);
 	virtual ~CCgMaterialRenderer();
 
-	virtual void OnSetMaterial(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS, IMaterialRendererServices* pService) = 0;
-	virtual bool OnRender(IMaterialRendererServices* pService, E_VERTEX_TYPE pVertexType) = 0;
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services) = 0;
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) = 0;
 	virtual void OnUnsetMaterial() = 0;
 
 	virtual bool isTransparent() const;
 
-	virtual void setBasicRenderStates(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS) = 0;
-	virtual bool setVertexShaderConstant(const c8* pName, const f32* pData, int pCount);
-	virtual void setVertexShaderConstant(const f32* pData, s32 pStartRegister, s32 pConstantAmount = 1);
-	virtual bool setPixelShaderConstant(const c8* pName, const f32* pData, int pCount);
-	virtual void setPixelShaderConstant(const f32* pData, s32 pStartRegister, s32 pConstantAmount = 1);
+	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates) = 0;
+	virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
+	virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
+	virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
+	virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
+	virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
+	virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
 	virtual IVideoDriver* getVideoDriver() = 0;
 
 protected:

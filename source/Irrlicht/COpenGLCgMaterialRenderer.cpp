@@ -14,38 +14,39 @@ namespace irr
 namespace video
 {
 
-COpenGLCgUniformSampler2D::COpenGLCgUniformSampler2D(const CGparameter& pParameter, bool pIsGlobal) : CCgUniform(pParameter, pIsGlobal)
+COpenGLCgUniformSampler2D::COpenGLCgUniformSampler2D(const CGparameter& parameter, bool global) : CCgUniform(parameter, global)
 {
 	Type = CG_SAMPLER2D;
 }
 
-void COpenGLCgUniformSampler2D::update(const float* pData, const SMaterial& pMaterial) const
+void COpenGLCgUniformSampler2D::update(const void* data, const SMaterial& material) const
 {
-	int LayerID = (int)*pData;
+	s32* Data = (s32*)data;
+	s32 LayerID = *Data;
 
-	if (pMaterial.TextureLayer[LayerID].Texture)
+	if (material.TextureLayer[LayerID].Texture)
 	{
-		int TextureID = reinterpret_cast<COpenGLTexture*>(pMaterial.TextureLayer[LayerID].Texture)->getOpenGLTextureName();
+		int TextureID = reinterpret_cast<COpenGLTexture*>(material.TextureLayer[LayerID].Texture)->getOpenGLTextureName();
 
 		cgGLSetTextureParameter(Parameter, TextureID);
 		cgGLEnableTextureParameter(Parameter);
 	}
 }
 
-COpenGLCgMaterialRenderer::COpenGLCgMaterialRenderer(COpenGLDriver* pDriver, s32& pMaterialType,
-	const c8* pVertexProgram, const c8* pVertexEntry, E_VERTEX_SHADER_TYPE pVertexProfile,
-	const c8* pFragmentProgram, const c8* pFragmentEntry, E_PIXEL_SHADER_TYPE pFragmentProfile,
-	const c8* pGeometryProgram, const c8* pGeometryEntry, E_GEOMETRY_SHADER_TYPE pGeometryProfile,
-	scene::E_PRIMITIVE_TYPE pInType, scene::E_PRIMITIVE_TYPE pOutType, u32 pVertices,
-	IShaderConstantSetCallBack* pCallBack, IMaterialRenderer* pBaseMaterial, s32 pUserData) :
-	Driver(pDriver), CCgMaterialRenderer(pCallBack, pBaseMaterial, pUserData)
+COpenGLCgMaterialRenderer::COpenGLCgMaterialRenderer(COpenGLDriver* driver, s32& materialType,
+	const c8* vertexProgram, const c8* vertexEntry, E_VERTEX_SHADER_TYPE vertexProfile,
+	const c8* fragmentProgram, const c8* fragmentEntry, E_PIXEL_SHADER_TYPE fragmentProfile,
+	const c8* geometryProgram, const c8* geometryEntry, E_GEOMETRY_SHADER_TYPE geometryProfile,
+	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType, u32 vertices,
+	IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData) :
+	Driver(driver), CCgMaterialRenderer(callback, baseMaterial, userData)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLCgMaterialRenderer");
 	#endif
 
-	init(pMaterialType, pVertexProgram, pVertexEntry, pVertexProfile, pFragmentProgram, pFragmentEntry, pFragmentProfile,
-		pGeometryProgram, pGeometryEntry, pGeometryProfile, pInType, pOutType, pVertices);
+	init(materialType, vertexProgram, vertexEntry, vertexProfile, fragmentProgram, fragmentEntry, fragmentProfile,
+		geometryProgram, geometryEntry, geometryProfile, inType, outType, vertices);
 }
 
 COpenGLCgMaterialRenderer::~COpenGLCgMaterialRenderer()
@@ -67,11 +68,11 @@ COpenGLCgMaterialRenderer::~COpenGLCgMaterialRenderer()
 	}
 }
 
-void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS, IMaterialRendererServices* pService)
+void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services)
 {
-	Material = pMaterial;
+	Material = material;
 
-	if (pMaterial.MaterialType != pLastMaterial.MaterialType || pResetRS)
+	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexProgram)
 		{
@@ -92,19 +93,19 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& pMaterial, const 
 		}
 
 		if (BaseMaterial)
-			BaseMaterial->OnSetMaterial(pMaterial, pMaterial, true, this);
+			BaseMaterial->OnSetMaterial(material, material, true, this);
 	}
 
 	if (CallBack)
-		CallBack->OnSetMaterial(pMaterial);
+		CallBack->OnSetMaterial(material);
 
 	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		Driver->setActiveTexture(i, pMaterial.getTexture(i));
+		Driver->setActiveTexture(i, material.getTexture(i));
 
-	Driver->setBasicRenderStates(pMaterial, pLastMaterial, pResetRS);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
-bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* pService, E_VERTEX_TYPE pVertexType)
+bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
 {
 	if (CallBack && (VertexProgram || FragmentProgram || GeometryProgram))
 		CallBack->OnSetConstants(this, UserData);
@@ -136,9 +137,9 @@ void COpenGLCgMaterialRenderer::OnUnsetMaterial()
 	Material = IdentityMaterial;;
 }
 
-void COpenGLCgMaterialRenderer::setBasicRenderStates(const SMaterial& pMaterial, const SMaterial& pLastMaterial, bool pResetRS)
+void COpenGLCgMaterialRenderer::setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates)
 {
-	Driver->setBasicRenderStates(pMaterial, pLastMaterial, pResetRS);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 IVideoDriver* COpenGLCgMaterialRenderer::getVideoDriver()
@@ -146,24 +147,24 @@ IVideoDriver* COpenGLCgMaterialRenderer::getVideoDriver()
 	return Driver;
 }
 
-void COpenGLCgMaterialRenderer::init(s32& pMaterialType,
-	const c8* pVertexProgram, const c8* pVertexEntry, E_VERTEX_SHADER_TYPE pVertexProfile,
-	const c8* pFragmentProgram, const c8* pFragmentEntry, E_PIXEL_SHADER_TYPE pFragmentProfile,
-	const c8* pGeometryProgram, const c8* pGeometryEntry, E_GEOMETRY_SHADER_TYPE pGeometryProfile,
-	scene::E_PRIMITIVE_TYPE pInType, scene::E_PRIMITIVE_TYPE pOutType, u32 pVertices)
+void COpenGLCgMaterialRenderer::init(s32& materialType,
+	const c8* vertexProgram, const c8* vertexEntry, E_VERTEX_SHADER_TYPE vertexProfile,
+	const c8* fragmentProgram, const c8* fragmentEntry, E_PIXEL_SHADER_TYPE fragmentProfile,
+	const c8* geometryProgram, const c8* geometryEntry, E_GEOMETRY_SHADER_TYPE geometryProfile,
+	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType, u32 vertices)
 {
 	bool Status = true;
 	CGerror Error = CG_NO_ERROR;
-	pMaterialType = -1;
+	materialType = -1;
 
 	// TODO: add profile selection
 
-	if (pVertexProgram)
+	if (vertexProgram)
 	{
 		VertexProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
 
 		if (VertexProfile)
-			VertexProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, pVertexProgram, VertexProfile, pVertexEntry, 0);
+			VertexProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, vertexProgram, VertexProfile, vertexEntry, 0);
 
 		if (!VertexProgram)
 		{
@@ -177,12 +178,12 @@ void COpenGLCgMaterialRenderer::init(s32& pMaterialType,
 			cgGLLoadProgram(VertexProgram);
 	}
 
-	if (pFragmentProgram)
+	if (fragmentProgram)
 	{
 		FragmentProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
 
 		if (FragmentProfile)
-			FragmentProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, pFragmentProgram, FragmentProfile, pFragmentEntry, 0);
+			FragmentProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, fragmentProgram, FragmentProfile, fragmentEntry, 0);
 
 		if (!FragmentProgram)
 		{
@@ -196,12 +197,12 @@ void COpenGLCgMaterialRenderer::init(s32& pMaterialType,
 			cgGLLoadProgram(FragmentProgram);
 	}
 
-	if (pGeometryProgram)
+	if (geometryProgram)
 	{
 		GeometryProfile = cgGLGetLatestProfile(CG_GL_GEOMETRY);
 
 		if (GeometryProfile)
-			GeometryProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, pGeometryProgram, GeometryProfile, pGeometryEntry, 0);
+			GeometryProgram = cgCreateProgram(Driver->getCgContext(), CG_SOURCE, geometryProgram, GeometryProfile, geometryEntry, 0);
 
 		if (!GeometryProgram)
 		{
@@ -234,7 +235,7 @@ void COpenGLCgMaterialRenderer::init(s32& pMaterialType,
 	}
 
 	if (Status)
-		pMaterialType = Driver->addMaterialRenderer(this);
+		materialType = Driver->addMaterialRenderer(this);
 }
 
 }
