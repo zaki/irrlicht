@@ -938,6 +938,8 @@ bool CIrrDeviceMacOSX::run()
 
 	os::Timer::tick();
 	storeMouseLocation();
+    
+    NSAutoreleasePool* Pool = [[NSAutoreleasePool alloc] init];
 
 	event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES];
 	if (event != nil)
@@ -1060,6 +1062,8 @@ bool CIrrDeviceMacOSX::run()
 	}
 
 	pollJoysticks();
+    
+    [Pool release];
 
 	return (![[NSApp delegate] isQuit] && IsActive);
 }
