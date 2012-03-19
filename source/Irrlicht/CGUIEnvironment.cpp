@@ -1399,7 +1399,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 		EGUI_FONT_TYPE t = EGFT_CUSTOM;
 
 		bool found=false;
-		while(xml->read() && !found)
+		while(!found && xml->read())
 		{
 			if (xml->getNodeType() == io::EXN_ELEMENT)
 			{

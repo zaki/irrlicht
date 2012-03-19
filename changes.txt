@@ -1,6 +1,8 @@
 Changes in 1.8 (??.??.2011)
 
- - XML-reader now preserves all whitespace. So even newlines are now returned as EXN_TEXT nodes.
+ - Support for better collada texture wrapping support on loading.
+
+ - XML-reader now ignores all whitespace-only EXN_TEXT elements as old way didn't work in cross-platform way (and arguably also not well on Windows). 
 
  - CXMLReader initializes IsEmptyElement now.
 
