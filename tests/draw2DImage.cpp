@@ -84,7 +84,7 @@ bool testExactPlacement(video::E_DRIVER_TYPE driverType)
 {
 	// create device
 
-	IrrlichtDevice *device = createDevice(video::EDT_DIRECT3D9, core::dimension2d<u32>(160,120), 32);
+	IrrlichtDevice *device = createDevice(driverType, core::dimension2d<u32>(160,120), 32);
 
 	if (device == 0)
 		return true; // could not create selected driver.
