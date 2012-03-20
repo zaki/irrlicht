@@ -235,8 +235,9 @@ namespace irr
 		int ScreenWidth;
 		int ScreenHeight;
 		u32 MouseButtonStates;
+        u32 SoftwareRendererType;
+        bool IsFullscreen;
 		bool IsActive;
-		bool IsSoftwareRenderer;
 		bool IsShiftDown;
 		bool IsControlDown;
 		bool IsResizable;
