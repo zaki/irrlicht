@@ -1,5 +1,9 @@
 Changes in 1.8 (??.??.2011)
 
+ - line2d::getClosestPoint can now also get the closest point on the line additional to only checking for closest point on the line-segment.
+
+ - avoid division by zero in line2d::getClosestPoint when start- and endpoint are identical
+
  - Support for better collada texture wrapping support on loading.
 
  - XML-reader now ignores all whitespace-only EXN_TEXT elements as old way didn't work in cross-platform way (and arguably also not well on Windows). 

@@ -211,16 +211,23 @@ class line2d
 		}
 
 		//! Get the closest point on this line to a point
-		vector2d<T> getClosestPoint(const vector2d<T>& point) const
+		/** \param checkOnlySegments: Default (true) is to return a point on the line-segment (between begin and end) of the line.
+		When set to false the function will check for the first the closest point on the the line even when outside the segment. */
+		vector2d<T> getClosestPoint(const vector2d<T>& point, bool checkOnlySegments=true) const
 		{
 			vector2d<f64> c((f64)(point.X-start.X), (f64)(point.Y- start.Y));
 			vector2d<f64> v((f64)(end.X-start.X), (f64)(end.Y-start.Y));
 			f64 d = v.getLength();
+			if ( d == 0 )	// can't tell much when the line is just a single point
+				return start;
 			v /= d;
 			f64 t = v.dotProduct(c);
 
-			if (t < 0) return vector2d<T>((T)start.X, (T)start.Y);
-			if (t > d) return vector2d<T>((T)end.X, (T)end.Y);
+			if ( checkOnlySegments )
+			{
+				if (t < 0) return vector2d<T>((T)start.X, (T)start.Y);
+				if (t > d) return vector2d<T>((T)end.X, (T)end.Y);
+			}
 
 			v *= t;
 			return vector2d<T>((T)(start.X + v.X), (T)(start.Y + v.Y));
@@ -232,18 +239,23 @@ class line2d
 		vector2d<T> end;
 };
 
-	// partial specialization to optimize <f32> lines 
+	// partial specialization to optimize <f32> lines (avoiding casts)
 	template <>
-	inline vector2df line2d<irr::f32>::getClosestPoint(const vector2df& point) const
+	inline vector2df line2d<irr::f32>::getClosestPoint(const vector2df& point, bool checkOnlySegments) const
 	{
 		vector2df c = point - start;
 		vector2df v = end - start;
 		f32 d = (f32)v.getLength();
+		if ( d == 0 )	// can't tell much when the line is just a single point
+			return start;
 		v /= d;
 		f32 t = v.dotProduct(c);
 
-		if (t < 0) return start;
-		if (t > d) return end;
+		if ( checkOnlySegments )
+		{
+			if (t < 0) return start;
+			if (t > d) return end;
+		}
 
 		v *= t;
 		return start + v;
