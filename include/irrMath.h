@@ -248,6 +248,12 @@ namespace core
 		return a <= tolerance;
 	}
 
+	//! returns if a equals zero, taking rounding errors into account
+	inline bool iszero(const s64 a, const s64 tolerance = 0)
+	{
+		return abs_(a) > tolerance;
+	}
+
 	inline s32 s32_min(s32 a, s32 b)
 	{
 		const s32 mask = (a - b) >> 31;
@@ -427,6 +433,12 @@ namespace core
 	REALINLINE s32 squareroot(const s32 f)
 	{
 		return static_cast<s32>(squareroot(static_cast<f32>(f)));
+	}
+
+	// calculate: sqrt ( x )
+	REALINLINE s64 squareroot(const s64 f)
+	{
+		return static_cast<s64>(squareroot(static_cast<f64>(f)));
 	}
 
 	// calculate: 1 / sqrt ( x )

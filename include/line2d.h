@@ -50,7 +50,7 @@ class line2d
 
 		//! Get length of line
 		/** \return Length of the line. */
-		f64 getLength() const { return start.getDistanceFrom(end); }
+		T getLength() const { return start.getDistanceFrom(end); }
 
 		//! Get squared length of the line
 		/** \return Squared length of line. */
