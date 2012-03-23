@@ -39,6 +39,7 @@ namespace core
 	//! Rounding error constant often used when comparing f32 values.
 
 	const s32 ROUNDING_ERROR_S32 = 0;
+	const s64 ROUNDING_ERROR_S64 = 0;
 	const f32 ROUNDING_ERROR_f32 = 0.000001f;
 	const f64 ROUNDING_ERROR_f64 = 0.00000001;
 
@@ -206,6 +207,12 @@ namespace core
 
 	//! returns if a equals b, taking an explicit rounding tolerance into account
 	inline bool equals(const u32 a, const u32 b, const s32 tolerance = ROUNDING_ERROR_S32)
+	{
+		return (a + tolerance >= b) && (a - tolerance <= b);
+	}
+
+	//! returns if a equals b, taking an explicit rounding tolerance into account
+	inline bool equals(const s64 a, const s64 b, const s64 tolerance = ROUNDING_ERROR_S64)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
