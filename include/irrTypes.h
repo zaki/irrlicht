@@ -67,14 +67,17 @@ typedef signed int		s32;
 #endif
 
 
-
+#ifdef __IRR_HAS_S64
 //! 64 bit signed variable.
 /** This is a typedef for __int64, it ensures portability of the engine. */
 #ifdef _MSC_VER
-typedef __int64				s64;
+typedef __int64					s64;
+#elif __GNUC__
+__extension__ typedef long long s64;
 #else
-typedef long long			s64;
+typedef long long				s64;
 #endif
+#endif	// __IRR_HAS_S64
 
 
 

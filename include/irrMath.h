@@ -39,7 +39,9 @@ namespace core
 	//! Rounding error constant often used when comparing f32 values.
 
 	const s32 ROUNDING_ERROR_S32 = 0;
+#ifdef __IRR_HAS_S64	
 	const s64 ROUNDING_ERROR_S64 = 0;
+#endif
 	const f32 ROUNDING_ERROR_f32 = 0.000001f;
 	const f64 ROUNDING_ERROR_f64 = 0.00000001;
 
@@ -211,12 +213,13 @@ namespace core
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
+#ifdef __IRR_HAS_S64	
 	//! returns if a equals b, taking an explicit rounding tolerance into account
 	inline bool equals(const s64 a, const s64 b, const s64 tolerance = ROUNDING_ERROR_S64)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
-
+#endif
 
 	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const f64 a, const f64 tolerance = ROUNDING_ERROR_f64)
@@ -248,11 +251,13 @@ namespace core
 		return a <= tolerance;
 	}
 
+#ifdef __IRR_HAS_S64	
 	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const s64 a, const s64 tolerance = 0)
 	{
 		return abs_(a) > tolerance;
 	}
+#endif
 
 	inline s32 s32_min(s32 a, s32 b)
 	{
@@ -435,11 +440,13 @@ namespace core
 		return static_cast<s32>(squareroot(static_cast<f32>(f)));
 	}
 
+#ifdef __IRR_HAS_S64	
 	// calculate: sqrt ( x )
 	REALINLINE s64 squareroot(const s64 f)
 	{
 		return static_cast<s64>(squareroot(static_cast<f64>(f)));
 	}
+#endif	
 
 	// calculate: 1 / sqrt ( x )
 	REALINLINE f64 reciprocal_squareroot(const f64 x)
