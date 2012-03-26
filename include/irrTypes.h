@@ -73,7 +73,11 @@ typedef signed int		s32;
 #ifdef _MSC_VER
 typedef __int64					s64;
 #elif __GNUC__
+#if __WORDSIZE == 64
+typedef long int 				s64;
+#else
 __extension__ typedef long long s64;
+#endif
 #else
 typedef long long				s64;
 #endif
