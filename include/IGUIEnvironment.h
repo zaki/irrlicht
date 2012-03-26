@@ -81,7 +81,11 @@ public:
 	virtual IGUIElement* getFocus() const = 0;
 
 	//! Returns the element which was last under the mouse cursor
-	/** \return Pointer to the element under the mouse. */
+	/** NOTE: This information is updated _after_ the user-eventreceiver 
+	received it's mouse-events. To find the hovered element while catching 
+	mouse events you have to use instead:
+	IGUIEnvironment::getRootGUIElement()->getElementFromPoint(mousePos);
+	\return Pointer to the element under the mouse. */
 	virtual IGUIElement* getHovered() const = 0;
 
 	//! Removes the focus from an element.
