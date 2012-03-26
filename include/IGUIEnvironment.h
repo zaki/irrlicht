@@ -204,8 +204,7 @@ public:
 	//! Returns the root gui element.
 	/** This is the first gui element, the (direct or indirect) parent of all
 	other gui elements. It is a valid IGUIElement, with dimensions the same
-	size as the screen. You should not need to use this method directly, unless
-	you wish to reparent GUI elements to the top level.
+	size as the screen. 
 	\return Pointer to the root element of the GUI. The returned pointer
 	should not be dropped. See IReferenceCounted::drop() for more
 	information. */

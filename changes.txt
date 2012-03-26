@@ -1,5 +1,9 @@
 Changes in 1.8 (??.??.2011)
 
+ - added IGUIElement::setName and IGUIElement::getName (similar to ISceneNode)
+ 
+ - CSceneCollisionManager::getScreenCoordinatesFrom3DPosition uses now getCurrentRenderTargetSize instead of getScreenSize so it can work with render textures.
+
  - line2d::getClosestPoint can now also get the closest point on the line additional to only checking for closest point on the line-segment.
 
  - avoid division by zero in line2d::getClosestPoint when start- and endpoint are identical
