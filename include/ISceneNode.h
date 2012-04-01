@@ -513,7 +513,7 @@ namespace scene
 		//! Gets the absolute position of the node in world coordinates.
 		/** If you want the position of the node relative to its parent,
 		use getPosition() instead.
-		/** NOTE: For speed reasons the absolute position is not 
+		NOTE: For speed reasons the absolute position is not 
 		automatically recalculated on each change of the relative 
 		position or by a position change of an parent. Instead the 
 		update usually happens once per frame in OnAnimate. You can enforce 
