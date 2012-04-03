@@ -1,6 +1,5 @@
 #include "testUtils.h"
 #include <irrlicht.h>
-#include <assert.h>
 
 using namespace irr;
 using namespace core;
@@ -53,7 +52,7 @@ static bool testSwap()
 	result &= compareLists<int>(list1, copy2);
 	result &= compareLists<int>(list2, copy1);
 
-	assert( result );
+	assert_log( result );
 
 	return result;
 }

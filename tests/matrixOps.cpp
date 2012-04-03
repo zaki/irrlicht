@@ -21,30 +21,30 @@ bool identity(void)
 	// Check default init
 	result &= (m==core::IdentityMatrix);
 	result &= (core::IdentityMatrix==m);
-	assert(result);
+	assert_log(result);
 	// Since the last test can be made with isDefinitelyIdentityMatrix we set it to false here
 	m.setDefinitelyIdentityMatrix(false);
 	result &= (m==core::IdentityMatrix);
 	result &= (core::IdentityMatrix==m);
-	assert(result);
+	assert_log(result);
 	// also equals should see this
 	result &= m.equals(core::IdentityMatrix);
 	result &= core::IdentityMatrix.equals(m);
-	assert(result);
+	assert_log(result);
 	// Check inequality
 	m[12]=5.f;
 	result &= (m!=core::IdentityMatrix);
 	result &= (core::IdentityMatrix!=m);
 	result &= !m.equals(core::IdentityMatrix);
 	result &= !core::IdentityMatrix.equals(m);
-	assert(result);
+	assert_log(result);
 
 	// Test multiplication
 	result &= (m==(core::IdentityMatrix*m));
 	result &= m.equals(core::IdentityMatrix*m);
 	result &= (m==(m*core::IdentityMatrix));
 	result &= m.equals(m*core::IdentityMatrix);
-	assert(result);
+	assert_log(result);
 
 	return result;
 }
@@ -59,30 +59,30 @@ bool transformations(void)
 	m *= s;
 	m.setTranslation(core::vector3df(5,6,7));
 	result &= (core::vector3df(5,6,7).equals(m.getTranslation()));
-	assert(result);
+	assert_log(result);
 	result &= (core::vector3df(2,3,4).equals(m.getScale()));
-	assert(result);
+	assert_log(result);
 	core::vector3df newRotation = m.getRotationDegrees();
 	result &= (core::vector3df(30,40,50).equals(newRotation, 0.000004f));
-	assert(result);
+	assert_log(result);
 	m.setRotationDegrees(vector3df(90.0001f, 270.85f, 180.0f));
 	s.setRotationDegrees(vector3df(0,0, 0.860866f));
 	m *= s;
 	newRotation = m.getRotationDegrees();
 	result &= (core::vector3df(0,270,270).equals(newRotation, 0.0001f));
-	assert(result);
+	assert_log(result);
 	m.setRotationDegrees(vector3df(270.0f, 89.8264f, 0.000100879f));
 	s.setRotationDegrees(vector3df(0,0, 0.189398f));
 	m *= s;
 	newRotation = m.getRotationDegrees();
 	result &= (core::vector3df(0,90,90).equals(newRotation, 0.0001f));
-	assert(result);
+	assert_log(result);
 	m.setRotationDegrees(vector3df(270.0f, 89.0602f, 359.999f));
 	s.setRotationDegrees(vector3df(0,0, 0.949104f));
 	m *= s;
 	newRotation = m.getRotationDegrees();
 	result &= (core::vector3df(0,90,89.999f).equals(newRotation));
-	assert(result);
+	assert_log(result);
 
 	return result;
 }
@@ -102,14 +102,14 @@ bool rotations(void)
 	rot4.setRotationDegrees(core::vector3df(90,90,90));
 	rot5 = rot3*rot2*rot1;
 	result &= (rot4.equals(rot5, ROUNDING_ERROR_f32));
-	assert(result);
+	assert_log(result);
 	rot4.transformVect(vec1);rot5.transformVect(vec12);
 	rot4.transformVect(vec2);rot5.transformVect(vec22);
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
 	result &= (vec1.equals(vec12));
 	result &= (vec2.equals(vec22));
 	result &= (vec3.equals(vec32));
-	assert(result);
+	assert_log(result);
 
 	vec1.set(1,2,3);vec12.set(1,2,3);
 	vec2.set(-5,0,0);vec22.set(-5,0,0);
@@ -120,14 +120,14 @@ bool rotations(void)
 	rot4.setRotationDegrees(core::vector3df(45,45,45));
 	rot5 = rot3*rot2*rot1;
 	result &= (rot4.equals(rot5, ROUNDING_ERROR_f32));
-	assert(result);
+	assert_log(result);
 	rot4.transformVect(vec1);rot5.transformVect(vec12);
 	rot4.transformVect(vec2);rot5.transformVect(vec22);
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
 	result &= (vec1.equals(vec12));
 	result &= (vec2.equals(vec22));
 	result &= (vec3.equals(vec32));
-	assert(result);
+	assert_log(result);
 
 	vec1.set(1,2,3);vec12.set(1,2,3);
 	vec2.set(-5,0,0);vec22.set(-5,0,0);
@@ -138,7 +138,7 @@ bool rotations(void)
 	rot4.setRotationDegrees(core::vector3df(-60,-60,-60));
 	rot5 = rot3*rot2*rot1;
 	result &= (rot4.equals(rot5, ROUNDING_ERROR_f32));
-	assert(result);
+	assert_log(result);
 	rot4.transformVect(vec1);rot5.transformVect(vec12);
 	rot4.transformVect(vec2);rot5.transformVect(vec22);
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
@@ -146,7 +146,7 @@ bool rotations(void)
 	result &= (vec2.equals(vec22));
 	// this one needs higher tolerance due to rounding issues
 	result &= (vec3.equals(vec32, 0.000002f));
-	assert(result);
+	assert_log(result);
 
 	vec1.set(1,2,3);vec12.set(1,2,3);
 	vec2.set(-5,0,0);vec22.set(-5,0,0);
@@ -157,37 +157,37 @@ bool rotations(void)
 	rot4.setRotationDegrees(core::vector3df(113,-27,193));
 	rot5 = rot3*rot2*rot1;
 	result &= (rot4.equals(rot5, ROUNDING_ERROR_f32));
-	assert(result);
+	assert_log(result);
 	rot4.transformVect(vec1);rot5.transformVect(vec12);
 	rot4.transformVect(vec2);rot5.transformVect(vec22);
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
 	// these ones need higher tolerance due to rounding issues
 	result &= (vec1.equals(vec12, 0.000002f));
-	assert(result);
+	assert_log(result);
 	result &= (vec2.equals(vec22));
-	assert(result);
+	assert_log(result);
 	result &= (vec3.equals(vec32, 0.000002f));
-	assert(result);
+	assert_log(result);
 
 	rot1.setRotationDegrees(core::vector3df(0,0,34));
 	rot2.setRotationDegrees(core::vector3df(0,43,0));
 	vec1=(rot2*rot1).getRotationDegrees();
 	result &= (vec1.equals(core::vector3df(27.5400505f, 34.4302292f, 42.6845398f), 0.000002f));
-	assert(result);
+	assert_log(result);
 
 	// corner cases
     rot1.setRotationDegrees(irr::core::vector3df(180.0f, 0.f, 0.f));
     vec1=rot1.getRotationDegrees();
 	result &= (vec1.equals(core::vector3df(180.0f, 0.f, 0.f), 0.000002f));
-	assert(result);
+	assert_log(result);
     rot1.setRotationDegrees(irr::core::vector3df(0.f, 180.0f, 0.f));
     vec1=rot1.getRotationDegrees();
 	result &= (vec1.equals(core::vector3df(180.0f, 360, 180.0f), 0.000002f));
-	assert(result);
+	assert_log(result);
     rot1.setRotationDegrees(irr::core::vector3df(0.f, 0.f, 180.0f));
     vec1=rot1.getRotationDegrees();
 	result &= (vec1.equals(core::vector3df(0.f, 0.f, 180.0f), 0.000002f));
-	assert(result);
+	assert_log(result);
 
 	rot1.makeIdentity();
 	rot1.setRotationDegrees(core::vector3df(270.f,0,0));
@@ -195,7 +195,7 @@ bool rotations(void)
 	rot2.setRotationDegrees(core::vector3df(-90.f,0,0));
 	vec1=(rot1*rot2).getRotationDegrees();
 	result &= (vec1.equals(core::vector3df(180.f, 0.f, 0.0f)));
-	assert(result);
+	assert_log(result);
 
 	return result;
 }

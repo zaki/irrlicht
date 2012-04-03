@@ -16,7 +16,7 @@ bool guiDisabledMenu(void)
 {
 	IrrlichtDevice *device = createDevice( video::EDT_BURNINGSVIDEO,
 											dimension2d<u32>(160, 40), 32);
-	assert(device);
+	assert_log(device);
 	if (!device)
 		return false;
 

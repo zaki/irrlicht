@@ -78,7 +78,7 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 		result = false;
 	}
 
-	assert(result);
+	assert_log(result);
 
 	cubeSelector->drop();
 	smgr->clear();
@@ -229,7 +229,7 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 		logTestString("A node was hit when none was expected.\n");
 		result = false;
 	}
-	assert(result);
+	assert_log(result);
 
 	smgr->clear();
 
@@ -273,7 +273,7 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 	else if(hit == middleTarget)
 		logTestString("getSceneNodeFromRayBB() hit the middle (scaled) target.\n");
 
-	assert(result);
+	assert_log(result);
 
 	smgr->clear();
 
@@ -286,10 +286,10 @@ static bool IntersectBox(const core::vector3df& origin, const core::vector3df& d
 {
 	core::vector3df minDist = (box.MinEdge - origin)/dir;
 	core::vector3df maxDist = (box.MaxEdge - origin)/dir;
-   
+
 	core::vector3df realMin(core::min_(minDist.X, maxDist.X),core::min_(minDist.Y, maxDist.Y),core::min_(minDist.Z, maxDist.Z));
 	core::vector3df realMax(core::max_(minDist.X, maxDist.X),core::max_(minDist.Y, maxDist.Y),core::max_(minDist.Z, maxDist.Z));
-   
+
 	f32 minmax = core::min_(realMax.X, realMax.Y, realMax.Z);
 	// nearest distance to intersection
 	f32 maxmin = core::max_(realMin.X, realMin.Y, realMin.Z);
@@ -364,7 +364,7 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 			logTestString("Consider replacement of bbox intersection test.\n");
 
 		result &= (hits==0);
-		assert(result);
+		assert_log(result);
 		// second round without any hits, so check opposite direction
 		camera->setTarget(core::vector3df(80.f, 80.f, 80.f));
 	}
@@ -445,7 +445,7 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 		}
 	}
 
-	assert(result);
+	assert_log(result);
 
 	smgr->clear();
 
@@ -457,7 +457,7 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 bool sceneCollisionManager(void)
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(160, 120));
-	assert(device);
+	assert_log(device);
 	if(!device)
 		return false;
 

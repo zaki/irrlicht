@@ -14,6 +14,15 @@
 	for (u32 i=video::EDT_DIRECT3D8; i<video::EDT_COUNT; ++i) \
 	result &= X(video::E_DRIVER_TYPE(i))
 
+// replacement for assert which does log the lines instead
+#define assert_log(X) \
+do { \
+	if ( !(X) ) \
+	{ \
+		logTestString("ASSERT in %s:%d: %s\n", __FILE__, __LINE__, #X); \
+	} \
+} while (false)
+
 //! Compare two files
 /** \param fileName1 The first file for comparison.
 	\param fileName2 The second file for comparison.

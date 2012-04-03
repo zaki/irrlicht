@@ -38,7 +38,7 @@ static bool transformPlane(const vector3df & point, const vector3df & normal,
 	if(!sloppyComparePlanes(plane, expected))
 	{
 		logTestString("Unexpected result\n");
-		assert(false);
+		assert_log(false);
 		return false;
 	}
 
@@ -57,12 +57,12 @@ static bool drawScaledOctree(void)
 	ISceneManager * smgr = device->getSceneManager();
 
 	bool added = device->getFileSystem()->addFileArchive("../media/map-20kdm2.pk3");
-	assert(added);
+	assert_log(added);
 
 	if(added)
 	{
 		ISceneNode * node = smgr->addOctreeSceneNode(smgr->getMesh("20kdm2.bsp")->getMesh(0), 0, -1, 1024);
-		assert(node);
+		assert_log(node);
 
 		if (node)
 		{

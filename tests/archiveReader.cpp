@@ -312,7 +312,7 @@ bool testSpecialZip(IFileSystem* fs, const char* archiveName, const char* filena
 		logTestString("%s name: %s\n", fileList->isDirectory(f)?"Directory":"File", fileList->getFileName(f).c_str());
 		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
 	}
-	
+
 	if (!fs->existFile(filename))
 	{
 		logTestString("existFile failed\n");
@@ -429,14 +429,14 @@ bool testAddRemove(IFileSystem* fs, const io::path& archiveName)
 bool archiveReader()
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(1, 1));
-	assert(device);
+	assert_log(device);
 	if(!device)
 		return false;
-	
+
 	io::IFileSystem * fs = device->getFileSystem ();
 	if ( !fs )
 		return false;
-	
+
 	bool ret = true;
 	logTestString("Testing mount file.\n");
 	ret &= testArchive(fs, "media/file_with_path");

@@ -14,7 +14,7 @@ using namespace gui;
 static bool saveScene(void)
 {
 	IrrlichtDevice *device = createDevice( EDT_NULL, dimension2d<u32>(160, 120), 32);
-	assert(device);
+	assert_log(device);
 	if (!device)
 		return false;
 

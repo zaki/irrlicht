@@ -99,7 +99,7 @@ static bool equalVectors(const S& compare,
 		logTestString("\nERROR: vector3d %.16f, %.16f, %.16f %s vector3d %.16f, %.16f, %.16f\n",
 			(f64)compare.val.X, (f64)compare.val.Y, (f64)compare.val.Z, compare.getName(),
 			(f64)with.X, (f64)with.Y, (f64)with.Z);
-		assert(compare(with));
+		assert_log(compare(with));
 		return false;
 	}
 
@@ -211,7 +211,7 @@ static bool doTests()
 	if(!vec.equals(otherVec, (T)0.1))
 	{
 		logTestString("vector3d::equals failed\n");
-		assert(0);
+		assert_log(0);
 		return false;
 	}
 
@@ -220,7 +220,7 @@ static bool doTests()
 	if(!equals(vec.getDistanceFrom(otherVec), (T)15.8113883))
 	{
 		logTestString("vector3d::getDistanceFrom() failed\n");
-		assert(0);
+		assert_log(0);
 		return false;
 	}
 

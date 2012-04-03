@@ -15,7 +15,7 @@ bool meshTransform(void)
 {
 	// Use EDT_BURNINGSVIDEO since it is not dependent on (e.g.) OpenGL driver versions.
 	IrrlichtDevice *device = createDevice(EDT_BURNINGSVIDEO, dimension2d<u32>(160, 120), 32);
-	assert(device);
+	assert_log(device);
 	if (!device)
 		return false;
 
@@ -25,7 +25,7 @@ bool meshTransform(void)
 	IMeshSceneNode* node1 = smgr->addCubeSceneNode(50);
 	IAnimatedMesh* amesh = smgr->getMesh("../media/sydney.md2");
 	IAnimatedMesh* smesh = smgr->getMesh("../media/ninja.b3d");
-	assert(node1 && amesh && smesh);
+	assert_log(node1 && amesh && smesh);
 
 	bool result = false;
 	if (!node1 || !amesh || !smesh)
@@ -35,7 +35,7 @@ bool meshTransform(void)
 	node1->setDebugDataVisible(scene::EDS_BBOX_ALL);
 
 	IMeshSceneNode* node2 = smgr->addMeshSceneNode(amesh->getMesh(10));
-	assert(node2);
+	assert_log(node2);
 
 	if (!node2)
 		return false;
@@ -45,7 +45,7 @@ bool meshTransform(void)
 	node2->setMaterialFlag(EMF_LIGHTING, false);
 
 	IMeshSceneNode* node3 = smgr->addMeshSceneNode(smesh->getMesh(10));
-	assert(node3);
+	assert_log(node3);
 
 	if (!node3)
 		return false;

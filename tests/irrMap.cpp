@@ -1,6 +1,5 @@
 #include "testUtils.h"
 #include <irrlicht.h>
-#include <assert.h>
 
 using namespace irr;
 using namespace core;
@@ -44,7 +43,7 @@ static bool testSwap()
 	result &= compareMaps(map1, copy2);
 	result &= compareMaps(map2, copy1);
 
-	assert( result );
+	assert_log( result );
 
 	return result;
 }

@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - replace asserts in tests with macro assert_log to allow running all tests through on problems.
+
  - added IGUIElement::setName and IGUIElement::getName (similar to ISceneNode)
  
  - CSceneCollisionManager::getScreenCoordinatesFrom3DPosition uses now getCurrentRenderTargetSize instead of getScreenSize so it can work with render textures.

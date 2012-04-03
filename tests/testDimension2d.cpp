@@ -19,7 +19,7 @@ bool testDimension2d(void)
 	if(dimension != dimension2df(300.f, -100.f))
 	{
 		logTestString("dimension2df != produced unexpected result.\n");
-		assert(false);
+		assert_log(false);
 		return false;
 	}
 
@@ -27,7 +27,7 @@ bool testDimension2d(void)
 	if(dimension != dimension2df(100.f, 100.f))
 	{
 		logTestString("dimension2df -= produced unexpected result.\n");
-		assert(false);
+		assert_log(false);
 		return false;
 	}
 
