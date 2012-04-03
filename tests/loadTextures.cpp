@@ -28,7 +28,7 @@ bool loadFromFileFolder(void)
 	u32 numTexs = driver->getTextureCount();
 
 	ITexture * tex1 = driver->getTexture("../media/tools.png");
-	assert(tex1);
+	assert_log(tex1);
 	if(!tex1)
 		logTestString("Unable to open ../media/tools.png\n");
 	if (driver->getTextureCount()!=numTexs+1)
@@ -38,7 +38,7 @@ bool loadFromFileFolder(void)
 	}
 
 	IReadFile * readFile = device->getFileSystem()->createAndOpenFile("../media/tools.png");
-	assert(readFile);
+	assert_log(readFile);
 	if(!readFile)
 		logTestString("Unable to open ../media/tools.png\n");
 	if (driver->getTextureCount()!=numTexs+1)
@@ -48,7 +48,7 @@ bool loadFromFileFolder(void)
 	}
 
 	ITexture * tex2 = driver->getTexture(readFile);
-	assert(tex2);
+	assert_log(tex2);
 	if(!readFile)
 		logTestString("Unable to create texture from ../media/tools.png\n");
 	if (driver->getTextureCount()!=numTexs+1)
@@ -63,7 +63,7 @@ bool loadFromFileFolder(void)
 	device->getFileSystem()->addFileArchive( "../media/" );
 
 	ITexture * tex3 = driver->getTexture("tools.png");
-	assert(tex3);
+	assert_log(tex3);
 	if(!tex3)
 		logTestString("Unable to open tools.png\n");
 	if (driver->getTextureCount()!=numTexs+1)
@@ -73,7 +73,7 @@ bool loadFromFileFolder(void)
 	}
 
 	ITexture * tex4 = driver->getTexture("tools.png");
-	assert(tex4);
+	assert_log(tex4);
 	if(!tex4)
 		logTestString("Unable to open tools.png\n");
 	if (driver->getTextureCount()!=numTexs+1)

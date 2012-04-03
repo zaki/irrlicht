@@ -3,7 +3,6 @@
 
 #include "testUtils.h"
 #include <irrlicht.h>
-#include <assert.h>
 
 using namespace irr;
 using namespace core;
@@ -12,7 +11,7 @@ core::map<int, int> countReferences;
 
 struct SDummy
 {
-	SDummy(int a) : x(a) 
+	SDummy(int a) : x(a)
 	{
 		countReferences.insert(x,1);
 	}
@@ -22,7 +21,7 @@ struct SDummy
 		countReferences.insert(x,1);
 	}
 
-	SDummy(const SDummy& other) 
+	SDummy(const SDummy& other)
 	{
 		x = other.x;
 		countReferences[x] = countReferences[x] + 1;
@@ -109,7 +108,7 @@ static bool testSwap()
 	result &= (array1 == copy2);
 	result &= (array2 == copy1);
 
-	assert( result );
+	assert_log( result );
 
 	return result;
 }

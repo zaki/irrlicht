@@ -31,12 +31,12 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 	bool result = true;
 	bool added = device->getFileSystem()->addFileArchive("../media/map-20kdm2.pk3");
-	assert(added);
+	assert_log(added);
 
 	if(added)
 	{
 		ISceneNode * node = smgr->addOctreeSceneNode(smgr->getMesh("20kdm2.bsp")->getMesh(0), 0, -1, 1024);
-		assert(node);
+		assert_log(node);
 
 		if (node)
 		{

@@ -57,7 +57,7 @@ bool writeImageToFile(void)
 	if (!screenshot)
 	{
 		logTestString("Failed to take screenshot\n");
-		assert(false);
+		assert_log(false);
 		goto cleanup;
 	}
 
@@ -72,7 +72,7 @@ bool writeImageToFile(void)
 		if (!fixedScreenshot)
 		{
 			logTestString("Failed to convert screenshot to ECF_A8R8G8B8\n");
-			assert(false);
+			assert_log(false);
 			goto cleanup;
 		}
 
@@ -85,7 +85,7 @@ bool writeImageToFile(void)
 	if (!driver->writeImageToFile(screenshot, memoryFile))
 	{
 		logTestString("Failed to write png to memory file\n");
-		assert(false);
+		assert_log(false);
 		goto cleanup;
 	}
 
@@ -93,14 +93,14 @@ bool writeImageToFile(void)
 	if (!writtenFile)
 	{
 		logTestString("Can't open %s for writing.\n", writtenFilename);
-		assert(false);
+		assert_log(false);
 		goto cleanup;
 	}
 
 	if (memoryFile->getPos() != writtenFile->write(buffer, memoryFile->getPos()))
 	{
 		logTestString("Error while writing to %s.\n", writtenFilename);
-		assert(false);
+		assert_log(false);
 		goto cleanup;
 	}
 
@@ -111,7 +111,7 @@ bool writeImageToFile(void)
 	if (!binaryCompareFiles(writtenFilename, referenceFilename))
 	{
 		logTestString("File written from memory is not the same as the reference file. %s:%d\n" ,  __FILE__, __LINE__);
-//		assert(false);
+//		assert_log(false);
 		goto cleanup;
 	}
 

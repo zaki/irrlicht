@@ -15,16 +15,16 @@ class ScalableFont : public gui::IGUIFontBitmap
 		irr::core::stringc m_file_name;
 		bool m_has_alpha;
 		float m_scale;
-		
+
 		TextureInfo()
 		{
 			m_has_alpha = false;
 			m_scale = 1.0f;
 		}
 	};
-	
+
 	std::map<int /* texture file ID */, TextureInfo> m_texture_files;
-	
+
 	void lazyLoadTexture(int texID)
 	{
 		const bool mipmap = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
@@ -33,7 +33,7 @@ class ScalableFont : public gui::IGUIFontBitmap
 		SpriteBank->setTexture(texID, Driver->getTexture( m_texture_files[texID].m_file_name ));
 		// set previous mip-map+filter state
 		Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, mipmap);
-		
+
 		// couldn't load texture, abort.
 		if (!SpriteBank->getTexture(texID))
 		{
@@ -70,29 +70,29 @@ class ScalableFont : public gui::IGUIFontBitmap
 					core::stringc filename = xml->getAttributeValue(L"filename");
 					core::stringc fn = filename;
 					u32 i = (u32)xml->getAttributeValueAsInt(L"index");
-					
+
 					float scale=1.0f;
 					if (xml->getAttributeValue(L"scale"))
 						scale = xml->getAttributeValueAsFloat(L"scale");
 						//std::cout  << "scale = " << scale << std::endl;
-						
+
 					core::stringw alpha = xml->getAttributeValue(L"hasAlpha");
-					
+
 					//std::cout << "---- Adding font texture " << fn.c_str() << "; alpha=" << alpha.c_str() << std::endl;
-					
-					
+
+
 					// make sure the sprite bank has enough textures in it
 					while (i+1 > SpriteBank->getTextureCount())
 					{
 						SpriteBank->addTexture(NULL);
 					}
-				
+
 					TextureInfo info;
 					info.m_file_name   = fn;
 					info.m_has_alpha   = (alpha == core::stringw("true"));
 					info.m_scale = scale;
-					
-					m_texture_files[i] = info;				
+
+					m_texture_files[i] = info;
 				}
 				else if (core::stringw(L"c") == xml->getNodeName())
 				{
@@ -101,16 +101,16 @@ class ScalableFont : public gui::IGUIFontBitmap
 					gui::SGUISpriteFrame f;
 					gui::SGUISprite s;
 					core::rect<s32> rectangle;
-					
+
 					a.underhang = xml->getAttributeValueAsInt(L"u");
 					a.overhang = xml->getAttributeValueAsInt(L"o");
 					a.spriteno = SpriteBank->getSprites().size();
 					s32 texno = xml->getAttributeValueAsInt(L"i");
-					
+
 					// parse rectangle
 					core::stringc rectstr   = xml->getAttributeValue(L"r");
 					wchar_t ch = xml->getAttributeValue(L"c")[0];
-					
+
 					const c8 *c = rectstr.c_str();
 					s32 val;
 					val = 0;
@@ -122,7 +122,7 @@ class ScalableFont : public gui::IGUIFontBitmap
 					}
 					rectangle.UpperLeftCorner.X = val;
 					while (*c == L' ' || *c == L',') c++;
-					
+
 					val = 0;
 					while (*c >= '0' && *c <= '9')
 					{
@@ -132,7 +132,7 @@ class ScalableFont : public gui::IGUIFontBitmap
 					}
 					rectangle.UpperLeftCorner.Y = val;
 					while (*c == L' ' || *c == L',') c++;
-					
+
 					val = 0;
 					while (*c >= '0' && *c <= '9')
 					{
@@ -142,7 +142,7 @@ class ScalableFont : public gui::IGUIFontBitmap
 					}
 					rectangle.LowerRightCorner.X = val;
 					while (*c == L' ' || *c == L',') c++;
-					
+
 					val = 0;
 					while (*c >= '0' && *c <= '9')
 					{
@@ -151,24 +151,24 @@ class ScalableFont : public gui::IGUIFontBitmap
 						c++;
 					}
 					rectangle.LowerRightCorner.Y = val;
-					
+
 					CharacterMap[ch] = Areas.size();
-					
+
 					// make frame
 					f.rectNumber = SpriteBank->getPositions().size();
 					f.textureNumber = texno;
-					
+
 					// add frame to sprite
 					s.Frames.push_back(f);
 					s.frameTime = 0;
-					
+
 					// add rectangle to sprite bank
 					SpriteBank->getPositions().push_back(rectangle);
 					a.width = rectangle.getWidth();
-					
+
 					// add sprite to sprite bank
 					SpriteBank->getSprites().push_back(s);
-					
+
 					// add character to font
 					Areas.push_back(a);
 				}
@@ -179,11 +179,11 @@ class ScalableFont : public gui::IGUIFontBitmap
 public:
 
 	bool m_black_border;
-	
+
 	ScalableFont* m_fallback_font;
 	float m_fallback_font_scale;
 	int m_fallback_kerning_width;
-	
+
 	//! constructor
 	ScalableFont(gui::IGUIEnvironment *env, const io::path& filename)
 	: Driver(0), SpriteBank(0), Environment(env), WrongCharacter(0),
@@ -192,7 +192,7 @@ public:
 	#ifdef _DEBUG
 		setDebugName("ScalableFont");
 	#endif
-		
+
 		m_fallback_font = NULL;
 		m_fallback_kerning_width = 0;
 		m_fallback_font_scale = 1.0f;
@@ -213,14 +213,14 @@ public:
 			Driver->grab();
 
 		setInvisibleCharacters ( L" " );
-		
+
 		io::IXMLReader* reader = env->getFileSystem()->createXMLReader(filename.c_str());
 		if (reader)
 		{
 			load( reader );
 			reader->drop();
 		}
-		assert(Areas.size() > 0);
+		assert_log(Areas.size() > 0);
 	}
 
 	//! destructor
@@ -239,7 +239,7 @@ public:
 			return false;
 
 		doReadXmlFile(xml);
-		
+
 		// set bad character
 		WrongCharacter = getAreaIDFromCharacter(L' ', NULL);
 
@@ -262,7 +262,7 @@ public:
 			bool vcenter=false, const core::rect<s32>* clip=0)
 	{
 		if (!Driver) return;
-		
+
 		core::position2d<s32> offset = position.UpperLeftCorner;
 		core::dimension2d<s32> text_dimension;
 
@@ -274,7 +274,7 @@ public:
 		core::array<core::position2di> offsets(text_size);
 		core::array<bool> fallback;
 		fallback.set_used(text_size);
-		
+
 		for (u32 i = 0; i<text_size; i++)
 		{
 			wchar_t c = text[i];
@@ -285,7 +285,7 @@ public:
 				offset.X = position.UpperLeftCorner.X + position.getWidth()/2;
 				continue;
 			}
-			
+
 			if (c == L'\r' ||	// Windows breaks
 				c == L'\n')	// Unix breaks
 			{
@@ -303,7 +303,7 @@ public:
 			fallback[i] = use_fallback_font;
 			offset.X += area.underhang;
 			offsets.push_back(offset);
-			// Invisible character. add something to the array anyway so that 
+			// Invisible character. add something to the array anyway so that
 			// indices from the various arrays remain in sync
 			indices.push_back((Invisible.findFirst(c) < 0) ? (int)area.spriteno
 						: -1);
@@ -313,7 +313,7 @@ public:
 		// ---- do the actual rendering
 		const int indiceAmount = indices.size();
 		core::array< gui::SGUISprite >& sprites = SpriteBank->getSprites();
-		core::array< core::rect<s32> >& positions = SpriteBank->getPositions();	
+		core::array< core::rect<s32> >& positions = SpriteBank->getPositions();
 		core::array< gui::SGUISprite >* fallback_sprites;
 		core::array< core::rect<s32> >* fallback_positions;
 		if (m_fallback_font!=NULL)
@@ -336,43 +336,43 @@ public:
 				continue;
 			if (indices[n] == -1)
 				continue;
-			
-			//assert(sprites[spriteID].Frames.size() > 0);
-			
+
+			//assert_log(sprites[spriteID].Frames.size() > 0);
+
 			const int texID = (fallback[n] ?
 					(*fallback_sprites)[spriteID].Frames[0].textureNumber :
 					sprites[spriteID].Frames[0].textureNumber);
-			
+
 			core::rect<s32> source = (fallback[n] ?
 						(*fallback_positions)[(*fallback_sprites)[spriteID].Frames[0].rectNumber] :
 						positions[sprites[spriteID].Frames[0].rectNumber]);
-			
+
 			const TextureInfo& info = (fallback[n] ?
 						(*(m_fallback_font->m_texture_files.find(texID))).second :
 						(*(m_texture_files.find(texID))).second);
 			float char_scale = info.m_scale;
 
 			core::dimension2d<s32> size = source.getSize();
-			
+
 			float scale = (fallback[n] ? m_scale*m_fallback_font_scale : m_scale);
 			size.Width  = (int)(size.Width  * scale * char_scale);
 			size.Height = (int)(size.Height * scale * char_scale);
-			
+
 			// align vertically if character is smaller
 			int y_shift = (size.Height < MaxHeight*m_scale ? (int)((MaxHeight*m_scale - size.Height)/2.0f) : 0);
-			
+
 			core::rect<s32> dest(offsets[n] + core::position2di(0, y_shift), size);
-			
+
 			video::SColor colors[] = {color, color, color, color};
-					
+
 			video::ITexture* texture = (fallback[n] ?
 										m_fallback_font->SpriteBank->getTexture(texID) :
 										SpriteBank->getTexture(texID) );
-			
+
 			if (texture == NULL)
 			{
 				// perform lazy loading
-				
+
 				if (fallback[n])
 				{
 					m_fallback_font->lazyLoadTexture(texID);
@@ -383,19 +383,19 @@ public:
 					lazyLoadTexture(texID);
 					texture = SpriteBank->getTexture(texID);
 				}
-				
+
 				if (texture == NULL)
 				{
 					continue; // no such character
 				}
 			}
-			
+
 			if (m_black_border)
 			{
 				// draw black border
 				video::SColor black(color.getAlpha(),0,0,0);
 				video::SColor black_colors[] = {black, black, black, black};
-				
+
 				for (int x_delta=-2; x_delta<=2; x_delta++)
 				{
 					for (int y_delta=-2; y_delta<=2; y_delta++)
@@ -406,10 +406,10 @@ public:
 											source,
 											clip,
 											black_colors, true);
-					}			
+					}
 				}
 			}
-			
+
 			if (fallback[n])
 			{
 				// draw text over
@@ -429,7 +429,7 @@ public:
 									source,
 									clip,
 									colors, true);
-				
+
 			}
 		}
 	}
@@ -437,8 +437,8 @@ public:
 	//! returns the dimension of a text
 	virtual core::dimension2d<u32> getDimension(const wchar_t* text) const
 	{
-		assert(Areas.size() > 0);
-		
+		assert_log(Areas.size() > 0);
+
 		core::dimension2d<u32> dim(0, 0);
 		core::dimension2d<u32> thisLine(0, (int)(MaxHeight*m_scale));
 
@@ -458,9 +458,9 @@ public:
 
 			bool fallback = false;
 			const SFontArea &area = getAreaFromCharacter(*p, &fallback);
-				
+
 			thisLine.Width += area.underhang;
-			
+
 			thisLine.Width += getCharWidth(area, fallback);
 		}
 
@@ -473,7 +473,7 @@ public:
 		dim.Height = (int)(dim.Height + 0.9f);
 
 		//std::cout << dim.Width << ", " << dim.Height << std::endl;
-		
+
 		return dim;
 	}
 	//! Calculates the index of the character in the text which is on a specific position.
@@ -557,25 +557,25 @@ private:
 		s32 width;
 		u32 spriteno;
 	};
-	
+
 	int getCharWidth(const SFontArea& area, const bool fallback) const
 	{
-		core::array< gui::SGUISprite >& sprites = SpriteBank->getSprites();		
+		core::array< gui::SGUISprite >& sprites = SpriteBank->getSprites();
 		core::array< gui::SGUISprite >* fallback_sprites = (m_fallback_font != NULL ?
 													&m_fallback_font->SpriteBank->getSprites() :
 													NULL);
-		
+
 		const int texID = (fallback ?
 				(*fallback_sprites)[area.spriteno].Frames[0].textureNumber :
 				sprites[area.spriteno].Frames[0].textureNumber);
-		
+
 		const TextureInfo& info = (fallback ?
 					(*(m_fallback_font->m_texture_files.find(texID))).second :
 					(*(m_texture_files.find(texID))).second);
 		const float char_scale = info.m_scale;
-		
+
 		//std::cout << "area.spriteno=" << area.spriteno << ", char_scale=" << char_scale << std::endl;
-		
+
 		if (fallback)
 			return (int)(((area.width + area.overhang)*m_fallback_font_scale + m_fallback_kerning_width) * m_scale * char_scale);
 		else
@@ -607,7 +607,7 @@ private:
 	{
 		const int area_id = getAreaIDFromCharacter(c, fallback_font);
 		const bool use_fallback_font = (fallback_font && *fallback_font);
-		
+
 		// Note: fallback_font can be NULL
 		return ( use_fallback_font ? m_fallback_font->Areas[area_id] : Areas[area_id]);
 	}   // getAreaFromCharacter
@@ -668,7 +668,7 @@ static bool draw2DImage4c(video::E_DRIVER_TYPE type)
 
 	video::ITexture* images = driver->getTexture("../media/2ddemo.png");
 	driver->makeColorKeyTexture(images, core::position2d<s32>(0,0));
-	
+
 	core::rect<s32> imp1(349,15,385,78);
 	core::rect<s32> imp2(387,15,423,78);
 
@@ -677,7 +677,7 @@ static bool draw2DImage4c(video::E_DRIVER_TYPE type)
 	device->getFileSystem()->changeWorkingDirectoryTo("media");
 
 	ScalableFont* font = new ScalableFont(device->getGUIEnvironment(), "title_font.xml");
-	font->m_fallback_font_scale = 4.0f; 
+	font->m_fallback_font_scale = 4.0f;
 	font->m_fallback_kerning_width = 15;
 	font->setKerningWidth(-18);
 	font->m_black_border = true;
@@ -687,25 +687,25 @@ static bool draw2DImage4c(video::E_DRIVER_TYPE type)
 	*/
 	driver->getMaterial2D().UseMipMaps = true;
 	driver->getMaterial2D().TextureLayer[0].BilinearFilter = true;
-	
+
 	{
 		driver->beginScene(true, true, video::SColor(255,120,102,136));
-		
+
 		driver->enableMaterial2D();
 
 		// draw fire & dragons background world
 		driver->draw2DImage(images, core::position2di(),
 							core::rect<s32>(0,0,342,224), 0,
 							video::SColor(255,255,255,255), true);
-		
+
 		// draw flying imp
 		driver->draw2DImage(images, core::position2d<s32>(114,75),
 							imp1, 0, video::SColor(255,255,255,255), true);
-		
+
 		// draw second flying imp
 		driver->draw2DImage(images, core::position2d<s32>(220,55),
 							imp2, 0, video::SColor(255,255,255,255), true);
-		
+
 		driver->draw2DImage(images, core::rect<s32>(10,10,108,48),
 							core::rect<s32>(354,87,442,118));
 
@@ -715,15 +715,15 @@ static bool draw2DImage4c(video::E_DRIVER_TYPE type)
 
 		font->draw( L"WXYZsSdDrRjJbB", core::rect<s32>(30,20,300,300),
 				video::SColor(255,255,255,255) );
-		
+
 		driver->enableMaterial2D(false);
-		
+
 		driver->draw2DImage(images, core::recti(10,90,108,128),
 			core::recti(354,87,442,118), 0, colors, true);
 
 		font->draw( L"WXYZsSdDrRjJbB", core::rect<s32>(30,60,300,400),
 				video::SColor(255,255,255,255) );
-		
+
 		driver->endScene();
 	}
 	font->drop();
@@ -830,7 +830,7 @@ static bool addBlend2d(video::E_DRIVER_TYPE type)
 	device->run();
 	device->drop();
 	return result;
-} 
+}
 
 // This test renders 4 times the same image. Two via IGUIImage, two via draw2DImage
 // 3 of the 4 images are filtered via 2dmaterial and bilinear filter, only the one
@@ -891,7 +891,7 @@ static bool moreFilterTests(video::E_DRIVER_TYPE type)
 	device->run();
 	device->drop();
 	return result;
-} 
+}
 
 bool twodmaterial()
 {
