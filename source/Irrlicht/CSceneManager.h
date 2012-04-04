@@ -506,6 +506,12 @@ namespace scene
 		//! Register a custom callbacks manager which gets callbacks during scene rendering.
 		virtual void setLightManager(ILightManager* lightManager);
 
+		//! Get current render time.
+		virtual E_SCENE_NODE_RENDER_PASS getCurrentRendertime() const { return CurrentRendertime; }
+
+		//! Set current render time.
+		virtual void setCurrentRendertime(E_SCENE_NODE_RENDER_PASS currentRendertime) { CurrentRendertime = currentRendertime; }
+
 		//! Get an instance of a geometry creator.
 		virtual const IGeometryCreator* getGeometryCreator(void) const { return GeometryCreator; }
 
