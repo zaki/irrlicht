@@ -539,8 +539,7 @@ void CDemo::loadSceneData()
 	campFire->setMaterialFlag(video::EMF_LIGHTING, false);
 	campFire->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	campFire->setMaterialTexture(0, driver->getTexture("../../media/fireball.bmp"));
-	campFire->setMaterialType(video::EMT_ONETEXTURE_BLEND);
-	campFire->getMaterial(0).MaterialTypeParam=video::pack_textureBlendFunc(video::EBF_ONE, video::EBF_ONE_MINUS_SRC_ALPHA, video::EMFN_MODULATE_1X, video::EAS_VERTEX_COLOR);
+	campFire->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 
 	// load music
 
