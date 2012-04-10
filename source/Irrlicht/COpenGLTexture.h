@@ -138,6 +138,7 @@ protected:
 
 	u8 MipLevelStored;
 	bool HasMipMaps;
+	bool MipmapLegacyMode;
 	bool IsRenderTarget;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
