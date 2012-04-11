@@ -1108,6 +1108,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 					getMaterialToken(file, pass.Texture.CoordsType, true);
 					getMaterialToken(file, pass.Texture.MipMaps, true);
 					getMaterialToken(file, pass.Texture.Alpha, true);
+
 					// Hmm, we might need more hints for other material types using two textures...
 					if (textureUnit>0)
 						pass.Material.MaterialType=video::EMT_LIGHTMAP;
@@ -1145,6 +1146,16 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 						pass.Material.TextureLayer[textureUnit].TrilinearFilter=(token=="trilinear");
 						pass.Material.TextureLayer[textureUnit].AnisotropicFilter=(token=="anisotropic")?2:1;
 					}
+				}
+				else if (token == "scale")
+				{
+					core::stringc x;
+					core::stringc y;
+
+					getMaterialToken(file, x, true);
+					getMaterialToken(file, y, true);
+
+					pass.Material.TextureLayer[textureUnit].getTextureMatrix().setTextureScale(core::fast_atof(x.c_str()), core::fast_atof(y.c_str()));
 				}
 				else if (token=="max_anisotropy")
 				{
