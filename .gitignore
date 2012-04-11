@@ -1,0 +1,8 @@
+bin/*
+lib/*
+source/Irrlicht/Irrlicht10.0.vcxproj.user
+source/Irrlicht/Irrlicht10.0.sdf
+source/Irrlicht/Irrlicht10.0.opensdf
+source/Irrlicht/Irrlicht10.0.vcxproj
+source/Irrlicht/obj/*
+source/Irrlicht/ipch/*
