@@ -1,0 +1,13 @@
+bin/*
+lib/*
+
+examples/*/Release/*
+examples/*/Debug/*
+
+*.vcxproj.user
+*.sdf
+*.opensdf
+/*.vcxproj
+
+source/Irrlicht/obj/*
+source/Irrlicht/ipch/*
