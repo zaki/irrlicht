@@ -1,8 +1,13 @@
 bin/*
 lib/*
-source/Irrlicht/Irrlicht10.0.vcxproj.user
-source/Irrlicht/Irrlicht10.0.sdf
-source/Irrlicht/Irrlicht10.0.opensdf
-source/Irrlicht/Irrlicht10.0.vcxproj
+
+examples/*/Release/*
+examples/*/Debug/*
+
+*.vcxproj.user
+*.sdf
+*.opensdf
+/*.vcxproj
+
 source/Irrlicht/obj/*
 source/Irrlicht/ipch/*
