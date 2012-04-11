@@ -529,6 +529,9 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 
 	switch (UniformInfo[i].type)
 	{
+		case GL_FLOAT:
+			Driver->extGlUniform1fv(Location, count, floats);
+			break;
 		case GL_FLOAT_VEC2_ARB:
 			Driver->extGlUniform2fv(Location, count/2, floats);
 			break;
@@ -547,9 +550,10 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 		case GL_FLOAT_MAT4_ARB:
 			Driver->extGlUniformMatrix4fv(Location, count/16, false, floats);
 			break;
-		// case GL_FLOAT:
-		default:
-			Driver->extGlUniform1fv(Location, count, floats);
+		default: // deprecated.
+			os::Printer::log("You used deprecated solution, please use an int interface instead of a float to set a variable", name, ELL_WARNING);
+			s32 ID = *floats;
+			Driver->extGlUniform1iv(Location, 1, &ID);
 			break;
 	}
 	return true;
