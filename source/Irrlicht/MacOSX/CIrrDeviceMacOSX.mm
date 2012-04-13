@@ -1235,7 +1235,6 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 
 		postEventFromUser(ievent);
 	}
-	[str release];
 }
 
 
