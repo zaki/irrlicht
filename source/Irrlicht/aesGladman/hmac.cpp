@@ -29,9 +29,11 @@
  and/or fitness for purpose.
  ---------------------------------------------------------------------------
  Issue Date: 26/08/2003
+ Includes a bugfix from Dr Brian Gladman made on 16/04/2012 for compiling on 64-bit
 
  This is an implementation of HMAC, the FIPS standard keyed hash function
 */
+
 
 #include "hmac.h"
 
@@ -81,8 +83,8 @@ void hmac_sha_data(const unsigned char data[], unsigned long data_len, hmac_ctx 
         memset(cx->key + cx->klen, 0, HASH_INPUT_SIZE - cx->klen);
 
         /* xor ipad into key value  */
-        for(i = 0; i < (HASH_INPUT_SIZE >> 2); ++i)
-            ((unsigned long*)cx->key)[i] ^= 0x36363636;
+        for(i = 0; i < HASH_INPUT_SIZE / sizeof(unsigned long); ++i)
+            ((unsigned long*)cx->key)[i] ^= IPAD;
 
         /* and start hash operation */
         sha_begin(cx->ctx);
@@ -109,8 +111,8 @@ void hmac_sha_end(unsigned char mac[], unsigned long mac_len, hmac_ctx cx[1])
     sha_end(dig, cx->ctx);         /* complete the inner hash      */
 
     /* set outer key value using opad and removing ipad */
-    for(i = 0; i < (HASH_INPUT_SIZE >> 2); ++i)
-        ((unsigned long*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+    for(i = 0; i < HASH_INPUT_SIZE / sizeof(unsigned long); ++i)
+        ((unsigned long*)cx->key)[i] ^= OPAD ^ IPAD;
 
     /* perform the outer hash operation */
     sha_begin(cx->ctx);

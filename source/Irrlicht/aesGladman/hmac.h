@@ -29,6 +29,7 @@
  and/or fitness for purpose.
  ---------------------------------------------------------------------------
  Issue Date: 26/08/2003
+ Includes a bugfix from Dr Brian Gladman made on 16/04/2012 for compiling on 64-bit
 
  This is an implementation of HMAC, the FIPS standard keyed hash function
 */
@@ -38,7 +39,7 @@
 
 #include <memory.h>
 
-#define USE_SHA1
+#define USE_SHA1	// Irrlicht only cares about SHA1 for now
 #if !defined(USE_SHA1) && !defined(USE_SHA256)
 #error define USE_SHA1 or USE_SHA256 to set the HMAC hash algorithm
 #endif
@@ -73,9 +74,11 @@
 #define HMAC_BAD_MODE         -1
 #define HMAC_IN_DATA  0xffffffff
 
+#define IPAD (0x36 * (((unsigned long)-1) / 0xff))
+#define OPAD (0x5c * (((unsigned long)-1) / 0xff))
+
 typedef struct
-{
-    unsigned char   key[HASH_INPUT_SIZE];
+{   unsigned char   key[HASH_INPUT_SIZE];
     sha_ctx         ctx[1];
     unsigned long   klen;
 } hmac_ctx;
@@ -93,4 +96,3 @@ void hmac_sha(const unsigned char key[], unsigned long key_len,
           unsigned char mac[], unsigned long mac_len);
 
 #endif
-
