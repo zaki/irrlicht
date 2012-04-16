@@ -458,7 +458,7 @@ bool archiveReader()
 //	logTestString("Testing complex mount file.\n");
 //	ret &= testMountFile(fs);
 	logTestString("Testing add/remove with filenames.\n");
-	testAddRemove(fs, "media/file_with_path.zip");
+	ret &= testAddRemove(fs, "media/file_with_path.zip");
 
 	device->closeDevice();
 	device->run();

@@ -458,9 +458,10 @@ bool CFileSystem::removeFileArchive(u32 index)
 //! removes an archive from the file system.
 bool CFileSystem::removeFileArchive(const io::path& filename)
 {
+	const path absPath = getAbsolutePath(filename);	
 	for (u32 i=0; i < FileArchives.size(); ++i)
 	{
-		if (filename == FileArchives[i]->getFileList()->getPath())
+		if (absPath == FileArchives[i]->getFileList()->getPath())
 			return removeFileArchive(i);
 	}
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;

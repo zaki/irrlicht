@@ -1,5 +1,9 @@
 Changes in 1.8 (??.??.2011)
 
+ - CFileSystem::removeFileArchive now checking for normalized path
+
+ - Fix zip's with passwords on 64-bit systems (thx @ Dr. Gladman for writing the bugfix)
+
  - replace asserts in tests with macro assert_log to allow running all tests through on problems.
 
  - added IGUIElement::setName and IGUIElement::getName (similar to ISceneNode)
