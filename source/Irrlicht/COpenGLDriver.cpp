@@ -2377,17 +2377,33 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 
 //! Draws a 2d line.
 void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
-				const core::position2d<s32>& end,
-				SColor color)
+				const core::position2d<s32>& end, SColor color)
 {
-	disableTextures();
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
+	if (start==end)
+		drawPixel(start.X, start.Y, color);
+	else
+	{
+		disableTextures();
+		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
-	glBegin(GL_LINES);
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glVertex2f(GLfloat(start.X), GLfloat(start.Y));
-	glVertex2f(GLfloat(end.X),   GLfloat(end.Y));
-	glEnd();
+		glBegin(GL_LINES);
+		glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+		GLfloat x=(GLfloat)start.X;
+		GLfloat y=(GLfloat)start.Y;
+		if (x>end.X)
+			x += 0.5f;
+		if (y>end.Y)
+			y += 0.5f;
+		glVertex2f(GLfloat(x), GLfloat(y));
+		x=(GLfloat)end.X;
+		y=(GLfloat)end.Y;
+		if (x>start.X)
+			x += 0.5f;
+		if (y>start.Y)
+			y += 0.5f;
+		glVertex2f(GLfloat(x),   GLfloat(y));
+		glEnd();
+	}
 }
 
 //! Draws a pixel

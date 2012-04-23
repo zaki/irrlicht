@@ -254,7 +254,7 @@ static void RenderLine32_Decal(video::IImage *t,
 	m = dy << 1;
 
 	run = dx;
-	while ( run )
+	do
 	{
 		*dst = argb;
 
@@ -266,7 +266,7 @@ static void RenderLine32_Decal(video::IImage *t,
 			d -= c;
 		}
 		run -= 1;
-	}
+	} while (run>=0);
 
 	t->unlock();
 }
@@ -321,7 +321,7 @@ static void RenderLine32_Blend(video::IImage *t,
 
 	run = dx;
 	const u32 packA = packAlpha ( alpha );
-	while ( run )
+	do
 	{
 		*dst = packA | PixelBlend32( *dst, argb, alpha );
 
@@ -333,7 +333,7 @@ static void RenderLine32_Blend(video::IImage *t,
 			d -= c;
 		}
 		run -= 1;
-	}
+	} while (run>=0);
 
 	t->unlock();
 }
@@ -386,7 +386,7 @@ static void RenderLine16_Decal(video::IImage *t,
 	m = dy << 1;
 
 	run = dx;
-	while ( run )
+	do
 	{
 		*dst = (u16)argb;
 
@@ -398,7 +398,7 @@ static void RenderLine16_Decal(video::IImage *t,
 			d -= c;
 		}
 		run -= 1;
-	}
+	} while (run>=0);
 
 	t->unlock();
 }
@@ -453,7 +453,7 @@ static void RenderLine16_Blend(video::IImage *t,
 
 	run = dx;
 	const u16 packA = alpha ? 0x8000 : 0;
-	while ( run )
+	do
 	{
 		*dst = packA | PixelBlend16( *dst, argb, alpha );
 
@@ -465,7 +465,7 @@ static void RenderLine16_Blend(video::IImage *t,
 			d -= c;
 		}
 		run -= 1;
-	}
+	} 	while (run>=0);
 
 	t->unlock();
 }

@@ -1962,23 +1962,28 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end,
 				SColor color)
 {
-	// thanks to Vash TheStampede who sent in his implementation
-	S3DVertex vtx[2];
-	vtx[0] = S3DVertex((f32)start.X, (f32)start.Y, 0.0f,
-						0.0f, 0.0f, 0.0f, // normal
-						color, 0.0f, 0.0f); // texture
+	if (start==end)
+		drawPixel(start.X, start.Y, color);
+	else
+	{
+		// thanks to Vash TheStampede who sent in his implementation
+		S3DVertex vtx[2];
+		vtx[0] = S3DVertex((f32)start.X+0.375f, (f32)start.Y+0.375f, 0.0f,
+							0.0f, 0.0f, 0.0f, // normal
+							color, 0.0f, 0.0f); // texture
 
-	vtx[1] = S3DVertex((f32)end.X, (f32)end.Y, 0.0f,
-						0.0f, 0.0f, 0.0f,
-						color, 0.0f, 0.0f);
+		vtx[1] = S3DVertex((f32)end.X+0.375f, (f32)end.Y+0.375f, 0.0f,
+							0.0f, 0.0f, 0.0f,
+							color, 0.0f, 0.0f);
 
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-	setActiveTexture(0,0);
+		setRenderStates2DMode(color.getAlpha() < 255, false, false);
+		setActiveTexture(0,0);
 
-	setVertexShader(EVT_STANDARD);
+		setVertexShader(EVT_STANDARD);
 
-	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1,
-					&vtx[0], sizeof(S3DVertex) );
+		pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1,
+						&vtx[0], sizeof(S3DVertex) );
+	}
 }
 
 
@@ -1994,7 +1999,7 @@ void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
 
 	setVertexShader(EVT_STANDARD);
 
-	S3DVertex vertex((f32)x, (f32)y, 0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
+	S3DVertex vertex((f32)x+0.375f, (f32)y+0.375f, 0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
 
 	pID3DDevice->DrawPrimitiveUP(D3DPT_POINTLIST, 1, &vertex, sizeof(vertex));
 }
