@@ -417,6 +417,17 @@ void logTestString(const char * format, ...)
 	vsprintf(logString, format, arguments);
 	va_end(arguments);
 
+#if defined(_IRR_WINDOWS_API_)
+#if defined (_WIN32_WCE )
+	core::stringw tmp(logString);
+	tmp += L"\n";
+	OutputDebugStringW(tmp.c_str());
+#else
+	OutputDebugStringA(logString);
+	OutputDebugStringA("\n");
+#endif
+#endif
+
 	(void)printf(logString);
 	if(logFile)
 	{
