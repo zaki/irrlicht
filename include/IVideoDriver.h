@@ -938,7 +938,7 @@ namespace video
 		virtual void draw2DRectangleOutline(const core::recti& pos,
 				SColor color=SColor(255,255,255,255)) =0;
 
-		//! Draws a 2d line.
+		//! Draws a 2d line. Both start and end will be included in coloring.
 		/** \param start Screen coordinates of the start of the line
 		in pixels.
 		\param end Screen coordinates of the start of the line in
