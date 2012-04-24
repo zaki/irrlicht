@@ -551,9 +551,9 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 			Driver->extGlUniformMatrix4fv(Location, count/16, false, floats);
 			break;
 		default: // deprecated.
-			os::Printer::log("You used deprecated solution, please use an int interface instead of a float to set a variable", name, ELL_WARNING);
-			s32 ID = *floats;
-			Driver->extGlUniform1iv(Location, 1, &ID);
+			os::Printer::log("Deprecation! Please use int interface instead of float to set variable", name, ELL_WARNING);
+			const GLint id = static_cast<GLint>(*floats);
+			Driver->extGlUniform1iv(Location, 1, &id);
 			break;
 	}
 	return true;
