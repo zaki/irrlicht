@@ -94,6 +94,7 @@ namespace scene
 		}
 
 		//! adds a MeshBuffer
+		/** The bounding box is not updated automatically. */
 		void addMeshBuffer(IMeshBuffer* buf)
 		{
 			if (buf)
