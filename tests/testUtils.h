@@ -36,6 +36,14 @@ extern bool binaryCompareFiles(const char * fileName1, const char * fileName2);
 	\return true if the files are identical, false on any error or difference. */
 extern bool xmlCompareFiles(irr::io::IFileSystem * fs, const char * fileName1, const char * fileName2);
 
+//! Compare two images, returning the degree to which they match.
+/** \param driver The Irrlicht video driver.
+	\param fileName1 The first image to compare.
+	\param fileName2 The second image to compare.
+	\return The match, from 0.f to 100.f */
+extern float fuzzyCompareImages(irr::video::IVideoDriver * driver,
+		const char * fileName1, const char * fileName2);
+
 //! Take a screenshot and compare it against a reference screenshot in the tests/media subdirectory
 /** \param driver The Irrlicht video driver.
 	\param fileName The unique filename suffix that will be appended to the name of the video driver.

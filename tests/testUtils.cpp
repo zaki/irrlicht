@@ -267,9 +267,9 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	}
 
 	video::ECOLOR_FORMAT format1 = image1->getColorFormat();
-	if(video::ECF_R8G8B8 != format1)
+	if(video::ECF_A8R8G8B8 != format1 && video::ECF_R8G8B8 != format1)
 	{
-		logTestString("fuzzyCompareImages: image 1 must be ECF_R8G8B8\n");
+		logTestString("fuzzyCompareImages: image 1 must be ECF_AR8G8B8 or ECF_R8G8B8\n");
 		return 0.f;
 	}
 
@@ -287,6 +287,9 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	u32 mismatchedColours = 0;
 	for(u32 pixel = 0; pixel < pixels; ++pixel)
 	{
+		if(video::ECF_A8R8G8B8 == format1)
+			image1Data++;
+
 		const u8 r1 = *(image1Data++);
 		const u8 g1 = *(image1Data++);
 		const u8 b1 = *(image1Data++);
@@ -308,6 +311,27 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	return 100.f * (totalColours - mismatchedColours) / totalColours;
 }
 
+
+//! Compare two images, returning the degree to which they match.
+/** \param image1 The first image to compare.
+	\param image2 The second image to compare.
+	\return The match, from 0.f to 100.f */
+float fuzzyCompareImages(irr::video::IVideoDriver * driver,
+		const char * fileName1, const char * fileName2)
+{
+	assert(fileName1);
+	assert(fileName2);
+	irr::video::IImage * img1 = driver->createImageFromFile(fileName1);
+	if (!img1)
+		return 0;
+	irr::video::IImage * img2 = driver->createImageFromFile(fileName2);
+	const float result = fuzzyCompareImages(img1, img2);
+	logTestString("Image match: %f%%\n", result);
+	img1->drop();
+	if (img2)
+		img2->drop();
+	return result;
+}
 
 bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 					const char * fileName,
@@ -361,10 +385,10 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 		return false;
 	}
 
-	float match = fuzzyCompareImages(screenshot, reference);
+	const float match = fuzzyCompareImages(screenshot, reference);
 	logTestString("Image match: %f%%\n", match);
 
-	if(match < requiredMatch)
+	if (match < requiredMatch)
 	{
 		irr::core::stringc mismatchFilename = "results/";
 		mismatchFilename += driverName;
