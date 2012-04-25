@@ -624,9 +624,9 @@ COpenGLDriver::~COpenGLDriver()
 
 	deleteMaterialRenders();
 
+	CurrentTexture.clear();
 	// I get a blue screen on my laptop, when I do not delete the
 	// textures manually before releasing the dc. Oh how I love this.
-
 	deleteAllTextures();
 	removeAllOcclusionQueries();
 	removeAllHardwareBuffers();
@@ -673,8 +673,7 @@ bool COpenGLDriver::genericDriverInit()
 	}
 
 	u32 i;
-	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		CurrentTexture[i]=0;
+	CurrentTexture.clear();
 	// load extensions
 	initExtensions(Params.Stencilbuffer);
 	if (queryFeature(EVDF_ARB_GLSL))
@@ -2433,7 +2432,7 @@ bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	if (MultiTextureExtension)
 		extGlActiveTexture(GL_TEXTURE0_ARB + stage);
 
-	CurrentTexture[stage]=texture;
+	CurrentTexture.set(stage,texture);
 
 	if (!texture)
 	{
@@ -2445,7 +2444,7 @@ bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 		if (texture->getDriverType() != EDT_OPENGL)
 		{
 			glDisable(GL_TEXTURE_2D);
-			CurrentTexture[stage]=0;
+			CurrentTexture.set(stage, 0);
 			os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
 			return false;
 		}
@@ -3817,6 +3816,17 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 	glEnd();
 }
 
+
+//! Removes a texture from the texture cache and deletes it, freeing lot of memory.
+void COpenGLDriver::removeTexture(ITexture* texture)
+{
+	if (!texture)
+		return;
+
+	CNullDriver::removeTexture(texture);
+	// Remove this texture from CurrentTexture as well
+	CurrentTexture.remove(texture);
+}
 
 
 //! Only used by the internal engine. Used to notify the driver that

@@ -387,6 +387,9 @@ namespace video
 		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
 		void removeDepthTexture(ITexture* texture);
 
+		//! Removes a texture from the texture cache and deletes it, freeing lot of memory.
+		void removeTexture(ITexture* texture);
+
 		//! Convert E_PRIMITIVE_TYPE to OpenGL equivalent
 		GLenum primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const;
 
@@ -467,7 +470,70 @@ namespace video
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		core::array<video::IRenderTarget> MRTargets;
-		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		class STextureStageCache
+		{
+			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		public:
+			STextureStageCache()
+			{
+				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+				{
+					CurrentTexture[i] = 0;
+				}
+			}
+
+			~STextureStageCache()
+			{
+				clear();
+			}
+
+			void set(u32 stage, const ITexture* tex)
+			{
+				if (stage<MATERIAL_MAX_TEXTURES)
+				{
+					const ITexture* oldTexture=CurrentTexture[stage];
+					if (tex)
+						tex->grab();
+					CurrentTexture[stage]=tex;
+					if (oldTexture)
+						oldTexture->drop();
+				}
+			}
+
+			const ITexture* operator[](int stage) const
+			{
+				if (stage<MATERIAL_MAX_TEXTURES)
+					return CurrentTexture[stage];
+				else
+					return 0;
+			}
+
+			void remove(const ITexture* tex)
+			{
+				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
+				{
+					if (CurrentTexture[i] == tex)
+					{
+						tex->drop();
+						CurrentTexture[i] = 0;
+					}
+				}
+			}
+
+			void clear()
+			{
+				// Drop all the CurrentTexture handles
+				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+				{
+					if (CurrentTexture[i])
+					{
+						CurrentTexture[i]->drop();
+						CurrentTexture[i] = 0;
+					}
+				}
+			}
+		};
+		STextureStageCache CurrentTexture;
 		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane
 		{
