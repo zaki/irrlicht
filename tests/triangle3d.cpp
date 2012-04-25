@@ -238,7 +238,7 @@ static bool isPointInside(triangle3d<T> triangleOrig, bool testIsInside, bool te
 // This is somewhat important as Direct3D does by default set the FPU into that mode.
 static bool isPointInsideWithSinglePrecision()
 {
-#if defined(_MSC_VER) && (defined(_WIN32) || defined(WIN32))
+#if defined(_MSC_VER) && !(defined(_WIN64))
 	int original = _control87( 0, 0 );
 	_control87(_PC_24, MCW_PC);	// single precision (double precision would be _PC_53)
 
