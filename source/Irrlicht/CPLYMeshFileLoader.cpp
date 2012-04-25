@@ -469,7 +469,7 @@ void CPLYMeshFileLoader::fillBuffer()
 	if (EndOfFile)
 		return;
 
-	u32 length = EndPointer - StartPointer;
+	u32 length = (u32)(EndPointer - StartPointer);
 	if (length && StartPointer != Buffer)
 	{
 		// copy the remaining data to the start of the buffer
@@ -647,7 +647,7 @@ c8* CPLYMeshFileLoader::getNextWord()
 		++pos;
 	}
 	--pos;
-	WordLength = pos-StartPointer;
+	WordLength = (s32)(pos-StartPointer);
 	// return pointer to the start of the word
 	return StartPointer;
 }
