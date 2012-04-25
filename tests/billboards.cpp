@@ -110,6 +110,8 @@ bool billboardSize(void)
 }
 
 // Test billboard orientation
+// Should generate a properly readable (i.e. not mirrored or flipped)
+// font file display.
 bool billboardOrientation(void)
 {
 	// Use EDT_BURNINGSVIDEO since it is not dependent on (e.g.) OpenGL driver versions.
