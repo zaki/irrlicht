@@ -502,7 +502,7 @@ namespace video
 
 			const ITexture* operator[](int stage) const
 			{
-				if (stage<MATERIAL_MAX_TEXTURES)
+				if ((u32)stage<MATERIAL_MAX_TEXTURES)
 					return CurrentTexture[stage];
 				else
 					return 0;
