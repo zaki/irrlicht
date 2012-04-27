@@ -608,7 +608,7 @@ namespace
 
 	HKL KEYBOARD_INPUT_HKL=0;
 	unsigned int KEYBOARD_INPUT_CODEPAGE = 1252;
-};
+}
 
 SEnvMapper* getEnvMapperFromHWnd(HWND hWnd)
 {
