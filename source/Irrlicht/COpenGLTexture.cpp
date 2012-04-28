@@ -169,6 +169,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_R16F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -182,6 +183,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RG16F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -195,6 +197,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RGBA16F_ARB;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGBA8;
 #endif
 		}
@@ -208,6 +211,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_R32F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -221,6 +225,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RG32F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -234,6 +239,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RGBA32F_ARB;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGBA8;
 #endif
 		}
@@ -671,6 +677,8 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	if (ECF_UNKNOWN == format)
 		format = getBestColorFormat(driver->getColorFormat());
+
+	ColorFormat = format;
 
 	GLint FilteringType;
 	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
