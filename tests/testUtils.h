@@ -55,6 +55,12 @@ extern bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * 
 													const char * fileName,
 													irr::f32 requiredMatch = 99.f);
 
+//! Stabilize the screen background eg. eliminate problems like an aero transparency effects etc.
+/** \param driver The Irrlicht video driver.
+	\return true if required color is the same as a window background color. */
+extern void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
+													irr::video::SColor color = irr::video::SColor(255, 255, 255, 255));
+
 
 //! Opens a test log file, deleting any existing contents.
 /** \param startNewLog true to create a new log file, false to append to an

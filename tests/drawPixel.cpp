@@ -24,6 +24,8 @@ static bool lineRender(E_DRIVER_TYPE driverType)
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	// Draw a cube background so that we can check that the pixels' alpha is working.
@@ -65,6 +67,8 @@ static bool pixelAccuracy(E_DRIVER_TYPE driverType)
 		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
 
 	IVideoDriver* driver = device->getVideoDriver();
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -125,6 +129,8 @@ static bool drawLine(E_DRIVER_TYPE driverType)
 		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
 
 	IVideoDriver* driver = device->getVideoDriver();
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 

@@ -23,6 +23,9 @@ bool testWithRenderTarget(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture* RenderTarget=driver->addRenderTargetTexture(core::dimension2d<u32>(64,64), "BASEMAP");
@@ -60,6 +63,8 @@ bool testRectangles(video::E_DRIVER_TYPE driverType)
 		return true; // could not create selected driver.
 
 	video::IVideoDriver* driver = device->getVideoDriver();
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -102,6 +107,8 @@ bool testWithPNG(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture *tex=driver->getTexture("media/RedbrushAlpha-0.25.png");
@@ -138,6 +145,9 @@ bool testExactPlacement(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture* rt=driver->addRenderTargetTexture(core::dimension2d<u32>(32,32), "rt1");

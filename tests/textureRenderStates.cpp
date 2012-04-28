@@ -15,6 +15,8 @@ static bool manyTextures(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	(void)smgr->addCameraSceneNode();
@@ -76,6 +78,8 @@ static bool renderAndLoad(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture* tex1 = driver->getTexture("../media/wall.bmp");
@@ -112,6 +116,8 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -170,6 +176,8 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNode();
@@ -224,6 +232,8 @@ static bool textureMatrix(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -296,6 +306,8 @@ bool danglingTexturePointer()
 		return true;
 
 	irr::video::IVideoDriver* driver = device->getVideoDriver();
+
+	stabilizeScreenBackground(driver);
 
 	// Load a texture from a file
 	// This binds and uploads to OpenGL texture #2.

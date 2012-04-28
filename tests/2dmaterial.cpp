@@ -661,6 +661,8 @@ static bool draw2DImage4c(video::E_DRIVER_TYPE type)
 		return true;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS,true);
@@ -775,6 +777,9 @@ static bool addBlend2d(video::E_DRIVER_TYPE type)
 		device->drop();
 		return false;
 	}
+
+	stabilizeScreenBackground(driver);
+
 	scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
 
 	if (node)
@@ -851,6 +856,8 @@ static bool moreFilterTests(video::E_DRIVER_TYPE type)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 

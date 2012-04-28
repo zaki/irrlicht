@@ -20,6 +20,9 @@ static bool testLightTypes(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 //	smgr->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));

@@ -47,6 +47,8 @@ bool octree()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	stabilizeScreenBackground(driver);
+
 	scene::IMetaTriangleSelector * meta = smgr->createMetaTriangleSelector();
 
 	device->getFileSystem()->addFileArchive("../media/map-20kdm2.pk3");
@@ -156,6 +158,8 @@ bool triangle()
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
+
+	stabilizeScreenBackground(driver);
 
 	scene::IMetaTriangleSelector * meta = smgr->createMetaTriangleSelector();
 

@@ -17,6 +17,9 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
+
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	// create first plane

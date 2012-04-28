@@ -333,6 +333,54 @@ float fuzzyCompareImages(irr::video::IVideoDriver * driver,
 	return result;
 }
 
+void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
+		irr::video::SColor color)
+{
+	for(int i = 0; i < 100; ++i) // 100 - max checks
+	{
+		driver->beginScene(true, true, color);
+		driver->endScene();
+
+		irr::video::IImage * screenshot = driver->createScreenShot();
+		if(!screenshot)
+			return;
+
+		const video::ECOLOR_FORMAT format = screenshot->getColorFormat();
+		if(format != video::ECF_R8G8B8)
+		{
+			irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot->getDimension());
+			screenshot->copyTo(fixedScreenshot);
+			screenshot->drop();
+
+			if(!fixedScreenshot)
+				return;
+
+			screenshot = fixedScreenshot;
+		}
+
+		u8 * image1Data = (u8*)screenshot->lock();
+
+		const u32 pixels = (screenshot->getPitch() * screenshot->getDimension().Height) / 4;
+		u32 mismatchedColours = 0;
+		bool status = true;
+		for(u32 pixel = 0; pixel < pixels; ++pixel)
+		{
+			const u8 r = *(image1Data++);
+			const u8 g = *(image1Data++);
+			const u8 b = *(image1Data++);
+
+			if(r != color.getRed() || g != color.getGreen() || b != color.getBlue())
+			{
+				status = false;
+				break;
+			}
+		}
+
+		if(status)
+			return;
+	}
+}
+
 bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 					const char * fileName,
 					irr::f32 requiredMatch)

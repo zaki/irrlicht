@@ -25,6 +25,9 @@ bool testShots(video::E_DRIVER_TYPE type)
 	node = smgr->addAnimatedMeshSceneNode(mesh);
 	if (!node)
 		return false;
+
+	stabilizeScreenBackground(driver);
+
 	node->setPosition(core::vector3df(20, 0, 30));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialTexture(0, driver->getTexture("../media/sydney.bmp"));

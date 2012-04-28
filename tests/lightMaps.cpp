@@ -29,6 +29,8 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	bool result = true;
 	bool added = device->getFileSystem()->addFileArchive("../media/map-20kdm2.pk3");
 	assert_log(added);

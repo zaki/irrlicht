@@ -11,6 +11,8 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->beginScene(true, true, video::SColor(255,100,101,140));

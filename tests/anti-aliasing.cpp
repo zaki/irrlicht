@@ -37,6 +37,9 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 		device->drop();
 		return false;
 	}
+
+	stabilizeScreenBackground(driver);
+
 	scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
 
 	if (node)
