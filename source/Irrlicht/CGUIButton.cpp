@@ -359,7 +359,7 @@ IGUIFont* CGUIButton::getActiveFont() const
 		return OverrideFont;
 	IGUISkin* skin = Environment->getSkin();
 	if (skin)
-		return skin->getFont();
+		return skin->getFont(EGDF_BUTTON);
 	return 0;
 }
 
