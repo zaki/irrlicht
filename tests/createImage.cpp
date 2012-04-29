@@ -2,7 +2,9 @@
 
 using namespace irr;
 
-static bool testImageCreation()
+namespace
+{
+bool testImageCreation()
 {
 	// create device
 
@@ -39,8 +41,35 @@ static bool testImageCreation()
 	return result;
 }
 
+bool testImageFormats()
+{
+	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO, core::dimension2d<u32>(256,128));
+
+	if (device == 0)
+		return true; // could not create selected driver.
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+	video::ITexture* tex=driver->getTexture("../media/water.jpg");
+	video::ITexture* tex1=driver->getTexture("media/grey.tga");
+	driver->beginScene(true, true);
+
+	driver->draw2DImage(tex, core::position2d<s32>(0,0), core::recti(0,0,64,64));
+	driver->draw2DImage(tex1, core::position2d<s32>(0,64), core::recti(0,0,64,64));
+	driver->endScene();
+
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-testImageFormats.png", 99.5f);
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
+}
+
 bool createImage()
 {
 	bool result = testImageCreation();
+	result &= testImageFormats();
 	return result;
 }
