@@ -635,7 +635,7 @@ COpenGLDriver::~COpenGLDriver()
 
 		if (ExposedData.OpenGLWin32.HRc)
 		{
-			if (!wglMakeCurrent(0, 0))
+			if (!wglMakeCurrent(HDc, 0))
 				os::Printer::log("Release of dc and rc failed.", ELL_WARNING);
 
 			if (!wglDeleteContext((HGLRC)ExposedData.OpenGLWin32.HRc))
