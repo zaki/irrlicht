@@ -19,7 +19,7 @@ bool billboardSize(void)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
-	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
+	smgr->addCameraSceneNode();
 	scene::IBillboardSceneNode* bill = smgr->addBillboardSceneNode();
 	bill->setPosition(core::vector3df(0,0,50));
 	bill = smgr->addBillboardSceneNode();
@@ -123,7 +123,7 @@ bool billboardOrientation(void)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
-	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
+	smgr->addCameraSceneNode();
 	scene::IBillboardSceneNode* bill = smgr->addBillboardSceneNode(0, core::dimension2df(40,40));
 	bill->setPosition(core::vector3df(0,-15,10));
 	bill->getMaterial(0).Lighting=false;

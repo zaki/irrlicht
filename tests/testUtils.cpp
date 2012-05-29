@@ -361,7 +361,6 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 		u8 * image1Data = (u8*)screenshot->lock();
 
 		const u32 pixels = (screenshot->getPitch() * screenshot->getDimension().Height) / 4;
-		u32 mismatchedColours = 0;
 		bool status = true;
 		for(u32 pixel = 0; pixel < pixels; ++pixel)
 		{

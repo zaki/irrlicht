@@ -90,6 +90,7 @@ static bool loadScene(void)
 
 	bool result = false;
 	device->run();
+	device->getTimer()->setTime(666);	// scene has animations and current scene seems to be saved at that time ... really - best result with just that number :-)
 	if (driver->beginScene(true, true, video::SColor(0, 80, 80, 80)))
 	{
 		smgr->drawAll();
