@@ -376,7 +376,11 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 		}
 
 		if(status)
+		{
+			screenshot->drop();
 			return;
+		}
+		screenshot->drop();
 	}
 }
 
