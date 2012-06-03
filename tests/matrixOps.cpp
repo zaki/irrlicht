@@ -126,7 +126,7 @@ bool rotations(void)
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
 	result &= (vec1.equals(vec12));
 	result &= (vec2.equals(vec22));
-	result &= (vec3.equals(vec32));
+	result &= (vec3.equals(vec32, 2*ROUNDING_ERROR_f32));
 	assert_log(result);
 
 	vec1.set(1,2,3);vec12.set(1,2,3);
