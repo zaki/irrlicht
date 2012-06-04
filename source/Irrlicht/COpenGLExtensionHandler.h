@@ -2457,7 +2457,7 @@ inline GLboolean COpenGLExtensionHandler::extGlIsQuery(GLuint id)
 #elif defined(GL_ARB_occlusion_query)
 	return glIsQueryARB(id);
 #elif defined(GL_NV_occlusion_query)
-	glIsOcclusionQueryNV(id);
+	return glIsOcclusionQueryNV(id);
 #else
 	return false;
 #endif
