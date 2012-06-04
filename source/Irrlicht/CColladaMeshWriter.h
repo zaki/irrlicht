@@ -80,10 +80,10 @@ public:
 protected:
 
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
-	inline irr::core::stringw toString(const irr::core::vector3df& vec) const;
-	inline irr::core::stringw uvToString(const irr::core::vector2df& vec) const;
-	inline irr::core::stringw toString(const irr::core::vector2df& vec) const;
-	inline irr::core::stringw toString(const irr::video::SColorf& colorf, bool writeAlpha=true) const;
+	void writeUv(const irr::core::vector2df& vec);
+	void writeVector(const irr::core::vector2df& vec);
+	void writeVector(const irr::core::vector3df& vec);
+	void writeColor(const irr::video::SColorf& colorf, bool writeAlpha=true);
 	inline irr::core::stringw toString(const irr::video::ECOLOR_FORMAT format) const;
 	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
 	inline irr::core::stringw toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;

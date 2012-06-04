@@ -387,7 +387,7 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 		Writer->writeLineBreak();
 
 		Writer->writeElement(L"technique_common", false);
-		Writer->writeLineBreak();			
+		Writer->writeLineBreak();
 
 		switch ( lightNode->getLightType() )
 		{
@@ -441,7 +441,7 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 				Writer->writeText( irr::core::stringw(lightData.Falloff).c_str() );
 				Writer->writeClosingTag(L"falloff_exponent");
 				Writer->writeLineBreak();
-					
+
 				Writer->writeClosingTag(L"spot");
 				Writer->writeLineBreak();
 				break;
@@ -704,40 +704,40 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) 
 	return type == video::EVT_2TCOORDS;
 }
 
-irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector3df& vec) const
+void CColladaMeshWriter::writeVector(const irr::core::vector3df& vec)
 {
-	c8 tmpbuf[255];
-	snprintf(tmpbuf, 255, "%f %f %f", vec.X, vec.Y, vec.Z);
-	core::stringw str  = tmpbuf;
+	wchar_t tmpbuf[255];
+	swprintf(tmpbuf, 255, L"%f %f %f", vec.X, vec.Y, vec.Z);
 
-	return str;
+	Writer->writeText(tmpbuf);
 }
 
-irr::core::stringw CColladaMeshWriter::uvToString(const irr::core::vector2df& vec) const
+void CColladaMeshWriter::writeUv(const irr::core::vector2df& vec)
 {
 	// change handedness
-	return toString( core::vector2df(vec.X, 1.f-vec.Y) );
+	wchar_t tmpbuf[255];
+	swprintf(tmpbuf, 255, L"%f %f", vec.X, 1.f-vec.Y);
+
+	Writer->writeText(tmpbuf);
 }
 
-irr::core::stringw CColladaMeshWriter::toString(const irr::core::vector2df& vec) const
+void CColladaMeshWriter::writeVector(const irr::core::vector2df& vec)
 {
-	c8 tmpbuf[255];
-	snprintf(tmpbuf, 255, "%f %f", vec.X, vec.Y);
-	core::stringw str  = tmpbuf;
+	wchar_t tmpbuf[255];
+	swprintf(tmpbuf, 255, L"%f %f", vec.X, vec.Y);
 
-	return str;
+	Writer->writeText(tmpbuf);
 }
 
-irr::core::stringw CColladaMeshWriter::toString(const irr::video::SColorf& colorf, bool writeAlpha) const
+void CColladaMeshWriter::writeColor(const irr::video::SColorf& colorf, bool writeAlpha)
 {
-	c8 tmpbuf[255];
+	wchar_t tmpbuf[255];
 	if ( writeAlpha )
-		snprintf(tmpbuf, 255, "%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
+		swprintf(tmpbuf, 255, L"%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
 	else
-		snprintf(tmpbuf, 255, "%f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue());
-	core::stringw str = tmpbuf;
+		swprintf(tmpbuf, 255, L"%f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue());
 
-	return str;
+	Writer->writeText(tmpbuf);
 }
 
 irr::core::stringw CColladaMeshWriter::toString(const irr::video::ECOLOR_FORMAT format) const
@@ -1185,7 +1185,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].Pos).c_str());
+						writeVector(vtx[j].Pos);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1195,7 +1195,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].Pos).c_str());
+						writeVector(vtx[j].Pos);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1205,7 +1205,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].Pos).c_str());
+						writeVector(vtx[j].Pos);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1275,7 +1275,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(uvToString(vtx[j].TCoords).c_str());
+						writeUv(vtx[j].TCoords);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1285,7 +1285,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(uvToString(vtx[j].TCoords).c_str());
+						writeUv(vtx[j].TCoords);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1295,7 +1295,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(uvToString(vtx[j].TCoords).c_str());
+						writeUv(vtx[j].TCoords);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1362,7 +1362,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].Normal).c_str());
+						writeVector(vtx[j].Normal);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1372,7 +1372,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].Normal).c_str());
+						writeVector(vtx[j].Normal);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1382,7 +1382,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 					video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
 					for (u32 j=0; j<vertexCount; ++j)
 					{
-						Writer->writeText(toString(vtx[j].Normal).c_str());
+						writeVector(vtx[j].Normal);
 						Writer->writeLineBreak();
 					}
 				}
@@ -1455,7 +1455,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 							video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 							for (u32 j=0; j<vertexCount; ++j)
 							{
-								Writer->writeText(toString(vtx[j].TCoords2).c_str());
+								writeVector(vtx[j].TCoords2);
 								Writer->writeLineBreak();
 							}
 						}
@@ -1548,10 +1548,11 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 
 		Writer->writeElement(L"p", false);
 
+		core::stringw strP;
+		strP.reserve(100);
 		for (u32 p=0; p<polyCount; ++p)
 		{
-			core::stringw strP;
-
+			strP = "";
 			strP += buffer->getIndices()[(p*3) + 0] + posIdx;
 			strP += " ";
 			strP += buffer->getIndices()[(p*3) + 0] + tCoordIdx;
@@ -1641,8 +1642,7 @@ void CColladaMeshWriter::writeColorElement(const video::SColorf & col, bool writ
 {
 	Writer->writeElement(L"color", false);
 
-	irr::core::stringw str( toString(col, writeAlpha) );
-	Writer->writeText(str.c_str());
+	writeColor(col, writeAlpha);
 
 	Writer->writeClosingTag(L"color");
 	Writer->writeLineBreak();
@@ -1659,11 +1659,11 @@ void CColladaMeshWriter::writeAmbientLightElement(const video::SColorf & col)
 	Writer->writeLineBreak();
 
 		Writer->writeElement(L"technique_common", false);
-		Writer->writeLineBreak();			
+		Writer->writeLineBreak();
 
 			Writer->writeElement(L"ambient", false);
 			Writer->writeLineBreak();
-					
+
 				writeColorElement(col, false);
 
 			Writer->writeClosingTag(L"ambient");
