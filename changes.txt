@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - speedup for xml-writing.
+
  - CFileSystem::removeFileArchive now checking for normalized path
 
  - Fix zip's with passwords on 64-bit systems (thx @ Dr. Gladman for writing the bugfix)

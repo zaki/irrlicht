@@ -205,8 +205,8 @@ void CXMLWriter::writeText(const wchar_t* text)
 	if (!File || !text)
 		return;
 
-	core::stringw s(text);
-	s = L""; // passing text and then resetting it is a (little ackward) way to reserve memory for the string to avoid lots of reallocations below.
+	core::stringw s;
+	s.reserve(wcslen(text));
 	const wchar_t* p = text;
 
 	while(*p)
