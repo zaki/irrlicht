@@ -48,12 +48,12 @@
 
 #include "sha1.h"
 
-#define HASH_INPUT_SIZE     SHA1_BLOCK_SIZE
-#define HASH_OUTPUT_SIZE    SHA1_DIGEST_SIZE
-#define sha_ctx             sha1_ctx
-#define sha_begin           sha1_begin
-#define sha_hash            sha1_hash
-#define sha_end             sha1_end
+#define HMAC_HASH_INPUT_SIZE    SHA1_BLOCK_SIZE
+#define HMAC_HASH_OUTPUT_SIZE   SHA1_DIGEST_SIZE
+#define sha_ctx             	sha1_ctx
+#define sha_begin           	sha1_begin
+#define sha_hash            	sha1_hash
+#define sha_end             	sha1_end
 
 #endif
 
@@ -61,8 +61,8 @@
 
 #include "sha2.h"
 
-#define HASH_INPUT_SIZE     SHA256_BLOCK_SIZE
-#define HASH_OUTPUT_SIZE    SHA256_DIGEST_SIZE
+#define HMAC_HASH_INPUT_SIZE     SHA256_BLOCK_SIZE
+#define HMAC_HASH_OUTPUT_SIZE    SHA256_DIGEST_SIZE
 #define sha_ctx             sha256_ctx
 #define sha_begin           sha256_begin
 #define sha_hash            sha256_hash
@@ -74,11 +74,8 @@
 #define HMAC_BAD_MODE         -1
 #define HMAC_IN_DATA  0xffffffff
 
-#define IPAD (0x36 * (((unsigned long)-1) / 0xff))
-#define OPAD (0x5c * (((unsigned long)-1) / 0xff))
-
 typedef struct
-{   unsigned char   key[HASH_INPUT_SIZE];
+{   unsigned char   key[HMAC_HASH_INPUT_SIZE];
     sha_ctx         ctx[1];
     unsigned long   klen;
 } hmac_ctx;

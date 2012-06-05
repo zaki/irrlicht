@@ -37,6 +37,9 @@
 
 #include "hmac.h"
 
+#define HMAC_IPAD (0x36 * (((unsigned long)-1) / 0xff))
+#define HMAC_OPAD (0x5c * (((unsigned long)-1) / 0xff))
+
 /* initialise the HMAC context to zero */
 void hmac_sha_begin(hmac_ctx cx[1])
 {
@@ -49,9 +52,9 @@ int hmac_sha_key(const unsigned char key[], unsigned long key_len, hmac_ctx cx[1
     if(cx->klen == HMAC_IN_DATA)                /* error if further key input   */
         return HMAC_BAD_MODE;                   /* is attempted in data mode    */
 
-    if(cx->klen + key_len > HASH_INPUT_SIZE)    /* if the key has to be hashed  */
+    if(cx->klen + key_len > HMAC_HASH_INPUT_SIZE)    /* if the key has to be hashed  */
     {
-        if(cx->klen <= HASH_INPUT_SIZE)         /* if the hash has not yet been */
+        if(cx->klen <= HMAC_HASH_INPUT_SIZE)         /* if the hash has not yet been */
         {                                       /* started, initialise it and   */
             sha_begin(cx->ctx);                /* hash stored key characters   */
             sha_hash(cx->key, cx->klen, cx->ctx);
@@ -73,22 +76,22 @@ void hmac_sha_data(const unsigned char data[], unsigned long data_len, hmac_ctx 
 
     if(cx->klen != HMAC_IN_DATA)                /* if not yet in data phase */
     {
-        if(cx->klen > HASH_INPUT_SIZE)          /* if key is being hashed   */
+        if(cx->klen > HMAC_HASH_INPUT_SIZE)          /* if key is being hashed   */
         {                                       /* complete the hash and    */
             sha_end(cx->key, cx->ctx);         /* store the result as the  */
-            cx->klen = HASH_OUTPUT_SIZE;        /* key and set new length   */
+            cx->klen = HMAC_HASH_OUTPUT_SIZE;        /* key and set new length   */
         }
 
         /* pad the key if necessary */
-        memset(cx->key + cx->klen, 0, HASH_INPUT_SIZE - cx->klen);
+        memset(cx->key + cx->klen, 0, HMAC_HASH_INPUT_SIZE - cx->klen);
 
         /* xor ipad into key value  */
-        for(i = 0; i < HASH_INPUT_SIZE / sizeof(unsigned long); ++i)
-            ((unsigned long*)cx->key)[i] ^= IPAD;
+        for(i = 0; i < HMAC_HASH_INPUT_SIZE / sizeof(unsigned long); ++i)
+            ((unsigned long*)cx->key)[i] ^= HMAC_IPAD;
 
         /* and start hash operation */
         sha_begin(cx->ctx);
-        sha_hash(cx->key, HASH_INPUT_SIZE, cx->ctx);
+        sha_hash(cx->key, HMAC_HASH_INPUT_SIZE, cx->ctx);
 
         /* mark as now in data mode */
         cx->klen = HMAC_IN_DATA;
@@ -101,7 +104,7 @@ void hmac_sha_data(const unsigned char data[], unsigned long data_len, hmac_ctx 
 
 /* compute and output the MAC value */
 void hmac_sha_end(unsigned char mac[], unsigned long mac_len, hmac_ctx cx[1])
-{   unsigned char dig[HASH_OUTPUT_SIZE];
+{   unsigned char dig[HMAC_HASH_OUTPUT_SIZE];
     unsigned int i;
 
     /* if no data has been entered perform a null data phase        */
@@ -111,13 +114,13 @@ void hmac_sha_end(unsigned char mac[], unsigned long mac_len, hmac_ctx cx[1])
     sha_end(dig, cx->ctx);         /* complete the inner hash      */
 
     /* set outer key value using opad and removing ipad */
-    for(i = 0; i < HASH_INPUT_SIZE / sizeof(unsigned long); ++i)
-        ((unsigned long*)cx->key)[i] ^= OPAD ^ IPAD;
+    for(i = 0; i < HMAC_HASH_INPUT_SIZE / sizeof(unsigned long); ++i)
+        ((unsigned long*)cx->key)[i] ^= HMAC_OPAD ^ HMAC_IPAD;
 
     /* perform the outer hash operation */
     sha_begin(cx->ctx);
-    sha_hash(cx->key, HASH_INPUT_SIZE, cx->ctx);
-    sha_hash(dig, HASH_OUTPUT_SIZE, cx->ctx);
+    sha_hash(cx->key, HMAC_HASH_INPUT_SIZE, cx->ctx);
+    sha_hash(dig, HMAC_HASH_OUTPUT_SIZE, cx->ctx);
     sha_end(dig, cx->ctx);
 
     /* output the hash value            */
