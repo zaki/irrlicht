@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - new function equalsByUlp to test for spacing between floating point numbers.
+
  - speedup for collada writing.
 
  - speedup for xml-writing.

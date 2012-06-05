@@ -188,6 +188,36 @@ namespace core
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
+	
+	//! We compare the difference in ULP's (spacing between floating-point numbers, aka ULP=1 means there exists no float between).
+	//\result true when numbers have a ULP <= maxUlpDiff AND have the same sign.
+	inline bool equalsByUlp(f32 a, f32 b, int maxUlpDiff)
+	{
+		// Based on the ideas from Bruce Dawson on 
+		// http://www.altdevblogaday.com/2012/02/22/comparing-floating-point-numbers-2012-edition/		
+		// When floats are interpreted as integers the two nearest possible float numbers differ just
+		// by one integer number. Also works the other way round, an integer of 1 interpreted as float 
+		// is for example the smallest possible float number.
+		int ia = *reinterpret_cast<int*>(&a);
+		int ib = *reinterpret_cast<int*>(&b);
+
+		// Different signs, we could maybe get difference to 0, but so close to 0 using epsilons is better.
+		if ( (ia >> 31 != 0) != (ib >> 31 != 0) )
+		{
+			// Check for equality to make sure +0==-0
+			if (a == b)
+				return true;
+			return false;
+		}
+	 
+		// Find the difference in ULPs.
+		int ulpsDiff = abs_(ia - ib);
+		if (ulpsDiff <= maxUlpDiff)
+			return true;
+	 
+		return false;
+	}	
+	
 #if 0
 	//! returns if a equals b, not using any rounding tolerance
 	inline bool equals(const s32 a, const s32 b)

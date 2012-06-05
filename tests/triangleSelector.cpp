@@ -56,10 +56,10 @@ bool octree()
 	if (q3levelmesh)
 	{
 		scene::ISceneNode* q3node = smgr->addOctreeSceneNode(q3levelmesh->getMesh(0));
-      
+
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
-		scene::ITriangleSelector * selector = 
+		scene::ITriangleSelector * selector =
 			smgr->createOctreeTriangleSelector(q3levelmesh->getMesh(0), q3node, 128);
 		meta->addTriangleSelector(selector);
 		selector->drop();
