@@ -104,7 +104,7 @@ static bool testCalculation_strtol(const char * valueString)
 {
 	const s32 newFastValue = strtol10(valueString);
 	const s32 oldFastValue = old_strtol10(valueString);
-	const s32 strtolValue = (s32)strtol(valueString, 0, 10);
+	const s32 strtolValue = (s32)clamp(strtol(valueString, 0, 10), (long int)INT_MIN, (long int)INT_MAX);
 
 	logTestString("\n String '%s'\n New fast %d\n Old fast %d\n   strtol %d\n",
 		valueString, newFastValue, oldFastValue, strtolValue);
@@ -155,6 +155,7 @@ bool test_fast_atof(void)
 		return false;
 	}
 
+#ifndef _DEBUG	// it's only faster in release
 	IrrlichtDevice* device = createDevice(video::EDT_NULL);
 	if (!device)
 		return false;
@@ -192,6 +193,7 @@ bool test_fast_atof(void)
 		logTestString("The fast method is slower than atof()\n");
 		return false;
 	}
+#endif // #ifndef _DEBUG
 
 	return true;
 }
@@ -234,6 +236,7 @@ bool test_strtol(void)
 		return false;
 	}
 
+#ifndef _DEBUG	// it's only faster in release
 	IrrlichtDevice* device = createDevice(video::EDT_NULL);
 	if (!device)
 		return false;
@@ -271,6 +274,7 @@ bool test_strtol(void)
 		logTestString("The fast method is slower than strtol()\n");
 		return false;
 	}
+#endif // #ifndef _DEBUG
 
 	return true;
 }
