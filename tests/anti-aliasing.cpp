@@ -51,13 +51,14 @@ static bool testLineRendering(video::E_DRIVER_TYPE type)
 
 	smgr->addCameraSceneNode(0, core::vector3df(0,30,-40), core::vector3df(0,5,0));
 
+	device->getTimer()->setTime(0);	// scene has animations and current scene seems to be saved at that time
 	driver->beginScene(true, true, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->draw3DBox(node->getBoundingBox(), video::SColor(0,255,0,0));
 	driver->draw2DLine(core::position2di(10,10), core::position2di(100,100), video::SColor(255,0,0,0));
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-lineAntiAliasing.png", 99.17f );
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-lineAntiAliasing.png", 99.4f );
 
 	device->closeDevice();
 	device->run();
