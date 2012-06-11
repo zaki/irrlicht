@@ -1,5 +1,11 @@
 Changes in 1.8 (??.??.2011)
 
+ - triangle3d::isPointInsideFast now using some epsilon to catch all points on the borders.
+
+ - triangle3d::getIntersectionOfPlaneWithLine calculates now with higher precision for more exact results.
+
+ - triangle3d::isOnSameSide (used by isPointInside) calculates now with higher precision and uses some epsilon to make it work with larger integers and less floating point troubles. Slightly slower now.
+ 
  - new function equalsByUlp to test for spacing between floating point numbers.
 
  - speedup for collada writing.

@@ -82,22 +82,25 @@ namespace core
 		}
 
 		//! Check if a point is inside the triangle (border-points count also as inside)
-		/** NOTE: When working with T='int' you should prefer isPointInsideFast, as 
-		isPointInside will run into number-overflows already with coordinates in the 3-digit-range.
+		/*
 		\param p Point to test. Assumes that this point is already
 		on the plane of the triangle.
 		\return True if the point is inside the triangle, otherwise false. */
 		bool isPointInside(const vector3d<T>& p) const
 		{
-			return (isOnSameSide(p, pointA, pointB, pointC) &&
- 				isOnSameSide(p, pointB, pointA, pointC) &&
- 				isOnSameSide(p, pointC, pointA, pointB));
+			vector3d<f64> af64((f64)pointA.X, (f64)pointA.Y, (f64)pointA.Z);
+			vector3d<f64> bf64((f64)pointB.X, (f64)pointB.Y, (f64)pointB.Z);
+			vector3d<f64> cf64((f64)pointC.X, (f64)pointC.Y, (f64)pointC.Z);
+			vector3d<f64> pf64((f64)p.X, (f64)p.Y, (f64)p.Z);
+			return (isOnSameSide(pf64, af64, bf64, cf64) &&
+ 				isOnSameSide(pf64, bf64, af64, cf64) &&
+ 				isOnSameSide(pf64, cf64, af64, bf64));
 		}
 
 		//! Check if a point is inside the triangle (border-points count also as inside)
-		/** This method uses a barycentric coordinate system. 
-		It is faster than isPointInside but is more susceptible to floating point rounding 
-		errors. This will especially be noticable when the FPU is in single precision mode 
+		/** This method uses a barycentric coordinate system.
+		It is faster than isPointInside but is more susceptible to floating point rounding
+		errors. This will especially be noticable when the FPU is in single precision mode
 		(which is for example set on default by Direct3D).
 		\param p Point to test. Assumes that this point is already
 		on the plane of the triangle.
@@ -107,21 +110,21 @@ namespace core
 			const vector3d<T> a = pointC - pointA;
 			const vector3d<T> b = pointB - pointA;
 			const vector3d<T> c = p - pointA;
-			
+
 			const f64 dotAA = a.dotProduct( a);
 			const f64 dotAB = a.dotProduct( b);
 			const f64 dotAC = a.dotProduct( c);
 			const f64 dotBB = b.dotProduct( b);
 			const f64 dotBC = b.dotProduct( c);
-			 
+
 			// get coordinates in barycentric coordinate system
-			const f64 invDenom =  1/(dotAA * dotBB - dotAB * dotAB); 
+			const f64 invDenom =  1/(dotAA * dotBB - dotAB * dotAB);
 			const f64 u = (dotBB * dotAC - dotAB * dotBC) * invDenom;
 			const f64 v = (dotAA * dotBC - dotAB * dotAC ) * invDenom;
-		 
+
 			// We count border-points as inside to keep downward compatibility.
-			// That's why we use >= and <= instead of > and < as more commonly seen on the web.
-			return (u >= 0) && (v >= 0) && (u + v <= 1);
+			// Rounding-error also needed for some test-cases.
+			return (u > -ROUNDING_ERROR_f32) && (v >= 0) && (u + v < 1+ROUNDING_ERROR_f32);
 
 		}
 
@@ -166,15 +169,27 @@ namespace core
 		bool getIntersectionOfPlaneWithLine(const vector3d<T>& linePoint,
 			const vector3d<T>& lineVect, vector3d<T>& outIntersection) const
 		{
-			const vector3d<T> normal = getNormal().normalize();
-			T t2;
+			// Work with f64 to get more precise results (makes enough difference to be worth the casts).
+			const vector3d<f64> linePointf64(linePoint.X, linePoint.Y, linePoint.Z);
+			const vector3d<f64> lineVectf64(lineVect.X, lineVect.Y, lineVect.Z);
+			vector3d<f64> outIntersectionf64;
 
-			if ( core::iszero ( t2 = normal.dotProduct(lineVect) ) )
+			core::triangle3d<irr::f64> trianglef64(vector3d<f64>((f64)pointA.X, (f64)pointA.Y, (f64)pointA.Z)
+										,vector3d<f64>((f64)pointB.X, (f64)pointB.Y, (f64)pointB.Z)
+										, vector3d<f64>((f64)pointC.X, (f64)pointC.Y, (f64)pointC.Z));
+			const vector3d<irr::f64> normalf64 = trianglef64.getNormal().normalize();
+			f64 t2;
+
+			if ( core::iszero ( t2 = normalf64.dotProduct(lineVectf64) ) )
 				return false;
 
-			T d = pointA.dotProduct(normal);
-			T t = -(normal.dotProduct(linePoint) - d) / t2;
-			outIntersection = linePoint + (lineVect * t);
+			f64 d = trianglef64.pointA.dotProduct(normalf64);
+			f64 t = -(normalf64.dotProduct(linePointf64) - d) / t2;
+			outIntersectionf64 = linePointf64 + (lineVectf64 * t);
+
+			outIntersection.X = (T)outIntersectionf64.X;
+			outIntersection.Y = (T)outIntersectionf64.Y;
+			outIntersection.Z = (T)outIntersectionf64.Z;
 			return true;
 		}
 
@@ -226,13 +241,27 @@ namespace core
 		vector3d<T> pointC;
 
 	private:
-		bool isOnSameSide(const vector3d<T>& p1, const vector3d<T>& p2,
-			const vector3d<T>& a, const vector3d<T>& b) const
+		// Using f64 instead of <T> to avoid integer overflows when T=int (maybe also less floating point troubles).
+		bool isOnSameSide(const vector3d<f64>& p1, const vector3d<f64>& p2,
+			const vector3d<f64>& a, const vector3d<f64>& b) const
 		{
-			vector3d<T> bminusa = b - a;
-			vector3d<T> cp1 = bminusa.crossProduct(p1 - a);
-			vector3d<T> cp2 = bminusa.crossProduct(p2 - a);
-			return (cp1.dotProduct(cp2) >= 0.0f);
+			vector3d<f64> bminusa = b - a;
+			vector3d<f64> cp1 = bminusa.crossProduct(p1 - a);
+			vector3d<f64> cp2 = bminusa.crossProduct(p2 - a);
+			f64 res = cp1.dotProduct(cp2);
+			if ( res < 0 )
+			{
+				// This catches some floating point troubles.
+				// Unfortunately slightly expensive and we don't really know the best epsilon for iszero.
+				vector3d<f64> cp1 = bminusa.normalize().crossProduct((p1 - a).normalize());
+				if ( 	core::iszero(cp1.X, (f64)ROUNDING_ERROR_f32)
+					&& 	core::iszero(cp1.Y, (f64)ROUNDING_ERROR_f32)
+					&& 	core::iszero(cp1.Z, (f64)ROUNDING_ERROR_f32) )
+				{
+					res = 0.f;
+				}
+			}
+			return (res >= 0.0f);
 		}
 	};
 
