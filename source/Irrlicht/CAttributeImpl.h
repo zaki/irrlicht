@@ -496,6 +496,24 @@ public:
 		return v;
 	}
 
+	virtual core::vector2df getVector2d()
+	{
+		core::vector2df v;
+
+		if (IsFloat)
+		{
+			v.X = Count > 0 ? ValueF[0] : 0;
+			v.Y = Count > 1 ? ValueF[1] : 0;
+		}
+		else
+		{
+			v.X = (f32)(Count > 0 ? ValueI[0] : 0);
+			v.Y = (f32)(Count > 1 ? ValueI[1] : 0);
+		}
+
+		return v;
+	}
+
 	virtual video::SColorf getColorf()
 	{
 		video::SColorf c;
@@ -542,6 +560,23 @@ public:
 			r.LowerRightCorner.Y = Count > 3 ? ValueI[3] : r.UpperLeftCorner.Y;
 		}
 		return r;
+	}
+
+	virtual core::dimension2du getDimension2d()
+	{
+		core::dimension2d<u32> dim;
+
+		if (IsFloat)
+		{
+			dim.Width = (u32)(Count > 0 ? ValueF[0] : 0);
+			dim.Height = (u32)(Count > 1 ? ValueF[1] : 0);
+		}
+		else
+		{
+			dim.Width = (u32)(Count > 0 ? ValueI[0] : 0);
+			dim.Height = (u32)(Count > 1 ? ValueI[1] : 0);
+		}
+		return dim;
 	}
 
 	virtual core::matrix4 getMatrix()
@@ -1076,8 +1111,8 @@ public:
 		}
 		else
 		{
-			if (Count > 0) ValueI[0] = v.Width;
-			if (Count > 1) ValueI[1] = v.Height;
+			if (Count > 0) ValueI[0] = (s32)v.Width;
+			if (Count > 1) ValueI[1] = (s32)v.Height;
 		}
 	}
 
@@ -1295,6 +1330,24 @@ public:
 };
 
 // Attribute implemented for 2d vectors
+class CVector2DAttribute : public CNumbersAttribute
+{
+public:
+
+	CVector2DAttribute(const char* name, core::vector2df value) : CNumbersAttribute(name, value) {}
+
+	virtual E_ATTRIBUTE_TYPE getType() const
+	{
+		return EAT_VECTOR2D;
+	}
+
+	virtual const wchar_t* getTypeString() const
+	{
+		return L"vector2d";
+	}
+};
+
+// Attribute implemented for 2d vectors
 class CPosition2DAttribute : public CNumbersAttribute
 {
 public:
@@ -1329,6 +1382,25 @@ public:
 	virtual const wchar_t* getTypeString() const
 	{
 		return L"rect";
+	}
+};
+
+
+// Attribute implemented for dimension
+class CDimension2dAttribute : public CNumbersAttribute
+{
+public:
+
+	CDimension2dAttribute (const char* name, core::dimension2d<u32> value) : CNumbersAttribute(name, value) { }
+
+	virtual E_ATTRIBUTE_TYPE getType() const
+	{
+		return EAT_DIMENSION2D;
+	}
+
+	virtual const wchar_t* getTypeString() const
+	{
+		return L"dimension2d";
 	}
 };
 
@@ -1977,6 +2049,7 @@ public:
 
 	void* Value;
 };
+
 
 
 // todo: CGUIFontAttribute

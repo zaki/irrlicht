@@ -284,6 +284,17 @@ namespace scene
 		virtual IAnimatedMesh * createAnimatedMesh(IMesh* mesh,
 			scene::E_ANIMATED_MESH_TYPE type = scene::EAMT_UNKNOWN) const = 0;
 
+		//! Vertex cache optimization according to the Forsyth paper
+		/** More information can be found at
+		http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html
+
+		The function is thread-safe (read: you can optimize several
+		meshes in different threads).
+
+		\param mesh Source mesh for the operation.
+		\return A new mesh optimized for the vertex cache. */
+		virtual IMesh* createForsythOptimizedMesh(const IMesh *mesh) const = 0;
+
 		//! Apply a manipulator on the Meshbuffer
 		/** \param func A functor defining the mesh manipulation.
 		\param buffer The Meshbuffer to apply the manipulator to.

@@ -12,6 +12,7 @@
 #include "COpenGLMaterialRenderer.h"
 #include "COpenGLShaderMaterialRenderer.h"
 #include "COpenGLSLMaterialRenderer.h"
+#include "COpenGLCgMaterialRenderer.h"
 #include "COpenGLNormalMapRenderer.h"
 #include "COpenGLParallaxMapRenderer.h"
 #include "os.h"
@@ -42,6 +43,10 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
+	#endif
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
 	#endif
 }
 
@@ -173,6 +178,7 @@ bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 		{
 			pfd.cDepthBits = 24;
 		}
+		else
 		if (i == 3)
 		{
 			if (Params.Bits!=16)
@@ -245,8 +251,6 @@ bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 	const bool pixel_format_supported = (wglExtensions.find("WGL_ARB_pixel_format") != -1);
 	const bool multi_sample_supported = ((wglExtensions.find("WGL_ARB_multisample") != -1) ||
 		(wglExtensions.find("WGL_EXT_multisample") != -1) || (wglExtensions.find("WGL_3DFX_multisample") != -1) );
-	const bool framebuffer_srgb_supported = ((wglExtensions.find("WGL_ARB_framebuffer_sRGB") != -1) ||
-		(wglExtensions.find("WGL_EXT_framebuffer_sRGB") != -1) );
 #ifdef _DEBUG
 	os::Printer::log("WGL_extensions", wglExtensions);
 #endif
@@ -475,6 +479,11 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
+	#endif
+
 	genericDriverInit();
 }
 
@@ -497,22 +506,43 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
+	#endif
 }
 
 
 bool COpenGLDriver::changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceLinux* device)
 {
-	if (videoData.OpenGLLinux.X11Display && videoData.OpenGLLinux.X11Window && videoData.OpenGLLinux.X11Context)
+	if (videoData.OpenGLLinux.X11Window)
 	{
-		if (!glXMakeCurrent((Display*)videoData.OpenGLLinux.X11Display, videoData.OpenGLLinux.X11Window, (GLXContext)videoData.OpenGLLinux.X11Context))
+		if (videoData.OpenGLLinux.X11Display && videoData.OpenGLLinux.X11Context)
 		{
-			os::Printer::log("Render Context switch failed.");
-			return false;
+			if (!glXMakeCurrent((Display*)videoData.OpenGLLinux.X11Display, videoData.OpenGLLinux.X11Window, (GLXContext)videoData.OpenGLLinux.X11Context))
+			{
+				os::Printer::log("Render Context switch failed.");
+				return false;
+			}
+			else
+			{
+				Drawable = videoData.OpenGLLinux.X11Window;
+				X11Display = (Display*)videoData.OpenGLLinux.X11Display;
+			}
 		}
 		else
 		{
-			Drawable = videoData.OpenGLLinux.X11Window;
-			X11Display = (Display*)videoData.OpenGLLinux.X11Display;
+			// in case we only got a window ID, try with the existing values for display and context
+			if (!glXMakeCurrent((Display*)ExposedData.OpenGLLinux.X11Display, videoData.OpenGLLinux.X11Window, (GLXContext)ExposedData.OpenGLLinux.X11Context))
+			{
+				os::Printer::log("Render Context switch failed.");
+				return false;
+			}
+			else
+			{
+				Drawable = videoData.OpenGLLinux.X11Window;
+				X11Display = (Display*)ExposedData.OpenGLLinux.X11Display;
+			}
 		}
 	}
 	// set back to main context
@@ -570,6 +600,10 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	setDebugName("COpenGLDriver");
 	#endif
 
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = 0;
+	#endif
+
 	genericDriverInit();
 }
 
@@ -579,13 +613,18 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 //! destructor
 COpenGLDriver::~COpenGLDriver()
 {
+	#ifdef _IRR_COMPILE_WITH_CG_
+	if (CgContext)
+		cgDestroyContext(CgContext);
+	#endif
+
 	RequestedLights.clear();
 
 	deleteMaterialRenders();
 
+	CurrentTexture.clear();
 	// I get a blue screen on my laptop, when I do not delete the
 	// textures manually before releasing the dc. Oh how I love this.
-
 	deleteAllTextures();
 	removeAllOcclusionQueries();
 	removeAllHardwareBuffers();
@@ -596,7 +635,7 @@ COpenGLDriver::~COpenGLDriver()
 
 		if (ExposedData.OpenGLWin32.HRc)
 		{
-			if (!wglMakeCurrent(0, 0))
+			if (!wglMakeCurrent(HDc, 0))
 				os::Printer::log("Release of dc and rc failed.", ELL_WARNING);
 
 			if (!wglDeleteContext((HGLRC)ExposedData.OpenGLWin32.HRc))
@@ -632,8 +671,7 @@ bool COpenGLDriver::genericDriverInit()
 	}
 
 	u32 i;
-	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		CurrentTexture[i]=0;
+	CurrentTexture.clear();
 	// load extensions
 	initExtensions(Params.Stencilbuffer);
 	if (queryFeature(EVDF_ARB_GLSL))
@@ -721,6 +759,10 @@ bool COpenGLDriver::genericDriverInit()
 	// We need to reset once more at the beginning of the first rendering.
 	// This fixes problems with intermediate changes to the material during texture load.
 	ResetRenderStates = true;
+
+	#ifdef _IRR_COMPILE_WITH_CG_
+	CgContext = cgCreateContext();
+	#endif
 
 	return true;
 }
@@ -1724,14 +1766,14 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		getColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
-	setActiveTexture(0, Material.getTexture(0));
+	this->setActiveTexture(0, Material.getTexture(0));
 	if (Material.MaterialType==EMT_ONETEXTURE_BLEND)
 	{
 		E_BLEND_FACTOR srcFact;
 		E_BLEND_FACTOR dstFact;
 		E_MODULATE_FUNC modulo;
 		u32 alphaSource;
-		unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+		unpack_textureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
 		setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource&video::EAS_TEXTURE) != 0);
 	}
 	else
@@ -2332,17 +2374,33 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 
 //! Draws a 2d line.
 void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
-				const core::position2d<s32>& end,
-				SColor color)
+				const core::position2d<s32>& end, SColor color)
 {
-	disableTextures();
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
+	if (start==end)
+		drawPixel(start.X, start.Y, color);
+	else
+	{
+		disableTextures();
+		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
-	glBegin(GL_LINES);
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glVertex2f(GLfloat(start.X), GLfloat(start.Y));
-	glVertex2f(GLfloat(end.X),   GLfloat(end.Y));
-	glEnd();
+		glBegin(GL_LINES);
+		glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+		GLfloat x=(GLfloat)start.X;
+		GLfloat y=(GLfloat)start.Y;
+		if (x>end.X)
+			x += 0.5f;
+		if (y>end.Y)
+			y += 0.5f;
+		glVertex2f(GLfloat(x), GLfloat(y));
+		x=(GLfloat)end.X;
+		y=(GLfloat)end.Y;
+		if (x>start.X)
+			x += 0.5f;
+		if (y>start.Y)
+			y += 0.5f;
+		glVertex2f(GLfloat(x),   GLfloat(y));
+		glEnd();
+	}
 }
 
 //! Draws a pixel
@@ -2372,7 +2430,7 @@ bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	if (MultiTextureExtension)
 		extGlActiveTexture(GL_TEXTURE0_ARB + stage);
 
-	CurrentTexture[stage]=texture;
+	CurrentTexture.set(stage,texture);
 
 	if (!texture)
 	{
@@ -2384,7 +2442,7 @@ bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 		if (texture->getDriverType() != EDT_OPENGL)
 		{
 			glDisable(GL_TEXTURE_2D);
-			CurrentTexture[stage]=0;
+			CurrentTexture.set(stage, 0);
 			os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
 			return false;
 		}
@@ -3502,8 +3560,9 @@ void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Next use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
+	const u32 count=triangles.size();
 	if (!StencilBuffer || !count)
 		return;
 
@@ -3523,11 +3582,16 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glDisable(GL_FOG);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_FALSE); // no depth buffer writing
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no color buffer drawing
-	glEnable(GL_STENCIL_TEST);
+	if (debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
+	{
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no color buffer drawing
+		glEnable(GL_STENCIL_TEST);
+	}
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),&triangles[0]);
+	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),triangles.const_pointer());
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
 	glPolygonOffset(-1.f,-1.f);
@@ -3645,7 +3709,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	disableTextures();
 
 	// store attributes
-	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_STENCIL_BUFFER_BIT);
+	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_STENCIL_BUFFER_BIT | GL_LIGHTING_BIT);
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
@@ -3751,6 +3815,17 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 }
 
 
+//! Removes a texture from the texture cache and deletes it, freeing lot of memory.
+void COpenGLDriver::removeTexture(ITexture* texture)
+{
+	if (!texture)
+		return;
+
+	CNullDriver::removeTexture(texture);
+	// Remove this texture from CurrentTexture as well
+	CurrentTexture.remove(texture);
+}
+
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
@@ -3801,8 +3876,21 @@ bool COpenGLDriver::setVertexShaderConstant(const c8* name, const f32* floats, i
 	return setPixelShaderConstant(name, floats, count);
 }
 
+//! Int interface for the above.
+bool COpenGLDriver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+{
+	return setPixelShaderConstant(name, ints, count);
+}
+
 //! Sets a constant for the pixel shader based on a name.
 bool COpenGLDriver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
+{
+	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
+	return false;
+}
+
+//! Int interface for the above.
+bool COpenGLDriver::setPixelShaderConstant(const c8* name, const s32* ints, int count)
 {
 	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 	return false;
@@ -3842,18 +3930,37 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
-	s32 userData)
+	s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	s32 nr = -1;
 
-	COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
-		this, nr,
-		vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
-		pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
-		geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
-		inType, outType, verticesOut,
-		callback,getMaterialRenderer(baseMaterial), userData);
-	r->drop();
+	#ifdef _IRR_COMPILE_WITH_CG_
+	if (shadingLang == EGSL_CG)
+	{
+		COpenGLCgMaterialRenderer* r = new COpenGLCgMaterialRenderer(
+			this, nr,
+			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
+			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
+			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
+			inType, outType, verticesOut,
+			callback,getMaterialRenderer(baseMaterial), userData);
+
+		r->drop();
+	}
+	else
+	#endif
+	{
+		COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
+			this, nr,
+			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
+			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
+			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
+			inType, outType, verticesOut,
+			callback,getMaterialRenderer(baseMaterial), userData);
+
+		r->drop();
+	}
+
 	return nr;
 }
 
@@ -4390,6 +4497,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		}
 		glReadBuffer(tgt);
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, type, pixels);
+		testGLError();
 		glReadBuffer(GL_BACK);
 	}
 
@@ -4581,6 +4689,13 @@ GLenum COpenGLDriver::getGLBlend(E_BLEND_FACTOR factor) const
 	}
 	return r;
 }
+
+#ifdef _IRR_COMPILE_WITH_CG_
+const CGcontext& COpenGLDriver::getCgContext()
+{
+	return CgContext;
+}
+#endif
 
 
 } // end namespace

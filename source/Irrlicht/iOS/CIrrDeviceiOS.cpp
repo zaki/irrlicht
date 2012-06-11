@@ -3,7 +3,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "CIrrDeviceIPhone.h"
+#include "CIrrDeviceiOS.h"
 
 #ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
@@ -21,8 +21,6 @@
 #include "SIrrCreationParameters.h"
 #include <CoreFoundation/CFRunLoop.h>
 #include "SExposedVideoData.h"
-
-//~ #include "irr/base/DeviceIPhone_Apple.h"
 
 namespace irr
 {
@@ -57,6 +55,7 @@ CIrrDeviceIPhone::CIrrDeviceIPhone(const SIrrlichtCreationParameters& params)
 	IrrIPhoneDevice.displayEnd = 0;
 	IrrIPhoneDevice.onTerminate = &CIrrDeviceIPhone::onTerminate;
 	IrrIPhoneDevice.onWindowActive = &CIrrDeviceIPhone::onWindowActive;
+	IrrIPhoneDevice.postEvent = &CIrrDeviceIPhone::postEvent;
 	
 	irr_device_iphone_create(&IrrIPhoneDevice);
 
@@ -275,6 +274,15 @@ void CIrrDeviceIPhone::onWindowActive(MIrrIPhoneDevice * dev, int active)
 	if (dev && dev->DeviceCPP)
 	{
 		static_cast<irr::CIrrDeviceIPhone*>(dev->DeviceCPP)->setWindowActive(active != 0);
+	}
+}
+
+//! Post event
+void CIrrDeviceIPhone::postEvent(MIrrIPhoneDevice * dev, SEvent * event)
+{
+	if (dev && dev->DeviceCPP)
+	{
+		static_cast<irr::CIrrDeviceIPhone*>(dev->DeviceCPP)->postEventFromUser( (SEvent&)*event );
 	}
 }
 

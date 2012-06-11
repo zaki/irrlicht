@@ -296,6 +296,12 @@ IGUIElement* CGUIEnvironment::getFocus() const
 	return Focus;
 }
 
+//! returns the element last known to be under the mouse cursor
+IGUIElement* CGUIEnvironment::getHovered() const
+{
+	return Hovered;
+}
+
 
 //! removes the focus from an element
 bool CGUIEnvironment::removeFocus(IGUIElement* element)
@@ -396,7 +402,6 @@ bool CGUIEnvironment::OnEvent(const SEvent& event)
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
-
 
 //
 void CGUIEnvironment::OnPostRender( u32 time )
@@ -1185,11 +1190,13 @@ IGUITreeView* CGUIEnvironment::addTreeView(const core::rect<s32>& rectangle,
 
 //! adds a file open dialog. The returned pointer must not be dropped.
 IGUIFileOpenDialog* CGUIEnvironment::addFileOpenDialog(const wchar_t* title,
-				bool modal, IGUIElement* parent, s32 id)
+				bool modal, IGUIElement* parent, s32 id,
+				bool restoreCWD, io::path::char_type* startDir)
 {
 	parent = parent ? parent : this;
 
-	IGUIFileOpenDialog* d = new CGUIFileOpenDialog(title, this, parent, id);
+	IGUIFileOpenDialog* d = new CGUIFileOpenDialog(title, this, parent, id,
+			restoreCWD, startDir);
 	d->drop();
 
 	if (modal)
@@ -1392,7 +1399,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 		EGUI_FONT_TYPE t = EGFT_CUSTOM;
 
 		bool found=false;
-		while(xml->read() && !found)
+		while(!found && xml->read())
 		{
 			if (xml->getNodeType() == io::EXN_ELEMENT)
 			{

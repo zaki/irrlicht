@@ -113,7 +113,7 @@ namespace video
 
 	//! EMT_ONETEXTURE_BLEND: pack srcFact, dstFact, Modulate and alpha source to MaterialTypeParam
 	/** alpha source can be an OR'ed combination of E_ALPHA_SOURCE values. */
-	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
+	inline f32 pack_textureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
 	{
 		const u32 tmp = (alphaSource << 12) | (modulate << 8) | (srcFact << 4) | dstFact;
 		return FR(tmp);
@@ -121,7 +121,7 @@ namespace video
 
 	//! EMT_ONETEXTURE_BLEND: unpack srcFact & dstFact and Modulo to MaterialTypeParam
 	/** The fields don't use the full byte range, so we could pack even more... */
-	inline void unpack_texureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
+	inline void unpack_textureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
 			E_MODULATE_FUNC &modulo, u32& alphaSource, const f32 param )
 	{
 		const u32 state = IR(param);
@@ -209,6 +209,15 @@ namespace video
 		of other elements, such as decals. */
 		EPO_FRONT=1
 	};
+
+	//! Names for polygon offset direction
+	const c8* const PolygonOffsetDirectionNames[] =
+	{
+		"Back",
+		"Front",
+		0
+	};
+
 
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;

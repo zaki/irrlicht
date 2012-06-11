@@ -24,6 +24,10 @@ namespace irr
 // also includes the OpenGL stuff
 #include "COpenGLExtensionHandler.h"
 
+#ifdef _IRR_COMPILE_WITH_CG_
+#include "Cg/cg.h"
+#endif
+
 namespace irr
 {
 
@@ -238,7 +242,7 @@ namespace video
 		//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 		//! this: First, draw all geometry. Then use this method, to draw the shadow
 		//! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-		virtual void drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail);
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible=0);
 
 		//! Fills the stencil shadow with color. After the shadow volume has been drawn
 		//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
@@ -282,8 +286,14 @@ namespace video
 		//! Sets a constant for the vertex shader based on a name.
 		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
 
+		//! Int interface for the above.
+		virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
+
 		//! Sets a constant for the pixel shader based on a name.
 		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
+
+		//! Int interface for the above.
+		virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
 
 		//! sets the current Texture
 		//! Returns whether setting was a success or not.
@@ -315,7 +325,8 @@ namespace video
 				u32 verticesOut = 0,
 				IShaderConstantSetCallBack* callback = 0,
 				E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-				s32 userData = 0);
+				s32 userData = 0,
+				E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
 
 		//! Returns a pointer to the IVideoDriver interface. (Implementation for
 		//! IMaterialRendererServices)
@@ -376,11 +387,19 @@ namespace video
 		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
 		void removeDepthTexture(ITexture* texture);
 
+		//! Removes a texture from the texture cache and deletes it, freeing lot of memory.
+		void removeTexture(ITexture* texture);
+
 		//! Convert E_PRIMITIVE_TYPE to OpenGL equivalent
 		GLenum primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const;
 
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
+
+		//! Get Cg context
+		#ifdef _IRR_COMPILE_WITH_CG_
+		const CGcontext& getCgContext();
+		#endif
 
 	private:
 
@@ -451,7 +470,70 @@ namespace video
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		core::array<video::IRenderTarget> MRTargets;
-		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		class STextureStageCache
+		{
+			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		public:
+			STextureStageCache()
+			{
+				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+				{
+					CurrentTexture[i] = 0;
+				}
+			}
+
+			~STextureStageCache()
+			{
+				clear();
+			}
+
+			void set(u32 stage, const ITexture* tex)
+			{
+				if (stage<MATERIAL_MAX_TEXTURES)
+				{
+					const ITexture* oldTexture=CurrentTexture[stage];
+					if (tex)
+						tex->grab();
+					CurrentTexture[stage]=tex;
+					if (oldTexture)
+						oldTexture->drop();
+				}
+			}
+
+			const ITexture* operator[](int stage) const
+			{
+				if ((u32)stage<MATERIAL_MAX_TEXTURES)
+					return CurrentTexture[stage];
+				else
+					return 0;
+			}
+
+			void remove(const ITexture* tex)
+			{
+				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
+				{
+					if (CurrentTexture[i] == tex)
+					{
+						tex->drop();
+						CurrentTexture[i] = 0;
+					}
+				}
+			}
+
+			void clear()
+			{
+				// Drop all the CurrentTexture handles
+				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+				{
+					if (CurrentTexture[i])
+					{
+						CurrentTexture[i]->drop();
+						CurrentTexture[i] = 0;
+					}
+				}
+			}
+		};
+		STextureStageCache CurrentTexture;
 		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane
 		{
@@ -505,6 +587,9 @@ namespace video
 		#endif
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 			CIrrDeviceSDL *SDLDevice;
+		#endif
+		#ifdef _IRR_COMPILE_WITH_CG_
+		CGcontext CgContext;
 		#endif
 
 		E_DEVICE_TYPE DeviceType;

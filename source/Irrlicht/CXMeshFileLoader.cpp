@@ -2328,10 +2328,11 @@ f32 CXMeshFileLoader::readFloat()
 		if (FloatSize == 8)
 		{
 #ifdef __BIG_ENDIAN__
-			c8 ctmp[8];
-			*((f32*)(ctmp+4)) = os::Byteswap::byteswap(*(f32 *)P);
-			*((f32*)(ctmp)) = os::Byteswap::byteswap(*(f32 *)P+4);
-			const f32 tmp = (f32)(*(f64 *)ctmp);
+			//TODO: Check if data is properly converted here
+			f32 ctmp[2];
+			ctmp[1] = os::Byteswap::byteswap(*(f32*)P);
+			ctmp[0] = os::Byteswap::byteswap(*(f32*)P+4);
+			const f32 tmp = (f32)(*(f64*)(void*)ctmp);
 #else
 			const f32 tmp = (f32)(*(f64 *)P);
 #endif

@@ -22,7 +22,8 @@ public:
 	//! constructor
 	CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
 		const core::vector3df& position, const core::dimension2d<f32>& size,
-		video::SColor colorTop=video::SColor(0xFFFFFFFF),video::SColor colorBottom=video::SColor(0xFFFFFFFF));
+		video::SColor colorTop=video::SColor(0xFFFFFFFF),
+		video::SColor colorBottom=video::SColor(0xFFFFFFFF));
 
 	//! pre render event
 	virtual void OnRegisterSceneNode();
@@ -36,8 +37,14 @@ public:
 	//! sets the size of the billboard
 	virtual void setSize(const core::dimension2d<f32>& size);
 
-	//! gets the size of the billboard
-	virtual const core::dimension2d<f32>& getSize() const;
+	//! Sets the widths of the top and bottom edges of the billboard independently.
+	virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth);
+
+ 	//! gets the size of the billboard
+ 	virtual const core::dimension2d<f32>& getSize() const;
+ 
+	//! Gets the widths of the top and bottom edges of the billboard.
+	virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const;
 
 	virtual video::SMaterial& getMaterial(u32 i);
 	
@@ -46,17 +53,19 @@ public:
 	
 	//! Set the color of all vertices of the billboard
 	//! \param overallColor: the color to set
-	virtual void setColor(const video::SColor & overallColor);
+	virtual void setColor(const video::SColor& overallColor);
 
 	//! Set the color of the top and bottom vertices of the billboard
 	//! \param topColor: the color to set the top vertices
 	//! \param bottomColor: the color to set the bottom vertices
-	virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor);
+	virtual void setColor(const video::SColor& topColor,
+			const video::SColor& bottomColor);
 
 	//! Gets the color of the top and bottom vertices of the billboard
 	//! \param[out] topColor: stores the color of the top vertices
 	//! \param[out] bottomColor: stores the color of the bottom vertices
-	virtual void getColor(video::SColor& topColor, video::SColor& bottomColor) const;
+	virtual void getColor(video::SColor& topColor,
+			video::SColor& bottomColor) const;
 
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -72,7 +81,9 @@ public:
 	
 private:
 
+	//! Size.Width is the bottom edge width
 	core::dimension2d<f32> Size;
+	f32 TopEdgeWidth;
 	core::aabbox3d<f32> BBox;
 	video::SMaterial Material;
 

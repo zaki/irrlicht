@@ -458,7 +458,7 @@ bool CIrrDeviceSDL::run()
 
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	// TODO: Check if the multiple open/close calls are too expensive, then
-        // open/close in the constructor/destructor instead
+	// open/close in the constructor/destructor instead
 
 	// update joystick states manually
 	SDL_JoystickUpdate();
@@ -478,7 +478,7 @@ bool CIrrDeviceSDL::run()
 				joyevent.JoystickEvent.ButtonStates |= (SDL_JoystickGetButton(joystick, j)<<j);
 
 			// query all axes, already in correct range
-			const int numAxes = core::min_(SDL_JoystickNumAxes(joystick), 6);
+			const int numAxes = core::min_(SDL_JoystickNumAxes(joystick), SEvent::SJoystickEvent::NUMBER_OF_AXES);
 			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X]=0;
 			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y]=0;
 			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z]=0;
@@ -570,8 +570,8 @@ bool CIrrDeviceSDL::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 	{
 		char logString[256];
 		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
-		 joystick, joystickInfo[joystick].Axes,
-   joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
+		joystick, joystickInfo[joystick].Axes,
+		joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
 		os::Printer::log(logString, ELL_INFORMATION);
 	}
 

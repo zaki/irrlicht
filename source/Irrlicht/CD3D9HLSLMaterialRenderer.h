@@ -51,6 +51,9 @@ public:
 	//! \param count: Amount of floats in array.
 	virtual bool setVariable(bool vertexShader, const c8* name, const f32* floats, int count);
 
+	//! Int interface for the above.
+	virtual bool setVariable(bool vertexShader, const c8* name, const s32* ints, int count);
+
 	bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
 protected:

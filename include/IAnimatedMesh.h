@@ -64,9 +64,22 @@ namespace scene
 	public:
 
 		//! Gets the frame count of the animated mesh.
-		/** \return Returns the amount of frames. If the amount is 1,
+		/** \return The amount of frames. If the amount is 1,
 		it is a static, non animated mesh. */
 		virtual u32 getFrameCount() const = 0;
+
+		//! Gets the animation speed of the animated mesh.
+		/** \return The number of frames per second to play the
+		animation with by default. If the amount is 0,
+		it is a static, non animated mesh. */
+		virtual f32 getAnimationSpeed() const = 0;
+
+		//! Sets the animation speed of the animated mesh.
+		/** \param fps Number of frames per second to play the
+		animation with by default. If the amount is 0,
+		it is not animated. The actual speed is set in the
+		scene node the mesh is instantiated in.*/
+		virtual void setAnimationSpeed(f32 fps) =0;
 
 		//! Returns the IMesh interface for a frame.
 		/** \param frame: Frame number as zero based index. The maximum

@@ -30,6 +30,7 @@ namespace scene
 		virtual void setShadowMesh(const IMesh* mesh);
 
 		//! Updates the shadow volumes for current light positions.
+		/** Called each render cycle from Animated Mesh SceneNode render method. */
 		virtual void updateShadowVolumes();
 
 		//! pre render method
@@ -48,9 +49,8 @@ namespace scene
 
 		typedef core::array<core::vector3df> SShadowVolume;
 
-		void createShadowVolume(const core::vector3df& pos);
-		void createZPassVolume(s32 faceCount, u32& numEdges, core::vector3df light, SShadowVolume* svp, bool caps);
-		void createZFailVolume(s32 faceCount, u32& numEdges, const core::vector3df& light, SShadowVolume* svp);
+		void createShadowVolume(const core::vector3df& pos, bool isDirectional=false);
+		u32 createEdgesAndCaps(core::vector3df light, SShadowVolume* svp);
 
 		//! Generates adjacency information based on mesh indices.
 		void calculateAdjacency();
@@ -64,14 +64,13 @@ namespace scene
 		core::array<u16> Indices;
 		core::array<u16> Adjacency;
 		core::array<u16> Edges;
-		// used for zfail method, if face is front facing
+		// tells if face is front facing
 		core::array<bool> FaceData;
 
 		const scene::IMesh* ShadowMesh;
 
 		u32 IndexCount;
 		u32 VertexCount;
-
 		u32 ShadowVolumesUsed;
 
 		f32 Infinity;

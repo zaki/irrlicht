@@ -308,7 +308,7 @@ namespace scene
 		core::vector3df	OldCameraPosition;
 		core::vector3df	OldCameraRotation;
 		core::vector3df	OldCameraUp;
-		f32				OldCameraFOV;
+		f32             OldCameraFOV;
 		f32 CameraMovementDelta;
 		f32 CameraRotationDelta;
 		f32 CameraFOVDelta;
@@ -316,6 +316,7 @@ namespace scene
 		// needed for (de)serialization
 		f32 TCoordScale1;
 		f32 TCoordScale2;
+		s32 SmoothFactor;
 		io::path HeightmapFile;
 		io::IFileSystem* FileSystem;
 	};

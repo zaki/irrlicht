@@ -170,7 +170,7 @@ public:
 	vector2d<T>& normalize()
 	{
 		f32 length = (f32)(X*X + Y*Y);
-		if (core::equals(length, 0.f))
+		if ( length == 0 )
 			return *this;
 		length = core::reciprocal_squareroot ( length );
 		X = (T)(X * length);
@@ -237,7 +237,7 @@ public:
 	\return Returns a value between 0 and 90. */
 	inline f64 getAngleWith(const vector2d<T>& b) const
 	{
-		f64 tmp = X*b.X + Y*b.Y;
+		f64 tmp = (f64)(X*b.X + Y*b.Y);
 
 		if (tmp == 0.0)
 			return 90.0;

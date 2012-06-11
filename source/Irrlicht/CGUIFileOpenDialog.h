@@ -24,7 +24,9 @@ namespace gui
 	public:
 
 		//! constructor
-		CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* environment, IGUIElement* parent, s32 id);
+		CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* environment,
+				IGUIElement* parent, s32 id, bool restoreCWD=false,
+				io::path::char_type* startDir=0);
 
 		//! destructor
 		virtual ~CGUIFileOpenDialog();
@@ -41,6 +43,9 @@ namespace gui
 		//! draws the element and its children
 		virtual void draw();
 
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+
 	protected:
 
 		//! fills the listbox with files.
@@ -55,6 +60,8 @@ namespace gui
 		core::position2d<s32> DragStart;
 		core::stringw FileName;
 		io::path FileDirectory;
+		io::path RestoreDirectory;
+		io::path StartDirectory;
 
 		IGUIButton* CloseButton;
 		IGUIButton* OKButton;

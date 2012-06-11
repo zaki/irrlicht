@@ -870,7 +870,7 @@ IMesh* CGeometryCreator::createVolumeLightMesh(
 	Buffer->recalculateBoundingBox();
 
 	Buffer->Material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-	Buffer->Material.MaterialTypeParam = pack_texureBlendFunc( video::EBF_SRC_COLOR, video::EBF_SRC_ALPHA, video::EMFN_MODULATE_1X );
+	Buffer->Material.MaterialTypeParam = pack_textureBlendFunc( video::EBF_SRC_COLOR, video::EBF_SRC_ALPHA, video::EMFN_MODULATE_1X );
 
 	Buffer->Material.Lighting = false;
 	Buffer->Material.ZWriteEnable = false;

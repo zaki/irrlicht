@@ -183,7 +183,15 @@ namespace core
 
 			//! Make an inverted rotation matrix from Euler angles.
 			/** The 4th row and column are unmodified. */
-			CMatrix4<T>& setInverseRotationDegrees( const vector3d<T>& rotation );
+			inline CMatrix4<T>& setInverseRotationDegrees( const vector3d<T>& rotation );
+
+			//! Make a rotation matrix from angle and axis using LH rotation.
+			/** The 4th row and column are unmodified. */
+			inline CMatrix4<T>& setRotationAxisRadiansLH(const T& angle, const vector3d<T>& axis);
+
+			//! Make a rotation matrix from angle and axis using RH rotation.
+			/** The 4th row and column are unmodified. */
+			inline CMatrix4<T>& setRotationAxisRadiansRH(const T& angle, const vector3d<T>& axis);
 
 			//! Set Scale
 			CMatrix4<T>& setScale( const vector3d<T>& scale );
@@ -906,6 +914,7 @@ namespace core
 	}
 
 
+	//! Sets matrix to rotation matrix of inverse angles given as parameters
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::setInverseRotationRadians( const vector3d<T>& rotation )
 	{
@@ -930,6 +939,73 @@ namespace core
 		M[2] = (T)( crsp*cy+sr*sy );
 		M[6] = (T)( crsp*sy-sr*cy );
 		M[10] = (T)( cr*cp );
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix=false;
+#endif
+		return *this;
+	}
+
+
+	//! Sets matrix to rotation matrix defined by axis and angle, assuming LH rotation
+	template <class T>
+	inline CMatrix4<T>& CMatrix4<T>::setRotationAxisRadiansLH( const T& angle, const vector3d<T>& axis )
+	{
+		const f64 c   = cos( angle );
+		const f64 s   = sin( angle );
+		const f64 t   = 1.0 - c;
+ 
+		const f64 tx  = t * axis.X;
+ 
+		M[0] = tx * axis.X + c;
+		M[1] = tx * axis.Y - s * axis.Z;
+		M[2] = tx * axis.Z + s * axis.Y;
+ 
+		const f64 ty  = t * axis.Y;
+ 
+		M[4] = ty * axis.X + s * axis.Z;
+		M[5] = ty * axis.Y + c;
+		M[6] = ty * axis.Z - s * axis.X;
+ 
+		const f64 tz  = t * axis.Z;
+ 
+		M[8]  = tz * axis.X - s * axis.Y;
+		M[9]  = tz * axis.Z + s * axis.X;
+		M[10] = tz * axis.Z + c;
+ 
+#if defined ( USE_MATRIX_TEST )
+		definitelyIdentityMatrix=false;
+#endif
+
+		return *this;
+	}
+
+
+	//! Sets matrix to rotation matrix defined by axis and angle, assuming RH rotation
+	template <class T>
+	inline CMatrix4<T>& CMatrix4<T>::setRotationAxisRadiansRH( const T& angle, const vector3d<T>& axis )
+	{
+ 		const f64 c = cos(angle);
+		const f64 s = sin(angle);
+		const f64 t = 1.0 - c;
+ 
+		const f64 tx  = t * axis.X;
+ 
+		M[0] = tx * axis.X + c;
+		M[1] = tx * axis.Y + s * axis.Z;
+		M[2] = tx * axis.Z - s * axis.Y;
+ 
+		const f64 ty  = t * axis.Y;
+ 
+		M[4] = ty * axis.X - s * axis.Z;
+		M[5] = ty * axis.Y + c;
+		M[6] = ty * axis.Z + s * axis.X;
+ 
+		const f64 tz  = t * axis.Z;
+ 
+		M[8]  = tz * axis.X + s * axis.Y;
+		M[9]  = tz * axis.Z - s * axis.X;
+		M[10] = tz * axis.Z + c;
+ 
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
 #endif

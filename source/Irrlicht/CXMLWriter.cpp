@@ -205,7 +205,11 @@ void CXMLWriter::writeText(const wchar_t* text)
 	if (!File || !text)
 		return;
 
+	// TODO: we have to get rid of that reserve call as well as it slows down xml-writing seriously.
+	// Making a member-variable would work, but a lot of memory would stay around after writing.
+	// So the correct solution is probably using fixed block here and always write when that is full.
 	core::stringw s;
+	s.reserve(wcslen(text)+1);	
 	const wchar_t* p = text;
 
 	while(*p)

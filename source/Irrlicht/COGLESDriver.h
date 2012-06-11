@@ -10,7 +10,7 @@
 #if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 	#include "MacOSX/CIrrDeviceMacOSX.h"
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-	#include "CIrrDeviceIPhone.h"
+	#include "iOS/CIrrDeviceiOS.h"
 #endif
 
 #include "SIrrCreationParameters.h"
@@ -231,9 +231,15 @@ namespace video
 
 		//! Sets a constant for the vertex shader based on a name.
 		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
-
+        
+		//! Int interface for the above.
+		virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
+        
 		//! Sets a constant for the pixel shader based on a name.
 		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
+        
+		//! Int interface for the above.
+		virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
 
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, const video::ITexture* texture);

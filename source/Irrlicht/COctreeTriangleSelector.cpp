@@ -113,24 +113,19 @@ void COctreeTriangleSelector::getTriangles(core::triangle3df* triangles,
 					const core::aabbox3d<f32>& box,
 					const core::matrix4* transform) const
 {
-	core::matrix4 mat ( core::matrix4::EM4CONST_NOTHING );
+	core::matrix4 mat(core::matrix4::EM4CONST_NOTHING);
 	core::aabbox3d<f32> invbox = box;
 
 	if (SceneNode)
 	{
-		SceneNode->getAbsoluteTransformation().getInverse ( mat );
+		SceneNode->getAbsoluteTransformation().getInverse(mat);
 		mat.transformBoxEx(invbox);
 	}
 
 	if (transform)
-	{
 		mat = *transform;
-	}
 	else
-	{
 		mat.makeIdentity();
-	}
-
 
 	if (SceneNode)
 		mat *= SceneNode->getAbsoluteTransformation();
@@ -153,21 +148,28 @@ void COctreeTriangleSelector::getTrianglesFromOctree(
 	if (!box.intersectsWithBox(node->Box))
 		return;
 
-	s32 cnt = node->Triangles.size();
-	if (cnt + trianglesWritten > maximumSize)
-		cnt -= cnt + trianglesWritten - maximumSize;
+	const u32 cnt = node->Triangles.size();
 
-	s32 i;
-
-	for (i=0; i<cnt; ++i)
+	for (u32 i=0; i<cnt; ++i)
 	{
-		mat->transformVect(triangles[trianglesWritten].pointA, node->Triangles[i].pointA );
-		mat->transformVect(triangles[trianglesWritten].pointB, node->Triangles[i].pointB );
-		mat->transformVect(triangles[trianglesWritten].pointC, node->Triangles[i].pointC );
+		const core::triangle3df& srcTri = node->Triangles[i];
+		// This isn't an accurate test, but it's fast, and the 
+		// API contract doesn't guarantee complete accuracy.
+		if (srcTri.isTotalOutsideBox(box))
+			continue;
+
+		core::triangle3df& dstTri = triangles[trianglesWritten];
+		mat->transformVect(dstTri.pointA, srcTri.pointA );
+		mat->transformVect(dstTri.pointB, srcTri.pointB );
+		mat->transformVect(dstTri.pointC, srcTri.pointC );
 		++trianglesWritten;
+
+		// Halt when the out array is full.
+		if (trianglesWritten == maximumSize)
+			return;
 	}
 
-	for (i=0; i<8; ++i)
+	for (u32 i=0; i<8; ++i)
 		if (node->Child[i])
 			getTrianglesFromOctree(node->Child[i], trianglesWritten,
 			maximumSize, box, mat, triangles);

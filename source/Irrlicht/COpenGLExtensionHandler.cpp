@@ -43,8 +43,9 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlGetInfoLogARB(0), pGlGetShaderInfoLog(0), pGlGetProgramInfoLog(0),
 	pGlGetObjectParameterivARB(0), pGlGetShaderiv(0), pGlGetProgramiv(0),
 	pGlGetUniformLocationARB(0), pGlGetUniformLocation(0),
-	pGlUniform1ivARB(0), pGlUniform1fvARB(0), pGlUniform2fvARB(0), pGlUniform3fvARB(0), pGlUniform4fvARB(0), pGlUniformMatrix2fvARB(0),
-	pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0),
+	pGlUniform1fvARB(0), pGlUniform2fvARB(0), pGlUniform3fvARB(0), pGlUniform4fvARB(0),
+	pGlUniform1ivARB(0), pGlUniform2ivARB(0), pGlUniform3ivARB(0), pGlUniform4ivARB(0),
+	pGlUniformMatrix2fvARB(0), pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0),
 	pGlGetActiveUniformARB(0), pGlGetActiveUniform(0),
 	pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
@@ -54,12 +55,12 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlBindFramebuffer(0), pGlDeleteFramebuffers(0), pGlGenFramebuffers(0),
 	pGlCheckFramebufferStatus(0), pGlFramebufferTexture2D(0),
 	pGlBindRenderbuffer(0), pGlDeleteRenderbuffers(0), pGlGenRenderbuffers(0),
-	pGlRenderbufferStorage(0), pGlFramebufferRenderbuffer(0),
+	pGlRenderbufferStorage(0), pGlFramebufferRenderbuffer(0), pGlGenerateMipmap(0),
 	// EXT framebuffer object
 	pGlBindFramebufferEXT(0), pGlDeleteFramebuffersEXT(0), pGlGenFramebuffersEXT(0),
 	pGlCheckFramebufferStatusEXT(0), pGlFramebufferTexture2DEXT(0),
 	pGlBindRenderbufferEXT(0), pGlDeleteRenderbuffersEXT(0), pGlGenRenderbuffersEXT(0),
-	pGlRenderbufferStorageEXT(0), pGlFramebufferRenderbufferEXT(0),
+	pGlRenderbufferStorageEXT(0), pGlFramebufferRenderbufferEXT(0), pGlGenerateMipmapEXT(0),
 	// MRTs
 	pGlDrawBuffersARB(0), pGlDrawBuffersATI(0),
 	pGlGenBuffersARB(0), pGlBindBufferARB(0), pGlBufferDataARB(0), pGlDeleteBuffersARB(0),
@@ -247,6 +248,8 @@ void COpenGLExtensionHandler::dumpFramebufferFormats() const
 				memset(vals,0,sizeof(vals));
 #define tmplog(x,y) os::Printer::log(x, core::stringc(y).c_str())
 				const BOOL res = wglGetPixelFormatAttribiv_ARB(hdc,i,0,nums,atts,vals);
+				if (FALSE==res)
+					continue;
 				tmplog("Pixel format ",i);
 				u32 j=0;
 				tmplog("Draw to window " , vals[j]);
@@ -446,11 +449,14 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGetProgramiv = (PFNGLGETPROGRAMIVPROC) IRR_OGL_LOAD_EXTENSION("glGetProgramiv");
 	pGlGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC) IRR_OGL_LOAD_EXTENSION("glGetUniformLocationARB");
 	pGlGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) IRR_OGL_LOAD_EXTENSION("glGetUniformLocation");
-	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform4fvARB");
-	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1ivARB");
 	pGlUniform1fvARB = (PFNGLUNIFORM1FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1fvARB");
 	pGlUniform2fvARB = (PFNGLUNIFORM2FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform2fvARB");
 	pGlUniform3fvARB = (PFNGLUNIFORM3FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform3fvARB");
+	pGlUniform4fvARB = (PFNGLUNIFORM4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform4fvARB");
+	pGlUniform1ivARB = (PFNGLUNIFORM1IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform1ivARB");
+	pGlUniform2ivARB = (PFNGLUNIFORM2IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform2ivARB");
+	pGlUniform3ivARB = (PFNGLUNIFORM3IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform3ivARB");
+	pGlUniform4ivARB = (PFNGLUNIFORM4IVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniform4ivARB");
 	pGlUniformMatrix2fvARB = (PFNGLUNIFORMMATRIX2FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix2fvARB");
 	pGlUniformMatrix3fvARB = (PFNGLUNIFORMMATRIX3FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix3fvARB");
 	pGlUniformMatrix4fvARB = (PFNGLUNIFORMMATRIX4FVARBPROC) IRR_OGL_LOAD_EXTENSION("glUniformMatrix4fvARB");
@@ -481,6 +487,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC) IRR_OGL_LOAD_EXTENSION("glGenRenderbuffers");
 	pGlRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC) IRR_OGL_LOAD_EXTENSION("glRenderbufferStorage");
 	pGlFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferRenderbuffer");
+	pGlGenerateMipmap = (PFNGLGENERATEMIPMAPPROC) IRR_OGL_LOAD_EXTENSION("glGenerateMipmap");
+
 	// EXT FrameBufferObjects
 	pGlBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glBindFramebufferEXT");
 	pGlDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glDeleteFramebuffersEXT");
@@ -492,6 +500,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenRenderbuffersEXT");
 	pGlRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) IRR_OGL_LOAD_EXTENSION("glRenderbufferStorageEXT");
 	pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) IRR_OGL_LOAD_EXTENSION("glFramebufferRenderbufferEXT");
+	pGlGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenerateMipmapEXT");
 	pGlDrawBuffersARB = (PFNGLDRAWBUFFERSARBPROC) IRR_OGL_LOAD_EXTENSION("glDrawBuffersARB");
 	pGlDrawBuffersATI = (PFNGLDRAWBUFFERSATIPROC) IRR_OGL_LOAD_EXTENSION("glDrawBuffersATI");
 
@@ -719,14 +728,14 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_MIP_MAP:
 		return true;
 	case EVDF_MIP_MAP_AUTO_UPDATE:
-		return FeatureAvailable[IRR_SGIS_generate_mipmap];
+		return FeatureAvailable[IRR_SGIS_generate_mipmap] || FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
 	case EVDF_STENCIL_BUFFER:
 		return StencilBuffer;
 	case EVDF_VERTEX_SHADER_1_1:
 	case EVDF_ARB_VERTEX_PROGRAM_1:
 		return FeatureAvailable[IRR_ARB_vertex_program] || FeatureAvailable[IRR_NV_vertex_program1_1];
-	case EVDF_PIXEL_SHADER_1_1: 
-	case EVDF_PIXEL_SHADER_1_2: 
+	case EVDF_PIXEL_SHADER_1_1:
+	case EVDF_PIXEL_SHADER_1_2:
 	case EVDF_ARB_FRAGMENT_PROGRAM_1:
 		return FeatureAvailable[IRR_ARB_fragment_program] || FeatureAvailable[IRR_NV_fragment_program];
 	case EVDF_PIXEL_SHADER_2_0:
@@ -742,7 +751,7 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		// return (FeatureAvailable[IRR_ARB_texture_non_power_of_two]||Version>=200);
 		return (FeatureAvailable[IRR_ARB_texture_non_power_of_two]);
 	case EVDF_FRAMEBUFFER_OBJECT:
-		return FeatureAvailable[IRR_EXT_framebuffer_object];
+		return FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
 	case EVDF_VERTEX_BUFFER_OBJECT:
 		return FeatureAvailable[IRR_ARB_vertex_buffer_object];
 	case EVDF_COLOR_MASK:

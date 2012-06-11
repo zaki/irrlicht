@@ -39,6 +39,9 @@ namespace core
 	//! Rounding error constant often used when comparing f32 values.
 
 	const s32 ROUNDING_ERROR_S32 = 0;
+#ifdef __IRR_HAS_S64
+	const s64 ROUNDING_ERROR_S64 = 0;
+#endif
 	const f32 ROUNDING_ERROR_f32 = 0.000001f;
 	const f64 ROUNDING_ERROR_f64 = 0.00000001;
 
@@ -185,6 +188,46 @@ namespace core
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
+
+	//! We compare the difference in ULP's (spacing between floating-point numbers, aka ULP=1 means there exists no float between).
+	//\result true when numbers have a ULP <= maxUlpDiff AND have the same sign.
+	inline bool equalsByUlp(f32 a, f32 b, int maxUlpDiff)
+	{
+		// Based on the ideas and code from Bruce Dawson on
+		// http://www.altdevblogaday.com/2012/02/22/comparing-floating-point-numbers-2012-edition/
+		// When floats are interpreted as integers the two nearest possible float numbers differ just
+		// by one integer number. Also works the other way round, an integer of 1 interpreted as float
+		// is for example the smallest possible float number.
+		union Float_t
+		{
+			Float_t(float f1 = 0.0f) : f(f1) {}
+			// Portable sign-extraction
+			bool sign() const { return (i >> 31) != 0; }
+
+			int i;
+			float f;
+		};
+
+		Float_t fa(a);
+		Float_t fb(b);
+
+		// Different signs, we could maybe get difference to 0, but so close to 0 using epsilons is better.
+		if ( fa.sign() != fb.sign() )
+		{
+			// Check for equality to make sure +0==-0
+			if (fa.i == fb.i)
+				return true;
+			return false;
+		}
+
+		// Find the difference in ULPs.
+		int ulpsDiff = abs_(fa.i- fb.i);
+		if (ulpsDiff <= maxUlpDiff)
+			return true;
+
+		return false;
+	}
+
 #if 0
 	//! returns if a equals b, not using any rounding tolerance
 	inline bool equals(const s32 a, const s32 b)
@@ -210,6 +253,13 @@ namespace core
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
+#ifdef __IRR_HAS_S64
+	//! returns if a equals b, taking an explicit rounding tolerance into account
+	inline bool equals(const s64 a, const s64 b, const s64 tolerance = ROUNDING_ERROR_S64)
+	{
+		return (a + tolerance >= b) && (a - tolerance <= b);
+	}
+#endif
 
 	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const f64 a, const f64 tolerance = ROUNDING_ERROR_f64)
@@ -240,6 +290,14 @@ namespace core
 	{
 		return a <= tolerance;
 	}
+
+#ifdef __IRR_HAS_S64
+	//! returns if a equals zero, taking rounding errors into account
+	inline bool iszero(const s64 a, const s64 tolerance = 0)
+	{
+		return abs_(a) > tolerance;
+	}
+#endif
 
 	inline s32 s32_min(s32 a, s32 b)
 	{
@@ -421,6 +479,14 @@ namespace core
 	{
 		return static_cast<s32>(squareroot(static_cast<f32>(f)));
 	}
+
+#ifdef __IRR_HAS_S64
+	// calculate: sqrt ( x )
+	REALINLINE s64 squareroot(const s64 f)
+	{
+		return static_cast<s64>(squareroot(static_cast<f64>(f)));
+	}
+#endif
 
 	// calculate: 1 / sqrt ( x )
 	REALINLINE f64 reciprocal_squareroot(const f64 x)

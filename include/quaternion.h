@@ -120,11 +120,29 @@ class quaternion
 		//! Inverts this quaternion
 		quaternion& makeInverse();
 
-		//! Set this quaternion to the result of the linear interpolation between two quaternions
+		//! Set this quaternion to the linear interpolation between two quaternions
+		/** \param q1 First quaternion to be interpolated.
+		\param q2 Second quaternion to be interpolated.
+		\param time Progress of interpolation. For time=0 the result is
+		q1, for time=1 the result is q2. Otherwise interpolation
+		between q1 and q2.
+		*/
 		quaternion& lerp(quaternion q1, quaternion q2, f32 time);
 
 		//! Set this quaternion to the result of the spherical interpolation between two quaternions
-		quaternion& slerp( quaternion q1, quaternion q2, f32 interpolate );
+		/** \param q1 First quaternion to be interpolated.
+		\param q2 Second quaternion to be interpolated.
+		\param time Progress of interpolation. For time=0 the result is
+		q1, for time=1 the result is q2. Otherwise interpolation
+		between q1 and q2.
+		\param threshold To avoid inaccuracies at the end (time=1) the
+		interpolation switches to linear interpolation at some point.
+		This value defines how much of the remaining interpolation will
+		be calculated with lerp. Everything from 1-threshold up will be
+		linear interpolation.
+		*/
+		quaternion& slerp(quaternion q1, quaternion q2,
+				f32 time, f32 threshold=.05f);
 
 		//! Create quaternion from rotation angle and rotation axis.
 		/** Axis must be unit length.
@@ -497,13 +515,12 @@ inline quaternion& quaternion::normalize()
 inline quaternion& quaternion::lerp(quaternion q1, quaternion q2, f32 time)
 {
 	const f32 scale = 1.0f - time;
-	const f32 invscale = time;
-	return (*this = (q1*scale) + (q2*invscale));
+	return (*this = (q1*scale) + (q2*time));
 }
 
 
 // set this quaternion to the result of the interpolation between two quaternions
-inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time)
+inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time, f32 threshold)
 {
 	f32 angle = q1.dotProduct(q2);
 
@@ -514,7 +531,7 @@ inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time)
 		angle *= -1.0f;
 	}
 
-	if (angle <= 0.95f) // spherical interpolation
+	if (angle <= (1-threshold)) // spherical interpolation
 	{
 		const f32 theta = acosf(angle);
 		const f32 invsintheta = reciprocal(sinf(theta));
@@ -534,8 +551,7 @@ inline f32 quaternion::dotProduct(const quaternion& q2) const
 }
 
 
-//! axis must be unit length
-//! angle in radians
+//! axis must be unit length, angle in radians
 inline quaternion& quaternion::fromAngleAxis(f32 angle, const vector3df& axis)
 {
 	const f32 fHalfAngle = 0.5f*angle;

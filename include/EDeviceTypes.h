@@ -24,8 +24,8 @@ namespace irr
 		//! A device native to Mac OSX
 		/** This device uses Apple's Cocoa API and works in Mac OSX 10.2 and above. */
 		EIDT_OSX,
-
-		//! A device native to the IPhone/IPod touch
+        
+        //! A device native to the IPhone/IPod touch
 		/** This device should be used with the OpenGL-ES driver. */
 		EIDT_IPHONE,
 

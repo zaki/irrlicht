@@ -28,9 +28,11 @@ namespace scene
 CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr,
 				const Q3LevelLoadParameter &loadParam)
 	: LoadParam(loadParam), Textures(0), NumTextures(0), LightMaps(0), NumLightMaps(0),
-	Vertices(0), NumVertices(0), Faces(0), NumFaces(0),	Planes(0), NumPlanes(0),
-	Nodes(0), NumNodes(0), Leafs(0), NumLeafs(0), LeafFaces(0), NumLeafFaces(0),
-	MeshVerts(0), NumMeshVerts(0), Brushes(0), NumBrushes(0), FileSystem(fs), SceneManager(smgr)
+	Vertices(0), NumVertices(0), Faces(0), NumFaces(0), Models(0), NumModels(0),
+	Planes(0), NumPlanes(0), Nodes(0), NumNodes(0), Leafs(0), NumLeafs(0),
+	LeafFaces(0), NumLeafFaces(0), MeshVerts(0), NumMeshVerts(0),
+	Brushes(0), NumBrushes(0), BrushEntities(0), FileSystem(fs),
+	SceneManager(smgr), FramesPerSecond(25.f)
 {
 	#ifdef _DEBUG
 	IReferenceCounted::setDebugName("CQ3LevelMesh");
@@ -64,7 +66,9 @@ CQ3LevelMesh::~CQ3LevelMesh()
 	if (FileSystem)
 		FileSystem->drop();
 
-	for ( s32 i = 0; i!= E_Q3_MESH_SIZE; ++i )
+	s32 i;
+
+	for ( i = 0; i!= E_Q3_MESH_SIZE; ++i )
 	{
 		if ( Mesh[i] )
 		{
@@ -72,6 +76,12 @@ CQ3LevelMesh::~CQ3LevelMesh()
 			Mesh[i] = 0;
 		}
 	}
+
+	for ( i = 1; i < NumModels; i++ )
+	{
+		BrushEntities[i]->drop();
+	}
+	delete [] BrushEntities; BrushEntities = 0;
 
 	ReleaseShader();
 	ReleaseEntity();
@@ -126,11 +136,6 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 		}
 	}
 
-	for ( i = 0; i!= E_Q3_MESH_SIZE; ++i )
-	{
-		Mesh[i] = new SMesh();
-	}
-
 	ReleaseEntity();
 
 	// load everything
@@ -170,6 +175,7 @@ void CQ3LevelMesh::cleanLoader ()
 	delete [] LightMaps; LightMaps = 0;
 	delete [] Vertices; Vertices = 0;
 	delete [] Faces; Faces = 0;
+	delete [] Models; Models = 0;
 	delete [] Planes; Planes = 0;
 	delete [] Nodes; Nodes = 0;
 	delete [] Leafs; Leafs = 0;
@@ -388,15 +394,31 @@ void CQ3LevelMesh::loadFogs(tBSPLump* l, io::IReadFile* file)
 */
 void CQ3LevelMesh::loadModels(tBSPLump* l, io::IReadFile* file)
 {
-	u32 files = l->length / sizeof(tBSPModel);
-	file->seek( l->offset );
+	NumModels = l->length / sizeof(tBSPModel);
+	Models = new tBSPModel[NumModels];
 
-	tBSPModel def;
-	for ( u32 i = 0; i!= files; ++i )
+	file->seek( l->offset );
+	file->read(Models, l->length);
+
+	if ( LoadParam.swapHeader )
 	{
-		file->read( &def, sizeof( def ) );
+		for ( s32 i = 0; i < NumModels; i++)
+		{
+			Models[i].min[0] = os::Byteswap::byteswap(Models[i].min[0]);
+			Models[i].min[1] = os::Byteswap::byteswap(Models[i].min[1]);
+			Models[i].min[2] = os::Byteswap::byteswap(Models[i].min[2]);
+			Models[i].max[0] = os::Byteswap::byteswap(Models[i].max[0]);
+			Models[i].max[1] = os::Byteswap::byteswap(Models[i].max[1]);
+			Models[i].max[2] = os::Byteswap::byteswap(Models[i].max[2]);
+
+			Models[i].faceIndex = os::Byteswap::byteswap(Models[i].faceIndex);
+			Models[i].numOfFaces = os::Byteswap::byteswap(Models[i].numOfFaces);
+			Models[i].brushIndex = os::Byteswap::byteswap(Models[i].brushIndex);
+			Models[i].numOfBrushes = os::Byteswap::byteswap(Models[i].numOfBrushes);
+		}
 	}
 
+	BrushEntities = new SMesh*[NumModels];
 }
 
 /*!
@@ -818,36 +840,19 @@ s32 CQ3LevelMesh::setShaderMaterial( video::SMaterial &material, const tBSPFace 
 #endif
 }
 
-
 /*!
+	Internal function to build a mesh.
 */
-void CQ3LevelMesh::solveTJunction()
+scene::SMesh** CQ3LevelMesh::buildMesh(s32 num)
 {
-}
-
-/*!
-	constructs a mesh from the quake 3 level file.
-*/
-void CQ3LevelMesh::constructMesh()
-{
-	if ( LoadParam.verbose > 0 )
-	{
-		LoadParam.startTime = os::Timer::getRealTime();
-
-		if ( LoadParam.verbose > 1 )
-		{
-			snprintf( buf, sizeof ( buf ),
-				"quake3::constructMesh start to create %d faces, %d vertices,%d mesh vertices",
-				NumFaces,
-				NumVertices,
-				NumMeshVerts
-				);
-			os::Printer::log(buf, ELL_INFORMATION);
-		}
-
-	}
+	scene::SMesh** newmesh = new SMesh *[quake3::E_Q3_MESH_SIZE];
 
 	s32 i, j, k,s;
+
+	for (i = 0; i < E_Q3_MESH_SIZE; i++)
+	{
+		newmesh[i] = new SMesh();
+	}
 
 	s32 *index;
 
@@ -858,7 +863,7 @@ void CQ3LevelMesh::constructMesh()
 	SToBuffer item [ E_Q3_MESH_SIZE ];
 	u32 itemSize;
 
-	for ( i=0; i < NumFaces; ++i)
+	for (i = Models[num].faceIndex; i < Models[num].numOfFaces + Models[num].faceIndex; ++i)
 	{
 		const tBSPFace * face = Faces + i;
 
@@ -880,36 +885,34 @@ void CQ3LevelMesh::constructMesh()
 			case 1: // normal polygons
 			case 2: // patches
 			case 3: // meshes
+				if ( 0 == shader )
 				{
-					if ( 0 == shader )
+					if ( LoadParam.cleanUnResolvedMeshes || material.getTexture(0) )
 					{
-						if ( LoadParam.cleanUnResolvedMeshes || material.getTexture(0) )
-						{
-							item[itemSize].takeVertexColor = 1;
-							item[itemSize].index = E_Q3_MESH_GEOMETRY;
-							itemSize += 1;
-						}
-						else
-						{
-							item[itemSize].takeVertexColor = 1;
-							item[itemSize].index = E_Q3_MESH_UNRESOLVED;
-							itemSize += 1;
-						}
+						item[itemSize].takeVertexColor = 1;
+						item[itemSize].index = E_Q3_MESH_GEOMETRY;
+						itemSize += 1;
 					}
 					else
 					{
 						item[itemSize].takeVertexColor = 1;
-						item[itemSize].index = E_Q3_MESH_ITEMS;
+						item[itemSize].index = E_Q3_MESH_UNRESOLVED;
 						itemSize += 1;
 					}
-
-				} break;
+				}
+				else
+				{
+					item[itemSize].takeVertexColor = 1;
+					item[itemSize].index = E_Q3_MESH_ITEMS;
+					itemSize += 1;
+				}
+			break;
 
 			case 4: // billboards
 				//item[itemSize].takeVertexColor = 1;
 				//item[itemSize].index = E_Q3_MESH_ITEMS;
 				//itemSize += 1;
-				break;
+			break;
 
 		}
 
@@ -932,7 +935,7 @@ void CQ3LevelMesh::constructMesh()
 #if 0
 				// there are lightmapsids and textureid with -1
 				const s32 tmp_index = ((Faces[i].lightmapID+1) * (NumTextures+1)) + (Faces[i].textureID+1);
-				buffer = (SMeshBufferLightMap*) Mesh[E_Q3_MESH_GEOMETRY]->getMeshBuffer(tmp_index);
+				buffer = (SMeshBufferLightMap*) newmesh[E_Q3_MESH_GEOMETRY]->getMeshBuffer(tmp_index);
 				buffer->setHardwareMappingHint ( EHM_STATIC );
 				buffer->getMaterial() = material;
 #endif
@@ -945,7 +948,7 @@ void CQ3LevelMesh::constructMesh()
 				if ( LoadParam.mergeShaderBuffer == 1 )
 				{
 					// combine
-					buffer = (SMeshBufferLightMap*) Mesh[ item[g].index ]->getMeshBuffer(
+					buffer = (SMeshBufferLightMap*) newmesh[ item[g].index ]->getMeshBuffer(
 						item[g].index != E_Q3_MESH_FOG ? material : material2 );
 				}
 
@@ -953,7 +956,7 @@ void CQ3LevelMesh::constructMesh()
 				if ( 0 == buffer )
 				{
 					buffer = new scene::SMeshBufferLightMap();
-					Mesh[ item[g].index ]->addMeshBuffer( buffer );
+					newmesh[ item[g].index ]->addMeshBuffer( buffer );
 					buffer->drop();
 					buffer->getMaterial() = item[g].index != E_Q3_MESH_FOG ? material : material2;
 					if ( item[g].index == E_Q3_MESH_GEOMETRY )
@@ -967,10 +970,10 @@ void CQ3LevelMesh::constructMesh()
 				case 4: // billboards
 					break;
 				case 2: // patches
-					createCurvedSurface_bezier(	buffer, i,
-												LoadParam.patchTesselation,
-												item[g].takeVertexColor
-											);
+					createCurvedSurface_bezier( buffer, i,
+									LoadParam.patchTesselation,
+									item[g].takeVertexColor
+								  );
 					break;
 
 				case 1: // normal polygons
@@ -1016,6 +1019,63 @@ void CQ3LevelMesh::constructMesh()
 
 			} // end switch
 		}
+	}
+
+	return newmesh;
+}
+
+/*!
+*/
+void CQ3LevelMesh::solveTJunction()
+{
+}
+
+/*!
+	constructs a mesh from the quake 3 level file.
+*/
+void CQ3LevelMesh::constructMesh()
+{
+	if ( LoadParam.verbose > 0 )
+	{
+		LoadParam.startTime = os::Timer::getRealTime();
+
+		if ( LoadParam.verbose > 1 )
+		{
+			snprintf( buf, sizeof ( buf ),
+				"quake3::constructMesh start to create %d faces, %d vertices,%d mesh vertices",
+				NumFaces,
+				NumVertices,
+				NumMeshVerts
+				);
+			os::Printer::log(buf, ELL_INFORMATION);
+		}
+
+	}
+
+	s32 i, j;
+
+	// First the main level
+	SMesh **tmp = buildMesh(0);
+
+	for (i = 0; i < E_Q3_MESH_SIZE; i++)
+	{
+		Mesh[i] = tmp[i];
+	}
+	delete [] tmp;
+
+	// Then the brush entities
+
+	for (i = 1; i < NumModels; i++)
+	{
+		tmp = buildMesh(i);
+		BrushEntities[i] = tmp[0];
+
+		// We only care about the main geometry here
+		for (j = 1; j < E_Q3_MESH_SIZE; j++)
+		{
+			tmp[j]->drop();
+		}
+		delete [] tmp;
 	}
 
 	if ( LoadParam.verbose > 0 )
@@ -1401,6 +1461,35 @@ tQ3EntityList & CQ3LevelMesh::getEntityList()
 	return Entity;
 }
 
+//! returns the requested brush entity
+IMesh* CQ3LevelMesh::getBrushEntityMesh(s32 num) const
+{
+	if (num < 1 || num >= NumModels)
+		return 0;
+
+	return BrushEntities[num];
+}
+
+//! returns the requested brush entity
+IMesh* CQ3LevelMesh::getBrushEntityMesh(quake3::IEntity &ent) const
+{
+	// This is a helper function to parse the entity,
+	// so you don't have to.
+
+	s32 num;
+
+	const quake3::SVarGroup* group = ent.getGroup(1);
+	const core::stringc& modnum = group->get("model");
+
+	if (!group->isDefined("model"))
+		return 0;
+
+	const char *temp = modnum.c_str() + 1; // We skip the first character.
+	num = core::strtol10(temp);
+
+	return getBrushEntityMesh(num);
+}
+
 
 /*!
 */
@@ -1681,94 +1770,105 @@ void CQ3LevelMesh::cleanMeshes()
 	if ( 0 == LoadParam.cleanUnResolvedMeshes )
 		return;
 
+	s32 i;
+
+	// First the main level
+	for (i = 0; i < E_Q3_MESH_SIZE; i++)
+	{
+		bool texture0important = ( i == 0 );
+
+		cleanMesh(Mesh[i], texture0important);
+	}
+
+	// Then the brush entities
+	for (i = 1; i < NumModels; i++)
+	{
+		cleanMesh(BrushEntities[i], true);
+	}
+}
+
+void CQ3LevelMesh::cleanMesh(SMesh *m, const bool texture0important)
+{
 	// delete all buffers without geometry in it.
 	u32 run = 0;
 	u32 remove = 0;
 
-	irr::scene::SMesh *m;
 	IMeshBuffer *b;
-	for ( u32 g = 0; g < E_Q3_MESH_SIZE; ++g )
+
+	run = 0;
+	remove = 0;
+
+	if ( LoadParam.verbose > 0 )
 	{
-		bool texture0important = ( g == 0 );
-
-		run = 0;
-		remove = 0;
-		m = Mesh[g];
-		if ( LoadParam.verbose > 0 )
+		LoadParam.startTime = os::Timer::getRealTime();
+		if ( LoadParam.verbose > 1 )
 		{
-			LoadParam.startTime = os::Timer::getRealTime();
-			if ( LoadParam.verbose > 1 )
-			{
-				snprintf( buf, sizeof ( buf ),
-					"quake3::cleanMeshes%d start for %d meshes",
-					g,
-					m->MeshBuffers.size()
-					);
-				os::Printer::log(buf, ELL_INFORMATION);
-			}
-		}
-
-		u32 i = 0;
-		s32 blockstart = -1;
-		s32 blockcount;
-
-		while( i < m->MeshBuffers.size())
-		{
-			run += 1;
-
-			b = m->MeshBuffers[i];
-
-			if ( b->getVertexCount() == 0 || b->getIndexCount() == 0 ||
-				( texture0important && b->getMaterial().getTexture(0) == 0 )
-				)
-			{
-				if ( blockstart < 0 )
-				{
-					blockstart = i;
-					blockcount = 0;
-				}
-				blockcount += 1;
-				i += 1;
-
-				// delete Meshbuffer
-				i -= 1;
-				remove += 1;
-				b->drop();
-				m->MeshBuffers.erase(i);
-			}
-			else
-			{
-				// clean blockwise
-				if ( blockstart >= 0 )
-				{
-					if ( LoadParam.verbose > 1 )
-					{
-						snprintf( buf, sizeof ( buf ),
-							"quake3::cleanMeshes%d cleaning mesh %d %d size",
-							g,
-							blockstart,
-							blockcount
-							);
-						os::Printer::log(buf, ELL_INFORMATION);
-					}
-					blockstart = -1;
-				}
-				i += 1;
-			}
-		}
-
-		if ( LoadParam.verbose > 0 )
-		{
-			LoadParam.endTime = os::Timer::getRealTime();
 			snprintf( buf, sizeof ( buf ),
-				"quake3::cleanMeshes%d needed %04d ms to clean %d of %d meshes",
-				g,
-				LoadParam.endTime - LoadParam.startTime,
-				remove,
-				run
+				"quake3::cleanMeshes start for %d meshes",
+				m->MeshBuffers.size()
 				);
 			os::Printer::log(buf, ELL_INFORMATION);
 		}
+	}
+
+	u32 i = 0;
+	s32 blockstart = -1;
+	s32 blockcount = 0;
+
+	while( i < m->MeshBuffers.size())
+	{
+		run += 1;
+
+		b = m->MeshBuffers[i];
+
+		if ( b->getVertexCount() == 0 || b->getIndexCount() == 0 ||
+			( texture0important && b->getMaterial().getTexture(0) == 0 )
+			)
+		{
+			if ( blockstart < 0 )
+			{
+				blockstart = i;
+				blockcount = 0;
+			}
+			blockcount += 1;
+			i += 1;
+
+			// delete Meshbuffer
+			i -= 1;
+			remove += 1;
+			b->drop();
+			m->MeshBuffers.erase(i);
+		}
+		else
+		{
+			// clean blockwise
+			if ( blockstart >= 0 )
+			{
+				if ( LoadParam.verbose > 1 )
+				{
+					snprintf( buf, sizeof ( buf ),
+						"quake3::cleanMeshes cleaning mesh %d %d size",
+						blockstart,
+						blockcount
+						);
+					os::Printer::log(buf, ELL_INFORMATION);
+				}
+				blockstart = -1;
+			}
+			i += 1;
+		}
+	}
+
+	if ( LoadParam.verbose > 0 )
+	{
+		LoadParam.endTime = os::Timer::getRealTime();
+		snprintf( buf, sizeof ( buf ),
+			"quake3::cleanMeshes needed %04d ms to clean %d of %d meshes",
+			LoadParam.endTime - LoadParam.startTime,
+			remove,
+			run
+			);
+		os::Printer::log(buf, ELL_INFORMATION);
 	}
 }
 
@@ -1791,8 +1891,10 @@ void CQ3LevelMesh::calcBoundingBoxes()
 		}
 	}
 
+	s32 g;
+
 	// create bounding box
-	for ( u32 g = 0; g != E_Q3_MESH_SIZE; ++g )
+	for ( g = 0; g != E_Q3_MESH_SIZE; ++g )
 	{
 		for ( u32 j=0; j < Mesh[g]->MeshBuffers.size(); ++j)
 		{
@@ -1803,6 +1905,17 @@ void CQ3LevelMesh::calcBoundingBoxes()
 		// Mesh[0] is the main bbox
 		if (g!=0)
 			Mesh[0]->BoundingBox.addInternalBox(Mesh[g]->getBoundingBox());
+	}
+
+	for (g = 1; g < NumModels; g++)
+	{
+		for ( u32 j=0; j < BrushEntities[g]->MeshBuffers.size(); ++j)
+		{
+			((SMeshBufferLightMap*)BrushEntities[g]->MeshBuffers[j])->
+				recalculateBoundingBox();
+		}
+
+		BrushEntities[g]->recalculateBoundingBox();
 	}
 
 	if ( LoadParam.verbose > 0 )

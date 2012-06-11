@@ -63,6 +63,9 @@ namespace irr
 		MacOS: Not yet implemented
 		*/
 		EET_USER_EVENT,
+        
+        //! A multi touch event.
+		EET_MULTI_TOUCH_EVENT,
 
 		//! This enum is never used, it only forces the compiler to
 		//! compile these enumeration values to 32 bit.
@@ -140,6 +143,25 @@ namespace irr
 		EMBSM_EXTRA2  = 0x10,
 
 		EMBSM_FORCE_32_BIT = 0x7fffffff
+	};
+    
+    //! Enumeration for all touch input events
+	enum EMULTI_TOUCH_INPUT_EVENT
+	{
+		//! Max multi touch count
+		NUMBER_OF_MULTI_TOUCHES = 10,
+        
+		//! Touch was pressed down.
+		EMTIE_PRESSED_DOWN = 0,
+        
+		//! Touch was left up.
+		EMTIE_LEFT_UP,
+        
+		//! The touch changed its position.
+		EMTIE_MOVED,
+        
+		//! No real event. Just for convenience to get number of events
+		EMTIE_COUNT
 	};
 
 	namespace gui
@@ -330,6 +352,55 @@ struct SEvent
 		//! True if ctrl was also pressed
 		bool Control:1;
 	};
+    
+    //! Any kind of multi touch event.
+	struct SMultiTouchInput
+	{
+		//! A helper function to check if a button is pressed.
+		u32 touchedCount() const
+		{
+			u32 count = 0;
+            
+			for (u16 i = 0; i < NUMBER_OF_MULTI_TOUCHES; ++i)
+            {
+				if (Touched[i])
+                    count++;
+			}
+            
+			return count;
+		}
+        
+        //! Reset variables.
+		void clear()
+		{
+			for (u16 i = 0; i < NUMBER_OF_MULTI_TOUCHES; ++i)
+            {
+				Touched[i] = 0;
+				X[i] = 0;
+				Y[i] = 0;
+				PrevX[i] = 0;
+				PrevY[i] = 0;
+			}
+		}
+        
+        // Status of simple touch.
+        u8 Touched[NUMBER_OF_MULTI_TOUCHES];
+        
+        // X position of simple touch.
+		s32 X[NUMBER_OF_MULTI_TOUCHES];
+        
+        // Y position of simple touch.
+		s32 Y[NUMBER_OF_MULTI_TOUCHES];
+        
+        // Previous X position of simple touch.
+		s32 PrevX[NUMBER_OF_MULTI_TOUCHES];
+        
+        // Previous Y position of simple touch.
+		s32 PrevY[NUMBER_OF_MULTI_TOUCHES];
+        
+		//! Type of multi touch event
+		EMULTI_TOUCH_INPUT_EVENT Event;
+	};
 
 	//! A joystick event.
 	/** Unlike other events, joystick events represent the result of polling
@@ -390,7 +461,6 @@ struct SEvent
 		}
 	};
 
-
 	//! Any kind of log event.
 	struct SLogEvent
 	{
@@ -417,6 +487,7 @@ struct SEvent
 		struct SGUIEvent GUIEvent;
 		struct SMouseInput MouseInput;
 		struct SKeyInput KeyInput;
+        struct SMultiTouchInput MultiTouchInput;
 		struct SJoystickEvent JoystickEvent;
 		struct SLogEvent LogEvent;
 		struct SUserEvent UserEvent;

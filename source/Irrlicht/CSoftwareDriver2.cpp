@@ -35,7 +35,9 @@ typedef sVec2 vec2;
 #define attribute
 #define varying
 
+#ifdef _MSC_VER
 #pragma warning(disable:4244)
+#endif
 
 struct mat4{
    float m[4][4];
@@ -2623,8 +2625,9 @@ u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Next use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+void CBurningVideoDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
+	const u32 count = triangles.size();
 	IBurningShader *shader = BurningShader [ ETR_STENCIL_SHADOW ];
 
 	CurrentShader = shader;
@@ -2639,14 +2642,14 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 	//glStencilMask(~0);
 	//glStencilFunc(GL_ALWAYS, 0, ~0);
 
-	if (zfail)
+	if (true)// zpass does not work yet
 	{
 		Material.org.BackfaceCulling = true;
 		Material.org.FrontfaceCulling = false;
 		shader->setParam ( 0, 0 );
 		shader->setParam ( 1, 1 );
 		shader->setParam ( 2, 0 );
-		drawVertexPrimitiveList ( triangles, count, 0, count/3, (video::E_VERTEX_TYPE) 4, scene::EPT_TRIANGLES, (video::E_INDEX_TYPE) 4 );
+		drawVertexPrimitiveList (triangles.const_pointer(), count, 0, count/3, (video::E_VERTEX_TYPE) 4, scene::EPT_TRIANGLES, (video::E_INDEX_TYPE) 4 );
 		//glStencilOp(GL_KEEP, incr, GL_KEEP);
 		//glDrawArrays(GL_TRIANGLES,0,count);
 
@@ -2655,7 +2658,7 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 		shader->setParam ( 0, 0 );
 		shader->setParam ( 1, 2 );
 		shader->setParam ( 2, 0 );
-		drawVertexPrimitiveList ( triangles, count, 0, count/3, (video::E_VERTEX_TYPE) 4, scene::EPT_TRIANGLES, (video::E_INDEX_TYPE) 4 );
+		drawVertexPrimitiveList (triangles.const_pointer(), count, 0, count/3, (video::E_VERTEX_TYPE) 4, scene::EPT_TRIANGLES, (video::E_INDEX_TYPE) 4 );
 		//glStencilOp(GL_KEEP, decr, GL_KEEP);
 		//glDrawArrays(GL_TRIANGLES,0,count);
 	}
@@ -2677,8 +2680,6 @@ void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangl
 		//glStencilOp(GL_KEEP, GL_KEEP, decr);
 		//glDrawArrays(GL_TRIANGLES,0,count);
 	}
-
-
 }
 
 //! Fills the stencil shadow with color. After the shadow volume has been drawn

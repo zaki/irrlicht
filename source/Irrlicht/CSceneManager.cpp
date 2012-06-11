@@ -715,7 +715,7 @@ ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
 //! to in the 3D Software Maya by Alias Wavefront.
 //! The returned pointer must not be dropped.
 ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
-	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id,
+	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id, f32 distance,
 	bool makeActive)
 {
 	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
@@ -723,7 +723,7 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 	if (node)
 	{
 		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
-			rotateSpeed, zoomSpeed, translationSpeed);
+			rotateSpeed, zoomSpeed, translationSpeed, distance);
 
 		node->addAnimator(anm);
 		anm->drop();

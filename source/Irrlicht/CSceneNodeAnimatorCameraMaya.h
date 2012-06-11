@@ -28,8 +28,8 @@ namespace scene
 	{
 	public:
 		//! Constructor
-		CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor, f32 rotateSpeed = -1500.0f, 
-			f32 zoomSpeed = 200.0f, f32 translationSpeed = 1500.0f);
+		CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor, f32 rotateSpeed = -1500.f, 
+			f32 zoomSpeed = 200.f, f32 translationSpeed = 1500.f, f32 distance=70.f);
 
 		//! Destructor
 		virtual ~CSceneNodeAnimatorCameraMaya();
@@ -58,6 +58,12 @@ namespace scene
 		//! Set the zoom speed
 		virtual void setZoomSpeed(f32 zoomSpeed);
 
+		//! Returns the current distance, i.e. orbit radius
+		virtual f32 getDistance() const;
+
+		//! Set the distance
+		virtual void setDistance(f32 distance);
+
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const
 		{
@@ -80,29 +86,27 @@ namespace scene
 
 		void allKeysUp();
 		void animate();
-		bool isMouseKeyDown(s32 key);
+		bool isMouseKeyDown(s32 key) const;
 
 		bool MouseKeys[3];
 
 		gui::ICursorControl *CursorControl;
-		core::vector3df Pos;
+		scene::ICameraSceneNode* OldCamera;
+		core::vector3df OldTarget;
+		core::vector3df LastCameraTarget;	// to find out if the camera target was moved outside this animator
+		core::position2df RotateStart;
+		core::position2df ZoomStart;
+		core::position2df TranslateStart;
+		core::position2df MousePos;
+		f32 ZoomSpeed;
+		f32 RotateSpeed;
+		f32 TranslateSpeed;
+		f32 CurrentZoom;
+		f32 RotX, RotY;
 		bool Zooming;
 		bool Rotating;
 		bool Moving;
 		bool Translating;
-		f32 ZoomSpeed;
-		f32 RotateSpeed;
-		f32 TranslateSpeed;
-		core::position2df RotateStart;
-		core::position2df ZoomStart;
-		core::position2df TranslateStart;
-		f32 CurrentZoom;
-		f32 RotX, RotY;
-		core::vector3df OldTarget;
-		core::vector3df LastCameraTarget;	// to find out if the camera target was moved outside this animator
-		scene::ICameraSceneNode* OldCamera;
-
-		core::position2df MousePos;
 	};
 
 } // end namespace scene

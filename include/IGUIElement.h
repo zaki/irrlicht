@@ -734,6 +734,29 @@ public:
 	{
 		return GUIElementTypeNames[Type];
 	}
+	
+	//! Returns the name of the element.
+	/** \return Name as character string. */
+	virtual const c8* getName() const
+	{
+		return Name.c_str();
+	}
+
+
+	//! Sets the name of the element.
+	/** \param name New name of the gui element. */
+	virtual void setName(const c8* name)
+	{
+		Name = name;
+	}
+
+
+	//! Sets the name of the element.
+	/** \param name New name of the gui element. */
+	virtual void setName(const core::stringc& name)
+	{
+		Name = name;
+	}
 
 
 	//! Writes attributes of the scene node.
@@ -741,6 +764,7 @@ public:
 	scripting languages, editors, debuggers or xml serialization purposes. */
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 	{
+		out->addString("Name", Name.c_str());		
 		out->addInt("Id", ID );
 		out->addString("Caption", getText());
 		out->addRect("Rect", DesiredRect);
@@ -764,6 +788,7 @@ public:
 	scripting languages, editors, debuggers or xml deserialization purposes. */
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 	{
+		setName(in->getAttributeAsString("Name"));
 		setID(in->getAttributeAsInt("Id"));
 		setText(in->getAttributeAsStringW("Caption").c_str());
 		setVisible(in->getAttributeAsBool("Visible"));
@@ -978,8 +1003,11 @@ protected:
 
 	//! tooltip
 	core::stringw ToolTipText;
+	
+	//! users can set this for identificating the element by string
+	core::stringc Name;
 
-	//! id
+	//! users can set this for identificating the element by integer
 	s32 ID;
 
 	//! tab stop like in windows

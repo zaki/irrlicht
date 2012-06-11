@@ -84,6 +84,10 @@ bool CImageWriterTGA::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 		imageHeader.PixelDepth = 24;
 		imageHeader.ImageDescriptor |= 0;
 		break;
+#ifndef _DEBUG
+	default:
+		break;
+#endif
 	}
 
 	// couldn't find a color converter

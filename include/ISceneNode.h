@@ -184,7 +184,12 @@ namespace scene
 
 
 		//! Get the absolute transformation of the node. Is recalculated every OnAnimate()-call.
-		//! \return The absolute transformation matrix.
+		/** NOTE: For speed reasons the absolute transformation is not 
+		automatically recalculated on each change of the relative 
+		transformation or by a transformation change of an parent. Instead the
+		update usually happens once per frame in OnAnimate. You can enforce 
+		an update with updateAbsolutePosition().
+		\return The absolute transformation matrix. */
 		virtual const core::matrix4& getAbsoluteTransformation() const
 		{
 			return AbsoluteTransformation;
@@ -508,7 +513,12 @@ namespace scene
 		//! Gets the absolute position of the node in world coordinates.
 		/** If you want the position of the node relative to its parent,
 		use getPosition() instead.
-		\return The current absolute position of the scene node. */
+		NOTE: For speed reasons the absolute position is not 
+		automatically recalculated on each change of the relative 
+		position or by a position change of an parent. Instead the 
+		update usually happens once per frame in OnAnimate. You can enforce 
+		an update with updateAbsolutePosition().
+		\return The current absolute position of the scene node (updated on last call of updateAbsolutePosition). */
 		virtual core::vector3df getAbsolutePosition() const
 		{
 			return AbsoluteTransformation.getTranslation();

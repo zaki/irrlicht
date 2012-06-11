@@ -39,7 +39,7 @@ namespace scene
 	VerticesToRender(0), IndicesToRender(0), DynamicSelectorUpdate(false),
 	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(true),
 	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),CameraFOVDelta(0.1f),
-	TCoordScale1(1.0f), TCoordScale2(1.0f), FileSystem(fs)
+	TCoordScale1(1.0f), TCoordScale2(1.0f), SmoothFactor(0), FileSystem(fs)
 	{
 		#ifdef _DEBUG
 		setDebugName("CTerrainSceneNode");
@@ -91,6 +91,7 @@ namespace scene
 		}
 
 		HeightmapFile = file->getFileName();
+		SmoothFactor = smoothFactor;
 
 		// Get the dimension of the heightmap data
 		TerrainData.Size = heightMap->getDimension().Width;
@@ -565,23 +566,23 @@ namespace scene
 	{
 		if (!IsVisible || !SceneManager->getActiveCamera())
 			return;
-    
-    SceneManager->registerNodeForRendering(this);
-    
-    preRenderCalculationsIfNeeded();
-    
-    // Do Not call ISceneNode::OnRegisterSceneNode(), this node should have no children (luke: is this comment still true, as ISceneNode::OnRegisterSceneNode() is called?)
-    
+
+		SceneManager->registerNodeForRendering(this);
+
+		preRenderCalculationsIfNeeded();
+
+		// Do Not call ISceneNode::OnRegisterSceneNode(), this node should have no children (luke: is this comment still true, as ISceneNode::OnRegisterSceneNode() is called?)
+
 		ISceneNode::OnRegisterSceneNode();
 		ForceRecalculation = false;
 	}
-  
-  void CTerrainSceneNode::preRenderCalculationsIfNeeded()
-  {
-    scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
-		if(!camera)
+
+	void CTerrainSceneNode::preRenderCalculationsIfNeeded()
+	{
+		scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
+		if (!camera)
 			return;
-    
+
 		// Determine the camera rotation, based on the camera direction.
 		const core::vector3df cameraPosition = camera->getAbsolutePosition();
 		const core::vector3df cameraRotation = core::line3d<f32>(cameraPosition, camera->getTarget()).getVector().getHorizontalAngle();
@@ -607,30 +608,27 @@ namespace scene
 				}
 			}
 		}
-		
-    //we need to redo calculations...
-    
+
+		//we need to redo calculations...
+
 		OldCameraPosition = cameraPosition;
 		OldCameraRotation = cameraRotation;
 		OldCameraUp = cameraUp;
 		OldCameraFOV = CameraFOV;
-    
-    
-    preRenderLODCalculations();
+
+		preRenderLODCalculations();
 		preRenderIndicesCalculations();
-    
-    
-  }
-  
+	}
+
 	void CTerrainSceneNode::preRenderLODCalculations()
 	{
-    scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
-    
-    if(!camera)
+		scene::ICameraSceneNode * camera = SceneManager->getActiveCamera();
+
+		if (!camera)
 			return;
-    
-    const core::vector3df cameraPosition = camera->getAbsolutePosition();
-    
+
+		const core::vector3df cameraPosition = camera->getAbsolutePosition();
+
 		const SViewFrustum* frustum = camera->getViewFrustum();
 
 		// Determine each patches LOD based on distance from camera (and whether or not they are in
@@ -640,22 +638,15 @@ namespace scene
 		{
 			if (frustum->getBoundingBox().intersectsWithBox(TerrainData.Patches[j].BoundingBox))
 			{
-				const f32 distance = (cameraPosition.X - TerrainData.Patches[j].Center.X) * (cameraPosition.X - TerrainData.Patches[j].Center.X) +
-					(cameraPosition.Y - TerrainData.Patches[j].Center.Y) * (cameraPosition.Y - TerrainData.Patches[j].Center.Y) +
-					(cameraPosition.Z - TerrainData.Patches[j].Center.Z) * (cameraPosition.Z - TerrainData.Patches[j].Center.Z);
+				const f32 distance = cameraPosition.getDistanceFromSQ(TerrainData.Patches[j].Center);
 
-				for (s32 i = TerrainData.MaxLOD - 1; i >= 0; --i)
+				TerrainData.Patches[j].CurrentLOD = 0;
+				for (s32 i = TerrainData.MaxLOD - 1; i>0; --i)
 				{
 					if (distance >= TerrainData.LODDistanceThreshold[i])
 					{
 						TerrainData.Patches[j].CurrentLOD = i;
 						break;
-					}
-					//else if (i == 0)
-					{
-						// If we've turned off a patch from viewing, because of the frustum, and now we turn around and it's
-						// too close, we need to turn it back on, at the highest LOD. The if above doesn't catch this.
-						TerrainData.Patches[j].CurrentLOD = 0;
 					}
 				}
 			}
@@ -771,46 +762,13 @@ namespace scene
 
 			if (DebugDataVisible & scene::EDS_NORMALS)
 			{
-				IAnimatedMesh * arrow = SceneManager->addArrowMesh(
-						"__debugnormal", 0xFFECEC00,
-						0xFF999900, 4, 8, 1.f, 0.6f, 0.05f,
-						0.3f);
-				if (0 == arrow)
-				{
-					arrow = SceneManager->getMesh( "__debugnormal");
-				}
-				IMesh *mesh = arrow->getMesh(0);
-
-				// find a good scaling factor
-
-				core::matrix4 m2;
-
 				// draw normals
-				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-				for (u32 i=0; i != RenderBuffer->getVertexCount(); ++i)
-				{
-					const core::vector3df& v = RenderBuffer->getNormal(i);
-					// align to v->Normal
-					if (core::vector3df(0,-1,0)==v)
-					{
-						m2.makeIdentity();
-						m2[5]=-m2[5];
-					}
-					else
-					{
-						core::quaternion quatRot;
-						m2=quatRot.rotationFromTo(v,core::vector3df(0,1,0)).getMatrix();
-					}
-
-					m2.setTranslation(RenderBuffer->getPosition(i));
-					m2=AbsoluteTransformation*m2;
-
-					driver->setTransform(video::ETS_WORLD, m2 );
-					for (u32 a = 0; a != mesh->getMeshBufferCount(); ++a)
-						driver->drawMeshBuffer(mesh->getMeshBuffer(a));
-				}
-				driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+				const f32 debugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
+				const video::SColor debugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+				driver->drawMeshBufferNormals(RenderBuffer, debugNormalLength, debugNormalColor);
 			}
+
+			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 			static u32 lastTime = 0;
 
@@ -1139,8 +1097,8 @@ namespace scene
 					mb->getVertexBuffer()[x + yd].Pos.Y =
 						(mb->getVertexBuffer()[x-1 + yd].Pos.Y + //left
 						mb->getVertexBuffer()[x+1 + yd].Pos.Y + //right
-						mb->getVertexBuffer()[x   + yd - TerrainData.Size].Pos.Y + //above
-						mb->getVertexBuffer()[x   + yd + TerrainData.Size].Pos.Y) * 0.25f; //below
+						mb->getVertexBuffer()[x + yd - TerrainData.Size].Pos.Y + //above
+						mb->getVertexBuffer()[x + yd + TerrainData.Size].Pos.Y) * 0.25f; //below
 				}
 				yd += TerrainData.Size;
 			}
@@ -1441,6 +1399,7 @@ namespace scene
 		out->addString("Heightmap", HeightmapFile.c_str());
 		out->addFloat("TextureScale1", TCoordScale1);
 		out->addFloat("TextureScale2", TCoordScale2);
+		out->addInt("SmoothFactor", SmoothFactor);
 	}
 
 
@@ -1451,6 +1410,7 @@ namespace scene
 		io::path newHeightmap = in->getAttributeAsString("Heightmap");
 		f32 tcoordScale1 = in->getAttributeAsFloat("TextureScale1");
 		f32 tcoordScale2 = in->getAttributeAsFloat("TextureScale2");
+		s32 smoothFactor = in->getAttributeAsInt("SmoothFactor");
 
 		// set possible new heightmap
 
@@ -1459,7 +1419,7 @@ namespace scene
 			io::IReadFile* file = FileSystem->createAndOpenFile(newHeightmap.c_str());
 			if (file)
 			{
-				loadHeightMap(file, video::SColor(255,255,255,255), 0);
+				loadHeightMap(file, video::SColor(255,255,255,255), smoothFactor);
 				file->drop();
 			}
 			else

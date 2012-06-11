@@ -14,6 +14,7 @@
 #include "triangle3d.h"
 #include "position2d.h"
 #include "rect.h"
+#include "dimension2d.h"
 #include "matrix4.h"
 #include "quaternion.h"
 #include "plane3d.h"
@@ -414,6 +415,30 @@ public:
 
 	/*
 
+		Vector2d Attribute
+
+	*/
+
+	//! Adds an attribute as 2d vector
+	virtual void addVector2d(const c8* attributeName, core::vector2df value) = 0;
+
+	//! Sets a attribute as 2d vector
+	virtual void setAttribute(const c8* attributeName, core::vector2df v) = 0;
+
+	//! Gets an attribute as vector
+	//! \param attributeName: Name of the attribute to get.
+	//! \return Returns value of the attribute previously set by setAttribute()
+	virtual core::vector2df getAttributeAsVector2d(const c8* attributeName) = 0;
+
+	//! Gets an attribute as position
+	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	virtual core::vector2df getAttributeAsVector2d(s32 index) = 0;
+
+	//! Sets an attribute as 2d vector
+	virtual void setAttribute(s32 index, core::vector2df v) = 0;
+
+	/*
+
 		Position2d Attribute
 
 	*/
@@ -459,6 +484,31 @@ public:
 
 	//! Sets an attribute as rectangle
 	virtual void setAttribute(s32 index, core::rect<s32> v) = 0;
+
+
+	/*
+
+		Dimension2d Attribute
+
+	*/
+
+	//! Adds an attribute as dimension2d
+	virtual void addDimension2d(const c8* attributeName, core::dimension2d<u32> value) = 0;
+
+	//! Sets an attribute as dimension2d
+	virtual void setAttribute(const c8* attributeName, core::dimension2d<u32> v) = 0;
+
+	//! Gets an attribute as dimension2d
+	//! \param attributeName: Name of the attribute to get.
+	//! \return Returns value of the attribute previously set by setAttribute()
+	virtual core::dimension2d<u32> getAttributeAsDimension2d(const c8* attributeName) = 0;
+
+	//! Gets an attribute as dimension2d
+	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
+	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index) = 0;
+
+	//! Sets an attribute as dimension2d
+	virtual void setAttribute(s32 index, core::dimension2d<u32> v) = 0;
 
 
 	/*

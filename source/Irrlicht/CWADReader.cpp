@@ -174,8 +174,8 @@ bool CWADReader::scanLocalHeader()
 		return false;
 
 #ifdef __BIG_ENDIAN__
-	header.numlumps = os::Byteswap::byteswap(header.numlumps);
-	header.infotableofs = os::Byteswap::byteswap(header.infotableofs);
+	Header.numlumps = os::Byteswap::byteswap(Header.numlumps);
+	Header.infotableofs = os::Byteswap::byteswap(Header.infotableofs);
 #endif
 
 	File->seek ( Header.infotableofs );

@@ -199,6 +199,12 @@ IAnimatedMesh* CHalflifeMDLMeshFileLoader::createMesh(io::IReadFile* file)
 
 //! Constructor
 CAnimatedMeshHalfLife::CAnimatedMeshHalfLife()
+	: FrameCount(0), MeshIPol(0), SceneManager(0), Header(0), TextureHeader(0),
+	OwnTexModel(false), SequenceIndex(0), CurrentFrame(0), FramesPerSecond(25.f),
+	SkinGroupSelection(0)
+#ifdef HL_TEXTURE_ATLAS
+	, TextureMaster(0)
+#endif
 {
 #ifdef _DEBUG
 	setDebugName("CAnimatedMeshHalfLife");
@@ -239,6 +245,9 @@ CAnimatedMeshHalfLife::~CAnimatedMeshHalfLife()
 
 	for (u32 i = 0; i < 32; ++i)
 		delete [] (u8*) AnimationHeader[i];
+
+	if (MeshIPol)
+		MeshIPol->drop();
 }
 
 
@@ -503,11 +512,11 @@ void CAnimatedMeshHalfLife::initModel()
 				m.TextureLayer[0].Texture = SceneManager->getVideoDriver()->getTexture ( store );
 				m.Lighting = false;
 
-				MeshIPol.addMeshBuffer ( buffer );
+				MeshIPol->addMeshBuffer(buffer);
 				buffer->recalculateBoundingBox();
-				buffer->drop ();
+				buffer->drop();
 			} // mesh
-			MeshIPol.recalculateBoundingBox();
+			MeshIPol->recalculateBoundingBox();
 		} // model
 	} // body part
 }
@@ -515,7 +524,7 @@ void CAnimatedMeshHalfLife::initModel()
 
 /*!
 */
-void CAnimatedMeshHalfLife::buildVertices ()
+void CAnimatedMeshHalfLife::buildVertices()
 {
 /*
 	const u16 *skinref = (u16 *)((u8*)TextureHeader + TextureHeader->skinindex);
@@ -555,7 +564,7 @@ void CAnimatedMeshHalfLife::buildVertices ()
 			{
 				const SHalflifeMesh *mesh = (SHalflifeMesh *)((u8*)Header + model->meshindex) + i;
 
-				IMeshBuffer * buffer = MeshIPol.getMeshBuffer ( meshBufferNr++ );
+				IMeshBuffer * buffer = MeshIPol->getMeshBuffer ( meshBufferNr++ );
 				video::S3DVertex* v = (video::S3DVertex* ) buffer->getVertices();
 
 				tricmd = (s16*)((u8*)Header + mesh->triindex);
@@ -677,7 +686,6 @@ void CAnimatedMeshHalfLife::renderModel(u32 param, IVideoDriver * driver, const 
 		v2[7][1] = bbmin[1];
 		v2[7][2] = bbmax[2];
 
-
 		for ( u32 g = 0; g < 8; ++g )
 			getTransformedBoneVector ( v[g],hitbox[i].bone,v2[g] );
 
@@ -728,15 +736,15 @@ IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFr
 	setUpBones ();
 	buildVertices();
 
-	MeshIPol.BoundingBox.MinEdge.X = seq->bbmin[0];
-	MeshIPol.BoundingBox.MinEdge.Z = seq->bbmin[1];
-	MeshIPol.BoundingBox.MinEdge.Y = seq->bbmin[2];
+	MeshIPol->BoundingBox.MinEdge.X = seq->bbmin[0];
+	MeshIPol->BoundingBox.MinEdge.Z = seq->bbmin[1];
+	MeshIPol->BoundingBox.MinEdge.Y = seq->bbmin[2];
 
-	MeshIPol.BoundingBox.MaxEdge.X = seq->bbmax[0];
-	MeshIPol.BoundingBox.MaxEdge.Z = seq->bbmax[1];
-	MeshIPol.BoundingBox.MaxEdge.Y = seq->bbmax[2];
+	MeshIPol->BoundingBox.MaxEdge.X = seq->bbmax[0];
+	MeshIPol->BoundingBox.MaxEdge.Z = seq->bbmax[1];
+	MeshIPol->BoundingBox.MaxEdge.Y = seq->bbmax[2];
 
-	return &MeshIPol;
+	return MeshIPol;
 }
 
 
@@ -767,7 +775,9 @@ void CAnimatedMeshHalfLife::initData ()
 	AnimList.clear();
 	FrameCount = 0;
 
-	MeshIPol.clear();
+	if (!MeshIPol)
+		MeshIPol = new SMesh();
+	MeshIPol->clear();
 
 #ifdef HL_TEXTURE_ATLAS
 	TextureAtlas.release();
@@ -777,13 +787,13 @@ void CAnimatedMeshHalfLife::initData ()
 
 /*!
 */
-void STextureAtlas::release ()
+void STextureAtlas::release()
 {
 	for (u32 i = 0; i < atlas.size(); i++)
 	{
 		if ( atlas[i].image )
 		{
-			atlas[i].image->drop ();
+			atlas[i].image->drop();
 			atlas[i].image = 0;
 		}
 	}
@@ -1630,7 +1640,7 @@ void CAnimatedMeshHalfLife::setUpBones()
 //! Returns an axis aligned bounding box
 const core::aabbox3d<f32>& CAnimatedMeshHalfLife::getBoundingBox() const
 {
-	return MeshIPol.BoundingBox;
+	return MeshIPol->BoundingBox;
 }
 
 
@@ -1644,14 +1654,14 @@ E_ANIMATED_MESH_TYPE CAnimatedMeshHalfLife::getMeshType() const
 //! returns amount of mesh buffers.
 u32 CAnimatedMeshHalfLife::getMeshBufferCount() const
 {
-	return MeshIPol.getMeshBufferCount();
+	return MeshIPol->getMeshBufferCount();
 }
 
 
 //! returns pointer to a mesh buffer
 IMeshBuffer* CAnimatedMeshHalfLife::getMeshBuffer(u32 nr) const
 {
-	return MeshIPol.getMeshBuffer(nr);
+	return MeshIPol->getMeshBuffer(nr);
 }
 
 
@@ -1661,20 +1671,20 @@ IMeshBuffer* CAnimatedMeshHalfLife::getMeshBuffer(u32 nr) const
 NULL if there is no such mesh buffer. */
 IMeshBuffer* CAnimatedMeshHalfLife::getMeshBuffer(const video::SMaterial &material) const
 {
-	return MeshIPol.getMeshBuffer(material);
+	return MeshIPol->getMeshBuffer(material);
 }
 
 
 void CAnimatedMeshHalfLife::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 {
-	MeshIPol.setMaterialFlag ( flag, newvalue );
+	MeshIPol->setMaterialFlag ( flag, newvalue );
 }
 
 
 //! set user axis aligned bounding box
 void CAnimatedMeshHalfLife::setBoundingBox(const core::aabbox3df& box)
 {
-	MeshIPol.setBoundingBox(box);
+	MeshIPol->setBoundingBox(box);
 }
 
 

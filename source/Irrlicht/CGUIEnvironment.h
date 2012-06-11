@@ -134,7 +134,9 @@ public:
 	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0);
 
 	//! Adds a file open dialog.
-	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title = 0, bool modal=true, IGUIElement* parent=0, s32 id=-1);
+	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title = 0,
+			bool modal=true, IGUIElement* parent=0, s32 id=-1,
+			bool restoreCWD=false, io::path::char_type* startDir=0);
 
 	//! Adds a color select dialog.
 	virtual IGUIColorSelectDialog* addColorSelectDialog(const wchar_t* title = 0, bool modal=true, IGUIElement* parent=0, s32 id=-1);
@@ -189,6 +191,9 @@ public:
 
 	//! Returns the element with the focus
 	virtual IGUIElement* getFocus() const;
+
+	//! Returns the element last known to be under the mouse
+	virtual IGUIElement* getHovered() const;
 
 	//! Adds an element for fading in or out.
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1);

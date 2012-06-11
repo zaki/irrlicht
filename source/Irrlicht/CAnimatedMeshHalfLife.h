@@ -522,6 +522,21 @@ namespace scene
 		//! set user axis aligned bounding box
 		virtual void setBoundingBox(const core::aabbox3df& box);
 
+		//! Gets the default animation speed of the animated mesh.
+		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
+		virtual f32 getAnimationSpeed() const
+		{
+			return FramesPerSecond;
+		}
+
+		//! Gets the frame count of the animated mesh.
+		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
+		The actual speed is set in the scene node the mesh is instantiated in.*/
+		virtual void setAnimationSpeed(f32 fps)
+		{
+			FramesPerSecond=fps;
+		}
+
 		//! Get the Animation List
 		virtual IAnimationList* getAnimList () { return &AnimList; }
 
@@ -539,7 +554,7 @@ namespace scene
 		IBodyList BodyList;
 
 		//! return a Mesh per frame
-		SMesh MeshIPol;
+		SMesh* MeshIPol;
 
 		ISceneManager *SceneManager;
 
@@ -554,11 +569,13 @@ namespace scene
 
 		u32 SequenceIndex;	// sequence index
 		f32 CurrentFrame;	// Current Frame
+		f32 FramesPerSecond;
 
 		#define MOUTH_CONTROLLER	4
 		u8 BoneController[4 + 1 ]; // bone controllers + mouth position
 		u8 Blending[2]; // animation blending
 
+		vec4_hl BoneAdj;
 		f32 SetController( s32 controllerIndex, f32 value );
 
 		u32 SkinGroupSelection; // skin group selection
@@ -574,7 +591,6 @@ namespace scene
 		void slerpBones( vec4_hl q1[], vec3_hl pos1[], vec4_hl q2[], vec3_hl pos2[], f32 s );
 		void calcRotations ( vec3_hl *pos, vec4_hl *q, SHalflifeSequence *seq, SHalflifeAnimOffset *anim, f32 f );
 
-		vec4_hl BoneAdj;
 		void calcBoneAdj();
 		void calcBoneQuaternion(const s32 frame, const SHalflifeBone *bone, SHalflifeAnimOffset *anim, const u32 j, f32& angle1, f32& angle2) const;
 		void calcBonePosition(const s32 frame, f32 s, const SHalflifeBone *bone, SHalflifeAnimOffset *anim, f32 *pos ) const;

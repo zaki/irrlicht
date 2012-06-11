@@ -10,6 +10,8 @@
 
 #ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
+namespace irr {
+
 //! Interface between ObjC device and C++ device.
 struct MIrrIPhoneDevice
 {
@@ -32,7 +34,11 @@ struct MIrrIPhoneDevice
 
 	void (*onTerminate)(struct MIrrIPhoneDevice * dev);
 	void (*onWindowActive)(struct MIrrIPhoneDevice * dev, int active);
+	void (*postEvent)(struct MIrrIPhoneDevice * dev, struct SEvent * event);
 };
+
+} // end namespace irr
+
 
 /* 	The single link time interface call between ObjC and C++.
 	It creates the ObjC device object and initializes the interface functions.
@@ -42,7 +48,7 @@ extern "C"
 #else
 extern
 #endif
-void irr_device_iphone_create(struct MIrrIPhoneDevice * dev);
+void irr_device_iphone_create(struct irr::MIrrIPhoneDevice * dev);
 
 #ifdef __cplusplus
 
@@ -140,6 +146,9 @@ namespace irr
 		//! Callback to set the active state of the window. This calls
 		//! setWindowActive(bool) as needed.
 		static void onWindowActive(MIrrIPhoneDevice * dev, int active);
+
+		//! Post event
+		static void postEvent(MIrrIPhoneDevice * dev, SEvent * event);
 	};
 
 } // end namespace irr

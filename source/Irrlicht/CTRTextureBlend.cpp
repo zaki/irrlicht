@@ -137,7 +137,7 @@ void CTRTextureBlend::setParam ( u32 index, f32 value)
 	E_BLEND_FACTOR srcFact,dstFact;
 	E_MODULATE_FUNC modulate;
 	u32 alphaSrc;
-	unpack_texureBlendFunc ( srcFact, dstFact, modulate, alphaSrc, value );
+	unpack_textureBlendFunc ( srcFact, dstFact, modulate, alphaSrc, value );
 
 	fragmentShader = 0;
 

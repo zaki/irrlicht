@@ -195,31 +195,15 @@ void CMeshSceneNode::render()
 
 		if (DebugDataVisible & scene::EDS_NORMALS)
 		{
-
 			// draw normals
-			core::vector3df normalizedNormal;
-			const f32 DebugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
-			const video::SColor DebugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+			const f32 debugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
+			const video::SColor debugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+			const u32 count = Mesh->getMeshBufferCount();
 
-			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
+			for (u32 i=0; i != count; ++i)
 			{
-				const scene::IMeshBuffer* mb = Mesh->getMeshBuffer(g);
-				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
-				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
-				const bool normalize = mb->getMaterial().NormalizeNormals;
-
-				for (u32 i=0; i != mb->getVertexCount(); ++i)
-				{
-					normalizedNormal = v->Normal;
-					if (normalize)
-						normalizedNormal.normalize();
-
-					driver->draw3DLine(v->Pos, v->Pos + (normalizedNormal * DebugNormalLength), DebugNormalColor);
-
-					v = (const video::S3DVertex*) ( (u8*) v+vSize );
-				}
+				driver->drawMeshBufferNormals(Mesh->getMeshBuffer(i), debugNormalLength, debugNormalColor);
 			}
-			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
 		// show mesh

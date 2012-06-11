@@ -13,9 +13,7 @@ namespace irr
 namespace scene
 {
 	//! Interface for a Mesh which can be loaded directly from a Quake3 .bsp-file.
-	/** The Mesh tries to load all textures of the map. There are currently
-	no additional methods in this class, but maybe there will be some in later
-	releases if there are feature requests. */
+	/** The Mesh tries to load all textures of the map.*/
 	class IQ3LevelMesh : public IAnimatedMesh
 	{
 	public:
@@ -31,6 +29,14 @@ namespace scene
 		//! get's an interface to the entities
 		virtual quake3::tQ3EntityList& getEntityList() = 0;
 
+		//! returns the requested brush entity
+		/** \param num The number from the model key of the entity.
+
+		Use this interface if you parse the entities yourself.*/
+		virtual IMesh* getBrushEntityMesh(s32 num) const = 0;
+
+		//! returns the requested brush entity
+		virtual IMesh* getBrushEntityMesh(quake3::IEntity &ent) const = 0;
 	};
 
 } // end namespace scene

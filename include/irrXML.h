@@ -189,7 +189,8 @@ namespace io
 		//! End of an xml element such as &lt;/foo&gt;
 		EXN_ELEMENT_END,
 
-		//! Text within an xml element: &lt;foo&gt; this is the text. &lt;foo&gt;
+		//! Text within an xml element: &lt;foo&gt; this is the text. &lt;/foo&gt;
+		//! Also text between 2 xml elements: &lt;/foo&gt; this is the text. &lt;foo&gt;
 		EXN_TEXT,
 
 		//! An xml comment like &lt;!-- I am a comment --&gt; or a DTD definition.
@@ -338,13 +339,13 @@ namespace io
 		virtual float getAttributeValueAsFloat(int idx) const = 0;
 
 		//! Returns the name of the current node.
-		/** Only non null, if the node type is EXN_ELEMENT.
+		/** Only valid, if the node type is EXN_ELEMENT.
 		\return Name of the current node or 0 if the node has no name. */
 		virtual const char_type* getNodeName() const = 0;
 
 		//! Returns data of the current node.
-		/** Only non null if the node has some
-		data and it is of type EXN_TEXT or EXN_UNKNOWN. */
+		/** Only valid if the node has some
+		data and it is of type EXN_TEXT, EXN_COMMENT, EXN_CDATA or EXN_UNKNOWN. */
 		virtual const char_type* getNodeData() const = 0;
 
 		//! Returns if an element is an empty element, like &lt;foo />

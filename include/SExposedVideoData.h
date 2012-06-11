@@ -79,8 +79,8 @@ struct SExposedVideoData
 			void* X11Context;
 			unsigned long X11Window;
 		} OpenGLLinux;
-		
-		struct
+        
+        struct
 		{
 			//! The UIApplicationDelegate object.
 			void* AppDelegate;

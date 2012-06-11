@@ -303,8 +303,7 @@ inline f32 strtof10(const char* in, const char** out = 0)
 */
 inline const char* fast_atof_move(const char* in, f32& result)
 {
-	// Please run this regression test when making any modifications to this function:
-	// https://sourceforge.net/tracker/download.php?group_id=74339&atid=540676&file_id=298968&aid=1865300
+	// Please run the regression test when making any modifications to this function.
 
 	result = 0.f;
 	if (!in)

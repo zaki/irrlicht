@@ -52,7 +52,7 @@ class map
 		RBTree* getRightChild() const	{ return RightChild; }
 		RBTree* getParent() const		{ return Parent; }
 
-		ValueTypeRB getValue() const
+		const ValueTypeRB& getValue() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return Value;
@@ -64,7 +64,7 @@ class map
 			return Value;
 		}
 
-		KeyTypeRB getKey() const
+		const KeyTypeRB& getKey() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return Key;
@@ -819,6 +819,13 @@ class map
 	bool remove(const KeyType& k)
 	{
 		Node* p = find(k);
+		return remove(p);
+	}
+
+	//! Removes a node from the tree and deletes it.
+	/** \return True if the node was found and deleted */
+	bool remove(Node* p)
+	{
 		if (p == 0)
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
@@ -896,7 +903,7 @@ class map
 
 		while(pNode!=0)
 		{
-			KeyType key(pNode->getKey());
+			const KeyType& key=pNode->getKey();
 
 			if (keyToFind == key)
 				return pNode;
@@ -1024,10 +1031,10 @@ class map
 		else
 		{
 			Node* pNode = Root;
-			KeyType keyNew = newNode->getKey();
+			const KeyType& keyNew = newNode->getKey();
 			while (pNode)
 			{
-				KeyType key(pNode->getKey());
+				const KeyType& key=pNode->getKey();
 
 				if (keyNew == key)
 				{

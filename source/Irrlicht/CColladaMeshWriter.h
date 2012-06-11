@@ -80,20 +80,21 @@ public:
 protected:
 
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
-	inline irr::core::stringw toString(const irr::core::vector3df& vec) const;
-	inline irr::core::stringw uvToString(const irr::core::vector2df& vec) const;
-	inline irr::core::stringw toString(const irr::core::vector2df& vec) const;
-	inline irr::core::stringw toString(const irr::video::SColorf& colorf, bool writeAlpha=true) const;
+	void writeUv(const irr::core::vector2df& vec);
+	void writeVector(const irr::core::vector2df& vec);
+	void writeVector(const irr::core::vector3df& vec);
+	void writeColor(const irr::video::SColorf& colorf, bool writeAlpha=true);
 	inline irr::core::stringw toString(const irr::video::ECOLOR_FORMAT format) const;
 	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
 	inline irr::core::stringw toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;
 	inline irr::core::stringw toRef(const irr::core::stringw& source) const;
-	irr::core::stringw uniqueNameForMesh(const scene::IMesh* mesh) const;
-	irr::core::stringw uniqueNameForLight(const scene::ISceneNode* lightNode) const;
-	irr::core::stringw uniqueNameForNode(const scene::ISceneNode* node) const;
+	irr::core::stringw nameForMesh(const scene::IMesh* mesh) const;
+	irr::core::stringw nameForLightNode(const scene::ISceneNode* lightNode) const;
+	irr::core::stringw nameForNode(const scene::ISceneNode* node) const;
+	irr::core::stringw nameForPtr(const void* ptr) const;
 	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
-	irr::core::stringw pathToNCName(const irr::io::path& path) const;
+	irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const;
 	irr::core::stringw pathToURI(const irr::io::path& path) const;
 	inline bool isXmlNameStartChar(wchar_t c) const;
 	inline bool isXmlNameChar(wchar_t c) const;

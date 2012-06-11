@@ -22,6 +22,11 @@
 #endif
 #include <d3d9.h>
 
+#ifdef _IRR_COMPILE_WITH_CG_
+#include "Cg/cg.h"
+#include "Cg/cgD3D9.h"
+#endif
+
 namespace irr
 {
 namespace video
@@ -219,7 +224,7 @@ namespace video
 		virtual void setAmbientLight(const SColorf& color);
 
 		//! Draws a shadow volume into the stencil buffer.
-		virtual void drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail);
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0);
 
 		//! Fills the stencil shadow with color.
 		virtual void drawStencilShadow(bool clearStencilBuffer=false,
@@ -263,8 +268,14 @@ namespace video
 		//! Sets a constant for the vertex shader based on a name.
 		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
 
+		//! Int interface for the above.
+		virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
+
 		//! Sets a constant for the pixel shader based on a name.
 		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
+
+		//! Int interface for the above.
+		virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
 
 		//! Returns a pointer to the IVideoDriver interface. (Implementation for
 		//! IMaterialRendererServices)
@@ -315,6 +326,11 @@ namespace video
 		//! Get Irrlicht color format from D3D color format.
 		ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format) const;
 
+		//! Get Cg context
+		#ifdef _IRR_COMPILE_WITH_CG_
+		const CGcontext& getCgContext();
+		#endif
+
 	private:
 
 		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -341,7 +357,7 @@ namespace video
 		void setRenderStatesStencilFillMode(bool alpha);
 
 		//! sets the needed renderstates
-		void setRenderStatesStencilShadowMode(bool zfail);
+		void setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisible);
 
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, const video::ITexture* texture);
@@ -382,7 +398,8 @@ namespace video
 			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData=0);
+			s32 userData = 0,
+			E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
 
 		void createMaterialRenderers();
 
@@ -457,6 +474,10 @@ namespace video
 		bool DriverWasReset;
 		bool OcclusionQuerySupport;
 		bool AlphaToCoverageSupport;
+
+		#ifdef _IRR_COMPILE_WITH_CG_
+		CGcontext CgContext;
+		#endif
 	};
 
 

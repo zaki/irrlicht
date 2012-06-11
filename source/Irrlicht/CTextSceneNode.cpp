@@ -238,6 +238,8 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 //! pre render event
 void CBillboardTextSceneNode::OnAnimate(u32 timeMs)
 {
+	ISceneNode::OnAnimate(timeMs);
+	
 	if (!IsVisible || !Font || !Mesh)
 		return;
 

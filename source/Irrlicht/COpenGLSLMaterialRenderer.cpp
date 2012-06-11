@@ -148,12 +148,12 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 #if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4)
 		if (Program2)
 		{
-			Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_INPUT_TYPE_EXT, Driver->primitiveTypeToGL(inType));
-			Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_OUTPUT_TYPE_EXT, Driver->primitiveTypeToGL(outType));
+			Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_INPUT_TYPE_EXT, Driver->primitiveTypeToGL(inType));
+			Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_OUTPUT_TYPE_EXT, Driver->primitiveTypeToGL(outType));
 			if (verticesOut==0)
-				Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
+				Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
 			else
-				Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_VERTICES_OUT_EXT, core::min_(verticesOut, Driver->MaxGeometryVerticesOut));
+				Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_VERTICES_OUT_EXT, core::min_(verticesOut, Driver->MaxGeometryVerticesOut));
 		}
 		else
 		{
@@ -496,6 +496,10 @@ bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const f3
 	return setPixelShaderConstant(name, floats, count);
 }
 
+bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+{
+	return setPixelShaderConstant(name, ints, count);
+}
 
 void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
@@ -546,8 +550,10 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 		case GL_FLOAT_MAT4_ARB:
 			Driver->extGlUniformMatrix4fv(Location, count/16, false, floats);
 			break;
-		default:
-			Driver->extGlUniform1iv(Location, count, reinterpret_cast<const GLint*>(floats));
+		default: // deprecated.
+			os::Printer::log("Deprecation! Please use int interface instead of float to set variable", name, ELL_WARNING);
+			const GLint id = static_cast<GLint>(*floats);
+			Driver->extGlUniform1iv(Location, 1, &id);
 			break;
 	}
 	return true;
@@ -556,6 +562,48 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 #endif
 }
 
+bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const s32* ints, int count)
+{
+	u32 i;
+	const u32 num = UniformInfo.size();
+
+	for (i=0; i < num; ++i)
+	{
+		if (UniformInfo[i].name == name)
+			break;
+	}
+
+	if (i == num)
+		return false;
+
+#if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
+	GLint Location=0;
+	if (Program2)
+		Location=Driver->extGlGetUniformLocation(Program2,name);
+	else
+		Location=Driver->extGlGetUniformLocationARB(Program,name);
+
+	switch (UniformInfo[i].type)
+	{
+		case GL_INT_VEC2_ARB:
+			Driver->extGlUniform2iv(Location, count/2, ints);
+			break;
+		case GL_INT_VEC3_ARB:
+			Driver->extGlUniform3iv(Location, count/3, ints);
+			break;
+		case GL_INT_VEC4_ARB:
+			Driver->extGlUniform4iv(Location, count/4, ints);
+			break;
+		// case GL_INT:
+		default:
+			Driver->extGlUniform1iv(Location, count, ints);
+			break;
+	}
+	return true;
+#else
+	return false;
+#endif
+}
 
 void COpenGLSLMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {

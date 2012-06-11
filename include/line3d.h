@@ -63,7 +63,7 @@ class line3d
 		/** \return Center of line. */
 		vector3d<T> getMiddle() const
 		{
-			return (start + end) * (T)0.5;
+			return (start + end)/(T)2;
 		}
 
 		//! Get vector of line

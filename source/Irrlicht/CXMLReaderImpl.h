@@ -12,7 +12,7 @@
 
 #ifdef _DEBUG
 #define IRR_DEBUGPRINT(x) printf((x));
-#else // _DEBUG 
+#else // _DEBUG
 #define IRR_DEBUGPRINT(x)
 #endif // _DEBUG
 
@@ -31,8 +31,8 @@ public:
 
 	//! Constructor
 	CXMLReaderImpl(IFileReadCallBack* callback, bool deleteCallBack = true)
-		: TextData(0), P(0), TextBegin(0), TextSize(0), CurrentNodeType(EXN_NONE),
-		SourceFormat(ETF_ASCII), TargetFormat(ETF_ASCII)
+		: IgnoreWhitespaceText(true), TextData(0), P(0), TextBegin(0), TextSize(0), CurrentNodeType(EXN_NONE),
+		SourceFormat(ETF_ASCII), TargetFormat(ETF_ASCII), IsEmptyElement(false)
 	{
 		if (!callback)
 			return;
@@ -42,7 +42,7 @@ public:
 		// read whole xml file
 
 		readFile(callback);
-		
+
 		// clean up
 
 		if (deleteCallBack)
@@ -55,7 +55,7 @@ public:
 		// set pointer to text begin
 		P = TextBegin;
 	}
-    	
+
 
 	//! Destructor
 	virtual ~CXMLReaderImpl()
@@ -64,8 +64,8 @@ public:
 	}
 
 
-	//! Reads forward to the next xml node. 
-	//! \return Returns false, if there was no further node. 
+	//! Reads forward to the next xml node.
+	//! \return Returns false, if there was no further node.
 	virtual bool read()
 	{
 		// if not end reached, parse the node
@@ -103,7 +103,7 @@ public:
 	}
 
 
-	//! Returns the value of an attribute. 
+	//! Returns the value of an attribute.
 	virtual const char_type* getAttributeValue(int idx) const
 	{
 		if ((unsigned int)idx >= Attributes.size())
@@ -113,7 +113,7 @@ public:
 	}
 
 
-	//! Returns the value of an attribute. 
+	//! Returns the value of an attribute.
 	virtual const char_type* getAttributeValue(const char_type* name) const
 	{
 		const SAttribute* attr = getAttributeByName(name);
@@ -136,7 +136,7 @@ public:
 
 
 
-	//! Returns the value of an attribute as integer. 
+	//! Returns the value of an attribute as integer.
 	int getAttributeValueAsInt(const char_type* name) const
 	{
 		const SAttribute* attr = getAttributeByName(name);
@@ -148,7 +148,7 @@ public:
 	}
 
 
-	//! Returns the value of an attribute as integer. 
+	//! Returns the value of an attribute as integer.
 	int getAttributeValueAsInt(int idx) const
 	{
 		const char_type* attrvalue = getAttributeValue(idx);
@@ -160,7 +160,7 @@ public:
 	}
 
 
-	//! Returns the value of an attribute as float. 
+	//! Returns the value of an attribute as float.
 	float getAttributeValueAsFloat(const char_type* name) const
 	{
 		const SAttribute* attr = getAttributeByName(name);
@@ -172,7 +172,7 @@ public:
 	}
 
 
-	//! Returns the value of an attribute as float. 
+	//! Returns the value of an attribute as float.
 	float getAttributeValueAsFloat(int idx) const
 	{
 		const char_type* attrvalue = getAttributeValue(idx);
@@ -245,14 +245,14 @@ private:
 		switch(*P)
 		{
 		case L'/':
-			parseClosingXMLElement(); 
+			parseClosingXMLElement();
 			break;
 		case L'?':
-			ignoreDefinition();	
+			ignoreDefinition();
 			break;
 		case L'!':
 			if (!parseCDATA())
-				parseComment();	
+				parseComment();
 			break;
 		default:
 			parseOpeningXMLElement();
@@ -265,9 +265,10 @@ private:
 	//! sets the state that text was found. Returns true if set should be set
 	bool setText(char_type* start, char_type* end)
 	{
-		// check if text is more than 2 characters, and if not, check if there is 
-		// only white space, so that this text won't be reported
-		if (end - start < 3)
+		// By default xml preserves all whitespace. But Irrlicht dropped some whitespace by default 
+		// in the past which did lead to OS dependent behavior. We just ignore all whitespace for now 
+		// as it's the closest to fixing behavior without breaking downward compatibility too much. 
+		if ( IgnoreWhitespaceText )
 		{
 			char_type* p = start;
 			for(; p != end; ++p)
@@ -369,7 +370,7 @@ private:
 
 					// read the attribute value
 					// check for quotes and single quotes, thx to murphy
-					while( (*P != L'\"') && (*P != L'\'') && *P) 
+					while( (*P != L'\"') && (*P != L'\'') && *P)
 						++P;
 
 					if (!*P) // malformatted xml file
@@ -379,7 +380,7 @@ private:
 
 					++P;
 					const char_type* attributeValueBegin = P;
-					
+
 					while(*P != attributeQuoteChar && *P)
 						++P;
 
@@ -390,10 +391,10 @@ private:
 					++P;
 
 					SAttribute attr;
-					attr.Name = core::string<char_type>(attributeNameBegin, 
+					attr.Name = core::string<char_type>(attributeNameBegin,
 						(int)(attributeNameEnd - attributeNameBegin));
 
-					core::string<char_type> s(attributeValueBegin, 
+					core::string<char_type> s(attributeValueBegin,
 						(int)(attributeValueEnd - attributeValueBegin));
 
 					attr.Value = replaceSpecialCharacters(s);
@@ -416,7 +417,7 @@ private:
 			IsEmptyElement = true;
 			endName--;
 		}
-		
+
 		NodeName = core::string<char_type>(startName, (int)(endName - startName));
 
 		++P;
@@ -465,7 +466,7 @@ private:
 		// find end of CDATA
 		while(*P && !cDataEnd)
 		{
-			if (*P == L'>' && 
+			if (*P == L'>' &&
 			   (*(P-1) == L']') &&
 			   (*(P-2) == L']'))
 			{
@@ -548,7 +549,7 @@ private:
 
 			// find next &
 			oldPos = pos;
-			pos = origstr.findNext(L'&', pos);		
+			pos = origstr.findNext(L'&', pos);
 		}
 
 		if (oldPos < (int)origstr.size()-1)
@@ -562,7 +563,7 @@ private:
 	//! reads the xml file and converts it into the wanted character format.
 	bool readFile(IFileReadCallBack* callback)
 	{
-		long size = callback->getSize();		
+		long size = callback->getSize();
 		if (size<0)
 			return false;
 		size += 4; // We need four terminating 0's at the end.
@@ -581,7 +582,7 @@ private:
 		memset(data8+size-4, 0, 4);
 
 		char16* data16 = reinterpret_cast<char16*>(data8);
-		char32* data32 = reinterpret_cast<char32*>(data8);	
+		char32* data32 = reinterpret_cast<char32*>(data8);
 
 		// now we need to convert the data to the desired target format
 		// based on the byte order mark.
@@ -593,7 +594,7 @@ private:
 		const u32 UTF32_LE = 0x0000FEFF;
 
 		// check source for all utf versions and convert to target data format
-		
+
 		if (size >= 4 && data32[0] == static_cast<char32>(UTF32_BE))
 		{
 			// UTF-32, big endian
@@ -649,7 +650,7 @@ private:
 	void convertTextData(src_char_type* source, char* pointerToStore, int sizeWithoutHeader)
 	{
 		// convert little to big endian if necessary
-		if (sizeof(src_char_type) > 1 && 
+		if (sizeof(src_char_type) > 1 &&
 			isLittleEndian(TargetFormat) != isLittleEndian(SourceFormat))
 			convertToLittleEndian(source);
 
@@ -663,9 +664,9 @@ private:
 		}
 		else
 		{
-			// convert source into target data format. 
-			// TODO: implement a real conversion. This one just 
-			// copies bytes. This is a problem when there are 
+			// convert source into target data format.
+			// TODO: implement a real conversion. This one just
+			// copies bytes. This is a problem when there are
 			// unicode symbols using more than one character.
 
 			TextData = new char_type[sizeWithoutHeader];
@@ -695,7 +696,7 @@ private:
 	template<class src_char_type>
 	void convertToLittleEndian(src_char_type* t)
 	{
-		if (sizeof(src_char_type) == 4) 
+		if (sizeof(src_char_type) == 4)
 		{
 			// 32 bit
 
@@ -710,7 +711,7 @@ private:
 		}
 		else
 		{
-			// 16 bit 
+			// 16 bit
 
 			while(*t)
 			{
@@ -740,7 +741,7 @@ private:
 	//! generates a list with xml special characters
 	void createSpecialCharacterList()
 	{
-		// list of strings containing special symbols, 
+		// list of strings containing special symbols,
 		// the first character is the special character,
 		// the following is the symbol string without trailing &.
 
@@ -749,7 +750,7 @@ private:
 		SpecialCharacters.push_back(">gt;");
 		SpecialCharacters.push_back("\"quot;");
 		SpecialCharacters.push_back("'apos;");
-		
+
 	}
 
 
@@ -775,13 +776,13 @@ private:
 
 		switch(sizeof(char_type))
 		{
-		case 1: 
+		case 1:
 			TargetFormat = ETF_UTF8;
 			break;
-		case 2: 
+		case 2:
 			TargetFormat = ETF_UTF16_LE;
 			break;
-		case 4: 
+		case 4:
 			TargetFormat = ETF_UTF32_LE;
 			break;
 		default:
@@ -791,7 +792,7 @@ private:
 
 
 	// instance variables:
-
+	bool IgnoreWhitespaceText;	 // do not return EXN_TEXT nodes for pure whitespace
 	char_type* TextData;         // data block of the text file
 	char_type* P;                // current point in text to parse
 	char_type* TextBegin;        // start of text to parse
@@ -801,7 +802,7 @@ private:
 	ETEXT_FORMAT SourceFormat;   // source format of the xml file
 	ETEXT_FORMAT TargetFormat;   // output format of this parser
 
-	core::string<char_type> NodeName;    // name of the node currently in
+	core::string<char_type> NodeName;    // name of the node currently in - also used for text
 	core::string<char_type> EmptyString; // empty string to be returned by getSafe() methods
 
 	bool IsEmptyElement;       // is the currently parsed node empty?
@@ -809,7 +810,7 @@ private:
 	core::array< core::string<char_type> > SpecialCharacters; // see createSpecialCharacterList()
 
 	core::array<SAttribute> Attributes; // attributes of current element
-	
+
 }; // end CXMLReaderImpl
 
 

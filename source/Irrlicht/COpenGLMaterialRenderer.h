@@ -77,7 +77,7 @@ public:
 			E_BLEND_FACTOR srcFact,dstFact;
 			E_MODULATE_FUNC modulate;
 			u32 alphaSource;
-			unpack_texureBlendFunc(srcFact, dstFact, modulate, alphaSource, material.MaterialTypeParam);
+			unpack_textureBlendFunc(srcFact, dstFact, modulate, alphaSource, material.MaterialTypeParam);
 
 #ifdef GL_ARB_texture_env_combine
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);

@@ -326,11 +326,12 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	DWORD fpuPrecision = 0;
 #else
 	DWORD fpuPrecision = highPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
+	DWORD multithreaded = Params.DriverMultithreaded ? D3DCREATE_MULTITHREADED : 0;
 #endif
 	if (pureSoftware)
 	{
 		hr = pID3D->CreateDevice(DisplayAdapter, D3DDEVTYPE_REF, hwnd,
-				fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+				fpuPrecision | multithreaded | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if (FAILED(hr))
 			os::Printer::log("Was not able to create Direct3D8 software device.", ELL_ERROR);
@@ -338,14 +339,14 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	else
 	{
 		hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-				fpuPrecision | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+				fpuPrecision | multithreaded | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if(FAILED(hr))
 			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-					fpuPrecision | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
+					fpuPrecision | multithreaded | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
 		if(FAILED(hr))
 			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-					fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+					fpuPrecision | multithreaded | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 		if (FAILED(hr))
 			os::Printer::log("Was not able to create Direct3D8 device.", ELL_ERROR);
 	}
@@ -938,7 +939,7 @@ void CD3D8Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 			E_BLEND_FACTOR dstFact;
 			E_MODULATE_FUNC modulo;
 			u32 alphaSource;
-			unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+			unpack_textureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
 			setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource&video::EAS_TEXTURE) != 0);
 		}
 		else
@@ -1259,22 +1260,27 @@ void CD3D8Driver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color)
 {
-	// thanks to Vash TheStampede who sent in his implementation
-	S3DVertex vtx[2];
-	vtx[0] = S3DVertex((f32)start.X, (f32)start.Y, 0.0f,
-					0.0f, 0.0f, 0.0f, // normal
-					color, 0.0f, 0.0f); // texture
+	if (start==end)
+		drawPixel(start.X, start.Y, color);
+	else
+	{
+		// thanks to Vash TheStampede who sent in his implementation
+		S3DVertex vtx[2];
+		vtx[0] = S3DVertex((f32)start.X+0.375f, (f32)start.Y+0.375f, 0.0f,
+						0.0f, 0.0f, 0.0f, // normal
+						color, 0.0f, 0.0f); // texture
 
-	vtx[1] = S3DVertex((f32)end.X, (f32)end.Y, 0.0f,
-					0.0f, 0.0f, 0.0f,
-					color, 0.0f, 0.0f);
+		vtx[1] = S3DVertex((f32)end.X+0.375f, (f32)end.Y+0.375f, 0.0f,
+						0.0f, 0.0f, 0.0f,
+						color, 0.0f, 0.0f);
 
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-	setActiveTexture(0,0);
+		setRenderStates2DMode(color.getAlpha() < 255, false, false);
+		setActiveTexture(0,0);
 
-	setVertexShader(EVT_STANDARD);
+		setVertexShader(EVT_STANDARD);
 
-	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, &vtx[0], sizeof(S3DVertex));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, &vtx[0], sizeof(S3DVertex));
+	}
 }
 
 
@@ -1290,7 +1296,7 @@ void CD3D8Driver::drawPixel(u32 x, u32 y, const SColor & color)
 
 	setVertexShader(EVT_STANDARD);
 
-	S3DVertex vertex((f32)x, (f32)y, 0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
+	S3DVertex vertex((f32)x+0.375f, (f32)y+0.375f, 0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
 
 	pID3DDevice->DrawPrimitiveUP(D3DPT_POINTLIST, 1, &vertex, sizeof(vertex));
 }
@@ -1672,12 +1678,19 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 
 
 //! sets the needed renderstates
-void CD3D8Driver::setRenderStatesStencilShadowMode(bool zfail)
+void CD3D8Driver::setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisible)
 {
 	if ((CurrentRenderMode != ERM_SHADOW_VOLUME_ZFAIL &&
 		CurrentRenderMode != ERM_SHADOW_VOLUME_ZPASS) ||
 		Transformation3DChanged)
 	{
+		// unset last 3d material
+		if (CurrentRenderMode == ERM_3D &&
+			static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
+		{
+			MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+			ResetRenderStates = true;
+		}
 		// switch back the matrices
 		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)&Matrices[ETS_VIEW]));
 		pID3DDevice->SetTransform(D3DTS_WORLD, (D3DMATRIX*)((void*)&Matrices[ETS_WORLD]));
@@ -1691,63 +1704,40 @@ void CD3D8Driver::setRenderStatesStencilShadowMode(bool zfail)
 		setActiveTexture(3,0);
 
 		pID3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
-		pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-		pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-		pID3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-		pID3DDevice->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
-		pID3DDevice->SetTextureStageState(2, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-		pID3DDevice->SetTextureStageState(3, D3DTSS_COLOROP, D3DTOP_DISABLE);
-		pID3DDevice->SetTextureStageState(3, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 		pID3DDevice->SetVertexShader(D3DFVF_XYZ);
 		LastVertexType = (video::E_VERTEX_TYPE)(-1);
 
-		pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE );
-		pID3DDevice->SetRenderState( D3DRS_STENCILENABLE, TRUE );
-		pID3DDevice->SetRenderState( D3DRS_SHADEMODE, D3DSHADE_FLAT);
-
+		pID3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		pID3DDevice->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+		pID3DDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_FLAT);
 		//pID3DDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
 		//pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
-		// unset last 3d material
-		if (CurrentRenderMode == ERM_3D &&
-			Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-			MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+		pID3DDevice->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+		pID3DDevice->SetRenderState(D3DRS_STENCILREF, 0x0);
+		pID3DDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff);
+		pID3DDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);
+		if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
+			pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0);
+		if ((debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY))
+			pID3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 
 	if (CurrentRenderMode != ERM_SHADOW_VOLUME_ZPASS && !zfail)
 	{
 		// USE THE ZPASS METHOD
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILFUNC,  D3DCMP_ALWAYS );
-		pID3DDevice->SetRenderState( D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState( D3DRS_STENCILFAIL,  D3DSTENCILOP_KEEP );
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILREF,       0x1 );
-		pID3DDevice->SetRenderState( D3DRS_STENCILMASK,      0xffffffff );
-		pID3DDevice->SetRenderState( D3DRS_STENCILWRITEMASK, 0xffffffff );
-
-		pID3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE);
-		pID3DDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_ZERO );
-		pID3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
 	}
 	else
 	if (CurrentRenderMode != ERM_SHADOW_VOLUME_ZFAIL && zfail)
 	{
 		// USE THE ZFAIL METHOD
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILFUNC,  D3DCMP_ALWAYS );
-		pID3DDevice->SetRenderState( D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState( D3DRS_STENCILFAIL,  D3DSTENCILOP_KEEP );
-		pID3DDevice->SetRenderState( D3DRS_STENCILPASS,  D3DSTENCILOP_KEEP );
-
-		pID3DDevice->SetRenderState( D3DRS_STENCILREF,       0x0 );
-		pID3DDevice->SetRenderState( D3DRS_STENCILMASK,      0xffffffff );
-		pID3DDevice->SetRenderState( D3DRS_STENCILWRITEMASK, 0xffffffff );
-
-		pID3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-		pID3DDevice->SetRenderState( D3DRS_SRCBLEND,  D3DBLEND_ZERO );
-		pID3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCR);
+		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
 	}
 
 	CurrentRenderMode = zfail ? ERM_SHADOW_VOLUME_ZFAIL : ERM_SHADOW_VOLUME_ZPASS;
@@ -2015,42 +2005,43 @@ const wchar_t* CD3D8Driver::getName() const
 
 
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
-//! this: Frist, draw all geometry. Then use this method, to draw the shadow
+//! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void CD3D8Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+void CD3D8Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
+	const u32 count = triangles.size();
 	if (!StencilBuffer || !count)
 		return;
 
-	setRenderStatesStencilShadowMode(zfail);
+	setRenderStatesStencilShadowMode(zfail, debugDataVisible);
 
 	if (!zfail)
 	{
 		// ZPASS Method
 
-		// Draw front-side of shadow volume in stencil/z only
+		// Draw front-side of shadow volume in stencil only
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW );
 		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCRSAT);
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 
 		// Now reverse cull order so front sides of shadow volume are written.
 		pID3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CW );
 		pID3DDevice->SetRenderState( D3DRS_STENCILPASS, D3DSTENCILOP_DECRSAT);
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 	}
 	else
 	{
 		// ZFAIL Method
 
-		// Draw front-side of shadow volume in stencil/z only
+		// Draw front-side of shadow volume in stencil only
 		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW );
 		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCRSAT );
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 
 		// Now reverse cull order so front sides of shadow volume are written.
 		pID3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 		pID3DDevice->SetRenderState( D3DRS_STENCILZFAIL, D3DSTENCILOP_DECRSAT );
-		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles.const_pointer(), sizeof(core::vector3df));
 	}
 }
 
@@ -2195,8 +2186,24 @@ bool CD3D8Driver::setVertexShaderConstant(const c8* name, const f32* floats, int
 }
 
 
+//! Int interface for the above.
+bool CD3D8Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+{
+	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
+	return false;
+}
+
+
 //! Sets a constant for the pixel shader based on a name.
 bool CD3D8Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
+{
+	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
+	return false;
+}
+
+
+//! Int interface for the above.
+bool CD3D8Driver::setPixelShaderConstant(const c8* name, const s32* ints, int count)
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;

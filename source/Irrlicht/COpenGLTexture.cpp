@@ -23,7 +23,7 @@ namespace video
 COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mipmapData, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
-	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
+	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
 	IsRenderTarget(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
 {
@@ -60,8 +60,8 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
-	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
-	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
+	MipmapLegacyMode(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
@@ -169,6 +169,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_R16F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -182,6 +183,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RG16F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -195,6 +197,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RGBA16F_ARB;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGBA8;
 #endif
 		}
@@ -208,6 +211,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_R32F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -221,6 +225,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RG32F;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGB8;
 #endif
 		}
@@ -234,6 +239,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 			internalformat =  GL_RGBA32F_ARB;
 #else
+			ColorFormat = ECF_A8R8G8B8;
 			internalformat =  GL_RGBA8;
 #endif
 		}
@@ -328,9 +334,16 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
 			else
 				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
-			// automatically generate and update mipmaps
-			glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+
 			AutomaticMipmapUpdate=true;
+
+			if (!Driver->queryFeature(EVDF_FRAMEBUFFER_OBJECT))
+			{
+				glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+				MipmapLegacyMode=true;
+			}
+			else
+				MipmapLegacyMode=false;
 		}
 		else
 #endif
@@ -367,6 +380,12 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
 			image->getDimension().Height, PixelFormat, PixelType, source);
 	image->unlock();
+
+	if (!MipmapLegacyMode && AutomaticMipmapUpdate)
+	{
+		glEnable(GL_TEXTURE_2D);
+		Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
+	}
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
@@ -606,13 +625,13 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 
 bool COpenGLTexture::isRenderTarget() const
 {
-	 return IsRenderTarget;
+	return IsRenderTarget;
 }
 
 
 void COpenGLTexture::setIsRenderTarget(bool isTarget)
 {
-	 IsRenderTarget = isTarget;
+	IsRenderTarget = isTarget;
 }
 
 
@@ -658,6 +677,8 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	if (ECF_UNKNOWN == format)
 		format = getBestColorFormat(driver->getColorFormat());
+
+	ColorFormat = format;
 
 	GLint FilteringType;
 	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);

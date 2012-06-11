@@ -28,8 +28,23 @@ namespace scene
 		//! destructor
 		virtual ~CAnimatedMeshMD2();
 
-		//! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
+		//! returns the amount of frames. If the amount is 1, it is a static (=non animated) mesh.
 		virtual u32 getFrameCount() const;
+
+		//! Gets the default animation speed of the animated mesh.
+		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
+		virtual f32 getAnimationSpeed() const
+		{
+			return FramesPerSecond;
+		}
+
+		//! Gets the frame count of the animated mesh.
+		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
+		The actual speed is set in the scene node the mesh is instantiated in.*/
+		virtual void setAnimationSpeed(f32 fps)
+		{
+			FramesPerSecond=fps;
+		}
 
 		//! returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail. Note, that some Meshes will ignore the detail level.
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1);
@@ -129,7 +144,7 @@ namespace scene
 		//! updates the interpolation buffer
 		void updateInterpolationBuffer(s32 frame, s32 startFrame, s32 endFrame);
 
-
+		f32 FramesPerSecond;
 	};
 
 } // end namespace scene

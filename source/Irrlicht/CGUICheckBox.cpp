@@ -129,7 +129,6 @@ void CGUICheckBox::draw()
 	IGUISkin* skin = Environment->getSkin();
 	if (skin)
 	{
-		const core::rect<s32> rect = AbsoluteRect;
 		const s32 height = skin->getSize(EGDS_CHECK_BOX_WIDTH);
 
 		core::rect<s32> checkRect(AbsoluteRect.UpperLeftCorner.X,

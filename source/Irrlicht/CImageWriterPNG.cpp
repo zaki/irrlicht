@@ -34,8 +34,14 @@ IImageWriter* createImageWriterPNG()
 // PNG function for error handling
 static void png_cpexcept_error(png_structp png_ptr, png_const_charp msg)
 {
-	os::Printer::log("PNG FATAL ERROR", msg, ELL_ERROR);
-	longjmp(png_ptr->jmpbuf, 1);
+	os::Printer::log("PNG fatal error", msg, ELL_ERROR);
+	longjmp(png_jmpbuf(png_ptr), 1);
+}
+
+// PNG function for warning handling
+static void png_cpexcept_warning(png_structp png_ptr, png_const_charp msg)
+{
+	os::Printer::log("PNG warning", msg, ELL_WARNING);
 }
 
 // PNG function for file writing
@@ -43,7 +49,7 @@ void PNGAPI user_write_data_fcn(png_structp png_ptr, png_bytep data, png_size_t 
 {
 	png_size_t check;
 
-	io::IWriteFile* file=(io::IWriteFile*)png_ptr->io_ptr;
+	io::IWriteFile* file=(io::IWriteFile*)png_get_io_ptr(png_ptr);
 	check=(png_size_t) file->write((const void*)data,(u32)length);
 
 	if (check != length)
@@ -75,7 +81,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 
 	// Allocate the png write struct
 	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
-		NULL, (png_error_ptr)png_cpexcept_error, NULL);
+		NULL, (png_error_ptr)png_cpexcept_error, (png_error_ptr)png_cpexcept_warning);
 	if (!png_ptr)
 	{
 		os::Printer::log("PNGWriter: Internal PNG create write struct failure\n", file->getFileName(), ELL_ERROR);
@@ -117,18 +123,21 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 				PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	}
 
-	s32 lineWidth=image->getDimension().Width;
+	s32 lineWidth = image->getDimension().Width;
 	switch(image->getColorFormat())
-	{
-	case ECF_R8G8B8:
-	case ECF_R5G6B5:
-		lineWidth*=3;
+	{ 	 
+	case ECF_R8G8B8: 	 
+	case ECF_R5G6B5: 	 
+		lineWidth*=3; 	 
+		break; 	 
+	case ECF_A8R8G8B8: 	 
+	case ECF_A1R5G5B5: 	 
+		lineWidth*=4; 	 
 		break;
-	case ECF_A8R8G8B8:
-	case ECF_A1R5G5B5:
-		lineWidth*=4;
+	// TODO: Error handling in case of unsupported color format
+	default:
 		break;
-	}
+	} 	 
 	u8* tmpImage = new u8[image->getDimension().Height*lineWidth];
 	if (!tmpImage)
 	{
@@ -152,6 +161,11 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 	case ECF_A1R5G5B5:
 		CColorConverter::convert_A1R5G5B5toA8R8G8B8(data,image->getDimension().Height*image->getDimension().Width,tmpImage);
 		break;
+#ifndef _DEBUG
+		// TODO: Error handling in case of unsupported color format
+	default:
+		break;
+#endif
 	}
 	image->unlock();
 

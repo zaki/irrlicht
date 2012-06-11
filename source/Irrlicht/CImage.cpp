@@ -211,6 +211,10 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend)
 			u32 * dest = (u32*) (Data + ( y * Pitch ) + ( x << 2 ));
 			*dest = blend ? PixelBlend32 ( *dest, color.color ) : color.color;
 		} break;
+#ifndef _DEBUG
+		default:
+			break;
+#endif
 	}
 }
 
@@ -234,6 +238,10 @@ SColor CImage::getPixel(u32 x, u32 y) const
 			u8* p = Data+(y*3)*Size.Width + (x*3);
 			return SColor(255,p[0],p[1],p[2]);
 		}
+#ifndef _DEBUG
+	default:
+		break;
+#endif
 	}
 
 	return SColor(0);
@@ -408,11 +416,10 @@ void CImage::fill(const SColor &color)
 			return;
 		}
 		break;
+		default:
+		// TODO: Handle other formats
+			return;
 	}
-	if (Format != ECF_A1R5G5B5 && Format != ECF_R5G6B5 &&
-			Format != ECF_A8R8G8B8)
-		return;
-
 	memset32( Data, c, getImageDataSizeInBytes() );
 }
 

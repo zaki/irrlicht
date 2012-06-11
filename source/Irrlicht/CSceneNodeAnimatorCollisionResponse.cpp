@@ -178,7 +178,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	CollisionResultPosition = core::vector3df();
 	CollisionNode = 0;
 
-	core::vector3df force = vel + FallingVelocity;
+	// core::vector3df force = vel + FallingVelocity;
 
 	if ( AnimateCameraTarget )
 	{

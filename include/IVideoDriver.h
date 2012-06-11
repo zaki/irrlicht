@@ -938,7 +938,7 @@ namespace video
 		virtual void draw2DRectangleOutline(const core::recti& pos,
 				SColor color=SColor(255,255,255,255)) =0;
 
-		//! Draws a 2d line.
+		//! Draws a 2d line. Both start and end will be included in coloring.
 		/** \param start Screen coordinates of the start of the line
 		in pixels.
 		\param end Screen coordinates of the start of the line in
@@ -979,12 +979,14 @@ namespace video
 		Please note that the code for the opengl version of the method
 		is based on free code sent in by Philipp Dortmann, lots of
 		thanks go to him!
-		\param triangles Pointer to array of 3d vectors, specifying the
-		shadow volume.
-		\param count Amount of triangles in the array.
+		\param triangles Array of 3d vectors, specifying the shadow
+		volume.
 		\param zfail If set to true, zfail method is used, otherwise
-		zpass. */
-		virtual void drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail=true) =0;
+		zpass.
+		\param debugDataVisible The debug data that is enabled for this
+		shadow node
+		*/
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0) =0;
 
 		//! Fills the stencil shadow with color.
 		/** After the shadow volume has been drawn into the stencil
@@ -1013,8 +1015,15 @@ namespace video
 			video::SColor rightDownEdge = video::SColor(255,0,0,0)) =0;
 
 		//! Draws a mesh buffer
-		/** \param mb Buffer to draw; */
+		/** \param mb Buffer to draw */
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb) =0;
+
+		//! Draws normals of a mesh buffer
+		/** \param mb Buffer to draw the normals of
+		\param length length scale factor of the normals
+		\param color Color the normals are rendered with
+		*/
+		virtual void drawMeshBufferNormals(const scene::IMeshBuffer* mb, f32 length=10.f, SColor color=0xffffffff) =0;
 
 		//! Sets the fog mode.
 		/** These are global values attached to each 3d object rendered,
@@ -1091,7 +1100,7 @@ namespace video
 
 		//! Returns light data which was previously set by IVideoDriver::addDynamicLight().
 		/** \param idx Zero based index of the light. Must be 0 or
-		greater and smaller than IVideoDriver()::getDynamicLightCount.
+		greater and smaller than IVideoDriver::getDynamicLightCount.
 		\return Light data. */
 		virtual const SLight& getDynamicLight(u32 idx) const =0;
 

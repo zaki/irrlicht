@@ -24,7 +24,7 @@
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
-//! _IRR_IPHONE_PLATFORM_ for Apple iPhone OS
+//! _IRR_IPHONE_PLATFORM_ for Apple devices running iOS
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! Note: PLATFORM defines the OS specific layer, API can group several platforms
 
@@ -36,7 +36,6 @@
 //! _IRR_COMPILE_WITH_X11_DEVICE_ for Linux X11 based device
 //! _IRR_COMPILE_WITH_SDL_DEVICE_ for platform independent SDL framework
 //! _IRR_COMPILE_WITH_CONSOLE_DEVICE_ for no windowing system, used as a fallback
-//! _IRR_COMPILE_WITH_IPHONE_DEVICE_ for UIKit windowing on iPhoneOS (aka embeded OSX)
 //! _IRR_COMPILE_WITH_FB_DEVICE_ for framebuffer systems
 
 //! Passing defines to the compiler which have NO in front of the _IRR definename is an alternative
@@ -106,7 +105,6 @@
 #endif
 #endif
 
-
 #if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_)
 #ifndef _IRR_SOLARIS_PLATFORM_
 #define _IRR_LINUX_PLATFORM_
@@ -167,18 +165,20 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 //! Define _IRR_COMPILE_WITH_OPENGL_ to compile the Irrlicht engine with OpenGL.
 /** If you do not wish the engine to be compiled with OpenGL, comment this
 define out. */
+#if !defined(_IRR_IPHONE_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
 #define _IRR_COMPILE_WITH_OPENGL_
+#endif
 #ifdef NO_IRR_COMPILE_WITH_OPENGL_
 #undef _IRR_COMPILE_WITH_OPENGL_
 #endif
 
 //! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
 /** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment
-this define out.
-You should only use this define if you really need the OpenGL-ES driver, and
-it should be usually the only HW accelerated one. OpenGL is currently disabled
-if using this driver, to avoid problems with the ogl-es emulators.
-*/
+ this define out.
+ You should only use this define if you really need the OpenGL-ES driver, and
+ it should be usually the only HW accelerated one. OpenGL is currently disabled
+ if using this driver, to avoid problems with the ogl-es emulators.
+ */
 //#define _IRR_COMPILE_WITH_OGLES1_
 #ifdef NO_IRR_COMPILE_WITH_OGLES1_
 #undef _IRR_COMPILE_WITH_OGLES1_
@@ -186,12 +186,12 @@ if using this driver, to avoid problems with the ogl-es emulators.
 
 //! Define _IRR_COMPILE_WITH_OGLES2_ to compile the Irrlicht engine with OpenGL-ES 2.x.
 /** If you do not wish the engine to be compiled with OpenGL-ES 2.x, comment
-this define out.
-You should only use this define if you really need the OpenGL-ES driver, and
-it should be usually the only HW accelerated one. OpenGL is currently disabled
-if using this driver, to avoid problems with the ogl-es emulators.
-*/
-#define _IRR_COMPILE_WITH_OGLES2_
+ this define out.
+ You should only use this define if you really need the OpenGL-ES driver, and
+ it should be usually the only HW accelerated one. OpenGL is currently disabled
+ if using this driver, to avoid problems with the ogl-es emulators.
+ */
+//#define _IRR_COMPILE_WITH_OGLES2_
 #ifdef NO_IRR_COMPILE_WITH_OGLES2_
 #undef _IRR_COMPILE_WITH_OGLES2_
 #endif
@@ -223,20 +223,18 @@ define out. */
 #undef _IRR_COMPILE_WITH_X11_
 #endif
 
-//! Define _IRR_OPENGL_USE_EXTPOINTER_ if the OpenGL driver should use OpenGL extensions via function pointers.
+//! Define _IRR_OPENGL_USE_EXTPOINTER_ if the OpenGL renderer should use OpenGL extensions via function pointers.
 /** On some systems there is no support for the dynamic extension of OpenGL
 	via function pointers such that this has to be undef'ed. */
-#ifdef _IRR_COMPILE_WITH_OPENGL_
 #if !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_SOLARIS_PLATFORM_)
 #define _IRR_OPENGL_USE_EXTPOINTER_
-#endif
 #endif
 
 //! Define _IRR_OGLES1_USE_EXTPOINTER_ if the OpenGL-ES 1.x driver should use extensions via function pointers.
 /** This should usually be enabled, but also depends on the specific
-	architecture. You can simply uncomment the define and recompile.
-	The iPhone does not have extension pointers, so disable it there always.
-*/
+ architecture. You can simply uncomment the define and recompile.
+ The iPhone does not have extension pointers, so disable it there always.
+ */
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 #if !defined(_IRR_IPHONE_PLATFORM_)
 #define _IRR_OGLES1_USE_EXTPOINTER_
@@ -245,10 +243,12 @@ define out. */
 
 //! Define _IRR_OGLES2_USE_EXTPOINTER_ if the OpenGL-ES 2.x driver should use extensions via function pointers.
 /** This should usually be enabled, but also depends on the specific
-	architecture. You can simply uncomment the define and recompile.
-*/
+ architecture. You can simply uncomment the define and recompile.
+ */
 #ifdef _IRR_COMPILE_WITH_OGLES2_
+#if !defined(_IRR_IPHONE_PLATFORM_)
 #define _IRR_OGLES2_USE_EXTPOINTER_
+#endif
 #endif
 
 //! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
@@ -346,6 +346,15 @@ to provide the user with the proper DLL. That's why it's disabled by default. */
 //#define _IRR_D3D_USE_LEGACY_HLSL_COMPILER
 #ifdef NO_IRR_D3D_USE_LEGACY_HLSL_COMPILER
 #undef _IRR_D3D_USE_LEGACY_HLSL_COMPILER
+#endif
+
+//! Define _IRR_COMPILE_WITH_CG_ to enable Cg Shading Language support
+//#define _IRR_COMPILE_WITH_CG_
+#ifdef NO_IRR_COMPILE_WITH_CG_
+#undef _IRR_COMPILE_WITH_CG_
+#endif
+#if !defined(_IRR_COMPILE_WITH_OPENGL_) && !defined(_IRR_COMPILE_WITH_DIRECT3D_9_)
+#undef _IRR_COMPILE_WITH_CG_
 #endif
 
 //! Define _IRR_USE_NVIDIA_PERFHUD_ to opt-in to using the nVidia PerHUD tool
@@ -822,14 +831,6 @@ precision will be lower but speed higher. currently X86 only
 
 #endif
 
-// OpenGL-ES usually interferes with OpenGL
-#ifdef _IRR_COMPILE_WITH_OGLES2_
-	#undef _IRR_COMPILE_WITH_OPENGL_
-#endif
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	#undef _IRR_COMPILE_WITH_OPENGL_
-#endif
-
 #ifndef _IRR_WINDOWS_API_
 	#undef _IRR_WCHAR_FILESYSTEM
 #endif
@@ -840,6 +841,12 @@ precision will be lower but speed higher. currently X86 only
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
 	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#endif
+
+//! Define __IRR_HAS_S64 if the irr::s64 type should be enable (needs long long, available on most platforms, but not part of ISO C++ 98)
+#define __IRR_HAS_S64
+#ifdef NO__IRR_HAS_S64
+#undef __IRR_HAS_S64
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__

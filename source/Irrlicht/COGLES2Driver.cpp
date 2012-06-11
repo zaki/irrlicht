@@ -2354,19 +2354,32 @@ namespace video
 #endif
 	}
 
-	//! Sets a constant for the vertex shader based on a name.
-	bool COGLES2Driver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
-	{
-		//pass this along, as in GLSL the same routine is used for both vertex and fragment shaders
-		return setPixelShaderConstant(name, floats, count);
-	}
-
-	//! Sets a constant for the pixel shader based on a name.
-	bool COGLES2Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
-	{
-		os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
-		return false;
-	}
+    //! Sets a constant for the vertex shader based on a name.
+    bool COGLES2Driver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
+    {
+        //pass this along, as in GLSL the same routine is used for both vertex and fragment shaders
+        return setPixelShaderConstant(name, floats, count);
+    }
+    
+    //! Int interface for the above.
+    bool COGLES2Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+    {
+        return setPixelShaderConstant(name, ints, count);
+    }
+    
+    //! Sets a constant for the pixel shader based on a name.
+    bool COGLES2Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
+    {
+        os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
+        return false;
+    }
+    
+    //! Int interface for the above.
+    bool COGLES2Driver::setPixelShaderConstant(const c8* name, const s32* ints, int count)
+    {
+        os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
+        return false;
+    }
 
 	//! Sets a vertex pointer the vertex shader based on a name.
 	bool COGLES2Driver::setVertexShaderPointer(const c8*, const void*, s32, bool, u16)

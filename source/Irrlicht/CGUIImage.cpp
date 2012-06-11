@@ -76,8 +76,6 @@ void CGUIImage::draw()
 	IGUISkin* skin = Environment->getSkin();
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	core::rect<s32> rect = AbsoluteRect;
-
 	if (Texture)
 	{
 		if (ScaleImage)

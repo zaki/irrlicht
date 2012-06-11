@@ -79,6 +79,13 @@ public:
 		return false;
 	}
 
+	//! Int interface for the above.
+	virtual bool setVariable(bool vertexShader, const c8* name, const s32* ints, int count)
+	{
+		os::Printer::log("Invalid material to set variable in.");
+		return false;
+	}
+
 protected:
 
 	IDirect3DDevice9* pID3DDevice;
@@ -129,7 +136,7 @@ public:
 			E_BLEND_FACTOR srcFact,dstFact;
 			E_MODULATE_FUNC modulate;
 			u32 alphaSource;
-			unpack_texureBlendFunc ( srcFact, dstFact, modulate, alphaSource, material.MaterialTypeParam );
+			unpack_textureBlendFunc ( srcFact, dstFact, modulate, alphaSource, material.MaterialTypeParam );
 
 			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO)
 			{

@@ -119,7 +119,7 @@ namespace scene
 
 		//! Return index of refraction for that material
 		/**	By default we don't write that.
-		\return a value >= 0.f to write <index_of_refraction> when it's < 0 nothing will be written */
+		\return a value greater equal 0.f to write \<index_of_refraction\> when it is lesser than 0 nothing will be written */
 		virtual f32 getIndexOfRefraction(const video::SMaterial& material) const = 0;
 
 		//! Should node be used in scene export? (only needed for scene-writing, ignored in mesh-writing)

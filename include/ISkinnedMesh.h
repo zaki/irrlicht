@@ -124,7 +124,7 @@ namespace scene
 		//! Joints
 		struct SJoint
 		{
-			SJoint() : UseAnimationFrom(0), LocalAnimatedMatrix_Animated(false), GlobalSkinningSpace(false),
+			SJoint() : UseAnimationFrom(0), GlobalSkinningSpace(false),
 				positionHint(-1),scaleHint(-1),rotationHint(-1)
 			{
 			}
@@ -168,8 +168,6 @@ namespace scene
 			friend class CSkinnedMesh;
 
 			SJoint *UseAnimationFrom;
-			bool LocalAnimatedMatrix_Animated;
-
 			bool GlobalSkinningSpace;
 
 			s32 positionHint;

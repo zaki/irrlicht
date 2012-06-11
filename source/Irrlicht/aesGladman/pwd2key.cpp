@@ -46,7 +46,7 @@ void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
                unsigned int key_len)/* and its required length  */
 {
     unsigned int    i, j, k, n_blk;
-    unsigned char uu[HASH_OUTPUT_SIZE], ux[HASH_OUTPUT_SIZE];
+    unsigned char uu[HMAC_HASH_OUTPUT_SIZE], ux[HMAC_HASH_OUTPUT_SIZE];
     hmac_ctx c1[1], c2[1], c3[1];
 
     /* set HMAC context (c1) for password               */
@@ -58,12 +58,12 @@ void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
     hmac_sha_data(salt, salt_len, c2);
 
     /* find the number of SHA blocks in the key         */
-    n_blk = 1 + (key_len - 1) / HASH_OUTPUT_SIZE;
+    n_blk = 1 + (key_len - 1) / HMAC_HASH_OUTPUT_SIZE;
 
     for(i = 0; i < n_blk; ++i) /* for each block in key */
     {
         /* ux[] holds the running xor value             */
-        memset(ux, 0, HASH_OUTPUT_SIZE);
+        memset(ux, 0, HMAC_HASH_OUTPUT_SIZE);
 
         /* set HMAC context (c3) for password and salt  */
         memcpy(c3, c2, sizeof(hmac_ctx));
@@ -81,10 +81,10 @@ void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
             hmac_sha_data(uu, k, c3);
 
             /* obtain HMAC for uu[]                 */
-            hmac_sha_end(uu, HASH_OUTPUT_SIZE, c3);
+            hmac_sha_end(uu, HMAC_HASH_OUTPUT_SIZE, c3);
 
             /* xor into the running xor block       */
-            for(k = 0; k < HASH_OUTPUT_SIZE; ++k)
+            for(k = 0; k < HMAC_HASH_OUTPUT_SIZE; ++k)
                 ux[k] ^= uu[k];
 
             /* set HMAC context (c3) for password   */
@@ -92,8 +92,8 @@ void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
         }
 
         /* compile key blocks into the key output   */
-        j = 0; k = i * HASH_OUTPUT_SIZE;
-        while(j < HASH_OUTPUT_SIZE && k < key_len)
+        j = 0; k = i * HMAC_HASH_OUTPUT_SIZE;
+        while(j < HMAC_HASH_OUTPUT_SIZE && k < key_len)
             key[k++] = ux[j++];
     }
 }
@@ -112,21 +112,21 @@ struct
 } tests[] =
 {
     {   8, 4, 5, (unsigned char*)"password",
-        {   
-            0x12, 0x34, 0x56, 0x78 
+        {
+            0x12, 0x34, 0x56, 0x78
         },
-        {   
+        {
             0x5c, 0x75, 0xce, 0xf0, 0x1a, 0x96, 0x0d, 0xf7,
-            0x4c, 0xb6, 0xb4, 0x9b, 0x9e, 0x38, 0xe6, 0xb5 
+            0x4c, 0xb6, 0xb4, 0x9b, 0x9e, 0x38, 0xe6, 0xb5
         }
     },
     {   8, 8, 5, (unsigned char*)"password",
-        {   
-            0x12, 0x34, 0x56, 0x78, 0x78, 0x56, 0x34, 0x12 
+        {
+            0x12, 0x34, 0x56, 0x78, 0x78, 0x56, 0x34, 0x12
         },
-        {   
+        {
             0xd1, 0xda, 0xa7, 0x86, 0x15, 0xf2, 0x87, 0xe6,
-            0xa1, 0xc8, 0xb1, 0x20, 0xd7, 0x06, 0x2a, 0x49 
+            0xa1, 0xc8, 0xb1, 0x20, 0xd7, 0x06, 0x2a, 0x49
         }
     },
     {   8, 21, 1, (unsigned char*)"password",
@@ -143,7 +143,7 @@ struct
             "ATHENA.MIT.EDUraeburn"
         },
         {
-            0x01, 0xdb, 0xee, 0x7f, 0x4a, 0x9e, 0x24, 0x3e, 
+            0x01, 0xdb, 0xee, 0x7f, 0x4a, 0x9e, 0x24, 0x3e,
             0x98, 0x8b, 0x62, 0xc7, 0x3c, 0xda, 0x93, 0x5d
         }
     },
@@ -152,7 +152,7 @@ struct
             "ATHENA.MIT.EDUraeburn"
         },
         {
-            0x5c, 0x08, 0xeb, 0x61, 0xfd, 0xf7, 0x1e, 0x4e, 
+            0x5c, 0x08, 0xeb, 0x61, 0xfd, 0xf7, 0x1e, 0x4e,
             0x4e, 0xc3, 0xcf, 0x6b, 0xa1, 0xf5, 0x51, 0x2b
         }
     }

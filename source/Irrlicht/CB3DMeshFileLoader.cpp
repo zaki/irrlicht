@@ -154,7 +154,11 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
 	readString(joint->Name);
 
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkNODE", joint->Name.c_str());
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "read ChunkNODE";
+	os::Printer::log(logStr.c_str(), joint->Name.c_str());
 #endif
 
 	f32 position[3], scale[3], rotation[4];
@@ -235,7 +239,11 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
 bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkMESH");
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "read ChunkMESH";
+	os::Printer::log(logStr.c_str());
 #endif
 
 	s32 brushID;
@@ -327,7 +335,11 @@ VRTS:
 bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkVRTS");
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "ChunkVRTS";
+	os::Printer::log(logStr.c_str());
 #endif
 
 	const s32 max_tex_coords = 3;
@@ -429,7 +441,11 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *inJoint)
 bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 meshBufferID, s32 vertices_Start)
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkTRIS");
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "ChunkTRIS";
+	os::Printer::log(logStr.c_str());
 #endif
 
 	bool showVertexWarning=false;
@@ -547,7 +563,11 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkBONE");
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "read ChunkBONE";
+	os::Printer::log(logStr.c_str());
 #endif
 
 	if (B3dStack.getLast().length > 8)
@@ -587,7 +607,15 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
 bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
 {
 #ifdef _B3D_READER_DEBUG
-//	os::Printer::log("read ChunkKEYS");
+	// Only print first, that's just too much output otherwise
+	if ( !inJoint || (inJoint->PositionKeys.empty() && inJoint->ScaleKeys.empty() && inJoint->RotationKeys.empty()) )
+	{
+		core::stringc logStr;
+		for ( u32 i=1; i < B3dStack.size(); ++i )
+			logStr += "-";
+		logStr += "read ChunkKEYS";
+		os::Printer::log(logStr.c_str());
+	}
 #endif
 
 	s32 flags;
@@ -726,7 +754,11 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
 bool CB3DMeshFileLoader::readChunkANIM()
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkANIM");
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "read ChunkANIM";
+	os::Printer::log(logStr.c_str());
 #endif
 
 	s32 animFlags; //not stored\used
@@ -736,6 +768,9 @@ bool CB3DMeshFileLoader::readChunkANIM()
 	B3DFile->read(&animFlags, sizeof(s32));
 	B3DFile->read(&animFrames, sizeof(s32));
 	readFloats(&animFPS, 1);
+	if (animFPS>0.f)
+		AnimatedMesh->setAnimationSpeed(animFPS);
+	os::Printer::log("FPS", io::path(animFPS), ELL_DEBUG);
 
 	#ifdef __BIG_ENDIAN__
 		animFlags = os::Byteswap::byteswap(animFlags);
@@ -750,7 +785,11 @@ bool CB3DMeshFileLoader::readChunkANIM()
 bool CB3DMeshFileLoader::readChunkTEXS()
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkTEXS");
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "read ChunkTEXS";
+	os::Printer::log(logStr.c_str());
 #endif
 
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
@@ -790,7 +829,11 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 bool CB3DMeshFileLoader::readChunkBRUS()
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkBRUS");
+	core::stringc logStr;
+	for ( u32 i=1; i < B3dStack.size(); ++i )
+		logStr += "-";
+	logStr += "read ChunkBRUS";
+	os::Printer::log(logStr.c_str());
 #endif
 
 	u32 n_texs;

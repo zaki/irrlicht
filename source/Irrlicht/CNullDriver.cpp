@@ -773,7 +773,8 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s
 	const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 	const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
-	draw2DImage(texture, core::position2d<s32>(destRect.UpperLeftCorner),
+	if (destRect.isValid())
+		draw2DImage(texture, core::position2d<s32>(destRect.UpperLeftCorner),
 				sourceRect, clipRect, colors?colors[0]:video::SColor(0xffffffff),
 				useAlphaChannelOfTexture);
 }
@@ -915,7 +916,7 @@ const wchar_t* CNullDriver::getName() const
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: Frist, draw all geometry. Then use this method, to draw the shadow
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void CNullDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+void CNullDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
 }
 
@@ -1520,6 +1521,24 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 }
 
 
+//! Draws the normals of a mesh buffer
+void CNullDriver::drawMeshBufferNormals(const scene::IMeshBuffer* mb, f32 length, SColor color)
+{
+	const u32 count = mb->getVertexCount();
+	const bool normalize = mb->getMaterial().NormalizeNormals;
+
+	for (u32 i=0; i < count; ++i)
+	{
+		core::vector3df normalizedNormal = mb->getNormal(i);
+		if (normalize)
+			normalizedNormal.normalize();
+
+		const core::vector3df& pos = mb->getPosition(i);
+		draw3DLine(pos, pos + (normalizedNormal * length), color);
+	}
+}
+
+
 CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
 {
 	if (!mb || !isHardwareBufferRecommend(mb))
@@ -1833,6 +1852,9 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addBool("UseMipMaps", material.UseMipMaps);
 	attr->addInt("AntiAliasing", material.AntiAliasing);
 	attr->addInt("ColorMask", material.ColorMask);
+	attr->addInt("ColorMaterial", material.ColorMaterial);
+	attr->addInt("PolygonOffsetFactor", material.PolygonOffsetFactor);
+	attr->addEnum("PolygonOffsetDirection", material.PolygonOffsetDirection, video::PolygonOffsetDirectionNames);
 
 	prefix = "BilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
@@ -1904,6 +1926,12 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.AntiAliasing = attr->getAttributeAsInt("AntiAliasing");
 	if (attr->existsAttribute("ColorMask"))
 		outMaterial.ColorMask = attr->getAttributeAsInt("ColorMask");
+	if (attr->existsAttribute("ColorMaterial"))
+		outMaterial.ColorMaterial = attr->getAttributeAsInt("ColorMaterial");
+	if (attr->existsAttribute("PolygonOffsetFactor"))
+		outMaterial.PolygonOffsetFactor = attr->getAttributeAsInt("PolygonOffsetFactor");
+	if (attr->existsAttribute("PolygonOffsetDirection"))
+		outMaterial.PolygonOffsetDirection = (video::E_POLYGON_OFFSET)attr->getAttributeAsEnumeration("PolygonOffsetDirection", video::PolygonOffsetDirectionNames);
 	prefix = "BilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_BILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
@@ -2025,7 +2053,7 @@ s32 CNullDriver::addHighLevelShaderMaterial(
 	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
-	s32 userData)
+	s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	os::Printer::log("High level shader materials not available (yet) in this driver, sorry");
 	return -1;
@@ -2048,7 +2076,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial,
-		s32 userData)
+		s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	io::IReadFile* vsfile = 0;
 	io::IReadFile* psfile = 0;
@@ -2089,7 +2117,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		psfile, pixelShaderEntryPointName, psCompileTarget,
 		gsfile, geometryShaderEntryPointName, gsCompileTarget,
 		inType, outType, verticesOut,
-		callback, baseMaterial, userData);
+		callback, baseMaterial, userData, shadingLang);
 
 	if (psfile)
 		psfile->drop();
@@ -2120,7 +2148,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial,
-		s32 userData)
+		s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	c8* vs = 0;
 	c8* ps = 0;
@@ -2171,7 +2199,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		ps, pixelShaderEntryPointName, psCompileTarget,
 		gs, geometryShaderEntryPointName, gsCompileTarget,
 		inType, outType, verticesOut,
-		callback, baseMaterial, userData);
+		callback, baseMaterial, userData, shadingLang);
 
 	delete [] vs;
 	delete [] ps;
@@ -2286,7 +2314,7 @@ s32 CNullDriver::addShaderMaterialFromFiles(const io::path& vertexShaderProgramF
 
 //! Creates a render target texture.
 ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-		const io::path& name, const ECOLOR_FORMAT format)
+		const io::path&name, const ECOLOR_FORMAT format)
 {
 	return 0;
 }

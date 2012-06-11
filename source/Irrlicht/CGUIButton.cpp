@@ -21,7 +21,8 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool noclip)
 : IGUIButton(environment, parent, id, rectangle),
 	SpriteBank(0), OverrideFont(0), Image(0), PressedImage(0),
-	ClickTime(0), IsPushButton(false), Pressed(false),
+	ClickTime(0), HoverTime(0), FocusTime(0), 
+	IsPushButton(false), Pressed(false),
 	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false)
 {
 	#ifdef _DEBUG
@@ -133,7 +134,6 @@ bool CGUIButton::OnEvent(const SEvent& event)
 		if (!event.KeyInput.PressedDown && Pressed &&
 			(event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE))
 		{
-			//Environment->removeFocus(this);
 
 			if (!IsPushButton)
 				setPressed(false);
@@ -151,10 +151,22 @@ bool CGUIButton::OnEvent(const SEvent& event)
 		}
 		break;
 	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
+		if (event.GUIEvent.Caller == this)
 		{
-			if (event.GUIEvent.Caller == this && !IsPushButton)
-				setPressed(false);
+			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
+			{
+				if (!IsPushButton)
+					setPressed(false);
+				FocusTime = os::Timer::getTime();
+			}
+			else if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
+			{
+				FocusTime = os::Timer::getTime();				
+			}
+			else if (event.GUIEvent.EventType == EGET_ELEMENT_HOVERED || event.GUIEvent.EventType == EGET_ELEMENT_LEFT)
+			{
+				HoverTime = os::Timer::getTime();
+			}
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -177,7 +189,6 @@ bool CGUIButton::OnEvent(const SEvent& event)
 		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 		{
 			bool wasPressed = Pressed;
-			//Environment->removeFocus(this);
 
 			if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
 			{
@@ -225,7 +236,6 @@ void CGUIButton::draw()
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	// todo:	move sprite up and text down if the pressed state has a sprite
-	//			draw sprites for focused and mouse-over
 	const core::position2di spritePos = AbsoluteRect.getCenter();
 
 	if (!Pressed)
@@ -245,13 +255,6 @@ void CGUIButton::draw()
 					ImageRect, &AbsoluteClippingRect,
 					0, UseAlphaChannel);
 		}
-		if (SpriteBank && ButtonSprites[EGBS_BUTTON_UP].Index != -1)
-		{
-			// draw pressed sprite
-			SpriteBank->draw2DSprite(ButtonSprites[EGBS_BUTTON_UP].Index, spritePos,
-				&AbsoluteClippingRect, ButtonSprites[EGBS_BUTTON_UP].Color, ClickTime, os::Timer::getTime(),
-				ButtonSprites[EGBS_BUTTON_UP].Loop, true);
-		}
 	}
 	else
 	{
@@ -263,7 +266,7 @@ void CGUIButton::draw()
 			core::position2d<s32> pos = spritePos;
 			pos.X -= PressedImageRect.getWidth() / 2;
 			pos.Y -= PressedImageRect.getHeight() / 2;
-			// patch by Alan Tyndall/Jonas Petersen
+
 			if (Image == PressedImage && PressedImageRect == ImageRect)
 			{
 				pos.X += 1;
@@ -275,13 +278,38 @@ void CGUIButton::draw()
 					PressedImageRect, &AbsoluteClippingRect,
 					0, UseAlphaChannel);
 		}
+	}
 
-		if (SpriteBank && ButtonSprites[EGBS_BUTTON_DOWN].Index != -1)
+	if (SpriteBank)
+	{
+		// pressed / unpressed animation
+		u32 state = Pressed ? (u32)EGBS_BUTTON_DOWN : (u32)EGBS_BUTTON_UP;
+		if (ButtonSprites[state].Index != -1)
 		{
-			// draw sprite
-			SpriteBank->draw2DSprite(ButtonSprites[EGBS_BUTTON_DOWN].Index, spritePos,
-				&AbsoluteClippingRect, ButtonSprites[EGBS_BUTTON_DOWN].Color, ClickTime, os::Timer::getTime(),
-				ButtonSprites[EGBS_BUTTON_DOWN].Loop, true);
+			SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
+			 	&AbsoluteClippingRect, ButtonSprites[state].Color, ClickTime, os::Timer::getTime(),
+				ButtonSprites[state].Loop, true);
+		}
+
+		// focused / unfocused animation
+		state = Environment->hasFocus(this) ? (u32)EGBS_BUTTON_FOCUSED : (u32)EGBS_BUTTON_NOT_FOCUSED;
+		if (ButtonSprites[state].Index != -1)
+		{
+			SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
+			 	&AbsoluteClippingRect, ButtonSprites[state].Color, FocusTime, os::Timer::getTime(),
+				ButtonSprites[state].Loop, true);
+		}
+
+		// mouse over / off animation
+		if (isEnabled())
+		{
+			state = Environment->getHovered() == this ? (u32)EGBS_BUTTON_MOUSE_OVER : (u32)EGBS_BUTTON_MOUSE_OFF;
+			if (ButtonSprites[state].Index != -1)
+			{
+				SpriteBank->draw2DSprite(ButtonSprites[state].Index, spritePos,
+				 	&AbsoluteClippingRect, ButtonSprites[state].Color, HoverTime, os::Timer::getTime(),
+					ButtonSprites[state].Loop, true);
+			}
 		}
 	}
 
@@ -331,7 +359,7 @@ IGUIFont* CGUIButton::getActiveFont() const
 		return OverrideFont;
 	IGUISkin* skin = Environment->getSkin();
 	if (skin)
-		return skin->getFont();
+		return skin->getFont(EGDF_BUTTON);
 	return 0;
 }
 
