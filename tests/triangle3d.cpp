@@ -220,43 +220,6 @@ static bool isPointInside(triangle3d<T> triangleOrig, bool testIsInside, bool te
 	return allExpected;
 }
 
-// Checking behaviour when FPU is set to single precision mode.
-// This is somewhat important as Direct3D does by default set the FPU into that mode.
-static bool isPointInsideWithSinglePrecision()
-{
-#if defined(_MSC_VER) && !(defined(_WIN64))
-	int original = _control87( 0, 0 );
-	_control87(_PC_24, MCW_PC);	// single precision (double precision would be _PC_53)
-
-	// Testcase just some example which popped up wwhic shows the difference between single precision and double precision
-	irr::core::triangle3d<irr::f64> t;
-	irr::core::vector3d<irr::f64> point;
-	t.pointA.X = 3.7237894e+002f;
-	t.pointA.Y = -1.0025123e+003f;
-	t.pointA.Z = 0;
-	t.pointB.X = 2.6698560e+002f;
-	t.pointB.Y = -9.8957166e+002f;
-	t.pointB.Z = 0;
-	t.pointC.X = 2.6981503e+002f;
-	t.pointC.Y = -9.3992731e+002f;
-	t.pointC.Z = 0;
-
-	point.X = 2.6981500e+002f;
-	point.Y = -9.3992743e+002f;
-	point.Z = 0;
-
-	bool ok = !t.isPointInside( point );
-
-	_control87(original, 0xfffff);	// restore
-
-	return ok;
-#else
-	// TODO: Be free to try changing the fpu for other systems.
-	// I think for MinGW it's still easy, but for Linux this probably also needs changed linker flags.
-	return true;
-#endif
-}
-
 // Test the functionality of triangle3d<T>
 bool testTriangle3d(void)
 {
@@ -306,11 +269,6 @@ bool testTriangle3d(void)
 	{
 		triangle3d<s32> t(vector3d<s32>(-1000,-1000,0), vector3d<s32>(1000,-1000,0), vector3d<s32>(0,1000,0));
 		allExpected &= isPointInside(t, false, true);
-	}
-
-	logTestString("Test isPointInsideWithSinglePrecision\n");
-	{
-		allExpected &= isPointInsideWithSinglePrecision();
 	}
 
 	if(allExpected)
