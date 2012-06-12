@@ -1,4 +1,4 @@
 Tests finished. 1 test of 1 passed.
 Compiled as DEBUG
-Test suite pass at GMT Mon Jun 11 15:15:12 2012
+Test suite pass at GMT Tue Jun 12 20:48:10 2012
 

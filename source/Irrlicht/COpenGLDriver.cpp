@@ -4391,11 +4391,11 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		type = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 		break;
 	case ECF_R5G6B5:
-		fmt = GL_BGR;
-		type = GL_UNSIGNED_SHORT_5_6_5_REV;
+		fmt = GL_RGB;
+		type = GL_UNSIGNED_SHORT_5_6_5;
 		break;
 	case ECF_R8G8B8:
-		fmt = GL_BGR;
+		fmt = GL_RGB;
 		type = GL_UNSIGNED_BYTE;
 		break;
 	case ECF_A8R8G8B8:
