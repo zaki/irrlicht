@@ -1025,7 +1025,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	EnvMap.push_back(em);
 
 	// set this as active window
-	if ( HWnd )
+	if (!ExternalWindow)
 	{
 		SetActiveWindow(HWnd);
 		SetForegroundWindow(HWnd);

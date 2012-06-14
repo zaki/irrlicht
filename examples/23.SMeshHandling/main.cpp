@@ -272,9 +272,9 @@ public:
 			{
 				const u16 n = (y-y0) * Width + x;
 				buf->Indices[i]=n;
-				buf->Indices[++i]=n + Height;
-				buf->Indices[++i]=n + Height + 1;
-				buf->Indices[++i]=n + Height + 1;
+				buf->Indices[++i]=n + Width;
+				buf->Indices[++i]=n + Width + 1;
+				buf->Indices[++i]=n + Width + 1;
 				buf->Indices[++i]=n + 1;
 				buf->Indices[++i]=n;
 				++i;

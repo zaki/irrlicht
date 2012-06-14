@@ -1144,7 +1144,7 @@ bool CIrrDeviceLinux::run()
 //! Pause the current process for the minimum time allowed only to allow other processes to execute
 void CIrrDeviceLinux::yield()
 {
-	struct timespec ts = {0,0};
+	struct timespec ts = {0,1};
 	nanosleep(&ts, NULL);
 }
 

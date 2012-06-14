@@ -329,6 +329,10 @@ The following names can be queried for the given types:
 -----------------------------
 Changes in 1.7.3 (20.02.2012)
 
+ - SceneNodeAnimatorFlyCircle fixes serialization of RadiusEllipsoid (was writing Radius). Thx @ wing64 for reporting.
+
+ - Yield on Linux now uses nanosleep with 1ns as 0 isn't guaranteed to yield (thx @ hendu for finding + fix)
+
  - GUIEditor attributes have now scrollbar to be editable
 
  - Remove warning when compiling line2d::intersectWith with other types than f32.

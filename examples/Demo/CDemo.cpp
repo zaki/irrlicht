@@ -431,7 +431,7 @@ void CDemo::loadSceneData()
 			model2->setMD2Animation(scene::EMAT_RUN);
 			model2->setMaterialTexture(0, device->getVideoDriver()->getTexture("../../media/sydney.bmp"));
 			model2->setMaterialFlag(video::EMF_LIGHTING, true);
-			model1->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+			model2->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 			model2->addShadowVolumeSceneNode();
 		}
 	}

@@ -149,9 +149,9 @@ bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 		0,                                         // No Alpha Buffer
 		0,                                         // Shift Bit Ignored
 		0,                                         // No Accumulation Buffer
-		0, 0, 0, 0,	                               // Accumulation Bits Ignored
-		Params.ZBufferBits,                        // Z-Buffer (Depth Buffer)
-		Params.Stencilbuffer ? 1 : 0,              // Stencil Buffer Depth
+		0, 0, 0, 0,	                           // Accumulation Bits Ignored
+		params.ZBufferBits,                        // Z-Buffer (Depth Buffer)
+		BYTE(params.Stencilbuffer ? 1 : 0),        // Stencil Buffer Depth
 		0,                                         // No Auxiliary Buffer
 		PFD_MAIN_PLANE,                            // Main Drawing Layer
 		0,                                         // Reserved

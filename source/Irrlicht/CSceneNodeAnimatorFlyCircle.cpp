@@ -63,7 +63,7 @@ void CSceneNodeAnimatorFlyCircle::serializeAttributes(io::IAttributes* out, io::
 	out->addFloat("Radius", Radius);
 	out->addFloat("Speed", Speed);
 	out->addVector3d("Direction", Direction);
-	out->addFloat("RadiusEllipsoid", Radius);
+	out->addFloat("RadiusEllipsoid", RadiusEllipsoid);
 }
 
 
