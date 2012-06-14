@@ -1925,11 +1925,7 @@ inline void COpenGLExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint 
 	else if (pGlBindFramebufferEXT)
 		pGlBindFramebufferEXT(target, framebuffer);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glBindFramebuffer(target, framebuffer);
-#else 
-	glBindFramebufferARB(target, framebuffer);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glBindFramebufferEXT(target, framebuffer);
 #else
@@ -1945,11 +1941,7 @@ inline void COpenGLExtensionHandler::extGlDeleteFramebuffers(GLsizei n, const GL
 	else if (pGlDeleteFramebuffersEXT)
 		pGlDeleteFramebuffersEXT(n, framebuffers);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glDeleteFramebuffers(n, framebuffers);
-#else 
-	glDeleteFramebuffersARB(n, framebuffers);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glDeleteFramebuffersEXT(n, framebuffers);
 #else
@@ -1965,11 +1957,7 @@ inline void COpenGLExtensionHandler::extGlGenFramebuffers(GLsizei n, GLuint *fra
 	else if (pGlGenFramebuffersEXT)
 		pGlGenFramebuffersEXT(n, framebuffers);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glGenFramebuffers(n, framebuffers);
-#else 
-	glGenFramebuffersARB(n, framebuffers);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glGenFramebuffersEXT(n, framebuffers);
 #else
@@ -1987,11 +1975,7 @@ inline GLenum COpenGLExtensionHandler::extGlCheckFramebufferStatus(GLenum target
 	else
 		return 0;
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	return glCheckFramebufferStatus(target);
-#else 
-	return glCheckFramebufferStatusARB(target);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	return glCheckFramebufferStatusEXT(target);
 #else
@@ -2008,11 +1992,7 @@ inline void COpenGLExtensionHandler::extGlFramebufferTexture2D(GLenum target, GL
 	else if (pGlFramebufferTexture2DEXT)
 		pGlFramebufferTexture2DEXT(target, attachment, textarget, texture, level);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glFramebufferTexture2D(target, attachment, textarget, texture, level);
-#else 
-	glFramebufferTexture2DARB(target, attachment, textarget, texture, level);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glFramebufferTexture2DEXT(target, attachment, textarget, texture, level);
 #else
@@ -2028,11 +2008,7 @@ inline void COpenGLExtensionHandler::extGlBindRenderbuffer(GLenum target, GLuint
 	else if (pGlBindRenderbufferEXT)
 		pGlBindRenderbufferEXT(target, renderbuffer);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glBindRenderbuffer(target, renderbuffer);
-#else 
-	glBindRenderbufferARB(target, renderbuffer);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glBindRenderbufferEXT(target, renderbuffer);
 #else
@@ -2048,11 +2024,7 @@ inline void COpenGLExtensionHandler::extGlDeleteRenderbuffers(GLsizei n, const G
 	else if (pGlDeleteRenderbuffersEXT)
 		pGlDeleteRenderbuffersEXT(n, renderbuffers);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glDeleteRenderbuffers(n, renderbuffers);
-#else 
-	glDeleteRenderbuffersARB(n, renderbuffers);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glDeleteRenderbuffersEXT(n, renderbuffers);
 #else
@@ -2068,11 +2040,7 @@ inline void COpenGLExtensionHandler::extGlGenRenderbuffers(GLsizei n, GLuint *re
 	else if (pGlGenRenderbuffersEXT)
 		pGlGenRenderbuffersEXT(n, renderbuffers);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glGenRenderbuffers(n, renderbuffers);
-#else 
-	glGenRenderbuffersARB(n, renderbuffers);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glGenRenderbuffersEXT(n, renderbuffers);
 #else
@@ -2088,11 +2056,7 @@ inline void COpenGLExtensionHandler::extGlRenderbufferStorage(GLenum target, GLe
 	else if (pGlRenderbufferStorageEXT)
 		pGlRenderbufferStorageEXT(target, internalformat, width, height);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glRenderbufferStorage(target, internalformat, width, height);
-#else 
-	glRenderbufferStorageARB(target, internalformat, width, height);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glRenderbufferStorageEXT(target, internalformat, width, height);
 #else
@@ -2108,11 +2072,7 @@ inline void COpenGLExtensionHandler::extGlFramebufferRenderbuffer(GLenum target,
 	else if (pGlFramebufferRenderbufferEXT)
 		pGlFramebufferRenderbufferEXT(target, attachment, renderbuffertarget, renderbuffer);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
-#else 
-	glFramebufferRenderbufferARB(target, attachment, renderbuffertarget, renderbuffer);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glFramebufferRenderbufferEXT(target, attachment, renderbuffertarget, renderbuffer);
 #else
@@ -2128,11 +2088,7 @@ inline void COpenGLExtensionHandler::extGlGenerateMipmap(GLenum target)
 	else if (pGlGenerateMipmapEXT)
 		pGlGenerateMipmapEXT(target);
 #elif defined(GL_ARB_framebuffer_object)
-#ifdef __MAC_10_6
 	glGenerateMipmap(target);
-#else 
-	glGenerateMipmapARB(target);
-#endif
 #elif defined(GL_EXT_framebuffer_object)
 	glGenerateMipmapEXT(target);
 #else
@@ -2386,9 +2342,9 @@ inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenu
 	if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendEquationIndexedAMD)
 		pGlBlendEquationIndexedAMD(buf, mode);
 #elif defined(GL_ARB_draw_buffers_blend)
-	glBlendEquationiARB(buf, src, dst);
+	glBlendEquationiARB(buf, mode);
 #elif defined(GL_AMD_draw_buffers_blend)
-	glBlendEquationIndexedAMD(buf, src, dst);
+	glBlendEquationIndexedAMD(buf, mode);
 #else
 	os::Printer::log("glBlendEquationIndexed not supported", ELL_ERROR);
 #endif
