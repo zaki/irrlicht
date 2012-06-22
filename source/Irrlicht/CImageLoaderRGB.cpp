@@ -355,9 +355,11 @@ bool CImageLoaderRGB::readOffsetTables(io::IReadFile* file, rgbStruct& rgb) cons
 	rgb.TableLen = rgb.Header.Ysize * rgb.Header.Zsize ; // calc size of tables
 
 	// return error if unable to allocate tables
-	if ( !(rgb.StartTable = new u32[rgb.TableLen]) )
+	rgb.StartTable = new u32[rgb.TableLen];
+	if (!rgb.StartTable)
 		return false;
-	if ( !(rgb.LengthTable = new u32[rgb.TableLen]) )
+	rgb.LengthTable = new u32[rgb.TableLen];
+	if (!rgb.LengthTable)
 		return false;
 
 	file->seek(512);

@@ -102,22 +102,26 @@ namespace video
 
 			if (Header.Zsize >= 1)
 			{
-				if ( !(tmpR = new u8 [Header.Xsize * Header.BPC]) )
+				tmpR = new u8[Header.Xsize * Header.BPC];
+				if (!tmpR)
 					return false;
 			}
 			if (Header.Zsize >= 2)
 			{
-				if ( !(tmpG = new u8 [Header.Xsize * Header.BPC]) )
+				tmpG = new u8[Header.Xsize * Header.BPC];
+				if (!tmpG)
 					return false;
 			}
 			if (Header.Zsize >= 3)
 			{
-				if ( !(tmpB = new u8 [Header.Xsize * Header.BPC]) )
+				tmpB = new u8[Header.Xsize * Header.BPC];
+				if (!tmpB)
 					return false;
 			}
 			if (Header.Zsize >= 4)
 			{
-				if ( !(tmpA = new u8 [Header.Xsize * Header.BPC]) )
+				tmpA = new u8[Header.Xsize * Header.BPC];
+				if (!tmpA)
 					return false;
 			}
 			return true;
