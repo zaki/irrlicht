@@ -15,21 +15,14 @@ namespace scene
 {
 
 
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
-
 	// structs needed to load the md2-format
 
 	const s32 MD2_MAGIC_NUMBER  = 844121161;
 	const s32 MD2_VERSION       = 8;
 	const s32 MD2_MAX_VERTS     = 2048;
+
+// byte-align structures
+#include "irrpack.h"
 
 	struct SMD2Header
 	{
@@ -85,11 +78,7 @@ namespace scene
 	} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 //! Constructor
 CMD2MeshFileLoader::CMD2MeshFileLoader()

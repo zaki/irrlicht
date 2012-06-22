@@ -46,16 +46,8 @@ public:
 
 private:
 
-	// byte-align structures
-	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-	#	pragma pack( push, packing )
-	#	pragma pack( 1 )
-	#	define PACK_STRUCT
-	#elif defined( __GNUC__ )
-	#	define PACK_STRUCT	__attribute__((packed))
-	#else
-	#	error compiler not supported
-	#endif
+// byte-align structures
+#include "irrpack.h"
 
 	struct ChunkHeader
 	{
@@ -63,12 +55,8 @@ private:
 		u32 length;
 	} PACK_STRUCT;
 
-	// Default alignment
-	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-	#	pragma pack( pop, packing )
-	#endif
-
-	#undef PACK_STRUCT
+// Default alignment
+#include "irrunpack.h"
 
 
 	struct ChunkData

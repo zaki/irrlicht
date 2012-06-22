@@ -16,18 +16,6 @@ namespace video
 
 #if defined(_IRR_COMPILE_WITH_DDS_LOADER_)
 
-// byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	define PACK_STRUCT
-#endif
-
-
 /* dependencies */
 /* dds definition */
 enum eDDSPixelFormat
@@ -48,6 +36,9 @@ enum eDDSPixelFormat
 #define DDS_MID_555		0x03E0;
 #define DDS_HI_555		0x7C00;
 
+
+// byte-align structures
+#include "irrpack.h"
 
 /* structures */
 struct ddsColorKey
@@ -193,6 +184,9 @@ struct ddsColor
 	u8		r, g, b, a;
 } PACK_STRUCT;
 
+// Default alignment
+#include "irrunpack.h"
+
 
 /* endian tomfoolery */
 typedef union
@@ -274,13 +268,6 @@ floatSwapUnion;
 
 #endif /*__BIG_ENDIAN__*/
 
-
-// Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
 
 #endif // compiled with loader or reader
 

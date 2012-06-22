@@ -32,41 +32,29 @@ namespace video
 {
 
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
+#include "irrpack.h"
 
 	// the RGB image file header structure
 
 	struct SRGBHeader
 	{
-		u16	Magic;							// IRIS image file magic number
-		u8  Storage;						// Storage format
-		u8  BPC;							// Number of bytes per pixel channel
-		u16 Dimension;						// Number of dimensions
-		u16 Xsize;							// X size in pixels
-		u16 Ysize;							// Y size in pixels
-		u16 Zsize;							// Z size in pixels
-		u32 Pixmin;							// Minimum pixel value
-		u32 Pixmax;							// Maximum pixel value
-		u32 Dummy1;							// ignored
-		char Imagename[80];					// Image name
-		u32 Colormap;						// Colormap ID
-//		char Dummy2[404];					// Ignored
+		u16 Magic;	// IRIS image file magic number
+		u8  Storage;	// Storage format
+		u8  BPC;	// Number of bytes per pixel channel
+		u16 Dimension;	// Number of dimensions
+		u16 Xsize;	// X size in pixels
+		u16 Ysize;	// Y size in pixels
+		u16 Zsize;	// Z size in pixels
+		u32 Pixmin;	// Minimum pixel value
+		u32 Pixmax;	// Maximum pixel value
+		u32 Dummy1;	// ignored
+		char Imagename[80];// Image name
+		u32 Colormap;	// Colormap ID
+//		char Dummy2[404];// Ignored
 	} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 	// this structure holds context specific data about the file being loaded.
 

@@ -25,16 +25,8 @@ namespace io
 	// zero in the local header
 	const s16 ZIP_INFO_IN_DATA_DESCRIPTOR =	0x0008;
 
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
-
+// byte-align structures
+#include "irrpack.h"
 
 	struct SZIPFileDataDescriptor
 	{
@@ -131,11 +123,7 @@ namespace io
 	} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 	//! Contains extended info about zip files in the archive
 	struct SZipFileEntry

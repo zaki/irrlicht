@@ -14,16 +14,8 @@ namespace scene
 {
 
 
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
-
+// byte-align structures
+#include "irrpack.h"
 
 //! General properties of a single animation frame.
 struct SMD3Frame
@@ -33,7 +25,7 @@ struct SMD3Frame
 	f32  position[3];	// position of bounding box
 	f32  radius;		// radius of bounding sphere
 	c8   creator[16];	// name of frame
-};
+} PACK_STRUCT;
 
 
 //! An attachment point for another MD3 model.
@@ -42,23 +34,17 @@ struct SMD3Tag
 	c8 Name[64];		//name of 'tag' as it's usually called in the md3 files try to see it as a sub-mesh/seperate mesh-part.
 	f32 position[3];	//relative position of tag
 	f32 rotationMatrix[9];	//3x3 rotation direction of tag
-};
+} PACK_STRUCT;
 
 //!Shader
 struct SMD3Shader
 {
 	c8 name[64];		// name of shader
 	s32 shaderIndex;
-};
-
-
+} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 
 //! Constructor
