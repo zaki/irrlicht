@@ -136,6 +136,7 @@ class map
 	//! Normal Iterator
 	class Iterator
 	{
+		friend class ConstIterator;
 	public:
 
 		Iterator() : Root(0), Cur(0) {}
@@ -283,6 +284,7 @@ class map
 	//! Const Iterator
 	class ConstIterator
 	{
+		friend class Iterator;
 	public:
 
 		ConstIterator() : Root(0), Cur(0) {}
