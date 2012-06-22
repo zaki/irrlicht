@@ -290,7 +290,7 @@ namespace
 				core::stringc t;
 				for (u32 i=0; i<16; ++i)
 				{
-					t+=core::stringc(Transformation[i]);
+					t+=core::stringc((double)Transformation[i]);
 					t+=" ";
 				}
 			#ifdef COLLADA_READER_DEBUG

@@ -176,7 +176,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				gotLightMap = true;
 			}
 
-			const core::stringc name = namebuf;
+			const core::stringc name(namebuf);
 			const s32 pos = name.findLast('.');
 			const core::stringc LightingMapStr = "LightingMap";
 			const s32 ls = LightingMapStr.size();

@@ -1876,7 +1876,7 @@ void CColladaMeshWriter::writeColorFx(const irr::core::stringw& meshname, const 
 void CColladaMeshWriter::writeFloatElement(irr::f32 value)
 {
 	Writer->writeElement(L"float", false);
-	Writer->writeText(core::stringw(value).c_str());
+	Writer->writeText(core::stringw((double)value).c_str());
 	Writer->writeClosingTag(L"float");
 	Writer->writeLineBreak();
 }
@@ -1890,7 +1890,7 @@ void CColladaMeshWriter::writeRotateElement(const irr::core::vector3df& axis, ir
 	txt += L" ";
 	txt += irr::core::stringw(axis.Z);
 	txt += L" ";
-	txt += irr::core::stringw(angle);
+	txt += irr::core::stringw((double)angle);
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag(L"rotate");
 	Writer->writeLineBreak();

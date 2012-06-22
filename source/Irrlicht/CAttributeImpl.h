@@ -168,7 +168,7 @@ public:
 
 	virtual core::stringw getStringW()
 	{
-		return core::stringw(Value);
+		return core::stringw((double)Value);
 	}
 
 	virtual void setInt(s32 intValue)
@@ -1734,11 +1734,11 @@ public:
 	{
 		if (IsStringW)
 		{
-			ValueW = core::stringw(floatValue);
+			ValueW = core::stringw((double)floatValue);
 		}
 		else
 		{
-			Value = core::stringc(floatValue);
+			Value = core::stringc((double)floatValue);
 		}
 	};
 

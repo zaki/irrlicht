@@ -185,7 +185,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			file->write(num.c_str(),num.size());
 			getColorAsStringLine(mat[i]->EmissiveColor, "Ke", num);
 			file->write(num.c_str(),num.size());
-			num = core::stringc(mat[i]->Shininess/0.128f);
+			num = core::stringc((double)(mat[i]->Shininess/0.128f));
 			file->write("Ns ", 3);
 			file->write(num.c_str(),num.size());
 			file->write("\n", 1);
@@ -227,11 +227,11 @@ void COBJMeshWriter::getColorAsStringLine(const video::SColor& color, const c8* 
 {
 	s = prefix;
 	s += " ";
-	s += core::stringc(color.getRed()/255.f);
+	s += core::stringc((double)(color.getRed()/255.f));
 	s += " ";
-	s += core::stringc(color.getGreen()/255.f);
+	s += core::stringc((double)(color.getGreen()/255.f));
 	s += " ";
-	s += core::stringc(color.getBlue()/255.f);
+	s += core::stringc((double)(color.getBlue()/255.f));
 	s += "\n";
 }
 
