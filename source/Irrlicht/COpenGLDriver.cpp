@@ -2421,7 +2421,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 
 bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
-	if (stage >= MaxTextureUnits)
+	if (stage >= MaxSupportedTextures)
 		return false;
 
 	if (CurrentTexture[stage]==texture)
@@ -2460,7 +2460,7 @@ bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 bool COpenGLDriver::disableTextures(u32 fromStage)
 {
 	bool result=true;
-	for (u32 i=fromStage; i<MaxTextureUnits; ++i)
+	for (u32 i=fromStage; i<MaxSupportedTextures; ++i)
 		result &= setActiveTexture(i, 0);
 	return result;
 }

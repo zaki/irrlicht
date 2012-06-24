@@ -567,13 +567,29 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	#endif
 #endif // _IRR_WINDOWS_API_
 
-	GLint num;
+	GLint num=0;
 	// set some properties
 #if defined(GL_ARB_multitexture) || defined(GL_VERSION_1_3)
 	if (Version>102 || FeatureAvailable[IRR_ARB_multitexture])
 	{
+#if defined(GL_MAX_TEXTURE_UNITS)
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &num);
+#elif defined(GL_MAX_TEXTURE_UNITS_ARB)
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &num);
+#endif
 		MaxSupportedTextures=static_cast<u8>(num);
+	}
+#endif
+#if defined(GL_ARB_vertex_shader) || defined(GL_VERSION_2_0)
+	if (Version>=200 || FeatureAvailable[IRR_ARB_vertex_shader])
+	{
+		num=0;
+#if defined(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &num);
+#elif defined(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB)
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &num);
+#endif
+		MaxSupportedTextures=core::max_(MaxSupportedTextures,static_cast<u8>(num));
 	}
 #endif
 	glGetIntegerv(GL_MAX_LIGHTS, &num);
