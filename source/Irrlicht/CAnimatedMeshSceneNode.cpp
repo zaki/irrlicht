@@ -81,6 +81,7 @@ f32 CAnimatedMeshSceneNode::getFrameNr() const
 }
 
 
+//! Get CurrentFrameNr and update transiting settings
 void CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 {
 	if (Transiting!=0.f)
@@ -238,18 +239,27 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 //! OnAnimate() is called just before rendering the whole scene.
 void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
-	buildFrameNr(timeMs-LastTimeMs);
-
-	if (Mesh)
+	// set CurrentFrameNr and update bbox
+	if (LastTimeMs==0)
 	{
-		scene::IMesh * mesh = getMeshForCurrentFrame();
+		CurrentFrameNr = (f32)StartFrame;
+		// bbox is the default one, so no change
+	}
+	else
+	{
+		buildFrameNr(timeMs-LastTimeMs);
 
-		if (mesh)
-			Box = mesh->getBoundingBox();
+		if (Mesh)
+		{
+			scene::IMesh * mesh = getMeshForCurrentFrame();
+
+			if (mesh)
+				Box = mesh->getBoundingBox();
+		}
 	}
 	LastTimeMs = timeMs;
 
-	IAnimatedMeshSceneNode::OnAnimate ( timeMs );
+	IAnimatedMeshSceneNode::OnAnimate(timeMs);
 }
 
 
