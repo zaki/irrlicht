@@ -5,6 +5,7 @@
 	Defines the Entities for Quake3
 */
 
+#include <irrlicht.h>
 #include "q3factory.h"
 #include "sound.h"
 

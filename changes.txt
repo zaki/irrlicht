@@ -327,6 +327,31 @@ The following names can be queried for the given types:
  - WM_SYSCOMMAND - SC_KEYMENU message is now ignored (F10 and ALT in Win32 windowed mode)
 
 -----------------------------
+Changes in 1.7.4
+
+ - Change include order to get example 21 compiling on MinGW.
+ 
+ - Irrlicht.dll has correct name now again (was named libIrrlicht.dll in c::b). This fixes bugreport 3518765 reported by tetho.
+ 
+ - Fix linker path in example 16 for C::B project file (linker path was in include path section).
+ 
+ - Link with opengl32 and gdi32 in Example 14 in C::B.
+
+ - Remove --no-export-all-symbols which got recently added to the windows build as that flag is not known by gcc on Windows.
+
+ - Fix bug in example 23 where Width and Height got mixed up. Thanks @Lazier for reporting.
+
+ - Fix for R5G6B5 converter submitted by XMight
+
+ - Fix conversion warning under mingw, found by Randajad
+
+ - Set EMF_NORMALIZE_NORMALS correct for syndey model in Demo (thanks @ Midnight for reporting).
+
+ - SceneNodeAnimatorFlyCircle fixes serialization of RadiusEllipsoid (was writing Radius). Thx @ wing64 for reporting.
+
+ - Yield on Linux now uses nanosleep with 1ns as 0 isn't guaranteed to yield (thx @ hendu for finding + fix)
+  
+-----------------------------
 Changes in 1.7.3 (20.02.2012)
 
  - SceneNodeAnimatorFlyCircle fixes serialization of RadiusEllipsoid (was writing Radius). Thx @ wing64 for reporting.

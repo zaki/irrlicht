@@ -18,6 +18,8 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
+					<Add library="opengl32" />
+					<Add library="gdi32" />
 					<Add directory="../../lib/Win32-gcc" />
 				</Linker>
 			</Target>

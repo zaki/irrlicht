@@ -6,7 +6,10 @@
 #define __E_DRIVER_CHOICE_H_INCLUDED__
 
 #include <iostream>
+#include <cstdio>
 #include "EDriverTypes.h"
+#include "irrTypes.h"
+#include "IrrlichtDevice.h"
 
 namespace irr
 {

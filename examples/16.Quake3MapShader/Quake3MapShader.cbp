@@ -15,8 +15,10 @@
 				<Compiler>
 					<Add option="-W" />
 					<Add option="-g" />
-					<Add directory="../../lib/Win32-gcc" />
 				</Compiler>
+				<Linker>
+					<Add directory="..\..\lib\Win32-gcc" />
+				</Linker>				
 			</Target>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
