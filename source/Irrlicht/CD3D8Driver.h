@@ -14,6 +14,7 @@
 	#include <windows.h>
 #endif
 
+#include "SIrrCreationParameters.h"
 // always included for static createDriver function
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -31,8 +32,7 @@ namespace video
 	public:
 
 		//! constructor
-		CD3D8Driver(const core::dimension2d<u32>& screenSize, HWND window, bool fullscreen,
-			bool stencibuffer, io::IFileSystem* io, bool pureSoftware=false, bool vsync=false);
+		CD3D8Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
 
 		//! destructor
 		virtual ~CD3D8Driver();
@@ -305,6 +305,7 @@ namespace video
 		IDirect3DSurface8* PrevRenderTarget;
 		core::dimension2d<u32> CurrentRendertargetSize;
 
+		HWND WindowId;
 		core::rect<s32>* SceneSourceRect;
 
 		D3DCAPS8 Caps;

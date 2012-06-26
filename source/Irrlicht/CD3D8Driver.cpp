@@ -212,10 +212,11 @@ bool CD3D8Driver::initDriver(HWND hwnd, bool pureSoftware)
 		present.BackBufferWidth = Params.WindowSize.Width;
 		present.BackBufferHeight = Params.WindowSize.Height;
 		present.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
+
 		if (Params.Vsync)
-			present.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+			present.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 		else
-			present.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+			present.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
 		if (Params.Bits == 32)
 			present.BackBufferFormat = D3DFMT_X8R8G8B8;
@@ -252,7 +253,7 @@ bool CD3D8Driver::initDriver(HWND hwnd, bool pureSoftware)
 	}
 
 	// check stencil buffer compatibility
-	if (Params.StencilBuffer)
+	if (Params.Stencilbuffer)
 	{
 		present.AutoDepthStencilFormat = D3DFMT_D24S8;
 		if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
@@ -271,7 +272,7 @@ bool CD3D8Driver::initDriver(HWND hwnd, bool pureSoftware)
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
 					os::Printer::log("Device does not support stencilbuffer, disabling stencil buffer.", ELL_WARNING);
-					Params.StencilBuffer = false;
+					Params.Stencilbuffer = false;
 				}
 			}
 #endif
@@ -281,11 +282,11 @@ bool CD3D8Driver::initDriver(HWND hwnd, bool pureSoftware)
 			present.BackBufferFormat, present.BackBufferFormat, present.AutoDepthStencilFormat)))
 		{
 			os::Printer::log("Depth-stencil format is not compatible with display format, disabling stencil buffer.", ELL_WARNING);
-			Params.StencilBuffer = false;
+			Params.Stencilbuffer = false;
 		}
 	}
 	// do not use else here to cope with flag change in previous block
-	if (!Params.StencilBuffer)
+	if (!Params.Stencilbuffer)
 	{
 #if !defined( _IRR_XBOX_PLATFORM_)
 		present.AutoDepthStencilFormat = D3DFMT_D32;
@@ -359,13 +360,13 @@ bool CD3D8Driver::initDriver(HWND hwnd, bool pureSoftware)
 	// get caps
 	pID3DDevice->GetDeviceCaps(&Caps);
 
-	if (Params.StencilBuffer &&
+	if (Params.Stencilbuffer &&
 		(!(Caps.StencilCaps & D3DSTENCILCAPS_DECRSAT) ||
 		!(Caps.StencilCaps & D3DSTENCILCAPS_INCRSAT) ||
 		!(Caps.StencilCaps & D3DSTENCILCAPS_KEEP)))
 	{
 		os::Printer::log("Device not able to use stencil buffer, disabling stencil buffer.", ELL_WARNING);
-		Params.StencilBuffer = false;
+		Params.Stencilbuffer = false;
 	}
 
 	// set default vertex shader
@@ -450,7 +451,7 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	if (zBuffer)
 		flags |= D3DCLEAR_ZBUFFER;
 
-	if (Params.StencilBuffer)
+	if (Params.Stencilbuffer)
 		flags |= D3DCLEAR_STENCIL;
 
 	if (flags)
@@ -581,7 +582,7 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_MIP_MAP:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) != 0;
 	case EVDF_STENCIL_BUFFER:
-		return Params.StencilBuffer && Caps.StencilCaps;
+		return Params.Stencilbuffer && Caps.StencilCaps;
 	case EVDF_VERTEX_SHADER_1_1:
 		return Caps.VertexShaderVersion >= D3DVS_VERSION(1,1);
 	case EVDF_VERTEX_SHADER_2_0:
@@ -2009,7 +2010,7 @@ const wchar_t* CD3D8Driver::getName() const
 void CD3D8Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
 	const u32 count = triangles.size();
-	if (!Params.StencilBuffer || !count)
+	if (!Params.Stencilbuffer || !count)
 		return;
 
 	setRenderStatesStencilShadowMode(zfail, debugDataVisible);
@@ -2051,7 +2052,7 @@ void CD3D8Driver::drawStencilShadowVolume(const core::array<core::vector3df>& tr
 void CD3D8Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 			video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
-	if (!Params.StencilBuffer)
+	if (!Params.Stencilbuffer)
 		return;
 
 	S3DVertex vtx[4];
