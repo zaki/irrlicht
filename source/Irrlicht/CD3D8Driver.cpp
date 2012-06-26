@@ -25,16 +25,15 @@ namespace video
 
 
 //! constructor
-CD3D8Driver::CD3D8Driver(const core::dimension2d<u32>& screenSize, HWND window,
-			bool fullscreen, bool stencilbuffer,
-			io::IFileSystem* io, bool pureSoftware, bool vsync)
-: CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
-	ResetRenderStates(true), Transformation3DChanged(false), StencilBuffer(stencilbuffer),
+CD3D8Driver::CD3D8Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io)
+	: CNullDriver(io, params.WindowSize), CurrentRenderMode(ERM_NONE),
+	ResetRenderStates(true), Transformation3DChanged(false),
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
-	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
+	LastVertexType((video::E_VERTEX_TYPE)-1),
+	MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(0), LastSetLight(-1), DeviceLost(false),
-	DriverWasReset(true), DisplayAdapter(0)
+	DriverWasReset(true), Params(params)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D8Driver");
@@ -141,13 +140,10 @@ void CD3D8Driver::createMaterialRenderers()
 
 
 //! initialises the Direct3D API
-bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
-		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
-		bool highPrecisionFPU, bool vsync, u8 antiAlias, u32 displayAdapter)
+bool CD3D8Driver::initDriver(HWND hwnd, bool pureSoftware)
 {
 	HRESULT hr;
 	typedef IDirect3D8 * (__stdcall *D3DCREATETYPE)(UINT);
-	DisplayAdapter = displayAdapter;
 
 #if defined( _IRR_XBOX_PLATFORM_)
 	D3DCREATETYPE d3dCreate = (D3DCREATETYPE) &Direct3DCreate8;
@@ -180,7 +176,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	// print device information
 	D3DADAPTER_IDENTIFIER8 dai;
-	if (!FAILED(pID3D->GetAdapterIdentifier(DisplayAdapter, D3DENUM_NO_WHQL_LEVEL, &dai)))
+	if (!FAILED(pID3D->GetAdapterIdentifier(Params.DisplayAdapter, D3DENUM_NO_WHQL_LEVEL, &dai)))
 	{
 		char tmp[512];
 
@@ -195,7 +191,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	}
 
 	D3DDISPLAYMODE d3ddm;
-	hr = pID3D->GetAdapterDisplayMode(DisplayAdapter, &d3ddm);
+	hr = pID3D->GetAdapterDisplayMode(Params.DisplayAdapter, &d3ddm);
 	if (FAILED(hr))
 	{
 		os::Printer::log("Error: Could not get Adapter Display mode.", ELL_ERROR);
@@ -209,16 +205,19 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	present.BackBufferFormat = d3ddm.Format;
 	present.EnableAutoDepthStencil = TRUE;
 
-	if (fullScreen)
+	if (Params.Fullscreen)
 	{
 		present.SwapEffect = D3DSWAPEFFECT_FLIP;
 		present.Windowed = FALSE;
-		present.BackBufferWidth = screenSize.Width;
-		present.BackBufferHeight = screenSize.Height;
+		present.BackBufferWidth = Params.WindowSize.Width;
+		present.BackBufferHeight = Params.WindowSize.Height;
 		present.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-		present.FullScreen_PresentationInterval = vsync ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;
+		if (Params.Vsync)
+			present.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+		else
+			present.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-		if (bits == 32)
+		if (Params.Bits == 32)
 			present.BackBufferFormat = D3DFMT_X8R8G8B8;
 		else
 			present.BackBufferFormat = D3DFMT_R5G6B5;
@@ -230,77 +229,77 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	#endif
 
 	// enable anti alias if possible and whished
-	if (antiAlias > 0)
+	if (Params.AntiAlias > 0)
 	{
-		if(antiAlias > 16)
-			antiAlias = 16;
+		if(Params.AntiAlias > 16)
+			Params.AntiAlias = 16;
 
-		while(antiAlias > 0)
+		while(Params.AntiAlias > 0)
 		{
-			if(!FAILED(pID3D->CheckDeviceMultiSampleType(DisplayAdapter,
-				devtype , present.BackBufferFormat, !fullScreen,
-				(D3DMULTISAMPLE_TYPE)antiAlias)))
+			if(!FAILED(pID3D->CheckDeviceMultiSampleType(Params.DisplayAdapter,
+				devtype , present.BackBufferFormat, !Params.Fullscreen,
+				(D3DMULTISAMPLE_TYPE)Params.AntiAlias)))
 			{
-				present.MultiSampleType	= (D3DMULTISAMPLE_TYPE)antiAlias;
+				present.MultiSampleType	= (D3DMULTISAMPLE_TYPE)Params.AntiAlias;
 				present.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
 				break;
 			}
-			--antiAlias;
+			--Params.AntiAlias;
 		}
 
-		if(antiAlias==0)
+		if(Params.AntiAlias==0)
 			os::Printer::log("Anti aliasing disabled because hardware/driver lacks necessary caps.", ELL_WARNING);
 	}
 
 	// check stencil buffer compatibility
-	if (StencilBuffer)
+	if (Params.StencilBuffer)
 	{
 		present.AutoDepthStencilFormat = D3DFMT_D24S8;
-		if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
 #if !defined( _IRR_XBOX_PLATFORM_)
 			present.AutoDepthStencilFormat = D3DFMT_D24X4S4;
-			if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
+			if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
 				present.AutoDepthStencilFormat = D3DFMT_D15S1;
-				if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
+				if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
 					os::Printer::log("Device does not support stencilbuffer, disabling stencil buffer.", ELL_WARNING);
-					StencilBuffer = false;
+					Params.StencilBuffer = false;
 				}
 			}
 #endif
 		}
 		else
-		if(FAILED(pID3D->CheckDepthStencilMatch(DisplayAdapter, devtype,
+		if(FAILED(pID3D->CheckDepthStencilMatch(Params.DisplayAdapter, devtype,
 			present.BackBufferFormat, present.BackBufferFormat, present.AutoDepthStencilFormat)))
 		{
 			os::Printer::log("Depth-stencil format is not compatible with display format, disabling stencil buffer.", ELL_WARNING);
-			StencilBuffer = false;
+			Params.StencilBuffer = false;
 		}
 	}
 	// do not use else here to cope with flag change in previous block
-	if (!StencilBuffer)
+	if (!Params.StencilBuffer)
 	{
 #if !defined( _IRR_XBOX_PLATFORM_)
 		present.AutoDepthStencilFormat = D3DFMT_D32;
-		if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
 			present.AutoDepthStencilFormat = D3DFMT_D24X8;
-			if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
+			if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
 				present.AutoDepthStencilFormat = D3DFMT_D16;
-				if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
+				if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
@@ -311,7 +310,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		}
 #else
 		present.AutoDepthStencilFormat = D3DFMT_D16;
-		if(FAILED(pID3D->CheckDeviceFormat(DisplayAdapter, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(Params.DisplayAdapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
@@ -325,27 +324,28 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 #if defined( _IRR_XBOX_PLATFORM_)
 	DWORD fpuPrecision = 0;
 #else
-	DWORD fpuPrecision = highPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
+	DWORD fpuPrecision = Params.HighPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
+	DWORD multithreaded = Params.DriverMultithreaded ? D3DCREATE_MULTITHREADED : 0;
 #endif
 	if (pureSoftware)
 	{
-		hr = pID3D->CreateDevice(DisplayAdapter, D3DDEVTYPE_REF, hwnd,
-				fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+		hr = pID3D->CreateDevice(Params.DisplayAdapter, D3DDEVTYPE_REF, hwnd,
+				fpuPrecision | multithreaded | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if (FAILED(hr))
 			os::Printer::log("Was not able to create Direct3D8 software device.", ELL_ERROR);
 	}
 	else
 	{
-		hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-				fpuPrecision | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+		hr = pID3D->CreateDevice(Params.DisplayAdapter, devtype, hwnd,
+				fpuPrecision | multithreaded | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if(FAILED(hr))
-			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-					fpuPrecision | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
+			hr = pID3D->CreateDevice(Params.DisplayAdapter, devtype, hwnd,
+					fpuPrecision | multithreaded | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
 		if(FAILED(hr))
-			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-					fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+			hr = pID3D->CreateDevice(Params.DisplayAdapter, devtype, hwnd,
+					fpuPrecision | multithreaded | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 		if (FAILED(hr))
 			os::Printer::log("Was not able to create Direct3D8 device.", ELL_ERROR);
 	}
@@ -359,20 +359,20 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	// get caps
 	pID3DDevice->GetDeviceCaps(&Caps);
 
-	if (StencilBuffer &&
+	if (Params.StencilBuffer &&
 		(!(Caps.StencilCaps & D3DSTENCILCAPS_DECRSAT) ||
 		!(Caps.StencilCaps & D3DSTENCILCAPS_INCRSAT) ||
 		!(Caps.StencilCaps & D3DSTENCILCAPS_KEEP)))
 	{
 		os::Printer::log("Device not able to use stencil buffer, disabling stencil buffer.", ELL_WARNING);
-		StencilBuffer = false;
+		Params.StencilBuffer = false;
 	}
 
 	// set default vertex shader
 	setVertexShader(EVT_STANDARD);
 
 	// enable antialiasing
-	if (antiAlias>0)
+	if (Params.AntiAlias>0)
 		pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
 	// set fog mode
@@ -401,7 +401,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
 	DriverAttributes->setAttribute("Version", 800);
 	DriverAttributes->setAttribute("ShaderLanguageVersion", (s32)Caps.VertexShaderVersion*100);
-	DriverAttributes->setAttribute("AntiAlias", antiAlias);
+	DriverAttributes->setAttribute("AntiAlias", Params.AntiAlias);
 
 	// set the renderstates
 	setRenderStates3DMode();
@@ -450,7 +450,7 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	if (zBuffer)
 		flags |= D3DCLEAR_ZBUFFER;
 
-	if (StencilBuffer)
+	if (Params.StencilBuffer)
 		flags |= D3DCLEAR_STENCIL;
 
 	if (flags)
@@ -581,7 +581,7 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_MIP_MAP:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) != 0;
 	case EVDF_STENCIL_BUFFER:
-		return StencilBuffer && Caps.StencilCaps;
+		return Params.StencilBuffer && Caps.StencilCaps;
 	case EVDF_VERTEX_SHADER_1_1:
 		return Caps.VertexShaderVersion >= D3DVS_VERSION(1,1);
 	case EVDF_VERTEX_SHADER_2_0:
@@ -2009,7 +2009,7 @@ const wchar_t* CD3D8Driver::getName() const
 void CD3D8Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
 	const u32 count = triangles.size();
-	if (!StencilBuffer || !count)
+	if (!Params.StencilBuffer || !count)
 		return;
 
 	setRenderStatesStencilShadowMode(zfail, debugDataVisible);
@@ -2051,7 +2051,7 @@ void CD3D8Driver::drawStencilShadowVolume(const core::array<core::vector3df>& tr
 void CD3D8Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 			video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
-	if (!StencilBuffer)
+	if (!Params.StencilBuffer)
 		return;
 
 	S3DVertex vtx[4];
@@ -2422,10 +2422,9 @@ IVideoDriver* createDirectX8Driver(const SIrrlichtCreationParameters& params,
 			io::IFileSystem* io, HWND window)
 {
 	const bool pureSoftware = false;
-	CD3D8Driver* dx8 = new CD3D8Driver(params.WindowSize, window, params.Fullscreen, params.Stencilbuffer, io, pureSoftware);
+	CD3D8Driver* dx8 = new CD3D8Driver(params, io);
 
-	if (!dx8->initDriver(params.WindowSize, window, params.Bits, params.Fullscreen, pureSoftware, params.HighPrecisionFPU,
-		params.Vsync, params.AntiAlias, params.DisplayAdapter))
+	if (!dx8->initDriver(window, pureSoftware))
 	{
 		dx8->drop();
 		dx8 = 0;
