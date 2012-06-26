@@ -326,12 +326,11 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	DWORD fpuPrecision = 0;
 #else
 	DWORD fpuPrecision = highPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
-	DWORD multithreaded = Params.DriverMultithreaded ? D3DCREATE_MULTITHREADED : 0;
 #endif
 	if (pureSoftware)
 	{
 		hr = pID3D->CreateDevice(DisplayAdapter, D3DDEVTYPE_REF, hwnd,
-				fpuPrecision | multithreaded | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+				fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if (FAILED(hr))
 			os::Printer::log("Was not able to create Direct3D8 software device.", ELL_ERROR);
@@ -339,14 +338,14 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	else
 	{
 		hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-				fpuPrecision | multithreaded | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+				fpuPrecision | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if(FAILED(hr))
 			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-					fpuPrecision | multithreaded | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
+					fpuPrecision | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
 		if(FAILED(hr))
 			hr = pID3D->CreateDevice(DisplayAdapter, devtype, hwnd,
-					fpuPrecision | multithreaded | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
+					fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 		if (FAILED(hr))
 			os::Printer::log("Was not able to create Direct3D8 device.", ELL_ERROR);
 	}
