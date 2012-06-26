@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - add -fPic in c::b linux fast math shared build.
+
  - triangle3d::isPointInsideFast now using some epsilon to catch all points on the borders.
 
  - triangle3d::getIntersectionOfPlaneWithLine calculates now with higher precision for more exact results.
