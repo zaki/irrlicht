@@ -62,6 +62,9 @@ public:
 	/** \param new_size New size of array. */
 	void reallocate(u32 new_size)
 	{
+		if (allocated==new_size)
+			return;
+
 		T* old_data = data;
 
 		data = allocator.allocate(new_size); //new T[new_size];
