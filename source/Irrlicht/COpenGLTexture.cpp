@@ -144,8 +144,8 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			internalformat =  GL_RGBA;
 			break;
 		case ECF_R5G6B5:
-			colorformat=GL_BGR;
-			type=GL_UNSIGNED_SHORT_5_6_5_REV;
+			colorformat=GL_RGB;
+			type=GL_UNSIGNED_SHORT_5_6_5;
 			internalformat =  GL_RGB;
 			break;
 		case ECF_R8G8B8:
@@ -699,6 +699,9 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
 		ImageSize.Height, 0, PixelFormat, PixelType, 0);
+#ifdef _DEBUG
+	driver->testGLError();
+#endif
 
 	// attach color texture to frame buffer
 	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
@@ -706,6 +709,10 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 						GL_TEXTURE_2D,
 						TextureName,
 						0);
+#ifdef _DEBUG
+	checkFBOStatus(Driver);
+#endif
+
 #endif
 	unbindRTT();
 }

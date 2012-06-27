@@ -2548,7 +2548,7 @@ bool COpenGLDriver::testGLError()
 		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", ELL_ERROR); break;
 #endif
 	};
-	_IRR_DEBUG_BREAK_IF(true);
+//	_IRR_DEBUG_BREAK_IF(true);
 	return true;
 #else
 	return false;
