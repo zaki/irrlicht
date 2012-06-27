@@ -239,23 +239,21 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 //! OnAnimate() is called just before rendering the whole scene.
 void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
-	// set CurrentFrameNr and update bbox
-	if (LastTimeMs==0)
+	if (LastTimeMs==0)	// first frame
 	{
-		CurrentFrameNr = (f32)StartFrame;
-		// bbox is the default one, so no change
+		LastTimeMs = timeMs;
 	}
-	else
+
+	// set CurrentFrameNr 
+	buildFrameNr(timeMs-LastTimeMs);
+
+	// update bbox
+	if (Mesh)
 	{
-		buildFrameNr(timeMs-LastTimeMs);
+		scene::IMesh * mesh = getMeshForCurrentFrame();
 
-		if (Mesh)
-		{
-			scene::IMesh * mesh = getMeshForCurrentFrame();
-
-			if (mesh)
-				Box = mesh->getBoundingBox();
-		}
+		if (mesh)
+			Box = mesh->getBoundingBox();
 	}
 	LastTimeMs = timeMs;
 
