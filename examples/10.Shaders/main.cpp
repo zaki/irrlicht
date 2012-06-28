@@ -107,7 +107,7 @@ public:
 			services->setVertexShaderConstant("mTransWorld", world.pointer(), 16);
 			// set texture, for textures it's very important to pass an int instead of float for a setPixelShaderConstant method.
 			s32 TextureLayerID = 0;
-			if (UseHighLevelShaders)
+			if (UseHighLevelShaders && driver->getDriverType() == video::EDT_OPENGL)
 				services->setPixelShaderConstant("myTexture", &TextureLayerID, 1);
 		}
 		else
