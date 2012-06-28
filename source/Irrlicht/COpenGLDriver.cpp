@@ -4121,7 +4121,8 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 #endif
 
 	// check if we should set the previous RT back
-	if (RenderTargetTexture != texture)
+	if ((RenderTargetTexture != texture) ||
+		(CurrentTarget==ERT_MULTI_RENDER_TEXTURES))
 	{
 		setActiveTexture(0, 0);
 		ResetRenderStates=true;
@@ -4135,6 +4136,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 			// we want to set a new target. so do this.
 			glViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
 			RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
+			// calls glDrawBuffer as well
 			RenderTargetTexture->bindRTT();
 			CurrentRendertargetSize = texture->getSize();
 			CurrentTarget=ERT_RENDER_TEXTURE;
