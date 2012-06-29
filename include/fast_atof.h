@@ -6,11 +6,16 @@
 #define __FAST_ATOF_H_INCLUDED__
 
 #include "irrMath.h"
+#include "irrString.h"
 
 namespace irr
 {
 namespace core
 {
+	//! Selection of characters which count as decimal point in fast_atof
+	// TODO: This should probably also be used in irr::core::string, but the float-to-string code
+	//		used there has to be rewritten first.
+	IRRLICHT_API extern irr::core::stringc LOCALE_DECIMAL_POINTS;
 
 // we write [17] here instead of [] to work around a swig bug
 const float fast_atof_table[17] = {
@@ -315,7 +320,7 @@ inline const char* fast_atof_move(const char* in, f32& result)
 
 	f32 value = strtof10(in, &in);
 
-	if ('.' == *in)
+	if ( LOCALE_DECIMAL_POINTS.findFirst(*in) >= 0 )
 	{
 		const char* afterDecimal = ++in;
 		const f32 decimal = strtof10(in, &afterDecimal);

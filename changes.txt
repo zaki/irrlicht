@@ -1,5 +1,19 @@
 Changes in 1.8 (??.??.2011)
 
+ - User can now set characters used for decimal point in fast_atof for localisation.
+
+ - Add parameter useAlphaChannel to second IGUIEnvironment::addImage function.
+
+ - Fix vsync on X11
+ 
+ - Fix MRT disabling. Bug found and fixed by hendu. 
+
+ - core:::array::reallocate returning now immediately when it has nothing to do. Should reduce a lot of memory thrashing on irrArrays.
+
+ - Start mesh animations at first OnAnimate , before start-frame was rather random.  Thx @Auria for reporting and patch proposal.
+ 
+ - renderTargetTexture now working with ECF_R5G6B5
+
  - add -fPic in c::b linux fast math shared build.
 
  - triangle3d::isPointInsideFast now using some epsilon to catch all points on the borders.
