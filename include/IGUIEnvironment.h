@@ -300,11 +300,13 @@ public:
 	\param parent Parent gui element of the image.
 	\param id Id to identify the gui element.
 	\param text Title text of the image.
+	\param useAlphaChannel Sets if the image should use the alpha channel
+	of the texture to draw itself.
 	\return Pointer to the created image element. Returns 0 if an error
 	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIImage* addImage(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
+		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0, bool useAlphaChannel=true) = 0;
 
 	//! Adds a checkbox element.
 	/** \param checked Define the initial state of the check box.

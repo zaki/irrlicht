@@ -1113,13 +1113,16 @@ IGUIImage* CGUIEnvironment::addImage(video::ITexture* image, core::position2d<s3
 
 
 //! adds an image. The returned pointer must not be dropped.
-IGUIImage* CGUIEnvironment::addImage(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id, const wchar_t* text)
+IGUIImage* CGUIEnvironment::addImage(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id, const wchar_t* text, bool useAlphaChannel)
 {
 	IGUIImage* img = new CGUIImage(this, parent ? parent : this,
 		id, rectangle);
 
 	if (text)
 		img->setText(text);
+
+	if ( useAlphaChannel )
+		img->setUseAlphaChannel(true);
 
 	img->drop();
 	return img;
