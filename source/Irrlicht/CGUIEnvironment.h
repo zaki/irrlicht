@@ -310,6 +310,7 @@ private:
 	io::IFileSystem* FileSystem;
 	IEventReceiver* UserReceiver;
 	IOSOperator* Operator;
+	static const io::path DefaultFontName;
 };
 
 } // end namespace gui

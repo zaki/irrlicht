@@ -52,6 +52,8 @@ const wchar_t* IRR_XML_FORMAT_GUI_ENV			= L"irr_gui";
 const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT		= L"element";
 const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE	= L"type";
 
+const io::path CGUIEnvironment::DefaultFontName = "#DefaultFont";
+
 //! constructor
 CGUIEnvironment::CGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* driver, IOSOperator* op)
 : IGUIElement(EGUIET_ROOT, 0, 0, 0, core::rect<s32>(core::position2d<s32>(0,0), driver ? core::dimension2d<s32>(driver->getScreenSize()) : core::dimension2d<s32>(0,0))),
@@ -166,11 +168,9 @@ CGUIEnvironment::~CGUIEnvironment()
 
 void CGUIEnvironment::loadBuiltInFont()
 {
-	io::path filename = "#DefaultFont";
+	io::IReadFile* file = io::createMemoryReadFile(BuiltInFontData, BuiltInFontDataSize, DefaultFontName, false);
 
-	io::IReadFile* file = io::createMemoryReadFile(BuiltInFontData, BuiltInFontDataSize, filename, false);
-
-	CGUIFont* font = new CGUIFont(this, filename );
+	CGUIFont* font = new CGUIFont(this, DefaultFontName );
 	if (!font->load(file))
 	{
 		os::Printer::log("Error: Could not load built-in Font. Did you compile without the BMP loader?", ELL_ERROR);
@@ -180,7 +180,7 @@ void CGUIEnvironment::loadBuiltInFont()
 	}
 
 	SFont f;
-	f.NamedPath.setPath(filename);
+	f.NamedPath.setPath(DefaultFontName);
 	f.Font = font;
 	Fonts.push_back(f);
 
@@ -1529,7 +1529,10 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 	// we don't have this sprite bank, we should load it
 	if (!FileSystem->existFile(b.NamedPath.getPath()))
 	{
-		os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_DEBUG);
+		if ( filename != DefaultFontName )
+		{
+			os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_DEBUG);
+		}
 		return 0;
 	}
 
