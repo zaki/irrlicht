@@ -2323,7 +2323,7 @@ inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum sr
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendFunciARB)
 		pGlBlendFunciARB(buf, src, dst);
-	if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendFuncIndexedAMD)
+	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendFuncIndexedAMD)
 		pGlBlendFuncIndexedAMD(buf, src, dst);
 #elif defined(GL_ARB_draw_buffers_blend)
 	glBlendFunciARB(buf, src, dst);
@@ -2339,7 +2339,7 @@ inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenu
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendEquationiARB)
 		pGlBlendEquationiARB(buf, mode);
-	if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendEquationIndexedAMD)
+	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendEquationIndexedAMD)
 		pGlBlendEquationIndexedAMD(buf, mode);
 #elif defined(GL_ARB_draw_buffers_blend)
 	glBlendEquationiARB(buf, mode);
