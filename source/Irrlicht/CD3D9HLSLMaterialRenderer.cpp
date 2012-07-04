@@ -286,11 +286,18 @@ bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
 		return false;
 	}
 
-	HRESULT hr = tbl->SetFloatArray(pID3DDevice, hndl, floats, count);
-	if (FAILED(hr))
+	D3DXCONSTANT_DESC Description;
+	UINT ucount = 1;
+    tbl->GetConstantDesc(hndl, &Description, &ucount);
+
+	if(Description.RegisterSet != D3DXRS_SAMPLER)
 	{
-		os::Printer::log("Error setting float array for HLSL variable", ELL_WARNING);
-		return false;
+		HRESULT hr = tbl->SetFloatArray(pID3DDevice, hndl, floats, count);
+		if (FAILED(hr))
+		{
+			os::Printer::log("Error setting float array for HLSL variable", ELL_WARNING);
+			return false;
+		}
 	}
 
 	return true;
@@ -318,11 +325,18 @@ bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
 		return false;
 	}
 
-	HRESULT hr = tbl->SetIntArray(pID3DDevice, hndl, ints, count);
-	if (FAILED(hr))
+	D3DXCONSTANT_DESC Description;
+	UINT ucount = 1;
+    tbl->GetConstantDesc(hndl, &Description, &ucount);
+
+	if(Description.RegisterSet != D3DXRS_SAMPLER)
 	{
-		os::Printer::log("Error setting int array for HLSL variable", ELL_WARNING);
-		return false;
+		HRESULT hr = tbl->SetIntArray(pID3DDevice, hndl, ints, count);
+		if (FAILED(hr))
+		{
+			os::Printer::log("Error setting int array for HLSL variable", ELL_WARNING);
+			return false;
+		}
 	}
 
 	return true;

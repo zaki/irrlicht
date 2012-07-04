@@ -550,10 +550,18 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 		case GL_FLOAT_MAT4_ARB:
 			Driver->extGlUniformMatrix4fv(Location, count/16, false, floats);
 			break;
-		default: // deprecated.
-			os::Printer::log("Deprecation! Please use int interface instead of float to set variable", name, ELL_WARNING);
-			const GLint id = static_cast<GLint>(*floats);
-			Driver->extGlUniform1iv(Location, 1, &id);
+		case GL_SAMPLER_1D:
+		case GL_SAMPLER_2D:
+		case GL_SAMPLER_3D:
+		case GL_SAMPLER_CUBE:
+		case GL_SAMPLER_1D_SHADOW:
+		case GL_SAMPLER_2D_SHADOW:
+			{
+				const GLint id = static_cast<GLint>(*floats);
+				Driver->extGlUniform1iv(Location, 1, &id);
+			}
+			break;
+		default:
 			break;
 	}
 	return true;
@@ -594,9 +602,16 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const s32
 		case GL_INT_VEC4_ARB:
 			Driver->extGlUniform4iv(Location, count/4, ints);
 			break;
-		// case GL_INT:
+		case GL_INT:
+		case GL_SAMPLER_1D:
+		case GL_SAMPLER_2D:
+		case GL_SAMPLER_3D:
+		case GL_SAMPLER_CUBE:
+		case GL_SAMPLER_1D_SHADOW:
+		case GL_SAMPLER_2D_SHADOW:
+			Driver->extGlUniform1iv(Location, 1, ints);
+			break;
 		default:
-			Driver->extGlUniform1iv(Location, count, ints);
 			break;
 	}
 	return true;
