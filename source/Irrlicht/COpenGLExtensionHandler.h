@@ -1041,6 +1041,10 @@ class COpenGLExtensionHandler
 	void extGlUniform2fv(GLint loc, GLsizei count, const GLfloat *v);
 	void extGlUniform3fv(GLint loc, GLsizei count, const GLfloat *v);
 	void extGlUniform4fv(GLint loc, GLsizei count, const GLfloat *v);
+	void extGlUniform1bv(GLint loc, GLsizei count, const bool *v);
+	void extGlUniform2bv(GLint loc, GLsizei count, const bool *v);
+	void extGlUniform3bv(GLint loc, GLsizei count, const bool *v);
+	void extGlUniform4bv(GLint loc, GLsizei count, const bool *v);
 	void extGlUniform1iv(GLint loc, GLsizei count, const GLint *v);
 	void extGlUniform2iv(GLint loc, GLsizei count, const GLint *v);
 	void extGlUniform3iv(GLint loc, GLsizei count, const GLint *v);

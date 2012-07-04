@@ -65,6 +65,9 @@ public:
 	*/
 	virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count) = 0;
 
+	//! Bool interface for the above.
+	virtual bool setVertexShaderConstant(const c8* name, const bool* bools, int count) = 0;
+
 	//! Int interface for the above.
 	virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count) = 0;
 
@@ -85,6 +88,9 @@ public:
 	\param count Amount of floats in array.
 	\return True if successful. */
 	virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count) = 0;
+
+	//! Bool interface for the above.
+	virtual bool setPixelShaderConstant(const c8* name, const bool* bools, int count) = 0;
 
 	//! Int interface for the above.
 	virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count) = 0;
