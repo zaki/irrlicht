@@ -1075,7 +1075,7 @@ public:
 			}
 			array[i-1] = 0;
 			used = i;
-			
+
 			return *this;
 		}
 
@@ -1094,16 +1094,13 @@ public:
 		if (used + len > allocated)
 			reallocate(used + len);
 
-		// Don't take the string terminator into account.
-		--used;
-
 		// Start replacing.
 		pos = 0;
 		while ((pos = find(other, pos)) != -1)
 		{
 			T* start = array + pos + other_size - 1;
-			T* ptr   = array + used;
-			T* end   = array + used + delta;
+			T* ptr   = array + used - 1;
+			T* end   = array + delta + used -1;
 
 			// Shift characters to make room for the string.
 			while (ptr != start)
@@ -1121,9 +1118,6 @@ public:
 			used += delta;
 		}
 
-		// Terminate the string and return ourself.
-		array[used] = 0;
-		++used;
 		return *this;
 	}
 

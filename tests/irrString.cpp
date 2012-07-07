@@ -39,6 +39,73 @@ static bool testFastAlloc()
 	return true;
 }
 
+static bool testReplace()
+{
+	// test string getting longer
+	core::stringw str = L"no";
+	str.replace(L"no", L"yes");
+	if ( str != L"yes" )
+		return false;
+	str = L"nonono";
+	str.replace(L"no", L"yes");
+	if ( str != L"yesyesyes" )
+		return false;
+	str = L"nomaybenomaybeno";
+	str.replace(L"no", L"yes");
+	if ( str != L"yesmaybeyesmaybeyes" )
+		return false;
+
+	// test string staying same length
+	str = L"one";
+	str.replace(L"one", L"two");
+	if ( str != L"two" )
+		return false;
+	str = L"oneone";
+	str.replace(L"one", L"two");
+	if ( str != L"twotwo" )
+		return false;
+
+	// test string getting shorter
+	str = L"yes";
+	str.replace(L"yes", L"no");
+	if ( str != L"no" )
+		return false;
+
+	str = L"yesyes";
+	str.replace(L"yes", L"no");
+	if ( str != L"nono" )
+		return false;
+
+	// remove string-parts completely
+	str = L"killme";
+	str.replace(L"killme", L"");
+	if ( str != L"" )
+		return false;
+
+	str = L"killmenow";
+	str.replace(L"killme", L"");
+	if ( str != L"now" )
+		return false;
+
+	str = L"nowkillme";
+	str.replace(L"killme", L"");
+	if ( str != L"now" )
+		return false;
+
+	// remove nothing
+	str = L"keepme";
+	str.replace(L"", L"whatever");
+	if ( str != L"keepme" )
+		return false;
+
+	str = L"keepme";
+	str.replace(L"", L"");
+	if ( str != L"keepme" )
+		return false;
+
+	return true;
+}
+
 
 bool testAppendStringc()
 {
@@ -172,6 +239,9 @@ bool testIrrString(void)
 
 	logTestString("test fast alloc\n");
 	allExpected &= testFastAlloc();
+
+	logTestString("test replace\n");
+	allExpected &= testReplace();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");
