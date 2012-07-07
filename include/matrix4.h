@@ -67,7 +67,7 @@ namespace core
 
 			//! Simple operator for directly accessing every element of the matrix.
 			T& operator()(const s32 row, const s32 col)
-			{ 
+			{
 #if defined ( USE_MATRIX_TEST )
 				definitelyIdentityMatrix=false;
 #endif
@@ -79,9 +79,9 @@ namespace core
 
 			//! Simple operator for linearly accessing every element of the matrix.
 			T& operator[](u32 index)
-			{ 
+			{
 #if defined ( USE_MATRIX_TEST )
-				definitelyIdentityMatrix=false; 
+				definitelyIdentityMatrix=false;
 #endif
 				return M[index];
 			}
@@ -97,8 +97,8 @@ namespace core
 
 			//! Returns pointer to internal array
 			const T* pointer() const { return M; }
-			T* pointer() 
-			{ 
+			T* pointer()
+			{
 #if defined ( USE_MATRIX_TEST )
 				definitelyIdentityMatrix=false;
 #endif
@@ -225,6 +225,8 @@ namespace core
 
 			//! An alternate transform vector method, writing into an array of 4 floats
 			void transformVect(T *out,const core::vector3df &in) const;
+
+			//! An alternate transform vector method, reading from and writing to an array of 3 floats
 			void transformVec3(T *out, const T * in) const;
 
 			//! Translate a vector by the translation part of this matrix.
@@ -953,25 +955,25 @@ namespace core
 		const f64 c   = cos( angle );
 		const f64 s   = sin( angle );
 		const f64 t   = 1.0 - c;
- 
+
 		const f64 tx  = t * axis.X;
- 
+
 		M[0] = tx * axis.X + c;
 		M[1] = tx * axis.Y - s * axis.Z;
 		M[2] = tx * axis.Z + s * axis.Y;
- 
+
 		const f64 ty  = t * axis.Y;
- 
+
 		M[4] = ty * axis.X + s * axis.Z;
 		M[5] = ty * axis.Y + c;
 		M[6] = ty * axis.Z - s * axis.X;
- 
+
 		const f64 tz  = t * axis.Z;
- 
+
 		M[8]  = tz * axis.X - s * axis.Y;
 		M[9]  = tz * axis.Z + s * axis.X;
 		M[10] = tz * axis.Z + c;
- 
+
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
 #endif
@@ -987,25 +989,25 @@ namespace core
  		const f64 c = cos(angle);
 		const f64 s = sin(angle);
 		const f64 t = 1.0 - c;
- 
+
 		const f64 tx  = t * axis.X;
- 
+
 		M[0] = tx * axis.X + c;
 		M[1] = tx * axis.Y + s * axis.Z;
 		M[2] = tx * axis.Z - s * axis.Y;
- 
+
 		const f64 ty  = t * axis.Y;
- 
+
 		M[4] = ty * axis.X - s * axis.Z;
 		M[5] = ty * axis.Y + c;
 		M[6] = ty * axis.Z + s * axis.X;
- 
+
 		const f64 tz  = t * axis.Z;
- 
+
 		M[8]  = tz * axis.X + s * axis.Y;
 		M[9]  = tz * axis.Z - s * axis.X;
 		M[10] = tz * axis.Z + c;
- 
+
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
 #endif
@@ -1982,7 +1984,7 @@ namespace core
 		v.normalize();
 
 		// cosinus angle
-		T ca = f.dotProduct(t);	
+		T ca = f.dotProduct(t);
 
 		core::vector3df vt(v * (1 - ca));
 
@@ -2043,7 +2045,7 @@ namespace core
 		const core::vector3df vs = look.crossProduct(from);
 
 		// cosinus angle
-		const f32 ca = from.dotProduct(look);	
+		const f32 ca = from.dotProduct(look);
 
 		core::vector3df vt(up * (1.f - ca));
 
