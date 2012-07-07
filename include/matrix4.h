@@ -958,21 +958,21 @@ namespace core
 
 		const f64 tx  = t * axis.X;
 
-		M[0] = tx * axis.X + c;
-		M[1] = tx * axis.Y - s * axis.Z;
-		M[2] = tx * axis.Z + s * axis.Y;
+		M[0] = (T)(tx * axis.X + c);
+		M[1] = (T)(tx * axis.Y - s * axis.Z);
+		M[2] = (T)(tx * axis.Z + s * axis.Y);
 
 		const f64 ty  = t * axis.Y;
 
-		M[4] = ty * axis.X + s * axis.Z;
-		M[5] = ty * axis.Y + c;
-		M[6] = ty * axis.Z - s * axis.X;
+		M[4] = (T)(ty * axis.X + s * axis.Z);
+		M[5] = (T)(ty * axis.Y + c);
+		M[6] = (T)(ty * axis.Z - s * axis.X);
 
 		const f64 tz  = t * axis.Z;
 
-		M[8]  = tz * axis.X - s * axis.Y;
-		M[9]  = tz * axis.Z + s * axis.X;
-		M[10] = tz * axis.Z + c;
+		M[8]  = (T)(tz * axis.X - s * axis.Y);
+		M[9]  = (T)(tz * axis.Z + s * axis.X);
+		M[10] = (T)(tz * axis.Z + c);
 
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
@@ -992,21 +992,21 @@ namespace core
 
 		const f64 tx  = t * axis.X;
 
-		M[0] = tx * axis.X + c;
-		M[1] = tx * axis.Y + s * axis.Z;
-		M[2] = tx * axis.Z - s * axis.Y;
+		M[0] = (T)(tx * axis.X + c);
+		M[1] = (T)(tx * axis.Y + s * axis.Z);
+		M[2] = (T)(tx * axis.Z - s * axis.Y);
 
 		const f64 ty  = t * axis.Y;
 
-		M[4] = ty * axis.X - s * axis.Z;
-		M[5] = ty * axis.Y + c;
-		M[6] = ty * axis.Z + s * axis.X;
+		M[4] = (T)(ty * axis.X - s * axis.Z);
+		M[5] = (T)(ty * axis.Y + c);
+		M[6] = (T)(ty * axis.Z + s * axis.X);
 
 		const f64 tz  = t * axis.Z;
 
-		M[8]  = tz * axis.X + s * axis.Y;
-		M[9]  = tz * axis.Z - s * axis.X;
-		M[10] = tz * axis.Z + c;
+		M[8]  = (T)(tz * axis.X + s * axis.Y);
+		M[9]  = (T)(tz * axis.Z - s * axis.X);
+		M[10] = (T)(tz * axis.Z + c);
 
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
