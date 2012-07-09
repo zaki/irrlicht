@@ -2481,8 +2481,12 @@ void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisi
 		pID3DDevice->SetRenderState(D3DRS_STENCILMASK, 0xffffffff);
 		pID3DDevice->SetRenderState(D3DRS_STENCILWRITEMASK, 0xffffffff);
 
-		if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
-			pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0);
+		pID3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+		pID3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ZERO );
+		pID3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+
+		//if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
+		//	pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0);
 		if ((debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY))
 			pID3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
@@ -2492,14 +2496,14 @@ void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisi
 		// USE THE ZPASS METHOD
 		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
 		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
-		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
+		//pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);	// does not matter, will be set later
 	}
 	else
 	if (CurrentRenderMode != ERM_SHADOW_VOLUME_ZFAIL && zfail)
 	{
 		// USE THE ZFAIL METHOD
 		pID3DDevice->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
-		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCR);
+		//pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCR);	// does not matter, will be set later
 		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
 	}
 
