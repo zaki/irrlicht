@@ -15,6 +15,9 @@ namespace gui
 	class IGUIButton;
 
 	//! Default moveable window GUI element with border, caption and close icons.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_ELEMENT_CLOSED
+	*/
 	class IGUIWindow : public IGUIElement
 	{
 	public:

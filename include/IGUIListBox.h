@@ -31,6 +31,10 @@ namespace gui
 
 
 	//! Default list box GUI element.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_LISTBOX_CHANGED
+	\li EGET_LISTBOX_SELECTED_AGAIN
+	*/
 	class IGUIListBox : public IGUIElement
 	{
 	public:

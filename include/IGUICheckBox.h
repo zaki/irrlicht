@@ -13,6 +13,9 @@ namespace gui
 {
 
 	//! GUI Check box interface.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_CHECKBOX_CHANGED
+	*/
 	class IGUICheckBox : public IGUIElement
 	{
 	public:

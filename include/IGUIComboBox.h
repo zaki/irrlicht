@@ -13,6 +13,9 @@ namespace gui
 {
 
 	//! Combobox widget
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_COMBO_BOX_CHANGED
+	*/
 	class IGUIComboBox : public IGUIElement
 	{
 	public:

@@ -13,6 +13,9 @@ namespace gui
 {
 
 	//! Default scroll bar GUI element.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_SCROLL_BAR_CHANGED
+	*/
 	class IGUIScrollBar : public IGUIElement
 	{
 	public:

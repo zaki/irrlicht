@@ -52,6 +52,9 @@ namespace gui
 	};
 
 	//! GUI Button interface.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_BUTTON_CLICKED
+	*/
 	class IGUIButton : public IGUIElement
 	{
 	public:

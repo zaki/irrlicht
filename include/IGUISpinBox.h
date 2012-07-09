@@ -14,6 +14,9 @@ namespace gui
 	class IGUIEditBox;
 
 	//! Single line edit box + spin buttons
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_SPINBOX_CHANGED
+	*/
 	class IGUISpinBox : public IGUIElement
 	{
 	public:

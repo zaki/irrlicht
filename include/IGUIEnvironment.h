@@ -61,6 +61,12 @@ class IGUIWindow;
 class IGUIElementFactory;
 
 //! GUI Environment. Used as factory and manager of all other GUI elements.
+/** \par This element can create the following events of type EGUI_EVENT_TYPE (which are passed on to focused sub-elements):
+\li EGET_ELEMENT_FOCUS_LOST
+\li EGET_ELEMENT_FOCUSED
+\li EGET_ELEMENT_LEFT
+\li EGET_ELEMENT_HOVERED
+*/
 class IGUIEnvironment : public virtual IReferenceCounted
 {
 public:

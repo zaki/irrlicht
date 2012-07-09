@@ -28,6 +28,10 @@ namespace gui
 	};
 
 	//! GUI Context menu interface.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_ELEMENT_CLOSED
+	\li EGET_MENU_ITEM_SELECTED
+	*/
 	class IGUIContextMenu : public IGUIElement
 	{
 	public:

@@ -49,6 +49,9 @@ namespace gui
 	};
 
 	//! A standard tab control
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_TAB_CHANGED
+	*/
 	class IGUITabControl : public IGUIElement
 	{
 	public:
