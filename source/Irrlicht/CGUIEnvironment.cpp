@@ -351,7 +351,7 @@ io::IFileSystem* CGUIEnvironment::getFileSystem() const
 }
 
 
-//! returns the current file system
+//! returns a pointer to the OS operator
 IOSOperator* CGUIEnvironment::getOSOperator() const
 {
 	return Operator;
