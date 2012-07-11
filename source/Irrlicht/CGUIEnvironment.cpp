@@ -112,12 +112,6 @@ CGUIEnvironment::~CGUIEnvironment()
 		Hovered = 0;
 	}
 
-	if (Driver)
-	{
-		Driver->drop();
-		Driver = 0;
-	}
-
 	if (Focus)
 	{
 		Focus->drop();
@@ -128,18 +122,6 @@ CGUIEnvironment::~CGUIEnvironment()
 	{
 		ToolTip.Element->drop();
 		ToolTip.Element = 0;
-	}
-
-	if (FileSystem)
-	{
-		FileSystem->drop();
-		FileSystem = 0;
-	}
-
-	if (Operator)
-	{
-		Operator->drop();
-		Operator = 0;
 	}
 
 	// drop skin
@@ -163,6 +145,24 @@ CGUIEnvironment::~CGUIEnvironment()
 	// remove all factories
 	for (i=0; i<GUIElementFactoryList.size(); ++i)
 		GUIElementFactoryList[i]->drop();
+
+	if (Operator)
+	{
+		Operator->drop();
+		Operator = 0;
+	}
+
+	if (FileSystem)
+	{
+		FileSystem->drop();
+		FileSystem = 0;
+	}
+
+	if (Driver)
+	{
+		Driver->drop();
+		Driver = 0;
+	}
 }
 
 
