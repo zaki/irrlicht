@@ -81,6 +81,11 @@ namespace gui
 	};
 
 	//! Default list box GUI element.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_TABLE_CHANGED
+	\li EGET_TABLE_SELECTED_AGAIN
+	\li EGET_TABLE_HEADER_CHANGED
+	*/
 	class IGUITable : public IGUIElement
 	{
 	public:
