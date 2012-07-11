@@ -258,7 +258,10 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 					setSelected((s32)Items.size() -1);
 
 				if (Selected != oldSelected)
+				{
 					sendSelectionChangedEvent();
+					return true;
+				}
 
 				if (absorb)
 					return true;
@@ -341,7 +344,10 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 						setSelected((s32)Items.size() -1);
 
 					if (Selected != oldSelected)
+					{
 						sendSelectionChangedEvent();
+						return true;
+					}
 				}
 			default:
 				break;

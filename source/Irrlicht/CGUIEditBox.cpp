@@ -462,13 +462,13 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		if (MultiLine)
 		{
 			inputChar(L'\n');
-			return true;
 		}
 		else
 		{
+			calculateScrollPos();
 			sendGuiEvent( EGET_EDITBOX_ENTER );
 		}
-		break;
+		return true;
 	case KEY_LEFT:
 
 		if (event.KeyInput.Shift)
@@ -694,10 +694,13 @@ bool CGUIEditBox::processKey(const SEvent& event)
 	if (textChanged)
 	{
 		breakText();
+		calculateScrollPos();
 		sendGuiEvent(EGET_EDITBOX_CHANGED);
 	}
-
-	calculateScrollPos();
+	else
+	{
+		calculateScrollPos();
+	}
 
 	return true;
 }
@@ -1323,8 +1326,8 @@ void CGUIEditBox::inputChar(wchar_t c)
 		}
 	}
 	breakText();
-	sendGuiEvent(EGET_EDITBOX_CHANGED);
 	calculateScrollPos();
+	sendGuiEvent(EGET_EDITBOX_CHANGED);
 }
 
 // calculate autoscroll
