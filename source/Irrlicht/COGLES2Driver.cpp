@@ -18,8 +18,13 @@
 #include "CImage.h"
 #include "os.h"
 
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#else
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
+#endif
 
 namespace irr
 {
@@ -36,8 +41,10 @@ namespace video
 		: CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
 		CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 		Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-		RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8),
-		EglDisplay(EGL_NO_DISPLAY)
+		RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8)
+#ifdef EGL_VERSION_1_0
+		, EglDisplay(EGL_NO_DISPLAY)
+#endif
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 		, HDc(0)
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -64,6 +71,7 @@ namespace video
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		Device = device;
 #endif
+#ifdef EGL_VERSION_1_0
 		if (EglDisplay == EGL_NO_DISPLAY)
 		{
 			os::Printer::log("Getting OpenGL-ES2 display.");
@@ -231,6 +239,33 @@ namespace video
 		// set vsync
 		if (params.Vsync)
 			eglSwapInterval(EglDisplay, 1);
+#elif defined(GL_ES_VERSION_2_0)
+        glGenFramebuffers(1, &ViewFramebuffer);
+        glGenRenderbuffers(1, &ViewRenderbuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
+
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+        ExposedData.OGLESIPhone.AppDelegate = Device.DeviceM;
+        (*Device.displayInit)(&Device, &ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
+#endif
+        
+        GLint backingWidth;
+        GLint backingHeight;
+        glGetRenderbufferParameteriv(
+                                        GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
+        glGetRenderbufferParameteriv(
+                                        GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
+        
+        glGenRenderbuffers(1, &ViewDepthRenderbuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, ViewDepthRenderbuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, backingWidth, backingHeight);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, ViewFramebuffer);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ViewRenderbuffer);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ViewDepthRenderbuffer);
+        
+        genericDriverInit(params.WindowSize, params.Stencilbuffer);
+#endif
 	}
 
 
@@ -239,7 +274,8 @@ namespace video
 	{
 		deleteMaterialRenders();
 		deleteAllTextures();
-
+        
+#if defined(EGL_VERSION_1_0)
 		// HACK : the following is commented because destroying the context crashes under Linux (Thibault 04-feb-10)
 		/*eglMakeCurrent(EGL_NO_DISPLAY, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 		eglDestroyContext(EglDisplay, EglContext);
@@ -249,6 +285,23 @@ namespace video
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 		if (HDc)
 			ReleaseDC((HWND)EglWindow, HDc);
+#endif
+#elif defined(GL_ES_VERSION_2_0)
+        if (0 != ViewFramebuffer)
+        {
+            glDeleteFramebuffers(1,&ViewFramebuffer);
+            ViewFramebuffer = 0;
+        }
+        if (0 != ViewRenderbuffer)
+        {
+            glDeleteRenderbuffers(1,&ViewRenderbuffer);
+            ViewRenderbuffer = 0;
+        }
+        if (0 != ViewDepthRenderbuffer)
+        {
+            glDeleteRenderbuffers(1,&ViewDepthRenderbuffer);
+            ViewDepthRenderbuffer = 0;
+        }
 #endif
 
 		delete TwoDRenderer;
@@ -264,7 +317,9 @@ namespace video
 		Name = glGetString(GL_VERSION);
 		printVersion();
 
-		os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
+#if defined(EGL_VERSION_1_0)
+        os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
+#endif
 
 		// print renderer information
 		vendorName = glGetString(GL_VENDOR);
@@ -275,8 +330,10 @@ namespace video
 			CurrentTexture[i] = 0;
 		// load extensions
 		initExtensions(this,
-						EglDisplay,
-						stencilBuffer);
+#if defined(EGL_VERSION_1_0)
+            EglDisplay,
+#endif
+            stencilBuffer);
 
 		StencilBuffer = stencilBuffer;
 
@@ -391,9 +448,10 @@ namespace video
 	//! presents the rendered scene on the screen, returns false if failed
 	bool COGLES2Driver::endScene()
 	{
-		CNullDriver::endScene();
-
-		eglSwapBuffers(EglDisplay, EglSurface);
+        CNullDriver::endScene();
+        
+#if defined(EGL_VERSION_1_0)
+        eglSwapBuffers(EglDisplay, EglSurface);
 		EGLint g = eglGetError();
 		if (EGL_SUCCESS != g)
 		{
@@ -406,6 +464,14 @@ namespace video
 				os::Printer::log("Could not swap buffers for OpenGL-ES2 driver.");
 			return false;
 		}
+#elif defined(GL_ES_VERSION_2_0)
+        glFlush();
+        glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+        (*Device.displayEnd)(&Device);
+#endif
+#endif
+        
 		return true;
 	}
 

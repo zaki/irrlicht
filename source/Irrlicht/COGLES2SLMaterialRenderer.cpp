@@ -17,7 +17,9 @@
 #include "EVertexAttributes.h"
 #include "COGLES2Texture.h"
 
+#if !defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 #include <GLES2/gl2.h>
+#endif
 
 namespace irr
 {
@@ -421,7 +423,11 @@ namespace video
 	{
 		return setPixelShaderConstant( name, floats, count );
 	}
-
+    
+    bool COGLES2SLMaterialRenderer::setVertexShaderConstant( const c8* name, const s32* ints, int count )
+	{
+		return setPixelShaderConstant( name, ints, count );
+	}
 
 	void COGLES2SLMaterialRenderer::setVertexShaderConstant( const f32* data, s32 startRegister, s32 constantAmount )
 	{
@@ -447,6 +453,12 @@ namespace video
 	}
 
 	bool COGLES2SLMaterialRenderer::setPixelShaderConstant( const c8* name, const f32* floats, int count )
+	{
+		os::Printer::log( "Cannot set constant, use high level shader call.", ELL_WARNING );
+		return false;
+	}
+    
+    bool COGLES2SLMaterialRenderer::setPixelShaderConstant( const c8* name, const s32* ints, int count )
 	{
 		os::Printer::log( "Cannot set constant, use high level shader call.", ELL_WARNING );
 		return false;

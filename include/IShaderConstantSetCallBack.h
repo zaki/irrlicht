@@ -75,6 +75,10 @@ public:
 	\param userData: Userdata int which can be specified when creating the shader.
 	*/
 	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData) = 0;
+    
+    virtual void OnSetAttribute(IMaterialRendererServices* services, s32 userData) {} 
+    
+    virtual void OnUnSetAttribute(IMaterialRendererServices* services, s32 userData) {}
 };
 
 

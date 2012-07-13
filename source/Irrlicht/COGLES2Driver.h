@@ -24,7 +24,12 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#else
 #include <EGL/eglplatform.h>
+#endif
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -448,10 +453,17 @@ namespace video
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		HDC HDc;
 #endif
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+		MIrrIPhoneDevice Device;
+		GLuint ViewFramebuffer;
+		GLuint ViewRenderbuffer;
+		GLuint ViewDepthRenderbuffer;
+#else
 		NativeWindowType EglWindow;
 		void* EglDisplay;
 		void* EglSurface;
 		void* EglContext;
+#endif
 
 		COGLES2FixedPipelineShader* FixedPipeline;
 		COGLES2Renderer2d* TwoDRenderer;
