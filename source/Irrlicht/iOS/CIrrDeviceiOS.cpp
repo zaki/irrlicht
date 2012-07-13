@@ -29,6 +29,11 @@ namespace video
 	IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 		video::SExposedVideoData& data, io::IFileSystem* io,
 		MIrrIPhoneDevice const & device);
+
+    IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
+        video::SExposedVideoData& data, io::IFileSystem* io,
+        MIrrIPhoneDevice const & device);
+
 }
 }
 
@@ -123,6 +128,18 @@ void CIrrDeviceIPhone::createDriver()
 		os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR);
 	#endif
 		break;
+            
+    case video::EDT_OGLES2:
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+		{
+			video::SExposedVideoData data;
+			VideoDriver = video::createOGLES2Driver(
+                                                    CreationParams, data, FileSystem, IrrIPhoneDevice);
+		}
+#else
+            os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR);
+#endif
+            break;
 
 	case video::EDT_SOFTWARE:
 	case video::EDT_BURNINGSVIDEO:
