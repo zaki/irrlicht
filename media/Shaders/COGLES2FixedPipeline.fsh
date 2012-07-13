@@ -33,7 +33,7 @@ varying float varClipDist;
 
 /* Uniforms */
 
-uniform int uRenderMode;
+uniform int uFRenderMode;
 
 uniform bool  uAlphaTest;
 uniform float uAlphaValue;
@@ -149,21 +149,21 @@ void main (void)
 	if(varClipDist < 0.0)
 		discard;
 	
-	if( uRenderMode == TwoD)
+	if( uFRenderMode == TwoD)
 		gl_FragColor = render2D();
-	else if( uRenderMode == Solid)
+	else if( uFRenderMode == Solid)
 		gl_FragColor = renderSolid();
-	else if(uRenderMode == LightMap)
+	else if(uFRenderMode == LightMap)
 		gl_FragColor = renderLightMap();
-	else if(uRenderMode == DetailMap)
+	else if(uFRenderMode == DetailMap)
 		gl_FragColor = renderDetailMap();
-	else if(uRenderMode == SphereMap)
+	else if(uFRenderMode == SphereMap)
 		gl_FragColor = renderSolid();
-	else if(uRenderMode == Reflection2Layer)
+	else if(uFRenderMode == Reflection2Layer)
 		gl_FragColor = renderReflection2Layer();
-	else if(uRenderMode == TransparentVertexAlpha)
+	else if(uFRenderMode == TransparentVertexAlpha)
 		gl_FragColor = renderTransparentVertexAlpha();
-	else if(uRenderMode == TransparentAlphaChannel)
+	else if(uFRenderMode == TransparentAlphaChannel)
 		gl_FragColor = renderTransparentAlphaChannel();
 	else
 		gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);

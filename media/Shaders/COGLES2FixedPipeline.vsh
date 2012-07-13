@@ -22,8 +22,10 @@ attribute vec4 inVertexColor;
 attribute vec4 inTexCoord0;
 attribute vec4 inTexCoord1;
 attribute vec3 inVertexNormal;
+attribute vec3 inVertexTangent;
+attribute vec3 inVertexBinormal;
 
-uniform int uRenderMode;
+uniform int uVRenderMode;
 
 /* Matrix Uniforms */
 
@@ -213,7 +215,7 @@ void main(void)
 	
 	if( uUseTexture[0])
 	{
-		if(uRenderMode == SphereMap || uRenderMode == Reflection2Layer)
+		if(uVRenderMode == SphereMap || uVRenderMode == Reflection2Layer)
 		{
 			vec3 eyeDir = normalize(inVertexPosition.xyz - uEyePos);
 			vec3 reflection = reflect(eyeDir, gNormal);

@@ -310,6 +310,18 @@ namespace irr
 #else
 					return false;
 #endif
+				case video::EDT_OGLES1:
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+					return true;
+#else
+					return false;
+#endif
+				case video::EDT_OGLES2:
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+					return true;
+#else
+					return false;
+#endif
 				default:
 					return false;
 			}

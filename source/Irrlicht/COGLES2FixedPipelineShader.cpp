@@ -18,7 +18,8 @@ namespace video
 
 	const char* const COGLES2FixedPipelineShader::sBuiltInShaderUniformNames[] =
 	{
-		"uRenderMode",
+        "uVRenderMode",
+		"uFRenderMode",
 		"uMvpMatrix",
 		"uWorldMatrix",
 		"uNormalize",
@@ -221,7 +222,8 @@ namespace video
 
 		setUniform(CLIP, &Clip);
 		setUniform(CLIP_PLANE, &ClipPlane);
-		setUniform(RENDER_MODE, &RenderMode);
+		setUniform(VRENDER_MODE, &RenderMode);
+        setUniform(FRENDER_MODE, &RenderMode);
 
 		return statusOk ;
 	};

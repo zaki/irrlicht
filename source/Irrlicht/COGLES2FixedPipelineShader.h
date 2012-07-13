@@ -147,7 +147,8 @@ namespace video
 	private :
 		enum SHADER_UNIFORM
 		{
-			RENDER_MODE = 0,
+            VRENDER_MODE = 0,
+			FRENDER_MODE,
 			MVP_MATRIX,
 			WORLD_MATRIX,
 			NORMALIZE,

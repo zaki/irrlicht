@@ -24,7 +24,7 @@ struct MIrrIPhoneDevice
 	/* The *display* functions call into the Obj-C instance. */
 
 	void (*displayCreate)(struct MIrrIPhoneDevice * dev,
-			void** window, int w, int h);
+			void** window, int w, int h, bool type);
 	void (*displayInit)(struct MIrrIPhoneDevice * dev,
 			void** context, void** view);
 	void (*displayBegin)(struct MIrrIPhoneDevice * dev);

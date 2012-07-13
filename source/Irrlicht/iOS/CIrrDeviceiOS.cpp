@@ -104,10 +104,12 @@ CIrrDeviceIPhone::~CIrrDeviceIPhone()
 
 bool CIrrDeviceIPhone::createDisplay()
 {
+    bool typeES2 = (CreationParams.DriverType == video::EDT_OGLES2) ? true : false;
+    
 	(*IrrIPhoneDevice.displayCreate)(
 		&IrrIPhoneDevice,
 		&CreationParams.WindowId,
-		CreationParams.WindowSize.Width, CreationParams.WindowSize.Height);
+		CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, typeES2);
 	return true;
 }
 

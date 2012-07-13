@@ -192,7 +192,7 @@
 - (void) applicationWillResignActive: (UIApplication *) application;
 - (void) applicationDidBecomeActive: (UIApplication *) application;
 - (void) applicationWillTerminate: (UIApplication *) application;
-- (void) displayCreateInWindow: (UIWindow**) window Width: (int) w Height: (int) h;
+- (void) displayCreateInWindow: (UIWindow**) window Width: (int) w Height: (int) h OGLESType: (bool) type;
 - (void) displayInitialize: (EAGLContext**) context_ View: (IrrIPhoneView**) view_;
 - (void) displayBegin;
 - (void) displayEnd;
@@ -228,7 +228,7 @@
 {
 	(*(dev->onTerminate))(dev);
 }
-- (void) displayCreateInWindow: (UIWindow**) window Width: (int) w Height: (int) h
+- (void) displayCreateInWindow: (UIWindow**) window Width: (int) w Height: (int) h OGLESType: (bool) type
 {
 	// Create our view.
 	CGRect rect;
@@ -247,7 +247,11 @@
 	
 	// Create the GL context now, so that the driver initializetion
 	// can make OpenGL calls.
-	context = [[EAGLContext alloc] initWithAPI: kEAGLRenderingAPIOpenGLES1];
+    if(type)
+        context = [[EAGLContext alloc] initWithAPI: kEAGLRenderingAPIOpenGLES2];
+    else
+        context = [[EAGLContext alloc] initWithAPI: kEAGLRenderingAPIOpenGLES1];
+    
 	[EAGLContext setCurrentContext: context];
 }
 - (void) displayInitialize: (EAGLContext**) context_ View: (IrrIPhoneView**) view_
@@ -279,9 +283,9 @@
 @end
 
 void irr_device_iphone_display_create(struct irr::MIrrIPhoneDevice * dev,
-	void** window, int w, int h)
+	void** window, int w, int h, bool type)
 {
-	[((IrrIPhoneDevice*)dev->DeviceM) displayCreateInWindow: (UIWindow**)window Width: w Height: h];
+	[((IrrIPhoneDevice*)dev->DeviceM) displayCreateInWindow: (UIWindow**)window Width: w Height: h OGLESType: type];
 }
 
 void irr_device_iphone_display_init(struct irr::MIrrIPhoneDevice * dev,
