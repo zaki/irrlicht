@@ -17,6 +17,7 @@
 #include "dimension2d.h"
 #include "IGUISpriteBank.h"
 #include <winuser.h>
+#include "SExposedVideoData.h"
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #define DIRECTINPUT_VERSION 0x0800
@@ -50,6 +51,14 @@ namespace irr
 		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 			io::IFileSystem* io, CIrrDeviceWin32* device);
 		#endif
+        
+        #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
+        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io); 	 
+        #endif 	 
+        
+        #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
+        IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io); 	 
+        #endif
 	}
 } // end namespace irr
 
@@ -899,8 +908,8 @@ namespace irr
 
 //! constructor
 CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
-: CIrrDeviceStub(params), HWnd(0), ChangedToFullScreen(false), Resized(false),
-	ExternalWindow(false), Win32CursorControl(0), JoyControl(0)
+: CIrrDeviceStub(params), HWnd(0), ChangedToFullScreen(false), IsNonNTWindows(false),
+    Resized(false), ExternalWindow(false), Win32CursorControl(0), JoyControl(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceWin32");
@@ -1107,6 +1116,44 @@ void CIrrDeviceWin32::createDriver()
 		os::Printer::log("OpenGL driver was not compiled in.", ELL_ERROR);
 		#endif
 		break;
+            
+    case video::EDT_OGLES1: 	 
+        #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
+        { 	 
+            video::SExposedVideoData data; 	 
+            data.OpenGLWin32.HWnd=HWnd; 	 
+            
+            switchToFullScreen(); 	 
+            
+            VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem); 	 
+            if (!VideoDriver) 	 
+            { 	 
+                os::Printer::log("Could not create OpenGL-ES1 driver.", ELL_ERROR); 	 
+            } 	 
+        } 	 
+        #else 	 
+        os::Printer::log("OpenGL-ES1 driver was not compiled in.", ELL_ERROR); 	 
+        #endif 	 
+        break; 	 
+            
+    case video::EDT_OGLES2: 	 
+        #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
+        { 	 
+            video::SExposedVideoData data; 	 
+            data.OpenGLWin32.HWnd=HWnd; 	 
+            
+            switchToFullScreen(); 	 
+            
+            VideoDriver = video::createOGLES2Driver(CreationParams, data, FileSystem); 	 
+            if (!VideoDriver) 	 
+            { 	 
+                os::Printer::log("Could not create OpenGL-ES2 driver.", ELL_ERROR); 	 
+            } 	 
+        } 	 
+        #else 	 
+        os::Printer::log("OpenGL-ES2 driver was not compiled in.", ELL_ERROR); 	 
+        #endif 	 
+        break;
 
 	case video::EDT_SOFTWARE:
 
@@ -1229,10 +1276,27 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 {
 	// We use SendMessage instead of SetText to ensure proper
 	// function even in cases where the HWND was created in a different thread
-	DWORD_PTR dwResult;
-	SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,
-			reinterpret_cast<LPARAM>(text),
-			SMTO_ABORTIFHUNG, 2000, &dwResult);
+    DWORD dwResult;
+    if (IsNonNTWindows)
+    {
+        const core::stringc s = text; 	 
+#if defined(_WIN64) || defined(WIN64) 	 
+        SetWindowTextA(HWnd, s.c_str()); 	 
+#else 	 
+        SendMessageTimeout(HWnd, WM_SETTEXT, 0, 	 
+                reinterpret_cast<LPARAM>(s.c_str()), 	 
+                SMTO_ABORTIFHUNG, 2000, &dwResult); 	 
+#endif 	 
+    } 	 
+    else 	 
+    { 	 
+#if defined(_WIN64) || defined(WIN64) 	 
+        SetWindowTextW(HWnd, text); 	 
+#else
+        SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,
+                reinterpret_cast<LPARAM>(text),
+                SMTO_ABORTIFHUNG, 2000, &dwResult);
+#endif
 }
 
 
@@ -1622,6 +1686,8 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 		break;
 
 	case VER_PLATFORM_WIN32_WINDOWS:
+            
+        IsNonNTWindows = true;
 
 		if (osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0)
 		{
@@ -1643,6 +1709,8 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 		break;
 
 	case VER_PLATFORM_WIN32s:
+            
+        IsNonNTWindows = true;
 		out.append("Microsoft Win32s ");
 		break;
 	}

@@ -389,6 +389,7 @@ namespace irr
 		HWND HWnd;
 
 		bool ChangedToFullScreen;
+        bool IsNonNTWindows;
 		bool Resized;
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;

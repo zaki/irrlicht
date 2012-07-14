@@ -18,6 +18,7 @@
 #include "COSOperator.h"
 #include "CColorConverter.h"
 #include "SIrrCreationParameters.h"
+#include "SExposedVideoData.h"
 #include "IGUISpriteBank.h"
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
@@ -50,8 +51,18 @@ namespace irr
 {
 	namespace video
 	{
-		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io, CIrrDeviceLinux* device);
+        #ifdef _IRR_COMPILE_WITH_OPENGL_
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
+                                         io::IFileSystem* io, CIrrDeviceWin32* device);
+        #endif
+        
+        #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
+        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io); 	 
+        #endif 	 
+
+        #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
+        IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io); 	 
+        #endif
 	}
 } // end namespace irr
 
@@ -810,6 +821,32 @@ void CIrrDeviceLinux::createDriver()
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 		#endif
 		break;
+            
+    case video::EDT_OGLES1: 	 
+        #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
+        { 	 
+            video::SExposedVideoData data; 	 
+            data.OpenGLLinux.X11Window = window; 	 
+            data.OpenGLLinux.X11Display = display; 	 
+            VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem); 	 
+        } 	 
+        #else 	 
+        os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR); 	 
+        #endif 	 
+        break;
+            
+    case video::EDT_OGLES2: 	 
+    #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
+        { 	 
+            video::SExposedVideoData data; 	 
+            data.OpenGLLinux.X11Window = window; 	 
+            data.OpenGLLinux.X11Display = display; 	 
+            VideoDriver = video::createOGLES2Driver(CreationParams, data, FileSystem); 	 
+        } 	 
+        #else 	 
+        os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR); 	 
+        #endif 	 
+        break;
 
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
