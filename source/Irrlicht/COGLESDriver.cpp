@@ -1174,14 +1174,21 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 		if (!setActiveTexture(0, texture))
 			return;
 		setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
-		const int crop[] = {sourceRect.UpperLeftCorner.X, sourceRect.LowerRightCorner.Y, sourceRect.getWidth(), sourceRect.getHeight()};
+		const GLint crop[] = {sourceRect.UpperLeftCorner.X, getCurrentRenderTargetSize().Height-sourceRect.LowerRightCorner.Y, sourceRect.getWidth(), sourceRect.getHeight()};
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, crop);
-		core::rect<s32> destRect(sourceRect);
-		destRect-=destRect.UpperLeftCorner;
-		destRect+=pos;
+
+		const bool isRTT = true;//texture->isRenderTarget();
+		if (!isRTT)
+		{
+			glMatrixMode(GL_TEXTURE);
+			GLfloat glmat[16];
+			createGLTextureMatrix(glmat, TextureFlipMatrix);
+			glLoadMatrixf(glmat);
+		}
+		core::rect<s32> destRect(pos,sourceRect.getSize());
 		if (clipRect)
 			destRect.clipAgainst(*clipRect);
-		extGlDrawTex(destRect.UpperLeftCorner.X, destRect.UpperLeftCorner.Y, 0, destRect.getWidth(), destRect.getHeight());
+		extGlDrawTex(destRect.UpperLeftCorner.X, getCurrentRenderTargetSize().Height-destRect.UpperLeftCorner.Y, 0, destRect.getWidth(), destRect.getHeight());
 		return;
 	}
 #endif
@@ -1421,7 +1428,11 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 
 		targetPos.X += sourceRects[currentIndex].getWidth();
 	}
-	drawVertexPrimitiveList2d3d(vertices.pointer(), indices.size()*4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
+	if (vertices.size())
+		drawVertexPrimitiveList2d3d(vertices.pointer(), vertices.size(),
+				quadIndices.pointer(), vertices.size()/2,
+				video::EVT_STANDARD, scene::EPT_TRIANGLES,
+				EIT_16BIT, false);
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
 }
@@ -1439,8 +1450,12 @@ void COGLES1Driver::draw2DImageBatch(const video::ITexture* texture,
 		return;
 
 	const u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
+	if (!drawCount)
+		return;
 
 	const core::dimension2d<u32>& ss = texture->getOriginalSize();
+	if (!ss.Width || !ss.Height)
+		return;
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
@@ -1561,7 +1576,11 @@ void COGLES1Driver::draw2DImageBatch(const video::ITexture* texture,
 		quadIndices.push_back(vstart+2);
 		quadIndices.push_back(vstart+3);
 	}
-	drawVertexPrimitiveList2d3d(vertices.pointer(), 4*drawCount, quadIndices.pointer(), 2*drawCount, video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
+	if (vertices.size())
+		drawVertexPrimitiveList2d3d(vertices.pointer(), vertices.size(),
+				quadIndices.pointer(), vertices.size()/2,
+				video::EVT_STANDARD, scene::EPT_TRIANGLES,
+				EIT_16BIT, false);
 }
 
 

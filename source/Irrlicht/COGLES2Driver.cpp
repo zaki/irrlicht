@@ -1406,14 +1406,25 @@ namespace video
 
 			const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
 
+			const u32 vstart = vertices.size();
 			vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
 			vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
 			vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
 			vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+			quadIndices.push_back(vstart);
+			quadIndices.push_back(vstart+1);
+			quadIndices.push_back(vstart+2);
+			quadIndices.push_back(vstart);
+			quadIndices.push_back(vstart+2);
+			quadIndices.push_back(vstart+3);
 
 			targetPos.X += sourceRects[currentIndex].getWidth();
 		}
-		drawVertexPrimitiveList2d3d(vertices.pointer(), indices.size()*4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
+		if (vertices.size()
+			drawVertexPrimitiveList2d3d(vertices.pointer(), vertices.size(),
+					quadIndices.pointer(), vertices.size()/2,
+					video::EVT_STANDARD, scene::EPT_TRIANGLES,
+					EIT_16BIT, false);
 		if (clipRect)
 			glDisable(GL_SCISSOR_TEST);
 		testGLError();
