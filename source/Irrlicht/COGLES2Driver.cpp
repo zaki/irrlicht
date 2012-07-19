@@ -1420,7 +1420,7 @@ namespace video
 
 			targetPos.X += sourceRects[currentIndex].getWidth();
 		}
-		if (vertices.size()
+		if (vertices.size())
 			drawVertexPrimitiveList2d3d(vertices.pointer(), vertices.size(),
 					quadIndices.pointer(), vertices.size()/2,
 					video::EVT_STANDARD, scene::EPT_TRIANGLES,
