@@ -2090,7 +2090,11 @@ Cursor CIrrDeviceLinux::TextureToCursor(irr::video::ITexture * tex, const core::
 
 
 CIrrDeviceLinux::CCursorControl::CCursorControl(CIrrDeviceLinux* dev, bool null)
-	: Device(dev), IsVisible(true), Null(null), UseReferenceRect(false)
+	: Device(dev)
+#ifdef _IRR_COMPILE_WITH_X11_
+	, PlatformBehavior(gui::ECPB_NONE), lastQuery(0)
+#endif
+	, IsVisible(true), Null(null), UseReferenceRect(false)
 	, ActiveIcon(gui::ECI_NORMAL), ActiveIconStartTime(0)
 {
 #ifdef _IRR_COMPILE_WITH_X11_

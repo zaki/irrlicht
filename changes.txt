@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Allow caching cursor position on X11 to work around slow XQueryPointer calls.
+
  - Struct packing works now with gcc 4.7 changes on MinGW (thx @Sudi for reporting).
 
  - Struct packing uses now same solution throughout (by including headers in corresponding places)

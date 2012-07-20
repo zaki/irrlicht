@@ -78,6 +78,21 @@ namespace gui
 		core::position2d<s32> HotSpot;
 	};
 
+	//! platform specific behavior flags for the cursor
+	enum ECURSOR_PLATFORM_BEHAVIOR
+	{
+		//! default - no platform specific behaviour
+		ECPB_NONE = 0,
+
+		//! On X11 try caching cursor updates as XQueryPointer calls can be expensive.
+		/** Update cursor positions only when the irrlicht timer has been updated or the timer is stopped.
+			This means you usually get one cursor update per device->run() which will be fine in most cases.
+			See this forum-thread for a more detailed explanation:
+			http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=45525
+		*/
+		ECPB_X11_CACHE_UPDATES = 1
+	};
+
 	//! Interface to manipulate the mouse cursor.
 	class ICursorControl : public virtual IReferenceCounted
 	{
@@ -159,6 +174,14 @@ namespace gui
 
 		//! Return a system-specific size which is supported for cursors. Larger icons will fail, smaller icons might work.
 		virtual core::dimension2di getSupportedIconSize() const { return core::dimension2di(0,0); }
+
+		//! Set platform specific behavior flags.
+		virtual void setPlatformBehavior(ECURSOR_PLATFORM_BEHAVIOR behavior) {}
+
+		//! Return platform specific behavior.
+		/** \return Behavior set by setPlatformBehavior or ECPB_NONE for platforms not implementing specific behaviors.
+		*/
+		virtual ECURSOR_PLATFORM_BEHAVIOR getPlatformBehavior() const { return ECPB_NONE; }
 	};
 
 
