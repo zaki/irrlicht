@@ -517,8 +517,8 @@ namespace video
 		position of a pixel instead a color value.
 		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
-		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
-		to release 1.5 and is provided for backwards compatibility only. 
+		(i.e. black). This behavior matches the legacy (buggy) behavior prior
+		to release 1.5 and is provided for backwards compatibility only.
 		This parameter may be removed by Irrlicht 1.9. */
 		virtual void makeColorKeyTexture(video::ITexture* texture,
 						video::SColor color,
@@ -534,7 +534,7 @@ namespace video
 		described above.
 		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
-		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
+		(i.e. black). This behavior matches the legacy (buggy) behavior prior
 		to release 1.5 and is provided for backwards compatibility only.
 		This parameter may be removed by Irrlicht 1.9. */
 		virtual void makeColorKeyTexture(video::ITexture* texture,

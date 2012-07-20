@@ -11,7 +11,7 @@ namespace irr
 {
 namespace gui
 {
-	//! Close behaviour.
+	//! Close behavior.
 	//! Default is ECMC_REMOVE
 	enum ECONTEXT_MENU_CLOSE
 	{
@@ -40,10 +40,10 @@ namespace gui
 		IGUIContextMenu(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_CONTEXT_MENU, environment, parent, id, rectangle) {}
 
-		//! set behaviour when menus are closed
+		//! set behavior when menus are closed
 		virtual void setCloseHandling(ECONTEXT_MENU_CLOSE onClose) = 0;
 
-		//! get current behaviour when the menu will be closed
+		//! get current behavior when the menu will be closed
 		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const = 0;
 
 		//! Get amount of menu items

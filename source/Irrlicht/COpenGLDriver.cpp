@@ -1013,7 +1013,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	core::array<c8> buffer;
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 	{
-		//buffer vertex data, and convert colours...
+		//buffer vertex data, and convert colors...
 		buffer.set_used(vertexSize * vertexCount);
 		memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
 		vbuf = buffer.const_pointer();

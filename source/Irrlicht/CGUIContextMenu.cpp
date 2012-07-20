@@ -51,13 +51,13 @@ CGUIContextMenu::~CGUIContextMenu()
 		LastFont->drop();
 }
 
-//! set behaviour when menus are closed
+//! set behavior when menus are closed
 void CGUIContextMenu::setCloseHandling(ECONTEXT_MENU_CLOSE onClose)
 {
 	CloseHandling = onClose;
 }
 
-//! get current behaviour when the menue will be closed
+//! get current behavior when the menue will be closed
 ECONTEXT_MENU_CLOSE CGUIContextMenu::getCloseHandling() const
 {
 	return CloseHandling;

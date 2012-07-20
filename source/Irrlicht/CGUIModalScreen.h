@@ -39,7 +39,7 @@ namespace gui
 		virtual void updateAbsolutePosition();
 
         //! Modalscreen is not a typical element, but rather acts like a state for it's children.
-        //! isVisible is overriden to give this a useful behaviour, so that a modal will no longer
+        //! isVisible is overriden to give this a useful behavior, so that a modal will no longer
         //! be active when its parent is invisible or all its children are invisible.
 		virtual bool isVisible() const;
 

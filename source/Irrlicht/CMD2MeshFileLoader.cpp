@@ -331,7 +331,7 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 		}
 	}
 
-	// populate interpolation buffer with texture coordinates and colours
+	// populate interpolation buffer with texture coordinates and colors
 	if (header.numFrames)
 	{
 		f32 dmaxs = 1.0f/(header.skinWidth);

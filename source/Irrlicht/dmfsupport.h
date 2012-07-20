@@ -29,7 +29,7 @@ namespace
 {
 
 /** A structure representing some DeleD infos.
-This structure contains data about DeleD level file like: version, ambient colour, number of objects etc...*/
+This structure contains data about DeleD level file like: version, ambient color, number of objects etc...*/
 struct dmfHeader
 {
 	//main file header
@@ -84,7 +84,7 @@ struct dmfVert
 
 
 /** A structure representing a single dynamic light.
-This structure contains light position coordinates, diffuse colour, specular colour and maximum radius of light.*/
+This structure contains light position coordinates, diffuse color, specular color and maximum radius of light.*/
 struct dmfLight
 {
 	core::vector3df pos;//!<Position of this light.
@@ -94,7 +94,7 @@ struct dmfLight
 };
 
 /** A structure representing a single water plane.
-This structure contains light position coordinates, diffuse colour, specular colour and maximum radius of light.*/
+This structure contains light position coordinates, diffuse color, specular color and maximum radius of light.*/
 struct dmfWaterPlane
 {
 	u32 waterID;//!<ID of specified water plane.

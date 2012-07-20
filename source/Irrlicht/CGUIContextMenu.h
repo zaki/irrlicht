@@ -31,10 +31,10 @@ namespace gui
 		//! destructor
 		virtual ~CGUIContextMenu();
 
-		//! set behaviour when menus are closed
+		//! set behavior when menus are closed
 		virtual void setCloseHandling(ECONTEXT_MENU_CLOSE onClose);
 
-		//! get current behaviour when the menue will be closed
+		//! get current behavior when the menue will be closed
 		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const;
 
 		//! Returns amount of menu items

@@ -856,9 +856,9 @@ namespace scene
 		\param vertexColor: The default color of all the vertices. If no texture is associated
 		with the scene node, then all vertices will be this color. Defaults to white.
 		\param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
-		know what you are doing, this might lead to strange behaviour.
+		know what you are doing, this might lead to strange behavior.
 		\param patchSize: patch size of the terrain. Only change if you
-		know what you are doing, this might lead to strange behaviour.
+		know what you are doing, this might lead to strange behavior.
 		\param smoothFactor: The number of times the vertices are smoothed.
 		\param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
 		\return Pointer to the created scene node. Can be null
@@ -894,9 +894,9 @@ namespace scene
 		\param vertexColor: The default color of all the vertices. If no texture is associated
 		with the scene node, then all vertices will be this color. Defaults to white.
 		\param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
-		know what you are doing, this might lead to strange behaviour.
+		know what you are doing, this might lead to strange behavior.
 		\param patchSize: patch size of the terrain. Only change if you
-		know what you are doing, this might lead to strange behaviour.
+		know what you are doing, this might lead to strange behavior.
 		\param smoothFactor: The number of times the vertices are smoothed.
 		\param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
 		\return Pointer to the created scene node. Can be null
@@ -1603,7 +1603,7 @@ namespace scene
 
 		//! Register a custom callbacks manager which gets callbacks during scene rendering.
 		/** \param[in] lightManager: the new callbacks manager. You may pass 0 to remove the
-			current callbacks manager and restore the default behaviour. */
+			current callbacks manager and restore the default behavior. */
 		virtual void setLightManager(ILightManager* lightManager) = 0;
 
 		//! Get an instance of a geometry creator.

@@ -402,7 +402,7 @@ bool CIrrDeviceStub::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightn
 	return false;
 }
 
-//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behaviour.
+//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behavior.
 void CIrrDeviceStub::setDoubleClickTime( u32 timeMs )
 {
 	MouseMultiClicks.DoubleClickTime = timeMs;

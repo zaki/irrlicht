@@ -704,7 +704,7 @@ class map
 				Node* newNodesUncle = newNode->getParent()->getParent()->getRightChild();
 				if ( newNodesUncle!=0 && newNodesUncle->isRed())
 				{
-					// case 1 - change the colours
+					// case 1 - change the colors
 					newNode->getParent()->setBlack();
 					newNodesUncle->setBlack();
 					newNode->getParent()->getParent()->setRed();
@@ -733,7 +733,7 @@ class map
 				Node* newNodesUncle = newNode->getParent()->getParent()->getLeftChild();
 				if ( newNodesUncle!=0 && newNodesUncle->isRed())
 				{
-					// case 1 - change the colours
+					// case 1 - change the colors
 					newNode->getParent()->setBlack();
 					newNodesUncle->setBlack();
 					newNode->getParent()->getParent()->setRed();
@@ -890,7 +890,7 @@ class map
 		return Root == 0;
 	}
 
-	//! \deprecated Use empty() instead. This method may be removed by Irrlicht 1.9 
+	//! \deprecated Use empty() instead. This method may be removed by Irrlicht 1.9
 	_IRR_DEPRECATED_ bool isEmpty() const
 	{
 		return empty();

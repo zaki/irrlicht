@@ -4,7 +4,7 @@
 
 /*
 	History:
-	- changed behaviour for log2 textures ( replaced multiplies by shift )
+	- changed behavior for log2 textures ( replaced multiplies by shift )
 */
 
 #ifndef __S_VIDEO_2_SOFTWARE_HELPER_H_INCLUDED__
@@ -714,7 +714,7 @@ inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 }
 
 // get video sample to fixpoint
-REALINLINE void getTexel_fix ( tFixPoint &a, 
+REALINLINE void getTexel_fix ( tFixPoint &a,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {

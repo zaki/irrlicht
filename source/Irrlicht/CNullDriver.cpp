@@ -1017,7 +1017,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 		for (u32 pixel = 0; pixel < pixels; ++ pixel)
 		{
-			// If the colour matches the reference colour, ignoring alphas,
+			// If the color matches the reference color, ignoring alphas,
 			// set the alpha to zero.
 			if(((*p) & 0x7fff) == refZeroAlpha)
 			{
@@ -1051,7 +1051,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 		const u32 pixels = pitch * dim.Height;
 		for (u32 pixel = 0; pixel < pixels; ++ pixel)
 		{
-			// If the colour matches the reference colour, ignoring alphas,
+			// If the color matches the reference color, ignoring alphas,
 			// set the alpha to zero.
 			if(((*p) & 0x00ffffff) == refZeroAlpha)
 			{

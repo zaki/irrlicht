@@ -81,7 +81,7 @@ namespace gui
 	//! platform specific behavior flags for the cursor
 	enum ECURSOR_PLATFORM_BEHAVIOR
 	{
-		//! default - no platform specific behaviour
+		//! default - no platform specific behavior
 		ECPB_NONE = 0,
 
 		//! On X11 try caching cursor updates as XQueryPointer calls can be expensive.

@@ -11,13 +11,13 @@ Changes in 1.8 (??.??.2011)
  - Add parameter useAlphaChannel to second IGUIEnvironment::addImage function.
 
  - Fix vsync on X11
- 
- - Fix MRT disabling. Bug found and fixed by hendu. 
+
+ - Fix MRT disabling. Bug found and fixed by hendu.
 
  - core:::array::reallocate returning now immediately when it has nothing to do. Should reduce a lot of memory thrashing on irrArrays.
 
  - Start mesh animations at first OnAnimate , before start-frame was rather random.  Thx @Auria for reporting and patch proposal.
- 
+
  - renderTargetTexture now working with ECF_R5G6B5
 
  - add -fPic in c::b linux fast math shared build.
@@ -27,7 +27,7 @@ Changes in 1.8 (??.??.2011)
  - triangle3d::getIntersectionOfPlaneWithLine calculates now with higher precision for more exact results.
 
  - triangle3d::isOnSameSide (used by isPointInside) calculates now with higher precision and uses some epsilon to make it work with larger integers and less floating point troubles. Slightly slower now.
- 
+
  - new function equalsByUlp to test for spacing between floating point numbers.
 
  - speedup for collada writing.
@@ -41,7 +41,7 @@ Changes in 1.8 (??.??.2011)
  - replace asserts in tests with macro assert_log to allow running all tests through on problems.
 
  - added IGUIElement::setName and IGUIElement::getName (similar to ISceneNode)
- 
+
  - CSceneCollisionManager::getScreenCoordinatesFrom3DPosition uses now getCurrentRenderTargetSize instead of getScreenSize so it can work with render textures.
 
  - line2d::getClosestPoint can now also get the closest point on the line additional to only checking for closest point on the line-segment.
@@ -50,7 +50,7 @@ Changes in 1.8 (??.??.2011)
 
  - Support for better collada texture wrapping support on loading.
 
- - XML-reader now ignores all whitespace-only EXN_TEXT elements as old way didn't work in cross-platform way (and arguably also not well on Windows). 
+ - XML-reader now ignores all whitespace-only EXN_TEXT elements as old way didn't work in cross-platform way (and arguably also not well on Windows).
 
  - CXMLReader initializes IsEmptyElement now.
 
@@ -72,7 +72,7 @@ Changes in 1.8 (??.??.2011)
 
  - IGUIEditBox: added missing serialization for Border
 
- - IGUIEditBox: remove bug that added spaces to the end of each line 
+ - IGUIEditBox: remove bug that added spaces to the end of each line
 
  - IGUIEditBox: fix crash that happened when wordwrapping was enabled, spaces were entered beyond the border and then cursor-key was pressed.
 
@@ -82,7 +82,7 @@ Changes in 1.8 (??.??.2011)
 
  - CDummyTransformationSceneNode::clone() added.
 
- - IParticleSystemSceneNode::doParticleSystem now public to allow rendering outside scenegraph. 
+ - IParticleSystemSceneNode::doParticleSystem now public to allow rendering outside scenegraph.
 
  - Renamed IOSOperator::getOperationSystemVersion to getOperatingSystemVersion. Changed return type from wchar_t to core::stringc, as that's the internal representation the name is built on.
 
@@ -100,7 +100,7 @@ Changes in 1.8 (??.??.2011)
 
  - Added SMF mesh loader, loads meshes from 3D World Studio. Originally written by Joseph Ellis
 
- - The loader selection process now consistently checks loader lists in reverse order, so new loaders added to Irrlicht override the internal ones. This applies when adding external mesh, image, scene and archive loaders, image writers, plus node, animator and GUI element factories. 
+ - The loader selection process now consistently checks loader lists in reverse order, so new loaders added to Irrlicht override the internal ones. This applies when adding external mesh, image, scene and archive loaders, image writers, plus node, animator and GUI element factories.
 
  - Added getters to retrieve mesh, scene and archive loaders.
 
@@ -183,13 +183,13 @@ Changes in 1.8 (??.??.2011)
  - Compile-defines can now be disabled from Makefiles/Projectfiles instead of having to change IrrCompileConfig.h each time.
 
  - IGUITabControl::setActiveTab should only take IGUITab* and not IGUIElement* (thx to greenya for finding)
- 
+
  - Add new skin-colors: EGDC_GRAY_WINDOW_SYMBOL, EGDC_EDITABLE, EGDC_GRAY_EDITABLE, EGDC_FOCUSED_EDITABLE
- 
+
  - Disabled state is now extended to sub-elements
- 
+
  - Make disabled state for several elements more visible
- 
+
  - Bugfix: Icons in tabcontrol get now affected immediately by skin-changes
 
  - Add xml example written by Yoran Bosman.
@@ -215,7 +215,7 @@ The following names can be queried for the given types:
 		* MaxTextureLODBias (float) Maximum value for LOD bias. Is usually at around 16, but can be lower on some systems.
 		* Version (int) Version of the driver. Should be Major*100+Minor
 		* ShaderLanguageVersion (int) Version of the high level shader language. Should be Major*100+Minor.
-    
+
  - Fix getRotationDegrees
 
  - Add creation parameter which allows to disable highres timers on Windows upon device creation.
@@ -236,7 +236,7 @@ The following names can be queried for the given types:
 
  - Add IGUIElement::bringToBack (patch written by DtD, although I'm to blame for the function-name)
 
- - BurningVideo 
+ - BurningVideo
    - add Normalmap Rendering (one light only), pushed Burningvideo to 0.46
    - add Stencil Shadow Rendering (one color only and 32 bit only),
      pushed Burningvideo to 0.47
@@ -249,13 +249,13 @@ The following names can be queried for the given types:
    allow to disable the bump/parallax on the earth like in the room ( with transparency )
 
  - added DDS Image files, DXT2, DXT3, DXT4, DXT5, based on code from nvidia and Randy Reddig
- 
+
  - added Halflife 1 Model Loader (based on code by Fabio Concas)
    Halflife 1.1.0.8, Counter-Strike 1.6 working
    -> Load all Textures ( can even optimize it to texture atlas ), all bone animation, all submodels.
    -> But to make use of the values (named animation, mouth animation)
       the Interface for IAnimatedMeshSceneNode has to be redone.
-  
+
    TODO:
    ->can handle float frames numbers, the interface for getMesh should be reworked
    This is my idea of a new getMesh interface for IAnimatedMesh
@@ -271,20 +271,20 @@ The following names can be queried for the given types:
     40.5  0.5   0.5
     40.9  0.1   0.9
     41.0  0   1
-   \param frameB: Frame number as zero based index. The other KeyFrame which is blended with FrameA. 
+   \param frameB: Frame number as zero based index. The other KeyFrame which is blended with FrameA.
    \param userParam: for Example Level of detail, or something else
    */
    virtual IMesh* getMesh(f32 frameA, s32 frameB = 0,s32 param = 0) = 0;
-   
+
    For now i used the (unused, always 255) detail level parameter and set a blend percentage as
    s32 frameNr = (s32) getFrameNr();
    s32 frameBlend = (s32) (core::fract ( getFrameNr() ) * 1000.f);
    return Mesh->getMesh(frameNr, frameBlend, StartFrame, EndFrame);
 
    So no interface is affected.
-  
+
    -> TODO: Quaternion Rotation is done private hand made and should be done with irrlicht quaternions
-  
+
  - Included 357kb Yodan.mdl mesh and copyright info file from Doug Hillyer
    to the media directory, used in example 7. collision as 4th model.
 
@@ -303,7 +303,7 @@ The following names can be queried for the given types:
 
  - added parameter make_lower to substring ( copy just lower case )
    string<T> subString(u32 begin, s32 length, bool make_lower = false ) const
-  
+
  - ColorConverter added
    //! converts a 8 bit palettized or non palettized image (A8) into R8G8B8
    static void convert8BitTo24Bit(const u8* in, s16* out, s32 width, s32 height, const s32* palette, s32 linepad = 0, bool flip=false);
@@ -352,11 +352,11 @@ The following names can be queried for the given types:
 Changes in 1.7.4
 
  - Change include order to get example 21 compiling on MinGW.
- 
+
  - Irrlicht.dll has correct name now again (was named libIrrlicht.dll in c::b). This fixes bugreport 3518765 reported by tetho.
- 
+
  - Fix linker path in example 16 for C::B project file (linker path was in include path section).
- 
+
  - Link with opengl32 and gdi32 in Example 14 in C::B.
 
  - Remove --no-export-all-symbols which got recently added to the windows build as that flag is not known by gcc on Windows.
@@ -372,7 +372,7 @@ Changes in 1.7.4
  - SceneNodeAnimatorFlyCircle fixes serialization of RadiusEllipsoid (was writing Radius). Thx @ wing64 for reporting.
 
  - Yield on Linux now uses nanosleep with 1ns as 0 isn't guaranteed to yield (thx @ hendu for finding + fix)
-  
+
 -----------------------------
 Changes in 1.7.3 (20.02.2012)
 
@@ -383,11 +383,11 @@ Changes in 1.7.3 (20.02.2012)
  - GUIEditor attributes have now scrollbar to be editable
 
  - Remove warning when compiling line2d::intersectWith with other types than f32.
- 
+
  - Document that triangle3d::isPointInside should not be used with int's.
 
  - triangle3d::isPointInsideFast handles 'on-border' cases now consistently.
- 
+
  - Some more editbox fixes
 
  - Harden Linux joystick usage, in case the driver returns illegal values
@@ -427,7 +427,7 @@ Changes in 1.7.3 (20.02.2012)
  - Add integer template specialization for vector3d::getSphericalCoordinateAngles which rounds angles to nearest integer now.
 
  - Recalculate FrameRect and ScrollPos in CGUIEditBox when AbsoluteRect gets changed (thx @ serengeor for report + testcase)
- 
+
  - Fix crash in editbox
 
  - Fix 'k' in bigfont.png (thx @ Scrappi for reporting)
@@ -437,9 +437,9 @@ Changes in 1.7.3 (20.02.2012)
  - EMIE_MOUSE_WHEEL messages now handled correctly in several gui-element when wheel isn't just 1.0 or -1.0 (thx @ Reiko for reporting)
 
  - Fix problems in Textwrapping in CGUIStaticText. Did use wrong size and did ignore last word of the text (thx @ Reiko for bugreport)
- 
+
  - Fix crash in collada (.dae) loading
-  
+
  - Fix bug handling in case RTT is not properly created
 
  - Fix SColorf interpolation
@@ -497,7 +497,7 @@ Changes in 1.7.3 (20.02.2012)
  - Fix crash on null-readfile in texture loading
 
  - Get particles saved before 1.7.2 (for example in irrEdit) working again (thx to smashly for problem reporting)
- 
+
  - Fix IGUIScrollBar setMax and setMin which had been restricted wrongly (reported by REDDemon)
 
  - Fix CNullDriver::createImage - Creating the image from a texture-rectangle which doesn't start at 0,0 works now again (thx @ ceyron for bugreport+testcase)
@@ -529,15 +529,15 @@ Changes in 1.7.2 (15.11.2010)
 
  - StaticText does now serialize the background color
 
- - Fix gui-elements which didn't care when skin-colors changed. That made it impossible to make the gui slowly transparent (thx to PI for reporting). 
+ - Fix gui-elements which didn't care when skin-colors changed. That made it impossible to make the gui slowly transparent (thx to PI for reporting).
  Note that it couldn't be completely fixed for the SpinBox without breaking the interface, so for that element you have to enforce this by calling for example element->setValue(element->getValue()) once.
 
  - Fix CXMLReaderImpl::getAttributeValueAsInt which returned wrong values with large integers (thx to squisher for finding)
- 
+
  - Fix compile problem in swap when using irrlicht in combination with stl (backport from trunk r3281)
 
  - Add EGET_TREEVIEW_NODE_COLLAPSE and deprecate EGET_TREEVIEW_NODE_COLLAPS (found by greenya)
- 
+
  - Fix serialization in CParticleSystemSceneNode (found by B@z)
 
  - Prevent crash in BillboardTextSceneNode when a custom font is used. Found and fixed by Nalin (bugtracker id: 3020487)
@@ -547,15 +547,15 @@ Changes in 1.7.2 (15.11.2010)
    Also remove BeginFrameTime in CAnimatedMeshSceneNode as it hasn't been used anymore since some time.
 
  - Add framerate and current frame information for animations in example 09 and do some minor cleanup.
- 
+
  - Added another test for xml-reader.
- 
+
  - Fix serialization in several particle emitters and affectors (thx to Ion Dune for reporting).
- 
+
  - Fix compile-error on VS for vector2d::getAngleTrig when used with integers. (thx to greenya for reporting)
- 
+
  - Fix bug in dimension2d::getInterpolated that caused wrong results when used with integers as template parameter. (thx to Greenya for noticing a warning which made me look over this code).
- 
+
  - Remove 2 minor memory leaks in meshloaders (found by tool cppcheck-1.43)
 
  - reduce file dependencies for IGUIEventReceiver.h (thx ngc92)
@@ -572,7 +572,7 @@ Changes in 1.7.2 (15.11.2010)
 
  - Fix crash in CGUIListBox when environment was cleared on events
 
- - Bugfix: Clear up depth-textures which could not be attached in OpenGL to prevent crashes. 
+ - Bugfix: Clear up depth-textures which could not be attached in OpenGL to prevent crashes.
 
  - Fix arrowMesh boundingbox.
 
@@ -594,12 +594,12 @@ Changes in 1.7.2 (15.11.2010)
 Changes in 1.7.1 (17.02.2010)
 
  - Fix octree with frustum+parent checks enabled (didn't clip at all before). Now using plane-checks instead of edge-checks for frustum-box intersection.
- 
+
  - Prevent that X11 selects larger resolutions in fullscreen even when perfect fits are available.
 
  - Ignore setResizable also on X11 when we're fullscreen to avoid messing up the window mode.
 
- - Work around a crash when pressing ESC after closing a Messagebox (found by Acki) 
+ - Work around a crash when pressing ESC after closing a Messagebox (found by Acki)
 
  - Prevent borland compile warnings in SColorHSL::FromRGB and in SVertexColorThresholdManipulator (found by mdeininger)
 
@@ -672,7 +672,7 @@ Changes in 1.7 (03.02.2010)
 
  - Add hasType to IGUIElement as a dynamic_cast substitute.
 
- - Add another parameter to IGUISkin::draw3DWindowBackground to allow getting the client area without actually drawing 
+ - Add another parameter to IGUISkin::draw3DWindowBackground to allow getting the client area without actually drawing
 
  - Add function getClientRect to IGUIWindow for getting the draw-able area
 
@@ -689,7 +689,7 @@ Changes in 1.7 (03.02.2010)
  - Allow to set the logging level already in SIrrlichtCreationParameters.
 
  - Add clearSystemMessages to devices (implemented only for Linux and Win32 so far).
- 
+
  - Support changing the render window from beginScene also with OpenGL driver.
 
  - Add getMaterial2D which allows to alter the 2d render state settings, such as filtering, anti-aliasing, thickness, etc.
@@ -746,7 +746,7 @@ Changes in 1.7 (03.02.2010)
  - Separate TextureWrap mode into U and V fields
 
  - Add mirror texture wrap modes
- 
+
  - windows show now active/inactive state
 
  - remove unneeded drop/grab calls found by manik_sheeri
@@ -797,7 +797,7 @@ Changes in 1.7 (03.02.2010)
 
  - Active camera not registered twice anymore
 
- - Parallax/normal map shader rotation bug under OpenGL fixed 
+ - Parallax/normal map shader rotation bug under OpenGL fixed
 
  - bump map handling for obj files fixed
 
@@ -974,7 +974,7 @@ Changes in 1.6 (23.09.2009)
 
  - Made IGUIElements recalculate clipping rectangle after setNotClipped, reported by Aelis440
 
- - Bug fix for the combo box where it showed white text instead of skin colour before being focused, fix posted by drewbacca
+ - Bug fix for the combo box where it showed white text instead of skin color before being focused, fix posted by drewbacca
 
  - EGDS_MESSAGE_BOX_HEIGHT is now honoured, bug reported by Spkka
 
@@ -1525,9 +1525,9 @@ Changes in 1.6 (23.09.2009)
 
  - D3D devices use DISCARD for windowed renderbuffers now, can be faster.
 
- - Changed behaviour of PixelBlend16() / PixelBlend16_simd() so that they treat the 1 bit alpha of the source pixel as boolean, i.e. they draw either the source pixel, or the destination pixel, rather than "blending". (Issue revealed by the fix to IVideoDriver::makeColorKeyTexture()).
+ - Changed behavior of PixelBlend16() / PixelBlend16_simd() so that they treat the 1 bit alpha of the source pixel as boolean, i.e. they draw either the source pixel, or the destination pixel, rather than "blending". (Issue revealed by the fix to IVideoDriver::makeColorKeyTexture()).
 
- - IVideoDriver::makeColorKeyTexture() bug fixed so that only alphas, not whole texel colors, are zeroed. An optional parameter allows using the old (buggy) behaviour for backwards compatibility.
+ - IVideoDriver::makeColorKeyTexture() bug fixed so that only alphas, not whole texel colors, are zeroed. An optional parameter allows using the old (buggy) behavior for backwards compatibility.
 
  - position2d is now a synonym for vector2d. position2d is therefore marked as deprecated, although it's unlikely to be removed.
 
@@ -1676,7 +1676,7 @@ Changes in version 1.5 (15.12.2008)
 
  - Terrain heightmap and texture were flipped in order to draw them as expected (looking onto the terrain from high above will just look like the actual texture/heightmap).
 
- - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact. The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
+ - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact. The behavior is now much more realistic, but it will require you to adjust your jump speed and gravity.
 
  - Skybox won't be culled anymore by nearplane or farplane.
 
@@ -2544,7 +2544,7 @@ Font improvements:
   - Elements can now automatically resize to fit their parents, or align themselves to an edge:
     setAlignment(left, right, top, bottom) - sets how each edge aligns to its parent,
     through EGUI_ALIGNMENT enum
-    EGUIA_UPPERLEFT - default behaviour, aligns to top or left edge
+    EGUIA_UPPERLEFT - default behavior, aligns to top or left edge
     EGUIA_LOWERRIGHT - aligns to the lower or right edge
     EGUIA_CENTER - moves relative to the center of its parent
     EGUIA_SCALE - uses relative scale
@@ -3024,7 +3024,7 @@ Changes in version 0.14.0 (30 November 2005)
 - Irrlicht.NET now supports shaders.
 
 - Irrlicht now loads all textures in 32 bit mode by default. (Previously this
-  was 16bit). To change this behaviour back again, use
+  was 16bit). To change this behavior back again, use
   device->getVideoDriver()->setTextureCreationFlag(ETCF_ALWAYS_16_BIT, true);
 
 - Irrlicht.NET now supports Particlesystems and Shaders. Thanks to a code
