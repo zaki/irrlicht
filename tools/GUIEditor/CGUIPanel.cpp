@@ -198,7 +198,7 @@ bool CGUIPanel::OnEvent(const SEvent &event)
 void CGUIPanel::moveInnerPane()
 {
 	core::dimension2d<s32> dim = InnerPane->getAbsolutePosition().getSize();
-	core::position2d<s32> newpos(-HScrollBar->getPos(), -VScrollBar->getPos());
+	core::position2d<s32> newpos(HScrollBar->isVisible() ? -HScrollBar->getPos() : 0 , VScrollBar->isVisible() ? -VScrollBar->getPos() : 0);
 	core::rect<s32> r(newpos, newpos + dim);
 	InnerPane->setRelativePosition(r);
 }
