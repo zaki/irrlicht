@@ -73,8 +73,8 @@ const wchar_t *helptext = L"This tool creates bitmap fonts for the Irrlicht Engi
 
 					L"That's all, have fun :-)";
 
-#ifdef _IRR_WINDOWS
-					const wchar_t *completeText = L"Font created"
+#ifdef _IRR_WINDOWS_
+					const wchar_t *completeText = L"Font created";
 #else
 					const wchar_t *completeText = L"Font created\n\n"
 							L"Please note that anti-aliasing under X11 is controlled by the system "
