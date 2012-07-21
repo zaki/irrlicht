@@ -51,7 +51,7 @@ const wchar_t *warntext = L"Legal Notice\n"
 					L"Some free fonts can be found here- www.openfontlibrary.org\n"
 					L"http://savannah.nongnu.org/projects/freefont/";
 
-wchar_t *helptext = L"This tool creates bitmap fonts for the Irrlicht Engine\n\n"
+const wchar_t *helptext = L"This tool creates bitmap fonts for the Irrlicht Engine\n\n"
 
 					L"First select a character encoding from the list, then choose the font, "
 					L"size, and whether you'd like bold, italic, antialiasing and an alpha channel. "
@@ -74,9 +74,9 @@ wchar_t *helptext = L"This tool creates bitmap fonts for the Irrlicht Engine\n\n
 					L"That's all, have fun :-)";
 
 #ifdef _IRR_WINDOWS
-					wchar_t *completeText = L"Font created"
+					const wchar_t *completeText = L"Font created"
 #else
-					wchar_t *completeText = L"Font created\n\n"
+					const wchar_t *completeText = L"Font created\n\n"
 							L"Please note that anti-aliasing under X11 is controlled by the system "
 							L"configuration, so if your system is set to use anti-aliasing, then so "
 							L"will any fonts you create with FontTool";
