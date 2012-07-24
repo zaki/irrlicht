@@ -11,6 +11,8 @@
 #include <sys/utsname.h>
 #include <time.h>
 #include "IEventReceiver.h"
+#include "ISceneManager.h"
+#include "IGUIEnvironment.h"
 #include "os.h"
 #include "CTimer.h"
 #include "irrString.h"
@@ -140,6 +142,24 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		CursorControl->setVisible(false);
 		static_cast<CCursorControl*>(CursorControl)->clearCursors();
 	}
+
+	// Must free OpenGL textures etc before destroying context, so can't wait for stub destructor
+	if ( GUIEnvironment )
+	{
+		GUIEnvironment->drop();
+		GUIEnvironment = NULL;
+	}
+	if ( SceneManager )
+	{
+		SceneManager->drop();
+		SceneManager = NULL;
+	}
+	if ( VideoDriver )
+	{
+		VideoDriver->drop();
+		VideoDriver = NULL;
+	}
+
 	if (display)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_

@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - Properly destroy OpenGL resources on linux (thx @curaga for the patch)
+
  - Fix diplay bux in the attribute-panel of the GUIEditor. Fixes bug 3517314 (thx @Darkcoder  for reporting).
 
  - Allow caching cursor position on X11 to work around slow XQueryPointer calls (thx @Hendu for reporting+patch proposal)
