@@ -22,7 +22,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 : CursorControl(cursorControl), MaxVerticalAngle(88.0f),
 	MoveSpeed(moveSpeed), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
 	MouseYDirection(invertY ? -1.0f : 1.0f),
-	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement)
+	LastAnimationTime(0), firstUpdate(true), firstInput(true), NoVerticalMovement(noVerticalMovement)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNodeAnimatorFPS");
@@ -105,7 +105,7 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	if (firstUpdate)
 	{
 		camera->updateAbsolutePosition();
-		if (CursorControl && camera)
+		if (CursorControl )
 		{
 			CursorControl->setPosition(0.5f, 0.5f);
 			CursorPos = CenterCursor = CursorControl->getRelativePosition();
@@ -118,7 +118,16 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	// If the camera isn't the active camera, and receiving input, then don't process it.
 	if(!camera->isInputReceiverEnabled())
+	{
+		firstInput = true;
 		return;
+	}
+
+	if ( firstInput )
+	{
+		allKeysUp();
+		firstInput = false;
+	}
 
 	scene::ISceneManager * smgr = camera->getSceneManager();
 	if(smgr && smgr->getActiveCamera() != camera)

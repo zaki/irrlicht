@@ -1,4 +1,5 @@
 Changes in 1.8 (??.??.2011)
+ - CSceneNodeAnimatorCameraFPS now resets the key-input when it was disabled (thx @ gerdb for reporting and patch-proposal)
 
  - Properly destroy OpenGL resources on linux (thx @curaga for the patch)
 

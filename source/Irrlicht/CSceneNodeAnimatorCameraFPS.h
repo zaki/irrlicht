@@ -112,6 +112,7 @@ namespace scene
 		bool CursorKeys[EKA_COUNT];
 
 		bool firstUpdate;
+		bool firstInput;
 		bool NoVerticalMovement;
 	};
 
