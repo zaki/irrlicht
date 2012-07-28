@@ -1,4 +1,7 @@
 Changes in 1.8 (??.??.2011)
+
+ - Add IAnimatedMeshSceneNode::getLoopMode (asked for by JLouisB)
+
  - CSceneNodeAnimatorCameraFPS now resets the key-input when it was disabled (thx @ gerdb for reporting and patch-proposal)
 
  - Properly destroy OpenGL resources on linux (thx @curaga for the patch)

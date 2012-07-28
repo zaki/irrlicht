@@ -166,6 +166,10 @@ namespace scene
 		/** If set to false, animations will not be played looped. */
 		virtual void setLoopMode(bool playAnimationLooped) = 0;
 
+		//! returns the current loop mode
+		/** When true the animations are played looped */
+		virtual bool getLoopMode() const = 0;
+
 		//! Sets a callback interface which will be called if an animation playback has ended.
 		/** Set this to 0 to disable the callback again.
 		Please note that this will only be called when in non looped

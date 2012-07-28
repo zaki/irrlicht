@@ -244,7 +244,7 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 		LastTimeMs = timeMs;
 	}
 
-	// set CurrentFrameNr 
+	// set CurrentFrameNr
 	buildFrameNr(timeMs-LastTimeMs);
 
 	// update bbox
@@ -733,6 +733,12 @@ bool CAnimatedMeshSceneNode::setMD2Animation(const c8* animationName)
 void CAnimatedMeshSceneNode::setLoopMode(bool playAnimationLooped)
 {
 	Looping = playAnimationLooped;
+}
+
+//! returns the current loop mode
+bool CAnimatedMeshSceneNode::getLoopMode() const
+{
+	return Looping;
 }
 
 
