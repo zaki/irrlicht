@@ -94,6 +94,8 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 		GLhandleARB shaders[8];
 		GLint count;
 		Driver->extGlGetAttachedObjects(Program, 8, &count, shaders);
+		// avoid bugs in some drivers, which return larger numbers
+		count=core::min_(count,8);
 		for (GLint i=0; i<count; ++i)
 			Driver->extGlDeleteObject(shaders[i]);
 		Driver->extGlDeleteObject(Program);
@@ -105,6 +107,8 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 		GLuint shaders[8];
 		GLint count;
 		Driver->extGlGetAttachedShaders(Program2, 8, &count, shaders);
+		// avoid bugs in some drivers, which return larger numbers
+		count=core::min_(count,8);
 		for (GLint i=0; i<count; ++i)
 			Driver->extGlDeleteShader(shaders[i]);
 		Driver->extGlDeleteProgram(Program2);
