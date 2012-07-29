@@ -59,10 +59,16 @@ public:
 
 
 	//! Reallocates the array, make it bigger or smaller.
-	/** \param new_size New size of array. */
-	void reallocate(u32 new_size)
+	/** \param new_size New size of array.
+	\param canShrink Specifies whether the array is reallocated even if
+	enough space is available. Setting this flag to false can speed up
+	array usage, but may use more memory than required by the data.
+	*/
+	void reallocate(u32 new_size, bool canShrink=true)
 	{
 		if (allocated==new_size)
+			return;
+		if (!canShrink && (new_size < allocated))
 			return;
 
 		T* old_data = data;
