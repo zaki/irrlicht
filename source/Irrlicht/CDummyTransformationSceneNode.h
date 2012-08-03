@@ -42,6 +42,15 @@ namespace scene
 
 	private:
 
+		// TODO: We can add least add some warnings to find troubles faster until we have 
+		// fixed bug id 2318691.
+		virtual const core::vector3df& getScale() const;
+		virtual void setScale(const core::vector3df& scale);
+		virtual const core::vector3df& getRotation() const;
+		virtual void setRotation(const core::vector3df& rotation);
+		virtual const core::vector3df& getPosition() const;
+		virtual void setPosition(const core::vector3df& newpos);
+
 		core::matrix4 RelativeTransformationMatrix;
 		core::aabbox3d<f32> Box;
 	};
