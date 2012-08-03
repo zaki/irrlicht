@@ -253,17 +253,35 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	Writer->writeElement(L"visual_scene", false, L"id", L"default_scene");
 	Writer->writeLineBreak();
 
-		// ambient light
+		// ambient light (instance_light also needs a node as parent so we have to create one)
 		Writer->writeElement(L"node", false);
 		Writer->writeLineBreak();
 		Writer->writeElement(L"instance_light", true, L"url", L"#ambientlight");
 		Writer->writeLineBreak();
-
-			// scenegraph
-			writeSceneNode(root);
-
 		Writer->writeClosingTag(L"node");
 		Writer->writeLineBreak();
+
+		// Write the scenegraph.
+		if ( root->getType() != ESNT_SCENE_MANAGER )
+		{
+			// TODO: Not certain if we should really write the root or if we should just always only write the children.
+			// For now writing root to keep backward compatibility for this case, but if anyone needs to _not_ write 
+			// that root-node we can add a parameter for this later on in writeScene.
+			writeSceneNode(root);
+		}
+		else
+		{
+			// The visual_scene element is identical to our scenemanager and acts as root,
+			// so we do not write the root itself if it points to the scenemanager.
+			const core::list<ISceneNode*>& rootChildren = root->getChildren();
+			for ( core::list<ISceneNode*>::ConstIterator it = rootChildren.begin();
+					it != rootChildren.end(); 
+					++ it )
+			{
+				writeSceneNode(*it);
+			}
+		}
+
 
 	Writer->writeClosingTag(L"visual_scene");
 	Writer->writeLineBreak();
@@ -321,11 +339,29 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 	IMesh* mesh = getProperties()->getMesh(node);
 	if ( mesh )
 	{
-		MeshNode * n = Meshes.find(mesh);
-		if ( n && !n->getValue().MaterialWritten )
+		if (	node->getType() == ESNT_MESH 
+			&&	static_cast<IMeshSceneNode*>(node)->isReadOnlyMaterials() )
 		{
-			writeMeshMaterials(n->getValue().Name, mesh);
-			n->getValue().MaterialWritten = true;
+			// no material overrides - write mesh materials
+			MeshNode * n = Meshes.find(mesh);
+			if ( n && !n->getValue().MaterialWritten )
+			{
+				writeMeshMaterials(n->getValue().Name, mesh);
+				n->getValue().MaterialWritten = true;
+			}		
+		}
+		else
+		{
+			// write node materials
+			irr::core::stringw nodename(nameForNode(node));
+			for (u32 i=0; i<node->getMaterialCount(); ++i)
+			{
+				core::stringw strMat = "mat";
+				strMat += nodename;
+				strMat += i;
+
+				writeMaterial(strMat);
+			}
 		}
 	}
 
@@ -336,6 +372,25 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 	}
 }
 
+void CColladaMeshWriter::writeMaterial(const irr::core::stringw& materialname)
+{
+	Writer->writeElement(L"material", false,
+		L"id", materialname.c_str(),
+		L"name", materialname.c_str());
+	Writer->writeLineBreak();
+
+	// We don't make a difference between material and effect on export.
+	// Every material is just using an instance of an effect.
+	core::stringw strFx(materialname);
+	strFx += L"-fx";
+	Writer->writeElement(L"instance_effect", true,
+		L"url", (core::stringw(L"#") + strFx).c_str());
+	Writer->writeLineBreak();
+
+	Writer->writeClosingTag(L"material");
+	Writer->writeLineBreak();
+}
+
 void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 {
 	if ( !node || !getProperties() || !getProperties()->isExportable(node) )
@@ -344,21 +399,33 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 	IMesh* mesh = getProperties()->getMesh(node);
 	if ( mesh )
 	{
-		MeshNode * n = Meshes.find(mesh);
-		if ( n  && !n->getValue().EffectWritten )
+		if (	node->getType() == ESNT_MESH 
+			&&	static_cast<IMeshSceneNode*>(node)->isReadOnlyMaterials() )
 		{
-			irr::core::stringw meshname(n->getValue().Name);
+			// no material overrides - write mesh materials
+			MeshNode * n = Meshes.find(mesh);
+			if ( n  && !n->getValue().EffectWritten )
+			{
+				irr::core::stringw meshname(n->getValue().Name);
+				writeMeshEffects(meshname, mesh);
+				n->getValue().EffectWritten = true;
+			}
+		}
+		else
+		{
+			irr::core::stringw nodename(nameForNode(node));
+			irr::core::stringw meshname(nameForMesh(mesh));	// still need meshname for textures
+			// write node materials
 			for (u32 i=0; i<node->getMaterialCount(); ++i)
 			{
 				core::stringw strMat = "mat";
-				strMat += meshname;
+				strMat += nodename;
 				strMat += i;
 				strMat += L"-fx";
 
 				video::SMaterial & material = node->getMaterial(i);
 				writeMaterialEffect(meshname, strMat, material);
 			}
-			n->getValue().EffectWritten = true;
 		}
 	}
 
@@ -505,12 +572,7 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	Writer->writeElement(L"node", false, L"id", nameId.c_str());
 	Writer->writeLineBreak();
 
-	irr::core::vector3df rot(node->getRotation());
-	writeTranslateElement( node->getPosition() );
-	writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X );
-	writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y );
-	writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z );
-	writeScaleElement( node->getScale() );
+	writeMatrixElement(node->getRelativeTransformation());
 
 	// instance geometry
 	IMesh* mesh = getProperties()->getMesh(node);
@@ -518,7 +580,7 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	{
 		MeshNode * n = Meshes.find(mesh);
 		if ( n )
-			writeMeshInstanceGeometry(n->getValue().Name, mesh);
+			writeMeshInstanceGeometry(n->getValue().Name, mesh, node);
 	}
 
 	// instance light
@@ -648,8 +710,19 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	return true;
 }
 
-void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh)
+void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh, scene::ISceneNode* node)
 {
+	core::stringw materialOwner; 
+	if ( !node || ( node->getType() == ESNT_MESH  )
+					&&	static_cast<IMeshSceneNode*>(node)->isReadOnlyMaterials() )
+	{
+		materialOwner = meshname;
+	}
+	else
+	{
+		materialOwner = nameForNode(node);
+	}
+
 	//<instance_geometry url="#mesh">
 	core::stringw meshId(meshname);
 	Writer->writeElement(L"instance_geometry", false, L"url", toRef(meshId).c_str());
@@ -665,12 +738,13 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 			// <instance_material symbol="leaf" target="#MidsummerLeaf01"/>
 			for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 			{
-				core::stringw strMat = "mat";
-				strMat += meshname;
-				strMat += i;
-				core::stringw strMatInst(L"#");
-				strMatInst += strMat;
-				Writer->writeElement(L"instance_material", false, L"symbol", strMat.c_str(), L"target", strMatInst.c_str());
+				core::stringw strMatSymbol = "mat";
+				strMatSymbol += meshname;
+				strMatSymbol += i;
+				core::stringw strMatTarget = "#mat";
+				strMatTarget += materialOwner;
+				strMatTarget += i;
+				Writer->writeElement(L"instance_material", false, L"symbol", strMatSymbol.c_str(), L"target", strMatTarget.c_str());
 				Writer->writeLineBreak();
 
 					// <bind_vertex_input semantic="mesh-TexCoord0" input_semantic="TEXCOORD" input_set="0"/>
@@ -960,18 +1034,7 @@ void CColladaMeshWriter::writeMeshMaterials(const irr::core::stringw& meshname, 
 		strMat += meshname;
 		strMat += i;
 
-		Writer->writeElement(L"material", false,
-			L"id", strMat.c_str(),
-			L"name", strMat.c_str());
-		Writer->writeLineBreak();
-
-		strMat += L"-fx";
-		Writer->writeElement(L"instance_effect", true,
-			L"url", (core::stringw(L"#") + strMat).c_str());
-		Writer->writeLineBreak();
-
-		Writer->writeClosingTag(L"material");
-		Writer->writeLineBreak();
+		writeMaterial(strMat);
 	}
 }
 
@@ -1919,6 +1982,29 @@ void CColladaMeshWriter::writeTranslateElement(const irr::core::vector3df& trans
 	txt += irr::core::stringw(translate.Z);
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag(L"translate");
+	Writer->writeLineBreak();
+}
+
+void CColladaMeshWriter::writeMatrixElement(const irr::core::matrix4& matrix)
+{
+	Writer->writeElement(L"matrix", false);
+	Writer->writeLineBreak();
+
+	for ( int a=0; a<4; ++a )
+	{
+		irr::core::stringw txt;
+		for ( int b=0; b<4; ++b )
+		{
+			if ( b > 0 )
+				txt += " ";
+			// row-column switched compared to Irrlicht
+			txt += irr::core::stringw(matrix[b*4+a]); 
+		}
+		Writer->writeText(txt.c_str());
+		Writer->writeLineBreak();
+	}
+
+	Writer->writeClosingTag(L"matrix");
 	Writer->writeLineBreak();
 }
 

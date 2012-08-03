@@ -1,5 +1,15 @@
 Changes in 1.8 (??.??.2011)
 
+ - Colladawriter now exports materials per node when those are used in Irrlicht
+ 
+ - Colladawriter now writing matrices for node transformations as old solution did not work with CDummyTransformationSceneNode's.
+ 
+ - Colladawriter no longer create an extra node for the scenemanger as <visual_scene> has that job in Collada.
+ 
+ - Colladwriter no longer makes all Scenenodes children of ambient-light as that can be parallel on the same layer instead.
+ 
+ - Colladareader now creates the ambient-light correct instead of creating a point-light for it.
+
  - Add IAnimatedMeshSceneNode::getLoopMode (asked for by JLouisB)
 
  - CSceneNodeAnimatorCameraFPS now resets the key-input when it was disabled (thx @ gerdb for reporting and patch-proposal)

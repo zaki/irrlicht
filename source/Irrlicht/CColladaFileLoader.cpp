@@ -123,6 +123,9 @@ namespace
 
 	const char* const inputSemanticNames[] = {"POSITION", "VERTEX", "NORMAL", "TEXCOORD",
 		"UV", "TANGENT", "IMAGE", "TEXTURE", 0};
+
+	// We have to read ambient lights like other light types here, so we need a type for it
+	const video::E_LIGHT_TYPE ELT_AMBIENT = video::E_LIGHT_TYPE(video::ELT_COUNT+1);
 }
 
 	//! following class is for holding and creating instances of library
@@ -176,6 +179,12 @@ namespace
 			#ifdef COLLADA_READER_DEBUG
 			os::Printer::log("COLLADA: Constructing light instance", Id.c_str(), ELL_DEBUG);
 			#endif
+
+			if ( LightData.Type == ELT_AMBIENT )
+			{
+				mgr->setAmbientLight( LightData.DiffuseColor );
+				return 0;
+			}
 
 			scene::ILightSceneNode* l = mgr->addLightSceneNode(parent);
 			if (l)
@@ -287,6 +296,7 @@ namespace
 			{
 				s->setName(getId());
 				s->getRelativeTransformationMatrix() = Transformation;
+				s->updateAbsolutePosition();
 				core::stringc t;
 				for (u32 i=0; i<16; ++i)
 				{
@@ -2392,7 +2402,7 @@ void CColladaFileLoader::readLightPrefab(io::IXMLReaderUTF8* reader)
 						prefab->LightData.Type=video::ELT_SPOT;
 					else
 					if (ambientSectionName == reader->getNodeName())
-						prefab->LightData.Type=video::ELT_POINT; // TODO: This needs some change
+						prefab->LightData.Type=ELT_AMBIENT;
 					else
 					if (colorNodeName == reader->getNodeName())
 						prefab->LightData.DiffuseColor=readColorNode(reader);

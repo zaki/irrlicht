@@ -111,7 +111,8 @@ protected:
 	void writeMeshEffects(const irr::core::stringw& meshname, scene::IMesh* mesh);
 	void writeMaterialEffect(const irr::core::stringw& meshname, const irr::core::stringw& materialname, const video::SMaterial & material);
 	void writeMeshGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
-	void writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
+	void writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh, scene::ISceneNode* node=0);
+	void writeMaterial(const irr::core::stringw& materialname);
 	void writeLightInstance(const irr::core::stringw& lightName);
 	void writeLibraryImages();
 	void writeColorFx(const irr::core::stringw& meshname, const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name=0, const wchar_t* attr1Value=0);
@@ -124,6 +125,7 @@ protected:
 	void writeRotateElement(const irr::core::vector3df& axis, irr::f32 angle);
 	void writeScaleElement(const irr::core::vector3df& scale);
 	void writeTranslateElement(const irr::core::vector3df& translate);
+	void writeMatrixElement(const irr::core::matrix4& matrix);
 
 	struct SComponentGlobalStartPos
 	{
