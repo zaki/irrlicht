@@ -77,7 +77,6 @@ namespace scene
 	};
 
 	//! Callback interface for properties which can be used to influence collada writing
-	//! NOTE: Interface is still work in process and might change some more before 1.8 release
 	class IColladaMeshWriterProperties  : public virtual IReferenceCounted
 	{
 	public:
@@ -131,13 +130,106 @@ namespace scene
 		virtual IMesh* getMesh(irr::scene::ISceneNode * node) = 0;
 	};
 
+	//! Callback interface to use custom names on collada writing.
+	/** Many names and id's have to be unique in collada. By default 
+	Irrlicht guarantees for example by using using pointer-values in the name.
+	This works for most tools, but occasionally you might need another naming scheme
+	to make it easier finding names again for further processing.
+	*/
+	class IColladaMeshWriterNames  : public virtual IReferenceCounted
+	{
+	public:
+	
+		IColladaMeshWriterNames() : MeshToNC(true), NodeToNC(true), NCNamePrefix(L"_NC_") {}
+		virtual ~IColladaMeshWriterNames () {}
+
+		//! Return a unique name for the given mesh
+		/** Note that names really must be unique here per mesh-pointer, so mostly it's a good idea to return
+		the nameForMesh from IColladaMeshWriter::getDefaultNameGenerator().
+		*/
+		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh) const = 0;
+
+		//! Return a unique name for the given node
+		/** Note that names really must be unique here per node-pointer, so mostly it's a good idea to return
+		the nameForNode from IColladaMeshWriter::getDefaultNameGenerator().
+		*/
+		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) const = 0;
+
+		//! Return a name for the material
+		/** There is one material created in the writer for each unique name. So you can use this to control 
+		the number of materials which get written. For example Irrlicht does by default write one material for each
+		material instanced by a node. So if you know that in your application material instances per node are identical 
+		between different nodes you can reduce the number of exported materials using that knowledge by using identical 
+		names for such shared materials. */
+		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const = 0;
+
+		//! Ensure meshnames follow the xs::NCName format (so this will change names!)
+		/** Names need to have a certain format in collada, like not starting with numbers,
+		and avoiding certain special characters. 
+		*/
+		void SetConvertMeshNameToNC(bool doConvert)	
+		{ 
+			MeshToNC = doConvert; 
+		}
+
+		//! Check if meshnames are forced to follow the xs::NCName format
+		bool GetConvertMeshNameToNC() const 
+		{
+			return MeshToNC;
+		}
+
+		//! Ensure nodenames follow the xs::NCName format (so this will change names!)
+		void SetConvertNodeNameToNC(bool doConvert)	
+		{ 
+			NodeToNC = doConvert; 
+		}
+
+		//! Check if nodenames are forced to follow the xs::NCName format
+		bool GetConvertNodeNameToNC() const 
+		{
+			return NodeToNC;
+		}
+
+		//! Ensure materialnames follow the xs::NCName format (so this will change names!)
+		void SetConvertMaterialNameToNC(bool doConvert)	
+		{ 
+			MaterialToNC = doConvert; 
+		}
+
+		//! Check if materialnames are forced to follow the xs::NCName format
+		bool GetConvertMaterialNameToNC() const 
+		{
+			return MaterialToNC;
+		}
+
+		//! When conversion to NCName's is enforced resulting names will have this prefix
+		void SetNCNamePrefix(const irr::core::stringw& prefix) 
+		{
+			NCNamePrefix = prefix;
+		}
+
+		//! Get the NCName prefix
+		const irr::core::stringw& getNCNamePrefix() const
+		{
+			return NCNamePrefix;
+		}
+
+	protected:
+		bool MeshToNC;
+		bool NodeToNC;
+		bool MaterialToNC;
+		irr::core::stringw NCNamePrefix;
+	};
+
 
 	//! Interface for writing meshes
 	class IColladaMeshWriter : public IMeshWriter
 	{
 	public:
 
-		IColladaMeshWriter() : Properties(0), DefaultProperties(0), WriteTextures(true), WriteDefaultScene(false), AmbientLight(0.f, 0.f, 0.f, 1.f)
+		IColladaMeshWriter() 
+			: Properties(0), DefaultProperties(0), NameGenerator(0), DefaultNameGenerator(0)
+			, WriteTextures(true), WriteDefaultScene(false), AmbientLight(0.f, 0.f, 0.f, 1.f)
 		{
 		}
 
@@ -148,6 +240,10 @@ namespace scene
 				Properties->drop();
 			if ( DefaultProperties )
 				DefaultProperties->drop();
+			if ( NameGenerator )
+				NameGenerator->drop();
+			if ( DefaultNameGenerator )
+				DefaultNameGenerator->drop();
 		}
 
 		//! writes a scene starting with the given node
@@ -209,7 +305,7 @@ namespace scene
 		}
 
 		//! Get properties which are currently used.
-		virtual IColladaMeshWriterProperties * getProperties()
+		virtual IColladaMeshWriterProperties * getProperties() const
 		{
 			return Properties;
 		}
@@ -221,8 +317,34 @@ namespace scene
 			return DefaultProperties; 
 		}
 
+		//! Install a generator to create custom names on export. 
+		virtual void setNameGenerator(IColladaMeshWriterNames * nameGenerator)
+		{
+			if ( nameGenerator == NameGenerator )
+				return;
+			if ( nameGenerator ) 
+				nameGenerator->grab();
+			if ( NameGenerator )
+				NameGenerator->drop();
+			NameGenerator = nameGenerator;
+		}
+
+		//! Get currently used name generator
+		virtual IColladaMeshWriterNames * getNameGenerator() const
+		{
+			return NameGenerator;
+		}
+
+		//! Return the original default name generator of the writer. 
+		/** You can use this pointer in your own generator to access and return default values. */
+		IColladaMeshWriterNames * getDefaultNameGenerator() const 
+		{ 
+			return DefaultNameGenerator; 
+		}
+
+
 	protected:
-		// NOTE: you should also call setProperties
+		// NOTE: You usually should also call setProperties with the same paraemter when using setDefaultProperties
 		virtual void setDefaultProperties(IColladaMeshWriterProperties * p)
 		{
 			if ( p == DefaultProperties )
@@ -234,9 +356,23 @@ namespace scene
 			DefaultProperties = p;
 		}
 
+		// NOTE: You usually should also call setNameGenerator with the same paraemter when using setDefaultProperties
+		virtual void setDefaultNameGenerator(IColladaMeshWriterNames * p)
+		{
+			if ( p == DefaultNameGenerator )
+				return;
+			if ( p ) 
+				p->grab();
+			if ( DefaultNameGenerator )
+				DefaultNameGenerator->drop();
+			DefaultNameGenerator = p;
+		}
+
 	private:
 		IColladaMeshWriterProperties * Properties;
 		IColladaMeshWriterProperties * DefaultProperties;
+		IColladaMeshWriterNames * NameGenerator;
+		IColladaMeshWriterNames * DefaultNameGenerator;
 		bool WriteTextures;
 		bool WriteDefaultScene;
 		video::SColorf AmbientLight;

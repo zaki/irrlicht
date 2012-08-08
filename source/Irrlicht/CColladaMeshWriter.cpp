@@ -122,6 +122,7 @@ IMesh* CColladaMeshWriterProperties::getMesh(irr::scene::ISceneNode * node)
 		return 0;
 	if ( node->getType() == ESNT_ANIMATED_MESH )
 		return static_cast<IAnimatedMeshSceneNode*>(node)->getMesh()->getMesh(0);
+	// TODO: we need some ISceneNode::hasType() function to get rid of those checks
 	if (	node->getType() == ESNT_MESH
 		||	node->getType() == ESNT_CUBE
 		||	node->getType() == ESNT_SPHERE
@@ -132,6 +133,65 @@ IMesh* CColladaMeshWriterProperties::getMesh(irr::scene::ISceneNode * node)
 	if ( node->getType() == ESNT_TERRAIN )
 		return static_cast<ITerrainSceneNode*>(node)->getMesh();
 	return 0;
+}
+
+CColladaMeshWriterNames::CColladaMeshWriterNames()
+{
+	SetConvertMeshNameToNC(true);
+	SetConvertNodeNameToNC(true);
+	SetConvertMaterialNameToNC(true);
+}
+
+irr::core::stringw CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh) const
+{
+	irr::core::stringw name(L"mesh");
+	name += nameForPtr(mesh);
+	return name;
+}
+
+irr::core::stringw CColladaMeshWriterNames::nameForNode(const scene::ISceneNode* node) const
+{
+	irr::core::stringw name;
+	// Prefix, because xs::ID can't start with a number, also nicer name
+	if ( node && node->getType() == ESNT_LIGHT )
+		name = L"light";	
+	else
+		name = L"node";
+	name += nameForPtr(node);
+	if ( node )
+	{
+		name += irr::core::stringw(node->getName());
+	}
+	return name;
+}
+
+irr::core::stringw CColladaMeshWriterNames::nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const
+{
+	core::stringw strMat(L"mat");
+
+	bool useMeshMaterial =	!node ||
+							(	(node->getType() == ESNT_MESH ||	// TODO: we need some ISceneNode::hasType() function to get rid of those checks
+								node->getType() == ESNT_CUBE ||
+								node->getType() == ESNT_SPHERE ||
+								node->getType() == ESNT_WATER_SURFACE ||
+								node->getType() == ESNT_Q3SHADER_SCENE_NODE)
+								&& static_cast<const IMeshSceneNode*>(node)->isReadOnlyMaterials())
+							||	(node->getType() == ESNT_ANIMATED_MESH && static_cast<const IAnimatedMeshSceneNode*>(node)->isReadOnlyMaterials() );
+
+	if ( !useMeshMaterial )
+	{
+		strMat += nameForNode(node);
+	}
+	strMat += nameForMesh(mesh);
+	strMat += materialId;
+	return strMat;
+}
+
+irr::core::stringw CColladaMeshWriterNames::nameForPtr(const void* ptr) const
+{
+	wchar_t buf[32];
+	swprintf(buf, 32, L"%p", ptr);
+	return irr::core::stringw(buf);
 }
 
 
@@ -158,6 +218,11 @@ CColladaMeshWriter::CColladaMeshWriter(	ISceneManager * smgr, video::IVideoDrive
 	setDefaultProperties(p);
 	setProperties(p);
 	p->drop();
+
+	CColladaMeshWriterNames * nameGenerator = new CColladaMeshWriterNames();
+	setDefaultNameGenerator(nameGenerator);
+	setNameGenerator(nameGenerator);
+	nameGenerator->drop();
 }
 
 
@@ -171,6 +236,15 @@ CColladaMeshWriter::~CColladaMeshWriter()
 }
 
 
+void CColladaMeshWriter::reset()
+{
+	LibraryImages.clear();
+	Meshes.clear();
+	LightNodes.clear();
+	MaterialsWritten.clear();
+	EffectsWritten.clear();
+}
+
 //! Returns the type of the mesh writer
 EMESH_WRITER_TYPE CColladaMeshWriter::getType() const
 {
@@ -183,6 +257,8 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	if (!file || !root)
 		return false;
 
+	reset();
+
 	Writer = FileSystem->createXMLWriter(file);
 
 	if (!Writer)
@@ -194,7 +270,6 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	Directory = FileSystem->getFileDir(FileSystem->getAbsolutePath( file->getFileName() ));
 
 	// make names for all nodes with exportable meshes
-	Meshes.clear();
 	makeMeshNames(root);
 
 	os::Printer::log("Writing scene", file->getFileName());
@@ -218,7 +293,6 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	Writer->writeClosingTag(L"library_materials");
 	Writer->writeLineBreak();
 
-	LibraryImages.clear();
 	Writer->writeElement(L"library_effects", false);
 	Writer->writeLineBreak();
 	writeNodeEffects(root);
@@ -310,7 +384,7 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 
 void CColladaMeshWriter::makeMeshNames(irr::scene::ISceneNode * node)
 {
-	if ( !node || !getProperties() || !getProperties()->isExportable(node) )
+	if ( !node || !getProperties() || !getProperties()->isExportable(node) || !getNameGenerator())
 		return;
 
 	IMesh* mesh = getProperties()->getMesh(node);
@@ -344,22 +418,19 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 		{
 			// no material overrides - write mesh materials
 			MeshNode * n = Meshes.find(mesh);
-			if ( n && !n->getValue().MaterialWritten )
+			if ( n && !n->getValue().MaterialsWritten )
 			{
-				writeMeshMaterials(n->getValue().Name, mesh);
-				n->getValue().MaterialWritten = true;
+				writeMeshMaterials(mesh);
+				n->getValue().MaterialsWritten = true;
 			}		
 		}
 		else
 		{
 			// write node materials
-			irr::core::stringw nodename(nameForNode(node));
 			for (u32 i=0; i<node->getMaterialCount(); ++i)
 			{
-				core::stringw strMat = "mat";
-				strMat += nodename;
-				strMat += i;
-
+				video::SMaterial & material = node->getMaterial(i);
+				core::stringw strMat(nameForMaterial(material, i, mesh, node));
 				writeMaterial(strMat);
 			}
 		}
@@ -374,6 +445,10 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 
 void CColladaMeshWriter::writeMaterial(const irr::core::stringw& materialname)
 {
+	if ( MaterialsWritten.find(materialname) )
+		return;
+	MaterialsWritten.insert(materialname, true);
+
 	Writer->writeElement(L"material", false,
 		L"id", materialname.c_str(),
 		L"name", materialname.c_str());
@@ -393,7 +468,7 @@ void CColladaMeshWriter::writeMaterial(const irr::core::stringw& materialname)
 
 void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 {
-	if ( !node || !getProperties() || !getProperties()->isExportable(node) )
+	if ( !node || !getProperties() || !getProperties()->isExportable(node) || !getNameGenerator() )
 		return;
 
 	IMesh* mesh = getProperties()->getMesh(node);
@@ -404,11 +479,10 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 		{
 			// no material overrides - write mesh materials
 			MeshNode * n = Meshes.find(mesh);
-			if ( n  && !n->getValue().EffectWritten )
+			if ( n  && !n->getValue().EffectsWritten )
 			{
-				irr::core::stringw meshname(n->getValue().Name);
-				writeMeshEffects(meshname, mesh);
-				n->getValue().EffectWritten = true;
+				writeMeshEffects(mesh);
+				n->getValue().EffectsWritten = true;
 			}
 		}
 		else
@@ -418,13 +492,10 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 			// write node materials
 			for (u32 i=0; i<node->getMaterialCount(); ++i)
 			{
-				core::stringw strMat = "mat";
-				strMat += nodename;
-				strMat += i;
-				strMat += L"-fx";
-
 				video::SMaterial & material = node->getMaterial(i);
-				writeMaterialEffect(meshname, strMat, material);
+				irr::core::stringw materialname(nameForMaterial(material, i, mesh, node));
+				materialname += L"-fx";
+				writeMaterialEffect(meshname, materialname, material);
 			}
 		}
 	}
@@ -447,7 +518,7 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 		const video::SLight& lightData = lightNode->getLightData();
 
 		ColladaLight cLight;
-		cLight.Name = nameForLightNode(node);
+		cLight.Name = nameForNode(node);
 		LightNodes.insert(node, cLight);
 
 		Writer->writeElement(L"light", false, L"id", cLight.Name.c_str());
@@ -609,6 +680,8 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	if (!file)
 		return false;
 
+	reset();
+
 	Writer = FileSystem->createXMLWriter(file);
 
 	if (!Writer)
@@ -638,17 +711,15 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"library_materials", false);
 	Writer->writeLineBreak();
 
-	irr::core::stringw meshname(nameForMesh(mesh));
-	writeMeshMaterials(meshname, mesh);
+	writeMeshMaterials(mesh);
 
 	Writer->writeClosingTag(L"library_materials");
 	Writer->writeLineBreak();
 
-	LibraryImages.clear();
 	Writer->writeElement(L"library_effects", false);
 	Writer->writeLineBreak();
 
-	writeMeshEffects(meshname, mesh);
+	writeMeshEffects(mesh);
 
 	Writer->writeClosingTag(L"library_effects");
 	Writer->writeLineBreak();
@@ -661,6 +732,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"library_geometries", false);
 	Writer->writeLineBreak();
 
+	irr::core::stringw meshname(nameForMesh(mesh));
 	writeMeshGeometry(meshname, mesh);
 
 	Writer->writeClosingTag(L"library_geometries");
@@ -712,17 +784,6 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh, scene::ISceneNode* node)
 {
-	core::stringw materialOwner; 
-	if ( !node || ( node->getType() == ESNT_MESH  )
-					&&	static_cast<IMeshSceneNode*>(node)->isReadOnlyMaterials() )
-	{
-		materialOwner = meshname;
-	}
-	else
-	{
-		materialOwner = nameForNode(node);
-	}
-
 	//<instance_geometry url="#mesh">
 	core::stringw meshId(meshname);
 	Writer->writeElement(L"instance_geometry", false, L"url", toRef(meshId).c_str());
@@ -736,14 +797,13 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 
 			// instance materials
 			// <instance_material symbol="leaf" target="#MidsummerLeaf01"/>
+			bool useNodeMaterials = node && node->getMaterialCount() == mesh->getMeshBufferCount();
 			for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 			{
-				core::stringw strMatSymbol = "mat";
-				strMatSymbol += meshname;
-				strMatSymbol += i;
-				core::stringw strMatTarget = "#mat";
-				strMatTarget += materialOwner;
-				strMatTarget += i;
+				irr::core::stringw strMatSymbol(nameForMaterialSymbol(mesh, i));
+				core::stringw strMatTarget = "#";
+				video::SMaterial & material = useNodeMaterials ? node->getMaterial(i) : mesh->getMeshBuffer(i)->getMaterial();
+				strMatTarget += nameForMaterial(material, i, mesh, node);
 				Writer->writeElement(L"instance_material", false, L"symbol", strMatSymbol.c_str(), L"target", strMatTarget.c_str());
 				Writer->writeLineBreak();
 
@@ -863,34 +923,48 @@ irr::core::stringw CColladaMeshWriter::toRef(const irr::core::stringw& source) c
 
 irr::core::stringw CColladaMeshWriter::nameForMesh(const scene::IMesh* mesh) const
 {
-	irr::core::stringw name(L"mesh");
-	name += nameForPtr(mesh);
-	return name;
-}
-
-irr::core::stringw CColladaMeshWriter::nameForLightNode(const scene::ISceneNode* lightNode) const
-{
-	irr::core::stringw name(L"light");	// (prefix, because xs::ID can't start with a number)
-	name += nameForPtr(lightNode);
-	return name;
+	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
+	if ( nameGenerator )
+	{
+		if ( nameGenerator->GetConvertMeshNameToNC() )
+			return toNCName(nameGenerator->nameForMesh(mesh), nameGenerator->getNCNamePrefix());
+		else
+			return nameGenerator->nameForMesh(mesh);
+	}
+	return irr::core::stringw(L"missing_name_generator");
 }
 
 irr::core::stringw CColladaMeshWriter::nameForNode(const scene::ISceneNode* node) const
 {
-	irr::core::stringw name(L"node");	// (prefix, because xs::ID can't start with a number)
-	name += nameForPtr(node);
-	if ( node )
+	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
+	if ( nameGenerator )
 	{
-		name += irr::core::stringw(node->getName());
-		name = toNCName(name);
+		if ( nameGenerator->GetConvertNodeNameToNC() )
+			return toNCName(nameGenerator->nameForNode(node), nameGenerator->getNCNamePrefix());
+		else
+			return nameGenerator->nameForNode(node);
 	}
-	return name;
+	return irr::core::stringw(L"missing_name_generator");
 }
 
-irr::core::stringw CColladaMeshWriter::nameForPtr(const void* ptr) const
+irr::core::stringw CColladaMeshWriter::nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const
 {
-	wchar_t buf[32];
-	swprintf(buf, 32, L"%p", ptr);
+	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
+	if ( nameGenerator )
+	{
+		if ( nameGenerator->GetConvertMaterialNameToNC() )
+			return toNCName(nameGenerator->nameForMaterial(material, materialId, mesh, node), nameGenerator->getNCNamePrefix());
+		else
+			return nameGenerator->nameForMaterial(material, materialId, mesh, node);
+	}
+	return irr::core::stringw(L"missing_name_generator");
+}
+
+// Each mesh-material has one symbol which is replaced on instantiation
+irr::core::stringw CColladaMeshWriter::nameForMaterialSymbol(const scene::IMesh* mesh, int materialId) const
+{
+	wchar_t buf[100];
+	swprintf(buf, 100, L"mat_symb_%p_%d", mesh, materialId);
 	return irr::core::stringw(buf);
 }
 
@@ -1025,21 +1099,23 @@ void CColladaMeshWriter::writeAsset()
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeMeshMaterials(const irr::core::stringw& meshname, scene::IMesh* mesh)
+void CColladaMeshWriter::writeMeshMaterials(scene::IMesh* mesh)
 {
 	u32 i;
 	for (i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
-		core::stringw strMat = "mat";
-		strMat += meshname;
-		strMat += i;
-
+		video::SMaterial & material = mesh->getMeshBuffer(i)->getMaterial();
+		core::stringw strMat(nameForMaterial(material, i, mesh, NULL));
 		writeMaterial(strMat);
 	}
 }
 
 void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& meshname, const irr::core::stringw& materialname, const video::SMaterial & material)
 {
+	if ( EffectsWritten.find(materialname) )
+		return;
+	EffectsWritten.insert(materialname, true);
+
 	Writer->writeElement(L"effect", false,
 		L"id", materialname.c_str(),
 		L"name", materialname.c_str());
@@ -1168,17 +1244,15 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& meshname,
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeMeshEffects(const irr::core::stringw& meshname, scene::IMesh* mesh)
+void CColladaMeshWriter::writeMeshEffects(scene::IMesh* mesh)
 {
+	const irr::core::stringw meshname(nameForMesh(mesh));
 	for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
-		core::stringw strMat = "mat";
-		strMat += meshname;
-		strMat += i;
-		strMat += L"-fx";
-
 		video::SMaterial & material = mesh->getMeshBuffer(i)->getMaterial();
-		writeMaterialEffect(meshname, strMat, material);
+		irr::core::stringw materialname(nameForMaterial(material, i, mesh, NULL));
+		materialname += L"-fx";
+		writeMaterialEffect(meshname, materialname, material);
 	}
 }
 
@@ -1580,9 +1654,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 
 		const u32 polyCount = buffer->getIndexCount() / 3;
 		core::stringw strPolyCount(polyCount);
-		core::stringw strMat = "mat";
-		strMat += meshname;
-		strMat += i;
+		irr::core::stringw strMat(nameForMaterialSymbol(mesh, i));
 
 		Writer->writeElement(L"triangles", false, L"count", strPolyCount.c_str(),
 								L"material", strMat.c_str());

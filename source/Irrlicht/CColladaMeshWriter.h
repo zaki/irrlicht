@@ -56,6 +56,18 @@ namespace scene
 		virtual irr::scene::IMesh* getMesh(irr::scene::ISceneNode * node);
 	};
 
+	class CColladaMeshWriterNames  : public virtual IColladaMeshWriterNames
+	{
+	public:
+		CColladaMeshWriterNames();
+		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh) const;
+		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) const;
+		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const;
+	protected:
+		irr::core::stringw nameForPtr(const void* ptr) const;
+	};
+
+
 
 //! class to write meshes, implementing a COLLADA (.dae, .xml) writer
 /** This writer implementation has been originally developed for irrEdit and then
@@ -79,6 +91,7 @@ public:
 
 protected:
 
+	void reset();
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
 	void writeUv(const irr::core::vector2df& vec);
 	void writeVector(const irr::core::vector2df& vec);
@@ -89,8 +102,9 @@ protected:
 	inline irr::core::stringw toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;
 	inline irr::core::stringw toRef(const irr::core::stringw& source) const;
 	irr::core::stringw nameForMesh(const scene::IMesh* mesh) const;
-	irr::core::stringw nameForLightNode(const scene::ISceneNode* lightNode) const;
 	irr::core::stringw nameForNode(const scene::ISceneNode* node) const;
+	irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const;
+	irr::core::stringw nameForMaterialSymbol(const scene::IMesh* mesh, int materialId) const;
 	irr::core::stringw nameForPtr(const void* ptr) const;
 	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
@@ -107,8 +121,8 @@ protected:
 	void writeNodeLights(irr::scene::ISceneNode * node);
 	void writeNodeGeometries(irr::scene::ISceneNode * node);
 	void writeSceneNode(irr::scene::ISceneNode * node);
-	void writeMeshMaterials(const irr::core::stringw& meshname, scene::IMesh* mesh);
-	void writeMeshEffects(const irr::core::stringw& meshname, scene::IMesh* mesh);
+	void writeMeshMaterials(scene::IMesh* mesh);
+	void writeMeshEffects(scene::IMesh* mesh);
 	void writeMaterialEffect(const irr::core::stringw& meshname, const irr::core::stringw& materialname, const video::SMaterial & material);
 	void writeMeshGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
 	void writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh, scene::ISceneNode* node=0);
@@ -154,15 +168,16 @@ protected:
 	core::array<video::ITexture*> LibraryImages;
 	io::path Directory;
 
+	// Check per mesh-ptr if stuff has been written for this mesh already
 	struct ColladaMesh
 	{
-		ColladaMesh() : MaterialWritten(false), EffectWritten(false), GeometryWritten(false)
+		ColladaMesh() : MaterialsWritten(false), EffectsWritten(false), GeometryWritten(false)
 		{
 		}
 
 		irr::core::stringw Name;
-		bool MaterialWritten;
-		bool EffectWritten;
+		bool MaterialsWritten;	// just an optimization doing that here in addition to the MaterialsWritten map
+		bool EffectsWritten;	// just an optimization doing that here in addition to the EffectsWritten map
 		bool GeometryWritten;
 	};
 	typedef core::map<IMesh*, ColladaMesh>::Node MeshNode;
@@ -175,6 +190,11 @@ protected:
 	};
 	typedef core::map<ISceneNode*, ColladaLight>::Node LightNode;
 	core::map<ISceneNode*, ColladaLight> LightNodes;
+
+	// Check per name if stuff has been written already 
+	// TODO: second parameter not needed, we just don't have a core::set class yet in Irrlicht
+	core::map<irr::core::stringw, bool> MaterialsWritten;
+	core::map<irr::core::stringw, bool> EffectsWritten;
 };
 
 
@@ -182,5 +202,3 @@ protected:
 } // end namespace
 
 #endif
-
-
