@@ -147,13 +147,13 @@ namespace scene
 		/** Note that names really must be unique here per mesh-pointer, so mostly it's a good idea to return
 		the nameForMesh from IColladaMeshWriter::getDefaultNameGenerator().
 		*/
-		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh) const = 0;
+		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh) = 0;
 
 		//! Return a unique name for the given node
 		/** Note that names really must be unique here per node-pointer, so mostly it's a good idea to return
 		the nameForNode from IColladaMeshWriter::getDefaultNameGenerator().
 		*/
-		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) const = 0;
+		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) = 0;
 
 		//! Return a name for the material
 		/** There is one material created in the writer for each unique name. So you can use this to control 
@@ -161,7 +161,7 @@ namespace scene
 		material instanced by a node. So if you know that in your application material instances per node are identical 
 		between different nodes you can reduce the number of exported materials using that knowledge by using identical 
 		names for such shared materials. */
-		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const = 0;
+		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
 
 		//! Ensure meshnames follow the xs::NCName format (so this will change names!)
 		/** Names need to have a certain format in collada, like not starting with numbers,

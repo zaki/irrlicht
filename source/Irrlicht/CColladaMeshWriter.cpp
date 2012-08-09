@@ -142,14 +142,14 @@ CColladaMeshWriterNames::CColladaMeshWriterNames()
 	SetConvertMaterialNameToNC(true);
 }
 
-irr::core::stringw CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh) const
+irr::core::stringw CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh)
 {
 	irr::core::stringw name(L"mesh");
 	name += nameForPtr(mesh);
 	return name;
 }
 
-irr::core::stringw CColladaMeshWriterNames::nameForNode(const scene::ISceneNode* node) const
+irr::core::stringw CColladaMeshWriterNames::nameForNode(const scene::ISceneNode* node)
 {
 	irr::core::stringw name;
 	// Prefix, because xs::ID can't start with a number, also nicer name
@@ -165,7 +165,7 @@ irr::core::stringw CColladaMeshWriterNames::nameForNode(const scene::ISceneNode*
 	return name;
 }
 
-irr::core::stringw CColladaMeshWriterNames::nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const
+irr::core::stringw CColladaMeshWriterNames::nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node)
 {
 	core::stringw strMat(L"mat");
 

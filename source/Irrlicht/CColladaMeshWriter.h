@@ -60,9 +60,9 @@ namespace scene
 	{
 	public:
 		CColladaMeshWriterNames();
-		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh) const;
-		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) const;
-		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const;
+		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh);
+		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node);
+		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node);
 	protected:
 		irr::core::stringw nameForPtr(const void* ptr) const;
 	};
