@@ -135,18 +135,18 @@ IMesh* CColladaMeshWriterProperties::getMesh(irr::scene::ISceneNode * node)
 	return 0;
 }
 
-CColladaMeshWriterNames::CColladaMeshWriterNames()
+
+
+CColladaMeshWriterNames::CColladaMeshWriterNames(IColladaMeshWriter * writer)
+	: ColladaMeshWriter(writer)
 {
-	SetConvertMeshNameToNC(true);
-	SetConvertNodeNameToNC(true);
-	SetConvertMaterialNameToNC(true);
 }
 
 irr::core::stringw CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh)
 {
 	irr::core::stringw name(L"mesh");
 	name += nameForPtr(mesh);
-	return name;
+	return ColladaMeshWriter->toNCName(name);
 }
 
 irr::core::stringw CColladaMeshWriterNames::nameForNode(const scene::ISceneNode* node)
@@ -162,7 +162,7 @@ irr::core::stringw CColladaMeshWriterNames::nameForNode(const scene::ISceneNode*
 	{
 		name += irr::core::stringw(node->getName());
 	}
-	return name;
+	return ColladaMeshWriter->toNCName(name);
 }
 
 irr::core::stringw CColladaMeshWriterNames::nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node)
@@ -180,11 +180,14 @@ irr::core::stringw CColladaMeshWriterNames::nameForMaterial(const video::SMateri
 
 	if ( !useMeshMaterial )
 	{
-		strMat += nameForNode(node);
+		strMat += L"node";
+		strMat += nameForPtr(node);
+		strMat += irr::core::stringw(node->getName());
 	}
-	strMat += nameForMesh(mesh);
+	strMat += L"mesh";
+	strMat += nameForPtr(mesh);
 	strMat += materialId;
-	return strMat;
+	return ColladaMeshWriter->toNCName(strMat);
 }
 
 irr::core::stringw CColladaMeshWriterNames::nameForPtr(const void* ptr) const
@@ -219,7 +222,7 @@ CColladaMeshWriter::CColladaMeshWriter(	ISceneManager * smgr, video::IVideoDrive
 	setProperties(p);
 	p->drop();
 
-	CColladaMeshWriterNames * nameGenerator = new CColladaMeshWriterNames();
+	CColladaMeshWriterNames * nameGenerator = new CColladaMeshWriterNames(this);
 	setDefaultNameGenerator(nameGenerator);
 	setNameGenerator(nameGenerator);
 	nameGenerator->drop();
@@ -926,10 +929,7 @@ irr::core::stringw CColladaMeshWriter::nameForMesh(const scene::IMesh* mesh) con
 	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
 	if ( nameGenerator )
 	{
-		if ( nameGenerator->GetConvertMeshNameToNC() )
-			return toNCName(nameGenerator->nameForMesh(mesh), nameGenerator->getNCNamePrefix());
-		else
-			return nameGenerator->nameForMesh(mesh);
+		return nameGenerator->nameForMesh(mesh);
 	}
 	return irr::core::stringw(L"missing_name_generator");
 }
@@ -939,10 +939,7 @@ irr::core::stringw CColladaMeshWriter::nameForNode(const scene::ISceneNode* node
 	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
 	if ( nameGenerator )
 	{
-		if ( nameGenerator->GetConvertNodeNameToNC() )
-			return toNCName(nameGenerator->nameForNode(node), nameGenerator->getNCNamePrefix());
-		else
-			return nameGenerator->nameForNode(node);
+		return nameGenerator->nameForNode(node);
 	}
 	return irr::core::stringw(L"missing_name_generator");
 }
@@ -952,10 +949,7 @@ irr::core::stringw CColladaMeshWriter::nameForMaterial(const video::SMaterial & 
 	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
 	if ( nameGenerator )
 	{
-		if ( nameGenerator->GetConvertMaterialNameToNC() )
-			return toNCName(nameGenerator->nameForMaterial(material, materialId, mesh, node), nameGenerator->getNCNamePrefix());
-		else
-			return nameGenerator->nameForMaterial(material, materialId, mesh, node);
+		return nameGenerator->nameForMaterial(material, materialId, mesh, node);
 	}
 	return irr::core::stringw(L"missing_name_generator");
 }

@@ -19,7 +19,6 @@ namespace io
 }
 namespace scene
 {
-
 	//! Callback interface for properties which can be used to influence collada writing
 	// (Implementer note: keep namespace labels here to make it easier for users copying this one)
 	class CColladaMeshWriterProperties  : public virtual IColladaMeshWriterProperties
@@ -59,12 +58,14 @@ namespace scene
 	class CColladaMeshWriterNames  : public virtual IColladaMeshWriterNames
 	{
 	public:
-		CColladaMeshWriterNames();
+		CColladaMeshWriterNames(IColladaMeshWriter * writer);
 		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh);
 		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node);
 		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node);
 	protected:
 		irr::core::stringw nameForPtr(const void* ptr) const;
+	private:
+		IColladaMeshWriter * ColladaMeshWriter;
 	};
 
 
@@ -88,6 +89,8 @@ public:
 	//! writes a mesh
 	virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE);
 
+	// Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
+	virtual irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const;
 
 protected:
 
@@ -108,7 +111,6 @@ protected:
 	irr::core::stringw nameForPtr(const void* ptr) const;
 	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
-	irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const;
 	irr::core::stringw pathToURI(const irr::io::path& path) const;
 	inline bool isXmlNameStartChar(wchar_t c) const;
 	inline bool isXmlNameChar(wchar_t c) const;

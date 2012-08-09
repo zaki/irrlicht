@@ -131,94 +131,45 @@ namespace scene
 	};
 
 	//! Callback interface to use custom names on collada writing.
-	/** Many names and id's have to be unique in collada. By default 
-	Irrlicht guarantees for example by using using pointer-values in the name.
-	This works for most tools, but occasionally you might need another naming scheme
-	to make it easier finding names again for further processing.
+	/** You can either modify names and id's written to collada or you can use
+	this interface to just find out which names are used on writing.
 	*/
 	class IColladaMeshWriterNames  : public virtual IReferenceCounted
 	{
 	public:
 	
-		IColladaMeshWriterNames() : MeshToNC(true), NodeToNC(true), NCNamePrefix(L"_NC_") {}
 		virtual ~IColladaMeshWriterNames () {}
 
 		//! Return a unique name for the given mesh
-		/** Note that names really must be unique here per mesh-pointer, so mostly it's a good idea to return
-		the nameForMesh from IColladaMeshWriter::getDefaultNameGenerator().
+		/** Note that names really must be unique here per mesh-pointer, so 
+		mostly it's a good idea to return the nameForMesh from 
+		IColladaMeshWriter::getDefaultNameGenerator(). Also names must follow 
+		the xs::NCName standard to be valid, you can run them through 
+		IColladaMeshWriter::toNCName to ensure that.
 		*/
 		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh) = 0;
 
 		//! Return a unique name for the given node
-		/** Note that names really must be unique here per node-pointer, so mostly it's a good idea to return
-		the nameForNode from IColladaMeshWriter::getDefaultNameGenerator().
+		/** Note that names really must be unique here per node-pointer, so 
+		mostly it's a good idea to return the nameForNode from 
+		IColladaMeshWriter::getDefaultNameGenerator(). Also names must follow 
+		the xs::NCName standard to be valid, you can run them through 
+		IColladaMeshWriter::toNCName to ensure that.
 		*/
 		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) = 0;
 
 		//! Return a name for the material
-		/** There is one material created in the writer for each unique name. So you can use this to control 
-		the number of materials which get written. For example Irrlicht does by default write one material for each
-		material instanced by a node. So if you know that in your application material instances per node are identical 
-		between different nodes you can reduce the number of exported materials using that knowledge by using identical 
-		names for such shared materials. */
-		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
-
-		//! Ensure meshnames follow the xs::NCName format (so this will change names!)
-		/** Names need to have a certain format in collada, like not starting with numbers,
-		and avoiding certain special characters. 
+		/** There is one material created in the writer for each unique name. 
+		So you can use this to control the number of materials which get written. 
+		For example Irrlicht does by default write one material for each material
+		instanced by a node. So if you know that in your application material 
+		instances per node are identical between different nodes you can reduce 
+		the number of exported materials using that knowledge by using identical 
+		names for such shared materials. 
+		Names must follow the xs::NCName standard to be valid, you can run them 
+		through	IColladaMeshWriter::toNCName to ensure that.
 		*/
-		void SetConvertMeshNameToNC(bool doConvert)	
-		{ 
-			MeshToNC = doConvert; 
-		}
-
-		//! Check if meshnames are forced to follow the xs::NCName format
-		bool GetConvertMeshNameToNC() const 
-		{
-			return MeshToNC;
-		}
-
-		//! Ensure nodenames follow the xs::NCName format (so this will change names!)
-		void SetConvertNodeNameToNC(bool doConvert)	
-		{ 
-			NodeToNC = doConvert; 
-		}
-
-		//! Check if nodenames are forced to follow the xs::NCName format
-		bool GetConvertNodeNameToNC() const 
-		{
-			return NodeToNC;
-		}
-
-		//! Ensure materialnames follow the xs::NCName format (so this will change names!)
-		void SetConvertMaterialNameToNC(bool doConvert)	
-		{ 
-			MaterialToNC = doConvert; 
-		}
-
-		//! Check if materialnames are forced to follow the xs::NCName format
-		bool GetConvertMaterialNameToNC() const 
-		{
-			return MaterialToNC;
-		}
-
-		//! When conversion to NCName's is enforced resulting names will have this prefix
-		void SetNCNamePrefix(const irr::core::stringw& prefix) 
-		{
-			NCNamePrefix = prefix;
-		}
-
-		//! Get the NCName prefix
-		const irr::core::stringw& getNCNamePrefix() const
-		{
-			return NCNamePrefix;
-		}
-
-	protected:
-		bool MeshToNC;
-		bool NodeToNC;
-		bool MaterialToNC;
-		irr::core::stringw NCNamePrefix;
+		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
 	};
 
 
@@ -341,6 +292,10 @@ namespace scene
 		{ 
 			return DefaultNameGenerator; 
 		}
+
+		//! Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
+		/** A tool function to help when using a custom name generator to generative valid names for collada names and id's. */
+		virtual irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const = 0;
 
 
 	protected:
