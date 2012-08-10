@@ -490,15 +490,16 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 		}
 		else
 		{
-			irr::core::stringw nodename(nameForNode(node));
-			irr::core::stringw meshname(nameForMesh(mesh));	// still need meshname for textures
+			irr::core::stringw uvname(nameForMesh(mesh));
+			uvname += L"-TexCoord0";	// TODO: need to handle second UV-set
+		
 			// write node materials
 			for (u32 i=0; i<node->getMaterialCount(); ++i)
 			{
 				video::SMaterial & material = node->getMaterial(i);
-				irr::core::stringw materialname(nameForMaterial(material, i, mesh, node));
-				materialname += L"-fx";
-				writeMaterialEffect(meshname, materialname, material);
+				irr::core::stringw materialfxname(nameForMaterial(material, i, mesh, node));
+				materialfxname += L"-fx";
+				writeMaterialEffect(uvname, materialfxname, material);
 			}
 		}
 	}
@@ -1104,15 +1105,15 @@ void CColladaMeshWriter::writeMeshMaterials(scene::IMesh* mesh)
 	}
 }
 
-void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& meshname, const irr::core::stringw& materialname, const video::SMaterial & material)
+void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& uvname, const irr::core::stringw& materialfxname, const video::SMaterial & material)
 {
-	if ( EffectsWritten.find(materialname) )
+	if ( EffectsWritten.find(materialfxname) )
 		return;
-	EffectsWritten.insert(materialname, true);
+	EffectsWritten.insert(materialfxname, true);
 
 	Writer->writeElement(L"effect", false,
-		L"id", materialname.c_str(),
-		L"name", materialname.c_str());
+		L"id", materialfxname.c_str(),
+		L"name", materialfxname.c_str());
 	Writer->writeLineBreak();
 	Writer->writeElement(L"profile_COMMON", false);
 	Writer->writeLineBreak();
@@ -1228,7 +1229,7 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& meshname,
 	Writer->writeLineBreak();
 
 	E_COLLADA_TECHNIQUE_FX techFx = getProperties() ? getProperties()->getTechniqueFx(material) : ECTF_BLINN;
-	writeFxElement(meshname, material, techFx);
+	writeFxElement(uvname, material, techFx);
 
 	Writer->writeClosingTag(L"technique");
 	Writer->writeLineBreak();
@@ -1240,13 +1241,15 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& meshname,
 
 void CColladaMeshWriter::writeMeshEffects(scene::IMesh* mesh)
 {
-	const irr::core::stringw meshname(nameForMesh(mesh));
+	irr::core::stringw uvname(nameForMesh(mesh));
+	uvname += L"-TexCoord0";	// TODO: need to handle second UV-set
+
 	for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		video::SMaterial & material = mesh->getMeshBuffer(i)->getMaterial();
-		irr::core::stringw materialname(nameForMaterial(material, i, mesh, NULL));
-		materialname += L"-fx";
-		writeMaterialEffect(meshname, materialname, material);
+		irr::core::stringw materialfxname(nameForMaterial(material, i, mesh, NULL));
+		materialfxname += L"-fx";
+		writeMaterialEffect(uvname, materialfxname, material);
 	}
 }
 
@@ -1374,7 +1377,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 
 	// write texture coordinates
 
-	core::stringw meshTexCoord0Id(meshId);
+	core::stringw meshTexCoord0Id(meshId); 
 	meshTexCoord0Id += L"-TexCoord0";
 	Writer->writeElement(L"source", false, L"id", meshTexCoord0Id.c_str());
 	Writer->writeLineBreak();
@@ -1843,20 +1846,18 @@ video::SColor CColladaMeshWriter::getColorMapping(const video::SMaterial & mater
 	return video::SColor(255, 0, 0, 0);
 }
 
-void CColladaMeshWriter::writeTextureSampler(const irr::core::stringw& meshname, s32 textureIdx)
+void CColladaMeshWriter::writeTextureSampler(const irr::core::stringw& uvname, s32 textureIdx)
 {
 	irr::core::stringw sampler(L"tex");
 	sampler += irr::core::stringw(textureIdx);
 	sampler += L"-sampler";
 
-	// <texture texture="sampler" texcoord="texCoord"/>
-	core::stringw meshTexCoordId(meshname);
-	meshTexCoordId += L"-TexCoord0";	// TODO: need to handle second UV-set
-	Writer->writeElement(L"texture", true, L"texture", sampler.c_str(), L"texcoord", meshTexCoordId.c_str() );
+	// <texture texture="sampler" texcoord="texCoordUv"/>
+	Writer->writeElement(L"texture", true, L"texture", sampler.c_str(), L"texcoord", uvname.c_str() );
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx)
+void CColladaMeshWriter::writeFxElement(const irr::core::stringw& uvname, const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx)
 {
 	core::stringw fxLabel;
 	bool writeEmission = true;
@@ -1900,22 +1901,22 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 	{
 		if ( writeEmission )
 		{
-			writeColorFx(meshname, material, L"emission", ECCS_EMISSIVE);
+			writeColorFx(uvname, material, L"emission", ECCS_EMISSIVE);
 		}
 
 		if ( writeAmbient )
 		{
-			writeColorFx(meshname, material, L"ambient", ECCS_AMBIENT);
+			writeColorFx(uvname, material, L"ambient", ECCS_AMBIENT);
 		}
 
 		if ( writeDiffuse )
 		{
-			writeColorFx(meshname, material, L"diffuse", ECCS_DIFFUSE);
+			writeColorFx(uvname, material, L"diffuse", ECCS_DIFFUSE);
 		}
 
 		if ( writeSpecular )
 		{
-			writeColorFx(meshname, material, L"specular", ECCS_SPECULAR);
+			writeColorFx(uvname, material, L"specular", ECCS_SPECULAR);
 		}
 
 		if ( writeShininess )
@@ -1929,7 +1930,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 
 		if ( writeReflective )
 		{
-			writeColorFx(meshname, material, L"reflective", ECCS_REFLECTIVE);
+			writeColorFx(uvname, material, L"reflective", ECCS_REFLECTIVE);
 		}
 
 		if ( writeReflectivity )
@@ -1949,7 +1950,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 		if ( writeTransparent )
 		{
 			E_COLLADA_TRANSPARENT_FX transparentFx = getProperties()->getTransparentFx(material);
-			writeColorFx(meshname, material, L"transparent", ECCS_TRANSPARENT, L"opaque", toString(transparentFx).c_str());
+			writeColorFx(uvname, material, L"transparent", ECCS_TRANSPARENT, L"opaque", toString(transparentFx).c_str());
 		}
 
 		if ( writeTransparency  )
@@ -1985,7 +1986,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& meshname, cons
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeColorFx(const irr::core::stringw& meshname, const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name, const wchar_t* attr1Value)
+void CColladaMeshWriter::writeColorFx(const irr::core::stringw& uvname, const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name, const wchar_t* attr1Value)
 {
 	irr::s32 idx = getCheckedTextureIdx(material, cs);
 	E_COLLADA_IRR_COLOR colType = idx < 0 ? getProperties()->getColorMapping(material, cs) : ECIC_NONE;
@@ -1994,7 +1995,7 @@ void CColladaMeshWriter::writeColorFx(const irr::core::stringw& meshname, const 
 		Writer->writeElement(colorname, false, attr1Name, attr1Value);
 		Writer->writeLineBreak();
 		if ( idx >= 0 )
-			writeTextureSampler( meshname, idx);
+			writeTextureSampler( uvname, idx);
 		else
 			writeColorElement(getColorMapping(material, cs, colType));
 		Writer->writeClosingTag(colorname);
