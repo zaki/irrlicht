@@ -582,13 +582,19 @@ public:
 	virtual bool saveGUI(io::IWriteFile* file, IGUIElement* start=0) = 0;
 
 	//! Loads the gui. Note that the current gui is not cleared before.
-	/** \param filename Name of the file.
+	/** When a parent is set the elements will be added below the parent, the parent itself does not deserialize.
+	When the file contains skin-settings from the gui-environment those are always serialized into the 
+	guienvironment independent	of the parent setting.
+	\param filename Name of the file.
 	\param parent Parent for the loaded GUI, root if 0.
 	\return True if loading succeeded, else false. */
 	virtual bool loadGUI(const io::path& filename, IGUIElement* parent=0) = 0;
 
 	//! Loads the gui. Note that the current gui is not cleared before.
-	/** \param file The file to load from.
+	/** When a parent is set the elements will be added below the parent, the parent itself does not deserialize.
+	When the file contains skin-settings from the gui-environment those are always serialized into the 
+	guienvironment independent	of the parent setting.
+	\param file The file to load from.
 	\param parent Parent for the loaded GUI, root if 0.
 	\return True if loading succeeded, else false. */
 	virtual bool loadGUI(io::IReadFile* file, IGUIElement* parent=0) = 0;

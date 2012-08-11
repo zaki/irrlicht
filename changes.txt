@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - CGUIEnvironment::loadGui - loading a gui into a target-element no longer messes up when the gui-file contained guienvironment serialization.
+
  - Colladawriter now exports materials per node when those are used in Irrlicht
  
  - Colladawriter now writing matrices for node transformations as old solution did not work with CDummyTransformationSceneNode's.

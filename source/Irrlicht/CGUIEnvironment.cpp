@@ -813,10 +813,14 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* node)
 	if (nodeType == io::EXN_NONE || nodeType == io::EXN_UNKNOWN || nodeType == io::EXN_ELEMENT_END)
 		return;
 
+	IGUIElement* deferedNode = 0;
 	if (!wcscmp(IRR_XML_FORMAT_GUI_ENV, reader->getNodeName()))
 	{
-		if (!node)
-			node = this; // root
+		// GuiEnvironment always must be this as it would serialize into a wrong element otherwise.
+		// So we use the given node next time
+		if ( node && node != this )
+			deferedNode = node;
+		node = this; // root
 	}
 	else if	(!wcscmp(IRR_XML_FORMAT_GUI_ELEMENT, reader->getNodeName()))
 	{
@@ -860,7 +864,10 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* node)
 			if (!wcscmp(IRR_XML_FORMAT_GUI_ELEMENT, reader->getNodeName()) ||
 				!wcscmp(IRR_XML_FORMAT_GUI_ENV, reader->getNodeName()))
 			{
-				readGUIElement(reader, node);
+				if ( deferedNode )
+					readGUIElement(reader, deferedNode);
+				else
+					readGUIElement(reader, node);
 			}
 			else
 			{
