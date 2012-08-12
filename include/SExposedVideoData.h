@@ -34,7 +34,7 @@ struct SExposedVideoData
 			//! Pointer to the IDirect3D9 interface
 			IDirect3D9* D3D9;
 
-			//! Pointer to the IDirect3D9 interface
+			//! Pointer to the IDirect3DDevice9 interface
 			IDirect3DDevice9* D3DDev9;
 
 			//! Window handle.
@@ -48,7 +48,7 @@ struct SExposedVideoData
 			//! Pointer to the IDirect3D8 interface
 			IDirect3D8* D3D8;
 
-			//! Pointer to the IDirect3D8 interface
+			//! Pointer to the IDirect3DDevice8 interface
 			IDirect3DDevice8* D3DDev8;
 
 			//! Window handle.
