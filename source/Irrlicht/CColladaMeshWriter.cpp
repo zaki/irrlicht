@@ -647,6 +647,9 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	Writer->writeElement(L"node", false, L"id", nameId.c_str());
 	Writer->writeLineBreak();
 
+	// DummyTransformationSceneNode don't have rotation, position, scale information
+	// But also don't always export the transformation matrix as that forces us creating 
+	// new DummyTransformationSceneNode's on import.
 	if ( node->getType() == ESNT_DUMMY_TRANSFORMATION )
 	{
 		writeMatrixElement(node->getRelativeTransformation());
