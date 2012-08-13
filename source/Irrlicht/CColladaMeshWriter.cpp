@@ -647,7 +647,19 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	Writer->writeElement(L"node", false, L"id", nameId.c_str());
 	Writer->writeLineBreak();
 
-	writeMatrixElement(node->getRelativeTransformation());
+	if ( node->getType() == ESNT_DUMMY_TRANSFORMATION )
+	{
+		writeMatrixElement(node->getRelativeTransformation());
+	}
+	else
+	{
+		irr::core::vector3df rot(node->getRotation()); 
+		writeTranslateElement( node->getPosition() ); 	 
+		writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X ); 	 
+		writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y ); 	 
+		writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z ); 	 
+		writeScaleElement( node->getScale() );
+	}
 
 	// instance geometry
 	IMesh* mesh = getProperties()->getMesh(node);
