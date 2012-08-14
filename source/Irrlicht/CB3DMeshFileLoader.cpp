@@ -177,7 +177,8 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
 	positionMatrix.setTranslation( joint->Animatedposition );
 	core::matrix4 scaleMatrix;
 	scaleMatrix.setScale( joint->Animatedscale );
-	core::matrix4 rotationMatrix = joint->Animatedrotation.getMatrix();
+	core::matrix4 rotationMatrix;
+	joint->Animatedrotation.getMatrix_transposed(rotationMatrix);
 
 	joint->LocalMatrix = positionMatrix * rotationMatrix * scaleMatrix;
 

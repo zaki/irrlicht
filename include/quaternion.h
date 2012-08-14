@@ -10,6 +10,11 @@
 #include "matrix4.h"
 #include "vector3d.h"
 
+// Between Irrlicht 1.7 and Irrlicht 1.8 the quaternion-matrix conversions got fixed.
+// This define disables all involved functions completely to allow finding all places 
+// where the wrong conversions had been in use.
+#define IRR_TEST_BROKEN_QUATERNION_USE 0
+
 namespace irr
 {
 namespace core
@@ -34,8 +39,10 @@ class quaternion
 		//! Constructor which converts euler angles (radians) to a quaternion
 		quaternion(const vector3df& vec);
 
+#if !IRR_TEST_BROKEN_QUATERNION_USE
 		//! Constructor which converts a matrix to a quaternion
 		quaternion(const matrix4& mat);
+#endif
 
 		//! Equalilty operator
 		bool operator==(const quaternion& other) const;
@@ -46,8 +53,10 @@ class quaternion
 		//! Assignment operator
 		inline quaternion& operator=(const quaternion& other);
 
+#if !IRR_TEST_BROKEN_QUATERNION_USE
 		//! Matrix assignment operator
 		inline quaternion& operator=(const matrix4& other);
+#endif
 
 		//! Add operator
 		quaternion operator+(const quaternion& other) const;
@@ -89,8 +98,10 @@ class quaternion
 		//! Normalizes the quaternion
 		inline quaternion& normalize();
 
+#if !IRR_TEST_BROKEN_QUATERNION_USE
 		//! Creates a matrix from this quaternion
 		matrix4 getMatrix() const;
+#endif 
 
 		//! Creates a matrix from this quaternion
 		void getMatrix( matrix4 &dest, const core::vector3df &translation ) const;
@@ -185,13 +196,13 @@ inline quaternion::quaternion(const vector3df& vec)
 	set(vec.X,vec.Y,vec.Z);
 }
 
-
+#if !IRR_TEST_BROKEN_QUATERNION_USE
 // Constructor which converts a matrix to a quaternion
 inline quaternion::quaternion(const matrix4& mat)
 {
 	(*this) = mat;
 }
-
+#endif
 
 // equal operator
 inline bool quaternion::operator==(const quaternion& other) const
@@ -218,7 +229,7 @@ inline quaternion& quaternion::operator=(const quaternion& other)
 	return *this;
 }
 
-
+#if !IRR_TEST_BROKEN_QUATERNION_USE
 // matrix assignment operator
 inline quaternion& quaternion::operator=(const matrix4& m)
 {
@@ -229,9 +240,9 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 		const f32 scale = sqrtf(diag) * 2.0f; // get scale from diagonal
 
 		// TODO: speed this up
-		X = ( m(2,1) - m(1,2)) / scale;
-		Y = ( m(0,2) - m(2,0)) / scale;
-		Z = ( m(1,0) - m(0,1)) / scale;
+		X = ( m(1,2) - m(2,1)) / scale;
+		Y = ( m(2,0) - m(0,2)) / scale;
+		Z = ( m(0,1) - m(1,0)) / scale;
 		W = 0.25f * scale;
 	}
 	else
@@ -244,9 +255,9 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 
 			// TODO: speed this up
 			X = 0.25f * scale;
-			Y = (m(0,1) + m(1,0)) / scale;
-			Z = (m(2,0) + m(0,2)) / scale;
-			W = (m(2,1) - m(1,2)) / scale;
+			Y = (m(1,0) + m(0,1)) / scale;
+			Z = (m(0,2) + m(2,0)) / scale;
+			W = (m(1,2) - m(2,1)) / scale;
 		}
 		else if ( m(1,1) > m(2,2))
 		{
@@ -255,10 +266,10 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 			const f32 scale = sqrtf( 1.0f + m(1,1) - m(0,0) - m(2,2)) * 2.0f;
 
 			// TODO: speed this up
-			X = (m(0,1) + m(1,0) ) / scale;
+			X = (m(1,0) + m(0,1) ) / scale;
 			Y = 0.25f * scale;
-			Z = (m(1,2) + m(2,1) ) / scale;
-			W = (m(0,2) - m(2,0) ) / scale;
+			Z = (m(2,1) + m(1,2) ) / scale;
+			W = (m(2,0) - m(0,2) ) / scale;
 		}
 		else
 		{
@@ -267,16 +278,16 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 			const f32 scale = sqrtf( 1.0f + m(2,2) - m(0,0) - m(1,1)) * 2.0f;
 
 			// TODO: speed this up
-			X = (m(0,2) + m(2,0)) / scale;
-			Y = (m(1,2) + m(2,1)) / scale;
+			X = (m(2,0) + m(0,2)) / scale;
+			Y = (m(2,1) + m(1,2)) / scale;
 			Z = 0.25f * scale;
-			W = (m(1,0) - m(0,1)) / scale;
+			W = (m(0,1) - m(1,0)) / scale;
 		}
 	}
 
 	return normalize();
 }
-
+#endif
 
 // multiplication operator
 inline quaternion quaternion::operator*(const quaternion& other) const
@@ -320,15 +331,15 @@ inline quaternion quaternion::operator+(const quaternion& b) const
 	return quaternion(X+b.X, Y+b.Y, Z+b.Z, W+b.W);
 }
 
-
+#if !IRR_TEST_BROKEN_QUATERNION_USE
 // Creates a matrix from this quaternion
 inline matrix4 quaternion::getMatrix() const
 {
 	core::matrix4 m;
-	getMatrix_transposed(m);
+	getMatrix(m, core::vector3df(0,0,0));
 	return m;
 }
-
+#endif
 
 /*!
 	Creates a matrix from this quaternion

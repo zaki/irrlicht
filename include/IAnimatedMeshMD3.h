@@ -166,10 +166,6 @@ namespace scene
 		SMD3QuaternionTag( const core::stringc& name )
 			: Name ( name ) {}
 
-		// construct from a matrix
-		SMD3QuaternionTag ( const core::stringc& name, const core::matrix4 &m )
-			: Name(name), position(m.getTranslation()), rotation(m) {}
-
 		// construct from a position and euler angles in degrees
 		SMD3QuaternionTag ( const core::vector3df &pos, const core::vector3df &angle )
 			: position(pos), rotation(angle * core::DEGTORAD) {}

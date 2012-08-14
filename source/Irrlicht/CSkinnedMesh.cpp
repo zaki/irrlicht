@@ -167,7 +167,9 @@ void CSkinnedMesh::buildAllLocalAnimatedMatrices()
 		{
 			joint->GlobalSkinningSpace=false;
 
-			joint->LocalAnimatedMatrix=joint->Animatedrotation.getMatrix();
+			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched to getMatrix_transposed instead of getMatrix for downward compatibility. 
+			//								   Not tested so far if this was correct or wrong before quaternion fix!
+			joint->Animatedrotation.getMatrix_transposed(joint->LocalAnimatedMatrix);
 
 			// --- joint->LocalAnimatedMatrix *= joint->Animatedrotation.getMatrix() ---
 			f32 *m1 = joint->LocalAnimatedMatrix.pointer();

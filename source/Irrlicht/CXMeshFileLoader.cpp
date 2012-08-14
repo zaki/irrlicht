@@ -1877,8 +1877,10 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 
 				ISkinnedMesh::SRotationKey *keyR=AnimatedMesh->addRotationKey(joint);
 				keyR->frame=time;
-				keyR->rotation= core::quaternion(mat);
 
+				// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from mat to mat.getTransposed() for downward compatibility. 
+				//								   Not tested so far if this was correct or wrong before quaternion fix!
+				keyR->rotation= core::quaternion(mat.getTransposed());
 
 				ISkinnedMesh::SPositionKey *keyP=AnimatedMesh->addPositionKey(joint);
 				keyP->frame=time;
