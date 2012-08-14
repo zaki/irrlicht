@@ -142,10 +142,15 @@ CColladaMeshWriterNames::CColladaMeshWriterNames(IColladaMeshWriter * writer)
 {
 }
 
-irr::core::stringw CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh)
+irr::core::stringw CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh, int instance)
 {
 	irr::core::stringw name(L"mesh");
 	name += nameForPtr(mesh);
+	if ( instance > 0 )
+	{
+		name += L"i";
+		name += irr::core::stringw(instance);
+	}
 	return ColladaMeshWriter->toNCName(name);
 }
 
@@ -320,7 +325,7 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	// write meshes
 	Writer->writeElement(L"library_geometries", false);
 	Writer->writeLineBreak();
-	writeNodeGeometries(root);
+	writeAllMeshGeometries();
 	Writer->writeClosingTag(L"library_geometries");
 	Writer->writeLineBreak();
 
@@ -395,8 +400,8 @@ void CColladaMeshWriter::makeMeshNames(irr::scene::ISceneNode * node)
 	{
 		if ( !Meshes.find(mesh) )
 		{
-			ColladaMesh cm;
-			cm.Name = nameForMesh(mesh);
+			SColladaMesh cm;
+			cm.Name = nameForMesh(mesh, 0);
 			Meshes.insert(mesh, cm);
 		}
 	}
@@ -413,17 +418,19 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 	if ( !node || !getProperties() || !getProperties()->isExportable(node) )
 		return;
 
+	core::array<irr::core::stringw> materialNames;
+
 	IMesh* mesh = getProperties()->getMesh(node);
 	if ( mesh )
 	{
+		MeshNode * n = Meshes.find(mesh);
 		if (	node->getType() == ESNT_MESH 
 			&&	static_cast<IMeshSceneNode*>(node)->isReadOnlyMaterials() )
 		{
 			// no material overrides - write mesh materials
-			MeshNode * n = Meshes.find(mesh);
 			if ( n && !n->getValue().MaterialsWritten )
 			{
-				writeMeshMaterials(mesh);
+				writeMeshMaterials(mesh, getGeometryWriting() == ECGI_PER_MESH_AND_MATERIAL ? &materialNames : NULL);
 				n->getValue().MaterialsWritten = true;
 			}		
 		}
@@ -435,6 +442,28 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 				video::SMaterial & material = node->getMaterial(i);
 				core::stringw strMat(nameForMaterial(material, i, mesh, node));
 				writeMaterial(strMat);
+				if ( getGeometryWriting() == ECGI_PER_MESH_AND_MATERIAL )
+					materialNames.push_back(strMat);
+			}
+		}
+
+		// When we write another mesh-geometry for each new material-list we have
+		// to figure out here if we need another geometry copy and create a new name here.
+		if ( n && getGeometryWriting() == ECGI_PER_MESH_AND_MATERIAL )
+		{
+			SGeometryMeshMaterials * geomMat = n->getValue().findGeometryMeshMaterials(materialNames);
+			if ( geomMat )
+				geomMat->MaterialOwners.push_back(node);
+			else
+			{
+				SGeometryMeshMaterials gmm;
+				if ( n->getValue().GeometryMeshMaterials.empty() )
+					gmm.GeometryName = n->getValue().Name;	// first one can use the original name
+				else
+					gmm.GeometryName = 	nameForMesh(mesh, n->getValue().GeometryMeshMaterials.size());
+				gmm.MaterialNames = materialNames;
+				gmm.MaterialOwners.push_back(node);
+				n->getValue().GeometryMeshMaterials.push_back(gmm);
 			}
 		}
 	}
@@ -490,16 +519,13 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 		}
 		else
 		{
-			irr::core::stringw uvname(nameForMesh(mesh));
-			uvname += L"-TexCoord0";	// TODO: need to handle second UV-set
-		
 			// write node materials
 			for (u32 i=0; i<node->getMaterialCount(); ++i)
 			{
 				video::SMaterial & material = node->getMaterial(i);
 				irr::core::stringw materialfxname(nameForMaterial(material, i, mesh, node));
 				materialfxname += L"-fx";
-				writeMaterialEffect(uvname, materialfxname, material);
+				writeMaterialEffect(materialfxname, material);
 			}
 		}
 	}
@@ -521,7 +547,7 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 		ILightSceneNode * lightNode = static_cast<ILightSceneNode*>(node);
 		const video::SLight& lightData = lightNode->getLightData();
 
-		ColladaLight cLight;
+		SColladaLight cLight;
 		cLight.Name = nameForNode(node);
 		LightNodes.insert(node, cLight);
 
@@ -614,26 +640,25 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 	}
 }
 
-void CColladaMeshWriter::writeNodeGeometries(irr::scene::ISceneNode * node)
+void CColladaMeshWriter::writeAllMeshGeometries()
 {
-	if ( !node || !getProperties() || !getProperties()->isExportable(node) )
-		return;
-
-	IMesh* mesh = getProperties()->getMesh(node);
-	if ( mesh )
+	core::map<IMesh*, SColladaMesh>::ConstIterator it = Meshes.getConstIterator();
+	for(; !it.atEnd(); it++ )
 	{
-		MeshNode * n = Meshes.find(mesh);
-		if ( n && !n->getValue().GeometryWritten )
+		IMesh* mesh = it->getKey();
+		const SColladaMesh& colladaMesh = it->getValue();
+
+		if ( getGeometryWriting() == ECGI_PER_MESH_AND_MATERIAL && colladaMesh.GeometryMeshMaterials.size() > 1 )
 		{
-			writeMeshGeometry(n->getValue().Name, mesh);
-			n->getValue().GeometryWritten = true;
+			for ( u32 i=0; i<colladaMesh.GeometryMeshMaterials.size(); ++i )
+			{
+				writeMeshGeometry(colladaMesh.GeometryMeshMaterials[i].GeometryName, mesh);
+			}
 		}
-	}
-
-	const core::list<ISceneNode*>& children = node->getChildren();
-	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
-	{
-		writeNodeGeometries( *it );
+		else
+		{
+			writeMeshGeometry(colladaMesh.Name, mesh);
+		}
 	}
 }
 
@@ -670,7 +695,10 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	{
 		MeshNode * n = Meshes.find(mesh);
 		if ( n )
-			writeMeshInstanceGeometry(n->getValue().Name, mesh, node);
+		{
+			const SColladaMesh& colladaMesh = n->getValue();
+			writeMeshInstanceGeometry(colladaMesh.findGeometryNameForNode(node), mesh, node);
+		}
 	}
 
 	// instance light
@@ -751,7 +779,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"library_geometries", false);
 	Writer->writeLineBreak();
 
-	irr::core::stringw meshname(nameForMesh(mesh));
+	irr::core::stringw meshname(nameForMesh(mesh, 0));
 	writeMeshGeometry(meshname, mesh);
 
 	Writer->writeClosingTag(L"library_geometries");
@@ -804,8 +832,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh, scene::ISceneNode* node)
 {
 	//<instance_geometry url="#mesh">
-	core::stringw meshId(meshname);
-	Writer->writeElement(L"instance_geometry", false, L"url", toRef(meshId).c_str());
+	Writer->writeElement(L"instance_geometry", false, L"url", toRef(meshname).c_str());
 	Writer->writeLineBreak();
 
 		Writer->writeElement(L"bind_material", false);
@@ -826,10 +853,9 @@ void CColladaMeshWriter::writeMeshInstanceGeometry(const irr::core::stringw& mes
 				Writer->writeElement(L"instance_material", false, L"symbol", strMatSymbol.c_str(), L"target", strMatTarget.c_str());
 				Writer->writeLineBreak();
 
-					// <bind_vertex_input semantic="mesh-TexCoord0" input_semantic="TEXCOORD" input_set="0"/>
-					core::stringw meshTexCoordId(meshname);
-					meshTexCoordId += L"-TexCoord0";	// TODO: need to handle second UV-set
-					Writer->writeElement(L"bind_vertex_input", true, L"semantic", meshTexCoordId.c_str(), L"input_semantic", L"TEXCOORD", L"input_set", L"0" );
+					// TODO: need to handle second UV-set
+					// <bind_vertex_input semantic="uv" input_semantic="TEXCOORD" input_set="0"/>
+					Writer->writeElement(L"bind_vertex_input", true, L"semantic", L"uv", L"input_semantic", L"TEXCOORD", L"input_set", L"0" );
 					Writer->writeLineBreak();
 
 				Writer->writeClosingTag(L"instance_material");
@@ -940,12 +966,12 @@ irr::core::stringw CColladaMeshWriter::toRef(const irr::core::stringw& source) c
 	return ref;
 }
 
-irr::core::stringw CColladaMeshWriter::nameForMesh(const scene::IMesh* mesh) const
+irr::core::stringw CColladaMeshWriter::nameForMesh(const scene::IMesh* mesh, int instance) const
 {
 	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
 	if ( nameGenerator )
 	{
-		return nameGenerator->nameForMesh(mesh);
+		return nameGenerator->nameForMesh(mesh, instance);
 	}
 	return irr::core::stringw(L"missing_name_generator");
 }
@@ -1109,7 +1135,7 @@ void CColladaMeshWriter::writeAsset()
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeMeshMaterials(scene::IMesh* mesh)
+void CColladaMeshWriter::writeMeshMaterials(scene::IMesh* mesh, irr::core::array<irr::core::stringw> * materialNamesOut)
 {
 	u32 i;
 	for (i=0; i<mesh->getMeshBufferCount(); ++i)
@@ -1117,10 +1143,12 @@ void CColladaMeshWriter::writeMeshMaterials(scene::IMesh* mesh)
 		video::SMaterial & material = mesh->getMeshBuffer(i)->getMaterial();
 		core::stringw strMat(nameForMaterial(material, i, mesh, NULL));
 		writeMaterial(strMat);
+		if ( materialNamesOut )
+			materialNamesOut->push_back(strMat);
 	}
 }
 
-void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& uvname, const irr::core::stringw& materialfxname, const video::SMaterial & material)
+void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& materialfxname, const video::SMaterial & material)
 {
 	if ( EffectsWritten.find(materialfxname) )
 		return;
@@ -1244,7 +1272,7 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& uvname, c
 	Writer->writeLineBreak();
 
 	E_COLLADA_TECHNIQUE_FX techFx = getProperties() ? getProperties()->getTechniqueFx(material) : ECTF_BLINN;
-	writeFxElement(uvname, material, techFx);
+	writeFxElement(material, techFx);
 
 	Writer->writeClosingTag(L"technique");
 	Writer->writeLineBreak();
@@ -1256,15 +1284,12 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& uvname, c
 
 void CColladaMeshWriter::writeMeshEffects(scene::IMesh* mesh)
 {
-	irr::core::stringw uvname(nameForMesh(mesh));
-	uvname += L"-TexCoord0";	// TODO: need to handle second UV-set
-
 	for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		video::SMaterial & material = mesh->getMeshBuffer(i)->getMaterial();
 		irr::core::stringw materialfxname(nameForMaterial(material, i, mesh, NULL));
 		materialfxname += L"-fx";
-		writeMaterialEffect(uvname, materialfxname, material);
+		writeMaterialEffect(materialfxname, material);
 	}
 }
 
@@ -1682,6 +1707,8 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 		bool has2ndTexCoords = hasSecondTextureCoordinates(buffer->getVertexType());
 		if (has2ndTexCoords)
 		{
+			// TODO: when working on second uv-set - my suspicion is that this one should be called "TEXCOORD2"
+			// to allow bind_vertex_input to differentiate the uv-sets.
 			Writer->writeElement(L"input", true, L"semantic", L"TEXCOORD", L"source", toRef(meshTexCoord1Id).c_str(), L"idx", L"3");
 			Writer->writeLineBreak();
 		}
@@ -1861,18 +1888,18 @@ video::SColor CColladaMeshWriter::getColorMapping(const video::SMaterial & mater
 	return video::SColor(255, 0, 0, 0);
 }
 
-void CColladaMeshWriter::writeTextureSampler(const irr::core::stringw& uvname, s32 textureIdx)
+void CColladaMeshWriter::writeTextureSampler(s32 textureIdx)
 {
 	irr::core::stringw sampler(L"tex");
 	sampler += irr::core::stringw(textureIdx);
 	sampler += L"-sampler";
 
 	// <texture texture="sampler" texcoord="texCoordUv"/>
-	Writer->writeElement(L"texture", true, L"texture", sampler.c_str(), L"texcoord", uvname.c_str() );
+	Writer->writeElement(L"texture", true, L"texture", sampler.c_str(), L"texcoord", L"uv" );
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeFxElement(const irr::core::stringw& uvname, const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx)
+void CColladaMeshWriter::writeFxElement(const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx)
 {
 	core::stringw fxLabel;
 	bool writeEmission = true;
@@ -1916,22 +1943,22 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& uvname, const 
 	{
 		if ( writeEmission )
 		{
-			writeColorFx(uvname, material, L"emission", ECCS_EMISSIVE);
+			writeColorFx(material, L"emission", ECCS_EMISSIVE);
 		}
 
 		if ( writeAmbient )
 		{
-			writeColorFx(uvname, material, L"ambient", ECCS_AMBIENT);
+			writeColorFx(material, L"ambient", ECCS_AMBIENT);
 		}
 
 		if ( writeDiffuse )
 		{
-			writeColorFx(uvname, material, L"diffuse", ECCS_DIFFUSE);
+			writeColorFx(material, L"diffuse", ECCS_DIFFUSE);
 		}
 
 		if ( writeSpecular )
 		{
-			writeColorFx(uvname, material, L"specular", ECCS_SPECULAR);
+			writeColorFx(material, L"specular", ECCS_SPECULAR);
 		}
 
 		if ( writeShininess )
@@ -1945,7 +1972,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& uvname, const 
 
 		if ( writeReflective )
 		{
-			writeColorFx(uvname, material, L"reflective", ECCS_REFLECTIVE);
+			writeColorFx(material, L"reflective", ECCS_REFLECTIVE);
 		}
 
 		if ( writeReflectivity )
@@ -1965,7 +1992,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& uvname, const 
 		if ( writeTransparent )
 		{
 			E_COLLADA_TRANSPARENT_FX transparentFx = getProperties()->getTransparentFx(material);
-			writeColorFx(uvname, material, L"transparent", ECCS_TRANSPARENT, L"opaque", toString(transparentFx).c_str());
+			writeColorFx(material, L"transparent", ECCS_TRANSPARENT, L"opaque", toString(transparentFx).c_str());
 		}
 
 		if ( writeTransparency  )
@@ -2001,7 +2028,7 @@ void CColladaMeshWriter::writeFxElement(const irr::core::stringw& uvname, const 
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeColorFx(const irr::core::stringw& uvname, const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name, const wchar_t* attr1Value)
+void CColladaMeshWriter::writeColorFx(const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name, const wchar_t* attr1Value)
 {
 	irr::s32 idx = getCheckedTextureIdx(material, cs);
 	E_COLLADA_IRR_COLOR colType = idx < 0 ? getProperties()->getColorMapping(material, cs) : ECIC_NONE;
@@ -2010,7 +2037,7 @@ void CColladaMeshWriter::writeColorFx(const irr::core::stringw& uvname, const vi
 		Writer->writeElement(colorname, false, attr1Name, attr1Value);
 		Writer->writeLineBreak();
 		if ( idx >= 0 )
-			writeTextureSampler( uvname, idx);
+			writeTextureSampler(idx);
 		else
 			writeColorElement(getColorMapping(material, cs, colType));
 		Writer->writeClosingTag(colorname);

@@ -76,6 +76,19 @@ namespace scene
 		ECIC_SPECULAR
 	};
 
+	//! Control when geometry elements are created
+	enum E_COLLADA_GEOMETRY_WRITING
+	{
+		//! Default - write each mesh exactly once to collada. Optimal but will not work with many tools.
+		ECGI_PER_MESH,	
+
+		//! Write each mesh as often as it's used with different materials in the scene.
+		ECGI_PER_MESH_AND_MATERIAL,
+
+		// not yet supported, but might be useful as well
+		// ECGI_PER_NODE
+	};
+
 	//! Callback interface for properties which can be used to influence collada writing
 	class IColladaMeshWriterProperties  : public virtual IReferenceCounted
 	{
@@ -146,8 +159,11 @@ namespace scene
 		IColladaMeshWriter::getDefaultNameGenerator(). Also names must follow 
 		the xs::NCName standard to be valid, you can run them through 
 		IColladaMeshWriter::toNCName to ensure that.
+		\param mesh Pointer to the mesh which needs a name
+		\param instance When E_COLLADA_GEOMETRY_WRITING is not ECGI_PER_MESH then 
+		several instances of the same mesh can be written and this counts them.
 		*/
-		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh) = 0;
+		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh, int instance) = 0;
 
 		//! Return a unique name for the given node
 		/** Note that names really must be unique here per node-pointer, so 
@@ -180,7 +196,7 @@ namespace scene
 
 		IColladaMeshWriter() 
 			: Properties(0), DefaultProperties(0), NameGenerator(0), DefaultNameGenerator(0)
-			, WriteTextures(true), WriteDefaultScene(false), AmbientLight(0.f, 0.f, 0.f, 1.f)
+			, WriteTextures(true), WriteDefaultScene(true), AmbientLight(0.f, 0.f, 0.f, 1.f)
 		{
 		}
 
@@ -239,6 +255,25 @@ namespace scene
 		virtual video::SColorf getAmbientLight() const
 		{
 			return AmbientLight;
+		}
+
+		//! Control when and how often a mesh is written
+		/** Optimally ECGI_PER_MESH would be always sufficent - writing geometry once per mesh.
+		Unfortunately many tools (at the time of writing this nearly all of them) have trouble
+		on import when different materials are used per node. So when you override materials
+		per node and importing the resuling collada has materials problems in other tools try 
+		using other values here. 
+		\param writeStyle One of the E_COLLADA_GEOMETRY_WRITING settings. 
+		*/
+		virtual void setGeometryWriting(E_COLLADA_GEOMETRY_WRITING writeStyle) 
+		{
+			GeometryWriting = writeStyle;
+		}
+
+		//! Get the current style of geometry writing.
+		virtual E_COLLADA_GEOMETRY_WRITING getGeometryWriting() const
+		{
+			return GeometryWriting;
 		}
 
 		//! Set properties to use by the meshwriter instead of it's default properties.
@@ -331,6 +366,7 @@ namespace scene
 		bool WriteTextures;
 		bool WriteDefaultScene;
 		video::SColorf AmbientLight;
+		E_COLLADA_GEOMETRY_WRITING GeometryWriting;
 	};
 
 
