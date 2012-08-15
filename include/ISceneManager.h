@@ -1524,64 +1524,96 @@ namespace scene
 		virtual ISceneManager* createNewSceneManager(bool cloneContent=false) = 0;
 
 		//! Saves the current scene into a file.
-		/** Scene nodes with the option isDebugObject set to true are not being saved.
-		The scene is usually written to an .irr file, an xml based format. .irr files can
-		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org).
-		To load .irr files again, see ISceneManager::loadScene().
+		/** Scene nodes with the option isDebugObject set to true are
+		not being saved. The scene is usually written to an .irr file,
+		an xml based format. .irr files can Be edited with the Irrlicht
+		Engine Editor, irrEdit (http://irredit.irrlicht3d.org). To
+		load .irr files again, see ISceneManager::loadScene().
 		\param filename Name of the file.
-		\param userDataSerializer If you want to save some user data for every scene node into the
-		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
-		Otherwise, simply specify 0 as this parameter.
-		\param node Node which is taken as the top node of the scene. This node and all of its
-		descendants are saved into the scene file. Pass 0 or the scene manager to save the full
-		scene (which is also the default).
+		\param userDataSerializer If you want to save some user data
+		for every scene node into the file, implement the
+		ISceneUserDataSerializer interface and provide it as parameter
+		here. Otherwise, simply specify 0 as this parameter.
+		\param node Node which is taken as the top node of the scene.
+		This node and all of its descendants are saved into the scene
+		file. Pass 0 or the scene manager to save the full scene (which
+		is also the default).
 		\return True if successful. */
 		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
 		//! Saves the current scene into a file.
-		/** Scene nodes with the option isDebugObject set to true are not being saved.
-		The scene is usually written to an .irr file, an xml based format. .irr files can
-		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org).
-		To load .irr files again, see ISceneManager::loadScene().
-		\param file: File where the scene is saved into.
-		\param userDataSerializer: If you want to save some user data for every scene node into the
-		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
-		Otherwise, simply specify 0 as this parameter.
-		\param node Node which is taken as the top node of the scene. This node and all of its
-		descendants are saved into the scene file. Pass 0 or the scene manager to save the full
-		scene (which is also the default).
+		/** Scene nodes with the option isDebugObject set to true are
+		not being saved. The scene is usually written to an .irr file,
+		an xml based format. .irr files can Be edited with the Irrlicht
+		Engine Editor, irrEdit (http://irredit.irrlicht3d.org). To
+		load .irr files again, see ISceneManager::loadScene().
+		\param file File where the scene is saved into.
+		\param userDataSerializer If you want to save some user data
+		for every scene node into the file, implement the
+		ISceneUserDataSerializer interface and provide it as parameter
+		here. Otherwise, simply specify 0 as this parameter.
+		\param node Node which is taken as the top node of the scene.
+		This node and all of its descendants are saved into the scene
+		file. Pass 0 or the scene manager to save the full scene (which
+		is also the default).
 		\return True if successful. */
 		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
 
+		//! Saves the current scene into a file.
+		/** Scene nodes with the option isDebugObject set to true are
+		not being saved. The scene is usually written to an .irr file,
+		an xml based format. .irr files can Be edited with the Irrlicht
+		Engine Editor, irrEdit (http://irredit.irrlicht3d.org). To
+		load .irr files again, see ISceneManager::loadScene().
+		\param writer XMLWriter with which the scene is saved.
+		\param currentPath Path which is used for relative file names.
+		Usually the directory of the file written into.
+		\param userDataSerializer If you want to save some user data
+		for every scene node into the file, implement the
+		ISceneUserDataSerializer interface and provide it as parameter
+		here. Otherwise, simply specify 0 as this parameter.
+		\param node Node which is taken as the top node of the scene.
+		This node and all of its descendants are saved into the scene
+		file. Pass 0 or the scene manager to save the full scene (which
+		is also the default).
+		\return True if successful. */
+		virtual bool saveScene(io::IXMLWriter* writer, const io::path& currentPath, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) = 0;
+
 		//! Loads a scene. Note that the current scene is not cleared before.
-		/** The scene is usually loaded from an .irr file, an xml based format, but other scene formats
-		can be added to the engine via ISceneManager::addExternalSceneLoader. .irr files can
-		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
-		saved directly by the engine using ISceneManager::saveScene().
-		\param filename: Name of the file.
-		\param userDataSerializer: If you want to load user data
+		/** The scene is usually loaded from an .irr file, an xml based
+		format, but other scene formats can be added to the engine via
+		ISceneManager::addExternalSceneLoader. .irr files can Be edited
+		with the Irrlicht Engine Editor, irrEdit
+		(http://irredit.irrlicht3d.org) or saved directly by the engine
+		using ISceneManager::saveScene().
+		\param filename Name of the file to load from.
+		\param userDataSerializer If you want to load user data
 		possibily saved in that file for some scene nodes in the file,
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
-		\param rootNode Node which is taken as the root node of the scene. Pass 0 to add the scene
-		directly to the scene manager (which is also the default).
+		\param rootNode Node which is taken as the root node of the
+		scene. Pass 0 to add the scene directly to the scene manager
+		(which is also the default).
 		\return True if successful. */
 		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		/** The scene is usually loaded from an .irr file, an xml based format, but other scene formats
-		can be added to the engine via ISceneManager::addExternalSceneLoader. .irr files can
-		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
-		saved directly by the engine using ISceneManager::saveScene().
-		\param file: File where the scene is going to be saved into.
-		\param userDataSerializer: If you want to load user data
+		/** The scene is usually loaded from an .irr file, an xml based
+		format, but other scene formats can be added to the engine via
+		ISceneManager::addExternalSceneLoader. .irr files can Be edited
+		with the Irrlicht Engine Editor, irrEdit
+		(http://irredit.irrlicht3d.org) or saved directly by the engine
+		using ISceneManager::saveScene().
+		\param file File where the scene is loaded from.
+		\param userDataSerializer If you want to load user data
 		possibily saved in that file for some scene nodes in the file,
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
-		\param rootNode Node which is taken as the root node of the scene. Pass 0 to add the scene
-		directly to the scene manager (which is also the default).
+		\param rootNode Node which is taken as the root node of the
+		scene. Pass 0 to add the scene directly to the scene manager
+		(which is also the default).
 		\return True if successful. */
 		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) = 0;
 

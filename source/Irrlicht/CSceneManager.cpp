@@ -2110,6 +2110,9 @@ bool CSceneManager::saveScene(const io::path& filename, ISceneUserDataSerializer
 		ret = saveScene(file, userDataSerializer, node);
 		file->drop();
 	}
+	else
+		os::Printer::log("Unable to open file", filename, ELL_ERROR);
+
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
@@ -2120,22 +2123,35 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 {
 	if (!file)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
+	bool result=false;
 	io::IXMLWriter* writer = FileSystem->createXMLWriter(file);
 	if (!writer)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-		return false;
+		os::Printer::log("Unable to create XML writer", file->getFileName(), ELL_ERROR);
 	}
+	else
+	{
+		result = saveScene(writer, FileSystem->getFileDir(FileSystem->getAbsolutePath(file->getFileName())), userDataSerializer, node);
+		writer->drop();
+	}
+	return result;
+}
+
+
+//! Saves the current scene into a file.
+bool CSceneManager::saveScene(io::IXMLWriter* writer, const io::path& currentPath, ISceneUserDataSerializer* userDataSerializer, ISceneNode* node)
+{
+	if (!writer)
+		return false;
+
 	if (!node)
 		node=this;
 
 	writer->writeXMLHeader();
-	writeSceneNode(writer, node, userDataSerializer, FileSystem->getFileDir(FileSystem->getAbsolutePath(file->getFileName())).c_str(), true);
-	writer->drop();
+	writeSceneNode(writer, node, userDataSerializer, currentPath.c_str(), true);
 
 	return true;
 }
@@ -2144,29 +2160,16 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 //! Loads a scene.
 bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer, ISceneNode* rootNode)
 {
-	bool ret = false;
-
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
-
 	if (!file)
 	{
 		os::Printer::log("Unable to open scene file", filename.c_str(), ELL_ERROR);
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
-	// try scene loaders in reverse order
-	s32 i = SceneLoaderList.size()-1;
-	for (; i >= 0 && !ret; --i)
-		if (SceneLoaderList[i]->isALoadableFileExtension(filename))
-			ret = SceneLoaderList[i]->loadScene(file, userDataSerializer, rootNode);
-
-	if (!ret)
-		os::Printer::log("Could not load scene file, perhaps the format is unsupported: ", filename.c_str(), ELL_ERROR);
-
+	const bool ret = loadScene(file, userDataSerializer, rootNode);
 	file->drop();
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -2177,7 +2180,6 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 	if (!file)
 	{
 		os::Printer::log("Unable to open scene file", ELL_ERROR);
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -2192,9 +2194,9 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 	if (!ret)
 		os::Printer::log("Could not load scene file, perhaps the format is unsupported: ", file->getFileName().c_str(), ELL_ERROR);
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
+
 
 //! writes a scene node
 void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISceneUserDataSerializer* userDataSerializer,
