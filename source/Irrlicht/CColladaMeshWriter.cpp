@@ -135,6 +135,26 @@ IMesh* CColladaMeshWriterProperties::getMesh(irr::scene::ISceneNode * node)
 	return 0;
 }
 
+// Check if the node has it's own material overwriting the mesh-materials
+bool CColladaMeshWriterProperties::useNodeMaterial(const scene::ISceneNode* node) const
+{
+	if ( !node )
+		return false;
+
+	// TODO: we need some ISceneNode::hasType() function to get rid of those checks
+	bool useMeshMaterial =	(	(node->getType() == ESNT_MESH ||	
+								node->getType() == ESNT_CUBE ||
+								node->getType() == ESNT_SPHERE ||
+								node->getType() == ESNT_WATER_SURFACE ||
+								node->getType() == ESNT_Q3SHADER_SCENE_NODE)
+								&& static_cast<const IMeshSceneNode*>(node)->isReadOnlyMaterials())
+
+							||	(node->getType() == ESNT_ANIMATED_MESH 
+								&& static_cast<const IAnimatedMeshSceneNode*>(node)->isReadOnlyMaterials() );
+
+	return !useMeshMaterial;
+}
+
 
 
 CColladaMeshWriterNames::CColladaMeshWriterNames(IColladaMeshWriter * writer)
@@ -174,16 +194,8 @@ irr::core::stringw CColladaMeshWriterNames::nameForMaterial(const video::SMateri
 {
 	core::stringw strMat(L"mat");
 
-	bool useMeshMaterial =	!node ||
-							(	(node->getType() == ESNT_MESH ||	// TODO: we need some ISceneNode::hasType() function to get rid of those checks
-								node->getType() == ESNT_CUBE ||
-								node->getType() == ESNT_SPHERE ||
-								node->getType() == ESNT_WATER_SURFACE ||
-								node->getType() == ESNT_Q3SHADER_SCENE_NODE)
-								&& static_cast<const IMeshSceneNode*>(node)->isReadOnlyMaterials())
-							||	(node->getType() == ESNT_ANIMATED_MESH && static_cast<const IAnimatedMeshSceneNode*>(node)->isReadOnlyMaterials() );
-
-	if ( !useMeshMaterial )
+	bool nodeMaterial = ColladaMeshWriter->getProperties()->useNodeMaterial(node);
+	if ( nodeMaterial )
 	{
 		strMat += L"node";
 		strMat += nameForPtr(node);
@@ -423,9 +435,8 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 	IMesh* mesh = getProperties()->getMesh(node);
 	if ( mesh )
 	{
-		MeshNode * n = Meshes.find(mesh);
-		if (	node->getType() == ESNT_MESH 
-			&&	static_cast<IMeshSceneNode*>(node)->isReadOnlyMaterials() )
+		MeshNode * n = Meshes.find(mesh);	
+		if ( !getProperties()->useNodeMaterial(node) )
 		{
 			// no material overrides - write mesh materials
 			if ( n && !n->getValue().MaterialsWritten )
@@ -506,8 +517,7 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 	IMesh* mesh = getProperties()->getMesh(node);
 	if ( mesh )
 	{
-		if (	node->getType() == ESNT_MESH 
-			&&	static_cast<IMeshSceneNode*>(node)->isReadOnlyMaterials() )
+		if ( !getProperties()->useNodeMaterial(node) )
 		{
 			// no material overrides - write mesh materials
 			MeshNode * n = Meshes.find(mesh);

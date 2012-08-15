@@ -53,6 +53,9 @@ namespace scene
 
 		//! Return the mesh for the given nod. If it has no mesh or shouldn't export it's mesh return 0.
 		virtual irr::scene::IMesh* getMesh(irr::scene::ISceneNode * node);
+
+		//! Return if the node has it's own material overwriting the mesh-materials
+		virtual bool useNodeMaterial(const scene::ISceneNode* node) const;
 	};
 
 	class CColladaMeshWriterNames  : public virtual IColladaMeshWriterNames

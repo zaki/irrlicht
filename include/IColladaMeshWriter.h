@@ -140,7 +140,16 @@ namespace scene
 
 		//! Return the mesh for the given node. If it has no mesh or shouldn't export it's mesh 
 		//! you can return 0 in which case only the transformation matrix of the node will be used.
+		// Note: Function is not const because there is no const getMesh() function.
 		virtual IMesh* getMesh(irr::scene::ISceneNode * node) = 0;
+
+		//! Return if the node has it's own material overwriting the mesh-materials
+		/** Usually true except for mesh-nodes which have isReadOnlyMaterials set.
+		This is mostly important for naming (as ISceneNode::getMaterial() already returns the correct material).
+		You have to override it when exporting custom scenenodes with own materials.
+		\return true => The node's own material is used, false => ignore node material and use the one from the mesh */
+		virtual bool useNodeMaterial(const scene::ISceneNode* node) const = 0;
+
 	};
 
 	//! Callback interface to use custom names on collada writing.
