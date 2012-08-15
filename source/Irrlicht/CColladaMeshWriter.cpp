@@ -263,6 +263,7 @@ void CColladaMeshWriter::reset()
 	LightNodes.clear();
 	MaterialsWritten.clear();
 	EffectsWritten.clear();
+	MaterialNameCache.clear();
 }
 
 //! Returns the type of the mesh writer
@@ -996,14 +997,27 @@ irr::core::stringw CColladaMeshWriter::nameForNode(const scene::ISceneNode* node
 	return irr::core::stringw(L"missing_name_generator");
 }
 
-irr::core::stringw CColladaMeshWriter::nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const
+irr::core::stringw CColladaMeshWriter::nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node)
 {
+	irr::core::stringw matName;
+	if ( getExportSMaterialsOnlyOnce() )
+	{
+		matName = findCachedMaterialName(material);
+		if ( !matName.empty() )
+			return matName;
+	}
+
 	IColladaMeshWriterNames * nameGenerator = getNameGenerator();
 	if ( nameGenerator )
 	{
-		return nameGenerator->nameForMaterial(material, materialId, mesh, node);
+		matName = nameGenerator->nameForMaterial(material, materialId, mesh, node);
 	}
-	return irr::core::stringw(L"missing_name_generator");
+	else
+		matName = irr::core::stringw(L"missing_name_generator");
+
+	if ( getExportSMaterialsOnlyOnce() )
+		MaterialNameCache.push_back (MaterialName(material, matName));
+	return matName;
 }
 
 // Each mesh-material has one symbol which is replaced on instantiation
@@ -1012,6 +1026,16 @@ irr::core::stringw CColladaMeshWriter::nameForMaterialSymbol(const scene::IMesh*
 	wchar_t buf[100];
 	swprintf(buf, 100, L"mat_symb_%p_%d", mesh, materialId);
 	return irr::core::stringw(buf);
+}
+
+irr::core::stringw CColladaMeshWriter::findCachedMaterialName(const irr::video::SMaterial& material) const
+{
+	for ( u32 i=0; i<MaterialNameCache.size(); ++i )
+	{
+		if ( MaterialNameCache[i].Material == material )
+			return MaterialNameCache[i].Name;
+	}
+	return irr::core::stringw();
 }
 
 irr::core::stringw CColladaMeshWriter::minTexfilterToString(bool bilinear, bool trilinear) const

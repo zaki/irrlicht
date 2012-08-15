@@ -82,7 +82,9 @@ namespace scene
 		//! Default - write each mesh exactly once to collada. Optimal but will not work with many tools.
 		ECGI_PER_MESH,	
 
-		//! Write each mesh as often as it's used with different materials in the scene.
+		//! Write each mesh as often as it's used with different materials-names in the scene.
+		//! Material names which are used here are created on export, so using the IColladaMeshWriterNames
+		//! interface you have some control over how many geometries are written.
 		ECGI_PER_MESH_AND_MATERIAL,
 
 		// not yet supported, but might be useful as well
@@ -205,7 +207,8 @@ namespace scene
 
 		IColladaMeshWriter() 
 			: Properties(0), DefaultProperties(0), NameGenerator(0), DefaultNameGenerator(0)
-			, WriteTextures(true), WriteDefaultScene(true), AmbientLight(0.f, 0.f, 0.f, 1.f)
+			, WriteTextures(true), WriteDefaultScene(true), ExportSMaterialOnce(true)
+			, AmbientLight(0.f, 0.f, 0.f, 1.f)
 		{
 		}
 
@@ -283,6 +286,24 @@ namespace scene
 		virtual E_COLLADA_GEOMETRY_WRITING getGeometryWriting() const
 		{
 			return GeometryWriting;
+		}
+
+		//! Make certain there is only one collada material generated per Irrlicht material
+		/** Checks before creating a collada material-name if an identical 
+		irr:::video::SMaterial has been exported already. If so don't export it with 
+		another name. This is set by default and leads to way smaller .dae files.
+		Note that if you need to disable this flag for some reason you can still 
+		get a similar effect using the IColladaMeshWriterNames::nameForMaterial
+		by returning identical names for identical materials there.
+		*/
+		virtual void setExportSMaterialsOnlyOnce(bool exportOnce)
+		{
+			ExportSMaterialOnce = exportOnce;
+		}
+
+		virtual bool getExportSMaterialsOnlyOnce() const
+		{
+			return ExportSMaterialOnce;
 		}
 
 		//! Set properties to use by the meshwriter instead of it's default properties.
@@ -374,6 +395,7 @@ namespace scene
 		IColladaMeshWriterNames * DefaultNameGenerator;
 		bool WriteTextures;
 		bool WriteDefaultScene;
+		bool ExportSMaterialOnce;
 		video::SColorf AmbientLight;
 		E_COLLADA_GEOMETRY_WRITING GeometryWriting;
 	};

@@ -109,9 +109,9 @@ protected:
 	inline irr::core::stringw toRef(const irr::core::stringw& source) const;
 	irr::core::stringw nameForMesh(const scene::IMesh* mesh, int instance) const;
 	irr::core::stringw nameForNode(const scene::ISceneNode* node) const;
-	irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) const;
+	irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node);
 	irr::core::stringw nameForMaterialSymbol(const scene::IMesh* mesh, int materialId) const;
-	irr::core::stringw nameForPtr(const void* ptr) const;
+	irr::core::stringw findCachedMaterialName(const irr::video::SMaterial& material) const;
 	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
 	irr::core::stringw pathToURI(const irr::io::path& path) const;
@@ -241,6 +241,17 @@ protected:
 	// TODO: second parameter not needed, we just don't have a core::set class yet in Irrlicht
 	core::map<irr::core::stringw, bool> MaterialsWritten;
 	core::map<irr::core::stringw, bool> EffectsWritten;
+
+	// Cache material names
+	struct MaterialName
+	{
+		MaterialName(const irr::video::SMaterial & material, const irr::core::stringw& name) 
+			: Material(material), Name(name) 
+		{}
+		irr::video::SMaterial Material;
+		irr::core::stringw Name;
+	};
+	irr::core::array< MaterialName > MaterialNameCache;
 };
 
 
