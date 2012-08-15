@@ -1736,6 +1736,14 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 
 	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
+	// These calls would lead to crashes due to wrong index usage.
+	// The vertex cache needs to be rewritten for these primitives.
+	if (pType==scene::EPT_POINTS || pType==scene::EPT_LINE_STRIP ||
+		pType==scene::EPT_LINE_LOOP || pType==scene::EPT_LINES ||
+		pType==scene::EPT_TRIANGLE_FAN || pType==scene::EPT_POLYGON ||
+		pType==scene::EPT_POINT_SPRITES)
+		return;
+
 	if ( 0 == CurrentShader )
 		return;
 
@@ -1805,48 +1813,6 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 
 		u32 vOut;
 		vOut = clipToFrustum ( CurrentOut.data, Temp.data, 3 );
-/*
-		if ( vOut < 3 )
-		{
-			char buf[256];
-			struct SCheck
-			{
-				u32 flag;
-				const char * name;
-			};
-
-			SCheck check[5];
-			check[0].flag = face[0]->flag;
-			check[0].name = "face0";
-			check[1].flag = face[1]->flag;
-			check[1].name = "face1";
-			check[2].flag = face[2]->flag;
-			check[2].name = "face2";
-			check[3].flag = (face[0]->flag & face[1]->flag & face[2]->flag);
-			check[3].name = "AND  ";
-			check[4].flag = (face[0]->flag | face[1]->flag | face[2]->flag);
-			check[4].name = "OR   ";
-
-			for ( s32 h = 0; h!= 5; ++h )
-			{
-				sprintf ( buf, "%s: %d %d %d %d %d %d",
-								check[h].name,
-								( check[h].flag & 1 ),
-								( check[h].flag & 2 ) >> 1,
-								( check[h].flag & 4 ) >> 2,
-								( check[h].flag & 8 ) >> 3,
-								( check[h].flag & 16 ) >> 4,
-								( check[h].flag & 32 ) >> 5
-							);
-				os::Printer::log( buf );
-			}
-
-			sprintf ( buf, "Vout: %d\n", vOut );
-			os::Printer::log( buf );
-
-			int hold = 1;
-		}
-*/
 		if ( vOut < 3 )
 			continue;
 
@@ -1884,8 +1850,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 		dc_area = screenarea ( CurrentOut.data );
 		if ( Material.org.BackfaceCulling && F32_LOWER_EQUAL_0 ( dc_area ) )
 			continue;
-		else
-		if ( Material.org.FrontfaceCulling && F32_GREATER_EQUAL_0( dc_area ) )
+		else if ( Material.org.FrontfaceCulling && F32_GREATER_EQUAL_0( dc_area ) )
 			continue;
 
 		// select mipmap
