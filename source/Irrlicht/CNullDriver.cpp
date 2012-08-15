@@ -1066,6 +1066,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 		texture->unlock();
 	}
+	texture->regenerateMipMapLevels();
 }
 
 
