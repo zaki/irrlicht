@@ -85,6 +85,57 @@ const core::vector3df vals[] = {
 	core::vector3df(-57.187481f,-90.f,0.f)
 };
 
+bool testQuatEulerMatrix()
+{
+	// Test fromAngleAxis
+	core::vector3df v4;
+	core::quaternion q1;
+	f32 angle = 60.f;
+	q1.fromAngleAxis(angle*core::DEGTORAD, core::vector3df(1, 0, 0));
+	q1.toEuler(v4);
+	bool result	= v4.equals(core::vector3df(angle*core::DEGTORAD,0,0));
+
+	// Test maxtrix constructor
+	core::vector3df v5;
+	core::matrix4 mx4;
+	mx4.setRotationDegrees(core::vector3df(angle,0,0));
+	core::quaternion q2(mx4);
+	q2.toEuler(v5);
+	result &= q1.equals(q2);
+	result &= v4.equals(v5);
+
+	// Test matrix conversion via getMatrix
+	core::matrix4 mat;
+	mat.setRotationDegrees(core::vector3df(angle,0,0));
+	core::vector3df v6 = mat.getRotationDegrees()*core::DEGTORAD;
+	// make sure comparison matrix is correct
+	result &= v4.equals(v6);
+ 
+	core::matrix4 mat2 = q1.getMatrix();
+	result &= mat.equals(mat2, 0.0005f);
+
+	// test for proper handedness
+	angle=90;
+	q1.fromAngleAxis(angle*core::DEGTORAD, core::vector3df(0,0,1));
+	// check we have the correct quat
+	result &= q1.equals(core::quaternion(0,0,sqrtf(2)/2,sqrtf(2)/2));
+	q1.toEuler(v4);
+	// and the correct rotation vector
+	result &= v4.equals(core::vector3df(0,0,90*core::DEGTORAD));
+	mat.setRotationRadians(v4);
+	mat2=q1.getMatrix();
+	// check matrix
+	result &= mat.equals(mat2, 0.0005f);
+	// and to be absolutely sure, check rotation results
+	v5.set(1,0,0);
+	mat.transformVect(v5);
+	v6.set(1,0,0);
+	mat2.transformVect(v6);
+	result &= v5.equals(v6);
+
+	return result;
+}
+
 bool testEulerConversion()
 {
 	bool result = true;
@@ -94,6 +145,7 @@ bool testEulerConversion()
 		result &= compareQ(vals[i]) && compareQ(vals[i], core::vector3df(1,2,3)) &&
 			compareQ(vals[i], core::vector3df(0,1,0));
 	}
+	result &= testQuatEulerMatrix();
 	return result;
 }
 

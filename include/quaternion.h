@@ -104,7 +104,7 @@ class quaternion
 #endif 
 
 		//! Creates a matrix from this quaternion
-		void getMatrix( matrix4 &dest, const core::vector3df &translation ) const;
+		void getMatrix( matrix4 &dest, const core::vector3df &translation=core::vector3df() ) const;
 
 		/*!
 			Creates a matrix from this quaternion
@@ -233,61 +233,62 @@ inline quaternion& quaternion::operator=(const quaternion& other)
 // matrix assignment operator
 inline quaternion& quaternion::operator=(const matrix4& m)
 {
-	const f32 diag = m(0,0) + m(1,1) + m(2,2) + 1;
+	const f32 diag = m[0] + m[5] + m[10] + 1;
 
 	if( diag > 0.0f )
 	{
 		const f32 scale = sqrtf(diag) * 2.0f; // get scale from diagonal
 
 		// TODO: speed this up
-		X = ( m(1,2) - m(2,1)) / scale;
-		Y = ( m(2,0) - m(0,2)) / scale;
-		Z = ( m(0,1) - m(1,0)) / scale;
+		X = (m[6] - m[9]) / scale;
+		Y = (m[8] - m[2]) / scale;
+		Z = (m[1] - m[4]) / scale;
 		W = 0.25f * scale;
 	}
 	else
 	{
-		if ( m(0,0) > m(1,1) && m(0,0) > m(2,2))
+		if (m[0]>m[5] && m[0]>m[10])
 		{
 			// 1st element of diag is greatest value
 			// find scale according to 1st element, and double it
-			const f32 scale = sqrtf( 1.0f + m(0,0) - m(1,1) - m(2,2)) * 2.0f;
+			const f32 scale = sqrtf(1.0f + m[0] - m[5] - m[10]) * 2.0f;
 
 			// TODO: speed this up
 			X = 0.25f * scale;
-			Y = (m(1,0) + m(0,1)) / scale;
-			Z = (m(0,2) + m(2,0)) / scale;
-			W = (m(1,2) - m(2,1)) / scale;
+			Y = (m[4] + m[1]) / scale;
+			Z = (m[2] + m[8]) / scale;
+			W = (m[6] - m[9]) / scale;
 		}
-		else if ( m(1,1) > m(2,2))
+		else if (m[5]>m[10])
 		{
 			// 2nd element of diag is greatest value
 			// find scale according to 2nd element, and double it
-			const f32 scale = sqrtf( 1.0f + m(1,1) - m(0,0) - m(2,2)) * 2.0f;
+			const f32 scale = sqrtf(1.0f + m[5] - m[0] - m[10]) * 2.0f;
 
 			// TODO: speed this up
-			X = (m(1,0) + m(0,1) ) / scale;
+			X = (m[4] + m[1]) / scale;
 			Y = 0.25f * scale;
-			Z = (m(2,1) + m(1,2) ) / scale;
-			W = (m(2,0) - m(0,2) ) / scale;
+			Z = (m[9] + m[6]) / scale;
+			W = (m[8] - m[2]) / scale;
 		}
 		else
 		{
 			// 3rd element of diag is greatest value
 			// find scale according to 3rd element, and double it
-			const f32 scale = sqrtf( 1.0f + m(2,2) - m(0,0) - m(1,1)) * 2.0f;
+			const f32 scale = sqrtf(1.0f + m[10] - m[0] - m[5]) * 2.0f;
 
 			// TODO: speed this up
-			X = (m(2,0) + m(0,2)) / scale;
-			Y = (m(2,1) + m(1,2)) / scale;
+			X = (m[8] + m[2]) / scale;
+			Y = (m[9] + m[6]) / scale;
 			Z = 0.25f * scale;
-			W = (m(0,1) - m(1,0)) / scale;
+			W = (m[1] - m[4]) / scale;
 		}
 	}
 
 	return normalize();
 }
 #endif
+
 
 // multiplication operator
 inline quaternion quaternion::operator*(const quaternion& other) const
@@ -308,6 +309,7 @@ inline quaternion quaternion::operator*(f32 s) const
 {
 	return quaternion(s*X, s*Y, s*Z, s*W);
 }
+
 
 // multiplication operator
 inline quaternion& quaternion::operator*=(f32 s)
@@ -336,7 +338,7 @@ inline quaternion quaternion::operator+(const quaternion& b) const
 inline matrix4 quaternion::getMatrix() const
 {
 	core::matrix4 m;
-	getMatrix(m, core::vector3df(0,0,0));
+	getMatrix(m);
 	return m;
 }
 #endif
@@ -344,34 +346,31 @@ inline matrix4 quaternion::getMatrix() const
 /*!
 	Creates a matrix from this quaternion
 */
-inline void quaternion::getMatrix( matrix4 &dest, const core::vector3df &center ) const
+inline void quaternion::getMatrix(matrix4 &dest,
+		const core::vector3df &center) const
 {
-	f32 * m = dest.pointer();
+	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
+	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
+	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
+	dest[3] = 0.0f;
 
-	m[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
-	m[1] = 2.0f*X*Y + 2.0f*Z*W;
-	m[2] = 2.0f*X*Z - 2.0f*Y*W;
-	m[3] = 0.0f;
+	dest[4] = 2.0f*X*Y - 2.0f*Z*W;
+	dest[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
+	dest[6] = 2.0f*Z*Y + 2.0f*X*W;
+	dest[7] = 0.0f;
 
-	m[4] = 2.0f*X*Y - 2.0f*Z*W;
-	m[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
-	m[6] = 2.0f*Z*Y + 2.0f*X*W;
-	m[7] = 0.0f;
+	dest[8] = 2.0f*X*Z + 2.0f*Y*W;
+	dest[9] = 2.0f*Z*Y - 2.0f*X*W;
+	dest[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
+	dest[11] = 0.0f;
 
-	m[8] = 2.0f*X*Z + 2.0f*Y*W;
-	m[9] = 2.0f*Z*Y - 2.0f*X*W;
-	m[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
-	m[11] = 0.0f;
+	dest[12] = center.X;
+	dest[13] = center.Y;
+	dest[14] = center.Z;
+	dest[15] = 1.f;
 
-	m[12] = center.X;
-	m[13] = center.Y;
-	m[14] = center.Z;
-	m[15] = 1.f;
-
-	//dest.setDefinitelyIdentityMatrix ( matrix4::BIT_IS_NOT_IDENTITY );
 	dest.setDefinitelyIdentityMatrix ( false );
 }
-
 
 
 /*!
@@ -379,39 +378,37 @@ inline void quaternion::getMatrix( matrix4 &dest, const core::vector3df &center 
 	Rotate about a center point
 	shortcut for
 	core::quaternion q;
-	q.rotationFromTo ( vin[i].Normal, forward );
-	q.getMatrix ( lookat, center );
+	q.rotationFromTo(vin[i].Normal, forward);
+	q.getMatrix(lookat, center);
 
 	core::matrix4 m2;
-	m2.setInverseTranslation ( center );
+	m2.setInverseTranslation(center);
 	lookat *= m2;
 */
 inline void quaternion::getMatrixCenter(matrix4 &dest,
 					const core::vector3df &center,
 					const core::vector3df &translation) const
 {
-	f32 * m = dest.pointer();
+	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
+	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
+	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
+	dest[3] = 0.0f;
 
-	m[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
-	m[1] = 2.0f*X*Y + 2.0f*Z*W;
-	m[2] = 2.0f*X*Z - 2.0f*Y*W;
-	m[3] = 0.0f;
+	dest[4] = 2.0f*X*Y - 2.0f*Z*W;
+	dest[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
+	dest[6] = 2.0f*Z*Y + 2.0f*X*W;
+	dest[7] = 0.0f;
 
-	m[4] = 2.0f*X*Y - 2.0f*Z*W;
-	m[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
-	m[6] = 2.0f*Z*Y + 2.0f*X*W;
-	m[7] = 0.0f;
-
-	m[8] = 2.0f*X*Z + 2.0f*Y*W;
-	m[9] = 2.0f*Z*Y - 2.0f*X*W;
-	m[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
-	m[11] = 0.0f;
+	dest[8] = 2.0f*X*Z + 2.0f*Y*W;
+	dest[9] = 2.0f*Z*Y - 2.0f*X*W;
+	dest[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
+	dest[11] = 0.0f;
 
 	dest.setRotationCenter ( center, translation );
 }
 
 // Creates a matrix from this quaternion
-inline void quaternion::getMatrix_transposed( matrix4 &dest ) const
+inline void quaternion::getMatrix_transposed(matrix4 &dest) const
 {
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
 	dest[4] = 2.0f*X*Y + 2.0f*Z*W;
@@ -432,10 +429,9 @@ inline void quaternion::getMatrix_transposed( matrix4 &dest ) const
 	dest[7] = 0.f;
 	dest[11] = 0.f;
 	dest[15] = 1.f;
-	//dest.setDefinitelyIdentityMatrix ( matrix4::BIT_IS_NOT_IDENTITY );
-	dest.setDefinitelyIdentityMatrix ( false );
-}
 
+	dest.setDefinitelyIdentityMatrix(false);
+}
 
 
 // Inverts this quaternion
@@ -444,6 +440,7 @@ inline quaternion& quaternion::makeInverse()
 	X = -X; Y = -Y; Z = -Z;
 	return *this;
 }
+
 
 // sets new quaternion
 inline quaternion& quaternion::set(f32 x, f32 y, f32 z, f32 w)
