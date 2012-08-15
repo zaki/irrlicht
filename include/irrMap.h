@@ -132,6 +132,8 @@ class map
 	public:
 
 	typedef RBTree<KeyType,ValueType> Node;
+	// We need the forwad declaration for the friend declaration
+	class ConstIterator;
 
 	//! Normal Iterator
 	class Iterator
