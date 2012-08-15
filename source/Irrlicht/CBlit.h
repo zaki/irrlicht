@@ -941,15 +941,22 @@ static void executeBlit_Color_16_to_16( const SBlitJob * job )
 	}
 	else
 	{
-		s32 dx = job->width - 1;
+		const s32 dx = job->width - 1;
 
 		for ( s32 dy = 0; dy != job->height; ++dy )
 		{
-			memset32( dst, c, job->srcPitch );
-			dst[dx] = c0;
+			if ((((long)dst)&0x10)==0)
+			{
+				memset32(dst, c, job->srcPitch);
+				dst[dx] = c0;
+			}
+			else
+			{
+				dst[0] = c0;
+				memset32(dst+1, c, job->srcPitch-1);
+			}
 			dst = (u16*) ( (u8*) (dst) + job->dstPitch );
 		}
-
 	}
 }
 
