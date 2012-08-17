@@ -1034,6 +1034,11 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	// get the codepage used for keyboard input
 	KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
 	KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) );
+
+	// now handle events which may be required for proper driver usage
+	// without this, at least user clip planes under D3D won't work in each situation
+	handleSystemMessages();
+	resizeIfNecessary();
 }
 
 
@@ -1149,21 +1154,7 @@ bool CIrrDeviceWin32::run()
 
 	static_cast<CCursorControl*>(CursorControl)->update();
 
-	MSG msg;
-
-	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-	{
-		// No message translation because we don't use WM_CHAR and it would conflict with our
-		// deadkey handling.
-
-		if (ExternalWindow && msg.hwnd == HWnd)
-			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
-		else
-			DispatchMessage(&msg);
-
-		if (msg.message == WM_QUIT)
-			Close = true;
-	}
+	handleSystemMessages();
 
 	if (!Close)
 		resizeIfNecessary();
@@ -1198,7 +1189,7 @@ void CIrrDeviceWin32::sleep(u32 timeMs, bool pauseTimer)
 
 void CIrrDeviceWin32::resizeIfNecessary()
 {
-	if (!Resized)
+	if (!Resized || !getVideoDriver())
 		return;
 
 	RECT r;
@@ -1773,6 +1764,28 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 
 }
 
+
+//! Process system events
+void CIrrDeviceWin32::handleSystemMessages()
+{
+	MSG msg;
+
+	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	{
+		// No message translation because we don't use WM_CHAR and it would conflict with our
+		// deadkey handling.
+
+		if (ExternalWindow && msg.hwnd == HWnd)
+			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
+		else
+			DispatchMessage(&msg);
+
+		if (msg.message == WM_QUIT)
+			Close = true;
+	}
+}
+
+
 //! Remove all messages pending in the system message loop
 void CIrrDeviceWin32::clearSystemMessages()
 {
@@ -1875,8 +1888,6 @@ HCURSOR CIrrDeviceWin32::TextureToCursor(HWND hwnd, irr::video::ITexture * tex, 
 
 	ReleaseDC(hwnd, dc);
 
-
-	//
 	// create the cursor
 
 	ICONINFO iconinfo;

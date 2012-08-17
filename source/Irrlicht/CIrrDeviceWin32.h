@@ -382,6 +382,9 @@ namespace irr
 		//! create the driver
 		void createDriver();
 
+		//! Process system events
+		void handleSystemMessages();
+
 		void getWindowsVersion(core::stringc& version);
 
 		void resizeIfNecessary();
