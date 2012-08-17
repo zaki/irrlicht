@@ -229,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\drawVertexPrimitive.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\enumerateImageManipulators.cpp"
 				>
 			</File>
@@ -430,6 +434,10 @@
 			</File>
 			<File
 				RelativePath=".\triangleSelector.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\userClipPlane.cpp"
 				>
 			</File>
 			<File

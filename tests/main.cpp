@@ -105,11 +105,13 @@ int main(int argumentCount, char * arguments[])
 	TEST(screenshot);
 	TEST(drawPixel);
 	TEST(drawRectOutline);
+	TEST(drawVertexPrimitive);
 	TEST(material);
 	TEST(renderTargetTexture);
 	TEST(textureFeatures);
 	TEST(textureRenderStates);
 	TEST(transparentMaterials);
+	TEST(userclipplane);
 	TEST(antiAliasing);
 	TEST(draw2DImage);
 	TEST(lights);

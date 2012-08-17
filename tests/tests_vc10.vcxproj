@@ -159,6 +159,7 @@
     <ClCompile Include="draw2DImage.cpp" />
     <ClCompile Include="drawPixel.cpp" />
     <ClCompile Include="drawRectOutline.cpp" />
+    <ClCompile Include="drawVertexPrimitive.cpp" />
     <ClCompile Include="enumerateImageManipulators.cpp" />
     <ClCompile Include="exports.cpp" />
     <ClCompile Include="fast_atof.cpp" />
@@ -211,6 +212,7 @@
     <ClCompile Include="transparentMaterials.cpp" />
     <ClCompile Include="triangle3d.cpp" />
     <ClCompile Include="triangleSelector.cpp" />
+    <ClCompile Include="userClipPlane.cpp" />
     <ClCompile Include="vectorPositionDimension2d.cpp" />
     <ClCompile Include="videoDriver.cpp" />
     <ClCompile Include="viewPort.cpp" />
