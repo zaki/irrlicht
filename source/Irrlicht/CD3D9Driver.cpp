@@ -3406,7 +3406,7 @@ bool CD3D9Driver::setClipPlane(u32 index, const core::plane3df& plane, bool enab
 	if (index >= MaxUserClipPlanes)
 		return false;
 
-	HRESULT ok = pID3DDevice->SetClipPlane(index, (const float*)&plane);
+	HRESULT ok = pID3DDevice->SetClipPlane(index, (const float*)&(plane.Normal.X));
 	if (D3D_OK == ok)
 		enableClipPlane(index, enable);
 	return true;

@@ -946,21 +946,23 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		{
 			// OpenGL only has a model matrix, view and world is not existent. so lets fake these two.
 			glMatrixMode(GL_MODELVIEW);
-			glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
+
+			// first load the viewing transformation for user clip planes
+			glLoadMatrixf((Matrices[ETS_VIEW]).pointer());
+
 			// we have to update the clip planes to the latest view matrix
 			for (u32 i=0; i<MaxUserClipPlanes; ++i)
 				if (UserClipPlanes[i].Enabled)
 					uploadClipPlane(i);
+
+			// now the real model-view matrix
+			glMultMatrixf(Matrices[ETS_WORLD].pointer());
 		}
 		break;
 	case ETS_PROJECTION:
 		{
 			glMatrixMode(GL_PROJECTION);
 			glLoadMatrixf(mat.pointer());
-			// we have to update the clip planes to the latest view matrix
-			for (u32 i=0; i<MaxUserClipPlanes; ++i)
-				if (UserClipPlanes[i].Enabled)
-					uploadClipPlane(i);
 		}
 		break;
 	case ETS_COUNT:
@@ -4614,7 +4616,7 @@ bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool en
 void COpenGLDriver::uploadClipPlane(u32 index)
 {
 	// opengl needs an array of doubles for the plane equation
-	double clip_plane[4];
+	GLdouble clip_plane[4];
 	clip_plane[0] = UserClipPlanes[index].Plane.Normal.X;
 	clip_plane[1] = UserClipPlanes[index].Plane.Normal.Y;
 	clip_plane[2] = UserClipPlanes[index].Plane.Normal.Z;
