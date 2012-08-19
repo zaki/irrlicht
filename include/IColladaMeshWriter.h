@@ -85,10 +85,7 @@ namespace scene
 		//! Write each mesh as often as it's used with different materials-names in the scene.
 		//! Material names which are used here are created on export, so using the IColladaMeshWriterNames
 		//! interface you have some control over how many geometries are written.
-		ECGI_PER_MESH_AND_MATERIAL,
-
-		// not yet supported, but might be useful as well
-		// ECGI_PER_NODE
+		ECGI_PER_MESH_AND_MATERIAL
 	};
 
 	//! Callback interface for properties which can be used to influence collada writing
