@@ -185,13 +185,9 @@ namespace core
 			/** The 4th row and column are unmodified. */
 			inline CMatrix4<T>& setInverseRotationDegrees( const vector3d<T>& rotation );
 
-			//! Make a rotation matrix from angle and axis using LH rotation.
+			//! Make a rotation matrix from angle and axis, assuming left handed rotation.
 			/** The 4th row and column are unmodified. */
-			inline CMatrix4<T>& setRotationAxisRadiansLH(const T& angle, const vector3d<T>& axis);
-
-			//! Make a rotation matrix from angle and axis using RH rotation.
-			/** The 4th row and column are unmodified. */
-			inline CMatrix4<T>& setRotationAxisRadiansRH(const T& angle, const vector3d<T>& axis);
+			inline CMatrix4<T>& setRotationAxisRadians(const T& angle, const vector3d<T>& axis);
 
 			//! Set Scale
 			CMatrix4<T>& setScale( const vector3d<T>& scale );
@@ -947,65 +943,32 @@ namespace core
 		return *this;
 	}
 
-
 	//! Sets matrix to rotation matrix defined by axis and angle, assuming LH rotation
 	template <class T>
-	inline CMatrix4<T>& CMatrix4<T>::setRotationAxisRadiansLH( const T& angle, const vector3d<T>& axis )
-	{
-		const f64 c   = cos( angle );
-		const f64 s   = sin( angle );
-		const f64 t   = 1.0 - c;
-
-		const f64 tx  = t * axis.X;
-
-		M[0] = (T)(tx * axis.X + c);
-		M[1] = (T)(tx * axis.Y - s * axis.Z);
-		M[2] = (T)(tx * axis.Z + s * axis.Y);
-
-		const f64 ty  = t * axis.Y;
-
-		M[4] = (T)(ty * axis.X + s * axis.Z);
-		M[5] = (T)(ty * axis.Y + c);
-		M[6] = (T)(ty * axis.Z - s * axis.X);
-
-		const f64 tz  = t * axis.Z;
-
-		M[8]  = (T)(tz * axis.X - s * axis.Y);
-		M[9]  = (T)(tz * axis.Z + s * axis.X);
-		M[10] = (T)(tz * axis.Z + c);
-
-#if defined ( USE_MATRIX_TEST )
-		definitelyIdentityMatrix=false;
-#endif
-
-		return *this;
-	}
-
-
-	//! Sets matrix to rotation matrix defined by axis and angle, assuming RH rotation
-	template <class T>
-	inline CMatrix4<T>& CMatrix4<T>::setRotationAxisRadiansRH( const T& angle, const vector3d<T>& axis )
+	inline CMatrix4<T>& CMatrix4<T>::setRotationAxisRadians( const T& angle, const vector3d<T>& axis )
 	{
  		const f64 c = cos(angle);
 		const f64 s = sin(angle);
 		const f64 t = 1.0 - c;
 
 		const f64 tx  = t * axis.X;
-
-		M[0] = (T)(tx * axis.X + c);
-		M[1] = (T)(tx * axis.Y + s * axis.Z);
-		M[2] = (T)(tx * axis.Z - s * axis.Y);
-
-		const f64 ty  = t * axis.Y;
-
-		M[4] = (T)(ty * axis.X - s * axis.Z);
-		M[5] = (T)(ty * axis.Y + c);
-		M[6] = (T)(ty * axis.Z + s * axis.X);
-
+		const f64 ty  = t * axis.Y;		
 		const f64 tz  = t * axis.Z;
 
-		M[8]  = (T)(tz * axis.X + s * axis.Y);
-		M[9]  = (T)(tz * axis.Z - s * axis.X);
+		const f64 sx  = s * axis.X;
+		const f64 sy  = s * axis.Y;
+		const f64 sz  = s * axis.Z;
+		
+		M[0] = (T)(tx * axis.X + c);
+		M[1] = (T)(tx * axis.Y + sz);
+		M[2] = (T)(tx * axis.Z - sy);
+
+		M[4] = (T)(ty * axis.X - sz);
+		M[5] = (T)(ty * axis.Y + c);
+		M[6] = (T)(ty * axis.Z + sx);
+
+		M[8]  = (T)(tz * axis.X + sy);
+		M[9]  = (T)(tz * axis.Y - sx);
 		M[10] = (T)(tz * axis.Z + c);
 
 #if defined ( USE_MATRIX_TEST )

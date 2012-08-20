@@ -236,6 +236,124 @@ bool isOrthogonal(void)
 	return true;
 }
 
+bool checkMatrixRotation(irr::core::matrix4& m, const vector3df& vector, const vector3df& expectedResult)
+{
+	vector3df v(vector);
+	m.rotateVect(v);
+	if ( expectedResult.equals(v) )
+		return true;
+	logTestString("checkMatrixRotation failed for vector %f %f %f. Expected %f %f %f, got %f %f %f \n"
+			, vector.X, vector.Y, vector.Z, expectedResult.X, expectedResult.Y, expectedResult.Z, v.X, v.Y, v.Z);
+	logTestString("matrix: ");
+	for ( int i=0; i<16; ++i )
+		logTestString("%.2f ", m[i]);
+	logTestString("\n");	
+
+	return false;
+}
+
+bool setRotationAxis()
+{
+	matrix4 m;
+	vector3df v;
+	
+	// y up, x right, z depth (as usual)
+
+	// y rotated around x-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(1,0,0)), vector3df(0,1,0), vector3df(0, 0, 1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(1,0,0)), vector3df(0,1,0), vector3df(0, -1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// y rotated around negative x-axis
+	m.makeIdentity();
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(-1,0,0)), vector3df(0,1,0), vector3df(0, 0, -1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// x rotated around x-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(1,0,0)), vector3df(1,0,0), vector3df(1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	// x rotated around y-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,1,0)), vector3df(1,0,0), vector3df(0, 0, -1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(0,1,0)), vector3df(1,0,0), vector3df(-1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// x rotated around negative y-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,-1,0)), vector3df(1,0,0), vector3df(0, 0, 1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	} 
+	
+	// y rotated around y-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,1,0)), vector3df(0,1,0), vector3df(0, 1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	// x rotated around z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,1)), vector3df(1,0,0), vector3df(0, 1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(0,0,1)), vector3df(1,0,0), vector3df(-1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	// x rotated around negative z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,-1)), vector3df(1,0,0), vector3df(0, -1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// y rotated around z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,1)), vector3df(0,1,0), vector3df(-1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(0,0,1)), vector3df(0,1,0), vector3df(0, -1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// z rotated around z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,1)), vector3df(0,0,1), vector3df(0, 0, 1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	
+	return true;
+}
+
 // just calling each function once to find compile problems
 void calltest()
 {
@@ -273,8 +391,7 @@ void calltest()
 	vector3df v2 = mat.getRotationDegrees();
 	mat.setInverseRotationRadians(vector3df(1.f, 1.f, 1.f) );
 	mat.setInverseRotationDegrees(vector3df(1.f, 1.f, 1.f) );
-	mat.setRotationAxisRadiansLH(1.f, vector3df(1.f, 1.f, 1.f) );
-	mat.setRotationAxisRadiansRH(1.f, vector3df(1.f, 1.f, 1.f) );
+	mat.setRotationAxisRadians(1.f, vector3df(1.f, 1.f, 1.f) );
 	mat.setScale(vector3df(1.f, 1.f, 1.f) );
 	mat.setScale(1.f);
 	vector3df v3 = mat.getScale();
@@ -342,6 +459,7 @@ bool matrixOps(void)
 	result &= rotations();
 	result &= isOrthogonal();
 	result &= transformations();
+	result &= setRotationAxis();
 	return result;
 }
 

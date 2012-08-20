@@ -1,5 +1,7 @@
 Changes in 1.8 (??.??.2011)
 
+ - matrix4::setRotationAxisRadians added
+
  - quaternion conversions to and from matrix4 no longer invert rotations. 
    To test if your code was affected by this you can set IRR_TEST_BROKEN_QUATERNION_USE in quaternion.h and try to compile your application.
    Then on all compile-errors when you pass the matrix to the quaternion you can replace the matrix transposed matrix.
