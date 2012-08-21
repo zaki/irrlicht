@@ -19,6 +19,7 @@
 #include "IMeshSceneNode.h"
 #include "ITerrainSceneNode.h"
 #include "ILightSceneNode.h"
+#include "ICameraSceneNode.h"
 #include "ISceneManager.h"
 
 namespace irr
@@ -261,6 +262,7 @@ void CColladaMeshWriter::reset()
 	LibraryImages.clear();
 	Meshes.clear();
 	LightNodes.clear();
+	CameraNodes.clear();
 	MaterialsWritten.clear();
 	EffectsWritten.clear();
 	MaterialNameCache.clear();
@@ -334,6 +336,12 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 	Writer->writeClosingTag(L"library_lights");
 	Writer->writeLineBreak();
 
+	// cameras
+	Writer->writeElement(L"library_cameras", false);
+	Writer->writeLineBreak();
+	writeNodeCameras(root);
+	Writer->writeClosingTag(L"library_cameras");
+	Writer->writeLineBreak();
 
 	// write meshes
 	Writer->writeElement(L"library_geometries", false);
@@ -575,19 +583,9 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 				Writer->writeLineBreak();
 
 				writeColorElement(lightData.DiffuseColor, false);
-
-				Writer->writeElement(L"constant_attenuation ", false);
-				Writer->writeText( irr::core::stringw(lightData.Attenuation.X).c_str() );
-				Writer->writeClosingTag(L"constant_attenuation ");
-				Writer->writeLineBreak();
-				Writer->writeElement(L"linear_attenuation  ", false);
-				Writer->writeText( irr::core::stringw(lightData.Attenuation.Y).c_str() );
-				Writer->writeClosingTag(L"linear_attenuation  ");
-				Writer->writeLineBreak();
-				Writer->writeElement(L"quadratic_attenuation", false);
-				Writer->writeText( irr::core::stringw(lightData.Attenuation.Z).c_str() );
-				Writer->writeClosingTag(L"quadratic_attenuation");
-				Writer->writeLineBreak();
+				writeNode(L"constant_attenuation ", core::stringw(lightData.Attenuation.X).c_str());
+				writeNode(L"linear_attenuation  ", core::stringw(lightData.Attenuation.Y).c_str());
+				writeNode(L"quadratic_attenuation", core::stringw(lightData.Attenuation.Z).c_str());
 
 				Writer->writeClosingTag(L"point");
 				Writer->writeLineBreak();
@@ -599,27 +597,12 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 
 				writeColorElement(lightData.DiffuseColor, false);
 
-				Writer->writeElement(L"constant_attenuation ", false);
-				Writer->writeText( irr::core::stringw(lightData.Attenuation.X).c_str() );
-				Writer->writeClosingTag(L"constant_attenuation ");
-				Writer->writeLineBreak();
-				Writer->writeElement(L"linear_attenuation  ", false);
-				Writer->writeText( irr::core::stringw(lightData.Attenuation.Y).c_str() );
-				Writer->writeClosingTag(L"linear_attenuation  ");
-				Writer->writeLineBreak();
-				Writer->writeElement(L"quadratic_attenuation", false);
-				Writer->writeText( irr::core::stringw(lightData.Attenuation.Z).c_str() );
-				Writer->writeClosingTag(L"quadratic_attenuation");
-				Writer->writeLineBreak();
+				writeNode(L"constant_attenuation ", core::stringw(lightData.Attenuation.X).c_str());
+				writeNode(L"linear_attenuation  ", core::stringw(lightData.Attenuation.Y).c_str());
+				writeNode(L"quadratic_attenuation", core::stringw(lightData.Attenuation.Z).c_str());
 
-				Writer->writeElement(L"falloff_angle", false);
-				Writer->writeText( irr::core::stringw(lightData.OuterCone * core::RADTODEG).c_str() );
-				Writer->writeClosingTag(L"falloff_angle");
-				Writer->writeLineBreak();
-				Writer->writeElement(L"falloff_exponent", false);
-				Writer->writeText( irr::core::stringw(lightData.Falloff).c_str() );
-				Writer->writeClosingTag(L"falloff_exponent");
-				Writer->writeLineBreak();
+				writeNode(L"falloff_angle", core::stringw(lightData.OuterCone * core::RADTODEG).c_str());
+				writeNode(L"falloff_exponent", core::stringw(lightData.Falloff).c_str());
 
 				Writer->writeClosingTag(L"spot");
 				Writer->writeLineBreak();
@@ -648,6 +631,71 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
 	{
 		writeNodeLights( *it );
+	}
+}
+
+void CColladaMeshWriter::writeNodeCameras(irr::scene::ISceneNode * node)
+{
+	if ( !node )
+		return;
+
+	if ( isCamera(node) )
+	{
+		ICameraSceneNode * cameraNode = static_cast<ICameraSceneNode*>(node);
+		irr::core::stringw name = nameForNode(node);
+		CameraNodes.insert(cameraNode, name);
+
+		Writer->writeElement(L"camera", false, L"id", name.c_str());
+		Writer->writeLineBreak();
+
+		Writer->writeElement(L"optics", false);
+		Writer->writeLineBreak();
+
+		Writer->writeElement(L"technique_common", false);
+		Writer->writeLineBreak();
+
+		if ( cameraNode->isOrthogonal() )
+		{
+			Writer->writeElement(L"orthographic", false);
+			Writer->writeLineBreak();
+
+//			writeNode(L"xmag", core::stringw("1.0").c_str());	// TODO: do we need xmag, ymag?
+//			writeNode(L"ymag", core::stringw("1.0").c_str());
+			writeNode(L"aspect_ratio", core::stringw(cameraNode->getAspectRatio()).c_str());
+			writeNode(L"znear", core::stringw(cameraNode->getNearValue()).c_str());
+			writeNode(L"zfar", core::stringw(cameraNode->getFarValue()).c_str());
+
+			Writer->writeClosingTag(L"orthographic");
+			Writer->writeLineBreak();
+		}
+		else
+		{
+			Writer->writeElement(L"perspective", false);
+			Writer->writeLineBreak();
+
+			writeNode(L"yfov", core::stringw(cameraNode->getFOV()*core::RADTODEG).c_str());
+			writeNode(L"aspect_ratio", core::stringw(cameraNode->getAspectRatio()).c_str());
+			writeNode(L"znear", core::stringw(cameraNode->getNearValue()).c_str());
+			writeNode(L"zfar", core::stringw(cameraNode->getFarValue()).c_str());
+
+			Writer->writeClosingTag(L"perspective");
+			Writer->writeLineBreak();
+		}
+
+		Writer->writeClosingTag(L"technique_common");
+		Writer->writeLineBreak();
+	
+		Writer->writeClosingTag(L"optics");
+		Writer->writeLineBreak();
+
+		Writer->writeClosingTag(L"camera");
+		Writer->writeLineBreak();
+	}
+
+	const core::list<ISceneNode*>& children = node->getChildren();
+	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
+	{
+		writeNodeCameras( *it );
 	}
 }
 
@@ -693,7 +741,14 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	else
 	{
 		irr::core::vector3df rot(node->getRotation()); 
-		writeTranslateElement( node->getPosition() ); 	 
+		if ( isCamera(node) && !static_cast<ICameraSceneNode*>(node)->getTargetAndRotationBinding() )
+		{
+			ICameraSceneNode * camNode = static_cast<ICameraSceneNode*>(node);
+			const core::vector3df toTarget = camNode->getTarget() - camNode->getAbsolutePosition();
+			rot = toTarget.getHorizontalAngle();
+		}
+
+		writeTranslateElement( node->getPosition() ); 
 		writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X ); 	 
 		writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y ); 	 
 		writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z ); 	 
@@ -720,7 +775,13 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 			writeLightInstance(n->getValue().Name);
 	}
 
-	// TODO instance cameras
+	// instance camera
+	if ( isCamera(node) )
+	{
+		CameraNode * camNode = CameraNodes.find(node);
+		if ( camNode )
+			writeCameraInstance(camNode->getValue());
+	}
 
 	const core::list<ISceneNode*>& children = node->getChildren();
 	for ( core::list<ISceneNode*>::ConstIterator it = children.begin(); it != children.end(); ++it )
@@ -889,6 +950,12 @@ void CColladaMeshWriter::writeLightInstance(const irr::core::stringw& lightName)
 	Writer->writeLineBreak();
 }
 
+void CColladaMeshWriter::writeCameraInstance(const irr::core::stringw& cameraName)
+{
+	Writer->writeElement(L"instance_camera", true, L"url", toRef(cameraName).c_str());
+	Writer->writeLineBreak();
+}
+
 bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const
 {
 	return type == video::EVT_2TCOORDS;
@@ -975,6 +1042,16 @@ irr::core::stringw CColladaMeshWriter::toRef(const irr::core::stringw& source) c
 	irr::core::stringw ref(L"#");
 	ref += source;
 	return ref;
+}
+
+bool CColladaMeshWriter::isCamera(const scene::ISceneNode* node) const
+{
+	// TODO: we need some ISceneNode::hasType() function to get rid of those checks
+	if (	node->getType() == ESNT_CAMERA
+		||	node->getType() == ESNT_CAMERA_MAYA
+		||	node->getType() == ESNT_CAMERA_FPS )
+		return true;
+	return false;
 }
 
 irr::core::stringw CColladaMeshWriter::nameForMesh(const scene::IMesh* mesh, int instance) const
@@ -2077,6 +2154,14 @@ void CColladaMeshWriter::writeColorFx(const video::SMaterial & material, const w
 		Writer->writeClosingTag(colorname);
 		Writer->writeLineBreak();
 	}
+}
+
+void CColladaMeshWriter::writeNode(const wchar_t * nodeName, const wchar_t * content)
+{
+	Writer->writeElement(nodeName, false);
+	Writer->writeText(content);
+	Writer->writeClosingTag(nodeName);
+	Writer->writeLineBreak();
 }
 
 void CColladaMeshWriter::writeFloatElement(irr::f32 value)

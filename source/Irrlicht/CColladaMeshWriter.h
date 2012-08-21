@@ -17,6 +17,7 @@ namespace io
 	class IXMLWriter;
 	class IFileSystem;
 }
+
 namespace scene
 {
 	//! Callback interface for properties which can be used to influence collada writing
@@ -107,6 +108,7 @@ protected:
 	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
 	inline irr::core::stringw toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;
 	inline irr::core::stringw toRef(const irr::core::stringw& source) const;
+	bool isCamera(const scene::ISceneNode* node) const;
 	irr::core::stringw nameForMesh(const scene::IMesh* mesh, int instance) const;
 	irr::core::stringw nameForNode(const scene::ISceneNode* node) const;
 	irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node);
@@ -124,6 +126,7 @@ protected:
 	void writeNodeMaterials(irr::scene::ISceneNode * node);
 	void writeNodeEffects(irr::scene::ISceneNode * node);
 	void writeNodeLights(irr::scene::ISceneNode * node);
+	void writeNodeCameras(irr::scene::ISceneNode * node);
 	void writeAllMeshGeometries();
 	void writeSceneNode(irr::scene::ISceneNode * node);
 	void writeMeshMaterials(scene::IMesh* mesh, irr::core::array<irr::core::stringw> * materialNamesOut=0);
@@ -133,6 +136,7 @@ protected:
 	void writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh, scene::ISceneNode* node=0);
 	void writeMaterial(const irr::core::stringw& materialname);
 	void writeLightInstance(const irr::core::stringw& lightName);
+	void writeCameraInstance(const irr::core::stringw& cameraName);
 	void writeLibraryImages();
 	void writeColorFx(const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name=0, const wchar_t* attr1Value=0);
 	void writeAmbientLightElement(const video::SColorf & col);
@@ -140,6 +144,7 @@ protected:
 	void writeColorElement(const video::SColorf & col, bool writeAlpha=true);
 	void writeTextureSampler(s32 textureIdx);
 	void writeFxElement(const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx);
+	void writeNode(const wchar_t * nodeName, const wchar_t * content);
 	void writeFloatElement(irr::f32 value);
 	void writeRotateElement(const irr::core::vector3df& axis, irr::f32 angle);
 	void writeScaleElement(const irr::core::vector3df& scale);
@@ -229,6 +234,7 @@ protected:
 	typedef core::map<IMesh*, SColladaMesh>::Node MeshNode;
 	core::map<IMesh*, SColladaMesh> Meshes;
 
+	// structure for the lights library
 	struct SColladaLight
 	{
 		SColladaLight()	{}
@@ -236,6 +242,10 @@ protected:
 	};
 	typedef core::map<ISceneNode*, SColladaLight>::Node LightNode;
 	core::map<ISceneNode*, SColladaLight> LightNodes;
+
+	// structure for the camera library
+	typedef core::map<ISceneNode*, irr::core::stringw>::Node CameraNode;
+	core::map<ISceneNode*, irr::core::stringw> CameraNodes;
 
 	// Check per name if stuff has been written already 
 	// TODO: second parameter not needed, we just don't have a core::set class yet in Irrlicht
