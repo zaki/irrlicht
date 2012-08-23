@@ -383,6 +383,8 @@ Function hasModalDialog() checks if we currently have a modal dialog open.
 */
 bool hasModalDialog()
 {
+	if ( !Device )
+		return false;
 	IGUIEnvironment* env = Device->getGUIEnvironment();
 	IGUIElement * focused = env->getFocus();
 	while ( focused )
