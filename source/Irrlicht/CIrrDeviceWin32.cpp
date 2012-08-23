@@ -1035,9 +1035,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
 	KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) );
 
-	// now handle events which may be required for proper driver usage
-	// without this, at least user clip planes under D3D won't work in each situation
-	handleSystemMessages();
+	// inform driver about the window size etc.
 	resizeIfNecessary();
 }
 

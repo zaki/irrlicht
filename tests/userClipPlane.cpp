@@ -12,6 +12,7 @@ static bool withSphere(video::E_DRIVER_TYPE type)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	driver->setClipPlane(0, core::plane3df(core::vector3df(0,18,0), core::vector3df(0,-1,0)), true);
 	smgr->addLightSceneNode(0, core::vector3df(30,30,50));
 	// create first sphere
 	scene::ISceneNode* sphere = smgr->addMeshSceneNode(smgr->addSphereMesh("sphere", 10, 64, 64));
@@ -27,20 +28,16 @@ static bool withSphere(video::E_DRIVER_TYPE type)
 
 	smgr->addCameraSceneNode(0, core::vector3df(-25,30,20), core::vector3df());
 
-	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	driver->setMaterial(video::IdentityMaterial);
-
-	driver->setClipPlane(0, core::plane3df(core::vector3df(0,18,0), core::vector3df(0,-1,0)), true);
-	driver->setClipPlane(1, core::plane3df(core::vector3df(0,2,0), core::vector3df(0,1,0)));
+	driver->setClipPlane(1, core::plane3df(core::vector3df(0,2,0), core::vector3df(0,1,0)), true);
 	driver->setClipPlane(2, core::plane3df(core::vector3df(8,0,0), core::vector3df(-1,0,0)));
 
+	device->run();
 //	while(device->run())
 	{
 	driver->beginScene(true, true, video::SColor(255,113,113,133));
 	driver->setClipPlane(3, core::plane3df(core::vector3df(-8,0,0), core::vector3df(1,0,0)), true);
 	driver->setClipPlane(4, core::plane3df(core::vector3df(0,0,8), core::vector3df(0,0,-1)));
 	driver->setClipPlane(5, core::plane3df(core::vector3df(0,0,-8), core::vector3df(0,0,1)));
-	driver->enableClipPlane(1, true);
 	driver->enableClipPlane(2, true);
 	driver->enableClipPlane(4, true);
 	driver->enableClipPlane(5, true);
