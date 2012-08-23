@@ -4,7 +4,7 @@ using namespace irr;
 
 static bool withSphere(video::E_DRIVER_TYPE type)
 {
-	IrrlichtDevice* device = createDevice(type, core::dimension2d<u32>(640, 480));
+	IrrlichtDevice* device = createDevice(type, core::dimension2d<u32>(160, 120));
 
 	if (device == 0)
 		return true;
@@ -20,13 +20,12 @@ static bool withSphere(video::E_DRIVER_TYPE type)
 	{
 		sphere->setPosition(core::vector3df(0,10,0));
 		sphere->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
-//		sphere->setMaterialFlag(video::EMF_WIREFRAME, true);
 	}
 
 	sphere = smgr->addMeshSceneNode(smgr->addHillPlaneMesh("mesh", core::dimension2df(10,10), core::dimension2du(10,10)));
 	sphere->setPosition(core::vector3df(0,10,0));
 
-	smgr->addCameraSceneNode(0, core::vector3df(-25,30,25), core::vector3df());
+	smgr->addCameraSceneNode(0, core::vector3df(-25,30,20), core::vector3df());
 
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	driver->setMaterial(video::IdentityMaterial);
