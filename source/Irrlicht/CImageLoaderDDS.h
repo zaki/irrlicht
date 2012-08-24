@@ -7,14 +7,14 @@
 
 #include "IrrCompileConfig.h"
 
+#if defined(_IRR_COMPILE_WITH_DDS_LOADER_)
+
 #include "IImageLoader.h"
 
 namespace irr
 {
 namespace video
 {
-
-#if defined(_IRR_COMPILE_WITH_DDS_LOADER_)
 
 /* dependencies */
 /* dds definition */
@@ -269,10 +269,6 @@ floatSwapUnion;
 #endif /*__BIG_ENDIAN__*/
 
 
-#endif // compiled with loader or reader
-
-#ifdef _IRR_COMPILE_WITH_DDS_LOADER_
-
 /*!
 	Surface Loader for DDS images
 */
@@ -289,15 +285,12 @@ public:
 
 	//! creates a surface from the file
 	virtual IImage* loadImage(io::IReadFile* file) const;
-
-private:
-
 };
 
-#endif // compiled with DDS loader
 
 } // end namespace video
 } // end namespace irr
 
+#endif // compiled with DDS loader
 #endif
 

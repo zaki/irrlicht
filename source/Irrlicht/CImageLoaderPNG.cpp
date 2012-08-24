@@ -277,7 +277,6 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 }
 
 
-
 IImageLoader* createImageLoaderPNG()
 {
 	return new CImageLoaderPng();

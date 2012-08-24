@@ -11,6 +11,10 @@
 #ifndef __C_IMAGE_LOADER_WAL_H_INCLUDED__
 #define __C_IMAGE_LOADER_WAL_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_WAL_LOADER_
+
 #include "IImageLoader.h"
 
 namespace irr
@@ -36,7 +40,7 @@ public:
 	virtual irr::video::IImage* loadImage(irr::io::IReadFile* file) const;
 };
 
-//! An Irrlicht image loader for Halife 1 engine textures
+//! An Irrlicht image loader for Halflife 1 engine textures
 class CImageLoaderWAL2 : public irr::video::IImageLoader
 {
 public:
@@ -73,7 +77,7 @@ public:
 		s32 flags;
 		s32 contents;
 		s32 value;
-	};
+	} PACK_STRUCT;
 
 // Default alignment
 #include "irrunpack.h"
@@ -82,3 +86,5 @@ public:
 }
 
 #endif
+#endif
+

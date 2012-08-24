@@ -4,6 +4,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageLoaderWAL.h"
+
+#ifdef _IRR_COMPILE_WITH_WAL_LOADER_
+
 #include "CColorConverter.h"
 #include "CImage.h"
 #include "os.h"
@@ -425,7 +428,6 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 }
 
 
-
 IImageLoader* createImageLoaderHalfLife()
 {
 	return new irr::video::CImageLoaderWAL2();
@@ -441,7 +443,8 @@ IImageLoader* createImageLoaderLMP()
 	return new irr::video::CImageLoaderLMP();
 }
 
-}
-}
+} // end namespace video
+} // end namespace irr
 
+#endif
 

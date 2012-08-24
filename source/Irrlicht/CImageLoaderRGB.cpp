@@ -651,3 +651,4 @@ IImageLoader* createImageLoaderRGB()
 } // end namespace irr
 
 #endif
+

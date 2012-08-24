@@ -709,3 +709,4 @@ IImageLoader* createImageLoaderDDS()
 } // end namespace irr
 
 #endif
+

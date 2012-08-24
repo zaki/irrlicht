@@ -162,3 +162,4 @@ private:
 
 #endif // _IRR_COMPILE_WITH_RGB_LOADER_
 #endif // __C_IMAGE_LOADER_RGB_H_INCLUDED__
+
