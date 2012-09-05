@@ -2160,7 +2160,8 @@ CIrrDeviceLinux::CCursorControl::~CCursorControl()
 #ifdef _IRR_COMPILE_WITH_X11_
 void CIrrDeviceLinux::CCursorControl::clearCursors()
 {
-	XFreeCursor(Device->display, invisCursor);
+	if (!Null)
+		XFreeCursor(Device->display, invisCursor);
 	for ( u32 i=0; i < Cursors.size(); ++i )
 	{
 		for ( u32 f=0; f < Cursors[i].Frames.size(); ++f )
