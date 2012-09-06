@@ -25,6 +25,7 @@
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
 //! _IRR_IPHONE_PLATFORM_ for Apple devices running iOS
+//! _IRR_ANDROID_PLATFORM_ for devices running Android
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! Note: PLATFORM defines the OS specific layer, API can group several platforms
 
@@ -44,6 +45,7 @@
 //! different library versions without having to change the sources.
 //! Example: NO_IRR_COMPILE_WITH_X11_ would disable X11
 
+#define _IRR_ANDROID_PLATFORM_
 
 //! Uncomment this line to compile with the SDL device
 //#define _IRR_COMPILE_WITH_SDL_DEVICE_
@@ -105,7 +107,14 @@
 #endif
 #endif
 
-#if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_)
+#if defined(_IRR_ANDROID_PLATFORM_)
+#define _IRR_COMPILE_WITH_ANDROID_DEVICE_
+#define _IRR_COMPILE_WITH_OGLES1_
+#define _IRR_COMPILE_WITH_OGLES2_
+#define _IRR_COMPILE_ANDROID_ASSET_READER_
+#endif
+
+#if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
 #ifndef _IRR_SOLARIS_PLATFORM_
 #define _IRR_LINUX_PLATFORM_
 #endif
@@ -179,7 +188,7 @@ define out. */
  it should be usually the only HW accelerated one. OpenGL is currently disabled
  if using this driver, to avoid problems with the ogl-es emulators.
  */
-#define _IRR_COMPILE_WITH_OGLES1_
+//#define _IRR_COMPILE_WITH_OGLES1_
 #ifdef NO_IRR_COMPILE_WITH_OGLES1_
 #undef _IRR_COMPILE_WITH_OGLES1_
 #endif

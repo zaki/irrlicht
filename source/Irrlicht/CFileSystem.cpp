@@ -30,7 +30,7 @@
 		#include <tchar.h>
 	#endif
 #else
-	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
+	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_) || defined(_IRR_ANDROID_PLATFORM_))
 		#include <stdio.h>
 		#include <stdlib.h>
 		#include <string.h>

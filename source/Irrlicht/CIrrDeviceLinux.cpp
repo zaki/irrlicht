@@ -821,7 +821,7 @@ void CIrrDeviceLinux::createDriver()
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 		#endif
 		break;
-            
+
     case video::EDT_OGLES1: 	 
         #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
         { 	 

@@ -54,6 +54,9 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	EglDisplay = eglGetDisplay((NativeDisplayType)ExposedData.OpenGLLinux.X11Display);
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	Device = device;
+#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+	EglWindow =	((struct android_app *)(params.PrivateData))->window;
+	EglDisplay = EGL_NO_DISPLAY;
 #endif
 #ifdef EGL_VERSION_1_0
 	if(EglDisplay == EGL_NO_DISPLAY)
@@ -73,6 +76,14 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 
 	EGLint attribs[] =
 	{
+#if defined( _IRR_COMPILE_WITH_ANDROID_DEVICE_ )
+		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+		EGL_BLUE_SIZE, 8,
+		EGL_GREEN_SIZE, 8,
+		EGL_RED_SIZE, 8,
+		EGL_DEPTH_SIZE, 16,
+		EGL_NONE
+#else		
 		EGL_RED_SIZE, 5,
 		EGL_GREEN_SIZE, 5,
 		EGL_BLUE_SIZE, 5,
@@ -88,6 +99,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
 #endif
 		EGL_NONE, 0
+#endif		
 	};
 	EGLint contextAttrib[] =
 	{
@@ -96,7 +108,6 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 #endif
 		EGL_NONE, 0
 	};
-
 	EGLConfig config;
 	EGLint num_configs;
 	u32 steps=5;
@@ -176,9 +187,22 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	if (params.Bits > attribs[9])
 		os::Printer::log("No full color buffer.");
 
+	#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+   /* EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
+    * guaranteed to be accepted by ANativeWindow_setBuffersGeometry().
+    * As soon as we picked a EGLConfig, we can safely reconfigure the
+    * ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID. */
+   EGLint format;
+   eglGetConfigAttrib(EglDisplay, config, EGL_NATIVE_VISUAL_ID, &format);
+
+   ANativeWindow_setBuffersGeometry(EglWindow, 0, 0, format);
+   #endif
+   
 	EglSurface = eglCreateWindowSurface(EglDisplay, config, EglWindow, NULL);
+	
 	if (EGL_NO_SURFACE==EglSurface)
 		EglSurface = eglCreateWindowSurface(EglDisplay, config, NULL, NULL);
+
 	if (EGL_NO_SURFACE==EglSurface)
 	{
 		testEGLError();
@@ -3230,7 +3254,7 @@ namespace video
 // -----------------------------------
 // WINDOWS VERSION
 // -----------------------------------
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 		video::SExposedVideoData& data, io::IFileSystem* io)
 {

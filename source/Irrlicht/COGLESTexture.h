@@ -14,6 +14,9 @@
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 #include <OpenGLES/ES1/gl.h>
 #include <OpenGLES/ES1/glext.h>
+#elif defined(_IRR_ANDROID_PLATFORM_)
+#include <GLES/gl.h>
+#include <GLES/glext.h>
 #else
 #include <GLES/egl.h>
 #endif

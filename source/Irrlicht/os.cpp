@@ -129,6 +129,38 @@ namespace os
 } // end namespace os
 
 
+#elif defined( _IRR_ANDROID_PLATFORM_ )
+
+// ----------------------------------------------------------------
+// Android version
+// ----------------------------------------------------------------
+
+#include <android/log.h>
+
+namespace irr
+{
+namespace os
+{
+
+	//! prints a debuginfo string
+	void Printer::print(const c8* message)
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "Irrlicht", "%s\n", message);
+	}
+
+	void Timer::initTimer(bool usePerformanceTimer)
+	{
+		initVirtualTimer();
+	}
+
+	u32 Timer::getRealTime()
+	{
+		timeval tv;
+		gettimeofday(&tv, 0);
+		return (u32)(tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	}
+} // end namespace os
+
 #else
 
 // ----------------------------------------------------------------

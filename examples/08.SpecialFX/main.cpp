@@ -13,8 +13,14 @@ runs slow on your hardware.
 */
 
 #include <irrlicht.h>
-#include <iostream>
-#include "driverChoice.h"
+#ifndef _IRR_ANDROID_PLATFORM_
+#  include <iostream>
+#  include "driverChoice.h"
+#else
+#  include "CAndroidAssetFileArchive.h"
+#  include <android/log.h>
+#  include <android_native_app_glue.h>
+#endif
 
 using namespace irr;
 
@@ -22,8 +28,17 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
+#ifndef _IRR_ANDROID_PLATFORM_
 int main()
+#else
+void android_main(struct android_app* app)
+#endif
 {
+    app_dummy();
+#ifdef _IRR_ANDROID_PLATFORM_
+        const bool shadows = false;
+	video::E_DRIVER_TYPE driverType=video::EDT_OGLES1;
+#else
 	// ask if user would like shadows
 	char i;
 	printf("Please press 'y' if you want to use realtime shadows.\n");
@@ -35,20 +50,42 @@ int main()
 	// ask user for driver
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
 	if (driverType==video::EDT_COUNT)
+    {
+#ifdef _IRR_ANDROID_PLATFORM_
+        return;
+#else
 		return 1;
+#endif
+    }
 
-
+#endif
 	/*
 	Create device and exit if creation failed. We make the stencil flag
 	optional to avoid slow screen modes for runs without shadows.
 	*/
+#ifdef _IRR_ANDROID_PLATFORM_
+        struct irr::SIrrlichtCreationParameters p;
+        p.DriverType = driverType;
+        // The android app object is needed by the irrlicht device.
+        p.PrivateData = app;
+	p.WindowSize = core::dimension2d<u32>(1280,800);
 
+	IrrlichtDevice *device = createDeviceEx(p);
+#else
 	IrrlichtDevice *device =
 		createDevice(driverType, core::dimension2d<u32>(640, 480),
-		16, false, shadows);
+	16, false, shadows);
+#endif
+
 
 	if (device == 0)
-		return 1; // could not create selected driver.
+        {
+#ifdef _IRR_ANDROID_PLATFORM_
+	    return;
+#else
+	    return 1; // could not create selected driver.
+#endif
+	}
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -68,7 +105,12 @@ int main()
 	off too with this code.
 	*/
 
+#ifdef _IRR_ANDROID_PLATFORM_
+	scene::IAnimatedMesh* mesh = smgr->getMesh("media/room.3ds");
+#else
 	scene::IAnimatedMesh* mesh = smgr->getMesh("../../media/room.3ds");
+#endif
+
 	if (mesh)
 	{
 		smgr->getMeshManipulator()->makePlanarTextureMapping(mesh->getMesh(0), 0.004f);
@@ -77,7 +119,12 @@ int main()
 		if (node)
 		{
 			((scene::IAnimatedMeshSceneNode*)node)->addShadowVolumeSceneNode();
+
+#ifdef _IRR_ANDROID_PLATFORM_
+			node->setMaterialTexture(0, driver->getTexture("media/wall.jpg"));
+#else
 			node->setMaterialTexture(0, driver->getTexture("../../media/wall.jpg"));
+#endif
 			node->getMaterial(0).SpecularColor.set(0,0,0,0);
 		}
 	}
@@ -106,8 +153,13 @@ int main()
 		{
 			node->setPosition(core::vector3df(0,7,0));
 
+#ifdef _IRR_ANDROID_PLATFORM_
+			node->setMaterialTexture(0, driver->getTexture("media/stones.jpg"));
+			node->setMaterialTexture(1, driver->getTexture("media/water.jpg"));
+#else
 			node->setMaterialTexture(0, driver->getTexture("../../media/stones.jpg"));
 			node->setMaterialTexture(1, driver->getTexture("../../media/water.jpg"));
+#endif
 
 			node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
 		}
@@ -139,7 +191,11 @@ int main()
 	{
 		node->setMaterialFlag(video::EMF_LIGHTING, false);
 		node->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+#ifdef _IRR_ANDROID_PLATFORM_
+		node->setMaterialTexture(0, driver->getTexture("media/particlewhite.bmp"));
+#else
 		node->setMaterialTexture(0, driver->getTexture("../../media/particlewhite.bmp"));
+#endif
 	}
 
 	/*
@@ -164,7 +220,11 @@ int main()
 		for (s32 g=7; g > 0; --g)
 		{
 			core::stringc tmp;
+#ifdef _IRR_ANDROID_PLATFORM_
+			tmp = "media/portal";
+#else
 			tmp = "../../media/portal";
+#endif
 			tmp += g;
 			tmp += ".bmp";
 			video::ITexture* t = driver->getTexture( tmp.c_str() );
@@ -251,7 +311,11 @@ int main()
 		ps->setScale(core::vector3df(2,2,2));
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
 //		ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+#ifdef _IRR_ANDROID_PLATFORM_
+		ps->setMaterialTexture(0, driver->getTexture("media/fire.bmp"));
+#else
 		ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
+#endif
 		ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 	}
 
@@ -273,7 +337,11 @@ int main()
 
 	// add animated character
 
+#ifdef _IRR_ANDROID_PLATFORM_
+	mesh = smgr->getMesh("media/dwarf.x");
+#else
 	mesh = smgr->getMesh("../../media/dwarf.x");
+#endif
 	scene::IAnimatedMeshSceneNode* anode = 0;
 
 	anode = smgr->addAnimatedMeshSceneNode(mesh);
@@ -326,7 +394,12 @@ int main()
 
 	device->drop();
 
-	return 0;
+#ifdef _IRR_ANDROID_PLATFORM_
+    return;
+#else
+    return 0;
+#endif
+
 }
 
 /*
