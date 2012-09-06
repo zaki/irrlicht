@@ -180,6 +180,104 @@ bool testAppendStringc()
 	return true;
 }
 
+bool testLowerUpper()
+{
+	irr::core::array <irr::core::stringc> stringsOrig, targetLower, targetUpper;
+	stringsOrig.push_back("abc");
+	targetLower.push_back("abc");
+	targetUpper.push_back("ABC");
+	stringsOrig.push_back("ABC");
+	targetLower.push_back("abc");
+	targetUpper.push_back("ABC");
+	stringsOrig.push_back("Abc");
+	targetLower.push_back("abc");
+	targetUpper.push_back("ABC");
+	stringsOrig.push_back("aBBc");
+	targetLower.push_back("abbc");
+	targetUpper.push_back("ABBC");
+	stringsOrig.push_back("abC");
+	targetLower.push_back("abc");
+	targetUpper.push_back("ABC");
+	stringsOrig.push_back("");
+	targetLower.push_back("");
+	targetUpper.push_back("");
+	/* TODO: those are not supported so far
+	stringsOrig.push_back("ßäöü");
+	targetLower.push_back("ßäöü");
+	targetUpper.push_back("ßÄÖÜ");
+	stringsOrig.push_back("ßÄÖÜ");
+	targetLower.push_back("ßäöü");
+	targetUpper.push_back("ßÄÖÜ");
+	*/
+
+	for ( irr::u32 i=0; i<stringsOrig.size(); ++i )
+	{
+		irr::core::stringc c = stringsOrig[i];
+		c.make_lower();
+		if ( c != targetLower[i] )
+		{
+			logTestString("make_lower for stringc failed in test %d %s\n", i, stringsOrig[i].c_str());
+			return false;
+		}
+
+		c = stringsOrig[i];
+		c.make_upper();
+		if ( c != targetUpper[i] )
+		{
+			logTestString("make_upper for stringc failed in test %d %s %s\n", i, stringsOrig[i].c_str(), c.c_str());
+			return false;
+		}
+
+		irr::core::stringw w = irr::core::stringw(stringsOrig[i]);
+		c.make_lower();
+		if ( c != irr::core::stringw(targetLower[i]) )
+		{
+			logTestString("make_lower for stringw failed in test %d %s\n", i, stringsOrig[i].c_str());
+			return false;
+		}
+
+		c = irr::core::stringw(stringsOrig[i]);
+		c.make_upper();
+		if ( c != irr::core::stringw(targetUpper[i]) )
+		{
+			logTestString("make_upper for stringw failed in test %d %s\n", i, stringsOrig[i].c_str());
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool testFindFunctions()
+{
+	irr::core::stringc dot(".");
+	irr::s32 p = dot.findFirst(0);
+	if ( p >= 0 )
+		return false;
+
+	irr::core::stringc empty("");
+	p = empty.findLastCharNotInList("x",1);
+	if ( p >= 0 )
+		return false;
+
+	p = empty.findLast('x');
+	if ( p >= 0 )
+		return false;
+
+	p = dot.findLast('.');
+	if ( p != 0 )
+		return false;
+
+	p = empty.findLastChar("ab", 2);
+	if ( p >= 0 )
+		return false;
+
+	p = dot.findLastChar("-.", 2);
+	if ( p != 0 )
+		return false;
+
+	return true;
+}
 
 // Test the functionality of irrString
 /** Validation is done with assert_log() against expected results. */
@@ -242,6 +340,12 @@ bool testIrrString(void)
 
 	logTestString("test replace\n");
 	allExpected &= testReplace();
+
+	logTestString("test make_lower and make_uppers\n");
+	allExpected &= testLowerUpper();
+
+	logTestString("test find functions\n");
+	allExpected &= testFindFunctions();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");

@@ -3448,6 +3448,8 @@ void COpenGLDriver::assignHardwareLight(u32 lightIndex)
 		glLightf(lidx, GL_SPOT_EXPONENT, 0.0f);
 		glLightf(lidx, GL_SPOT_CUTOFF, 180.0f);
 	break;
+	default:
+	break;
 	}
 
 	// set diffuse color

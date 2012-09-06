@@ -501,7 +501,7 @@ public:
 	//! Makes the string lower case.
 	string<T,TAlloc>& make_lower()
 	{
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; array[i]; ++i)
 			array[i] = locale_lower ( array[i] );
 		return *this;
 	}
@@ -510,7 +510,7 @@ public:
 	//! Makes the string upper case.
 	string<T,TAlloc>& make_upper()
 	{
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; array[i]; ++i)
 			array[i] = locale_upper ( array[i] );
 		return *this;
 	}
@@ -534,7 +534,7 @@ public:
 	\return True if the strings are equal ignoring case. */
 	bool equals_substring_ignore_case(const string<T,TAlloc>&other, const s32 sourcePos = 0 ) const
 	{
-		if ( (u32) sourcePos > used )
+		if ( (u32) sourcePos >= used )
 			return false;
 
 		u32 i;
@@ -717,7 +717,7 @@ public:
 	or -1 if not found. */
 	s32 findFirst(T c) const
 	{
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; i<used-1; ++i)
 			if (array[i] == c)
 				return i;
 
@@ -736,7 +736,7 @@ public:
 		if (!c || !count)
 			return -1;
 
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; i<used-1; ++i)
 			for (u32 j=0; j<count; ++j)
 				if (array[i] == c[j])
 					return i;
@@ -806,7 +806,7 @@ public:
 	or -1 if not found. */
 	s32 findNext(T c, u32 startPos) const
 	{
-		for (u32 i=startPos; i<used; ++i)
+		for (u32 i=startPos; i<used-1; ++i)
 			if (array[i] == c)
 				return i;
 
@@ -821,7 +821,7 @@ public:
 	or -1 if not found. */
 	s32 findLast(T c, s32 start = -1) const
 	{
-		start = core::clamp ( start < 0 ? (s32)(used) - 1 : start, 0, (s32)(used) - 1 );
+		start = core::clamp ( start < 0 ? (s32)(used) - 2 : start, 0, (s32)(used) - 2 );
 		for (s32 i=start; i>=0; --i)
 			if (array[i] == c)
 				return i;
@@ -841,7 +841,7 @@ public:
 		if (!c || !count)
 			return -1;
 
-		for (s32 i=used-1; i>=0; --i)
+		for (s32 i=(s32)used-2; i>=0; --i)
 			for (u32 j=0; j<count; ++j)
 				if (array[i] == c[j])
 					return i;
@@ -1006,7 +1006,7 @@ public:
 	\param replaceWith Character replacing the old one. */
 	string<T,TAlloc>& replace(T toReplace, T replaceWith)
 	{
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; i<used-1; ++i)
 			if (array[i] == toReplace)
 				array[i] = replaceWith;
 		return *this;
@@ -1128,7 +1128,7 @@ public:
 	{
 		u32 pos = 0;
 		u32 found = 0;
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; i<used-1; ++i)
 		{
 			if (array[i] == c)
 			{
@@ -1153,7 +1153,7 @@ public:
 			return *this;
 		u32 pos = 0;
 		u32 found = 0;
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; i<used-1; ++i)
 		{
 			u32 j = 0;
 			while (j < size)
@@ -1186,7 +1186,7 @@ public:
 
 		u32 pos = 0;
 		u32 found = 0;
-		for (u32 i=0; i<used; ++i)
+		for (u32 i=0; i<used-1; ++i)
 		{
 			// Don't use characters.findFirst as it finds the \0,
 			// causing used to become incorrect.

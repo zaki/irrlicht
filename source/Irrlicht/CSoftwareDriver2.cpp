@@ -1943,6 +1943,8 @@ s32 CBurningVideoDriver::addDynamicLight(const SLight& dl)
 			l.quadraticAttenuation = dl.Attenuation.Z;
 
 			break;
+		default:
+			break;
 	}
 
 	LightSpace.Light.push_back ( l );
@@ -2162,6 +2164,8 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, u32 vertexargb )
 				// diffuse component
 				diffuse.mulAdd ( light.DiffuseColor, dot );
 				break;
+			default:
+				break;
 		}
 
 	}
@@ -2228,7 +2232,7 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 			os::Printer::log("Fatal Error: Tried to copy from a surface not owned by this driver.", ELL_ERROR);
 			return;
 		}
-	
+
 	if (useAlphaChannelOfTexture)
 		StretchBlit(BLITTER_TEXTURE_ALPHA_BLEND, RenderTargetSurface, &destRect, &sourceRect,
 			    ((CSoftwareTexture2*)texture)->getImage(), (colors ? colors[0].color : 0));
@@ -2237,7 +2241,7 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 			    ((CSoftwareTexture2*)texture)->getImage(), (colors ? colors[0].color : 0));
 	}
 }
-    
+
 //! Draws a 2d line.
 void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,

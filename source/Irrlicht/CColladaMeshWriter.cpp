@@ -143,14 +143,14 @@ bool CColladaMeshWriterProperties::useNodeMaterial(const scene::ISceneNode* node
 		return false;
 
 	// TODO: we need some ISceneNode::hasType() function to get rid of those checks
-	bool useMeshMaterial =	(	(node->getType() == ESNT_MESH ||	
+	bool useMeshMaterial =	(	(node->getType() == ESNT_MESH ||
 								node->getType() == ESNT_CUBE ||
 								node->getType() == ESNT_SPHERE ||
 								node->getType() == ESNT_WATER_SURFACE ||
 								node->getType() == ESNT_Q3SHADER_SCENE_NODE)
 								&& static_cast<const IMeshSceneNode*>(node)->isReadOnlyMaterials())
 
-							||	(node->getType() == ESNT_ANIMATED_MESH 
+							||	(node->getType() == ESNT_ANIMATED_MESH
 								&& static_cast<const IAnimatedMeshSceneNode*>(node)->isReadOnlyMaterials() );
 
 	return !useMeshMaterial;
@@ -180,7 +180,7 @@ irr::core::stringw CColladaMeshWriterNames::nameForNode(const scene::ISceneNode*
 	irr::core::stringw name;
 	// Prefix, because xs::ID can't start with a number, also nicer name
 	if ( node && node->getType() == ESNT_LIGHT )
-		name = L"light";	
+		name = L"light";
 	else
 		name = L"node";
 	name += nameForPtr(node);
@@ -368,7 +368,7 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 		if ( root->getType() != ESNT_SCENE_MANAGER )
 		{
 			// TODO: Not certain if we should really write the root or if we should just always only write the children.
-			// For now writing root to keep backward compatibility for this case, but if anyone needs to _not_ write 
+			// For now writing root to keep backward compatibility for this case, but if anyone needs to _not_ write
 			// that root-node we can add a parameter for this later on in writeScene.
 			writeSceneNode(root);
 		}
@@ -378,7 +378,7 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 			// so we do not write the root itself if it points to the scenemanager.
 			const core::list<ISceneNode*>& rootChildren = root->getChildren();
 			for ( core::list<ISceneNode*>::ConstIterator it = rootChildren.begin();
-					it != rootChildren.end(); 
+					it != rootChildren.end();
 					++ it )
 			{
 				writeSceneNode(*it);
@@ -444,7 +444,7 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 	IMesh* mesh = getProperties()->getMesh(node);
 	if ( mesh )
 	{
-		MeshNode * n = Meshes.find(mesh);	
+		MeshNode * n = Meshes.find(mesh);
 		if ( !getProperties()->useNodeMaterial(node) )
 		{
 			// no material overrides - write mesh materials
@@ -452,7 +452,7 @@ void CColladaMeshWriter::writeNodeMaterials(irr::scene::ISceneNode * node)
 			{
 				writeMeshMaterials(mesh, getGeometryWriting() == ECGI_PER_MESH_AND_MATERIAL ? &materialNames : NULL);
 				n->getValue().MaterialsWritten = true;
-			}		
+			}
 		}
 		else
 		{
@@ -617,6 +617,8 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 				Writer->writeClosingTag(L"directional");
 				Writer->writeLineBreak();
 				break;
+			default:
+				break;
 		}
 
 		Writer->writeClosingTag(L"technique_common");
@@ -684,7 +686,7 @@ void CColladaMeshWriter::writeNodeCameras(irr::scene::ISceneNode * node)
 
 		Writer->writeClosingTag(L"technique_common");
 		Writer->writeLineBreak();
-	
+
 		Writer->writeClosingTag(L"optics");
 		Writer->writeLineBreak();
 
@@ -732,7 +734,7 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	Writer->writeLineBreak();
 
 	// DummyTransformationSceneNode don't have rotation, position, scale information
-	// But also don't always export the transformation matrix as that forces us creating 
+	// But also don't always export the transformation matrix as that forces us creating
 	// new DummyTransformationSceneNode's on import.
 	if ( node->getType() == ESNT_DUMMY_TRANSFORMATION )
 	{
@@ -740,7 +742,7 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	}
 	else
 	{
-		irr::core::vector3df rot(node->getRotation()); 
+		irr::core::vector3df rot(node->getRotation());
 		if ( isCamera(node) && !static_cast<ICameraSceneNode*>(node)->getTargetAndRotationBinding() )
 		{
 			ICameraSceneNode * camNode = static_cast<ICameraSceneNode*>(node);
@@ -748,10 +750,10 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 			rot = toTarget.getHorizontalAngle();
 		}
 
-		writeTranslateElement( node->getPosition() ); 
-		writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X ); 	 
-		writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y ); 	 
-		writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z ); 	 
+		writeTranslateElement( node->getPosition() );
+		writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X );
+		writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y );
+		writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z );
 		writeScaleElement( node->getScale() );
 	}
 
@@ -1528,7 +1530,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringw& meshname, s
 
 	// write texture coordinates
 
-	core::stringw meshTexCoord0Id(meshId); 
+	core::stringw meshTexCoord0Id(meshId);
 	meshTexCoord0Id += L"-TexCoord0";
 	Writer->writeElement(L"source", false, L"id", meshTexCoord0Id.c_str());
 	Writer->writeLineBreak();
@@ -2226,7 +2228,7 @@ void CColladaMeshWriter::writeMatrixElement(const irr::core::matrix4& matrix)
 			if ( b > 0 )
 				txt += " ";
 			// row-column switched compared to Irrlicht
-			txt += irr::core::stringw(matrix[b*4+a]); 
+			txt += irr::core::stringw(matrix[b*4+a]);
 		}
 		Writer->writeText(txt.c_str());
 		Writer->writeLineBreak();

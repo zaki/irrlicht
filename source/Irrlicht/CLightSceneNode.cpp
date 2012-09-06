@@ -69,6 +69,8 @@ void CLightSceneNode::render()
 						LightData.Direction * LightData.Radius,
 						LightData.DiffuseColor.toSColor());
 				break;
+			default:
+				break;
 		}
 	}
 
