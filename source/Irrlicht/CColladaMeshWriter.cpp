@@ -558,7 +558,7 @@ void CColladaMeshWriter::writeNodeEffects(irr::scene::ISceneNode * node)
 
 void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 {
-	if ( !node )
+	if ( !node || !getProperties() || !getProperties()->isExportable(node))
 		return;
 
 	if ( node->getType() == ESNT_LIGHT )
@@ -638,7 +638,7 @@ void CColladaMeshWriter::writeNodeLights(irr::scene::ISceneNode * node)
 
 void CColladaMeshWriter::writeNodeCameras(irr::scene::ISceneNode * node)
 {
-	if ( !node )
+	if ( !node || !getProperties() || !getProperties()->isExportable(node) )
 		return;
 
 	if ( isCamera(node) )
