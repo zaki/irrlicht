@@ -34,7 +34,6 @@
  a password and a salt value.
 */
 
-#include <string.h>
 #include <memory.h>
 #include "hmac.h"
 

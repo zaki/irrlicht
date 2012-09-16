@@ -39,7 +39,6 @@
 */
 
 #include <memory.h>
-#include <string.h>
 #include "prng.h"
 
 /* mix a random data pool using the SHA1 compression function (as   */
