@@ -834,9 +834,14 @@ IFileList* CFileSystem::createFileList()
 
 		r = new CFileList(Path, true, false);
 
-		struct _tfinddata_t c_file;
-		long hFile;
+		// TODO: Should be unified once mingw adapts the proper types
+#if defined(__GNUC__)
+		long hFile; //mingw return type declaration
+#else
+		intptr_t hFile;
+#endif
 
+		struct _tfinddata_t c_file;
 		if( (hFile = _tfindfirst( _T("*"), &c_file )) != -1L )
 		{
 			do
