@@ -1507,6 +1507,37 @@ void CSceneManager::drawAll()
 			LightManager->OnRenderPassPostRender(CurrentRendertime);
 	}
 
+	// render transparent objects.
+	{
+		CurrentRendertime = ESNRP_TRANSPARENT;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+
+		TransparentNodeList.sort(); // sort by distance from camera
+		if (LightManager)
+		{
+			LightManager->OnRenderPassPreRender(CurrentRendertime);
+
+			for (i=0; i<TransparentNodeList.size(); ++i)
+			{
+				ISceneNode* node = TransparentNodeList[i].Node;
+				LightManager->OnNodePreRender(node);
+				node->render();
+				LightManager->OnNodePostRender(node);
+			}
+		}
+		else
+		{
+			for (i=0; i<TransparentNodeList.size(); ++i)
+				TransparentNodeList[i].Node->render();
+		}
+
+		Parameters.setAttribute ( "drawn_transparent", (s32) TransparentNodeList.size() );
+		TransparentNodeList.set_used(0);
+
+		if (LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRendertime);
+	}
+
 	// render shadows
 	{
 		CurrentRendertime = ESNRP_SHADOW;
@@ -1534,37 +1565,6 @@ void CSceneManager::drawAll()
 				ShadowColor, ShadowColor);
 
 		ShadowNodeList.set_used(0);
-
-		if (LightManager)
-			LightManager->OnRenderPassPostRender(CurrentRendertime);
-	}
-
-	// render transparent objects.
-	{
-		CurrentRendertime = ESNRP_TRANSPARENT;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
-
-		TransparentNodeList.sort(); // sort by distance from camera
-		if (LightManager)
-		{
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
-
-			for (i=0; i<TransparentNodeList.size(); ++i)
-			{
-				ISceneNode* node = TransparentNodeList[i].Node;
-				LightManager->OnNodePreRender(node);
-				node->render();
-				LightManager->OnNodePostRender(node);
-			}
-		}
-		else
-		{
-			for (i=0; i<TransparentNodeList.size(); ++i)
-				TransparentNodeList[i].Node->render();
-		}
-
-		Parameters.setAttribute ( "drawn_transparent", (s32) TransparentNodeList.size() );
-		TransparentNodeList.set_used(0);
 
 		if (LightManager)
 			LightManager->OnRenderPassPostRender(CurrentRendertime);
