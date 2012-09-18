@@ -6,6 +6,7 @@
 #include "ISceneManager.h"
 #include "IMesh.h"
 #include "IVideoDriver.h"
+#include "ICameraScenenode.h"
 #include "SLight.h"
 #include "os.h"
 
@@ -64,14 +65,13 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 
 	numEdges=createEdgesAndCaps(light, svp);
 
-	const core::vector3df ls = light * Infinity; // light scaled
 	// for all edges add the near->far quads
 	for (u32 i=0; i<numEdges; ++i)
 	{
 		const core::vector3df &v1 = Vertices[Edges[2*i+0]];
 		const core::vector3df &v2 = Vertices[Edges[2*i+1]];
-		const core::vector3df v3(v1 - ls);
-		const core::vector3df v4(v2 - ls);
+		const core::vector3df v3(v1+(v1 - light).normalize()*Infinity);
+		const core::vector3df v4(v2+(v2 - light).normalize()*Infinity);
 
 		// Add a quad (two triangles) to the vertex list
 #ifdef _DEBUG
@@ -91,14 +91,11 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 
 #define IRR_USE_ADJACENCY
 
-u32 CShadowVolumeSceneNode::createEdgesAndCaps(core::vector3df light,
+u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
 					SShadowVolume* svp)
 {
 	u32 numEdges=0;
 	const u32 faceCount = IndexCount / 3;
-	light *= Infinity;
-	if (light == core::vector3df(0,0,0))
-		light = core::vector3df(0.0001f,0.0001f,0.0001f);
 
 	// Check every face if it is front or back facing the light.
 	for (u32 i=0; i<faceCount; ++i)
@@ -116,13 +113,13 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(core::vector3df light,
 #endif
 			// add front cap from light-facing faces
 			svp->push_back(v0);
-			svp->push_back(v2);
 			svp->push_back(v1);
+			svp->push_back(v2);
 
 			// add back cap
-			svp->push_back(v0-light);
-			svp->push_back(v1-light);
-			svp->push_back(v2-light);
+			svp->push_back(v0+(v0-light).normalize()*Infinity);
+			svp->push_back(v1+(v1-light).normalize()*Infinity);
+			svp->push_back(v2+(v2-light).normalize()*Infinity);
 		}
 	}
 
@@ -287,6 +284,19 @@ void CShadowVolumeSceneNode::render()
 
 	if (!ShadowVolumesUsed || !driver)
 		return;
+
+	if (UseZFailMethod && SceneManager->getActiveCamera())
+	{
+		core::matrix4 mat(core::matrix4::EM4CONST_NOTHING);
+
+		mat.buildProjectionMatrixPerspectiveFovInfinityLH(
+				SceneManager->getActiveCamera()->getFOV(),
+				SceneManager->getActiveCamera()->getAspectRatio(),
+				SceneManager->getActiveCamera()->getNearValue(),
+				core::ROUNDING_ERROR_f32);
+
+		driver->setTransform(video::ETS_PROJECTION, mat);
+	}
 
 	driver->setTransform(video::ETS_WORLD, Parent->getAbsoluteTransformation());
 
