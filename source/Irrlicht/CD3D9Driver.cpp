@@ -2485,6 +2485,9 @@ void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail, u32 debugDataVisi
 		pID3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ZERO );
 		pID3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
 
+		pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+		pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+
 		//if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
 		//	pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0);
 		if ((debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY))

@@ -112,9 +112,9 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
 				os::Printer::log("Allocation too small.", ELL_DEBUG);
 #endif
 			// add front cap from light-facing faces
-			svp->push_back(v0);
-			svp->push_back(v1);
 			svp->push_back(v2);
+			svp->push_back(v1);
+			svp->push_back(v0);
 
 			// add back cap
 			svp->push_back(v0+(v0-light).normalize()*Infinity);
@@ -276,7 +276,6 @@ void CShadowVolumeSceneNode::OnRegisterSceneNode()
 	}
 }
 
-
 //! renders the node.
 void CShadowVolumeSceneNode::render()
 {
@@ -294,7 +293,7 @@ void CShadowVolumeSceneNode::render()
 				SceneManager->getActiveCamera()->getAspectRatio(),
 				SceneManager->getActiveCamera()->getNearValue(),
 				core::ROUNDING_ERROR_f32);
-
+		
 		driver->setTransform(video::ETS_PROJECTION, mat);
 	}
 
