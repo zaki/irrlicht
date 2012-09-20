@@ -90,6 +90,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 
 
 #define IRR_USE_ADJACENCY
+#define IRR_USE_REVERSE_EXTRUDED
 
 u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
 					SShadowVolume* svp)
@@ -104,7 +105,12 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
 		const core::vector3df v1 = Vertices[Indices[3*i+1]];
 		const core::vector3df v2 = Vertices[Indices[3*i+2]];
 
+#ifdef IRR_USE_REVERSE_EXTRUDED
 		FaceData[i]=core::triangle3df(v0,v1,v2).isFrontFacing(light);
+#else
+		FaceData[i]=core::triangle3df(v2,v1,v0).isFrontFacing(light);
+#endif
+
 		if (UseZFailMethod && FaceData[i])
 		{
 #ifdef _DEBUG
@@ -284,7 +290,7 @@ void CShadowVolumeSceneNode::render()
 	if (!ShadowVolumesUsed || !driver)
 		return;
 
-	if (UseZFailMethod && SceneManager->getActiveCamera())
+	/*if (UseZFailMethod && SceneManager->getActiveCamera())
 	{
 		core::matrix4 mat(core::matrix4::EM4CONST_NOTHING);
 
@@ -295,7 +301,7 @@ void CShadowVolumeSceneNode::render()
 				core::ROUNDING_ERROR_f32);
 		
 		driver->setTransform(video::ETS_PROJECTION, mat);
-	}
+	}*/
 
 	driver->setTransform(video::ETS_WORLD, Parent->getAbsoluteTransformation());
 
