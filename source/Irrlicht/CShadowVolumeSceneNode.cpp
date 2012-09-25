@@ -6,7 +6,7 @@
 #include "ISceneManager.h"
 #include "IMesh.h"
 #include "IVideoDriver.h"
-#include "ICameraScenenode.h"
+#include "ICameraSceneNode.h"
 #include "SLight.h"
 #include "os.h"
 
@@ -299,7 +299,7 @@ void CShadowVolumeSceneNode::render()
 				SceneManager->getActiveCamera()->getAspectRatio(),
 				SceneManager->getActiveCamera()->getNearValue(),
 				core::ROUNDING_ERROR_f32);
-		
+
 		driver->setTransform(video::ETS_PROJECTION, mat);
 	}*/
 
