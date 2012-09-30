@@ -2023,7 +2023,9 @@ public:
 
 	virtual void setString(const char* text)
 	{
-		sscanf(text, "0x%x", (unsigned int*)(&Value));
+		u32 tmp;
+		sscanf(text, "0x%x", &tmp);
+		Value = (void *) tmp;
 	}
 
 	virtual E_ATTRIBUTE_TYPE getType() const
