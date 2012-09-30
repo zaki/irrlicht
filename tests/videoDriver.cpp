@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Colin MacDonald, Christian Stehno
+// Copyright (C) 2008-2012 Colin MacDonald, Christian Stehno
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"

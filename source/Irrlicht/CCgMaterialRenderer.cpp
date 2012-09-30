@@ -1,4 +1,4 @@
-// Copyright (C) 2011 Patryk Nadrowski
+// Copyright (C) 2012 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 

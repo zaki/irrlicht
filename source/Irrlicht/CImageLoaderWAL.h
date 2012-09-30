@@ -1,5 +1,5 @@
 // Copyright (C) 2004 Murphy McCauley
-// Copyright (C) 2007-2011 Christian Stehno
+// Copyright (C) 2007-2012 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 /*

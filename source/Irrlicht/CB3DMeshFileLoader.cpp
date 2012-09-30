@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2011 Luke Hoschke
+// Copyright (C) 2006-2012 Luke Hoschke
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2007-2012 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 

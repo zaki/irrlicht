@@ -1,4 +1,4 @@
-Changes in 1.8 (??.??.2011)
+Changes in 1.8 (??.10.2012)
 
  - Fix a bunch of off-by one errors in irr::core::string in functions equals_substring_ignore_case, findFirst, findFirstChar, findNext, findLast, findLastChar, replace, remove and removeChars.
    This prevents some potential memory access errors, find functions no longer try to find the \0, replace no longer replaces the \0 and remove no longer tries to remove it (which did remove the last character instead).
