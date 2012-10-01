@@ -119,6 +119,11 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Sizes[EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT] = 0;
 	Sizes[EGDS_MESSAGE_BOX_MAX_TEXT_HEIGHT] = 99999;
 
+	Sizes[EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X] = 1;
+	Sizes[EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y] = 1;
+	Sizes[EGDS_BUTTON_PRESSED_TEXT_OFFSET_X] = 0;
+	Sizes[EGDS_BUTTON_PRESSED_TEXT_OFFSET_Y] = 2;
+
 	Texts[EGDT_MSG_BOX_OK] = L"OK";
 	Texts[EGDT_MSG_BOX_CANCEL] = L"Cancel";
 	Texts[EGDT_MSG_BOX_YES] = L"Yes";
@@ -990,6 +995,8 @@ void CGUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrite
 //! scripting languages, editors, debuggers or xml deserialization purposes.
 void CGUISkin::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
+	// TODO: This is not nice code for downward compatibility, whenever new values are added and users
+	// load an old skin the corresponding values will be set to 0.
 	u32 i;
 	for (i=0; i<EGDC_COUNT; ++i)
 		Colors[i] = in->getAttributeAsColor(GUISkinColorNames[i]);

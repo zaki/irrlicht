@@ -269,8 +269,8 @@ void CGUIButton::draw()
 
 			if (Image == PressedImage && PressedImageRect == ImageRect)
 			{
-				pos.X += 1;
-				pos.Y += 1;
+				pos.X += skin->getSize(EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X);
+				pos.Y += skin->getSize(EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y);
 			}
 			driver->draw2DImage(PressedImage,
 					ScaleImage? AbsoluteRect :
@@ -319,7 +319,10 @@ void CGUIButton::draw()
 
 		core::rect<s32> rect = AbsoluteRect;
 		if (Pressed)
-			rect.UpperLeftCorner.Y += 2;
+		{
+			rect.UpperLeftCorner.X += skin->getSize(EGDS_BUTTON_PRESSED_TEXT_OFFSET_X);
+			rect.UpperLeftCorner.Y += skin->getSize(EGDS_BUTTON_PRESSED_TEXT_OFFSET_Y);
+		}
 
 		if (font)
 			font->draw(Text.c_str(), rect,
