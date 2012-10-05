@@ -857,9 +857,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (dev)
 		{
 			if ((wParam&0xFF)==WA_INACTIVE)
+			{
+				ShowWindow(hWnd,SW_MINIMIZE);
 				dev->switchToFullScreen(true);
+			}
 			else
+			{
+				SetForegroundWindow(hWnd);
+				ShowWindow(hWnd, SW_RESTORE);
 				dev->switchToFullScreen();
+			}
 		}
 		break;
 
@@ -1328,19 +1335,23 @@ bool CIrrDeviceWin32::switchToFullScreen(bool reset)
 {
 	if (!CreationParams.Fullscreen)
 		return true;
-	if (reset)
-	{
-		if (ChangedToFullScreen)
-			return (ChangeDisplaySettings(NULL,0)==DISP_CHANGE_SUCCESSFUL);
-		else
-			return true;
-	}
 
 	DEVMODE dm;
 	memset(&dm, 0, sizeof(dm));
 	dm.dmSize = sizeof(dm);
 	// use default values from current setting
 	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
+
+	if (reset)
+	{
+		if (ChangedToFullScreen)
+		{
+			return (ChangeDisplaySettings(&dm,0)==DISP_CHANGE_SUCCESSFUL);
+		}
+		else
+			return true;
+	}
+
 	dm.dmPelsWidth = CreationParams.WindowSize.Width;
 	dm.dmPelsHeight = CreationParams.WindowSize.Height;
 	dm.dmBitsPerPel = CreationParams.Bits;
