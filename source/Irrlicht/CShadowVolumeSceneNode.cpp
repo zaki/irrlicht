@@ -7,6 +7,7 @@
 #include "IMesh.h"
 #include "IVideoDriver.h"
 #include "ICameraSceneNode.h"
+#include "SViewFrustum.h"
 #include "SLight.h"
 #include "os.h"
 
@@ -42,19 +43,26 @@ CShadowVolumeSceneNode::~CShadowVolumeSceneNode()
 void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bool isDirectional)
 {
 	SShadowVolume* svp = 0;
+	core::aabbox3d<f32>* bb = 0;
 
 	// builds the shadow volume and adds it to the shadow volume list.
 
 	if (ShadowVolumes.size() > ShadowVolumesUsed)
 	{
 		// get the next unused buffer
+
 		svp = &ShadowVolumes[ShadowVolumesUsed];
 		svp->set_used(0);
+
+		bb = &ShadowBBox[ShadowVolumesUsed];
 	}
 	else
 	{
 		ShadowVolumes.push_back(SShadowVolume());
 		svp = &ShadowVolumes.getLast();
+
+		ShadowBBox.push_back(core::aabbox3d<f32>());
+		bb = &ShadowBBox.getLast();
 	}
 	svp->reallocate(IndexCount*5);
 	++ShadowVolumesUsed;
@@ -63,7 +71,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 	Edges.set_used(IndexCount*2);
 	u32 numEdges = 0;
 
-	numEdges=createEdgesAndCaps(light, svp);
+	numEdges=createEdgesAndCaps(light, svp, bb);
 
 	// for all edges add the near->far quads
 	for (u32 i=0; i<numEdges; ++i)
@@ -93,10 +101,15 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 #define IRR_USE_REVERSE_EXTRUDED
 
 u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
-					SShadowVolume* svp)
+					SShadowVolume* svp, core::aabbox3d<f32>* bb)
 {
 	u32 numEdges=0;
 	const u32 faceCount = IndexCount / 3;
+
+	if(faceCount >= 1)
+		bb->reset(Vertices[Indices[0]]);
+	else
+		bb->reset(0,0,0);
 
 	// Check every face if it is front or back facing the light.
 	for (u32 i=0; i<faceCount; ++i)
@@ -123,9 +136,17 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
 			svp->push_back(v0);
 
 			// add back cap
-			svp->push_back(v0+(v0-light).normalize()*Infinity);
-			svp->push_back(v1+(v1-light).normalize()*Infinity);
-			svp->push_back(v2+(v2-light).normalize()*Infinity);
+			const core::vector3df i0 = v0+(v0-light).normalize()*Infinity;
+			const core::vector3df i1 = v1+(v1-light).normalize()*Infinity;
+			const core::vector3df i2 = v2+(v2-light).normalize()*Infinity;
+
+			svp->push_back(i0);
+			svp->push_back(i1);
+			svp->push_back(i2);
+
+			bb->addInternalPoint(i0);
+			bb->addInternalPoint(i1);
+			bb->addInternalPoint(i2);
 		}
 	}
 
@@ -290,24 +311,50 @@ void CShadowVolumeSceneNode::render()
 	if (!ShadowVolumesUsed || !driver)
 		return;
 
-	/*if (UseZFailMethod && SceneManager->getActiveCamera())
-	{
-		core::matrix4 mat(core::matrix4::EM4CONST_NOTHING);
-
-		mat.buildProjectionMatrixPerspectiveFovInfinityLH(
-				SceneManager->getActiveCamera()->getFOV(),
-				SceneManager->getActiveCamera()->getAspectRatio(),
-				SceneManager->getActiveCamera()->getNearValue(),
-				core::ROUNDING_ERROR_f32);
-
-		driver->setTransform(video::ETS_PROJECTION, mat);
-	}*/
-
 	driver->setTransform(video::ETS_WORLD, Parent->getAbsoluteTransformation());
 
 	for (u32 i=0; i<ShadowVolumesUsed; ++i)
 	{
-		driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod, DebugDataVisible);
+		bool drawShadow = true;
+
+		if (UseZFailMethod && SceneManager->getActiveCamera())
+		{
+			// Disable shadows drawing, when back cap is behind of ZFar plane.
+
+			SViewFrustum frust = *SceneManager->getActiveCamera()->getViewFrustum();
+
+			core::matrix4 invTrans(Parent->getAbsoluteTransformation(), core::matrix4::EM4CONST_INVERSE);
+			frust.transform(invTrans);
+
+			core::vector3df edges[8];
+			ShadowBBox[i].getEdges(edges);
+
+			core::vector3df largestEdge = edges[0];
+			f32 maxDistance = core::vector3df(SceneManager->getActiveCamera()->getPosition() - edges[0]).getLength();
+			f32 curDistance = 0.f;
+
+			for(int j = 1; j < 8; ++j)
+			{
+				curDistance = core::vector3df(SceneManager->getActiveCamera()->getPosition() - edges[j]).getLength();
+
+				if(curDistance > maxDistance)
+				{
+					maxDistance = curDistance;
+					largestEdge = edges[j];
+				}
+			}
+
+			if (!(frust.planes[scene::SViewFrustum::VF_FAR_PLANE].classifyPointRelation(largestEdge) != core::ISREL3D_FRONT))
+				drawShadow = false;
+		}
+
+		if(drawShadow)
+			driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod, DebugDataVisible);
+		else
+		{
+			core::array<core::vector3df> triangles;
+			driver->drawStencilShadowVolume(triangles, UseZFailMethod, DebugDataVisible);
+		}
 	}
 }
 

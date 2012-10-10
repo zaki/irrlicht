@@ -50,7 +50,7 @@ namespace scene
 		typedef core::array<core::vector3df> SShadowVolume;
 
 		void createShadowVolume(const core::vector3df& pos, bool isDirectional=false);
-		u32 createEdgesAndCaps(const core::vector3df& light, SShadowVolume* svp);
+		u32 createEdgesAndCaps(const core::vector3df& light, SShadowVolume* svp, core::aabbox3d<f32>* bb);
 
 		//! Generates adjacency information based on mesh indices.
 		void calculateAdjacency();
@@ -59,6 +59,9 @@ namespace scene
 
 		// a shadow volume for every light
 		core::array<SShadowVolume> ShadowVolumes;
+
+		// a back cap bounding box for every light
+		core::array<core::aabbox3d<f32> > ShadowBBox;
 
 		core::array<core::vector3df> Vertices;
 		core::array<u16> Indices;
