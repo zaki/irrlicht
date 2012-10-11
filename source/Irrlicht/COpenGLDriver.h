@@ -402,6 +402,9 @@ namespace video
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
+		//! Get ZBuffer bits.
+		GLenum getZBufferBits() const;
+
 		//! Get Cg context
 		#ifdef _IRR_COMPILE_WITH_CG_
 		const CGcontext& getCgContext();

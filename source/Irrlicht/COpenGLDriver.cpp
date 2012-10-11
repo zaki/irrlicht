@@ -4707,6 +4707,27 @@ GLenum COpenGLDriver::getGLBlend(E_BLEND_FACTOR factor) const
 	return r;
 }
 
+GLenum COpenGLDriver::getZBufferBits() const
+{
+	GLenum bits = 0;
+	switch (Params.ZBufferBits)
+	{
+	case 16:
+		bits = GL_DEPTH_COMPONENT16;
+		break;
+	case 24:
+		bits = GL_DEPTH_COMPONENT24;
+		break;
+	case 32:
+		bits = GL_DEPTH_COMPONENT32;
+		break;
+	default:
+		bits = GL_DEPTH_COMPONENT;
+		break;
+	}
+	return bits;
+}
+
 #ifdef _IRR_COMPILE_WITH_CG_
 const CGcontext& COpenGLDriver::getCgContext()
 {
