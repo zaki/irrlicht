@@ -255,7 +255,7 @@ int main()
 	anode->setAnimationSpeed(15);
 
 	// add shadow
-	anode->addShadowVolumeSceneNode(0, -1, true, 400.0f); // workaround for infinity matrix problem
+	anode->addShadowVolumeSceneNode();
 	smgr->setShadowColor(video::SColor(150,0,0,0));
 
 	// make the model a little bit bigger and normalize its normals
