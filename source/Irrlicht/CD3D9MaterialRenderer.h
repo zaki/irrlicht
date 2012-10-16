@@ -63,10 +63,6 @@ public:
 	{
 	}
 
-	~CD3D9MaterialRenderer()
-	{
-	}
-
 	//! sets a variable in the shader.
 	//! \param vertexShader: True if this should be set in the vertex shader, false if
 	//! in the pixel shader.
