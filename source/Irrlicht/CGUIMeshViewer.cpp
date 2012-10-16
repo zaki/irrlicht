@@ -117,7 +117,6 @@ void CGUIMeshViewer::draw()
 
 	frameRect = AbsoluteRect;
 	frameRect.UpperLeftCorner.Y = AbsoluteRect.LowerRightCorner.Y - 1;
-	frameRect.LowerRightCorner.Y = AbsoluteRect.LowerRightCorner.Y;
 	skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
 
 	// draw the mesh
