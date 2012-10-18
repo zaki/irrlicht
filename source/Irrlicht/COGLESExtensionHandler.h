@@ -44,8 +44,10 @@ namespace video
 			IRR_AMD_program_binary_Z400, //48
 			IRR_ANGLE_framebuffer_blit, // 84
 			IRR_ANGLE_framebuffer_multisample, // 85
+			IRR_APPLE_copy_texture_levels, // 123
 			IRR_APPLE_framebuffer_multisample, // 79
 			IRR_APPLE_rgb_422, // 77
+			IRR_APPLE_sync, // 124
 			IRR_APPLE_texture_2D_limited_npot, // 59
 			IRR_APPLE_texture_format_BGRA8888, // 80
 			IRR_APPLE_texture_max_level, // 81
@@ -57,13 +59,18 @@ namespace video
 			IRR_EXT_blend_minmax, // 65
 			IRR_EXT_discard_framebuffer, // 64
 			IRR_EXT_frag_depth, // 87
+			IRR_EXT_map_buffer_range, // 121
+			IRR_EXT_multisampled_render_to_texture, // 106
 			IRR_EXT_multi_draw_arrays, // 69
+			IRR_EXT_robustness, // 107
 			IRR_EXT_read_format_bgra, // 66
 			IRR_EXT_shader_texture_lod, // 78
+			IRR_EXT_sRGB, // 105
 			IRR_EXT_texture_compression_dxt1, //49
 			IRR_EXT_texture_filter_anisotropic, //41
 			IRR_EXT_texture_format_BGRA8888, //51
 			IRR_EXT_texture_lod_bias, // 60
+			IRR_EXT_texture_storage, // 108
 			IRR_EXT_texture_type_2_10_10_10_REV, //42
 			IRR_IMG_multisampled_render_to_texture, // 75
 			IRR_IMG_program_binary, // 67
@@ -105,6 +112,7 @@ namespace video
 			IRR_OES_point_sprite, //15
 			IRR_OES_query_matrix, //16
 			IRR_OES_read_format, //17
+			IRR_OES_required_internalformat, // 115
 			IRR_OES_rgb8_rgba8, //30
 			IRR_OES_single_precision, //18
 			IRR_OES_standard_derivatives, //45
