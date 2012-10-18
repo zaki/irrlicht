@@ -397,7 +397,7 @@ namespace video
 			else
 			{
 				wchar_t buf[512];
-				swprintf( buf, 512, L"Unable to find uniform : %S", UniformStringTable[i] );
+				swprintf( buf, 512, L"Unable to find uniform : %s", UniformStringTable[i] );
 				os::Printer::log( buf, ELL_WARNING );
 				SUniformInfo blank;
 				blank.location = -1;
