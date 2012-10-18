@@ -583,13 +583,12 @@ CQuake3EventHandler::~CQuake3EventHandler ()
 
 
 // create runtime textures smog, fog
-void CQuake3EventHandler::createTextures ()
+void CQuake3EventHandler::createTextures()
 {
 	IVideoDriver * driver = Game->Device->getVideoDriver();
 
-	dimension2du dim ( 64, 64 );
+	dimension2du dim(64, 64);
 
-	video::ITexture* texture;
 	video::IImage* image;
 	u32 i;
 	u32 x;
@@ -609,7 +608,7 @@ void CQuake3EventHandler::createTextures ()
 		}
 		image->unlock();
 		snprintf ( buf, 64, "smoke_%02d", i );
-		texture = driver->addTexture( buf, image );
+		driver->addTexture( buf, image );
 		image->drop ();
 	}
 
@@ -628,10 +627,9 @@ void CQuake3EventHandler::createTextures ()
 		}
 		image->unlock();
 		snprintf ( buf, 64, "fog_%02d", i );
-		texture = driver->addTexture( buf, image );
+		driver->addTexture( buf, image );
 		image->drop ();
 	}
-
 }
 
 

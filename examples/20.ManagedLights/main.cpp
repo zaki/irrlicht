@@ -327,21 +327,21 @@ Add several "zones".  You could use this technique to light individual rooms, fo
 			billboard->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
 			billboard->setMaterialTexture(0, driver->getTexture("../../media/particle.bmp"));
 			billboard->setMaterialFlag(video::EMF_LIGHTING, false);
-			scene::ILightSceneNode * light = smgr->addLightSceneNode(billboard, vector3df(0, 0, 0), video::SColorf(1, 0, 0), lightRadius);
+			smgr->addLightSceneNode(billboard, vector3df(0, 0, 0), video::SColorf(1, 0, 0), lightRadius);
 
 			billboard = smgr->addBillboardSceneNode(node);
 			billboard->setPosition(vector3df(-21, -14, -21));
 			billboard->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
 			billboard->setMaterialTexture(0, driver->getTexture("../../media/particle.bmp"));
 			billboard->setMaterialFlag(video::EMF_LIGHTING, false);
-			light = smgr->addLightSceneNode(billboard, vector3df(0, 0, 0), video::SColorf(0, 1, 0), lightRadius);
+			smgr->addLightSceneNode(billboard, vector3df(0, 0, 0), video::SColorf(0, 1, 0), lightRadius);
 
 			billboard = smgr->addBillboardSceneNode(node);
 			billboard->setPosition(vector3df(21, -14, -21));
 			billboard->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
 			billboard->setMaterialTexture(0, driver->getTexture("../../media/particle.bmp"));
 			billboard->setMaterialFlag(video::EMF_LIGHTING, false);
-			light = smgr->addLightSceneNode(billboard, vector3df(0, 0, 0), video::SColorf(0, 0, 1), lightRadius);
+			smgr->addLightSceneNode(billboard, vector3df(0, 0, 0), video::SColorf(0, 0, 1), lightRadius);
 
 			// Each cube also has a smaller cube rotating around it, to show that the cubes are being
 			// lit by the lights in their 'zone', not just lights that are their direct children.
