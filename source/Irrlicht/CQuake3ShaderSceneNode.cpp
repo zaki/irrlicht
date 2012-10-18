@@ -14,6 +14,7 @@
 #include "IMeshManipulator.h"
 #include "SMesh.h"
 #include "IMaterialRenderer.h"
+#include "CShadowVolumeSceneNode.h"
 
 namespace irr
 {
@@ -33,7 +34,7 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 		core::vector3df(0.f, 0.f, 0.f),
 		core::vector3df(0.f, 0.f, 0.f),
 		core::vector3df(1.f, 1.f, 1.f)),
-	Shader(shader), Mesh(0), Original(0), MeshBuffer(0), TimeAbs(0.f)
+	Shader(shader), Mesh(0), Shadow(0), Original(0), MeshBuffer(0), TimeAbs(0.f)
 {
 	#ifdef _DEBUG
 		core::stringc dName = "CQuake3ShaderSceneNode ";
@@ -71,6 +72,9 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 */
 CQuake3ShaderSceneNode::~CQuake3ShaderSceneNode()
 {
+	if (Shadow)
+		Shadow->drop();
+
 	if (Mesh)
 		Mesh->drop();
 
@@ -336,6 +340,8 @@ void CQuake3ShaderSceneNode::render()
 	}
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation );
+	if (Shadow)
+		Shadow->updateShadowVolumes();
 
 	//! render all stages
 	u32 drawCount = (pass == ESNRP_TRANSPARENT_EFFECT) ? 1 : 0;
@@ -487,6 +493,40 @@ void CQuake3ShaderSceneNode::render()
 		driver->draw3DBox( getBoundingBox(), video::SColor(255,255,0,0));
 	}
 
+}
+
+
+//! Removes a child from this scene node.
+//! Implemented here, to be able to remove the shadow properly, if there is one,
+//! or to remove attached childs.
+bool CQuake3ShaderSceneNode::removeChild(ISceneNode* child)
+{
+	if (child && Shadow == child)
+	{
+		Shadow->drop();
+		Shadow = 0;
+	}
+
+	return ISceneNode::removeChild(child);
+}
+
+
+//! Creates shadow volume scene node as child of this node
+//! and returns a pointer to it.
+IShadowVolumeSceneNode* CQuake3ShaderSceneNode::addShadowVolumeSceneNode(
+		const IMesh* shadowMesh, s32 id, bool zfailmethod, f32 infinity)
+{
+	if (!SceneManager->getVideoDriver()->queryFeature(video::EVDF_STENCIL_BUFFER))
+		return 0;
+
+	if (!shadowMesh)
+		shadowMesh = Mesh; // if null is given, use the mesh of node
+
+	if (Shadow)
+		Shadow->drop();
+
+	Shadow = new CShadowVolumeSceneNode(shadowMesh, this, SceneManager, id,  zfailmethod, infinity);
+	return Shadow;
 }
 
 

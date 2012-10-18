@@ -290,7 +290,6 @@ void CAnimatedMeshSceneNode::render()
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
-
 	if (Shadow && PassCount==1)
 		Shadow->updateShadowVolumes();
 
@@ -1116,6 +1115,7 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	newNode->LoopCallBack = LoopCallBack;
 	newNode->PassCount = PassCount;
 	newNode->Shadow = Shadow;
+	newNode->Shadow->grab();
 	newNode->JointChildSceneNodes = JointChildSceneNodes;
 	newNode->PretransitingSave = PretransitingSave;
 	newNode->RenderFromIdentity = RenderFromIdentity;

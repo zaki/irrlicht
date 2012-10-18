@@ -47,9 +47,20 @@ public:
 	virtual void setReadOnlyMaterials(bool readonly) {}
 	virtual bool isReadOnlyMaterials() const { return true; }
 
+	//! Creates shadow volume scene node as child of this node
+	//! and returns a pointer to it.
+	virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh,
+		s32 id, bool zfailmethod=true, f32 infinity=10000.0f);
+
+	//! Removes a child from this scene node.
+	//! Implemented here, to be able to remove the shadow properly, if there is one,
+	//! or to remove attached childs.
+	virtual bool removeChild(ISceneNode* child);
+
 private:
 	const quake3::IShader* Shader;
 	SMesh *Mesh;
+	IShadowVolumeSceneNode* Shadow;
 	const SMeshBufferLightMap* Original;
 	SMeshBuffer* MeshBuffer;
 	core::vector3df MeshOffset;

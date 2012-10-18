@@ -45,6 +45,11 @@ namespace scene
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_CUBE; }
 
+		//! Creates shadow volume scene node as child of this node
+		//! and returns a pointer to it.
+		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh,
+			s32 id, bool zfailmethod=true, f32 infinity=10000.0f);
+
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
@@ -68,10 +73,16 @@ namespace scene
 		//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
 		virtual bool isReadOnlyMaterials() const { return false; }
 
+		//! Removes a child from this scene node.
+		//! Implemented here, to be able to remove the shadow properly, if there is one,
+		//! or to remove attached childs.
+		virtual bool removeChild(ISceneNode* child);
+
 	private:
 		void setSize();
 
 		IMesh* Mesh;
+		IShadowVolumeSceneNode* Shadow;
 		f32 Size;
 	};
 

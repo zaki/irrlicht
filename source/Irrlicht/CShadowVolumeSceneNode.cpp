@@ -203,7 +203,7 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
 
 void CShadowVolumeSceneNode::setShadowMesh(const IMesh* mesh)
 {
-    if (ShadowMesh == mesh)
+	if (ShadowMesh == mesh)
 		return;
 	if (ShadowMesh)
 		ShadowMesh->drop();
@@ -227,8 +227,8 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 
 	// create as much shadow volumes as there are lights but
 	// do not ignore the max light settings.
-	const u32 lights = SceneManager->getVideoDriver()->getDynamicLightCount();
-	if (!lights)
+	const u32 lightCount = SceneManager->getVideoDriver()->getDynamicLightCount();
+	if (!lightCount)
 		return;
 
 	// calculate total amount of vertices and indices
@@ -279,7 +279,7 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 	const core::vector3df parentpos = Parent->getAbsolutePosition();
 
 	// TODO: Only correct for point lights.
-	for (i=0; i<lights; ++i)
+	for (i=0; i<lightCount; ++i)
 	{
 		const video::SLight& dl = SceneManager->getVideoDriver()->getDynamicLight(i);
 		core::vector3df lpos = dl.Position;

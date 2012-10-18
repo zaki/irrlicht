@@ -60,6 +60,11 @@ namespace scene
 		//! Returns the current mesh
 		virtual IMesh* getMesh(void) { return Mesh; }
 
+		//! Creates shadow volume scene node as child of this node
+		//! and returns a pointer to it.
+		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh,
+			s32 id, bool zfailmethod=true, f32 infinity=10000.0f);
+
 		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
 		/* In this way it is possible to change the materials a mesh causing all mesh scene nodes 
 		referencing this mesh to change too. */
@@ -71,6 +76,11 @@ namespace scene
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
+		//! Removes a child from this scene node.
+		//! Implemented here, to be able to remove the shadow properly, if there is one,
+		//! or to remove attached childs.
+		virtual bool removeChild(ISceneNode* child);
+
 	protected:
 
 		void copyMaterials();
@@ -80,6 +90,7 @@ namespace scene
 		video::SMaterial ReadOnlyMaterial;
 
 		IMesh* Mesh;
+		IShadowVolumeSceneNode* Shadow;
 
 		s32 PassCount;
 		bool ReadOnlyMaterials;
