@@ -242,23 +242,28 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 
 	GLint backingWidth;
 	GLint backingHeight;
-	glGetRenderbufferParameterivOES(
-		GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
-	glGetRenderbufferParameterivOES(
-		GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
+	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
+	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
 	
 	glGenRenderbuffersOES(1, &ViewDepthRenderbuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
-	glRenderbufferStorageOES(
-		GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight);
-
+    
+    GLenum depthComponent = GL_DEPTH_COMPONENT16_OES;
+    
+    if(params.ZBufferBits >= 24)
+        depthComponent = GL_DEPTH_COMPONENT24_OES;
+    
+	glRenderbufferStorageOES(GL_RENDERBUFFER_OES, depthComponent, backingWidth, backingHeight);
+    
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
-	glFramebufferRenderbufferOES(
-		GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, ViewRenderbuffer);
-	glFramebufferRenderbufferOES(
-		GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
-
-	genericDriverInit(params.WindowSize, params.Stencilbuffer);
+	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, ViewRenderbuffer);
+	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
+    
+    core::dimension2d<u32> WindowSize(backingWidth, backingHeight);
+    CNullDriver::ScreenSize = WindowSize;
+    CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
+    
+	genericDriverInit(WindowSize, params.Stencilbuffer);
 #endif
 }
 

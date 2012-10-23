@@ -44,13 +44,19 @@
 
 	UITouch *touch = [touches anyObject];
 	CGPoint touchPoint = [touch locationInView:self];
+    
+    float scale = 1.0f;
+    
+    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
+        scale = [[UIScreen mainScreen] scale];
 
 	// event as mouse.
 	irr::SEvent ev;
 	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
 	ev.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
-	ev.MouseInput.X = touchPoint.x;
-	ev.MouseInput.Y = touchPoint.y;
+	ev.MouseInput.X = touchPoint.x*scale;
+	ev.MouseInput.Y = touchPoint.y*scale;
+    
 	//ev.MouseInput.Shift = 0;
 	//ev.MouseInput.Control = 0;
 	ev.MouseInput.ButtonStates = 0;	//MK_LBUTTON;
@@ -70,10 +76,10 @@
 		prevTouchPoint = [touch previousLocationInView:self];
 		nowTouchPoint = [touch locationInView:self];
 		ev.MultiTouchInput.Touched[idx] = 1;
-		ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x;
-		ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y;
-		ev.MultiTouchInput.X[idx] = nowTouchPoint.x;
-		ev.MultiTouchInput.Y[idx] = nowTouchPoint.y;
+		ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x*scale;
+		ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y*scale;
+		ev.MultiTouchInput.X[idx] = nowTouchPoint.x*scale;
+		ev.MultiTouchInput.Y[idx] = nowTouchPoint.y*scale;
 		idx ++;
 	}
 	dev->postEventFromUser(ev);
@@ -85,12 +91,17 @@
 
 	UITouch *touch = [touches anyObject];
 	CGPoint touchPoint = [touch locationInView:self];
+    
+    float scale = 1.0f;
+    
+    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
+        scale = [[UIScreen mainScreen] scale];
 
 	irr::SEvent ev;
 	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
 	ev.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-	ev.MouseInput.X = touchPoint.x;
-	ev.MouseInput.Y = touchPoint.y;
+	ev.MouseInput.X = touchPoint.x*scale;
+	ev.MouseInput.Y = touchPoint.y*scale;
 	//ev.MouseInput.Shift = 0;
 	//ev.MouseInput.Control = 0;
 	ev.MouseInput.ButtonStates = 0;	//MK_LBUTTON;
@@ -109,10 +120,10 @@
 		prevTouchPoint = [touch previousLocationInView:self];
 		nowTouchPoint = [touch locationInView:self];
 		ev.MultiTouchInput.Touched[idx] = 1;
-		ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x;
-		ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y;
-		ev.MultiTouchInput.X[idx] = nowTouchPoint.x;
-		ev.MultiTouchInput.Y[idx] = nowTouchPoint.y;
+		ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x*scale;
+		ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y*scale;
+		ev.MultiTouchInput.X[idx] = nowTouchPoint.x*scale;
+		ev.MultiTouchInput.Y[idx] = nowTouchPoint.y*scale;
 		idx ++;
 	}
 	dev->postEventFromUser(ev);
@@ -124,12 +135,17 @@
 
 	UITouch *touch = [touches anyObject];
 	CGPoint touchPoint = [touch locationInView:self];
+    
+    float scale = 1.0f;
+    
+    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
+        scale = [[UIScreen mainScreen] scale];
 
 	irr::SEvent ev;
 	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
 	ev.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
-	ev.MouseInput.X = touchPoint.x;
-	ev.MouseInput.Y = touchPoint.y;
+	ev.MouseInput.X = touchPoint.x*scale;
+	ev.MouseInput.Y = touchPoint.y*scale;
 	//ev.MouseInput.Shift = 0;
 	//ev.MouseInput.Control = 0;
 	ev.MouseInput.ButtonStates = 0;	//MK_LBUTTON;
@@ -148,10 +164,10 @@
 		prevTouchPoint = [touch previousLocationInView:self];
 		nowTouchPoint = [touch locationInView:self];
 		ev.MultiTouchInput.Touched[idx] = 1;
-		ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x;
-		ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y;
-		ev.MultiTouchInput.X[idx] = nowTouchPoint.x;
-		ev.MultiTouchInput.Y[idx] = nowTouchPoint.y;
+		ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x*scale;
+		ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y*scale;
+		ev.MultiTouchInput.X[idx] = nowTouchPoint.x*scale;
+		ev.MultiTouchInput.Y[idx] = nowTouchPoint.y*scale;
 		idx ++;
 	}
 	dev->postEventFromUser(ev);
@@ -163,12 +179,17 @@
 
 	UITouch *touch = [touches anyObject];
 	CGPoint touchPoint = [touch locationInView:self];
+    
+    float scale = 1.0f;
+    
+    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
+        scale = [[UIScreen mainScreen] scale];
 
 	irr::SEvent ev;
 	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
 	ev.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
-	ev.MouseInput.X = touchPoint.x;
-	ev.MouseInput.Y = touchPoint.y;
+	ev.MouseInput.X = touchPoint.x*scale;
+	ev.MouseInput.Y = touchPoint.y*scale;
 	//ev.MouseInput.Shift = 0;
 	//ev.MouseInput.Control = 0;
 	ev.MouseInput.ButtonStates = 0;	//MK_LBUTTON;
@@ -229,14 +250,16 @@
 	(*(dev->onTerminate))(dev);
 }
 - (void) displayCreateInWindow: (UIWindow**) window Width: (int) w Height: (int) h OGLESType: (bool) type
-{
+{    
 	// Create our view.
-	CGRect rect;
-	rect.origin.x = 0;
-	rect.origin.y = 0;
-	rect.size.width = w;
-	rect.size.height = h;
+	CGRect rect = [[UIScreen mainScreen] applicationFrame];
     view = [[IrrIPhoneView alloc] initWithFrame: rect];
+    
+    if ([view respondsToSelector:@selector(setContentScaleFactor:)])
+    {
+        view.ContentScaleFactor = [[UIScreen mainScreen] scale];
+    }
+
 	view.layer.opaque = YES;
 	if (nil != *window)
 	{
