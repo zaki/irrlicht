@@ -348,6 +348,54 @@ bool CIrrDeviceStub::activateJoysticks(core::array<SJoystickInfo> & joystickInfo
 	return false;
 }
 
+//! No-op in this implementation
+bool CIrrDeviceStub::activateAccelerometer(float updateInterval)
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::deactivateAccelerometer()
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::isAccelerometerActive()
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::isAccelerometerAvailable()
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::activateGyroscope(float updateInterval)
+{
+    return false;
+}
+
+//! No-op in this implementation
+bool CIrrDeviceStub::deactivateGyroscope()
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::isGyroscopeActive()
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::isGyroscopeAvailable()
+{
+    return false;
+}
+
 /*!
 */
 void CIrrDeviceStub::calculateGammaRamp ( u16 *ramp, f32 gamma, f32 relativebrightness, f32 relativecontrast )

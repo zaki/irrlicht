@@ -67,7 +67,7 @@ namespace video
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
 					const SExposedVideoData& data,
-					io::IFileSystem* io, MIrrIPhoneDevice const & device);
+					io::IFileSystem* io, CIrrDeviceIPhone* device);
 #endif
 
 		//! destructor
@@ -454,7 +454,7 @@ namespace video
 		HDC HDc;
 #endif
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-		MIrrIPhoneDevice Device;
+		CIrrDeviceIPhone* Device;
 		GLuint ViewFramebuffer;
 		GLuint ViewRenderbuffer;
 		GLuint ViewDepthRenderbuffer;

@@ -188,7 +188,6 @@
 		5E3EA4561586A22F00C17C1D /* triangle3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30451015515AC500D9E53B /* triangle3d.h */; };
 		5E3EA4571586A22F00C17C1D /* vector2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30451115515AC500D9E53B /* vector2d.h */; };
 		5E3EA4581586A22F00C17C1D /* vector3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30451215515AC500D9E53B /* vector3d.h */; };
-		5E3EA4591586A27C00C17C1D /* CIrrDeviceiOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EA1C01586440400C17C1D /* CIrrDeviceiOS.cpp */; };
 		5E3EA45A1586A27C00C17C1D /* CIrrDeviceiOS.h in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EA1C11586440400C17C1D /* CIrrDeviceiOS.h */; };
 		5E3EA45B1586A27C00C17C1D /* CIrrDeviceiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EA1C21586440400C17C1D /* CIrrDeviceiOS.mm */; };
 		5E3EA45C1586A27C00C17C1D /* aescrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EA1F015867C3F00C17C1D /* aescrypt.cpp */; };
@@ -1366,7 +1365,6 @@
 		5E3047CE15515B4400D9E53B /* ISceneNodeAnimatorFinishing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISceneNodeAnimatorFinishing.h; path = ../ISceneNodeAnimatorFinishing.h; sourceTree = "<group>"; };
 		5E3047CF15515B4400D9E53B /* ITriangleRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ITriangleRenderer.h; path = ../ITriangleRenderer.h; sourceTree = "<group>"; };
 		5E3047D015515B4400D9E53B /* IZBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IZBuffer.h; path = ../IZBuffer.h; sourceTree = "<group>"; };
-		5E3EA1C01586440400C17C1D /* CIrrDeviceiOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceiOS.cpp; sourceTree = "<group>"; };
 		5E3EA1C11586440400C17C1D /* CIrrDeviceiOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceiOS.h; sourceTree = "<group>"; };
 		5E3EA1C21586440400C17C1D /* CIrrDeviceiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CIrrDeviceiOS.mm; sourceTree = "<group>"; };
 		5E3EA1F015867C3F00C17C1D /* aescrypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = aescrypt.cpp; path = ../aesGladman/aescrypt.cpp; sourceTree = "<group>"; };
@@ -1472,6 +1470,7 @@
 		5E7CF769155187AB0014DCBA /* SoftwareDriver2_compile_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoftwareDriver2_compile_config.h; path = ../SoftwareDriver2_compile_config.h; sourceTree = "<group>"; };
 		5E7CF76A155187AB0014DCBA /* SoftwareDriver2_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoftwareDriver2_helper.h; path = ../SoftwareDriver2_helper.h; sourceTree = "<group>"; };
 		5E7CF76B155187AB0014DCBA /* wglext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wglext.h; path = ../wglext.h; sourceTree = "<group>"; };
+		5EDC9F971638D8CF00E65F28 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		5EE3D2BE1552DF7C00D0F9E8 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -2293,7 +2292,6 @@
 		5E7B130C1586434F0011BD23 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				5E3EA1C01586440400C17C1D /* CIrrDeviceiOS.cpp */,
 				5E3EA1C11586440400C17C1D /* CIrrDeviceiOS.h */,
 				5E3EA1C21586440400C17C1D /* CIrrDeviceiOS.mm */,
 			);
@@ -2303,6 +2301,7 @@
 		5E7CF2E115516CC00014DCBA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5EDC9F971638D8CF00E65F28 /* CoreMotion.framework */,
 				5E7CF2E215516CC00014DCBA /* UIKit.framework */,
 				5E7CF2E415516CC00014DCBA /* Foundation.framework */,
 				5E7CF2E615516CC00014DCBA /* CoreGraphics.framework */,
@@ -2569,7 +2568,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E3EA4591586A27C00C17C1D /* CIrrDeviceiOS.cpp in Sources */,
 				5E3EA45A1586A27C00C17C1D /* CIrrDeviceiOS.h in Sources */,
 				5E3EA45B1586A27C00C17C1D /* CIrrDeviceiOS.mm in Sources */,
 				5E3EA45C1586A27C00C17C1D /* aescrypt.cpp in Sources */,

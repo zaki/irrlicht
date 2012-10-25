@@ -35,7 +35,7 @@ namespace video
 	COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 			const SExposedVideoData& data, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-			, const MIrrIPhoneDevice& device
+			, CIrrDeviceIPhone* device
 #endif
 	)
 		: CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
@@ -245,26 +245,34 @@ namespace video
         glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
 
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        ExposedData.OGLESIPhone.AppDelegate = Device.DeviceM;
-        (*Device.displayInit)(&Device, &ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
+        ExposedData.OGLESIPhone.AppDelegate = Device;
+        Device->displayInitialize(&ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
 #endif
         
         GLint backingWidth;
         GLint backingHeight;
-        glGetRenderbufferParameteriv(
-                                        GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
-        glGetRenderbufferParameteriv(
-                                        GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
+        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
+        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
         
         glGenRenderbuffers(1, &ViewDepthRenderbuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, ViewDepthRenderbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, backingWidth, backingHeight);
+        
+        GLenum depthComponent = GL_DEPTH_COMPONENT16;
+        
+        if(params.ZBufferBits >= 24)
+            depthComponent = GL_DEPTH_COMPONENT24_OES;
+        
+        glRenderbufferStorage(GL_RENDERBUFFER, depthComponent, backingWidth, backingHeight);
         
         glBindFramebuffer(GL_FRAMEBUFFER, ViewFramebuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ViewRenderbuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ViewDepthRenderbuffer);
         
-        genericDriverInit(params.WindowSize, params.Stencilbuffer);
+        core::dimension2d<u32> WindowSize(backingWidth, backingHeight);
+        CNullDriver::ScreenSize = WindowSize;
+        CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
+        
+        genericDriverInit(WindowSize, params.Stencilbuffer);
 #endif
 	}
 
@@ -468,7 +476,7 @@ namespace video
         glFlush();
         glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        (*Device.displayEnd)(&Device);
+        Device->displayEnd();
 #endif
 #endif
         
@@ -2951,7 +2959,7 @@ namespace video
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 			video::SExposedVideoData& data, io::IFileSystem* io,
-			MIrrIPhoneDevice const & device)
+			CIrrDeviceIPhone* device)
 	{
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 		return new COGLES2Driver(params, data, io, device);
