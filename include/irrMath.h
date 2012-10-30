@@ -31,6 +31,10 @@
 #define FLT_MAX 3.402823466E+38F
 #endif
 
+#ifndef FLT_MIN
+#define FLT_MIN 1.17549435e-38F
+#endif
+
 namespace irr
 {
 namespace core
