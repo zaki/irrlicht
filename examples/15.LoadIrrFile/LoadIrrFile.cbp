@@ -8,34 +8,29 @@
 		<Build>
 			<Target title="Windows">
 				<Option platforms="Windows;" />
-				<Option output="../../bin/Win32-gcc/LoadIrrFile" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\bin\Win32-gcc\LoadIrrFile" prefix_auto="0" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option projectResourceIncludeDirsRelation="1" />
 				<Compiler>
-					<Add option="-W" />
 					<Add option="-g" />
-					<Add option="-D_IRR_STATIC_LIB_" />
 				</Compiler>
 				<Linker>
-					<Add directory="../../lib/Win32-gcc" />
+					<Add directory="..\..\lib\Win32-gcc" />
 				</Linker>
 			</Target>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
-				<Option output="../../bin/Linux/LoadIrrFile" prefix_auto="0" extension_auto="0" />
+				<Option output="..\..\bin\Linux\LoadIrrFile" prefix_auto="0" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
 				<Compiler>
-					<Add option="-W" />
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
 					<Add library="Xxf86vm" />
 					<Add library="Xcursor" />
 					<Add library="GL" />
-					<Add directory="../../lib/Linux" />
+					<Add directory="..\..\lib\Linux" />
 				</Linker>
 			</Target>
 		</Build>
@@ -43,9 +38,8 @@
 			<Add alias="All" targets="Windows;Linux;" />
 		</VirtualTargets>
 		<Compiler>
-			<Add option="-W" />
 			<Add option="-g" />
-			<Add directory="../../include" />
+			<Add directory="..\..\include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
@@ -54,6 +48,7 @@
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

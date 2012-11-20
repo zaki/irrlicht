@@ -322,6 +322,7 @@ void CDemo::switchToNextScene()
 
 			camera = sm->addCameraSceneNodeFPS(0, 100.0f, .4f, -1, keyMap, 9, false, 3.f);
 			camera->setPosition(core::vector3df(108,140,-140));
+			camera->setFarValue(5000.0f);
 
 			scene::ISceneNodeAnimatorCollisionResponse* collider =
 				sm->createCollisionResponseAnimator(
@@ -703,7 +704,7 @@ void CDemo::createParticleImpacts()
 
 			scene::IParticleEmitter* em = pas->createBoxEmitter(
 				core::aabbox3d<f32>(-5,-5,-5,5,5,5),
-				Impacts[i].outVector, 20,40, video::SColor(0,255,255,255),video::SColor(0,255,255,255),
+				Impacts[i].outVector, 20,40, video::SColor(50,255,255,255),video::SColor(50,255,255,255),
 				1200,1600, 20);
 
 			pas->setEmitter(em);
@@ -716,7 +717,7 @@ void CDemo::createParticleImpacts()
 			pas->setMaterialFlag(video::EMF_LIGHTING, false);
 			pas->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 			pas->setMaterialTexture(0, device->getVideoDriver()->getTexture("../../media/smoke.bmp"));
-			pas->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+			pas->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 
 			scene::ISceneNodeAnimator* anim = sm->createDeleteAnimator(2000);
 			pas->addAnimator(anim);

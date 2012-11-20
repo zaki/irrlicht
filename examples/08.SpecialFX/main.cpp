@@ -269,6 +269,7 @@ int main()
 
 	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS();
 	camera->setPosition(core::vector3df(-50,50,-150));
+	camera->setFarValue(10000.0f); // this increase a shadow visible range.
 
 	// disable mouse cursor
 	device->getCursorControl()->setVisible(false);

@@ -44,6 +44,19 @@ enum
 };
 
 /*
+	Set the skin transparency by changing the alpha values of all skin-colors
+*/
+void setSkinTransparency(s32 alpha, irr::gui::IGUISkin * skin)
+{
+	for (s32 i=0; i<irr::gui::EGDC_COUNT ; ++i)
+	{
+		video::SColor col = skin->getColor((EGUI_DEFAULT_COLOR)i);
+		col.setAlpha(alpha);
+		skin->setColor((EGUI_DEFAULT_COLOR)i, col);
+	}
+}
+
+/*
 The Event Receiver is not only capable of getting keyboard and
 mouse input events, but also events of the graphical user interface
 (gui). There are events for almost everything: Button click,
@@ -81,14 +94,7 @@ public:
 				if (id == GUI_ID_TRANSPARENCY_SCROLL_BAR)
 				{
 					s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-					
-					for (u32 i=0; i<EGDC_COUNT ; ++i)
-					{
-						SColor col = env->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
-						col.setAlpha(pos);
-						env->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, col);
-					}
-					
+					setSkinTransparency(pos, env->getSkin());
 				}
 				break;
 
@@ -232,6 +238,8 @@ int main()
 	IGUIScrollBar* scrollbar = env->addScrollBar(true,
 			rect<s32>(150, 45, 350, 60), 0, GUI_ID_TRANSPARENCY_SCROLL_BAR);
 	scrollbar->setMax(255);
+	scrollbar->setPos(255);
+	setSkinTransparency( scrollbar->getPos(), env->getSkin());
 
 	// set scrollbar position to alpha value of an arbitrary element
 	scrollbar->setPos(env->getSkin()->getColor(EGDC_WINDOW).getAlpha());

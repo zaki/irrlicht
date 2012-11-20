@@ -1334,7 +1334,7 @@ void CIrrDeviceLinux::setResizable(bool resize)
 video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
-	if (!VideoModeList.getVideoModeCount())
+	if (!VideoModeList->getVideoModeCount())
 	{
 		bool temporaryDisplay = false;
 
@@ -1364,11 +1364,11 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 
 				// find fitting mode
 
-				VideoModeList.setDesktop(defaultDepth, core::dimension2d<u32>(
+				VideoModeList->setDesktop(defaultDepth, core::dimension2d<u32>(
 					modes[0]->hdisplay, modes[0]->vdisplay));
 				for (int i = 0; i<modeCount; ++i)
 				{
-					VideoModeList.addMode(core::dimension2d<u32>(
+					VideoModeList->addMode(core::dimension2d<u32>(
 						modes[i]->hdisplay, modes[i]->vdisplay), defaultDepth);
 				}
 				XFree(modes);
@@ -1382,11 +1382,11 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 				XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
 				oldRandrMode=XRRConfigCurrentConfiguration(config,&oldRandrRotation);
 				XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
-				VideoModeList.setDesktop(defaultDepth, core::dimension2d<u32>(
+				VideoModeList->setDesktop(defaultDepth, core::dimension2d<u32>(
 					modes[oldRandrMode].width, modes[oldRandrMode].height));
 				for (int i = 0; i<modeCount; ++i)
 				{
-					VideoModeList.addMode(core::dimension2d<u32>(
+					VideoModeList->addMode(core::dimension2d<u32>(
 						modes[i].width, modes[i].height), defaultDepth);
 				}
 				XRRFreeScreenConfigInfo(config);
@@ -1405,7 +1405,7 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 	}
 #endif
 
-	return &VideoModeList;
+	return VideoModeList;
 }
 
 

@@ -222,7 +222,9 @@ public:
 			}
 			Mesh->MeshBuffers.erase(i,Mesh->getMeshBufferCount()-i);
 		}
-
+		// set dirty flag to make sure that hardware copies of this
+		// buffer are also updated, see IMesh::setHardwareMappingHint
+		Mesh->setDirty();
 		Mesh->recalculateBoundingBox();
 	}
 
