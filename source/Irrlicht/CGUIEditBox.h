@@ -56,8 +56,14 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw);
 
+		//! Checks if background drawing is enabled
+		virtual bool isDrawBackgroundEnabled() const;
+
 		//! Turns the border on or off
 		virtual void setDrawBorder(bool border);
+
+		//! Checks if border drawing is enabled
+		virtual bool isDrawBorderEnabled() const;
 
 		//! Enables or disables word wrap for using the edit box as multiline text editor.
 		virtual void setWordWrap(bool enable);

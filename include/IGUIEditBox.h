@@ -68,9 +68,17 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw) = 0;
 
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
+
 		//! Turns the border on or off
 		/** \param border: true if you want the border to be drawn, false if not */
 		virtual void setDrawBorder(bool border) = 0;
+
+		//! Checks if border drawing is enabled
+		/** \return true if border drawing is enabled, false otherwise */
+		virtual bool isDrawBorderEnabled() const = 0;
 
 		//! Sets text justification mode
 		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default),

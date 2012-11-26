@@ -127,10 +127,22 @@ void CGUIEditBox::setDrawBorder(bool border)
 	Border = border;
 }
 
+//! Checks if border drawing is enabled
+bool CGUIEditBox::isDrawBorderEnabled() const
+{
+	return Border;
+}
+
 //! Sets whether to draw the background
 void CGUIEditBox::setDrawBackground(bool draw)
 {
 	Background = draw;
+}
+
+//! Checks if background drawing is enabled
+bool CGUIEditBox::isDrawBackgroundEnabled() const
+{
+	return Background;
 }
 
 //! Sets if the text should use the overide color or the color in the gui skin.

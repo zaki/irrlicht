@@ -1,3 +1,9 @@
+--------------------------
+Changes in 1.9 (not yet released)
+
+- Add getters IGUIButton::isDrawBorderEnabled and IGUIButton::isDrawBackgroundEnabled
+
+--------------------------
 Changes in 1.8.1 (not yet released)
 
  - Fix crash in CMeshSceneNode::clone when the mesh had no shadow (reported by  christianclavet, bug-fix found by Nadro)
