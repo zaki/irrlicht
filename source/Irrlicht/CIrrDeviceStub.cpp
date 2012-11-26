@@ -395,6 +395,30 @@ bool CIrrDeviceStub::isGyroscopeAvailable()
 {
     return false;
 }
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::activateDeviceMotion(float updateInterval)
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::deactivateDeviceMotion()
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::isDeviceMotionActive()
+{
+    return false;
+}
+    
+//! No-op in this implementation
+bool CIrrDeviceStub::isDeviceMotionAvailable()
+{
+    return false;
+}
 
 /*!
 */

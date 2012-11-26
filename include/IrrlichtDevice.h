@@ -269,6 +269,18 @@ namespace irr
         
         //! Is gyroscope available.
         virtual bool isGyroscopeAvailable() = 0;
+        
+        //! Activate device motion.
+        virtual bool activateDeviceMotion(float updateInterval = 0.016666f) = 0;
+        
+        //! Deactivate device motion.
+        virtual bool deactivateDeviceMotion() = 0;
+        
+        //! Is device motion active.
+        virtual bool isDeviceMotionActive() = 0;
+        
+        //! Is device motion available.
+        virtual bool isDeviceMotionAvailable() = 0;
 
 		//! Set the current Gamma Value for the Display
 		virtual bool setGammaRamp(f32 red, f32 green, f32 blue,

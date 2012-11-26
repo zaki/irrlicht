@@ -42,6 +42,9 @@ namespace irr
         
         //! A gyroscope event.
         EET_GYROSCOPE_EVENT,
+        
+        //! A device motion event.
+        EET_DEVICE_MOTION_EVENT,
 
 		//! A joystick (joypad, gamepad) input event.
 		/** Joystick events are created by polling all connected joysticks once per
@@ -435,6 +438,20 @@ struct SEvent
         // Z rotation.
 		f64 Z;
 	};
+    
+    //! Any kind of device motion event.
+	struct SDeviceMotionEvent
+	{
+        
+        // X angle - roll.
+		f64 X;
+        
+        // Y angle - pitch.
+		f64 Y;
+        
+        // Z angle - yaw.
+		f64 Z;
+	};
 
 	//! A joystick event.
 	/** Unlike other events, joystick events represent the result of polling
@@ -524,6 +541,7 @@ struct SEvent
         struct SMultiTouchInput MultiTouchInput;
         struct SAccelerometerEvent AccelerometerEvent;
         struct SGyroscopeEvent GyroscopeEvent;
+        struct SDeviceMotionEvent DeviceMotionEvent;
 		struct SJoystickEvent JoystickEvent;
 		struct SLogEvent LogEvent;
 		struct SUserEvent UserEvent;

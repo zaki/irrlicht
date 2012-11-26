@@ -37,7 +37,6 @@
 @interface IrrIPhoneView : UIView
 {
     irr::CIrrDeviceIPhone* dev;
-	NSTimer *timer;
 }
 - (void) dealloc;
 - (void) setDevice:(irr::CIrrDeviceIPhone*)device;
@@ -217,6 +216,7 @@
 	IrrIPhoneView* view;
 	irr::CIrrDeviceIPhone* dev;
     CMMotionManager* motionManager;
+    CMAttitude* referenceAttitude;
 }
 - (id) initWithDevice: (irr::CIrrDeviceIPhone*) device;
 - (void) dealloc;
@@ -237,6 +237,11 @@
 - (BOOL) isGyroscopeActive;
 - (BOOL) isGyroscopeAvailable;
 - (void) getGyroscopeData:(double&) X ValueY: (double&) Y ValueZ: (double&) Z;
+- (BOOL) activateDeviceMotion: (float) updateInterval;
+- (BOOL) deactivateDeviceMotion;
+- (BOOL) isDeviceMotionActive;
+- (BOOL) isDeviceMotionAvailable;
+- (void) getDeviceMotionData:(double&) X ValueY: (double&) Y ValueZ: (double&) Z;
 @end
 
 @implementation IrrIPhoneDevice
@@ -248,6 +253,7 @@
 		view = nil;
 		dev = device;
         motionManager = [[CMMotionManager alloc] init];
+        referenceAttitude = nil;
 	}
 	return self;
 }
@@ -255,7 +261,8 @@
 {
     [self deactivateAccelerometer];
     [self deactivateGyroscope];
-    [motionManager release]; 
+    [self deactivateDeviceMotion];
+    [motionManager release];
 	[super dealloc];
 }
 - (void) applicationWillResignActive: (UIApplication *) application
@@ -397,6 +404,56 @@
     X = motionManager.gyroData.rotationRate.x;
     Y = motionManager.gyroData.rotationRate.y;
     Z = motionManager.gyroData.rotationRate.z;
+}
+- (BOOL) activateDeviceMotion: (float) updateInterval;
+{
+    referenceAttitude = nil;
+    
+    if (motionManager.isDeviceMotionAvailable && !motionManager.isDeviceMotionActive)
+    {
+        motionManager.deviceMotionUpdateInterval = updateInterval;
+        [motionManager startDeviceMotionUpdates];
+        return TRUE;
+    }
+    
+    return FALSE;
+}
+- (BOOL) deactivateDeviceMotion
+{
+    if (motionManager.isDeviceMotionAvailable && motionManager.isDeviceMotionActive)
+    {
+        [motionManager stopDeviceMotionUpdates];
+        return TRUE;
+    }
+    
+    return FALSE;
+}
+- (BOOL) isDeviceMotionActive
+{
+    if (motionManager.isDeviceMotionActive)
+        return TRUE;
+    
+    return FALSE;
+}
+- (BOOL) isDeviceMotionAvailable
+{
+    if (motionManager.isDeviceMotionAvailable)
+        return TRUE;
+    
+    return FALSE;
+}
+- (void) getDeviceMotionData:(double&) X ValueY: (double&) Y ValueZ: (double&) Z
+{
+    CMAttitude* currentAttitude = motionManager.deviceMotion.attitude;
+    
+    if(referenceAttitude != nil)
+        [currentAttitude multiplyByInverseOfAttitude: referenceAttitude];
+    else
+        referenceAttitude = [motionManager.deviceMotion.attitude retain];
+    
+    X = currentAttitude.roll;
+    Y = currentAttitude.pitch;
+    Z = currentAttitude.yaw;
 }
 @end
 
@@ -562,6 +619,17 @@ namespace irr
             postEventFromUser(ev);
         }
         
+        //! Device Motion
+        if([((IrrIPhoneDevice*)DeviceM) isDeviceMotionActive])
+        {
+            irr::SEvent ev;
+            ev.EventType = irr::EET_DEVICE_MOTION_EVENT;
+            
+            [((IrrIPhoneDevice*)DeviceM) getDeviceMotionData: ev.DeviceMotionEvent.X ValueY: ev.DeviceMotionEvent.Y ValueZ: ev.DeviceMotionEvent.Z];
+            
+            postEventFromUser(ev);
+        }
+        
         yield();
         Closed = Close;
         return !Close;
@@ -681,6 +749,26 @@ namespace irr
     bool CIrrDeviceIPhone::isGyroscopeAvailable()
     {
         return [((IrrIPhoneDevice*)DeviceM) isGyroscopeAvailable];
+    }
+    
+    bool CIrrDeviceIPhone::activateDeviceMotion(float updateInterval)
+    {
+        return [((IrrIPhoneDevice*)DeviceM) activateDeviceMotion: updateInterval];
+    }
+    
+    bool CIrrDeviceIPhone::deactivateDeviceMotion()
+    {
+        return [((IrrIPhoneDevice*)DeviceM) deactivateDeviceMotion];
+    }
+    
+    bool CIrrDeviceIPhone::isDeviceMotionActive()
+    {
+        return [((IrrIPhoneDevice*)DeviceM) isDeviceMotionActive];
+    }
+    
+    bool CIrrDeviceIPhone::isDeviceMotionAvailable()
+    {
+        return [((IrrIPhoneDevice*)DeviceM) isDeviceMotionAvailable];
     }
     
 } // end namespace

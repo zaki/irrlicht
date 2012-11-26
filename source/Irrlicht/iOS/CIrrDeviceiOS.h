@@ -102,6 +102,18 @@ namespace irr
         
         //! Is gyroscope available.
         virtual bool isGyroscopeAvailable();
+        
+        //! Activate device motion.
+        virtual bool activateDeviceMotion(float updateInterval = 0.016666f);
+        
+        //! Deactivate device motion.
+        virtual bool deactivateDeviceMotion();
+        
+        //! Is device motion active.
+        virtual bool isDeviceMotionActive();
+        
+        //! Is device motion available.
+        virtual bool isDeviceMotionAvailable();
 
 		//! Get the type of the device.
 		/** This allows the user to check which windowing system is currently being
