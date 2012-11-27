@@ -187,7 +187,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 		gui::IGUIEnvironment* gui)
 : ISceneNode(0, 0), Driver(driver), FileSystem(fs), GUIEnvironment(gui),
 	CursorControl(cursorControl), CollisionManager(0),
-	ActiveCamera(0), ShadowColor(150,0,0,0), AmbientLight(0,0,0,0),
+	ActiveCamera(0), ShadowColor(150,0,0,0), AmbientLight(0,0,0,0), Parameters(0),
 	MeshCache(cache), CurrentRendertime(ESNRP_NONE), LightManager(0),
 	IRR_XML_FORMAT_SCENE(L"irr_scene"), IRR_XML_FORMAT_NODE(L"node"), IRR_XML_FORMAT_NODE_ATTR_TYPE(L"type")
 {
@@ -198,10 +198,6 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 
 	// root node's scene manager
 	SceneManager = this;
-
-	// set scene parameters
-	Parameters.setAttribute( DEBUG_NORMAL_LENGTH, 1.f );
-	Parameters.setAttribute( DEBUG_NORMAL_COLOR, video::SColor(255, 34, 221, 221));
 
 	if (Driver)
 		Driver->grab();
@@ -220,6 +216,11 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 		MeshCache = new CMeshCache();
 	else
 		MeshCache->grab();
+
+	// set scene parameters
+	Parameters = new io::CAttributes();
+	Parameters->setAttribute(DEBUG_NORMAL_LENGTH, 1.f);
+	Parameters->setAttribute(DEBUG_NORMAL_COLOR, video::SColor(255, 34, 221, 221));
 
 	// create collision manager
 	CollisionManager = new CSceneCollisionManager(this, Driver);
@@ -249,7 +250,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CCSMLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_LMTS_LOADER_
-	MeshLoaderList.push_back(new CLMTSMeshFileLoader(FileSystem, Driver, &Parameters));
+	MeshLoaderList.push_back(new CLMTSMeshFileLoader(FileSystem, Driver, Parameters));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
 	MeshLoaderList.push_back(new CMY3DMeshFileLoader(this, FileSystem));
@@ -302,7 +303,6 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	SceneLoaderList.push_back(new CSceneLoaderIrr(this, FileSystem));
 	#endif
 
-
 	// factories
 	ISceneNodeFactory* factory = new CDefaultSceneNodeFactory(this);
 	registerSceneNodeFactory(factory);
@@ -353,6 +353,9 @@ CSceneManager::~CSceneManager()
 
 	if (MeshCache)
 		MeshCache->drop();
+
+	if (Parameters)
+		Parameters->drop();
 
 	for (i=0; i<SceneNodeFactoryList.size(); ++i)
 		SceneNodeFactoryList[i]->drop();
@@ -1327,13 +1330,13 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	}
 
 #ifdef SCENEMANAGER_DEBUG
-	s32 index = Parameters.findAttribute ( "calls" );
-	Parameters.setAttribute ( index, Parameters.getAttributeAsInt ( index ) + 1 );
+	s32 index = Parameters->findAttribute("calls");
+	Parameters->setAttribute(index, Parameters->getAttributeAsInt(index)+1);
 
 	if (!taken)
 	{
-		index = Parameters.findAttribute ( "culled" );
-		Parameters.setAttribute ( index, Parameters.getAttributeAsInt ( index ) + 1 );
+		index = Parameters->findAttribute("culled");
+		Parameters->setAttribute(index, Parameters->getAttributeAsInt(index)+1);
 	}
 #endif
 
@@ -1349,11 +1352,11 @@ void CSceneManager::drawAll()
 		return;
 
 	// reset attributes
-	Parameters.setAttribute ( "culled", 0 );
-	Parameters.setAttribute ( "calls", 0 );
-	Parameters.setAttribute ( "drawn_solid", 0 );
-	Parameters.setAttribute ( "drawn_transparent", 0 );
-	Parameters.setAttribute ( "drawn_transparent_effect", 0 );
+	Parameters->setAttribute("culled", 0);
+	Parameters->setAttribute("calls", 0);
+	Parameters->setAttribute("drawn_solid", 0);
+	Parameters->setAttribute("drawn_transparent", 0);
+	Parameters->setAttribute("drawn_transparent_effect", 0);
 
 	u32 i; // new ISO for scoping problem in some compilers
 
@@ -1364,7 +1367,7 @@ void CSceneManager::drawAll()
 	Driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
 	for (i=video::ETS_COUNT-1; i>=video::ETS_TEXTURE_0; --i)
 		Driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
-	Driver->setAllowZWriteOnTransparent(Parameters.getAttributeAsBool( ALLOW_ZWRITE_ON_TRANSPARENT) );
+	Driver->setAllowZWriteOnTransparent(Parameters->getAttributeAsBool(ALLOW_ZWRITE_ON_TRANSPARENT));
 
 	// do animations and other stuff.
 	OnAnimate(os::Timer::getTime());
@@ -1500,7 +1503,7 @@ void CSceneManager::drawAll()
 				SolidNodeList[i].Node->render();
 		}
 
-		Parameters.setAttribute("drawn_solid", (s32) SolidNodeList.size() );
+		Parameters->setAttribute("drawn_solid", (s32) SolidNodeList.size());
 		SolidNodeList.set_used(0);
 
 		if (LightManager)
@@ -1563,7 +1566,7 @@ void CSceneManager::drawAll()
 				TransparentNodeList[i].Node->render();
 		}
 
-		Parameters.setAttribute ( "drawn_transparent", (s32) TransparentNodeList.size() );
+		Parameters->setAttribute("drawn_transparent", (s32) TransparentNodeList.size());
 		TransparentNodeList.set_used(0);
 
 		if (LightManager)
@@ -1595,7 +1598,7 @@ void CSceneManager::drawAll()
 				TransparentEffectNodeList[i].Node->render();
 		}
 
-		Parameters.setAttribute ( "drawn_transparent_effect", (s32) TransparentEffectNodeList.size() );
+		Parameters->setAttribute("drawn_transparent_effect", (s32) TransparentEffectNodeList.size());
 		TransparentEffectNodeList.set_used(0);
 	}
 
@@ -1610,8 +1613,8 @@ void CSceneManager::drawAll()
 
 void CSceneManager::setLightManager(ILightManager* lightManager)
 {
-    if (lightManager)
-        lightManager->grab();
+	if (lightManager)
+		lightManager->grab();
 	if (LightManager)
 		LightManager->drop();
 
@@ -2000,7 +2003,7 @@ void CSceneManager::clear()
 //! Returns interface to the parameters set in this scene.
 io::IAttributes* CSceneManager::getParameters()
 {
-	return &Parameters;
+	return Parameters;
 }
 
 

@@ -631,7 +631,7 @@ namespace scene
 		video::SColorf AmbientLight;
 
 		//! String parameters
-		io::CAttributes Parameters;
+		io::CAttributes* Parameters;
 
 		//! Mesh cache
 		IMeshCache* MeshCache;
