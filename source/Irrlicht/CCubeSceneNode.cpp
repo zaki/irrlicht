@@ -221,7 +221,8 @@ ISceneNode* CCubeSceneNode::clone(ISceneNode* newParent, ISceneManager* newManag
 	nb->cloneMembers(this, newManager);
 	nb->getMaterial(0) = getMaterial(0);
 	nb->Shadow = Shadow;
-	nb->Shadow->grab();
+	if ( nb->Shadow )
+		nb->Shadow->grab();
 
 	if ( newParent )
 		nb->drop();

@@ -511,7 +511,7 @@ void CGUIListBox::draw()
 	clientClip.clipAgainst(AbsoluteClippingRect);
 
 	skin->draw3DSunkenPane(this, skin->getColor(EGDC_3D_HIGH_LIGHT), true,
-		DrawBack, frameRect, &clientClip);
+		DrawBack, frameRect, &AbsoluteClippingRect);
 
 	if (clipRect)
 		clientClip.clipAgainst(*clipRect);

@@ -6,6 +6,9 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.1 (not yet released)
 
+ - Fix crashes in CCubeSceneNode::clone and CSphereSceneNode::clone (reported by  marsupial)
+ - Fix the clipping in the listbox drawing which was only showing the right line of the sunken pane (reported by Mloren and Abraxas).
+ - Initialize slider in example 05 correct (reported by Zerochen)
  - Fix crash in CMeshSceneNode::clone when the mesh had no shadow (reported by  christianclavet, bug-fix found by Nadro)
 
 --------------------------
@@ -586,7 +589,9 @@ The following names can be queried for the given types:
  - Support new OpenGL 2.x shader creation
 
 -----------------------------
-Changes in 1.7.4
+Changes in 1.7.4 (not yet released)
+
+ - fixed getDepthFunction in IQ3Shader which always returned ECFN_EQUAL due to missing break (found by the cppcheck tool)
 
  - STL loader improved to handle arbitrary file starts
 

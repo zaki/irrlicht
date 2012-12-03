@@ -186,7 +186,8 @@ ISceneNode* CSphereSceneNode::clone(ISceneNode* newParent, ISceneManager* newMan
 	nb->cloneMembers(this, newManager);
 	nb->getMaterial(0) = Mesh->getMeshBuffer(0)->getMaterial();
 	nb->Shadow = Shadow;
-	nb->Shadow->grab();
+	if ( nb->Shadow )
+		nb->Shadow->grab();
 
 	if ( newParent )
 		nb->drop();

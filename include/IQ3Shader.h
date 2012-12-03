@@ -204,6 +204,7 @@ namespace quake3
 		{
 			case 0:
 				ret = video::ECFN_LESSEQUAL;
+				break;
 			case 1:
 				ret = video::ECFN_EQUAL;
 				break;
