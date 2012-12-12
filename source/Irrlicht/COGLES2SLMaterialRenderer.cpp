@@ -261,8 +261,8 @@ namespace video
 		//if (BaseMaterial)
 		//	BaseMaterial->OnSetMaterial(material, material, true, this);
 
-		//for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		//	Driver->setActiveTexture(i, material.getTexture(i));
+		for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			Driver->setActiveTexture(i, material.getTexture(i));
 		Driver->setBasicRenderStates( material, lastMaterial, resetAllRenderstates );
 	}
 
@@ -351,23 +351,24 @@ namespace video
 
 		int num = 0;
 		glGetProgramiv( Program, GL_ACTIVE_UNIFORMS, &num );
+        
+        if (num == 0)
+            return true;
 
 		int maxlen = 0;
 		glGetProgramiv( Program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxlen );
+        
+        if (maxlen == 0)
+        {
+            os::Printer::log("GLSL: failed to retrieve uniform information", ELL_ERROR);
+            return false;
+        }
 
-		if ( maxlen == 0 && num != 0 )
-		{
-			os::Printer::log( "GLSL: failed to retrieve uniform information", ELL_ERROR );
-			return false;
-		}
-
+        maxlen++;
 		c8 *buf = new c8[maxlen];
 
 		UniformInfo.clear();
-		UniformInfo.reallocate( num );
-
-		core::array<core::stringc> names( num );
-		core::array<SUniformInfo> uni( num );
+		UniformInfo.reallocate(num);
 
 		for ( int i = 0; i < num; ++i )
 		{
@@ -375,36 +376,14 @@ namespace video
 			GLint size;
 			SUniformInfo ui;
 			glGetActiveUniform( Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<char*>( buf ) );
+            
+            ui.name = buf;
 			ui.location = glGetUniformLocation( Program, buf );
-			uni.push_back( ui );
-			names.push_back( buf );
+
+			UniformInfo.push_back(ui);
 		}
 
 		delete [] buf;
-
-		for ( int i = 0; i < UniformCount; ++i )
-		{
-			int j;
-			for ( j = 0; j < num; ++j )
-			{
-				if ( names[j] == UniformStringTable[i] )
-					break;
-			}
-			if ( j < num )
-			{
-				UniformInfo.push_back( uni[j] );
-			}
-			else
-			{
-				wchar_t buf[512];
-				swprintf( buf, 512, L"Unable to find uniform : %s", UniformStringTable[i] );
-				os::Printer::log( buf, ELL_WARNING );
-				SUniformInfo blank;
-				blank.location = -1;
-				blank.type = GL_INVALID_ENUM;
-				UniformInfo.push_back( blank );
-			}
-		}
 
 		return true;
 	}
@@ -454,14 +433,109 @@ namespace video
 
 	bool COGLES2SLMaterialRenderer::setPixelShaderConstant( const c8* name, const f32* floats, int count )
 	{
-		os::Printer::log( "Cannot set constant, use high level shader call.", ELL_WARNING );
-		return false;
+        u32 i;
+        const u32 num = UniformInfo.size();
+        
+        for (i=0; i < num; ++i)
+        {
+            if (UniformInfo[i].name == name)
+                break;
+        }
+        
+        if (i == num)
+            return false;
+
+        if(UniformInfo[i].location == -1)
+           return false;
+        
+        bool status = true;
+        
+        switch (UniformInfo[i].type)
+        {
+            case GL_FLOAT:
+                glUniform1fv(UniformInfo[i].location, count, floats);
+                break;
+            case GL_FLOAT_VEC2:
+                glUniform2fv(UniformInfo[i].location, count/2, floats);
+                break;
+            case GL_FLOAT_VEC3:
+                glUniform3fv(UniformInfo[i].location, count/3, floats);
+                break;
+            case GL_FLOAT_VEC4:
+                glUniform4fv(UniformInfo[i].location, count/4, floats);
+                break;
+            case GL_FLOAT_MAT2:
+                glUniformMatrix2fv(UniformInfo[i].location, count/4, false, floats);
+                break;
+            case GL_FLOAT_MAT3:
+                glUniformMatrix3fv(UniformInfo[i].location, count/9, false, floats);
+                break;
+            case GL_FLOAT_MAT4:
+                glUniformMatrix4fv(UniformInfo[i].location, count/16, false, floats);
+                break;
+            case GL_SAMPLER_2D:
+            case GL_SAMPLER_CUBE:
+                {
+                    if(floats)
+                    {
+                        GLint id = *floats;
+                        glUniform1iv(UniformInfo[i].location, 1, &id);
+                    }
+                }
+                break;
+            default:
+                status = false;
+                break;
+        }
+        
+        return status;
 	}
     
     bool COGLES2SLMaterialRenderer::setPixelShaderConstant( const c8* name, const s32* ints, int count )
 	{
-		os::Printer::log( "Cannot set constant, use high level shader call.", ELL_WARNING );
-		return false;
+        u32 i;
+        const u32 num = UniformInfo.size();
+        
+        for (i=0; i < num; ++i)
+        {
+            if (UniformInfo[i].name == name)
+                break;
+        }
+        
+        if (i == num)
+            return false;
+        
+        if(UniformInfo[i].location == -1)
+            return false;
+        
+        bool status = true;
+
+        switch (UniformInfo[i].type)
+        {
+            case GL_INT_VEC2:
+            case GL_BOOL_VEC2:
+                glUniform2iv(UniformInfo[i].location, count/2, ints);
+                break;
+            case GL_INT_VEC3:
+            case GL_BOOL_VEC3:
+                glUniform3iv(UniformInfo[i].location, count/3, ints);
+                break;
+            case GL_INT_VEC4:
+            case GL_BOOL_VEC4:
+                glUniform4iv(UniformInfo[i].location, count/4, ints);
+                break;
+            case GL_INT:
+            case GL_BOOL:
+            case GL_SAMPLER_2D:
+            case GL_SAMPLER_CUBE:
+                glUniform1iv(UniformInfo[i].location, count, ints);
+                break;
+            default:
+                status = false;
+                break;
+        }
+        
+        return status;
 	}
 
 	bool COGLES2SLMaterialRenderer::setUniform( int index, const void* data, int count )

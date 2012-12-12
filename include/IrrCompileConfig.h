@@ -203,8 +203,12 @@ define out. */
 #ifdef NO_IRR_COMPILE_WITH_OGLES2_
 #undef _IRR_COMPILE_WITH_OGLES2_
 #endif
-#ifndef IRR_OGLES2_SHADER_PATH 
+#ifndef IRR_OGLES2_SHADER_PATH
+#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
+#define IRR_OGLES2_SHADER_PATH ""
+#else
 #define IRR_OGLES2_SHADER_PATH "../../media/Shaders/"
+#endif
 #endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver

@@ -34,6 +34,7 @@ namespace video
 	protected:
 		struct SUniformInfo
 		{
+            core::stringc name;
 			u32 type;
 			s32 location;
 		};

@@ -285,7 +285,8 @@ namespace video
 				u32 verticesOut = 0,
 				IShaderConstantSetCallBack* callback = 0,
 				E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-				s32 userData=0);
+                s32 userData=0,
+                E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
 
 		//! Returns pointer to the IGPUProgrammingServices interface.
 		virtual IGPUProgrammingServices* getGPUProgrammingServices();

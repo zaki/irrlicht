@@ -24,6 +24,7 @@
 #include "SIrrCreationParameters.h"
 #include <CoreFoundation/CFRunLoop.h>
 #include "SExposedVideoData.h"
+#include "IFileSystem.h"
 
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
@@ -485,8 +486,7 @@ namespace irr
     {
 #ifdef _DEBUG
         setDebugName("CIrrDeviceIPhone");
-#endif
-        
+#endif        
         DeviceM = [[IrrIPhoneDevice alloc] initWithDevice: this];
         
         // print version, distribution etc.
@@ -506,6 +506,13 @@ namespace irr
             if (!createDisplay())
                 return;
         }
+        
+        NSBundle* Bundle = [NSBundle mainBundle];
+        NSString* BundlePath = [Bundle bundlePath];
+        
+        core::stringc NewPath = [BundlePath cStringUsingEncoding:NSASCIIStringEncoding];
+        
+        FileSystem->changeWorkingDirectoryTo(NewPath);
         
         // create driver
         createDriver();
