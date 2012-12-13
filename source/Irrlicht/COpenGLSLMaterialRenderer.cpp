@@ -500,11 +500,6 @@ bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const f3
 	return setPixelShaderConstant(name, floats, count);
 }
 
-bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const bool* bools, int count)
-{
-	return setPixelShaderConstant(name, bools, count);
-}
-
 bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const s32* ints, int count)
 {
 	return setPixelShaderConstant(name, ints, count);
@@ -571,53 +566,6 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 				const GLint id = static_cast<GLint>(*floats);
 				Driver->extGlUniform1iv(Location, 1, &id);
 			}
-			break;
-		default:
-			status = false;
-			break;
-	}
-	return status;
-#else
-	return false;
-#endif
-}
-
-bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const bool* bools, int count)
-{
-	u32 i;
-	const u32 num = UniformInfo.size();
-
-	for (i=0; i < num; ++i)
-	{
-		if (UniformInfo[i].name == name)
-			break;
-	}
-
-	if (i == num)
-		return false;
-
-#if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
-	GLint Location=0;
-	if (Program2)
-		Location=Driver->extGlGetUniformLocation(Program2,name);
-	else
-		Location=Driver->extGlGetUniformLocationARB(Program,name);
-
-	bool status = true;
-
-	switch (UniformInfo[i].type)
-	{
-		case GL_BOOL:
-			Driver->extGlUniform1iv(Location, count, (GLint*)bools);
-			break;
-		case GL_BOOL_VEC2:
-			Driver->extGlUniform2iv(Location, count/2, (GLint*)bools);
-			break;
-		case GL_BOOL_VEC3:
-			Driver->extGlUniform3iv(Location, count/3, (GLint*)bools);
-			break;
-		case GL_BOOL_VEC4:
-			Driver->extGlUniform4iv(Location, count/4, (GLint*)bools);
 			break;
 		default:
 			status = false;

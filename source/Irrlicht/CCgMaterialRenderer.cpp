@@ -195,11 +195,6 @@ bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const f32* flo
 	return setPixelShaderConstant(name, floats, count);
 }
 
-bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const bool* bools, int count)
-{
-	return setPixelShaderConstant(name, bools, count);
-}
-
 bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const s32* ints, int count)
 {
 	return setPixelShaderConstant(name, ints, count);
@@ -236,23 +231,6 @@ bool CCgMaterialRenderer::setPixelShaderConstant(const c8* name, const s32* ints
 		if(UniformInfo[i]->getName() == name)
 		{
 			UniformInfo[i]->update(ints, Material);
-
-			Status = true;
-		}
-	}
-
-	return Status;
-}
-
-bool CCgMaterialRenderer::setPixelShaderConstant(const c8* name, const bool* bools, int count)
-{
-	bool Status = false;
-
-	for(unsigned int i = 0; i < UniformInfo.size(); ++i)
-	{
-		if(UniformInfo[i]->getName() == name)
-		{
-			UniformInfo[i]->update(bools, Material);
 
 			Status = true;
 		}

@@ -305,45 +305,6 @@ bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
 
 
 bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
-					const bool* bools, int count)
-{
-	LPD3DXCONSTANTTABLE tbl = vertexShader ? VSConstantsTable : PSConstantsTable;
-	if (!tbl)
-		return false;
-
-	// currently we only support top level parameters.
-	// Should be enough for the beginning. (TODO)
-
-	D3DXHANDLE hndl = tbl->GetConstantByName(NULL, name);
-	if (!hndl)
-	{
-		core::stringc s = "HLSL Variable to set not found: '";
-		s += name;
-		s += "'. Available variables are:";
-		os::Printer::log(s.c_str(), ELL_WARNING);
-		printHLSLVariables(tbl);
-		return false;
-	}
-
-	D3DXCONSTANT_DESC Description;
-	UINT ucount = 1;
-    tbl->GetConstantDesc(hndl, &Description, &ucount);
-
-	if(Description.RegisterSet != D3DXRS_SAMPLER)
-	{
-		HRESULT hr = tbl->SetBoolArray(pID3DDevice, hndl, (BOOL*)bools, count);
-		if (FAILED(hr))
-		{
-			os::Printer::log("Error setting bool array for HLSL variable", ELL_WARNING);
-			return false;
-		}
-	}
-
-	return true;
-}
-
-
-bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
 					const s32* ints, int count)
 {
 	LPD3DXCONSTANTTABLE tbl = vertexShader ? VSConstantsTable : PSConstantsTable;

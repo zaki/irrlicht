@@ -2186,14 +2186,6 @@ bool CD3D8Driver::setVertexShaderConstant(const c8* name, const f32* floats, int
 }
 
 
-//! Bool interface for the above.
-bool CD3D8Driver::setVertexShaderConstant(const c8* name, const bool* bools, int count)
-{
-	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
-	return false;
-}
-
-
 //! Int interface for the above.
 bool CD3D8Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
 {
@@ -2204,14 +2196,6 @@ bool CD3D8Driver::setVertexShaderConstant(const c8* name, const s32* ints, int c
 
 //! Sets a constant for the pixel shader based on a name.
 bool CD3D8Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
-{
-	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
-	return false;
-}
-
-
-//! Bool interface for the above.
-bool CD3D8Driver::setPixelShaderConstant(const c8* name, const bool* bools, int count)
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;

@@ -3100,19 +3100,6 @@ bool CD3D9Driver::setVertexShaderConstant(const c8* name, const f32* floats, int
 }
 
 
-//! Bool interface for the above.
-bool CD3D9Driver::setVertexShaderConstant(const c8* name, const bool* bools, int count)
-{
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(true, name, bools, count);
-	}
-
-	return false;
-}
-
-
 //! Int interface for the above.
 bool CD3D9Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
 {
@@ -3133,19 +3120,6 @@ bool CD3D9Driver::setPixelShaderConstant(const c8* name, const f32* floats, int 
 	{
 		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
 		return r->setVariable(false, name, floats, count);
-	}
-
-	return false;
-}
-
-
-//! Bool interface for the above.
-bool CD3D9Driver::setPixelShaderConstant(const c8* name, const bool* bools, int count)
-{
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(false, name, bools, count);
 	}
 
 	return false;
