@@ -36,8 +36,8 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
-	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
+	CurrentRendertargetSize(0,0), CurrentMatrixMode(GL_MODELVIEW), ColorFormat(ECF_R8G8B8),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params), DepthMask(true),
 	HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
 	DeviceType(EIDT_WIN32)
 {
@@ -472,8 +472,8 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
-	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
+	CurrentRendertargetSize(0,0), CurrentMatrixMode(GL_MODELVIEW), ColorFormat(ECF_R8G8B8),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params), DepthMask(true),
 	OSXDevice(device), DeviceType(EIDT_OSX)
 {
 	#ifdef _DEBUG
@@ -499,8 +499,8 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), CurrentMatrixMode(GL_MODELVIEW),
+	ColorFormat(ECF_R8G8B8), CurrentTarget(ERT_FRAME_BUFFER), Params(params), DepthMask(true),
 	X11Device(device), DeviceType(EIDT_X11)
 {
 	#ifdef _DEBUG
@@ -592,8 +592,8 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), CurrentMatrixMode(GL_MODELVIEW),
+	ColorFormat(ECF_R8G8B8), CurrentTarget(ERT_FRAME_BUFFER), Params(params), DepthMask(true),
 	SDLDevice(device), DeviceType(EIDT_SDL)
 {
 	#ifdef _DEBUG
@@ -876,9 +876,12 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 
 	if (zBuffer)
 	{
-		glDepthMask(GL_TRUE);
+		if (!DepthMask)
+			glDepthMask(GL_TRUE);
+
 		LastMaterial.ZWriteEnable=true;
-		mask |= GL_DEPTH_BUFFER_BIT;
+		DepthMask = true;
+ 		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
 	if (stencilBuffer)
@@ -945,7 +948,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	case ETS_WORLD:
 		{
 			// OpenGL only has a model matrix, view and world is not existent. so lets fake these two.
-			glMatrixMode(GL_MODELVIEW);
+			setMatrixMode(GL_MODELVIEW);
 
 			// first load the viewing transformation for user clip planes
 			glLoadMatrixf((Matrices[ETS_VIEW]).pointer());
@@ -961,7 +964,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		break;
 	case ETS_PROJECTION:
 		{
-			glMatrixMode(GL_PROJECTION);
+			setMatrixMode(GL_PROJECTION);
 			glLoadMatrixf(mat.pointer());
 		}
 		break;
@@ -978,7 +981,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			if (MultiTextureExtension)
 				extGlActiveTexture(GL_TEXTURE0_ARB + i);
 
-			glMatrixMode(GL_TEXTURE);
+			setMatrixMode(GL_TEXTURE);
 			if (!isRTT && mat.isIdentity() )
 				glLoadIdentity();
 			else
@@ -2569,10 +2572,10 @@ void COpenGLDriver::setRenderStates3DMode()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// switch back the matrices
-		glMatrixMode(GL_MODELVIEW);
+		setMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
 
-		glMatrixMode(GL_PROJECTION);
+		setMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(Matrices[ETS_PROJECTION].pointer());
 
 		ResetRenderStates = true;
@@ -2938,10 +2941,20 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	{
 		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
 		{
-			glDepthMask(GL_TRUE);
+			if (!DepthMask)
+			{
+				glDepthMask(GL_TRUE);
+				DepthMask = true;
+			}
 		}
 		else
-			glDepthMask(GL_FALSE);
+		{
+			if (DepthMask)
+			{
+				glDepthMask(GL_FALSE);
+				DepthMask = false;
+			}
+		}
 	}
 
 	// back face culling
@@ -3210,7 +3223,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		}
 		if (Transformation3DChanged)
 		{
-			glMatrixMode(GL_PROJECTION);
+			setMatrixMode(GL_PROJECTION);
 
 			const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 			core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
@@ -3218,7 +3231,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			m.setTranslation(core::vector3df(-1,1,0));
 			glLoadMatrixf(m.pointer());
 
-			glMatrixMode(GL_MODELVIEW);
+			setMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glTranslatef(0.375f, 0.375f, 0.0f);
 
@@ -3586,6 +3599,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& 
 	glDisable(GL_FOG);
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_FALSE); // no depth buffer writing
+	DepthMask = false;
 	if (debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
@@ -3716,6 +3730,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
 	glDepthMask(GL_FALSE);
+	DepthMask = false;
 
 	glShadeModel(GL_FLAT);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -3728,10 +3743,10 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
 	// draw a shadow rectangle covering the entire screen using stencil buffer
-	glMatrixMode(GL_MODELVIEW);
+	setMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
+	setMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
 
@@ -3755,7 +3770,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 	// restore settings
 	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
+	setMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glPopAttrib();
 }
@@ -4726,6 +4741,14 @@ GLenum COpenGLDriver::getZBufferBits() const
 		break;
 	}
 	return bits;
+}
+
+void COpenGLDriver::setMatrixMode(GLenum mode)
+{
+	if (CurrentMatrixMode != mode) {
+		glMatrixMode(mode);
+		CurrentMatrixMode = mode;
+	}
 }
 
 #ifdef _IRR_COMPILE_WITH_CG_
