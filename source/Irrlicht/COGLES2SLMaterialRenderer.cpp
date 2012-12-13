@@ -109,6 +109,9 @@ namespace video
 			if ( !createShader( GL_FRAGMENT_SHADER, pixelShaderProgram, "" ) )
 				return false;
 
+        for ( size_t i = 0; i < EVA_COUNT; ++i )
+			glBindAttribLocation( Program, i, sBuiltInVertexAttributeNames[i] );
+
 		if ( !linkProgram() )
 			return false;
 
@@ -258,11 +261,7 @@ namespace video
 			if ( CallBack )
 				CallBack->OnSetMaterial( material );
 		}
-		//if (BaseMaterial)
-		//	BaseMaterial->OnSetMaterial(material, material, true, this);
 
-		for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			Driver->setActiveTexture(i, material.getTexture(i));
 		Driver->setBasicRenderStates( material, lastMaterial, resetAllRenderstates );
 	}
 

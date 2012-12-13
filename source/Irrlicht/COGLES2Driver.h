@@ -344,11 +344,6 @@ namespace video
 		ITexture* createDepthTexture(ITexture* texture, bool shared = true);
 		void removeDepthTexture(ITexture* texture);
 
-		void renderHighLevelShader(bool state = true)
-		{
-			NoHighLevelShader = !state;
-		}
-
 		COGLES2FixedPipelineShader* fixedPipeline()
 		{
 			return FixedPipeline;
@@ -468,7 +463,6 @@ namespace video
 
 		COGLES2FixedPipelineShader* FixedPipeline;
 		COGLES2Renderer2d* TwoDRenderer;
-		bool NoHighLevelShader;
 
 		bool BlendEnabled;
 		E_BLEND_FACTOR SourceFactor;

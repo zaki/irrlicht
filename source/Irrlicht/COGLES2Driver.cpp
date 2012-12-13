@@ -52,7 +52,6 @@ namespace video
 		, ViewRenderbuffer(0)
 		, ViewDepthRenderbuffer(0)
 #endif
-		, NoHighLevelShader(true)
 		, BlendEnabled(false)
 		, SourceFactor(EBF_ZERO)
 		, DestFactor(EBF_ZERO)
@@ -811,7 +810,6 @@ namespace video
 		CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 		//TODO: treat #ifdef GL_OES_point_size_array outside this if
-		if (NoHighLevelShader)
 		{
 			glEnableVertexAttribArray(EVA_COLOR);
 			glEnableVertexAttribArray(EVA_POSITION);
@@ -1009,7 +1007,6 @@ namespace video
 				break;
 		}
 
-		if (NoHighLevelShader)
 		{
 			if (vType == EVT_TANGENTS)
 			{
