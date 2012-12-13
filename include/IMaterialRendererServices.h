@@ -38,6 +38,9 @@ public:
 		const SMaterial& lastMaterial,
 		bool resetAllRenderstates) = 0;
 
+	//! Return an index constant for the vertex shader based on a name.
+	virtual s32 getVertexShaderConstantID(const c8* name) = 0;
+
 	//! Sets a constant for the vertex shader based on a name.
 	/** This can be used if you used a high level shader language like GLSL
 	or HLSL to create a shader. Example: If you created a shader which has
@@ -58,15 +61,15 @@ public:
 		services->setVertexShaderConstant("mWorldViewProj", worldViewProj.M, 16);
 	}
 	\endcode
-	\param name Name of the variable
+	\param index Index of the variable
 	\param floats Pointer to array of floats
 	\param count Amount of floats in array.
 	\return True if successful.
 	*/
-	virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count) = 0;
+	virtual bool setVertexShaderConstant(s32 index, const f32* floats, int count) = 0;
 
 	//! Int interface for the above.
-	virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count) = 0;
+	virtual bool setVertexShaderConstant(s32 index, const s32* ints, int count) = 0;
 
 	//! Sets a vertex shader constant.
 	/** Can be used if you created a shader using pixel/vertex shader
@@ -76,18 +79,21 @@ public:
 	\param constantAmount: Amount of registers to be set. One register consists of 4 floats. */
 	virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1) = 0;
 
+	//! Return an index constant for the pixel shader based on a name.
+	virtual s32 getPixelShaderConstantID(const c8* name) = 0;
+
 	//! Sets a constant for the pixel shader based on a name.
 	/** This can be used if you used a high level shader language like GLSL
 	or HLSL to create a shader. See setVertexShaderConstant() for an
 	example on how to use this.
-	\param name Name of the variable
+	\param index Index of the variable
 	\param floats Pointer to array of floats
 	\param count Amount of floats in array.
 	\return True if successful. */
-	virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count) = 0;
+	virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count) = 0;
 
 	//! Int interface for the above.
-	virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count) = 0;
+	virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count) = 0;
 
 	//! Sets a pixel shader constant.
 	/** Can be used if you created a shader using pixel/vertex shader

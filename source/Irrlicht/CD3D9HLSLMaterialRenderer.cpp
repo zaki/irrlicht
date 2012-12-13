@@ -265,26 +265,46 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 }
 
 
-bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
-					const f32* floats, int count)
+s32 CD3D9HLSLMaterialRenderer::getVariableID(bool vertexShader, const c8* name)
 {
 	LPD3DXCONSTANTTABLE tbl = vertexShader ? VSConstantsTable : PSConstantsTable;
 	if (!tbl)
+		return -1;
+
+	D3DXHANDLE hndl = tbl->GetConstantByName(NULL, name);
+	if (!hndl)
+	{
+		core::stringc s = "HLSL Variable to get ID not found: '";
+		s += name;
+		s += "'. Available variables are:";
+		os::Printer::log(s.c_str(), ELL_WARNING);
+		printHLSLVariables(tbl);
+		return -1;
+	}
+
+	D3DXCONSTANT_DESC Description;
+	UINT ucount = 1;
+
+	if (!FAILED(tbl->GetConstantDesc(hndl, &Description, &ucount)))
+		return Description.RegisterIndex;
+
+	return -1;
+}
+
+
+bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, s32 index,
+					const f32* floats, int count)
+{
+	LPD3DXCONSTANTTABLE tbl = vertexShader ? VSConstantsTable : PSConstantsTable;
+	if (index < 0 || !tbl)
 		return false;
 
 	// currently we only support top level parameters.
 	// Should be enough for the beginning. (TODO)
 
-	D3DXHANDLE hndl = tbl->GetConstantByName(NULL, name);
+	D3DXHANDLE hndl = tbl->GetConstant(NULL, index);
 	if (!hndl)
-	{
-		core::stringc s = "HLSL Variable to set not found: '";
-		s += name;
-		s += "'. Available variables are:";
-		os::Printer::log(s.c_str(), ELL_WARNING);
-		printHLSLVariables(tbl);
 		return false;
-	}
 
 	D3DXCONSTANT_DESC Description;
 	UINT ucount = 1;
@@ -304,26 +324,19 @@ bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
 }
 
 
-bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, const c8* name,
+bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, s32 index,
 					const s32* ints, int count)
 {
 	LPD3DXCONSTANTTABLE tbl = vertexShader ? VSConstantsTable : PSConstantsTable;
-	if (!tbl)
+	if (index < 0 || !tbl)
 		return false;
 
 	// currently we only support top level parameters.
 	// Should be enough for the beginning. (TODO)
 
-	D3DXHANDLE hndl = tbl->GetConstantByName(NULL, name);
+	D3DXHANDLE hndl = tbl->GetConstant(NULL, index);
 	if (!hndl)
-	{
-		core::stringc s = "HLSL Variable to set not found: '";
-		s += name;
-		s += "'. Available variables are:";
-		os::Printer::log(s.c_str(), ELL_WARNING);
-		printHLSLVariables(tbl);
 		return false;
-	}
 
 	D3DXCONSTANT_DESC Description;
 	UINT ucount = 1;

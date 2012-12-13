@@ -399,6 +399,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 			GLint size;
 			Driver->extGlGetActiveUniform(Program2, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLchar*>(buf));
 			ui.name = buf;
+			ui.location = Driver->extGlGetUniformLocation(Program2, buf);
 
 			UniformInfo.push_back(ui);
 		}
@@ -475,6 +476,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 			GLint size;
 			Driver->extGlGetActiveUniformARB(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLcharARB*>(buf));
 			ui.name = buf;
+			ui.location = Driver->extGlGetUniformLocationARB(Program, buf);
 
 			UniformInfo.push_back(ui);
 		}
@@ -494,15 +496,20 @@ void COpenGLSLMaterialRenderer::setBasicRenderStates(const SMaterial& material,
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
-
-bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const f32* floats, int count)
+s32 COpenGLSLMaterialRenderer::getVertexShaderConstantID(const c8* name)
 {
-	return setPixelShaderConstant(name, floats, count);
+	return getPixelShaderConstantID(name);
 }
 
-bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+s32 COpenGLSLMaterialRenderer::getPixelShaderConstantID(const c8* name)
 {
-	return setPixelShaderConstant(name, ints, count);
+	for (u32 i = 0; i < UniformInfo.size(); ++i)
+	{
+		if (UniformInfo[i].name == name)
+			return i;
+	}
+
+	return -1;
 }
 
 void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
@@ -510,51 +517,51 @@ void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 sta
 	os::Printer::log("Cannot set constant, please use high level shader call instead.", ELL_WARNING);
 }
 
-bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32* floats, int count)
+void COpenGLSLMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
-	u32 i;
-	const u32 num = UniformInfo.size();
+	os::Printer::log("Cannot set constant, use high level shader call.", ELL_WARNING);
+}
 
-	for (i=0; i < num; ++i)
-	{
-		if (UniformInfo[i].name == name)
-			break;
-	}
+bool COpenGLSLMaterialRenderer::setVertexShaderConstant(s32 index, const f32* floats, int count)
+{
+	return setPixelShaderConstant(index, floats, count);
+}
 
-	if (i == num)
+bool COpenGLSLMaterialRenderer::setVertexShaderConstant(s32 index, const s32* ints, int count)
+{
+	return setPixelShaderConstant(index, ints, count);
+}
+
+bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const f32* floats, int count)
+{
+#ifdef GL_ARB_shader_objects
+	if(index < 0 || UniformInfo[index].location < 0)
 		return false;
-
-#if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
-	GLint Location=0;
-	if (Program2)
-		Location=Driver->extGlGetUniformLocation(Program2,name);
-	else
-		Location=Driver->extGlGetUniformLocationARB(Program,name);
 
 	bool status = true;
 
-	switch (UniformInfo[i].type)
+	switch (UniformInfo[index].type)
 	{
 		case GL_FLOAT:
-			Driver->extGlUniform1fv(Location, count, floats);
+			Driver->extGlUniform1fv(UniformInfo[index].location, count, floats);
 			break;
 		case GL_FLOAT_VEC2:
-			Driver->extGlUniform2fv(Location, count/2, floats);
+			Driver->extGlUniform2fv(UniformInfo[index].location, count/2, floats);
 			break;
 		case GL_FLOAT_VEC3:
-			Driver->extGlUniform3fv(Location, count/3, floats);
+			Driver->extGlUniform3fv(UniformInfo[index].location, count/3, floats);
 			break;
 		case GL_FLOAT_VEC4:
-			Driver->extGlUniform4fv(Location, count/4, floats);
+			Driver->extGlUniform4fv(UniformInfo[index].location, count/4, floats);
 			break;
 		case GL_FLOAT_MAT2:
-			Driver->extGlUniformMatrix2fv(Location, count/4, false, floats);
+			Driver->extGlUniformMatrix2fv(UniformInfo[index].location, count/4, false, floats);
 			break;
 		case GL_FLOAT_MAT3:
-			Driver->extGlUniformMatrix3fv(Location, count/9, false, floats);
+			Driver->extGlUniformMatrix3fv(UniformInfo[index].location, count/9, false, floats);
 			break;
 		case GL_FLOAT_MAT4:
-			Driver->extGlUniformMatrix4fv(Location, count/16, false, floats);
+			Driver->extGlUniformMatrix4fv(UniformInfo[index].location, count/16, false, floats);
 			break;
 		case GL_SAMPLER_1D:
 		case GL_SAMPLER_2D:
@@ -563,8 +570,13 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 		case GL_SAMPLER_1D_SHADOW:
 		case GL_SAMPLER_2D_SHADOW:
 			{
-				const GLint id = static_cast<GLint>(*floats);
-				Driver->extGlUniform1iv(Location, 1, &id);
+				if(floats)
+				{
+					const GLint id = *floats;
+					Driver->extGlUniform1iv(UniformInfo[index].location, 1, &id);
+				}
+				else
+					status = false;
 			}
 			break;
 		default:
@@ -577,42 +589,31 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 #endif
 }
 
-bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const s32* ints, int count)
+bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const s32* ints, int count)
 {
-	u32 i;
-	const u32 num = UniformInfo.size();
-
-	for (i=0; i < num; ++i)
-	{
-		if (UniformInfo[i].name == name)
-			break;
-	}
-
-	if (i == num)
+#ifdef GL_ARB_shader_objects
+	if(index < 0 || UniformInfo[index].location < 0)
 		return false;
-
-#if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
-	GLint Location=0;
-	if (Program2)
-		Location=Driver->extGlGetUniformLocation(Program2,name);
-	else
-		Location=Driver->extGlGetUniformLocationARB(Program,name);
 
 	bool status = true;
 
-	switch (UniformInfo[i].type)
+	switch (UniformInfo[index].type)
 	{
 		case GL_INT:
-			Driver->extGlUniform1iv(Location, count, ints);
+		case GL_BOOL:
+			Driver->extGlUniform1iv(UniformInfo[index].location, count, ints);
 			break;
 		case GL_INT_VEC2:
-			Driver->extGlUniform2iv(Location, count/2, ints);
+		case GL_BOOL_VEC2:
+			Driver->extGlUniform2iv(UniformInfo[index].location, count/2, ints);
 			break;
 		case GL_INT_VEC3:
-			Driver->extGlUniform3iv(Location, count/3, ints);
+		case GL_BOOL_VEC3:
+			Driver->extGlUniform3iv(UniformInfo[index].location, count/3, ints);
 			break;
 		case GL_INT_VEC4:
-			Driver->extGlUniform4iv(Location, count/4, ints);
+		case GL_BOOL_VEC4:
+			Driver->extGlUniform4iv(UniformInfo[index].location, count/4, ints);
 			break;
 		case GL_SAMPLER_1D:
 		case GL_SAMPLER_2D:
@@ -620,7 +621,7 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const s32
 		case GL_SAMPLER_CUBE:
 		case GL_SAMPLER_1D_SHADOW:
 		case GL_SAMPLER_2D_SHADOW:
-			Driver->extGlUniform1iv(Location, 1, ints);
+			Driver->extGlUniform1iv(UniformInfo[index].location, 1, ints);
 			break;
 		default:
 			status = false;
@@ -630,11 +631,6 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const s32
 #else
 	return false;
 #endif
-}
-
-void COpenGLSLMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
-{
-	os::Printer::log("Cannot set constant, use high level shader call.", ELL_WARNING);
 }
 
 IVideoDriver* COpenGLSLMaterialRenderer::getVideoDriver()

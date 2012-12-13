@@ -43,16 +43,18 @@ public:
 	//! Destructor
 	~CD3D9HLSLMaterialRenderer();
 
+	virtual s32 getVariableID(bool vertexShader, const c8* name);
+
 	//! sets a variable in the shader.
 	//! \param vertexShader: True if this should be set in the vertex shader, false if
 	//! in the pixel shader.
-	//! \param name: Name of the variable
+	//! \param index: Index of the variable
 	//! \param floats: Pointer to array of floats
 	//! \param count: Amount of floats in array.
-	virtual bool setVariable(bool vertexShader, const c8* name, const f32* floats, int count);
+	virtual bool setVariable(bool vertexShader, s32 index, const f32* floats, int count);
 
 	//! Int interface for the above.
-	virtual bool setVariable(bool vertexShader, const c8* name, const s32* ints, int count);
+	virtual bool setVariable(bool vertexShader, s32 index, const s32* ints, int count);
 
 	bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
