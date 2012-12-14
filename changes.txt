@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add IColladaMeshWriter::findGeometryNameForNode
 - Add getters IGUIButton::isDrawBorderEnabled and IGUIButton::isDrawBackgroundEnabled
 
 --------------------------

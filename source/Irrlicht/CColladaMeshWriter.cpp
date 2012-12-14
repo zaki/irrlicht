@@ -1189,6 +1189,20 @@ irr::core::stringw CColladaMeshWriter::toNCName(const irr::core::stringw& oldStr
 	return result;
 }
 
+const irr::core::stringw* CColladaMeshWriter::findGeometryNameForNode(ISceneNode* node)
+{
+	IMesh* mesh = getProperties()->getMesh(node);
+	if ( !mesh )
+		return NULL;
+
+	MeshNode * n = Meshes.find(mesh);
+	if ( !n )
+		return NULL;
+
+	const SColladaMesh& colladaMesh = n->getValue();
+	return &colladaMesh.findGeometryNameForNode(node);
+}
+
 // Restrict the characters to a set of allowed characters in xs::NCName.
 irr::core::stringw CColladaMeshWriter::pathToURI(const irr::io::path& path) const
 {

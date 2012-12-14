@@ -96,6 +96,9 @@ public:
 	// Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
 	virtual irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const;
 
+	//! After export you can find out which name had been used for writing the geometry for this node.
+	virtual const irr::core::stringw* findGeometryNameForNode(ISceneNode* node);
+
 protected:
 
 	void reset();
