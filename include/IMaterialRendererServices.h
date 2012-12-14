@@ -103,6 +103,30 @@ public:
 	\param constantAmount Amount of registers to be set. One register consists of 4 floats. */
 	virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1) = 0;
 
+	//! \deprecated. This method may be removed by Irrlicht 2.0
+	_IRR_DEPRECATED_ bool setVertexShaderConstant(const c8* name, const f32* floats, int count)
+	{
+		return setVertexShaderConstant(getVertexShaderConstantID(name), floats, count);
+	}
+
+	//! \deprecated. This method may be removed by Irrlicht 2.0
+	_IRR_DEPRECATED_ bool setVertexShaderConstant(const c8* name, const s32* ints, int count)
+	{
+		return setVertexShaderConstant(getVertexShaderConstantID(name), ints, count);
+	}
+
+	//! \deprecated. This method may be removed by Irrlicht 2.0
+	_IRR_DEPRECATED_ bool setPixelShaderConstant(const c8* name, const f32* floats, int count)
+	{
+		return setPixelShaderConstant(getPixelShaderConstantID(name), floats, count);
+	}
+
+	//! \deprecated. This method may be removed by Irrlicht 2.0
+	_IRR_DEPRECATED_ bool setPixelShaderConstant(const c8* name, const s32* ints, int count)
+	{
+		return setPixelShaderConstant(getPixelShaderConstantID(name), ints, count);
+	}
+
 	//! Get pointer to the IVideoDriver interface
 	/** \return Pointer to the IVideoDriver interface */
 	virtual IVideoDriver* getVideoDriver() = 0;
