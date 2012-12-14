@@ -271,22 +271,26 @@ s32 CD3D9HLSLMaterialRenderer::getVariableID(bool vertexShader, const c8* name)
 	if (!tbl)
 		return -1;
 
-	D3DXHANDLE hndl = tbl->GetConstantByName(NULL, name);
-	if (!hndl)
+	D3DXCONSTANTTABLE_DESC tblDesc;
+	if (!FAILED(tbl->GetDesc(&tblDesc)))
 	{
-		core::stringc s = "HLSL Variable to get ID not found: '";
-		s += name;
-		s += "'. Available variables are:";
-		os::Printer::log(s.c_str(), ELL_WARNING);
-		printHLSLVariables(tbl);
-		return -1;
+		for (u32 i = 0; i < tblDesc.Constants; ++i)
+		{
+			D3DXHANDLE curConst = tbl->GetConstant(NULL, i);
+			D3DXCONSTANT_DESC constDesc;
+			UINT ucount = 1;
+
+			if (!FAILED(tbl->GetConstantDesc(curConst, &constDesc, &ucount)))
+				if(strcmp(name, constDesc.Name) == 0)
+					return i;
+		}
 	}
 
-	D3DXCONSTANT_DESC Description;
-	UINT ucount = 1;
-
-	if (!FAILED(tbl->GetConstantDesc(hndl, &Description, &ucount)))
-		return Description.RegisterIndex;
+	core::stringc s = "HLSL Variable to get ID not found: '";
+	s += name;
+	s += "'. Available variables are:";
+	os::Printer::log(s.c_str(), ELL_WARNING);
+	printHLSLVariables(tbl);
 
 	return -1;
 }

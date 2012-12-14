@@ -47,11 +47,33 @@ bool UseCgShaders = false;
 class MyShaderCallBack : public video::IShaderConstantSetCallBack
 {
 public:
+	MyShaderCallBack() : WorldViewProjID(-1), TransWorldID(-1), InvWorldID(-1), PositionID(-1),
+						ColorID(-1), TextureID(-1), FirstUpdate(true)
+	{
+	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices* services,
 			s32 userData)
 	{
 		video::IVideoDriver* driver = services->getVideoDriver();
+
+		// get shader constants id.
+
+		if (UseHighLevelShaders && FirstUpdate)
+		{
+			WorldViewProjID = services->getVertexShaderConstantID("mWorldViewProj");
+			TransWorldID = services->getVertexShaderConstantID("mTransWorld");
+			InvWorldID = services->getVertexShaderConstantID("mInvWorld");
+			PositionID = services->getVertexShaderConstantID("mLightPos");
+			ColorID = services->getVertexShaderConstantID("mLightColor");
+
+			// Textures ID are important only for OpenGL interface.
+
+			if(driver->getDriverType() == video::EDT_OPENGL)
+				TextureID = services->getVertexShaderConstantID("myTexture");
+
+			FirstUpdate = false;
+		}
 
 		// set inverted world matrix
 		// if we are using highlevel shaders (the user can select this when
@@ -61,7 +83,7 @@ public:
 		invWorld.makeInverse();
 
 		if (UseHighLevelShaders)
-			services->setVertexShaderConstant("mInvWorld", invWorld.pointer(), 16);
+			services->setVertexShaderConstant(InvWorldID, invWorld.pointer(), 16);
 		else
 			services->setVertexShaderConstant(invWorld.pointer(), 0, 4);
 
@@ -73,7 +95,7 @@ public:
 		worldViewProj *= driver->getTransform(video::ETS_WORLD);
 
 		if (UseHighLevelShaders)
-			services->setVertexShaderConstant("mWorldViewProj", worldViewProj.pointer(), 16);
+			services->setVertexShaderConstant(WorldViewProjID, worldViewProj.pointer(), 16);
 		else
 			services->setVertexShaderConstant(worldViewProj.pointer(), 4, 4);
 
@@ -83,7 +105,7 @@ public:
 			getActiveCamera()->getAbsolutePosition();
 
 		if (UseHighLevelShaders)
-			services->setVertexShaderConstant("mLightPos", reinterpret_cast<f32*>(&pos), 3);
+			services->setVertexShaderConstant(PositionID, reinterpret_cast<f32*>(&pos), 3);
 		else
 			services->setVertexShaderConstant(reinterpret_cast<f32*>(&pos), 8, 1);
 
@@ -92,7 +114,7 @@ public:
 		video::SColorf col(0.0f,1.0f,1.0f,0.0f);
 
 		if (UseHighLevelShaders)
-			services->setVertexShaderConstant("mLightColor",
+			services->setVertexShaderConstant(ColorID,
 					reinterpret_cast<f32*>(&col), 4);
 		else
 			services->setVertexShaderConstant(reinterpret_cast<f32*>(&col), 9, 1);
@@ -104,16 +126,25 @@ public:
 
 		if (UseHighLevelShaders)
 		{
-			services->setVertexShaderConstant("mTransWorld", world.pointer(), 16);
+			services->setVertexShaderConstant(TransWorldID, world.pointer(), 16);
 
 			// set texture, for textures you can use both an int and a float setPixelShaderConstant interfaces (You need it only for an OpenGL driver).
 			s32 TextureLayerID = 0;
-			if (UseHighLevelShaders)
-				services->setPixelShaderConstant("myTexture", &TextureLayerID, 1);
+			services->setPixelShaderConstant(TextureID, &TextureLayerID, 1);
 		}
 		else
 			services->setVertexShaderConstant(world.pointer(), 10, 4);
 	}
+
+private:
+	s32 WorldViewProjID;
+	s32 TransWorldID;
+	s32 InvWorldID;
+	s32 PositionID;
+	s32 ColorID;
+	s32 TextureID;
+
+	bool FirstUpdate;
 };
 
 /*
