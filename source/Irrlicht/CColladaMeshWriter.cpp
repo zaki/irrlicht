@@ -661,6 +661,9 @@ void CColladaMeshWriter::writeNodeCameras(irr::scene::ISceneNode * node)
 			Writer->writeElement(L"orthographic", false);
 			Writer->writeLineBreak();
 
+			// TODO: Those values are not affected by the matrix set for the ortographic projection.
+			//		 We do not have those values so far in Irrlicht for orthogonal cameras.
+
 //			writeNode(L"xmag", core::stringw("1.0").c_str());	// TODO: do we need xmag, ymag?
 //			writeNode(L"ymag", core::stringw("1.0").c_str());
 			writeNode(L"aspect_ratio", core::stringw(cameraNode->getAspectRatio()).c_str());
@@ -740,16 +743,21 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	{
 		writeMatrixElement(node->getRelativeTransformation());
 	}
+	else if ( isCamera(node) )
+	{
+		// TODO: We do not handle the case when ICameraSceneNode::getTargetAndRotationBinding() is false. Probably we would have to create a second
+		// node to do that.
+
+		// Note: We can't use rotations for the camera as Irrlicht does not regard the up-vector in rotations so far.
+		// We could maybe use projection matrices, but avoiding them might allow us to get rid of some DummyTransformationSceneNodes on 
+		// import in the future. So that's why we use the lookat element instead.
+
+		ICameraSceneNode * camNode = static_cast<ICameraSceneNode*>(node);
+		writeLookAtElement(camNode->getPosition(), camNode->getTarget(), camNode->getUpVector());
+	}
 	else
 	{
 		irr::core::vector3df rot(node->getRotation());
-		if ( isCamera(node) && !static_cast<ICameraSceneNode*>(node)->getTargetAndRotationBinding() )
-		{
-			ICameraSceneNode * camNode = static_cast<ICameraSceneNode*>(node);
-			const core::vector3df toTarget = camNode->getTarget() - camNode->getAbsolutePosition();
-			rot = toTarget.getHorizontalAngle();
-		}
-
 		writeTranslateElement( node->getPosition() );
 		writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X );
 		writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y );
@@ -2226,6 +2234,18 @@ void CColladaMeshWriter::writeTranslateElement(const irr::core::vector3df& trans
 	txt += irr::core::stringw(translate.Z);
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag(L"translate");
+	Writer->writeLineBreak();
+}
+
+void CColladaMeshWriter::writeLookAtElement(const irr::core::vector3df& eyePos, const irr::core::vector3df& targetPos, const irr::core::vector3df& upVector)
+{
+	Writer->writeElement(L"lookat", false);
+
+	wchar_t tmpbuf[255];
+	swprintf(tmpbuf, 255, L"%f %f %f %f %f %f %f %f %f", eyePos.X, eyePos.Y, eyePos.Z, targetPos.X, targetPos.Y, targetPos.Z, upVector.X, upVector.Y, upVector.Z);
+	Writer->writeText(tmpbuf);
+
+	Writer->writeClosingTag(L"lookat");
 	Writer->writeLineBreak();
 }
 

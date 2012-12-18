@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Collada exporter now exports the camera up-vector correctly.
 - Add IColladaMeshWriter::findGeometryNameForNode
 - Add getters IGUIButton::isDrawBorderEnabled and IGUIButton::isDrawBackgroundEnabled
 
