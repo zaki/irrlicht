@@ -103,6 +103,29 @@ public:
 	//! sets whether this texture is intended to be used as a render target.
 	void setIsRenderTarget(bool isTarget);
 
+	//! Cache methods.
+
+	u8 getTextureWrapU() const;
+	void setTextureWrapU(u8 value);
+
+	u8 getTextureWrapV() const;
+	void setTextureWrapV(u8 value);
+
+	bool getBilinearFilter() const;
+	void setBilinearFilter(bool value);
+
+	bool getTrilinearFilter() const;
+	void setTrilinearFilter(bool value);
+
+	u8 getAnisotropicFilter() const;
+	void setAnisotropicFilter(u8 value);
+
+	bool getMipMapsStatus() const;
+	void setMipMapsStatus(bool value);
+
+	bool getCacheStatus() const;
+	void setCacheStatus(bool value);
+
 protected:
 
 	//! protected constructor with basic setup, no GL texture name created, for derived classes
@@ -143,6 +166,14 @@ protected:
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
 	bool KeepImage;
+
+	u8 WrapU;
+	u8 WrapV;
+	bool Bilinear;
+	bool Trilinear;
+	u8 Anisotropic;
+	bool MipMapStatus;
+	bool CacheStatus;
 };
 
 //! OpenGL FBO texture.

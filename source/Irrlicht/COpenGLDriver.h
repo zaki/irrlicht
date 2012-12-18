@@ -151,7 +151,7 @@ namespace video
 
 		//! draws a set of 2d images, using a color and the alpha channel of the
 		//! texture if desired.
-		void draw2DImageBatch(const video::ITexture* texture,
+		void draw2DImageBatch(video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
@@ -159,7 +159,7 @@ namespace video
 				bool useAlphaChannelOfTexture);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
+		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
@@ -179,7 +179,7 @@ namespace video
 		Note that the alpha component is used: If alpha is other than 255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
 		used to draw the image. */
-		virtual void draw2DImage(const video::ITexture* texture,
+		virtual void draw2DImage(video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -188,7 +188,7 @@ namespace video
 				bool useAlphaChannelOfTexture=false);
 
 		//! Draws a part of the texture into the rectangle.
-		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+		virtual void draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 
@@ -303,7 +303,7 @@ namespace video
 
 		//! sets the current Texture
 		//! Returns whether setting was a success or not.
-		bool setActiveTexture(u32 stage, const video::ITexture* texture);
+		bool setActiveTexture(u32 stage, video::ITexture* texture);
 
 		//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 		//! Returns whether disabling was successful or not.
@@ -405,6 +405,12 @@ namespace video
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
 
+		//! Set the gl matrix mode, if not set already
+		void setGlMatrixMode(GLenum mode);
+
+		//! Set active texture, if not set already
+		void setGlActiveTexture(GLenum texture);
+
 		//! Get Cg context
 		#ifdef _IRR_COMPILE_WITH_CG_
 		const CGcontext& getCgContext();
@@ -428,9 +434,6 @@ namespace video
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 		inline void getGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
-
-		//! Set GL pipeline to desired texture wrap modes of the material
-		void setWrapMode(const SMaterial& material);
 
 		//! get native wrap mode value
 		GLint getTextureWrapMode(const u8 clamp);
@@ -458,9 +461,6 @@ namespace video
 		void renderArray(const void* indexList, u32 primitiveCount,
 				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
-		//! Set the gl matrix mode, if not set already
-		void setMatrixMode(GLenum mode);
-
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
 		core::array<u8> ColorBuffer;
@@ -484,7 +484,7 @@ namespace video
 		core::array<video::IRenderTarget> MRTargets;
 		class STextureStageCache
 		{
-			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+			ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		public:
 			STextureStageCache()
 			{
@@ -499,7 +499,7 @@ namespace video
 				clear();
 			}
 
-			void set(u32 stage, const ITexture* tex)
+			void set(u32 stage, ITexture* tex)
 			{
 				if (stage<MATERIAL_MAX_TEXTURES)
 				{
@@ -512,7 +512,7 @@ namespace video
 				}
 			}
 
-			const ITexture* operator[](int stage) const
+			ITexture* operator[](int stage) const
 			{
 				if ((u32)stage<MATERIAL_MAX_TEXTURES)
 					return CurrentTexture[stage];
@@ -520,7 +520,7 @@ namespace video
 					return 0;
 			}
 
-			void remove(const ITexture* tex)
+			void remove(ITexture* tex)
 			{
 				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
 				{
@@ -561,8 +561,6 @@ namespace video
 
 		core::matrix4 TextureFlipMatrix;
 
-		GLenum CurrentMatrixMode;
-
 		//! Color buffer format
 		ECOLOR_FORMAT ColorFormat;
 
@@ -571,7 +569,15 @@ namespace video
 
 		SIrrlichtCreationParameters Params;
 
+		bool IsDepthTestEnabled;
+		bool IsTexture2DEnabled;
+
 		bool DepthMask;
+
+		GLenum CurrentMatrixMode;
+		GLenum CurrentActiveTexture;
+
+		s8 CacheLODBias[MATERIAL_MAX_TEXTURES];
 
 		//! All the lights that have been requested; a hardware limited
 		//! number of them will be used at once.

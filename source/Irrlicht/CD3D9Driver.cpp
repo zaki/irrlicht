@@ -1567,7 +1567,7 @@ void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 }
 
 
-void CD3D9Driver::draw2DImage(const video::ITexture* texture,
+void CD3D9Driver::draw2DImage(video::ITexture* texture,
 		const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect,
 		const core::rect<s32>* clipRect,
@@ -1639,7 +1639,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 }
 
 
-void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
+void CD3D9Driver::draw2DImageBatch(video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
@@ -1787,7 +1787,7 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 
 //! draws a 2d image, using a color and the alpha channel of the texture if
 //! desired. The image is drawn at pos and clipped against clipRect (if != 0).
-void CD3D9Driver::draw2DImage(const video::ITexture* texture,
+void CD3D9Driver::draw2DImage(video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,

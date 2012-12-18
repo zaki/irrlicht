@@ -714,7 +714,7 @@ void CNullDriver::draw3DBox(const core::aabbox3d<f32>& box, SColor color)
 
 
 //! draws an 2d image
-void CNullDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos)
+void CNullDriver::draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos)
 {
 	if (!texture)
 		return;
@@ -730,7 +730,7 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::positi
 //! in one line. All drawings are clipped against clipRect (if != 0).
 //! The subtextures are defined by the array of sourceRects and are chosen
 //! by the indices given.
-void CNullDriver::draw2DImageBatch(const video::ITexture* texture,
+void CNullDriver::draw2DImageBatch(video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -751,7 +751,7 @@ void CNullDriver::draw2DImageBatch(const video::ITexture* texture,
 
 //! draws a set of 2d images, using a color and the alpha channel of the
 //! texture if desired.
-void CNullDriver::draw2DImageBatch(const video::ITexture* texture,
+void CNullDriver::draw2DImageBatch(video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
@@ -769,7 +769,7 @@ void CNullDriver::draw2DImageBatch(const video::ITexture* texture,
 
 
 //! Draws a part of the texture into the rectangle.
-void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+void CNullDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
 	const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 	const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
@@ -781,7 +781,7 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s
 
 
 //! Draws a 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CNullDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
+void CNullDriver::draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
 				bool useAlphaChannelOfTexture)

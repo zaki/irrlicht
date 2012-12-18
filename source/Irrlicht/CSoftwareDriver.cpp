@@ -792,7 +792,7 @@ const core::dimension2d<u32>& CSoftwareDriver::getCurrentRenderTargetSize() cons
 
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CSoftwareDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
+void CSoftwareDriver::draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
 					const core::rect<s32>& sourceRect,
 					const core::rect<s32>* clipRect, SColor color,
 					bool useAlphaChannelOfTexture)

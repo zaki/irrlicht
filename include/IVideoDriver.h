@@ -809,7 +809,7 @@ namespace video
 		/** \param texture Pointer to texture to use.
 		\param destPos Upper left 2d destination position where the
 		image will be drawn. */
-		virtual void draw2DImage(const video::ITexture* texture,
+		virtual void draw2DImage(video::ITexture* texture,
 			const core::position2d<s32>& destPos) =0;
 
 		//! Draws a 2d image using a color
@@ -828,7 +828,7 @@ namespace video
 		will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of
 		the texture is used to draw the image.*/
-		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
+		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect =0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false) =0;
 
@@ -852,7 +852,7 @@ namespace video
 		255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of
 		the texture is used to draw the image. */
-		virtual void draw2DImageBatch(const video::ITexture* texture,
+		virtual void draw2DImageBatch(video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -877,7 +877,7 @@ namespace video
 		255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of
 		the texture is used to draw the image. */
-		virtual void draw2DImageBatch(const video::ITexture* texture,
+		virtual void draw2DImageBatch(video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect=0,
@@ -894,7 +894,7 @@ namespace video
 		the corners of the destRect
 		\param useAlphaChannelOfTexture True if alpha channel will be
 		blended. */
-		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+		virtual void draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect =0,
 			const video::SColor * const colors=0, bool useAlphaChannelOfTexture=false) =0;
 
