@@ -7,6 +7,7 @@
 
 #include "ITexture.h"
 #include "IImage.h"
+#include "SMaterialLayer.h"
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -45,10 +46,29 @@ namespace video
 {
 
 class COpenGLDriver;
+
 //! OpenGL texture.
 class COpenGLTexture : public ITexture
 {
 public:
+
+	//! Cache structure.
+	struct SStatesCache
+	{
+		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT), BilinearFilter(true),
+			TrilinearFilter(false), AnisotropicFilter(0), MipMapStatus(true), IsCached(false)
+		{
+		}
+
+		u8 WrapU;
+		u8 WrapV;
+		bool BilinearFilter;
+		bool TrilinearFilter;
+		u8 AnisotropicFilter;
+		bool MipMapStatus;
+
+		bool IsCached;
+	};
 
 	//! constructor
 	COpenGLTexture(IImage* surface, const io::path& name, void* mipmapData=0, COpenGLDriver* driver=0);
@@ -103,28 +123,8 @@ public:
 	//! sets whether this texture is intended to be used as a render target.
 	void setIsRenderTarget(bool isTarget);
 
-	//! Cache methods.
-
-	u8 getTextureWrapU() const;
-	void setTextureWrapU(u8 value) const;
-
-	u8 getTextureWrapV() const;
-	void setTextureWrapV(u8 value) const;
-
-	bool getBilinearFilter() const;
-	void setBilinearFilter(bool value) const;
-
-	bool getTrilinearFilter() const;
-	void setTrilinearFilter(bool value) const;
-
-	u8 getAnisotropicFilter() const;
-	void setAnisotropicFilter(u8 value) const;
-
-	bool getMipMapsStatus() const;
-	void setMipMapsStatus(bool value) const;
-
-	bool getCacheStatus() const;
-	void setCacheStatus(bool value) const;
+	//! Get an access to texture states cache.
+	SStatesCache& getStatesCache() const;
 
 protected:
 
@@ -167,13 +167,7 @@ protected:
 	bool ReadOnlyLock;
 	bool KeepImage;
 
-	mutable u8 WrapU;
-	mutable u8 WrapV;
-	mutable bool Bilinear;
-	mutable bool Trilinear;
-	mutable u8 Anisotropic;
-	mutable bool MipMapStatus;
-	mutable bool CacheStatus;
+	mutable SStatesCache StatesCache;
 };
 
 //! OpenGL FBO texture.

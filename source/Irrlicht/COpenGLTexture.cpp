@@ -25,8 +25,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
 	IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true),
-	WrapU(ETC_REPEAT), WrapV(ETC_REPEAT), Bilinear(true), Trilinear(false), Anisotropic(0), MipMapStatus(true), CacheStatus(false)
+	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -63,8 +62,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	MipmapLegacyMode(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true),
-	WrapU(ETC_REPEAT), WrapV(ETC_REPEAT), Bilinear(true), Trilinear(false), Anisotropic(0), MipMapStatus(true), CacheStatus(false)
+	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -658,76 +656,11 @@ void COpenGLTexture::unbindRTT()
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
 }
 
-//! Cache methods.
 
-u8 COpenGLTexture::getTextureWrapU() const
+//! Get an access to texture states cache.
+COpenGLTexture::SStatesCache& COpenGLTexture::getStatesCache() const
 {
-	return WrapU;
-}
-
-void COpenGLTexture::setTextureWrapU(u8 value) const
-{
-	WrapU = value;
-}
-
-u8 COpenGLTexture::getTextureWrapV() const
-{
-	return WrapV;
-}
-
-void COpenGLTexture::setTextureWrapV(u8 value) const
-{
-	WrapV = value;
-}
-
-bool COpenGLTexture::getBilinearFilter() const
-{
-	return Bilinear;
-}
-
-void COpenGLTexture::setBilinearFilter(bool value) const
-{
-	Bilinear = value;
-}
-
-bool COpenGLTexture::getTrilinearFilter() const
-{
-	return Trilinear;
-}
-
-void COpenGLTexture::setTrilinearFilter(bool value) const
-{
-	Trilinear = value;
-}
-
-u8 COpenGLTexture::getAnisotropicFilter() const
-{
-	return Anisotropic;
-}
-
-void COpenGLTexture::setAnisotropicFilter(u8 value) const
-{
-	Anisotropic = value;
-}
-
-bool COpenGLTexture::getMipMapsStatus() const
-{
-	return MipMapStatus;
-}
-
-void COpenGLTexture::setMipMapsStatus(bool value) const
-{
-	MipMapStatus = value;
-}
-
-bool COpenGLTexture::getCacheStatus() const
-{
-	return CacheStatus;
-}
-
-void COpenGLTexture::setCacheStatus(bool value) const
-{
-	CacheStatus = value;
+	return StatesCache;
 }
 
 
