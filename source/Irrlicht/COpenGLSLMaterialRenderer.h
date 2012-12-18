@@ -30,6 +30,7 @@
 #endif
 
 
+#include "EMaterialTypes.h"
 #include "IMaterialRenderer.h"
 #include "IMaterialRendererServices.h"
 #include "IGPUProgrammingServices.h"
@@ -42,6 +43,7 @@ namespace video
 {
 
 class COpenGLDriver;
+class COpenGLMaterialRenderer;
 class IShaderConstantSetCallBack;
 
 //! Class for using GLSL shaders with OpenGL
@@ -67,7 +69,7 @@ public:
 		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
 		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
-		IMaterialRenderer* baseMaterial = 0,
+		E_MATERIAL_TYPE baseMaterial = EMT_SOLID,
 		s32 userData = 0);
 
 	//! Destructor
@@ -101,7 +103,7 @@ protected:
 	//! create a fall back material for example.
 	COpenGLSLMaterialRenderer(COpenGLDriver* driver,
 					IShaderConstantSetCallBack* callback,
-					IMaterialRenderer* baseMaterial,
+					E_MATERIAL_TYPE baseMaterial,
 					s32 userData=0);
 
 	void init(s32& outMaterialTypeNr, 
@@ -118,7 +120,7 @@ protected:
 	
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
-	IMaterialRenderer* BaseMaterial;
+	COpenGLMaterialRenderer* BaseMaterial;
 
 	struct SUniformInfo
 	{
