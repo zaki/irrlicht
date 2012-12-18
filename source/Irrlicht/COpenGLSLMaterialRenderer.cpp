@@ -57,7 +57,7 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 	if (baseMaterial == EMT_ONETEXTURE_BLEND || baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA ||
 		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
 	{
-		BaseMaterial = dynamic_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
+		BaseMaterial = static_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
 	}
 
 	if (BaseMaterial)
@@ -83,7 +83,7 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(COpenGLDriver* driver,
 	if (baseMaterial == EMT_ONETEXTURE_BLEND || baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA ||
 		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
 	{
-		BaseMaterial = dynamic_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
+		BaseMaterial = static_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
 	}
 
 	if (BaseMaterial)

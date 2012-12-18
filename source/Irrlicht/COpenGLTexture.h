@@ -106,25 +106,25 @@ public:
 	//! Cache methods.
 
 	u8 getTextureWrapU() const;
-	void setTextureWrapU(u8 value);
+	void setTextureWrapU(u8 value) const;
 
 	u8 getTextureWrapV() const;
-	void setTextureWrapV(u8 value);
+	void setTextureWrapV(u8 value) const;
 
 	bool getBilinearFilter() const;
-	void setBilinearFilter(bool value);
+	void setBilinearFilter(bool value) const;
 
 	bool getTrilinearFilter() const;
-	void setTrilinearFilter(bool value);
+	void setTrilinearFilter(bool value) const;
 
 	u8 getAnisotropicFilter() const;
-	void setAnisotropicFilter(u8 value);
+	void setAnisotropicFilter(u8 value) const;
 
 	bool getMipMapsStatus() const;
-	void setMipMapsStatus(bool value);
+	void setMipMapsStatus(bool value) const;
 
 	bool getCacheStatus() const;
-	void setCacheStatus(bool value);
+	void setCacheStatus(bool value) const;
 
 protected:
 
@@ -167,13 +167,13 @@ protected:
 	bool ReadOnlyLock;
 	bool KeepImage;
 
-	u8 WrapU;
-	u8 WrapV;
-	bool Bilinear;
-	bool Trilinear;
-	u8 Anisotropic;
-	bool MipMapStatus;
-	bool CacheStatus;
+	mutable u8 WrapU;
+	mutable u8 WrapV;
+	mutable bool Bilinear;
+	mutable bool Trilinear;
+	mutable u8 Anisotropic;
+	mutable bool MipMapStatus;
+	mutable bool CacheStatus;
 };
 
 //! OpenGL FBO texture.

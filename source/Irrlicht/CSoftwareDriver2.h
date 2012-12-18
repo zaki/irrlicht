@@ -85,12 +85,12 @@ namespace video
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
 	//! Draws a part of the texture into the rectangle.
-		virtual void draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 				const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 				const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 

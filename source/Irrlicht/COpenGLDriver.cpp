@@ -1919,7 +1919,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 //! draws a set of 2d images, using a color and the alpha channel of the
 //! texture if desired.
-void COpenGLDriver::draw2DImageBatch(video::ITexture* texture,
+void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
@@ -2056,7 +2056,7 @@ void COpenGLDriver::draw2DImageBatch(video::ITexture* texture,
 //! draws a 2d image, using a color and the alpha channel of the texture if
 //! desired. The image is drawn at pos, clipped against clipRect (if != 0).
 //! Only the subtexture defined by sourceRect is used.
-void COpenGLDriver::draw2DImage(video::ITexture* texture,
+void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
@@ -2186,7 +2186,7 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 
 
 //! The same, but with a four element array of colors, one for each vertex
-void COpenGLDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 		const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
@@ -2259,7 +2259,7 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>&
 //! in one line. All drawings are clipped against clipRect (if != 0).
 //! The subtextures are defined by the array of sourceRects and are chosen
 //! by the indices given.
-void COpenGLDriver::draw2DImage(video::ITexture* texture,
+void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -2436,7 +2436,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 	glEnd();
 }
 
-bool COpenGLDriver::setActiveTexture(u32 stage, video::ITexture* texture)
+bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
 	if (stage >= MaxSupportedTextures)
 		return false;
@@ -2851,7 +2851,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		else if (i>0)
 			break;
 
-		COpenGLTexture* tmpTexture = static_cast<COpenGLTexture*>(CurrentTexture[i]);
+		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
 
 		if(resetAllRenderStates)
 			tmpTexture->setCacheStatus(false);

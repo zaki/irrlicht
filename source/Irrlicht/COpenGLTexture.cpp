@@ -665,7 +665,7 @@ u8 COpenGLTexture::getTextureWrapU() const
 	return WrapU;
 }
 
-void COpenGLTexture::setTextureWrapU(u8 value)
+void COpenGLTexture::setTextureWrapU(u8 value) const
 {
 	WrapU = value;
 }
@@ -675,7 +675,7 @@ u8 COpenGLTexture::getTextureWrapV() const
 	return WrapV;
 }
 
-void COpenGLTexture::setTextureWrapV(u8 value)
+void COpenGLTexture::setTextureWrapV(u8 value) const
 {
 	WrapV = value;
 }
@@ -685,7 +685,7 @@ bool COpenGLTexture::getBilinearFilter() const
 	return Bilinear;
 }
 
-void COpenGLTexture::setBilinearFilter(bool value)
+void COpenGLTexture::setBilinearFilter(bool value) const
 {
 	Bilinear = value;
 }
@@ -695,7 +695,7 @@ bool COpenGLTexture::getTrilinearFilter() const
 	return Trilinear;
 }
 
-void COpenGLTexture::setTrilinearFilter(bool value)
+void COpenGLTexture::setTrilinearFilter(bool value) const
 {
 	Trilinear = value;
 }
@@ -705,7 +705,7 @@ u8 COpenGLTexture::getAnisotropicFilter() const
 	return Anisotropic;
 }
 
-void COpenGLTexture::setAnisotropicFilter(u8 value)
+void COpenGLTexture::setAnisotropicFilter(u8 value) const
 {
 	Anisotropic = value;
 }
@@ -715,7 +715,7 @@ bool COpenGLTexture::getMipMapsStatus() const
 	return MipMapStatus;
 }
 
-void COpenGLTexture::setMipMapsStatus(bool value)
+void COpenGLTexture::setMipMapsStatus(bool value) const
 {
 	MipMapStatus = value;
 }
@@ -725,7 +725,7 @@ bool COpenGLTexture::getCacheStatus() const
 	return CacheStatus;
 }
 
-void COpenGLTexture::setCacheStatus(bool value)
+void COpenGLTexture::setCacheStatus(bool value) const
 {
 	CacheStatus = value;
 }

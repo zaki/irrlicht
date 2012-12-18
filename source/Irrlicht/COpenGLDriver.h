@@ -151,7 +151,7 @@ namespace video
 
 		//! draws a set of 2d images, using a color and the alpha channel of the
 		//! texture if desired.
-		void draw2DImageBatch(video::ITexture* texture,
+		void draw2DImageBatch(const video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
@@ -159,7 +159,7 @@ namespace video
 				bool useAlphaChannelOfTexture);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
@@ -179,7 +179,7 @@ namespace video
 		Note that the alpha component is used: If alpha is other than 255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
 		used to draw the image. */
-		virtual void draw2DImage(video::ITexture* texture,
+		virtual void draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -188,7 +188,7 @@ namespace video
 				bool useAlphaChannelOfTexture=false);
 
 		//! Draws a part of the texture into the rectangle.
-		virtual void draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 
@@ -303,7 +303,7 @@ namespace video
 
 		//! sets the current Texture
 		//! Returns whether setting was a success or not.
-		bool setActiveTexture(u32 stage, video::ITexture* texture);
+		bool setActiveTexture(u32 stage, const video::ITexture* texture);
 
 		//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 		//! Returns whether disabling was successful or not.
@@ -484,7 +484,7 @@ namespace video
 		core::array<video::IRenderTarget> MRTargets;
 		class STextureStageCache
 		{
-			ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		public:
 			STextureStageCache()
 			{
@@ -499,7 +499,7 @@ namespace video
 				clear();
 			}
 
-			void set(u32 stage, ITexture* tex)
+			void set(u32 stage, const ITexture* tex)
 			{
 				if (stage<MATERIAL_MAX_TEXTURES)
 				{
@@ -512,7 +512,7 @@ namespace video
 				}
 			}
 
-			ITexture* operator[](int stage) const
+			const ITexture* operator[](int stage) const
 			{
 				if ((u32)stage<MATERIAL_MAX_TEXTURES)
 					return CurrentTexture[stage];
