@@ -317,6 +317,13 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		InternalFormat=oldInternalFormat;
 
 	Driver->setActiveTexture(0, this);
+
+	if (Driver->MultiTextureExtension)
+		Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
@@ -652,6 +659,12 @@ void COpenGLTexture::unbindRTT()
 {
 	Driver->setActiveTexture(0, this);
 
+	if (Driver->MultiTextureExtension)
+		Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+
 	// Copy Our ViewPort To The Texture
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
 }
@@ -701,6 +714,12 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 	// generate color texture
 	glGenTextures(1, &TextureName);
 	Driver->setActiveTexture(0, this);
+
+	if (Driver->MultiTextureExtension)
+		Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

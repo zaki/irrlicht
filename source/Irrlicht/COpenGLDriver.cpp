@@ -764,10 +764,6 @@ bool COpenGLDriver::genericDriverInit()
 	// create matrix for flipping textures
 	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
 
-	// Cached initial values.
-	for(u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-		CacheLODBias[i] = -1;
-
 	// We need to reset once more at the beginning of the first rendering.
 	// This fixes problems with intermediate changes to the material during texture load.
 	ResetRenderStates = true;
@@ -2444,45 +2440,17 @@ bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	if (CurrentTexture[stage]==texture)
 		return true;
 
-	if (MultiTextureExtension)
-		setGlActiveTexture(GL_TEXTURE0_ARB + stage);
-
 	CurrentTexture.set(stage,texture);
 
 	if (!texture)
-	{
-		//if(IsTexture2DEnabled)
-		{
-			glDisable(GL_TEXTURE_2D);
-			IsTexture2DEnabled = false;
-		}
-
 		return true;
-	}
-	else
+	else if (texture->getDriverType() != EDT_OPENGL)
 	{
-		if (texture->getDriverType() != EDT_OPENGL)
-		{
-			//if(IsTexture2DEnabled)
-			{
-				glDisable(GL_TEXTURE_2D);
-				IsTexture2DEnabled = false;
-			}
-
-			CurrentTexture.set(stage, 0);
-			os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
-			return false;
-		}
-
-		//if(!IsTexture2DEnabled)
-		{
-			glEnable(GL_TEXTURE_2D);
-			IsTexture2DEnabled = true;
-		}
-
-		glBindTexture(GL_TEXTURE_2D,
-			static_cast<const COpenGLTexture*>(texture)->getOpenGLTextureName());
+		CurrentTexture.set(stage, 0);
+		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+		return false;
 	}
+
 	return true;
 }
 
@@ -2543,12 +2511,8 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 	Material = material;
 	OverrideMaterial.apply(Material);
 
-	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
-	{
+	for (u32 i = 0; i < MaxTextureUnits; ++i)
 		setActiveTexture(i, material.getTexture(i));
-		setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
-				Material.getTextureMatrix(i));
-	}
 }
 
 
@@ -2740,124 +2704,208 @@ GLint COpenGLDriver::getTextureWrapMode(const u8 clamp)
 
 //! Can be called by an IMaterialRenderer to make its work easier.
 void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-	bool resetAllRenderStates)
+	bool resetAllRenderStates, bool fixedPipeline)
 {
-	if (resetAllRenderStates ||
-		lastmaterial.ColorMaterial != material.ColorMaterial)
+	// Fixed pipeline isn't important for shader based materials
+
+	if(fixedPipeline || resetAllRenderStates)
 	{
-		switch (material.ColorMaterial)
+		// material colors
+		if (resetAllRenderStates ||
+			lastmaterial.ColorMaterial != material.ColorMaterial)
 		{
-		case ECM_NONE:
-			glDisable(GL_COLOR_MATERIAL);
-			break;
-		case ECM_DIFFUSE:
-			glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
-			break;
-		case ECM_AMBIENT:
-			glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT);
-			break;
-		case ECM_EMISSIVE:
-			glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
-			break;
-		case ECM_SPECULAR:
-			glColorMaterial(GL_FRONT_AND_BACK, GL_SPECULAR);
-			break;
-		case ECM_DIFFUSE_AND_AMBIENT:
-			glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-			break;
-		}
-		if (material.ColorMaterial != ECM_NONE)
-			glEnable(GL_COLOR_MATERIAL);
-	}
-
-	if (resetAllRenderStates ||
-		lastmaterial.AmbientColor != material.AmbientColor ||
-		lastmaterial.DiffuseColor != material.DiffuseColor ||
-		lastmaterial.EmissiveColor != material.EmissiveColor ||
-		lastmaterial.ColorMaterial != material.ColorMaterial)
-	{
-		GLfloat color[4];
-
-		const f32 inv = 1.0f / 255.0f;
-
-		if ((material.ColorMaterial != video::ECM_AMBIENT) &&
-			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
-		{
-			color[0] = material.AmbientColor.getRed() * inv;
-			color[1] = material.AmbientColor.getGreen() * inv;
-			color[2] = material.AmbientColor.getBlue() * inv;
-			color[3] = material.AmbientColor.getAlpha() * inv;
-			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+			switch (material.ColorMaterial)
+			{
+			case ECM_NONE:
+				glDisable(GL_COLOR_MATERIAL);
+				break;
+			case ECM_DIFFUSE:
+				glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+				break;
+			case ECM_AMBIENT:
+				glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT);
+				break;
+			case ECM_EMISSIVE:
+				glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
+				break;
+			case ECM_SPECULAR:
+				glColorMaterial(GL_FRONT_AND_BACK, GL_SPECULAR);
+				break;
+			case ECM_DIFFUSE_AND_AMBIENT:
+				glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+				break;
+			}
+			if (material.ColorMaterial != ECM_NONE)
+				glEnable(GL_COLOR_MATERIAL);
 		}
 
-		if ((material.ColorMaterial != video::ECM_DIFFUSE) &&
-			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+		if (resetAllRenderStates ||
+			lastmaterial.AmbientColor != material.AmbientColor ||
+			lastmaterial.DiffuseColor != material.DiffuseColor ||
+			lastmaterial.EmissiveColor != material.EmissiveColor ||
+			lastmaterial.ColorMaterial != material.ColorMaterial)
 		{
-			color[0] = material.DiffuseColor.getRed() * inv;
-			color[1] = material.DiffuseColor.getGreen() * inv;
-			color[2] = material.DiffuseColor.getBlue() * inv;
-			color[3] = material.DiffuseColor.getAlpha() * inv;
-			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+			GLfloat color[4];
+
+			const f32 inv = 1.0f / 255.0f;
+
+			if ((material.ColorMaterial != video::ECM_AMBIENT) &&
+				(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+			{
+				color[0] = material.AmbientColor.getRed() * inv;
+				color[1] = material.AmbientColor.getGreen() * inv;
+				color[2] = material.AmbientColor.getBlue() * inv;
+				color[3] = material.AmbientColor.getAlpha() * inv;
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+			}
+
+			if ((material.ColorMaterial != video::ECM_DIFFUSE) &&
+				(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+			{
+				color[0] = material.DiffuseColor.getRed() * inv;
+				color[1] = material.DiffuseColor.getGreen() * inv;
+				color[2] = material.DiffuseColor.getBlue() * inv;
+				color[3] = material.DiffuseColor.getAlpha() * inv;
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+			}
+
+			if (material.ColorMaterial != video::ECM_EMISSIVE)
+			{
+				color[0] = material.EmissiveColor.getRed() * inv;
+				color[1] = material.EmissiveColor.getGreen() * inv;
+				color[2] = material.EmissiveColor.getBlue() * inv;
+				color[3] = material.EmissiveColor.getAlpha() * inv;
+				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
+			}
 		}
 
-		if (material.ColorMaterial != video::ECM_EMISSIVE)
+		if (resetAllRenderStates ||
+			lastmaterial.SpecularColor != material.SpecularColor ||
+			lastmaterial.Shininess != material.Shininess ||
+			lastmaterial.ColorMaterial != material.ColorMaterial)
 		{
-			color[0] = material.EmissiveColor.getRed() * inv;
-			color[1] = material.EmissiveColor.getGreen() * inv;
-			color[2] = material.EmissiveColor.getBlue() * inv;
-			color[3] = material.EmissiveColor.getAlpha() * inv;
-			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
-		}
-	}
+			GLfloat color[4]={0.f,0.f,0.f,1.f};
+			const f32 inv = 1.0f / 255.0f;
 
-	if (resetAllRenderStates ||
-		lastmaterial.SpecularColor != material.SpecularColor ||
-		lastmaterial.Shininess != material.Shininess ||
-		lastmaterial.ColorMaterial != material.ColorMaterial)
-	{
-		GLfloat color[4]={0.f,0.f,0.f,1.f};
-		const f32 inv = 1.0f / 255.0f;
-
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material.Shininess);
-		// disable Specular colors if no shininess is set
-		if ((material.Shininess != 0.0f) &&
-			(material.ColorMaterial != video::ECM_SPECULAR))
-		{
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material.Shininess);
+			// disable Specular colors if no shininess is set
+			if ((material.Shininess != 0.0f) &&
+				(material.ColorMaterial != video::ECM_SPECULAR))
+			{
 #ifdef GL_EXT_separate_specular_color
-			if (FeatureAvailable[IRR_EXT_separate_specular_color])
-				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
+				if (FeatureAvailable[IRR_EXT_separate_specular_color])
+					glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 #endif
-			color[0] = material.SpecularColor.getRed() * inv;
-			color[1] = material.SpecularColor.getGreen() * inv;
-			color[2] = material.SpecularColor.getBlue() * inv;
-			color[3] = material.SpecularColor.getAlpha() * inv;
-		}
+				color[0] = material.SpecularColor.getRed() * inv;
+				color[1] = material.SpecularColor.getGreen() * inv;
+				color[2] = material.SpecularColor.getBlue() * inv;
+				color[3] = material.SpecularColor.getAlpha() * inv;
+			}
 #ifdef GL_EXT_separate_specular_color
-		else if (FeatureAvailable[IRR_EXT_separate_specular_color])
-			glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
+			else if (FeatureAvailable[IRR_EXT_separate_specular_color])
+				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 #endif
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color);
+		}
+
+		// shademode
+		if (resetAllRenderStates || (lastmaterial.GouraudShading != material.GouraudShading))
+		{
+			if (material.GouraudShading)
+				glShadeModel(GL_SMOOTH);
+			else
+				glShadeModel(GL_FLAT);
+		}
+
+		// lighting
+		if (resetAllRenderStates || (lastmaterial.Lighting != material.Lighting))
+		{
+			if (material.Lighting)
+				glEnable(GL_LIGHTING);
+			else
+				glDisable(GL_LIGHTING);
+		}
+
+		// fog
+		if (resetAllRenderStates || lastmaterial.FogEnable != material.FogEnable)
+		{
+			if (material.FogEnable)
+				glEnable(GL_FOG);
+			else
+				glDisable(GL_FOG);
+		}
+
+		// normalization
+		if (resetAllRenderStates || lastmaterial.NormalizeNormals != material.NormalizeNormals)
+		{
+			if (material.NormalizeNormals)
+				glEnable(GL_NORMALIZE);
+			else
+				glDisable(GL_NORMALIZE);
+		}
 	}
 
-	// Texture filter
-	// Has to be checked always because it depends on the textures
-	// Filtering has to be set for each texture layer
-	for (u32 i=0; i<MaxTextureUnits; ++i)
-	{
-		if (!CurrentTexture[i])
-			continue;
-		if (MultiTextureExtension)
-			setGlActiveTexture(GL_TEXTURE0_ARB + i);
-		else if (i>0)
-			break;
+	// Set textures to TU/TIU and apply filters to them
 
+	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
+	{
 		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
+
+		if(fixedPipeline)
+		{
+			if (i>0 && !MultiTextureExtension)
+				break;
+
+			if (!CurrentTexture[i])
+			{
+				if (MultiTextureExtension)
+					setGlActiveTexture(GL_TEXTURE0_ARB + i);
+
+				glDisable(GL_TEXTURE_2D);
+
+				continue;
+			}
+			else
+			{
+				if (MultiTextureExtension)
+					setGlActiveTexture(GL_TEXTURE0_ARB + i);
+
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
+				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+			}
+		}
+		else
+		{
+			if (CurrentTexture[i])
+			{
+				setGlActiveTexture(GL_TEXTURE0_ARB + i);
+				glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
+			}
+			else
+				continue;
+		}
 
 		if(resetAllRenderStates)
 			tmpTexture->getStatesCache().IsCached = false;
 
-#ifdef GL_EXT_texture_lod_bias
-		if (FeatureAvailable[IRR_EXT_texture_lod_bias] && (resetAllRenderStates || material.TextureLayer[i].LODBias != CacheLODBias[i]))
+#ifdef GL_VERSION_2_1
+		if (Version>=210)
+		{
+			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].LODBias != tmpTexture->getStatesCache().LODBias)
+			{
+				if (material.TextureLayer[i].LODBias)
+				{
+					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, tmp);
+				}
+				else
+					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.f);
+
+				tmpTexture->getStatesCache().LODBias = material.TextureLayer[i].LODBias;
+			}
+		}
+		else if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		{
 			if (material.TextureLayer[i].LODBias)
 			{
@@ -2866,10 +2914,20 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			}
 			else
 				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
-
-			CacheLODBias[i] = material.TextureLayer[i].LODBias;
+		}
+#elif defined(GL_EXT_texture_lod_bias)
+		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		{
+			if (material.TextureLayer[i].LODBias)
+			{
+				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
+			}
+			else
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
 		}
 #endif
+
 		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 			material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
 		{
@@ -2914,7 +2972,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-			material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
+				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
 
 			tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
 		}
@@ -2938,24 +2996,6 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// fillmode
 	if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
 		glPolygonMode(GL_FRONT_AND_BACK, material.Wireframe ? GL_LINE : material.PointCloud? GL_POINT : GL_FILL);
-
-	// shademode
-	if (resetAllRenderStates || (lastmaterial.GouraudShading != material.GouraudShading))
-	{
-		if (material.GouraudShading)
-			glShadeModel(GL_SMOOTH);
-		else
-			glShadeModel(GL_FLAT);
-	}
-
-	// lighting
-	if (resetAllRenderStates || (lastmaterial.Lighting != material.Lighting))
-	{
-		if (material.Lighting)
-			glEnable(GL_LIGHTING);
-		else
-			glDisable(GL_LIGHTING);
-	}
 
 	// zbuffer
 	if (resetAllRenderStates || lastmaterial.ZBuffer != material.ZBuffer)
@@ -3094,24 +3134,6 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 		else
 			glDisable(GL_CULL_FACE);
-	}
-
-	// fog
-	if (resetAllRenderStates || lastmaterial.FogEnable != material.FogEnable)
-	{
-		if (material.FogEnable)
-			glEnable(GL_FOG);
-		else
-			glDisable(GL_FOG);
-	}
-
-	// normalization
-	if (resetAllRenderStates || lastmaterial.NormalizeNormals != material.NormalizeNormals)
-	{
-		if (material.NormalizeNormals)
-			glEnable(GL_NORMALIZE);
-		else
-			glDisable(GL_NORMALIZE);
 	}
 
 	// Color Mask
@@ -3309,7 +3331,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// be sure to leave in texture stage 0
-	if (MultiTextureExtension)
+	if (fixedPipeline && MultiTextureExtension)
 		setGlActiveTexture(GL_TEXTURE0_ARB);
 }
 
@@ -4266,7 +4288,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	if ((RenderTargetTexture != texture) ||
 		(CurrentTarget==ERT_MULTI_RENDER_TEXTURES))
 	{
-		setActiveTexture(0, 0);
+		setGlActiveTexture(GL_TEXTURE0_ARB);
 		ResetRenderStates=true;
 		if (RenderTargetTexture!=0)
 		{

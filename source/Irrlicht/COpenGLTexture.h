@@ -56,7 +56,7 @@ public:
 	struct SStatesCache
 	{
 		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT), BilinearFilter(true),
-			TrilinearFilter(false), AnisotropicFilter(0), MipMapStatus(true), IsCached(false)
+			TrilinearFilter(false), AnisotropicFilter(0), MipMapStatus(true), IsCached(false), LODBias(0)
 		{
 		}
 
@@ -66,6 +66,7 @@ public:
 		bool TrilinearFilter;
 		u8 AnisotropicFilter;
 		bool MipMapStatus;
+		s8 LODBias;
 
 		bool IsCached;
 	};

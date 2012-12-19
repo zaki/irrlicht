@@ -275,7 +275,14 @@ namespace video
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-			bool resetAllRenderstates);
+			bool resetAllRenderstates)
+		{
+			setBasicRenderStates(material, lastmaterial, resetAllRenderstates, true);
+		}
+
+		//! Can be called by an IMaterialRenderer to make its work easier.
+		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
+			bool resetAllRenderstates, bool fixedPipeline);
 
 		//! Get a vertex shader constant index.
 		virtual s32 getVertexShaderConstantID(const c8* name);
@@ -576,8 +583,6 @@ namespace video
 
 		GLenum CurrentMatrixMode;
 		GLenum CurrentActiveTexture;
-
-		s8 CacheLODBias[MATERIAL_MAX_TEXTURES];
 
 		//! All the lights that have been requested; a hardware limited
 		//! number of them will be used at once.

@@ -227,7 +227,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
 
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
 }
 
 
@@ -502,7 +502,7 @@ void COpenGLSLMaterialRenderer::setBasicRenderStates(const SMaterial& material,
 						bool resetAllRenderstates)
 {
 	// forward
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
 }
 
 s32 COpenGLSLMaterialRenderer::getVertexShaderConstantID(const c8* name)
