@@ -661,14 +661,20 @@ void CColladaMeshWriter::writeNodeCameras(irr::scene::ISceneNode * node)
 			Writer->writeElement(L"orthographic", false);
 			Writer->writeLineBreak();
 
-			// TODO: Those values are not affected by the matrix set for the ortographic projection.
-			//		 We do not have those values so far in Irrlicht for orthogonal cameras.
+			irr::core::matrix4 projMat( cameraNode->getProjectionMatrix() );
+			irr::f32 xmag = 2.f/projMat[0];
+			irr::f32 ymag = 2.f/projMat[5];
 
-//			writeNode(L"xmag", core::stringw("1.0").c_str());	// TODO: do we need xmag, ymag?
-//			writeNode(L"ymag", core::stringw("1.0").c_str());
-			writeNode(L"aspect_ratio", core::stringw(cameraNode->getAspectRatio()).c_str());
-			writeNode(L"znear", core::stringw(cameraNode->getNearValue()).c_str());
-			writeNode(L"zfar", core::stringw(cameraNode->getFarValue()).c_str());
+			// Note that Irrlicht camera does not update near/far when setting the projection matrix, 
+			// so we have to calculate that here (at least currently - maybe camera code will be updated at some time).
+			irr::f32 nearMinusFar = -1.f/projMat[10];
+			irr::f32 zNear = projMat[14]*nearMinusFar;
+			irr::f32 zFar = 1.f/projMat[10] + zNear;
+
+			writeNode(L"xmag", core::stringw(xmag).c_str());
+			writeNode(L"ymag", core::stringw(ymag).c_str());
+			writeNode(L"znear", core::stringw(zNear).c_str());
+			writeNode(L"zfar", core::stringw(zFar).c_str());
 
 			Writer->writeClosingTag(L"orthographic");
 			Writer->writeLineBreak();
