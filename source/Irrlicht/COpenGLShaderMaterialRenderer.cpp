@@ -11,6 +11,7 @@
 #include "IVideoDriver.h"
 #include "os.h"
 #include "COpenGLDriver.h"
+#include "COpenGLMaterialRenderer.h"
 
 namespace irr
 {
@@ -21,8 +22,8 @@ namespace video
 //! Constructor
 COpenGLShaderMaterialRenderer::COpenGLShaderMaterialRenderer(video::COpenGLDriver* driver,
 	s32& outMaterialTypeNr, const c8* vertexShaderProgram, const c8* pixelShaderProgram,
-	IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData)
-	: Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
+	IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData)
+	: Driver(driver), CallBack(callback), BaseMaterial(0),
 		VertexShader(0), UserData(userData)
 {
 	#ifdef _DEBUG
@@ -33,6 +34,12 @@ COpenGLShaderMaterialRenderer::COpenGLShaderMaterialRenderer(video::COpenGLDrive
 	for (u32 i=0; i<4; ++i)
 	{
 		PixelShader[i]=0;
+	}
+
+	if (baseMaterial == EMT_ONETEXTURE_BLEND || baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA ||
+		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
+	{
+		BaseMaterial = static_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
 	}
 
 	if (BaseMaterial)
@@ -49,14 +56,20 @@ COpenGLShaderMaterialRenderer::COpenGLShaderMaterialRenderer(video::COpenGLDrive
 //! create a fall back material for example.
 COpenGLShaderMaterialRenderer::COpenGLShaderMaterialRenderer(COpenGLDriver* driver,
 				IShaderConstantSetCallBack* callback,
-				IMaterialRenderer* baseMaterial, s32 userData)
-: Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
+				E_MATERIAL_TYPE baseMaterial, s32 userData)
+: Driver(driver), CallBack(callback), BaseMaterial(0),
 		VertexShader(0), UserData(userData)
 {
 	PixelShader.set_used(4);
 	for (u32 i=0; i<4; ++i)
 	{
 		PixelShader[i]=0;
+	}
+
+	if (baseMaterial == EMT_ONETEXTURE_BLEND || baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA ||
+		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
+	{
+		BaseMaterial = static_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
 	}
 
 	if (BaseMaterial)
@@ -159,15 +172,13 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 		}
 
 		if (BaseMaterial)
-			BaseMaterial->OnSetMaterial(material, lastMaterial, resetAllRenderstates, services);
+			BaseMaterial->OnSetBaseMaterial(material);
 	}
 
 	//let callback know used material
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
 
-	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		Driver->setActiveTexture(i, material.getTexture(i));
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
@@ -192,7 +203,7 @@ void COpenGLShaderMaterialRenderer::OnUnsetMaterial()
 #endif
 
 	if (BaseMaterial)
-		BaseMaterial->OnUnsetMaterial();
+		BaseMaterial->OnUnsetBaseMaterial();
 }
 
 

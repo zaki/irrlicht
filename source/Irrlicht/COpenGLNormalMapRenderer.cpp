@@ -153,7 +153,7 @@ const char OPENGL_NORMAL_MAP_PSH[] =
 
 //! Constructor
 COpenGLNormalMapRenderer::COpenGLNormalMapRenderer(video::COpenGLDriver* driver,
-	s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
+	s32& outMaterialTypeNr, E_MATERIAL_TYPE baseMaterial)
 	: COpenGLShaderMaterialRenderer(driver, 0, baseMaterial), CompiledShaders(true)
 {
 

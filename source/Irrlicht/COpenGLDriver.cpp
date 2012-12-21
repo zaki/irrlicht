@@ -807,19 +807,19 @@ void COpenGLDriver::createMaterialRenderers()
 	// add normal map renderers
 	s32 tmp = 0;
 	video::IMaterialRenderer* renderer = 0;
-	renderer = new COpenGLNormalMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
+	renderer = new COpenGLNormalMapRenderer(this, tmp, EMT_SOLID);
 	renderer->drop();
-	renderer = new COpenGLNormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
+	renderer = new COpenGLNormalMapRenderer(this, tmp, EMT_TRANSPARENT_ADD_COLOR);
 	renderer->drop();
-	renderer = new COpenGLNormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
+	renderer = new COpenGLNormalMapRenderer(this, tmp, EMT_TRANSPARENT_VERTEX_ALPHA);
 	renderer->drop();
 
 	// add parallax map renderers
-	renderer = new COpenGLParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
+	renderer = new COpenGLParallaxMapRenderer(this, tmp, EMT_SOLID);
 	renderer->drop();
-	renderer = new COpenGLParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
+	renderer = new COpenGLParallaxMapRenderer(this, tmp, EMT_TRANSPARENT_ADD_COLOR);
 	renderer->drop();
-	renderer = new COpenGLParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
+	renderer = new COpenGLParallaxMapRenderer(this, tmp, EMT_TRANSPARENT_VERTEX_ALPHA);
 	renderer->drop();
 
 	// add basic 1 texture blending
@@ -986,8 +986,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 
 			const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
 
-			if (MultiTextureExtension)
-				setGlActiveTexture(GL_TEXTURE0_ARB + i);
+			setGlActiveTexture(GL_TEXTURE0_ARB + i);
 
 			setGlMatrixMode(GL_TEXTURE);
 			if (!isRTT && mat.isIdentity() )
@@ -2209,7 +2208,8 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	disableTextures(1);
-	setActiveTexture(0, texture);
+	if (!setActiveTexture(0, texture))
+		return;
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
@@ -2461,7 +2461,19 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 {
 	bool result=true;
 	for (u32 i=fromStage; i<MaxSupportedTextures; ++i)
+	{
 		result &= setActiveTexture(i, 0);
+
+		if(DriverStage.getTexture(i) != 0 || !DriverStage.getTextureFixedPipeline(i))
+		{
+			setGlActiveTexture(GL_TEXTURE0_ARB + i);
+
+			glDisable(GL_TEXTURE_2D);
+
+			DriverStage.setTexture(i, 0);
+			DriverStage.setTextureFixedPipeline(i, true);
+		}
+	}
 	return result;
 }
 
@@ -2858,20 +2870,31 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 
 			if (!CurrentTexture[i])
 			{
-				if (MultiTextureExtension)
+				if(DriverStage.getTexture(i) != 0 || !DriverStage.getTextureFixedPipeline(i))
+				{
 					setGlActiveTexture(GL_TEXTURE0_ARB + i);
 
-				glDisable(GL_TEXTURE_2D);
+					glDisable(GL_TEXTURE_2D);
+
+					DriverStage.setTexture(i, 0);
+					DriverStage.setTextureFixedPipeline(i, true);
+				}
 
 				continue;
 			}
 			else
 			{
-				if (MultiTextureExtension)
+				if(DriverStage.getTexture(i) != CurrentTexture[i] || !DriverStage.getTextureFixedPipeline(i))
+				{
 					setGlActiveTexture(GL_TEXTURE0_ARB + i);
 
-				glEnable(GL_TEXTURE_2D);
-				glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
+					glEnable(GL_TEXTURE_2D);
+					glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
+
+					DriverStage.setTexture(i, CurrentTexture[i]);
+					DriverStage.setTextureFixedPipeline(i, true);
+				}
+
 				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 			}
 		}
@@ -2879,8 +2902,14 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		{
 			if (CurrentTexture[i])
 			{
-				setGlActiveTexture(GL_TEXTURE0_ARB + i);
-				glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
+				if(DriverStage.getTexture(i) != CurrentTexture[i])
+				{
+					setGlActiveTexture(GL_TEXTURE0_ARB + i);
+					glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
+
+					DriverStage.setTexture(i, CurrentTexture[i]);
+					DriverStage.setTextureFixedPipeline(i, false);
+				}
 			}
 			else
 				continue;
@@ -3331,7 +3360,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// be sure to leave in texture stage 0
-	if (fixedPipeline && MultiTextureExtension)
+	if (fixedPipeline)
 		setGlActiveTexture(GL_TEXTURE0_ARB);
 }
 
@@ -3348,6 +3377,10 @@ void COpenGLDriver::enableMaterial2D(bool enable)
 //! sets the needed renderstates
 void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
+	bool BindedTexture = false;
+
+	setGlActiveTexture(GL_TEXTURE0_ARB);
+
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
 		// unset last 3d material
@@ -3371,14 +3404,14 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			glTranslatef(0.375f, 0.375f, 0.0f);
 
 			// Make sure we set first texture matrix
-			if (MultiTextureExtension)
-				setGlActiveTexture(GL_TEXTURE0_ARB);
+			setGlActiveTexture(GL_TEXTURE0_ARB);
 
 			Transformation3DChanged = false;
 		}
 		if (!OverrideMaterial2DEnabled)
 		{
 			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+			BindedTexture = true;
 			LastMaterial = InitMaterial2D;
 		}
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -3392,6 +3425,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	{
 		OverrideMaterial2D.Lighting=false;
 		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
+		BindedTexture = true;
 		LastMaterial = OverrideMaterial2D;
 	}
 
@@ -3412,6 +3446,20 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (texture)
 	{
+		if(!BindedTexture && CurrentTexture[0])
+		{
+			if(DriverStage.getTexture(0) != CurrentTexture[0] || !DriverStage.getTextureFixedPipeline(0))
+			{
+				setGlActiveTexture(GL_TEXTURE0_ARB);
+
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(CurrentTexture[0])->getOpenGLTextureName());
+
+				DriverStage.setTexture(0, CurrentTexture[0]);
+				DriverStage.setTextureFixedPipeline(0, true);
+			}
+		}
+
 		if (!OverrideMaterial2DEnabled)
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -4072,7 +4120,7 @@ s32 COpenGLDriver::addShaderMaterial(const c8* vertexShaderProgram,
 	s32 nr = -1;
 	COpenGLShaderMaterialRenderer* r = new COpenGLShaderMaterialRenderer(
 		this, nr, vertexShaderProgram, pixelShaderProgram,
-		callback, getMaterialRenderer(baseMaterial), userData);
+		callback, baseMaterial, userData);
 
 	r->drop();
 	return nr;
@@ -4889,7 +4937,7 @@ void COpenGLDriver::setGlMatrixMode(GLenum mode)
 
 void COpenGLDriver::setGlActiveTexture(GLenum texture)
 {
-	if (CurrentActiveTexture != texture)
+	if (MultiTextureExtension && CurrentActiveTexture != texture)
 	{
 		extGlActiveTexture(texture);
 		CurrentActiveTexture = texture;

@@ -316,10 +316,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!newTexture)
 		InternalFormat=oldInternalFormat;
 
-	Driver->setActiveTexture(0, this);
-
-	if (Driver->MultiTextureExtension)
-		Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
+	Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
@@ -657,10 +654,7 @@ void COpenGLTexture::bindRTT()
 //! Unbind Render Target Texture
 void COpenGLTexture::unbindRTT()
 {
-	Driver->setActiveTexture(0, this);
-
-	if (Driver->MultiTextureExtension)
-		Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
+	Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, TextureName);
@@ -713,10 +707,8 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
-	Driver->setActiveTexture(0, this);
 
-	if (Driver->MultiTextureExtension)
-		Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
+	Driver->setGlActiveTexture(GL_TEXTURE0_ARB);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, TextureName);

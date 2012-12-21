@@ -23,7 +23,7 @@ public:
 
 	//! Constructor
 	COpenGLNormalMapRenderer(video::COpenGLDriver* driver,
-		s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial);
+		s32& outMaterialTypeNr, E_MATERIAL_TYPE baseMaterial);
 
 	//! Destructor
 	~COpenGLNormalMapRenderer();

@@ -425,6 +425,8 @@ namespace video
 
 	private:
 
+		
+
 		//! clears the zbuffer and color buffer
 		void clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color);
 
@@ -489,6 +491,7 @@ namespace video
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		core::array<video::IRenderTarget> MRTargets;
+
 		class STextureStageCache
 		{
 			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
@@ -553,6 +556,57 @@ namespace video
 			}
 		};
 		STextureStageCache CurrentTexture;
+
+		class SDriverStageCache
+		{
+		public:
+			SDriverStageCache()
+			{
+				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+				{
+					CurrentTexture[i] = 0;
+					CurrentTextureFixedPipeline[i] = true;
+				}
+			}
+
+			~SDriverStageCache()
+			{
+			}
+
+			const ITexture* getTexture(u32 stage) const
+			{
+				if ((u32)stage < MATERIAL_MAX_TEXTURES)
+					return CurrentTexture[stage];
+				else
+					return 0;
+			}
+
+			void setTexture(u32 stage, const ITexture* tex)
+			{
+				if (stage < MATERIAL_MAX_TEXTURES)
+					CurrentTexture[stage] = tex;
+			}
+
+			bool getTextureFixedPipeline(u32 stage) const
+			{
+				if ((u32)stage < MATERIAL_MAX_TEXTURES)
+					return CurrentTextureFixedPipeline[stage];
+				else
+					return true;
+			}
+
+			void setTextureFixedPipeline(u32 stage, bool texFixedPipeline)
+			{
+				if (stage < MATERIAL_MAX_TEXTURES)
+					CurrentTextureFixedPipeline[stage] = texFixedPipeline;
+			}
+
+		private:
+			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+			bool CurrentTextureFixedPipeline[MATERIAL_MAX_TEXTURES];
+		};
+		SDriverStageCache DriverStage;
+
 		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane
 		{
