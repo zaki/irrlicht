@@ -21,6 +21,12 @@
 #include <SDL/SDL.h>
 #endif
 
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+// Objective-C++ code part
+#import "MacOSX/CIrrDeviceMacOSX.h"
+// End of objective-C++ code part
+#endif
+
 namespace irr
 {
 namespace video

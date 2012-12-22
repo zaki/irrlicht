@@ -30,7 +30,6 @@
 	#endif
 
 #elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-	#include "CIrrDeviceMacOSX.h"
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#define GL_GLEXT_LEGACY 1
 	#endif
@@ -2387,7 +2386,7 @@ inline void COpenGLExtensionHandler::extGlProgramParameteri(GLhandleARB program,
 #elif defined(GL_ARB_geometry_shader4)
 	glProgramParameteriARB(program, pname, value);
 #elif defined(GL_EXT_geometry_shader4)
-	glProgramParameteriEXT((long GLuint)program, pname, value);
+	glProgramParameteriEXT((long unsigned int)program, pname, value);
 #elif defined(GL_NV_geometry_program4) || defined(GL_NV_geometry_shader4)
 	glProgramParameteriNV(program, pname, value);
 #else
