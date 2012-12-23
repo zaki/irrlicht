@@ -43,9 +43,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	IsDepthTestEnabled(false), IsTexture2DEnabled(false), DepthMask(true),
-	CurrentMatrixMode(0), CurrentActiveTexture(0),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params), BridgeCalls(0),
 	HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
 	DeviceType(EIDT_WIN32)
 {
@@ -481,9 +479,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	IsDepthTestEnabled(false), IsTexture2DEnabled(false), DepthMask(true),
-	CurrentMatrixMode(0), CurrentActiveTexture(0),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params), BridgeCalls(0),
 	OSXDevice(device), DeviceType(EIDT_OSX)
 {
 	#ifdef _DEBUG
@@ -511,9 +507,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0),
 	ColorFormat(ECF_R8G8B8), CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	IsDepthTestEnabled(false), IsTexture2DEnabled(false), DepthMask(true),
-	CurrentMatrixMode(0), CurrentActiveTexture(0),
-	X11Device(device), DeviceType(EIDT_X11)
+    BridgeCalls(0), X11Device(device), DeviceType(EIDT_X11)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -606,9 +600,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0),
 	ColorFormat(ECF_R8G8B8), CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	IsDepthTestEnabled(false), IsTexture2DEnabled(false), DepthMask(true),
-	CurrentMatrixMode(0), CurrentActiveTexture(0),
-	SDLDevice(device), DeviceType(EIDT_SDL)
+	BridgeCalls(0), SDLDevice(device), DeviceType(EIDT_SDL)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -631,6 +623,9 @@ COpenGLDriver::~COpenGLDriver()
 	if (CgContext)
 		cgDestroyContext(CgContext);
 	#endif
+    
+    if (BridgeCalls)
+        delete BridgeCalls;
 
 	RequestedLights.clear();
 
@@ -688,6 +683,10 @@ bool COpenGLDriver::genericDriverInit()
 	CurrentTexture.clear();
 	// load extensions
 	initExtensions(Params.Stencilbuffer);
+    
+    if (!BridgeCalls)
+        BridgeCalls = new COpenGLCallBridge(this);
+    
 	if (queryFeature(EVDF_ARB_GLSL))
 	{
 		char buf[32];
@@ -890,11 +889,9 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 
 	if (zBuffer)
 	{
-		if (!DepthMask)
-			glDepthMask(GL_TRUE);
+		BridgeCalls->setDepthMask(true);
 
 		LastMaterial.ZWriteEnable=true;
-		DepthMask = true;
  		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
@@ -962,7 +959,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	case ETS_WORLD:
 		{
 			// OpenGL only has a model matrix, view and world is not existent. so lets fake these two.
-			setGlMatrixMode(GL_MODELVIEW);
+			BridgeCalls->setMatrixMode(GL_MODELVIEW);
 
 			// first load the viewing transformation for user clip planes
 			glLoadMatrixf((Matrices[ETS_VIEW]).pointer());
@@ -978,7 +975,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		break;
 	case ETS_PROJECTION:
 		{
-			setGlMatrixMode(GL_PROJECTION);
+			BridgeCalls->setMatrixMode(GL_PROJECTION);
 			glLoadMatrixf(mat.pointer());
 		}
 		break;
@@ -992,9 +989,9 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 
 			const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
 
-			setGlActiveTexture(GL_TEXTURE0_ARB + i);
+			BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB + i);
 
-			setGlMatrixMode(GL_TEXTURE);
+			BridgeCalls->setMatrixMode(GL_TEXTURE);
 			if (!isRTT && mat.isIdentity() )
 				glLoadIdentity();
 			else
@@ -1797,8 +1794,8 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 	else
 		setRenderStates2DMode(Material.MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL);
 
-	if (MultiTextureExtension)
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+    if (MultiTextureExtension)
+        extGlClientActiveTexture(GL_TEXTURE0_ARB);
 
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -2469,16 +2466,7 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 	for (u32 i=fromStage; i<MaxSupportedTextures; ++i)
 	{
 		result &= setActiveTexture(i, 0);
-
-		if(DriverStage.getTexture(i) != 0 || !DriverStage.getTextureFixedPipeline(i))
-		{
-			setGlActiveTexture(GL_TEXTURE0_ARB + i);
-
-			glDisable(GL_TEXTURE_2D);
-
-			DriverStage.setTexture(i, 0);
-			DriverStage.setTextureFixedPipeline(i, true);
-		}
+        BridgeCalls->setTexture(i, true);
 	}
 	return result;
 }
@@ -2581,10 +2569,10 @@ void COpenGLDriver::setRenderStates3DMode()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// switch back the matrices
-		setGlMatrixMode(GL_MODELVIEW);
+		BridgeCalls->setMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
 
-		setGlMatrixMode(GL_PROJECTION);
+		BridgeCalls->setMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(Matrices[ETS_PROJECTION].pointer());
 
 		ResetRenderStates = true;
@@ -2876,30 +2864,13 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 
 			if (!CurrentTexture[i])
 			{
-				if(DriverStage.getTexture(i) != 0 || !DriverStage.getTextureFixedPipeline(i))
-				{
-					setGlActiveTexture(GL_TEXTURE0_ARB + i);
-
-					glDisable(GL_TEXTURE_2D);
-
-					DriverStage.setTexture(i, 0);
-					DriverStage.setTextureFixedPipeline(i, true);
-				}
+				BridgeCalls->setTexture(i, fixedPipeline);
 
 				continue;
 			}
 			else
 			{
-				if(DriverStage.getTexture(i) != CurrentTexture[i] || !DriverStage.getTextureFixedPipeline(i))
-				{
-					setGlActiveTexture(GL_TEXTURE0_ARB + i);
-
-					glEnable(GL_TEXTURE_2D);
-					glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
-
-					DriverStage.setTexture(i, CurrentTexture[i]);
-					DriverStage.setTextureFixedPipeline(i, true);
-				}
+				BridgeCalls->setTexture(i, fixedPipeline);
 
 				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 			}
@@ -2908,14 +2879,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		{
 			if (CurrentTexture[i])
 			{
-				if(DriverStage.getTexture(i) != CurrentTexture[i])
-				{
-					setGlActiveTexture(GL_TEXTURE0_ARB + i);
-					glBindTexture(GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName());
-
-					DriverStage.setTexture(i, CurrentTexture[i]);
-					DriverStage.setTextureFixedPipeline(i, false);
-				}
+				BridgeCalls->setTexture(i, fixedPipeline);
 			}
 			else
 				continue;
@@ -3038,90 +3002,28 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		switch (material.ZBuffer)
 		{
 			case ECFN_NEVER:
-				{
-					if(IsDepthTestEnabled)
-					{
-						glDisable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = false;
-					}
-				}
+                BridgeCalls->setDepthFunc(0);
 				break;
 			case ECFN_LESSEQUAL:
-				{
-					if(!IsDepthTestEnabled)
-					{
-						glEnable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = true;
-					}
-
-					glDepthFunc(GL_LEQUAL);
-				}
+                BridgeCalls->setDepthFunc(GL_LEQUAL);
 				break;
 			case ECFN_EQUAL:
-				{
-					if(!IsDepthTestEnabled)
-					{
-						glEnable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = true;
-					}
-
-					glDepthFunc(GL_EQUAL);
-				}
+                BridgeCalls->setDepthFunc(GL_EQUAL);
 				break;
 			case ECFN_LESS:
-				{
-					if(!IsDepthTestEnabled)
-					{
-						glEnable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = true;
-					}
-
-					glDepthFunc(GL_LESS);
-				}
+                BridgeCalls->setDepthFunc(GL_LESS);
 				break;
 			case ECFN_NOTEQUAL:
-				{
-					if(!IsDepthTestEnabled)
-					{
-						glEnable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = true;
-					}
-
-					glDepthFunc(GL_NOTEQUAL);
-				}
+                BridgeCalls->setDepthFunc(GL_NOTEQUAL);
 				break;
 			case ECFN_GREATEREQUAL:
-				{
-					if(!IsDepthTestEnabled)
-					{
-						glEnable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = true;
-					}
-
-					glDepthFunc(GL_GEQUAL);
-				}
+                BridgeCalls->setDepthFunc(GL_GEQUAL);
 				break;
 			case ECFN_GREATER:
-				{
-					if(!IsDepthTestEnabled)
-					{
-						glEnable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = true;
-					}
-
-					glDepthFunc(GL_GREATER);
-				}
+                BridgeCalls->setDepthFunc(GL_GREATER);
 				break;
 			case ECFN_ALWAYS:
-				{
-					if(!IsDepthTestEnabled)
-					{
-						glEnable(GL_DEPTH_TEST);
-						IsDepthTestEnabled = true;
-					}
-
-					glDepthFunc(GL_ALWAYS);
-				}
+                BridgeCalls->setDepthFunc(GL_ALWAYS);
 				break;
 		}
 	}
@@ -3130,21 +3032,9 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
 		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
-		{
-			if (!DepthMask)
-			{
-				glDepthMask(GL_TRUE);
-				DepthMask = true;
-			}
-		}
+			BridgeCalls->setDepthMask(true);
 		else
-		{
-			if (DepthMask)
-			{
-				glDepthMask(GL_FALSE);
-				DepthMask = false;
-			}
-		}
+            BridgeCalls->setDepthMask(false);
 	}
 
 	// back face culling
@@ -3367,7 +3257,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 
 	// be sure to leave in texture stage 0
 	if (fixedPipeline)
-		setGlActiveTexture(GL_TEXTURE0_ARB);
+		BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
 }
 
 
@@ -3385,7 +3275,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 {
 	bool BindedTexture = false;
 
-	setGlActiveTexture(GL_TEXTURE0_ARB);
+	BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
 
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
@@ -3397,7 +3287,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		}
 		if (Transformation3DChanged)
 		{
-			setGlMatrixMode(GL_PROJECTION);
+			BridgeCalls->setMatrixMode(GL_PROJECTION);
 
 			const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 			core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
@@ -3405,12 +3295,12 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			m.setTranslation(core::vector3df(-1,1,0));
 			glLoadMatrixf(m.pointer());
 
-			setGlMatrixMode(GL_MODELVIEW);
+			BridgeCalls->setMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glTranslatef(0.375f, 0.375f, 0.0f);
 
 			// Make sure we set first texture matrix
-			setGlActiveTexture(GL_TEXTURE0_ARB);
+			BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
 
 			Transformation3DChanged = false;
 		}
@@ -3453,18 +3343,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	if (texture)
 	{
 		if(!BindedTexture && CurrentTexture[0])
-		{
-			if(DriverStage.getTexture(0) != CurrentTexture[0] || !DriverStage.getTextureFixedPipeline(0))
-			{
-				setGlActiveTexture(GL_TEXTURE0_ARB);
-
-				glEnable(GL_TEXTURE_2D);
-				glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(CurrentTexture[0])->getOpenGLTextureName());
-
-				DriverStage.setTexture(0, CurrentTexture[0]);
-				DriverStage.setTextureFixedPipeline(0, true);
-			}
-		}
+            BridgeCalls->setTexture(0, true);
 
 		if (!OverrideMaterial2DEnabled)
 		{
@@ -3786,9 +3665,9 @@ void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& 
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_FALSE); // no depth buffer writing
-	DepthMask = false;
+    BridgeCalls->setDepthFunc(GL_LESS);
+    BridgeCalls->setDepthMask(false);
+
 	if (debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
@@ -3918,8 +3797,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
-	glDepthMask(GL_FALSE);
-	DepthMask = false;
+    BridgeCalls->setDepthMask(false);
 
 	glShadeModel(GL_FLAT);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -3932,10 +3810,10 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
 	// draw a shadow rectangle covering the entire screen using stencil buffer
-	setGlMatrixMode(GL_MODELVIEW);
+	BridgeCalls->setMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	setGlMatrixMode(GL_PROJECTION);
+	BridgeCalls->setMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
 
@@ -3959,7 +3837,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 	// restore settings
 	glPopMatrix();
-	setGlMatrixMode(GL_MODELVIEW);
+	BridgeCalls->setMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glPopAttrib();
 }
@@ -4342,7 +4220,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	if ((RenderTargetTexture != texture) ||
 		(CurrentTarget==ERT_MULTI_RENDER_TEXTURES))
 	{
-		setGlActiveTexture(GL_TEXTURE0_ARB);
+		BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
 		ResetRenderStates=true;
 		if (RenderTargetTexture!=0)
 		{
@@ -4931,31 +4809,118 @@ GLenum COpenGLDriver::getZBufferBits() const
 	}
 	return bits;
 }
-
-void COpenGLDriver::setGlMatrixMode(GLenum mode)
+    
+COpenGLCallBridge* COpenGLDriver::getBridgeCalls() const
 {
-	if (CurrentMatrixMode != mode)
-	{
-		glMatrixMode(mode);
-		CurrentMatrixMode = mode;
-	}
+    return BridgeCalls;
 }
-
-void COpenGLDriver::setGlActiveTexture(GLenum texture)
-{
-	if (MultiTextureExtension && CurrentActiveTexture != texture)
-	{
-		extGlActiveTexture(texture);
-		CurrentActiveTexture = texture;
-	}
-}
-
+    
 #ifdef _IRR_COMPILE_WITH_CG_
 const CGcontext& COpenGLDriver::getCgContext()
 {
-	return CgContext;
+    return CgContext;
 }
 #endif
+    
+COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
+    DepthMask(false), DepthFunc(0), DepthTest(false), MatrixMode(GL_MODELVIEW),
+    ActiveTexture(GL_TEXTURE0_ARB)
+{
+    for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+    {
+        Texture[i] = 0;
+        TextureFixedPipeline[i] = true;
+    }
+    
+    glDepthMask(GL_FALSE);
+    glDisable(GL_DEPTH_TEST);
+    glMatrixMode(GL_MODELVIEW);
+    
+    if(Driver->MultiTextureExtension)
+        Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
+}
+        
+void COpenGLCallBridge::setDepthMask(bool enabled)
+{
+    if(DepthMask != enabled)
+    {
+        if (enabled)
+            glDepthMask(GL_TRUE);
+        else
+            glDepthMask(GL_FALSE);
+                
+        DepthMask = enabled;
+    }
+}
+        
+void COpenGLCallBridge::setDepthFunc(GLenum mode)
+{
+    if(DepthFunc != mode)
+    {
+        if(mode == 0)
+        {
+            if(DepthTest)
+            {
+                glDisable(GL_DEPTH_TEST);
+                DepthTest = false;
+            }
+        }
+        else
+        {
+            if(!DepthTest)
+            {
+                glEnable(GL_DEPTH_TEST);
+                DepthTest = true;
+            }
+                    
+            glDepthFunc(mode);
+        }
+                
+        DepthFunc = mode;
+    }
+}
+        
+void COpenGLCallBridge::setMatrixMode(GLenum mode)
+{
+    if (MatrixMode != mode)
+    {
+        glMatrixMode(mode);
+        MatrixMode = mode;
+    }
+}
+        
+void COpenGLCallBridge::setActiveTexture(GLenum texture)
+{
+    if (Driver->MultiTextureExtension && ActiveTexture != texture)
+    {
+        Driver->extGlActiveTexture(texture);
+        ActiveTexture = texture;
+    }
+}
+        
+void COpenGLCallBridge::setTexture(u32 stage, bool fixedPipeline)
+{
+    if (stage < MATERIAL_MAX_TEXTURES)
+    {
+        if((fixedPipeline && TextureFixedPipeline[stage] != fixedPipeline) || Texture[stage] != Driver->CurrentTexture[stage])
+        {
+            setActiveTexture(GL_TEXTURE0_ARB + stage);
+
+            if(Driver->CurrentTexture[stage])
+            {
+                if(fixedPipeline)
+                    glEnable(GL_TEXTURE_2D);
+
+                glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
+            }
+            else if(fixedPipeline)
+                glDisable(GL_TEXTURE_2D);
+                
+            TextureFixedPipeline[stage] = fixedPipeline;
+            Texture[stage] = Driver->CurrentTexture[stage];
+        }
+    }
+}
 
 
 } // end namespace

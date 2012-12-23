@@ -33,10 +33,12 @@ namespace irr
 
 namespace video
 {
+    class COpenGLCallBridge;
 	class COpenGLTexture;
 
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
+        friend class COpenGLCallBridge;
 		friend class COpenGLTexture;
 	public:
 
@@ -411,12 +413,9 @@ namespace video
 
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
-
-		//! Set the gl matrix mode, if not set already
-		void setGlMatrixMode(GLenum mode);
-
-		//! Set active texture, if not set already
-		void setGlActiveTexture(GLenum texture);
+        
+        //! Get bridge calls.
+        COpenGLCallBridge* getBridgeCalls() const;
 
 		//! Get Cg context
 		#ifdef _IRR_COMPILE_WITH_CG_
@@ -424,8 +423,8 @@ namespace video
 		#endif
 
 	private:
-
-		
+        // Bridge calls.
+        COpenGLCallBridge* BridgeCalls;
 
 		//! clears the zbuffer and color buffer
 		void clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color);
@@ -557,56 +556,6 @@ namespace video
 		};
 		STextureStageCache CurrentTexture;
 
-		class SDriverStageCache
-		{
-		public:
-			SDriverStageCache()
-			{
-				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				{
-					CurrentTexture[i] = 0;
-					CurrentTextureFixedPipeline[i] = true;
-				}
-			}
-
-			~SDriverStageCache()
-			{
-			}
-
-			const ITexture* getTexture(u32 stage) const
-			{
-				if ((u32)stage < MATERIAL_MAX_TEXTURES)
-					return CurrentTexture[stage];
-				else
-					return 0;
-			}
-
-			void setTexture(u32 stage, const ITexture* tex)
-			{
-				if (stage < MATERIAL_MAX_TEXTURES)
-					CurrentTexture[stage] = tex;
-			}
-
-			bool getTextureFixedPipeline(u32 stage) const
-			{
-				if ((u32)stage < MATERIAL_MAX_TEXTURES)
-					return CurrentTextureFixedPipeline[stage];
-				else
-					return true;
-			}
-
-			void setTextureFixedPipeline(u32 stage, bool texFixedPipeline)
-			{
-				if (stage < MATERIAL_MAX_TEXTURES)
-					CurrentTextureFixedPipeline[stage] = texFixedPipeline;
-			}
-
-		private:
-			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
-			bool CurrentTextureFixedPipeline[MATERIAL_MAX_TEXTURES];
-		};
-		SDriverStageCache DriverStage;
-
 		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane
 		{
@@ -629,14 +578,6 @@ namespace video
 		E_RENDER_TARGET CurrentTarget;
 
 		SIrrlichtCreationParameters Params;
-
-		bool IsDepthTestEnabled;
-		bool IsTexture2DEnabled;
-
-		bool DepthMask;
-
-		GLenum CurrentMatrixMode;
-		GLenum CurrentActiveTexture;
 
 		//! All the lights that have been requested; a hardware limited
 		//! number of them will be used at once.
@@ -675,6 +616,45 @@ namespace video
 
 		E_DEVICE_TYPE DeviceType;
 	};
+    
+    //! This bridge between Irlicht pseudo OpenGL calls
+    //! and true OpenGL calls.
+    
+    class COpenGLCallBridge
+    {
+    public:
+        COpenGLCallBridge(COpenGLDriver* driver);
+        
+        // Depth calls.
+
+        void setDepthMask(bool enabled);
+        
+        void setDepthFunc(GLenum mode);
+        
+        // Matrix calls.
+        
+        void setMatrixMode(GLenum mode);
+        
+        // Texture calls.
+        
+        void setActiveTexture(GLenum texture);
+        
+        void setTexture(u32 stage, bool fixedPipeline);
+        
+    private:
+        COpenGLDriver* Driver;
+        
+        bool DepthMask;
+        GLenum DepthFunc;
+        bool DepthTest;
+        
+        GLenum MatrixMode;
+        
+        GLenum ActiveTexture;
+
+        const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+        bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
+    };
 
 } // end namespace video
 } // end namespace irr
