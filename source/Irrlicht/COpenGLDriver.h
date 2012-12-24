@@ -624,6 +624,10 @@ namespace video
     {
     public:
         COpenGLCallBridge(COpenGLDriver* driver);
+
+		// Client State calls.
+
+		void setClientState(bool vertex, bool normal, bool color);
         
         // Depth calls.
 
@@ -643,6 +647,10 @@ namespace video
         
     private:
         COpenGLDriver* Driver;
+
+		bool ClientStateVertex;
+		bool ClientStateNormal;
+		bool ClientStateColor;
         
         bool DepthMask;
         GLenum DepthFunc;

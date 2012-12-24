@@ -1466,12 +1466,13 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	if (MultiTextureExtension)
 		extGlClientActiveTexture(GL_TEXTURE0_ARB);
 
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
+	{
+		BridgeCalls->setClientState(true, true, true);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
-		glEnableClientState(GL_NORMAL_ARRAY);
+	}
+	else
+		BridgeCalls->setClientState(true, false, true);
 
 //due to missing defines in OSX headers, we have to be more specific with this check
 //#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
@@ -1608,10 +1609,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		}
 		extGlClientActiveTexture(GL_TEXTURE0_ARB);
 	}
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	
+	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -1797,10 +1797,13 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
     if (MultiTextureExtension)
         extGlClientActiveTexture(GL_TEXTURE0_ARB);
 
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
+	{
+		BridgeCalls->setClientState(true, false, true);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+	else
+		BridgeCalls->setClientState(true, false, true);
 
 //due to missing defines in OSX headers, we have to be more specific with this check
 //#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
@@ -1909,9 +1912,9 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		}
 		extGlClientActiveTexture(GL_TEXTURE0_ARB);
 	}
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -3676,7 +3679,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& 
 		glEnable(GL_STENCIL_TEST);
 	}
 
-	glEnableClientState(GL_VERTEX_ARRAY);
+	BridgeCalls->setClientState(true, false, false);
 	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),triangles.const_pointer());
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
@@ -3777,7 +3780,6 @@ void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& 
 #endif
 
 	glDisable(GL_POLYGON_OFFSET_FILL);
-	glDisableClientState(GL_VERTEX_ARRAY); //not stored on stack
 	glPopAttrib();
 }
 
@@ -4823,6 +4825,7 @@ const CGcontext& COpenGLDriver::getCgContext()
 #endif
     
 COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
+	ClientStateVertex(0), ClientStateNormal(0), ClientStateColor(0),
     DepthMask(false), DepthFunc(0), DepthTest(false), MatrixMode(GL_MODELVIEW),
     ActiveTexture(GL_TEXTURE0_ARB)
 {
@@ -4831,6 +4834,10 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
         Texture[i] = 0;
         TextureFixedPipeline[i] = true;
     }
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
     
     glDepthMask(GL_FALSE);
     glDisable(GL_DEPTH_TEST);
@@ -4838,6 +4845,39 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
     
     if(Driver->MultiTextureExtension)
         Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
+}
+
+void COpenGLCallBridge::setClientState(bool vertex, bool normal, bool color)
+{
+	if(ClientStateVertex != vertex)
+	{
+		if(vertex)
+			glEnableClientState(GL_VERTEX_ARRAY);
+		else
+			glDisableClientState(GL_VERTEX_ARRAY);
+
+		ClientStateVertex = vertex;
+	}
+
+	if(ClientStateNormal != normal)
+	{
+		if(normal)
+			glEnableClientState(GL_NORMAL_ARRAY);
+		else
+			glDisableClientState(GL_NORMAL_ARRAY);
+
+		ClientStateNormal = normal;
+	}
+
+	if(ClientStateColor != color)
+	{
+		if(color)
+			glEnableClientState(GL_COLOR_ARRAY);
+		else
+			glDisableClientState(GL_COLOR_ARRAY);
+
+		ClientStateColor = color;
+	}
 }
         
 void COpenGLCallBridge::setDepthMask(bool enabled)
