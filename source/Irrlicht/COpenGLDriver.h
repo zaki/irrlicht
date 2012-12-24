@@ -592,6 +592,10 @@ namespace video
 		};
 		core::array<RequestedLight> RequestedLights;
 
+		//! Built-in 2D quad for 2D rendering.
+		S3DVertex Quad2DVertices[4];
+		u16 Quad2DIndices[6];
+
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;

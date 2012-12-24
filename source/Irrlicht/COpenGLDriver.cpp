@@ -755,6 +755,20 @@ bool COpenGLDriver::genericDriverInit()
 	extGlProvokingVertex(GL_FIRST_VERTEX_CONVENTION_EXT);
 #endif
 
+	// Create built-in 2D quad for 2D rendering.
+
+	Quad2DIndices[0] = 0;
+    Quad2DIndices[1] = 2;
+    Quad2DIndices[2] = 3;
+    Quad2DIndices[3] = 0;
+    Quad2DIndices[4] = 1;
+    Quad2DIndices[5] = 2;
+
+    Quad2DVertices[0] = S3DVertex(core::vector3df(-1.0f, 1.0f, 0.0f), core::vector3df(0.0f, 0.0f, 0.0f), SColor(255,255,255,255), core::vector2df(0.0f, 1.0f));
+	Quad2DVertices[0] = S3DVertex(core::vector3df(1.0f, 1.0f, 0.0f), core::vector3df(0.0f, 0.0f, 0.0f), SColor(255,255,255,255), core::vector2df(1.0f, 1.0f));
+	Quad2DVertices[0] = S3DVertex(core::vector3df(1.0f, -1.0f, 0.0f), core::vector3df(0.0f, 0.0f, 0.0f), SColor(255,255,255,255), core::vector2df(1.0f, 0.0f));
+	Quad2DVertices[0] = S3DVertex(core::vector3df(-1.0f, -1.0f, 0.0f), core::vector3df(0.0f, 0.0f, 0.0f), SColor(255,255,255,255), core::vector2df(0.0f, 0.0f));
+
 	// create material renderers
 	createMaterialRenderers();
 
@@ -1942,8 +1956,35 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glBegin(GL_QUADS);
+	Quad2DVertices[0].Color = color;
+	Quad2DVertices[1].Color = color;
+	Quad2DVertices[2].Color = color;
+	Quad2DVertices[3].Color = color;
+
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
+
+	if (MultiTextureExtension)
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+
+	BridgeCalls->setClientState(true, false, true);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
 
 	for (u32 i=0; i<drawCount; ++i)
 	{
@@ -2038,19 +2079,20 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 
 		const core::rect<s32> poss(targetPos, sourceSize);
 
-		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+		Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+		Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
 
-		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+		Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+		Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+		Quad2DVertices[2].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+		Quad2DVertices[3].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 
-		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y));
-
-		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
 	}
-	glEnd();
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -2167,22 +2209,49 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glBegin(GL_QUADS);
+	Quad2DVertices[0].Color = color;
+	Quad2DVertices[1].Color = color;
+	Quad2DVertices[2].Color = color;
+	Quad2DVertices[3].Color = color;
 
-	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+	Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+	Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
 
-	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+	Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+	Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+	Quad2DVertices[2].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+	Quad2DVertices[3].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 
-	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y));
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
+	if (MultiTextureExtension)
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
 
-	glEnd();
+	BridgeCalls->setClientState(true, false, true);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -2231,25 +2300,49 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 			clipRect->getWidth(), clipRect->getHeight());
 	}
 
-	glBegin(GL_QUADS);
+	Quad2DVertices[0].Color = useColor[0];
+	Quad2DVertices[1].Color = useColor[3];
+	Quad2DVertices[2].Color = useColor[2];
+	Quad2DVertices[3].Color = useColor[1];
 
-	glColor4ub(useColor[0].getRed(), useColor[0].getGreen(), useColor[0].getBlue(), useColor[0].getAlpha());
-	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(GLfloat(destRect.UpperLeftCorner.X), GLfloat(destRect.UpperLeftCorner.Y));
+	Quad2DVertices[0].Pos = core::vector3df((f32)destRect.UpperLeftCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[1].Pos = core::vector3df((f32)destRect.LowerRightCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[2].Pos = core::vector3df((f32)destRect.LowerRightCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f);
+	Quad2DVertices[3].Pos = core::vector3df((f32)destRect.UpperLeftCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f);
 
-	glColor4ub(useColor[3].getRed(), useColor[3].getGreen(), useColor[3].getBlue(), useColor[3].getAlpha());
-	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(GLfloat(destRect.LowerRightCorner.X), GLfloat(destRect.UpperLeftCorner.Y));
+	Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+	Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+	Quad2DVertices[2].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+	Quad2DVertices[3].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 
-	glColor4ub(useColor[2].getRed(), useColor[2].getGreen(), useColor[2].getBlue(), useColor[2].getAlpha());
-	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(GLfloat(destRect.LowerRightCorner.X), GLfloat(destRect.LowerRightCorner.Y));
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	glColor4ub(useColor[1].getRed(), useColor[1].getGreen(), useColor[1].getBlue(), useColor[1].getAlpha());
-	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(GLfloat(destRect.UpperLeftCorner.X), GLfloat(destRect.LowerRightCorner.Y));
+	if (MultiTextureExtension)
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
 
-	glEnd();
+	BridgeCalls->setClientState(true, false, true);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
@@ -2276,7 +2369,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	if (clipRect)
 	{
 		if (!clipRect->isValid())
@@ -2293,6 +2385,36 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 
+	Quad2DVertices[0].Color = color;
+	Quad2DVertices[1].Color = color;
+	Quad2DVertices[2].Color = color;
+	Quad2DVertices[3].Color = color;
+
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
+
+	if (MultiTextureExtension)
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+
+	BridgeCalls->setClientState(true, false, true);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
 	for (u32 i=0; i<indices.size(); ++i)
 	{
 		const s32 currentIndex = indices[i];
@@ -2307,23 +2429,23 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 		const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
 
-		glBegin(GL_QUADS);
+		Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+		Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
 
-		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+		Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+		Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+		Quad2DVertices[2].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+		Quad2DVertices[3].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
+	
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
 
-		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
-
-		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y));
-
-		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
-
-		glEnd();
 		targetPos.X += sourceRects[currentIndex].getWidth();
 	}
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
 }
@@ -2370,24 +2492,37 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 		colorLeftDown.getAlpha() < 255 ||
 		colorRightDown.getAlpha() < 255, false, false);
 
-	glBegin(GL_QUADS);
-	glColor4ub(colorLeftUp.getRed(), colorLeftUp.getGreen(),
-		colorLeftUp.getBlue(), colorLeftUp.getAlpha());
-	glVertex2f(GLfloat(pos.UpperLeftCorner.X), GLfloat(pos.UpperLeftCorner.Y));
+	Quad2DVertices[0].Color = colorLeftUp;
+	Quad2DVertices[1].Color = colorRightUp;
+	Quad2DVertices[2].Color = colorRightDown;
+	Quad2DVertices[3].Color = colorLeftDown;
 
-	glColor4ub(colorRightUp.getRed(), colorRightUp.getGreen(),
-		colorRightUp.getBlue(), colorRightUp.getAlpha());
-	glVertex2f(GLfloat(pos.LowerRightCorner.X), GLfloat(pos.UpperLeftCorner.Y));
+	Quad2DVertices[0].Pos = core::vector3df((f32)pos.UpperLeftCorner.X, (f32)pos.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[1].Pos = core::vector3df((f32)pos.LowerRightCorner.X, (f32)pos.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[2].Pos = core::vector3df((f32)pos.LowerRightCorner.X, (f32)pos.LowerRightCorner.Y, 0.0f);
+	Quad2DVertices[3].Pos = core::vector3df((f32)pos.UpperLeftCorner.X, (f32)pos.LowerRightCorner.Y, 0.0f);
 
-	glColor4ub(colorRightDown.getRed(), colorRightDown.getGreen(),
-		colorRightDown.getBlue(), colorRightDown.getAlpha());
-	glVertex2f(GLfloat(pos.LowerRightCorner.X), GLfloat(pos.LowerRightCorner.Y));
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	glColor4ub(colorLeftDown.getRed(), colorLeftDown.getGreen(),
-		colorLeftDown.getBlue(), colorLeftDown.getAlpha());
-	glVertex2f(GLfloat(pos.UpperLeftCorner.X), GLfloat(pos.LowerRightCorner.Y));
+	BridgeCalls->setClientState(true, false, true);
 
-	glEnd();
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
 }
 
 
@@ -2402,23 +2537,33 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 		disableTextures();
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
-		glBegin(GL_LINES);
-		glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-		GLfloat x=(GLfloat)start.X;
-		GLfloat y=(GLfloat)start.Y;
-		if (x>end.X)
-			x += 0.5f;
-		if (y>end.Y)
-			y += 0.5f;
-		glVertex2f(GLfloat(x), GLfloat(y));
-		x=(GLfloat)end.X;
-		y=(GLfloat)end.Y;
-		if (x>start.X)
-			x += 0.5f;
-		if (y>start.Y)
-			y += 0.5f;
-		glVertex2f(GLfloat(x),   GLfloat(y));
-		glEnd();
+		Quad2DVertices[0].Color = color;
+		Quad2DVertices[1].Color = color;
+
+		Quad2DVertices[0].Pos = core::vector3df((f32)start.X, (f32)start.Y, 0.0f);
+		Quad2DVertices[1].Pos = core::vector3df((f32)end.X, (f32)end.Y, 0.0f);
+
+		if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 2, EVT_STANDARD);
+
+		BridgeCalls->setClientState(true, false, true);
+
+		glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+		const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+		const GLint colorSize=4;
+#endif
+		if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+		else
+		{
+			_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+			glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+		}
+
+		glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, Quad2DIndices);
 	}
 }
 
@@ -2432,10 +2577,31 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 	disableTextures();
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
-	glBegin(GL_POINTS);
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glVertex2i(x, y);
-	glEnd();
+	Quad2DVertices[0].Color = color;
+
+	Quad2DVertices[0].Pos = core::vector3df((f32)x, (f32)y, 0.0f);
+
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 1, EVT_STANDARD);
+
+	BridgeCalls->setClientState(true, false, true);
+
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawArrays(GL_POINTS, 0, 1);
 }
 
 bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
@@ -3819,21 +3985,37 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glPushMatrix();
 	glLoadIdentity();
 
-	glBegin(GL_QUADS);
+	Quad2DVertices[0].Color = leftDownEdge;
+	Quad2DVertices[1].Color = leftUpEdge;
+	Quad2DVertices[2].Color = rightUpEdge;
+	Quad2DVertices[3].Color = rightDownEdge;
 
-	glColor4ub(leftDownEdge.getRed(), leftDownEdge.getGreen(), leftDownEdge.getBlue(), leftDownEdge.getAlpha());
-	glVertex3f(-1.f,-1.f,-0.9f);
+	Quad2DVertices[0].Pos = core::vector3df(-1.0f, -1.0f, -0.9f);
+	Quad2DVertices[1].Pos = core::vector3df(-1.0f, 1.0f, -0.9f);
+	Quad2DVertices[2].Pos = core::vector3df(1.0f, 1.0f, -0.9f);
+	Quad2DVertices[3].Pos = core::vector3df(1.0f, -1.0f, -0.9f);
 
-	glColor4ub(leftUpEdge.getRed(), leftUpEdge.getGreen(), leftUpEdge.getBlue(), leftUpEdge.getAlpha());
-	glVertex3f(-1.f, 1.f,-0.9f);
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	glColor4ub(rightUpEdge.getRed(), rightUpEdge.getGreen(), rightUpEdge.getBlue(), rightUpEdge.getAlpha());
-	glVertex3f(1.f, 1.f,-0.9f);
+	BridgeCalls->setClientState(true, false, true);
 
-	glColor4ub(rightDownEdge.getRed(), rightDownEdge.getGreen(), rightDownEdge.getBlue(), rightDownEdge.getAlpha());
-	glVertex3f(1.f,-1.f,-0.9f);
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
 
-	glEnd();
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
 
 	clearBuffers(false, false, clearStencilBuffer, 0x0);
 
@@ -3892,12 +4074,33 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 {
 	setRenderStates3DMode();
 
-	glBegin(GL_LINES);
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glVertex3f(start.X, start.Y, start.Z);
+	Quad2DVertices[0].Color = color;
+	Quad2DVertices[1].Color = color;
 
-	glVertex3f(end.X, end.Y, end.Z);
-	glEnd();
+	Quad2DVertices[0].Pos = core::vector3df((f32)start.X, (f32)start.Y, (f32)start.Z);
+	Quad2DVertices[1].Pos = core::vector3df((f32)end.X, (f32)end.Y, (f32)end.Z);
+
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(Quad2DVertices, 2, EVT_STANDARD);
+
+	BridgeCalls->setClientState(true, false, true);
+
+	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, Quad2DIndices);
 }
 
 
