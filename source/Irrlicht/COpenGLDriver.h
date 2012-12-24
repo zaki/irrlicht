@@ -631,7 +631,7 @@ namespace video
 
 		// Client State calls.
 
-		void setClientState(bool vertex, bool normal, bool color);
+		void setClientState(bool vertex, bool normal, bool color, bool texCoord0);
         
         // Depth calls.
 
@@ -646,6 +646,8 @@ namespace video
         // Texture calls.
         
         void setActiveTexture(GLenum texture);
+
+		void setClientActiveTexture(GLenum texture);
         
         void setTexture(u32 stage, bool fixedPipeline);
         
@@ -655,6 +657,7 @@ namespace video
 		bool ClientStateVertex;
 		bool ClientStateNormal;
 		bool ClientStateColor;
+		bool ClientStateTexCoord0;
         
         bool DepthMask;
         GLenum DepthFunc;
@@ -662,7 +665,8 @@ namespace video
         
         GLenum MatrixMode;
         
-        GLenum ActiveTexture;
+		GLenum ActiveTexture;
+        GLenum ClientActiveTexture;
 
         const ITexture* Texture[MATERIAL_MAX_TEXTURES];
         bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];

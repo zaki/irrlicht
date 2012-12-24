@@ -1477,16 +1477,10 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	// draw everything
 	setRenderStates3DMode();
 
-	if (MultiTextureExtension)
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
-
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
-	{
-		BridgeCalls->setClientState(true, true, true);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	}
+		BridgeCalls->setClientState(true, true, true, true);
 	else
-		BridgeCalls->setClientState(true, false, true);
+		BridgeCalls->setClientState(true, false, true, false);
 
 //due to missing defines in OSX headers, we have to be more specific with this check
 //#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
@@ -1539,7 +1533,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 			if (MultiTextureExtension && CurrentTexture[1])
 			{
-				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
@@ -1565,7 +1559,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 			if (MultiTextureExtension)
 			{
-				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
@@ -1590,14 +1584,14 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 			if (MultiTextureExtension)
 			{
-				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
 				else
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(36));
 
-				extGlClientActiveTexture(GL_TEXTURE2_ARB);
+				BridgeCalls->setClientActiveTexture(GL_TEXTURE2_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
@@ -1613,19 +1607,16 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	{
 		if (vType==EVT_TANGENTS)
 		{
-			extGlClientActiveTexture(GL_TEXTURE2_ARB);
+			BridgeCalls->setClientActiveTexture(GL_TEXTURE2_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
 		{
-			extGlClientActiveTexture(GL_TEXTURE1_ARB);
+			BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+		BridgeCalls->setClientActiveTexture(GL_TEXTURE0_ARB);
 	}
-	
-	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -1808,16 +1799,10 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 	else
 		setRenderStates2DMode(Material.MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL);
 
-    if (MultiTextureExtension)
-        extGlClientActiveTexture(GL_TEXTURE0_ARB);
-
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
-	{
-		BridgeCalls->setClientState(true, false, true);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	}
+		BridgeCalls->setClientState(true, false, true, true);
 	else
-		BridgeCalls->setClientState(true, false, true);
+		BridgeCalls->setClientState(true, false, true, false);
 
 //due to missing defines in OSX headers, we have to be more specific with this check
 //#if defined(GL_ARB_vertex_array_bgra) || defined(GL_EXT_vertex_array_bgra)
@@ -1868,7 +1853,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 			if (MultiTextureExtension && CurrentTexture[1])
 			{
-				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
@@ -1891,7 +1876,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 			if (MultiTextureExtension)
 			{
-				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
@@ -1921,14 +1906,11 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 	{
 		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
 		{
-			extGlClientActiveTexture(GL_TEXTURE1_ARB);
+			BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+		BridgeCalls->setClientActiveTexture(GL_TEXTURE0_ARB);
 	}
-
-	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -1964,11 +1946,7 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	if (MultiTextureExtension)
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
-
-	BridgeCalls->setClientState(true, false, true);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	BridgeCalls->setClientState(true, false, true, true);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
 	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
@@ -2091,8 +2069,6 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
 	}
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -2227,11 +2203,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	if (MultiTextureExtension)
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
-
-	BridgeCalls->setClientState(true, false, true);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	BridgeCalls->setClientState(true, false, true, true);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
 	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
@@ -2250,8 +2222,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	}
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 
@@ -2318,11 +2288,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	if (MultiTextureExtension)
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
-
-	BridgeCalls->setClientState(true, false, true);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	BridgeCalls->setClientState(true, false, true, true);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
 	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
@@ -2341,8 +2307,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	}
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, Quad2DIndices);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
@@ -2393,11 +2357,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	if (MultiTextureExtension)
-		extGlClientActiveTexture(GL_TEXTURE0_ARB);
-
-	BridgeCalls->setClientState(true, false, true);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	BridgeCalls->setClientState(true, false, true, true);
 
 	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
 	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
@@ -2443,8 +2403,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 		targetPos.X += sourceRects[currentIndex].getWidth();
 	}
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
@@ -2505,7 +2463,7 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	BridgeCalls->setClientState(true, false, true);
+	BridgeCalls->setClientState(true, false, true, false);
 
 	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
 
@@ -2544,9 +2502,9 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 		Quad2DVertices[1].Pos = core::vector3df((f32)end.X, (f32)end.Y, 0.0f);
 
 		if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
-		getColorBuffer(Quad2DVertices, 2, EVT_STANDARD);
+			getColorBuffer(Quad2DVertices, 2, EVT_STANDARD);
 
-		BridgeCalls->setClientState(true, false, true);
+		BridgeCalls->setClientState(true, false, true, false);
 
 		glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
 
@@ -2584,7 +2542,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 1, EVT_STANDARD);
 
-	BridgeCalls->setClientState(true, false, true);
+	BridgeCalls->setClientState(true, false, true, false);
 
 	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
 
@@ -3845,7 +3803,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& 
 		glEnable(GL_STENCIL_TEST);
 	}
 
-	BridgeCalls->setClientState(true, false, false);
+	BridgeCalls->setClientState(true, false, false, false);
 	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),triangles.const_pointer());
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
@@ -3998,9 +3956,9 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 4, EVT_STANDARD);
 
-	BridgeCalls->setClientState(true, false, true);
+	BridgeCalls->setClientState(true, false, true, false);
 
-	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+	glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
 
 #ifdef GL_BGRA
 	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
@@ -4083,9 +4041,9 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
 		getColorBuffer(Quad2DVertices, 2, EVT_STANDARD);
 
-	BridgeCalls->setClientState(true, false, true);
+	BridgeCalls->setClientState(true, false, true, false);
 
-	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+	glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
 
 #ifdef GL_BGRA
 	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
@@ -5028,29 +4986,33 @@ const CGcontext& COpenGLDriver::getCgContext()
 #endif
     
 COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
-	ClientStateVertex(0), ClientStateNormal(0), ClientStateColor(0),
+	ClientStateVertex(false), ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false),
     DepthMask(false), DepthFunc(0), DepthTest(false), MatrixMode(GL_MODELVIEW),
-    ActiveTexture(GL_TEXTURE0_ARB)
+    ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB)
 {
     for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
     {
         Texture[i] = 0;
         TextureFixedPipeline[i] = true;
     }
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
     
     glDepthMask(GL_FALSE);
     glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_MODELVIEW);
     
     if(Driver->MultiTextureExtension)
+	{
         Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
+		Driver->extGlClientActiveTexture(GL_TEXTURE0_ARB);
+	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-void COpenGLCallBridge::setClientState(bool vertex, bool normal, bool color)
+void COpenGLCallBridge::setClientState(bool vertex, bool normal, bool color, bool texCoord0)
 {
 	if(ClientStateVertex != vertex)
 	{
@@ -5080,6 +5042,18 @@ void COpenGLCallBridge::setClientState(bool vertex, bool normal, bool color)
 			glDisableClientState(GL_COLOR_ARRAY);
 
 		ClientStateColor = color;
+	}
+
+	if(ClientStateTexCoord0 != texCoord0)
+	{
+		setClientActiveTexture(GL_TEXTURE0_ARB);
+
+		if(texCoord0)
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		else
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		ClientStateTexCoord0 = texCoord0;
 	}
 }
         
@@ -5138,6 +5112,15 @@ void COpenGLCallBridge::setActiveTexture(GLenum texture)
     {
         Driver->extGlActiveTexture(texture);
         ActiveTexture = texture;
+    }
+}
+
+void COpenGLCallBridge::setClientActiveTexture(GLenum texture)
+{
+    if (Driver->MultiTextureExtension && ClientActiveTexture != texture)
+    {
+        Driver->extGlClientActiveTexture(texture);
+        ClientActiveTexture = texture;
     }
 }
         

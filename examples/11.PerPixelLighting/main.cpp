@@ -368,9 +368,6 @@ int main()
 		smgr->addLightSceneNode(0, core::vector3df(0,0,0),
 		video::SColorf(0.5f, 1.0f, 0.5f, 0.0f), 800.0f);
 
-	light1->setDebugDataVisible ( scene::EDS_BBOX );
-
-
 	// add fly circle animator to light 1
 	scene::ISceneNodeAnimator* anim =
 		smgr->createFlyCircleAnimator (core::vector3df(50,300,0),190.0f, -0.003f);
