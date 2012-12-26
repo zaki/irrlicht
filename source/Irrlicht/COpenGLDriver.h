@@ -280,11 +280,15 @@ namespace video
 			bool resetAllRenderstates)
 		{
 			setBasicRenderStates(material, lastmaterial, resetAllRenderstates, true);
+            setTextureRenderStates(material, resetAllRenderstates, true);
 		}
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 			bool resetAllRenderstates, bool fixedPipeline);
+        
+        //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
+        virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline);
 
 		//! Get a vertex shader constant index.
 		virtual s32 getVertexShaderConstantID(const c8* name);
@@ -413,6 +417,9 @@ namespace video
 
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
+        
+        //! Get current material.
+        const SMaterial& getCurrentMaterial() const;
         
         //! Get bridge calls.
         COpenGLCallBridge* getBridgeCalls() const;
@@ -595,6 +602,7 @@ namespace video
 		//! Built-in 2D quad for 2D rendering.
 		S3DVertex Quad2DVertices[4];
 		u16 Quad2DIndices[6];
+        u16 Line2DIndices[2];
 
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context

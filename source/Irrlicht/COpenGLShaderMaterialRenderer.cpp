@@ -120,6 +120,8 @@ void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr,
 
 bool COpenGLShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 {
+    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, false);
+
 	// call callback to set shader constants
 	if (CallBack && (VertexShader || PixelShader[0]))
 		CallBack->OnSetConstants(service, UserData);

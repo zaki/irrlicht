@@ -104,6 +104,8 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 
 bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
 {
+    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, false);
+
 	if (CallBack && (VertexProgram || FragmentProgram || GeometryProgram))
 		CallBack->OnSetConstants(this, UserData);
 

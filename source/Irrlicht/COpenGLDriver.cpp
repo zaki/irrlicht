@@ -755,7 +755,7 @@ bool COpenGLDriver::genericDriverInit()
 	extGlProvokingVertex(GL_FIRST_VERTEX_CONVENTION_EXT);
 #endif
 
-	// Create built-in 2D quad for 2D rendering.
+	// Create built-in 2D quad and line for 2D rendering.
 
 	Quad2DIndices[0] = 0;
     Quad2DIndices[1] = 2;
@@ -763,6 +763,9 @@ bool COpenGLDriver::genericDriverInit()
     Quad2DIndices[3] = 0;
     Quad2DIndices[4] = 1;
     Quad2DIndices[5] = 2;
+    
+    Line2DIndices[0] = 0;
+    Line2DIndices[1] = 1;
 
     Quad2DVertices[0] = S3DVertex(core::vector3df(-1.0f, 1.0f, 0.0f), core::vector3df(0.0f, 0.0f, 0.0f), SColor(255,255,255,255), core::vector2df(0.0f, 1.0f));
 	Quad2DVertices[0] = S3DVertex(core::vector3df(1.0f, 1.0f, 0.0f), core::vector3df(0.0f, 0.0f, 0.0f), SColor(255,255,255,255), core::vector2df(1.0f, 1.0f));
@@ -2521,7 +2524,7 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 			glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 		}
 
-		glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, Quad2DIndices);
+		glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, Line2DIndices);
 	}
 }
 
@@ -2978,147 +2981,6 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 	}
 
-	// Set textures to TU/TIU and apply filters to them
-
-	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
-	{
-		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
-
-		if(fixedPipeline)
-		{
-			if (i>0 && !MultiTextureExtension)
-				break;
-
-			if (!CurrentTexture[i])
-			{
-				BridgeCalls->setTexture(i, fixedPipeline);
-
-				continue;
-			}
-			else
-			{
-				BridgeCalls->setTexture(i, fixedPipeline);
-
-				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
-			}
-		}
-		else
-		{
-			if (CurrentTexture[i])
-			{
-				BridgeCalls->setTexture(i, fixedPipeline);
-			}
-			else
-				continue;
-		}
-
-		if(resetAllRenderStates)
-			tmpTexture->getStatesCache().IsCached = false;
-
-#ifdef GL_VERSION_2_1
-		if (Version>=210)
-		{
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].LODBias != tmpTexture->getStatesCache().LODBias)
-			{
-				if (material.TextureLayer[i].LODBias)
-				{
-					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, tmp);
-				}
-				else
-					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.f);
-
-				tmpTexture->getStatesCache().LODBias = material.TextureLayer[i].LODBias;
-			}
-		}
-		else if (FeatureAvailable[IRR_EXT_texture_lod_bias])
-		{
-			if (material.TextureLayer[i].LODBias)
-			{
-				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
-			}
-			else
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
-		}
-#elif defined(GL_EXT_texture_lod_bias)
-		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
-		{
-			if (material.TextureLayer[i].LODBias)
-			{
-				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
-			}
-			else
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
-		}
-#endif
-
-		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
-			material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
-
-			tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
-			tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-		}
-
-		if (material.UseMipMaps && CurrentTexture[i]->hasMipMaps())
-		{
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
-				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-					material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
-					material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
-					GL_NEAREST_MIPMAP_NEAREST);
-
-				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
-				tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-				tmpTexture->getStatesCache().MipMapStatus = true;
-			}
-		}
-		else
-		{
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
-				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || tmpTexture->getStatesCache().MipMapStatus)
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-					(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
-
-				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
-				tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-				tmpTexture->getStatesCache().MipMapStatus = false;
-			}
-		}
-
-#ifdef GL_EXT_texture_filter_anisotropic
-		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
-			(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
-
-			tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
-		}
-#endif
-
-		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
-			tmpTexture->getStatesCache().WrapU = material.TextureLayer[i].TextureWrapU;
-		}
-
-		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
-			tmpTexture->getStatesCache().WrapV = material.TextureLayer[i].TextureWrapV;
-		}
-
-		tmpTexture->getStatesCache().IsCached = true;
-	}
-
 	// fillmode
 	if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
 		glPolygonMode(GL_FRONT_AND_BACK, material.Wireframe ? GL_LINE : material.PointCloud? GL_POINT : GL_FILL);
@@ -3383,8 +3245,152 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// be sure to leave in texture stage 0
-	if (fixedPipeline)
-		BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
+    BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
+}
+    
+//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
+void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline)
+{
+	// Set textures to TU/TIU and apply filters to them
+
+	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
+	{
+		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
+
+		if(fixedPipeline)
+		{
+			if (i>0 && !MultiTextureExtension)
+				break;
+
+			if (!CurrentTexture[i])
+			{
+				BridgeCalls->setTexture(i, fixedPipeline);
+
+				continue;
+			}
+			else
+			{
+				BridgeCalls->setTexture(i, fixedPipeline);
+
+				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+			}
+		}
+		else
+		{
+			if (CurrentTexture[i])
+			{
+				BridgeCalls->setTexture(i, fixedPipeline);
+			}
+			else
+				continue;
+		}
+
+		if(resetAllRenderstates)
+			tmpTexture->getStatesCache().IsCached = false;
+
+#ifdef GL_VERSION_2_1
+		if (Version>=210)
+		{
+			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].LODBias != tmpTexture->getStatesCache().LODBias)
+			{
+				if (material.TextureLayer[i].LODBias)
+				{
+					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, tmp);
+				}
+				else
+					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.f);
+
+				tmpTexture->getStatesCache().LODBias = material.TextureLayer[i].LODBias;
+			}
+		}
+		else if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		{
+			if (material.TextureLayer[i].LODBias)
+			{
+				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
+			}
+			else
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
+		}
+#elif defined(GL_EXT_texture_lod_bias)
+		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		{
+			if (material.TextureLayer[i].LODBias)
+			{
+				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
+			}
+			else
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
+		}
+#endif
+
+		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+			material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
+
+			tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
+			tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+		}
+
+		if (material.UseMipMaps && CurrentTexture[i]->hasMipMaps())
+		{
+			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
+			{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
+					material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
+					GL_NEAREST_MIPMAP_NEAREST);
+
+				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
+				tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+				tmpTexture->getStatesCache().MipMapStatus = true;
+			}
+		}
+		else
+		{
+			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || tmpTexture->getStatesCache().MipMapStatus)
+			{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
+
+				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
+				tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+				tmpTexture->getStatesCache().MipMapStatus = false;
+			}
+		}
+
+#ifdef GL_EXT_texture_filter_anisotropic
+		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
+			(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
+
+			tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
+		}
+#endif
+
+		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
+			tmpTexture->getStatesCache().WrapU = material.TextureLayer[i].TextureWrapU;
+		}
+
+		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
+			tmpTexture->getStatesCache().WrapV = material.TextureLayer[i].TextureWrapV;
+		}
+
+		tmpTexture->getStatesCache().IsCached = true;
+	}
 }
 
 
@@ -3472,12 +3478,34 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		if(!BindedTexture && CurrentTexture[0])
             BridgeCalls->setTexture(0, true);
 
-		if (!OverrideMaterial2DEnabled)
+		if (!OverrideMaterial2DEnabled && CurrentTexture[0])
 		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[0]);
+            
+            if (tmpTexture->getStatesCache().IsCached && !tmpTexture->getStatesCache().BilinearFilter &&
+                !tmpTexture->getStatesCache().TrilinearFilter && !tmpTexture->getStatesCache().MipMapStatus)
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                
+                tmpTexture->getStatesCache().BilinearFilter = false;
+                tmpTexture->getStatesCache().TrilinearFilter = false;
+                tmpTexture->getStatesCache().MipMapStatus = false;
+            }
+                
+            if(!tmpTexture->getStatesCache().IsCached || ETC_REPEAT != tmpTexture->getStatesCache().WrapU)
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                tmpTexture->getStatesCache().WrapU = ETC_REPEAT;
+            }
+
+            if(!tmpTexture->getStatesCache().IsCached || GL_REPEAT != tmpTexture->getStatesCache().WrapV)
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                tmpTexture->getStatesCache().WrapV = ETC_REPEAT;
+            }
+
+            tmpTexture->getStatesCache().IsCached = true;
 		}
 		Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
 		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
@@ -4058,7 +4086,7 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
-	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, Quad2DIndices);
+	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, Line2DIndices);
 }
 
 
@@ -4972,6 +5000,11 @@ GLenum COpenGLDriver::getZBufferBits() const
 	}
 	return bits;
 }
+
+const SMaterial& COpenGLDriver::getCurrentMaterial() const
+{
+    return Material;
+}
     
 COpenGLCallBridge* COpenGLDriver::getBridgeCalls() const
 {
@@ -5005,6 +5038,8 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
         Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
 		Driver->extGlClientActiveTexture(GL_TEXTURE0_ARB);
 	}
+    
+    glDisable(GL_TEXTURE_2D);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);

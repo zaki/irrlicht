@@ -35,6 +35,13 @@ public:
 	virtual void OnUnsetBaseMaterial()
 	{
 	}
+    
+    virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
+    {
+        Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, true);
+        
+        return true;
+    }
 
 protected:
 
@@ -54,7 +61,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (resetAllRenderstates || (material.MaterialType != lastMaterial.MaterialType))
 		{
@@ -78,7 +85,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 //		if (material.MaterialType != lastMaterial.MaterialType ||
 //			material.MaterialTypeParam != lastMaterial.MaterialTypeParam ||
@@ -263,7 +270,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -322,7 +329,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if ((material.MaterialType != lastMaterial.MaterialType) || resetAllRenderstates)
 		{
@@ -368,7 +375,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -553,7 +560,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -599,7 +606,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -715,7 +722,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -768,7 +775,7 @@ public:
 		core::matrix4 tmp = Driver->getTransform(ETS_TEXTURE_0);
 		tmp[5]*=-1;
 		Driver->setTransform(ETS_TEXTURE_0, tmp);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -800,7 +807,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -855,7 +862,7 @@ public:
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
