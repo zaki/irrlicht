@@ -3406,10 +3406,6 @@ void COpenGLDriver::enableMaterial2D(bool enable)
 //! sets the needed renderstates
 void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
-	bool BindedTexture = false;
-
-	BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
-
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
 		// unset last 3d material
@@ -3439,8 +3435,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		}
 		if (!OverrideMaterial2DEnabled)
 		{
-			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
-			BindedTexture = true;
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true, true);
 			LastMaterial = InitMaterial2D;
 		}
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -3453,8 +3448,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	if (OverrideMaterial2DEnabled)
 	{
 		OverrideMaterial2D.Lighting=false;
-		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
-		BindedTexture = true;
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false, true);
 		LastMaterial = OverrideMaterial2D;
 	}
 
@@ -3475,38 +3469,11 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (texture)
 	{
-		if(!BindedTexture && CurrentTexture[0])
-            BridgeCalls->setTexture(0, true);
-
-		if (!OverrideMaterial2DEnabled && CurrentTexture[0])
-		{
-            const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[0]);
-            
-            if (tmpTexture->getStatesCache().IsCached && !tmpTexture->getStatesCache().BilinearFilter &&
-                !tmpTexture->getStatesCache().TrilinearFilter && !tmpTexture->getStatesCache().MipMapStatus)
-            {
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                
-                tmpTexture->getStatesCache().BilinearFilter = false;
-                tmpTexture->getStatesCache().TrilinearFilter = false;
-                tmpTexture->getStatesCache().MipMapStatus = false;
-            }
-                
-            if(!tmpTexture->getStatesCache().IsCached || ETC_REPEAT != tmpTexture->getStatesCache().WrapU)
-            {
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                tmpTexture->getStatesCache().WrapU = ETC_REPEAT;
-            }
-
-            if(!tmpTexture->getStatesCache().IsCached || GL_REPEAT != tmpTexture->getStatesCache().WrapV)
-            {
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                tmpTexture->getStatesCache().WrapV = ETC_REPEAT;
-            }
-
-            tmpTexture->getStatesCache().IsCached = true;
-		}
+        if (OverrideMaterial2DEnabled)
+            setTextureRenderStates(OverrideMaterial2D, false, true);
+        else
+            setTextureRenderStates(InitMaterial2D, false, true);
+        
 		Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
 		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 		// Due to the transformation change, the previous line would call a reset each frame

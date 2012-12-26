@@ -360,6 +360,10 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 			// enable bilinear mipmap filter
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            
+            StatesCache.BilinearFilter = true;
+            StatesCache.TrilinearFilter = false;
+            StatesCache.MipMapStatus = true;
 		}
 		else
 #else
@@ -370,6 +374,10 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 			// enable bilinear filter without mipmaps
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            
+            StatesCache.BilinearFilter = true;
+            StatesCache.TrilinearFilter = false;
+            StatesCache.MipMapStatus = false;
 		}
 	}
 
@@ -710,6 +718,15 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    if(FilteringType == GL_NEAREST)
+        StatesCache.BilinearFilter = false;
+    else
+        StatesCache.BilinearFilter = true;
+        
+    StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
+    StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
+            
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
 		ImageSize.Height, 0, PixelFormat, PixelType, 0);
 #ifdef _DEBUG
