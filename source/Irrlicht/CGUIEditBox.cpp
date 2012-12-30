@@ -34,7 +34,7 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border,
 	: IGUIEditBox(environment, parent, id, rectangle), MouseMarking(false),
 	Border(border), Background(true), OverrideColorEnabled(false), MarkBegin(0), MarkEnd(0),
 	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
-	Operator(0), BlinkStartTime(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
+	Operator(0), BlinkStartTime(0), CursorBlinkTime(350), CursorChar(L"_"), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
 	WordWrap(false), MultiLine(false), AutoScroll(true), PasswordBox(false),
 	PasswordChar(L'*'), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
 	CurrentTextRect(0,0,1,1), FrameRect(rectangle)
@@ -896,14 +896,14 @@ void CGUIEditBox::draw()
 			}
 			s = txtLine->subString(0,CursorPos-startPos);
 			charcursorpos = font->getDimension(s.c_str()).Width +
-				font->getKerningWidth(L"_", CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
+				font->getKerningWidth(CursorChar.c_str(), CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
 
-			if (focus && (os::Timer::getTime() - BlinkStartTime) % 700 < 350)
+			if (focus && (CursorBlinkTime == 0 || (os::Timer::getTime() - BlinkStartTime) % (2*CursorBlinkTime) < CursorBlinkTime))
 			{
 				setTextRect(cursorLine);
 				CurrentTextRect.UpperLeftCorner.X += charcursorpos;
 
-				font->draw(L"_", CurrentTextRect,
+				font->draw(CursorChar, CurrentTextRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 			}
@@ -981,6 +981,30 @@ u32 CGUIEditBox::getMax() const
 	return Max;
 }
 
+//! Set the character used for the cursor. 
+/** By default it's "_" */
+void CGUIEditBox::setCursorChar(const wchar_t cursorChar)
+{
+	CursorChar[0] = cursorChar;
+}
+
+//! Get the character used for the cursor. 
+wchar_t CGUIEditBox::getCursorChar() const
+{
+	return CursorChar[0];
+}
+
+//! Set the blinktime for the cursor. 2x blinktime is one full cycle.
+void CGUIEditBox::setCursorBlinkTime(irr::u32 timeMs)
+{
+	CursorBlinkTime = timeMs;
+}
+
+//! Get the cursor blinktime
+irr::u32 CGUIEditBox::getCursorBlinkTime() const
+{
+	return CursorBlinkTime;
+}
 
 bool CGUIEditBox::processMouse(const SEvent& event)
 {
@@ -1370,7 +1394,7 @@ void CGUIEditBox::calculateScrollPos()
 			return;
 
 		// get cursor area
-		irr::u32 cursorWidth = font->getDimension(L"_").Width;
+		irr::u32 cursorWidth = font->getDimension(CursorChar.c_str()).Width;
 		core::stringw *txtLine = hasBrokenText ? &BrokenText[cursLine] : &Text;
 		s32 cPos = hasBrokenText ? CursorPos - BrokenTextPositions[cursLine] : CursorPos;	// column
 		s32 cStart = font->getDimension(txtLine->subString(0, cPos).c_str()).Width;		// pixels from text-start

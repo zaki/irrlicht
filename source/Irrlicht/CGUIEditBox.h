@@ -113,6 +113,20 @@ namespace gui
 		//! Returns maximum amount of characters, previously set by setMax();
 		virtual u32 getMax() const;
 
+		//! Set the character used for the cursor. 
+		/** By default it's "_" */
+		virtual void setCursorChar(const wchar_t cursorChar);
+
+		//! Get the character used for the cursor. 
+		virtual wchar_t getCursorChar() const;
+
+		//! Set the blinktime for the cursor. 2x blinktime is one full cycle.
+		//** \param timeMs Blinktime in milliseconds. When set to 0 the cursor is constantly on without blinking */
+		virtual void setCursorBlinkTime(irr::u32 timeMs);
+
+		//! Get the cursor blinktime
+		virtual irr::u32 getCursorBlinkTime() const; 
+
 		//! Sets whether the edit box is a password box. Setting this to true will
 		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
 		\param passwordBox: true to enable password, false to disable
@@ -165,6 +179,8 @@ namespace gui
 		IOSOperator* Operator;
 
 		u32 BlinkStartTime;
+		irr::u32 CursorBlinkTime;
+		core::stringw CursorChar; // IGUIFont::draw needs stringw instead of wchar_t
 		s32 CursorPos;
 		s32 HScrollPos, VScrollPos; // scroll position in characters
 		u32 Max;

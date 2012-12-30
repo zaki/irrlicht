@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add functions to set/get cursor character and blinktime to IGUIEditBox
 - Collada exporter calculates values for orthographic camera now on export
 - Collada exporter now exports the camera up-vector correctly.
 - Add IColladaMeshWriter::findGeometryNameForNode
