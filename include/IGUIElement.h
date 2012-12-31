@@ -841,7 +841,7 @@ protected:
 			if (NoClip)
 			{
 				IGUIElement* p=this;
-				while (p && p->Parent)
+				while (p->Parent)
 					p = p->Parent;
 				parentAbsoluteClip = p->AbsoluteClippingRect;
 			}
