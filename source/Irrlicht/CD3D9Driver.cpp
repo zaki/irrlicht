@@ -748,6 +748,9 @@ bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	else
 	{
 		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9Texture());
+
+		if (stage <= 4)
+            pID3DDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + stage, ((const CD3D9Texture*)texture)->getDX9Texture());
 	}
 	return true;
 }
