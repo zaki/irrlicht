@@ -8,6 +8,10 @@
 #include "IXMLWriter.h"
 #include "IVideoDriver.h"
 
+#ifndef _IRR_COMPILE_WITH_XML_
+	#include "CXMLReader.h"	// for noXML
+#endif
+
 namespace irr
 {
 namespace io
@@ -1408,6 +1412,7 @@ void CAttributes::setAttribute(s32 index, void* userPointer)
 bool CAttributes::read(io::IXMLReader* reader, bool readCurrentElementOnly,
 					    const wchar_t* nonDefaultElementName)
 {
+#ifdef _IRR_COMPILE_WITH_XML_
 	if (!reader)
 		return false;
 
@@ -1440,11 +1445,16 @@ bool CAttributes::read(io::IXMLReader* reader, bool readCurrentElementOnly,
 	}
 
 	return true;
+#else
+	noXML();
+	return false;
+#endif
 }
 
 
 void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 {
+#ifdef _IRR_COMPILE_WITH_XML_
 	core::stringw element = reader->getNodeName();
 	core::stringc name = reader->getAttributeValue(L"name");
 
@@ -1593,12 +1603,16 @@ void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 		addDimension2d(name.c_str(), core::dimension2d<u32>());
 		Attributes.getLast()->setString(reader->getAttributeValue(L"value"));
 	}
+#else
+	noXML();
+#endif
 }
 
 //! Write these attributes into a xml file
 bool CAttributes::write(io::IXMLWriter* writer, bool writeXMLHeader,
 						const wchar_t* nonDefaultElementName)
 {
+#ifdef _IRR_COMPILE_WITH_XML_
 	if (!writer)
 		return false;
 
@@ -1657,6 +1671,10 @@ bool CAttributes::write(io::IXMLWriter* writer, bool writeXMLHeader,
 	writer->writeLineBreak();
 
 	return true;
+#else
+	noXML();
+	return false;
+#endif
 }
 
 

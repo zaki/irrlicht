@@ -905,6 +905,8 @@ bool twodmaterial()
 	bool result = true;
 	TestWithAllDrivers(addBlend2d);
 	TestWithAllDrivers(moreFilterTests);
+#ifdef 	_IRR_COMPILE_WITH_XML_
 	TestWithAllDrivers(draw2DImage4c);
+#endif
 	return result;
 }

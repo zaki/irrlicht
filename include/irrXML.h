@@ -416,6 +416,7 @@ namespace io
 	See IIrrXMLReader for description on how to use it. */
 	typedef IIrrXMLReader<char32, IXMLBase> IrrXMLReaderUTF32;
 
+#ifdef _IRR_COMPILE_WITH_XML_
 
 	//! Creates an instance of an UFT-8 or ASCII character xml parser.
 	/** This means that all character data will be returned in 8 bit ASCII or UTF-8.
@@ -537,6 +538,7 @@ namespace io
 	IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(IFileReadCallBack* callback,
 																		bool deleteCallback = false);
 
+#endif // _IRR_COMPILE_WITH_XML_
 
 	/*! \file irrXML.h
 	\brief Header file of the irrXML, the Irrlicht XML parser.

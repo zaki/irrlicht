@@ -5,8 +5,11 @@
 #ifndef __C_XML_WRITER_H_INCLUDED__
 #define __C_XML_WRITER_H_INCLUDED__
 
-#include <wchar.h>
 #include "IXMLWriter.h"
+
+#ifdef _IRR_COMPILE_WITH_XML_
+
+#include <wchar.h>
 #include "IWriteFile.h"
 
 namespace irr
@@ -71,6 +74,8 @@ namespace io
 
 } // end namespace irr
 } // end namespace io
+
+#endif // _IRR_COMPILE_WITH_XML_
 
 #endif
 

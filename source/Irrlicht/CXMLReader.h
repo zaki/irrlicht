@@ -9,6 +9,7 @@
 
 namespace irr
 {
+#ifdef _IRR_COMPILE_WITH_XML_
 namespace io
 {
 	class IReadFile;
@@ -18,8 +19,11 @@ namespace io
 
 	//! creates an IXMLReader
 	IXMLReaderUTF8* createIXMLReaderUTF8(IReadFile* file);
-
 } // end namespace irr
+#else // _IRR_COMPILE_WITH_XML_
+	//! print a message that Irrlicht is compiled without _IRR_COMPILE_WITH_XML_
+	void noXML();
+#endif // _IRR_COMPILE_WITH_XML_
 } // end namespace io
 
 #endif
