@@ -637,9 +637,27 @@ namespace video
     public:
         COpenGLCallBridge(COpenGLDriver* driver);
 
-		// Client State calls.
+		// Alpha calls.
+
+		void setAlphaFunc(GLenum mode, GLclampf ref);
+
+		void setAlphaTest(bool enable);
+
+		// Blending calls.
+
+		void setBlendFunc(GLenum source, GLenum destination);
+
+		void setBlend(bool enable);
+
+		// Client state calls.
 
 		void setClientState(bool vertex, bool normal, bool color, bool texCoord0);
+
+		// Cull face calls.
+
+		void setCullFaceFunc(GLenum mode);
+
+		void setCullFace(bool enable);
         
         // Depth calls.
 
@@ -664,10 +682,21 @@ namespace video
     private:
         COpenGLDriver* Driver;
 
+		GLenum AlphaMode;
+		GLclampf AlphaRef;
+		bool AlphaTest;
+
+		GLenum BlendSource;
+		GLenum BlendDestination;
+		bool Blend;
+
 		bool ClientStateVertex;
 		bool ClientStateNormal;
 		bool ClientStateColor;
 		bool ClientStateTexCoord0;
+
+		GLenum CullFaceMode;
+		bool CullFace;
         
 		GLenum DepthFunc;
         bool DepthMask;

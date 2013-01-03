@@ -1,6 +1,9 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Added ECFN_DISABLED value (it works like ECFN_NEVER worked before) and changed ECFN_NEVER behaviour
+  (it works like its equivalent value in OpenGL/Direct3D).
+- Removed boolean interface from IShaderConstantSetCallBack, please use integer interface instead of them.
 - Add a LeakHunter class which can be enabled with compile-flag _IRR_COMPILE_WITH_LEAK_HUNTER_ to find leaking IReferenceCounted objects.
 - Add _IRR_COMPILE_WITH_XML_ define to allow compiling Irrlicht without xml (patch written by curaga)
 - Add functions to set/get cursor character and blinktime to IGUIEditBox

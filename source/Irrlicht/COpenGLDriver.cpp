@@ -748,7 +748,6 @@ bool COpenGLDriver::genericDriverInit()
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
-	glDepthFunc(GL_LEQUAL);
 	glFrontFace(GL_CW);
 	// adjust flat coloring scheme to DirectX version
 #if defined(GL_ARB_provoking_vertex) || defined(GL_EXT_provoking_vertex)
@@ -777,8 +776,6 @@ bool COpenGLDriver::genericDriverInit()
 
 	// set the renderstates
 	setRenderStates3DMode();
-
-	glAlphaFunc(GL_GREATER, 0.f);
 
 	// set fog mode
 	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
@@ -2694,9 +2691,9 @@ void COpenGLDriver::setRenderStates3DMode()
 	if (CurrentRenderMode != ERM_3D)
 	{
 		// Reset Texture Stages
-		glDisable(GL_BLEND);
-		glDisable(GL_ALPHA_TEST);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		BridgeCalls->setBlend(false);
+		BridgeCalls->setAlphaTest(false);
+		BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// switch back the matrices
 		BridgeCalls->setMatrixMode(GL_MODELVIEW);
@@ -3042,23 +3039,23 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	{
 		if ((material.FrontfaceCulling) && (material.BackfaceCulling))
 		{
-			glCullFace(GL_FRONT_AND_BACK);
-			glEnable(GL_CULL_FACE);
+			BridgeCalls->setCullFaceFunc(GL_FRONT_AND_BACK);
+			BridgeCalls->setCullFace(true);
 		}
 		else
 		if (material.BackfaceCulling)
 		{
-			glCullFace(GL_BACK);
-			glEnable(GL_CULL_FACE);
+			BridgeCalls->setCullFaceFunc(GL_BACK);
+			BridgeCalls->setCullFace(true);
 		}
 		else
 		if (material.FrontfaceCulling)
 		{
-			glCullFace(GL_FRONT);
-			glEnable(GL_CULL_FACE);
+			BridgeCalls->setCullFaceFunc(GL_FRONT);
+			BridgeCalls->setCullFace(true);
 		}
 		else
-			glDisable(GL_CULL_FACE);
+			BridgeCalls->setCullFace(false);
 	}
 
 	// Color Mask
@@ -3075,10 +3072,10 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		(resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation))
 	{
 		if (material.BlendOperation==EBO_NONE)
-			glDisable(GL_BLEND);
+			BridgeCalls->setBlend(false);
 		else
 		{
-			glEnable(GL_BLEND);
+			BridgeCalls->setBlend(true);
 #if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op) || defined(GL_VERSION_1_2)
 			switch (material.BlendOperation)
 			{
@@ -3449,7 +3446,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			setBasicRenderStates(InitMaterial2D, LastMaterial, true, true);
 			LastMaterial = InitMaterial2D;
 		}
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #ifdef GL_EXT_clip_volume_hint
 		if (FeatureAvailable[IRR_EXT_clip_volume_hint])
 			glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT, GL_FASTEST);
@@ -3468,14 +3465,14 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (alphaChannel || alpha)
 	{
-		glEnable(GL_BLEND);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.f);
+		BridgeCalls->setBlend(true);
+		BridgeCalls->setAlphaTest(true);
+		BridgeCalls->setAlphaFunc(GL_GREATER, 0.f);
 	}
 	else
 	{
-		glDisable(GL_BLEND);
-		glDisable(GL_ALPHA_TEST);
+		BridgeCalls->setBlend(false);
+		BridgeCalls->setAlphaTest(false);
 	}
 
 	if (texture)
@@ -4998,7 +4995,10 @@ const CGcontext& COpenGLDriver::getCgContext()
 #endif
     
 COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
+	AlphaMode(GL_ALWAYS), AlphaRef(0.0f), AlphaTest(false),
+	BlendSource(GL_ONE), BlendDestination(GL_ZERO), Blend(false),
 	ClientStateVertex(false), ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false),
+	CullFaceMode(GL_BACK), CullFace(false),
     DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), MatrixMode(GL_MODELVIEW),
     ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB)
 {
@@ -5009,6 +5009,15 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
         Texture[i] = 0;
         TextureFixedPipeline[i] = true;
     }
+
+	glAlphaFunc(GL_ALWAYS, 0.0f);
+	glDisable(GL_ALPHA_TEST);
+
+	glBlendFunc(GL_ONE, GL_ZERO);
+	glDisable(GL_BLEND);
+
+	glCullFace(GL_BACK);
+	glDisable(GL_CULL_FACE);
     
 	glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
@@ -5028,6 +5037,54 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+void COpenGLCallBridge::setAlphaFunc(GLenum mode, GLclampf ref)
+{
+	if(AlphaMode != mode || AlphaRef != ref)
+	{
+		glAlphaFunc(mode, ref);
+
+		AlphaMode = mode;
+		AlphaRef = ref;
+	}
+}
+
+void COpenGLCallBridge::setAlphaTest(bool enable)
+{
+    if(AlphaTest != enable)
+    {
+        if (enable)
+            glEnable(GL_ALPHA_TEST);
+        else
+            glDisable(GL_ALPHA_TEST);
+                
+        AlphaTest = enable;
+    }
+}
+
+void COpenGLCallBridge::setBlendFunc(GLenum source, GLenum destination)
+{
+	if(BlendSource != source || BlendDestination != destination)
+	{
+		glBlendFunc(source, destination);
+
+		BlendSource = source;
+		BlendDestination = destination;
+	}
+}
+
+void COpenGLCallBridge::setBlend(bool enable)
+{
+    if(Blend != enable)
+    {
+        if (enable)
+            glEnable(GL_BLEND);
+        else
+            glDisable(GL_BLEND);
+                
+        Blend = enable;
+    }
 }
 
 void COpenGLCallBridge::setClientState(bool vertex, bool normal, bool color, bool texCoord0)
@@ -5073,6 +5130,29 @@ void COpenGLCallBridge::setClientState(bool vertex, bool normal, bool color, boo
 
 		ClientStateTexCoord0 = texCoord0;
 	}
+}
+
+void COpenGLCallBridge::setCullFaceFunc(GLenum mode)
+{
+    if(CullFaceMode != mode)
+    {
+		glCullFace(mode);
+                
+        CullFaceMode = mode;
+    }
+}
+
+void COpenGLCallBridge::setCullFace(bool enable)
+{
+    if(CullFace != enable)
+    {
+        if (enable)
+            glEnable(GL_CULL_FACE);
+        else
+            glDisable(GL_CULL_FACE);
+                
+        CullFace = enable;
+    }
 }
 
 void COpenGLCallBridge::setDepthFunc(GLenum mode)
