@@ -368,7 +368,7 @@ void CAnimatedMeshSceneNode::render()
 			}
 		}
 
-		debug_mat.ZBuffer = video::ECFN_NEVER;
+		debug_mat.ZBuffer = video::ECFN_DISABLED;
 		debug_mat.Lighting = false;
 		driver->setMaterial(debug_mat);
 
@@ -448,7 +448,7 @@ void CAnimatedMeshSceneNode::render()
 		{
 			debug_mat.Lighting = false;
 			debug_mat.Wireframe = true;
-			debug_mat.ZBuffer = video::ECFN_NEVER;
+			debug_mat.ZBuffer = video::ECFN_DISABLED;
 			driver->setMaterial(debug_mat);
 
 			for (u32 g=0; g<m->getMeshBufferCount(); ++g)

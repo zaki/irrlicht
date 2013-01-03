@@ -993,7 +993,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		{
 			getMaterialToken(file, token);
 			if (token!="on")
-				pass.Material.ZBuffer=video::ECFN_NEVER;
+				pass.Material.ZBuffer=video::ECFN_DISABLED;
 		}
 		else if (token=="depth_write")
 		{

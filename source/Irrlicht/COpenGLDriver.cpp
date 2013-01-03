@@ -2990,29 +2990,40 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	{
 		switch (material.ZBuffer)
 		{
-			case ECFN_NEVER:
-                BridgeCalls->setDepthFunc(0);
+			case ECFN_DISABLED:
+                BridgeCalls->setDepthTest(false);
 				break;
 			case ECFN_LESSEQUAL:
+				BridgeCalls->setDepthTest(true);
                 BridgeCalls->setDepthFunc(GL_LEQUAL);
 				break;
 			case ECFN_EQUAL:
+				BridgeCalls->setDepthTest(true);
                 BridgeCalls->setDepthFunc(GL_EQUAL);
 				break;
 			case ECFN_LESS:
+				BridgeCalls->setDepthTest(true);
                 BridgeCalls->setDepthFunc(GL_LESS);
 				break;
 			case ECFN_NOTEQUAL:
+				BridgeCalls->setDepthTest(true);
                 BridgeCalls->setDepthFunc(GL_NOTEQUAL);
 				break;
 			case ECFN_GREATEREQUAL:
+				BridgeCalls->setDepthTest(true);
                 BridgeCalls->setDepthFunc(GL_GEQUAL);
 				break;
 			case ECFN_GREATER:
+				BridgeCalls->setDepthTest(true);
                 BridgeCalls->setDepthFunc(GL_GREATER);
 				break;
 			case ECFN_ALWAYS:
+				BridgeCalls->setDepthTest(true);
                 BridgeCalls->setDepthFunc(GL_ALWAYS);
+				break;
+			case ECFN_NEVER:
+				BridgeCalls->setDepthTest(true);
+                BridgeCalls->setDepthFunc(GL_NEVER);
 				break;
 		}
 	}
@@ -3787,8 +3798,9 @@ void COpenGLDriver::drawStencilShadowVolume(const core::array<core::vector3df>& 
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
-    BridgeCalls->setDepthFunc(GL_LESS);
-    BridgeCalls->setDepthMask(false);
+	glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_FALSE);
 
 	if (debugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -3918,7 +3930,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
-    BridgeCalls->setDepthMask(false);
+    glDepthMask(GL_FALSE);
 
 	glShadeModel(GL_FLAT);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -4987,17 +4999,21 @@ const CGcontext& COpenGLDriver::getCgContext()
     
 COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	ClientStateVertex(false), ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false),
-    DepthMask(false), DepthFunc(0), DepthTest(false), MatrixMode(GL_MODELVIEW),
+    DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), MatrixMode(GL_MODELVIEW),
     ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB)
 {
+	// Initial OpenGL values from specification.
+
     for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
     {
         Texture[i] = 0;
         TextureFixedPipeline[i] = true;
     }
     
-    glDepthMask(GL_FALSE);
+	glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
     glDisable(GL_DEPTH_TEST);
+
     glMatrixMode(GL_MODELVIEW);
     
     if(Driver->MultiTextureExtension)
@@ -5058,44 +5074,40 @@ void COpenGLCallBridge::setClientState(bool vertex, bool normal, bool color, boo
 		ClientStateTexCoord0 = texCoord0;
 	}
 }
-        
-void COpenGLCallBridge::setDepthMask(bool enabled)
-{
-    if(DepthMask != enabled)
-    {
-        if (enabled)
-            glDepthMask(GL_TRUE);
-        else
-            glDepthMask(GL_FALSE);
-                
-        DepthMask = enabled;
-    }
-}
-        
+
 void COpenGLCallBridge::setDepthFunc(GLenum mode)
 {
     if(DepthFunc != mode)
     {
-        if(mode == 0)
-        {
-            if(DepthTest)
-            {
-                glDisable(GL_DEPTH_TEST);
-                DepthTest = false;
-            }
-        }
-        else
-        {
-            if(!DepthTest)
-            {
-                glEnable(GL_DEPTH_TEST);
-                DepthTest = true;
-            }
-                    
-            glDepthFunc(mode);
-        }
+		glDepthFunc(mode);
                 
         DepthFunc = mode;
+    }
+}
+        
+void COpenGLCallBridge::setDepthMask(bool enable)
+{
+    if(DepthMask != enable)
+    {
+        if (enable)
+            glDepthMask(GL_TRUE);
+        else
+            glDepthMask(GL_FALSE);
+                
+        DepthMask = enable;
+    }
+}
+
+void COpenGLCallBridge::setDepthTest(bool enable)
+{
+    if(DepthTest != enable)
+    {
+        if (enable)
+            glEnable(GL_DEPTH_TEST);
+        else
+            glDisable(GL_DEPTH_TEST);
+                
+        DepthTest = enable;
     }
 }
         

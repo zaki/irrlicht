@@ -484,7 +484,7 @@ void CBurningVideoDriver::setCurrentShader()
 	ITexture *texture0 = Material.org.getTexture(0);
 	ITexture *texture1 = Material.org.getTexture(1);
 
-	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER &&
+	bool zMaterialTest =	Material.org.ZBuffer != ECFN_DISABLED &&
 							Material.org.ZWriteEnable &&
 							( AllowZWriteOnTransparent || !Material.org.isTransparent() );
 

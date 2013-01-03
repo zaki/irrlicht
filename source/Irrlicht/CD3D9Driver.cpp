@@ -2202,7 +2202,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	{
 		switch (material.ZBuffer)
 		{
-		case ECFN_NEVER:
+		case ECFN_DISABLED:
 			pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 			break;
 		case ECFN_LESSEQUAL:
@@ -2233,6 +2233,9 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 			break;
+		case ECFN_NEVER:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
 		}
 	}
 

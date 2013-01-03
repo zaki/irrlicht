@@ -643,9 +643,11 @@ namespace video
         
         // Depth calls.
 
-        void setDepthMask(bool enabled);
-        
-        void setDepthFunc(GLenum mode);
+		void setDepthFunc(GLenum mode);
+
+        void setDepthMask(bool enable);
+
+		void setDepthTest(bool enable);
         
         // Matrix calls.
         
@@ -667,8 +669,8 @@ namespace video
 		bool ClientStateColor;
 		bool ClientStateTexCoord0;
         
+		GLenum DepthFunc;
         bool DepthMask;
-        GLenum DepthFunc;
         bool DepthTest;
         
         GLenum MatrixMode;
