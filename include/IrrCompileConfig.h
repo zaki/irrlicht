@@ -122,6 +122,13 @@
 #undef _IRR_COMPILE_WITH_XML_
 #endif
 
+//! Add a leak-hunter to Irrlicht which helps finding unreleased reference counted objects.
+//! NOTE: This is slow and should only be used for debugging
+//#define _IRR_COMPILE_WITH_LEAK_HUNTER_
+#ifdef NO_IRR_COMPILE_WITH_LEAK_HUNTER_
+#undef _IRR_COMPILE_WITH_LEAK_HUNTER_
+#endif
+
 //! Define _IRR_COMPILE_WITH_DIRECT3D_8_ and _IRR_COMPILE_WITH_DIRECT3D_9_ to
 //! compile the Irrlicht engine with Direct3D8 and/or DIRECT3D9.
 /** If you only want to use the software device or opengl you can disable those defines.

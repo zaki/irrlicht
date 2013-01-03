@@ -7,6 +7,10 @@
 
 #include "irrTypes.h"
 
+#ifdef _IRR_COMPILE_WITH_LEAK_HUNTER_
+	#include "leakHunter.h"
+#endif 
+
 namespace irr
 {
 
@@ -46,11 +50,17 @@ namespace irr
 		IReferenceCounted()
 			: DebugName(0), ReferenceCounter(1)
 		{
+#ifdef _IRR_COMPILE_WITH_LEAK_HUNTER_
+			LeakHunter::addObject(this);
+#endif
 		}
 
 		//! Destructor.
 		virtual ~IReferenceCounted()
 		{
+			#ifdef _IRR_COMPILE_WITH_LEAK_HUNTER_
+				LeakHunter::removeObject(this);
+			#endif
 		}
 
 		//! Grabs the object. Increments the reference counter by one.

@@ -591,6 +591,7 @@
 		<Unit filename="..\..\include\irrlicht.h" />
 		<Unit filename="..\..\include\irrpack.h" />
 		<Unit filename="..\..\include\irrunpack.h" />
+		<Unit filename="..\..\include\leakHunter.h" />
 		<Unit filename="..\..\include\line2d.h" />
 		<Unit filename="..\..\include\line3d.h" />
 		<Unit filename="..\..\include\matrix4.h" />
@@ -1273,6 +1274,7 @@
 		</Unit>
 		<Unit filename="lzma\LzmaDec.h" />
 		<Unit filename="lzma\Types.h" />
+		<Unit filename="leakHunter.cpp" />
 		<Unit filename="os.cpp" />
 		<Unit filename="os.h" />
 		<Unit filename="zlib\adler32.c">
