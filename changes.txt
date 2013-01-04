@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- IAttributes::getAttributeAs functions now can have a customizable default-parameter to return when attributeName is not found
 - Added ECFN_DISABLED value (it works like ECFN_NEVER worked before) and changed ECFN_NEVER behaviour
   (it works like its equivalent value in OpenGL/Direct3D).
 - Removed boolean interface from IShaderConstantSetCallBack, please use integer interface instead of them.
