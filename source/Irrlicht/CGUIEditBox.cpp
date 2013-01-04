@@ -1035,7 +1035,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 		}
 		break;
 	case EMIE_LMOUSE_PRESSED_DOWN:
-		if (!Environment->hasFocus(this))
+		if (!Environment->hasFocus(this))	// can happen when events are manually send to the element
 		{
 			BlinkStartTime = os::Timer::getTime();
 			MouseMarking = true;
