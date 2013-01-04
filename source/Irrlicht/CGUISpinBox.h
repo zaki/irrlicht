@@ -76,6 +76,13 @@ namespace gui
 		/** \param places: The number of decimal places to display, use -1 to reset */
 		virtual void setDecimalPlaces(s32 places);
 
+		//! Sets when the spinbox has to validate entered text.
+		/** \param validateOn Can be any combination of EGUI_SPINBOX_VALIDATION bit flags */
+		virtual void setValidateOn(u32 validateOn);
+
+		//! Gets when the spinbox has to validate entered text.
+		virtual u32 getValidateOn() const;
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
@@ -96,6 +103,7 @@ namespace gui
 
 		core::stringw FormatString;
 		s32 DecimalPlaces;
+		u32 ValidateOn;	// combination of EGUI_SPINBOX_VALIDATION bit-flags
 	};
 
 
