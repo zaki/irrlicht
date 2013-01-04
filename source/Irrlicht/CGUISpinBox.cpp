@@ -259,7 +259,8 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 			e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
 			if ( Parent )
 				Parent->OnEvent(e);
-			return eatEvent;
+			if ( eatEvent )
+				return true;
 		}
 	}
 
