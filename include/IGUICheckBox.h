@@ -29,6 +29,21 @@ namespace gui
 
 		//! Returns true if box is checked.
 		virtual bool isChecked() const = 0;
+
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw) = 0;
+
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
+
+		//! Sets whether to draw the border
+		virtual void setDrawBorder(bool draw) = 0;
+
+		//! Checks if border drawing is enabled
+		/** \return true if border drawing is enabled, false otherwise */
+		virtual bool isDrawBorderEnabled() const = 0;
+
 	};
 
 } // end namespace gui

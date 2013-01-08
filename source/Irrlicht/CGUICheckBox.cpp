@@ -19,7 +19,8 @@ namespace gui
 
 //! constructor
 CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
-: IGUICheckBox(environment, parent, id, rectangle), checkTime(0), Pressed(false), Checked(checked)
+: IGUICheckBox(environment, parent, id, rectangle), CheckTime(0), Pressed(false), Checked(checked)
+, Border(false), Background(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUICheckBox");
@@ -80,7 +81,7 @@ bool CGUICheckBox::OnEvent(const SEvent& event)
 			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 			{
 				Pressed = true;
-				checkTime = os::Timer::getTime();
+				CheckTime = os::Timer::getTime();
 				Environment->setFocus(this);
 				return true;
 			}
@@ -129,10 +130,29 @@ void CGUICheckBox::draw()
 	IGUISkin* skin = Environment->getSkin();
 	if (skin)
 	{
+		video::IVideoDriver* driver = Environment->getVideoDriver();
+		core::rect<s32> frameRect(AbsoluteRect);
+
+		// draw background
+		if (Background)
+		{
+			video::SColor bgColor = skin->getColor(gui::EGDC_3D_FACE);
+			driver->draw2DRectangle(bgColor, frameRect, &AbsoluteClippingRect);
+		}
+
+		// draw the border
+		if (Border)
+		{
+			skin->draw3DSunkenPane(this, 0, true, false, frameRect, &AbsoluteClippingRect);
+			frameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
+			frameRect.LowerRightCorner.X -= skin->getSize(EGDS_TEXT_DISTANCE_X);
+		}
+
 		const s32 height = skin->getSize(EGDS_CHECK_BOX_WIDTH);
 
-		core::rect<s32> checkRect(AbsoluteRect.UpperLeftCorner.X,
-					((AbsoluteRect.getHeight() - height) / 2) + AbsoluteRect.UpperLeftCorner.Y,
+		// the rectangle around the "checked" area.
+		core::rect<s32> checkRect(frameRect.UpperLeftCorner.X,
+					((frameRect.getHeight() - height) / 2) + frameRect.UpperLeftCorner.Y,
 					0, 0);
 
 		checkRect.LowerRightCorner.X = checkRect.UpperLeftCorner.X + height;
@@ -144,14 +164,17 @@ void CGUICheckBox::draw()
 		skin->draw3DSunkenPane(this, skin->getColor(col),
 			false, true, checkRect, &AbsoluteClippingRect);
 
+		// the checked icon
 		if (Checked)
 		{
 			skin->drawIcon(this, EGDI_CHECK_BOX_CHECKED, checkRect.getCenter(),
-				checkTime, os::Timer::getTime(), false, &AbsoluteClippingRect);
+				CheckTime, os::Timer::getTime(), false, &AbsoluteClippingRect);
 		}
+
+		// associated text
 		if (Text.size())
 		{
-			checkRect = AbsoluteRect;
+			checkRect = frameRect;
 			checkRect.UpperLeftCorner.X += height + 5;
 
 			IGUIFont* font = skin->getFont();
@@ -180,12 +203,39 @@ bool CGUICheckBox::isChecked() const
 	return Checked;
 }
 
+//! Sets whether to draw the background
+void CGUICheckBox::setDrawBackground(bool draw)
+{
+	Background = draw;
+}
+
+//! Checks if background drawing is enabled
+bool CGUICheckBox::isDrawBackgroundEnabled() const
+{
+	return Background;
+}
+
+//! Sets whether to draw the border
+void CGUICheckBox::setDrawBorder(bool draw)
+{
+	Border = draw;
+}
+
+//! Checks if border drawing is enabled
+bool CGUICheckBox::isDrawBorderEnabled() const
+{
+	return Border;
+}
+
 
 //! Writes attributes of the element.
 void CGUICheckBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUICheckBox::serializeAttributes(out,options);
+
 	out->addBool("Checked",	Checked);
+	out->addBool("Border",  Border);
+	out->addBool("Background", Background);
 }
 
 
@@ -193,6 +243,8 @@ void CGUICheckBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadW
 void CGUICheckBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 {
 	Checked = in->getAttributeAsBool ("Checked");
+	Border = in->getAttributeAsBool ("Border", Border);
+	Background = in->getAttributeAsBool ("Background", Background);
 
 	IGUICheckBox::deserializeAttributes(in,options);
 }

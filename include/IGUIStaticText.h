@@ -67,13 +67,13 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw) = 0;
 
-		//! Gets the background color
-		/** \return: The background color */
-		virtual video::SColor getBackgroundColor() const = 0;
-
 		//! Checks if background drawing is enabled
 		/** \return true if background drawing is enabled, false otherwise */
 		virtual bool isDrawBackgroundEnabled() const = 0;
+
+		//! Gets the background color
+		/** \return: The background color */
+		virtual video::SColor getBackgroundColor() const = 0;
 
 		//! Sets whether to draw the border
 		virtual void setDrawBorder(bool draw) = 0;
