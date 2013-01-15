@@ -3,27 +3,21 @@
 // and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 precision mediump float;
 
 uniform bool uUseTexture;
 uniform sampler2D uTextureUnit;
-uniform bool uAlphaTest;
-uniform float uAlphaValue;
 
-varying vec4 varVertexColor;
-varying vec4 varTexCoord;
+varying vec4 vVertexColor;
+varying vec2 vTexCoord;
 
 void main(void)
 {
-	vec4 color = varVertexColor;
-	vec4 texel = texture2D(uTextureUnit, varTexCoord.xy);
+	vec4 Color = vVertexColor;
+
 	if(uUseTexture)
-	{
-		color *= texel;
-	}
+		Color *= texture2D(uTextureUnit, vTexCoord);
 	
-	if(uAlphaTest && !(color.a > uAlphaValue))
-		discard;
-	
-	gl_FragColor = color;
+	gl_FragColor = Color;
 }

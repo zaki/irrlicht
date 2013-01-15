@@ -279,6 +279,7 @@ namespace video
 	COGLES2Driver::~COGLES2Driver()
 	{
 		deleteMaterialRenders();
+		delete MaterialRenderer2D;
 		deleteAllTextures();
 
 		if (BridgeCalls)
@@ -312,8 +313,6 @@ namespace video
             ViewDepthRenderbuffer = 0;
         }
 #endif
-
-//		delete TwoDRenderer;
 	}
 
 // -----------------------------------------------------------------------
@@ -360,8 +359,6 @@ namespace video
 		DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
 		DriverAttributes->setAttribute("Version", Version);
 		DriverAttributes->setAttribute("AntiAlias", AntiAlias);
-
-//		TwoDRenderer = new COGLES2Renderer2d(this, FileSystem);
 
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
@@ -441,6 +438,12 @@ namespace video
 			FPFSData[Size] = 0;
 		}
 
+		if (FPVSFile)
+			FPVSFile->drop();
+
+		if (FPFSFile)
+			FPFSFile->drop();
+
 		// Normal Mapping.
 
 		core::stringc NMVSPath = IRR_OGLES2_SHADER_PATH;
@@ -476,6 +479,12 @@ namespace video
 			NMFSFile->read(NMFSData, Size);
 			NMFSData[Size] = 0;
 		}
+
+		if (NMVSFile)
+			NMVSFile->drop();
+
+		if (NMFSFile)
+			NMFSFile->drop();
 
 		// Parallax Mapping.
 
@@ -513,6 +522,12 @@ namespace video
 			PMFSData[Size] = 0;
 		}
 
+		if (PMVSFile)
+			PMVSFile->drop();
+
+		if (PMFSFile)
+			PMFSFile->drop();
+
 		// Create materials.		
 
 		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID, this));
@@ -540,6 +555,50 @@ namespace video
 		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA, this));
 
 		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_ONETEXTURE_BLEND, this));
+
+		// Create 2D material renderer.
+
+		core::stringc R2DVSPath = IRR_OGLES2_SHADER_PATH;
+		R2DVSPath += "COGLES2Renderer2D.vsh";
+
+		core::stringc R2DFSPath = IRR_OGLES2_SHADER_PATH;
+		R2DFSPath += "COGLES2Renderer2D.fsh";
+
+		io::IReadFile* R2DVSFile = FileSystem->createAndOpenFile(R2DVSPath);
+		io::IReadFile* R2DFSFile = FileSystem->createAndOpenFile(R2DFSPath);
+
+		c8* R2DVSData = 0;
+		c8* R2DFSData = 0;
+
+		Size = R2DVSFile->getSize();
+
+		if (Size)
+		{
+			R2DVSData = new c8[Size+1];
+			R2DVSFile->read(R2DVSData, Size);
+			R2DVSData[Size] = 0;
+		}
+
+		Size = R2DFSFile->getSize();
+
+		if (Size)
+		{
+			// if both handles are the same we must reset the file
+			if (R2DFSFile == PMVSFile)
+				R2DFSFile->seek(0);
+
+			R2DFSData = new c8[Size+1];
+			R2DFSFile->read(R2DFSData, Size);
+			R2DFSData[Size] = 0;
+		}
+
+		if (R2DVSFile)
+			R2DVSFile->drop();
+
+		if (R2DFSFile)
+			R2DFSFile->drop();
+
+		MaterialRenderer2D = new COGLES2Renderer2D(R2DVSData, R2DFSData, this);
 	}
 
 
@@ -1800,7 +1859,10 @@ namespace video
 		{
 			// unset old material
 
-			if (LastMaterial.MaterialType != Material.MaterialType &&
+			// unset last 3d material
+			if (CurrentRenderMode == ERM_2D)
+				MaterialRenderer2D->OnUnsetMaterial();
+			else if (LastMaterial.MaterialType != Material.MaterialType &&
 					static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 
@@ -2051,7 +2113,7 @@ namespace video
 	//! sets the needed renderstates
 	void COGLES2Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 	{
-		if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
+		if (CurrentRenderMode != ERM_2D)
 		{
 			// unset last 3d material
 			if (CurrentRenderMode == ERM_3D)
@@ -2060,35 +2122,29 @@ namespace video
 					MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			}
 
-			//TwoDRenderer->useProgram(); //Fixed Pipeline Shader needed to render 2D
-
-			if (Transformation3DChanged)
-			{
-				const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-				core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
-				m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0f, 1.0f);
-				m.setTranslation(core::vector3df(-1,1,0));
-
-				//TwoDRenderer->setOrthoMatrix(m);
-
-				// Make sure we set first texture matrix
-				BridgeCalls->setActiveTexture(GL_TEXTURE0);
-
-				Transformation3DChanged = false;
-			}
-			if (!OverrideMaterial2DEnabled)
-			{
-				setBasicRenderStates(InitMaterial2D, LastMaterial, true);
-				LastMaterial = InitMaterial2D;
-			}
-			BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			CurrentRenderMode = ERM_2D;
 		}
+
+		if (!OverrideMaterial2DEnabled)
+			Material = InitMaterial2D;
+
 		if (OverrideMaterial2DEnabled)
 		{
 			OverrideMaterial2D.Lighting=false;
-			setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
-			LastMaterial = OverrideMaterial2D;
+			OverrideMaterial2D.ZWriteEnable=false;
+			OverrideMaterial2D.ZBuffer=ECFN_NEVER; // it will be ECFN_DISABLED after merge
+			OverrideMaterial2D.Lighting=false;
+
+			Material = OverrideMaterial2D;
 		}
+
+		if (texture)
+			MaterialRenderer2D->setTexture(CurrentTexture[0]);
+		else
+			MaterialRenderer2D->setTexture(0);
+
+		MaterialRenderer2D->OnSetMaterial(Material, LastMaterial, true, 0);
+		LastMaterial = Material;
 
 		// no alphaChannel without texture
 		alphaChannel &= texture;
@@ -2096,30 +2152,12 @@ namespace video
 		if (alphaChannel || alpha)
 		{
 			BridgeCalls->setBlend(true);
-			//TwoDRenderer->useAlphaTest(true);
-			//TwoDRenderer->setAlphaTestValue(0.f);
+			BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 		else
-		{
 			BridgeCalls->setBlend(false);
-			//TwoDRenderer->useAlphaTest(false);
-		}
 
-		if (texture)
-		{
-			if (OverrideMaterial2DEnabled)
-				setTextureRenderStates(OverrideMaterial2D, false);
-			else
-				setTextureRenderStates(InitMaterial2D, false);
-        
-			Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
-			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
-			// Due to the transformation change, the previous line would call a reset each frame
-			// but we can safely reset the variable as it was false before
-			Transformation3DChanged=false;
-		}
-
-		CurrentRenderMode = ERM_2D;
+		MaterialRenderer2D->OnRender(this, video::EVT_STANDARD);
 	}
 
 
@@ -2837,7 +2875,7 @@ namespace video
 		BlendSource(GL_ONE), BlendDestination(GL_ZERO), Blend(false),
 		CullFaceMode(GL_BACK), CullFace(false),
 		DepthFunc(GL_LESS), DepthMask(true), DepthTest(false),
-		ActiveTexture(GL_TEXTURE0)
+		Program(0), ActiveTexture(GL_TEXTURE0)
 	{
 		// Initial OpenGL values from specification.
 
@@ -2935,6 +2973,15 @@ namespace video
 				glDisable(GL_DEPTH_TEST);
                 
 			DepthTest = enable;
+		}
+	}
+
+	void COGLES2CallBridge::setProgram(GLuint program)
+	{
+		if (Program != program)
+		{
+			glUseProgram(program);
+			Program = program;
 		}
 	}
         

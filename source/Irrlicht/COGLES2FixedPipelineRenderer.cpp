@@ -66,6 +66,8 @@ bool COGLES2FixedPipelineRenderer::OnRender(IMaterialRendererServices* service, 
 		return SharedRenderer->OnRender(service, vtxtype);
 	else
 	{
+		Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
+
 		/* Vertex Shader part */
 
 		/* Matrices Upload */

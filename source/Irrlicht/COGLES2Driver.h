@@ -51,10 +51,9 @@ namespace video
 	class COGLES2CallBridge;
 	class COGLES2Texture;
 	class COGLES2FixedPipelineRenderer;
+	class COGLES2Renderer2D;
 	class COGLES2NormalMapRenderer;
 	class COGLES2ParallaxMapRenderer;
-
-	//class COGLES2Renderer2d;
 
 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
 	{
@@ -356,6 +355,9 @@ namespace video
 		void deleteFramebuffers(s32 n, const u32 *framebuffers);
 		void deleteRenderbuffers(s32 n, const u32 *renderbuffers);
 
+		// returns the current size of the screen or rendertarget
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
+
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
@@ -390,9 +392,6 @@ namespace video
 
 		//! sets the needed renderstates
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
-
-		// returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
 		void createMaterialRenderers();
 
@@ -449,6 +448,8 @@ namespace video
 		core::array<RequestedLight> RequestedLights;
 		SColorf AmbientLight;
 
+		COGLES2Renderer2D* MaterialRenderer2D;
+
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		HDC HDc;
 #endif
@@ -463,8 +464,6 @@ namespace video
 		void* EglSurface;
 		void* EglContext;
 #endif
-
-		//COGLES2Renderer2d* TwoDRenderer;
 	};
 
     //! This bridge between Irlicht pseudo OpenGL calls
@@ -494,6 +493,10 @@ namespace video
         void setDepthMask(bool enable);
 
 		void setDepthTest(bool enable);
+
+		// Program calls.
+
+		void setProgram(GLuint program);
         
         // Texture calls.
         
@@ -514,6 +517,8 @@ namespace video
 		GLenum DepthFunc;
         bool DepthMask;
         bool DepthTest;
+
+		GLuint Program;
         
 		GLenum ActiveTexture;
 

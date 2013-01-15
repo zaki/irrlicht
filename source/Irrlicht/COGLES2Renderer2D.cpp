@@ -1,84 +1,100 @@
-// Copyright (C) 2009-2010 Amundis
+// Copyright (C) 2013 Patryk Nadrowski
 // Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
+// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
+// driver implemented by Amundis.
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#include "COGLES2Renderer2D.h"
+#include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
+
+#include "COGLES2Renderer2D.h"
+#include "IGPUProgrammingServices.h"
+#include "os.h"
+#include "COGLES2Driver.h"
 
 namespace irr
 {
 namespace video
 {
 
-	const char* const COGLES2Renderer2d::sBuiltInShaderUniformNames[] =
-	{
-		"uOrthoMatrix",
-		"uUseTexture",
-		"uTextureUnit",
-		"uAlphaTest",
-		"uAlphaValue",
-		0
-	};
+//! Constructor
+COGLES2Renderer2D::COGLES2Renderer2D(const c8* vertexShaderProgram, const c8* pixelShaderProgram, COGLES2Driver* driver)
+	:	COGLES2MaterialRenderer(driver, 0, EMT_SOLID), RenderTargetSize(core::dimension2d<u32>(0,0)),
+		Matrix(core::matrix4::EM4CONST_NOTHING), Texture(0)
+{
+	#ifdef _DEBUG
+	setDebugName("COGLES2Renderer2D");
+	#endif
 
-	static const char* vertexShaderFile = IRR_OGLES2_SHADER_PATH "COGLES2Renderer2D.vsh";
-	static const char* fragmentShaderFile = IRR_OGLES2_SHADER_PATH "COGLES2Renderer2D.fsh";
+	int Temp = 0;
 
-	COGLES2Renderer2d::COGLES2Renderer2d( irr::video::COGLES2Driver *driver, irr::io::IFileSystem *fs )
-			: COGLES2MaterialRenderer( driver )
-	{
-#ifdef _DEBUG
-		setDebugName( "COGLES2Renderer2d" );
-#endif
-		/*s32 dummy = -1;
-		if (!initFromFiles( dummy, vertexShaderFile, fragmentShaderFile, false))
-			return;
-		useProgram();
-		int texUnit = 0;
-		setUniform( TEXTURE_UNIT, &texUnit );*/
-	}
+	init(Temp, vertexShaderProgram, pixelShaderProgram, false);
 
-	void COGLES2Renderer2d::useTexture( bool param )
-	{
-		/*if ( param != UseTexture )
-		{
-			UseTexture = param;
-			int dummy = param ? 1 : 0;
-			setUniform( USE_TEXTURE, &dummy );
-		}*/
-	}
+	Driver->getBridgeCalls()->setProgram(Program);
 
-	void COGLES2Renderer2d::useAlphaTest( bool param )
-	{
-		/*if ( param != UseAlphaTest )
-		{
-			UseAlphaTest = param;
-			int dummy = param ? 1 : 0;
-			setUniform( ALPHA_TEST, &dummy );
-		}*/
-	}
+	// These states doesn't change later.
 
-	void COGLES2Renderer2d::setAlphaTestValue( float value )
-	{
-		/*if ( value != AlphaTestValue )
-		{
-			AlphaTestValue = value;
-			setUniform( ALPHA_VALUE, &AlphaTestValue );
-		}*/
-	}
+	MatrixID = getPixelShaderConstantID("uOrthoMatrix");
+	UseTextureID = getPixelShaderConstantID("uUseTexture");
+	s32 TextureUnitID = getPixelShaderConstantID("uTextureUnit");	
 
-	void COGLES2Renderer2d::setOrthoMatrix( const core::matrix4 &matrix )
-	{
-		/*if ( matrix != OrthoMatrix )
-		{
-			OrthoMatrix = matrix;
-			setUniform( ORTHO_MATRIX, OrthoMatrix.pointer() );
-		}*/
-	}
-}
+	int TextureUnit = 0;
+	setPixelShaderConstant(TextureUnitID, &TextureUnit, 1);
+
+	Driver->getBridgeCalls()->setProgram(0);
 }
 
-#endif
 
+//! Destructor
+COGLES2Renderer2D::~COGLES2Renderer2D()
+{
+}
+
+
+void COGLES2Renderer2D::OnSetMaterial(const video::SMaterial& material,
+				const video::SMaterial& lastMaterial,
+				bool resetAllRenderstates,
+				video::IMaterialRendererServices* services)
+{
+	Driver->getBridgeCalls()->setProgram(Program);
+
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+}
+
+
+bool COGLES2Renderer2D::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
+{
+	Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
+
+	const core::dimension2d<u32>& renderTargetSize = Driver->getCurrentRenderTargetSize();
+
+	if (RenderTargetSize != renderTargetSize)
+	{
+		Matrix.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0f, 1.0f);
+		Matrix.setTranslation(core::vector3df(-1,1,0));
+
+		setPixelShaderConstant(MatrixID, Matrix.pointer(), 16);
+
+		RenderTargetSize = renderTargetSize;
+	}
+
+	int UseTexture = Texture ? 1 : 0;
+	setPixelShaderConstant(UseTextureID, &UseTexture, 1);
+
+	return true;
+}
+
+
+void COGLES2Renderer2D::setTexture(const ITexture* texture)
+{
+	Texture = texture;
+}
+
+
+} // end namespace video
+} // end namespace irr
+
+
+#endif
