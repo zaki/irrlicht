@@ -1,8 +1,10 @@
-// Copyright (C) 2009-2010 Amundis
+// Copyright (C) 2013 Patryk Nadrowski
 // Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
+// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
+// driver implemented by Amundis.
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
+
 #ifndef __C_OGLES2_DRIVER_H_INCLUDED__
 #define __C_OGLES2_DRIVER_H_INCLUDED__
 
@@ -46,12 +48,18 @@ namespace irr
 {
 namespace video
 {
+	class COGLES2CallBridge;
 	class COGLES2Texture;
-	class COGLES2FixedPipelineShader;
-	class COGLES2Renderer2d;
+	class COGLES2FixedPipelineRenderer;
+	class COGLES2NormalMapRenderer;
+	class COGLES2ParallaxMapRenderer;
+
+	//class COGLES2Renderer2d;
 
 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
 	{
+		friend class COGLES2CallBridge;
+
 	public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
@@ -234,9 +242,10 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
-		virtual void setBasicRenderStates(const SMaterial& material,
-				const SMaterial& lastmaterial,
-				bool resetAllRenderstates);
+		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial, bool resetAllRenderstates);
+        
+        //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
+        virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates);
 
 		//! Sets a vertex shader constant.
 		virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount = 1);
@@ -344,24 +353,21 @@ namespace video
 		ITexture* createDepthTexture(ITexture* texture, bool shared = true);
 		void removeDepthTexture(ITexture* texture);
 
-		COGLES2FixedPipelineShader* fixedPipeline()
-		{
-			return FixedPipeline;
-		}
-
-		virtual void reloadShaders();
-
-		//native ogles2 which was ogles1 extensions.
-
 		void deleteFramebuffers(s32 n, const u32 *framebuffers);
 		void deleteRenderbuffers(s32 n, const u32 *renderbuffers);
 
-		void enableBlend();
-		void disableBlend();
-		u32 getGLBlend(E_BLEND_FACTOR factor);
-		void blendFunc(E_BLEND_FACTOR sFactor, E_BLEND_FACTOR dFactor);
+		//! Convert E_BLEND_FACTOR to OpenGL equivalent
+		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
+
+		//! Get current material.
+        const SMaterial& getCurrentMaterial() const;
+
+		//! Get bridge calls.
+        COGLES2CallBridge* getBridgeCalls() const;
 
 	private:
+		// Bridge calls.
+        COGLES2CallBridge* BridgeCalls;
 
 		void uploadClipPlane(u32 index);
 
@@ -378,9 +384,6 @@ namespace video
 
 		//! Map Irrlicht wrap mode to OpenGL enum
 		GLint getTextureWrapMode(u8 clamp) const;
-
-		//! Set GL pipeline to desired texture wrap modes of the material
-		void setWrapMode(const SMaterial& material);
 
 		//! sets the needed renderstates
 		void setRenderStates3DMode();
@@ -461,13 +464,61 @@ namespace video
 		void* EglContext;
 #endif
 
-		COGLES2FixedPipelineShader* FixedPipeline;
-		COGLES2Renderer2d* TwoDRenderer;
-
-		bool BlendEnabled;
-		E_BLEND_FACTOR SourceFactor;
-		E_BLEND_FACTOR DestFactor;
+		//COGLES2Renderer2d* TwoDRenderer;
 	};
+
+    //! This bridge between Irlicht pseudo OpenGL calls
+    //! and true OpenGL calls.
+    
+    class COGLES2CallBridge
+    {
+    public:
+        COGLES2CallBridge(COGLES2Driver* driver);
+
+		// Blending calls.
+
+		void setBlendFunc(GLenum source, GLenum destination);
+
+		void setBlend(bool enable);
+
+		// Cull face calls.
+
+		void setCullFaceFunc(GLenum mode);
+
+		void setCullFace(bool enable);
+        
+        // Depth calls.
+
+		void setDepthFunc(GLenum mode);
+
+        void setDepthMask(bool enable);
+
+		void setDepthTest(bool enable);
+        
+        // Texture calls.
+        
+        void setActiveTexture(GLenum texture);
+        
+        void setTexture(u32 stage);
+        
+    private:
+        COGLES2Driver* Driver;
+
+		GLenum BlendSource;
+		GLenum BlendDestination;
+		bool Blend;
+
+		GLenum CullFaceMode;
+		bool CullFace;
+        
+		GLenum DepthFunc;
+        bool DepthMask;
+        bool DepthTest;
+        
+		GLenum ActiveTexture;
+
+        const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+    };
 
 } // end namespace video
 } // end namespace irr

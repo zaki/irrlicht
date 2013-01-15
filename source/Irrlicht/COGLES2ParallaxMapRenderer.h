@@ -1,6 +1,7 @@
-// Copyright (C) 2009-2010 Amundis
+// Copyright (C) 2013 Patryk Nadrowski
 // Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
+// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
+// driver implemented by Amundis.
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -8,57 +9,37 @@
 #define __C_OGLES2_PARALLAX_MAP_RENDERER_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
+
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#include "COGLES2SLMaterialRenderer.h"
-#include "IShaderConstantSetCallBack.h"
+#include "COGLES2MaterialRenderer.h"
 
 namespace irr
 {
 namespace video
 {
 
-	//! Class for rendering normal maps with OGLES2
-	class COGLES2ParallaxMapRenderer : public COGLES2SLMaterialRenderer, public IShaderConstantSetCallBack
-	{
-	public:
+//! Class for parallax mapping in OpenGL ES 2.0
+class COGLES2ParallaxMapRenderer : public COGLES2MaterialRenderer
+{
+public:
+	//! Constructor
+	COGLES2ParallaxMapRenderer(const c8* vertexShaderProgram,
+		const c8* pixelShaderProgram, E_MATERIAL_TYPE baseMaterial,
+		COGLES2Driver* driver);
 
-		//! Constructor
-		COGLES2ParallaxMapRenderer( video::COGLES2Driver* driver, io::IFileSystem* fs,
-									s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial );
+	//! Destructor
+	~COGLES2ParallaxMapRenderer();
 
-		//! Destructor
-		virtual ~COGLES2ParallaxMapRenderer();
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
+		bool resetAllRenderstates, IMaterialRendererServices* services);
 
-		//! Called by the engine when the vertex and/or pixel shader constants for an
-		//! material renderer should be set.
-		virtual void OnSetConstants( IMaterialRendererServices* services, s32 userData );
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
-		virtual void OnSetMaterial( const SMaterial& material ) { }
-		virtual void OnSetMaterial( const video::SMaterial& material,
-									const video::SMaterial& lastMaterial,
-									bool resetAllRenderstates, video::IMaterialRendererServices* services );
+protected:
 
-	protected:
-
-		bool CompiledShaders;
-		f32 CurrentScale;
-
-	private:
-		enum SHADER_UNIFORM
-		{
-			MVP_MATRIX = 0,
-			LIGHT_POSITION,
-			LIGHT_COLOR,
-			EYE_POSITION,
-			TEXTURE_UNIT0,
-			TEXTURE_UNIT1,
-			LIGHT_DIFFUSE,
-			HEIGHT_SCALE,
-			UNIFORM_COUNT
-		};
-		static const char* const sBuiltInShaderUniformNames[];
-	};
+	COGLES2MaterialRenderer* SharedRenderer;
+};
 
 
 } // end namespace video
@@ -66,4 +47,5 @@ namespace video
 
 #endif
 #endif
+
 

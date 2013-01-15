@@ -180,7 +180,11 @@ int main()
 	case video::EDT_OGLES1:
 	case video::EDT_OGLES2:
 		UseHighLevelShaders=true;
-		// fallthrough!
+		{
+			psFileName = "../../media/ogles2.frag";
+			vsFileName = "../../media/ogles2.vert";
+		}
+		break;
 	case video::EDT_OPENGL:
 		if (UseHighLevelShaders)
 		{
@@ -208,7 +212,7 @@ int main()
 	least the vertex shader in action, without the pixel shader.
 	*/
 
-	if (!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
+	/*if (!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
 		!driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1))
 	{
 		device->getLogger()->log("WARNING: Pixel shaders disabled "\
@@ -222,7 +226,7 @@ int main()
 		device->getLogger()->log("WARNING: Vertex shaders disabled "\
 			"because of missing driver/hardware support.");
 		vsFileName = "";
-	}
+	}*/
 
 	/*
 	Now lets create the new materials. As you maybe know from previous
@@ -391,8 +395,8 @@ int main()
 
 		if (lastFPS != fps)
 		{
-			core::stringw str = L"Irrlicht Engine - Vertex and pixel shader example [";
-			str += driver->getName();
+			core::stringw str = L"[";
+			//str += driver->getName();
 			str += "] FPS:";
 			str += fps;
 

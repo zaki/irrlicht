@@ -7,7 +7,7 @@
 #ifndef __C_OGLES2_RENDERER_2D_H_INCLUDED__
 #define __C_OGLES2_RENDERER_2D_H_INCLUDED__
 
-#include "COGLES2SLMaterialRenderer.h"
+#include "COGLES2MaterialRenderer.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
@@ -21,7 +21,7 @@ namespace video
 {
 	class COGLES2Driver;
 
-	class COGLES2Renderer2d : public COGLES2SLMaterialRenderer
+	class COGLES2Renderer2d : public COGLES2MaterialRenderer
 	{
 	public:
 		COGLES2Renderer2d( COGLES2Driver* driver, io::IFileSystem* fs );

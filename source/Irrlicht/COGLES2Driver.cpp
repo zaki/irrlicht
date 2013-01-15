@@ -1,6 +1,7 @@
-// Copyright (C) 2009-2010 Amundis
+// Copyright (C) 2013 Patryk Nadrowski
 // Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
+// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
+// driver implemented by Amundis.
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -12,6 +13,7 @@
 
 #include "COGLES2Texture.h"
 #include "COGLES2MaterialRenderer.h"
+#include "COGLES2FixedPipelineRenderer.h"
 #include "COGLES2NormalMapRenderer.h"
 #include "COGLES2ParallaxMapRenderer.h"
 #include "COGLES2Renderer2D.h"
@@ -40,7 +42,7 @@ namespace video
 	)
 		: CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
 		CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
-		Transformation3DChanged(true), AntiAlias(params.AntiAlias),
+		Transformation3DChanged(true), AntiAlias(params.AntiAlias), BridgeCalls(0),
 		RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8)
 #ifdef EGL_VERSION_1_0
 		, EglDisplay(EGL_NO_DISPLAY)
@@ -52,9 +54,6 @@ namespace video
 		, ViewRenderbuffer(0)
 		, ViewDepthRenderbuffer(0)
 #endif
-		, BlendEnabled(false)
-		, SourceFactor(EBF_ZERO)
-		, DestFactor(EBF_ZERO)
 	{
 #ifdef _DEBUG
 		setDebugName("COGLES2Driver");
@@ -281,6 +280,9 @@ namespace video
 	{
 		deleteMaterialRenders();
 		deleteAllTextures();
+
+		if (BridgeCalls)
+			delete BridgeCalls;
         
 #if defined(EGL_VERSION_1_0)
 		// HACK : the following is commented because destroying the context crashes under Linux (Thibault 04-feb-10)
@@ -311,8 +313,7 @@ namespace video
         }
 #endif
 
-		delete TwoDRenderer;
-		delete FixedPipeline;
+//		delete TwoDRenderer;
 	}
 
 // -----------------------------------------------------------------------
@@ -342,6 +343,9 @@ namespace video
 #endif
             stencilBuffer);
 
+		if (!BridgeCalls)
+			BridgeCalls = new COGLES2CallBridge(this);
+
 		StencilBuffer = stencilBuffer;
 
 		DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
@@ -357,10 +361,7 @@ namespace video
 		DriverAttributes->setAttribute("Version", Version);
 		DriverAttributes->setAttribute("AntiAlias", AntiAlias);
 
-		FixedPipeline = new COGLES2FixedPipelineShader(this, FileSystem);
-		FixedPipeline->useProgram(); //For setting the default uniforms (Alpha)
-
-		TwoDRenderer = new COGLES2Renderer2d(this, FileSystem);
+//		TwoDRenderer = new COGLES2Renderer2d(this, FileSystem);
 
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
@@ -394,7 +395,6 @@ namespace video
 		// This fixes problems with intermediate changes to the material during texture load.
 		ResetRenderStates = true;
 
-		glUseProgram(0);
 		testGLError();
 
 		return true;
@@ -403,52 +403,143 @@ namespace video
 
 	void COGLES2Driver::createMaterialRenderers()
 	{
-		// create OGLES1 material renderers
+		// Load shaders from files (in future shaders will be merged with source code).
 
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_SOLID(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_SOLID_2_LAYER(this));
+		// Fixed pipeline.
 
-		// add the same renderer for all lightmap types
-		COGLES2MaterialRenderer_LIGHTMAP* lmr = new COGLES2MaterialRenderer_LIGHTMAP(this);
-		addMaterialRenderer(lmr); // for EMT_LIGHTMAP:
-		addMaterialRenderer(lmr); // for EMT_LIGHTMAP_ADD:
-		addMaterialRenderer(lmr); // for EMT_LIGHTMAP_M2:
-		addMaterialRenderer(lmr); // for EMT_LIGHTMAP_M4:
-		addMaterialRenderer(lmr); // for EMT_LIGHTMAP_LIGHTING:
-		addMaterialRenderer(lmr); // for EMT_LIGHTMAP_LIGHTING_M2:
-		addMaterialRenderer(lmr); // for EMT_LIGHTMAP_LIGHTING_M4:
-		lmr->drop();
+		core::stringc FPVSPath = IRR_OGLES2_SHADER_PATH;
+		FPVSPath += "COGLES2FixedPipeline.vsh";
 
-		// add remaining material renderer
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_DETAIL_MAP(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_SPHERE_MAP(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_REFLECTION_2_LAYER(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_TRANSPARENT_ADD_COLOR(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_TRANSPARENT_VERTEX_ALPHA(this));
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(this));
+		core::stringc FPFSPath = IRR_OGLES2_SHADER_PATH;
+		FPFSPath += "COGLES2FixedPipeline.fsh";
 
-		// add normal map renderers
-		s32 tmp = 0;
-		video::IMaterialRenderer* renderer = 0;
-		renderer = new COGLES2NormalMapRenderer(this, FileSystem, tmp, MaterialRenderers[EMT_SOLID].Renderer);
-		renderer->drop();
-		renderer = new COGLES2NormalMapRenderer(this, FileSystem, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
-		renderer->drop();
-		renderer = new COGLES2NormalMapRenderer(this, FileSystem, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
-		renderer->drop();
+		io::IReadFile* FPVSFile = FileSystem->createAndOpenFile(FPVSPath);
+		io::IReadFile* FPFSFile = FileSystem->createAndOpenFile(FPFSPath);
 
-		// add parallax map renderers
-		renderer = new COGLES2ParallaxMapRenderer(this, FileSystem, tmp, MaterialRenderers[EMT_SOLID].Renderer);
-		renderer->drop();
-		renderer = new COGLES2ParallaxMapRenderer(this, FileSystem, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
-		renderer->drop();
-		renderer = new COGLES2ParallaxMapRenderer(this, FileSystem, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
-		renderer->drop();
+		c8* FPVSData = 0;
+		c8* FPFSData = 0;
 
-		// add basic 1 texture blending
-		addAndDropMaterialRenderer(new COGLES2MaterialRenderer_ONETEXTURE_BLEND(this));
+		long Size = FPVSFile->getSize();
+
+		if (Size)
+		{
+			FPVSData = new c8[Size+1];
+			FPVSFile->read(FPVSData, Size);
+			FPVSData[Size] = 0;
+		}
+
+		Size = FPFSFile->getSize();
+
+		if (Size)
+		{
+			// if both handles are the same we must reset the file
+			if (FPFSFile == FPVSFile)
+				FPFSFile->seek(0);
+
+			FPFSData = new c8[Size+1];
+			FPFSFile->read(FPFSData, Size);
+			FPFSData[Size] = 0;
+		}
+
+		// Normal Mapping.
+
+		core::stringc NMVSPath = IRR_OGLES2_SHADER_PATH;
+		NMVSPath += "COGLES2NormalMap.vsh";
+
+		core::stringc NMFSPath = IRR_OGLES2_SHADER_PATH;
+		NMFSPath += "COGLES2NormalMap.fsh";
+
+		io::IReadFile* NMVSFile = FileSystem->createAndOpenFile(NMVSPath);
+		io::IReadFile* NMFSFile = FileSystem->createAndOpenFile(NMFSPath);
+
+		c8* NMVSData = 0;
+		c8* NMFSData = 0;
+
+		Size = NMVSFile->getSize();
+
+		if (Size)
+		{
+			NMVSData = new c8[Size+1];
+			NMVSFile->read(NMVSData, Size);
+			NMVSData[Size] = 0;
+		}
+
+		Size = NMFSFile->getSize();
+
+		if (Size)
+		{
+			// if both handles are the same we must reset the file
+			if (NMFSFile == NMVSFile)
+				NMFSFile->seek(0);
+
+			NMFSData = new c8[Size+1];
+			NMFSFile->read(NMFSData, Size);
+			NMFSData[Size] = 0;
+		}
+
+		// Parallax Mapping.
+
+		core::stringc PMVSPath = IRR_OGLES2_SHADER_PATH;
+		PMVSPath += "COGLES2ParallaxMap.vsh";
+
+		core::stringc PMFSPath = IRR_OGLES2_SHADER_PATH;
+		PMFSPath += "COGLES2ParallaxMap.fsh";
+
+		io::IReadFile* PMVSFile = FileSystem->createAndOpenFile(FPVSPath);
+		io::IReadFile* PMFSFile = FileSystem->createAndOpenFile(FPFSPath);
+
+		c8* PMVSData = 0;
+		c8* PMFSData = 0;
+
+		Size = PMVSFile->getSize();
+
+		if (Size)
+		{
+			PMVSData = new c8[Size+1];
+			PMVSFile->read(PMVSData, Size);
+			PMVSData[Size] = 0;
+		}
+
+		Size = PMFSFile->getSize();
+
+		if (Size)
+		{
+			// if both handles are the same we must reset the file
+			if (PMFSFile == PMVSFile)
+				PMFSFile->seek(0);
+
+			PMFSData = new c8[Size+1];
+			PMFSFile->read(PMFSData, Size);
+			PMFSData[Size] = 0;
+		}
+
+		// Create materials.		
+
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID_2_LAYER, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_ADD, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M2, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M4, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M2, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M4, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SPHERE_MAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_REFLECTION_2_LAYER, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL_REF, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_VERTEX_ALPHA, this));
+		
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA, this));
+
+		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA, this));
+
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_ONETEXTURE_BLEND, this));
 	}
 
 
@@ -1527,31 +1618,23 @@ namespace video
 
 	bool COGLES2Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	{
-		if (stage >= MaxTextureUnits)
+		if (stage >= MaxSupportedTextures)
 			return false;
 
-		if (CurrentTexture[stage] == texture)
+		if (CurrentTexture[stage]==texture)
 			return true;
-
-		glActiveTexture(GL_TEXTURE0 + stage);
 
 		CurrentTexture[stage] = texture;
 
 		if (!texture)
-		{
 			return true;
-		}
-		else
+		else if (texture->getDriverType() != EDT_OGLES2)
 		{
-			if (texture->getDriverType() != EDT_OGLES2)
-			{
-				os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
-				return false;
-			}
-			glBindTexture(GL_TEXTURE_2D,
-						static_cast<const COGLES2Texture*>(texture)->getOGLES2TextureName());
+			CurrentTexture[stage] = 0;
+			os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+			return false;
 		}
-		testGLError();
+
 		return true;
 	}
 
@@ -1611,12 +1694,8 @@ namespace video
 		Material = material;
 		OverrideMaterial.apply(Material);
 
-		for (s32 i = MaxTextureUnits - 1; i >= 0; --i)
-		{
-			setActiveTexture(i, Material.getTexture(i));
-			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i),
-					Material.getTextureMatrix(i));
-		}
+		for (u32 i = 0; i < MaxTextureUnits; ++i)
+			setActiveTexture(i, material.getTexture(i));
 	}
 
 	//! prints error if an error happened.
@@ -1647,7 +1726,7 @@ namespace video
 #endif
 	}
 
-
+	//! prints error if an error happened.
 	bool COGLES2Driver::testEGLError()
 	{
 #if defined(EGL_VERSION_1_0) && defined(_DEBUG)
@@ -1706,17 +1785,13 @@ namespace video
 	}
 
 
-	//! sets the needed renderstates
 	void COGLES2Driver::setRenderStates3DMode()
 	{
 		if (CurrentRenderMode != ERM_3D)
 		{
 			// Reset Texture Stages
-			if (BlendEnabled)
-			{
-				glDisable(GL_BLEND);
-				BlendEnabled = false;
-			}
+			BridgeCalls->setBlend(false);
+			BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			ResetRenderStates = true;
 		}
@@ -1726,7 +1801,7 @@ namespace video
 			// unset old material
 
 			if (LastMaterial.MaterialType != Material.MaterialType &&
-				static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
+					static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 
 			// set new material.
@@ -1741,333 +1816,235 @@ namespace video
 		if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
 			MaterialRenderers[Material.MaterialType].Renderer->OnRender(this, video::EVT_STANDARD);
 
-		testGLError();
-
 		CurrentRenderMode = ERM_3D;
 	}
 
-
-	GLint COGLES2Driver::getTextureWrapMode(u8 clamp) const
-	{
-		switch (clamp)
-		{
-			case ETC_CLAMP:
-				// mode=GL_CLAMP; not supported in ogl-es
-				return GL_CLAMP_TO_EDGE;
-			case ETC_CLAMP_TO_EDGE:
-				return GL_CLAMP_TO_EDGE;
-			case ETC_CLAMP_TO_BORDER:
-				// mode=GL_CLAMP_TO_BORDER; not supported in ogl-es
-				return GL_CLAMP_TO_EDGE;
-			case ETC_MIRROR:
-#ifdef GL_OES_texture_mirrored_repeat
-				if (FeatureAvailable[IRR_OES_texture_mirrored_repeat])
-					return GL_MIRRORED_REPEAT_OES;
-				else
-#endif
-					return GL_REPEAT;
-			default:
-				return GL_REPEAT;
-		}
-	}
-
-
-	void COGLES2Driver::setWrapMode(const SMaterial& material)
-	{
-		testGLError();
-		// texture address mode
-		// Has to be checked always because it depends on the textures
-		for (u32 u = 0; u < MaxTextureUnits; ++u)
-		{
-			if (MultiTextureExtension)
-				glActiveTexture(GL_TEXTURE0 + u);
-			else if (u>0)
-				break; // stop loop
-
-			// the APPLE npot restricted extension needs some care as it only supports CLAMP_TO_EDGE
-			if (queryFeature(EVDF_TEXTURE_NPOT) && !FeatureAvailable[IRR_OES_texture_npot] &&
-					CurrentTexture[u] && (CurrentTexture[u]->getSize() != CurrentTexture[u]->getOriginalSize()))
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			}
-			else
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[u].TextureWrapU));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[u].TextureWrapV));
-			}
-		}
-	}
-
-
 	//! Can be called by an IMaterialRenderer to make its work easier.
-	void COGLES2Driver::setBasicRenderStates(const SMaterial& material,
-			const SMaterial& lastmaterial, bool resetAllRenderStates)
+	void COGLES2Driver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial, bool resetAllRenderStates)
 	{
-		testGLError();
-		// Texture filter
-		// Has to be checked always because it depends on the textures
-		// Filtering has to be set for each texture layer
-		for (u32 i = 0; i < MaxTextureUnits; ++i)
-		{
-			if (!CurrentTexture[i])
-				continue;
-			glActiveTexture(GL_TEXTURE0 + i);
-
-#ifdef GL_EXT_texture_lod_bias
-			if (FeatureAvailable[IRR_EXT_texture_lod_bias])
-			{
-				if (material.TextureLayer[i].LODBias)
-				{
-					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
-				}
-				else
-					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
-			}
-#endif
-			if (material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter)
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			}
-			else
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			}
-
-			if (material.getTexture(i) && CurrentTexture[i]->hasMipMaps())
-			{
-				if (material.TextureLayer[i].TrilinearFilter)
-				{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-				}
-				else if (material.TextureLayer[i].BilinearFilter)
-				{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-				}
-				else
-				{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-				}
-			}
-			else if (material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter)
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			}
-			else
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			}
-
-#ifdef GL_EXT_texture_filter_anisotropic
-			if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-						static_cast<GLfloat>(material.TextureLayer[i].AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1));
-#endif
-		}
-		testGLError();
-
-		// fillmode
-		// for ogl-es this is emulated by other polygon primitives during rendering
-
-		// shademode
-		if (resetAllRenderStates || (lastmaterial.GouraudShading != material.GouraudShading))
-		{
-			//TODO : OpenGL ES 2.0 Port glShadeModel
-			//if (material.GouraudShading)
-			// glShadeModel(GL_SMOOTH);
-			//else
-			// glShadeModel(GL_FLAT);
-		}
-		testGLError();
-
-		// zbuffer
+		// ZBuffer
 		if (resetAllRenderStates || lastmaterial.ZBuffer != material.ZBuffer)
 		{
 			switch (material.ZBuffer)
 			{
-				case ECFN_NEVER:
-					glDisable(GL_DEPTH_TEST);
+				case ECFN_NEVER: // it will be ECFN_DISABLED after merge
+					BridgeCalls->setDepthTest(false);
 					break;
 				case ECFN_LESSEQUAL:
-					glEnable(GL_DEPTH_TEST);
-					glDepthFunc(GL_LEQUAL);
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_LEQUAL);
 					break;
 				case ECFN_EQUAL:
-					glEnable(GL_DEPTH_TEST);
-					glDepthFunc(GL_EQUAL);
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_EQUAL);
 					break;
 				case ECFN_LESS:
-					glEnable(GL_DEPTH_TEST);
-					glDepthFunc(GL_LESS);
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_LESS);
 					break;
 				case ECFN_NOTEQUAL:
-					glEnable(GL_DEPTH_TEST);
-					glDepthFunc(GL_NOTEQUAL);
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_NOTEQUAL);
 					break;
 				case ECFN_GREATEREQUAL:
-					glEnable(GL_DEPTH_TEST);
-					glDepthFunc(GL_GEQUAL);
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_GEQUAL);
 					break;
 				case ECFN_GREATER:
-					glEnable(GL_DEPTH_TEST);
-					glDepthFunc(GL_GREATER);
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_GREATER);
 					break;
 				case ECFN_ALWAYS:
-					glEnable(GL_DEPTH_TEST);
-					glDepthFunc(GL_ALWAYS);
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_ALWAYS);
 					break;
+				/*case ECFN_NEVER:
+					BridgeCalls->setDepthTest(true);
+					BridgeCalls->setDepthFunc(GL_NEVER);
+					break;*/
 			}
 		}
-		testGLError();
 
-		// zwrite
-//		if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
+		// ZWrite
+	//	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 		{
 			if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
-			{
-				glDepthMask(GL_TRUE);
-			}
+				BridgeCalls->setDepthMask(true);
 			else
-				glDepthMask(GL_FALSE);
+				BridgeCalls->setDepthMask(false);
 		}
 
-		// back face culling
+		// Back face culling
 		if (resetAllRenderStates || (lastmaterial.FrontfaceCulling != material.FrontfaceCulling) || (lastmaterial.BackfaceCulling != material.BackfaceCulling))
 		{
 			if ((material.FrontfaceCulling) && (material.BackfaceCulling))
 			{
-				glCullFace(GL_FRONT_AND_BACK);
-				glEnable(GL_CULL_FACE);
-			}
-			else if (material.BackfaceCulling)
-			{
-				glCullFace(GL_BACK);
-				glEnable(GL_CULL_FACE);
-			}
-			else if (material.FrontfaceCulling)
-			{
-				glCullFace(GL_FRONT);
-				glEnable(GL_CULL_FACE);
+				BridgeCalls->setCullFaceFunc(GL_FRONT_AND_BACK);
+				BridgeCalls->setCullFace(true);
 			}
 			else
-				glDisable(GL_CULL_FACE);
+			if (material.BackfaceCulling)
+			{
+				BridgeCalls->setCullFaceFunc(GL_BACK);
+				BridgeCalls->setCullFace(true);
+			}
+			else
+			if (material.FrontfaceCulling)
+			{
+				BridgeCalls->setCullFaceFunc(GL_FRONT);
+				BridgeCalls->setCullFace(true);
+			}
+			else
+				BridgeCalls->setCullFace(false);
 		}
-		testGLError();
 
 		// Color Mask
 		if (resetAllRenderStates || lastmaterial.ColorMask != material.ColorMask)
 		{
 			glColorMask(
-				(material.ColorMask & ECP_RED) ? GL_TRUE : GL_FALSE,
-				(material.ColorMask & ECP_GREEN) ? GL_TRUE : GL_FALSE,
-				(material.ColorMask & ECP_BLUE) ? GL_TRUE : GL_FALSE,
-				(material.ColorMask & ECP_ALPHA) ? GL_TRUE : GL_FALSE);
+				(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+				(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+				(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+				(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 		}
-		testGLError();
 
+		// Blend operation
 		if (resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation)
 		{
-			if (EBO_NONE)
-				glDisable(GL_BLEND);
+			if (material.BlendOperation==EBO_NONE)
+				BridgeCalls->setBlend(false);
 			else
 			{
-				glEnable(GL_BLEND);
+				BridgeCalls->setBlend(true);
+
 				switch (material.BlendOperation)
 				{
+				case EBO_ADD:
+					glBlendEquation(GL_FUNC_ADD);
+					break;
 				case EBO_SUBTRACT:
 					glBlendEquation(GL_FUNC_SUBTRACT);
 					break;
 				case EBO_REVSUBTRACT:
 					glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 					break;
-				case EBO_MIN:
-	#if defined(GL_EXT_blend_minmax)
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						glBlendEquation(GL_MIN_EXT);
-	#endif
-					break;
-				case EBO_MAX:
-	#if defined(GL_EXT_blend_minmax)
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						glBlendEquation(GL_MAX_EXT);
-	#endif
-					break;
-				case EBO_MIN_FACTOR:
-					// fallback in case of missing extension
-	#if defined(GL_EXT_blend_minmax)
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						glBlendEquation(GL_MIN_EXT);
-	#endif
-					break;
-				case EBO_MAX_FACTOR:
-					// fallback in case of missing extension
-	#if defined(GL_EXT_blend_minmax)
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						glBlendEquation(GL_MAX_EXT);
-	#endif
-					break;
-				case EBO_MIN_ALPHA:
-	#if defined(GL_EXT_blend_minmax)
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						glBlendEquation(GL_MIN_EXT);
-	#endif
-					break;
-				case EBO_MAX_ALPHA:
-	#if defined(GL_EXT_blend_minmax)
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						glBlendEquation(GL_MAX_EXT);
-	#endif
-					break;
 				default:
-					glBlendEquation(GL_FUNC_ADD);
 					break;
 				}
 			}
 		}
 
-		// Polygon Offset
-		if (queryFeature(EVDF_POLYGON_OFFSET) && (resetAllRenderStates ||
-			lastmaterial.PolygonOffsetDirection != material.PolygonOffsetDirection ||
-			lastmaterial.PolygonOffsetFactor != material.PolygonOffsetFactor))
-		{
-			if (material.PolygonOffsetFactor)
-				glEnable(GL_POLYGON_OFFSET_FILL);
-			else
-				glDisable(GL_POLYGON_OFFSET_FILL);
-			if (material.PolygonOffsetDirection==EPO_BACK)
-				glPolygonOffset(1.0f, (GLfloat)material.PolygonOffsetFactor);
-			else
-				glPolygonOffset(-1.0f, (GLfloat)-material.PolygonOffsetFactor);
-		}
-
-		// thickness
-		if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
-		{
-			//TODO : OpenGL ES 2.0 Port glPointSize
-			//glPointSize(material.Thickness);
-			glLineWidth(material.Thickness == 0 ? 1 : material.Thickness);
-			//glLineWidth with 0 generate GL_INVALID_VALUE on real hardware.
-		}
-		testGLError();
-
 		// Anti aliasing
 		if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing)
 		{
-			{
-				if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
-					glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-				else if (lastmaterial.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
-					glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-				// other settings cannot be changed in ogl-es
-			}
+			if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
+				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+			else if (lastmaterial.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
+				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 		}
-		testGLError();
 
-		setWrapMode(material);
+		// Texture parameters
+		setTextureRenderStates(material, resetAllRenderStates);
+	}
+    
+	//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
+	void COGLES2Driver::setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates)
+	{
+		// Set textures to TU/TIU and apply filters to them
 
-		glActiveTexture(GL_TEXTURE0);
-		testGLError();
+		for (s32 i = MaxTextureUnits-1; i>= 0; --i)
+		{
+			const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(CurrentTexture[i]);
+
+			if (CurrentTexture[i])
+				BridgeCalls->setTexture(i);
+			else
+				continue;
+
+			if(resetAllRenderstates)
+				tmpTexture->getStatesCache().IsCached = false;
+
+			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
+			{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+					(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
+
+				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
+				tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+			}
+
+			if (material.UseMipMaps && CurrentTexture[i]->hasMipMaps())
+			{
+				if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+					material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
+				{
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+						material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
+						material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
+						GL_NEAREST_MIPMAP_NEAREST);
+
+					tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
+					tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+					tmpTexture->getStatesCache().MipMapStatus = true;
+				}
+			}
+			else
+			{
+				if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+					material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || tmpTexture->getStatesCache().MipMapStatus)
+				{
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+						(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
+
+					tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
+					tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+					tmpTexture->getStatesCache().MipMapStatus = false;
+				}
+			}
+
+	#ifdef GL_EXT_texture_filter_anisotropic
+			if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
+				(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
+			{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+					material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
+
+				tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
+			}
+	#endif
+
+			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
+			{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
+				tmpTexture->getStatesCache().WrapU = material.TextureLayer[i].TextureWrapU;
+			}
+
+			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
+			{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
+				tmpTexture->getStatesCache().WrapV = material.TextureLayer[i].TextureWrapV;
+			}
+
+			tmpTexture->getStatesCache().IsCached = true;
+		}
+	}
+
+
+	// Get OpenGL ES2.0 texture wrap mode from Irrlicht wrap mode.
+	GLint COGLES2Driver::getTextureWrapMode(u8 clamp) const
+	{
+		switch (clamp)
+		{
+			case ETC_CLAMP:
+			case ETC_CLAMP_TO_EDGE:
+			case ETC_CLAMP_TO_BORDER:
+				return GL_CLAMP_TO_EDGE;
+			case ETC_MIRROR:
+				return GL_REPEAT;
+			default:
+				return GL_REPEAT;
+		}
 	}
 
 
@@ -2082,25 +2059,29 @@ namespace video
 				if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 					MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			}
+
+			//TwoDRenderer->useProgram(); //Fixed Pipeline Shader needed to render 2D
+
+			if (Transformation3DChanged)
+			{
+				const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+				core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
+				m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0f, 1.0f);
+				m.setTranslation(core::vector3df(-1,1,0));
+
+				//TwoDRenderer->setOrthoMatrix(m);
+
+				// Make sure we set first texture matrix
+				BridgeCalls->setActiveTexture(GL_TEXTURE0);
+
+				Transformation3DChanged = false;
+			}
 			if (!OverrideMaterial2DEnabled)
 			{
 				setBasicRenderStates(InitMaterial2D, LastMaterial, true);
 				LastMaterial = InitMaterial2D;
 			}
-
-			TwoDRenderer->useProgram(); //Fixed Pipeline Shader needed to render 2D
-
-			if (Transformation3DChanged)
-			{
-				const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-				core::matrix4 m;
-				m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
-				m.setTranslation(core::vector3df(-1, 1, 0));
-
-				TwoDRenderer->setOrthoMatrix(m);
-
-				Transformation3DChanged = false;
-			}
+			BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 		if (OverrideMaterial2DEnabled)
 		{
@@ -2108,42 +2089,37 @@ namespace video
 			setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
 			LastMaterial = OverrideMaterial2D;
 		}
+
+		// no alphaChannel without texture
+		alphaChannel &= texture;
+
 		if (alphaChannel || alpha)
 		{
-			if (! BlendEnabled)
-			{
-				glEnable(GL_BLEND);
-				BlendEnabled = true;
-			}
-			blendFunc(EBF_SRC_ALPHA, EBF_ONE_MINUS_SRC_ALPHA);
-			TwoDRenderer->useAlphaTest(true);
-			TwoDRenderer->setAlphaTestValue(0.f);
+			BridgeCalls->setBlend(true);
+			//TwoDRenderer->useAlphaTest(true);
+			//TwoDRenderer->setAlphaTestValue(0.f);
 		}
 		else
 		{
-			if (BlendEnabled)
-			{
-				glDisable(GL_BLEND);
-				BlendEnabled = false;
-			}
-			TwoDRenderer->useAlphaTest(false);
+			BridgeCalls->setBlend(false);
+			//TwoDRenderer->useAlphaTest(false);
 		}
 
 		if (texture)
 		{
-			if (!OverrideMaterial2DEnabled)
-			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			}
+			if (OverrideMaterial2DEnabled)
+				setTextureRenderStates(OverrideMaterial2D, false);
+			else
+				setTextureRenderStates(InitMaterial2D, false);
+        
+			Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
+			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
+			// Due to the transformation change, the previous line would call a reset each frame
+			// but we can safely reset the variable as it was false before
+			Transformation3DChanged=false;
 		}
-		TwoDRenderer->useTexture(texture);
 
 		CurrentRenderMode = ERM_2D;
-		testGLError();
 	}
 
 
@@ -2332,11 +2308,6 @@ namespace video
 		//glShadeModel(GL_FLAT);
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-		if (! BlendEnabled)
-			glEnable(GL_BLEND);
-
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_NOTEQUAL, 0, ~0);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
@@ -2373,10 +2344,6 @@ namespace video
 		glDepthMask(depthMask);
 		//TODO : OpenGL ES 2.0 Port glShadeModel
 		//glShadeModel(shadeModel);
-		if (!BlendEnabled)
-			glDisable(GL_BLEND);
-		glBlendFunc(getGLBlend(SourceFactor), getGLBlend(DestFactor));
-		testGLError();
 	}
 
 
@@ -2502,10 +2469,10 @@ namespace video
 			s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
 	{
 		s32 nr = -1;
-		COGLES2SLMaterialRenderer* r = new COGLES2SLMaterialRenderer(
+		COGLES2MaterialRenderer* r = new COGLES2MaterialRenderer(
 			this, nr, vertexShaderProgram,
 			pixelShaderProgram,
-			callback, getMaterialRenderer(baseMaterial), userData);
+			callback, baseMaterial, userData);
 
 		r->drop();
 		return nr;
@@ -2787,11 +2754,6 @@ namespace video
 		}
 	}
 
-	void COGLES2Driver::reloadShaders()
-	{
-		FixedPipeline->reload();
-	}
-
 	void COGLES2Driver::deleteFramebuffers(s32 n, const u32 *framebuffers)
 	{
 		glDeleteFramebuffers(n, framebuffers);
@@ -2801,77 +2763,6 @@ namespace video
 	{
 		glDeleteRenderbuffers(n, renderbuffers);
 	}
-
-	void COGLES2Driver::enableBlend()
-	{
-		if (! BlendEnabled)
-		{
-			BlendEnabled = true;
-			glEnable(GL_BLEND);
-		}
-	}
-
-	void COGLES2Driver::disableBlend()
-	{
-		if (BlendEnabled)
-		{
-			BlendEnabled = false;
-			glDisable(GL_BLEND);
-		}
-	}
-
-	u32 COGLES2Driver::getGLBlend(E_BLEND_FACTOR factor)
-	{
-		u32 r = 0;
-		switch (factor)
-		{
-			case EBF_ZERO:
-				r = GL_ZERO;
-				break;
-			case EBF_ONE:
-				r = GL_ONE;
-				break;
-			case EBF_DST_COLOR:
-				r = GL_DST_COLOR;
-				break;
-			case EBF_ONE_MINUS_DST_COLOR:
-				r = GL_ONE_MINUS_DST_COLOR;
-				break;
-			case EBF_SRC_COLOR:
-				r = GL_SRC_COLOR;
-				break;
-			case EBF_ONE_MINUS_SRC_COLOR:
-				r = GL_ONE_MINUS_SRC_COLOR;
-				break;
-			case EBF_SRC_ALPHA:
-				r = GL_SRC_ALPHA;
-				break;
-			case EBF_ONE_MINUS_SRC_ALPHA:
-				r = GL_ONE_MINUS_SRC_ALPHA;
-				break;
-			case EBF_DST_ALPHA:
-				r = GL_DST_ALPHA;
-				break;
-			case EBF_ONE_MINUS_DST_ALPHA:
-				r = GL_ONE_MINUS_DST_ALPHA;
-				break;
-			case EBF_SRC_ALPHA_SATURATE:
-				r = GL_SRC_ALPHA_SATURATE;
-				break;
-		}
-		return r;
-	}
-
-	void COGLES2Driver::blendFunc(E_BLEND_FACTOR sFactor, E_BLEND_FACTOR dFactor)
-	{
-		if (sFactor != SourceFactor || dFactor != DestFactor)
-		{
-			SourceFactor = sFactor;
-			DestFactor = dFactor;
-			glBlendFunc(getGLBlend(sFactor), getGLBlend(dFactor));
-		}
-	}
-
 
 	//! Set/unset a clipping plane.
 	bool COGLES2Driver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
@@ -2910,6 +2801,166 @@ namespace video
 	core::dimension2du COGLES2Driver::getMaxTextureSize() const
 	{
 		return core::dimension2du(MaxTextureSize, MaxTextureSize);
+	}
+
+	GLenum COGLES2Driver::getGLBlend(E_BLEND_FACTOR factor) const
+	{
+		GLenum r = 0;
+		switch (factor)
+		{
+			case EBF_ZERO:			r = GL_ZERO; break;
+			case EBF_ONE:			r = GL_ONE; break;
+			case EBF_DST_COLOR:		r = GL_DST_COLOR; break;
+			case EBF_ONE_MINUS_DST_COLOR:	r = GL_ONE_MINUS_DST_COLOR; break;
+			case EBF_SRC_COLOR:		r = GL_SRC_COLOR; break;
+			case EBF_ONE_MINUS_SRC_COLOR:	r = GL_ONE_MINUS_SRC_COLOR; break;
+			case EBF_SRC_ALPHA:		r = GL_SRC_ALPHA; break;
+			case EBF_ONE_MINUS_SRC_ALPHA:	r = GL_ONE_MINUS_SRC_ALPHA; break;
+			case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
+			case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
+			case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
+		}
+		return r;
+	}
+
+	const SMaterial& COGLES2Driver::getCurrentMaterial() const
+	{
+		return Material;
+	}
+    
+	COGLES2CallBridge* COGLES2Driver::getBridgeCalls() const
+	{
+		return BridgeCalls;
+	}
+
+	COGLES2CallBridge::COGLES2CallBridge(COGLES2Driver* driver) : Driver(driver),
+		BlendSource(GL_ONE), BlendDestination(GL_ZERO), Blend(false),
+		CullFaceMode(GL_BACK), CullFace(false),
+		DepthFunc(GL_LESS), DepthMask(true), DepthTest(false),
+		ActiveTexture(GL_TEXTURE0)
+	{
+		// Initial OpenGL values from specification.
+
+		for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+			Texture[i] = 0;
+
+		glBlendFunc(GL_ONE, GL_ZERO);
+		glDisable(GL_BLEND);
+
+		glCullFace(GL_BACK);
+		glDisable(GL_CULL_FACE);
+    
+		glDepthFunc(GL_LESS);
+		glDepthMask(GL_TRUE);
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	void COGLES2CallBridge::setBlendFunc(GLenum source, GLenum destination)
+	{
+		if(BlendSource != source || BlendDestination != destination)
+		{
+			glBlendFunc(source, destination);
+
+			BlendSource = source;
+			BlendDestination = destination;
+		}
+	}
+
+	void COGLES2CallBridge::setBlend(bool enable)
+	{
+		if(Blend != enable)
+		{
+			if (enable)
+				glEnable(GL_BLEND);
+			else
+				glDisable(GL_BLEND);
+                
+			Blend = enable;
+		}
+	}
+
+	void COGLES2CallBridge::setCullFaceFunc(GLenum mode)
+	{
+		if(CullFaceMode != mode)
+		{
+			glCullFace(mode);
+                
+			CullFaceMode = mode;
+		}
+	}
+
+	void COGLES2CallBridge::setCullFace(bool enable)
+	{
+		if(CullFace != enable)
+		{
+			if (enable)
+				glEnable(GL_CULL_FACE);
+			else
+				glDisable(GL_CULL_FACE);
+                
+			CullFace = enable;
+		}
+	}
+
+	void COGLES2CallBridge::setDepthFunc(GLenum mode)
+	{
+		if(DepthFunc != mode)
+		{
+			glDepthFunc(mode);
+                
+			DepthFunc = mode;
+		}
+	}
+        
+	void COGLES2CallBridge::setDepthMask(bool enable)
+	{
+		if(DepthMask != enable)
+		{
+			if (enable)
+				glDepthMask(GL_TRUE);
+			else
+				glDepthMask(GL_FALSE);
+                
+			DepthMask = enable;
+		}
+	}
+
+	void COGLES2CallBridge::setDepthTest(bool enable)
+	{
+		if(DepthTest != enable)
+		{
+			if (enable)
+				glEnable(GL_DEPTH_TEST);
+			else
+				glDisable(GL_DEPTH_TEST);
+                
+			DepthTest = enable;
+		}
+	}
+        
+	void COGLES2CallBridge::setActiveTexture(GLenum texture)
+	{
+		if (ActiveTexture != texture)
+		{
+			glActiveTexture(texture);
+			ActiveTexture = texture;
+		}
+	}
+        
+	void COGLES2CallBridge::setTexture(u32 stage)
+	{
+		if (stage < MATERIAL_MAX_TEXTURES)
+		{
+			if(Texture[stage] != Driver->CurrentTexture[stage])
+			{
+				setActiveTexture(GL_TEXTURE0 + stage);
+
+				if(Driver->CurrentTexture[stage])
+					glBindTexture(GL_TEXTURE_2D, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOGLES2TextureName());
+
+				Texture[stage] = Driver->CurrentTexture[stage];
+			}
+		}
 	}
 
 

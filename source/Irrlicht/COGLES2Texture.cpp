@@ -1,6 +1,7 @@
-// Copyright (C) 2009-2010 Amundis
+// Copyright (C) 2013 Patryk Nadrowski
 // Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
+// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
+// driver implemented by Amundis.
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -217,6 +218,10 @@ namespace video
 			// enable bilinear filter without mipmaps
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+			StatesCache.BilinearFilter = true;
+            StatesCache.TrilinearFilter = false;
+            StatesCache.MipMapStatus = false;
 		}
 
 		void* source = 0;
@@ -447,6 +452,12 @@ namespace video
 		glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height );
 	}
 
+	//! Get an access to texture states cache.
+	COGLES2Texture::SStatesCache& COGLES2Texture::getStatesCache() const
+	{
+		return StatesCache;
+	}
+
 	/* FBO Textures */
 
 	// helper function for render to texture
@@ -503,6 +514,11 @@ namespace video
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		StatesCache.BilinearFilter = true;        
+		StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
+		StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
+
 		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
 				ImageSize.Height, 0, PixelFormat, PixelType, 0);
 
