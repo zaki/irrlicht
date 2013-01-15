@@ -22,7 +22,7 @@
 //! _IRR_WINDOWS_CE_PLATFORM_ for Windows CE
 //! _IRR_WINDOWS_API_ for Windows or XBox
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
-//! _IRR_SOLARIS_PLATFORM_ for Solaris
+//! _IRR_SOLARIS_PLATFORM_ for Solaris (note by default it's for 
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! Note: PLATFORM defines the OS specific layer, API can group several platforms
@@ -95,6 +95,13 @@
 #endif
 #define _IRR_OSX_PLATFORM_
 #define _IRR_COMPILE_WITH_OSX_DEVICE_
+#endif
+
+#if defined(__SVR4) && defined(__sun)
+#define _IRR_SOLARIS_PLATFORM_
+#if defined(__sparc)
+	#define __BIG_ENDIAN__
+#endif
 #endif
 
 #if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_)
@@ -789,10 +796,6 @@ precision will be lower but speed higher. currently X86 only
 
 #ifndef _IRR_WINDOWS_API_
 	#undef _IRR_WCHAR_FILESYSTEM
-#endif
-
-#if defined(__sparc__) || defined(__sun__)
-#define __BIG_ENDIAN__
 #endif
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
