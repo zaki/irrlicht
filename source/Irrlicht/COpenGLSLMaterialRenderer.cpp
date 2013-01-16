@@ -106,8 +106,9 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 		GLint count;
 		Driver->extGlGetAttachedObjects(Program, 8, &count, shaders);
 		// avoid bugs in some drivers, which return larger numbers
-		count=core::min_(count,8);
-		for (GLint i=0; i<count; ++i)
+		// use int variable to avoid compiler problems with template
+		int mincount=core::min_((int)count,8);
+		for (int i=0; i<mincount; ++i)
 			Driver->extGlDeleteObject(shaders[i]);
 		Driver->extGlDeleteObject(Program);
 		Program = 0;
@@ -119,8 +120,9 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 		GLint count;
 		Driver->extGlGetAttachedShaders(Program2, 8, &count, shaders);
 		// avoid bugs in some drivers, which return larger numbers
-		count=core::min_(count,8);
-		for (GLint i=0; i<count; ++i)
+		// use int variable to avoid compiler problems with template
+		int mincount=core::min_((int)count,8);
+		for (int i=0; i<mincount; ++i)
 			Driver->extGlDeleteShader(shaders[i]);
 		Driver->extGlDeleteProgram(Program2);
 		Program2 = 0;
@@ -583,7 +585,7 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const f32* flo
 			{
 				if(floats)
 				{
-					const GLint id = *floats;
+					const GLint id = static_cast<const GLint>(*floats);
 					Driver->extGlUniform1iv(UniformInfo[index].location, 1, &id);
 				}
 				else
@@ -612,19 +614,19 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const s32* int
 	{
 		case GL_INT:
 		case GL_BOOL:
-			Driver->extGlUniform1iv(UniformInfo[index].location, count, ints);
+			Driver->extGlUniform1iv(UniformInfo[index].location, count, reinterpret_cast<const GLint*>(ints));
 			break;
 		case GL_INT_VEC2:
 		case GL_BOOL_VEC2:
-			Driver->extGlUniform2iv(UniformInfo[index].location, count/2, ints);
+			Driver->extGlUniform2iv(UniformInfo[index].location, count/2, reinterpret_cast<const GLint*>(ints));
 			break;
 		case GL_INT_VEC3:
 		case GL_BOOL_VEC3:
-			Driver->extGlUniform3iv(UniformInfo[index].location, count/3, ints);
+			Driver->extGlUniform3iv(UniformInfo[index].location, count/3, reinterpret_cast<const GLint*>(ints));
 			break;
 		case GL_INT_VEC4:
 		case GL_BOOL_VEC4:
-			Driver->extGlUniform4iv(UniformInfo[index].location, count/4, ints);
+			Driver->extGlUniform4iv(UniformInfo[index].location, count/4, reinterpret_cast<const GLint*>(ints));
 			break;
 		case GL_SAMPLER_1D:
 		case GL_SAMPLER_2D:
@@ -632,7 +634,7 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const s32* int
 		case GL_SAMPLER_CUBE:
 		case GL_SAMPLER_1D_SHADOW:
 		case GL_SAMPLER_2D_SHADOW:
-			Driver->extGlUniform1iv(UniformInfo[index].location, 1, ints);
+			Driver->extGlUniform1iv(UniformInfo[index].location, 1, reinterpret_cast<const GLint*>(ints));
 			break;
 		default:
 			status = false;
