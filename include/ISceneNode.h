@@ -174,7 +174,9 @@ namespace scene
 
 
 		//! Get the axis aligned, transformed and animated absolute bounding box of this node.
-		/** \return The transformed bounding box. */
+		/** Note: The result is still an axis-aligned bounding box, so it's size 
+		changes with rotation. 
+		\return The transformed bounding box. */
 		virtual const core::aabbox3d<f32> getTransformedBoundingBox() const
 		{
 			core::aabbox3d<f32> box = getBoundingBox();
@@ -182,6 +184,18 @@ namespace scene
 			return box;
 		}
 
+		//! Get a the 8 corners of the original bounding box transformed and 
+		//! animated by the absolute transformation.
+		/** Note: The result is _not_ identical to getTransformedBoundingBox().getEdges(), 
+		but getting an aabbox3d of these edges would then be identical.
+		\param edges Receives an array with the transformed edges */
+		virtual const void getTransformedBoundingBoxEdges(core::array< core::vector3d<f32> >& edges) const
+		{
+			edges.set_used(8);
+			getBoundingBox().getEdges( edges.pointer() );
+			for ( u32 i=0; i<8; ++i )
+				AbsoluteTransformation.transformVect( edges[i] );
+		}
 
 		//! Get the absolute transformation of the node. Is recalculated every OnAnimate()-call.
 		/** NOTE: For speed reasons the absolute transformation is not 
