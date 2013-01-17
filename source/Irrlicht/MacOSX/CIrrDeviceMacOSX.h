@@ -19,9 +19,15 @@
 #include <OpenGL/OpenGL.h>
 #include <map>
 
+#ifdef __MAC_10_6
 @class NSWindow;
 @class NSOpenGLContext;
 @class NSBitmapImageRep;
+#else
+class NSWindow;
+class NSOpenGLContext;
+class NSBitmapImageRep;
+#endif
 
 namespace irr
 {

@@ -22,9 +22,11 @@
 #endif
 
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-// Objective-C++ code part
-#import "MacOSX/CIrrDeviceMacOSX.h"
-// End of objective-C++ code part
+// If You use MacOSX SDK which support MacOSX 10.6 "__MAC_10_6" and
+// custom XCode project for build Irrlicht make sure that
+// COpenGLDriver.cpp is signed as "Objective-C++ Source"
+// in "Identity and Type" section in XCode.
+#include "MacOSX/CIrrDeviceMacOSX.h"
 #endif
 
 namespace irr

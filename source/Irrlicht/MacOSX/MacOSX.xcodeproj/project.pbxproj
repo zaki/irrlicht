@@ -584,6 +584,10 @@
 		5DD480CA0C7DA66800728AA9 /* CIrrDeviceSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480C40C7DA66800728AA9 /* CIrrDeviceSDL.cpp */; };
 		5DD480CB0C7DA66800728AA9 /* COpenGLExtensionHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480C50C7DA66800728AA9 /* COpenGLExtensionHandler.cpp */; };
 		5DD480CC0C7DA66800728AA9 /* CMD3MeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480C60C7DA66800728AA9 /* CMD3MeshFileLoader.cpp */; };
+		5E25C81C16A83DC700320AA9 /* leakHunter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C81B16A83DC700320AA9 /* leakHunter.cpp */; };
+		5E25C81F16A83E4500320AA9 /* leakHunter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E25C81E16A83E4500320AA9 /* leakHunter.h */; };
+		5E25C82216A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */; };
+		5E25C82316A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E25C82116A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h */; };
 		5E5484EC168A959900119951 /* CCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5484EA168A959800119951 /* CCgMaterialRenderer.cpp */; };
 		5E5484ED168A959900119951 /* CCgMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E5484EB168A959900119951 /* CCgMaterialRenderer.h */; };
 		5E5484F1168A95D500119951 /* COpenGLCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */; };
@@ -2081,6 +2085,10 @@
 		5DD480C40C7DA66800728AA9 /* CIrrDeviceSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceSDL.cpp; sourceTree = "<group>"; };
 		5DD480C50C7DA66800728AA9 /* COpenGLExtensionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLExtensionHandler.cpp; sourceTree = "<group>"; };
 		5DD480C60C7DA66800728AA9 /* CMD3MeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMD3MeshFileLoader.cpp; sourceTree = "<group>"; };
+		5E25C81B16A83DC700320AA9 /* leakHunter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = leakHunter.cpp; sourceTree = "<group>"; };
+		5E25C81E16A83E4500320AA9 /* leakHunter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = leakHunter.h; sourceTree = "<group>"; };
+		5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CD3D9CgMaterialRenderer.cpp; sourceTree = "<group>"; };
+		5E25C82116A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CD3D9CgMaterialRenderer.h; sourceTree = "<group>"; };
 		5E5484EA168A959800119951 /* CCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCgMaterialRenderer.cpp; sourceTree = "<group>"; };
 		5E5484EB168A959900119951 /* CCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCgMaterialRenderer.h; sourceTree = "<group>"; };
 		5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLCgMaterialRenderer.cpp; sourceTree = "<group>"; };
@@ -2655,6 +2663,7 @@
 				4C53DF990A484C240014E966 /* COSOperator.cpp */,
 				4C53DF9A0A484C240014E966 /* COSOperator.h */,
 				4C53DFD00A484C240014E966 /* CTimer.h */,
+				5E25C81B16A83DC700320AA9 /* leakHunter.cpp */,
 				4C53E00A0A484C250014E966 /* Irrlicht.cpp */,
 				4C53E16A0A484C2C0014E966 /* os.cpp */,
 				4C53E16B0A484C2C0014E966 /* os.h */,
@@ -2940,6 +2949,8 @@
 		0910BA8E0D1F72FB00D46B04 /* Direct3D9 */ = {
 			isa = PBXGroup;
 			children = (
+				5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */,
+				5E25C82116A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h */,
 				4C53DF0D0A484C230014E966 /* CD3D9Driver.cpp */,
 				4C53DF0E0A484C230014E966 /* CD3D9Driver.h */,
 				4C53DF0F0A484C230014E966 /* CD3D9HLSLMaterialRenderer.cpp */,
@@ -3584,7 +3595,6 @@
 			children = (
 				4C53E14C0A484C2C0014E966 /* AppDelegate.h */,
 				4C53E14D0A484C2C0014E966 /* AppDelegate.mm */,
-				4C53E14E0A484C2C0014E966 /* build */,
 				4C53E15E0A484C2C0014E966 /* CIrrDeviceMacOSX.h */,
 				4C53E15F0A484C2C0014E966 /* CIrrDeviceMacOSX.mm */,
 				4C53E1640A484C2C0014E966 /* MacOSX_Prefix.pch */,
@@ -3593,37 +3603,6 @@
 				4C53E1670A484C2C0014E966 /* OSXClipboard.mm */,
 			);
 			path = MacOSX;
-			sourceTree = "<group>";
-		};
-		4C53E14E0A484C2C0014E966 /* build */ = {
-			isa = PBXGroup;
-			children = (
-				4C53E14F0A484C2C0014E966 /* MacOSX.build */,
-			);
-			path = build;
-			sourceTree = "<group>";
-		};
-		4C53E14F0A484C2C0014E966 /* MacOSX.build */ = {
-			isa = PBXGroup;
-			children = (
-				4C53E1500A484C2C0014E966 /* MacOSX.pbxindex */,
-			);
-			path = MacOSX.build;
-			sourceTree = "<group>";
-		};
-		4C53E1500A484C2C0014E966 /* MacOSX.pbxindex */ = {
-			isa = PBXGroup;
-			children = (
-				4C53E1590A484C2C0014E966 /* strings.pbxstrings */,
-			);
-			path = MacOSX.pbxindex;
-			sourceTree = "<group>";
-		};
-		4C53E1590A484C2C0014E966 /* strings.pbxstrings */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = strings.pbxstrings;
 			sourceTree = "<group>";
 		};
 		4C53E1710A484C2C0014E966 /* zlib */ = {
@@ -3717,6 +3696,7 @@
 				4CFA7C4A0A88742900B03626 /* IrrCompileConfig.h */,
 				4CFA7C4B0A88742900B03626 /* irrlicht.h */,
 				4CFA7C4C0A88742900B03626 /* IrrlichtDevice.h */,
+				5E25C81E16A83E4500320AA9 /* leakHunter.h */,
 				4CFA7C740A88742900B03626 /* SIrrCreationParameters.h */,
 			);
 			name = include;
@@ -3987,6 +3967,8 @@
 				95E5857812FCE2CB004946C6 /* CAnimatedMeshHalfLife.h in Headers */,
 				5E5484ED168A959900119951 /* CCgMaterialRenderer.h in Headers */,
 				5E5484F2168A95D500119951 /* COpenGLCgMaterialRenderer.h in Headers */,
+				5E25C81F16A83E4500320AA9 /* leakHunter.h in Headers */,
+				5E25C82316A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5405,6 +5387,8 @@
 				95E5859512FCE3F5004946C6 /* CSMFMeshFileLoader.cpp in Sources */,
 				5E5484EC168A959900119951 /* CCgMaterialRenderer.cpp in Sources */,
 				5E5484F1168A95D500119951 /* COpenGLCgMaterialRenderer.cpp in Sources */,
+				5E25C81C16A83DC700320AA9 /* leakHunter.cpp in Sources */,
+				5E25C82216A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
