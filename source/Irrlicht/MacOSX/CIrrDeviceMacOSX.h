@@ -107,7 +107,7 @@ namespace irr
 		public:
 
 			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device)
-				: WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), Device(device), UseReferenceRect(false)
+				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f), Device(device), IsVisible(true), UseReferenceRect(false)
 			{
 				CursorPos.X = CursorPos.Y = 0;
 				if (WindowSize.Width!=0)

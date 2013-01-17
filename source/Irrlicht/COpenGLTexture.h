@@ -55,19 +55,20 @@ public:
 	//! Cache structure.
 	struct SStatesCache
 	{
-		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT), BilinearFilter(false),
-			TrilinearFilter(false), AnisotropicFilter(0), MipMapStatus(false), IsCached(false), LODBias(0)
+		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT),
+				LODBias(0), AnisotropicFilter(0),
+				BilinearFilter(false), TrilinearFilter(false),
+				MipMapStatus(false), IsCached(false)
 		{
 		}
 
 		u8 WrapU;
 		u8 WrapV;
+		s8 LODBias;
+		u8 AnisotropicFilter;
 		bool BilinearFilter;
 		bool TrilinearFilter;
-		u8 AnisotropicFilter;
 		bool MipMapStatus;
-		s8 LODBias;
-
 		bool IsCached;
 	};
 
