@@ -174,8 +174,8 @@ namespace scene
 
 
 		//! Get the axis aligned, transformed and animated absolute bounding box of this node.
-		/** Note: The result is still an axis-aligned bounding box, so it's size 
-		changes with rotation. 
+		/** Note: The result is still an axis-aligned bounding box, so it's size
+		changes with rotation.
 		\return The transformed bounding box. */
 		virtual const core::aabbox3d<f32> getTransformedBoundingBox() const
 		{
@@ -184,12 +184,12 @@ namespace scene
 			return box;
 		}
 
-		//! Get a the 8 corners of the original bounding box transformed and 
+		//! Get a the 8 corners of the original bounding box transformed and
 		//! animated by the absolute transformation.
-		/** Note: The result is _not_ identical to getTransformedBoundingBox().getEdges(), 
+		/** Note: The result is _not_ identical to getTransformedBoundingBox().getEdges(),
 		but getting an aabbox3d of these edges would then be identical.
 		\param edges Receives an array with the transformed edges */
-		virtual const void getTransformedBoundingBoxEdges(core::array< core::vector3d<f32> >& edges) const
+		virtual void getTransformedBoundingBoxEdges(core::array< core::vector3d<f32> >& edges) const
 		{
 			edges.set_used(8);
 			getBoundingBox().getEdges( edges.pointer() );
@@ -198,10 +198,10 @@ namespace scene
 		}
 
 		//! Get the absolute transformation of the node. Is recalculated every OnAnimate()-call.
-		/** NOTE: For speed reasons the absolute transformation is not 
-		automatically recalculated on each change of the relative 
+		/** NOTE: For speed reasons the absolute transformation is not
+		automatically recalculated on each change of the relative
 		transformation or by a transformation change of an parent. Instead the
-		update usually happens once per frame in OnAnimate. You can enforce 
+		update usually happens once per frame in OnAnimate. You can enforce
 		an update with updateAbsolutePosition().
 		\return The absolute transformation matrix. */
 		virtual const core::matrix4& getAbsoluteTransformation() const
@@ -527,10 +527,10 @@ namespace scene
 		//! Gets the absolute position of the node in world coordinates.
 		/** If you want the position of the node relative to its parent,
 		use getPosition() instead.
-		NOTE: For speed reasons the absolute position is not 
-		automatically recalculated on each change of the relative 
-		position or by a position change of an parent. Instead the 
-		update usually happens once per frame in OnAnimate. You can enforce 
+		NOTE: For speed reasons the absolute position is not
+		automatically recalculated on each change of the relative
+		position or by a position change of an parent. Instead the
+		update usually happens once per frame in OnAnimate. You can enforce
 		an update with updateAbsolutePosition().
 		\return The current absolute position of the scene node (updated on last call of updateAbsolutePosition). */
 		virtual core::vector3df getAbsolutePosition() const
