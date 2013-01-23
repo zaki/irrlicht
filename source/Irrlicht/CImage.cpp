@@ -458,5 +458,111 @@ inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) cons
 }
 
 
+/** Compressed image **/
+
+
+//! Constructor
+CImageCompressed::CImageCompressed(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
+			bool ownForeignMemory, bool deleteForeignMemory)
+: Data(0), Size(size), Format(format), DeleteMemory(deleteForeignMemory)
+{
+	if (ownForeignMemory)
+	{
+		Data = (u8*)0xbadf00d;
+		initData();
+		Data = (u8*)data;
+	}
+	else
+	{
+		Data = 0;
+		initData();
+		memcpy(Data, data, Size.Height * Pitch);
+	}
+}
+
+
+//! Destructor
+CImageCompressed::~CImageCompressed()
+{
+	if (DeleteMemory)
+		delete [] Data;
+}
+
+
+//! assumes format and size has been set and creates the rest
+void CImageCompressed::initData()
+{
+#ifdef _DEBUG
+	setDebugName("CImageCompressed");
+#endif
+	BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
+
+	// Pitch should be aligned...
+	Pitch = BytesPerPixel * Size.Width;
+
+	if (!Data)
+	{
+		DeleteMemory=true;
+		Data = new u8[Size.Height * Pitch];
+	}
+}
+
+
+//! Use this to get a pointer to the image data.
+const void* CImageCompressed::getData() const
+{
+	return Data;
+}
+
+
+//! Returns width and height of image data.
+const core::dimension2d<u32>& CImageCompressed::getDimension() const
+{
+	return Size;
+}
+
+
+//! Returns bits per pixel.
+u32 CImageCompressed::getBitsPerPixel() const
+{
+	return getBitsPerPixelFromFormat(Format);
+}
+
+
+//! Returns bytes per pixel
+u32 CImageCompressed::getBytesPerPixel() const
+{
+	return BytesPerPixel;
+}
+
+
+//! Returns image data size in bytes
+u32 CImageCompressed::getImageDataSizeInBytes() const
+{
+	return Pitch * Size.Height;
+}
+
+
+//! Returns image data size in pixels
+u32 CImageCompressed::getImageDataSizeInPixels() const
+{
+	return Size.Width * Size.Height;
+}
+
+
+//! returns the color format
+ECOLOR_FORMAT CImageCompressed::getColorFormat() const
+{
+	return Format;
+}
+
+
+//! returns pitch of image
+u32 CImageCompressed::getPitch() const
+{
+	return Pitch;
+}
+
+
 } // end namespace video
 } // end namespace irr

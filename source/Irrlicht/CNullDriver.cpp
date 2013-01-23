@@ -139,7 +139,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #ifdef _IRR_COMPILE_WITH_PSD_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
 #endif
-#ifdef _IRR_COMPILE_WITH_DDS_LOADER_
+#if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_DECODER_LOADER_)
 	SurfaceLoader.push_back(video::createImageLoaderDDS());
 #endif
 #ifdef _IRR_COMPILE_WITH_PCX_LOADER_
@@ -1399,6 +1399,77 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 	}
 
 	return new CImage(format, size, data, ownForeignMemory, deleteMemory);
+}
+
+
+//! Creates a compressed software image from a file.
+IImageCompressed* CNullDriver::createImageCompressedFromFile(const io::path& filename)
+{
+	if (!filename.size())
+		return 0;
+
+	IImageCompressed* image = 0;
+	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
+
+	if (file)
+	{
+		image = createImageCompressedFromFile(file);
+		file->drop();
+	}
+	else
+		os::Printer::log("Could not open file of image", filename, ELL_WARNING);
+
+	return image;
+}
+
+
+//! Creates a compressed software image from a file.
+IImageCompressed* CNullDriver::createImageCompressedFromFile(io::IReadFile* file)
+{
+	if (!file)
+		return 0;
+
+	IImageCompressed* image = 0;
+
+	s32 i;
+
+	// try to load file based on file extension
+	for (i=SurfaceLoader.size()-1; i>=0; --i)
+	{
+		if (SurfaceLoader[i]->isALoadableFileExtension(file->getFileName()))
+		{
+			// reset file position which might have changed due to previous loadImage calls
+			file->seek(0);
+			image = SurfaceLoader[i]->loadImageCompressed(file);
+			if (image)
+				return image;
+		}
+	}
+
+	// try to load file based on what is in it
+	for (i=SurfaceLoader.size()-1; i>=0; --i)
+	{
+		// dito
+		file->seek(0);
+		if (SurfaceLoader[i]->isALoadableFileFormat(file))
+		{
+			file->seek(0);
+			image = SurfaceLoader[i]->loadImageCompressed(file);
+			if (image)
+				return image;
+		}
+	}
+
+	return 0; // failed to load
+}
+
+
+//! Creates a software compressed image from a byte array.
+IImageCompressed* CNullDriver::createImageCompressedFromData(ECOLOR_FORMAT format,
+							const core::dimension2d<u32>& size, void *data,
+							bool ownForeignMemory, bool deleteMemory)
+{
+	return new CImageCompressed(format, size, data, ownForeignMemory, deleteMemory);
 }
 
 

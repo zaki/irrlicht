@@ -532,14 +532,24 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_PSD_LOADER_
 #undef _IRR_COMPILE_WITH_PSD_LOADER_
 #endif
-//! Define _IRR_COMPILE_WITH_DDS_LOADER_ if you want to load .dds files
+//! Define _IRR_COMPILE_WITH_DDS_LOADER_ if you want to load compressed .dds files
+// Patent problem isn't related to this loader.
+#define _IRR_COMPILE_WITH_DDS_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_DDS_LOADER_
+#undef _IRR_COMPILE_WITH_DDS_LOADER_
+#endif
+//! Define _IRR_COMPILE_WITH_DDS_DECODER_LOADER_ if you want to load .dds files
+//! loader will decompress these files and will send to the memory as uncompressed files.
 // Outcommented because
 // a) it doesn't compile on 64-bit currently
 // b) anyone enabling it should be aware that S3TC compression algorithm which might be used in that loader
 // is patented in the US by S3 and they do collect license fees when it's used in applications.
 // So if you are unfortunate enough to develop applications for US market and their broken patent system be careful.
-// #define _IRR_COMPILE_WITH_DDS_LOADER_
-#ifdef NO_IRR_COMPILE_WITH_DDS_LOADER_
+// #define _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_DDS_DECODER_LOADER_
+#undef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
+#endif
+#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
 #undef _IRR_COMPILE_WITH_DDS_LOADER_
 #endif
 //! Define _IRR_COMPILE_WITH_TGA_LOADER_ if you want to load .tga files

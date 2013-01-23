@@ -119,6 +119,59 @@ private:
 	bool DeleteMemory;
 };
 
+//! Internal interface for software compressed image data.
+class CImageCompressed : public IImageCompressed
+{
+public:
+
+	//! Constructor
+	/** \param useForeignMemory: If true, the image will use the data pointer
+	directly and own it from now on, which means it will also try to delete [] the
+	data when the image will be destructed. If false, the memory will by copied. */
+	CImageCompressed(ECOLOR_FORMAT format, const core::dimension2d<u32>& size,
+		void* data, bool ownForeignMemory=true, bool deleteMemory = true);
+
+	//! Destructor
+	virtual ~CImageCompressed();
+
+	//! Use this to get a pointer to the image data.
+	virtual const void* getData() const;
+
+	//! Returns width and height of image data.
+	virtual const core::dimension2d<u32>& getDimension() const;
+
+	//! Returns bits per pixel.
+	virtual u32 getBitsPerPixel() const;
+
+	//! Returns bytes per pixel
+	virtual u32 getBytesPerPixel() const;
+
+	//! Returns image data size in bytes
+	virtual u32 getImageDataSizeInBytes() const;
+
+	//! Returns image data size in pixels
+	virtual u32 getImageDataSizeInPixels() const;
+
+	//! returns the color format
+	virtual ECOLOR_FORMAT getColorFormat() const;
+
+	//! returns pitch of image
+	virtual u32 getPitch() const;
+
+private:
+
+	//! assumes format and size has been set and creates the rest
+	void initData();
+
+	u8* Data;
+	core::dimension2d<u32> Size;
+	u32 BytesPerPixel;
+	u32 Pitch;
+	ECOLOR_FORMAT Format;
+
+	bool DeleteMemory;
+};
+
 } // end namespace video
 } // end namespace irr
 

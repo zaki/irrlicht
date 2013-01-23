@@ -43,6 +43,15 @@ public:
 	/** \param file File handle to check.
 	\return Pointer to newly created image, or 0 upon error. */
 	virtual IImage* loadImage(io::IReadFile* file) const = 0;
+
+	//! Creates a compressed surface from the file
+	/** \param file File handle to check.
+	\return Pointer to newly created image, or 0 upon error. */
+	virtual IImageCompressed* loadImageCompressed(io::IReadFile* file) const
+	{
+		// The most of supported file formats are uncompressed, so we define it here.
+		return 0;
+	}
 };
 
 

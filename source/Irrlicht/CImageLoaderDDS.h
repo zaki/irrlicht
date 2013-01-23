@@ -7,7 +7,7 @@
 
 #include "IrrCompileConfig.h"
 
-#if defined(_IRR_COMPILE_WITH_DDS_LOADER_)
+#if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_DECODER_LOADER_)
 
 #include "IImageLoader.h"
 
@@ -16,8 +16,7 @@ namespace irr
 namespace video
 {
 
-/* dependencies */
-/* dds definition */
+/* dds pixel format types */
 enum eDDSPixelFormat
 {
 	DDS_PF_ARGB8888,
@@ -29,23 +28,23 @@ enum eDDSPixelFormat
 	DDS_PF_UNKNOWN
 };
 
-/* 16bpp stuff */
-#define DDS_LOW_5		0x001F;
-#define DDS_MID_6		0x07E0;
-#define DDS_HIGH_5		0xF800;
-#define DDS_MID_555		0x03E0;
-#define DDS_HI_555		0x7C00;
-
-
 // byte-align structures
 #include "irrpack.h"
 
 /* structures */
-struct ddsColorKey
+
+struct ddsPixelFormat
 {
-	u32		colorSpaceLowValue;
-	u32		colorSpaceHighValue;
+	u32	Size;
+	u32 Flags;
+	u32 FourCC;
+	u32 RGBBitCount;
+	u32	RBitMask;
+	u32 GBitMask;
+	u32 BBitMask;
+	u32	ABitMask;
 } PACK_STRUCT;
+
 
 struct ddsCaps
 {
@@ -55,108 +54,25 @@ struct ddsCaps
 	u32		caps4;
 } PACK_STRUCT;
 
-struct ddsMultiSampleCaps
+
+struct ddsHeader
 {
-	u16		flipMSTypes;
-	u16		bltMSTypes;
+	c8 Magic[4];
+	u32 Size;
+	u32 Flags;
+	u32 Height;
+	u32 Width;
+	u32 PitchOrLinearSize;
+	u32 Depth;
+	u32 MipMapCount;
+	u32 Reserved1[11];
+	ddsPixelFormat PixelFormat;
+	ddsCaps Caps;
+	u32 Reserved2;
 } PACK_STRUCT;
 
 
-struct ddsPixelFormat
-{
-	u32		size;
-	u32		flags;
-	u32		fourCC;
-	union
-	{
-		u32	rgbBitCount;
-		u32	yuvBitCount;
-		u32	zBufferBitDepth;
-		u32	alphaBitDepth;
-		u32	luminanceBitCount;
-		u32	bumpBitCount;
-		u32	privateFormatBitCount;
-	};
-	union
-	{
-		u32	rBitMask;
-		u32	yBitMask;
-		u32	stencilBitDepth;
-		u32	luminanceBitMask;
-		u32	bumpDuBitMask;
-		u32	operations;
-	};
-	union
-	{
-		u32	gBitMask;
-		u32	uBitMask;
-		u32	zBitMask;
-		u32	bumpDvBitMask;
-		ddsMultiSampleCaps	multiSampleCaps;
-	};
-	union
-	{
-		u32	bBitMask;
-		u32	vBitMask;
-		u32	stencilBitMask;
-		u32	bumpLuminanceBitMask;
-	};
-	union
-	{
-		u32	rgbAlphaBitMask;
-		u32	yuvAlphaBitMask;
-		u32	luminanceAlphaBitMask;
-		u32	rgbZBitMask;
-		u32	yuvZBitMask;
-	};
-} PACK_STRUCT;
-
-
-struct ddsBuffer
-{
-	/* magic: 'dds ' */
-	c8				magic[ 4 ];
-
-	/* directdraw surface */
-	u32		size;
-	u32		flags;
-	u32		height;
-	u32		width;
-	union
-	{
-		s32				pitch;
-		u32	linearSize;
-	};
-	u32		backBufferCount;
-	union
-	{
-		u32	mipMapCount;
-		u32	refreshRate;
-		u32	srcVBHandle;
-	};
-	u32		alphaBitDepth;
-	u32		reserved;
-	void				*surface;
-	union
-	{
-		ddsColorKey	ckDestOverlay;
-		u32	emptyFaceColor;
-	};
-	ddsColorKey		ckDestBlt;
-	ddsColorKey		ckSrcOverlay;
-	ddsColorKey		ckSrcBlt;
-	union
-	{
-		ddsPixelFormat	pixelFormat;
-		u32	fvf;
-	};
-	ddsCaps			caps;
-	u32		textureStage;
-
-	/* data (Varying size) */
-	u8		data[ 4 ];
-} PACK_STRUCT;
-
+#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
 
 struct ddsColorBlock
 {
@@ -183,6 +99,9 @@ struct ddsColor
 {
 	u8		r, g, b, a;
 } PACK_STRUCT;
+
+#endif
+
 
 // Default alignment
 #include "irrunpack.h"
@@ -285,6 +204,9 @@ public:
 
 	//! creates a surface from the file
 	virtual IImage* loadImage(io::IReadFile* file) const;
+
+	//! creates a compressed surface from the file
+	virtual IImageCompressed* loadImageCompressed(io::IReadFile* file) const;
 };
 
 

@@ -31,6 +31,23 @@ namespace video
 		//! Default 32 bit color format. 8 bits are used for every component: red, green, blue and alpha.
 		ECF_A8R8G8B8,
 
+		/** Compressed image formats. **/
+
+		//! DXT1 color format.
+		ECF_DXT1,
+
+		//! DXT2 color format.
+		ECF_DXT2,
+
+		//! DXT3 color format.
+		ECF_DXT3,
+
+		//! DXT4 color format.
+		ECF_DXT4,
+
+		//! DXT5 color format.
+		ECF_DXT5,
+
 		/** Floating Point formats. The following formats may only be used for render target textures. */
 
 		//! 16 bit floating point format using 16 bits for the red channel.
