@@ -50,7 +50,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
-	pGlCompressedTexImage2D(0),
+	pGlCompressedTexImage2D(0), pGlCompressedTexSubImage2D(0),
 	// ARB framebuffer object
 	pGlBindFramebuffer(0), pGlDeleteFramebuffers(0), pGlGenFramebuffers(0),
 	pGlCheckFramebufferStatus(0), pGlFramebufferTexture2D(0),
@@ -473,6 +473,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	// compressed textures
 	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) IRR_OGL_LOAD_EXTENSION("glCompressedTexImage2D");
+	pGlCompressedTexSubImage2D = (PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC) IRR_OGL_LOAD_EXTENSION("glCompressedTexSubImage2D");
 
 	// ARB FrameBufferObjects
 	pGlBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC) IRR_OGL_LOAD_EXTENSION("glBindFramebuffer");

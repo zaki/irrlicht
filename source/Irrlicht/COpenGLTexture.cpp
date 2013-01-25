@@ -25,7 +25,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
 	IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true)
+	ReadOnlyLock(false), KeepImage(true), Compressed(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -36,7 +36,21 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 	glGenTextures(1, &TextureName);
 
-	if (ImageSize==TextureSize)
+	if (ColorFormat == ECF_DXT1 || ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
+	{	
+		if(ImageSize != TextureSize)
+		{
+			os::Printer::log("Invalid size of image for compressed texture, size of image must be POT.", ELL_ERROR);
+			return;
+		}
+		else
+		{
+			Compressed = true;
+			Image = origImage;
+			Image->grab();
+		}
+	}
+	else if (ImageSize==TextureSize)
 	{
 		Image = Driver->createImage(ColorFormat, ImageSize);
 		origImage->copyTo(Image);
@@ -62,7 +76,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	MipmapLegacyMode(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true)
+	ReadOnlyLock(false), KeepImage(true), Compressed(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -159,7 +173,23 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 				type=GL_UNSIGNED_INT_8_8_8_8_REV;
 			internalformat =  GL_RGBA;
 			break;
-		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
+		case ECF_DXT1:
+			colorformat = GL_BGRA_EXT;
+			type = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			break;
+		case ECF_DXT2:
+		case ECF_DXT3:
+			colorformat = GL_BGRA_EXT;
+			type = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			break;
+		case ECF_DXT4:
+		case ECF_DXT5:
+			colorformat = GL_BGRA_EXT;
+			type = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			break;
 		case ECF_R16F:
 		{
 #ifdef GL_ARB_texture_rg
@@ -293,7 +323,10 @@ void COpenGLTexture::getImageValues(IImage* image)
 	}
 	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
-	ColorFormat = getBestColorFormat(image->getColorFormat());
+	if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+		ColorFormat = image->getColorFormat();
+	else
+		ColorFormat = getBestColorFormat(image->getColorFormat());
 }
 
 
@@ -325,36 +358,110 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	// mipmap handling for main texture
 	if (!level && newTexture)
 	{
-#ifndef DISABLE_MIPMAPPING
-#ifdef GL_SGIS_generate_mipmap
 		// auto generate if possible and no mipmap data is given
-		if (HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		if (!Compressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
-			if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_FASTEST);
-			else if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_QUALITY))
-				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
-			else
-				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
-
-			AutomaticMipmapUpdate=true;
-
 			if (!Driver->queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 			{
+#ifdef GL_SGIS_generate_mipmap
+				if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
+					glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_FASTEST);
+				else if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_QUALITY))
+					glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
+				else
+					glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
+
 				glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
 				MipmapLegacyMode=true;
+				AutomaticMipmapUpdate=true;
+#endif
 			}
 			else
+			{
+				if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
+					glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
+				else if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_QUALITY))
+					glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+				else
+					glHint(GL_GENERATE_MIPMAP_HINT, GL_DONT_CARE);
+
 				MipmapLegacyMode=false;
+				AutomaticMipmapUpdate=true;
+			}
+		}
+
+		// enable bilinear filter without mipmaps
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            
+		StatesCache.BilinearFilter = true;
+		StatesCache.TrilinearFilter = false;
+		StatesCache.MipMapStatus = false;
+	}
+
+	// now get image data and upload to GPU
+	u32 compressedDataSize = 0;
+
+	void* source = image->lock();
+	if (newTexture)
+	{
+		if(Compressed)
+		{
+			if(ColorFormat == ECF_DXT1)
+				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
+			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
+				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
+
+			Driver->extGlCompressedTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, image->getDimension().Width,
+				image->getDimension().Height, 0, compressedDataSize, source);
 		}
 		else
-#endif
+			glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, image->getDimension().Width,
+				image->getDimension().Height, 0, PixelFormat, PixelType, source);
+	}
+	else
+	{
+		if(Compressed)
+		{
+			if(ColorFormat == ECF_DXT1)
+				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
+			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
+				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
+
+			Driver->extGlCompressedTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
+				image->getDimension().Height, PixelFormat, compressedDataSize, source);
+		}
+		else
+			glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
+				image->getDimension().Height, PixelFormat, PixelType, source);
+	}
+	image->unlock();
+
+	if (!level && newTexture)
+	{
+		if (!Compressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		{
+			if (!MipmapLegacyMode && AutomaticMipmapUpdate)
+			{
+				glEnable(GL_TEXTURE_2D);
+				Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
+			}
+		}
+		else if(HasMipMaps)
 		{
 			// Either generate manually due to missing capability
-			// or use predefined mipmap data
+			// or use predefined mipmap data eg. for compressed textures
 			AutomaticMipmapUpdate=false;
+
+			if (Compressed)
+				if (image->hasMipMap())
+					mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
+				else
+					HasMipMaps = false;
+
 			regenerateMipMapLevels(mipmapData);
 		}
+
 		if (HasMipMaps) // might have changed in regenerateMipMapLevels
 		{
 			// enable bilinear mipmap filter
@@ -365,37 +472,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
             StatesCache.TrilinearFilter = false;
             StatesCache.MipMapStatus = true;
 		}
-		else
-#else
-			HasMipMaps=false;
-			os::Printer::log("Did not create OpenGL texture mip maps.", ELL_INFORMATION);
-#endif
-		{
-			// enable bilinear filter without mipmaps
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            
-            StatesCache.BilinearFilter = true;
-            StatesCache.TrilinearFilter = false;
-            StatesCache.MipMapStatus = false;
-		}
-	}
-
-	// now get image data and upload to GPU
-	void* source = image->lock();
-	if (newTexture)
-		glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, image->getDimension().Width,
-			image->getDimension().Height, 0, PixelFormat, PixelType, source);
-	else
-		glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
-			image->getDimension().Height, PixelFormat, PixelType, source);
-	image->unlock();
-
-	if (!MipmapLegacyMode && AutomaticMipmapUpdate)
-	{
-		glEnable(GL_TEXTURE_2D);
-		Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
-	}
+	}		
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
@@ -405,6 +482,9 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 //! lock function
 void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
+	if (Compressed) // TO-DO
+		return 0;
+
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
@@ -510,6 +590,9 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 //! unlock function
 void COpenGLTexture::unlock()
 {
+	if (Compressed) // TO-DO
+		return;
+
 	// test if miplevel or main texture was locked
 	IImage* image = MipImage?MipImage:Image;
 	if (!image)
@@ -595,12 +678,16 @@ bool COpenGLTexture::hasMipMaps() const
 //! modifying the texture
 void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 {
+	if(Compressed && !mipmapData)
+		return;
+
 	if (AutomaticMipmapUpdate || !HasMipMaps || !Image)
 		return;
 	if ((Image->getDimension().Width==1) && (Image->getDimension().Height==1))
 		return;
 
 	// Manually create mipmaps or use prepared version
+	u32 compressedDataSize = 0;
 	u32 width=Image->getDimension().Width;
 	u32 height=Image->getDimension().Height;
 	u32 i=0;
@@ -611,18 +698,38 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 			width>>=1;
 		if (height>1)
 			height>>=1;
+
 		++i;
+
 		if (!target)
 			target = new u8[width*height*Image->getBytesPerPixel()];
+
 		// create scaled version if no mipdata available
 		if (!mipmapData)
 			Image->copyToScaling(target, width, height, Image->getColorFormat());
-		glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
-				0, PixelFormat, PixelType, target);
+
+		if (Compressed)
+		{
+			if(ColorFormat == ECF_DXT1)
+				compressedDataSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
+			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
+				compressedDataSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
+
+			Driver->extGlCompressedTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width,
+				height, 0, compressedDataSize, target);
+		}
+		else
+			glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
+					0, PixelFormat, PixelType, target);
+
 		// get next prepared mipmap data if available
 		if (mipmapData)
 		{
-			mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();
+			if (Compressed)
+				mipmapData = static_cast<u8*>(mipmapData)+compressedDataSize;
+			else
+				mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();
+
 			target = static_cast<u8*>(mipmapData);
 		}
 	}

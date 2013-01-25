@@ -98,6 +98,12 @@ public:
 	//! fills the surface with given color
 	virtual void fill(const SColor &color) =0;
 
+	//! Inform whether the image is compressed
+	virtual bool isCompressed() const = 0;
+
+	//! Inform wheather the image has mipmaps
+	virtual bool hasMipMap() const = 0;
+
 	//! get the amount of Bits per Pixel of the given color format
 	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)
 	{
@@ -110,6 +116,13 @@ public:
 		case ECF_R8G8B8:
 			return 24;
 		case ECF_A8R8G8B8:
+			return 32;
+		case ECF_DXT1:
+			return 16;
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
 			return 32;
 		case ECF_R16F:
 			return 16;
@@ -125,6 +138,22 @@ public:
 			return 128;
 		default:
 			return 0;
+		}
+	}
+
+	//! test if this is compressed color format
+	static bool isCompressedFormat(const ECOLOR_FORMAT format)
+	{
+		switch(format)
+		{
+			case ECF_DXT1:
+			case ECF_DXT2:
+			case ECF_DXT3:
+			case ECF_DXT4:
+			case ECF_DXT5:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -146,56 +175,6 @@ public:
 		}
 	}
 
-};
-
-//! Interface for software compressed image data.
-/** Image loaders create these images from files. IVideoDrivers convert
-these images into their (hardware) textures.
-*/
-class IImageCompressed : public virtual IReferenceCounted
-{
-public:
-
-	//! Use this to get a pointer to the image data.
-	virtual const void* getData() const = 0;
-
-	//! Returns width and height of image data.
-	virtual const core::dimension2d<u32>& getDimension() const = 0;
-
-	//! Returns bits per pixel.
-	virtual u32 getBitsPerPixel() const = 0;
-
-	//! Returns bytes per pixel
-	virtual u32 getBytesPerPixel() const = 0;
-
-	//! Returns image data size in bytes
-	virtual u32 getImageDataSizeInBytes() const = 0;
-
-	//! Returns image data size in pixels
-	virtual u32 getImageDataSizeInPixels() const = 0;
-
-	//! Returns the color format
-	virtual ECOLOR_FORMAT getColorFormat() const = 0;
-
-	//! Returns pitch of image
-	virtual u32 getPitch() const = 0;
-
-	//! get the amount of Bits per Pixel of the given color format
-	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)
-	{
-		switch(format)
-		{
-		case ECF_DXT1:
-			return 16;
-		case ECF_DXT2:
-		case ECF_DXT3:
-		case ECF_DXT4:
-		case ECF_DXT5:
-			return 32;
-		default:
-			return 0;
-		}
-	}
 };
 
 } // end namespace video

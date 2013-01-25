@@ -992,6 +992,9 @@ class COpenGLExtensionHandler
 	void extGlCompressedTexImage2D(GLenum target, GLint level,
 		GLenum internalformat, GLsizei width, GLsizei height,
 		GLint border, GLsizei imageSize, const void* data);
+	void extGlCompressedTexSubImage2D(GLenum target, GLint level,
+		GLint xoffset, GLint yoffset, GLsizei width, GLsizei height,
+		GLenum format, GLsizei imageSize, const void* data);
 
 	// shader programming
 	void extGlGenPrograms(GLsizei n, GLuint *programs);
@@ -1168,6 +1171,7 @@ class COpenGLExtensionHandler
 		PFNGLSTENCILFUNCSEPARATEATIPROC pGlStencilFuncSeparateATI;
 		PFNGLSTENCILOPSEPARATEATIPROC pGlStencilOpSeparateATI;
 		PFNGLCOMPRESSEDTEXIMAGE2DPROC pGlCompressedTexImage2D;
+		PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC pGlCompressedTexSubImage2D;
 		// ARB framebuffer object
 		PFNGLBINDFRAMEBUFFERPROC pGlBindFramebuffer;
 		PFNGLDELETEFRAMEBUFFERSPROC pGlDeleteFramebuffers;
@@ -1931,6 +1935,19 @@ inline void COpenGLExtensionHandler::extGlCompressedTexImage2D (GLenum target, G
 	glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
 #else
 	os::Printer::log("glCompressedTexImage2D not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
+		GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void* data)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlCompressedTexSubImage2D)
+		pGlCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+#elif defined(GL_ARB_texture_compression)
+	glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+#else
+	os::Printer::log("glCompressedTexSubImage2D not supported", ELL_ERROR);
 #endif
 }
 

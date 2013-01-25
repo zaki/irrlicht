@@ -204,9 +204,6 @@ public:
 
 	//! creates a surface from the file
 	virtual IImage* loadImage(io::IReadFile* file) const;
-
-	//! creates a compressed surface from the file
-	virtual IImageCompressed* loadImageCompressed(io::IReadFile* file) const;
 };
 
 

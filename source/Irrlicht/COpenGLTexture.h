@@ -169,6 +169,8 @@ protected:
 	bool ReadOnlyLock;
 	bool KeepImage;
 
+	bool Compressed;
+
 	mutable SStatesCache StatesCache;
 };
 

@@ -1218,18 +1218,6 @@ namespace video
 			bool ownForeignMemory=false,
 			bool deleteMemory = true) =0;
 
-		//! Creates a compressed software image from a file.
-		virtual IImageCompressed* createImageCompressedFromFile(const io::path& filename) = 0;
-
-		//! Creates a compressed software image from a file.
-		virtual IImageCompressed* createImageCompressedFromFile(io::IReadFile* file) = 0;
-
-		//! Creates a software compressed image from a byte array.
-		virtual IImageCompressed* createImageCompressedFromData(ECOLOR_FORMAT format,
-			const core::dimension2d<u32>& size, void *data,
-			bool ownForeignMemory=false,
-			bool deleteMemory = true) = 0;
-
 		//! Creates an empty software image.
 		/**
 		\param format Desired color format of the image.

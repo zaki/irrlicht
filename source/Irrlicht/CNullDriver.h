@@ -352,17 +352,6 @@ namespace video
 			const core::dimension2d<u32>& size, void *data,
 			bool ownForeignMemory=true, bool deleteForeignMemory = true);
 
-		//! Creates a compressed software image from a file.
-		virtual IImageCompressed* createImageCompressedFromFile(const io::path& filename);
-
-		//! Creates a compressed software image from a file.
-		virtual IImageCompressed* createImageCompressedFromFile(io::IReadFile* file);
-
-		//! Creates a software compressed image from a byte array.
-		virtual IImageCompressed* createImageCompressedFromData(ECOLOR_FORMAT format,
-			const core::dimension2d<u32>& size, void *data,
-			bool ownForeignMemory=false, bool deleteMemory = true);
-
 		//! Creates an empty software image.
 		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size);
 

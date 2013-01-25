@@ -113,6 +113,8 @@ s32 DDSGetInfo(ddsHeader* dds, s32* width, s32* height, eDDSPixelFormat* pf)
 }
 
 
+#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
+
 /*
 DDSDecompressARGB8888()
 decompresses an argb 8888 format texture
@@ -140,8 +142,6 @@ s32 DDSDecompressARGB8888(ddsHeader* dds, u8* data, s32 width, s32 height, u8* p
 	return 0;
 }
 
-
-#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
 
 /*!
 	DDSGetColorBlockColors()
@@ -692,59 +692,14 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 	IImage* image = 0;
 	s32 width, height;
 	eDDSPixelFormat pixelFormat;
-
-	file->seek(0);
-	file->read(&header, sizeof(ddsHeader));
-
-	if (0 == DDSGetInfo(&header, &width, &height, &pixelFormat))
-	{
-#ifndef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-		if(pixelFormat == DDS_PF_ARGB8888)
-#endif
-		{
-			u32 newSize = file->getSize() - sizeof(ddsHeader);
-			u8* memFile = new u8[newSize];
-			file->read(memFile, newSize);
-
-			image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
-
-#ifndef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-			DDSDecompressARGB8888(&header, memFile, width, height, (u8*)image->lock());
-#else
-			if (DDSDecompress(&header, memFile, (u8*)image->lock()) == -1)
-			{
-				image->unlock();
-				image->drop();
-				image = 0;
-			}
-#endif
-
-			delete[] memFile;
-
-			if (image)
-				image->unlock();
-		}
-	}
-
-	return image;
-}
-
-
-//! creates a compressed surface from the file
-IImageCompressed* CImageLoaderDDS::loadImageCompressed(io::IReadFile* file) const
-{
-#ifndef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-	ddsHeader header;
-	IImageCompressed* image = 0;
-	s32 width, height;
-	eDDSPixelFormat pixelFormat;
-
-	file->seek(0);
-	file->read(&header, sizeof(ddsHeader));
-
 	ECOLOR_FORMAT format = ECF_UNKNOWN;
 	u32 dataSize = 0;
 	bool is3D = false;
+	bool useAlpha = false;
+	u32 mipMapCount = 0;
+
+	file->seek(0);
+	file->read(&header, sizeof(ddsHeader));
 
 	if (0 == DDSGetInfo(&header, &width, &height, &pixelFormat))
 	{
@@ -753,31 +708,172 @@ IImageCompressed* CImageLoaderDDS::loadImageCompressed(io::IReadFile* file) cons
 		if (!is3D)
 			header.Depth = 1;
 
-		if (header.PixelFormat.Flags & DDPF_FOURCC) // Compressed formats
+		useAlpha = header.PixelFormat.Flags & DDPF_ALPHAPIXELS;
+
+		if (header.MipMapCount > 0 && (header.Flags & DDSD_MIPMAPCOUNT))
+			mipMapCount = header.MipMapCount;
+
+#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
+		u32 newSize = file->getSize() - sizeof(ddsHeader);
+		u8* memFile = new u8[newSize];
+		file->read(memFile, newSize);
+
+		image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
+
+		if (DDSDecompress(&header, memFile, (u8*)image->lock()) == -1)
+		{
+			image->unlock();
+			image->drop();
+			image = 0;
+		}
+
+		delete[] memFile;
+#else
+		if (header.PixelFormat.Flags & DDPF_RGB) // Uncompressed formats
+		{
+			u32 byteCount = header.PixelFormat.RGBBitCount / 8;
+			
+			if( header.Flags & DDSD_PITCH )
+				dataSize = header.PitchOrLinearSize * header.Height * header.Depth * (header.PixelFormat.RGBBitCount / 8);
+			else
+				dataSize = header.Width * header.Height * header.Depth * (header.PixelFormat.RGBBitCount / 8);
+
+			u8* data = new u8[dataSize];
+			file->read(data, dataSize);
+
+			switch (header.PixelFormat.RGBBitCount) // Bytes per pixel
+			{
+				case 16:
+				{
+					if (useAlpha)
+					{
+						if (header.PixelFormat.ABitMask == 0x8000)
+							format = ECF_A1R5G5B5;
+					}
+					else
+					{
+						if (header.PixelFormat.RBitMask == 0xf800)
+							format = ECF_R5G6B5;
+					}
+
+					break;
+				}
+				case 24:
+				{
+					if (!useAlpha)
+					{
+						if (header.PixelFormat.RBitMask == 0xff0000)
+							format = ECF_R8G8B8;
+					}
+
+					break;
+				}
+				case 32:
+				{
+					if (useAlpha)
+					{
+						if (header.PixelFormat.RBitMask & 0xff0000)
+							format = ECF_A8R8G8B8;
+						else if (header.PixelFormat.RBitMask & 0xff)
+						{
+							// convert from A8B8G8R8 to A8R8G8B8
+							u8 tmp = 0;
+
+							for (u32 i = 0; i < dataSize; i += 4)
+							{
+								tmp = data[i];
+								data[i] = data[i+2];
+								data[i+2] = tmp;
+							}
+						}
+					}
+
+					break;
+				}
+			}
+
+			if (format != ECF_UNKNOWN)
+			{
+				if (!is3D) // Currently 3D textures are unsupported.
+				{
+					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height ), data, true, true, false);
+				}
+			}
+			else
+			{
+				delete[] data;
+			}
+		}
+		else if (header.PixelFormat.Flags & DDPF_FOURCC) // Compressed formats
 		{
 			switch(pixelFormat)
 			{
 				case DDS_PF_DXT1:
 				{
-					dataSize = (header.Width / 4 ) * (header.Height / 4) * 8;
+					u32 curWidth = header.Width;
+					u32 curHeight = header.Height;
+
+					dataSize = ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 8;
+
+					do
+					{
+						if (curWidth > 1)
+							curWidth >>= 1;
+
+						if (curHeight > 1)
+							curHeight >>= 1;
+
+						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 8;
+					}
+					while (curWidth != 1 || curWidth != 1);
+
 					format = ECF_DXT1;
-					os::Printer::log("Detected ECF_DXT1 format", ELL_DEBUG);
 					break;
 				}
 				case DDS_PF_DXT2:
 				case DDS_PF_DXT3:
 				{
-					dataSize = (header.Width / 4 ) * (header.Height / 4) * 16;
+					u32 curWidth = header.Width;
+					u32 curHeight = header.Height;
+
+					dataSize = ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
+
+					do
+					{
+						if (curWidth > 1)
+							curWidth >>= 1;
+
+						if (curHeight > 1)
+							curHeight >>= 1;
+
+						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
+					}
+					while (curWidth != 1 || curWidth != 1);
+
 					format = ECF_DXT3;
-					os::Printer::log("Detected ECF_DXT3 format", ELL_DEBUG);
 					break;
 				}
 				case DDS_PF_DXT4:
 				case DDS_PF_DXT5:
 				{
-					dataSize = (header.Width / 4 ) * (header.Height / 4) * 16;
+					u32 curWidth = header.Width;
+					u32 curHeight = header.Height;
+
+					dataSize = ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
+
+					do
+					{
+						if (curWidth > 1)
+							curWidth >>= 1;
+
+						if (curHeight > 1)
+							curHeight >>= 1;
+
+						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
+					}
+					while (curWidth != 1 || curWidth != 1);
+
 					format = ECF_DXT5;
-					os::Printer::log("Detected ECF_DXT5 format", ELL_DEBUG);
 					break;
 				}
 			}
@@ -789,16 +885,16 @@ IImageCompressed* CImageLoaderDDS::loadImageCompressed(io::IReadFile* file) cons
 					u8* data = new u8[dataSize];
 					file->read(data, dataSize);
 
-					image = new CImageCompressed(format, core::dimension2d<u32>(header.Width, header.Height ), data);
+					bool hasMipMap = (mipMapCount > 0) ? true : false;
+
+					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true, true, hasMipMap);
 				}
 			}
 		}
+#endif
 	}
 
 	return image;
-#else
-	return 0;
-#endif
 }
 
 
