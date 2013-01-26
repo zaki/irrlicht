@@ -165,11 +165,10 @@ protected:
 	bool HasMipMaps;
 	bool MipmapLegacyMode;
 	bool IsRenderTarget;
+	bool IsCompressed;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
 	bool KeepImage;
-
-	bool Compressed;
 
 	mutable SStatesCache StatesCache;
 };

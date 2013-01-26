@@ -101,8 +101,9 @@ public:
 	//! Inform whether the image is compressed
 	virtual bool isCompressed() const = 0;
 
-	//! Inform wheather the image has mipmaps
-	virtual bool hasMipMap() const = 0;
+	//! Check whether the image has MipMaps
+	/** \return True if image has MipMaps, else false. */
+	virtual bool hasMipMaps() const = 0;
 
 	//! get the amount of Bits per Pixel of the given color format
 	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)

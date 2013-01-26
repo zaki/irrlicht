@@ -15,7 +15,7 @@ namespace video
 
 //! Constructor of empty image
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
-:Data(0), Size(size), Format(format), DeleteMemory(true), Compressed(false)
+:Data(0), Size(size), Format(format), DeleteMemory(true), IsCompressed(false), HasMipMaps(false)
 {
 	initData();
 }
@@ -23,8 +23,8 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 
 //! Constructor from raw data
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
-			bool ownForeignMemory, bool deleteForeignMemory, bool compressed, bool hasMipMapData)
-: Data(0), Size(size), Format(format), DeleteMemory(deleteForeignMemory), Compressed(compressed), HasMipMap(hasMipMapData)
+			bool ownForeignMemory, bool deleteForeignMemory, bool compressed, bool mipMaps)
+: Data(0), Size(size), Format(format), DeleteMemory(deleteForeignMemory), IsCompressed(compressed), HasMipMaps(mipMaps)
 {
 	if (ownForeignMemory)
 	{
@@ -182,7 +182,7 @@ u32 CImage::getAlphaMask() const
 //! sets a pixel
 void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::setPixel method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -229,7 +229,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend)
 //! returns a pixel
 SColor CImage::getPixel(u32 x, u32 y) const
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::getPixel method doesn't work with compressed images.", ELL_WARNING);
 		return SColor(0);
@@ -271,7 +271,7 @@ ECOLOR_FORMAT CImage::getColorFormat() const
 //! copies this surface into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::copyTo method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -284,7 +284,7 @@ void CImage::copyTo(IImage* target, const core::position2d<s32>& pos)
 //! copies this surface partially into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::copyTo method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -297,7 +297,7 @@ void CImage::copyTo(IImage* target, const core::position2d<s32>& pos, const core
 //! copies this surface into another, using the alpha mask, a cliprect and a color to add with
 void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const SColor &color, const core::rect<s32>* clipRect)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::copyToWithAlpha method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -313,7 +313,7 @@ void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, c
 // note: this is very very slow.
 void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::copyToScaling method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -375,7 +375,7 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 // note: this is very very slow.
 void CImage::copyToScaling(IImage* target)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::copyToScaling method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -400,7 +400,7 @@ void CImage::copyToScaling(IImage* target)
 //! copies this surface into another, scaling it to fit it.
 void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::copyToScalingBoxFilter method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -438,7 +438,7 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 //! fills the surface with given color
 void CImage::fill(const SColor &color)
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::fill method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -482,20 +482,21 @@ void CImage::fill(const SColor &color)
 //! Inform whether the image is compressed
 bool CImage::isCompressed() const
 {
-	return Compressed;
+	return IsCompressed;
 }
 
 
-//! Inform wheather the image store mipmaps
-bool CImage::hasMipMap() const
+//! Check whether the image has MipMaps
+bool CImage::hasMipMaps() const
 {
-	return HasMipMap;
+	return HasMipMaps;
 }
+
 
 //! get a filtered pixel
 inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) const
 {
-	if (Compressed)
+	if (IsCompressed)
 	{
 		os::Printer::log("IImage::getPixelBox method doesn't work with compressed images.", ELL_WARNING);
 		return SColor(0);

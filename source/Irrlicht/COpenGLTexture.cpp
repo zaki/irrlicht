@@ -25,7 +25,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
 	IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true), Compressed(false)
+	ReadOnlyLock(false), KeepImage(true), IsCompressed(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -34,10 +34,14 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageValues(origImage);
 
-	glGenTextures(1, &TextureName);
-
 	if (ColorFormat == ECF_DXT1 || ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
 	{	
+		if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+		{
+			os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+			return;
+		}
+
 		if(ImageSize != TextureSize)
 		{
 			os::Printer::log("Invalid size of image for compressed texture, size of image must be POT.", ELL_ERROR);
@@ -45,9 +49,10 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 		}
 		else
 		{
-			Compressed = true;
+			IsCompressed = true;
 			Image = origImage;
 			Image->grab();
+			KeepImage = false;
 		}
 	}
 	else if (ImageSize==TextureSize)
@@ -61,6 +66,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 		// scale texture
 		origImage->copyToScaling(Image);
 	}
+	glGenTextures(1, &TextureName);
 	uploadTexture(true, mipmapData);
 	if (!KeepImage)
 	{
@@ -76,7 +82,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	MipmapLegacyMode(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true), Compressed(false)
+	ReadOnlyLock(false), KeepImage(true), IsCompressed(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -359,7 +365,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!level && newTexture)
 	{
 		// auto generate if possible and no mipmap data is given
-		if (!Compressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		if (!IsCompressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
 			if (!Driver->queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 			{
@@ -405,7 +411,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	void* source = image->lock();
 	if (newTexture)
 	{
-		if(Compressed)
+		if (IsCompressed)
 		{
 			if(ColorFormat == ECF_DXT1)
 				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
@@ -421,7 +427,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	}
 	else
 	{
-		if(Compressed)
+		if (IsCompressed)
 		{
 			if(ColorFormat == ECF_DXT1)
 				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
@@ -439,7 +445,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 	if (!level && newTexture)
 	{
-		if (!Compressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		if (!IsCompressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
 			if (!MipmapLegacyMode && AutomaticMipmapUpdate)
 			{
@@ -453,8 +459,8 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 			// or use predefined mipmap data eg. for compressed textures
 			AutomaticMipmapUpdate=false;
 
-			if (Compressed)
-				if (image->hasMipMap())
+			if (IsCompressed && !mipmapData)
+				if (image->hasMipMaps())
 					mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
 				else
 					HasMipMaps = false;
@@ -482,7 +488,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 //! lock function
 void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
-	if (Compressed) // TO-DO
+	if (IsCompressed) // TO-DO
 		return 0;
 
 	// store info about which image is locked
@@ -590,7 +596,7 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 //! unlock function
 void COpenGLTexture::unlock()
 {
-	if (Compressed) // TO-DO
+	if (IsCompressed) // TO-DO
 		return;
 
 	// test if miplevel or main texture was locked
@@ -678,10 +684,9 @@ bool COpenGLTexture::hasMipMaps() const
 //! modifying the texture
 void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 {
-	if(Compressed && !mipmapData)
-		return;
-
 	if (AutomaticMipmapUpdate || !HasMipMaps || !Image)
+		return;
+	if (IsCompressed && !mipmapData)
 		return;
 	if ((Image->getDimension().Width==1) && (Image->getDimension().Height==1))
 		return;
@@ -708,7 +713,7 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 		if (!mipmapData)
 			Image->copyToScaling(target, width, height, Image->getColorFormat());
 
-		if (Compressed)
+		if (IsCompressed)
 		{
 			if(ColorFormat == ECF_DXT1)
 				compressedDataSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
@@ -725,7 +730,7 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 		// get next prepared mipmap data if available
 		if (mipmapData)
 		{
-			if (Compressed)
+			if (IsCompressed)
 				mipmapData = static_cast<u8*>(mipmapData)+compressedDataSize;
 			else
 				mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();

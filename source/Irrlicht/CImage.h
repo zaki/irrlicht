@@ -24,7 +24,8 @@ public:
 	directly and own it from now on, which means it will also try to delete [] the
 	data when the image will be destructed. If false, the memory will by copied. */
 	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size,
-		void* data, bool ownForeignMemory=true, bool deleteMemory = true, bool compressed = false, bool hasMipMapData = false);
+		void* data, bool ownForeignMemory=true, bool deleteMemory = true,
+		bool compressed = false, bool mipMaps = false);
 
 	//! constructor for empty image
 	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size);
@@ -106,8 +107,9 @@ public:
 	//! Inform whether the image is compressed
 	virtual bool isCompressed() const;
 
-	//! Inform wheather the image has mipmaps
-	virtual bool hasMipMap() const;
+	//! Check whether the image has MipMaps
+	/** \return True if image has MipMaps, else false. */
+	virtual bool hasMipMaps() const;
 
 private:
 
@@ -122,10 +124,10 @@ private:
 	u32 Pitch;
 	ECOLOR_FORMAT Format;
 
-	bool DeleteMemory;
+	bool IsCompressed;
+	bool HasMipMaps;
 
-	bool Compressed;
-	bool HasMipMap;
+	bool DeleteMemory;
 };
 
 } // end namespace video

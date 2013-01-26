@@ -117,6 +117,7 @@ private:
 	bool HasMipMaps;
 	bool HardwareMipMaps;
 	bool IsRenderTarget;
+	bool IsCompressed;
 };
 
 

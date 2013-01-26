@@ -789,6 +789,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 			FeatureAvailable[IRR_EXT_blend_subtract] || FeatureAvailable[IRR_EXT_blend_logic_op];
 	case EVDF_TEXTURE_MATRIX:
 		return true;
+	case EVDF_TEXTURE_COMPRESSED_DXT:
+		return FeatureAvailable[IRR_EXT_texture_compression_s3tc];
 	default:
 		return false;
 	};

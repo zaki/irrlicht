@@ -682,6 +682,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_BLEND_OPERATIONS:
 	case EVDF_TEXTURE_MATRIX:
 		return true;
+	case EVDF_TEXTURE_COMPRESSED_DXT:
+		return true;
 	default:
 		return false;
 	};
