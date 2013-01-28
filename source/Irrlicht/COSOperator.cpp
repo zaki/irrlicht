@@ -161,8 +161,26 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 	return true;
 #else
 	// could probably be read from "/proc/cpuinfo" or "/proc/cpufreq"
-
-	return false;
+	FILE* file = fopen("/proc/cpuinfo", "r");
+	*MHz=0;
+	if (file)
+	{
+		char buffer[1024];
+		fread(buffer, 1024, file);
+		buffer[1023]=0;
+		core::stringc str(buffer);
+		s32 pos = str.find("cpu MHz");
+		if (pos != -1)
+		{
+			pos = str.findNext(':', pos);
+			if (pos != -1)
+			{
+				*Mhz = core::fast_atof(str.c_str+pos+1);
+			}
+		}
+		fclose(file);
+	}
+	return (*MHz != 0);
 #endif
 }
 
@@ -201,8 +219,19 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 	// TODO: implement for non-availablity of symbols/features
 	return false;
 #endif
+#elif defined(_IRR_OSX_PLATFORM_)
+	int mib[2];
+	int64_t physical_memory;
+	size_t length;
+
+	// Get the Physical memory size
+	mib[0] = CTL_HW;
+	mib[1] = HW_MEMSIZE;
+	length = sizeof(int64);
+	sysctl(mib, 2, &physical_memory, &length, NULL, 0);
+	return true;
 #else
-	// TODO: implement for OSX
+	// TODO: implement for others
 	return false;
 #endif
 }
