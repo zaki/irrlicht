@@ -23,6 +23,7 @@
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 #include "MacOSX/OSXClipboard.h"
 #endif
+#include "fast_atof.h"
 
 namespace irr
 {
@@ -166,7 +167,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 	if (file)
 	{
 		char buffer[1024];
-		fread(buffer, 1024, file);
+		fread(buffer, 1, 1024, file);
 		buffer[1023]=0;
 		core::stringc str(buffer);
 		s32 pos = str.find("cpu MHz");
@@ -175,7 +176,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 			pos = str.findNext(':', pos);
 			if (pos != -1)
 			{
-				*Mhz = core::fast_atof(str.c_str+pos+1);
+				*MHz = core::fast_atof(str.c_str()+pos+1);
 			}
 		}
 		fclose(file);
