@@ -152,7 +152,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 	const c8* geometryProgram, const c8* geometryEntry, E_GEOMETRY_SHADER_TYPE geometryProfile,
 	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType, u32 vertices)
 {
-	bool Status = true;
+	bool shaderStatus = true;
 	CGerror Error = CG_NO_ERROR;
 	materialType = -1;
 
@@ -171,7 +171,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 			os::Printer::log("Cg vertex program failed to compile:", ELL_ERROR);
 			os::Printer::log(cgGetLastListing(Driver->getCgContext()), ELL_ERROR);
 
-			Status = false;
+			shaderStatus = false;
 		}
 		else
 			cgGLLoadProgram(VertexProgram);
@@ -190,7 +190,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 			os::Printer::log("Cg fragment program failed to compile:", ELL_ERROR);
 			os::Printer::log(cgGetLastListing(Driver->getCgContext()), ELL_ERROR);
 
-			Status = false;
+			shaderStatus = false;
 		}
 		else
 			cgGLLoadProgram(FragmentProgram);
@@ -209,7 +209,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 			os::Printer::log("Cg geometry program failed to compile:", ELL_ERROR);
 			os::Printer::log(cgGetLastListing(Driver->getCgContext()), ELL_ERROR);
 
-			Status = false;
+			shaderStatus = false;
 		}
 		else
 			cgGLLoadProgram(GeometryProgram);
@@ -233,7 +233,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 		}
 	}
 
-	if (Status)
+	if (shaderStatus)
 		materialType = Driver->addMaterialRenderer(this);
 }
 

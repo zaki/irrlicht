@@ -22,6 +22,10 @@ CCgUniform::CCgUniform(const CGparameter& parameter, bool global) : Parameter(pa
 		Space = CG_PROGRAM;
 }
 
+CCgUniform::~CCgUniform()
+{
+}
+
 const core::stringc& CCgUniform::getName() const
 {
 	return Name;

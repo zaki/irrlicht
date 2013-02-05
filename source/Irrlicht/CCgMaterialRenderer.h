@@ -31,6 +31,7 @@ class CCgUniform
 {
 public:
 	CCgUniform(const CGparameter& parameter, bool global);
+	virtual ~CCgUniform();
 
 	const core::stringc& getName() const;
 	const CGparameter& getParameter() const;
