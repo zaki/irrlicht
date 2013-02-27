@@ -346,6 +346,20 @@ public:
 		return IsVisible;
 	}
 
+	//! Check whether the element is truly visible, taking into accounts its parents' visibility
+	/** \return true if the element and all its parents are visible,
+	false if this or any parent element is invisible. */
+	virtual bool isTrulyVisible() const
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+		if(!IsVisible)
+			return false;
+
+		if(!Parent)
+			return true;
+
+		return Parent->isTrulyVisible();
+	}
 
 	//! Sets the visible state of this element.
 	virtual void setVisible(bool visible)
