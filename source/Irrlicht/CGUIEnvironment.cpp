@@ -329,11 +329,24 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 }
 
 
-//! Returns if the element has focus
-bool CGUIEnvironment::hasFocus(IGUIElement* element) const
+//! Returns whether the element has focus
+bool CGUIEnvironment::hasFocus(IGUIElement* element, bool checkSubElements) const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return (element == Focus);
+	if (element == Focus)
+		return true;
+
+	if ( !checkSubElements || !element )
+		return false;
+
+	IGUIElement* f = Focus;
+	while ( f && f->isSubElement() )
+	{
+		f = f->getParent();
+		if ( f == element )
+			return true;
+	}
+	return false;
 }
 
 

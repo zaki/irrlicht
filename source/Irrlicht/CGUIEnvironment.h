@@ -187,7 +187,7 @@ public:
 	virtual bool removeFocus(IGUIElement* element);
 
 	//! Returns if the element has focus
-	virtual bool hasFocus(IGUIElement* element) const;
+	virtual bool hasFocus(IGUIElement* element, bool checkSubElements=false) const;
 
 	//! Returns the element with the focus
 	virtual IGUIElement* getFocus() const;

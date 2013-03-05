@@ -103,8 +103,9 @@ public:
 
 	//! Returns whether the element has focus
 	/** \param element Pointer to the element which is tested.
+	\param checkSubElements When true and focus is on a sub-element of element then it will still count as focused and return true
 	\return True if the element has focus, else false. */
-	virtual bool hasFocus(IGUIElement* element) const = 0;
+	virtual bool hasFocus(IGUIElement* element, bool checkSubElements=false) const = 0;
 
 	//! Returns the current video driver.
 	/** \return Pointer to the video driver. */

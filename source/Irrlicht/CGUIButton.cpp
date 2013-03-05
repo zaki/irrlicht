@@ -175,8 +175,8 @@ bool CGUIButton::OnEvent(const SEvent& event)
 			if (Environment->hasFocus(this) &&
 				!AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
 			{
-					Environment->removeFocus(this);
-					return false;
+				Environment->removeFocus(this);
+				return false;
 			}
 
 			if (!IsPushButton)
