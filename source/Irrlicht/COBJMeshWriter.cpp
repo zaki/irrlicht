@@ -195,6 +195,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 				file->write("map_Kd ", 7);
 				io::path tname = FileSystem->getRelativeFilename(mat[i]->getTexture(0)->getName(),
 						FileSystem->getFileDir(file->getFileName()));
+				// avoid blanks as .obj cannot handle strings with spaces
 				if (tname.findFirst(' ') != -1)
 					tname = FileSystem->getFileBasename(tname);
 				file->write(tname.c_str(), tname.size());
