@@ -165,6 +165,9 @@ namespace scene
 		@see getTargetAndRotationBinding() */
 		virtual void bindTargetAndRotation(bool bound) =0;
 
+		//! Updates the matrices without uploading them to the driver
+		virtual void updateMatrices() = 0;
+
 		//! Queries if the camera scene node's rotation and its target position are bound together.
 		/** @see bindTargetAndRotation() */
 		virtual bool getTargetAndRotationBinding(void) const =0;
