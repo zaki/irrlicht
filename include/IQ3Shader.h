@@ -80,7 +80,7 @@ namespace quake3
 	typedef core::array< video::ITexture* > tTexArray;
 
 	// string helper.. TODO: move to generic files
-	inline s16 isEqual ( const core::stringc &string, u32 &pos, const c8 *list[], u16 listSize )
+	inline s16 isEqual ( const core::stringc &string, u32 &pos, const c8 * const list[], u16 listSize )
 	{
 		const char * in = string.c_str () + pos;
 
@@ -772,7 +772,7 @@ namespace quake3
 				io::IFileSystem *fileSystem,
 				video::IVideoDriver* driver)
 	{
-		static const char* extension[] =
+		static const char * const extension[] =
 		{
 			".jpg",
 			".jpeg",

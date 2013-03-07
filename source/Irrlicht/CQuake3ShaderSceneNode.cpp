@@ -1102,7 +1102,7 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 		const SVariable &v = group->Variable[g];
 
 		// get the modifier 
-		static const c8 * modifierList[] =
+		static const c8 * const modifierList[] =
 		{ 
 			"tcmod","deformvertexes","rgbgen","tcgen","map","alphagen"
 		};
@@ -1124,7 +1124,7 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 		}
 
 		// get the modifier function
-		static const c8 * funclist[] =
+		static const c8 * const funclist[] =
 		{ 
 			"scroll","scale","rotate","stretch","turb",
 			"wave","identity","vertex",
@@ -1133,7 +1133,7 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 			"exactvertex","const","lightingspecular","move","normal",
 			"identitylighting"
 		};
-		static const c8 * groupToken[] = { "(", ")" };
+		static const c8 * const groupToken[] = { "(", ")" };
 
 		pos = 0;
 		function.masterfunc1 = (eQ3ModifierFunction) isEqual( v.content, pos, funclist, 22 );

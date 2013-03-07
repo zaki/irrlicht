@@ -68,7 +68,7 @@ namespace
 namespace irr
 {
 
-const char* wmDeleteWindow = "WM_DELETE_WINDOW";
+const char wmDeleteWindow[] = "WM_DELETE_WINDOW";
 
 //! constructor
 CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)

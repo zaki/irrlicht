@@ -48,9 +48,9 @@ namespace irr
 namespace gui
 {
 
-const wchar_t* IRR_XML_FORMAT_GUI_ENV			= L"irr_gui";
-const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT		= L"element";
-const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE	= L"type";
+const wchar_t IRR_XML_FORMAT_GUI_ENV[]			= L"irr_gui";
+const wchar_t IRR_XML_FORMAT_GUI_ELEMENT[]		= L"element";
+const wchar_t IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE[]	= L"type";
 
 const io::path CGUIEnvironment::DefaultFontName = "#DefaultFont";
 
@@ -168,7 +168,8 @@ CGUIEnvironment::~CGUIEnvironment()
 
 void CGUIEnvironment::loadBuiltInFont()
 {
-	io::IReadFile* file = io::createMemoryReadFile(BuiltInFontData, BuiltInFontDataSize, DefaultFontName, false);
+	io::IReadFile* file = io::createMemoryReadFile((void *) BuiltInFontData,
+				BuiltInFontDataSize, DefaultFontName, false);
 
 	CGUIFont* font = new CGUIFont(this, DefaultFontName );
 	if (!font->load(file))
