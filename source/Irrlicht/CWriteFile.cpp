@@ -107,7 +107,7 @@ const io::path& CWriteFile::getFileName() const
 
 
 
-IWriteFile* createWriteFile(const io::path& fileName, bool append)
+IWriteFile* CWriteFile::createWriteFile(const io::path& fileName, bool append)
 {
 	CWriteFile* file = new CWriteFile(fileName, append);
 	if (file->isOpen())

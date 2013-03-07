@@ -47,6 +47,9 @@ namespace io
 		//! returns name of file
 		virtual const io::path& getFileName() const;
 
+		//! create read file on disk.
+		static IReadFile* createReadFile(const io::path& fileName);
+
 	private:
 
 		//! opens the file

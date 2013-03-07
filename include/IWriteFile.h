@@ -40,9 +40,6 @@ namespace io
 		virtual const path& getFileName() const = 0;
 	};
 
-	//! Internal function, please do not use.
-	IWriteFile* createWriteFile(const io::path& fileName, bool append);
-
 } // end namespace io
 } // end namespace irr
 

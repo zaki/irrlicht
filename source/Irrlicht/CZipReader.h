@@ -180,7 +180,7 @@ namespace io
 	public:
 
 		//! constructor
-		CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths, bool isGZip=false);
+		CZipReader(IFileSystem* fs, IReadFile* file, bool ignoreCase, bool ignorePaths, bool isGZip=false);
 
 		//! destructor
 		virtual ~CZipReader();
@@ -210,6 +210,7 @@ namespace io
 
 		bool scanCentralDirectoryHeader();
 
+		io::IFileSystem* FileSystem;
 		IReadFile* File;
 
 		// holds extended info about files
