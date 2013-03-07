@@ -976,8 +976,12 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		const s32 realWidth = clientSize.right - clientSize.left;
 		const s32 realHeight = clientSize.bottom - clientSize.top;
 
-		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+		s32 windowLeft = (CreationParams.WindowPosition.X == -1 ?
+		                     (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2 :
+		                     CreationParams.WindowPosition.X);
+		s32 windowTop = (CreationParams.WindowPosition.Y == -1 ?
+		                     (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2 :
+		                     CreationParams.WindowPosition.Y);
 
 		if ( windowLeft < 0 )
 			windowLeft = 0;
@@ -1735,6 +1739,22 @@ void CIrrDeviceWin32::restoreWindow()
 	SetWindowPlacement(HWnd, &wndpl);
 }
 
+core::position2di CIrrDeviceWin32::getWindowPosition()
+{
+	WINDOWPLACEMENT wndpl;
+	wndpl.length = sizeof(WINDOWPLACEMENT);
+	if (GetWindowPlacement(HWnd, &wndpl))
+	{
+		return core::position2di((int)wndpl.rcNormalPosition.left,
+		                         (int)wndpl.rcNormalPosition.top);
+	}
+	else
+	{
+		// No reason for this to happen
+		os::Printer::log("Failed to retrieve window location", ELL_ERROR);
+		return core::position2di(-1, -1);
+	}
+}
 
 bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {

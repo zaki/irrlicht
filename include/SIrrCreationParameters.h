@@ -9,6 +9,7 @@
 #include "EDeviceTypes.h"
 #include "dimension2d.h"
 #include "ILogger.h"
+#include "position2d.h"
 
 namespace irr
 {
@@ -23,6 +24,7 @@ namespace irr
 			DeviceType(EIDT_BEST),
 			DriverType(video::EDT_BURNINGSVIDEO),
 			WindowSize(core::dimension2d<u32>(800, 600)),
+			WindowPosition(core::position2di(-1,-1)),
 			Bits(16),
 			ZBufferBits(16),
 			Fullscreen(false),
@@ -58,6 +60,7 @@ namespace irr
 			DeviceType = other.DeviceType;
 			DriverType = other.DriverType;
 			WindowSize = other.WindowSize;
+			WindowPosition = other.WindowPosition;
 			Bits = other.Bits;
 			ZBufferBits = other.ZBufferBits;
 			Fullscreen = other.Fullscreen;
@@ -101,6 +104,9 @@ namespace irr
 
 		//! Size of the window or the video mode in fullscreen mode. Default: 800x600
 		core::dimension2d<u32> WindowSize;
+
+		//! Position of the window on-screen. Default: (-1, -1) or centered.
+		core::position2di WindowPosition;
 
 		//! Minimum Bits per pixel of the color buffer in fullscreen mode. Ignored if windowed mode. Default: 16.
 		u8 Bits;

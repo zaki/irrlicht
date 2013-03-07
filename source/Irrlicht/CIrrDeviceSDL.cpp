@@ -753,6 +753,12 @@ void CIrrDeviceSDL::maximizeWindow()
 	// do nothing
 }
 
+//! Get the position of this window on screen
+core::position2di getWindowPosition()
+{
+    return core::position2di(-1, -1);
+}
+
 
 //! Restore original window size
 void CIrrDeviceSDL::restoreWindow()

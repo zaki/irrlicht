@@ -662,15 +662,25 @@ bool CIrrDeviceLinux::createWindow()
 
 	if (!CreationParams.WindowId)
 	{
+		int x = 0;
+		int y = 0;
+	    
+		if (!CreationParams.Fullscreen)
+	    {
+	    	if (CreationParams.WindowPosition.X > 0) x = CreationParams.WindowPosition.X;
+	    	if (CreationParams.WindowPosition.Y > 0) y = CreationParams.WindowPosition.Y;
+		}
+	    
 		// create new Window
 		// Remove window manager decoration in fullscreen
 		attributes.override_redirect = CreationParams.Fullscreen;
 		window = XCreateWindow(display,
 				RootWindow(display, visual->screen),
-				0, 0, Width, Height, 0, visual->depth,
+				x, y, Width, Height, 0, visual->depth,
 				InputOutput, visual->visual,
 				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
 				&attributes);
+		
 		XMapRaised(display, window);
 		CreationParams.WindowId = (void*)window;
 		Atom wmDelete;
@@ -1435,6 +1445,13 @@ void CIrrDeviceLinux::restoreWindow()
 #endif
 }
 
+core::position2di CIrrDeviceLinux::getWindowPosition()
+{
+	int wx = 0, wy = 0;
+	Window child;
+	XTranslateCoordinates(display, window, DefaultRootWindow(display), 0, 0, &wx, &wy, &child);
+	return core::position2di(wx, wy);
+}
 
 void CIrrDeviceLinux::createKeyMap()
 {
