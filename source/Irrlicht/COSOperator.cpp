@@ -127,6 +127,8 @@ const c8* COSOperator::getTextFromClipboard() const
 
 bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 {
+	if (MHz)
+		*MHz=0;
 #if defined(_IRR_WINDOWS_API_) && !defined(_WIN32_WCE ) && !defined (_IRR_XBOX_PLATFORM_)
 	LONG Error;
 
@@ -148,7 +150,6 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 		return false;
 	else if (MHz)
 		*MHz = Speed;
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;
 
 #elif defined(_IRR_OSX_PLATFORM_)
@@ -163,7 +164,6 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 #else
 	// could probably be read from "/proc/cpuinfo" or "/proc/cpufreq"
 	FILE* file = fopen("/proc/cpuinfo", "r");
-	*MHz=0;
 	if (file)
 	{
 		char buffer[1024];
@@ -199,7 +199,6 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 	if (Avail)
 		*Avail = (u32)(MemoryStatus.dwAvailPhys>>10);
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;
 
 #elif defined(_IRR_POSIX_API_) && !defined(__FreeBSD__)
