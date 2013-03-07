@@ -211,6 +211,11 @@ static bool doTests()
 		logTestString("default aabbox3d<T> has wrong Extent\n");
 		return false;
 	}
+	if (!core::equals(empty.getRadius(), (T)sqrt(3.0)))
+	{
+		logTestString("default aabbox3d<T> has wrong radius\n");
+		return false;
+	}
 	if (empty.isEmpty())
 	{
 		logTestString("default aabbox3d<T> is empty\n");
@@ -242,6 +247,11 @@ static bool doTests()
 		logTestString("extended aabbox3d<T> has wrong Extent\n");
 		return false;
 	}
+	if (!core::equals(two.getRadius(), (T)sqrt(27./4.)))
+	{
+		logTestString("extended aabbox3d<T> has wrong radius\n");
+		return false;
+	}
 	if (two.isEmpty())
 	{
 		logTestString("extended aabbox3d<T> is empty\n");
@@ -271,6 +281,11 @@ static bool doTests()
 	if (one.getExtent() != core::vector3d<T>(0,0,0))
 	{
 		logTestString("singular aabbox3d<T> has Extent\n");
+		return false;
+	}
+	if (one.getRadius() != 0)
+	{
+		logTestString("singular aabbox3d<T> has radius\n");
 		return false;
 	}
 	if (!one.isEmpty())
@@ -335,6 +350,11 @@ static bool doTests()
 	if (one.getExtent() != core::vector3d<T>(3,4,5))
 	{
 		logTestString("large aabbox3d<T> has wrong Extent\n");
+		return false;
+	}
+	if (!core::equals(one.getRadius(), (T)sqrt(50./4.)))
+	{
+		logTestString("large aabbox3d<T> has wrong radius\n");
 		return false;
 	}
 	if (one.isEmpty())

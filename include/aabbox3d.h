@@ -115,6 +115,14 @@ class aabbox3d
 			return MaxEdge - MinEdge;
 		}
 
+		//! Get radius of the bounding sphere
+		/** \return Radius of the bounding sphere. */
+		T getRadius() const
+		{
+			const T radius = getExtent().getLength() / 2;
+			return radius;
+		}
+
 		//! Check if the box is empty.
 		/** This means that there is no space between the min and max edge.
 		\return True if box is empty, else false. */
