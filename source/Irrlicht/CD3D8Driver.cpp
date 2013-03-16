@@ -1009,7 +1009,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		const core::position2d<s32>& pos,
 		const core::rect<s32>& sourceRect,
 		const core::rect<s32>* clipRect, SColor color,
-		bool useAlphaChannelOfTexture)
+		bool useAlphaChannelOfTexture, f32 rotation)
 {
 	if (!texture)
 		return;
@@ -1112,21 +1112,34 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
+	core::vector2df fpos[4];
+	fpos[0] = core::vector2df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y);
+	fpos[1] = core::vector2df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y);
+	fpos[2] = core::vector2df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y);
+	fpos[3] = core::vector2df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y);
+
+	if(rotation > 0.f)
+	{
+		if(rotation > 360.0f)
+			rotation = fmodf(rotation, 360.f);
+
+		core::vector2d<s32> rcenter = poss.getCenter();
+
+		for (u32 i = 0; i < 4; ++i)
+			fpos[i].rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+	}
+
 	S3DVertex vtx[4];
-	vtx[0] = S3DVertex((f32)poss.UpperLeftCorner.X,
-			(f32)poss.UpperLeftCorner.Y, 0.0f,
+	vtx[0] = S3DVertex(fpos[0].X, fpos[0].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[1] = S3DVertex((f32)poss.LowerRightCorner.X,
-			(f32)poss.UpperLeftCorner.Y, 0.0f,
+	vtx[1] = S3DVertex(fpos[1].X, fpos[1].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[2] = S3DVertex((f32)poss.LowerRightCorner.X,
-			(f32)poss.LowerRightCorner.Y, 0.0f,
+	vtx[2] = S3DVertex(fpos[2].X, fpos[2].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	vtx[3] = S3DVertex((f32)poss.UpperLeftCorner.X,
-			(f32)poss.LowerRightCorner.Y, 0.0f,
+	vtx[3] = S3DVertex(fpos[3].X, fpos[3].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 
@@ -1144,7 +1157,8 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		const core::rect<s32>& sourceRect,
 		const core::rect<s32>* clipRect,
 		const video::SColor* const colors,
-		bool useAlphaChannelOfTexture)
+		bool useAlphaChannelOfTexture,
+		f32 rotation)
 {
 	if(!texture)
 		return;
@@ -1188,17 +1202,34 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 
 	const video::SColor* const useColor = colors ? colors : temp;
 
+	core::vector2df fpos[4];
+	fpos[0] = core::vector2df((f32)clippedRect.UpperLeftCorner.X, (f32)clippedRect.UpperLeftCorner.Y);
+	fpos[1] = core::vector2df((f32)clippedRect.LowerRightCorner.X, (f32)clippedRect.UpperLeftCorner.Y);
+	fpos[2] = core::vector2df((f32)clippedRect.LowerRightCorner.X, (f32)clippedRect.LowerRightCorner.Y);
+	fpos[3] = core::vector2df((f32)clippedRect.UpperLeftCorner.X, (f32)clippedRect.LowerRightCorner.Y);
+
+	if(rotation > 0.f)
+	{
+		if(rotation > 360.0f)
+			rotation = fmodf(rotation, 360.f);
+
+		core::vector2d<s32> rcenter = clippedRect.getCenter();
+
+		for (u32 i = 0; i < 4; ++i)
+			fpos[i].rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+	}
+
 	S3DVertex vtx[4]; // clock wise
-	vtx[0] = S3DVertex((f32)clippedRect.UpperLeftCorner.X, (f32)clippedRect.UpperLeftCorner.Y, 0.0f,
+	vtx[0] = S3DVertex(fpos[0].X, fpos[0].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[0],
 			tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[1] = S3DVertex((f32)clippedRect.LowerRightCorner.X, (f32)clippedRect.UpperLeftCorner.Y, 0.0f,
+	vtx[1] = S3DVertex(fpos[1].X, fpos[1].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[3],
 			tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[2] = S3DVertex((f32)clippedRect.LowerRightCorner.X, (f32)clippedRect.LowerRightCorner.Y, 0.0f,
+	vtx[2] = S3DVertex(fpos[2].X, fpos[2].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[2],
 			tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	vtx[3] = S3DVertex((f32)clippedRect.UpperLeftCorner.X, (f32)clippedRect.LowerRightCorner.Y, 0.0f,
+	vtx[3] = S3DVertex(fpos[3].X, fpos[3].Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[1],
 			tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 

@@ -2191,7 +2191,7 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, u32 vertexargb )
 void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 					 const core::rect<s32>& sourceRect,
 					 const core::rect<s32>* clipRect, SColor color,
-					 bool useAlphaChannelOfTexture)
+					 bool useAlphaChannelOfTexture, f32 rotation)
 {
 	if (texture)
 	{
@@ -2229,7 +2229,7 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 //! Draws a part of the texture into the rectangle.
 void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-		const video::SColor* const colors, bool useAlphaChannelOfTexture)
+		const video::SColor* const colors, bool useAlphaChannelOfTexture, f32 rotation)
 {
 	if (texture)
 	{

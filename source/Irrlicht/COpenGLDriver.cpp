@@ -1923,7 +1923,8 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
 				SColor color,
-				bool useAlphaChannelOfTexture)
+				bool useAlphaChannelOfTexture,
+				f32 rotation)
 {
 	if (!texture)
 		return;
@@ -2059,10 +2060,36 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 
 		const core::rect<s32> poss(targetPos, sourceSize);
 
-		Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-		Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-		Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
-		Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+		if(rotation > 0.f)
+		{
+			if(rotation > 360.0f)
+				rotation = fmodf(rotation, 360.f);
+
+			core::vector2d<s32> rcenter = poss.getCenter();
+
+			core::vector2df rpos((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[0].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+			rpos.set((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[1].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+			rpos.set((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[2].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+			rpos.set((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[3].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+		}
+		else
+		{
+			Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+			Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+			Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+			Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+		}
 
 		Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
 		Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
@@ -2081,7 +2108,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
-				bool useAlphaChannelOfTexture)
+				bool useAlphaChannelOfTexture, f32 rotation)
 {
 	if (!texture)
 		return;
@@ -2192,10 +2219,36 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	Quad2DVertices[2].Color = color;
 	Quad2DVertices[3].Color = color;
 
-	Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
-	Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+	if(rotation > 0.f)
+	{
+		if(rotation > 360.0f)
+			rotation = fmodf(rotation, 360.f);
+
+		core::vector2d<s32> rcenter = poss.getCenter();
+
+		core::vector2df rpos((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[0].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+		rpos.set((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[1].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+		rpos.set((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[2].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+		rpos.set((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[3].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+	}
+	else
+	{
+		Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+		Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+	}
 
 	Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
 	Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
@@ -2230,7 +2283,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 //! The same, but with a four element array of colors, one for each vertex
 void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-		const video::SColor* const colors, bool useAlphaChannelOfTexture)
+		const video::SColor* const colors, bool useAlphaChannelOfTexture, f32 rotation)
 {
 	if (!texture)
 		return;
@@ -2277,10 +2330,36 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	Quad2DVertices[2].Color = useColor[2];
 	Quad2DVertices[3].Color = useColor[1];
 
-	Quad2DVertices[0].Pos = core::vector3df((f32)destRect.UpperLeftCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[1].Pos = core::vector3df((f32)destRect.LowerRightCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[2].Pos = core::vector3df((f32)destRect.LowerRightCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f);
-	Quad2DVertices[3].Pos = core::vector3df((f32)destRect.UpperLeftCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f);
+	if(rotation > 0.f)
+	{
+		if(rotation > 360.0f)
+			rotation = fmodf(rotation, 360.f);
+
+		core::vector2d<s32> rcenter = destRect.getCenter();
+
+		core::vector2df rpos((f32)destRect.UpperLeftCorner.X, (f32)destRect.UpperLeftCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[0].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+		rpos.set((f32)destRect.LowerRightCorner.X, (f32)destRect.UpperLeftCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[1].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+		rpos.set((f32)destRect.LowerRightCorner.X, (f32)destRect.LowerRightCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[2].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+		rpos.set((f32)destRect.UpperLeftCorner.X, (f32)destRect.LowerRightCorner.Y);
+		rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+		Quad2DVertices[3].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+	}
+	else
+	{
+		Quad2DVertices[0].Pos = core::vector3df((f32)destRect.UpperLeftCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[1].Pos = core::vector3df((f32)destRect.LowerRightCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f);
+		Quad2DVertices[2].Pos = core::vector3df((f32)destRect.LowerRightCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f);
+		Quad2DVertices[3].Pos = core::vector3df((f32)destRect.UpperLeftCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f);
+	}
 
 	Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
 	Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
@@ -2325,7 +2404,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
 				const core::rect<s32>* clipRect, SColor color,
-				bool useAlphaChannelOfTexture)
+				bool useAlphaChannelOfTexture, f32 rotation)
 {
 	if (!texture)
 		return;
@@ -2391,10 +2470,36 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 		const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
 
-		Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-		Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-		Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
-		Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+		if(rotation > 0.f)
+		{
+			if(rotation > 360.0f)
+				rotation = fmodf(rotation, 360.f);
+
+			core::vector2d<s32> rcenter = poss.getCenter();
+
+			core::vector2df rpos((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[0].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+			rpos.set((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[1].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+			rpos.set((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[2].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+
+			rpos.set((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y);
+			rpos.rotateBy(rotation, core::vector2df(rcenter.X, rcenter.Y));
+			Quad2DVertices[3].Pos = core::vector3df(rpos.X, rpos.Y, 0.0f);
+		}
+		else
+		{
+			Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+			Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
+			Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+			Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+		}
 
 		Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
 		Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
