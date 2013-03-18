@@ -736,15 +736,14 @@ void CNullDriver::draw2DImageBatch(const video::ITexture* texture,
 				const core::array<s32>& indices,
 				s32 kerningWidth,
 				const core::rect<s32>* clipRect, SColor color,
-				bool useAlphaChannelOfTexture,
-				f32 rotation)
+				bool useAlphaChannelOfTexture)
 {
 	core::position2d<s32> target(pos);
 
 	for (u32 i=0; i<indices.size(); ++i)
 	{
 		draw2DImage(texture, target, sourceRects[indices[i]],
-				clipRect, color, useAlphaChannelOfTexture, rotation);
+				clipRect, color, useAlphaChannelOfTexture);
 		target.X += sourceRects[indices[i]].getWidth();
 		target.X += kerningWidth;
 	}
@@ -757,15 +756,14 @@ void CNullDriver::draw2DImageBatch(const video::ITexture* texture,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
 				SColor color,
-				bool useAlphaChannelOfTexture,
-				f32 rotation)
+				bool useAlphaChannelOfTexture)
 {
 	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
 
 	for (u32 i=0; i<drawCount; ++i)
 	{
 		draw2DImage(texture, positions[i], sourceRects[i],
-				clipRect, color, useAlphaChannelOfTexture, rotation);
+				clipRect, color, useAlphaChannelOfTexture);
 	}
 }
 
@@ -773,12 +771,12 @@ void CNullDriver::draw2DImageBatch(const video::ITexture* texture,
 //! Draws a part of the texture into the rectangle.
 void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 	const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-	const video::SColor* const colors, bool useAlphaChannelOfTexture, f32 rotation)
+	const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
 	if (destRect.isValid())
 		draw2DImage(texture, core::position2d<s32>(destRect.UpperLeftCorner),
 				sourceRect, clipRect, colors?colors[0]:video::SColor(0xffffffff),
-				useAlphaChannelOfTexture, rotation);
+				useAlphaChannelOfTexture);
 }
 
 
@@ -786,7 +784,7 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s
 void CNullDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
-				bool useAlphaChannelOfTexture, f32 rotation)
+				bool useAlphaChannelOfTexture)
 {
 }
 

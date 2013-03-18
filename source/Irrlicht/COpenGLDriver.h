@@ -158,13 +158,12 @@ namespace video
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect,
 				SColor color,
-				bool useAlphaChannelOfTexture,
-				f32 rotation = 0.f);
+				bool useAlphaChannelOfTexture);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false, f32 rotation = 0.f);
+			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
 		//! draws a set of 2d images, using a color and the alpha
 		/** channel of the texture if desired. The images are drawn
@@ -188,13 +187,12 @@ namespace video
 				const core::array<s32>& indices,
 				const core::rect<s32>* clipRect=0,
 				SColor color=SColor(255,255,255,255),
-				bool useAlphaChannelOfTexture=false,
-				f32 rotation = 0.f);
+				bool useAlphaChannelOfTexture=false);
 
 		//! Draws a part of the texture into the rectangle.
 		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false, f32 rotation = 0.f);
+			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 
 		//! draw an 2d rectangle
 		virtual void draw2DRectangle(SColor color, const core::rect<s32>& pos,
@@ -288,7 +286,7 @@ namespace video
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 			bool resetAllRenderstates, bool fixedPipeline);
-
+        
         //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
         virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline);
 
@@ -419,10 +417,10 @@ namespace video
 
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
-
+        
         //! Get current material.
         const SMaterial& getCurrentMaterial() const;
-
+        
         //! Get bridge calls.
         COpenGLCallBridge* getBridgeCalls() const;
 
@@ -475,8 +473,8 @@ namespace video
 		//! helper function doing the actual rendering.
 		void renderArray(const void* indexList, u32 primitiveCount,
 				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
-
-        // Bridge calls.
+				
+		// Bridge calls.
         COpenGLCallBridge* BridgeCalls;
 
 		core::stringw Name;
@@ -631,10 +629,10 @@ namespace video
 
 		E_DEVICE_TYPE DeviceType;
 	};
-
+    
     //! This bridge between Irlicht pseudo OpenGL calls
     //! and true OpenGL calls.
-
+    
     class COpenGLCallBridge
     {
     public:
@@ -661,7 +659,7 @@ namespace video
 		void setCullFaceFunc(GLenum mode);
 
 		void setCullFace(bool enable);
-
+        
         // Depth calls.
 
 		void setDepthFunc(GLenum mode);
@@ -669,19 +667,19 @@ namespace video
         void setDepthMask(bool enable);
 
 		void setDepthTest(bool enable);
-
+        
         // Matrix calls.
-
+        
         void setMatrixMode(GLenum mode);
-
+        
         // Texture calls.
-
+        
         void setActiveTexture(GLenum texture);
 
 		void setClientActiveTexture(GLenum texture);
-
+        
         void setTexture(u32 stage, bool fixedPipeline);
-
+        
     private:
         COpenGLDriver* Driver;
 
@@ -700,13 +698,13 @@ namespace video
 
 		GLenum CullFaceMode;
 		bool CullFace;
-
+        
 		GLenum DepthFunc;
         bool DepthMask;
         bool DepthTest;
-
+        
         GLenum MatrixMode;
-
+        
 		GLenum ActiveTexture;
         GLenum ClientActiveTexture;
 
