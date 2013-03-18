@@ -15,7 +15,7 @@ namespace video
 
 //! Constructor of empty image
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
-:Data(0), Size(size), Format(format), DeleteMemory(true), IsCompressed(false), HasMipMaps(false)
+:Data(0), Size(size), Format(format), IsCompressed(false), HasMipMaps(false), DeleteMemory(true)
 {
 	initData();
 }
@@ -24,7 +24,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 //! Constructor from raw data
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
 			bool ownForeignMemory, bool deleteForeignMemory, bool compressed, bool mipMaps)
-: Data(0), Size(size), Format(format), DeleteMemory(deleteForeignMemory), IsCompressed(compressed), HasMipMaps(mipMaps)
+: Data(0), Size(size), Format(format), IsCompressed(compressed), HasMipMaps(mipMaps), DeleteMemory(deleteForeignMemory)
 {
 	if (ownForeignMemory)
 	{

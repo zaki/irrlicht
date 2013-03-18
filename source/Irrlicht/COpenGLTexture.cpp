@@ -24,8 +24,8 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
-	IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true), IsCompressed(false)
+	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
+	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -35,7 +35,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	getImageValues(origImage);
 
 	if (ColorFormat == ECF_DXT1 || ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-	{	
+	{
 		if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
 		{
 			os::Printer::log("DXT texture compression not available.", ELL_ERROR);
@@ -81,8 +81,8 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
-	MipmapLegacyMode(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true), IsCompressed(false)
+	MipmapLegacyMode(true), IsRenderTarget(false), IsCompressed(false),
+	AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -354,7 +354,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	// make sure we don't change the internal format of existing images
 	if (!newTexture)
 		InternalFormat=oldInternalFormat;
-        
+
     Driver->setActiveTexture(0, this);
 	Driver->getBridgeCalls()->setTexture(0, true);
 
@@ -399,7 +399,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		// enable bilinear filter without mipmaps
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            
+
 		StatesCache.BilinearFilter = true;
 		StatesCache.TrilinearFilter = false;
 		StatesCache.MipMapStatus = false;
@@ -460,10 +460,12 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 			AutomaticMipmapUpdate=false;
 
 			if (IsCompressed && !mipmapData)
+			{
 				if (image->hasMipMaps())
 					mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
 				else
 					HasMipMaps = false;
+			}
 
 			regenerateMipMapLevels(mipmapData);
 		}
@@ -473,12 +475,12 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 			// enable bilinear mipmap filter
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            
+
             StatesCache.BilinearFilter = true;
             StatesCache.TrilinearFilter = false;
             StatesCache.MipMapStatus = true;
 		}
-	}		
+	}
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
@@ -823,22 +825,22 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
-    
+
     Driver->setActiveTexture(0, this);
 	Driver->getBridgeCalls()->setTexture(0, true);
-    
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
+
     if(FilteringType == GL_NEAREST)
         StatesCache.BilinearFilter = false;
     else
         StatesCache.BilinearFilter = true;
-        
+
     StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
     StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
-            
+
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
 		ImageSize.Height, 0, PixelFormat, PixelType, 0);
 #ifdef _DEBUG

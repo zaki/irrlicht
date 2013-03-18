@@ -288,7 +288,7 @@ namespace video
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 			bool resetAllRenderstates, bool fixedPipeline);
-        
+
         //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
         virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline);
 
@@ -419,10 +419,10 @@ namespace video
 
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
-        
+
         //! Get current material.
         const SMaterial& getCurrentMaterial() const;
-        
+
         //! Get bridge calls.
         COpenGLCallBridge* getBridgeCalls() const;
 
@@ -432,8 +432,6 @@ namespace video
 		#endif
 
 	private:
-        // Bridge calls.
-        COpenGLCallBridge* BridgeCalls;
 
 		//! clears the zbuffer and color buffer
 		void clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color);
@@ -477,6 +475,9 @@ namespace video
 		//! helper function doing the actual rendering.
 		void renderArray(const void* indexList, u32 primitiveCount,
 				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
+
+        // Bridge calls.
+        COpenGLCallBridge* BridgeCalls;
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -630,10 +631,10 @@ namespace video
 
 		E_DEVICE_TYPE DeviceType;
 	};
-    
+
     //! This bridge between Irlicht pseudo OpenGL calls
     //! and true OpenGL calls.
-    
+
     class COpenGLCallBridge
     {
     public:
@@ -660,7 +661,7 @@ namespace video
 		void setCullFaceFunc(GLenum mode);
 
 		void setCullFace(bool enable);
-        
+
         // Depth calls.
 
 		void setDepthFunc(GLenum mode);
@@ -668,19 +669,19 @@ namespace video
         void setDepthMask(bool enable);
 
 		void setDepthTest(bool enable);
-        
+
         // Matrix calls.
-        
+
         void setMatrixMode(GLenum mode);
-        
+
         // Texture calls.
-        
+
         void setActiveTexture(GLenum texture);
 
 		void setClientActiveTexture(GLenum texture);
-        
+
         void setTexture(u32 stage, bool fixedPipeline);
-        
+
     private:
         COpenGLDriver* Driver;
 
@@ -699,13 +700,13 @@ namespace video
 
 		GLenum CullFaceMode;
 		bool CullFace;
-        
+
 		GLenum DepthFunc;
         bool DepthMask;
         bool DepthTest;
-        
+
         GLenum MatrixMode;
-        
+
 		GLenum ActiveTexture;
         GLenum ClientActiveTexture;
 

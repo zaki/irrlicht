@@ -44,7 +44,7 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial,
 		s32 userData)
-	: Driver(driver), CallBack(callback), Program(0), Program2(0), BaseMaterial(0), UserData(userData)
+	: Driver(driver), CallBack(callback), BaseMaterial(0), Program(0), Program2(0), UserData(userData)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLSLMaterialRenderer");
