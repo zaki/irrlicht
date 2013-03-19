@@ -190,9 +190,7 @@ namespace video
 			{
 				case EVDF_RENDER_TO_TARGET:
 				case EVDF_HARDWARE_TL:
-					return true;
 				case EVDF_MULTITEXTURE:
-					return MultiTextureExtension;
 				case EVDF_BILINEAR_FILTER:
 				case EVDF_MIP_MAP:
 				case EVDF_MIP_MAP_AUTO_UPDATE:
@@ -235,15 +233,14 @@ namespace video
 		u16 Version;
 		u8 MaxTextureUnits;
 		u8 MaxSupportedTextures;
-		u8 MaxLights;
 		u8 MaxAnisotropy;
-		u8 MaxUserClipPlanes;
-		u32 MaxTextureSize;
 		u32 MaxIndices;
+		u32 MaxTextureSize;
 		f32 MaxTextureLODBias;
-
-		bool MultiTextureExtension;
-		bool MultiSamplingExtension;
+		//! Minimal and maximal supported thickness for lines without smoothing
+		GLfloat DimAliasedLine[2];
+		//! Minimal and maximal supported thickness for points without smoothing
+		GLfloat DimAliasedPoint[2];
 		bool StencilBuffer;
 		bool FeatureAvailable[IRR_OGLES2_Feature_Count];
 	};

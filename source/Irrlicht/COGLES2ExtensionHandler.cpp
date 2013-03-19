@@ -160,9 +160,9 @@ namespace video
 
 	COGLES2ExtensionHandler::COGLES2ExtensionHandler() :
 			EGLVersion(0), Version(0), MaxTextureUnits(0), MaxSupportedTextures(0),
-			MaxLights(0), MaxAnisotropy(1), MaxUserClipPlanes(6), MaxTextureSize(1),
-			MaxIndices(0xffff), MaxTextureLODBias(0.f), MultiTextureExtension(false),
-			MultiSamplingExtension(false), StencilBuffer(false)
+			MaxAnisotropy(1), MaxTextureSize(1),
+			MaxIndices(0xffff), MaxTextureLODBias(0.f),
+			StencilBuffer(false)
 	{
 		for (u32 i=0; i<IRR_OGLES2_Feature_Count; ++i)
 			FeatureAvailable[i] = false;
@@ -227,26 +227,30 @@ namespace video
 			delete [] str;
 		}
 
-		GLint val = 0;
+		GLint val=0;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &val);
 		MaxSupportedTextures = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
-		MultiTextureExtension = true;
-		//TODO : OpenGL ES 2.0 Port
-		//glGetIntegerv(GL_MAX_LIGHTS, &val);
-		MaxLights = 8;
-#ifdef GL_EXT_texture_filter_anisotropic
+
+	#ifdef GL_EXT_texture_filter_anisotropic
 		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
 		{
 			glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
 			MaxAnisotropy = static_cast<u8>(val);
 		}
-#endif
+	#endif
+	#ifdef GL_MAX_ELEMENTS_INDICES
+		glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &val);
+		MaxIndices=val;
+	#endif
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
 		MaxTextureSize=static_cast<u32>(val);
-#ifdef GL_EXT_texture_lod_bias
+	#ifdef GL_EXT_texture_lod_bias
 		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 			glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
-#endif
+	#endif
+		glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
+		glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
+
 		MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
 	}
 

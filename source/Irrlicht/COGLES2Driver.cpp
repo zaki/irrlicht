@@ -220,7 +220,7 @@ namespace video
 #endif
 		os::Printer::log("Creating EglContext...");
 		EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, contextAttrib);
-		if (testEGLError())
+		if (EGL_NO_CONTEXT == EglContext)
 		{
 			os::Printer::log("FAILED\n");
 			os::Printer::log("Could not create Context for OpenGL-ES2 display.");
@@ -349,9 +349,9 @@ namespace video
 
 		DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
 		DriverAttributes->setAttribute("MaxSupportedTextures", MaxSupportedTextures);
-		DriverAttributes->setAttribute("MaxLights", MaxLights);
+//		DriverAttributes->setAttribute("MaxLights", MaxLights);
 		DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
-		DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
+//		DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
 //		DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
 //		DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
 		DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
@@ -363,7 +363,7 @@ namespace video
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 		// Reset The Current Viewport
-		glViewport(0, 0, screenSize.Width, screenSize.Height);
+		BridgeCalls->setViewport(core::rect<s32>(0, 0, screenSize.Width, screenSize.Height));
 
 		UserClipPlane.reallocate(0);
 
@@ -1743,7 +1743,7 @@ namespace video
 	//! returns a device dependent texture from a software surface (IImage)
 	video::ITexture* COGLES2Driver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 	{
-		return new COGLES2Texture(surface, name, this);
+		return new COGLES2Texture(surface, name, mipmapData, this);
 	}
 
 
@@ -2204,7 +2204,7 @@ namespace video
 	//! returns the maximal amount of dynamic lights the device can handle
 	u32 COGLES2Driver::getMaximalDynamicLightAmount() const
 	{
-		return MaxLights;
+		return 8;
 	}
 
 
@@ -2228,11 +2228,7 @@ namespace video
 		vp.clipAgainst(rendert);
 
 		if (vp.getHeight() > 0 && vp.getWidth() > 0)
-		{
-			glViewport(vp.UpperLeftCorner.X,
-						getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(),
-						vp.getWidth(), vp.getHeight());
-		}
+			BridgeCalls->setViewport(core::rect<s32>(vp.UpperLeftCorner.X, getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(), vp.getWidth(), vp.getHeight()));
 
 		ViewPort = vp;
 		testGLError();
@@ -2404,7 +2400,7 @@ namespace video
 	void COGLES2Driver::OnResize(const core::dimension2d<u32>& size)
 	{
 		CNullDriver::OnResize(size);
-		glViewport(0, 0, size.Width, size.Height);
+		BridgeCalls->setViewport(core::rect<s32>(0, 0, size.Width, size.Height));
 		testGLError();
 	}
 
@@ -2541,42 +2537,28 @@ namespace video
 
 		video::ITexture* rtt = 0;
 
-		// if driver supports FrameBufferObjects, use them
-		if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
+		rtt = new COGLES2FBOTexture(size, name, this, format);
+		if (rtt)
 		{
-			rtt = new COGLES2FBOTexture(size, name, this, format);
-			if (rtt)
-			{
-				bool success = false;
-				addTexture(rtt);
+			bool success = false;
+			addTexture(rtt);
 
-				ITexture* tex = createDepthTexture(rtt);
-				if (tex)
-				{
-					success = static_cast<video::COGLES2FBODepthTexture*>(tex)->attach(rtt);
-					if (!success)
-					{
-						removeDepthTexture(tex);
-					}
-					tex->drop();
-				}
-				rtt->drop();
+			ITexture* tex = createDepthTexture(rtt);
+			if (tex)
+			{
+				success = static_cast<video::COGLES2FBODepthTexture*>(tex)->attach(rtt);
 				if (!success)
 				{
-					removeTexture(rtt);
-					rtt=0;
+					removeDepthTexture(tex);
 				}
+				tex->drop();
 			}
-		}
-		else
-		{
-			// the simple texture is only possible for size <= screensize
-			// we try to find an optimal size with the original constraints
-			core::dimension2du destSize(core::min_(size.Width, ScreenSize.Width), core::min_(size.Height, ScreenSize.Height));
-			destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
-			rtt = addTexture(destSize, name, ECF_A8R8G8B8);
-			if (rtt)
-				static_cast<video::COGLES2Texture*>(rtt)->setIsRenderTarget(true);
+			rtt->drop();
+			if (!success)
+			{
+				removeTexture(rtt);
+				rtt=0;
+			}
 		}
 
 		//restore mip-mapping
@@ -2617,13 +2599,14 @@ namespace video
 		if (texture)
 		{
 			// we want to set a new target. so do this.
+			BridgeCalls->setViewport(core::rect<s32>(0, 0, texture->getSize().Width, texture->getSize().Height));
 			RenderTargetTexture = static_cast<COGLES2Texture*>(texture);
 			RenderTargetTexture->bindRTT();
 			CurrentRendertargetSize = texture->getSize();
 		}
 		else
 		{
-			glViewport(0, 0, ScreenSize.Width, ScreenSize.Height);
+			BridgeCalls->setViewport(core::rect<s32>(0, 0, ScreenSize.Width, ScreenSize.Height));
 			RenderTargetTexture = 0;
 			CurrentRendertargetSize = core::dimension2d<u32>(0, 0);
 		}
@@ -2816,9 +2799,6 @@ namespace video
 	//! Enable/disable a clipping plane.
 	void COGLES2Driver::enableClipPlane(u32 index, bool enable)
 	{
-		if (index >= MaxUserClipPlanes)
-			return;
-
 		UserClipPlane[index].Enabled = enable;
 	}
 
@@ -2861,6 +2841,38 @@ namespace video
 		return r;
 	}
 
+	GLenum COGLES2Driver::getZBufferBits() const
+	{
+/*#if defined(GL_OES_depth24)
+		if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth24))
+			InternalFormat = GL_DEPTH_COMPONENT24_OES;
+		else
+#endif
+#if defined(GL_OES_depth32)
+		if (Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth32))
+			InternalFormat = GL_DEPTH_COMPONENT32_OES;
+		else
+#endif*/
+
+		GLenum bits = GL_DEPTH_COMPONENT16;//0;
+		/*switch (Params.ZBufferBits)
+		{
+		case 16:
+			bits = GL_DEPTH_COMPONENT16;
+			break;
+		case 24:
+			bits = GL_DEPTH_COMPONENT24;
+			break;
+		case 32:
+			bits = GL_DEPTH_COMPONENT32;
+			break;
+		default:
+			bits = GL_DEPTH_COMPONENT;
+			break;
+		}*/
+		return bits;
+	}
+
 	const SMaterial& COGLES2Driver::getCurrentMaterial() const
 	{
 		return Material;
@@ -2875,7 +2887,7 @@ namespace video
 		BlendSource(GL_ONE), BlendDestination(GL_ZERO), Blend(false),
 		CullFaceMode(GL_BACK), CullFace(false),
 		DepthFunc(GL_LESS), DepthMask(true), DepthTest(false),
-		Program(0), ActiveTexture(GL_TEXTURE0)
+		Program(0), ActiveTexture(GL_TEXTURE0), Viewport(core::rect<s32>(0, 0, 0, 0))
 	{
 		// Initial OpenGL values from specification.
 
@@ -3003,10 +3015,19 @@ namespace video
 				setActiveTexture(GL_TEXTURE0 + stage);
 
 				if(Driver->CurrentTexture[stage])
-					glBindTexture(GL_TEXTURE_2D, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOGLES2TextureName());
+					glBindTexture(GL_TEXTURE_2D, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
 
 				Texture[stage] = Driver->CurrentTexture[stage];
 			}
+		}
+	}
+
+	void COGLES2CallBridge::setViewport(const core::rect<s32>& viewport)
+	{
+		if (Viewport != viewport)
+		{
+			glViewport(viewport.UpperLeftCorner.X, viewport.UpperLeftCorner.Y, viewport.LowerRightCorner.X, viewport.LowerRightCorner.Y);
+			Viewport = viewport;
 		}
 	}
 

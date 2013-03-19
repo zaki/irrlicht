@@ -58,6 +58,7 @@ namespace video
 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
 	{
 		friend class COGLES2CallBridge;
+		friend class COGLES2Texture;
 
 	public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
@@ -361,6 +362,9 @@ namespace video
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
+		//! Get ZBuffer bits.
+		GLenum getZBufferBits() const;
+
 		//! Get current material.
         const SMaterial& getCurrentMaterial() const;
 
@@ -503,6 +507,10 @@ namespace video
         void setActiveTexture(GLenum texture);
         
         void setTexture(u32 stage);
+
+		// Viewport calls.
+
+		void setViewport(const core::rect<s32>& viewport);
         
     private:
         COGLES2Driver* Driver;
@@ -523,6 +531,8 @@ namespace video
 		GLenum ActiveTexture;
 
         const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+
+		core::rect<s32> Viewport;
     };
 
 } // end namespace video
