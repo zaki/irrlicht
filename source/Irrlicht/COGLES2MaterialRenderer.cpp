@@ -106,6 +106,10 @@ COGLES2MaterialRenderer::~COGLES2MaterialRenderer()
 	UniformInfo.clear();
 }
 
+GLuint COGLES2MaterialRenderer::getProgram() const
+{
+	return Program;
+}
 
 void COGLES2MaterialRenderer::init(s32& outMaterialTypeNr,
 		const c8* vertexShaderProgram,

@@ -37,7 +37,7 @@ public:
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
 protected:
-
+	int yy;
 	COGLES2MaterialRenderer* SharedRenderer;
 };
 

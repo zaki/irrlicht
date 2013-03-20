@@ -271,6 +271,9 @@ namespace video
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, const video::ITexture* texture);
 
+		//! check if active texture is not equal null.
+		bool isActiveTexture(u32 stage);
+
 		//! disables all textures beginning with fromStage.
 		bool disableTextures(u32 fromStage = 0);
 

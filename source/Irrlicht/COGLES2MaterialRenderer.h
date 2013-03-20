@@ -55,6 +55,8 @@ public:
 	//! Destructor
 	virtual ~COGLES2MaterialRenderer();
 
+	GLuint getProgram() const;
+
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services);
 

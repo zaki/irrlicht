@@ -498,11 +498,6 @@ void COGLES2Texture::bindRTT()
 //! Unbind Render Target Texture
 void COGLES2Texture::unbindRTT()
 {
-	Driver->setActiveTexture(0, this);
-	Driver->getBridgeCalls()->setTexture(0);
-
-	// Copy Our ViewPort To The Texture
-	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
 }
 
 
