@@ -109,7 +109,7 @@ private:
 			MaterialName = o.MaterialName;
 			faceCount = o.faceCount;
 			faces = new u16[faceCount];
-			for (u32 i=0; i<faceCount; ++i)
+			for (u16 i=0; i<faceCount; ++i)
 				faces[i] = o.faces[i];
 		}
 

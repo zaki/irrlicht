@@ -397,7 +397,7 @@ void CImageLoaderRGB::processFile(io::IReadFile* file, rgbStruct& rgb) const
 
 #ifdef _IRR_RGB_FILE_INVERTED_IMAGE_
 	// preserve the image as stored, eg, inverted
-	for (u32 i = 0; i < rgb.Header.Ysize; ++i)
+	for (u16 i = 0; i < rgb.Header.Ysize; ++i)
 #else
 	// invert the image to make it upright
 	for (s32 i = (s32)(rgb.Header.Ysize)-1; i>=0; --i)
@@ -414,7 +414,7 @@ void CImageLoaderRGB::processFile(io::IReadFile* file, rgbStruct& rgb) const
 			readRGBrow( rgb.tmpA, i, 3, file, rgb);
 
 		// cycle thru all values for this row
-		for (u32 j = 0; j < rgb.Header.Xsize; ++j)
+		for (u16 j = 0; j < rgb.Header.Xsize; ++j)
 		{
 			if(rgb.Header.BPC == 1)
 			{
@@ -510,7 +510,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 		if (rgb.Header.BPC != 1)
 		{
 			u16* tmpbuf = reinterpret_cast<u16*>(buf);
-			for (u32 i=0; i<rgb.Header.Xsize; ++i)
+			for (u16 i=0; i<rgb.Header.Xsize; ++i)
 				tmpbuf[i] = os::Byteswap::byteswap(tmpbuf[i]);
 		}
 #endif

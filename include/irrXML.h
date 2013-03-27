@@ -374,10 +374,19 @@ namespace io
 		xmlChar<T>() {}
 		xmlChar<T>(char in) : c(static_cast<T>(in)) {}
 		xmlChar<T>(wchar_t in) : c(static_cast<T>(in)) {}
+#if defined(__BORLANDC__)
+		// Note - removing explicit for borland was to get it to even compile.
+		// There haven't been any kind of tests for that besides that.
+		xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
+		xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
+		xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
+		xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
+#else 
 		explicit xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
+#endif
 		operator T() const { return c; }
 		void operator=(int t) { c=static_cast<T>(t); }
 	};

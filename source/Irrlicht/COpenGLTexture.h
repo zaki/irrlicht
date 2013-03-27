@@ -180,7 +180,7 @@ public:
 
 	//! FrameBufferObject constructor
 	COpenGLFBOTexture(const core::dimension2d<u32>& size, const io::path& name,
-		COpenGLDriver* driver = 0, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+		COpenGLDriver* driver = 0, ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! destructor
 	virtual ~COpenGLFBOTexture();

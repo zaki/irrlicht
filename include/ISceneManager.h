@@ -1527,7 +1527,7 @@ namespace scene
 		/** Scene nodes with the option isDebugObject set to true are
 		not being saved. The scene is usually written to an .irr file,
 		an xml based format. .irr files can Be edited with the Irrlicht
-		Engine Editor, irrEdit (http://irredit.irrlicht3d.org). To
+		Engine Editor, irrEdit (http://www.ambiera.com/irredit/). To
 		load .irr files again, see ISceneManager::loadScene().
 		\param filename Name of the file.
 		\param userDataSerializer If you want to save some user data
@@ -1545,7 +1545,7 @@ namespace scene
 		/** Scene nodes with the option isDebugObject set to true are
 		not being saved. The scene is usually written to an .irr file,
 		an xml based format. .irr files can Be edited with the Irrlicht
-		Engine Editor, irrEdit (http://irredit.irrlicht3d.org). To
+		Engine Editor, irrEdit (http://www.ambiera.com/irredit/). To
 		load .irr files again, see ISceneManager::loadScene().
 		\param file File where the scene is saved into.
 		\param userDataSerializer If you want to save some user data
@@ -1563,7 +1563,7 @@ namespace scene
 		/** Scene nodes with the option isDebugObject set to true are
 		not being saved. The scene is usually written to an .irr file,
 		an xml based format. .irr files can Be edited with the Irrlicht
-		Engine Editor, irrEdit (http://irredit.irrlicht3d.org). To
+		Engine Editor, irrEdit (http://www.ambiera.com/irredit/). To
 		load .irr files again, see ISceneManager::loadScene().
 		\param writer XMLWriter with which the scene is saved.
 		\param currentPath Path which is used for relative file names.
@@ -1584,7 +1584,7 @@ namespace scene
 		format, but other scene formats can be added to the engine via
 		ISceneManager::addExternalSceneLoader. .irr files can Be edited
 		with the Irrlicht Engine Editor, irrEdit
-		(http://irredit.irrlicht3d.org) or saved directly by the engine
+		(http://www.ambiera.com/irredit/) or saved directly by the engine
 		using ISceneManager::saveScene().
 		\param filename Name of the file to load from.
 		\param userDataSerializer If you want to load user data
@@ -1603,7 +1603,7 @@ namespace scene
 		format, but other scene formats can be added to the engine via
 		ISceneManager::addExternalSceneLoader. .irr files can Be edited
 		with the Irrlicht Engine Editor, irrEdit
-		(http://irredit.irrlicht3d.org) or saved directly by the engine
+		(http://www.ambiera.com/irredit/) or saved directly by the engine
 		using ISceneManager::saveScene().
 		\param file File where the scene is loaded from.
 		\param userDataSerializer If you want to load user data

@@ -1015,7 +1015,7 @@ void C3DSMeshFileLoader::composeObject(io::IReadFile* file, const core::stringc&
 		SMaterialGroup group;
 		group.faceCount = CountFaces;
 		group.faces = new u16[group.faceCount];
-		for (u32 i=0; i<group.faceCount; ++i)
+		for (u16 i=0; i<group.faceCount; ++i)
 			group.faces[i] = i;
 		MaterialGroups.push_back(group);
 

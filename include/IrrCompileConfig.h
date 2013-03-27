@@ -160,6 +160,10 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 #ifdef NO_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #endif
+// can't get this to compile currently under borland, can be removed if someone has a better solution
+#if defined(__BORLANDC__)	
+#undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
+#endif
 
 //! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004
 // #define _IRR_COMPILE_WITH_DIRECT3D_8_
@@ -824,6 +828,24 @@ precision will be lower but speed higher. currently X86 only
 	#undef _IRR_COMPILE_WITH_IRR_WRITER_
 	#undef _IRR_COMPILE_WITH_COLLADA_WRITER_
 	#undef _IRR_COMPILE_WITH_COLLADA_LOADER_
+#endif
+
+#if defined(__BORLANDC__)
+	#include <tchar.h>
+
+	// Borland 5.5.1 does not have _strcmpi defined
+	#if __BORLANDC__ == 0x551
+	//    #define _strcmpi strcmpi
+		#undef _tfinddata_t
+		#undef _tfindfirst
+		#undef _tfindnext
+
+		#define _tfinddata_t __tfinddata_t
+		#define _tfindfirst  __tfindfirst
+		#define _tfindnext   __tfindnext
+		typedef long intptr_t;
+	#endif
+    
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__

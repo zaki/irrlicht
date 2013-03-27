@@ -595,7 +595,8 @@ private:
 
 		// check source for all utf versions and convert to target data format
 
-		if (size >= 4 && data32[0] == static_cast<char32>(UTF32_BE))
+		if (size >= 4 && data32[0] 
+			== static_cast<char32>(UTF32_BE))
 		{
 			// UTF-32, big endian
 			SourceFormat = ETF_UTF32_BE;

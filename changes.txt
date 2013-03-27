@@ -24,6 +24,9 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.1 (not yet released)
 
+ - Fix compiling errors for c++ builder (thx @Greatwolf for many patches and @cfanderek for reminding)
+ - Initialized IColladaMeshWriter::GeometryWriting which was uninitialized.
+ - Fix linker trouble with irr::core::equalsByUl when compiling Irrlicht as managed code (thx @  Memorial76 for a report + testcase)
  - Fix crashes in CCubeSceneNode::clone and CSphereSceneNode::clone (reported by  marsupial)
  - Fix the clipping in the listbox drawing which was only showing the right line of the sunken pane (reported by Mloren and Abraxas).
  - Initialize slider in example 05 correct (reported by Zerochen)

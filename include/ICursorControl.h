@@ -68,12 +68,12 @@ namespace gui
 		{
 		}
 
-		SCursorSprite( gui::IGUISpriteBank * spriteBank, s32 spriteId, const core::position2d<s32> &hotspot=core::position2d<s32>(0,0) )
+		SCursorSprite( gui::IGUISpriteBank * spriteBank, s32 spriteId, const core::position2d<s32> &hotspot=(core::position2d<s32>(0,0)) )
 		: SpriteBank(spriteBank), SpriteId(spriteId), HotSpot(hotspot)
 		{
 		}
 
-		gui::IGUISpriteBank * SpriteBank;
+		IGUISpriteBank * SpriteBank;
 		s32 SpriteId;
 		core::position2d<s32> HotSpot;
 	};

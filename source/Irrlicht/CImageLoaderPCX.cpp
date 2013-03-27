@@ -141,7 +141,7 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 			memset(PCXData+offset, value, cnt);
 		else
 		{
-			for (u32 i=0; i<cnt; ++i)
+			for (u8 i=0; i<cnt; ++i)
 			{
 				PCXData[linestart+lineoffset]=value;
 				lineoffset += 3;

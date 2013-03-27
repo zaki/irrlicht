@@ -206,6 +206,7 @@ namespace scene
 			: Properties(0), DefaultProperties(0), NameGenerator(0), DefaultNameGenerator(0)
 			, WriteTextures(true), WriteDefaultScene(true), ExportSMaterialOnce(true)
 			, AmbientLight(0.f, 0.f, 0.f, 1.f)
+			, GeometryWriting(ECGI_PER_MESH)
 		{
 		}
 
