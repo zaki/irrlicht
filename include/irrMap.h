@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2011 by Kat'Oun
+// Copyright (C) 2006-2012 by Kat'Oun
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -132,10 +132,13 @@ class map
 	public:
 
 	typedef RBTree<KeyType,ValueType> Node;
+	// We need the forwad declaration for the friend declaration
+	class ConstIterator;
 
 	//! Normal Iterator
 	class Iterator
 	{
+		friend class ConstIterator;
 	public:
 
 		Iterator() : Root(0), Cur(0) {}
@@ -283,6 +286,7 @@ class map
 	//! Const Iterator
 	class ConstIterator
 	{
+		friend class Iterator;
 	public:
 
 		ConstIterator() : Root(0), Cur(0) {}
@@ -702,7 +706,7 @@ class map
 				Node* newNodesUncle = newNode->getParent()->getParent()->getRightChild();
 				if ( newNodesUncle!=0 && newNodesUncle->isRed())
 				{
-					// case 1 - change the colours
+					// case 1 - change the colors
 					newNode->getParent()->setBlack();
 					newNodesUncle->setBlack();
 					newNode->getParent()->getParent()->setRed();
@@ -731,7 +735,7 @@ class map
 				Node* newNodesUncle = newNode->getParent()->getParent()->getLeftChild();
 				if ( newNodesUncle!=0 && newNodesUncle->isRed())
 				{
-					// case 1 - change the colours
+					// case 1 - change the colors
 					newNode->getParent()->setBlack();
 					newNodesUncle->setBlack();
 					newNode->getParent()->getParent()->setRed();
@@ -888,7 +892,7 @@ class map
 		return Root == 0;
 	}
 
-	//! \deprecated Use empty() instead. This method may be removed by Irrlicht 1.9 
+	//! \deprecated Use empty() instead. This method may be removed by Irrlicht 1.9
 	_IRR_DEPRECATED_ bool isEmpty() const
 	{
 		return empty();

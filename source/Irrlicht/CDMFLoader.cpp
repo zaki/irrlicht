@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 //
@@ -274,7 +274,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				findFile(use_mat_dirs, path, materiali[i].pathName, materiali[i].textureName);
 				tex = driver->getTexture(materiali[i].textureName);
 			}
-			//Primary texture is just a colour
+			//Primary texture is just a color
 			else if(materiali[i].textureFlag==1)
 			{
 				video::SColor color(axtoi(materiali[i].textureName.c_str()));

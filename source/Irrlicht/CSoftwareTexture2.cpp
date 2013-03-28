@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -32,6 +32,14 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 
 	if (image)
 	{
+		bool IsCompressed = false;
+
+		if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+		{
+			os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+			IsCompressed = true;
+		}
+
 		OrigSize = image->getDimension();
 		OriginalFormat = image->getColorFormat();
 
@@ -49,7 +57,9 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 		if ( OrigSize == optSize )
 		{
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, image->getDimension());
-			image->copyTo(MipMap[0]);
+
+			if (!IsCompressed)
+				image->copyTo(MipMap[0]);
 		}
 		else
 		{
@@ -64,7 +74,9 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 			OrigSize = optSize;
 			os::Printer::log ( buf, ELL_WARNING );
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
-			image->copyToScalingBoxFilter ( MipMap[0],0, false );
+
+			if (!IsCompressed)
+				image->copyToScalingBoxFilter ( MipMap[0],0, false );
 		}
 
 		OrigImageDataSizeInPixels = (f32) 0.3f * MipMap[0]->getImageDataSizeInPixels();

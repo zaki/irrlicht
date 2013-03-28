@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 //
@@ -50,15 +50,7 @@ private:
 	void cleanup();
 
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
+#include "irrpack.h"
 
 	struct SLMTSHeader
 	{
@@ -98,11 +90,7 @@ private:
 	} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 	SLMTSHeader Header;
 	SLMTSTextureInfoEntry* Textures;

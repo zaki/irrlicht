@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Colin MacDonald
+// Copyright (C) 2008-2012 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -217,7 +217,6 @@ static bool isPointInside(triangle3d<T> triangleOrig)
 	return allExpected;
 }
 
-
 // Test the functionality of triangle3d<T>
 /** Validation is done with asserts() against expected results. */
 bool testTriangle3d(void)
@@ -269,7 +268,7 @@ bool testTriangle3d(void)
 		triangle3d<s32> t(vector3d<s32>(-1000,-1000,0), vector3d<s32>(1000,-1000,0), vector3d<s32>(0,1000,0));	
 		allExpected &= isPointInside(t);
 	}
-	
+
 	if(allExpected)
 		logTestString("\nAll tests passed\n");
 	else

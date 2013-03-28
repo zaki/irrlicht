@@ -1,5 +1,5 @@
 // Copyright (C) 2002-2007 Nikolaus Gebhardt
-// Copyright (C) 2007-2011 Christian Stehno
+// Copyright (C) 2007-2012 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -62,6 +62,12 @@ namespace irr
 
 		//! Restores original window size
 		virtual void restoreWindow();
+
+		//! returns current window position (not supported for this device)
+        virtual core::position2di getWindowPosition()
+		{
+			return core::position2di(-1, -1);
+		}
 
 		//! presents a surface in the client area
 		virtual bool present(video::IImage* surface, void* windowId = 0, core::rect<s32>* src=0 );

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -275,7 +275,6 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	return 0;
 #endif // _IRR_COMPILE_WITH_LIBPNG_
 }
-
 
 
 IImageLoader* createImageLoaderPNG()

@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2011 Christian Stehno
+// Copyright (C) 2009-2012 Christian Stehno
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"

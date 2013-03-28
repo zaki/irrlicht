@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -161,7 +161,7 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
 
-		//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behaviour.
+		//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behavior.
 		//! When set to 0 no double- and tripleclicks will be generated.
 		virtual void setDoubleClickTime( u32 timeMs );
 
@@ -211,7 +211,7 @@ namespace irr
 			EMOUSE_INPUT_EVENT LastMouseInputEvent;
 		};
 		SMouseMultiClicks MouseMultiClicks;
-		video::CVideoModeList VideoModeList;
+		video::CVideoModeList* VideoModeList;
 		SIrrlichtCreationParameters CreationParams;
 		bool Close;
 	};

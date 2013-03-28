@@ -1,6 +1,6 @@
 /* irrlicht.h -- interface of the 'Irrlicht Engine'
 
-  Copyright (C) 2002-2011 Nikolaus Gebhardt
+  Copyright (C) 2002-2012 Nikolaus Gebhardt
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -187,7 +187,7 @@
 #include "vector2d.h"
 #include "vector3d.h"
 
-/*! \mainpage Irrlicht Engine 1.7 API documentation
+/*! \mainpage Irrlicht Engine 1.8 API documentation
  *
  * <div align="center"><img src="logobig.png" ></div>
  *

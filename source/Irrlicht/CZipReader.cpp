@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -111,7 +111,7 @@ IFileArchive* CArchiveLoaderZIP::createArchive(io::IReadFile* file, bool ignoreC
 
 		bool isGZip = (sig == 0x8b1f);
 
-		archive = new CZipReader(file, ignoreCase, ignorePaths, isGZip);
+		archive = new CZipReader(FileSystem, file, ignoreCase, ignorePaths, isGZip);
 	}
 	return archive;
 }
@@ -137,8 +137,8 @@ bool CArchiveLoaderZIP::isALoadableFileFormat(io::IReadFile* file) const
 // zip archive
 // -----------------------------------------------------------------------------
 
-CZipReader::CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths, bool isGZip)
- : CFileList((file ? file->getFileName() : io::path("")), ignoreCase, ignorePaths), File(file), IsGZip(isGZip)
+CZipReader::CZipReader(IFileSystem* fs, IReadFile* file, bool ignoreCase, bool ignorePaths, bool isGZip)
+ : CFileList((file ? file->getFileName() : io::path("")), ignoreCase, ignorePaths), FileSystem(fs), File(file), IsGZip(isGZip)
 {
 	#ifdef _DEBUG
 	setDebugName("CZipReader");
@@ -586,7 +586,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 			delete [] decryptedBuf;
 			return 0;
 		}
-		decrypted = io::createMemoryReadFile(decryptedBuf, decryptedSize, Files[index].FullName, true);
+		decrypted = FileSystem->createMemoryReadFile(decryptedBuf, decryptedSize, Files[index].FullName, true);
 		actualCompressionMethod = (e.header.Sig & 0xffff);
 #if 0
 		if ((e.header.Sig & 0xff000000)==0x01000000)
@@ -680,7 +680,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 				return 0;
 			}
 			else
-				return io::createMemoryReadFile(pBuf, uncompressedSize, Files[index].FullName, true);
+				return FileSystem->createMemoryReadFile(pBuf, uncompressedSize, Files[index].FullName, true);
 
 			#else
 			return 0; // zlib not compiled, we cannot decompress the data.
@@ -751,7 +751,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 				return 0;
 			}
 			else
-				return io::createMemoryReadFile(pBuf, uncompressedSize, Files[index].FullName, true);
+				return FileSystem->createMemoryReadFile(pBuf, uncompressedSize, Files[index].FullName, true);
 
 			#else
 			os::Printer::log("bzip2 decompression not supported. File cannot be read.", ELL_ERROR);
@@ -814,7 +814,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 				return 0;
 			}
 			else
-				return io::createMemoryReadFile(pBuf, uncompressedSize, Files[index].FullName, true);
+				return FileSystem->createMemoryReadFile(pBuf, uncompressedSize, Files[index].FullName, true);
 
 			#else
 			os::Printer::log("lzma decompression not supported. File cannot be read.", ELL_ERROR);

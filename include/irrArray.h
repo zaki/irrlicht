@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and irrXML.h
 
@@ -59,9 +59,18 @@ public:
 
 
 	//! Reallocates the array, make it bigger or smaller.
-	/** \param new_size New size of array. */
-	void reallocate(u32 new_size)
+	/** \param new_size New size of array.
+	\param canShrink Specifies whether the array is reallocated even if
+	enough space is available. Setting this flag to false can speed up
+	array usage, but may use more memory than required by the data.
+	*/
+	void reallocate(u32 new_size, bool canShrink=true)
 	{
+		if (allocated==new_size)
+			return;
+		if (!canShrink && (new_size < allocated))
+			return;
+
 		T* old_data = data;
 
 		data = allocator.allocate(new_size); //new T[new_size];

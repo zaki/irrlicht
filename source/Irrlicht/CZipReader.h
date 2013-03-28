@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -25,16 +25,8 @@ namespace io
 	// zero in the local header
 	const s16 ZIP_INFO_IN_DATA_DESCRIPTOR =	0x0008;
 
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
-
+// byte-align structures
+#include "irrpack.h"
 
 	struct SZIPFileDataDescriptor
 	{
@@ -131,11 +123,7 @@ namespace io
 	} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 	//! Contains extended info about zip files in the archive
 	struct SZipFileEntry
@@ -192,7 +180,7 @@ namespace io
 	public:
 
 		//! constructor
-		CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths, bool isGZip=false);
+		CZipReader(IFileSystem* fs, IReadFile* file, bool ignoreCase, bool ignorePaths, bool isGZip=false);
 
 		//! destructor
 		virtual ~CZipReader();
@@ -222,6 +210,7 @@ namespace io
 
 		bool scanCentralDirectoryHeader();
 
+		io::IFileSystem* FileSystem;
 		IReadFile* File;
 
 		// holds extended info about files

@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Colin MacDonald
+// Copyright (C) 2008-2012 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -236,15 +236,230 @@ bool isOrthogonal(void)
 	return true;
 }
 
+bool checkMatrixRotation(irr::core::matrix4& m, const vector3df& vector, const vector3df& expectedResult)
+{
+	vector3df v(vector);
+	m.rotateVect(v);
+	if ( expectedResult.equals(v) )
+		return true;
+	logTestString("checkMatrixRotation failed for vector %f %f %f. Expected %f %f %f, got %f %f %f \n"
+			, vector.X, vector.Y, vector.Z, expectedResult.X, expectedResult.Y, expectedResult.Z, v.X, v.Y, v.Z);
+	logTestString("matrix: ");
+	for ( int i=0; i<16; ++i )
+		logTestString("%.2f ", m[i]);
+	logTestString("\n");	
+
+	return false;
+}
+
+bool setRotationAxis()
+{
+	matrix4 m;
+	vector3df v;
+	
+	// y up, x right, z depth (as usual)
+
+	// y rotated around x-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(1,0,0)), vector3df(0,1,0), vector3df(0, 0, 1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(1,0,0)), vector3df(0,1,0), vector3df(0, -1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// y rotated around negative x-axis
+	m.makeIdentity();
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(-1,0,0)), vector3df(0,1,0), vector3df(0, 0, -1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// x rotated around x-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(1,0,0)), vector3df(1,0,0), vector3df(1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	// x rotated around y-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,1,0)), vector3df(1,0,0), vector3df(0, 0, -1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(0,1,0)), vector3df(1,0,0), vector3df(-1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// x rotated around negative y-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,-1,0)), vector3df(1,0,0), vector3df(0, 0, 1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	} 
+	
+	// y rotated around y-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,1,0)), vector3df(0,1,0), vector3df(0, 1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	// x rotated around z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,1)), vector3df(1,0,0), vector3df(0, 1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(0,0,1)), vector3df(1,0,0), vector3df(-1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	// x rotated around negative z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,-1)), vector3df(1,0,0), vector3df(0, -1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// y rotated around z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,1)), vector3df(0,1,0), vector3df(-1, 0, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(180.f*DEGTORAD, vector3df(0,0,1)), vector3df(0,1,0), vector3df(0, -1, 0)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+	
+	// z rotated around z-axis
+	if ( !checkMatrixRotation( m.setRotationAxisRadians(90.f*DEGTORAD, vector3df(0,0,1)), vector3df(0,0,1), vector3df(0, 0, 1)) )
+	{
+		logTestString("%s:%d", __FILE__, __LINE__);
+		return false;
+	}
+
+	
+	return true;
+}
+
+// just calling each function once to find compile problems
+void calltest()
+{
+	matrix4 mat;
+	matrix4 mat2(mat);
+	f32& f1 = mat(0,0);
+	const f32& f2 = mat(0,0);
+	f32& f3 = mat[0];
+	const f32& f4 = mat[0];
+	mat = mat;
+	mat = 1.f;
+	const f32 * pf1 = mat.pointer();
+	f32 * pf2 = mat.pointer();
+	bool b = mat == mat2;
+	b = mat != mat2;
+	mat = mat + mat2;
+	mat += mat2;
+	mat = mat - mat2;
+	mat -= mat2;
+	mat.setbyproduct(mat, mat2);
+	mat.setbyproduct_nocheck(mat, mat2);
+	mat = mat * mat2;
+	mat *= mat2;
+	mat = mat * 10.f;
+	mat *= 10.f;
+	mat.makeIdentity();
+	b = mat.isIdentity();
+	b = mat.isOrthogonal();
+	b = mat.isIdentity_integer_base ();
+	mat.setTranslation(vector3df(1.f, 1.f, 1.f) );
+	vector3df v1 = mat.getTranslation();
+	mat.setInverseTranslation(vector3df(1.f, 1.f, 1.f) );
+	mat.setRotationRadians(vector3df(1.f, 1.f, 1.f) );
+	mat.setRotationDegrees(vector3df(1.f, 1.f, 1.f) );
+	vector3df v2 = mat.getRotationDegrees();
+	mat.setInverseRotationRadians(vector3df(1.f, 1.f, 1.f) );
+	mat.setInverseRotationDegrees(vector3df(1.f, 1.f, 1.f) );
+	mat.setRotationAxisRadians(1.f, vector3df(1.f, 1.f, 1.f) );
+	mat.setScale(vector3df(1.f, 1.f, 1.f) );
+	mat.setScale(1.f);
+	vector3df v3 = mat.getScale();
+	mat.inverseTranslateVect(v1);
+	mat.inverseRotateVect(v1);
+	mat.rotateVect(v1);
+	mat.rotateVect(v1, v2);
+	f32 fv3[3];
+	mat.rotateVect(fv3, v1);
+	mat.transformVect(v1);
+	mat.transformVect(v1, v1);
+	f32 fv4[4];
+	mat.transformVect(fv4, v1);
+	mat.transformVec3(fv3, fv3);
+	mat.translateVect(v1);
+	plane3df p1;
+	mat.transformPlane(p1);
+	mat.transformPlane(p1, p1);
+	aabbox3df bb1;
+	mat.transformBox(bb1);
+	mat.transformBoxEx(bb1);
+	mat.multiplyWith1x4Matrix(fv4);
+	mat.makeInverse();
+	b = mat.getInversePrimitive(mat2);
+	b = mat.getInverse(mat2);
+	mat.buildProjectionMatrixPerspectiveFovRH(1.f, 1.f, 1.f, 1000.f);
+	mat.buildProjectionMatrixPerspectiveFovLH(1.f, 1.f, 1.f, 1000.f);
+	mat.buildProjectionMatrixPerspectiveFovInfinityLH(1.f, 1.f, 1.f);
+	mat.buildProjectionMatrixPerspectiveRH(100.f, 100.f, 1.f, 1000.f);
+	mat.buildProjectionMatrixPerspectiveLH(10000.f, 10000.f, 1.f, 1000.f);
+	mat.buildProjectionMatrixOrthoLH(10000.f, 10000.f, 1.f, 1000.f);
+	mat.buildProjectionMatrixOrthoRH(10000.f, 10000.f, 1.f, 1000.f);
+	mat.buildCameraLookAtMatrixLH(vector3df(1.f, 1.f, 1.f), vector3df(0.f, 0.f, 0.f), vector3df(0.f, 1.f, 0.f) );
+	mat.buildCameraLookAtMatrixRH(vector3df(1.f, 1.f, 1.f), vector3df(0.f, 0.f, 0.f), vector3df(0.f, 1.f, 0.f) );
+	mat.buildShadowMatrix(vector3df(1.f, 1.f, 1.f), p1);
+	core::rect<s32> a1(0,0,100,100);
+	mat.buildNDCToDCMatrix(a1, 1.f);
+	mat.interpolate(mat2, 1.f);
+	mat = mat.getTransposed();
+	mat.getTransposed(mat2);
+	mat.buildRotateFromTo(vector3df(1.f, 1.f, 1.f), vector3df(1.f, 1.f, 1.f));
+	mat.setRotationCenter(vector3df(1.f, 1.f, 1.f), vector3df(1.f, 1.f, 1.f));
+	mat.buildAxisAlignedBillboard(vector3df(1.f, 1.f, 1.f), vector3df(1.f, 1.f, 1.f), vector3df(1.f, 1.f, 1.f), vector3df(1.f, 1.f, 1.f), vector3df(1.f, 1.f, 1.f));
+	mat.buildTextureTransform( 1.f,vector2df(1.f, 1.f), vector2df(1.f, 1.f), vector2df(1.f, 1.f));
+	mat.setTextureRotationCenter( 1.f );
+	mat.setTextureTranslate( 1.f, 1.f );
+	mat.setTextureTranslateTransposed(1.f, 1.f);
+	mat.setTextureScale( 1.f, 1.f );
+	mat.setTextureScaleCenter( 1.f, 1.f );
+	f32 fv16[16];
+	mat.setM(fv16);
+	mat.setDefinitelyIdentityMatrix(false);
+	b = mat.getDefinitelyIdentityMatrix();
+	b = mat.equals(mat2);
+	f1 = f1+f2+f3+f4+*pf1+*pf2; // getting rid of unused variable warnings.
+}
+
 }
 
 bool matrixOps(void)
 {
 	bool result = true;
+	calltest();
 	result &= identity();
 	result &= rotations();
 	result &= isOrthogonal();
 	result &= transformations();
+	result &= setRotationAxis();
 	return result;
 }
 

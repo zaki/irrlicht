@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011 Nikolaus Gebhardt
+// Copyright (C) 2007-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -195,7 +195,7 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 	// create actual geometry for lwo2
 	if (FormatVersion==2)
 	{
-		core::array<u32>vertexCount;
+		core::array<u32> vertexCount;
 		vertexCount.reallocate(Materials.size());
 		for (i=0; i<Materials.size(); ++i)
 			vertexCount.push_back(0);

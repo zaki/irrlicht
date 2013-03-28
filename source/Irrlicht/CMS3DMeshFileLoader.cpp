@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -21,15 +21,7 @@ namespace scene
 #endif
 
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
+#include "irrpack.h"
 
 namespace {
 // File header
@@ -103,11 +95,7 @@ struct MS3DVertexWeights
 } // end namespace
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 struct SGroup
 {
@@ -513,7 +501,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 			tmpMatrix=jnt->LocalMatrix*tmpMatrix;
 
-			k->rotation  = core::quaternion(tmpMatrix);
+			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from tmpMatrix to tmpMatrix.getTransposed() for downward compatibility. 
+			//								   Not tested so far if this was correct or wrong before quaternion fix!
+			k->rotation  = core::quaternion(tmpMatrix.getTransposed());
 		}
 
 		// get translation keyframes

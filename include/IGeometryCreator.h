@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -71,7 +71,7 @@ public:
 	/**
 	\param texture The texture to apply to the terrain.
 	\param heightmap An image that will be interpreted as a heightmap. The
-	brightness (average colour) of each pixel is interpreted as a height,
+	brightness (average color) of each pixel is interpreted as a height,
 	with a 255 brightness pixel producing the maximum height.
 	\param stretchSize The size that each pixel will produce, i.e. a
 	512x512 heightmap

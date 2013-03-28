@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Thomas Alten
+// Copyright (C) 2002-2012 Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -19,16 +19,6 @@ namespace scene
 {
 
 
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
-
 	// STUDIO MODELS, Copyright (c) 1998, Valve LLC. All rights reserved.
 	#define MAXSTUDIOTRIANGLES	20000	// TODO: tune this
 	#define MAXSTUDIOVERTS		2048	// TODO: tune this
@@ -47,6 +37,9 @@ namespace scene
 
 	typedef f32 vec3_hl[3];	// x,y,z
 	typedef f32 vec4_hl[4];	// x,y,z,w
+
+// byte-align structures
+#include "irrpack.h"
 
 	struct SHalflifeHeader
 	{
@@ -104,14 +97,14 @@ namespace scene
 	} PACK_STRUCT;
 
 	// header for demand loaded sequence group data
-	typedef struct
+	struct studioseqhdr_t
 	{
 		s32 id;
 		s32 version;
 
 		c8 name[64];
 		s32 length;
-	} PACK_STRUCT studioseqhdr_t;
+	} PACK_STRUCT;
 
 	// bones
 	struct SHalflifeBone
@@ -207,22 +200,22 @@ namespace scene
 	} PACK_STRUCT;
 
 	// events
-	typedef struct
+	struct mstudioevent_t
 	{
 		s32 frame;
 		s32 event;
 		s32 type;
 		c8 options[64];
-	} PACK_STRUCT mstudioevent_t;
+	} PACK_STRUCT;
 
 
 	// pivots
-	typedef struct
+	struct mstudiopivot_t
 	{
 		vec3_hl org;	// pivot point
 		s32 start;
 		s32 end;
-	} PACK_STRUCT mstudiopivot_t;
+	} PACK_STRUCT;
 
 	// attachment
 	struct SHalflifeAttachment
@@ -298,14 +291,17 @@ namespace scene
 
 
 	// meshes
-	typedef struct
+	struct SHalflifeMesh
 	{
 		u32	numtris;
 		u32	triindex;
 		u32	skinref;
 		u32	numnorms;		// per mesh normals
 		u32	normindex;		// normal vec3_hl
-	} PACK_STRUCT SHalflifeMesh;
+	} PACK_STRUCT;
+
+// Default alignment
+#include "irrunpack.h"
 
 	// lighting options
 	#define STUDIO_NF_FLATSHADE		0x0001
@@ -342,12 +338,6 @@ namespace scene
 
 	#define RAD_TO_STUDIO		(32768.0/M_PI)
 	#define STUDIO_TO_RAD		(M_PI/32768.0)
-
-// Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-#undef PACK_STRUCT
 
 	/*!
 		Textureatlas

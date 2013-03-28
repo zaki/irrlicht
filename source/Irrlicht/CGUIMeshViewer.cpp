@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -117,7 +117,6 @@ void CGUIMeshViewer::draw()
 
 	frameRect = AbsoluteRect;
 	frameRect.UpperLeftCorner.Y = AbsoluteRect.LowerRightCorner.Y - 1;
-	frameRect.LowerRightCorner.Y = AbsoluteRect.LowerRightCorner.Y;
 	skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
 
 	// draw the mesh

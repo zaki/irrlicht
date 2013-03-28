@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -40,16 +40,8 @@ public:
 
 private:
 
-	// byte-align structures
-	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-	#	pragma pack( push, packing )
-	#	pragma pack( 1 )
-	#	define PACK_STRUCT
-	#elif defined( __GNUC__ )
-	#	define PACK_STRUCT	__attribute__((packed))
-	#else
-	#	error compiler not supported
-	#endif
+// byte-align structures
+#include "irrpack.h"
 
 	struct ChunkHeader
 	{
@@ -57,13 +49,8 @@ private:
 		s32 length;
 	} PACK_STRUCT;
 
-	// Default alignment
-	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-	#	pragma pack( pop, packing )
-	#endif
-
-	#undef PACK_STRUCT
-
+// Default alignment
+#include "irrunpack.h"
 
 	struct ChunkData
 	{
@@ -122,7 +109,7 @@ private:
 			MaterialName = o.MaterialName;
 			faceCount = o.faceCount;
 			faces = new u16[faceCount];
-			for (u32 i=0; i<faceCount; ++i)
+			for (u16 i=0; i<faceCount; ++i)
 				faces[i] = o.faces[i];
 		}
 

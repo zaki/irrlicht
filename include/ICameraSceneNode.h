@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -164,6 +164,9 @@ namespace scene
 		and targetting, false to unbind them.
 		@see getTargetAndRotationBinding() */
 		virtual void bindTargetAndRotation(bool bound) =0;
+
+		//! Updates the matrices without uploading them to the driver
+		virtual void updateMatrices() = 0;
 
 		//! Queries if the camera scene node's rotation and its target position are bound together.
 		/** @see bindTargetAndRotation() */

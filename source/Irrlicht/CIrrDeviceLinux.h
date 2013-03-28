@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -13,6 +13,7 @@
 #include "IrrlichtDevice.h"
 #include "IImagePresenter.h"
 #include "ICursorControl.h"
+#include "os.h"
 
 #ifdef _IRR_COMPILE_WITH_X11_
 
@@ -99,6 +100,9 @@ namespace irr
 
 		//! Restores the window size.
 		virtual void restoreWindow();
+
+		//! Get the position of this window on screen
+		virtual core::position2di getWindowPosition();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
@@ -293,6 +297,12 @@ namespace irr
 			virtual core::dimension2di getSupportedIconSize() const;
 
 #ifdef _IRR_COMPILE_WITH_X11_
+			//! Set platform specific behavior flags.
+			virtual void setPlatformBehavior(gui::ECURSOR_PLATFORM_BEHAVIOR behavior) {PlatformBehavior = behavior; }
+
+			//! Return platform specific behavior.
+			virtual gui::ECURSOR_PLATFORM_BEHAVIOR getPlatformBehavior() const { return PlatformBehavior; }
+
 			void update();
 			void clearCursors();
 #endif
@@ -303,6 +313,14 @@ namespace irr
 #ifdef _IRR_COMPILE_WITH_X11_
 				if (Null)
 					return;
+
+				if ( PlatformBehavior&gui::ECPB_X11_CACHE_UPDATES && !os::Timer::isStopped() )
+				{
+					u32 now = os::Timer::getTime();
+					if (now <= lastQuery)
+						return;
+					lastQuery = now;
+				}
 
 				Window tmp;
 				int itmp1, itmp2;
@@ -327,6 +345,8 @@ namespace irr
 			core::position2d<s32> CursorPos;
 			core::rect<s32> ReferenceRect;
 #ifdef _IRR_COMPILE_WITH_X11_
+			gui::ECURSOR_PLATFORM_BEHAVIOR PlatformBehavior;
+			u32 lastQuery;
 			Cursor invisCursor;
 
 			struct CursorFrameX11

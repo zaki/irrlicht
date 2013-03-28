@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -11,16 +11,16 @@ namespace io
 {
 
 
-CMemoryFile::CMemoryFile(void* memory, long len, const io::path& fileName, bool d)
+CMemoryReadFile::CMemoryReadFile(const void* memory, long len, const io::path& fileName, bool d)
 : Buffer(memory), Len(len), Pos(0), Filename(fileName), deleteMemoryWhenDropped(d)
 {
 	#ifdef _DEBUG
-	setDebugName("CMemoryFile");
+	setDebugName("CMemoryReadFile");
 	#endif
 }
 
 
-CMemoryFile::~CMemoryFile()
+CMemoryReadFile::~CMemoryReadFile()
 {
 	if (deleteMemoryWhenDropped)
 		delete [] (c8*)Buffer;
@@ -28,7 +28,7 @@ CMemoryFile::~CMemoryFile()
 
 
 //! returns how much was read
-s32 CMemoryFile::read(void* buffer, u32 sizeToRead)
+s32 CMemoryReadFile::read(void* buffer, u32 sizeToRead)
 {
 	s32 amount = static_cast<s32>(sizeToRead);
 	if (Pos + amount > Len)
@@ -45,30 +45,10 @@ s32 CMemoryFile::read(void* buffer, u32 sizeToRead)
 	return amount;
 }
 
-//! returns how much was written
-s32 CMemoryFile::write(const void* buffer, u32 sizeToWrite)
-{
-	s32 amount = static_cast<s32>(sizeToWrite);
-	if (Pos + amount > Len)
-		amount -= Pos + amount - Len;
-
-	if (amount <= 0)
-		return 0;
-
-	c8* p = (c8*)Buffer;
-	memcpy(p + Pos, buffer, amount);
-
-	Pos += amount;
-
-	return amount;
-}
-
-
-
 //! changes position in file, returns true if successful
 //! if relativeMovement==true, the pos is changed relative to current pos,
 //! otherwise from begin of file
-bool CMemoryFile::seek(long finalPos, bool relativeMovement)
+bool CMemoryReadFile::seek(long finalPos, bool relativeMovement)
 {
 	if (relativeMovement)
 	{
@@ -90,29 +70,135 @@ bool CMemoryFile::seek(long finalPos, bool relativeMovement)
 
 
 //! returns size of file
-long CMemoryFile::getSize() const
+long CMemoryReadFile::getSize() const
 {
 	return Len;
 }
 
 
 //! returns where in the file we are.
-long CMemoryFile::getPos() const
+long CMemoryReadFile::getPos() const
 {
 	return Pos;
 }
 
 
 //! returns name of file
-const io::path& CMemoryFile::getFileName() const
+const io::path& CMemoryReadFile::getFileName() const
 {
 	return Filename;
 }
 
 
-IReadFile* createMemoryReadFile(void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped)
+CMemoryWriteFile::CMemoryWriteFile(void* memory, long len, const io::path& fileName, bool d)
+: Buffer(memory), Len(len), Pos(0), Filename(fileName), deleteMemoryWhenDropped(d)
 {
-	CMemoryFile* file = new CMemoryFile(memory, size, fileName, deleteMemoryWhenDropped);
+	#ifdef _DEBUG
+	setDebugName("CMemoryWriteFile");
+	#endif
+}
+
+
+CMemoryWriteFile::~CMemoryWriteFile()
+{
+	if (deleteMemoryWhenDropped)
+		delete [] (c8*)Buffer;
+}
+
+
+//! returns how much was read
+s32 CMemoryWriteFile::read(void* buffer, u32 sizeToRead)
+{
+	s32 amount = static_cast<s32>(sizeToRead);
+	if (Pos + amount > Len)
+		amount -= Pos + amount - Len;
+
+	if (amount <= 0)
+		return 0;
+
+	c8* p = (c8*)Buffer;
+	memcpy(buffer, p + Pos, amount);
+
+	Pos += amount;
+
+	return amount;
+}
+
+
+	//! returns how much was written
+s32 CMemoryWriteFile::write(const void* buffer, u32 sizeToWrite)
+{
+	s32 amount = static_cast<s32>(sizeToWrite);
+	if (Pos + amount > Len)
+		amount -= Pos + amount - Len;
+
+	if (amount <= 0)
+		return 0;
+
+	c8* p = (c8*)Buffer;
+	memcpy(p + Pos, buffer, amount);
+
+	Pos += amount;
+
+	return amount;
+}
+
+
+
+//! changes position in file, returns true if successful
+//! if relativeMovement==true, the pos is changed relative to current pos,
+//! otherwise from begin of file
+bool CMemoryWriteFile::seek(long finalPos, bool relativeMovement)
+{
+	if (relativeMovement)
+	{
+		if (Pos + finalPos > Len)
+			return false;
+
+		Pos += finalPos;
+	}
+	else
+	{
+		if (finalPos > Len)
+			return false;
+
+		Pos = finalPos;
+	}
+
+	return true;
+}
+
+
+//! returns size of file
+long CMemoryWriteFile::getSize() const
+{
+	return Len;
+}
+
+
+//! returns where in the file we are.
+long CMemoryWriteFile::getPos() const
+{
+	return Pos;
+}
+
+
+//! returns name of file
+const io::path& CMemoryWriteFile::getFileName() const
+{
+	return Filename;
+}
+
+
+IReadFile* createMemoryReadFile(const void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped)
+{
+	CMemoryReadFile* file = new CMemoryReadFile(memory, size, fileName, deleteMemoryWhenDropped);
+	return file;
+}
+
+IWriteFile* createMemoryWriteFile(void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped)
+{
+	CMemoryWriteFile* file = new CMemoryWriteFile(memory, size, fileName, deleteMemoryWhenDropped);
 	return file;
 }
 

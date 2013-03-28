@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // Code for this scene node has been contributed by Anders la Cour-Harbo (alc)
@@ -46,7 +46,7 @@ CSkyDomeSceneNode::CSkyDomeSceneNode(video::ITexture* sky, u32 horiRes, u32 vert
 
 	Buffer = new SMeshBuffer();
 	Buffer->Material.Lighting = false;
-	Buffer->Material.ZBuffer = video::ECFN_NEVER;
+	Buffer->Material.ZBuffer = video::ECFN_DISABLED;
 	Buffer->Material.ZWriteEnable = false;
 	Buffer->Material.AntiAliasing = video::EAAM_OFF;
 	Buffer->Material.setTexture(0, sky);

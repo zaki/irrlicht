@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Colin MacDonald and Christian Stehno
+// Copyright (C) 2008-2012 Colin MacDonald and Christian Stehno
 // No rights reserved: this software is in the public domain.
 
 // This is the entry point for the Irrlicht test suite.
@@ -105,11 +105,13 @@ int main(int argumentCount, char * arguments[])
 	TEST(screenshot);
 	TEST(drawPixel);
 	TEST(drawRectOutline);
+	TEST(drawVertexPrimitive);
 	TEST(material);
 	TEST(renderTargetTexture);
 	TEST(textureFeatures);
 	TEST(textureRenderStates);
 	TEST(transparentMaterials);
+	TEST(userclipplane);
 	TEST(antiAliasing);
 	TEST(draw2DImage);
 	TEST(lights);

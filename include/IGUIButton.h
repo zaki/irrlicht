@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -52,6 +52,9 @@ namespace gui
 	};
 
 	//! GUI Button interface.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_BUTTON_CLICKED
+	*/
 	class IGUIButton : public IGUIElement
 	{
 	public:

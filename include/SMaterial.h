@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -61,8 +61,8 @@ namespace video
 	//! Comparison function, e.g. for depth buffer test
 	enum E_COMPARISON_FUNC
 	{
-		//! Test never succeeds, this equals disable
-		ECFN_NEVER=0,
+		//! Depth test disabled (disable also write to depth buffer)
+		ECFN_DISABLED=0,
 		//! <= test, default for e.g. depth test
 		ECFN_LESSEQUAL=1,
 		//! Exact equality
@@ -76,7 +76,9 @@ namespace video
 		//! inverse of <=
 		ECFN_GREATER,
 		//! test succeeds always
-		ECFN_ALWAYS
+		ECFN_ALWAYS,
+		//! Test never succeeds
+		ECFN_NEVER
 	};
 
 	//! Enum values for enabling/disabling color planes for rendering
@@ -362,7 +364,9 @@ namespace video
 		f32 Thickness;
 
 		//! Is the ZBuffer enabled? Default: ECFN_LESSEQUAL
-		/** Values are from E_COMPARISON_FUNC. */
+		/** If you want to disable depth test for this material
+		just set this parameter to ECFN_DISABLED.
+		Values are from E_COMPARISON_FUNC. */
 		u8 ZBuffer;
 
 		//! Sets the antialiasing mode
@@ -418,7 +422,8 @@ namespace video
 		//! Is the zbuffer writeable or is it read-only. Default: true.
 		/** This flag is forced to false if the MaterialType is a
 		transparent type and the scene parameter
-		ALLOW_ZWRITE_ON_TRANSPARENT is not set. */
+		ALLOW_ZWRITE_ON_TRANSPARENT is not set. If you set this parameter
+		to true, make sure that ZBuffer value is other than ECFN_DISABLED */
 		bool ZWriteEnable:1;
 
 		//! Is backface culling enabled? Default: true
@@ -579,7 +584,7 @@ namespace video
 				case EMF_LIGHTING:
 					return Lighting;
 				case EMF_ZBUFFER:
-					return ZBuffer!=ECFN_NEVER;
+					return ZBuffer!=ECFN_DISABLED;
 				case EMF_ZWRITE_ENABLE:
 					return ZWriteEnable;
 				case EMF_BACK_FACE_CULLING:

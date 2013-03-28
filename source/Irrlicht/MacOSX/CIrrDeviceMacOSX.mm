@@ -1,5 +1,5 @@
 // Copyright (C) 2005-2006 Etienne Petitjean
-// Copyright (C) 2007-2011 Christian Stehno
+// Copyright (C) 2007-2012 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -11,7 +11,8 @@
 #import <OpenGL/gl.h>
 #import <Carbon/Carbon.h>
 
-#include "CIrrDeviceMacOSX.h"
+#import "CIrrDeviceMacOSX.h"
+
 #include "IEventReceiver.h"
 #include "irrList.h"
 #include "os.h"
@@ -23,7 +24,7 @@
 #include "COSOperator.h"
 #include "CColorConverter.h"
 #include "irrlicht.h"
-
+#include <algorithm>
 
 #import <wchar.h>
 #import <time.h>
@@ -370,6 +371,10 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	os::Printer::log(name.version,ELL_INFORMATION);
 
 	initKeycodes();
+
+	VideoModeList->setDesktop(CreationParams.Bits, core::dimension2d<u32>([[NSScreen mainScreen] frame].size.width, [[NSScreen mainScreen] frame].size.height));
+
+	bool success = true;
 	if (CreationParams.DriverType != video::EDT_NULL)
 		createWindow();
 
@@ -460,7 +465,17 @@ bool CIrrDeviceMacOSX::createWindow()
 	{
 		if(!CreationParams.WindowId) //create another window when WindowId is null
 		{
-			Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
+			const NSBackingStoreType type = (CreationParams.DriverType == video::EDT_OPENGL) ? NSBackingStoreBuffered : NSBackingStoreNonretained;
+			int x = std::max(0, CreationParams.WindowPosition.X);
+			int y = std::max(0, CreationParams.WindowPosition.Y);
+			
+			if (CreationParams.WindowPosition.Y > -1)
+			{
+				int screenHeight = [[[NSScreen screens] objectAtIndex:0] frame].size.height;
+				y = screenHeight - y - CreationParams.WindowSize.Height;
+			}
+
+			Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(x,y,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:type defer:FALSE];
 		}
 
 		if (Window != NULL || CreationParams.WindowId)
@@ -551,7 +566,10 @@ bool CIrrDeviceMacOSX::createWindow()
 			{
 				if (!CreationParams.WindowId)
 				{
-					[Window center];
+					if (CreationParams.WindowPosition.X == -1 && CreationParams.WindowPosition.Y == -1)
+					{
+						[Window center];
+					}
 					[Window setDelegate:[NSApp delegate]];
 					[OGLContext setView:[Window contentView]];
 					[Window setAcceptsMouseMovedEvents:TRUE];
@@ -1136,11 +1154,20 @@ void CIrrDeviceMacOSX::maximizeWindow()
 }
 
 
-//! Restore the window to normal size if possible.
+//! get the window to normal size if possible.
 void CIrrDeviceMacOSX::restoreWindow()
 {
 	[Window deminiaturize:[NSApp self]];
 }
+    
+//! Get the position of this window on screen
+core::position2di CIrrDeviceMacOSX::getWindowPosition()
+{
+	NSRect rect = [Window frame];
+	int screenHeight = [[[NSScreen screens] objectAtIndex:0] frame].size.height;
+	return core::position2di(rect.origin.x, screenHeight - rect.origin.y - rect.size.height);
+}
+
 
 
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
@@ -1457,11 +1484,40 @@ void CIrrDeviceMacOSX::pollJoysticks()
 
 video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 {
-	if (!VideoModeList.getVideoModeCount())
+	if (!VideoModeList->getVideoModeCount())
 	{
 		CGDirectDisplayID display;
 		display = CGMainDisplayID();
 
+#ifdef __MAC_10_6
+		CFArrayRef Modes = CGDisplayCopyAllDisplayModes(display, NULL);
+
+		for(int i = 0; i < CFArrayGetCount(Modes); ++i)
+		{
+			CGDisplayModeRef CurrentMode = (CGDisplayModeRef)CFArrayGetValueAtIndex(Modes, i);
+
+			u8 Depth = 0;
+
+			CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(CurrentMode);
+
+			if(CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+				Depth = 32;
+			else
+			if(CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+				Depth = 16;
+			else
+			if(CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+				Depth = 8;
+
+			if(Depth)
+			{
+				unsigned int Width = CGDisplayModeGetWidth(CurrentMode);
+				unsigned int Height = CGDisplayModeGetHeight(CurrentMode);
+
+				VideoModeList->addMode(core::dimension2d<u32>(Width, Height), Depth);
+			}
+		}
+#else
 		CFArrayRef availableModes = CGDisplayAvailableModes(display);
 		unsigned int numberOfAvailableModes = CFArrayGetCount(availableModes);
 		for (u32 i= 0; i<numberOfAvailableModes; ++i)
@@ -1481,8 +1537,9 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 			VideoModeList.addMode(core::dimension2d<u32>(width, height),
 				bitsPerPixel);
 		}
+#endif
 	}
-	return &VideoModeList;
+	return VideoModeList;
 }
 
 } // end namespace irr

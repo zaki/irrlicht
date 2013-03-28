@@ -57,8 +57,8 @@
 
 /* define an unsigned 64-bit type */
 
-#ifdef _MSC_VER
-#if _MSC_VER < 1300
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#if (_MSC_VER < 1300) || (__BORLANDC__ < 0x582)
   typedef unsigned __int64   sha2_64t;
   #define s_u64 ui64
 #elif ULONG_MAX == 0xffffffffffffffff

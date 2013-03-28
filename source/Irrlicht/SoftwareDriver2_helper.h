@@ -1,10 +1,10 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 /*
 	History:
-	- changed behaviour for log2 textures ( replaced multiplies by shift )
+	- changed behavior for log2 textures ( replaced multiplies by shift )
 */
 
 #ifndef __S_VIDEO_2_SOFTWARE_HELPER_H_INCLUDED__
@@ -67,14 +67,16 @@ namespace irr
 // ----------------------- Generic ----------------------------------
 
 //! a more useful memset for pixel
-inline void memset32 ( void * dest, const u32 value, u32 bytesize )
+// (standard memset only works with 8-bit values)
+inline void memset32(void * dest, const u32 value, u32 bytesize)
 {
 	u32 * d = (u32*) dest;
 
 	u32 i;
 
-	i = bytesize >> ( 2 + 3 );
-	while( i )
+	// loops unrolled to reduce the number of increments by factor ~8.
+	i = bytesize >> (2 + 3);
+	while (i)
 	{
 		d[0] = value;
 		d[1] = value;
@@ -91,13 +93,47 @@ inline void memset32 ( void * dest, const u32 value, u32 bytesize )
 	}
 
 	i = (bytesize >> 2 ) & 7;
-	while( i )
+	while (i)
 	{
 		d[0] = value;
 		d += 1;
 		i -= 1;
 	}
+}
 
+//! a more useful memset for pixel
+// (standard memset only works with 8-bit values)
+inline void memset16(void * dest, const u16 value, u32 bytesize)
+{
+	u16 * d = (u16*) dest;
+
+	u32 i;
+
+	// loops unrolled to reduce the number of increments by factor ~8.
+	i = bytesize >> (1 + 3);
+	while (i)
+	{
+		d[0] = value;
+		d[1] = value;
+		d[2] = value;
+		d[3] = value;
+
+		d[4] = value;
+		d[5] = value;
+		d[6] = value;
+		d[7] = value;
+
+		d += 8;
+		--i;
+	}
+
+	i = (bytesize >> 1 ) & 7;
+	while (i)
+	{
+		d[0] = value;
+		++d;
+		--i;
+	}
 }
 
 /*
@@ -714,7 +750,7 @@ inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 }
 
 // get video sample to fixpoint
-REALINLINE void getTexel_fix ( tFixPoint &a, 
+REALINLINE void getTexel_fix ( tFixPoint &a,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {

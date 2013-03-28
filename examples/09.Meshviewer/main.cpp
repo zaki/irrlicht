@@ -376,6 +376,24 @@ void onKillFocus()
 }
 
 /*
+Function hasModalDialog() checks if we currently have a modal dialog open.
+*/
+bool hasModalDialog()
+{
+	if ( !Device )
+		return false;
+	IGUIEnvironment* env = Device->getGUIEnvironment();
+	IGUIElement * focused = env->getFocus();
+	while ( focused )
+	{
+		if ( focused->isVisible() && focused->hasType(EGUIET_MODAL_SCREEN) )
+			return true;
+		focused = focused->getParent();
+	}
+	return false;
+}
+
+/*
 To get all the events sent by the GUI Elements, we need to create an event
 receiver. This one is really simple. If an event occurs, it checks the id of
 the caller and the event type, and starts an action based on these values. For

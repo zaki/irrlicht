@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -120,7 +120,7 @@ typedef double				f64;
 #if defined(_MSC_VER) && _MSC_VER > 1310 && !defined (_WIN32_WCE)
 #define swprintf swprintf_s
 #define snprintf sprintf_s
-#else
+#elif !defined(__CYGWIN__)
 #define swprintf _snwprintf
 #define snprintf _snprintf
 #endif

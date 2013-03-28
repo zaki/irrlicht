@@ -4,6 +4,9 @@ copy doxygen.css ..\..\..\doctemp\html
 copy irrlicht.png ..\..\..\doctemp\html
 copy logobig.png ..\..\..\doctemp\html
 
+rem enable following line for skipping tutorial generation (can be used for faster testing documentation layout)
+rem goto SKIP_TUTS
+
 rem for /F %%i in ('dir ..\..\..\examples\[01]*\main.cpp') DO ..\sed.exe -f tutorials.sed %i >>tut.txt
 ..\sed.exe -f tutorials.sed ..\..\..\examples\01.HelloWorld\main.cpp >tut.txt
 ..\sed.exe -f tutorials.sed ..\..\..\examples\02.Quake3Map\main.cpp >>tut.txt
@@ -28,6 +31,8 @@ rem for /F %%i in ('dir ..\..\..\examples\[01]*\main.cpp') DO ..\sed.exe -f tuto
 ..\sed.exe -f tutorials.sed ..\..\..\examples\21.Quake3Explorer\main.cpp >>tut.txt
 ..\sed.exe -f tutorials.sed ..\..\..\examples\22.MaterialViewer\main.cpp >>tut.txt
 ..\sed.exe -f tutorials.sed ..\..\..\examples\23.SMeshHandling\main.cpp >>tut.txt
+
+:SKIP_TUTS
 
 ..\doxygen.exe doxygen.cfg
 

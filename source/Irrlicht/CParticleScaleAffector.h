@@ -1,3 +1,7 @@
+// Copyright (C) 2010-2012 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
 #ifndef C_PARTICLE_SCALE_AFFECTOR_H
 #define C_PARTICLE_SCALE_AFFECTOR_H
 

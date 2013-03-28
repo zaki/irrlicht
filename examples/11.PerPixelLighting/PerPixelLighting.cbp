@@ -14,7 +14,6 @@
 				<Option projectResourceIncludeDirsRelation="1" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="-W" />
 				</Compiler>
 				<Linker>
 					<Add directory="..\..\lib\Win32-gcc" />
@@ -28,7 +27,6 @@
 				<Option projectResourceIncludeDirsRelation="1" />
 				<Compiler>
 					<Add option="-g" />
-					<Add option="-W" />
 				</Compiler>
 				<Linker>
 					<Add library="Xxf86vm" />
@@ -43,7 +41,6 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-g" />
-			<Add option="-W" />
 			<Add directory="..\..\include" />
 		</Compiler>
 		<Linker>

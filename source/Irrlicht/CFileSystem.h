@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -34,7 +34,7 @@ public:
 	virtual IReadFile* createAndOpenFile(const io::path& filename);
 
 	//! Creates an IReadFile interface for accessing memory like a file.
-	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const io::path& fileName, bool deleteMemoryWhenDropped = false);
+	virtual IReadFile* createMemoryReadFile(const void* memory, s32 len, const io::path& fileName, bool deleteMemoryWhenDropped = false);
 
 	//! Creates an IReadFile interface for accessing files inside files
 	virtual IReadFile* createLimitReadFile(const io::path& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize);

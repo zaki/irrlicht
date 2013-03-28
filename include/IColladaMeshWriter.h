@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -76,8 +76,19 @@ namespace scene
 		ECIC_SPECULAR
 	};
 
+	//! Control when geometry elements are created
+	enum E_COLLADA_GEOMETRY_WRITING
+	{
+		//! Default - write each mesh exactly once to collada. Optimal but will not work with many tools.
+		ECGI_PER_MESH,	
+
+		//! Write each mesh as often as it's used with different materials-names in the scene.
+		//! Material names which are used here are created on export, so using the IColladaMeshWriterNames
+		//! interface you have some control over how many geometries are written.
+		ECGI_PER_MESH_AND_MATERIAL
+	};
+
 	//! Callback interface for properties which can be used to influence collada writing
-	//! NOTE: Interface is still work in process and might change some more before 1.8 release
 	class IColladaMeshWriterProperties  : public virtual IReferenceCounted
 	{
 	public:
@@ -128,7 +139,61 @@ namespace scene
 
 		//! Return the mesh for the given node. If it has no mesh or shouldn't export it's mesh 
 		//! you can return 0 in which case only the transformation matrix of the node will be used.
+		// TODO: Function is not const because there is no const getMesh() function for several Irrlicht nodes.
 		virtual IMesh* getMesh(irr::scene::ISceneNode * node) = 0;
+
+		//! Return if the node has it's own material overwriting the mesh-materials
+		/** Usually true except for mesh-nodes which have isReadOnlyMaterials set.
+		This is mostly important for naming (as ISceneNode::getMaterial() already returns the correct material).
+		You have to override it when exporting custom scenenodes with own materials.
+		\return true => The node's own material is used, false => ignore node material and use the one from the mesh */
+		virtual bool useNodeMaterial(const scene::ISceneNode* node) const = 0;
+
+	};
+
+	//! Callback interface to use custom names on collada writing.
+	/** You can either modify names and id's written to collada or you can use
+	this interface to just find out which names are used on writing.
+	*/
+	class IColladaMeshWriterNames  : public virtual IReferenceCounted
+	{
+	public:
+	
+		virtual ~IColladaMeshWriterNames () {}
+
+		//! Return a unique name for the given mesh
+		/** Note that names really must be unique here per mesh-pointer, so 
+		mostly it's a good idea to return the nameForMesh from 
+		IColladaMeshWriter::getDefaultNameGenerator(). Also names must follow 
+		the xs::NCName standard to be valid, you can run them through 
+		IColladaMeshWriter::toNCName to ensure that.
+		\param mesh Pointer to the mesh which needs a name
+		\param instance When E_COLLADA_GEOMETRY_WRITING is not ECGI_PER_MESH then 
+		several instances of the same mesh can be written and this counts them.
+		*/
+		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh, int instance) = 0;
+
+		//! Return a unique name for the given node
+		/** Note that names really must be unique here per node-pointer, so 
+		mostly it's a good idea to return the nameForNode from 
+		IColladaMeshWriter::getDefaultNameGenerator(). Also names must follow 
+		the xs::NCName standard to be valid, you can run them through 
+		IColladaMeshWriter::toNCName to ensure that.
+		*/
+		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) = 0;
+
+		//! Return a name for the material
+		/** There is one material created in the writer for each unique name. 
+		So you can use this to control the number of materials which get written. 
+		For example Irrlicht does by default write one material for each material
+		instanced by a node. So if you know that in your application material 
+		instances per node are identical between different nodes you can reduce 
+		the number of exported materials using that knowledge by using identical 
+		names for such shared materials. 
+		Names must follow the xs::NCName standard to be valid, you can run them 
+		through	IColladaMeshWriter::toNCName to ensure that.
+		*/
+		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
 	};
 
 
@@ -137,7 +202,11 @@ namespace scene
 	{
 	public:
 
-		IColladaMeshWriter() : Properties(0), DefaultProperties(0), WriteTextures(true), WriteDefaultScene(false), AmbientLight(0.f, 0.f, 0.f, 1.f)
+		IColladaMeshWriter() 
+			: Properties(0), DefaultProperties(0), NameGenerator(0), DefaultNameGenerator(0)
+			, WriteTextures(true), WriteDefaultScene(true), ExportSMaterialOnce(true)
+			, AmbientLight(0.f, 0.f, 0.f, 1.f)
+			, GeometryWriting(ECGI_PER_MESH)
 		{
 		}
 
@@ -148,6 +217,10 @@ namespace scene
 				Properties->drop();
 			if ( DefaultProperties )
 				DefaultProperties->drop();
+			if ( NameGenerator )
+				NameGenerator->drop();
+			if ( DefaultNameGenerator )
+				DefaultNameGenerator->drop();
 		}
 
 		//! writes a scene starting with the given node
@@ -194,6 +267,43 @@ namespace scene
 			return AmbientLight;
 		}
 
+		//! Control when and how often a mesh is written
+		/** Optimally ECGI_PER_MESH would be always sufficent - writing geometry once per mesh.
+		Unfortunately many tools (at the time of writing this nearly all of them) have trouble
+		on import when different materials are used per node. So when you override materials
+		per node and importing the resuling collada has materials problems in other tools try 
+		using other values here. 
+		\param writeStyle One of the E_COLLADA_GEOMETRY_WRITING settings. 
+		*/
+		virtual void setGeometryWriting(E_COLLADA_GEOMETRY_WRITING writeStyle) 
+		{
+			GeometryWriting = writeStyle;
+		}
+
+		//! Get the current style of geometry writing.
+		virtual E_COLLADA_GEOMETRY_WRITING getGeometryWriting() const
+		{
+			return GeometryWriting;
+		}
+
+		//! Make certain there is only one collada material generated per Irrlicht material
+		/** Checks before creating a collada material-name if an identical 
+		irr:::video::SMaterial has been exported already. If so don't export it with 
+		another name. This is set by default and leads to way smaller .dae files.
+		Note that if you need to disable this flag for some reason you can still 
+		get a similar effect using the IColladaMeshWriterNames::nameForMaterial
+		by returning identical names for identical materials there.
+		*/
+		virtual void setExportSMaterialsOnlyOnce(bool exportOnce)
+		{
+			ExportSMaterialOnce = exportOnce;
+		}
+
+		virtual bool getExportSMaterialsOnlyOnce() const
+		{
+			return ExportSMaterialOnce;
+		}
+
 		//! Set properties to use by the meshwriter instead of it's default properties.
 		/** Overloading properties with an own class allows modifying the writing process in certain ways. 
 		By default properties are set to the DefaultProperties. */
@@ -209,7 +319,7 @@ namespace scene
 		}
 
 		//! Get properties which are currently used.
-		virtual IColladaMeshWriterProperties * getProperties()
+		virtual IColladaMeshWriterProperties * getProperties() const
 		{
 			return Properties;
 		}
@@ -221,8 +331,44 @@ namespace scene
 			return DefaultProperties; 
 		}
 
+		//! Install a generator to create custom names on export. 
+		virtual void setNameGenerator(IColladaMeshWriterNames * nameGenerator)
+		{
+			if ( nameGenerator == NameGenerator )
+				return;
+			if ( nameGenerator ) 
+				nameGenerator->grab();
+			if ( NameGenerator )
+				NameGenerator->drop();
+			NameGenerator = nameGenerator;
+		}
+
+		//! Get currently used name generator
+		virtual IColladaMeshWriterNames * getNameGenerator() const
+		{
+			return NameGenerator;
+		}
+
+		//! Return the original default name generator of the writer. 
+		/** You can use this pointer in your own generator to access and return default values. */
+		IColladaMeshWriterNames * getDefaultNameGenerator() const 
+		{ 
+			return DefaultNameGenerator; 
+		}
+
+		//! Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
+		/** A tool function to help when using a custom name generator to generative valid names for collada names and id's. */
+		virtual irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const = 0;
+
+		//! After export you can find out which name had been used for writing the geometry for this node.
+		/** The name comes from IColladaMeshWriterNames::nameForMesh, but you can't access the node there. 
+		\return Either a pointer to the name or NULL	*/
+		// TODO: Function is not const because there is no const getMesh() function for several Irrlicht nodes.
+		virtual const irr::core::stringw* findGeometryNameForNode(ISceneNode* node) = 0;
+
+
 	protected:
-		// NOTE: you should also call setProperties
+		// NOTE: You usually should also call setProperties with the same paraemter when using setDefaultProperties
 		virtual void setDefaultProperties(IColladaMeshWriterProperties * p)
 		{
 			if ( p == DefaultProperties )
@@ -234,12 +380,28 @@ namespace scene
 			DefaultProperties = p;
 		}
 
+		// NOTE: You usually should also call setNameGenerator with the same paraemter when using setDefaultProperties
+		virtual void setDefaultNameGenerator(IColladaMeshWriterNames * p)
+		{
+			if ( p == DefaultNameGenerator )
+				return;
+			if ( p ) 
+				p->grab();
+			if ( DefaultNameGenerator )
+				DefaultNameGenerator->drop();
+			DefaultNameGenerator = p;
+		}
+
 	private:
 		IColladaMeshWriterProperties * Properties;
 		IColladaMeshWriterProperties * DefaultProperties;
+		IColladaMeshWriterNames * NameGenerator;
+		IColladaMeshWriterNames * DefaultNameGenerator;
 		bool WriteTextures;
 		bool WriteDefaultScene;
+		bool ExportSMaterialOnce;
 		video::SColorf AmbientLight;
+		E_COLLADA_GEOMETRY_WRITING GeometryWriting;
 	};
 
 

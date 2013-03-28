@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="26.OcclusionQuery_vc9"
-	ProjectGUID="{7BDBB7E8-E0C9-4A0D-83C1-D389D6140FEF}"
+	ProjectGUID="{9A859369-0A56-4DAB-9E0C-9F93C91CF0F2}"
 	RootNamespace="OcclusionQuery_vc9"
 	TargetFrameworkVersion="131072"
 	>

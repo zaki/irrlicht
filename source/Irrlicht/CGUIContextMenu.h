@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -31,10 +31,10 @@ namespace gui
 		//! destructor
 		virtual ~CGUIContextMenu();
 
-		//! set behaviour when menus are closed
+		//! set behavior when menus are closed
 		virtual void setCloseHandling(ECONTEXT_MENU_CLOSE onClose);
 
-		//! get current behaviour when the menue will be closed
+		//! get current behavior when the menue will be closed
 		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const;
 
 		//! Returns amount of menu items

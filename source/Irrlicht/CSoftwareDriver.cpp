@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -139,7 +139,7 @@ void CSoftwareDriver::selectRightTriangleRenderer()
 					renderer = ETR_TEXTURE_GOURAUD_ADD;
 				}
 				else
-				if ((Material.ZBuffer==ECFN_NEVER) && !Material.ZWriteEnable)
+				if ((Material.ZBuffer==ECFN_DISABLED) && !Material.ZWriteEnable)
 					renderer = ETR_TEXTURE_GOURAUD_NOZ;
 				else
 				{

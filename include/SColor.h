@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -30,6 +30,23 @@ namespace video
 
 		//! Default 32 bit color format. 8 bits are used for every component: red, green, blue and alpha.
 		ECF_A8R8G8B8,
+
+		/** Compressed image formats. **/
+
+		//! DXT1 color format.
+		ECF_DXT1,
+
+		//! DXT2 color format.
+		ECF_DXT2,
+
+		//! DXT3 color format.
+		ECF_DXT3,
+
+		//! DXT4 color format.
+		ECF_DXT4,
+
+		//! DXT5 color format.
+		ECF_DXT5,
 
 		/** Floating Point formats. The following formats may only be used for render target textures. */
 
@@ -395,6 +412,7 @@ namespace video
 					}
 					break;
 				default:
+					color = 0xffffffff;
 				break;
 			}
 		}

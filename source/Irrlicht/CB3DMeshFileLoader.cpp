@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2011 Luke Hoschke
+// Copyright (C) 2006-2012 Luke Hoschke
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -177,7 +177,8 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
 	positionMatrix.setTranslation( joint->Animatedposition );
 	core::matrix4 scaleMatrix;
 	scaleMatrix.setScale( joint->Animatedscale );
-	core::matrix4 rotationMatrix = joint->Animatedrotation.getMatrix();
+	core::matrix4 rotationMatrix;
+	joint->Animatedrotation.getMatrix_transposed(rotationMatrix);
 
 	joint->LocalMatrix = positionMatrix * rotationMatrix * scaleMatrix;
 
@@ -770,7 +771,7 @@ bool CB3DMeshFileLoader::readChunkANIM()
 	readFloats(&animFPS, 1);
 	if (animFPS>0.f)
 		AnimatedMesh->setAnimationSpeed(animFPS);
-	os::Printer::log("FPS", io::path(animFPS), ELL_DEBUG);
+	os::Printer::log("FPS", io::path((double)animFPS), ELL_DEBUG);
 
 	#ifdef __BIG_ENDIAN__
 		animFlags = os::Byteswap::byteswap(animFlags);

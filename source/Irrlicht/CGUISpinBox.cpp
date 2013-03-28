@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2011 Michael Zeilfelder
+// Copyright (C) 2006-2012 Michael Zeilfelder
 // This file uses the licence of the Irrlicht Engine.
 
 #include "CGUISpinBox.h"
@@ -23,7 +23,7 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, bool border,IGUIEnvironment* envir
 : IGUISpinBox(environment, parent, id, rectangle),
 	EditBox(0), ButtonSpinUp(0), ButtonSpinDown(0), StepSize(1.f),
 	RangeMin(-FLT_MAX), RangeMax(FLT_MAX), FormatString(L"%f"),
-	DecimalPlaces(-1)
+	DecimalPlaces(-1), ValidateOn(EGUI_SBV_ENTER|EGUI_SBV_LOSE_FOCUS)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUISpinBox");
@@ -156,7 +156,6 @@ f32 CGUISpinBox::getStepSize() const
 	return StepSize;
 }
 
-
 void CGUISpinBox::setStepSize(f32 step)
 {
 	StepSize = step;
@@ -179,12 +178,24 @@ void CGUISpinBox::setDecimalPlaces(s32 places)
 	setValue(getValue());
 }
 
+//! Sets when the spinbox has to validate entered text.
+void CGUISpinBox::setValidateOn(u32 validateOn)
+{
+	ValidateOn = validateOn;
+}
+
+//! Gets when the spinbox has to validate entered text.
+u32 CGUISpinBox::getValidateOn() const
+{
+	return ValidateOn;
+}
 
 bool CGUISpinBox::OnEvent(const SEvent& event)
 {
 	if (IsEnabled)
 	{
 		bool changeEvent = false;
+		bool eatEvent = false;
 		switch(event.EventType)
 		{
 		case EET_MOUSE_INPUT_EVENT:
@@ -195,6 +206,7 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 					f32 val = getValue() + (StepSize * (event.MouseInput.Wheel < 0 ? -1.f : 1.f));
 					setValue(val);
 					changeEvent = true;
+					eatEvent = true;
 				}
 				break;
 			default:
@@ -203,6 +215,7 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 			break;
 
 		case EET_GUI_EVENT:
+
 			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
 			{
 				if (event.GUIEvent.Caller == ButtonSpinUp)
@@ -220,9 +233,12 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 					changeEvent = true;
 				}
 			}
-			if (event.GUIEvent.EventType == EGET_EDITBOX_CHANGED || event.GUIEvent.EventType == EGET_EDITBOX_ENTER)
+			if (event.GUIEvent.Caller == EditBox)
 			{
-				if (event.GUIEvent.Caller == EditBox)
+				if (	(event.GUIEvent.EventType == EGET_EDITBOX_CHANGED && ValidateOn & EGUI_SBV_CHANGE)
+					||	(event.GUIEvent.EventType == EGET_EDITBOX_ENTER && ValidateOn & EGUI_SBV_ENTER) 
+					||	(event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST && ValidateOn & EGUI_SBV_LOSE_FOCUS)
+					)
 				{
 					verifyValueRange();
 					changeEvent = true;
@@ -243,7 +259,8 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 			e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
 			if ( Parent )
 				Parent->OnEvent(e);
-			return true;
+			if ( eatEvent )
+				return true;
 		}
 	}
 
@@ -307,6 +324,7 @@ void CGUISpinBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	out->addFloat("Max", getMax());
 	out->addFloat("Step", getStepSize());
 	out->addInt("DecimalPlaces", DecimalPlaces);
+	out->addInt("ValidateOn", (s32)ValidateOn);
 }
 
 
@@ -317,6 +335,7 @@ void CGUISpinBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 	setRange(in->getAttributeAsFloat("Min"), in->getAttributeAsFloat("Max"));
 	setStepSize(in->getAttributeAsFloat("Step"));
 	setDecimalPlaces(in->getAttributeAsInt("DecimalPlaces"));
+	setValidateOn((u32)in->getAttributeAsInt("ValidateOn", (s32)ValidateOn) );
 }
 
 

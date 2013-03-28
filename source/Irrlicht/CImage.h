@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -24,7 +24,8 @@ public:
 	directly and own it from now on, which means it will also try to delete [] the
 	data when the image will be destructed. If false, the memory will by copied. */
 	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size,
-		void* data, bool ownForeignMemory=true, bool deleteMemory = true);
+		void* data, bool ownForeignMemory=true, bool deleteMemory = true,
+		bool compressed = false, bool mipMaps = false);
 
 	//! constructor for empty image
 	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size);
@@ -103,6 +104,13 @@ public:
 	//! fills the surface with given color
 	virtual void fill(const SColor &color);
 
+	//! Inform whether the image is compressed
+	virtual bool isCompressed() const;
+
+	//! Check whether the image has MipMaps
+	/** \return True if image has MipMaps, else false. */
+	virtual bool hasMipMaps() const;
+
 private:
 
 	//! assumes format and size has been set and creates the rest
@@ -115,6 +123,9 @@ private:
 	u32 BytesPerPixel;
 	u32 Pitch;
 	ECOLOR_FORMAT Format;
+
+	bool IsCompressed;
+	bool HasMipMaps;
 
 	bool DeleteMemory;
 };

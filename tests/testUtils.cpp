@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Colin MacDonald
+// Copyright (C) 2008-2012 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #if defined(_MSC_VER)
@@ -148,6 +148,21 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 }
 
 
+irr::core::stringc shortDriverName(irr::video::IVideoDriver * driver)
+{
+	irr::core::stringc driverName = driver->getName();
+
+	// For OpenGL and Burning, chop the version number out. Other drivers have more stable version numbers.
+	// TA: Sorry Rogerborg. burnings video also has the version number inside;-)
+	//     maybe you sould take the getDriverType Info for this
+	if(driverName.find("OpenGL") > -1)
+		driverName = "OpenGL";
+	else if(driverName.find("Burning's Video") > -1)
+		driverName = "Burning's Video";
+
+	return driverName;
+}
+
 bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 					const char * fileName,
 					irr::f32 requiredMatch)
@@ -177,20 +192,8 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 		screenshot = fixedScreenshot;
 	}
 
-	irr::core::stringc driverName = driver->getName();
+	irr::core::stringc driverName = shortDriverName(driver);
 	
-	// For OpenGL and Burning, chop the version number out. Other drivers have more stable version numbers.
-	// TA: Sorry Rogerborg. burnings video also has the version number inside;-)
-	//     maybe you sould take the getDriverType Info for this
-	if (driverName.find("OpenGL ES 2") > -1)
-		driverName = "OGLES2";
-	else if (driverName.find("OpenGL ES") > -1)
-		driverName = "OGLES1";
-	else if (driverName.find("OpenGL") > -1)
-		driverName = "OpenGL";
-	else if (driverName.find("Burning's Video") > -1)
-		driverName = "Burning's Video";
-
 	irr::core::stringc referenceFilename = "media/";
 	referenceFilename += driverName;
 	referenceFilename += fileName;

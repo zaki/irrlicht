@@ -127,7 +127,10 @@ public:
 	*/
 	virtual void render()
 	{
-		u16 indices[] = {	0,2,3, 2,1,3, 1,0,3, 2,0,1	};
+		/* Indices into the 'Vertices' array. A triangle needs 3 vertices 
+		so you have to pass the 3 corresponding indices for each triangle to 
+		tell which of the vertices should be used for it.	*/
+		u16 indices[] = {	0,2,3, 2,1,3, 1,0,3, 2,0,1	}; 
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 		driver->setMaterial(Material);

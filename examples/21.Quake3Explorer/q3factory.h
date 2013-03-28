@@ -7,9 +7,6 @@
 #ifndef __QUAKE3_FACTORY__H_INCLUDED__
 #define __QUAKE3_FACTORY__H_INCLUDED__
 
-#include <irrlicht.h>
-
-
 using namespace irr;
 using namespace scene;
 using namespace gui;

@@ -53,6 +53,7 @@
 		<Unit filename="draw2DImage.cpp" />
 		<Unit filename="drawPixel.cpp" />
 		<Unit filename="drawRectOutline.cpp" />
+		<Unit filename="drawVertexPrimitive.cpp" />
 		<Unit filename="enumerateImageManipulators.cpp" />
 		<Unit filename="exports.cpp" />
 		<Unit filename="fast_atof.cpp" />
@@ -102,6 +103,7 @@
 		<Unit filename="textureRenderStates.cpp" />
 		<Unit filename="timer.cpp" />
 		<Unit filename="transparentMaterials.cpp" />
+		<Unit filename="userClipPlane.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />
 		<Unit filename="videoDriver.cpp" />
 		<Unit filename="viewPort.cpp" />

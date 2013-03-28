@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -363,7 +363,7 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 
 	buffer->Indices.reallocate((polyCountX * polyCountY) * 6);
 
-	const video::SColor clr(100, 255,255,255);
+	const video::SColor clr(255, 255,255,255);
 
 	u32 level = 0;
 

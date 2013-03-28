@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -113,6 +113,14 @@ class aabbox3d
 		vector3d<T> getExtent() const
 		{
 			return MaxEdge - MinEdge;
+		}
+
+		//! Get radius of the bounding sphere
+		/** \return Radius of the bounding sphere. */
+		T getRadius() const
+		{
+			const T radius = getExtent().getLength() / 2;
+			return radius;
 		}
 
 		//! Check if the box is empty.

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -9,7 +9,7 @@
 	\brief Header file containing all scene parameters for modifying mesh loading etc.
 
 	This file includes all parameter names which can be set using ISceneManager::getParameters()
-	to modify the behaviour of plugins and mesh loaders.
+	to modify the behavior of plugins and mesh loaders.
 */
 
 namespace irr

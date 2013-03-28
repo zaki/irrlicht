@@ -1,5 +1,5 @@
 /*
-	Vector font tool - Gaz Davidson December 2006-2011
+	Vector font tool - Gaz Davidson December 2006-2012
 
 	I noticed bitmap fonts were taking massive amounts of video memory at reasonable sizes,
 	so I decided to make a vector font. I always wanted to try converting pixels to triangles...

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -65,7 +65,7 @@ namespace irr
 		/** This is not used by Irrlicht and can be used to send user
 		specific data though the system. The Irrlicht 'window handle'
 		can be obtained from IrrlichtDevice::getExposedVideoData()
-		The usage and behaviour depends on the operating system:
+		The usage and behavior depends on the operating system:
 		Windows: send a WM_USER message to the Irrlicht Window; the
 			wParam and lParam will be used to populate the
 			UserData1 and UserData2 members of the SUserEvent.
@@ -279,8 +279,8 @@ namespace irr
 			//! A tree view node was collapsed. See IGUITreeView::getLastEventNode().
 			EGET_TREEVIEW_NODE_COLLAPSE,
 
-			//! deprecated - use EGET_TREEVIEW_NODE_COLLAPSE instead. This 
-			//! may be removed by Irrlicht 1.9 
+			//! deprecated - use EGET_TREEVIEW_NODE_COLLAPSE instead. This
+			//! may be removed by Irrlicht 1.9
 			EGET_TREEVIEW_NODE_COLLAPS = EGET_TREEVIEW_NODE_COLLAPSE,
 
 			//! No real event. Just for convenience to get number of events

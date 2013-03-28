@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -139,7 +139,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #ifdef _IRR_COMPILE_WITH_PSD_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
 #endif
-#ifdef _IRR_COMPILE_WITH_DDS_LOADER_
+#if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_DECODER_LOADER_)
 	SurfaceLoader.push_back(video::createImageLoaderDDS());
 #endif
 #ifdef _IRR_COMPILE_WITH_PCX_LOADER_
@@ -190,7 +190,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	InitMaterial2D.AntiAliasing=video::EAAM_OFF;
 	InitMaterial2D.Lighting=false;
 	InitMaterial2D.ZWriteEnable=false;
-	InitMaterial2D.ZBuffer=video::ECFN_NEVER;
+	InitMaterial2D.ZBuffer=video::ECFN_DISABLED;
 	InitMaterial2D.UseMipMaps=false;
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{
@@ -1017,7 +1017,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 		for (u32 pixel = 0; pixel < pixels; ++ pixel)
 		{
-			// If the colour matches the reference colour, ignoring alphas,
+			// If the color matches the reference color, ignoring alphas,
 			// set the alpha to zero.
 			if(((*p) & 0x7fff) == refZeroAlpha)
 			{
@@ -1051,7 +1051,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 		const u32 pixels = pitch * dim.Height;
 		for (u32 pixel = 0; pixel < pixels; ++ pixel)
 		{
-			// If the colour matches the reference colour, ignoring alphas,
+			// If the color matches the reference color, ignoring alphas,
 			// set the alpha to zero.
 			if(((*p) & 0x00ffffff) == refZeroAlpha)
 			{
@@ -1066,6 +1066,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 		texture->unlock();
 	}
+	texture->regenerateMipMapLevels();
 }
 
 

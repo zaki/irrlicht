@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -187,7 +187,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		{
 			c8 vertexWord[WORD_BUFFER_LENGTH]; // for retrieving vertex data
 			video::S3DVertex v;
-			// Assign vertex color from currently active material's diffuse colour
+			// Assign vertex color from currently active material's diffuse color
 			if (mtlChanged)
 			{
 				// retrieve the material
@@ -468,8 +468,8 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 //						currMaterial->Meshbuffer->Material.Textures[1] = texture;
 //						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
 		}
-		// Set diffuse material colour to white so as not to affect texture colour
-		// Because Maya set diffuse colour Kd to black when you use a diffuse colour map
+		// Set diffuse material color to white so as not to affect texture color
+		// Because Maya set diffuse color Kd to black when you use a diffuse color map
 		// But is this the right thing to do?
 		currMaterial->Meshbuffer->Material.DiffuseColor.set(
 			currMaterial->Meshbuffer->Material.DiffuseColor.getAlpha(), 255, 255, 255 );

@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2011 Christian Stehno
+// Copyright (C) 2009-2012 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,7 +6,10 @@
 #define __E_DRIVER_CHOICE_H_INCLUDED__
 
 #include <iostream>
+#include <cstdio>
 #include "EDriverTypes.h"
+#include "irrTypes.h"
+#include "IrrlichtDevice.h"
 
 namespace irr
 {

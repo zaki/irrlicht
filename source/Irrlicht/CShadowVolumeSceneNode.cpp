@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,6 +6,8 @@
 #include "ISceneManager.h"
 #include "IMesh.h"
 #include "IVideoDriver.h"
+#include "ICameraSceneNode.h"
+#include "SViewFrustum.h"
 #include "SLight.h"
 #include "os.h"
 
@@ -41,19 +43,26 @@ CShadowVolumeSceneNode::~CShadowVolumeSceneNode()
 void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bool isDirectional)
 {
 	SShadowVolume* svp = 0;
+	core::aabbox3d<f32>* bb = 0;
 
 	// builds the shadow volume and adds it to the shadow volume list.
 
 	if (ShadowVolumes.size() > ShadowVolumesUsed)
 	{
 		// get the next unused buffer
+
 		svp = &ShadowVolumes[ShadowVolumesUsed];
 		svp->set_used(0);
+
+		bb = &ShadowBBox[ShadowVolumesUsed];
 	}
 	else
 	{
 		ShadowVolumes.push_back(SShadowVolume());
 		svp = &ShadowVolumes.getLast();
+
+		ShadowBBox.push_back(core::aabbox3d<f32>());
+		bb = &ShadowBBox.getLast();
 	}
 	svp->reallocate(IndexCount*5);
 	++ShadowVolumesUsed;
@@ -62,16 +71,15 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 	Edges.set_used(IndexCount*2);
 	u32 numEdges = 0;
 
-	numEdges=createEdgesAndCaps(light, svp);
+	numEdges=createEdgesAndCaps(light, svp, bb);
 
-	const core::vector3df ls = light * Infinity; // light scaled
 	// for all edges add the near->far quads
 	for (u32 i=0; i<numEdges; ++i)
 	{
 		const core::vector3df &v1 = Vertices[Edges[2*i+0]];
 		const core::vector3df &v2 = Vertices[Edges[2*i+1]];
-		const core::vector3df v3(v1 - ls);
-		const core::vector3df v4(v2 - ls);
+		const core::vector3df v3(v1+(v1 - light).normalize()*Infinity);
+		const core::vector3df v4(v2+(v2 - light).normalize()*Infinity);
 
 		// Add a quad (two triangles) to the vertex list
 #ifdef _DEBUG
@@ -90,15 +98,18 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light, bo
 
 
 #define IRR_USE_ADJACENCY
+#define IRR_USE_REVERSE_EXTRUDED
 
-u32 CShadowVolumeSceneNode::createEdgesAndCaps(core::vector3df light,
-					SShadowVolume* svp)
+u32 CShadowVolumeSceneNode::createEdgesAndCaps(const core::vector3df& light,
+					SShadowVolume* svp, core::aabbox3d<f32>* bb)
 {
 	u32 numEdges=0;
 	const u32 faceCount = IndexCount / 3;
-	light *= Infinity;
-	if (light == core::vector3df(0,0,0))
-		light = core::vector3df(0.0001f,0.0001f,0.0001f);
+
+	if(faceCount >= 1)
+		bb->reset(Vertices[Indices[0]]);
+	else
+		bb->reset(0,0,0);
 
 	// Check every face if it is front or back facing the light.
 	for (u32 i=0; i<faceCount; ++i)
@@ -107,7 +118,12 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(core::vector3df light,
 		const core::vector3df v1 = Vertices[Indices[3*i+1]];
 		const core::vector3df v2 = Vertices[Indices[3*i+2]];
 
+#ifdef IRR_USE_REVERSE_EXTRUDED
 		FaceData[i]=core::triangle3df(v0,v1,v2).isFrontFacing(light);
+#else
+		FaceData[i]=core::triangle3df(v2,v1,v0).isFrontFacing(light);
+#endif
+
 		if (UseZFailMethod && FaceData[i])
 		{
 #ifdef _DEBUG
@@ -115,14 +131,22 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(core::vector3df light,
 				os::Printer::log("Allocation too small.", ELL_DEBUG);
 #endif
 			// add front cap from light-facing faces
-			svp->push_back(v0);
 			svp->push_back(v2);
 			svp->push_back(v1);
+			svp->push_back(v0);
 
 			// add back cap
-			svp->push_back(v0-light);
-			svp->push_back(v1-light);
-			svp->push_back(v2-light);
+			const core::vector3df i0 = v0+(v0-light).normalize()*Infinity;
+			const core::vector3df i1 = v1+(v1-light).normalize()*Infinity;
+			const core::vector3df i2 = v2+(v2-light).normalize()*Infinity;
+
+			svp->push_back(i0);
+			svp->push_back(i1);
+			svp->push_back(i2);
+
+			bb->addInternalPoint(i0);
+			bb->addInternalPoint(i1);
+			bb->addInternalPoint(i2);
 		}
 	}
 
@@ -179,7 +203,7 @@ u32 CShadowVolumeSceneNode::createEdgesAndCaps(core::vector3df light,
 
 void CShadowVolumeSceneNode::setShadowMesh(const IMesh* mesh)
 {
-    if (ShadowMesh == mesh)
+	if (ShadowMesh == mesh)
 		return;
 	if (ShadowMesh)
 		ShadowMesh->drop();
@@ -203,8 +227,8 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 
 	// create as much shadow volumes as there are lights but
 	// do not ignore the max light settings.
-	const u32 lights = SceneManager->getVideoDriver()->getDynamicLightCount();
-	if (!lights)
+	const u32 lightCount = SceneManager->getVideoDriver()->getDynamicLightCount();
+	if (!lightCount)
 		return;
 
 	// calculate total amount of vertices and indices
@@ -255,7 +279,7 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 	const core::vector3df parentpos = Parent->getAbsolutePosition();
 
 	// TODO: Only correct for point lights.
-	for (i=0; i<lights; ++i)
+	for (i=0; i<lightCount; ++i)
 	{
 		const video::SLight& dl = SceneManager->getVideoDriver()->getDynamicLight(i);
 		core::vector3df lpos = dl.Position;
@@ -279,7 +303,6 @@ void CShadowVolumeSceneNode::OnRegisterSceneNode()
 	}
 }
 
-
 //! renders the node.
 void CShadowVolumeSceneNode::render()
 {
@@ -292,7 +315,46 @@ void CShadowVolumeSceneNode::render()
 
 	for (u32 i=0; i<ShadowVolumesUsed; ++i)
 	{
-		driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod, DebugDataVisible);
+		bool drawShadow = true;
+
+		if (UseZFailMethod && SceneManager->getActiveCamera())
+		{
+			// Disable shadows drawing, when back cap is behind of ZFar plane.
+
+			SViewFrustum frust = *SceneManager->getActiveCamera()->getViewFrustum();
+
+			core::matrix4 invTrans(Parent->getAbsoluteTransformation(), core::matrix4::EM4CONST_INVERSE);
+			frust.transform(invTrans);
+
+			core::vector3df edges[8];
+			ShadowBBox[i].getEdges(edges);
+
+			core::vector3df largestEdge = edges[0];
+			f32 maxDistance = core::vector3df(SceneManager->getActiveCamera()->getPosition() - edges[0]).getLength();
+			f32 curDistance = 0.f;
+
+			for(int j = 1; j < 8; ++j)
+			{
+				curDistance = core::vector3df(SceneManager->getActiveCamera()->getPosition() - edges[j]).getLength();
+
+				if(curDistance > maxDistance)
+				{
+					maxDistance = curDistance;
+					largestEdge = edges[j];
+				}
+			}
+
+			if (!(frust.planes[scene::SViewFrustum::VF_FAR_PLANE].classifyPointRelation(largestEdge) != core::ISREL3D_FRONT))
+				drawShadow = false;
+		}
+
+		if(drawShadow)
+			driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod, DebugDataVisible);
+		else
+		{
+			core::array<core::vector3df> triangles;
+			driver->drawStencilShadowVolume(triangles, UseZFailMethod, DebugDataVisible);
+		}
 	}
 }
 

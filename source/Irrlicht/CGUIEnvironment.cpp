@@ -1,5 +1,5 @@
 
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -48,9 +48,11 @@ namespace irr
 namespace gui
 {
 
-const wchar_t* IRR_XML_FORMAT_GUI_ENV			= L"irr_gui";
-const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT		= L"element";
-const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE	= L"type";
+const wchar_t IRR_XML_FORMAT_GUI_ENV[]			= L"irr_gui";
+const wchar_t IRR_XML_FORMAT_GUI_ELEMENT[]		= L"element";
+const wchar_t IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE[]	= L"type";
+
+const io::path CGUIEnvironment::DefaultFontName = "#DefaultFont";
 
 //! constructor
 CGUIEnvironment::CGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* driver, IOSOperator* op)
@@ -110,12 +112,6 @@ CGUIEnvironment::~CGUIEnvironment()
 		Hovered = 0;
 	}
 
-	if (Driver)
-	{
-		Driver->drop();
-		Driver = 0;
-	}
-
 	if (Focus)
 	{
 		Focus->drop();
@@ -126,18 +122,6 @@ CGUIEnvironment::~CGUIEnvironment()
 	{
 		ToolTip.Element->drop();
 		ToolTip.Element = 0;
-	}
-
-	if (FileSystem)
-	{
-		FileSystem->drop();
-		FileSystem = 0;
-	}
-
-	if (Operator)
-	{
-		Operator->drop();
-		Operator = 0;
 	}
 
 	// drop skin
@@ -161,16 +145,33 @@ CGUIEnvironment::~CGUIEnvironment()
 	// remove all factories
 	for (i=0; i<GUIElementFactoryList.size(); ++i)
 		GUIElementFactoryList[i]->drop();
+
+	if (Operator)
+	{
+		Operator->drop();
+		Operator = 0;
+	}
+
+	if (FileSystem)
+	{
+		FileSystem->drop();
+		FileSystem = 0;
+	}
+
+	if (Driver)
+	{
+		Driver->drop();
+		Driver = 0;
+	}
 }
 
 
 void CGUIEnvironment::loadBuiltInFont()
 {
-	io::path filename = "#DefaultFont";
+	io::IReadFile* file = FileSystem->createMemoryReadFile(BuiltInFontData,
+				BuiltInFontDataSize, DefaultFontName, false);
 
-	io::IReadFile* file = io::createMemoryReadFile(BuiltInFontData, BuiltInFontDataSize, filename, false);
-
-	CGUIFont* font = new CGUIFont(this, filename );
+	CGUIFont* font = new CGUIFont(this, DefaultFontName );
 	if (!font->load(file))
 	{
 		os::Printer::log("Error: Could not load built-in Font. Did you compile without the BMP loader?", ELL_ERROR);
@@ -180,7 +181,7 @@ void CGUIEnvironment::loadBuiltInFont()
 	}
 
 	SFont f;
-	f.NamedPath.setPath(filename);
+	f.NamedPath.setPath(DefaultFontName);
 	f.Font = font;
 	Fonts.push_back(f);
 
@@ -329,11 +330,24 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 }
 
 
-//! Returns if the element has focus
-bool CGUIEnvironment::hasFocus(IGUIElement* element) const
+//! Returns whether the element has focus
+bool CGUIEnvironment::hasFocus(IGUIElement* element, bool checkSubElements) const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return (element == Focus);
+	if (element == Focus)
+		return true;
+
+	if ( !checkSubElements || !element )
+		return false;
+
+	IGUIElement* f = Focus;
+	while ( f && f->isSubElement() )
+	{
+		f = f->getParent();
+		if ( f == element )
+			return true;
+	}
+	return false;
 }
 
 
@@ -351,7 +365,7 @@ io::IFileSystem* CGUIEnvironment::getFileSystem() const
 }
 
 
-//! returns the current file system
+//! returns a pointer to the OS operator
 IOSOperator* CGUIEnvironment::getOSOperator() const
 {
 	return Operator;
@@ -813,10 +827,14 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* node)
 	if (nodeType == io::EXN_NONE || nodeType == io::EXN_UNKNOWN || nodeType == io::EXN_ELEMENT_END)
 		return;
 
+	IGUIElement* deferedNode = 0;
 	if (!wcscmp(IRR_XML_FORMAT_GUI_ENV, reader->getNodeName()))
 	{
-		if (!node)
-			node = this; // root
+		// GuiEnvironment always must be this as it would serialize into a wrong element otherwise.
+		// So we use the given node next time
+		if ( node && node != this )
+			deferedNode = node;
+		node = this; // root
 	}
 	else if	(!wcscmp(IRR_XML_FORMAT_GUI_ELEMENT, reader->getNodeName()))
 	{
@@ -860,7 +878,10 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* node)
 			if (!wcscmp(IRR_XML_FORMAT_GUI_ELEMENT, reader->getNodeName()) ||
 				!wcscmp(IRR_XML_FORMAT_GUI_ENV, reader->getNodeName()))
 			{
-				readGUIElement(reader, node);
+				if ( deferedNode )
+					readGUIElement(reader, deferedNode);
+				else
+					readGUIElement(reader, node);
 			}
 			else
 			{
@@ -1113,13 +1134,16 @@ IGUIImage* CGUIEnvironment::addImage(video::ITexture* image, core::position2d<s3
 
 
 //! adds an image. The returned pointer must not be dropped.
-IGUIImage* CGUIEnvironment::addImage(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id, const wchar_t* text)
+IGUIImage* CGUIEnvironment::addImage(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id, const wchar_t* text, bool useAlphaChannel)
 {
 	IGUIImage* img = new CGUIImage(this, parent ? parent : this,
 		id, rectangle);
 
 	if (text)
 		img->setText(text);
+
+	if ( useAlphaChannel )
+		img->setUseAlphaChannel(true);
 
 	img->drop();
 	return img;
@@ -1529,7 +1553,10 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 	// we don't have this sprite bank, we should load it
 	if (!FileSystem->existFile(b.NamedPath.getPath()))
 	{
-		os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_DEBUG);
+		if ( filename != DefaultFontName )
+		{
+			os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_DEBUG);
+		}
 		return 0;
 	}
 

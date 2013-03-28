@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011 Christian Stehno
+// Copyright (C) 2007-2012 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -40,8 +40,6 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* file)
 	if (filesize < 6) // we need a header
 		return 0;
 
-	const u32 WORD_BUFFER_LENGTH = 512;
-
 	SMesh* mesh = new SMesh();
 	SMeshBuffer* meshBuffer = new SMeshBuffer();
 	mesh->addMeshBuffer(meshBuffer);
@@ -50,11 +48,9 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* file)
 	core::vector3df vertex[3];
 	core::vector3df normal;
 
-	c8 buffer[WORD_BUFFER_LENGTH];
-
 	bool binary = false;
-	file->read(buffer, 5);
-	if (strncmp("solid", buffer, 5))
+	core::stringc token;
+	if (getNextToken(file, token) != "solid")
 		binary = true;
 	// read/skip header
 	u32 binFaceCount = 0;
@@ -70,7 +66,6 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* file)
 		goNextLine(file);
 
 	u16 attrib=0;
-	core::stringc token;
 	token.reserve(32);
 
 	while (file->getPos() < filesize)

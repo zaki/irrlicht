@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -187,7 +187,7 @@ const char OPENGL_PARALLAX_MAP_PSH[] =
 
 //! Constructor
 COpenGLParallaxMapRenderer::COpenGLParallaxMapRenderer(video::COpenGLDriver* driver,
-	s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
+	s32& outMaterialTypeNr, E_MATERIAL_TYPE baseMaterial)
 	: COpenGLShaderMaterialRenderer(driver, 0, baseMaterial), CompiledShaders(true)
 {
 

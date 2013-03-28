@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Nikolaus Gebhardt
+// Copyright (C) 2008-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -45,7 +45,8 @@ namespace scene
 
 			virtual void push_back(const u32 &element)
 			{
-				Indices.push_back((T&)element);
+				// push const ref due to compiler problem with gcc 4.6, big endian
+				Indices.push_back((const T&)element);
 			}
 
 			virtual u32 operator [](u32 index) const

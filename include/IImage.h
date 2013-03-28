@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -98,6 +98,13 @@ public:
 	//! fills the surface with given color
 	virtual void fill(const SColor &color) =0;
 
+	//! Inform whether the image is compressed
+	virtual bool isCompressed() const = 0;
+
+	//! Check whether the image has MipMaps
+	/** \return True if image has MipMaps, else false. */
+	virtual bool hasMipMaps() const = 0;
+
 	//! get the amount of Bits per Pixel of the given color format
 	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)
 	{
@@ -110,6 +117,13 @@ public:
 		case ECF_R8G8B8:
 			return 24;
 		case ECF_A8R8G8B8:
+			return 32;
+		case ECF_DXT1:
+			return 16;
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
 			return 32;
 		case ECF_R16F:
 			return 16;
@@ -125,6 +139,22 @@ public:
 			return 128;
 		default:
 			return 0;
+		}
+	}
+
+	//! test if this is compressed color format
+	static bool isCompressedFormat(const ECOLOR_FORMAT format)
+	{
+		switch(format)
+		{
+			case ECF_DXT1:
+			case ECF_DXT2:
+			case ECF_DXT3:
+			case ECF_DXT4:
+			case ECF_DXT5:
+				return true;
+			default:
+				return false;
 		}
 	}
 

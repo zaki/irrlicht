@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -99,8 +99,10 @@ void CGUISpriteBank::clear()
 {
 	// drop textures
 	for (u32 i=0; i<Textures.size(); ++i)
+	{
 		if (Textures[i])
 			Textures[i]->drop();
+	}
 	Textures.clear();
 	Sprites.clear();
 	Rectangles.clear();
@@ -150,7 +152,7 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 			frame = (f >= Sprites[index].Frames.size()) ? Sprites[index].Frames.size()-1 : f;
 	}
 
-	const video::ITexture* tex = Textures[Sprites[index].Frames[frame].textureNumber];
+	const video::ITexture* tex = getTexture(Sprites[index].Frames[frame].textureNumber);
 	if (!tex)
 		return;
 
@@ -182,17 +184,17 @@ void CGUISpriteBank::draw2DSpriteBatch(	const core::array<u32>& indices,
 {
 	const irr::u32 drawCount = core::min_<u32>(indices.size(), pos.size());
 
-	if( Textures.empty() )
+	if (!getTextureCount())
 		return;
-	core::array<SDrawBatch> drawBatches(Textures.size());
-	for(u32 i = 0;i < Textures.size();i++)
+	core::array<SDrawBatch> drawBatches(getTextureCount());
+	for (u32 i=0; i < Textures.size(); ++i)
 	{
 		drawBatches.push_back(SDrawBatch());
 		drawBatches[i].positions.reallocate(drawCount);
 		drawBatches[i].sourceRects.reallocate(drawCount);
 	}
 
-	for(u32 i = 0;i < drawCount;i++)
+	for (u32 i = 0; i < drawCount; ++i)
 	{
 		const u32 index = indices[i];
 
@@ -211,7 +213,6 @@ void CGUISpriteBank::draw2DSpriteBatch(	const core::array<u32>& indices,
 		}
 
 		const u32 texNum = Sprites[index].Frames[frame].textureNumber;
-
 		SDrawBatch& currentBatch = drawBatches[texNum];
 
 		const u32 rn = Sprites[index].Frames[frame].rectNumber;
@@ -238,7 +239,7 @@ void CGUISpriteBank::draw2DSpriteBatch(	const core::array<u32>& indices,
 	for(u32 i = 0;i < drawBatches.size();i++)
 	{
 		if(!drawBatches[i].positions.empty() && !drawBatches[i].sourceRects.empty())
-			Driver->draw2DImageBatch(Textures[i], drawBatches[i].positions,
+			Driver->draw2DImageBatch(getTexture(i), drawBatches[i].positions,
 				drawBatches[i].sourceRects, clip, color, true);
 	}
 }
@@ -247,4 +248,3 @@ void CGUISpriteBank::draw2DSpriteBatch(	const core::array<u32>& indices,
 } // namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
-

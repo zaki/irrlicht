@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011 Dean Wadsworth
+// Copyright (C) 2007-2012 Dean Wadsworth
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 

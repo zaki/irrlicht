@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -67,6 +67,15 @@ HasMipMaps(false), IsRenderTarget(false)
 
 	if (image)
 	{
+		if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+		{
+			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+			{
+				os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+				return;
+			}
+		}
+
 		if (createTexture(flags, image))
 		{
 			if (copyTexture(image))

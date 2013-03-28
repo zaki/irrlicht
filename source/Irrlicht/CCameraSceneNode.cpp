@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -244,6 +244,19 @@ void CCameraSceneNode::OnRegisterSceneNode()
 //! render
 void CCameraSceneNode::render()
 {
+	updateMatrices();
+
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	if ( driver)
+	{
+		driver->setTransform(video::ETS_PROJECTION, ViewArea.getTransform ( video::ETS_PROJECTION) );
+		driver->setTransform(video::ETS_VIEW, ViewArea.getTransform ( video::ETS_VIEW) );
+	}
+}
+
+//! update
+void CCameraSceneNode::updateMatrices()
+{
 	core::vector3df pos = getAbsolutePosition();
 	core::vector3df tgtv = Target - pos;
 	tgtv.normalize();
@@ -263,15 +276,7 @@ void CCameraSceneNode::render()
 	ViewArea.getTransform(video::ETS_VIEW).buildCameraLookAtMatrixLH(pos, Target, up);
 	ViewArea.getTransform(video::ETS_VIEW) *= Affector;
 	recalculateViewArea();
-
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	if ( driver)
-	{
-		driver->setTransform(video::ETS_PROJECTION, ViewArea.getTransform ( video::ETS_PROJECTION) );
-		driver->setTransform(video::ETS_VIEW, ViewArea.getTransform ( video::ETS_VIEW) );
-	}
 }
-
 
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CCameraSceneNode::getBoundingBox() const

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and/or irrXML.h
 
@@ -120,7 +120,7 @@
 	The irrXML license is based on the zlib license. Basicly, this means you can do with
 	irrXML whatever you want:
 
-	Copyright (C) 2002-2011 Nikolaus Gebhardt
+	Copyright (C) 2002-2012 Nikolaus Gebhardt
 
 	This software is provided 'as-is', without any express or implied
 	warranty. In no event will the authors be held liable for any damages
@@ -374,10 +374,19 @@ namespace io
 		xmlChar<T>() {}
 		xmlChar<T>(char in) : c(static_cast<T>(in)) {}
 		xmlChar<T>(wchar_t in) : c(static_cast<T>(in)) {}
+#if defined(__BORLANDC__)
+		// Note - removing explicit for borland was to get it to even compile.
+		// There haven't been any kind of tests for that besides that.
+		xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
+		xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
+		xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
+		xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
+#else 
 		explicit xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
+#endif
 		operator T() const { return c; }
 		void operator=(int t) { c=static_cast<T>(t); }
 	};
@@ -416,6 +425,7 @@ namespace io
 	See IIrrXMLReader for description on how to use it. */
 	typedef IIrrXMLReader<char32, IXMLBase> IrrXMLReaderUTF32;
 
+#ifdef _IRR_COMPILE_WITH_XML_
 
 	//! Creates an instance of an UFT-8 or ASCII character xml parser.
 	/** This means that all character data will be returned in 8 bit ASCII or UTF-8.
@@ -537,6 +547,7 @@ namespace io
 	IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(IFileReadCallBack* callback,
 																		bool deleteCallback = false);
 
+#endif // _IRR_COMPILE_WITH_XML_
 
 	/*! \file irrXML.h
 	\brief Header file of the irrXML, the Irrlicht XML parser.

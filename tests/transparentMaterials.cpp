@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Christian Stehno, Colin MacDonald
+// Copyright (C) 2008-2012 Christian Stehno, Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -341,7 +341,7 @@ bool transparentMaterials(void)
 {
 	bool result = true;
 	TestWithAllDrivers(testTransparentAlphaChannel);
-	// FIXME Rogerborg 8-January-2011. Burning's video currently produces unexpected results,
+	// FIXME Rogerborg 8-January-2010. Burning's video currently produces unexpected results,
 	// blending using the full alpha value instead of using a boolean mask. This test is being
 	// added now anyway to help verify the fix when it's done; it should just require an
 	// update of the reference image.

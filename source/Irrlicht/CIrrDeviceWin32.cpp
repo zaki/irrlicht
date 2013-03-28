@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -863,12 +863,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_ACTIVATE:
 		// we need to take care for screen changes, e.g. Alt-Tab
 		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
+		if (dev && dev->isFullscreen())
 		{
 			if ((wParam&0xFF)==WA_INACTIVE)
+			{
+				// If losing focus we minimize the app to show other one
+				ShowWindow(hWnd,SW_MINIMIZE);
+				// and switch back to default resolution
 				dev->switchToFullScreen(true);
+			}
 			else
+			{
+				// Otherwise we retore the fullscreen Irrlicht app
+				SetForegroundWindow(hWnd);
+				ShowWindow(hWnd, SW_RESTORE);
+				// and set the fullscreen resolution again
 				dev->switchToFullScreen();
+			}
 		}
 		break;
 
@@ -924,6 +935,13 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	// get handle to exe file
 	HINSTANCE hInstance = GetModuleHandle(0);
 
+	// Store original desktop mode.
+
+	memset(&DesktopMode, 0, sizeof(DesktopMode));
+	DesktopMode.dmSize = sizeof(DesktopMode);
+
+	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &DesktopMode);
+
 	// create the window if we need to and we do not use the null device
 	if (!CreationParams.WindowId && CreationParams.DriverType != video::EDT_NULL)
 	{
@@ -967,8 +985,12 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		const s32 realWidth = clientSize.right - clientSize.left;
 		const s32 realHeight = clientSize.bottom - clientSize.top;
 
-		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+		s32 windowLeft = (CreationParams.WindowPosition.X == -1 ?
+		                     (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2 :
+		                     CreationParams.WindowPosition.X);
+		s32 windowTop = (CreationParams.WindowPosition.Y == -1 ?
+		                     (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2 :
+		                     CreationParams.WindowPosition.Y);
 
 		if ( windowLeft < 0 )
 			windowLeft = 0;
@@ -1034,7 +1056,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	EnvMap.push_back(em);
 
 	// set this as active window
-	if ( HWnd )
+	if (!ExternalWindow)
 	{
 		SetActiveWindow(HWnd);
 		SetForegroundWindow(HWnd);
@@ -1043,6 +1065,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	// get the codepage used for keyboard input
 	KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
 	KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage( LOWORD(KEYBOARD_INPUT_HKL) );
+
+	// inform driver about the window size etc.
+	resizeIfNecessary();
 }
 
 
@@ -1196,21 +1221,7 @@ bool CIrrDeviceWin32::run()
 
 	static_cast<CCursorControl*>(CursorControl)->update();
 
-	MSG msg;
-
-	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-	{
-		// No message translation because we don't use WM_CHAR and it would conflict with our
-		// deadkey handling.
-
-		if (ExternalWindow && msg.hwnd == HWnd)
-			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
-		else
-			DispatchMessage(&msg);
-
-		if (msg.message == WM_QUIT)
-			Close = true;
-	}
+	handleSystemMessages();
 
 	if (!Close)
 		resizeIfNecessary();
@@ -1245,7 +1256,7 @@ void CIrrDeviceWin32::sleep(u32 timeMs, bool pauseTimer)
 
 void CIrrDeviceWin32::resizeIfNecessary()
 {
-	if (!Resized)
+	if (!Resized || !getVideoDriver())
 		return;
 
 	RECT r;
@@ -1404,18 +1415,23 @@ bool CIrrDeviceWin32::switchToFullScreen(bool reset)
 {
 	if (!CreationParams.Fullscreen)
 		return true;
+
 	if (reset)
 	{
 		if (ChangedToFullScreen)
-			return (ChangeDisplaySettings(NULL,0)==DISP_CHANGE_SUCCESSFUL);
+		{
+			return (ChangeDisplaySettings(&DesktopMode,0)==DISP_CHANGE_SUCCESSFUL);
+		}
 		else
 			return true;
 	}
 
+	// use default values from current setting
+
 	DEVMODE dm;
 	memset(&dm, 0, sizeof(dm));
 	dm.dmSize = sizeof(dm);
-	// use default values from current setting
+
 	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
 	dm.dmPelsWidth = CreationParams.WindowSize.Width;
 	dm.dmPelsHeight = CreationParams.WindowSize.Height;
@@ -1471,7 +1487,7 @@ CIrrDeviceWin32::CCursorControl* CIrrDeviceWin32::getWin32CursorControl()
 //! by the gfx adapter.
 video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 {
-	if (!VideoModeList.getVideoModeCount())
+	if (!VideoModeList->getVideoModeCount())
 	{
 		// enumerate video modes.
 		DWORD i=0;
@@ -1481,17 +1497,17 @@ video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 
 		while (EnumDisplaySettings(NULL, i, &mode))
 		{
-			VideoModeList.addMode(core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight),
+			VideoModeList->addMode(core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight),
 				mode.dmBitsPerPel);
 
 			++i;
 		}
 
 		if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &mode))
-			VideoModeList.setDesktop(mode.dmBitsPerPel, core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight));
+			VideoModeList->setDesktop(mode.dmBitsPerPel, core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight));
 	}
 
-	return &VideoModeList;
+	return VideoModeList;
 }
 
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
@@ -1674,12 +1690,12 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 			sprintf(tmp, "version %ld.%ld %s (Build %ld)",
 					osvi.dwMajorVersion,
 					osvi.dwMinorVersion,
-					osvi.szCSDVersion,
+					irr::core::stringc(osvi.szCSDVersion).c_str(),
 					osvi.dwBuildNumber & 0xFFFF);
 		}
 		else
 		{
-			sprintf(tmp, "%s (Build %ld)", osvi.szCSDVersion,
+			sprintf(tmp, "%s (Build %ld)", irr::core::stringc(osvi.szCSDVersion).c_str(),
 			osvi.dwBuildNumber & 0xFFFF);
 		}
 
@@ -1792,6 +1808,22 @@ void CIrrDeviceWin32::restoreWindow()
 	SetWindowPlacement(HWnd, &wndpl);
 }
 
+core::position2di CIrrDeviceWin32::getWindowPosition()
+{
+	WINDOWPLACEMENT wndpl;
+	wndpl.length = sizeof(WINDOWPLACEMENT);
+	if (GetWindowPlacement(HWnd, &wndpl))
+	{
+		return core::position2di((int)wndpl.rcNormalPosition.left,
+		                         (int)wndpl.rcNormalPosition.top);
+	}
+	else
+	{
+		// No reason for this to happen
+		os::Printer::log("Failed to retrieve window location", ELL_ERROR);
+		return core::position2di(-1, -1);
+	}
+}
 
 bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
@@ -1841,6 +1873,28 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 	return r;
 
 }
+
+
+//! Process system events
+void CIrrDeviceWin32::handleSystemMessages()
+{
+	MSG msg;
+
+	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	{
+		// No message translation because we don't use WM_CHAR and it would conflict with our
+		// deadkey handling.
+
+		if (ExternalWindow && msg.hwnd == HWnd)
+			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
+		else
+			DispatchMessage(&msg);
+
+		if (msg.message == WM_QUIT)
+			Close = true;
+	}
+}
+
 
 //! Remove all messages pending in the system message loop
 void CIrrDeviceWin32::clearSystemMessages()
@@ -1944,8 +1998,6 @@ HCURSOR CIrrDeviceWin32::TextureToCursor(HWND hwnd, irr::video::ITexture * tex, 
 
 	ReleaseDC(hwnd, dc);
 
-
-	//
 	// create the cursor
 
 	ICONINFO iconinfo;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and/or irrXML.h
 
@@ -595,7 +595,8 @@ private:
 
 		// check source for all utf versions and convert to target data format
 
-		if (size >= 4 && data32[0] == static_cast<char32>(UTF32_BE))
+		if (size >= 4 && data32[0] 
+			== static_cast<char32>(UTF32_BE))
 		{
 			// UTF-32, big endian
 			SourceFormat = ETF_UTF32_BE;

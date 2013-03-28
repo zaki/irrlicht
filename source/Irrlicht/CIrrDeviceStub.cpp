@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -19,9 +19,10 @@ namespace irr
 //! constructor
 CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 : IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0),
-	Timer(0), CursorControl(0), UserReceiver(params.EventReceiver), Logger(0), Operator(0),
-	Randomizer(0), FileSystem(0), InputReceivingSceneManager(0), CreationParams(params),
-	Close(false)
+	Timer(0), CursorControl(0), UserReceiver(params.EventReceiver),
+	Logger(0), Operator(0), Randomizer(0), FileSystem(0),
+	InputReceivingSceneManager(0), VideoModeList(0),
+	CreationParams(params), Close(false)
 {
 	Timer = new CTimer(params.UsePerformanceTimer);
 	if (os::Printer::Logger)
@@ -41,6 +42,8 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 	Randomizer = createDefaultRandomizer();
 
 	FileSystem = io::createFileSystem();
+	VideoModeList = new video::CVideoModeList();
+
 	core::stringc s = "Irrlicht Engine version ";
 	s.append(getVersion());
 	os::Printer::log(s.c_str(), ELL_INFORMATION);
@@ -51,6 +54,7 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 
 CIrrDeviceStub::~CIrrDeviceStub()
 {
+	VideoModeList->drop();
 	FileSystem->drop();
 
 	if (GUIEnvironment)
@@ -154,7 +158,7 @@ gui::ICursorControl* CIrrDeviceStub::getCursorControl()
 //! by the gfx adapter.
 video::IVideoModeList* CIrrDeviceStub::getVideoModeList()
 {
-	return &VideoModeList;
+	return VideoModeList;
 }
 
 
@@ -474,7 +478,7 @@ bool CIrrDeviceStub::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightn
 	return false;
 }
 
-//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behaviour.
+//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behavior.
 void CIrrDeviceStub::setDoubleClickTime( u32 timeMs )
 {
 	MouseMultiClicks.DoubleClickTime = timeMs;

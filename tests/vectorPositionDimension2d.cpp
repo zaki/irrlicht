@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Colin MacDonald
+// Copyright (C) 2008-2012 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 /** This test verifies that position2d and vector2d are interchangeable,

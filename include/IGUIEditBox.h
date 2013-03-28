@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,6 +15,11 @@ namespace gui
 	class IGUIFont;
 
 	//! Single line edit box for editing simple text.
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_EDITBOX_ENTER
+	\li EGET_EDITBOX_CHANGED
+	\li EGET_EDITBOX_MARKING_CHANGED
+	*/
 	class IGUIEditBox : public IGUIElement
 	{
 	public:
@@ -63,9 +68,17 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw) = 0;
 
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
+
 		//! Turns the border on or off
 		/** \param border: true if you want the border to be drawn, false if not */
 		virtual void setDrawBorder(bool border) = 0;
+
+		//! Checks if border drawing is enabled
+		/** \return true if border drawing is enabled, false otherwise */
+		virtual bool isDrawBorderEnabled() const = 0;
 
 		//! Sets text justification mode
 		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default),
@@ -120,6 +133,21 @@ namespace gui
 
 		//! Returns maximum amount of characters, previously set by setMax();
 		virtual u32 getMax() const = 0;
+
+		//! Set the character used for the cursor. 
+		/** By default it's "_" */
+		virtual void setCursorChar(const wchar_t cursorChar) = 0;
+
+		//! Get the character used for the cursor. 
+		virtual wchar_t getCursorChar() const = 0;
+
+		//! Set the blinktime for the cursor. 2x blinktime is one full cycle.
+		//** \param timeMs Blinktime in milliseconds. When set to 0 the cursor is constantly on without blinking */
+		virtual void setCursorBlinkTime(irr::u32 timeMs) = 0;
+
+		//! Get the cursor blinktime
+		virtual irr::u32 getCursorBlinkTime() const = 0; 
+ 
 	};
 
 

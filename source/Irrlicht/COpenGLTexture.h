@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -7,6 +7,7 @@
 
 #include "ITexture.h"
 #include "IImage.h"
+#include "SMaterialLayer.h"
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -45,10 +46,31 @@ namespace video
 {
 
 class COpenGLDriver;
+
 //! OpenGL texture.
 class COpenGLTexture : public ITexture
 {
 public:
+
+	//! Cache structure.
+	struct SStatesCache
+	{
+		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT),
+				LODBias(0), AnisotropicFilter(0),
+				BilinearFilter(false), TrilinearFilter(false),
+				MipMapStatus(false), IsCached(false)
+		{
+		}
+
+		u8 WrapU;
+		u8 WrapV;
+		s8 LODBias;
+		u8 AnisotropicFilter;
+		bool BilinearFilter;
+		bool TrilinearFilter;
+		bool MipMapStatus;
+		bool IsCached;
+	};
 
 	//! constructor
 	COpenGLTexture(IImage* surface, const io::path& name, void* mipmapData=0, COpenGLDriver* driver=0);
@@ -103,6 +125,9 @@ public:
 	//! sets whether this texture is intended to be used as a render target.
 	void setIsRenderTarget(bool isTarget);
 
+	//! Get an access to texture states cache.
+	SStatesCache& getStatesCache() const;
+
 protected:
 
 	//! protected constructor with basic setup, no GL texture name created, for derived classes
@@ -140,9 +165,12 @@ protected:
 	bool HasMipMaps;
 	bool MipmapLegacyMode;
 	bool IsRenderTarget;
+	bool IsCompressed;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
 	bool KeepImage;
+
+	mutable SStatesCache StatesCache;
 };
 
 //! OpenGL FBO texture.
@@ -152,7 +180,7 @@ public:
 
 	//! FrameBufferObject constructor
 	COpenGLFBOTexture(const core::dimension2d<u32>& size, const io::path& name,
-		COpenGLDriver* driver = 0, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+		COpenGLDriver* driver = 0, ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! destructor
 	virtual ~COpenGLFBOTexture();

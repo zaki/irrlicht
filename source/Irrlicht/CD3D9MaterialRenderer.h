@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -63,24 +63,26 @@ public:
 	{
 	}
 
-	~CD3D9MaterialRenderer()
+	virtual s32 getVariableID(bool vertexShader, const c8* name)
 	{
+		os::Printer::log("Invalid material to set variable in.");
+		return -1;
 	}
 
 	//! sets a variable in the shader.
 	//! \param vertexShader: True if this should be set in the vertex shader, false if
 	//! in the pixel shader.
-	//! \param name: Name of the variable
+	//! \param index: Index of the variable
 	//! \param floats: Pointer to array of floats
 	//! \param count: Amount of floats in array.
-	virtual bool setVariable(bool vertexShader, const c8* name, const f32* floats, int count)
+	virtual bool setVariable(bool vertexShader, s32 index, const f32* floats, int count)
 	{
 		os::Printer::log("Invalid material to set variable in.");
 		return false;
 	}
 
 	//! Int interface for the above.
-	virtual bool setVariable(bool vertexShader, const c8* name, const s32* ints, int count)
+	virtual bool setVariable(bool vertexShader, s32 index, const s32* ints, int count)
 	{
 		os::Printer::log("Invalid material to set variable in.");
 		return false;
@@ -104,6 +106,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -112,8 +116,6 @@ public:
 
 		pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 };
 
@@ -128,6 +130,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType ||
 			material.MaterialTypeParam != lastMaterial.MaterialTypeParam ||
 			resetAllRenderstates)
@@ -172,9 +176,6 @@ public:
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
-
 	}
 
 	//! Returns if the material is transparent.
@@ -238,6 +239,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0, D3DTA_TEXTURE);
@@ -247,8 +250,6 @@ public:
 
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 };
 
@@ -264,6 +265,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -274,8 +277,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	//! Returns if the material is transparent. The scene management needs to know this
@@ -298,6 +299,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -309,8 +312,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	//! Returns if the material is transparent. The scene managment needs to know this
@@ -333,6 +334,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates
 			|| material.MaterialTypeParam != lastMaterial.MaterialTypeParam )
 		{
@@ -349,8 +352,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	virtual void OnUnsetMaterial()
@@ -379,6 +380,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -394,8 +397,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	virtual void OnUnsetMaterial()
@@ -423,6 +424,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			if (material.MaterialType >= EMT_LIGHTMAP_LIGHTING)
@@ -451,8 +454,6 @@ public:
 
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 };
 
@@ -469,6 +470,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -478,8 +481,6 @@ public:
 			pID3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 };
 
@@ -495,6 +496,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -507,8 +510,6 @@ public:
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACENORMAL );
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	virtual void OnUnsetMaterial()
@@ -531,6 +532,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -544,8 +547,6 @@ public:
 			pID3DDevice->SetTextureStageState( 1, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	virtual void OnUnsetMaterial()
@@ -568,6 +569,8 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
+		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
@@ -585,8 +588,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
-
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	virtual void OnUnsetMaterial()

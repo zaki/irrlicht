@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -84,6 +84,9 @@ namespace irr
 
 		//! Restores the window size.
 		virtual void restoreWindow();
+
+		//! Get the position of the window on screen
+		virtual core::position2di getWindowPosition();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
@@ -382,6 +385,9 @@ namespace irr
 		//! create the driver
 		void createDriver();
 
+		//! Process system events
+		void handleSystemMessages();
+
 		void getWindowsVersion(core::stringc& version);
 
 		void resizeIfNecessary();
@@ -393,6 +399,7 @@ namespace irr
 		bool Resized;
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
+		DEVMODE DesktopMode;
 
 		SJoystickWin32Control* JoyControl;
 	};

@@ -293,30 +293,20 @@ void android_main(struct android_app* app)
 			core::dimension2df(10.f,10.f),         // min size
 			core::dimension2df(20.f,20.f));        // max size
 
-		if (em)
-		{
-			ps->setEmitter(em); // this grabs the emitter
-			em->drop(); // so we can drop it here without deleting it
-		}
+		ps->setEmitter(em); // this grabs the emitter
+		em->drop(); // so we can drop it here without deleting it
 
 		scene::IParticleAffector* paf = ps->createFadeOutParticleAffector();
 
-		if (paf)
-		{
-			ps->addAffector(paf); // same goes for the affector
-			paf->drop();
-		}
+		ps->addAffector(paf); // same goes for the affector
+		paf->drop();
 
 		ps->setPosition(core::vector3df(-70,60,40));
 		ps->setScale(core::vector3df(2,2,2));
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
-//		ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-#ifdef _IRR_ANDROID_PLATFORM_
-		ps->setMaterialTexture(0, driver->getTexture("media/fire.bmp"));
-#else
+		ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 		ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
-#endif
-		ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+		ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 	}
 
 	/*
@@ -363,6 +353,7 @@ void android_main(struct android_app* app)
 
 	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS();
 	camera->setPosition(core::vector3df(-50,50,-150));
+	camera->setFarValue(10000.0f); // this increase a shadow visible range.
 
 	// disable mouse cursor
 	device->getCursorControl()->setVisible(false);

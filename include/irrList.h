@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -59,7 +59,7 @@ public:
 		}
 
 		Iterator  operator + (s32 num) const { Iterator tmp = *this; return tmp += num; }
-		Iterator& operator -=(s32 num) const { return (*this)+=(-num); }
+		Iterator& operator -=(s32 num) { return (*this)+=(-num); }
 		Iterator  operator - (s32 num) const { return (*this)+ (-num); }
 
 		bool operator ==(const Iterator&      other) const { return Current == other.Current; }
@@ -110,7 +110,7 @@ public:
 		}
 
 		ConstIterator  operator + (s32 num) const { ConstIterator tmp = *this; return tmp += num; }
-		ConstIterator& operator -=(s32 num) const { return (*this)+=(-num); }
+		ConstIterator& operator -=(s32 num) { return (*this)+=(-num); }
 		ConstIterator  operator - (s32 num) const { return (*this)+ (-num); }
 
 		bool operator ==(const ConstIterator& other) const { return Current == other.Current; }

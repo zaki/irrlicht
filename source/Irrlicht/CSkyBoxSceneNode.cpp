@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -38,7 +38,7 @@ CSkyBoxSceneNode::CSkyBoxSceneNode(video::ITexture* top, video::ITexture* bottom
 
 	video::SMaterial mat;
 	mat.Lighting = false;
-	mat.ZBuffer = video::ECFN_NEVER;
+	mat.ZBuffer = video::ECFN_DISABLED;
 	mat.ZWriteEnable = false;
 	mat.AntiAliasing=0;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;

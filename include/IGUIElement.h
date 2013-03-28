@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -346,6 +346,20 @@ public:
 		return IsVisible;
 	}
 
+	//! Check whether the element is truly visible, taking into accounts its parents' visibility
+	/** \return true if the element and all its parents are visible,
+	false if this or any parent element is invisible. */
+	virtual bool isTrulyVisible() const
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+		if(!IsVisible)
+			return false;
+
+		if(!Parent)
+			return true;
+
+		return Parent->isTrulyVisible();
+	}
 
 	//! Sets the visible state of this element.
 	virtual void setVisible(bool visible)
@@ -841,7 +855,7 @@ protected:
 			if (NoClip)
 			{
 				IGUIElement* p=this;
-				while (p && p->Parent)
+				while (p->Parent)
 					p = p->Parent;
 				parentAbsoluteClip = p->AbsoluteClippingRect;
 			}

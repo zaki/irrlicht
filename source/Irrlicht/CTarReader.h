@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2011 Gaz Davidson
+// Copyright (C) 2009-2012 Gaz Davidson
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -21,16 +21,6 @@ namespace irr
 namespace io
 {
 
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
-
 	enum E_TAR_LINK_INDICATOR
 	{
 		ETLI_REGULAR_FILE_OLD      =  0 ,
@@ -43,6 +33,9 @@ namespace io
 		ETLI_FIFO_SPECIAL_FILE     = '6',
 		ETLI_CONTIGUOUS_FILE       = '7'
 	};
+
+// byte-align structures
+#include "irrpack.h"
 
 	struct STarHeader
 	{
@@ -64,13 +57,8 @@ namespace io
 		c8 FileNamePrefix[155];
 	} PACK_STRUCT;
 
-
 // Default alignment
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+#include "irrunpack.h"
 
 	//! Archiveloader capable of loading ZIP Archives
 	class CArchiveLoaderTAR : public IArchiveLoader

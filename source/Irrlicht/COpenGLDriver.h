@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -33,10 +33,12 @@ namespace irr
 
 namespace video
 {
+    class COpenGLCallBridge;
 	class COpenGLTexture;
 
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
+        friend class COpenGLCallBridge;
 		friend class COpenGLTexture;
 	public:
 
@@ -275,7 +277,24 @@ namespace video
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-			bool resetAllRenderstates);
+			bool resetAllRenderstates)
+		{
+			setBasicRenderStates(material, lastmaterial, resetAllRenderstates, true);
+            setTextureRenderStates(material, resetAllRenderstates, true);
+		}
+
+		//! Can be called by an IMaterialRenderer to make its work easier.
+		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
+			bool resetAllRenderstates, bool fixedPipeline);
+        
+        //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
+        virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline);
+
+		//! Get a vertex shader constant index.
+		virtual s32 getVertexShaderConstantID(const c8* name);
+
+		//! Get a pixel shader constant index.
+		virtual s32 getPixelShaderConstantID(const c8* name);
 
 		//! Sets a vertex shader constant.
 		virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
@@ -283,17 +302,17 @@ namespace video
 		//! Sets a pixel shader constant.
 		virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
 
-		//! Sets a constant for the vertex shader based on a name.
-		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
+		//! Sets a constant for the vertex shader based on an index.
+		virtual bool setVertexShaderConstant(s32 index, const f32* floats, int count);
 
 		//! Int interface for the above.
-		virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
+		virtual bool setVertexShaderConstant(s32 index, const s32* ints, int count);
 
-		//! Sets a constant for the pixel shader based on a name.
-		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
+		//! Sets a constant for the pixel shader based on an index.
+		virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count);
 
 		//! Int interface for the above.
-		virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
+		virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count);
 
 		//! sets the current Texture
 		//! Returns whether setting was a success or not.
@@ -396,6 +415,15 @@ namespace video
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
+		//! Get ZBuffer bits.
+		GLenum getZBufferBits() const;
+        
+        //! Get current material.
+        const SMaterial& getCurrentMaterial() const;
+        
+        //! Get bridge calls.
+        COpenGLCallBridge* getBridgeCalls() const;
+
 		//! Get Cg context
 		#ifdef _IRR_COMPILE_WITH_CG_
 		const CGcontext& getCgContext();
@@ -419,9 +447,6 @@ namespace video
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 		inline void getGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
-
-		//! Set GL pipeline to desired texture wrap modes of the material
-		void setWrapMode(const SMaterial& material);
 
 		//! get native wrap mode value
 		GLint getTextureWrapMode(const u8 clamp);
@@ -448,6 +473,9 @@ namespace video
 		//! helper function doing the actual rendering.
 		void renderArray(const void* indexList, u32 primitiveCount,
 				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
+				
+		// Bridge calls.
+        COpenGLCallBridge* BridgeCalls;
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -470,6 +498,7 @@ namespace video
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		core::array<video::IRenderTarget> MRTargets;
+
 		class STextureStageCache
 		{
 			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
@@ -508,7 +537,7 @@ namespace video
 					return 0;
 			}
 
-			void remove(const ITexture* tex)
+			void remove(ITexture* tex)
 			{
 				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
 				{
@@ -534,6 +563,7 @@ namespace video
 			}
 		};
 		STextureStageCache CurrentTexture;
+
 		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane
 		{
@@ -570,6 +600,11 @@ namespace video
 		};
 		core::array<RequestedLight> RequestedLights;
 
+		//! Built-in 2D quad for 2D rendering.
+		S3DVertex Quad2DVertices[4];
+		u16 Quad2DIndices[6];
+        u16 Line2DIndices[2];
+
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
@@ -594,6 +629,88 @@ namespace video
 
 		E_DEVICE_TYPE DeviceType;
 	};
+    
+    //! This bridge between Irlicht pseudo OpenGL calls
+    //! and true OpenGL calls.
+    
+    class COpenGLCallBridge
+    {
+    public:
+        COpenGLCallBridge(COpenGLDriver* driver);
+
+		// Alpha calls.
+
+		void setAlphaFunc(GLenum mode, GLclampf ref);
+
+		void setAlphaTest(bool enable);
+
+		// Blending calls.
+
+		void setBlendFunc(GLenum source, GLenum destination);
+
+		void setBlend(bool enable);
+
+		// Client state calls.
+
+		void setClientState(bool vertex, bool normal, bool color, bool texCoord0);
+
+		// Cull face calls.
+
+		void setCullFaceFunc(GLenum mode);
+
+		void setCullFace(bool enable);
+        
+        // Depth calls.
+
+		void setDepthFunc(GLenum mode);
+
+        void setDepthMask(bool enable);
+
+		void setDepthTest(bool enable);
+        
+        // Matrix calls.
+        
+        void setMatrixMode(GLenum mode);
+        
+        // Texture calls.
+        
+        void setActiveTexture(GLenum texture);
+
+		void setClientActiveTexture(GLenum texture);
+        
+        void setTexture(u32 stage, bool fixedPipeline);
+        
+    private:
+        COpenGLDriver* Driver;
+
+		GLenum AlphaMode;
+		GLclampf AlphaRef;
+		bool AlphaTest;
+
+		GLenum BlendSource;
+		GLenum BlendDestination;
+		bool Blend;
+
+		bool ClientStateVertex;
+		bool ClientStateNormal;
+		bool ClientStateColor;
+		bool ClientStateTexCoord0;
+
+		GLenum CullFaceMode;
+		bool CullFace;
+        
+		GLenum DepthFunc;
+        bool DepthMask;
+        bool DepthTest;
+        
+        GLenum MatrixMode;
+        
+		GLenum ActiveTexture;
+        GLenum ClientActiveTexture;
+
+        const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+        bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
+    };
 
 } // end namespace video
 } // end namespace irr

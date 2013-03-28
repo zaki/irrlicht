@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -616,11 +616,11 @@ void CColorConverter::convert_R5G6B5toR8G8B8(const void* sP, s32 sN, void* dP)
 
 	for (s32 x = 0; x < sN; ++x)
 	{
-		dB[0] = (*sB & 0xf800) << 8;
-		dB[1] = (*sB & 0x07e0) << 2;
+		dB[0] = (*sB & 0xf800) >> 8;
+		dB[1] = (*sB & 0x07e0) >> 3;
 		dB[2] = (*sB & 0x001f) << 3;
 
-		sB += 4;
+		sB += 1;
 		dB += 3;
 	}
 }
@@ -632,11 +632,11 @@ void CColorConverter::convert_R5G6B5toB8G8R8(const void* sP, s32 sN, void* dP)
 
 	for (s32 x = 0; x < sN; ++x)
 	{
-		dB[2] = (*sB & 0xf800) << 8;
-		dB[1] = (*sB & 0x07e0) << 2;
+		dB[2] = (*sB & 0xf800) >> 8;
+		dB[1] = (*sB & 0x07e0) >> 3;
 		dB[0] = (*sB & 0x001f) << 3;
 
-		sB += 4;
+		sB += 1;
 		dB += 3;
 	}
 }

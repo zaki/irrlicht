@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -63,7 +63,7 @@ void CSceneNodeAnimatorFlyCircle::serializeAttributes(io::IAttributes* out, io::
 	out->addFloat("Radius", Radius);
 	out->addFloat("Speed", Speed);
 	out->addVector3d("Direction", Direction);
-	out->addFloat("RadiusEllipsoid", Radius);
+	out->addFloat("RadiusEllipsoid", RadiusEllipsoid);
 }
 
 

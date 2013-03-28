@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2011 Gaz Davidson
+// Copyright (C) 2009-2012 Gaz Davidson
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -67,6 +67,12 @@ namespace irr
 
 		//! returns if window is minimized
 		virtual bool isWindowMinimized() const;
+
+		//! returns current window position (not supported for this device)
+        virtual core::position2di getWindowPosition()
+		{
+			return core::position2di(-1, -1);
+		}
 
 		//! presents a surface in the client area
 		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0);

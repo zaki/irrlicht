@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -30,6 +30,7 @@
 #endif
 
 
+#include "EMaterialTypes.h"
 #include "IMaterialRenderer.h"
 #include "IMaterialRendererServices.h"
 #include "IGPUProgrammingServices.h"
@@ -42,6 +43,7 @@ namespace video
 {
 
 class COpenGLDriver;
+class COpenGLMaterialRenderer;
 class IShaderConstantSetCallBack;
 
 //! Class for using GLSL shaders with OpenGL
@@ -67,7 +69,7 @@ public:
 		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
 		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
-		IMaterialRenderer* baseMaterial = 0,
+		E_MATERIAL_TYPE baseMaterial = EMT_SOLID,
 		s32 userData = 0);
 
 	//! Destructor
@@ -85,12 +87,14 @@ public:
 
 	// implementations for the render services
 	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates);
-	virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
-	virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
+	virtual s32 getVertexShaderConstantID(const c8* name);
+	virtual s32 getPixelShaderConstantID(const c8* name);
 	virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
-	virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
-	virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
 	virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
+	virtual bool setVertexShaderConstant(s32 index, const f32* floats, int count);
+	virtual bool setVertexShaderConstant(s32 index, const s32* ints, int count);
+	virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count);
+	virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count);
 	virtual IVideoDriver* getVideoDriver();
 
 protected:
@@ -99,7 +103,7 @@ protected:
 	//! create a fall back material for example.
 	COpenGLSLMaterialRenderer(COpenGLDriver* driver,
 					IShaderConstantSetCallBack* callback,
-					IMaterialRenderer* baseMaterial,
+					E_MATERIAL_TYPE baseMaterial,
 					s32 userData=0);
 
 	void init(s32& outMaterialTypeNr, 
@@ -116,12 +120,13 @@ protected:
 	
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
-	IMaterialRenderer* BaseMaterial;
+	COpenGLMaterialRenderer* BaseMaterial;
 
 	struct SUniformInfo
 	{
 		core::stringc name;
 		GLenum type;
+		GLint location;
 	};
 
 	GLhandleARB Program;

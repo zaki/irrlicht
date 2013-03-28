@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -20,7 +20,10 @@ enum E_LIGHT_TYPE
 	//! spot light, it has a position in space, a direction, and a limited cone of influence
 	ELT_SPOT,
 	//! directional light, coming from a direction from an infinite distance
-	ELT_DIRECTIONAL
+	ELT_DIRECTIONAL,
+
+	//! Only used for counting the elements of this enum
+	ELT_COUNT
 };
 
 //! Names for light types

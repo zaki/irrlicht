@@ -1,5 +1,6 @@
-// This file is part of the "Irrlicht Engine".
 // written by Reinhard Ostermeier, reinhard@nospam.r-ostermeier.de
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #ifndef __I_GUI_TREE_VIEW_H_INCLUDED__
 #define __I_GUI_TREE_VIEW_H_INCLUDED__
@@ -17,6 +18,12 @@ namespace gui
 
 
 	//! Node for gui tree view
+	/** \par This element can create the following events of type EGUI_EVENT_TYPE:
+	\li EGET_TREEVIEW_NODE_EXPAND
+	\li EGET_TREEVIEW_NODE_COLLAPS
+	\li EGET_TREEVIEW_NODE_DESELECT
+	\li EGET_TREEVIEW_NODE_SELECT
+	*/
 	class IGUITreeViewNode : public IReferenceCounted
 	{
 	public:

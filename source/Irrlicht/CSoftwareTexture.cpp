@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -24,11 +24,21 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name,
 
 	if (image)
 	{
+		bool IsCompressed = false;
+
+		if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+		{
+			os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+			IsCompressed = true;
+		}
+
 		OrigSize = image->getDimension();
 		core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
 
 		Image = new CImage(ECF_A1R5G5B5, OrigSize);
-		image->copyTo(Image);
+
+		if (!IsCompressed)
+			image->copyTo(Image);
 
 		if (optSize == OrigSize)
 		{

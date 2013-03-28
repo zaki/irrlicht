@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2011 Christian Stehno
+// Copyright (C) 2008-2012 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -64,7 +64,8 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 	// write OBJ MESH header
 
-	const core::stringc name(FileSystem->getFileBasename(SceneManager->getMeshCache()->getMeshName(mesh), false)+".mtl");
+	core::stringc name;
+	core::cutFilenameExtension(name,file->getFileName()) += ".mtl";
 	file->write("# exported by Irrlicht\n",23);
 	file->write("mtllib ",7);
 	file->write(name.c_str(),name.size());
@@ -185,14 +186,19 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			file->write(num.c_str(),num.size());
 			getColorAsStringLine(mat[i]->EmissiveColor, "Ke", num);
 			file->write(num.c_str(),num.size());
-			num = core::stringc(mat[i]->Shininess/0.128f);
+			num = core::stringc((double)(mat[i]->Shininess/0.128f));
 			file->write("Ns ", 3);
 			file->write(num.c_str(),num.size());
 			file->write("\n", 1);
 			if (mat[i]->getTexture(0))
 			{
 				file->write("map_Kd ", 7);
-				file->write(mat[i]->getTexture(0)->getName().getPath().c_str(), mat[i]->getTexture(0)->getName().getPath().size());
+				io::path tname = FileSystem->getRelativeFilename(mat[i]->getTexture(0)->getName(),
+						FileSystem->getFileDir(file->getFileName()));
+				// avoid blanks as .obj cannot handle strings with spaces
+				if (tname.findFirst(' ') != -1)
+					tname = FileSystem->getFileBasename(tname);
+				file->write(tname.c_str(), tname.size());
 				file->write("\n",1);
 			}
 			file->write("\n",1);
@@ -227,11 +233,11 @@ void COBJMeshWriter::getColorAsStringLine(const video::SColor& color, const c8* 
 {
 	s = prefix;
 	s += " ";
-	s += core::stringc(color.getRed()/255.f);
+	s += core::stringc((double)(color.getRed()/255.f));
 	s += " ";
-	s += core::stringc(color.getGreen()/255.f);
+	s += core::stringc((double)(color.getGreen()/255.f));
 	s += " ";
-	s += core::stringc(color.getBlue()/255.f);
+	s += core::stringc((double)(color.getBlue()/255.f));
 	s += "\n";
 }
 

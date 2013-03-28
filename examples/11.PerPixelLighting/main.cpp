@@ -3,7 +3,7 @@
 This tutorial shows how to use one of the built in more complex materials in
 irrlicht: Per pixel lighted surfaces using normal maps and parallax mapping. It
 will also show how to use fog and moving particle systems. And don't panic: You
-dont need any experience with shaders to use these materials in Irrlicht.
+do not need any experience with shaders to use these materials in Irrlicht.
 
 At first, we need to include all headers and do the stuff we always do, like in
 nearly all other tutorials.
@@ -263,7 +263,7 @@ int main()
 			driver->makeNormalMapTexture(normalMap, 9.0f);
 /*
 		// The Normal Map and the displacement map/height map in the alpha channel
-		video::ITexture* normalMap = 
+		video::ITexture* normalMap =
 			driver->getTexture("../../media/rockwall_NRM.tga");
 */
 		/*
@@ -368,9 +368,6 @@ int main()
 	scene::ILightSceneNode* light1 =
 		smgr->addLightSceneNode(0, core::vector3df(0,0,0),
 		video::SColorf(0.5f, 1.0f, 0.5f, 0.0f), 800.0f);
-
-	light1->setDebugDataVisible ( scene::EDS_BBOX );
-
 
 	// add fly circle animator to light 1
 	scene::ISceneNodeAnimator* anim =

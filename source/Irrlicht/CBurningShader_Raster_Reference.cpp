@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -625,7 +625,7 @@ void CBurningShader_Raster_Reference::setMaterial ( const SBurningShaderMaterial
 	ShaderParam.SetRenderState( BD3DRS_SPECULARMATERIALSOURCE, (m.ColorMaterial==ECM_SPECULAR)?BD3DMCS_COLOR1:BD3DMCS_MATERIAL);
 
 	// depth buffer enable and compare
-	ShaderParam.SetRenderState( BD3DRS_ZENABLE, (material.org.ZBuffer==video::ECFN_NEVER) ? BD3DZB_FALSE : BD3DZB_USEW);
+	ShaderParam.SetRenderState( BD3DRS_ZENABLE, (material.org.ZBuffer==video::ECFN_DISABLED) ? BD3DZB_FALSE : BD3DZB_USEW);
 	switch (material.org.ZBuffer)
 	{
 	case ECFN_NEVER:

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -68,14 +68,29 @@ namespace gui
 		{
 		}
 
-		SCursorSprite( gui::IGUISpriteBank * spriteBank, s32 spriteId, const core::position2d<s32> &hotspot=core::position2d<s32>(0,0) )
+		SCursorSprite( gui::IGUISpriteBank * spriteBank, s32 spriteId, const core::position2d<s32> &hotspot=(core::position2d<s32>(0,0)) )
 		: SpriteBank(spriteBank), SpriteId(spriteId), HotSpot(hotspot)
 		{
 		}
 
-		gui::IGUISpriteBank * SpriteBank;
+		IGUISpriteBank * SpriteBank;
 		s32 SpriteId;
 		core::position2d<s32> HotSpot;
+	};
+
+	//! platform specific behavior flags for the cursor
+	enum ECURSOR_PLATFORM_BEHAVIOR
+	{
+		//! default - no platform specific behavior
+		ECPB_NONE = 0,
+
+		//! On X11 try caching cursor updates as XQueryPointer calls can be expensive.
+		/** Update cursor positions only when the irrlicht timer has been updated or the timer is stopped.
+			This means you usually get one cursor update per device->run() which will be fine in most cases.
+			See this forum-thread for a more detailed explanation:
+			http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=45525
+		*/
+		ECPB_X11_CACHE_UPDATES = 1
 	};
 
 	//! Interface to manipulate the mouse cursor.
@@ -159,6 +174,14 @@ namespace gui
 
 		//! Return a system-specific size which is supported for cursors. Larger icons will fail, smaller icons might work.
 		virtual core::dimension2di getSupportedIconSize() const { return core::dimension2di(0,0); }
+
+		//! Set platform specific behavior flags.
+		virtual void setPlatformBehavior(ECURSOR_PLATFORM_BEHAVIOR behavior) {}
+
+		//! Return platform specific behavior.
+		/** \return Behavior set by setPlatformBehavior or ECPB_NONE for platforms not implementing specific behaviors.
+		*/
+		virtual ECURSOR_PLATFORM_BEHAVIOR getPlatformBehavior() const { return ECPB_NONE; }
 	};
 
 

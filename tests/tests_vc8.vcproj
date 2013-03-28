@@ -225,6 +225,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\drawVertexPrimitive.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\enumerateImageManipulators.cpp"
 				>
 			</File>
@@ -422,6 +426,10 @@
 			</File>
 			<File
 				RelativePath=".\transparentMaterials.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\userClipPlane.cpp"
 				>
 			</File>
 			<File

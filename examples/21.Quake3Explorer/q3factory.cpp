@@ -5,6 +5,7 @@
 	Defines the Entities for Quake3
 */
 
+#include <irrlicht.h>
 #include "q3factory.h"
 #include "sound.h"
 
@@ -401,18 +402,14 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 		// show Debug Shader Name
 		if ( showShaderName && node )
 		{
-			IBillboardTextSceneNode* node2 = 0;
 			swprintf ( (wchar_t*) buf, 64, L"%hs:%d", node->getName(),node->getID() );
-			node2 = smgr->addBillboardTextSceneNode(
+			smgr->addBillboardTextSceneNode(
 					font,
 					(wchar_t*) buf,
 					node,
 					dimension2d<f32>(80.0f, 8.0f),
 					vector3df(0, 10, 0),
-					sceneNodeID
-					);
-			snprintf ( buf, 64, "%s:%d", node->getName(),node->getID() );
-			//node2->setName ( buf );
+					sceneNodeID);
 			sceneNodeID += 1;
 		}
 
@@ -638,18 +635,15 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 		// show name
 		if ( showShaderName )
 		{
-			IBillboardTextSceneNode* node2 = 0;
 			swprintf ( (wchar_t*) buf, sizeof(buf) / 2, L"%hs", itemElement->key );
-			node2 = smgr->addBillboardTextSceneNode(
+			smgr->addBillboardTextSceneNode(
 					font,
 					(wchar_t*) buf,
 					parent,
 					dimension2d<f32>(80.0f, 8.0f),
 					p + vector3df(0, 30, 0),
-					0
-					);
+					0);
 		}
-
 	}
 
 	// music

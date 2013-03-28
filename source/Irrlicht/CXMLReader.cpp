@@ -1,9 +1,11 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "CXMLReaderImpl.h"
 #include "CXMLReader.h"
+
+#ifdef _IRR_COMPILE_WITH_XML_
+#include "CXMLReaderImpl.h"
 #include "IReadFile.h"
 
 namespace irr
@@ -48,23 +50,35 @@ namespace io
 
 	// now create an implementation for IXMLReader using irrXML.
 
-	//! Creates an instance of a wide character xml parser. 
+	//! Creates an instance of a wide character xml parser.
 	IXMLReader* createIXMLReader(IReadFile* file)
 	{
 		if (!file)
 			return 0;
 
-		return new CXMLReaderImpl<wchar_t, IReferenceCounted>(new CIrrXMLFileReadCallBack(file)); 
+		return new CXMLReaderImpl<wchar_t, IReferenceCounted>(new CIrrXMLFileReadCallBack(file));
 	}
 
-	//! Creates an instance of an UFT-8 or ASCII character xml parser. 
+	//! Creates an instance of an UFT-8 or ASCII character xml parser.
 	IXMLReaderUTF8* createIXMLReaderUTF8(IReadFile* file)
 	{
 		if (!file)
 			return 0;
 
-		return new CXMLReaderImpl<char, IReferenceCounted>(new CIrrXMLFileReadCallBack(file)); 
+		return new CXMLReaderImpl<char, IReferenceCounted>(new CIrrXMLFileReadCallBack(file));
 	}
 
 } // end namespace
 } // end namespace
+#else // not _IRR_COMPILE_WITH_XML_
+#include "os.h"
+namespace irr
+{
+
+void noXML()
+{
+	irr::os::Printer::log("XML support disabled in IrrCompileConfig.", irr::ELL_ERROR);
+}
+
+} // end namespace
+#endif // _IRR_COMPILE_WITH_XML_

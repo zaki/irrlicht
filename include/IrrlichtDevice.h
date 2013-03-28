@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -235,6 +235,9 @@ namespace irr
 
 		//! Restore the window to normal size if possible.
 		virtual void restoreWindow() =0;
+
+		//! Get the position of the frame on-screen
+		virtual core::position2di getWindowPosition() = 0;
 
 		//! Activate any joysticks, and generate events for them.
 		/** Irrlicht contains support for joysticks, but does not generate joystick events by default,

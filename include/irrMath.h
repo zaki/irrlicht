@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -29,6 +29,10 @@
 
 #ifndef FLT_MAX
 #define FLT_MAX 3.402823466E+38F
+#endif
+
+#ifndef FLT_MIN
+#define FLT_MIN 1.17549435e-38F
 #endif
 
 namespace irr
@@ -189,6 +193,16 @@ namespace core
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
+	union FloatIntUnion32
+	{
+		FloatIntUnion32(float f1 = 0.0f) : f(f1) {}
+		// Portable sign-extraction
+		bool sign() const { return (i >> 31) != 0; }
+
+		irr::s32 i;
+		irr::f32 f;
+	};
+
 	//! We compare the difference in ULP's (spacing between floating-point numbers, aka ULP=1 means there exists no float between).
 	//\result true when numbers have a ULP <= maxUlpDiff AND have the same sign.
 	inline bool equalsByUlp(f32 a, f32 b, int maxUlpDiff)
@@ -198,18 +212,9 @@ namespace core
 		// When floats are interpreted as integers the two nearest possible float numbers differ just
 		// by one integer number. Also works the other way round, an integer of 1 interpreted as float
 		// is for example the smallest possible float number.
-		union Float_t
-		{
-			Float_t(float f1 = 0.0f) : f(f1) {}
-			// Portable sign-extraction
-			bool sign() const { return (i >> 31) != 0; }
 
-			int i;
-			float f;
-		};
-
-		Float_t fa(a);
-		Float_t fb(b);
+		FloatIntUnion32 fa(a);
+		FloatIntUnion32 fb(b);
 
 		// Different signs, we could maybe get difference to 0, but so close to 0 using epsilons is better.
 		if ( fa.sign() != fb.sign() )

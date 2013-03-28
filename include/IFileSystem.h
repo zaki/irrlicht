@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -51,7 +51,7 @@ public:
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information.
 	*/
-	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const path& fileName, bool deleteMemoryWhenDropped=false) =0;
+	virtual IReadFile* createMemoryReadFile(const void* memory, s32 len, const path& fileName, bool deleteMemoryWhenDropped=false) =0;
 
 	//! Creates an IReadFile interface for accessing files inside files.
 	/** This is useful e.g. for archives.

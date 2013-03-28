@@ -1,4 +1,4 @@
-// Copyright (C) 2011-2012 Patryk Nadrowski
+// Copyright (C) 2012-2012 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -99,14 +99,13 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
 
-	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		Driver->setActiveTexture(i, material.getTexture(i));
-
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
 {
+    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, false);
+
 	if (CallBack && (VertexProgram || FragmentProgram || GeometryProgram))
 		CallBack->OnSetConstants(this, UserData);
 
@@ -153,7 +152,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 	const c8* geometryProgram, const c8* geometryEntry, E_GEOMETRY_SHADER_TYPE geometryProfile,
 	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType, u32 vertices)
 {
-	bool Status = true;
+	bool shaderStatus = true;
 	CGerror Error = CG_NO_ERROR;
 	materialType = -1;
 
@@ -172,7 +171,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 			os::Printer::log("Cg vertex program failed to compile:", ELL_ERROR);
 			os::Printer::log(cgGetLastListing(Driver->getCgContext()), ELL_ERROR);
 
-			Status = false;
+			shaderStatus = false;
 		}
 		else
 			cgGLLoadProgram(VertexProgram);
@@ -191,7 +190,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 			os::Printer::log("Cg fragment program failed to compile:", ELL_ERROR);
 			os::Printer::log(cgGetLastListing(Driver->getCgContext()), ELL_ERROR);
 
-			Status = false;
+			shaderStatus = false;
 		}
 		else
 			cgGLLoadProgram(FragmentProgram);
@@ -210,7 +209,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 			os::Printer::log("Cg geometry program failed to compile:", ELL_ERROR);
 			os::Printer::log(cgGetLastListing(Driver->getCgContext()), ELL_ERROR);
 
-			Status = false;
+			shaderStatus = false;
 		}
 		else
 			cgGLLoadProgram(GeometryProgram);
@@ -234,7 +233,7 @@ void COpenGLCgMaterialRenderer::init(s32& materialType,
 		}
 	}
 
-	if (Status)
+	if (shaderStatus)
 		materialType = Driver->addMaterialRenderer(this);
 }
 

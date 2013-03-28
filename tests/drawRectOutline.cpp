@@ -2,6 +2,9 @@
 
 using namespace irr;
 
+namespace
+{
+
 bool testWithDriver(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice *device =
@@ -37,6 +40,7 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 	device->drop();
 
 	return result ;
+}
 }
 
 bool drawRectOutline(void)

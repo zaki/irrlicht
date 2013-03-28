@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2012 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -238,7 +238,7 @@ namespace video
 					const void* indices, u32 indexCount,
 					E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType,
 					E_INDEX_TYPE iType);
-		void VertexCache_get ( s4DVertex ** face );
+		void VertexCache_get ( const s4DVertex ** face );
 		void VertexCache_getbypass ( s4DVertex ** face );
 
 		void VertexCache_fill ( const u32 sourceIndex,const u32 destIndex );

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -279,16 +279,22 @@ namespace os
 		struct tm * timeinfo;
 		timeinfo = localtime(&rawtime);
 
-		ITimer::RealTimeDate date;
-		date.Hour=(u32)timeinfo->tm_hour;
-		date.Minute=(u32)timeinfo->tm_min;
-		date.Second=(u32)timeinfo->tm_sec;
-		date.Day=(u32)timeinfo->tm_mday;
-		date.Month=(u32)timeinfo->tm_mon+1;
-		date.Year=(u32)timeinfo->tm_year+1900;
-		date.Weekday=(ITimer::EWeekday)timeinfo->tm_wday;
-		date.Yearday=(u32)timeinfo->tm_yday+1;
-		date.IsDST=timeinfo->tm_isdst != 0;
+		// init with all 0 to indicate error
+		ITimer::RealTimeDate date={0};
+		// at least Windows returns NULL on some illegal dates
+		if (timeinfo)
+		{
+			// set useful values if succeeded
+			date.Hour=(u32)timeinfo->tm_hour;
+			date.Minute=(u32)timeinfo->tm_min;
+			date.Second=(u32)timeinfo->tm_sec;
+			date.Day=(u32)timeinfo->tm_mday;
+			date.Month=(u32)timeinfo->tm_mon+1;
+			date.Year=(u32)timeinfo->tm_year+1900;
+			date.Weekday=(ITimer::EWeekday)timeinfo->tm_wday;
+			date.Yearday=(u32)timeinfo->tm_yday+1;
+			date.IsDST=timeinfo->tm_isdst != 0;
+		}
 		return date;
 	}
 

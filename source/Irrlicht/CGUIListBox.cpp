@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -511,7 +511,7 @@ void CGUIListBox::draw()
 	clientClip.clipAgainst(AbsoluteClippingRect);
 
 	skin->draw3DSunkenPane(this, skin->getColor(EGDC_3D_HIGH_LIGHT), true,
-		DrawBack, frameRect, &clientClip);
+		DrawBack, frameRect, &AbsoluteClippingRect);
 
 	if (clipRect)
 		clientClip.clipAgainst(*clipRect);

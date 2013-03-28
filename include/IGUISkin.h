@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -183,6 +183,14 @@ namespace gui
 		EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT,
 		//! maximal space to reserve for messagebox text-height
 		EGDS_MESSAGE_BOX_MAX_TEXT_HEIGHT,
+		//! pixels to move the button image to the right when a pushbutton is pressed
+		EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X,
+		//! pixels to move the button image down when a pushbutton is pressed
+		EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y,
+		//! pixels to move the button text to the right when a pushbutton is pressed
+		EGDS_BUTTON_PRESSED_TEXT_OFFSET_X,
+		//! pixels to move the button text down when a pushbutton is pressed
+		EGDS_BUTTON_PRESSED_TEXT_OFFSET_Y,
 
 		//! this value is not used, it only specifies the amount of default sizes
 		//! available.
@@ -210,6 +218,10 @@ namespace gui
 		"MessageBoxMaxTextWidth",
 		"MessageBoxMinTextHeight",
 		"MessageBoxMaxTextHeight",
+		"ButtonPressedImageOffsetX",
+		"ButtonPressedImageOffsetY"
+		"ButtonPressedTextOffsetX",
+		"ButtonPressedTextOffsetY",
 		0
 	};
 

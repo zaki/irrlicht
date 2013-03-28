@@ -47,4 +47,7 @@ extern void closeTestLog();
 	\... optional parameters */
 extern void logTestString(const char * format, ...);
 
+//! Return a drivername for the driver which is useable in filenames
+extern irr::core::stringc shortDriverName(irr::video::IVideoDriver * driver);
+
 #endif // _TEST_UTILS_H_

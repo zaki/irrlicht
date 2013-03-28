@@ -1,4 +1,4 @@
-// Copyright (C) 2006-2011 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2006-2012 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -80,7 +80,7 @@ namespace quake3
 	typedef core::array< video::ITexture* > tTexArray;
 
 	// string helper.. TODO: move to generic files
-	inline s16 isEqual ( const core::stringc &string, u32 &pos, const c8 *list[], u16 listSize )
+	inline s16 isEqual ( const core::stringc &string, u32 &pos, const c8 * const list[], u16 listSize )
 	{
 		const char * in = string.c_str () + pos;
 
@@ -204,6 +204,7 @@ namespace quake3
 		{
 			case 0:
 				ret = video::ECFN_LESSEQUAL;
+				break;
 			case 1:
 				ret = video::ECFN_EQUAL;
 				break;
@@ -771,7 +772,7 @@ namespace quake3
 				io::IFileSystem *fileSystem,
 				video::IVideoDriver* driver)
 	{
-		static const char* extension[] =
+		static const char * const extension[] =
 		{
 			".jpg",
 			".jpeg",

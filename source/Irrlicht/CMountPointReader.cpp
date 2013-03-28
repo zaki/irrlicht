@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2011 Nikolaus Gebhardt
+// Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -155,7 +155,7 @@ IReadFile* CMountPointReader::createAndOpenFile(u32 index)
 	if (index >= Files.size())
 		return 0;
 
-	return createReadFile(RealFileNames[Files[index].ID]);
+	return CReadFile::createReadFile(RealFileNames[Files[index].ID]);
 }
 
 //! opens a file by file name
