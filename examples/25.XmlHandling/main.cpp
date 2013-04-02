@@ -1,8 +1,13 @@
 /** Example 025 Xml Handling
- *
- *	Demonstrates loading and saving of configurations via XML
- *	@author Y.M. Bosman	<yoran.bosman@gmail.com>
- */
+
+Demonstrates loading and saving of configurations via XML
+
+@author Y.M. Bosman	\<yoran.bosman@gmail.com\>
+
+This demo features a fully usable system for configuration handling. The code
+can easily be intergrated into own apps.
+
+*/
 
 #include <irrlicht.h>
 
@@ -18,24 +23,20 @@ using namespace gui;
 #endif
 
 
-/**
- *	SettingManager class
- *	This class loads and writes the settings
- *	and manages the options.
- *
- *
- *	The class makes use of irrMap which is a an associative arrays using a red-black tree
- *	it allows easy mapping of a key to a value, along the way there is some information on how to use it
- *
- */
+/* SettingManager class.
+
+This class loads and writes the settings and manages the options.
+
+The class makes use of irrMap which is a an associative arrays using a
+red-black tree it allows easy mapping of a key to a value, along the way there
+is some information on how to use it.
+*/
 
 class SettingManager
 {
 public:
 
-	/**
-	 *	Construct setting managers and set default settings
-	 */
+	// Construct setting managers and set default settings
 	SettingManager(const stringw& settings_file): SettingsFile(settings_file), NullDevice(0)
 	{
 		// Irrlicht null device, we want to load settings before we actually created our device, therefore, nulldevice
@@ -59,10 +60,9 @@ public:
 		SettingMap.insert(L"fullscreen", L"0"); //0 is false
 	}
 
-	/**
-	 *	Destructor, you could store settings automatically on exit of your application if you wanted to
-	 *	in our case we simply drop the nulldevice
-	 */
+	// Destructor, you could store settings automatically on exit of your
+	// application if you wanted to in our case we simply drop the
+	// nulldevice
 	~SettingManager()
 	{
 		if (NullDevice)
@@ -72,20 +72,21 @@ public:
 		}
 	};
 
-	/**
-	 *	Load xml from disk, overwrite default settings
-	 *	The xml we are trying to load has the following structure
-	 *	settings nested in sections nested in the root node, like so
-	 *
-	 *	<?xml version="1.0"?>
-	 *	<mygame>
-	 *		<video>
-	 *			<setting name="driver" value="Direct3D9" />
-	 *			<setting name="fullscreen" value="0" />
-	 *			<setting name="resolution" value="1024x768" />
-	 *		</video>
-	 *	</mygame>
-	 */
+	/*
+	Load xml from disk, overwrite default settings
+	The xml we are trying to load has the following structure
+	settings nested in sections nested in the root node, like so
+	<pre>
+		<?xml version="1.0"?>
+		<mygame>
+			<video>
+				<setting name="driver" value="Direct3D9" />
+				<setting name="fullscreen" value="0" />
+				<setting name="resolution" value="1024x768" />
+			</video>
+		</mygame>
+	</pre>
+	*/
 	bool load()
 	{
 		//if not able to create device dont attempt to load
@@ -149,10 +150,7 @@ public:
 		return true;
 	}
 
-	/**
-	 *	Save the xml to disk
-	 *	We use the nulldevice
-	 */
+	// Save the xml to disk. We use the nulldevice.
 	bool save()
 	{
 
@@ -206,27 +204,19 @@ public:
 		return true;
 	}
 
-	/**
-	 *	Set setting in our manager
-	 */
+	// Set setting in our manager
 	void setSetting(const stringw& name, const stringw& value)
 	{
 		SettingMap[name]=value;
 	}
 
-	/**
-	 *	set setting overload to quickly assign integers to our setting map
-	 */
+	// set setting overload to quickly assign integers to our setting map
 	void setSetting(const stringw& name, s32 value)
 	{
 		SettingMap[name]=stringw(value);
 	}
 
-	/**
-	 *	Get setting as string
-	 *	@param key Name of setting
-	 *	@return	Empty string if the settings is not found, else value of the setting
-	 */
+	// Get setting as string
 	stringw getSetting(const stringw& key) const
 	{
 		//the find function or irrmap returns a pointer to a map Node
@@ -239,11 +229,7 @@ public:
 			return L"";
 	}
 
-	/**
-	 *	Get setting as bool
-	 *	@param key Name of setting
-	 *	@return	False if the key cannot be found, else true if the setting == 1
-	 */
+	//
 	bool getSettingAsBoolean(const stringw& key ) const
 	{
 		stringw s = getSetting(key);
@@ -252,11 +238,7 @@ public:
 		return s.equals_ignore_case(L"1");
 	}
 
-	/**
-	 *	Get setting as integer NOTE: function is not used in example but provided for completeness
-	 *	@param	key	name of setting
-	 *	@return	0 if the key cannot be found, else the setting converted to an integer
-	 */
+	//
 	s32 getSettingAsInteger(const stringw& key) const
 	{
 		//we implicitly cast to string instead of stringw because strtol10 does not accept wide strings
@@ -280,9 +262,9 @@ private:
 	irr::IrrlichtDevice* NullDevice;
 };
 
-/**
- *	Application context for global variables
- */
+/*
+Application context for global variables
+*/
 struct SAppContext
 {
 	SAppContext()
@@ -372,10 +354,10 @@ private:
 };
 
 
-/**
- *	Function to create a video settings dialog
- *	This dialog shows the current settings from the configuration xml and allows them to be changed
- */
+/*
+Function to create a video settings dialog
+This dialog shows the current settings from the configuration xml and allows them to be changed
+*/
 void createSettingsDialog(SAppContext& app)
 {
 	// first get rid of alpha in gui
@@ -431,6 +413,9 @@ void createSettingsDialog(SAppContext& app)
 			L"Cancel and exit");
 }
 
+/*
+The main function. Creates all objects and does the XML handling.
+*/
 int main()
 {
 	//create new application context
@@ -441,11 +426,9 @@ int main()
 	param.DriverType = EDT_SOFTWARE;
 	param.WindowSize.set(640,480);
 
-	/**
-	 *	Try to load config.
-	 *	I leave it as an exercise of the reader to store the configuration in the local application data folder,
-	 *	the only logical place to store config data for games. For all other operating systems I redirect to your manuals
-	 */
+	// Try to load config.
+	// I leave it as an exercise of the reader to store the configuration in the local application data folder,
+	// the only logical place to store config data for games. For all other operating systems I redirect to your manuals
 	app.Settings = new SettingManager("../../media/settings.xml");
 	if ( !app.Settings->load() )
 	{
@@ -518,3 +501,5 @@ int main()
 	return 0;
 }
 
+/*
+**/

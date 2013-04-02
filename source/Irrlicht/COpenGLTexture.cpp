@@ -361,6 +361,8 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
+	bool mipmapLegacyMode = true;
+
 	// mipmap handling for main texture
 	if (!level && newTexture)
 	{
@@ -480,6 +482,17 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
             StatesCache.TrilinearFilter = false;
             StatesCache.MipMapStatus = true;
 		}
+	}
+
+	if (!mipmapLegacyMode)
+	{
+		glEnable(GL_TEXTURE_2D);
+		Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		AutomaticMipmapUpdate=true;
 	}
 
 	if (Driver->testGLError())

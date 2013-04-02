@@ -50,6 +50,7 @@ int main(int argumentCount, char * arguments[])
 	// (temporarily) to the beginning of the list, since each test runs in its own
 	// process.
 
+
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	// Now the simple tests without device
 	TEST(testIrrArray);
@@ -67,8 +68,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testS3DVertex);
 	TEST(testaabbox3d);
     TEST(color);
-	// TODO: Needs to be fixed first
-//	TEST(testTriangle3d);
+	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);
 	// file system checks (with null driver)
 	TEST(filesystem);
@@ -89,6 +89,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
 	TEST(burningsVideo);
+	TEST(billboards);
 	TEST(createImage);
 	TEST(cursorSetVisible);
 	TEST(flyCircleAnimator);
@@ -126,7 +127,8 @@ int main(int argumentCount, char * arguments[])
 	// q3 maps are slow
 	TEST(planeMatrix);
 	TEST(terrainSceneNode);
-	TEST(lightMaps); 
+	TEST(lightMaps);
+	TEST(triangleSelector);
 
 	unsigned int numberOfTests = tests.size();
 	unsigned int testToRun = 0;

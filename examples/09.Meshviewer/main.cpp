@@ -147,8 +147,7 @@ void updateScaleInfo(scene::ISceneNode* model)
 }
 
 /*
-The three following functions do several stuff used by the mesh viewer. The
-first function showAboutText() simply displays a messagebox with a caption and
+Function showAboutText() displays a messagebox with a caption and
 a message text. The texts will be stored in the MessageText and Caption
 variables at startup.
 */
@@ -162,7 +161,7 @@ void showAboutText()
 
 
 /*
-The second function loadModel() loads a model and displays it using an
+Function loadModel() loads a model and displays it using an
 addAnimatedMeshSceneNode and the scene manager. Nothing difficult. It also
 displays a short message box, if the model could not be loaded.
 */
@@ -259,7 +258,7 @@ void loadModel(const c8* fn)
 
 
 /*
-Finally, the third function creates a toolbox window. In this simple mesh
+Function createToolBox() creates a toolbox window. In this simple mesh
 viewer, this toolbox only contains a tab control with three edit boxes for
 changing the scale of the displayed model.
 */
@@ -323,6 +322,10 @@ void createToolBox()
 	scrollbar->setSmallStep(1);
 }
 
+/*
+Function updateToolBox() is called each frame to update dynamic information in 
+the toolbox.
+*/
 void updateToolBox()
 {
 	IGUIEnvironment* env = Device->getGUIEnvironment();
@@ -397,7 +400,7 @@ bool hasModalDialog()
 To get all the events sent by the GUI Elements, we need to create an event
 receiver. This one is really simple. If an event occurs, it checks the id of
 the caller and the event type, and starts an action based on these values. For
-example, if a menu item with id GUI_ID_OPEN_MODEL was selected, if opens a file-open-dialog.
+example, if a menu item with id GUI_ID_OPEN_MODEL was selected, it opens a file-open-dialog.
 */
 class MyEventReceiver : public IEventReceiver
 {
@@ -521,6 +524,11 @@ public:
 	*/
 	bool OnKeyUp(irr::EKEY_CODE keyCode)
 	{
+		// Don't handle keys if we have a modal dialog open as it would lead 
+		// to unexpected application behaviour for the user.
+		if ( hasModalDialog() )
+			return false;
+		
 		if (keyCode == irr::KEY_ESCAPE)
 		{
 			if (Device)

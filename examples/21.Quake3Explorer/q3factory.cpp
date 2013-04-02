@@ -783,7 +783,7 @@ funcptr_createDeviceEx load_createDeviceEx ( const c8 * filename)
 #endif
 
 /*
-	get the current collision respone camera animator
+	get the current collision response camera animator
 */
 ISceneNodeAnimatorCollisionResponse* camCollisionResponse( IrrlichtDevice * device )
 {

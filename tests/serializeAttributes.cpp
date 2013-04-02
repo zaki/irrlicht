@@ -42,6 +42,8 @@ public:
 		out->addColor("ValColor", ValColor);
 		out->addColorf("ValColorf", ValColorf);
 		out->addVector3d("ValVector3df", ValVector3df);
+		out->addVector2d("ValVector2df", ValVector2df);
+		out->addDimension2d("ValDimension2du", ValDimension2du);
 		out->addPosition2d("ValPosition2di", ValPosition2di);
 		out->addRect("ValRect", ValRect);
 		out->addMatrix("ValMatrix", ValMatrix);
@@ -68,6 +70,8 @@ public:
 		ValColor = in->getAttributeAsColor("ValColor");
 		ValColorf = in->getAttributeAsColorf("ValColorf");
 		ValVector3df = in->getAttributeAsVector3d("ValVector3df");
+		ValVector2df = in->getAttributeAsVector2d("ValVector2df");
+		ValDimension2du = in->getAttributeAsDimension2d("ValDimension2du");
 		ValPosition2di = in->getAttributeAsPosition2d("ValPosition2di");
 		ValRect = in->getAttributeAsRect("ValRect");
 		ValMatrix = in->getAttributeAsMatrix("ValMatrix");
@@ -102,6 +106,8 @@ public:
 			return false;
 		}
 		COMPARE(ValVector3df, other.ValVector3df);
+		COMPARE(ValVector2df, other.ValVector2df);
+		COMPARE(ValDimension2du, other.ValDimension2du);
 		COMPARE(ValPosition2di, other.ValPosition2di);
 		COMPARE(ValRect, other.ValRect);
 		COMPARE(ValMatrix, other.ValMatrix);
@@ -130,6 +136,8 @@ public:
 		ValColor.set(0,0,0,0);
 		ValColorf.set(0.f, 0.f, 0.f, 0.f);
 		ValVector3df.set(0.f, 0.f, 0.f);
+		ValVector2df.set(0.f, 0.f);
+		ValDimension2du.set(0, 0);
 		ValPosition2di.set(0,0);
 		ValRect = core::rect<s32>(0,0,0,0);
 		ValMatrix.makeIdentity();
@@ -158,6 +166,8 @@ public:
 		ValColor.set(1,2,3,4);
 		ValColorf.set(1.f, 2.f, 3.f, 4.f);
 		ValVector3df.set(1.f, 2.f, 3.f);
+		ValVector2df.set(1.f, 2.f);
+		ValDimension2du.set(1, 2);
 		ValPosition2di.set(1,2);
 		ValRect = core::rect<s32>(1,2,3,4);
 		ValMatrix = 99.9f;
@@ -182,6 +192,8 @@ public:
 	video::SColor 				ValColor;
 	video::SColorf 				ValColorf;
 	core::vector3df 			ValVector3df;
+	core::vector2df 			ValVector2df;
+	core::dimension2du			ValDimension2du;
 	core::position2di 			ValPosition2di;
 	core::rect<s32> 			ValRect;
 	core::matrix4 				ValMatrix;

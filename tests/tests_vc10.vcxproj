@@ -149,6 +149,7 @@
     <ClCompile Include="anti-aliasing.cpp" />
     <ClCompile Include="archiveReader.cpp" />
     <ClCompile Include="b3dAnimation.cpp" />
+    <ClCompile Include="billboards.cpp" />
     <ClCompile Include="burningsVideo.cpp" />
     <ClCompile Include="collisionResponseAnimator.cpp" />
     <ClCompile Include="color.cpp" />
@@ -209,6 +210,7 @@
     <ClCompile Include="textureRenderStates.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="transparentMaterials.cpp" />
+    <ClCompile Include="triangleSelector.cpp" />
     <ClCompile Include="userClipPlane.cpp" />
     <ClCompile Include="vectorPositionDimension2d.cpp" />
     <ClCompile Include="videoDriver.cpp" />

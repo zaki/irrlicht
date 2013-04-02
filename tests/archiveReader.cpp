@@ -261,6 +261,7 @@ bool testEncryptedZip(IFileSystem* fs)
 
 	char tmp[13] = {'\0'};
 	readFile->read(tmp, 12);
+	readFile->drop();
 	if (strncmp(tmp, "Linux Users:", 12))
 	{
 		logTestString("Read bad data from archive: %s\n", tmp);
@@ -277,8 +278,6 @@ bool testEncryptedZip(IFileSystem* fs)
 	// make sure there is no archive mounted
 	if ( fs->getFileArchiveCount() )
 		return false;
-
-	readFile->drop();
 
 	return true;
 }

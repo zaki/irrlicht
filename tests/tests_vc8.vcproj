@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\billboards.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\burningsVideo.cpp"
 				>
 			</File>
@@ -426,6 +430,10 @@
 			</File>
 			<File
 				RelativePath=".\transparentMaterials.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\triangleSelector.cpp"
 				>
 			</File>
 			<File

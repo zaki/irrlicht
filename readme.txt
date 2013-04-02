@@ -90,9 +90,10 @@ The Irrlicht Engine SDK version 1.8
 
   * Linux:
 	* Needed: XServer with include files
-	* Optional: OpenGL headers and libraries (libGL.so), for OpenGL support
-	*       GLX + XF86VidMode or XRandr extension (X11 support libraries,
-		the latter two for fullscreen mode)
+	* Optional: OpenGL headers and libraries (libGL.so) for OpenGL support
+		GLX +
+		XF86VidMode [package x11proto-xf86vidmode-dev] or XRandr
+		(X11 support libraries, the latter two for fullscreen mode)
 
   * OSX:
 	* Needed: XCode and Cocoa framework

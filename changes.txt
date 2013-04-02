@@ -641,7 +641,7 @@ Changes in 1.7.4 (not yet released)
  - Yield on Linux now uses nanosleep with 1ns as 0 isn't guaranteed to yield (thx @ hendu for finding + fix)
 
 -----------------------------
-Changes in 1.7.3 (??.??.2011)
+Changes in 1.7.3 (20.02.2012)
 
  - SceneNodeAnimatorFlyCircle fixes serialization of RadiusEllipsoid (was writing Radius). Thx @ wing64 for reporting.
 
@@ -683,13 +683,19 @@ Changes in 1.7.3 (??.??.2011)
 
  - Fix crash in editbox when scrolling up with empty first lines caused by textwrapping.
 
- - triangle3d::isPointInside can now work with larger integers, old version failed already with values in the 3-digit range. It got also faster. (thx @ Eigen for report + testcase and REDDemon for patch proposal).
+ - Fix endianess conversions
+
+ - Changes to isPointInside
 
  - Fix focus problem when removing an unfocused modal dialog reported by Reiko here: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=44358
+
+ - Fix md2 normals problem again
 
  - Add integer template specialization for vector3d::getSphericalCoordinateAngles which rounds angles to nearest integer now.
 
  - Recalculate FrameRect and ScrollPos in CGUIEditBox when AbsoluteRect gets changed (thx @ serengeor for report + testcase)
+
+ - Fix crash in editbox
 
  - Fix 'k' in bigfont.png (thx @ Scrappi for reporting)
 
@@ -701,6 +707,10 @@ Changes in 1.7.3 (??.??.2011)
 
  - Fix crash in collada (.dae) loading
 
+ - Fix bug handling in case RTT is not properly created
+
+ - Fix SColorf interpolation
+
  - Fix memory-leaks in example 22 MaterialViewer
 
  - Fix array::erase which did destroy objects more than once when used with a range (thx @ RedDragCZ for reporting + testcase).
@@ -710,6 +720,8 @@ Changes in 1.7.3 (??.??.2011)
  - ICameraSceneNode::IsOrthogonal is correctly serialized and cloned now.
 
  - CGUIScrollBar passes unused mousemove-events now to parent element. Fixes focus-bug in ComboBox reported by REDDemon here: http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=43474&highlight=
+
+ - Fix getAngle and getAngleWith
 
  - Fix clipping in CGUITabControl
 
@@ -1953,6 +1965,8 @@ Changes in version 1.5 (15.12.2008)
 
  - Fixed LMTS problems with extra data in files.
 
+ - Removed VS6 .dsw / .dsp project files - VS6 is no longer supported.
+
  - Particles can be scaled during animations. Particle scaling needs to happen in the emitter now, instead of in the Particle system scene node. Deprecation methods will guide the user.
 
  - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
@@ -1986,7 +2000,7 @@ Changes in version 1.5 (15.12.2008)
  - Added minimize button to win32 window (if resizable)
 
  - Major API change: RTTs are now created via addRenderTargetTexture instead of createRenderTargetTexture, which allows to retrieve them from the texture cache, but also changes the way of removing the RTTs, and especially one must not drop the pointer anymore.
- 
+
  - WindowsCE-Bugfix
 
  - disableFeature can be used to override feature support of the video driver.
@@ -2296,7 +2310,7 @@ Changes in version 1.4.1 (04 Jun 2008)
  - Fixed bug in CBillboardSceneNode::setColor, reported by rogerborg
 
  - Fixed clipping of menu, toolbar and combo box GUI elements, reported by greenya
-   - setNotClipped now applies all the way up to the root of the GUI environment, rather than just to the next parent 
+   - setNotClipped now applies all the way up to the root of the GUI environment, rather than just to the next parent
 
  - Made new scene managers use the original manager's GUIEnvironment, reported by MasterGod
 
@@ -2361,14 +2375,14 @@ Changes in version 1.4 (30 Nov 2007)
 
  - Added IMeshManipulator::createMeshWelded which creates a copy of the mesh with similar vertices welded together.
 
- - Irrlicht now has its own file format for static meshes. It is based on xml and has the 
+ - Irrlicht now has its own file format for static meshes. It is based on xml and has the
    extension .irrmesh. Irrlicht is able to write every IMesh to this file format, and of course to
    read it back again.
-   
+
  - Irrlicht is now able to write Meshes out into files. Use ISceneManager::createMeshWriter()
    to obtain an interface with which you can write out meshes. Currently, an own .irrmesh
    file format is supported as well as the COLLADA file format.
-   
+
  - fixed the keyboard autorepeat difference betwenn Linux and Windows. Thanks to denton we now have only KeyPressed events on both systems in case of autorepeat.
 
  - Added several new particle emitters and affectors from IrrSpintz. Also some new getter and setter methods were added.
@@ -2408,11 +2422,11 @@ Changes in version 1.4 (30 Nov 2007)
  - Fixed the hillplane mesh to work with non-quadratic dimensions as well. Changed the interface also, so use a u32 dimension to specify the tilecount now.
 
  - Hires timers are disabled on windows systems with more than one CPU, due to bugs
-   in the BIOS of many multi-core motherboards. To enable hires timers in your project, 
+   in the BIOS of many multi-core motherboards. To enable hires timers in your project,
    use SetProcessAffinityMask to set to use only one CPU before creating the device.
 
  - OpenGL render targets now the same way up as the other drivers. If you have
-   written opengl shaders that use render targets then you'll need to change your 
+   written opengl shaders that use render targets then you'll need to change your
    texture coordinates accordingly.
 
  - Fixed some OpenGL renderstate stuff. setBasicRenderstate returns with
@@ -2429,21 +2443,21 @@ Changes in version 1.4 (30 Nov 2007)
 
  - Fixed bugs in MY3D and OBJ loader.
 
- - Added IMeshCache::clearUnusedMeshes(). This allows the user to remove 
-   meshes that are sitting in the mesh cache but aren't used by any scene nodes. 
+ - Added IMeshCache::clearUnusedMeshes(). This allows the user to remove
+   meshes that are sitting in the mesh cache but aren't used by any scene nodes.
    This is useful for example when changing levels.
 
  - Added IUnknown::getReferenceCount()
 
- - createDevice now reports errors if the driverType is unknown, previously it 
+ - createDevice now reports errors if the driverType is unknown, previously it
    created a window but populated it with a null driver without any warning.
 
- - Fixed a bug in CBillboardTextSceneNode::setText where the old text was not 
+ - Fixed a bug in CBillboardTextSceneNode::setText where the old text was not
    cleared.
 
  - Changed irrArray::linear_search to use the == operator rather than <
    This may be slower in some cases, but it no longer returns false positives
-   when searching arrays of classes that override the < operator but 
+   when searching arrays of classes that override the < operator but
    !(x<y) && !(y<x) does not necessarily mean x==y (vectors, positions etc).
 
  - Fixed getSize/getOriginalSize method inversion in OpenGL textures.
@@ -2470,8 +2484,8 @@ GUI:
 
  - Added EGET_ELEMENT_CLOSED GUI event type. Absorb this event to cancel closing a window.
 
- - Added _IRR_COMPILE_WITH_GUI_ to allow compiling without the GUI. 
-   This is useful if you use another GUI system (ie CEGUI) or are using Irrlicht 
+ - Added _IRR_COMPILE_WITH_GUI_ to allow compiling without the GUI.
+   This is useful if you use another GUI system (ie CEGUI) or are using Irrlicht
    inside another window. You will have to supply an external IGUIFont if you wish
    to use font scene nodes as there will be no GUI environment available to load fonts.
 
@@ -2484,26 +2498,26 @@ GUI:
 
  - Added IGUISkin::draw2dRectangle, so skins can override the default highlight.
 
- - EGET_ELEMENT_FOCUS_LOST and EGET_ELEMENT_FOCUSED events can now be absorbed 
-   by returning true in OnEvent. Absorbing these events will cancel the focus 
+ - EGET_ELEMENT_FOCUS_LOST and EGET_ELEMENT_FOCUSED events can now be absorbed
+   by returning true in OnEvent. Absorbing these events will cancel the focus
    change.
 
  - IGUIEnvironment::setFocus and removeFocus now return bools.
 
- - New SEvent.GUIEvent.Element. Points to a second element that is being 
+ - New SEvent.GUIEvent.Element. Points to a second element that is being
    used in the event. During a EGET_ELEMENT_FOCUS_LOST event it points
    to the element which would like the focus.
 
- - Fixed the default font icons so they have a black border and are not 
+ - Fixed the default font icons so they have a black border and are not
    invisible in default listboxes. Old font tool textures now keep their color
-   so colorful fonts are possible by editing the font's texture. The colors of 
+   so colorful fonts are possible by editing the font's texture. The colors of
    completely transparent areas are no longer kept when generating the texture
    from an image. Added builtInFont.bmp for ease of editing.
 
  - IGUIElement changes:
 
      Most elements can now be accessed using the keyboard. Use space and return
-     to select or deselect, escape to cancel selection (ie while pressing a 
+     to select or deselect, escape to cancel selection (ie while pressing a
      button with space or return), and the cursor keys where appropriate.
 
      Added navigation through the GUI using tab and the shift and control keys.
@@ -2513,12 +2527,12 @@ GUI:
        setTabOrder - Sets the order of focus within this tab group,
          Only one element in each group should have the same TabOrder number.
          Set to -1 to add to the end of the group.
-       setTabGroup - set this to true if the element is a group that contains 
+       setTabGroup - set this to true if the element is a group that contains
          other elements, and can be navigated with ctrl+tab/ctrl+shift+tab.
        isTabGroup - returns true if the element is a tab group.
        getTabGroup - returns the tab group that the element belongs to.
-       getNextElement - searches for the next element which would be focused 
-         within the element's children, only useful if you are doing your own 
+       getNextElement - searches for the next element which would be focused
+         within the element's children, only useful if you are doing your own
          custom navigation.
 
      Added isMychild, to check if an element is descended from this one.
@@ -2546,8 +2560,8 @@ GUI:
  - IGUIStaticText new methods setDrawBorder and setTextAlignment.
 
  - IGUIListBox changes:
-   Added setAutoScrollEnabled and isAutoScrollEnabled, for automatic scrolling 
-   when selecting or adding an item. 
+   Added setAutoScrollEnabled and isAutoScrollEnabled, for automatic scrolling
+   when selecting or adding an item.
    Scrollbars are now only visible when the list doesn't fit in the visible area.
    You can now type an item's text to select it.
 
@@ -2581,7 +2595,7 @@ Changes in version 1.3.1 (20 Jun 2007)
 
  - CSphereSceneNode is now texture wrapped with sphere mapping by exactly one
    texture. Only a small error on the top remained.
-   
+
  - The Sky box scene node now clamps its textures by default (meaning no
    more ugly artifacts at the borders).
 
@@ -2593,7 +2607,7 @@ Changes in version 1.3.1 (20 Jun 2007)
    triangle3d.isOnSameSide is now private - it's just a helper class not
    intended for further use.
 
- - Added IFileSystem::getFileDir, to get the directory when given a file 
+ - Added IFileSystem::getFileDir, to get the directory when given a file
    name. Submitted by Jeff Myers
 
  - Updated to latest PNG library (1.2.18), fixing a vulnerability.
@@ -2648,17 +2662,17 @@ Changes in version 1.3.1 (20 Jun 2007)
  - Added scissor test to opengl draw2DImage method that ignored clip.
 
  - Fixed a bug in rect::isValid, it was almost always true.
- 
+
  - Fixed wrong particle emission.
- 
+
  - Added LinuxDevice setResizeAble implementation.
- 
+
  - Enumeration values of the ESCENE_NODE_TYPE enum are no longer ints but four
    character codes. If you were using them as index previously, this is no longer possible.
- 
+
  - There is now a way to set which scene manager should recieve user input, when working
    with multiple scene managers: IrrlichtDevice::setInputReceivingSceneManager().
- 
+
  - ICursorControl now supports setting a reference rectangle.
    If this rect is set, the cursor position is not being calculated relative to
    the rendering window but to this rect. You can set the rect pointer to 0 to disable
@@ -2676,11 +2690,11 @@ Changes in version 1.3.1 (20 Jun 2007)
 
  - Added min and max functions with 3 values: core::min_ and core::max_
 
- - Fixed a crash when using Octtrees caused by unnecessary dropping of meshes when 
+ - Fixed a crash when using Octtrees caused by unnecessary dropping of meshes when
    deserializing the scene node.
 
  - Removed an array::erase from Octtrees and Octtree triangle selector.
- 
+
  - Removed a bug which caused irrlicht to crash when using animated .x files as static meshes.
 
 GUI:
@@ -2706,7 +2720,7 @@ GUI:
 
   - Can now load/save gui environment from/to an element.
 
-  - Most element set functions now have a corresponding get or is function. 
+  - Most element set functions now have a corresponding get or is function.
    (API change) IGUIButton::getUseAlphaChannel is now isAlphaChannelUsed, to fit with other is* functions.
 
   - Fixed a bug with resizing the gui environment when the device is resized
@@ -2723,7 +2737,7 @@ GUI:
 
 GUI Editor:
 
-  - Added cut/copy/paste using clipboard and xml (via memory file). Will have problems in Linux due 
+  - Added cut/copy/paste using clipboard and xml (via memory file). Will have problems in Linux due
     to no clipboard support
 
   - Added texture attribute element
@@ -2747,13 +2761,13 @@ Changes in version 1.3 (15 Mar 2007)
   nodes work again, it should be enough to rename OnPreRender()
   to OnRegisterSceneNode() and OnPostRender() to OnAnimate() in most cases.
 
-- ISceneNode::getMaterialCount and getMaterial now use u32 instead of s32. You will also need 
+- ISceneNode::getMaterialCount and getMaterial now use u32 instead of s32. You will also need
   to update this in your custom scene nodes.
 
 - matrix4 speed enhancement, testing for identity before multiply. faster check for identity
   for the positive case using an additional boolean flag.
   The internal array M is now private, changing the API. Use mat[x] instead of mat.M[x].
-  The pointer to M is acquired by mat.pointer(), some methods take a matrix4 reference 
+  The pointer to M is acquired by mat.pointer(), some methods take a matrix4 reference
   instead of a f32*.
 
 - Some more suppport for tangent meshes
@@ -2767,8 +2781,8 @@ Font improvements:
 
   - Started a font tool for creating the new XML fonts, including generating vector fonts
     (currently not backward compatible with old fonts, only works for Win2K+, some bugs still)
-   
-  - Font interface now supports kerning- kerning pairs, per letter and global kerning widths, 
+
+  - Font interface now supports kerning- kerning pairs, per letter and global kerning widths,
     although he internal font only supports global and per-letter.
 
   - added _IRR_COMPILE_WITH_SOFTWARE_ and _IRR_COMPILE_WITH_BURNINGSVIDEO_ to compile config
@@ -2780,13 +2794,13 @@ Font improvements:
 
   - Started a GUI Editor as a GUI element factory example (work in progress)
 
-  - New IGUIElement functions: isSubElement & setSubElement for child elements created by their parents 
+  - New IGUIElement functions: isSubElement & setSubElement for child elements created by their parents
     (eg. a scrollbar on a list box). Set it if you don't want an element to be serialized
 
   - New GUI event, EGET_ELEMENT_FOCUSED
 
-  - GUI environment ELEMENT_FOCUS_LOST event now sets the element as the caller, focus_lost events 
-    are now usually passed to parent elements, so elements now check if they are the caller before 
+  - GUI environment ELEMENT_FOCUS_LOST event now sets the element as the caller, focus_lost events
+    are now usually passed to parent elements, so elements now check if they are the caller before
     updating (so users can catch focus lost events without them being eaten by the elements)
 
   - Buttons, checkboxes and tab controls now only activate when the mouse is released over them.
@@ -2795,21 +2809,21 @@ Font improvements:
     could cause problems with draggable user windows, as they may now be dragged off screen.
 
   - Elements can now automatically resize to fit their parents, or align themselves to an edge:
-    setAlignment(left, right, top, bottom) - sets how each edge aligns to its parent, 
+    setAlignment(left, right, top, bottom) - sets how each edge aligns to its parent,
     through EGUI_ALIGNMENT enum
     EGUIA_UPPERLEFT - default behavior, aligns to top or left edge
     EGUIA_LOWERRIGHT - aligns to the lower or right edge
     EGUIA_CENTER - moves relative to the center of its parent
     EGUIA_SCALE - uses relative scale
 
-  - setMaxSize, setMinSize - sets the maximum and minimum sizes for automatic resizing, 
+  - setMaxSize, setMinSize - sets the maximum and minimum sizes for automatic resizing,
     use 0 for no maximum size.
 
   - setRelativePosition now takes a rect<f32> for relative positioning within their parents
 
   - getFileSystem added to the GUI environment
 
-  - New IGUISpriteBank, used to hold 2d image data like fonts and GUI icons. 
+  - New IGUISpriteBank, used to hold 2d image data like fonts and GUI icons.
     Icons provided by the built-in font are now accessed through the skin's sprite bank.
     Users can override the icons by setting a different sprite bank and setting new sprites.
 
@@ -2825,10 +2839,10 @@ Font improvements:
   - New Compile Config BURNINGVIDEO_RENDERER_FAST
   touching the 20fps border in the demo ( P4 mobile 2Ghz ). 15fps average.
   ( Compile config Release Fast-FPU )
-		
+
   - VertexCache for Tansformed & Light Vertices
     boost small drawPrimitive Calls ( 2DRectangle, Billboard ) and Real Index Triangles
-		
+
   - Bilinear Dither
   - clipping test ( compare instead of generic plane normal )
   - support for NOT using vertexcolor
@@ -2837,7 +2851,7 @@ Font improvements:
 - added vertex to color to billboard.
   shade top & shade down.
   to support some static lighting effect on billboards
- 
+
 - Implemented line rendering for SoftwareDriver
 
 - XMLWriter fix for 32bit wchar_t (esp. for big endian)
@@ -2862,7 +2876,7 @@ Font improvements:
 
 - Fixed 16bit depth screens under Windows.
 
-- Implemented getMeshBuffer(SMaterial) for all AnimatedMeshes. 
+- Implemented getMeshBuffer(SMaterial) for all AnimatedMeshes.
   It was returning 0 for all implementations previously. User defined IMesh derivates
   will also have to implement it now due to the removed empty implementation.
 
@@ -2870,7 +2884,7 @@ Font improvements:
   a very short time. This allows other processes to execute without a major
   penalty for the Irrlicht application.
 
-- Added sleep() methd to IrrlichtDevice, for pausing the Irrlicht process for a longer 
+- Added sleep() methd to IrrlichtDevice, for pausing the Irrlicht process for a longer
   amount of time.
 
 - Auto-split mesh to 16bit buffers in 3ds loader
@@ -2881,13 +2895,13 @@ Font improvements:
 
 - Fixed(?) the glXGetProcAddress problems with different drivers
 
-- B3D changes by Luke: 
-  Texture scaling bugfix, support for alpha blending, new option to normalise weights, 
+- B3D changes by Luke:
+  Texture scaling bugfix, support for alpha blending, new option to normalise weights,
   animation code optimization, fixed memory leak
 
 - ROUNDING_ERROR is now ROUNDING_ERROR_f32 or ROUNDING_ERROR_f64
 
-- Material ZBuffer flag changed to a u32 value 
+- Material ZBuffer flag changed to a u32 value
   Reason: change ( off or on ) to , off, lequal, equal
   Necessary for multi-pass if previous stage has had transparency
 
@@ -2914,7 +2928,7 @@ Font improvements:
   so it feel's more like common browers
 
 - added a Texture transform to IVideoDriver::setTransform
-	
+
 - quaternion::getmatrix
   in fact the getmatrix version is returning the transposed.
   i'm quite sure that this is the wrong implementation.
@@ -2931,7 +2945,7 @@ Font improvements:
   - The Example Quake3Map shows how to continue applying the Q3Shaders with SceneNodes
      ( for example animmap converts to TextureAnimator.)
      TODO: use the Irrlicht Variable Syntax to remove redundant code..
-	   
+
 - added getVertexPitch() to IMeshBuffer interface
 
 - added generic isupper, isspace.. functions to coreutil.h to remove dependencies for ctype.h
@@ -2942,12 +2956,12 @@ Font improvements:
 - moved fast_atof.h to the public include
   added strtol10 to remove dependencies for stdlib.h
   anyway math.h is needed for powf
-	
+
 - core::vector3d
   added getInterpolated_quadratic.
   vector3d<T> getInterpolated_quadratic(const vector3d<T>& v2, const vector3d<T>& v3, const T d) const
   // this*(1-d)*(1-d) + 2 * v2 * (1-d) + v3 * d * d;
-	
+
 - irrstring: added param start to findLast(T c,  s32 start = -1 )
   reason: to continue searching reverse on a specific position
   (parameter is checked against boundaries )
@@ -2957,8 +2971,8 @@ Font improvements:
   changed the core::vector3df normalize vector.
   specialized templates are not allowed in irrlicht currently, so it's only for f32 for now.
   a C function and a NVidia Version are in irrmath.h
-	
-- add Primitives to CFPSCounter 
+
+- add Primitives to CFPSCounter
   and changed interpolation to 1500ms instead of 2000ms
   and rounding to ceiling..
 
@@ -2973,7 +2987,7 @@ Font improvements:
    this is quite useful if you want to use more artistic fonts.
    default = 0
    better kerning would need a seperate coordinate set for each symbol.
-	
+
 - changed MD2_FRAME_SHIFT to lower framerate
   -> lower IPol
   problems can occur if somebody uses hardcoded frame-numbers instead
@@ -2982,14 +2996,14 @@ Font improvements:
 - changed spelling "frustrum" to "frustum"
 
   -> changed also SViewFrustrum.h to SViewFrustum.h
-	
+
 - changed Parameter AutomaticCulling from bool to enum E_CULLING_TYPE
   to support more than two culling modes.
-	
+
   added Frustum culling ( it's a copy & paste from the octree )
   added initial bounding sphere
     used for culling point lights..
-	 
+
 - Added getSystemMemory and getProcessorSpeedMHz for Windows and Linux to the OSOperator, submitted by Vitek.
 
 -------------------------------------------
@@ -3015,7 +3029,7 @@ Changes in version 1.2 (29 Nov 2006)
 
 - Split ESNRP_LIGHT_AND_CAMERA passes into ESNRP_LIGHT and ESNRP_CAMERA to fix a problem with lights being rendered before cameras in OpenGL (thanks again to Vitek for finding this). ESNRP_LIGHT_AND_CAMERA is now deprecated.
 
-- Fixed many OpenGL render state problems which were related to wrong texture states. The textures are now enabled and disabled by the material renderers in OnSetMaterial. Also enabled the texture state cache which helps preventing texture changes just as the one for D3Dx. Thanks to hey_i_am_real for some good hints on where the problem was located. 
+- Fixed many OpenGL render state problems which were related to wrong texture states. The textures are now enabled and disabled by the material renderers in OnSetMaterial. Also enabled the texture state cache which helps preventing texture changes just as the one for D3Dx. Thanks to hey_i_am_real for some good hints on where the problem was located.
 
 - Added compile flag _IRR_COMPILE_WITH_X11_ which is by default enabled. Disabling the flag removes all X11 dependencies from Irrlicht and allows for a headless Linux Irrlicht server - added by request :-)
 
@@ -3078,7 +3092,7 @@ Changes in version 1.2 (29 Nov 2006)
   You can influence this by calling ISceneManager::setAmbientLight(). That light color
   is also stored when saving .irr files via ISceneManager::saveScene().
 
-- Loaded COLLADA files which contained only one single mesh now behave like all the 
+- Loaded COLLADA files which contained only one single mesh now behave like all the
   other loaded meshes, and the #meshname workaround has been removed.
 
 - File lists are now sorted.
