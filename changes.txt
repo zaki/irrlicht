@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+ - Removed VS6 .dsw / .dsp project files - VS6 is no longer supported.
 
 - IGUIEnvironment::hasFocus has now a parameter checkSubElements as subelements are usually seen as part of an element. Default unfortunately must be false due to backward compatibility.
 - Add IGUIElement::isTrulyVisible which works like ISceneNode::isTrulyVisible and checks for parent visibility as well.
