@@ -88,7 +88,7 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 
 bool xmlCompareFiles(irr::io::IFileSystem * fs, const char * fileName1, const char * fileName2)
 {
-	if(!fileName1 || !fileName2)
+	if (!fileName1 || !fileName2)
 		return false;
 
 	io::IXMLReaderUTF8* reader1 = fs->createXMLReaderUTF8(fileName1);
@@ -267,7 +267,7 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	}
 
 	video::ECOLOR_FORMAT format1 = image1->getColorFormat();
-	if(video::ECF_A8R8G8B8 != format1 && video::ECF_R8G8B8 != format1)
+	if (video::ECF_A8R8G8B8 != format1 && video::ECF_R8G8B8 != format1)
 	{
 		logTestString("fuzzyCompareImages: image 1 must be ECF_AR8G8B8 or ECF_R8G8B8\n");
 		return 0.f;
@@ -287,14 +287,14 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	u32 mismatchedColours = 0;
 	for (u32 pixel = 0; pixel < pixels; ++pixel)
 	{
-		if(video::ECF_A8R8G8B8 == format1)
+		if (video::ECF_A8R8G8B8 == format1)
 			image1Data++;
 
 		const u8 r1 = *(image1Data++);
 		const u8 g1 = *(image1Data++);
 		const u8 b1 = *(image1Data++);
 
-		if(video::ECF_A8R8G8B8 == format2)
+		if (video::ECF_A8R8G8B8 == format2)
 			image2Data++;
 
 		const u8 r2 = *(image2Data++);
@@ -342,17 +342,17 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 		driver->endScene();
 
 		irr::video::IImage * screenshot = driver->createScreenShot();
-		if(!screenshot)
+		if (!screenshot)
 			return;
 
 		const video::ECOLOR_FORMAT format = screenshot->getColorFormat();
-		if(format != video::ECF_R8G8B8)
+		if (format != video::ECF_R8G8B8)
 		{
 			irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot->getDimension());
 			screenshot->copyTo(fixedScreenshot);
 			screenshot->drop();
 
-			if(!fixedScreenshot)
+			if (!fixedScreenshot)
 				return;
 
 			screenshot = fixedScreenshot;
@@ -368,14 +368,14 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 			const u8 g = *(image1Data++);
 			const u8 b = *(image1Data++);
 
-			if(r != color.getRed() || g != color.getGreen() || b != color.getBlue())
+			if (r != color.getRed() || g != color.getGreen() || b != color.getBlue())
 			{
 				status = false;
 				break;
 			}
 		}
 
-		if(status)
+		if (status)
 		{
 			screenshot->drop();
 			return;
@@ -391,9 +391,9 @@ irr::core::stringc shortDriverName(irr::video::IVideoDriver * driver)
 	// For OpenGL and Burning, chop the version number out. Other drivers have more stable version numbers.
 	// TA: Sorry Rogerborg. burnings video also has the version number inside;-)
 	//     maybe you sould take the getDriverType Info for this
-	if(driverName.find("OpenGL") > -1)
+	if (driverName.find("OpenGL") > -1)
 		driverName = "OpenGL";
-	else if(driverName.find("Burning's Video") > -1)
+	else if (driverName.find("Burning's Video") > -1)
 		driverName = "Burning's Video";
 
 	return driverName;
@@ -434,7 +434,7 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 	referenceFilename += driverName;
 	referenceFilename += fileName;
 	irr::video::IImage * reference = driver->createImageFromFile(referenceFilename.c_str());
-	if(!reference)
+	if (!reference)
 	{
 		logTestString("\n*** Failed to load reference image '%s'\n*** Creating from screenshot - please check this image.\n\n",
 			referenceFilename.c_str());
@@ -468,13 +468,13 @@ bool openTestLog(bool startNewLog, const char * filename)
 {
 	closeTestLog();
 
-	if(startNewLog)
+	if (startNewLog)
 		logFile = fopen(filename, "w");
 	else
 		logFile = fopen(filename, "a");
 
 	assert(logFile);
-	if(!logFile)
+	if (!logFile)
 		logTestString("\nWARNING: unable to open the test log file %s\n", filename);
 
 	return (logFile != 0);
@@ -511,7 +511,7 @@ void logTestString(const char * format, ...)
 #endif
 
 	(void)printf(logString);
-	if(logFile)
+	if (logFile)
 	{
 		(void)fprintf(logFile, logString);
 		(void)fflush(logFile);
