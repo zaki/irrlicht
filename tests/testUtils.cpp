@@ -22,11 +22,11 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 {
 	assert(fileName1);
 	assert(fileName2);
-	if(!fileName1 || !fileName2)
+	if (!fileName1 || !fileName2)
 		return false;
 
 	FILE * file1 = fopen(fileName1, "rb");
-	if(!file1)
+	if (!file1)
 	{
 		logTestString("binaryCompareFiles: File '%s' cannot be opened\n", fileName1);
 		assert(file1);
@@ -34,7 +34,7 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 	}
 
 	FILE * file2 = fopen(fileName2, "rb");
-	if(!file2)
+	if (!file2)
 	{
 		logTestString("binaryCompareFiles: File '%s' cannot be opened\n", fileName2);
 		(void)fclose(file1);
@@ -47,7 +47,7 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 	(void)fseek(file2, 0, SEEK_END);
 	const size_t file1Size = ftell(file1);
 	const size_t file2Size = ftell(file2);
-	if(file1Size != file2Size)
+	if (file1Size != file2Size)
 	{
 		logTestString("binaryCompareFiles: Files are different sizes: %d vs %d\n",
 			file1Size, file2Size);
@@ -62,9 +62,9 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 	char file1Buffer[8196];
 	char file2Buffer[8196];
 
-	while(!feof(file1))
+	while (!feof(file1))
 	{
-		if(feof(file2)
+		if (feof(file2)
 			||(fread(file1Buffer, sizeof(file1Buffer), 1, file1) !=
 			fread(file2Buffer, sizeof(file2Buffer), 1, file2)))
 		{
@@ -72,7 +72,7 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 			break;
 		}
 
-		if(memcmp(file1Buffer, file2Buffer, sizeof(file1Buffer)))
+		if (memcmp(file1Buffer, file2Buffer, sizeof(file1Buffer)))
 		{
 			logTestString("binaryCompareFiles: files are different\n");
 			break;
@@ -88,7 +88,7 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 
 bool xmlCompareFiles(irr::io::IFileSystem * fs, const char * fileName1, const char * fileName2)
 {
-	if(!fileName1 || !fileName2)
+	if (!fileName1 || !fileName2)
 		return false;
 
 	io::IXMLReaderUTF8* reader1 = fs->createXMLReaderUTF8(fileName1);
@@ -257,24 +257,24 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 {
 	assert(image1);
 	assert(image2);
-	if(!image1 || !image2)
+	if (!image1 || !image2)
 		return 0.f;
 
-	if(image1->getDimension() != image2->getDimension())
+	if (image1->getDimension() != image2->getDimension())
 	{
 		logTestString("fuzzyCompareImages: images are different sizes\n");
 		return 0.f;
 	}
 
 	video::ECOLOR_FORMAT format1 = image1->getColorFormat();
-	if(video::ECF_A8R8G8B8 != format1 && video::ECF_R8G8B8 != format1)
+	if (video::ECF_A8R8G8B8 != format1 && video::ECF_R8G8B8 != format1)
 	{
 		logTestString("fuzzyCompareImages: image 1 must be ECF_AR8G8B8 or ECF_R8G8B8\n");
 		return 0.f;
 	}
 
 	video::ECOLOR_FORMAT format2 = image2->getColorFormat();
-	if(video::ECF_A8R8G8B8 != format2 && video::ECF_R8G8B8 != format2)
+	if (video::ECF_A8R8G8B8 != format2 && video::ECF_R8G8B8 != format2)
 	{
 		logTestString("fuzzyCompareImages: image 2 must be ECF_AR8G8B8 or ECF_R8G8B8\n");
 		return 0.f;
@@ -287,14 +287,14 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	u32 mismatchedColours = 0;
 	for(u32 pixel = 0; pixel < pixels; ++pixel)
 	{
-		if(video::ECF_A8R8G8B8 == format1)
+		if (video::ECF_A8R8G8B8 == format1)
 			image1Data++;
 
 		const u8 r1 = *(image1Data++);
 		const u8 g1 = *(image1Data++);
 		const u8 b1 = *(image1Data++);
 
-		if(video::ECF_A8R8G8B8 == format2)
+		if (video::ECF_A8R8G8B8 == format2)
 			image2Data++;
 
 		const u8 r2 = *(image2Data++);
@@ -342,17 +342,17 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 		driver->endScene();
 
 		irr::video::IImage * screenshot = driver->createScreenShot();
-		if(!screenshot)
+		if (!screenshot)
 			return;
 
 		const video::ECOLOR_FORMAT format = screenshot->getColorFormat();
-		if(format != video::ECF_R8G8B8)
+		if (format != video::ECF_R8G8B8)
 		{
 			irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot->getDimension());
 			screenshot->copyTo(fixedScreenshot);
 			screenshot->drop();
 
-			if(!fixedScreenshot)
+			if (!fixedScreenshot)
 				return;
 
 			screenshot = fixedScreenshot;
@@ -368,14 +368,14 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 			const u8 g = *(image1Data++);
 			const u8 b = *(image1Data++);
 
-			if(r != color.getRed() || g != color.getGreen() || b != color.getBlue())
+			if (r != color.getRed() || g != color.getGreen() || b != color.getBlue())
 			{
 				status = false;
 				break;
 			}
 		}
 
-		if(status)
+		if (status)
 		{
 			screenshot->drop();
 			return;
@@ -391,9 +391,9 @@ irr::core::stringc shortDriverName(irr::video::IVideoDriver * driver)
 	// For OpenGL and Burning, chop the version number out. Other drivers have more stable version numbers.
 	// TA: Sorry Rogerborg. burnings video also has the version number inside;-)
 	//     maybe you sould take the getDriverType Info for this
-	if(driverName.find("OpenGL") > -1)
+	if (driverName.find("OpenGL") > -1)
 		driverName = "OpenGL";
-	else if(driverName.find("Burning's Video") > -1)
+	else if (driverName.find("Burning's Video") > -1)
 		driverName = "Burning's Video";
 
 	return driverName;
@@ -404,7 +404,7 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 					irr::f32 requiredMatch)
 {
 	irr::video::IImage * screenshot = driver->createScreenShot();
-	if(!screenshot)
+	if (!screenshot)
 	{
 		logTestString("Failed to take screenshot\n");
 		assert(false);
@@ -412,13 +412,13 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 	}
 
 	const video::ECOLOR_FORMAT format = screenshot->getColorFormat();
-	if(format != video::ECF_R8G8B8)
+	if (format != video::ECF_R8G8B8)
 	{
 		irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot->getDimension());
 		screenshot->copyTo(fixedScreenshot);
 		screenshot->drop();
 
-		if(!fixedScreenshot)
+		if (!fixedScreenshot)
 		{
 			logTestString("Failed to convert screenshot to ECF_A8R8G8B8\n");
 			assert(false);
@@ -434,7 +434,7 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 	referenceFilename += driverName;
 	referenceFilename += fileName;
 	irr::video::IImage * reference = driver->createImageFromFile(referenceFilename.c_str());
-	if(!reference)
+	if (!reference)
 	{
 		logTestString("\n*** Failed to load reference image '%s'\n*** Creating from screenshot - please check this image.\n\n",
 			referenceFilename.c_str());
@@ -468,13 +468,13 @@ bool openTestLog(bool startNewLog, const char * filename)
 {
 	closeTestLog();
 
-	if(startNewLog)
+	if (startNewLog)
 		logFile = fopen(filename, "w");
 	else
 		logFile = fopen(filename, "a");
 
 	assert(logFile);
-	if(!logFile)
+	if (!logFile)
 		logTestString("\nWARNING: unable to open the test log file %s\n", filename);
 
 	return (logFile != 0);
@@ -511,7 +511,7 @@ void logTestString(const char * format, ...)
 #endif
 
 	(void)printf(logString);
-	if(logFile)
+	if (logFile)
 	{
 		(void)fprintf(logFile, logString);
 		(void)fflush(logFile);
