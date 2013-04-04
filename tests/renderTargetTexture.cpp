@@ -23,6 +23,9 @@ static bool testWith2DImage(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture *image = driver->getTexture ("../media/irrlichtlogo2.png");
@@ -130,6 +133,8 @@ bool rttAndZBuffer(video::E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	stabilizeScreenBackground(vd);
+
 	logTestString("Testing driver %ls\n", vd->getName());
 
 	video::ITexture* rt = vd->addRenderTargetTexture(cp.WindowSize, "rt", video::ECF_A32B32G32R32F);
@@ -232,6 +237,8 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 		return false;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	driver->beginScene(true, true, video::SColor(255,255, 255, 255));
 	driver->setRenderTarget(rt, true, true, video::SColor(255,255,0,255));
 	driver->draw2DImage(driver->getTexture("../media/fireball.bmp"), core::recti(0, 0,rt->getSize().Width,rt->getSize().Height), core::recti(0,0,64,64));
@@ -333,6 +340,8 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 

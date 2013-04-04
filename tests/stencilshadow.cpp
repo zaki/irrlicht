@@ -11,6 +11,8 @@ static bool shadows(video::E_DRIVER_TYPE driverType)
 	if (!device)
 		return true; // No error if device does not exist
 
+	stabilizeScreenBackground(device->getVideoDriver());
+
 	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNodeFPS();
 	cam->setPosition(core::vector3df(-15,55,10));
 	cam->setTarget(core::vector3df(-5,-5,-15));

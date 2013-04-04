@@ -27,6 +27,9 @@ static bool viewPortText(E_DRIVER_TYPE driverType)
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 	IGUIEnvironment* env = smgr->getGUIEnvironment();
+
+	stabilizeScreenBackground(driver);
+
 	env->addCheckBox(true, core::recti(10,60,28,82));
 
 	logTestString("Testing driver %ls\n", driver->getName());

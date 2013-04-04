@@ -508,19 +508,6 @@
 		4CA25C080A485EAD00B4E469 /* jquant1.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7390A485CD80014E966 /* jquant1.c */; };
 		4CA25C090A485EAD00B4E469 /* jquant2.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E73A0A485CD80014E966 /* jquant2.c */; };
 		4CA25C0A0A485EAD00B4E469 /* jutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E73B0A485CD80014E966 /* jutils.c */; };
-		4CA25C0C0A485EAD00B4E469 /* rdbmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7540A485CD90014E966 /* rdbmp.c */; };
-		4CA25C0D0A485EAD00B4E469 /* rdcolmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7550A485CD90014E966 /* rdcolmap.c */; };
-		4CA25C0E0A485EAD00B4E469 /* rdgif.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7560A485CD90014E966 /* rdgif.c */; };
-		4CA25C100A485EAD00B4E469 /* rdppm.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7590A485CD90014E966 /* rdppm.c */; };
-		4CA25C110A485EAD00B4E469 /* rdrle.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E75A0A485CD90014E966 /* rdrle.c */; };
-		4CA25C120A485EAD00B4E469 /* rdswitch.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E75B0A485CD90014E966 /* rdswitch.c */; };
-		4CA25C130A485EAD00B4E469 /* rdtarga.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E75C0A485CD90014E966 /* rdtarga.c */; };
-		4CA25C150A485EAD00B4E469 /* transupp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7660A485CD90014E966 /* transupp.c */; };
-		4CA25C170A485EAD00B4E469 /* wrbmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76A0A485CD90014E966 /* wrbmp.c */; };
-		4CA25C180A485EAD00B4E469 /* wrgif.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76B0A485CD90014E966 /* wrgif.c */; };
-		4CA25C1A0A485EAD00B4E469 /* wrppm.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76E0A485CD90014E966 /* wrppm.c */; };
-		4CA25C1B0A485EAD00B4E469 /* wrrle.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76F0A485CD90014E966 /* wrrle.c */; };
-		4CA25C1C0A485EAD00B4E469 /* wrtarga.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7700A485CD90014E966 /* wrtarga.c */; };
 		4CA25C350A4860EE00B4E469 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C00547D0A48470500C844C2 /* main.cpp */; };
 		4CA25C360A48610400B4E469 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E1650A484C2C0014E966 /* MainMenu.nib */; };
 		4CA25C520A48618800B4E469 /* libIrrlicht.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E24D0A4850120014E966 /* libIrrlicht.a */; };
@@ -801,19 +788,6 @@
 		95972A1112C192DA00BF73D3 /* jquant1.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7390A485CD80014E966 /* jquant1.c */; };
 		95972A1212C192DA00BF73D3 /* jquant2.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E73A0A485CD80014E966 /* jquant2.c */; };
 		95972A1312C192DA00BF73D3 /* jutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E73B0A485CD80014E966 /* jutils.c */; };
-		95972A1412C192DA00BF73D3 /* rdbmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7540A485CD90014E966 /* rdbmp.c */; };
-		95972A1512C192DA00BF73D3 /* rdcolmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7550A485CD90014E966 /* rdcolmap.c */; };
-		95972A1612C192DA00BF73D3 /* rdgif.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7560A485CD90014E966 /* rdgif.c */; };
-		95972A1712C192DA00BF73D3 /* rdppm.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7590A485CD90014E966 /* rdppm.c */; };
-		95972A1812C192DA00BF73D3 /* rdrle.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E75A0A485CD90014E966 /* rdrle.c */; };
-		95972A1912C192DA00BF73D3 /* rdswitch.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E75B0A485CD90014E966 /* rdswitch.c */; };
-		95972A1A12C192DA00BF73D3 /* rdtarga.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E75C0A485CD90014E966 /* rdtarga.c */; };
-		95972A1B12C192DA00BF73D3 /* transupp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7660A485CD90014E966 /* transupp.c */; };
-		95972A1C12C192DA00BF73D3 /* wrbmp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76A0A485CD90014E966 /* wrbmp.c */; };
-		95972A1D12C192DA00BF73D3 /* wrgif.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76B0A485CD90014E966 /* wrgif.c */; };
-		95972A1E12C192DA00BF73D3 /* wrppm.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76E0A485CD90014E966 /* wrppm.c */; };
-		95972A1F12C192DA00BF73D3 /* wrrle.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E76F0A485CD90014E966 /* wrrle.c */; };
-		95972A2012C192DA00BF73D3 /* wrtarga.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E7700A485CD90014E966 /* wrtarga.c */; };
 		95972A2212C192DA00BF73D3 /* inffast.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1800A484C2C0014E966 /* inffast.c */; };
 		95972A2312C192DA00BF73D3 /* inftrees.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1850A484C2C0014E966 /* inftrees.c */; };
 		95972A2412C192DA00BF73D3 /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E18D0A484C2C0014E966 /* uncompr.c */; };
@@ -1936,19 +1910,6 @@
 		4C53E7390A485CD80014E966 /* jquant1.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = jquant1.c; sourceTree = "<group>"; };
 		4C53E73A0A485CD80014E966 /* jquant2.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = jquant2.c; sourceTree = "<group>"; };
 		4C53E73B0A485CD80014E966 /* jutils.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = jutils.c; sourceTree = "<group>"; };
-		4C53E7540A485CD90014E966 /* rdbmp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdbmp.c; sourceTree = "<group>"; };
-		4C53E7550A485CD90014E966 /* rdcolmap.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdcolmap.c; sourceTree = "<group>"; };
-		4C53E7560A485CD90014E966 /* rdgif.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdgif.c; sourceTree = "<group>"; };
-		4C53E7590A485CD90014E966 /* rdppm.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdppm.c; sourceTree = "<group>"; };
-		4C53E75A0A485CD90014E966 /* rdrle.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdrle.c; sourceTree = "<group>"; };
-		4C53E75B0A485CD90014E966 /* rdswitch.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdswitch.c; sourceTree = "<group>"; };
-		4C53E75C0A485CD90014E966 /* rdtarga.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdtarga.c; sourceTree = "<group>"; };
-		4C53E7660A485CD90014E966 /* transupp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = transupp.c; sourceTree = "<group>"; };
-		4C53E76A0A485CD90014E966 /* wrbmp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wrbmp.c; sourceTree = "<group>"; };
-		4C53E76B0A485CD90014E966 /* wrgif.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wrgif.c; sourceTree = "<group>"; };
-		4C53E76E0A485CD90014E966 /* wrppm.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wrppm.c; sourceTree = "<group>"; };
-		4C53E76F0A485CD90014E966 /* wrrle.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wrrle.c; sourceTree = "<group>"; };
-		4C53E7700A485CD90014E966 /* wrtarga.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wrtarga.c; sourceTree = "<group>"; };
 		4C6DC9B60A48715A0017A6E5 /* inflate.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = inflate.c; sourceTree = "<group>"; };
 		4CA25B980A485D9800B4E469 /* CustomSceneNode_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CustomSceneNode_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CA25B9A0A485D9800B4E469 /* MeshViewer_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeshViewer_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2133,7 +2094,7 @@
 		5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLCgMaterialRenderer.cpp; sourceTree = "<group>"; };
 		5E5484F0168A95D500119951 /* COpenGLCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COpenGLCgMaterialRenderer.h; sourceTree = "<group>"; };
 		959726FD12C18FFC00BF73D3 /* IrrFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IrrFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		959726FE12C18FFC00BF73D3 /* IrrFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "IrrFramework-Info.plist"; path = "svn/irrlicht1.7/source/Irrlicht/MacOSX/IrrFramework-Info.plist"; sourceTree = SYSTEM_DEVELOPER_DIR; };
+		959726FE12C18FFC00BF73D3 /* irrFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "irrFramework-Info.plist"; sourceTree = "<group>"; };
 		95972B8312C19A5C00BF73D3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		95972B8912C19A7600BF73D3 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		95972B8D12C19A7F00BF73D3 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
@@ -2421,7 +2382,7 @@
 				4C53E2540A48505D0014E966 /* Libraries */,
 				4C53E24C0A484FED0014E966 /* Products */,
 				959726FD12C18FFC00BF73D3 /* IrrFramework.framework */,
-				959726FE12C18FFC00BF73D3 /* IrrFramework-Info.plist */,
+				959726FE12C18FFC00BF73D3 /* irrFramework-Info.plist */,
 				95972B8312C19A5C00BF73D3 /* OpenGL.framework */,
 				95972B8912C19A7600BF73D3 /* IOKit.framework */,
 				95972B8D12C19A7F00BF73D3 /* Carbon.framework */,
@@ -3625,19 +3586,6 @@
 				4C53E7390A485CD80014E966 /* jquant1.c */,
 				4C53E73A0A485CD80014E966 /* jquant2.c */,
 				4C53E73B0A485CD80014E966 /* jutils.c */,
-				4C53E7540A485CD90014E966 /* rdbmp.c */,
-				4C53E7550A485CD90014E966 /* rdcolmap.c */,
-				4C53E7560A485CD90014E966 /* rdgif.c */,
-				4C53E7590A485CD90014E966 /* rdppm.c */,
-				4C53E75A0A485CD90014E966 /* rdrle.c */,
-				4C53E75B0A485CD90014E966 /* rdswitch.c */,
-				4C53E75C0A485CD90014E966 /* rdtarga.c */,
-				4C53E7660A485CD90014E966 /* transupp.c */,
-				4C53E76A0A485CD90014E966 /* wrbmp.c */,
-				4C53E76B0A485CD90014E966 /* wrgif.c */,
-				4C53E76E0A485CD90014E966 /* wrppm.c */,
-				4C53E76F0A485CD90014E966 /* wrrle.c */,
-				4C53E7700A485CD90014E966 /* wrtarga.c */,
 			);
 			path = jpeglib;
 			sourceTree = "<group>";
@@ -4433,7 +4381,6 @@
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "MacOSX" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -4754,19 +4701,6 @@
 				95972A1112C192DA00BF73D3 /* jquant1.c in Sources */,
 				95972A1212C192DA00BF73D3 /* jquant2.c in Sources */,
 				95972A1312C192DA00BF73D3 /* jutils.c in Sources */,
-				95972A1412C192DA00BF73D3 /* rdbmp.c in Sources */,
-				95972A1512C192DA00BF73D3 /* rdcolmap.c in Sources */,
-				95972A1612C192DA00BF73D3 /* rdgif.c in Sources */,
-				95972A1712C192DA00BF73D3 /* rdppm.c in Sources */,
-				95972A1812C192DA00BF73D3 /* rdrle.c in Sources */,
-				95972A1912C192DA00BF73D3 /* rdswitch.c in Sources */,
-				95972A1A12C192DA00BF73D3 /* rdtarga.c in Sources */,
-				95972A1B12C192DA00BF73D3 /* transupp.c in Sources */,
-				95972A1C12C192DA00BF73D3 /* wrbmp.c in Sources */,
-				95972A1D12C192DA00BF73D3 /* wrgif.c in Sources */,
-				95972A1E12C192DA00BF73D3 /* wrppm.c in Sources */,
-				95972A1F12C192DA00BF73D3 /* wrrle.c in Sources */,
-				95972A2012C192DA00BF73D3 /* wrtarga.c in Sources */,
 				95972A2212C192DA00BF73D3 /* inffast.c in Sources */,
 				95972A2312C192DA00BF73D3 /* inftrees.c in Sources */,
 				95972A2412C192DA00BF73D3 /* uncompr.c in Sources */,
@@ -5187,19 +5121,6 @@
 				4CA25C080A485EAD00B4E469 /* jquant1.c in Sources */,
 				4CA25C090A485EAD00B4E469 /* jquant2.c in Sources */,
 				4CA25C0A0A485EAD00B4E469 /* jutils.c in Sources */,
-				4CA25C0C0A485EAD00B4E469 /* rdbmp.c in Sources */,
-				4CA25C0D0A485EAD00B4E469 /* rdcolmap.c in Sources */,
-				4CA25C0E0A485EAD00B4E469 /* rdgif.c in Sources */,
-				4CA25C100A485EAD00B4E469 /* rdppm.c in Sources */,
-				4CA25C110A485EAD00B4E469 /* rdrle.c in Sources */,
-				4CA25C120A485EAD00B4E469 /* rdswitch.c in Sources */,
-				4CA25C130A485EAD00B4E469 /* rdtarga.c in Sources */,
-				4CA25C150A485EAD00B4E469 /* transupp.c in Sources */,
-				4CA25C170A485EAD00B4E469 /* wrbmp.c in Sources */,
-				4CA25C180A485EAD00B4E469 /* wrgif.c in Sources */,
-				4CA25C1A0A485EAD00B4E469 /* wrppm.c in Sources */,
-				4CA25C1B0A485EAD00B4E469 /* wrrle.c in Sources */,
-				4CA25C1C0A485EAD00B4E469 /* wrtarga.c in Sources */,
 				4C53E3D80A4856B30014E966 /* inffast.c in Sources */,
 				4C53E3DC0A4856B30014E966 /* inftrees.c in Sources */,
 				4C53E3E40A4856B30014E966 /* uncompr.c in Sources */,
@@ -5747,10 +5668,7 @@
 		0946CCB20EC99BBE00D945A5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
@@ -5778,10 +5696,7 @@
 		0946CCB30EC99BBE00D945A5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -6014,10 +5929,7 @@
 		0E2E3CFA1103E294002DE8D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
@@ -6028,7 +5940,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "/Users/hybrid/irrlicht/branch_1.7/source/Irrlicht/MacOSX/DemoApp-Info.plist";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
 				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -6045,10 +5957,7 @@
 		0E2E3CFB1103E294002DE8D7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -6059,7 +5968,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "/Users/hybrid/irrlicht/branch_1.7/source/Irrlicht/MacOSX/DemoApp-Info.plist";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
 				INSTALL_PATH = /;
 				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
 				OTHER_LDFLAGS = (
@@ -6079,10 +5988,7 @@
 		0E2E3D3A1103E3F4002DE8D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
@@ -6093,7 +5999,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "/Users/hybrid/irrlicht/branch_1.7/source/Irrlicht/MacOSX/DemoApp-Info.plist";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
 				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -6110,10 +6016,7 @@
 		0E2E3D3B1103E3F4002DE8D7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -6124,7 +6027,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "/Users/hybrid/irrlicht/branch_1.7/source/Irrlicht/MacOSX/DemoApp-Info.plist";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
 				INSTALL_PATH = /;
 				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
 				OTHER_LDFLAGS = (
@@ -6144,10 +6047,7 @@
 		1DEB921F08733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -6167,10 +6067,7 @@
 		1DEB922008733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
@@ -6187,10 +6084,7 @@
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				HEADER_SEARCH_PATHS = ../../../include;
@@ -6198,17 +6092,14 @@
 					"-DMACOSX",
 					"-D_DEBUG",
 				);
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -6219,7 +6110,7 @@
 				HEADER_SEARCH_PATHS = ../../../include;
 				INSTALL_MODE_FLAG = "a+rwx";
 				OTHER_CFLAGS = "-DMACOSX";
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 			};
 			name = Release;
 		};
@@ -6610,6 +6501,7 @@
 					AppKit,
 				);
 				PRODUCT_NAME = UserInterface_dbg;
+				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -6639,7 +6531,7 @@
 					AppKit,
 				);
 				PRODUCT_NAME = UserInterface;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT = "";
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
@@ -6707,8 +6599,7 @@
 		B81CFF3F097FE25F0057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
@@ -6734,7 +6625,7 @@
 					AppKit,
 				);
 				PRODUCT_NAME = Quake3Map_dbg;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -6743,8 +6634,7 @@
 		B81CFF40097FE25F0057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -6771,7 +6661,7 @@
 					AppKit,
 				);
 				PRODUCT_NAME = Quake3Map;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
@@ -6839,10 +6729,7 @@
 		B81CFF84097FE3DC0057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
@@ -6870,10 +6757,7 @@
 		B81CFF85097FE3DC0057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -6904,7 +6788,7 @@
 		B81CFF9D097FE45E0057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
@@ -6934,7 +6818,7 @@
 		B81CFF9E097FE45E0057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;

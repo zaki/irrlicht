@@ -11,6 +11,8 @@ static bool testOrthoCam(video::E_DRIVER_TYPE driverType)
 	if (!device)
 		return true; // No error if device does not exist
 
+	stabilizeScreenBackground(device->getVideoDriver());
+
 	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNode();
 	cam->setPosition(core::vector3df(500,200,-500));
 	cam->setTarget(core::vector3df());
@@ -52,6 +54,8 @@ static bool testOrthoStencil(video::E_DRIVER_TYPE driverType)
 	IrrlichtDevice *device = createDevice (driverType, core::dimension2d<u32>(160,120), 16, false, true);
 	if (!device)
 		return true; // No error if device does not exist
+
+	stabilizeScreenBackground(device->getVideoDriver());
 
 	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNode();
 	cam->setPosition(core::vector3df(300,250,-300));

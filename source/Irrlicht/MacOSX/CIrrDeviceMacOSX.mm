@@ -9,7 +9,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/gl.h>
+#ifndef __MAC_10_6
 #import <Carbon/Carbon.h>
+#endif
 
 #import "CIrrDeviceMacOSX.h"
 
@@ -43,6 +45,7 @@
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDKeys.h>
 
+#ifndef __MAC_10_6
 // Contents from Events.h from Carbon/HIToolbox but we need it with Cocoa too
 // and for some reason no Cocoa equivalent of these constants seems provided.
 // So I'm doing like everyone else and using copy-and-paste.
@@ -180,7 +183,7 @@ enum {
 	kVK_DownArrow     = 0x7D,
 	kVK_UpArrow       = 0x7E
 };
-
+#endif
 
 struct JoystickComponent
 {
@@ -475,9 +478,8 @@ namespace irr
 CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param), Window(NULL), CGLContext(NULL), OGLContext(NULL),
 	SoftwareDriverTarget(0), DeviceWidth(0), DeviceHeight(0),
-	ScreenWidth(0), ScreenHeight(0), MouseButtonStates(0),
-	IsActive(true), IsSoftwareRenderer(false),
-	IsShiftDown(false), IsControlDown(false), IsResizable(false)
+	ScreenWidth(0), ScreenHeight(0), MouseButtonStates(0), SoftwareRendererType(0),
+	IsActive(true), IsFullscreen(false), IsShiftDown(false), IsControlDown(false), IsResizable(false)
 {
 	struct utsname name;
 	NSString *path;
@@ -514,21 +516,27 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 
 	bool success = true;
 	if (CreationParams.DriverType != video::EDT_NULL)
-		success = createWindow();
+        success = createWindow();
+
 	// in case of failure, one can check VideoDriver for initialization
 	if (!success)
 		return;
 
 	setResizable(false);
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
-	createDriver();
+    
+    createDriver();
 	createGUIAndScene();
 }
 
 CIrrDeviceMacOSX::~CIrrDeviceMacOSX()
 {
 	[SoftwareDriverTarget release];
-	SetSystemUIMode(kUIModeNormal, 0);
+#ifdef __MAC_10_6
+    [NSApp setPresentationOptions:(NSApplicationPresentationDefault)];
+#else
+    SetSystemUIMode(kUIModeNormal, kUIOptionAutoShowMenuBar);
+#endif
 	closeDevice();
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	for (u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
@@ -555,6 +563,9 @@ void CIrrDeviceMacOSX::closeDevice()
 		[Window setReleasedWhenClosed:TRUE];
 		[Window release];
 		Window = NULL;
+        
+        if (IsFullscreen)
+            CGReleaseAllDisplays();
 	}
 	else
 	{
@@ -576,6 +587,7 @@ void CIrrDeviceMacOSX::closeDevice()
 		}
 	}
 
+    IsFullscreen = false;
 	IsActive = false;
 	CGLContext = NULL;
 }
@@ -587,7 +599,12 @@ bool CIrrDeviceMacOSX::createWindow()
 	CGDirectDisplayID       display=CGMainDisplayID();
 	CGLPixelFormatObj       pixelFormat;
 	CGRect                  displayRect;
-	CFDictionaryRef         displaymode, olddisplaymode;
+#ifdef __MAC_10_6
+    CGDisplayModeRef        displaymode, olddisplaymode;
+#else
+    CFDictionaryRef         displaymode, olddisplaymode;
+#endif
+    
 	GLint                   numPixelFormats, newSwapInterval;
 
 	int alphaSize = CreationParams.WithAlphaChannel?4:0;
@@ -597,8 +614,6 @@ bool CIrrDeviceMacOSX::createWindow()
 
 	ScreenWidth = (int) CGDisplayPixelsWide(display);
 	ScreenHeight = (int) CGDisplayPixelsHigh(display);
-
-	VideoModeList.setDesktop(CreationParams.Bits, core::dimension2d<u32>(ScreenWidth, ScreenHeight));
 
 	// we need to check where the exceptions may happen and work at them
 	// for now we will just catch them to be able to avoid an app exit
@@ -726,14 +741,56 @@ bool CIrrDeviceMacOSX::createWindow()
 		}
 		else
 		{
-			displaymode = CGDisplayBestModeForParameters(display,CreationParams.Bits,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height,NULL);
-			if (displaymode != NULL)
-			{
+#ifdef __MAC_10_6
+            displaymode = CGDisplayCopyDisplayMode(display);
+
+            CFArrayRef Modes = CGDisplayCopyAllDisplayModes(display, NULL);
+
+            for(int i = 0; i < CFArrayGetCount(Modes); ++i)
+            {
+                CGDisplayModeRef CurrentMode = (CGDisplayModeRef)CFArrayGetValueAtIndex(Modes, i);
+                
+                u8 Depth = 0;
+                
+                CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(CurrentMode);
+                
+                if(CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                    Depth = 32;
+                else
+                if(CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                    Depth = 16;
+                else
+                if(CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+                    Depth = 8;
+
+                if(Depth == CreationParams.Bits)
+                    if((CGDisplayModeGetWidth(CurrentMode) == CreationParams.WindowSize.Width) && (CGDisplayModeGetHeight(CurrentMode) == CreationParams.WindowSize.Height))
+                    {
+                        displaymode = CurrentMode;
+                        break;
+                    }
+            }
+#else
+            displaymode = CGDisplayBestModeForParameters(display,CreationParams.Bits,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height,NULL);
+#endif
+            
+            if (displaymode != NULL)
+            {
+#ifdef __MAC_10_6
+                olddisplaymode = CGDisplayCopyDisplayMode(display);
+#else
 				olddisplaymode = CGDisplayCurrentMode(display);
+#endif
+                
 				error = CGCaptureAllDisplays();
 				if (error == CGDisplayNoErr)
 				{
-					error = CGDisplaySwitchToMode(display,displaymode);
+#ifdef __MAC_10_6
+                    error = CGDisplaySetDisplayMode(display, displaymode, NULL);
+#else
+                    error = CGDisplaySwitchToMode(display, displaymode);
+#endif
+                    
 					if (error == CGDisplayNoErr)
 					{
 						CGLPixelFormatAttribute	fullattribs[] =
@@ -764,43 +821,66 @@ bool CIrrDeviceMacOSX::createWindow()
 
 						if (CGLContext != NULL)
 						{
-							CGLSetFullScreen(CGLContext);
-							displayRect = CGDisplayBounds(display);
-							ScreenWidth = DeviceWidth = (int)displayRect.size.width;
-							ScreenHeight = DeviceHeight = (int)displayRect.size.height;
-							CreationParams.WindowSize.set(ScreenWidth, ScreenHeight);
-							result = true;
-						}
-					}
-					if (!result)
-						CGReleaseAllDisplays();
-				}
-			}
-		}
-	}
-	@catch (NSException *exception)
-	{
-		closeDevice();
-		result = false;
-	}
+#ifdef __MAC_10_6
+                            CGLSetFullScreenOnDisplay(CGLContext, CGDisplayIDToOpenGLDisplayMask(display));
+#else
+                            CGLSetFullScreen(CGLContext);
+#endif
+                                displayRect = CGDisplayBounds(display);
+                                ScreenWidth = DeviceWidth = (int)displayRect.size.width;
+                                ScreenHeight = DeviceHeight = (int)displayRect.size.height;
+                                CreationParams.WindowSize.set(ScreenWidth, ScreenHeight);
+                                result = true;
+                            }
+                        }
+                        else
+                        {
+                            Window = [[NSWindow alloc] initWithContentRect:[[NSScreen mainScreen] frame] styleMask:NSBorderlessWindowMask backing:NSBackingStoreNonretained defer:NO screen:[NSScreen mainScreen]];
 
-	if (result)
-	{
-		// fullscreen?
-		if (Window == NULL && !CreationParams.WindowId) //hide menus in fullscreen mode only
-			SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
-		CGLSetCurrentContext(CGLContext);
-		newSwapInterval = (CreationParams.Vsync) ? 1 : 0;
-		CGLSetParameter(CGLContext,kCGLCPSwapInterval,&newSwapInterval);
-		if (IsSoftwareRenderer && CreationParams.DriverType != video::EDT_NULL)
-		{
-			GLint order = -1; // below window
-			CGLSetParameter(CGLContext, kCGLCPSurfaceOrder, &order);
-		}
-	}
-
-	return (result);
-}
+                            [Window setLevel: CGShieldingWindowLevel()];
+                            [Window setAcceptsMouseMovedEvents:TRUE];
+                            [Window setIsVisible:TRUE];
+                            [Window makeKeyAndOrderFront:nil];
+                            
+                            displayRect = CGDisplayBounds(display);
+                            ScreenWidth = DeviceWidth = (int)displayRect.size.width;
+                            ScreenHeight = DeviceHeight = (int)displayRect.size.height;
+                            CreationParams.WindowSize.set(ScreenWidth, ScreenHeight);
+                            result = true;
+                        }
+                    }
+                    if (!result)
+                        CGReleaseAllDisplays();
+                }
+            }
+        }
+    }
+    @catch (NSException *exception)
+    {
+        closeDevice();
+        result = false;
+    }
+        
+    if (result)
+    {
+        // fullscreen?
+        if (Window == NULL && !CreationParams.WindowId) //hide menus in fullscreen mode only
+#ifdef __MAC_10_6
+            [NSApp setPresentationOptions:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)];
+#else
+            SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
+#endif
+        
+        if(CreationParams.DriverType == video::EDT_OPENGL)
+        {
+            CGLSetCurrentContext(CGLContext);
+            newSwapInterval = (CreationParams.Vsync) ? 1 : 0;
+            CGLSetParameter(CGLContext,kCGLCPSwapInterval,&newSwapInterval);
+        }
+    }
+        
+    return (result);
+}    
 
 void CIrrDeviceMacOSX::setResize(int width, int height)
 {
@@ -809,7 +889,8 @@ void CIrrDeviceMacOSX::setResize(int width, int height)
 	DeviceHeight = height;
 
 	// update the size of the opengl rendering context
-	[OGLContext update];
+    if(OGLContext);
+        [OGLContext update];
 
 	// resize the driver to the inner pane size
 	if (Window)
@@ -819,6 +900,7 @@ void CIrrDeviceMacOSX::setResize(int width, int height)
 	}
 	else
 		getVideoDriver()->OnResize(core::dimension2d<u32>( (s32)width, (s32)height));
+    
 	if (CreationParams.WindowId && OGLContext)
 		[(NSOpenGLContext *)OGLContext update];
 }
@@ -831,7 +913,7 @@ void CIrrDeviceMacOSX::createDriver()
 		case video::EDT_SOFTWARE:
 		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
 			VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
-			IsSoftwareRenderer = true;
+			SoftwareRendererType = 2;
 		#else
 			os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
@@ -840,7 +922,7 @@ void CIrrDeviceMacOSX::createDriver()
 		case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 			VideoDriver = video::createBurningVideoDriver(CreationParams, FileSystem, this);
-			IsSoftwareRenderer = true;
+			SoftwareRendererType = 1;
 		#else
 			os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
 		#endif
@@ -880,6 +962,8 @@ void CIrrDeviceMacOSX::flush()
 
 bool CIrrDeviceMacOSX::run()
 {
+    NSAutoreleasePool* Pool = [[NSAutoreleasePool alloc] init];
+    
 	NSEvent *event;
 	irr::SEvent	ievent;
 
@@ -1048,7 +1132,11 @@ void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	{
 		size = wcstombs(title,text,1024);
 		title[1023] = 0;
-		NSString* name = [NSString stringWithCString:title length:size];
+#ifdef __MAC_10_6
+        NSString* name = [NSString stringWithCString:title encoding:NSUTF8StringEncoding];
+#else
+        NSString* name = [NSString stringWithCString:title length:size];
+#endif
 		[Window setTitle:name];
 		[name release];
 	}
@@ -1159,6 +1247,7 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 	{
 		CGEventRef ourEvent = CGEventCreate(NULL);
 		CGPoint point = CGEventGetLocation(ourEvent);
+        CFRelease(ourEvent);
 
 		ievent.MouseInput.X = (int)point.x;
 		ievent.MouseInput.Y = (int)point.y;
@@ -1190,6 +1279,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 	{
 		CGEventRef ourEvent = CGEventCreate(NULL);
 		CGPoint point = CGEventGetLocation(ourEvent);
+        CFRelease(ourEvent);
 
 		x = (int)point.x;
 		y = (int)point.y;
@@ -1200,7 +1290,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 			// In fullscreen mode, events are not sent regularly so rely on polling
 			irr::SEvent ievent;
 			ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+			ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 			ievent.MouseInput.X = x;
 			ievent.MouseInput.Y = y;
 			postEventFromUser(ievent);
@@ -1232,7 +1322,15 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 
 	c.x = p.x;
 	c.y = p.y;
-	CGSetLocalEventsSuppressionInterval(0);
+    
+#ifdef __MAC_10_6
+    /*CGEventSourceRef SourceRef = CGEventSourceCreate(0); 
+	CGEventSourceSetLocalEventsSuppressionInterval(SourceRef, 0); 
+	CFRelease(SourceRef);*/
+    CGSetLocalEventsSuppressionInterval(0);
+#else
+    CGSetLocalEventsSuppressionInterval(0);
+#endif
 	CGWarpMouseCursorPosition(c);
 }
 
@@ -1416,7 +1514,7 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 	if (!surface)
 		return false;
 
-	if (IsSoftwareRenderer)
+	if (SoftwareRendererType > 0)
 	{
 		const u32 colorSamples=3;
 		// do we need to change the size?
@@ -1458,14 +1556,25 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 		const u32 minWidth = core::min_(surface->getDimension().Width, (u32)areaRect.size.width);
 		for (u32 y=0; y!=srcheight; ++y)
 		{
-#if 0
-			if (surface->getColorFormat() == video::ECF_A8R8G8B8)
-				video::CColorConverter::convert_A8R8G8B8toB8G8R8(srcdata, minWidth, destData);
-			else
-				video::CColorConverter::convert_A1R5G5B5toB8G8R8(srcdata, minWidth, destData);
-#else
-			video::CColorConverter::convert_viaFormat(srcdata, surface->getColorFormat(), minWidth, destData, video::ECF_R8G8B8);
-#endif
+            if(SoftwareRendererType == 2)
+            {
+                if (surface->getColorFormat() == video::ECF_A8R8G8B8)
+                    video::CColorConverter::convert_A8R8G8B8toB8G8R8(srcdata, minWidth, destData);
+                else if (surface->getColorFormat() == video::ECF_A1R5G5B5)
+                    video::CColorConverter::convert_A1R5G5B5toB8G8R8(srcdata, minWidth, destData);
+                else
+                    video::CColorConverter::convert_viaFormat(srcdata, surface->getColorFormat(), minWidth, destData, video::ECF_R8G8B8);
+            }
+            else
+            {
+                if (surface->getColorFormat() == video::ECF_A8R8G8B8)
+                    video::CColorConverter::convert_A8R8G8B8toR8G8B8(srcdata, minWidth, destData);
+                else if (surface->getColorFormat() == video::ECF_A1R5G5B5)
+                    video::CColorConverter::convert_A1R5G5B5toR8G8B8(srcdata, minWidth, destData);
+                else
+                    video::CColorConverter::convert_viaFormat(srcdata, surface->getColorFormat(), minWidth, destData, video::ECF_R8G8B8);
+            }
+
 			srcdata += srcPitch;
 			destData += destPitch;
 		}

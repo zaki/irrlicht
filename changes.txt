@@ -162,6 +162,9 @@ Changes in 1.8 (7.11.2012)
 
  - line2d::intersectWith and and line2d::getClosestPoint work now also with integers.
 
+
+ - line2d::intersectWith and and line2d::getClosestPoint work now also with integers.
+
  - line2d::getMiddle and line3d::getMiddle work now also with integers. But can be slower for compilers which are not optimizing division by 2 to multiplication by 0.5 for floats.
 
  - Add Nadro's initial Cg support. Example 10 is enhanced to allow also Cg shaders.
@@ -660,6 +663,10 @@ Changes in 1.7.3 (20.02.2012)
 
  - Harden Linux joystick usage, in case the driver returns illegal values
 
+ - Some more editbox fixes
+
+ - Harden Linux joystick usage, in case the driver returns illegal values
+
  - Bugfix: vector2d.normalize() and vector3d.normalize() had returned wrong results with very short vectors since  Irrlicht 1.5. Thanks to Willem Swart for Bugreport + testcase.
 
  - Unknown keymappings now use the X11 keycode instead of 0 to make such keys at least usable in games.
@@ -698,6 +705,8 @@ Changes in 1.7.3 (20.02.2012)
 
  - Fix crash in editbox
 
+ - Fix crash in editbox
+
  - Fix 'k' in bigfont.png (thx @ Scrappi for reporting)
 
  - fix serialization for CBillboardSceneNode, it had missed 2 color (thx for finding + patch from pc0de)
@@ -707,6 +716,10 @@ Changes in 1.7.3 (20.02.2012)
  - Fix problems in Textwrapping in CGUIStaticText. Did use wrong size and did ignore last word of the text (thx @ Reiko for bugreport)
 
  - Fix crash in collada (.dae) loading
+
+ - Fix bug handling in case RTT is not properly created
+
+ - Fix SColorf interpolation
 
  - Fix bug handling in case RTT is not properly created
 

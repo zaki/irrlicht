@@ -15,6 +15,8 @@ static bool manyTextures(video::E_DRIVER_TYPE driverType)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	(void)smgr->addCameraSceneNode();
@@ -50,7 +52,7 @@ static bool manyTextures(video::E_DRIVER_TYPE driverType)
 	smgr->drawAll();
 	// draw meshbuffer
 	driver->setMaterial(mat);
-	driver->drawMeshBuffer(mesh); 
+	driver->drawMeshBuffer(mesh);
 	driver->endScene();
 	mesh->drop();
 
@@ -75,6 +77,8 @@ static bool renderAndLoad(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -112,6 +116,8 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager * smgr = device->getSceneManager();
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -170,6 +176,8 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNode();
@@ -198,14 +206,14 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	gui->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.34f);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureMatrixInMixedScenes.png", 99.33f);
 
 	device->closeDevice();
 	device->run();
 	device->drop();
 
 	return result;
-} 
+}
 
 // animated texture matrix test.
 static bool textureMatrix(video::E_DRIVER_TYPE driverType)
@@ -224,6 +232,8 @@ static bool textureMatrix(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -273,15 +283,80 @@ static bool textureMatrix(video::E_DRIVER_TYPE driverType)
 	return result;
 }
 
+bool danglingTexturePointer()
+{
+// A demo of the OpenGL "white texture" bug in Irrlicht
+// Author: Matt Giuca
+// (Vaguely based on the Irrlicht 2D graphics tutorial)
+
+// I have found that in some situations, when using the OpenGL driver, some
+// textures appear white.
+// This is caused by deleting a texture while it is active (the last texture
+// read or written to), and then loading a new texture at the same memory
+// location. The new texture will not be loaded properly.
+
+// This demo triggers the bug (though there is some probability that it won't
+// be triggered; just run it again until it shows a white square instead of
+// the Irrlicht logo).
+
+	// This is only a problem in the OpenGL driver
+	irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL,
+		irr::core::dimension2d<irr::u32>(160, 120));
+	if (!device)
+		return true;
+
+	irr::video::IVideoDriver* driver = device->getVideoDriver();
+
+	stabilizeScreenBackground(driver);
+
+	// Load a texture from a file
+	// This binds and uploads to OpenGL texture #2.
+	irr::video::ITexture* logo2 = driver->getTexture("../media/irrlichtlogo2.png");
+	// Remove the texture from the driver (delete it from hardware)
+	// This leaves CurrentTexture pointing at logo2
+	driver->removeTexture(logo2);
+	// Load another texture from a file
+	// There is a good probability that logo3 will be allocated the same
+	// memory address as logo2. If that happens,
+	// COpenGLDriver::setActiveTexture will not bother to call glBindTextures
+	// (thinking that logo3 is the same texture as logo2).
+	// Therefore, the logo3 texture will be uploaded to texture #0, not #2.
+	irr::video::ITexture* logo3 = driver->getTexture("../media/irrlichtlogo3.png");
+
+	device->run();
+	{
+		driver->beginScene(true, true, irr::video::SColor(255,100,101,140));
+
+		// This is required to trigger the white appearance (this unbinds the
+		// texture, forcing draw2DImage to rebind the logo3 texture (#2)).
+		driver->setMaterial(irr::video::SMaterial());
+
+		// Since logo3 was uploaded to #0, not #2, this will bind texture #2,
+		// which has never been written to. OpenGL considers an empty texture
+		// to be white.
+		driver->draw2DImage(logo3, irr::core::position2d<irr::s32>(20, 20));
+
+		driver->endScene();
+	}
+
+	const bool result = takeScreenshotAndCompareAgainstReference(driver, "-texturePointer.png");
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
+
 bool textureRenderStates(void)
 {
 	bool result = true;
-
 	TestWithAllDrivers(renderAndLoad);
 	TestWithAllDrivers(renderAndRemove);
 	TestWithAllDrivers(testTextureMatrixInMixedScenes);
 	TestWithAllDrivers(manyTextures);
 	TestWithAllDrivers(textureMatrix);
+	result &= danglingTexturePointer();
 
 	return result;
 }

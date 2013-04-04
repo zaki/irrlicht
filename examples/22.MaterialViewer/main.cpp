@@ -445,7 +445,7 @@ public:
 		return DirtyFlag;
 	};
 
-	// Put the names of all currenlty loaded textures in a combobox
+	// Put the names of all currently loaded textures in a combobox
 	void updateTextures(video::IVideoDriver * driver)
 	{
 		s32 oldSelected = ComboTexture->getSelected();
@@ -793,7 +793,7 @@ public:
 protected:
 
 	// Application initialization
-	// returns true when it was succesful initialized, otherwise false.
+	// returns true when it was successful initialized, otherwise false.
 	bool init(int argc, char *argv[])
 	{
 		// ask user for driver
@@ -902,7 +902,7 @@ protected:
 				GlobalAmbient->resetDirty();
 			}
 
-			// draw everythings
+			// draw everything
 			video::SColor bkColor( skin->getColor(gui::EGDC_APP_WORKSPACE) );
 			videoDriver->beginScene(true, true, bkColor);
 
@@ -958,7 +958,7 @@ protected:
 			return;
 		const u32 pitch = imageA8R8G8B8->getPitch();
 
-		// some nice caro with 9 typical colors
+		// some nice square-pattern with 9 typical colors
 		for ( u32 y = 0; y < height; ++ y )
 		{
 			for ( u32 x = 0; x < pitch; ++x )

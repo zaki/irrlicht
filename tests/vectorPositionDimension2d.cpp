@@ -24,43 +24,43 @@ static bool doTest(void)
 	result &= (vector == dimension); // The conversion should be explicit.
 	result &= (dimension2 == position);
 	result &= (position == POSITION((T)99.9, (T)99.9));
-	assert(result);
-	
+	assert_log(result);
+
 	dimension = (T)2 * position;
 	result &= (dimension == VECTOR(2 * (T)99.9, 2 * (T)99.9));
-	assert(result);
+	assert_log(result);
 
 	dimension /= (T)2;
 	result &= (dimension == POSITION((T)99.9, (T)99.9));
-	assert(result);
+	assert_log(result);
 
 	dimension += vector;
 	result &= (dimension == VECTOR(2 * (T)99.9, 2 * (T)99.9));
-	assert(result);
+	assert_log(result);
 
 	dimension -= position;
 	result &= (dimension == POSITION((T)99.9, (T)99.9));
-	assert(result);
-	
+	assert_log(result);
+
 	position = dimension;
 	result &= (position == VECTOR((T)99.9, (T)99.9));
-	assert(result);
+	assert_log(result);
 
 	vector += position;
 	result &= (vector == POSITION(2 * (T)99.9, 2 * (T)99.9));
-	assert(result);
+	assert_log(result);
 
 	vector -= position;
 	result &= (vector == dimension);
-	assert(result);
+	assert_log(result);
 
 	position *= (T)3.5;
 	result &= (position == VECTOR((T)3.5 * (T)99.9, (T)3.5 * (T)99.9));
-	assert(result);
+	assert_log(result);
 
 	vector += dimension;
 	result &= (vector == VECTOR(2 * (T)99.9, 2 * (T)99.9));
-	assert(result);
+	assert_log(result);
 
 	return result;
 }

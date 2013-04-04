@@ -6,21 +6,21 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
-				<Option output="..\bin\gcc\tests" prefix_auto="1" extension_auto="1" />
-				<Option object_output=".\Debug\" />
+			<Target title="Win32 Debug">
+				<Option output="../bin/gcc/tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add directory="..\lib\Win32-gcc\" />
+					<Add directory="../lib/Win32-gcc/" />
 				</Linker>
 			</Target>
-			<Target title="Release">
-				<Option output="..\bin\gcc\tests" prefix_auto="1" extension_auto="1" />
-				<Option object_output=".\Release\" />
+			<Target title="Win32 Release">
+				<Option output="../bin/gcc/tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -30,15 +30,50 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="Linux Debug">
+				<Option platforms="Unix;" />
+				<Option output="../bin/gcc/tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fno-exceptions" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-D_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="GL" />
+					<Add directory="../lib/Linux/" />
+				</Linker>
+			</Target>
+			<Target title="Linux Release">
+				<Option platforms="Unix;" />
+				<Option output="../bin/gcc/tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output="./Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-fno-exceptions" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+				</Compiler>
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="GL" />
+					<Add directory="../lib/Linux/" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add directory="..\include" />
+			<Add directory="../include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add directory="..\lib\gcc" />
+			<Add directory="../lib/gcc" />
 		</Linker>
 		<Unit filename="2dmaterial.cpp" />
 		<Unit filename="anti-aliasing.cpp" />
@@ -61,6 +96,7 @@
 		<Unit filename="filesystem.cpp" />
 		<Unit filename="flyCircleAnimator.cpp" />
 		<Unit filename="guiDisabledMenu.cpp" />
+		<Unit filename="ioScene.cpp" />
 		<Unit filename="irrArray.cpp" />
 		<Unit filename="irrCoreEquals.cpp" />
 		<Unit filename="irrList.cpp" />
@@ -68,7 +104,6 @@
 		<Unit filename="irrString.cpp" />
 		<Unit filename="lightMaps.cpp" />
 		<Unit filename="lights.cpp" />
-		<Unit filename="line2dIntersectWith.cpp" />
 		<Unit filename="loadTextures.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />
@@ -78,7 +113,6 @@
 		<Unit filename="meshLoaders.cpp" />
 		<Unit filename="meshTransform.cpp" />
 		<Unit filename="mrt.cpp" />
-		<Unit filename="orthocam.cpp" />
 		<Unit filename="planeMatrix.cpp" />
 		<Unit filename="projectionMatrix.cpp" />
 		<Unit filename="removeCustomAnimator.cpp" />
@@ -89,21 +123,23 @@
 		<Unit filename="serializeAttributes.cpp" />
 		<Unit filename="skinnedMesh.cpp" />
 		<Unit filename="softwareDevice.cpp" />
-		<Unit filename="stencilShadow.cpp" />
 		<Unit filename="terrainSceneNode.cpp" />
-		<Unit filename="testaabbox.cpp" />
 		<Unit filename="testDimension2d.cpp" />
 		<Unit filename="testGeometryCreator.cpp" />
+		<Unit filename="testLine2d.cpp" />
 		<Unit filename="testQuaternion.cpp" />
 		<Unit filename="testS3DVertex.cpp" />
 		<Unit filename="testUtils.cpp" />
+		<Unit filename="testUtils.h" />
 		<Unit filename="testVector2d.cpp" />
 		<Unit filename="testVector3d.cpp" />
 		<Unit filename="testXML.cpp" />
+		<Unit filename="testaabbox.cpp" />
 		<Unit filename="textureFeatures.cpp" />
 		<Unit filename="textureRenderStates.cpp" />
 		<Unit filename="timer.cpp" />
 		<Unit filename="transparentMaterials.cpp" />
+		<Unit filename="triangle3d.cpp" />
 		<Unit filename="triangleSelector.cpp" />
 		<Unit filename="userClipPlane.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />

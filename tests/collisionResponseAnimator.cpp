@@ -25,7 +25,7 @@ public:
 			logTestString("*** Error: collision point, expected %f %f %f\n",
 				ExpectedCollisionPoint.X, ExpectedCollisionPoint.Y, ExpectedCollisionPoint.Z);
 			expectedCollisionCallbackPositions = false;
-			assert(false);
+			assert_log(false);
 		}
 
 		const vector3df & nodePosition = animator.getCollisionResultPosition();
@@ -34,14 +34,14 @@ public:
 			logTestString("*** Error: result position, expected %f %f %f\n",
 				ExpectedNodePosition.X, ExpectedNodePosition.Y, ExpectedNodePosition.Z);
 			expectedCollisionCallbackPositions = false;
-			assert(false);
+			assert_log(false);
 		}
 
 		if(animator.getTargetNode() != ExpectedTarget)
 		{
 			logTestString("*** Error: wrong node\n");
 			expectedCollisionCallbackPositions = false;
-			assert(false);
+			assert_log(false);
 		}
 
 		return ConsumeNextCollision;
@@ -73,7 +73,7 @@ private:
 bool collisionResponseAnimator(void)
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL);
-	assert(device);
+	assert_log(device);
 	if(!device)
 		return false;
 
@@ -140,14 +140,14 @@ bool collisionResponseAnimator(void)
 	if(testNode1->getAbsolutePosition().X > -15.f)
 	{
 		logTestString("collisionResponseAnimator test node 1 wasn't stopped from moving.\n");
-		assert(false);
+		assert_log(false);
 		result = false;
 	}
 
 	if(testNode2->getAbsolutePosition().X < 50.f)
 	{
 		logTestString("collisionResponseAnimator test node 2 was stopped from moving.\n");
-		assert(false);
+		assert_log(false);
 		result = false;
 	}
 
@@ -167,7 +167,7 @@ bool collisionResponseAnimator(void)
 	if(testNode2->getAbsolutePosition().X != -50.f)
 	{
 		logTestString("collisionResponseAnimator test node 2 was stopped from moving.\n");
-		assert(false);
+		assert_log(false);
 		result = false;
 	}
 
@@ -184,7 +184,7 @@ bool collisionResponseAnimator(void)
 	if(testNode2->getAbsolutePosition().X > -15.f)
 	{
 		logTestString("collisionResponseAnimator test node 2 moved too far.\n");
-		assert(false);
+		assert_log(false);
 		result = false;
 	}
 

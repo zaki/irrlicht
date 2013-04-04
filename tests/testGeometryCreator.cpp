@@ -97,6 +97,10 @@ bool testGeometryCreator(void)
 	scene::IAnimatedMesh* terrain = smgr->addTerrainMesh("TerrainMeshName", colorMapImage, heightMapImage,
 		core::dimension2d<f32>(40, 40), // size of a pixel
 		8*40); // maximum height
+	colorMapImage->drop();
+	colorMapImage = 0;
+	heightMapImage->drop();
+	heightMapImage = 0;
 
 	scene::IAnimatedMeshSceneNode* anode = smgr->addAnimatedMeshSceneNode(terrain);
 	if (anode)

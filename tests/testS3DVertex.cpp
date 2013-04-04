@@ -1,6 +1,5 @@
 #include "testUtils.h"
 #include "irrlicht.h"
-#include <assert.h>
 
 using namespace irr;
 using namespace core;

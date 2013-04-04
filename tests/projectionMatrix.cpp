@@ -19,6 +19,8 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 	IVideoDriver* driver = device->getVideoDriver();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	bool result = true;

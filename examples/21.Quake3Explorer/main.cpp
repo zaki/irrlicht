@@ -9,7 +9,7 @@ Features:
 	- Adjust GammaLevel at runtime
 	- Create SceneNodes for the Shaders
 	- Load EntityList and create Entity SceneNodes
-	- Create Players with Weapons and with Collison Respsone
+	- Create Players with Weapons and with Collision Response
 	- Play music
 
 You can download the Quake III Arena demo ( copyright id software )
@@ -829,7 +829,7 @@ void CQuake3EventHandler::CreateGUI()
 
 
 /*
-	Add an Archive to the FileSystems und updates the GUI
+	Add an Archive to the FileSystems and updates the GUI
 */
 void CQuake3EventHandler::AddArchive ( const path& archiveName )
 {

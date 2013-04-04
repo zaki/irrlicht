@@ -595,11 +595,11 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 		success = (_chdir(newDirectory.c_str()) == 0);
 	#endif
 #else
-    #if defined(_IRR_WCHAR_FILESYSTEM)
+	#if defined(_IRR_WCHAR_FILESYSTEM)
 		success = (_wchdir(newDirectory.c_str()) == 0);
-    #else
-        success = (chdir(newDirectory.c_str()) == 0);
-    #endif
+	#else
+		success = (chdir(newDirectory.c_str()) == 0);
+	#endif
 #endif
 	}
 
@@ -975,19 +975,19 @@ bool CFileSystem::existFile(const io::path& filename) const
 #else
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 #if defined(_MSC_VER)
-    #if defined(_IRR_WCHAR_FILESYSTEM)
-        return (_waccess(filename.c_str(), 0) != -1);
-    #else
-        return (_access(filename.c_str(), 0) != -1);
-    #endif
+	#if defined(_IRR_WCHAR_FILESYSTEM)
+		return (_waccess(filename.c_str(), 0) != -1);
+	#else
+		return (_access(filename.c_str(), 0) != -1);
+	#endif
 #elif defined(F_OK)
-    #if defined(_IRR_WCHAR_FILESYSTEM)
-        return (_waccess(filename.c_str(), F_OK) != -1);
-    #else
-        return (access(filename.c_str(), F_OK) != -1);
+	#if defined(_IRR_WCHAR_FILESYSTEM)
+		return (_waccess(filename.c_str(), F_OK) != -1);
+	#else
+		return (access(filename.c_str(), F_OK) != -1);
 	#endif
 #else
-    return (access(filename.c_str(), 0) != -1);
+	return (access(filename.c_str(), 0) != -1);
 #endif
 #endif
 }

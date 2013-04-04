@@ -90,7 +90,9 @@ static bool testCalculation_atof(const char * valueString)
 	logTestString("\n String '%s'\n New fast %.40f\n Old fast %.40f\n     atof %.40f\n",
 		valueString, newFastValue, oldFastValue, atofValue);
 
-	bool accurate = fabs(newFastValue - atofValue) <= fabs(oldFastValue - atofValue);
+	const f32 diffNew = fabs(newFastValue - atofValue) ;
+	const f32 diffOld = fabs(newFastValue - atofValue) ;
+	bool accurate = diffNew <= diffOld || equalsByUlp(diffNew, diffOld, 1);
 
 	if(!accurate)
 		logTestString("*** ERROR - less accurate than old method ***\n\n");
@@ -102,7 +104,7 @@ static bool testCalculation_strtol(const char * valueString)
 {
 	const s32 newFastValue = strtol10(valueString);
 	const s32 oldFastValue = old_strtol10(valueString);
-	const s32 strtolValue = (s32)strtol(valueString, 0, 10);
+	const s32 strtolValue = (s32)clamp(strtol(valueString, 0, 10), (long int)INT_MIN, (long int)INT_MAX);
 
 	logTestString("\n String '%s'\n New fast %d\n Old fast %d\n   strtol %d\n",
 		valueString, newFastValue, oldFastValue, strtolValue);
@@ -153,6 +155,7 @@ bool test_fast_atof(void)
 		return false;
 	}
 
+#ifndef _DEBUG	// it's only faster in release
 	IrrlichtDevice* device = createDevice(video::EDT_NULL);
 	if (!device)
 		return false;
@@ -190,6 +193,7 @@ bool test_fast_atof(void)
 		logTestString("The fast method is slower than atof()\n");
 		return false;
 	}
+#endif // #ifndef _DEBUG
 
 	return true;
 }
@@ -232,6 +236,7 @@ bool test_strtol(void)
 		return false;
 	}
 
+#ifndef _DEBUG	// it's only faster in release
 	IrrlichtDevice* device = createDevice(video::EDT_NULL);
 	if (!device)
 		return false;
@@ -269,11 +274,15 @@ bool test_strtol(void)
 		logTestString("The fast method is slower than strtol()\n");
 		return false;
 	}
+#endif // #ifndef _DEBUG
 
 	return true;
 }
 
 bool fast_atof(void)
 {
-	return test_fast_atof() && test_strtol();
+	bool ok = true;
+	ok &= test_fast_atof() ;
+	ok &= test_strtol();
+	return ok;
 }

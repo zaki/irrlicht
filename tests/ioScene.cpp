@@ -14,7 +14,7 @@ using namespace gui;
 static bool saveScene(void)
 {
 	IrrlichtDevice *device = createDevice( EDT_NULL, dimension2d<u32>(160, 120), 32);
-	assert(device);
+	assert_log(device);
 	if (!device)
 		return false;
 
@@ -60,11 +60,11 @@ static bool saveScene(void)
 
 	logTestString("Test scene.irr");
 	smgr->saveScene("results/scene.irr");
-	bool result = binaryCompareFiles("results/scene.irr", "media/scene.irr");
+	bool result = xmlCompareFiles(device->getFileSystem(), "results/scene.irr", "media/scene.irr");
 
 	logTestString("Test scene2.irr");
 	smgr->saveScene("results/scene2.irr", 0, node3);
-	result &= binaryCompareFiles("results/scene2.irr", "media/scene2.irr");
+	result &= xmlCompareFiles(device->getFileSystem(), "results/scene2.irr", "media/scene2.irr");
 
 	device->closeDevice();
 	device->run();
@@ -90,6 +90,7 @@ static bool loadScene(void)
 
 	bool result = false;
 	device->run();
+	device->getTimer()->setTime(666);	// scene has animations and current scene seems to be saved at that time ... really - best result with just that number :-)
 	if (driver->beginScene(true, true, video::SColor(0, 80, 80, 80)))
 	{
 		smgr->drawAll();

@@ -1,12 +1,12 @@
 /** Example 010 Shaders
 
-This tutorial shows how to use shaders for D3D8, D3D9, and OpenGL with the
+This tutorial shows how to use shaders for D3D8, D3D9, OpenGL, and Cg with the
 engine and how to create new material types with them. It also shows how to
 disable the generation of mipmaps at texture loading, and how to use text scene
 nodes.
 
 This tutorial does not explain how shaders work. I would recommend to read the
-D3D or OpenGL documentation, to search a tutorial, or to read a book about
+D3D, OpenGL, or Cg documentation, to search a tutorial, or to read a book about
 this.
 
 At first, we need to include all headers and do the stuff we always do, like in
@@ -42,6 +42,7 @@ the variable name as parameter instead of the register index.
 
 IrrlichtDevice* device = 0;
 bool UseHighLevelShaders = false;
+bool UseCgShaders = false;
 
 class MyShaderCallBack : public video::IShaderConstantSetCallBack
 {
@@ -124,6 +125,7 @@ public:
 		world = world.getTransposed();
 
 		if (UseHighLevelShaders)
+		{
 			services->setVertexShaderConstant(TransWorldID, world.pointer(), 16);
 
 			// set texture, for textures you can use both an int and a float setPixelShaderConstant interfaces (You need it only for an OpenGL driver).
@@ -165,7 +167,13 @@ int main()
 		printf("Please press 'y' if you want to use high level shaders.\n");
 		std::cin >> i;
 		if (i == 'y')
+		{
 			UseHighLevelShaders = true;
+			printf("Please press 'y' if you want to use Cg shaders.\n");
+			std::cin >> i;
+			if (i == 'y')
+				UseCgShaders = true;
+		}
 	}
 
 	// create device
@@ -204,6 +212,7 @@ int main()
 	case video::EDT_DIRECT3D9:
 		if (UseHighLevelShaders)
 		{
+			// Cg can also handle this syntax
 			psFileName = "../../media/d3d9.hlsl";
 			vsFileName = psFileName; // both shaders are in the same file
 		}
@@ -225,8 +234,17 @@ int main()
 	case video::EDT_OPENGL:
 		if (UseHighLevelShaders)
 		{
-			psFileName = "../../media/opengl.frag";
-			vsFileName = "../../media/opengl.vert";
+			if (!UseCgShaders)
+			{
+				psFileName = "../../media/opengl.frag";
+				vsFileName = "../../media/opengl.vert";
+			}
+			else
+			{
+				// Use HLSL syntax for Cg
+				psFileName = "../../media/d3d9.hlsl";
+				vsFileName = psFileName; // both shaders are in the same file
+			}
 		}
 		else
 		{
@@ -244,12 +262,12 @@ int main()
 	but not pixel shaders, we create a new material which only uses the
 	vertex shader, and no pixel shader. Otherwise, if we would tell the
 	engine to create this material and the engine sees that the hardware
-	wouldn't be able to fullfill the request completely, it would not
+	wouldn't be able to fulfill the request completely, it would not
 	create any new material at all. So in this example you would see at
 	least the vertex shader in action, without the pixel shader.
 	*/
 
-	/*if (!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
+	if (!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
 		!driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1))
 	{
 		device->getLogger()->log("WARNING: Pixel shaders disabled "\
@@ -263,7 +281,7 @@ int main()
 		device->getLogger()->log("WARNING: Vertex shaders disabled "\
 			"because of missing driver/hardware support.");
 		vsFileName = "";
-	}*/
+	}
 
 	/*
 	Now lets create the new materials. As you maybe know from previous
@@ -281,7 +299,7 @@ int main()
 	names, then you could write the code of the shader directly as string.
 	The following parameter is a pointer to the IShaderConstantSetCallBack
 	class we wrote at the beginning of this tutorial. If you don't want to
-	set constants, set this to 0. The last paramter tells the engine which
+	set constants, set this to 0. The last parameter tells the engine which
 	material it should use as base material.
 
 	To demonstrate this, we create two materials with a different base
@@ -303,17 +321,23 @@ int main()
 
 		if (UseHighLevelShaders)
 		{
-			// create material from high level shaders (hlsl or glsl)
+			// Choose the desired shader type. Default is the native
+			// shader type for the driver, for Cg pass the special
+			// enum value EGSL_CG
+			const video::E_GPU_SHADING_LANGUAGE shadingLanguage =
+				UseCgShaders ? video::EGSL_CG:video::EGSL_DEFAULT;
+
+			// create material from high level shaders (hlsl, glsl or cg)
 
 			newMaterialType1 = gpu->addHighLevelShaderMaterialFromFiles(
 				vsFileName, "vertexMain", video::EVST_VS_1_1,
 				psFileName, "pixelMain", video::EPST_PS_1_1,
-				mc, video::EMT_SOLID);
+				mc, video::EMT_SOLID, 0, shadingLanguage);
 
 			newMaterialType2 = gpu->addHighLevelShaderMaterialFromFiles(
 				vsFileName, "vertexMain", video::EVST_VS_1_1,
 				psFileName, "pixelMain", video::EPST_PS_1_1,
-				mc, video::EMT_TRANSPARENT_ADD_COLOR);
+				mc, video::EMT_TRANSPARENT_ADD_COLOR, 0 , shadingLanguage);
 		}
 		else
 		{
@@ -432,8 +456,8 @@ int main()
 
 		if (lastFPS != fps)
 		{
-			core::stringw str = L"[";
-			//str += driver->getName();
+			core::stringw str = L"Irrlicht Engine - Vertex and pixel shader example [";
+			str += driver->getName();
 			str += "] FPS:";
 			str += fps;
 

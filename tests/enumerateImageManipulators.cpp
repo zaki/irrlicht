@@ -15,7 +15,7 @@ bool enumerateImageManipulators(void)
 
     IVideoDriver* driver = device->getVideoDriver();
 
-	const char* filenames[] = 
+	const char* filenames[] =
 	{
 		"foo.bmp",
 		"foo.jpg",
@@ -49,11 +49,11 @@ bool enumerateImageManipulators(void)
 	for (i = 0; i < loaders; ++i)
 	{
 		IImageLoader * loader = driver->getImageLoader(i);
-		
+
 		if(!loader)
 		{
 			logTestString("Failed to get image loader %d\n", i);
-			assert(false);
+			assert_log(false);
 			result = false;
 		}
 
@@ -67,7 +67,7 @@ bool enumerateImageManipulators(void)
 	}
 
 	IImageLoader * loader = driver->getImageLoader(i);
-	assert(loader == 0);
+	assert_log(loader == 0);
 	if(loader)
 	{
 		logTestString("Got a loader when none was expected (%d)\n", i);
@@ -79,7 +79,7 @@ bool enumerateImageManipulators(void)
 		if(!loaderForFilename[filename])
 		{
 			logTestString("File type '%s' doesn't have a loader\n", filenames[filename]);
-			assert(false);
+			assert_log(false);
 			result = false;
 		}
 	}
@@ -88,11 +88,11 @@ bool enumerateImageManipulators(void)
 	for (i = 0; i < writers; ++i)
 	{
 		IImageWriter * writer = driver->getImageWriter(i);
-		
+
 		if(!writer)
 		{
 			logTestString("Failed to get image writer %d\n", i);
-			assert(false);
+			assert_log(false);
 			result = false;
 		}
 
@@ -107,7 +107,7 @@ bool enumerateImageManipulators(void)
 	}
 
 	IImageWriter * writer = driver->getImageWriter(i);
-	assert(writer == 0);
+	assert_log(writer == 0);
 	if(writer)
 	{
 		logTestString("Got a writer when none was expected (%d)\n", i);
@@ -120,7 +120,7 @@ bool enumerateImageManipulators(void)
 		if(!writerForFilename[filename] && (filename<writersUntil))
 		{
 			logTestString("File type '%s' doesn't have a writer\n", filenames[filename]);
-			assert(false);
+			assert_log(false);
 			result = false;
 		}
 	}

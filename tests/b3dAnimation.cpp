@@ -10,7 +10,7 @@ bool b3dAnimation(void)
 {
 	// Use EDT_BURNINGSVIDEO since it is not dependent on (e.g.) OpenGL driver versions.
 	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO, core::dimension2d<u32>(160, 120), 32);
-	assert(device);
+	assert_log(device);
 	if (!device)
 		return false;
 
@@ -18,14 +18,14 @@ bool b3dAnimation(void)
 	scene::ISceneManager * smgr = device->getSceneManager();
 
 	scene::ISkinnedMesh* mesh = (scene::ISkinnedMesh*)smgr->getMesh("../media/ninja.b3d");
-	assert(mesh);
+	assert_log(mesh);
 
 	bool result = false;
 	if (!mesh)
 		return false;
 
 	scene::IAnimatedMeshSceneNode* node1 = smgr->addAnimatedMeshSceneNode(mesh);
-	assert(node1);
+	assert_log(node1);
 
 	/** Verify that two skinned animated mesh scene nodes can use different frames of the skinned mesh */
 	if(node1)
@@ -38,7 +38,7 @@ bool b3dAnimation(void)
 	}
 
 	scene::IAnimatedMeshSceneNode* node2 = smgr->addAnimatedMeshSceneNode(mesh);
-	assert(node2);
+	assert_log(node2);
 	if(node2)
 	{
 		node2->setPosition(core::vector3df(3, -3, 10));

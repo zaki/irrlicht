@@ -14,7 +14,7 @@ static bool compareVectors(const core::vector2d<T> & compare,
 	{
 		logTestString("\nERROR: vector2d %.16f, %.16f != vector2d %.16f, %.16f\n",
 			(f64)compare.X, (f64)compare.Y, (f64)with.X, (f64)with.Y);
-		assert(compare == with);
+		assert_log(compare == with);
 		return false;
 	}
 
@@ -32,7 +32,7 @@ static bool doTests()
 	if(!equals(vec.getDistanceFrom(otherVec), (T)15.8113883))
 	{
 		logTestString("vector2d::getDistanceFrom() failed\n");
-		assert(0);
+		assert_log(0);
 		return false;
 	}
 

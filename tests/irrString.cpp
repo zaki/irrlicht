@@ -3,7 +3,6 @@
 
 #include "testUtils.h"
 #include <irrlicht.h>
-#include <assert.h>
 
 using namespace irr;
 using namespace core;
@@ -281,7 +280,7 @@ bool testFindFunctions()
 }
 
 // Test the functionality of irrString
-/** Validation is done with asserts() against expected results. */
+/** Validation is done with assert_log() against expected results. */
 bool testIrrString(void)
 {
 	bool allExpected = true;
@@ -290,39 +289,39 @@ bool testIrrString(void)
 	{
 		// Check empty string
 		core::stringc empty;
-		assert(empty.size()==0);
-		assert(empty[0]==0);
-		assert(empty.c_str()!=0);
-		assert(*(empty.c_str())==0);
+		assert_log(empty.size()==0);
+		assert_log(empty[0]==0);
+		assert_log(empty.c_str()!=0);
+		assert_log(*(empty.c_str())==0);
 		// Assign content
 		empty = "Test";
-		assert(empty.size()==4);
-		assert(empty[0]=='T');
-		assert(empty[3]=='t');
-		assert(*(empty.c_str())=='T');
+		assert_log(empty.size()==4);
+		assert_log(empty[0]=='T');
+		assert_log(empty[3]=='t');
+		assert_log(*(empty.c_str())=='T');
 		//Assign empty string, should be same as in the beginning
 		empty = "";
-		assert(empty.size()==0);
-		assert(empty[0]==0);
-		assert(*(empty.c_str())==0);
+		assert_log(empty.size()==0);
+		assert_log(empty[0]==0);
+		assert_log(*(empty.c_str())==0);
 	}
 	logTestString("Test stringw\n");
 	{
 		core::stringw empty;
-		assert(empty.size()==0);
-		assert(empty[0]==0);
-		assert(empty.c_str()!=0);
-		assert(*(empty.c_str())==0);
+		assert_log(empty.size()==0);
+		assert_log(empty[0]==0);
+		assert_log(empty.c_str()!=0);
+		assert_log(*(empty.c_str())==0);
 		empty = L"Test";
-		assert(empty.size()==4);
-		assert(empty[0]==L'T');
-		assert(empty[3]=='t');
-		assert(*(empty.c_str())==L'T');
+		assert_log(empty.size()==4);
+		assert_log(empty[0]==L'T');
+		assert_log(empty[3]=='t');
+		assert_log(*(empty.c_str())==L'T');
 		empty = L"";
-		assert(empty.size()==0);
-		assert(empty[0]==0);
-		assert(*(empty.c_str())==0);
-		assert(allExpected &= testSplit());
+		assert_log(empty.size()==0);
+		assert_log(empty[0]==0);
+		assert_log(*(empty.c_str())==0);
+		assert_log(allExpected &= testSplit());
 	}
 	allExpected &= testAppendStringc();
 

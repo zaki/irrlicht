@@ -7,7 +7,7 @@ Windows, Toolbars, Menus, ComboBoxes, Tabcontrols, Editboxes, Images,
 MessageBoxes, SkyBoxes, and how to parse XML files with the integrated XML
 reader of the engine.
 
-We start like in most other tutorials: Include all nesessary header files, add
+We start like in most other tutorials: Include all necessary header files, add
 a comment to let the engine be linked with the right .lib file in Visual
 Studio, and declare some global variables. We also add two 'using namespace'
 statements, so we do not need to write the whole names of all classes. In this
@@ -939,7 +939,7 @@ int main(int argc, char* argv[])
 	/*
 	That's nearly the whole application. We simply show the about message
 	box at start up, and load the first model. To make everything look
-	better, a skybox is created and a user controled camera, to make the
+	better, a skybox is created and a user controlled camera, to make the
 	application a little bit more interactive. Finally, everything is drawn
 	in a standard drawing loop.
 	*/

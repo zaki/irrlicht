@@ -83,11 +83,11 @@ void CGUIAttributeEditor::refreshAttribs()
 		// try to create attribute
 		stringc str = Attribs->getAttributeTypeString(i);
 		str += "_attribute";
-		CGUIAttribute* n = (CGUIAttribute*)Environment->addGUIElement(str.c_str(), this);
+		CGUIAttribute* n = (CGUIAttribute*)Environment->addGUIElement(str.c_str(), 0);
 
 		// if this doesn't exist, use a string editor
 		if (!n)
-			n = (CGUIAttribute*)Environment->addGUIElement("string_attribute", this);
+			n = (CGUIAttribute*)Environment->addGUIElement("string_attribute", 0);
 
 		if (n)
 		{
@@ -95,6 +95,11 @@ void CGUIAttributeEditor::refreshAttribs()
 			n->setParentID(getID());
 			n->grab();
 		}
+
+		// We can't set "this" as parent above as we need functionality
+		// of the overloaded addChild which isn't called in the constructor.
+		// (that's a general Irrlicht messup with too fat constructors)
+		addChild(n);
 
 		AttribList[i]->setSubElement(true);
 		AttribList[i]->setRelativePosition(r);

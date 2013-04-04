@@ -11,7 +11,7 @@ using namespace scene;
 bool sceneNodeAnimator(void)
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(160, 120));
-	assert(device);
+	assert_log(device);
 	if(!device)
 		return false;
 
@@ -108,7 +108,7 @@ bool sceneNodeAnimator(void)
 	if(!result)
 	{
 		logTestString("One or more animators has a bad hasFinished() state\n.");
-		assert(false);
+		assert_log(false);
 	}
 
 	return result;

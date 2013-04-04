@@ -24,6 +24,8 @@ static bool lineRender(E_DRIVER_TYPE driverType)
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	// Draw a cube background so that we can check that the pixels' alpha is working.
@@ -65,6 +67,8 @@ static bool pixelAccuracy(E_DRIVER_TYPE driverType)
 		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
 
 	IVideoDriver* driver = device->getVideoDriver();
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -110,12 +114,78 @@ static bool pixelAccuracy(E_DRIVER_TYPE driverType)
 	return result;
 }
 
+// this test draws lines of different lengths and compares
+// them with pixel placement
+// grey pixels denote start and end of the white drawn lines
+// black pixels only make those grey points better visible
+// yellow and magenta lines should start and end next toa black pixel,
+// yellow one right to the last black pixel down, magenta below the last
+// black pixel to the right
+// white lines are always double drawn, lines back and forth.
+static bool drawLine(E_DRIVER_TYPE driverType)
+{
+	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
+	if (!device)
+		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
+
+	IVideoDriver* driver = device->getVideoDriver();
+
+	stabilizeScreenBackground(driver);
+
+	logTestString("Testing driver %ls\n", driver->getName());
+
+	device->getSceneManager()->addCameraSceneNode();
+
+	driver->beginScene(true, true, SColor(255,100,101,140));
+	// horizontal lines
+	for (u32 i=0; i<20; ++i)
+	{
+		driver->draw2DLine(core::vector2di(10,10+3*i), core::vector2di(10+2*i,10+3*i));
+		// mark start point
+		driver->drawPixel(9,10+3*i+1, video::SColor(0xff000000));
+		driver->drawPixel(10,10+3*i+1, video::SColor(0xff888888));
+		driver->drawPixel(11,10+3*i+1, video::SColor(0xff000000));
+		// mark end point
+		driver->drawPixel(9+2*i,10+3*i+1, video::SColor(0xff000000));
+		driver->drawPixel(10+2*i,10+3*i+1, video::SColor(0xff888888));
+		driver->drawPixel(11+2*i,10+3*i+1, video::SColor(0xff000000));
+		driver->draw2DLine(core::vector2di(10+2*i,10+3*i+2), core::vector2di(10,10+3*i+2));
+	}
+	// vertical lines
+	for (u32 i=0; i<20; ++i)
+	{
+		driver->draw2DLine(core::vector2di(11+3*i,10), core::vector2di(11+3*i,10+2*i));
+		// mark start point
+		driver->drawPixel(11+3*i+1,9, video::SColor(0xff000000));
+		driver->drawPixel(11+3*i+1,10, video::SColor(0xff888888));
+		driver->drawPixel(11+3*i+1,11, video::SColor(0xff000000));
+		// mark end point
+		driver->drawPixel(11+3*i+1,9+2*i, video::SColor(0xff000000));
+		driver->drawPixel(11+3*i+1,10+2*i, video::SColor(0xff888888));
+		driver->drawPixel(11+3*i+1,11+2*i, video::SColor(0xff000000));
+		driver->draw2DLine(core::vector2di(11+3*i+2,10+2*i), core::vector2di(11+3*i+2, 10));
+	}
+	// diagonal lines
+	driver->draw2DLine(core::vector2di(14,14),core::vector2di(50,68), video::SColor(0xffffff00));
+	driver->draw2DLine(core::vector2di(15,14),core::vector2di(69,50), video::SColor(0xffff00ff));
+	driver->endScene();
+
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-drawLine.png");
+
+	device->closeDevice();
+	device->run();
+	device->drop();
+
+	return result;
+}
+
 bool drawPixel(void)
 {
 	bool result = true;
 
 	TestWithAllDrivers(lineRender);
 	TestWithAllDrivers(pixelAccuracy);
+	TestWithAllDrivers(drawLine);
 
 	return result;
 }

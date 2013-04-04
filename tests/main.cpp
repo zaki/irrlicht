@@ -50,7 +50,6 @@ int main(int argumentCount, char * arguments[])
 	// (temporarily) to the beginning of the list, since each test runs in its own
 	// process.
 
-
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	// Now the simple tests without device
 	TEST(testIrrArray);
@@ -59,7 +58,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(exports);
 	TEST(irrCoreEquals);
 	TEST(testIrrString);
-	TEST(line2dIntersectWith);
+	TEST(testLine2d);
 	TEST(matrixOps);
 	TEST(testDimension2d);
 	TEST(testVector2d);
@@ -98,7 +97,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(md2Animation);
 	TEST(meshTransform);
 	TEST(skinnedMesh);
-	TEST(testGeometryCreator); 
+	TEST(testGeometryCreator);
 	TEST(writeImageToFile);
 	TEST(ioScene);
 	// all driver checks

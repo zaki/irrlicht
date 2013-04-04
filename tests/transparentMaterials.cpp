@@ -27,6 +27,8 @@ bool testTransparentAlphaChannelRef(video::E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
@@ -77,6 +79,8 @@ bool testTransparentAlphaChannel(video::E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
@@ -126,6 +130,8 @@ bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -183,6 +189,8 @@ bool testTransparentReflection2Layer(video::E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
@@ -244,6 +252,8 @@ bool testTransparentAddColor(video::E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	stabilizeScreenBackground(driver);
+
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
@@ -292,6 +302,8 @@ bool testTransparentVertexAlphaMore(E_DRIVER_TYPE driverType)
 		device->drop();
 		return true;
 	}
+
+	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 

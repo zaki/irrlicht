@@ -62,7 +62,7 @@ bool cursorSetVisible(void)
 	if(!result)
 	{
 		logTestString("ERROR: cursorSetVisible received %d events.\n", moveTrapper.MouseMovesReceived);
-		assert(false);
+		assert_log(false);
 	}
 
 	return result;

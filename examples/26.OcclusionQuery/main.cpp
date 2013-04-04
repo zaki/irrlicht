@@ -30,7 +30,7 @@ a good idea to render with just basic solid material. Avoid complex shaders
 and state changes through textures. There's no need while just doing the
 occlusion query. At least if the render is not used for the actual scene. This
 is the third way to optimize occlusion queries. Just check the queries every
-5th or 10th frane, or even less frequent. This depends on the movement speed
+5th or 10th frame, or even less frequent. This depends on the movement speed
 of the objects and camera.
 */
 
@@ -169,7 +169,7 @@ int main()
 		Once in a while, here every 100 ms, we check the visibility. We run the queries,
 		update the pixel value, and query the result. Since we already rendered the node
 		we render the query invisible. The update is made blocking, as we need the result
-		immediately. If you don't need the result immediately, e.g. because oyu have other
+		immediately. If you don't need the result immediately, e.g. because you have other
 		things to render, you can call the update non-blocking. This gives the GPU more
 		time to pass back the results without flushing the render pipeline.
 		If the update was called non-blocking, the result from getOcclusionQueryResult is

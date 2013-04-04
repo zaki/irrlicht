@@ -289,7 +289,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\line2dIntersectWith.cpp"
+				RelativePath=".\testLine2d.cpp"
 				>
 			</File>
 			<File
