@@ -1306,7 +1306,7 @@
     <ClInclude Include="COGLES2ExtensionHandler.h">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClInclude>
-    <ClInclude Include="COGLES2FixedPipelineShader.h">
+    <ClInclude Include="COGLES2FixedPipelineRenderer.h">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClInclude>
     <ClInclude Include="COGLES2MaterialRenderer.h">
@@ -1321,7 +1321,7 @@
     <ClInclude Include="COGLES2Renderer2D.h">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClInclude>
-    <ClInclude Include="COGLES2SLMaterialRenderer.h">
+    <ClInclude Include="COGLES2MaterialRenderer.h">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\driverChoice.h">
@@ -2291,7 +2291,7 @@
     <ClCompile Include="COGLES2ExtensionHandler.cpp">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClCompile>
-    <ClCompile Include="COGLES2FixedPipelineShader.cpp">
+    <ClCompile Include="COGLES2FixedPipelineRenderer.cpp">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClCompile>
     <ClCompile Include="COGLES2NormalMapRenderer.cpp">
@@ -2303,7 +2303,7 @@
     <ClCompile Include="COGLES2Renderer2D.cpp">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClCompile>
-    <ClCompile Include="COGLES2SLMaterialRenderer.cpp">
+    <ClCompile Include="COGLES2MaterialRenderer.cpp">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClCompile>
     <ClCompile Include="COGLES2Texture.cpp">

@@ -2740,11 +2740,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\COGLES2FixedPipelineShader.cpp"
+						RelativePath=".\COGLES2FixedPipelineRenderer.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\COGLES2FixedPipelineShader.h"
+						RelativePath=".\COGLES2FixedPipelineRenderer.h"
 						>
 					</File>
 					<File
@@ -2776,11 +2776,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\COGLES2SLMaterialRenderer.cpp"
+						RelativePath=".\COGLES2MaterialRenderer.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\COGLES2SLMaterialRenderer.h"
+						RelativePath=".\COGLES2MaterialRenderer.h"
 						>
 					</File>
 					<File
