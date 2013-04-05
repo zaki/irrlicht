@@ -34,8 +34,8 @@ int main()
 void android_main(struct android_app* app)
 #endif
 {
-    app_dummy();
 #ifdef _IRR_ANDROID_PLATFORM_
+    app_dummy();
         const bool shadows = false;
 	video::E_DRIVER_TYPE driverType=video::EDT_OGLES1;
 #else

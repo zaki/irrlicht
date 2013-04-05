@@ -289,7 +289,7 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_PCEMULATION_2.07.27.0484\Builds\OGLES2\WindowsPC\Lib;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_PCEMULATION_2.07.27.0484\Builds\OGLES2\WindowsPC\Lib;$(ExecutablePath)</ExecutablePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\WindowsX86\Lib;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
@@ -1002,11 +1002,9 @@
     <ClInclude Include="COGLES2Driver.h" />
     <ClInclude Include="COGLES2ExtensionHandler.h" />
     <ClInclude Include="COGLES2FixedPipelineRenderer.h" />
-    <ClInclude Include="COGLES2MaterialRenderer.h" />
     <ClInclude Include="COGLES2NormalMapRenderer.h" />
     <ClInclude Include="COGLES2ParallaxMapRenderer.h" />
     <ClInclude Include="COGLES2Renderer2D.h" />
-    <ClInclude Include="COGLES2MaterialRenderer.h" />
     <ClInclude Include="COGLES2Texture.h" />
     <ClInclude Include="COGLESDriver.h" />
     <ClInclude Include="COGLESExtensionHandler.h" />

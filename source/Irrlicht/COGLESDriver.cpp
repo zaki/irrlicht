@@ -2855,6 +2855,46 @@ ECOLOR_FORMAT COGLES1Driver::getColorFormat() const
 }
 
 
+//! Get a vertex shader constant index.
+s32 COGLES1Driver::getVertexShaderConstantID(const c8* name)
+{
+	return getPixelShaderConstantID(name);
+}
+
+//! Get a pixel shader constant index.
+s32 COGLES1Driver::getPixelShaderConstantID(const c8* name)
+{
+	os::Printer::log("Error: Please call services->getPixelShaderConstantID(), not VideoDriver->getPixelShaderConstantID().");
+	return -1;
+}
+
+//! Sets a constant for the vertex shader based on an index.
+bool COGLES1Driver::setVertexShaderConstant(s32 index, const f32* floats, int count)
+{
+	//pass this along, as in GLSL the same routine is used for both vertex and fragment shaders
+	return setPixelShaderConstant(index, floats, count);
+}
+
+//! Int interface for the above.
+bool COGLES1Driver::setVertexShaderConstant(s32 index, const s32* ints, int count)
+{
+	return setPixelShaderConstant(index, ints, count);
+}
+
+//! Sets a constant for the pixel shader based on an index.
+bool COGLES1Driver::setPixelShaderConstant(s32 index, const f32* floats, int count)
+{
+	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
+	return false;
+}
+
+//! Int interface for the above.
+bool COGLES1Driver::setPixelShaderConstant(s32 index, const s32* ints, int count)
+{
+	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
+	return false;
+}
+
 //! Sets a vertex shader constant.
 void COGLES1Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
@@ -2871,33 +2911,6 @@ void COGLES1Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s
 	for (s32 i=0; i<constantAmount; ++i)
 		extGlProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM, startRegister+i, &data[i*4]);
 #endif
-}
-
-//! Sets a constant for the vertex shader based on a name.
-bool COGLES1Driver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
-{
-    //pass this along, as in GLSL the same routine is used for both vertex and fragment shaders
-    return setPixelShaderConstant(name, floats, count);
-}
-    
-//! Int interface for the above.
-bool COGLES1Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
-{
-    return setPixelShaderConstant(name, ints, count);
-}
-    
-//! Sets a constant for the pixel shader based on a name.
-bool COGLES1Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
-{
-    os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
-    return false;
-}
-    
-//! Int interface for the above.
-bool COGLES1Driver::setPixelShaderConstant(const c8* name, const s32* ints, int count)
-{
-    os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
-    return false;
 }
 
 

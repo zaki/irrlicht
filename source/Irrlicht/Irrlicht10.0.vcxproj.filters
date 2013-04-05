@@ -1309,9 +1309,6 @@
     <ClInclude Include="COGLES2FixedPipelineRenderer.h">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClInclude>
-    <ClInclude Include="COGLES2MaterialRenderer.h">
-      <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
-    </ClInclude>
     <ClInclude Include="COGLES2NormalMapRenderer.h">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClInclude>
