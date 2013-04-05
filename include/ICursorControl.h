@@ -20,19 +20,19 @@ namespace gui
 	enum ECURSOR_ICON
 	{
 		// Following cursors might be system specific, or might use an Irrlicht icon-set. No guarantees so far.
-		ECI_NORMAL,		// arrow
-		ECI_CROSS,		// Crosshair
-		ECI_HAND, 		// Hand
-		ECI_HELP,		// Arrow and question mark
-		ECI_IBEAM,		// typical text-selection cursor
-		ECI_NO, 		// should not click icon
-		ECI_WAIT, 		// hourclass
-		ECI_SIZEALL,  	// arrow in all directions
+		ECI_NORMAL,	// arrow
+		ECI_CROSS,	// Crosshair
+		ECI_HAND,	// Hand
+		ECI_HELP,	// Arrow and question mark
+		ECI_IBEAM,	// typical text-selection cursor
+		ECI_NO,		// should not click icon
+		ECI_WAIT,	// hourclass
+		ECI_SIZEALL,	// arrow in all directions
 		ECI_SIZENESW,	// resizes in direction north-east or south-west
-		ECI_SIZENWSE, 	// resizes in direction north-west or south-east
-		ECI_SIZENS, 	// resizes in direction north or south
-		ECI_SIZEWE, 	// resizes in direction west or east
-		ECI_UP,			// up-arrow
+		ECI_SIZENWSE,	// resizes in direction north-west or south-east
+		ECI_SIZENS,	// resizes in direction north or south
+		ECI_SIZEWE,	// resizes in direction west or east
+		ECI_UP,		// up-arrow
 
 		// Implementer note: Should we add system specific cursors, which use guaranteed the system icons,
 		// then I would recommend using a naming scheme like ECI_W32_CROSS, ECI_X11_CROSSHAIR and adding those

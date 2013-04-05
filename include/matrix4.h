@@ -947,18 +947,18 @@ namespace core
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::setRotationAxisRadians( const T& angle, const vector3d<T>& axis )
 	{
- 		const f64 c = cos(angle);
+		const f64 c = cos(angle);
 		const f64 s = sin(angle);
 		const f64 t = 1.0 - c;
 
 		const f64 tx  = t * axis.X;
-		const f64 ty  = t * axis.Y;		
+		const f64 ty  = t * axis.Y;
 		const f64 tz  = t * axis.Z;
 
 		const f64 sx  = s * axis.X;
 		const f64 sy  = s * axis.Y;
 		const f64 sz  = s * axis.Z;
-		
+
 		M[0] = (T)(tx * axis.X + c);
 		M[1] = (T)(tx * axis.Y + sz);
 		M[2] = (T)(tx * axis.Z - sy);

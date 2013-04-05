@@ -161,7 +161,7 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 #undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #endif
 // can't get this to compile currently under borland, can be removed if someone has a better solution
-#if defined(__BORLANDC__)	
+#if defined(__BORLANDC__)
 #undef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #endif
 
@@ -391,7 +391,7 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_OGRE_LOADER_
 #undef _IRR_COMPILE_WITH_OGRE_LOADER_
 #endif
-#endif	// _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+#endif // _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
 
 //! Define _IRR_COMPILE_WITH_IRR_MESH_LOADER_ if you want to load Irrlicht Engine .irrmesh files
 #define _IRR_COMPILE_WITH_IRR_MESH_LOADER_
@@ -845,7 +845,6 @@ precision will be lower but speed higher. currently X86 only
 		#define _tfindnext   __tfindnext
 		typedef long intptr_t;
 	#endif
-    
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__

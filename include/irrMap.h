@@ -41,16 +41,16 @@ class map
 				p->setParent(this);
 		}
 
-		void setParent(RBTree* p)		{ Parent=p; }
+		void setParent(RBTree* p) { Parent=p; }
 
-		void setValue(const ValueTypeRB& v)	{ Value = v; }
+		void setValue(const ValueTypeRB& v) { Value = v; }
 
-		void setRed()			{ IsRed = true; }
-		void setBlack()			{ IsRed = false; }
+		void setRed() { IsRed = true; }
+		void setBlack() { IsRed = false; }
 
-		RBTree* getLeftChild() const	{ return LeftChild; }
-		RBTree* getRightChild() const	{ return RightChild; }
-		RBTree* getParent() const		{ return Parent; }
+		RBTree* getLeftChild() const { return LeftChild; }
+		RBTree* getRightChild() const { return RightChild; }
+		RBTree* getParent() const { return Parent; }
 
 		const ValueTypeRB& getValue() const
 		{
@@ -118,13 +118,13 @@ class map
 	private:
 		RBTree();
 
-		RBTree*		LeftChild;
-		RBTree*		RightChild;
+		RBTree* LeftChild;
+		RBTree* RightChild;
 
-		RBTree*		Parent;
+		RBTree* Parent;
 
-		KeyTypeRB	Key;
-		ValueTypeRB	Value;
+		KeyTypeRB Key;
+		ValueTypeRB Value;
 
 		bool IsRed;
 	}; // RBTree
@@ -442,7 +442,7 @@ class map
 	{
 	public:
 
-	ParentFirstIterator() : Root(0), Cur(0)	{}
+	ParentFirstIterator() : Root(0), Cur(0) {}
 
 	explicit ParentFirstIterator(Node* root) : Root(root), Cur(0)
 	{
@@ -938,7 +938,7 @@ class map
 	/** Afterwards this object will contain the content of the other object and the other
 	object will contain the content of this object. Iterators will afterwards be valid for
 	the swapped object.
-	\param other Swap content with this object	*/
+	\param other Swap content with this object */
 	void swap(map<KeyType, ValueType>& other)
 	{
 		core::swap(Root, other.Root);

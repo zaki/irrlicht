@@ -22,15 +22,15 @@ namespace video
 	//! Flag for EMT_ONETEXTURE_BLEND, ( BlendFactor ) BlendFunc = source * sourceFactor + dest * destFactor
 	enum E_BLEND_FACTOR
 	{
-		EBF_ZERO	= 0,			//!< src & dest	(0, 0, 0, 0)
-		EBF_ONE,					//!< src & dest	(1, 1, 1, 1)
-		EBF_DST_COLOR, 				//!< src	(destR, destG, destB, destA)
+		EBF_ZERO	= 0,		//!< src & dest	(0, 0, 0, 0)
+		EBF_ONE,			//!< src & dest	(1, 1, 1, 1)
+		EBF_DST_COLOR,			//!< src	(destR, destG, destB, destA)
 		EBF_ONE_MINUS_DST_COLOR,	//!< src	(1-destR, 1-destG, 1-destB, 1-destA)
-		EBF_SRC_COLOR,				//!< dest	(srcR, srcG, srcB, srcA)
-		EBF_ONE_MINUS_SRC_COLOR, 	//!< dest	(1-srcR, 1-srcG, 1-srcB, 1-srcA)
-		EBF_SRC_ALPHA,				//!< src & dest	(srcA, srcA, srcA, srcA)
+		EBF_SRC_COLOR,			//!< dest	(srcR, srcG, srcB, srcA)
+		EBF_ONE_MINUS_SRC_COLOR,	//!< dest	(1-srcR, 1-srcG, 1-srcB, 1-srcA)
+		EBF_SRC_ALPHA,			//!< src & dest	(srcA, srcA, srcA, srcA)
 		EBF_ONE_MINUS_SRC_ALPHA,	//!< src & dest	(1-srcA, 1-srcA, 1-srcA, 1-srcA)
-		EBF_DST_ALPHA,				//!< src & dest	(destA, destA, destA, destA)
+		EBF_DST_ALPHA,			//!< src & dest	(destA, destA, destA, destA)
 		EBF_ONE_MINUS_DST_ALPHA,	//!< src & dest	(1-destA, 1-destA, 1-destA, 1-destA)
 		EBF_SRC_ALPHA_SATURATE		//!< src	(min(srcA, 1-destA), idem, ...)
 	};
@@ -39,11 +39,11 @@ namespace video
 	enum E_BLEND_OPERATION
 	{
 		EBO_NONE = 0,	//!< No blending happens
-		EBO_ADD,		//!< Default blending adds the color values
+		EBO_ADD,	//!< Default blending adds the color values
 		EBO_SUBTRACT,	//!< This mode subtracts the color values
 		EBO_REVSUBTRACT,//!< This modes subtracts destination from source
-		EBO_MIN,		//!< Choose minimum value of each color channel
-		EBO_MAX,		//!< Choose maximum value of each color channel
+		EBO_MIN,	//!< Choose minimum value of each color channel
+		EBO_MAX,	//!< Choose maximum value of each color channel
 		EBO_MIN_FACTOR,	//!< Choose minimum value of each color channel after applying blend factors, not widely supported
 		EBO_MAX_FACTOR,	//!< Choose maximum value of each color channel after applying blend factors, not widely supported
 		EBO_MIN_ALPHA,	//!< Choose minimum value of each color channel based on alpha value, not widely supported
@@ -128,7 +128,7 @@ namespace video
 	{
 		const u32 state = IR(param);
 		alphaSource = (state & 0x0000F000) >> 12;
-		modulo	= E_MODULATE_FUNC( ( state & 0x00000F00 ) >> 8 );
+		modulo = E_MODULATE_FUNC( ( state & 0x00000F00 ) >> 8 );
 		srcFact = E_BLEND_FACTOR ( ( state & 0x000000F0 ) >> 4 );
 		dstFact = E_BLEND_FACTOR ( ( state & 0x0000000F ) );
 	}
@@ -370,7 +370,7 @@ namespace video
 		u8 ZBuffer;
 
 		//! Sets the antialiasing mode
-		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is 
+		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is
 		EAAM_SIMPLE|EAAM_LINE_SMOOTH, i.e. simple multi-sample
 		anti-aliasing and lime smoothing is enabled. */
 		u8 AntiAliasing;
@@ -384,7 +384,7 @@ namespace video
 
 		//! Defines the interpretation of vertex color in the lighting equation
 		/** Values should be chosen from E_COLOR_MATERIAL.
-		When lighting is enabled, vertex color can be used instead of the 
+		When lighting is enabled, vertex color can be used instead of the
 		material values for light modulation. This allows to easily change e.g. the
 		diffuse light behavior of each face. The default, ECM_DIFFUSE, will result in
 		a very similar rendering as with lighting turned off, just with light shading. */

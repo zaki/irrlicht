@@ -74,7 +74,7 @@ typedef signed int		s32;
 typedef unsigned __int64			u64;
 #elif __GNUC__
 #if __WORDSIZE == 64
-typedef unsigned long int 			u64;
+typedef unsigned long int			u64;
 #else
 __extension__ typedef unsigned long long	u64;
 #endif
@@ -88,7 +88,7 @@ typedef unsigned long long			u64;
 typedef __int64					s64;
 #elif __GNUC__
 #if __WORDSIZE == 64
-typedef long int 				s64;
+typedef long int				s64;
 #else
 __extension__ typedef long long			s64;
 #endif
@@ -164,18 +164,18 @@ strings
 //! define a break macro for debugging.
 #if defined(_DEBUG)
 #if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && !defined (_WIN32_WCE)
-  #if defined(WIN64) || defined(_WIN64) // using portable common solution for x64 configuration
-  #include <crtdbg.h>
-  #define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_CrtDbgBreak();}
-  #else
-  #define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_asm int 3}
-  #endif
+#if defined(WIN64) || defined(_WIN64) // using portable common solution for x64 configuration
+	#include <crtdbg.h>
+	#define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_CrtDbgBreak();}
 #else
-#include "assert.h"
-#define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) assert( !(_CONDITION_) );
+	#define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_asm int 3}
 #endif
 #else
-#define _IRR_DEBUG_BREAK_IF( _CONDITION_ )
+	#include "assert.h"
+	#define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) assert( !(_CONDITION_) );
+#endif
+#else
+	#define _IRR_DEBUG_BREAK_IF( _CONDITION_ )
 #endif
 
 //! Defines a deprecated macro which generates a warning at compile time

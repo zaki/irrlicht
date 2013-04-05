@@ -81,7 +81,7 @@ public:
 	//! Set the maximum particle life-time in milliseconds
 	virtual void setMaxLifeTime( u32 lifeTimeMax ) = 0;
 
-	//!	Set maximal random derivation from the direction
+	//! Set maximal random derivation from the direction
 	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) = 0;
 
 	//! Get direction the emitter emits particles
@@ -111,9 +111,8 @@ public:
 	//! Get the maximum particle life-time in milliseconds
 	virtual u32 getMaxLifeTime() const = 0;
 
-	//!	Get maximal random derivation from the direction
+	//! Get maximal random derivation from the direction
 	virtual s32 getMaxAngleDegrees() const = 0;
-
 
 	//! Get emitter type
 	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_POINT; }

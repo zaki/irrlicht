@@ -702,17 +702,17 @@ namespace scene
 		{
 			if (!out)
 				return;
-			out->addString	("Name", Name.c_str());
-			out->addInt	("Id", ID );
+			out->addString("Name", Name.c_str());
+			out->addInt("Id", ID );
 
 			out->addVector3d("Position", getPosition() );
 			out->addVector3d("Rotation", getRotation() );
 			out->addVector3d("Scale", getScale() );
 
-			out->addBool	("Visible", IsVisible );
-			out->addInt	("AutomaticCulling", AutomaticCullingState);
-			out->addInt	("DebugDataVisible", DebugDataVisible );
-			out->addBool	("IsDebugObject", IsDebugObject );
+			out->addBool("Visible", IsVisible );
+			out->addInt("AutomaticCulling", AutomaticCullingState);
+			out->addInt("DebugDataVisible", DebugDataVisible );
+			out->addBool("IsDebugObject", IsDebugObject );
 		}
 
 

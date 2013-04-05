@@ -218,7 +218,7 @@ class line2d
 			vector2d<f64> c((f64)(point.X-start.X), (f64)(point.Y- start.Y));
 			vector2d<f64> v((f64)(end.X-start.X), (f64)(end.Y-start.Y));
 			f64 d = v.getLength();
-			if ( d == 0 )	// can't tell much when the line is just a single point
+			if ( d == 0 ) // can't tell much when the line is just a single point
 				return start;
 			v /= d;
 			f64 t = v.dotProduct(c);
@@ -246,7 +246,7 @@ class line2d
 		vector2df c = point - start;
 		vector2df v = end - start;
 		f32 d = (f32)v.getLength();
-		if ( d == 0 )	// can't tell much when the line is just a single point
+		if ( d == 0 ) // can't tell much when the line is just a single point
 			return start;
 		v /= d;
 		f32 t = v.dotProduct(c);

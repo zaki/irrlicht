@@ -62,7 +62,7 @@ namespace gui
 		So to get absolute positions you have to add the resulting rectangle to getAbsolutePosition().UpperLeftCorner.<br>
 		To get it relative to the parent element you have to add the resulting rectangle to getRelativePosition().UpperLeftCorner.
 		Beware that adding a menu will not change the clientRect as menus are own gui elements, so in that case you might want to subtract
-		the menu area additionally.	*/
+		the menu area additionally. */
 		virtual core::rect<s32> getClientRect() const = 0;
 	};
 

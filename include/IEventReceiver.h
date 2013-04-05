@@ -216,7 +216,7 @@ namespace irr
 			//! The text in an editbox was changed. This does not include automatic changes in text-breaking.
 			EGET_EDITBOX_CHANGED,
 
-            //! The marked area in an editbox was changed.
+			//! The marked area in an editbox was changed.
 			EGET_EDITBOX_MARKING_CHANGED,
 
 			//! The tab was changed in an tab control
@@ -345,7 +345,7 @@ struct SEvent
 		{
 			NUMBER_OF_BUTTONS = 32,
 
-			AXIS_X = 0, // e.g. analog stick 1 left to right
+			AXIS_X = 0,	// e.g. analog stick 1 left to right
 			AXIS_Y,		// e.g. analog stick 1 top to bottom
 			AXIS_Z,		// e.g. throttle, or analog 2 stick 2 left to right
 			AXIS_R,		// e.g. rudder, or analog 2 stick 2 top to bottom
@@ -454,18 +454,18 @@ struct SJoystickInfo
 	/** This is an internal Irrlicht index; it does not map directly
 	 * to any particular hardware joystick. It corresponds to the
 	 * irr::SJoystickEvent Joystick ID. */
-	u8				Joystick;
+	u8 Joystick;
 
 	//! The name that the joystick uses to identify itself.
-	core::stringc	Name;
+	core::stringc Name;
 
 	//! The number of buttons that the joystick has.
-	u32				Buttons;
+	u32 Buttons;
 
 	//! The number of axes that the joystick has, i.e. X, Y, Z, R, U, V.
 	/** Note: with a Linux device, the POV hat (if any) will use two axes. These
 	 *  will be included in this count. */
-	u32				Axes;
+	u32 Axes;
 
 	//! An indication of whether the joystick has a POV hat.
 	/** A Windows device will identify the presence or absence or the POV hat.  A

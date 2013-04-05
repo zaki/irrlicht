@@ -134,11 +134,11 @@ namespace gui
 		//! Returns maximum amount of characters, previously set by setMax();
 		virtual u32 getMax() const = 0;
 
-		//! Set the character used for the cursor. 
+		//! Set the character used for the cursor.
 		/** By default it's "_" */
 		virtual void setCursorChar(const wchar_t cursorChar) = 0;
 
-		//! Get the character used for the cursor. 
+		//! Get the character used for the cursor.
 		virtual wchar_t getCursorChar() const = 0;
 
 		//! Set the blinktime for the cursor. 2x blinktime is one full cycle.
@@ -146,8 +146,7 @@ namespace gui
 		virtual void setCursorBlinkTime(irr::u32 timeMs) = 0;
 
 		//! Get the cursor blinktime
-		virtual irr::u32 getCursorBlinkTime() const = 0; 
- 
+		virtual irr::u32 getCursorBlinkTime() const = 0;
 	};
 
 

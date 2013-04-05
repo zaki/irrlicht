@@ -564,7 +564,7 @@ public:
 	virtual bool sendToBack(IGUIElement* child)
 	{
 		core::list<IGUIElement*>::Iterator it = Children.begin();
-		if (child == (*it))	// already there
+		if (child == (*it)) // already there
 			return true;
 		for (; it != Children.end(); ++it)
 		{
@@ -748,7 +748,7 @@ public:
 	{
 		return GUIElementTypeNames[Type];
 	}
-	
+
 	//! Returns the name of the element.
 	/** \return Name as character string. */
 	virtual const c8* getName() const
@@ -778,7 +778,7 @@ public:
 	scripting languages, editors, debuggers or xml serialization purposes. */
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 	{
-		out->addString("Name", Name.c_str());		
+		out->addString("Name", Name.c_str());
 		out->addInt("Id", ID );
 		out->addString("Caption", getText());
 		out->addRect("Rect", DesiredRect);
@@ -1017,7 +1017,7 @@ protected:
 
 	//! tooltip
 	core::stringw ToolTipText;
-	
+
 	//! users can set this for identificating the element by string
 	core::stringc Name;
 

@@ -11,7 +11,7 @@
 #include "vector3d.h"
 
 // Between Irrlicht 1.7 and Irrlicht 1.8 the quaternion-matrix conversions got fixed.
-// This define disables all involved functions completely to allow finding all places 
+// This define disables all involved functions completely to allow finding all places
 // where the wrong conversions had been in use.
 #define IRR_TEST_BROKEN_QUATERNION_USE 0
 
@@ -101,7 +101,7 @@ class quaternion
 #if !IRR_TEST_BROKEN_QUATERNION_USE
 		//! Creates a matrix from this quaternion
 		matrix4 getMatrix() const;
-#endif 
+#endif
 
 		//! Creates a matrix from this quaternion
 		void getMatrix( matrix4 &dest, const core::vector3df &translation=core::vector3df() ) const;

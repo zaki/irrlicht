@@ -9,7 +9,7 @@
 
 #ifdef _IRR_COMPILE_WITH_LEAK_HUNTER_
 	#include "leakHunter.h"
-#endif 
+#endif
 
 namespace irr
 {

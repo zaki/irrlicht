@@ -29,7 +29,7 @@ namespace scene
 		"box",			// camera box against node box
 		"frustum_box",		// camera frustum against node box
 		"frustum_sphere",	// camera frustum against node sphere
-		"occ_query",	// occlusion query
+		"occ_query",		// occlusion query
 		0
 	};
 

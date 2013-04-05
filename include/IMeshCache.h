@@ -103,7 +103,7 @@ namespace scene
 		}
 
 		//! Renames a loaded mesh.
-		/**	\deprecated Use renameMesh() instead. This method may be removed by
+		/** \deprecated Use renameMesh() instead. This method may be removed by
 		Irrlicht 1.9 */
 		_IRR_DEPRECATED_ bool setMeshFilename(u32 index, const io::path& filename)
 		{
@@ -125,12 +125,12 @@ namespace scene
 
 		//! Get the name of a loaded mesh, based on its index.
 		/** \param index: Index of the mesh, number between 0 and getMeshCount()-1.
-		\return The name if mesh was found and has a name, else	the path is empty. */
+		\return The name if mesh was found and has a name, else the path is empty. */
 		virtual const io::SNamedPath& getMeshName(u32 index) const = 0;
 
 		//! Get the name of the loaded mesh if there is any.
 		/** \param mesh Pointer to mesh to query.
-		\return The name if mesh was found and has a name, else	the path is empty. */
+		\return The name if mesh was found and has a name, else the path is empty. */
 		virtual const io::SNamedPath& getMeshName(const IMesh* const mesh) const = 0;
 
 		//! Renames a loaded mesh.

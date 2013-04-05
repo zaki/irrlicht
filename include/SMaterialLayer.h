@@ -73,7 +73,7 @@ namespace video
 		~SMaterialLayer()
 		{
 			MatrixAllocator.destruct(TextureMatrix);
-			MatrixAllocator.deallocate(TextureMatrix); 
+			MatrixAllocator.deallocate(TextureMatrix);
 		}
 
 		//! Assignment operator
@@ -93,7 +93,7 @@ namespace video
 				else
 				{
 					MatrixAllocator.destruct(TextureMatrix);
-					MatrixAllocator.deallocate(TextureMatrix); 
+					MatrixAllocator.deallocate(TextureMatrix);
 					TextureMatrix = 0;
 				}
 			}
@@ -200,8 +200,8 @@ namespace video
 		/** In Irrlicht you can use anisotropic texture filtering
 		in conjunction with bilinear or trilinear texture
 		filtering to improve rendering results. Primitives
-		will look less blurry with this flag switched on. The number gives 
-		the maximal anisotropy degree, and is often in the range 2-16. 
+		will look less blurry with this flag switched on. The number gives
+		the maximal anisotropy degree, and is often in the range 2-16.
 		Value 1 is equivalent to 0, but should be avoided. */
 		u8 AnisotropicFilter;
 

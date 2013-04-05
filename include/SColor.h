@@ -429,14 +429,14 @@ namespace video
 				{
 					u16 * dest = (u16*)data;
 					*dest = video::A8R8G8B8toA1R5G5B5( color );
-				} 
+				}
 				break;
 
 				case ECF_R5G6B5:
 				{
 					u16 * dest = (u16*)data;
 					*dest = video::A8R8G8B8toR5G6B5( color );
-				} 
+				}
 				break;
 
 				case ECF_R8G8B8:
@@ -445,14 +445,14 @@ namespace video
 					dest[0] = (u8)getRed();
 					dest[1] = (u8)getGreen();
 					dest[2] = (u8)getBlue();
-				} 
+				}
 				break;
 
 				case ECF_A8R8G8B8:
 				{
 					u32 * dest = (u32*)data;
 					*dest = color;
-				} 
+				}
 				break;
 
 				default:
