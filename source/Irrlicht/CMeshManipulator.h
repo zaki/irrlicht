@@ -27,12 +27,12 @@ public:
 
 	//! Recalculates all normals of the mesh.
 	/** \param mesh: Mesh on which the operation is performed.
-	    \param smooth: Whether to use smoothed normals. */
+	\param smooth: Whether to use smoothed normals. */
 	virtual void recalculateNormals(scene::IMesh* mesh, bool smooth = false, bool angleWeighted = false) const;
 
 	//! Recalculates all normals of the mesh buffer.
 	/** \param buffer: Mesh buffer on which the operation is performed.
-	    \param smooth: Whether to use smoothed normals. */
+	\param smooth: Whether to use smoothed normals. */
 	virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const;
 
 	//! Clones a static IMesh into a modifiable SMesh.

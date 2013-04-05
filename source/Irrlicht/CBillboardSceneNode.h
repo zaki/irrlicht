@@ -40,9 +40,9 @@ public:
 	//! Sets the widths of the top and bottom edges of the billboard independently.
 	virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth);
 
- 	//! gets the size of the billboard
- 	virtual const core::dimension2d<f32>& getSize() const;
- 
+	//! gets the size of the billboard
+	virtual const core::dimension2d<f32>& getSize() const;
+
 	//! Gets the widths of the top and bottom edges of the billboard.
 	virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const;
 

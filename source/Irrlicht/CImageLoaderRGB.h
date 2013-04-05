@@ -5,7 +5,7 @@
 
 /*
 	Author:	Gary Conway (Viper) - co-author of the ZIP file format, Feb 1989,
-						 see the story at http://www.idcnet.us/ziphistory.html
+						see the story at http://www.idcnet.us/ziphistory.html
 	Website:	http://idcnet.us
 	Email:		codeslinger@vipergc.com
 	Created:	March 1, 2009
@@ -60,12 +60,11 @@ namespace video
 
 	typedef struct _RGBdata
 	{
-		u8 *tmp,
-		   *tmpR,
-		   *tmpG,
-		   *tmpB,
-		   *tmpA;
-
+		u8 *tmp;
+		u8 *tmpR;
+		u8 *tmpG;
+		u8 *tmpB;
+		u8 *tmpA;
 
 		u32 *StartTable;	// compressed data table, holds file offsets
 		u32 *LengthTable;	// length for the above data, hold lengths for above

@@ -194,8 +194,8 @@ public:
 	virtual void clearParticles();
 
 	//! Do manually update the particles.
- 	//! This should only be called when you want to render the node outside the scenegraph,
- 	//! as the node will care about this otherwise automatically.
+	//! This should only be called when you want to render the node outside the scenegraph,
+	//! as the node will care about this otherwise automatically.
 	virtual void doParticleSystem(u32 time);
 
 	//! Writes attributes of the scene node.

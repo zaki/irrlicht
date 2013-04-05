@@ -64,7 +64,7 @@ namespace irr
 		virtual void restoreWindow();
 
 		//! returns current window position (not supported for this device)
-        virtual core::position2di getWindowPosition()
+		virtual core::position2di getWindowPosition()
 		{
 			return core::position2di(-1, -1);
 		}

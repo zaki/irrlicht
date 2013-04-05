@@ -465,7 +465,7 @@ static void RenderLine16_Blend(video::IImage *t,
 			d -= c;
 		}
 		run -= 1;
-	} 	while (run>=0);
+	} while (run>=0);
 
 	t->unlock();
 }
@@ -1060,7 +1060,7 @@ static inline tExecuteBlit getBlitter2( eBlitter operation,const video::IImage *
 
 // bounce clipping to texture
 inline void setClip ( AbsRectangle &out, const core::rect<s32> *clip,
-					 const video::IImage * tex, s32 passnative )
+					const video::IImage * tex, s32 passnative )
 {
 	if ( clip && 0 == tex && passnative )
 	{
@@ -1228,7 +1228,7 @@ static void drawRectangle(video::IImage* img, const core::rect<s32>& rect, const
 
 //! draws a line from to with color
 static void drawLine(video::IImage* img, const core::position2d<s32>& from,
-					 const core::position2d<s32>& to, const video::SColor &color)
+					const core::position2d<s32>& to, const video::SColor &color)
 {
 	AbsRectangle clip;
 	GetClip(clip, img);

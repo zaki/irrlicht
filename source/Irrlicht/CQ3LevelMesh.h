@@ -25,7 +25,7 @@ namespace scene
 
 		//! constructor
 		CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr,
-		             const quake3::Q3LevelLoadParameter &loadParam);
+			const quake3::Q3LevelLoadParameter &loadParam);
 
 		//! destructor
 		virtual ~CQ3LevelMesh();
@@ -105,7 +105,7 @@ namespace scene
 		}
 
 		//! Returns pointer to a mesh buffer which fits a material
- 		/** \param material: material to search for
+		/** \param material: material to search for
 		\return Pointer to the mesh buffer or 0 if there is no such mesh buffer. */
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const
 		{

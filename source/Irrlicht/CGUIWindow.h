@@ -50,18 +50,18 @@ namespace gui
 		//! Sets whether the window is draggable
 		virtual void setDraggable(bool draggable);
 
-        //! Set if the window background will be drawn
-        virtual void setDrawBackground(bool draw);
+		//! Set if the window background will be drawn
+		virtual void setDrawBackground(bool draw);
 
-        //! Get if the window background will be drawn
-        virtual bool getDrawBackground() const;
+		//! Get if the window background will be drawn
+		virtual bool getDrawBackground() const;
 
-        //! Set if the window titlebar will be drawn
-        //! Note: If the background is not drawn, then the titlebar is automatically also not drawn
-        virtual void setDrawTitlebar(bool draw);
+		//! Set if the window titlebar will be drawn
+		//! Note: If the background is not drawn, then the titlebar is automatically also not drawn
+		virtual void setDrawTitlebar(bool draw);
 
-        //! Get if the window titlebar will be drawn
-        virtual bool getDrawTitlebar() const;
+		//! Get if the window titlebar will be drawn
+		virtual bool getDrawTitlebar() const;
 
 		//! Returns the rectangle of the drawable area (without border and without titlebar)
 		virtual core::rect<s32> getClientRect() const;
@@ -85,8 +85,8 @@ namespace gui
 
 		core::position2d<s32> DragStart;
 		bool Dragging, IsDraggable;
-        bool DrawBackground;
-        bool DrawTitlebar;
+		bool DrawBackground;
+		bool DrawTitlebar;
 		bool IsActive;
 	};
 

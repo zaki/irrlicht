@@ -391,9 +391,9 @@ namespace scene
 		EAMT_STILL,
 		//! From Start to End, then Stop ( Limited Line )
 		EAMT_WAYPOINT,
-		//! Linear Cycling Animation	 ( Sawtooth )
+		//! Linear Cycling Animation ( Sawtooth )
 		EAMT_LOOPING,
-		//! Linear bobbing				 ( Triangle )
+		//! Linear bobbing ( Triangle )
 		EAMT_PINGPONG
 	};
 

@@ -35,13 +35,12 @@ public:
 	virtual void OnUnsetBaseMaterial()
 	{
 	}
-    
-    virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
-    {
-        Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, true);
-        
-        return true;
-    }
+
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
+	{
+		Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, true);
+		return true;
+	}
 
 protected:
 
@@ -249,12 +248,12 @@ public:
 		Driver->getBridgeCalls()->setAlphaTest(false);
 	}
 
- 	//! Returns if the material is transparent.
- 	/** Is not always transparent, but mostly. */
- 	virtual bool isTransparent() const
- 	{
- 		return true;
- 	}
+	//! Returns if the material is transparent.
+	/** Is not always transparent, but mostly. */
+	virtual bool isTransparent() const
+	{
+		return true;
+	}
 };
 
 

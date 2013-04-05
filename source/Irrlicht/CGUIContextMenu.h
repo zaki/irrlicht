@@ -44,7 +44,7 @@ namespace gui
 		virtual u32 addItem(const wchar_t* text, s32 commandid,
 				bool enabled, bool hasSubMenu, bool checked, bool autoChecking);
 
-        //! Insert a menu item at specified position.
+		//! Insert a menu item at specified position.
 		virtual u32 insertItem(u32 idx, const wchar_t* text, s32 commandId, bool enabled,
 			bool hasSubMenu, bool checked, bool autoChecking);
 

@@ -15,7 +15,7 @@ namespace irr
 namespace io
 {
 
- 	/*!
+	/*!
 		Class for reading from memory.
 	*/
 	class CMemoryReadFile : public IReadFile

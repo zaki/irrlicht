@@ -33,12 +33,12 @@ namespace irr
 
 namespace video
 {
-    class COpenGLCallBridge;
+	class COpenGLCallBridge;
 	class COpenGLTexture;
 
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
-        friend class COpenGLCallBridge;
+		friend class COpenGLCallBridge;
 		friend class COpenGLTexture;
 	public:
 
@@ -280,15 +280,15 @@ namespace video
 			bool resetAllRenderstates)
 		{
 			setBasicRenderStates(material, lastmaterial, resetAllRenderstates, true);
-            setTextureRenderStates(material, resetAllRenderstates, true);
+			setTextureRenderStates(material, resetAllRenderstates, true);
 		}
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 			bool resetAllRenderstates, bool fixedPipeline);
-        
-        //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
-        virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline);
+
+		//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
+		virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline);
 
 		//! Get a vertex shader constant index.
 		virtual s32 getVertexShaderConstantID(const c8* name);
@@ -417,12 +417,12 @@ namespace video
 
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
-        
-        //! Get current material.
-        const SMaterial& getCurrentMaterial() const;
-        
-        //! Get bridge calls.
-        COpenGLCallBridge* getBridgeCalls() const;
+
+		//! Get current material.
+		const SMaterial& getCurrentMaterial() const;
+
+		//! Get bridge calls.
+		COpenGLCallBridge* getBridgeCalls() const;
 
 		//! Get Cg context
 		#ifdef _IRR_COMPILE_WITH_CG_
@@ -475,7 +475,7 @@ namespace video
 				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 				
 		// Bridge calls.
-        COpenGLCallBridge* BridgeCalls;
+		COpenGLCallBridge* BridgeCalls;
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -603,7 +603,7 @@ namespace video
 		//! Built-in 2D quad for 2D rendering.
 		S3DVertex Quad2DVertices[4];
 		u16 Quad2DIndices[6];
-        u16 Line2DIndices[2];
+		u16 Line2DIndices[2];
 
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
@@ -629,14 +629,14 @@ namespace video
 
 		E_DEVICE_TYPE DeviceType;
 	};
-    
-    //! This bridge between Irlicht pseudo OpenGL calls
-    //! and true OpenGL calls.
-    
-    class COpenGLCallBridge
-    {
-    public:
-        COpenGLCallBridge(COpenGLDriver* driver);
+
+	//! This bridge between Irlicht pseudo OpenGL calls
+	//! and true OpenGL calls.
+
+	class COpenGLCallBridge
+	{
+		public:
+		COpenGLCallBridge(COpenGLDriver* driver);
 
 		// Alpha calls.
 
@@ -659,29 +659,29 @@ namespace video
 		void setCullFaceFunc(GLenum mode);
 
 		void setCullFace(bool enable);
-        
-        // Depth calls.
+
+		// Depth calls.
 
 		void setDepthFunc(GLenum mode);
 
-        void setDepthMask(bool enable);
+		void setDepthMask(bool enable);
 
 		void setDepthTest(bool enable);
-        
-        // Matrix calls.
-        
-        void setMatrixMode(GLenum mode);
-        
-        // Texture calls.
-        
-        void setActiveTexture(GLenum texture);
+
+		// Matrix calls.
+
+		void setMatrixMode(GLenum mode);
+
+		// Texture calls.
+
+		void setActiveTexture(GLenum texture);
 
 		void setClientActiveTexture(GLenum texture);
-        
-        void setTexture(u32 stage, bool fixedPipeline);
-        
-    private:
-        COpenGLDriver* Driver;
+
+		void setTexture(u32 stage, bool fixedPipeline);
+
+	private:
+		COpenGLDriver* Driver;
 
 		GLenum AlphaMode;
 		GLclampf AlphaRef;
@@ -698,19 +698,19 @@ namespace video
 
 		GLenum CullFaceMode;
 		bool CullFace;
-        
-		GLenum DepthFunc;
-        bool DepthMask;
-        bool DepthTest;
-        
-        GLenum MatrixMode;
-        
-		GLenum ActiveTexture;
-        GLenum ClientActiveTexture;
 
-        const ITexture* Texture[MATERIAL_MAX_TEXTURES];
-        bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
-    };
+		GLenum DepthFunc;
+		bool DepthMask;
+		bool DepthTest;
+
+		GLenum MatrixMode;
+
+		GLenum ActiveTexture;
+		GLenum ClientActiveTexture;
+
+		const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+		bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
+	};
 
 } // end namespace video
 } // end namespace irr
