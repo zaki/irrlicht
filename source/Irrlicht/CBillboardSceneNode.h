@@ -14,13 +14,13 @@ namespace scene
 {
 
 //! Scene node which is a billboard. A billboard is like a 3d sprite: A 2d element,
-//! which always looks to the camera. 
+//! which always looks to the camera.
 class CBillboardSceneNode : virtual public IBillboardSceneNode
 {
 public:
 
 	//! constructor
-	CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
+	CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, const core::dimension2d<f32>& size,
 		video::SColor colorTop=video::SColor(0xFFFFFFFF),
 		video::SColor colorBottom=video::SColor(0xFFFFFFFF));
@@ -47,10 +47,10 @@ public:
 	virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const;
 
 	virtual video::SMaterial& getMaterial(u32 i);
-	
+
 	//! returns amount of materials used by this scene node.
 	virtual u32 getMaterialCount() const;
-	
+
 	//! Set the color of all vertices of the billboard
 	//! \param overallColor: the color to set
 	virtual void setColor(const video::SColor& overallColor);
@@ -78,7 +78,7 @@ public:
 
 	//! Creates a clone of this scene node and its children.
 	virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
-	
+
 private:
 
 	//! Size.Width is the bottom edge width

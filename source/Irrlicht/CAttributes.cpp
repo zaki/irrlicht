@@ -341,7 +341,7 @@ video::SColor CAttributes::getAttributeAsColor(const c8* attributeName, const vi
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getColor();
-	else 
+	else
 		return defaultNotFound;
 }
 
@@ -1078,7 +1078,7 @@ core::quaternion CAttributes::getAttributeAsQuaternion(const c8* attributeName, 
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getQuaternion();
-	else 
+	else
 		return defaultNotFound;
 }
 
@@ -1170,7 +1170,7 @@ core::plane3df CAttributes::getAttributeAsPlane3d(const c8* attributeName, const
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getPlane();
-	else 
+	else
 		return defaultNotFound;
 }
 
@@ -1216,7 +1216,7 @@ core::triangle3df CAttributes::getAttributeAsTriangle3d(const c8* attributeName,
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getTriangle();
-	else 
+	else
 		return defaultNotFound;
 }
 
@@ -1263,7 +1263,7 @@ core::line2df CAttributes::getAttributeAsLine2d(const c8* attributeName, const c
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getLine2d();
-	else 
+	else
 		return defaultNotFound;
 }
 
@@ -1358,7 +1358,7 @@ void* CAttributes::getAttributeAsUserPointer(const c8* attributeName, void* defa
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getUserPointer();
-	else 
+	else
 		return defaultNotFound;
 }
 

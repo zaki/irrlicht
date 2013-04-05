@@ -24,11 +24,11 @@ namespace scene
 	/** This scene node animator can be attached to a camera to make it act
 	like a 3d modelling tool camera
 	*/
-	class CSceneNodeAnimatorCameraMaya : public ISceneNodeAnimatorCameraMaya 
+	class CSceneNodeAnimatorCameraMaya : public ISceneNodeAnimatorCameraMaya
 	{
 	public:
 		//! Constructor
-		CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor, f32 rotateSpeed = -1500.f, 
+		CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor, f32 rotateSpeed = -1500.f,
 			f32 zoomSpeed = 200.f, f32 translationSpeed = 1500.f, f32 distance=70.f);
 
 		//! Destructor
@@ -71,7 +71,7 @@ namespace scene
 		}
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const 
+		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const
 		{
 			return ESNAT_CAMERA_MAYA;
 		}

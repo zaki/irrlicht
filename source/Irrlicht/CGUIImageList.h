@@ -28,17 +28,16 @@ public:
 	//! \param useAlphaChannel: true if the alpha channel from the texture should be used
 	//! \return
 	//! true if the image list was created
-	bool createImageList( 
-				video::ITexture*			texture, 
-				core::dimension2d<s32>	imageSize, 
-				bool							useAlphaChannel );
+	bool createImageList(video::ITexture* texture,
+				core::dimension2d<s32> imageSize,
+				bool useAlphaChannel);
 
 	//! Draws an image and clips it to the specified rectangle if wanted
 	//! \param index: Index of the image
 	//! \param destPos: Position of the image to draw
 	//! \param clip: Optional pointer to a rectalgle against which the text will be clipped.
 	//! If the pointer is null, no clipping will be done.
-	virtual void draw( s32 index, const core::position2d<s32>& destPos, 
+	virtual void draw( s32 index, const core::position2d<s32>& destPos,
 		const core::rect<s32>* clip = 0 );
 
 	//! Returns the count of Images in the list.

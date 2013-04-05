@@ -118,7 +118,7 @@ void CParticleRingEmitter::serializeAttributes(io::IAttributes* out, io::SAttrib
 	out->addFloat("MinStartSizeWidth", MinStartSize.Width);
 	out->addFloat("MinStartSizeHeight", MinStartSize.Height);
 	out->addFloat("MaxStartSizeWidth", MaxStartSize.Width);
-	out->addFloat("MaxStartSizeHeight", MaxStartSize.Height); 
+	out->addFloat("MaxStartSizeHeight", MaxStartSize.Height);
 	out->addInt("MinParticlesPerSecond", MinParticlesPerSecond);
 	out->addInt("MaxParticlesPerSecond", MaxParticlesPerSecond);
 	out->addColor("MinStartColor", MinStartColor);
@@ -132,8 +132,8 @@ void CParticleRingEmitter::serializeAttributes(io::IAttributes* out, io::SAttrib
 void CParticleRingEmitter::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
 	Center = in->getAttributeAsVector3d("Center");
-	Radius = in->getAttributeAsFloat("Radius"); 
-	RingThickness = in->getAttributeAsFloat("RingThickness"); 
+	Radius = in->getAttributeAsFloat("Radius");
+	RingThickness = in->getAttributeAsFloat("RingThickness");
 
 	Direction = in->getAttributeAsVector3d("Direction");
 	if (Direction.getLength() == 0)

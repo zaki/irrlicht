@@ -36,7 +36,7 @@ public:
 		s32 spanEnd; // saves end of spans
 		f32 leftdeltaxf; // amount of pixels to increase on left side of triangle
 		f32 rightdeltaxf; // amount of pixels to increase on right side of triangle
-		s32 leftx, rightx; // position where we are 
+		s32 leftx, rightx; // position where we are
 		f32 leftxf, rightxf; // same as above, but as f32 values
 		s32 span; // current span
 		s32 leftTx, rightTx, leftTy, rightTy; // texture interpolating values
@@ -50,7 +50,7 @@ public:
 		lockedSurface = (u16*)RenderTarget->lock();
 		lockedZBuffer = ZBuffer->lock();
 		lockedTexture = (u16*)Texture->lock();
-		
+
 		for (s32 i=0; i<triangleCount; ++i)
 		{
 			v1 = &vertices[*indexList];
@@ -161,7 +161,7 @@ public:
 				if (spanEnd > ViewPortRect.LowerRightCorner.Y)
 					spanEnd = ViewPortRect.LowerRightCorner.Y;
 
-				// if the span <0, than we can skip these spans, 
+				// if the span <0, than we can skip these spans,
 				// and proceed to the next spans which are really on the screen.
 				if (span < ViewPortRect.UpperLeftCorner.Y)
 				{
@@ -173,7 +173,7 @@ public:
 					}
 					else
 					{
-						leftx = ViewPortRect.UpperLeftCorner.Y - span; 
+						leftx = ViewPortRect.UpperLeftCorner.Y - span;
 						span = ViewPortRect.UpperLeftCorner.Y;
 					}
 

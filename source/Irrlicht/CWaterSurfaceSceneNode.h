@@ -17,7 +17,7 @@ namespace scene
 	public:
 
 		//! constructor
-		CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength, 
+		CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength,
 			IMesh* mesh, ISceneNode* parent, ISceneManager* mgr,	s32 id,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),

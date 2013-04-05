@@ -46,7 +46,7 @@ IFileArchive* CArchiveLoaderWAD::createArchive(const io::path& filename, bool ig
 		archive = createArchive ( file, ignoreCase, ignorePaths );
 		file->drop ();
 	}
-	
+
 	return archive;
 }
 
@@ -143,7 +143,7 @@ CWADReader::~CWADReader()
 
 //! return the id of the file Archive
 const io::path& CWADReader::getArchiveName () const
-{ 
+{
 	return Base;
 }
 

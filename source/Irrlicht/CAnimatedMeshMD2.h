@@ -126,11 +126,11 @@ namespace scene
 		};
 
 		//! keyframe transformations
-		core::array<SKeyFrameTransform> FrameTransforms; 
+		core::array<SKeyFrameTransform> FrameTransforms;
 
 		//! keyframe vertex data
 		core::array<SMD2Vert> *FrameList;
-		
+
 		//! bounding boxes for each keyframe
 		core::array<core::aabbox3d<f32> > BoxList;
 

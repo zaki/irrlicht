@@ -31,7 +31,7 @@ public:
 
 	//! Prints out a text into the log
 	virtual void log(const wchar_t* text, ELOG_LEVEL ll=ELL_INFORMATION);
-	
+
 	//! Prints out a text into the log
 	virtual void log(const c8* text, const c8* hint, ELOG_LEVEL ll=ELL_INFORMATION);
 

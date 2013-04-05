@@ -9,11 +9,11 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 /*!
-	Interface for a class which is able to present an IImage 
+	Interface for a class which is able to present an IImage
 	an the Screen. Usually only implemented by an IrrDevice for
 	presenting Software Device Rendered images.
 

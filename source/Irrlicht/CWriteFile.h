@@ -41,7 +41,7 @@ namespace io
 		//! returns if file is open
 		bool isOpen() const;
 
-		//! creator method	
+		//! creator method
 		static IWriteFile* createWriteFile(const io::path& fileName, bool append);
 
 	private:

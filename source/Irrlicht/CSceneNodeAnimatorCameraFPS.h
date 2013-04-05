@@ -59,7 +59,7 @@ namespace scene
 		virtual void setKeyMap(SKeyMap *map, u32 count);
 
 		//! Sets the keyboard mapping for this animator
-		//!	\param keymap The new keymap array 
+		//!	\param keymap The new keymap array
 		virtual void setKeyMap(const core::array<SKeyMap>& keymap);
 
 		//! Gets the keyboard mapping for this animator

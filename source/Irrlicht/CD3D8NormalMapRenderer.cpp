@@ -13,13 +13,13 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 	// 1.1 Shaders with two lights and vertex based attenuation
 
 	// Irrlicht Engine D3D8 render path normal map vertex shader
-	const char D3D8_NORMAL_MAP_VSH[] = 
+	const char D3D8_NORMAL_MAP_VSH[] =
 		";Irrlicht Engine 0.8 D3D8 render path normal map vertex shader\n"\
 		"; c0-3: Transposed world matrix \n"\
 		"; c8-11: Transposed worldViewProj matrix (Projection * View * World) \n"\
@@ -82,7 +82,7 @@ namespace video
 		"\n";
 
 	// Irrlicht Engine D3D8 render path normal map pixel shader
-	const char D3D8_NORMAL_MAP_PSH[] = 
+	const char D3D8_NORMAL_MAP_PSH[] =
 		";Irrlicht Engine 0.8 D3D8 render path normal map pixel shader\n"\
 		";Input: \n"\
 		";t0: color map texture coord \n"\
@@ -107,12 +107,12 @@ namespace video
 		"mul r0, t0, r0             ; total luminance * base color\n"\
 		"mov r0.a, v0.a             ; write interpolated vertex alpha value \n"\
 		"\n"\
-		"";	
+		"";
 
 	CD3D8NormalMapRenderer::CD3D8NormalMapRenderer(
-		IDirect3DDevice8* d3ddev, video::IVideoDriver* driver, 
+		IDirect3DDevice8* d3ddev, video::IVideoDriver* driver,
 		s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
-		: CD3D8ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial), 
+		: CD3D8ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial),
 		CompiledShaders(true)
 	{
 
@@ -120,7 +120,7 @@ namespace video
 		setDebugName("CD3D8NormalMapRenderer");
 		#endif
 
-		// set this as callback. We could have done this in 
+		// set this as callback. We could have done this in
 		// the initialization list, but some compilers don't like it.
 
 		CallBack = this;
@@ -142,7 +142,7 @@ namespace video
 		video::IMaterialRenderer* renderer = driver->getMaterialRenderer(EMT_NORMAL_MAP_SOLID);
 		if (renderer)
 		{
-			// use the already compiled shaders 
+			// use the already compiled shaders
 			video::CD3D8NormalMapRenderer* nmr = (video::CD3D8NormalMapRenderer*)renderer;
 			CompiledShaders = false;
 
@@ -169,7 +169,7 @@ namespace video
 
 		if (!CompiledShaders)
 		{
-			// prevent this from deleting shaders we did not create 
+			// prevent this from deleting shaders we did not create
 			VertexShader = 0;
 			PixelShader = 0;
 		}
@@ -187,7 +187,7 @@ namespace video
 		return CD3D8ShaderMaterialRenderer::OnRender(service, vtxtype);
 	}
 
-	//! Returns the render capability of the material. 
+	//! Returns the render capability of the material.
 	s32 CD3D8NormalMapRenderer::getRenderCapability() const
 	{
 		if (Driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
@@ -220,7 +220,7 @@ namespace video
 
 		for (u32 i=0; i<2; ++i)
 		{
-			SLight light; 
+			SLight light;
 
 			if (i<cnt)
 				light = driver->getDynamicLight(i);
@@ -239,7 +239,7 @@ namespace video
 		f32 c95[] = {0.5f, 0.5f, 0.5f, 0.5f};
 		services->setVertexShaderConstant(c95, 95, 1);
 	}
-	
+
 
 } // end namespace video
 } // end namespace irr

@@ -48,8 +48,8 @@ namespace io
 
 	struct SWADFileHeader
 	{
-		c8 tag[4];			// type of WAD format WAD2 = quake2, WAD3 = halflife
-		u32 numlumps;		
+		c8 tag[4]; // type of WAD format WAD2 = quake2, WAD3 = halflife
+		u32 numlumps;
 		u32 infotableofs;
 	} PACK_STRUCT;
 
@@ -144,7 +144,7 @@ namespace io
 
 
 	private:
-		
+
 		io::path Type;
 
 		//! scans for a local header, returns false if there is no more local file header.

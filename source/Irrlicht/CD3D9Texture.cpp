@@ -722,7 +722,7 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 				memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/TextureSize.Width);
 				mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/TextureSize.Width;
 			}
-			
+
 			// unlock
 			mipSurface->UnlockRect();
 			// release

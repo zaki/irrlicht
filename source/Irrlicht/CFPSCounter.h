@@ -9,11 +9,11 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 
-class CFPSCounter  
+class CFPSCounter
 {
 public:
 	CFPSCounter();
@@ -50,5 +50,5 @@ private:
 } // end namespace irr
 
 
-#endif 
+#endif
 

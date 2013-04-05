@@ -7,7 +7,7 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 
@@ -60,7 +60,7 @@ void CFPSCounter::registerFrame(u32 now, u32 primitivesDrawn)
 	if (milliseconds >= 1500 )
 	{
 		const f32 invMilli = core::reciprocal ( (f32) milliseconds );
-		
+
 		FPS = core::ceil32 ( ( 1000 * FramesCounted ) * invMilli );
 		PrimitiveAverage = core::ceil32 ( ( 1000 * PrimitivesCounted ) * invMilli );
 

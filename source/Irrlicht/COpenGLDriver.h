@@ -473,7 +473,7 @@ namespace video
 		//! helper function doing the actual rendering.
 		void renderArray(const void* indexList, u32 primitiveCount,
 				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
-				
+
 		// Bridge calls.
 		COpenGLCallBridge* BridgeCalls;
 

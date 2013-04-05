@@ -1918,7 +1918,7 @@ public:
 
 		if ( Value )
 			return core::stringc(Value->getName().getPath().c_str());
-		
+
 		return core::stringc(0);
 	}
 

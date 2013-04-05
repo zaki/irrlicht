@@ -153,7 +153,7 @@ void COctreeTriangleSelector::getTrianglesFromOctree(
 	for (u32 i=0; i<cnt; ++i)
 	{
 		const core::triangle3df& srcTri = node->Triangles[i];
-		// This isn't an accurate test, but it's fast, and the 
+		// This isn't an accurate test, but it's fast, and the
 		// API contract doesn't guarantee complete accuracy.
 		if (srcTri.isTotalOutsideBox(box))
 			continue;

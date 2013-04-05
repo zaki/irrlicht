@@ -45,7 +45,7 @@ CIrrDeviceFB::CIrrDeviceFB(const SIrrlichtCreationParameters& params)
 	// print version, distribution etc.
 	// thx to LynxLuna for pointing me to the uname function
 	core::stringc linuxversion;
-	struct utsname FBInfo; 
+	struct utsname FBInfo;
 	uname(&FBInfo);
 
 	linuxversion += FBInfo.sysname;
@@ -116,10 +116,10 @@ bool CIrrDeviceFB::createWindow(const core::dimension2d<u32>& windowSize, u32 bi
 	if (ioctl(KeyboardDevice, KDSETMODE, KD_GRAPHICS) <0)
 		perror("Set keyboard mode");
 
-	Framebuffer=open("/dev/fb/0", O_RDWR); 
+	Framebuffer=open("/dev/fb/0", O_RDWR);
 	if (Framebuffer == -1)
 	{
-		Framebuffer=open("/dev/fb0", O_RDWR); 
+		Framebuffer=open("/dev/fb0", O_RDWR);
 		if (Framebuffer == -1)
 		{
 			perror("Open framebuffer");
@@ -197,7 +197,7 @@ void CIrrDeviceFB::createDriver()
 		os::Printer::log("No Software driver support compiled in.", ELL_WARNING);
 		#endif
 		break;
-		
+
 	case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		VideoDriver = video::createBurningVideoDriver(CreationParams, FileSystem, this);
@@ -236,7 +236,7 @@ bool CIrrDeviceFB::run()
 			irr::SEvent irrevent;
 			irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
 			irrevent.KeyInput.PressedDown = true;
-			
+
 			switch (ev.code)
 			{
 				case KEY_RIGHTCTRL:
@@ -289,7 +289,7 @@ void CIrrDeviceFB::yield()
 void CIrrDeviceFB::sleep(u32 timeMs, bool pauseTimer=false)
 {
 	bool wasStopped = Timer ? Timer->isStopped() : true;
-	
+
 	struct timespec ts;
 	ts.tv_sec = (time_t) (timeMs / 1000);
 	ts.tv_nsec = (long) (timeMs % 1000) * 1000000;

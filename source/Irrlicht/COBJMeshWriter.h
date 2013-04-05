@@ -31,7 +31,7 @@ namespace scene
 		//! Returns the type of the mesh writer
 		virtual EMESH_WRITER_TYPE getType() const;
 
-		//! writes a mesh 
+		//! writes a mesh
 		virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE);
 
 	protected:

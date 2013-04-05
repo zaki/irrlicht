@@ -773,7 +773,7 @@ void COgreMeshFileLoader::composeObject(void)
 			ISkinnedMesh::SJoint* joint = m->addJoint();
 			joint->Name=Skeleton.Bones[i].Name;
 
-			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched to getMatrix_transposed instead of getMatrix for downward compatibility. 
+			// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched to getMatrix_transposed instead of getMatrix for downward compatibility.
 			//								   Not tested so far if this was correct or wrong before quaternion fix!
 			Skeleton.Bones[i].Orientation.getMatrix_transposed(joint->LocalMatrix);
 
@@ -827,8 +827,8 @@ void COgreMeshFileLoader::composeObject(void)
 				ISkinnedMesh::SRotationKey* rotkey = m->addRotationKey(keyjoint);
 				rotkey->frame=frame.Time*25;
 
-				// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from keyjoint->LocalMatrix to keyjoint->LocalMatrix.getTransposed() for downward compatibility. 
-				//								   Not tested so far if this was correct or wrong before quaternion fix!
+				// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from keyjoint->LocalMatrix to keyjoint->LocalMatrix.getTransposed() for downward compatibility.
+				// Not tested so far if this was correct or wrong before quaternion fix!
 				rotkey->rotation=core::quaternion(keyjoint->LocalMatrix.getTransposed())*frame.Orientation;
 
 				ISkinnedMesh::SScaleKey* scalekey = m->addScaleKey(keyjoint);

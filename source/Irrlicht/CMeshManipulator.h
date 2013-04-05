@@ -41,7 +41,7 @@ public:
 	//! Creates a planar texture mapping on the mesh
 	/** \param mesh: Mesh on which the operation is performed.
 	\param resolution: resolution of the planar mapping. This is the value
-	specifying which is the relation between world space and 
+	specifying which is the relation between world space and
 	texture coordinate space. */
 	virtual void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution=0.001f) const;
 

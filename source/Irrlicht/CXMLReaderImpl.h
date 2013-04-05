@@ -265,9 +265,9 @@ private:
 	//! sets the state that text was found. Returns true if set should be set
 	bool setText(char_type* start, char_type* end)
 	{
-		// By default xml preserves all whitespace. But Irrlicht dropped some whitespace by default 
-		// in the past which did lead to OS dependent behavior. We just ignore all whitespace for now 
-		// as it's the closest to fixing behavior without breaking downward compatibility too much. 
+		// By default xml preserves all whitespace. But Irrlicht dropped some whitespace by default
+		// in the past which did lead to OS dependent behavior. We just ignore all whitespace for now
+		// as it's the closest to fixing behavior without breaking downward compatibility too much.
 		if ( IgnoreWhitespaceText )
 		{
 			char_type* p = start;
@@ -596,7 +596,7 @@ private:
 
 		// check source for all utf versions and convert to target data format
 
-		if (size >= 4 && data32[0] 
+		if (size >= 4 && data32[0]
 			== static_cast<char32>(UTF32_BE))
 		{
 			// UTF-32, big endian

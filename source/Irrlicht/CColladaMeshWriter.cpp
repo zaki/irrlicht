@@ -665,7 +665,7 @@ void CColladaMeshWriter::writeNodeCameras(irr::scene::ISceneNode * node)
 			irr::f32 xmag = 2.f/projMat[0];
 			irr::f32 ymag = 2.f/projMat[5];
 
-			// Note that Irrlicht camera does not update near/far when setting the projection matrix, 
+			// Note that Irrlicht camera does not update near/far when setting the projection matrix,
 			// so we have to calculate that here (at least currently - maybe camera code will be updated at some time).
 			irr::f32 nearMinusFar = -1.f/projMat[10];
 			irr::f32 zNear = projMat[14]*nearMinusFar;
@@ -755,7 +755,7 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 		// node to do that.
 
 		// Note: We can't use rotations for the camera as Irrlicht does not regard the up-vector in rotations so far.
-		// We could maybe use projection matrices, but avoiding them might allow us to get rid of some DummyTransformationSceneNodes on 
+		// We could maybe use projection matrices, but avoiding them might allow us to get rid of some DummyTransformationSceneNodes on
 		// import in the future. So that's why we use the lookat element instead.
 
 		ICameraSceneNode * camNode = static_cast<ICameraSceneNode*>(node);

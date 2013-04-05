@@ -12,7 +12,7 @@ namespace gui
 
 //! constructor
 CGUIImageList::CGUIImageList( video::IVideoDriver* driver )
- :	Driver( driver ), 
+ :	Driver( driver ),
 	Texture( 0 ),
 	ImageCount( 0 ),
 	ImageSize( 0, 0 ),
@@ -70,7 +70,7 @@ bool CGUIImageList::createImageList(video::ITexture* texture,
 }
 
 //! Draws an image and clips it to the specified rectangle if wanted
-void CGUIImageList::draw( s32 index, const core::position2d<s32>& destPos, 
+void CGUIImageList::draw( s32 index, const core::position2d<s32>& destPos,
 		const core::rect<s32>* clip /*= 0*/ )
 {
 	core::rect<s32> sourceRect;
@@ -85,7 +85,7 @@ void CGUIImageList::draw( s32 index, const core::position2d<s32>& destPos,
 	sourceRect.LowerRightCorner.X = sourceRect.UpperLeftCorner.X + ImageSize.Width;
 	sourceRect.LowerRightCorner.Y = sourceRect.UpperLeftCorner.Y + ImageSize.Height;
 
-	Driver->draw2DImage( Texture, destPos, sourceRect, clip, 
+	Driver->draw2DImage( Texture, destPos, sourceRect, clip,
 								video::SColor( 255, 255, 255, 255 ), UseAlphaChannel );
 }
 

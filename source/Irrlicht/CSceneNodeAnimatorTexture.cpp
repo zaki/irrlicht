@@ -12,7 +12,7 @@ namespace scene
 
 
 //! constructor
-CSceneNodeAnimatorTexture::CSceneNodeAnimatorTexture(const core::array<video::ITexture*>& textures, 
+CSceneNodeAnimatorTexture::CSceneNodeAnimatorTexture(const core::array<video::ITexture*>& textures,
 					 s32 timePerFrame, bool loop, u32 now)
 : ISceneNodeAnimatorFinishing(0),
 	TimePerFrame(timePerFrame), StartTime(now), Loop(loop)
@@ -128,7 +128,7 @@ void CSceneNodeAnimatorTexture::deserializeAttributes(io::IAttributes* in, io::S
 
 ISceneNodeAnimator* CSceneNodeAnimatorTexture::createClone(ISceneNode* node, ISceneManager* newManager)
 {
-	CSceneNodeAnimatorTexture * newAnimator = 
+	CSceneNodeAnimatorTexture * newAnimator =
 		new CSceneNodeAnimatorTexture(Textures, TimePerFrame, Loop, StartTime);
 
 	return newAnimator;
