@@ -247,26 +247,29 @@ namespace video
         //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
         virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates);
 
+		//! Get a vertex shader constant index.
+		virtual s32 getVertexShaderConstantID(const c8* name);
+
+		//! Get a pixel shader constant index.
+		virtual s32 getPixelShaderConstantID(const c8* name);
+
 		//! Sets a vertex shader constant.
 		virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount = 1);
 
 		//! Sets a pixel shader constant.
 		virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount = 1);
 
-		//! Sets a constant for the vertex shader based on a name.
-		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
-        
-		//! Int interface for the above.
-		virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
-        
-		//! Sets a constant for the pixel shader based on a name.
-		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
-        
-		//! Int interface for the above.
-		virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
+		//! Sets a constant for the vertex shader based on an index.
+		virtual bool setVertexShaderConstant(s32 index, const f32* floats, int count);
 
-		//! Sets a vertex pointer the vertex shader based on a name.
-		virtual bool setVertexShaderPointer(const c8* name, const void* pointer, s32 size = 3, bool normalized = false, u16 stride = 0);
+		//! Int interface for the above.
+		virtual bool setVertexShaderConstant(s32 index, const s32* ints, int count);
+
+		//! Sets a constant for the pixel shader based on an index.
+		virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count);
+
+		//! Int interface for the above.
+		virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count);
 
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, const video::ITexture* texture);

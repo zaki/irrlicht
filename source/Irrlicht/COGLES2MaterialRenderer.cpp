@@ -397,7 +397,7 @@ bool COGLES2MaterialRenderer::setPixelShaderConstant(s32 index, const f32* float
 			{
 				if(floats)
 				{
-					const GLint id = *floats;
+					const GLint id = (GLint)(*floats);
 					glUniform1iv(UniformInfo[index].location, 1, &id);
 				}
 				else
