@@ -70,9 +70,6 @@ public:
 	a vertex type other than EVT_TANGENTS. */
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) { return true; }
 
-	//! Called every time after an each bunch of geometry was drawed.
-	virtual bool PostRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) { return true; }
-
 	//! Called by the IVideoDriver to unset this material.
 	/** Called during the IVideoDriver::setMaterial() call before the new
 	material will get the OnSetMaterial() call. */

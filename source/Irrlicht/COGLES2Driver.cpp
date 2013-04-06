@@ -943,9 +943,6 @@ namespace video
 		setRenderStates3DMode();
 
 		drawVertexPrimitiveList2d3d(vertices, vertexCount, (const u16*)indexList, primitiveCount, vType, pType, iType);
-
-		if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
-			MaterialRenderers[Material.MaterialType].Renderer->PostRender(this, video::EVT_STANDARD);
 	}
 
 
