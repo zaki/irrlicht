@@ -188,36 +188,45 @@ namespace video
 		{
 			switch (feature)
 			{
-				case EVDF_RENDER_TO_TARGET:
-				case EVDF_HARDWARE_TL:
-				case EVDF_MULTITEXTURE:
-				case EVDF_BILINEAR_FILTER:
-				case EVDF_MIP_MAP:
-				case EVDF_MIP_MAP_AUTO_UPDATE:
-					return true;
-				case EVDF_STENCIL_BUFFER:
-					return StencilBuffer;
-				case EVDF_TEXTURE_NSQUARE:
-					return true; // non-square is always supported
-				case EVDF_ARB_GLSL:
-				case EVDF_TEXTURE_NPOT:
-				case EVDF_FRAMEBUFFER_OBJECT:
-				case EVDF_VERTEX_BUFFER_OBJECT:
-				case EVDF_ALPHA_TO_COVERAGE:
-				case EVDF_COLOR_MASK:
-				case EVDF_POLYGON_OFFSET:
-				case EVDF_BLEND_OPERATIONS:
-					return true;
-				case EVDF_MULTIPLE_RENDER_TARGETS:
-				case EVDF_MRT_BLEND:
-				case EVDF_MRT_COLOR_MASK:
-				case EVDF_MRT_BLEND_FUNC:
-				case EVDF_GEOMETRY_SHADER:
-				case EVDF_OCCLUSION_QUERY:
-					return false;
-				default:
-					return false;
-			}
+			case EVDF_RENDER_TO_TARGET:
+			case EVDF_HARDWARE_TL:
+			case EVDF_MULTITEXTURE:
+			case EVDF_BILINEAR_FILTER:
+			case EVDF_MIP_MAP:
+			case EVDF_MIP_MAP_AUTO_UPDATE:
+			case EVDF_VERTEX_SHADER_1_1:
+			case EVDF_PIXEL_SHADER_1_1:
+			case EVDF_PIXEL_SHADER_1_2:
+			case EVDF_PIXEL_SHADER_2_0:
+			case EVDF_VERTEX_SHADER_2_0:
+			case EVDF_ARB_GLSL:
+			case EVDF_TEXTURE_NSQUARE:
+			case EVDF_TEXTURE_NPOT:
+			case EVDF_FRAMEBUFFER_OBJECT:
+			case EVDF_VERTEX_BUFFER_OBJECT:
+			case EVDF_COLOR_MASK:
+			case EVDF_ALPHA_TO_COVERAGE:
+			case EVDF_POLYGON_OFFSET:
+			case EVDF_TEXTURE_MATRIX:
+				return true;
+			case EVDF_ARB_VERTEX_PROGRAM_1:
+			case EVDF_ARB_FRAGMENT_PROGRAM_1:
+			case EVDF_GEOMETRY_SHADER:
+			case EVDF_MULTIPLE_RENDER_TARGETS:
+			case EVDF_MRT_BLEND:
+			case EVDF_MRT_COLOR_MASK:
+			case EVDF_MRT_BLEND_FUNC:
+			case EVDF_OCCLUSION_QUERY:
+				return false;
+			case EVDF_BLEND_OPERATIONS:
+				return false;
+			case EVDF_TEXTURE_COMPRESSED_DXT:
+				return false; // NV Tegra need improvements here
+			case EVDF_STENCIL_BUFFER:
+				return StencilBuffer;
+			default:
+				return false;
+			};
 		}
 
 		void dump() const;

@@ -95,7 +95,7 @@ COGLES2MaterialRenderer::~COGLES2MaterialRenderer()
 		GLuint shaders[8];
 		GLint count;
 		glGetAttachedShaders(Program, 8, &count, shaders);
-		// avoid bugs in some drivers, which return larger numbers
+
 		count=core::min_(count,8);
 		for (GLint i=0; i<count; ++i)
 			glDeleteShader(shaders[i]);

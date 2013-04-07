@@ -2440,19 +2440,13 @@ namespace video
 	//! Sets a vertex shader constant.
 	void COGLES2Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 	{
-#ifdef GL_vertex_program
-		for (s32 i = 0; i < constantAmount; ++i)
-			glProgramLocalParameter4fv(GL_VERTEX_PROGRAM, startRegister + i, &data[i*4]);
-#endif
+		os::Printer::log("Error: Please call services->setVertexShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 	}
 
 	//! Sets a pixel shader constant.
 	void COGLES2Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 	{
-#ifdef GL_fragment_program
-		for (s32 i = 0; i < constantAmount; ++i)
-			glProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM, startRegister + i, &data[i*4]);
-#endif
+		os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 	}
 
 	//! Sets a constant for the vertex shader based on an index.

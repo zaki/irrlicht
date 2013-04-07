@@ -129,37 +129,37 @@ bool COGLES2FixedPipelineRenderer::OnRender(IMaterialRendererServices* service, 
 			break;
 		}
 
-		setPixelShaderConstant("uMaterialType", &materialType, 1);
+		IMaterialRendererServices::setPixelShaderConstant("uMaterialType", &materialType, 1);
 
 		/* Transform Matrices Upload */
 
 		core::matrix4 world = Driver->getTransform(ETS_WORLD);
-		setPixelShaderConstant("uWorldMatrix", world.pointer(), 16);
+		IMaterialRendererServices::setPixelShaderConstant("uWorldMatrix", world.pointer(), 16);
 
 		core::matrix4 worldViewProj = Driver->getTransform(video::ETS_PROJECTION);
 		worldViewProj *= Driver->getTransform(video::ETS_VIEW);
 		worldViewProj *= Driver->getTransform(ETS_WORLD);
-		setPixelShaderConstant("uMvpMatrix", worldViewProj.pointer(), 16);
+		IMaterialRendererServices::setPixelShaderConstant("uMvpMatrix", worldViewProj.pointer(), 16);
 
 		/* Textures Upload */
 
 		s32 TextureUsage0 = Driver->isActiveTexture(0);
 		s32 TextureUsage1 = Driver->isActiveTexture(1);
 
-		setPixelShaderConstant("uTextureUsage0", &TextureUsage0, 1);
-		setPixelShaderConstant("uTextureUsage1", &TextureUsage1, 1);
+		IMaterialRendererServices::setPixelShaderConstant("uTextureUsage0", &TextureUsage0, 1);
+		IMaterialRendererServices::setPixelShaderConstant("uTextureUsage1", &TextureUsage1, 1);
 
 		core::matrix4 textureMatrix0 = Driver->getTransform(video::ETS_TEXTURE_0);
 		core::matrix4 textureMatrix1 = Driver->getTransform(video::ETS_TEXTURE_0);
 
-		setPixelShaderConstant("uTextureMatrix0", textureMatrix0.pointer(), 16);
-		setPixelShaderConstant("uTextureMatrix1", textureMatrix1.pointer(), 16);
+		IMaterialRendererServices::setPixelShaderConstant("uTextureMatrix0", textureMatrix0.pointer(), 16);
+		IMaterialRendererServices::setPixelShaderConstant("uTextureMatrix1", textureMatrix1.pointer(), 16);
 
 		s32 TextureUnit0 = 0;
 		s32 TextureUnit1 = 1;
 
-		setPixelShaderConstant("uTextureUnit0", &TextureUnit0, 1);
-		setPixelShaderConstant("uTextureUnit1", &TextureUnit1, 1);
+		IMaterialRendererServices::setPixelShaderConstant("uTextureUnit0", &TextureUnit0, 1);
+		IMaterialRendererServices::setPixelShaderConstant("uTextureUnit1", &TextureUnit1, 1);
 
 		return true;
 	}

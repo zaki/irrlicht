@@ -79,28 +79,6 @@ public:
 	virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count);
 	virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count);
 
-	//! For compatybility with old irrlicht revisions.
-
-	bool setVertexShaderConstant(const c8* name, const f32* floats, int count)
-	{
-		return setVertexShaderConstant(getVertexShaderConstantID(name), floats, count);
-	}
-
-	bool setVertexShaderConstant(const c8* name, const s32* ints, int count)
-	{
-		return setVertexShaderConstant(getVertexShaderConstantID(name), ints, count);
-	}
-
-	bool setPixelShaderConstant(const c8* name, const f32* floats, int count)
-	{
-		return setPixelShaderConstant(getPixelShaderConstantID(name), floats, count);
-	}
-
-	bool setPixelShaderConstant(const c8* name, const s32* ints, int count)
-	{
-		return setPixelShaderConstant(getPixelShaderConstantID(name), ints, count);
-	}
-
 	virtual IVideoDriver* getVideoDriver();
 
 protected:
