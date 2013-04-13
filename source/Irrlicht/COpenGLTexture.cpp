@@ -445,30 +445,15 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 	if (!level && newTexture)
 	{
-		if (!IsCompressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		if (IsCompressed && !mipmapData)
 		{
-			if (!MipmapLegacyMode && AutomaticMipmapUpdate)
-			{
-				glEnable(GL_TEXTURE_2D);
-				Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
-			}
+			if (image->hasMipMaps())
+				mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
+			else
+				HasMipMaps = false;
 		}
-		else if(HasMipMaps)
-		{
-			// Either generate manually due to missing capability
-			// or use predefined mipmap data eg. for compressed textures
-			AutomaticMipmapUpdate=false;
 
-			if (IsCompressed && !mipmapData)
-			{
-				if (image->hasMipMaps())
-					mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
-				else
-					HasMipMaps = false;
-			}
-
-			regenerateMipMapLevels(mipmapData);
-		}
+		regenerateMipMapLevels(mipmapData);
 
 		if (HasMipMaps) // might have changed in regenerateMipMapLevels
 		{
@@ -686,12 +671,34 @@ bool COpenGLTexture::hasMipMaps() const
 //! modifying the texture
 void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 {
-	if (AutomaticMipmapUpdate || !HasMipMaps || !Image)
+	// texture require mipmaps?
+	if (!HasMipMaps)
 		return;
-	if (IsCompressed && !mipmapData)
+
+	// we don't use custom data for mipmaps.
+	if (!mipmapData)
+	{
+		// compressed textures require custom data for prepare mipmaps.
+		if (IsCompressed)
+			return;
+
+		// texture use legacy method for generate mipmaps?
+		if (AutomaticMipmapUpdate && MipmapLegacyMode)
+			return;
+
+		// hardware doesn't support generate mipmaps for certain texture but image data doesn't exist or is wrong.
+		if (!AutomaticMipmapUpdate && (!Image || (Image && ((Image->getDimension().Width==1) && (Image->getDimension().Height==1)))))
+			return;
+	}
+
+	// hardware moethods for generate mipmaps.
+	if (!mipmapData && AutomaticMipmapUpdate && !MipmapLegacyMode)
+	{
+		glEnable(GL_TEXTURE_2D);
+		Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
+
 		return;
-	if ((Image->getDimension().Width==1) && (Image->getDimension().Height==1))
-		return;
+	}
 
 	// Manually create mipmaps or use prepared version
 	u32 compressedDataSize = 0;
