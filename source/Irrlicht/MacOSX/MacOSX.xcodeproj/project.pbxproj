@@ -592,6 +592,8 @@
 		5E5484ED168A959900119951 /* CCgMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E5484EB168A959900119951 /* CCgMaterialRenderer.h */; };
 		5E5484F1168A95D500119951 /* COpenGLCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */; };
 		5E5484F2168A95D500119951 /* COpenGLCgMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E5484F0168A95D500119951 /* COpenGLCgMaterialRenderer.h */; };
+		5E5687451719AE69007C0D05 /* CImageLoaderDDS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5687431719AE69007C0D05 /* CImageLoaderDDS.cpp */; };
+		5E5687461719AE69007C0D05 /* CImageLoaderDDS.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E5687441719AE69007C0D05 /* CImageLoaderDDS.h */; };
 		95154774133CD9DA008D792F /* aabbox3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CFA7C0A0A88742800B03626 /* aabbox3d.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		95154775133CD9DA008D792F /* CMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0910B9FD0D1F64B300D46B04 /* CMeshBuffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		95154776133CD9DA008D792F /* coreutil.h in Headers */ = {isa = PBXBuildFile; fileRef = 0910B9FE0D1F64B300D46B04 /* coreutil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2093,6 +2095,8 @@
 		5E5484EB168A959900119951 /* CCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCgMaterialRenderer.h; sourceTree = "<group>"; };
 		5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLCgMaterialRenderer.cpp; sourceTree = "<group>"; };
 		5E5484F0168A95D500119951 /* COpenGLCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COpenGLCgMaterialRenderer.h; sourceTree = "<group>"; };
+		5E5687431719AE69007C0D05 /* CImageLoaderDDS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CImageLoaderDDS.cpp; sourceTree = "<group>"; };
+		5E5687441719AE69007C0D05 /* CImageLoaderDDS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CImageLoaderDDS.h; sourceTree = "<group>"; };
 		959726FD12C18FFC00BF73D3 /* IrrFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IrrFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		959726FE12C18FFC00BF73D3 /* irrFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "irrFramework-Info.plist"; sourceTree = "<group>"; };
 		95972B8312C19A5C00BF73D3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -3213,6 +3217,8 @@
 			children = (
 				4CFA7BDC0A88735900B03626 /* CImageLoaderBMP.cpp */,
 				4CFA7BDD0A88735900B03626 /* CImageLoaderBMP.h */,
+				5E5687431719AE69007C0D05 /* CImageLoaderDDS.cpp */,
+				5E5687441719AE69007C0D05 /* CImageLoaderDDS.h */,
 				4C53DF5C0A484C230014E966 /* CImageLoaderJPG.cpp */,
 				4C53DF5D0A484C230014E966 /* CImageLoaderJPG.h */,
 				4C53DF5E0A484C230014E966 /* CImageLoaderPCX.cpp */,
@@ -3223,8 +3229,8 @@
 				096840280D0F1A2300333EFD /* CImageLoaderPPM.h */,
 				4C53DF620A484C230014E966 /* CImageLoaderPSD.cpp */,
 				4C53DF630A484C230014E966 /* CImageLoaderPSD.h */,
-				34EF91D00F65FCA6000B5651 /* CImageLoaderRGB.h */,
 				34EF91D10F65FCA6000B5651 /* CImageLoaderRGB.cpp */,
+				34EF91D00F65FCA6000B5651 /* CImageLoaderRGB.h */,
 				4C53DF640A484C230014E966 /* CImageLoaderTGA.cpp */,
 				4C53DF650A484C230014E966 /* CImageLoaderTGA.h */,
 				0910B9DC0D1F5D4100D46B04 /* CImageLoaderWAL.cpp */,
@@ -3969,6 +3975,7 @@
 				5E5484F2168A95D500119951 /* COpenGLCgMaterialRenderer.h in Headers */,
 				5E25C81F16A83E4500320AA9 /* leakHunter.h in Headers */,
 				5E25C82316A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h in Headers */,
+				5E5687461719AE69007C0D05 /* CImageLoaderDDS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5389,6 +5396,7 @@
 				5E5484F1168A95D500119951 /* COpenGLCgMaterialRenderer.cpp in Sources */,
 				5E25C81C16A83DC700320AA9 /* leakHunter.cpp in Sources */,
 				5E25C82216A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp in Sources */,
+				5E5687451719AE69007C0D05 /* CImageLoaderDDS.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
