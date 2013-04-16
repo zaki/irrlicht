@@ -75,6 +75,9 @@ namespace irr
 
 		//! Restore the window to normal size if possible.
 		virtual void restoreWindow();
+        
+        //! Get the position of this window on screen
+		virtual core::position2di getWindowPosition();
 
 		//! De/activates the window. When not active no rendering takes place.
 		virtual void setWindowActive(bool);

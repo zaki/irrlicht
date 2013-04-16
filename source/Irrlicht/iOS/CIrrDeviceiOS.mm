@@ -838,6 +838,11 @@ namespace irr
     void CIrrDeviceIPhone::restoreWindow()
     {
     }
+    
+    core::position2di CIrrDeviceIPhone::getWindowPosition()
+    {
+        return core::position2di(0, 0);
+    }
 
     void CIrrDeviceIPhone::setWindowActive(bool active)
     {
