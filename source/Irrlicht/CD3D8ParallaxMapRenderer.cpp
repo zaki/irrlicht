@@ -13,12 +13,12 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 	// 1.1/1.4 Shaders with two lights and vertex based attenuation
 
 	// Irrlicht Engine D3D8 render path normal map vertex shader
-	const char D3D8_PARALLAX_MAP_VSH[] = 
+	const char D3D8_PARALLAX_MAP_VSH[] =
 		";Irrlicht Engine 0.10 D3D8 render path parallax mapping vertex shader\n"\
 		"; c0-3: Transposed world matrix \n"\
 		"; c4: Eye position \n"\
@@ -96,7 +96,7 @@ namespace video
 
 
 	// Irrlicht Engine D3D8 render path normal map pixel shader version 1.4
-	const char D3D8_PARALLAX_MAP_PSH[] = 
+	const char D3D8_PARALLAX_MAP_PSH[] =
 		";Irrlicht Engine 0.10 D3D8 render path parallax mapping pixel shader \n"\
 		";Input:  \n"\
 		";t0: color map texture coord  \n"\
@@ -144,9 +144,9 @@ namespace video
 
 
 	CD3D8ParallaxMapRenderer::CD3D8ParallaxMapRenderer(
-		IDirect3DDevice8* d3ddev, video::IVideoDriver* driver, 
+		IDirect3DDevice8* d3ddev, video::IVideoDriver* driver,
 		s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
-		: CD3D8ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial), 
+		: CD3D8ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial),
 		CompiledShaders(true), CurrentScale(0.0f)
 	{
 
@@ -154,7 +154,7 @@ namespace video
 		setDebugName("CD3D8ParallaxMapRenderer");
 		#endif
 
-		// set this as callback. We could have done this in 
+		// set this as callback. We could have done this in
 		// the initialization list, but some compilers don't like it.
 
 		CallBack = this;
@@ -176,7 +176,7 @@ namespace video
 		video::IMaterialRenderer* renderer = driver->getMaterialRenderer(EMT_PARALLAX_MAP_SOLID);
 		if (renderer)
 		{
-			// use the already compiled shaders 
+			// use the already compiled shaders
 			video::CD3D8ParallaxMapRenderer* nmr = (video::CD3D8ParallaxMapRenderer*)renderer;
 			CompiledShaders = false;
 
@@ -203,7 +203,7 @@ namespace video
 
 		if (!CompiledShaders)
 		{
-			// prevent this from deleting shaders we did not create 
+			// prevent this from deleting shaders we did not create
 			VertexShader = 0;
 			PixelShader = 0;
 		}
@@ -222,18 +222,18 @@ namespace video
 	}
 
 
-	void CD3D8ParallaxMapRenderer::OnSetMaterial(const video::SMaterial& material, 
+	void CD3D8ParallaxMapRenderer::OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services)
 	{
-		CD3D8ShaderMaterialRenderer::OnSetMaterial(material, lastMaterial, 
+		CD3D8ShaderMaterialRenderer::OnSetMaterial(material, lastMaterial,
 			resetAllRenderstates, services);
 
 		CurrentScale = material.MaterialTypeParam;
 	}
 
 
-	//! Returns the render capability of the material. 
+	//! Returns the render capability of the material.
 	s32 CD3D8ParallaxMapRenderer::getRenderCapability() const
 	{
 		if (Driver->queryFeature(video::EVDF_PIXEL_SHADER_1_4) &&
@@ -276,10 +276,10 @@ namespace video
 		// and set them as constants
 
 		const u32 cnt = driver->getDynamicLightCount();
-		
+
 		for (u32 i=0; i<2; ++i)
 		{
-			SLight light; 
+			SLight light;
 
 			if (i<cnt)
 				light = driver->getDynamicLight(i);
@@ -309,7 +309,7 @@ namespace video
 		f32 c6[] = {factor, factor, factor, 0};
 		services->setPixelShaderConstant(c6, 6, 1);
 	}
-	
+
 
 } // end namespace video
 } // end namespace irr

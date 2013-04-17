@@ -152,7 +152,7 @@ ISceneNode* CMetaTriangleSelector::getSceneNodeForTriangle(u32 triangleIndex) co
 }
 
 
-/* Return the number of TriangleSelectors that are inside this one, 
+/* Return the number of TriangleSelectors that are inside this one,
 Only useful for MetaTriangleSelector others return 1
 */
 u32 CMetaTriangleSelector::getSelectorCount() const

@@ -675,13 +675,15 @@ bool CIrrDeviceLinux::createWindow()
 	{
 		int x = 0;
 		int y = 0;
-	    
+
 		if (!CreationParams.Fullscreen)
-	    {
-	    	if (CreationParams.WindowPosition.X > 0) x = CreationParams.WindowPosition.X;
-	    	if (CreationParams.WindowPosition.Y > 0) y = CreationParams.WindowPosition.Y;
+		{
+			if (CreationParams.WindowPosition.X > 0)
+				x = CreationParams.WindowPosition.X;
+			if (CreationParams.WindowPosition.Y > 0)
+				y = CreationParams.WindowPosition.Y;
 		}
-	    
+
 		// create new Window
 		// Remove window manager decoration in fullscreen
 		attributes.override_redirect = CreationParams.Fullscreen;
@@ -691,7 +693,7 @@ bool CIrrDeviceLinux::createWindow()
 				InputOutput, visual->visual,
 				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
 				&attributes);
-		
+
 		XMapRaised(display, window);
 		CreationParams.WindowId = (void*)window;
 		Atom wmDelete;

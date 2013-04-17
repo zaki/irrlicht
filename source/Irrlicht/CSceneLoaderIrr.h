@@ -40,8 +40,9 @@ public:
 	virtual bool isALoadableFileFormat(io::IReadFile *file) const;
 
 	//! Loads the scene into the scene manager.
-	virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0,
-	                       ISceneNode* rootNode=0);
+	virtual bool loadScene(io::IReadFile* file,
+		ISceneUserDataSerializer* userDataSerializer=0,
+		ISceneNode* rootNode=0);
 
 private:
 

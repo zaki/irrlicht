@@ -139,8 +139,8 @@ namespace scene
 	} PACK_STRUCT;
 
 #ifndef ZONE_H
-	// NOTE: this was a void*, but that crashes on 64bit. 
-	// I have found no mdl format desc, so not sure what it's meant to be, but s32 at least works. 
+	// NOTE: this was a void*, but that crashes on 64bit.
+	// I have found no mdl format desc, so not sure what it's meant to be, but s32 at least works.
 	typedef s32 cache_user_t;	
 #endif
 
@@ -391,9 +391,9 @@ namespace scene
 		EAMT_STILL,
 		//! From Start to End, then Stop ( Limited Line )
 		EAMT_WAYPOINT,
-		//! Linear Cycling Animation	 ( Sawtooth )
+		//! Linear Cycling Animation ( Sawtooth )
 		EAMT_LOOPING,
-		//! Linear bobbing				 ( Triangle )
+		//! Linear bobbing ( Triangle )
 		EAMT_PINGPONG
 	};
 

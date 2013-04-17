@@ -30,7 +30,7 @@ namespace scene
 		virtual ~CAnimatedMeshMD3();
 
 		//! loads a quake3 md3 file
-		virtual bool loadModelFile(u32 modelIndex, io::IReadFile* file, 
+		virtual bool loadModelFile(u32 modelIndex, io::IReadFile* file,
 				io::IFileSystem* fs, video::IVideoDriver* driver);
 
 		// IAnimatedMeshMD3

@@ -13,13 +13,13 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 	// 1.1 Shaders with two lights and vertex based attenuation
 
 	// Irrlicht Engine D3D9 render path normal map vertex shader
-	const char D3D9_NORMAL_MAP_VSH[] = 
+	const char D3D9_NORMAL_MAP_VSH[] =
 		";Irrlicht Engine 0.8 D3D9 render path normal map vertex shader\n"\
 		"; c0-3: Transposed world matrix \n"\
 		"; c8-11: Transposed worldViewProj matrix (Projection * View * World) \n"\
@@ -82,7 +82,7 @@ namespace video
 		"\n";
 
 	// Irrlicht Engine D3D9 render path normal map pixel shader
-	const char D3D9_NORMAL_MAP_PSH_1_1[] = 
+	const char D3D9_NORMAL_MAP_PSH_1_1[] =
 		";Irrlicht Engine 0.8 D3D9 render path normal map pixel shader\n"\
 		";Input: \n"\
 		";t0: color map texture coord \n"\
@@ -108,10 +108,10 @@ namespace video
 		"+mov r0.a, v0.a             ; write interpolated vertex alpha value \n"\
 		"\n"\
 		"";
-		
+
 	// Higher-quality normal map pixel shader (requires PS 2.0)
 	// uses per-pixel normalization for improved accuracy
-	const char D3D9_NORMAL_MAP_PSH_2_0[] = 
+	const char D3D9_NORMAL_MAP_PSH_2_0[] =
 		";Irrlicht Engine 0.8 D3D9 render path normal map pixel shader\n"\
 		";Input: \n"\
 		";t0: color map texture coord \n"\
@@ -145,7 +145,7 @@ namespace video
 		"nrm r1, r4					; normalize the normal vector into r1\n"\
 		"nrm r2, r5					; normalize the light1 vector into r2\n"\
 		"nrm r3, r6					; normalize the light2 vector into r3\n"\
-		
+
 		"dp3 r2, r2, r1				; let r2 = normal DOT light 1 vector\n"\
 		"max r2, r2, c0				; clamp result to positive numbers\n"\
 		"mul r2, r2, v0             ; let r2 = luminance1 * light color 1 \n"\
@@ -164,15 +164,15 @@ namespace video
 		"";
 
 	CD3D9NormalMapRenderer::CD3D9NormalMapRenderer(
-		IDirect3DDevice9* d3ddev, video::IVideoDriver* driver, 
+		IDirect3DDevice9* d3ddev, video::IVideoDriver* driver,
 		s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
 		: CD3D9ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial)
 	{
 		#ifdef _DEBUG
 		setDebugName("CD3D9NormalMapRenderer");
 		#endif
-	
-		// set this as callback. We could have done this in 
+
+		// set this as callback. We could have done this in
 		// the initialization list, but some compilers don't like it.
 
 		CallBack = this;
@@ -195,7 +195,7 @@ namespace video
 		video::IMaterialRenderer* renderer = driver->getMaterialRenderer(EMT_NORMAL_MAP_SOLID);
 		if (renderer)
 		{
-			// use the already compiled shaders 
+			// use the already compiled shaders
 			video::CD3D9NormalMapRenderer* nmr = (video::CD3D9NormalMapRenderer*)renderer;
 			VertexShader = nmr->VertexShader;
 			if (VertexShader)
@@ -244,7 +244,7 @@ namespace video
 	}
 
 
-	//! Returns the render capability of the material. 
+	//! Returns the render capability of the material.
 	s32 CD3D9NormalMapRenderer::getRenderCapability() const
 	{
 		if (Driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
@@ -277,7 +277,7 @@ namespace video
 
 		for (u32 i=0; i<2; ++i)
 		{
-			SLight light; 
+			SLight light;
 
 			if (i<cnt)
 				light = driver->getDynamicLight(i);

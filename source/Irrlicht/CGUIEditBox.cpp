@@ -981,14 +981,14 @@ u32 CGUIEditBox::getMax() const
 	return Max;
 }
 
-//! Set the character used for the cursor. 
+//! Set the character used for the cursor.
 /** By default it's "_" */
 void CGUIEditBox::setCursorChar(const wchar_t cursorChar)
 {
 	CursorChar[0] = cursorChar;
 }
 
-//! Get the character used for the cursor. 
+//! Get the character used for the cursor.
 wchar_t CGUIEditBox::getCursorChar() const
 {
 	return CursorChar[0];

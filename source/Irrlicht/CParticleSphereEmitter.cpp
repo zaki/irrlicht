@@ -118,7 +118,7 @@ void CParticleSphereEmitter::serializeAttributes(io::IAttributes* out, io::SAttr
 	out->addFloat("MinStartSizeWidth", MinStartSize.Width);
 	out->addFloat("MinStartSizeHeight", MinStartSize.Height);
 	out->addFloat("MaxStartSizeWidth", MaxStartSize.Width);
-	out->addFloat("MaxStartSizeHeight", MaxStartSize.Height); 
+	out->addFloat("MaxStartSizeHeight", MaxStartSize.Height);
 	out->addInt("MinParticlesPerSecond", MinParticlesPerSecond);
 	out->addInt("MaxParticlesPerSecond", MaxParticlesPerSecond);
 	out->addColor("MinStartColor", MinStartColor);
@@ -150,7 +150,7 @@ void CParticleSphereEmitter::deserializeAttributes(io::IAttributes* in, io::SAtt
 		MaxStartSize.Width = in->getAttributeAsFloat(idx);
 	idx = in->findAttribute("MaxStartSizeHeight");
 	if ( idx >= 0 )
-		MaxStartSize.Height = in->getAttributeAsFloat(idx); 
+		MaxStartSize.Height = in->getAttributeAsFloat(idx);
 	MinParticlesPerSecond = in->getAttributeAsInt("MinParticlesPerSecond");
 	MaxParticlesPerSecond = in->getAttributeAsInt("MaxParticlesPerSecond");
 

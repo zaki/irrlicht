@@ -128,9 +128,8 @@ namespace gui
 		//! set global itemHeight
 		virtual void setItemHeight( s32 height );
 
-        //! Sets whether to draw the background
-        virtual void setDrawBackground(bool draw);
-
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw);
 
 	private:
 

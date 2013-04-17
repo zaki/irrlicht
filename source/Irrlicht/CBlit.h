@@ -465,7 +465,7 @@ static void RenderLine16_Blend(video::IImage *t,
 			d -= c;
 		}
 		run -= 1;
-	} 	while (run>=0);
+	} while (run>=0);
 
 	t->unlock();
 }
@@ -488,7 +488,7 @@ static void executeBlit_TextureCopy_x_to_x( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (u32*) ( (u8*) (job->src) + job->srcPitch*src_y );
-			
+
 			for ( u32 dx = 0; dx < w; ++dx )
 			{
 				const u32 src_x = (u32)(dx*wscale);
@@ -531,7 +531,7 @@ static void executeBlit_TextureCopy_32_to_16( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (u32*) ( (u8*) (job->src) + job->srcPitch*src_y );
-			
+
 			for ( u32 dx = 0; dx < w; ++dx )
 			{
 				const u32 src_x = (u32)(dx*wscale);
@@ -577,7 +577,7 @@ static void executeBlit_TextureCopy_24_to_16( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (u8*)(job->src) + job->srcPitch*src_y;
-			
+
 			for ( u32 dx = 0; dx < w; ++dx )
 			{
 				const u8* src_x = src+(u32)(dx*wscale);
@@ -622,7 +622,7 @@ static void executeBlit_TextureCopy_16_to_32( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (u16*) ( (u8*) (job->src) + job->srcPitch*src_y );
-			
+
 			for ( u32 dx = 0; dx < w; ++dx )
 			{
 				const u32 src_x = (u32)(dx*wscale);
@@ -662,7 +662,7 @@ static void executeBlit_TextureCopy_16_to_24( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (u16*) ( (u8*) (job->src) + job->srcPitch*src_y );
-			
+
 			for ( u32 dx = 0; dx < w; ++dx )
 			{
 				const u32 src_x = (u32)(dx*wscale);
@@ -712,7 +712,7 @@ static void executeBlit_TextureCopy_24_to_32( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (const u8*)job->src+(job->srcPitch*src_y);
-			
+
 			for ( u32 dx = 0; dx < w; ++dx )
 			{
 				const u8* s = src+(u32)(dx*wscale);
@@ -805,7 +805,7 @@ static void executeBlit_TextureBlend_16_to_16( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (u32*) ( (u8*) (job->src) + job->srcPitch*src_y );
-			
+
 			for ( u32 dx = 0; dx < rdx; ++dx )
 			{
 				const u32 src_x = (u32)(dx*wscale);
@@ -857,7 +857,7 @@ static void executeBlit_TextureBlend_32_to_32( const SBlitJob * job )
 		{
 			const u32 src_y = (u32)(dy*hscale);
 			src = (u32*) ( (u8*) (job->src) + job->srcPitch*src_y );
-			
+
 			for ( u32 dx = 0; dx < w; ++dx )
 			{
 				const u32 src_x = (u32)(dx*wscale);
@@ -1060,7 +1060,7 @@ static inline tExecuteBlit getBlitter2( eBlitter operation,const video::IImage *
 
 // bounce clipping to texture
 inline void setClip ( AbsRectangle &out, const core::rect<s32> *clip,
-					 const video::IImage * tex, s32 passnative )
+					const video::IImage * tex, s32 passnative )
 {
 	if ( clip && 0 == tex && passnative )
 	{
@@ -1228,7 +1228,7 @@ static void drawRectangle(video::IImage* img, const core::rect<s32>& rect, const
 
 //! draws a line from to with color
 static void drawLine(video::IImage* img, const core::position2d<s32>& from,
-					 const core::position2d<s32>& to, const video::SColor &color)
+					const core::position2d<s32>& to, const video::SColor &color)
 {
 	AbsRectangle clip;
 	GetClip(clip, img);

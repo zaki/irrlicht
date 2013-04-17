@@ -21,7 +21,7 @@ public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 	COSOperator(const core::stringc& osversion, CIrrDeviceLinux* device);
 #endif
- 	COSOperator(const core::stringc& osversion);
+	COSOperator(const core::stringc& osversion);
 
 	//! returns the current operation system version as string.
 	virtual const core::stringc& getOperatingSystemVersion() const;
@@ -49,7 +49,7 @@ private:
 	core::stringc OperatingSystem;
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-    CIrrDeviceLinux * IrrDeviceLinux;
+	CIrrDeviceLinux * IrrDeviceLinux;
 #endif
 
 };

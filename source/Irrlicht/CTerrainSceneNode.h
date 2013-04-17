@@ -258,10 +258,8 @@ namespace scene
 			core::aabbox3df	BoundingBox;
 			core::array<f64> LODDistanceThreshold;
 		};
-    
-    
-    virtual void preRenderCalculationsIfNeeded();
-    
+
+		virtual void preRenderCalculationsIfNeeded();
 		virtual void preRenderLODCalculations();
 		virtual void preRenderIndicesCalculations();
 

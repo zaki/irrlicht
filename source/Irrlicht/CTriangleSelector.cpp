@@ -216,7 +216,7 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 	const u32 cnt = Triangles.size();
 	for (u32 i=0; i<cnt; ++i)
 	{
-		// This isn't an accurate test, but it's fast, and the 
+		// This isn't an accurate test, but it's fast, and the
 		// API contract doesn't guarantee complete accuracy.
 		if (Triangles[i].isTotalOutsideBox(tBox))
 		   continue;

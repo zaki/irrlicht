@@ -75,7 +75,7 @@ void CSceneNodeAnimatorFlyCircle::deserializeAttributes(io::IAttributes* in, io:
 	Speed = in->getAttributeAsFloat("Speed");
 	Direction = in->getAttributeAsVector3d("Direction");
 	StartTime = 0;
-	
+
 	if (Direction.equals(core::vector3df(0,0,0)))
 		Direction.set(0,1,0); // irrlicht 1.1 backwards compatibility
 	else
@@ -88,7 +88,7 @@ void CSceneNodeAnimatorFlyCircle::deserializeAttributes(io::IAttributes* in, io:
 
 ISceneNodeAnimator* CSceneNodeAnimatorFlyCircle::createClone(ISceneNode* node, ISceneManager* newManager)
 {
-	CSceneNodeAnimatorFlyCircle * newAnimator = 
+	CSceneNodeAnimatorFlyCircle * newAnimator =
 		new CSceneNodeAnimatorFlyCircle(StartTime, Center, Radius, Speed, Direction, RadiusEllipsoid);
 
 	return newAnimator;

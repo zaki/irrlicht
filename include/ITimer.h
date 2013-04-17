@@ -51,7 +51,7 @@ public:
 		// Day of the year, from 1 to 366
 		u32 Yearday;
 		// Whether daylight saving is on
-		bool IsDST;		
+		bool IsDST;
 	};
 
 	virtual RealTimeDate getRealTimeAndDate() const = 0;

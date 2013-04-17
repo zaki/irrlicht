@@ -16,7 +16,7 @@ namespace gui
 {
 	class IGUIElement;
 	class IGUIEnvironment;
-	
+
 	//! This interface makes it possible to dynamically create gui elements.
 	class CDefaultGUIElementFactory : public IGUIElementFactory
 	{

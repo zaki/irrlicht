@@ -114,7 +114,6 @@ static inline void swap_xor ( s32 &a, s32 &b )
 */
 void CTRTextureWire2::renderLine ( const s4DVertex *a,const s4DVertex *b ) const
 {
-	
 	int pitch0 = RenderTarget->getDimension().Width << VIDEO_SAMPLE_GRANULARITY;
 	int pitch1 = RenderTarget->getDimension().Width << 2;
 

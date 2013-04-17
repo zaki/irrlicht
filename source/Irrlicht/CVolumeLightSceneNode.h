@@ -82,8 +82,10 @@ namespace scene
 		video::SColor FootColor;	// Color at the source
 		video::SColor TailColor;	// Color at the end.
 
-		core::vector3df LightDimensions; // LightDimensions.Y Distance of shooting -- Length of beams
-										 // LightDimensions.X and LightDimensions.Z determine the size/dimension of the plane
+		// LightDimensions.Y Distance of shooting -- Length of beams
+		// LightDimensions.X and LightDimensions.Z determine the
+		// size/dimension of the plane
+		core::vector3df LightDimensions;
 	};
 
 } // end namespace scene

@@ -34,13 +34,13 @@ namespace scene
 		//! Return which color from Irrlicht should be used for the color requested by collada
 		virtual irr::scene::E_COLLADA_IRR_COLOR getColorMapping(const irr::video::SMaterial & material, irr::scene::E_COLLADA_COLOR_SAMPLER cs) const;
 
-		//! Return custom colors for certain color types requested by collada. 
+		//! Return custom colors for certain color types requested by collada.
 		virtual irr::video::SColor getCustomColor(const irr::video::SMaterial & material, irr::scene::E_COLLADA_COLOR_SAMPLER cs) const;
 
 		//! Return the settings for transparence
 		virtual irr::scene::E_COLLADA_TRANSPARENT_FX getTransparentFx(const irr::video::SMaterial& material) const;
 
-		//! Transparency value for that material. 
+		//! Transparency value for that material.
 		virtual irr::f32 getTransparency(const irr::video::SMaterial& material) const;
 
 		//! Reflectivity value for that material
@@ -251,7 +251,7 @@ protected:
 	typedef core::map<ISceneNode*, irr::core::stringw>::Node CameraNode;
 	core::map<ISceneNode*, irr::core::stringw> CameraNodes;
 
-	// Check per name if stuff has been written already 
+	// Check per name if stuff has been written already
 	// TODO: second parameter not needed, we just don't have a core::set class yet in Irrlicht
 	core::map<irr::core::stringw, bool> MaterialsWritten;
 	core::map<irr::core::stringw, bool> EffectsWritten;
@@ -259,8 +259,8 @@ protected:
 	// Cache material names
 	struct MaterialName
 	{
-		MaterialName(const irr::video::SMaterial & material, const irr::core::stringw& name) 
-			: Material(material), Name(name) 
+		MaterialName(const irr::video::SMaterial & material, const irr::core::stringw& name)
+			: Material(material), Name(name)
 		{}
 		irr::video::SMaterial Material;
 		irr::core::stringw Name;

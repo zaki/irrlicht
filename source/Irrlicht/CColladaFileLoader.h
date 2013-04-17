@@ -136,7 +136,7 @@ struct SColladaEffect
 	core::array<core::stringc> Textures;
 	video::SMaterial Mat;
 	// TODO: Parameters looks somewhat lazy workaround, I think we should really read all parameters correct.
-	io::IAttributes * Parameters;	
+	io::IAttributes * Parameters;
 
 	inline bool operator< (const SColladaEffect & other) const
 	{

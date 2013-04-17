@@ -660,14 +660,14 @@ public:
 			ret.Normal.X = Count > 0 ? ValueF[0] : 0.0f;
 			ret.Normal.Y = Count > 1 ? ValueF[1] : 0.0f;
 			ret.Normal.Z = Count > 2 ? ValueF[2] : 0.0f;
-			ret.D		 = Count > 3 ? ValueF[3] : 0.0f;
+			ret.D        = Count > 3 ? ValueF[3] : 0.0f;
 		}
 		else
 		{
 			ret.Normal.X = Count > 0 ? (f32)ValueI[0] : 0.0f;
 			ret.Normal.Y = Count > 1 ? (f32)ValueI[1] : 0.0f;
 			ret.Normal.Z = Count > 2 ? (f32)ValueI[2] : 0.0f;
-			ret.D		 = Count > 3 ? (f32)ValueI[3] : 0.0f;
+			ret.D        = Count > 3 ? (f32)ValueI[3] : 0.0f;
 		}
 
 		return ret;
@@ -1918,7 +1918,7 @@ public:
 
 		if ( Value )
 			return core::stringc(Value->getName().getPath().c_str());
-		
+
 		return core::stringc(0);
 	}
 

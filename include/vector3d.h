@@ -60,7 +60,7 @@ namespace core
 		//! sort in order X, Y, Z. Equality with rounding tolerance.
 		bool operator<=(const vector3d<T>&other) const
 		{
-			return 	(X<other.X || core::equals(X, other.X)) ||
+			return (X<other.X || core::equals(X, other.X)) ||
 					(core::equals(X, other.X) && (Y<other.Y || core::equals(Y, other.Y))) ||
 					(core::equals(X, other.X) && core::equals(Y, other.Y) && (Z<other.Z || core::equals(Z, other.Z)));
 		}
@@ -68,7 +68,7 @@ namespace core
 		//! sort in order X, Y, Z. Equality with rounding tolerance.
 		bool operator>=(const vector3d<T>&other) const
 		{
-			return 	(X>other.X || core::equals(X, other.X)) ||
+			return (X>other.X || core::equals(X, other.X)) ||
 					(core::equals(X, other.X) && (Y>other.Y || core::equals(Y, other.Y))) ||
 					(core::equals(X, other.X) && core::equals(Y, other.Y) && (Z>other.Z || core::equals(Z, other.Z)));
 		}
@@ -76,7 +76,7 @@ namespace core
 		//! sort in order X, Y, Z. Difference must be above rounding tolerance.
 		bool operator<(const vector3d<T>&other) const
 		{
-			return 	(X<other.X && !core::equals(X, other.X)) ||
+			return (X<other.X && !core::equals(X, other.X)) ||
 					(core::equals(X, other.X) && Y<other.Y && !core::equals(Y, other.Y)) ||
 					(core::equals(X, other.X) && core::equals(Y, other.Y) && Z<other.Z && !core::equals(Z, other.Z));
 		}
@@ -84,7 +84,7 @@ namespace core
 		//! sort in order X, Y, Z. Difference must be above rounding tolerance.
 		bool operator>(const vector3d<T>&other) const
 		{
-			return 	(X>other.X && !core::equals(X, other.X)) ||
+			return (X>other.X && !core::equals(X, other.X)) ||
 					(core::equals(X, other.X) && Y>other.Y && !core::equals(Y, other.Y)) ||
 					(core::equals(X, other.X) && core::equals(Y, other.Y) && Z>other.Z && !core::equals(Z, other.Z));
 		}

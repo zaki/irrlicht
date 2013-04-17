@@ -18,7 +18,7 @@ namespace scene
 	public:
 
 		//! constructor
-		CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, 
+		CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& lookat = core::vector3df(0,0,100));
 
@@ -48,10 +48,10 @@ namespace scene
 		virtual const core::matrix4& getViewMatrixAffector() const;
 
 		//! It is possible to send mouse and key events to the camera. Most cameras
-		//! may ignore this input, but camera scene nodes which are created for 
+		//! may ignore this input, but camera scene nodes which are created for
 		//! example with scene::ISceneManager::addMayaCameraSceneNode or
 		//! scene::ISceneManager::addMeshViewerCameraSceneNode, may want to get this input
-		//! for changing their position, look at target or whatever. 
+		//! for changing their position, look at target or whatever.
 		virtual bool OnEvent(const SEvent& event);
 
 		//! Sets the look at target of the camera
@@ -156,9 +156,9 @@ namespace scene
 		core::vector3df Target;
 		core::vector3df UpVector;
 
-		f32 Fovy;	// Field of view, in radians. 
-		f32 Aspect;	// Aspect ratio. 
-		f32 ZNear;	// value of the near view-plane. 
+		f32 Fovy;	// Field of view, in radians.
+		f32 Aspect;	// Aspect ratio.
+		f32 ZNear;	// value of the near view-plane.
 		f32 ZFar;	// Z-value of the far view-plane.
 
 		SViewFrustum ViewArea;

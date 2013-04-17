@@ -795,7 +795,6 @@ REALINLINE void CBurningShader_Raster_Reference::scanline ()
 			pShader.i += 1;
 			if ( pShader.i > pShader.dx )
 				return;
-			
 		}
 	}
 
@@ -846,7 +845,6 @@ REALINLINE void CBurningShader_Raster_Reference::scanline ()
 	}
 
 }
-	
 
 
 void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c )
@@ -938,21 +936,21 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 
 		// correct to pixel center
 		scan.x[0] += scan.slopeX[0] * subPixel;
-		scan.x[1] += scan.slopeX[1] * subPixel;		
+		scan.x[1] += scan.slopeX[1] * subPixel;
 
 		scan.w[0] += scan.slopeW[0] * subPixel;
-		scan.w[1] += scan.slopeW[1] * subPixel;		
+		scan.w[1] += scan.slopeW[1] * subPixel;
 
 		for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 		{
 			scan.c[i][0] += scan.slopeC[i][0] * subPixel;
-			scan.c[i][1] += scan.slopeC[i][1] * subPixel;		
+			scan.c[i][1] += scan.slopeC[i][1] * subPixel;
 		}
 
 		for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 		{
 			scan.t[i][0] += scan.slopeT[i][0] * subPixel;
-			scan.t[i][1] += scan.slopeT[i][1] * subPixel;		
+			scan.t[i][1] += scan.slopeT[i][1] * subPixel;
 		}
 
 		// rasterize the edge scanlines
@@ -1053,21 +1051,21 @@ void CBurningShader_Raster_Reference::drawTriangle ( const s4DVertex *a,const s4
 
 		// correct to pixel center
 		scan.x[0] += scan.slopeX[0] * subPixel;
-		scan.x[1] += scan.slopeX[1] * subPixel;		
+		scan.x[1] += scan.slopeX[1] * subPixel;
 
 		scan.w[0] += scan.slopeW[0] * subPixel;
-		scan.w[1] += scan.slopeW[1] * subPixel;		
+		scan.w[1] += scan.slopeW[1] * subPixel;
 
 		for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 		{
 			scan.c[i][0] += scan.slopeC[i][0] * subPixel;
-			scan.c[i][1] += scan.slopeC[i][1] * subPixel;		
+			scan.c[i][1] += scan.slopeC[i][1] * subPixel;
 		}
 
 		for ( i = 0; i != ShaderParam.TextureUnits; ++i )
 		{
 			scan.t[i][0] += scan.slopeT[i][0] * subPixel;
-			scan.t[i][1] += scan.slopeT[i][1] * subPixel;		
+			scan.t[i][1] += scan.slopeT[i][1] * subPixel;
 		}
 
 		// rasterize the edge scanlines

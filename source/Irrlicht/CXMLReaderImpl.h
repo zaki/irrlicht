@@ -265,9 +265,9 @@ private:
 	//! sets the state that text was found. Returns true if set should be set
 	bool setText(char_type* start, char_type* end)
 	{
-		// By default xml preserves all whitespace. But Irrlicht dropped some whitespace by default 
-		// in the past which did lead to OS dependent behavior. We just ignore all whitespace for now 
-		// as it's the closest to fixing behavior without breaking downward compatibility too much. 
+		// By default xml preserves all whitespace. But Irrlicht dropped some whitespace by default
+		// in the past which did lead to OS dependent behavior. We just ignore all whitespace for now
+		// as it's the closest to fixing behavior without breaking downward compatibility too much.
 		if ( IgnoreWhitespaceText )
 		{
 			char_type* p = start;
@@ -467,8 +467,8 @@ private:
 		while(*P && !cDataEnd)
 		{
 			if (*P == L'>' &&
-			   (*(P-1) == L']') &&
-			   (*(P-2) == L']'))
+				(*(P-1) == L']') &&
+				(*(P-2) == L']'))
 			{
 				cDataEnd = P - 2;
 			}
@@ -566,8 +566,9 @@ private:
 		long size = callback->getSize();
 		if (size<0)
 			return false;
-		size += 4; // We need four terminating 0's at the end.
-		           // For ASCII we need 1 0's, for UTF-16 2, for UTF-32 4.
+		// We need four terminating 0's at the end.
+		// For ASCII we need 1 0's, for UTF-16 2, for UTF-32 4.
+		size += 4;
 
 		char* data8 = new char[size];
 
@@ -595,7 +596,7 @@ private:
 
 		// check source for all utf versions and convert to target data format
 
-		if (size >= 4 && data32[0] 
+		if (size >= 4 && data32[0]
 			== static_cast<char32>(UTF32_BE))
 		{
 			// UTF-32, big endian
@@ -704,9 +705,9 @@ private:
 			while(*t)
 			{
 				*t = ((*t & 0xff000000) >> 24) |
-				     ((*t & 0x00ff0000) >> 8)  |
-				     ((*t & 0x0000ff00) << 8)  |
-				     ((*t & 0x000000ff) << 24);
+					((*t & 0x00ff0000) >> 8)  |
+					((*t & 0x0000ff00) << 8)  |
+					((*t & 0x000000ff) << 24);
 				++t;
 			}
 		}
@@ -726,9 +727,9 @@ private:
 	inline bool isLittleEndian(ETEXT_FORMAT f)
 	{
 		return f == ETF_ASCII ||
-		       f == ETF_UTF8 ||
-		       f == ETF_UTF16_LE ||
-		       f == ETF_UTF32_LE;
+			f == ETF_UTF8 ||
+			f == ETF_UTF16_LE ||
+			f == ETF_UTF32_LE;
 	}
 
 
@@ -793,7 +794,7 @@ private:
 
 
 	// instance variables:
-	bool IgnoreWhitespaceText;	 // do not return EXN_TEXT nodes for pure whitespace
+	bool IgnoreWhitespaceText;   // do not return EXN_TEXT nodes for pure whitespace
 	char_type* TextData;         // data block of the text file
 	char_type* P;                // current point in text to parse
 	char_type* TextBegin;        // start of text to parse

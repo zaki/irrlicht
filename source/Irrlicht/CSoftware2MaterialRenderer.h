@@ -12,7 +12,7 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 //! Base class for all internal Software2 material renderers
@@ -38,10 +38,10 @@ public:
 	CSoftware2MaterialRenderer_SOLID ( video::CBurningVideoDriver* driver )
 		:CSoftware2MaterialRenderer ( driver ) {}
 
-	//! Returns if the material is transparent. 
+	//! Returns if the material is transparent.
 	virtual bool isTransparent() const
 	{
-		return false; 
+		return false;
 	}
 
 };
@@ -56,10 +56,10 @@ public:
 		: CSoftware2MaterialRenderer ( driver ) {}
 
 
-	//! Returns if the material is transparent. 
+	//! Returns if the material is transparent.
 	virtual bool isTransparent() const
 	{
-		return true; 
+		return true;
 	}
 
 };

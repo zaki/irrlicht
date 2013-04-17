@@ -13,40 +13,40 @@
 namespace irr
 {
 	class IReferenceCounted;
-	
+
 	//! A calls helping to find unrelease objects of type IReferenceCounted.
 	/** To use this you have recompile Irrlicht with _IRR_COMPILE_WITH_LEAK_HUNTER_.
-		Note that this will slow down your application and should only be used for debugging. 
+		Note that this will slow down your application and should only be used for debugging.
 		The way to use is that you can check after you closed and dropped your last Irrlicht device
 		if there are still any IReferenceCounted left over which have not been deleted.
 	*/
-	class LeakHunter 
+	class LeakHunter
 	{
 		public:
 			friend class IReferenceCounted;
-			
+
 			//! Clear all IReferenceCounted objects inside LeakHunter
-			/** This does not affect the IReferenceCounted themselfes only the 
-				counting of them. Usually you don't ever need to clear, but 
-				sometimes it helps when for example you want for to ignore 
+			/** This does not affect the IReferenceCounted themselfes only the
+				counting of them. Usually you don't ever need to clear, but
+				sometimes it helps when for example you want for to ignore
 				certain leaks.
 			*/
-			static void clearReferenceCountedObjects() 
+			static void clearReferenceCountedObjects()
 			{
 				ReferenceCountedObjects.clear();
 			}
-			
+
 			static inline irr::core::array<const IReferenceCounted*> getReferenceCountedObjects()
 			{
-				return ReferenceCountedObjects; 
+				return ReferenceCountedObjects;
 			}
-			
-		protected:			
+
+		protected:
 			static inline void addObject(const IReferenceCounted* object)
 			{
 				ReferenceCountedObjects.push_back(object);
 			}
-			
+
 			static inline void removeObject(const IReferenceCounted* object)
 			{
 				irr::s32 idx = ReferenceCountedObjects.linear_search(object );
@@ -56,10 +56,10 @@ namespace irr
 					ReferenceCountedObjects.erase( ReferenceCountedObjects.size()-1 );
 				}
 			}
-		
+
 		private:
 			// NOTE: We don't do additional grab()/drop()'s here as we want to supervise reference counted objects and not affect them otherwise.
-			IRRLICHT_API static irr::core::array<const IReferenceCounted*> ReferenceCountedObjects; 
+			IRRLICHT_API static irr::core::array<const IReferenceCounted*> ReferenceCountedObjects;
 	};
 } // end namespace irr
 

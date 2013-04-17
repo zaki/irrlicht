@@ -21,7 +21,7 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool noclip)
 : IGUIButton(environment, parent, id, rectangle),
 	SpriteBank(0), OverrideFont(0), Image(0), PressedImage(0),
-	ClickTime(0), HoverTime(0), FocusTime(0), 
+	ClickTime(0), HoverTime(0), FocusTime(0),
 	IsPushButton(false), Pressed(false),
 	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false)
 {
@@ -161,7 +161,7 @@ bool CGUIButton::OnEvent(const SEvent& event)
 			}
 			else if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
 			{
-				FocusTime = os::Timer::getTime();				
+				FocusTime = os::Timer::getTime();
 			}
 			else if (event.GUIEvent.EventType == EGET_ELEMENT_HOVERED || event.GUIEvent.EventType == EGET_ELEMENT_LEFT)
 			{

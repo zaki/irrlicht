@@ -11,7 +11,7 @@
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 #if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #include "irrMath.h"    // needed by borland for sqrtf define
-#endif 
+#endif
 #include <d3d9.h>
 
 #include "CD3D9ShaderMaterialRenderer.h"

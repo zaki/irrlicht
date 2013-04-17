@@ -243,13 +243,13 @@ void CTRTextureGouraudAlpha2::scanline_bilinear ()
 
 		inversew = fix_inverse32 ( line.w[0] );
 
-		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x,inversew), 
+		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x,inversew),
 											d + tofix ( line.t[0][0].y,inversew)
 											);
 
 #else
 
-		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x), 
+		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x),
 											d + tofix ( line.t[0][0].y)
 											);
 
@@ -273,13 +273,13 @@ void CTRTextureGouraudAlpha2::scanline_bilinear ()
 
 #ifdef INVERSE_W
 		inversew = fix_inverse32 ( line.w[0] );
-		getSample_texture ( a0,r0,g0,b0, 
+		getSample_texture ( a0,r0,g0,b0,
 							&IT[0],
 							tofix ( line.t[0][0].x,inversew),
 							tofix ( line.t[0][0].y,inversew)
 						);
 #else
-		getSample_texture ( a0,r0,g0,b0, 
+		getSample_texture ( a0,r0,g0,b0,
 							&IT[0],
 							tofix ( line.t[0][0].x),
 							tofix ( line.t[0][0].y)
@@ -313,7 +313,7 @@ void CTRTextureGouraudAlpha2::scanline_bilinear ()
 			dst[i] = fix4_to_color ( a0, r2, g2, b2 );
 
 /*
-			dst[i] = PixelBlend32 ( dst[i], 
+			dst[i] = PixelBlend32 ( dst[i],
 									fix_to_color ( r0,g0, b0 ),
 									fixPointu_to_u32 ( a0 )
 								);
@@ -459,31 +459,31 @@ void CTRTextureGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex 
 
 		// correct to pixel center
 		scan.x[0] += scan.slopeX[0] * subPixel;
-		scan.x[1] += scan.slopeX[1] * subPixel;		
+		scan.x[1] += scan.slopeX[1] * subPixel;
 
 #ifdef IPOL_Z
 		scan.z[0] += scan.slopeZ[0] * subPixel;
-		scan.z[1] += scan.slopeZ[1] * subPixel;		
+		scan.z[1] += scan.slopeZ[1] * subPixel;
 #endif
 
 #ifdef IPOL_W
 		scan.w[0] += scan.slopeW[0] * subPixel;
-		scan.w[1] += scan.slopeW[1] * subPixel;		
+		scan.w[1] += scan.slopeW[1] * subPixel;
 #endif
 
 #ifdef IPOL_C0
 		scan.c[0][0] += scan.slopeC[0][0] * subPixel;
-		scan.c[0][1] += scan.slopeC[0][1] * subPixel;		
+		scan.c[0][1] += scan.slopeC[0][1] * subPixel;
 #endif
 
 #ifdef IPOL_T0
 		scan.t[0][0] += scan.slopeT[0][0] * subPixel;
-		scan.t[0][1] += scan.slopeT[0][1] * subPixel;		
+		scan.t[0][1] += scan.slopeT[0][1] * subPixel;
 #endif
 
 #ifdef IPOL_T1
 		scan.t[1][0] += scan.slopeT[1][0] * subPixel;
-		scan.t[1][1] += scan.slopeT[1][1] * subPixel;		
+		scan.t[1][1] += scan.slopeT[1][1] * subPixel;
 #endif
 
 #endif
@@ -619,31 +619,31 @@ void CTRTextureGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex 
 
 		// correct to pixel center
 		scan.x[0] += scan.slopeX[0] * subPixel;
-		scan.x[1] += scan.slopeX[1] * subPixel;		
+		scan.x[1] += scan.slopeX[1] * subPixel;
 
 #ifdef IPOL_Z
 		scan.z[0] += scan.slopeZ[0] * subPixel;
-		scan.z[1] += scan.slopeZ[1] * subPixel;		
+		scan.z[1] += scan.slopeZ[1] * subPixel;
 #endif
 
 #ifdef IPOL_W
 		scan.w[0] += scan.slopeW[0] * subPixel;
-		scan.w[1] += scan.slopeW[1] * subPixel;		
+		scan.w[1] += scan.slopeW[1] * subPixel;
 #endif
 
 #ifdef IPOL_C0
 		scan.c[0][0] += scan.slopeC[0][0] * subPixel;
-		scan.c[0][1] += scan.slopeC[0][1] * subPixel;		
+		scan.c[0][1] += scan.slopeC[0][1] * subPixel;
 #endif
 
 #ifdef IPOL_T0
 		scan.t[0][0] += scan.slopeT[0][0] * subPixel;
-		scan.t[0][1] += scan.slopeT[0][1] * subPixel;		
+		scan.t[0][1] += scan.slopeT[0][1] * subPixel;
 #endif
 
 #ifdef IPOL_T1
 		scan.t[1][0] += scan.slopeT[1][0] * subPixel;
-		scan.t[1][1] += scan.slopeT[1][1] * subPixel;		
+		scan.t[1][1] += scan.slopeT[1][1] * subPixel;
 #endif
 
 #endif

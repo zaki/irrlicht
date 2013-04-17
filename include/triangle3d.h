@@ -93,8 +93,8 @@ namespace core
 			vector3d<f64> cf64((f64)pointC.X, (f64)pointC.Y, (f64)pointC.Z);
 			vector3d<f64> pf64((f64)p.X, (f64)p.Y, (f64)p.Z);
 			return (isOnSameSide(pf64, af64, bf64, cf64) &&
- 				isOnSameSide(pf64, bf64, af64, cf64) &&
- 				isOnSameSide(pf64, cf64, af64, bf64));
+				isOnSameSide(pf64, bf64, af64, cf64) &&
+				isOnSameSide(pf64, cf64, af64, bf64));
 		}
 
 		//! Check if a point is inside the triangle (border-points count also as inside)
@@ -254,9 +254,9 @@ namespace core
 				// This catches some floating point troubles.
 				// Unfortunately slightly expensive and we don't really know the best epsilon for iszero.
 				vector3d<f64> cp1 = bminusa.normalize().crossProduct((p1 - a).normalize());
-				if ( 	core::iszero(cp1.X, (f64)ROUNDING_ERROR_f32)
-					&& 	core::iszero(cp1.Y, (f64)ROUNDING_ERROR_f32)
-					&& 	core::iszero(cp1.Z, (f64)ROUNDING_ERROR_f32) )
+				if (core::iszero(cp1.X, (f64)ROUNDING_ERROR_f32)
+					&& core::iszero(cp1.Y, (f64)ROUNDING_ERROR_f32)
+					&& core::iszero(cp1.Z, (f64)ROUNDING_ERROR_f32) )
 				{
 					res = 0.f;
 				}

@@ -17,8 +17,8 @@ namespace scene
 {
 	class ISceneNodeAnimator;
 	class ISceneManager;
-	
-	//!	Interface making it possible to dynamicly create scene nodes animators 
+
+	//! Interface making it possible to dynamicly create scene nodes animators
 	class CDefaultSceneNodeAnimatorFactory : public ISceneNodeAnimatorFactory
 	{
 	public:
@@ -49,13 +49,13 @@ namespace scene
 		getCreatableSceneNodeTypeCount() */
 		virtual ESCENE_NODE_ANIMATOR_TYPE getCreateableSceneNodeAnimatorType(u32 idx) const;
 
-		//! returns type name of a createable scene node animator type 
+		//! returns type name of a createable scene node animator type
 		/** \param idx: Index of scene node animator type in this factory. Must be a value between 0 and
 		getCreatableSceneNodeAnimatorTypeCount() */
 		virtual const c8* getCreateableSceneNodeAnimatorTypeName(u32 idx) const;
 
-		//! returns type name of a createable scene node animator type 
-		/** \param type: Type of scene node animator. 
+		//! returns type name of a createable scene node animator type
+		/** \param type: Type of scene node animator.
 		\return: Returns name of scene node animator type if this factory can create the type, otherwise 0. */
 		virtual const c8* getCreateableSceneNodeAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const;
 

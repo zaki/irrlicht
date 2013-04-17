@@ -39,7 +39,7 @@ void CSceneNodeAnimatorRotation::animateNode(ISceneNode* node, u32 timeMs)
 			if (rot.Z>360.f)
 				rot.Z=fmodf(rot.Z, 360.f);
 			node->setRotation(rot);
-			StartTime=timeMs; 
+			StartTime=timeMs;
 		}
 	}
 }
@@ -61,7 +61,7 @@ void CSceneNodeAnimatorRotation::deserializeAttributes(io::IAttributes* in, io::
 
 ISceneNodeAnimator* CSceneNodeAnimatorRotation::createClone(ISceneNode* node, ISceneManager* newManager)
 {
-	CSceneNodeAnimatorRotation * newAnimator = 
+	CSceneNodeAnimatorRotation * newAnimator =
 		new CSceneNodeAnimatorRotation(StartTime, Rotation);
 
 	return newAnimator;

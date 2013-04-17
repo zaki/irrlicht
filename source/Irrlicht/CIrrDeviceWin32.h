@@ -140,17 +140,31 @@ namespace irr
 				BOOL gotCursorInfo = GetCursorInfo(&info);
 				while ( gotCursorInfo )
 				{
-					if ( (visible && info.flags == CURSOR_SHOWING) 	// visible
-						|| (!visible && info.flags == 0 ) )			// hidden
+#ifdef CURSOR_SUPPRESSED
+					// new flag for Windows 8, where cursor
+					// might be suppressed for touch interface
+					if (info.flags == CURSOR_SUPPRESSED)
+					{
+						visible=false;
+						break;
+					}
+#endif
+					if ( (visible && info.flags == CURSOR_SHOWING) || // visible
+						(!visible && info.flags == 0 ) ) // hidden
 					{
 						break;
 					}
-					int showResult = ShowCursor(visible);   // this only increases an internal display counter in windows, so it might have to be called some more
-					if ( showResult < 0 )
-					{
+					// this only increases an internal
+					// display counter in windows, so it
+					// might have to be called some more
+					const int showResult = ShowCursor(visible);
+					// if result has correct sign we can
+					// stop here as well
+					if (( !visible && showResult < 0 ) ||
+						(visible && showResult >= 0))
 						break;
-					}
-					info.cbSize = sizeof(CURSORINFO);	// yes, it really must be set each time
+					// yes, it really must be set each time
+					info.cbSize = sizeof(CURSORINFO);
 					gotCursorInfo = GetCursorInfo(&info);
 				}
 				IsVisible = visible;
@@ -190,7 +204,7 @@ namespace irr
 				if (UseReferenceRect)
 				{
 					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x,
-								 ReferenceRect.UpperLeftCorner.Y + y);
+								ReferenceRect.UpperLeftCorner.Y + y);
 				}
 				else
 				{
@@ -263,23 +277,23 @@ namespace irr
 			/** Used to notify the cursor that the window resizable settings changed. */
 			void updateBorderSize(bool fullscreen, bool resizable)
 			{
-			   if (!fullscreen)
-			   {
-				  if (resizable)
-				  {
-					 BorderX = GetSystemMetrics(SM_CXSIZEFRAME);
-					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME);
-				  }
-				  else
-				  {
-					 BorderX = GetSystemMetrics(SM_CXDLGFRAME);
-					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME);
-				  }
-			   }
-			   else
-			   {
-				  BorderX = BorderY = 0;
-			   }
+				if (!fullscreen)
+				{
+					if (resizable)
+					{
+						BorderX = GetSystemMetrics(SM_CXSIZEFRAME);
+						BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME);
+					}
+					else
+					{
+						BorderX = GetSystemMetrics(SM_CXDLGFRAME);
+						BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME);
+					}
+				}
+				else
+				{
+					BorderX = BorderY = 0;
+				}
 			}
 
 
@@ -298,10 +312,10 @@ namespace irr
 			//! replace the given cursor icon.
 			virtual void changeIcon(gui::ECURSOR_ICON iconId, const gui::SCursorSprite& icon);
 
-            //! Return a system-specific size which is supported for cursors. Larger icons will fail, smaller icons might work.
+			//! Return a system-specific size which is supported for cursors. Larger icons will fail, smaller icons might work.
 			virtual core::dimension2di getSupportedIconSize() const;
 
-            void update();
+			void update();
 
 		private:
 
@@ -339,7 +353,7 @@ namespace irr
 				}
 			}
 
-            CIrrDeviceWin32* Device;
+			CIrrDeviceWin32* Device;
 			core::position2d<s32> CursorPos;
 			core::dimension2d<u32> WindowSize;
 			core::dimension2d<f32> InvWindowSize;

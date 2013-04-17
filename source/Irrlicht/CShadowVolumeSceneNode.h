@@ -18,8 +18,8 @@ namespace scene
 	public:
 
 		//! constructor
-		CShadowVolumeSceneNode(const IMesh* shadowMesh, ISceneNode* parent, ISceneManager* mgr, 
-			s32 id,  bool zfailmethod=true, f32 infinity=10000.0f);
+		CShadowVolumeSceneNode(const IMesh* shadowMesh, ISceneNode* parent, ISceneManager* mgr,
+			s32 id, bool zfailmethod=true, f32 infinity=10000.0f);
 
 		//! destructor
 		virtual ~CShadowVolumeSceneNode();

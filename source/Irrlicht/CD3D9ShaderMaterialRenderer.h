@@ -68,7 +68,7 @@ protected:
 					LPD3DXBUFFER* ppErrorMsgs);
 
 	HRESULT stubD3DXAssembleShaderFromFile(LPCSTR pSrcFile,
-				        CONST D3DXMACRO* pDefines, LPD3DXINCLUDE  pInclude, DWORD Flags,
+					CONST D3DXMACRO* pDefines, LPD3DXINCLUDE  pInclude, DWORD Flags,
 					LPD3DXBUFFER* ppShader, LPD3DXBUFFER* ppErrorMsgs);
 
 	HRESULT stubD3DXCompileShader(LPCSTR pSrcData, UINT SrcDataLen, CONST D3DXMACRO* pDefines,

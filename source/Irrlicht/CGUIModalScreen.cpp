@@ -92,7 +92,7 @@ bool CGUIModalScreen::OnEvent(const SEvent& event)
 				Environment->setFocus(event.GUIEvent.Element);
 				MouseDownTime = os::Timer::getTime();
 				return true;
-			}			
+			}
 			if ( !canTakeFocus(event.GUIEvent.Caller))
 			{
 				if ( !Children.empty() )

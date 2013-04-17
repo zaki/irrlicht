@@ -87,8 +87,8 @@ public:
 	virtual IGUIElement* getFocus() const = 0;
 
 	//! Returns the element which was last under the mouse cursor
-	/** NOTE: This information is updated _after_ the user-eventreceiver 
-	received it's mouse-events. To find the hovered element while catching 
+	/** NOTE: This information is updated _after_ the user-eventreceiver
+	received it's mouse-events. To find the hovered element while catching
 	mouse events you have to use instead:
 	IGUIEnvironment::getRootGUIElement()->getElementFromPoint(mousePos);
 	\return Pointer to the element under the mouse. */
@@ -215,7 +215,7 @@ public:
 	//! Returns the root gui element.
 	/** This is the first gui element, the (direct or indirect) parent of all
 	other gui elements. It is a valid IGUIElement, with dimensions the same
-	size as the screen. 
+	size as the screen.
 	\return Pointer to the root element of the GUI. The returned pointer
 	should not be dropped. See IReferenceCounted::drop() for more
 	information. */
@@ -584,8 +584,8 @@ public:
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** When a parent is set the elements will be added below the parent, the parent itself does not deserialize.
-	When the file contains skin-settings from the gui-environment those are always serialized into the 
-	guienvironment independent	of the parent setting.
+	When the file contains skin-settings from the gui-environment those are always serialized into the
+	guienvironment independent of the parent setting.
 	\param filename Name of the file.
 	\param parent Parent for the loaded GUI, root if 0.
 	\return True if loading succeeded, else false. */
@@ -593,8 +593,8 @@ public:
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** When a parent is set the elements will be added below the parent, the parent itself does not deserialize.
-	When the file contains skin-settings from the gui-environment those are always serialized into the 
-	guienvironment independent	of the parent setting.
+	When the file contains skin-settings from the gui-environment those are always serialized into the
+	guienvironment independent of the parent setting.
 	\param file The file to load from.
 	\param parent Parent for the loaded GUI, root if 0.
 	\return True if loading succeeded, else false. */

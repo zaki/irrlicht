@@ -54,7 +54,7 @@ namespace irr
 		virtual bool isWindowMinimized() const;
 
 		//! returns current window position (not supported for this device)
-        virtual core::position2di getWindowPosition()
+		virtual core::position2di getWindowPosition()
 		{
 			return core::position2di(-1, -1);
 		}
@@ -155,7 +155,7 @@ namespace irr
 				if (UseReferenceRect)
 				{
 					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x,
-								 ReferenceRect.UpperLeftCorner.Y + y);
+								ReferenceRect.UpperLeftCorner.Y + y);
 				}
 				else
 				{
@@ -215,9 +215,9 @@ namespace irr
 				WindowSize = size;
 				if (size.Width!=0)
 					InvWindowSize.Width = 1.0f / size.Width;
-				else 
+				else
 					InvWindowSize.Width = 0.f;
- 
+
 				if (size.Height!=0)
 					InvWindowSize.Height = 1.0f / size.Height;
 				else
@@ -235,7 +235,7 @@ namespace irr
 					DWORD xy = GetMessagePos();
 					p.x = GET_X_LPARAM(xy);
 					p.y = GET_Y_LPARAM(xy);
-				} 
+				}
 
 				if (UseReferenceRect)
 				{

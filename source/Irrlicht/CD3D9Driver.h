@@ -106,8 +106,8 @@ namespace video
 			IDirect3DIndexBuffer9* indexBuffer;
 
 			u32 vertexBufferSize;
-            u32 indexBufferSize;
- 		};
+			u32 indexBufferSize;
+		};
 
 		bool updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer);
 		bool updateIndexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer);

@@ -39,7 +39,7 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 class COpenGLDriver;
@@ -54,8 +54,8 @@ public:
 
 	//! Constructor
 	COpenGLSLMaterialRenderer(
-		COpenGLDriver* driver, 
-		s32& outMaterialTypeNr, 
+		COpenGLDriver* driver,
+		s32& outMaterialTypeNr,
 		const c8* vertexShaderProgram = 0,
 		const c8* vertexShaderEntryPointName = 0,
 		E_VERTEX_SHADER_TYPE vsCompileTarget = video::EVST_VS_1_1,
@@ -106,8 +106,8 @@ protected:
 					E_MATERIAL_TYPE baseMaterial,
 					s32 userData=0);
 
-	void init(s32& outMaterialTypeNr, 
-		const c8* vertexShaderProgram, 
+	void init(s32& outMaterialTypeNr,
+		const c8* vertexShaderProgram,
 		const c8* pixelShaderProgram,
 		const c8* geometryShaderProgram,
 		scene::E_PRIMITIVE_TYPE inType=scene::EPT_TRIANGLES,
@@ -117,7 +117,7 @@ protected:
 	bool createProgram();
 	bool createShader(GLenum shaderType, const char* shader);
 	bool linkProgram();
-	
+
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
 	COpenGLMaterialRenderer* BaseMaterial;

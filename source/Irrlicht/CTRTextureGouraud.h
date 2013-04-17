@@ -34,10 +34,10 @@ namespace video
 
 		//! constructor
 		CTRTextureGouraud(IZBuffer* zbuffer);
-	
+
 		//! destructor
 		virtual ~CTRTextureGouraud();
-	
+
 		//! sets a render target
 		virtual void setRenderTarget(video::IImage* surface, const core::rect<s32>& viewPort);
 

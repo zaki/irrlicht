@@ -152,7 +152,7 @@ namespace scene
 		\param file The file to read the image from. File is not rewinded.
 		\param vertexColor Color of all vertices.
 		\param smoothFactor Number of smoothing passes. */
-		virtual bool loadHeightMap(io::IReadFile* file, 
+		virtual bool loadHeightMap(io::IReadFile* file,
 			video::SColor vertexColor=video::SColor(255,255,255,255),
 			s32 smoothFactor=0) =0;
 

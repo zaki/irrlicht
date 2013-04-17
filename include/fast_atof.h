@@ -13,8 +13,8 @@ namespace irr
 namespace core
 {
 	//! Selection of characters which count as decimal point in fast_atof
-	// TODO: This should probably also be used in irr::core::string, but the float-to-string code
-	//		used there has to be rewritten first.
+	// TODO: This should probably also be used in irr::core::string, but
+	// the float-to-string code used there has to be rewritten first.
 	IRRLICHT_API extern irr::core::stringc LOCALE_DECIMAL_POINTS;
 
 // we write [17] here instead of [] to work around a swig bug

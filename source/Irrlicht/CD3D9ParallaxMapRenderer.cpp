@@ -227,11 +227,10 @@ namespace video
 		: CD3D9ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial),
 		CurrentScale(0.0f)
 	{
-	
 		#ifdef _DEBUG
 		setDebugName("CD3D9ParallaxMapRenderer");
 		#endif
-	
+
 		// set this as callback. We could have done this in
 		// the initialization list, but some compilers don't like it.
 

@@ -18,7 +18,7 @@ namespace scene
 
 	//! Special scene node animator for FPS cameras
 	/** This scene node animator can be attached to a camera to make it act
-	like a first person shooter 
+	like a first person shooter
 	*/
 	class ISceneNodeAnimatorCameraFPS : public ISceneNodeAnimator
 	{
@@ -45,15 +45,15 @@ namespace scene
 		virtual void setKeyMap(SKeyMap *map, u32 count) = 0;
 
 		//! Sets the keyboard mapping for this animator
-		//!	\param keymap The new keymap array 
+		//! \param keymap The new keymap array
 		virtual void setKeyMap(const core::array<SKeyMap>& keymap) = 0;
 
 		//! Gets the keyboard mapping for this animator
 		virtual const core::array<SKeyMap>& getKeyMap() const = 0;
 
 		//! Sets whether vertical movement should be allowed.
-		/** If vertical movement is enabled then the camera may fight with 
-		gravity causing camera shake. Disable this if the camera has 
+		/** If vertical movement is enabled then the camera may fight with
+		gravity causing camera shake. Disable this if the camera has
 		a collision animator with gravity enabled. */
 		virtual void setVerticalMovement(bool allow) = 0;
 

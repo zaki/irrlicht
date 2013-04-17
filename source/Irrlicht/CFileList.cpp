@@ -98,7 +98,7 @@ u32 CFileList::addItem(const io::path& fullPath, u32 offset, u32 size, bool isDi
 //! Returns the ID of a file in the file list, based on an index.
 u32 CFileList::getID(u32 index) const
 {
-	return index < Files.size() ? Files[index].ID : 0;	
+	return index < Files.size() ? Files[index].ID : 0;
 }
 
 bool CFileList::isDirectory(u32 index) const

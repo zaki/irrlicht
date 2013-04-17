@@ -236,7 +236,7 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 			if (event.GUIEvent.Caller == EditBox)
 			{
 				if (	(event.GUIEvent.EventType == EGET_EDITBOX_CHANGED && ValidateOn & EGUI_SBV_CHANGE)
-					||	(event.GUIEvent.EventType == EGET_EDITBOX_ENTER && ValidateOn & EGUI_SBV_ENTER) 
+					||	(event.GUIEvent.EventType == EGET_EDITBOX_ENTER && ValidateOn & EGUI_SBV_ENTER)
 					||	(event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST && ValidateOn & EGUI_SBV_LOSE_FOCUS)
 					)
 				{

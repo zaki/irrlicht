@@ -12,7 +12,7 @@ namespace irr
 namespace scene
 {
 
-//! Scene node which is a dynamic light. You can switch the light on and off by 
+//! Scene node which is a dynamic light. You can switch the light on and off by
 //! making it visible or not, and let it be animated by ordinary scene node animators.
 class CLightSceneNode : public ILightSceneNode
 {
@@ -58,8 +58,7 @@ public:
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
 	//! Creates a clone of this scene node and its children.
-	virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0); 
-
+	virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
 	//! Sets the light's radius of influence.
 	/** Outside this radius the light won't lighten geometry and cast no

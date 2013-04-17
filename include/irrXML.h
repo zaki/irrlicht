@@ -381,7 +381,7 @@ namespace io
 		xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
 		xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
 		xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
-#else 
+#else
 		explicit xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}

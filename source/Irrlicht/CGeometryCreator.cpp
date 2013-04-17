@@ -20,7 +20,7 @@ IMesh* CGeometryCreator::createCubeMesh(const core::vector3df& size) const
 	SMeshBuffer* buffer = new SMeshBuffer();
 
 	// Create indices
-	const u16 u[36] = {   0,2,1,   0,3,2,   1,5,4,   1,2,5,   4,6,7,   4,5,6, 
+	const u16 u[36] = {   0,2,1,   0,3,2,   1,5,4,   1,2,5,   4,6,7,   4,5,6,
             7,3,0,   7,6,3,   9,5,2,   9,8,5,   0,11,10,   0,10,7};
 
 	buffer->Indices.set_used(36);
@@ -505,8 +505,8 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 
 
 /* A cylinder with proper normals and texture coords */
-IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length, 
-			u32 tesselation, const video::SColor& color, 
+IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
+			u32 tesselation, const video::SColor& color,
 			bool closeTop, f32 oblique) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
@@ -644,7 +644,7 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 
 /* A cone with proper normals and texture coords */
 IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation,
-					const video::SColor& colorTop, 
+					const video::SColor& colorTop,
 					const video::SColor& colorBottom,
 					f32 oblique) const
 {

@@ -15,7 +15,7 @@ namespace io
 {
 
 	//! Interface providing methods for making it easier to write XML files.
-	/** This XML Writer writes xml files using in the platform dependent 
+	/** This XML Writer writes xml files using in the platform dependent
 	wchar_t format and sets the xml-encoding correspondingly. */
 	class IXMLWriter : public virtual IReferenceCounted
 	{

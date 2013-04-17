@@ -34,7 +34,7 @@ namespace video
 	class ITriangleRenderer : public virtual IReferenceCounted
 	{
 	public:
-	
+
 		//! sets a render target
 		virtual void setRenderTarget(video::IImage* surface, const core::rect<s32>& viewPort) = 0;
 

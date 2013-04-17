@@ -88,7 +88,7 @@ namespace gui
 		virtual bool hasChildren() const = 0;
 
 		//! returns true if this node has child nodes
-		/** \deprecated Deprecated in 1.8, use hasChildren() instead. 
+		/** \deprecated Deprecated in 1.8, use hasChildren() instead.
 		This method may be removed by Irrlicht 1.9 */
 		_IRR_DEPRECATED_ bool hasChilds() const
 		{

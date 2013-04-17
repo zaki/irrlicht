@@ -319,7 +319,7 @@ void COpenGLParallaxMapRenderer::OnSetConstants(IMaterialRendererServices* servi
 
 		// Transform the light by the inverse world matrix to get it into object space.
 		invWorldMat.transformVect(light.Position);
-		
+
 		services->setVertexShaderConstant(
 			reinterpret_cast<const f32*>(&light.Position), 12+(i*2), 1);
 

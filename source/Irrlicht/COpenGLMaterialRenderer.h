@@ -35,13 +35,12 @@ public:
 	virtual void OnUnsetBaseMaterial()
 	{
 	}
-    
-    virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
-    {
-        Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, true);
-        
-        return true;
-    }
+
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
+	{
+		Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, true);
+		return true;
+	}
 
 protected:
 
@@ -106,7 +105,7 @@ public:
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);			
+			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);
 			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, (f32) modulate );
 #endif
 
@@ -176,7 +175,7 @@ public:
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);			
+		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);
 		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, (f32) modulate );
 #endif
 
@@ -249,12 +248,12 @@ public:
 		Driver->getBridgeCalls()->setAlphaTest(false);
 	}
 
- 	//! Returns if the material is transparent.
- 	/** Is not always transparent, but mostly. */
- 	virtual bool isTransparent() const
- 	{
- 		return true;
- 	}
+	//! Returns if the material is transparent.
+	/** Is not always transparent, but mostly. */
+	virtual bool isTransparent() const
+	{
+		return true;
+	}
 };
 
 
@@ -648,12 +647,12 @@ public:
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_ARB, GL_PREVIOUS_ARB);
 #else
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-				
+
 				if (material.MaterialType == EMT_LIGHTMAP_ADD)
 					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_ADD);
 				else
 					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-				
+
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_MODULATE);

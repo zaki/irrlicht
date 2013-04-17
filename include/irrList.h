@@ -389,13 +389,13 @@ public:
 	/** Afterwards this object will contain the content of the other object and the other
 	object will contain the content of this object. Iterators will afterwards be valid for
 	the swapped object.
-	\param other Swap content with this object	*/
+	\param other Swap content with this object */
 	void swap(list<T>& other)
 	{
 		core::swap(First, other.First);
 		core::swap(Last, other.Last);
 		core::swap(Size, other.Size);
-		core::swap(allocator, other.allocator);	// memory is still released by the same allocator used for allocation
+		core::swap(allocator, other.allocator); // memory is still released by the same allocator used for allocation
 	}
 
 

@@ -113,11 +113,11 @@ namespace gui
 		//! Returns maximum amount of characters, previously set by setMax();
 		virtual u32 getMax() const;
 
-		//! Set the character used for the cursor. 
+		//! Set the character used for the cursor.
 		/** By default it's "_" */
 		virtual void setCursorChar(const wchar_t cursorChar);
 
-		//! Get the character used for the cursor. 
+		//! Get the character used for the cursor.
 		virtual wchar_t getCursorChar() const;
 
 		//! Set the blinktime for the cursor. 2x blinktime is one full cycle.
@@ -125,7 +125,7 @@ namespace gui
 		virtual void setCursorBlinkTime(irr::u32 timeMs);
 
 		//! Get the cursor blinktime
-		virtual irr::u32 getCursorBlinkTime() const; 
+		virtual irr::u32 getCursorBlinkTime() const;
 
 		//! Sets whether the edit box is a password box. Setting this to true will
 		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
