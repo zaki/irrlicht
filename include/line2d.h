@@ -78,14 +78,14 @@ class line2d
 		{
 			// Uses the method given at:
 			// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
-			const f32 commonDenominator = (f32)(l.end.Y - l.start.Y)*(end.X - start.X) -
-											(l.end.X - l.start.X)*(end.Y - start.Y);
+			const f32 commonDenominator = (f32)((l.end.Y - l.start.Y)*(end.X - start.X) -
+											(l.end.X - l.start.X)*(end.Y - start.Y));
 
-			const f32 numeratorA = (f32)(l.end.X - l.start.X)*(start.Y - l.start.Y) -
-											(l.end.Y - l.start.Y)*(start.X -l.start.X);
+			const f32 numeratorA = (f32)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
+											(l.end.Y - l.start.Y)*(start.X -l.start.X));
 
-			const f32 numeratorB = (f32)(end.X - start.X)*(start.Y - l.start.Y) -
-											(end.Y - start.Y)*(start.X -l.start.X);
+			const f32 numeratorB = (f32)((end.X - start.X)*(start.Y - l.start.Y) -
+											(end.Y - start.Y)*(start.X -l.start.X));
 
 			if(equals(commonDenominator, 0.f))
 			{

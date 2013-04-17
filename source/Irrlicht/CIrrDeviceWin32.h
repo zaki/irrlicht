@@ -140,17 +140,31 @@ namespace irr
 				BOOL gotCursorInfo = GetCursorInfo(&info);
 				while ( gotCursorInfo )
 				{
-					if ( (visible && info.flags == CURSOR_SHOWING) // visible
-						|| (!visible && info.flags == 0 ) ) // hidden
+#ifdef CURSOR_SUPPRESSED
+					// new flag for Windows 8, where cursor
+					// might be suppressed for touch interface
+					if (info.flags == CURSOR_SUPPRESSED)
+					{
+						visible=false;
+						break;
+					}
+#endif
+					if ( (visible && info.flags == CURSOR_SHOWING) || // visible
+						(!visible && info.flags == 0 ) ) // hidden
 					{
 						break;
 					}
-					int showResult = ShowCursor(visible);   // this only increases an internal display counter in windows, so it might have to be called some more
-					if ( showResult < 0 )
-					{
+					// this only increases an internal
+					// display counter in windows, so it
+					// might have to be called some more
+					const int showResult = ShowCursor(visible);
+					// if result has correct sign we can
+					// stop here as well
+					if (( !visible && showResult < 0 ) ||
+						(visible && showResult >= 0))
 						break;
-					}
-					info.cbSize = sizeof(CURSORINFO);	// yes, it really must be set each time
+					// yes, it really must be set each time
+					info.cbSize = sizeof(CURSORINFO);
 					gotCursorInfo = GetCursorInfo(&info);
 				}
 				IsVisible = visible;
