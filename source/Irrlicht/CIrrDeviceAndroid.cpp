@@ -89,16 +89,17 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 
 	// Create cursor control
 	CursorControl = new CCursorControl(this);
+	
+	io::CAndroidAssetFileArchive *assets = io::createAndroidAssetFileArchive(false, false);
+	assets->addDirectory("media");
+	FileSystem->addFileArchive(assets);
 
 	// Create the driver.
 	createDriver();
 		
 	if (VideoDriver)	
 		createGUIAndScene();
-		
-	io::CAndroidAssetFileArchive *assets = io::createAndroidAssetFileArchive(false, false);
-	assets->addDirectory("media");
-	FileSystem->addFileArchive(assets);
+
 	// TODO
 	//
 	// if engine->app->savedState is not NULL then use postEventFromUser() 
@@ -249,6 +250,11 @@ void CIrrDeviceAndroid::maximizeWindow( void )
 
 void CIrrDeviceAndroid::restoreWindow( void )
 {
+}
+
+core::position2di CIrrDeviceAndroid::getWindowPosition()
+{
+	return core::position2di(0, 0);
 }
 
 E_DEVICE_TYPE CIrrDeviceAndroid::getType( void ) const

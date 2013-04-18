@@ -42,6 +42,10 @@ namespace irr
 		virtual void minimizeWindow( void );
 		virtual void maximizeWindow( void );
 		virtual void restoreWindow( void );
+		
+		//! Get the position of this window on screen
+		virtual core::position2di getWindowPosition();
+		
 		virtual E_DEVICE_TYPE getType( void ) const;
 
 		//! Implementation of the linux cursor control

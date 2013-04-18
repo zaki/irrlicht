@@ -26,6 +26,9 @@
 #else
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
+#ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_
+#include "android_native_app_glue.h"
+#endif
 #endif
 
 namespace irr
@@ -68,6 +71,9 @@ namespace video
 		EglDisplay = eglGetDisplay((NativeDisplayType)ExposedData.OpenGLLinux.X11Display);
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		Device = device;
+#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+		EglWindow =	((struct android_app *)(params.PrivateData))->window;
+		EglDisplay = EGL_NO_DISPLAY;
 #endif
 #ifdef EGL_VERSION_1_0
 		if (EglDisplay == EGL_NO_DISPLAY)

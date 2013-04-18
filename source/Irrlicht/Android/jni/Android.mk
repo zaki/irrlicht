@@ -53,6 +53,7 @@ LOCAL_SRC_FILES := \
 					CFileList.cpp \
 					CFileSystem.cpp \
 					CFPSCounter.cpp \
+					leakHunter.cpp \
 					CGeometryCreator.cpp \
 					CGUIButton.cpp \
 					CGUICheckBox.cpp \
@@ -319,7 +320,7 @@ zlib/compress.c  zlib/deflate.c  zlib/gzlib.c    zlib/gzwrite.c  zlib/inffast.c 
 
 LOCAL_C_INCLUDES := ../../../include
 
-LOCAL_CFLAGS := -DBUILD_OGLES2 -g -D_DEBUG
+LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_ -g -D_DEBUG
 LOCAL_STATIC_LIBRARIES := android_native_app_glue
 
 include $(BUILD_STATIC_LIBRARY)
