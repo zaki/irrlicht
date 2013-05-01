@@ -602,8 +602,7 @@ namespace video
 
 		//! Built-in 2D quad for 2D rendering.
 		S3DVertex Quad2DVertices[4];
-		u16 Quad2DIndices[6];
-		u16 Line2DIndices[2];
+		static const u16 Quad2DIndices[4];
 
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
