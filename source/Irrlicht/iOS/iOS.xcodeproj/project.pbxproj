@@ -506,11 +506,48 @@
 		5E3EA6731586A27E00C17C1D /* IBurningShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047C415515B4400D9E53B /* IBurningShader.cpp */; };
 		5E3EA6771586A27E00C17C1D /* Irrlicht.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CC15515B4400D9E53B /* Irrlicht.cpp */; };
 		5E3EA6781586A27E00C17C1D /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CD15515B4400D9E53B /* irrXML.cpp */; };
+		5ED2483F1731568400A13B86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E215516CC00014DCBA /* UIKit.framework */; };
+		5ED248401731568400A13B86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E415516CC00014DCBA /* Foundation.framework */; };
+		5ED248411731568400A13B86 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E615516CC00014DCBA /* CoreGraphics.framework */; };
+		5ED2485E173157AD00A13B86 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2485B173157AD00A13B86 /* main.cpp */; };
+		5ED2486117315F7A00A13B86 /* libIrrlicht.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF31215516E370014DCBA /* libIrrlicht.a */; };
+		5ED2486317315FA800A13B86 /* media in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486217315FA800A13B86 /* media */; };
+		5ED24864173161C900A13B86 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2EA15516CC00014DCBA /* OpenGLES.framework */; };
+		5ED24865173161F200A13B86 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EDC9F971638D8CF00E65F28 /* CoreMotion.framework */; };
+		5ED248661731622A00A13B86 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E815516CC00014DCBA /* QuartzCore.framework */; };
+		5ED248741731788700A13B86 /* COGLES2FixedPipeline.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */; };
+		5ED248751731788700A13B86 /* COGLES2FixedPipeline.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */; };
+		5ED248761731788700A13B86 /* COGLES2NormalMap.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */; };
+		5ED248771731788700A13B86 /* COGLES2NormalMap.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */; };
+		5ED248781731788700A13B86 /* COGLES2ParallaxMap.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */; };
+		5ED248791731788700A13B86 /* COGLES2ParallaxMap.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248711731788700A13B86 /* COGLES2ParallaxMap.vsh */; };
+		5ED2487A1731788700A13B86 /* COGLES2Renderer2D.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248721731788700A13B86 /* COGLES2Renderer2D.fsh */; };
+		5ED2487B1731788700A13B86 /* COGLES2Renderer2D.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */; };
+		5ED2487C173178DC00A13B86 /* COGLES2FixedPipeline.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */; };
+		5ED2487D173178DC00A13B86 /* COGLES2FixedPipeline.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */; };
+		5ED2487E173178DC00A13B86 /* COGLES2NormalMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */; };
+		5ED2487F173178DC00A13B86 /* COGLES2NormalMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */; };
+		5ED24880173178DC00A13B86 /* COGLES2ParallaxMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */; };
+		5ED24881173178DC00A13B86 /* COGLES2ParallaxMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248711731788700A13B86 /* COGLES2ParallaxMap.vsh */; };
+		5ED24882173178DC00A13B86 /* COGLES2Renderer2D.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248721731788700A13B86 /* COGLES2Renderer2D.fsh */; };
+		5ED24883173178DC00A13B86 /* COGLES2Renderer2D.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */; };
+		5ED2488817317FFC00A13B86 /* Interface_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2488617317FFC00A13B86 /* Interface_iPad.xib */; };
+		5ED2488917317FFC00A13B86 /* Interface_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2488717317FFC00A13B86 /* Interface_iPhone.xib */; };
 		5EEAE04C171DF38900C7BC68 /* irrpack.h in Headers */ = {isa = PBXBuildFile; fileRef = 5EEAE049171DF38900C7BC68 /* irrpack.h */; };
 		5EEAE04D171DF38900C7BC68 /* irrunpack.h in Headers */ = {isa = PBXBuildFile; fileRef = 5EEAE04A171DF38900C7BC68 /* irrunpack.h */; };
 		5EEAE04E171DF38900C7BC68 /* leakHunter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5EEAE04B171DF38900C7BC68 /* leakHunter.h */; };
 		5EEAE050171DF3C700C7BC68 /* leakHunter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EEAE04F171DF3C700C7BC68 /* leakHunter.cpp */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5ED2485F17315F6400A13B86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E96FAE715515650000A0A05 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5E7CF31115516E370014DCBA;
+			remoteInfo = Irrlicht;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		5E25C82816A845D900320AA9 /* COGLES2FixedPipelineRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = COGLES2FixedPipelineRenderer.cpp; path = ../COGLES2FixedPipelineRenderer.cpp; sourceTree = "<group>"; };
@@ -1244,6 +1281,20 @@
 		5E7CF769155187AB0014DCBA /* SoftwareDriver2_compile_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoftwareDriver2_compile_config.h; path = ../SoftwareDriver2_compile_config.h; sourceTree = "<group>"; };
 		5E7CF76A155187AB0014DCBA /* SoftwareDriver2_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoftwareDriver2_helper.h; path = ../SoftwareDriver2_helper.h; sourceTree = "<group>"; };
 		5E7CF76B155187AB0014DCBA /* wglext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wglext.h; path = ../wglext.h; sourceTree = "<group>"; };
+		5ED2483E1731568400A13B86 /* 17.HelloWorld_Mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = 17.HelloWorld_Mobile.app; path = HelloWorldMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5ED2485B173157AD00A13B86 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = main.cpp; path = ../../../examples/17.HelloWorld_Mobile/main.cpp; sourceTree = "<group>"; };
+		5ED2486217315FA800A13B86 /* media */ = {isa = PBXFileReference; lastKnownFileType = folder; name = media; path = ../../../media; sourceTree = "<group>"; };
+		5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2FixedPipeline.fsh; sourceTree = "<group>"; };
+		5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2FixedPipeline.vsh; sourceTree = "<group>"; };
+		5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2NormalMap.fsh; sourceTree = "<group>"; };
+		5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2NormalMap.vsh; sourceTree = "<group>"; };
+		5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2ParallaxMap.fsh; sourceTree = "<group>"; };
+		5ED248711731788700A13B86 /* COGLES2ParallaxMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2ParallaxMap.vsh; sourceTree = "<group>"; };
+		5ED248721731788700A13B86 /* COGLES2Renderer2D.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2Renderer2D.fsh; sourceTree = "<group>"; };
+		5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2Renderer2D.vsh; sourceTree = "<group>"; };
+		5ED2488417317C4C00A13B86 /* example-info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "example-info.plist"; sourceTree = "<group>"; };
+		5ED2488617317FFC00A13B86 /* Interface_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Interface_iPad.xib; sourceTree = "<group>"; };
+		5ED2488717317FFC00A13B86 /* Interface_iPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Interface_iPhone.xib; sourceTree = "<group>"; };
 		5EDC9F971638D8CF00E65F28 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		5EE3D2BE1552DF7C00D0F9E8 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		5EEAE049171DF38900C7BC68 /* irrpack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = irrpack.h; path = ../../../include/irrpack.h; sourceTree = "<group>"; };
@@ -1257,6 +1308,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5ED2483B1731568400A13B86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5ED2486117315F7A00A13B86 /* libIrrlicht.a in Frameworks */,
+				5ED248661731622A00A13B86 /* QuartzCore.framework in Frameworks */,
+				5ED24865173161F200A13B86 /* CoreMotion.framework in Frameworks */,
+				5ED24864173161C900A13B86 /* OpenGLES.framework in Frameworks */,
+				5ED2483F1731568400A13B86 /* UIKit.framework in Frameworks */,
+				5ED248401731568400A13B86 /* Foundation.framework in Frameworks */,
+				5ED248411731568400A13B86 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2095,9 +2160,12 @@
 		5E96FAE515515650000A0A05 = {
 			isa = PBXGroup;
 			children = (
+				5ED24838173151F300A13B86 /* Examples */,
 				5E7CF2E115516CC00014DCBA /* Frameworks */,
 				5E30445D15515A9000D9E53B /* Include */,
+				5ED2486217315FA800A13B86 /* media */,
 				5E96FAF115515650000A0A05 /* Products */,
+				5ED2486B1731788700A13B86 /* Shaders */,
 				5E3045C815515AD100D9E53B /* Source */,
 			);
 			sourceTree = "<group>";
@@ -2106,8 +2174,44 @@
 			isa = PBXGroup;
 			children = (
 				5E7CF31215516E370014DCBA /* libIrrlicht.a */,
+				5ED2483E1731568400A13B86 /* 17.HelloWorld_Mobile.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5ED24838173151F300A13B86 /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				5ED248391731523300A13B86 /* 17.HelloWorld_Mobile */,
+			);
+			name = Examples;
+			sourceTree = "<group>";
+		};
+		5ED248391731523300A13B86 /* 17.HelloWorld_Mobile */ = {
+			isa = PBXGroup;
+			children = (
+				5ED2488617317FFC00A13B86 /* Interface_iPad.xib */,
+				5ED2488717317FFC00A13B86 /* Interface_iPhone.xib */,
+				5ED2488417317C4C00A13B86 /* example-info.plist */,
+				5ED2485B173157AD00A13B86 /* main.cpp */,
+			);
+			name = 17.HelloWorld_Mobile;
+			sourceTree = "<group>";
+		};
+		5ED2486B1731788700A13B86 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */,
+				5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */,
+				5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */,
+				5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */,
+				5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */,
+				5ED248711731788700A13B86 /* COGLES2ParallaxMap.vsh */,
+				5ED248721731788700A13B86 /* COGLES2Renderer2D.fsh */,
+				5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */,
+			);
+			name = Shaders;
+			path = ../../../media/Shaders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2325,11 +2429,32 @@
 			productReference = 5E7CF31215516E370014DCBA /* libIrrlicht.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		5ED2483D1731568400A13B86 /* HelloWorldMobile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5ED248541731568400A13B86 /* Build configuration list for PBXNativeTarget "HelloWorldMobile" */;
+			buildPhases = (
+				5ED2483A1731568400A13B86 /* Sources */,
+				5ED2483B1731568400A13B86 /* Frameworks */,
+				5ED2483C1731568400A13B86 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5ED2486017315F6400A13B86 /* PBXTargetDependency */,
+			);
+			name = HelloWorldMobile;
+			productName = 17.HelloWorld_Mobile;
+			productReference = 5ED2483E1731568400A13B86 /* 17.HelloWorld_Mobile.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		5E96FAE715515650000A0A05 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+			};
 			buildConfigurationList = 5E96FAEA15515650000A0A05 /* Build configuration list for PBXProject "iOS" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -2343,9 +2468,31 @@
 			projectRoot = "";
 			targets = (
 				5E7CF31115516E370014DCBA /* Irrlicht */,
+				5ED2483D1731568400A13B86 /* HelloWorldMobile */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5ED2483C1731568400A13B86 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5ED2487C173178DC00A13B86 /* COGLES2FixedPipeline.fsh in Resources */,
+				5ED2487D173178DC00A13B86 /* COGLES2FixedPipeline.vsh in Resources */,
+				5ED2487E173178DC00A13B86 /* COGLES2NormalMap.fsh in Resources */,
+				5ED2487F173178DC00A13B86 /* COGLES2NormalMap.vsh in Resources */,
+				5ED24880173178DC00A13B86 /* COGLES2ParallaxMap.fsh in Resources */,
+				5ED24881173178DC00A13B86 /* COGLES2ParallaxMap.vsh in Resources */,
+				5ED24882173178DC00A13B86 /* COGLES2Renderer2D.fsh in Resources */,
+				5ED24883173178DC00A13B86 /* COGLES2Renderer2D.vsh in Resources */,
+				5ED2486317315FA800A13B86 /* media in Resources */,
+				5ED2488817317FFC00A13B86 /* Interface_iPad.xib in Resources */,
+				5ED2488917317FFC00A13B86 /* Interface_iPhone.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5E7CF30E15516E370014DCBA /* Sources */ = {
@@ -2673,7 +2820,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5ED2483A1731568400A13B86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5ED2485E173157AD00A13B86 /* main.cpp in Sources */,
+				5ED248741731788700A13B86 /* COGLES2FixedPipeline.fsh in Sources */,
+				5ED248751731788700A13B86 /* COGLES2FixedPipeline.vsh in Sources */,
+				5ED248761731788700A13B86 /* COGLES2NormalMap.fsh in Sources */,
+				5ED248771731788700A13B86 /* COGLES2NormalMap.vsh in Sources */,
+				5ED248781731788700A13B86 /* COGLES2ParallaxMap.fsh in Sources */,
+				5ED248791731788700A13B86 /* COGLES2ParallaxMap.vsh in Sources */,
+				5ED2487A1731788700A13B86 /* COGLES2Renderer2D.fsh in Sources */,
+				5ED2487B1731788700A13B86 /* COGLES2Renderer2D.vsh in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5ED2486017315F6400A13B86 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5E7CF31115516E370014DCBA /* Irrlicht */;
+			targetProxy = 5ED2485F17315F6400A13B86 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		5E7CF31B15516E370014DCBA /* Debug */ = {
@@ -2682,6 +2853,7 @@
 				DSTROOT = /tmp/Irrlicht.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2744,6 +2916,56 @@
 			};
 			name = Release;
 		};
+		5ED248551731568400A13B86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = ../../../include;
+				INFOPLIST_FILE = "$(SRCROOT)/example-info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		5ED248561731568400A13B86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				HEADER_SEARCH_PATHS = ../../../include;
+				INFOPLIST_FILE = "$(SRCROOT)/example-info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2761,6 +2983,15 @@
 			buildConfigurations = (
 				5E96FAFB15515650000A0A05 /* Debug */,
 				5E96FAFC15515650000A0A05 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5ED248541731568400A13B86 /* Build configuration list for PBXNativeTarget "HelloWorldMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5ED248551731568400A13B86 /* Debug */,
+				5ED248561731568400A13B86 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

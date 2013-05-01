@@ -7,8 +7,11 @@
 
 #include <irrlicht.h>
 
-#if defined ( _IRR_WINDOWS_ )
+#ifdef _IRR_WINDOWS_
 	#include <windows.h>
+#elif defined(_IRR_IPHONE_PLATFORM_)
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
 #endif
 
 using namespace irr;
@@ -19,6 +22,19 @@ using namespace io;
 using namespace gui;
 
 #pragma comment(lib, "Irrlicht.lib")
+
+
+#ifdef _IRR_IPHONE_PLATFORM_
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
+{
+    UIWindow* window;
+    IrrlichtDevice* device;
+}
+
+@property (strong, nonatomic) UIWindow *window;
+
+@end
+#endif
 
 class EventReceiver_basic : public IEventReceiver
 {
@@ -108,18 +124,27 @@ public:
 */
 IrrlichtDevice *startup()
 {
-	//E_DRIVER_TYPE driverType = EDT_BURNINGSVIDEO;
-	E_DRIVER_TYPE driverType = EDT_OPENGL;
-
 	// create device
 	IrrlichtDevice *device = 0;
+    
+#ifdef _IRR_IPHONE_PLATFORM_
+    AppDelegate* delegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
 
-#if defined (_IRR_USE_WINDOWS_CE_DEVICE_)
+    SIrrlichtCreationParameters param;
+	param.DriverType = EDT_OGLES2;
+	param.WindowSize = dimension2d<u32>(0,0);
+	param.WindowId = delegate.window;
+	param.Bits = 24;
+    param.ZBufferBits = 16;
+	param.AntiAlias  = 0;
+    
+    device = createDeviceEx(param);
+#elif defined(_IRR_USE_WINDOWS_CE_DEVICE_)
 	// set to standard mobile fullscreen 240x320
-	device = createDevice(driverType, dimension2d<u32>(240, 320), 16, true );
+	device = createDevice(EDT_OPENGL, dimension2d<u32>(240, 320), 16, true );
 #else
 	// on PC. use window mode
-	device = createDevice(driverType, dimension2d<u32>(240, 320), 16, false );
+	device = createDevice(EDT_OPENGL, dimension2d<u32>(240, 320), 16, false );
 #endif		
 	if ( 0 == device )
 		return 0;
@@ -127,6 +152,12 @@ IrrlichtDevice *startup()
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
+    
+#ifdef _IRR_IPHONE_PLATFORM_
+    stringc mediaPath = "media/";
+#else
+    stringc mediaPath = "../../media/";
+#endif
 
 	// set the filesystem relative to the executable
 #if defined (_IRR_WINDOWS_)
@@ -143,10 +174,14 @@ IrrlichtDevice *startup()
 	IGUIStaticText *text = guienv->addStaticText(L"FPS: 25",
 		rect<s32>(140,15,200,30), false, false, 0, 100 );
 
+
+#ifndef _IRR_IPHONE_PLATFORM_
+    // programmable quit button isn't allowed on iOS.
 	guienv->addButton(core::rect<int>(200,10,238,30), 0, 2, L"Quit");
+#endif
 
 	// add irrlicht logo
-	guienv->addImage(driver->getTexture("../../media/irrlichtlogo3.png"),
+	guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
 					core::position2d<s32>(0,-2));
 	return device;
 }
@@ -155,8 +190,18 @@ IrrlichtDevice *startup()
 */
 int run ( IrrlichtDevice *device )
 {
+#ifdef _IRR_IPHONE_PLATFORM_
+    while (device)
+    {
+    NSAutoreleasePool* tPool = [[NSAutoreleasePool alloc] init];
+    while(CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.002f, TRUE) == kCFRunLoopRunHandledSource);
+    [tPool release];
+
+    if(device->run())
+#else
 	while(device->run())
 	if (device->isWindowActive())
+#endif
 	{
 		device->getVideoDriver()->beginScene(true, true, SColor(0,100,100,100));
 		device->getSceneManager()->drawAll();
@@ -174,8 +219,15 @@ int run ( IrrlichtDevice *device )
 		}
 	}
 
+#ifndef _IRR_IPHONE_PLATFORM_
 	device->drop();
-	return 0;
+#else
+    else
+        break;
+    }
+#endif
+
+	return 1;
 }
 
 /*!
@@ -436,22 +488,40 @@ int example_terrain()
 
 /*
 */
+#ifdef _IRR_IPHONE_PLATFORM_
+IrrlichtDevice* example_helloworld()
+#else
 int example_helloworld()
+#endif
 {
 	// create device
 	IrrlichtDevice *device = startup();
 	if (device == 0)
-		return 1; // could not create selected driver.
+        #ifdef _IRR_IPHONE_PLATFORM_
+        return 0;
+        #else
+        return 1
+        #endif
 
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
 
-	IAnimatedMesh* mesh = smgr->getMesh("../../media/sydney.md2");
+#ifdef _IRR_IPHONE_PLATFORM_
+    stringc mediaPath = "media/";
+#else
+    stringc mediaPath = "../../media/";
+#endif
+
+	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "sydney.md2");
 	if (!mesh)
 	{
 		device->drop();
-		return 1;
+        #ifdef _IRR_IPHONE_PLATFORM_
+        return 0;
+        #else
+        return 1
+        #endif
 	}
 	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
 
@@ -467,7 +537,7 @@ int example_helloworld()
 	{
 		node->setMaterialFlag(EMF_LIGHTING, false);
 		node->setMD2Animation(scene::EMAT_STAND);
-		node->setMaterialTexture( 0, driver->getTexture("../../media/sydney.bmp") );
+		node->setMaterialTexture( 0, driver->getTexture(mediaPath + "sydney.bmp") );
 	}
 
 	/*
@@ -477,11 +547,14 @@ int example_helloworld()
 	*/
 	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 
-	EventReceiver_basic receiver(device);
+#ifdef _IRR_IPHONE_PLATFORM_
+    return device;
+#else
+    EventReceiver_basic receiver(device);
 	device->setEventReceiver(&receiver);
 
 	return run ( device );
-
+#endif
 }
 
 #if defined (_IRR_USE_WINDOWS_CE_DEVICE_)
@@ -492,11 +565,80 @@ int example_helloworld()
 
 /*
 */
-int main()
+#ifdef _IRR_IPHONE_PLATFORM_
+@implementation AppDelegate
+
+@synthesize window;
+
+- (void)applicationDidFinishLaunching:(UIApplication*)application 
 {
+    // if you need ViewController or you don't want to see warning:
+    // "Application windows are expected to have a root view controller
+    // at the end of application launch" create custom UIWindow here
+    // and apply your ViewController to it in following way:
+    // window.rootViewController = YourViewController
+    // it's important to do this step before createDevice method.
+    device = example_helloworld();
+    
+    [self performSelectorOnMainThread:@selector(applicationUpdate) withObject:nil waitUntilDone:NO];
+}
+
+- (void) applicationUpdate
+{
+	run(device);
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    // you should pause rendering here, because some iOS versions,
+    // doesn't allow to send OpenGL rendering commands, when app
+    // is inactive.
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    // you should unpause rendering here.
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application 
+{
+    // you should pause rendering here, because some iOS versions,
+    // doesn't allow to send OpenGL rendering commands, when app
+    // is inactive.
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application 
+{
+    // you should unpause rendering here.
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application 
+{
+    device->drop();
+}
+
+- (void)dealloc 
+{
+	[window release];
+	[super dealloc];
+}
+
+@end
+#endif
+
+int main(int argc, char *argv[])
+{
+#ifdef _IRR_IPHONE_PLATFORM_
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    int retVal = UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+    [pool release];
+
+    return retVal;
+#else
 	example_helloworld ();
 	example_customscenenode();
 	//example_terrain();
+#endif
 }
 
 /*
