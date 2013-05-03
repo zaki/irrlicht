@@ -244,39 +244,39 @@ namespace video
 		if (params.Vsync)
 			eglSwapInterval(EglDisplay, 1);
 #elif defined(GL_ES_VERSION_2_0)
-        glGenFramebuffers(1, &ViewFramebuffer);
-        glGenRenderbuffers(1, &ViewRenderbuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
+		glGenFramebuffers(1, &ViewFramebuffer);
+		glGenRenderbuffers(1, &ViewRenderbuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
 
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        ExposedData.OGLESIPhone.AppDelegate = Device;
-        Device->displayInitialize(&ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
+		ExposedData.OGLESIPhone.AppDelegate = Device;
+		Device->displayInitialize(&ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
 #endif
-        
-        GLint backingWidth;
-        GLint backingHeight;
-        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
-        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
-        
-        glGenRenderbuffers(1, &ViewDepthRenderbuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, ViewDepthRenderbuffer);
-        
-        GLenum depthComponent = GL_DEPTH_COMPONENT16;
-        
-        if(params.ZBufferBits >= 24)
-            depthComponent = GL_DEPTH_COMPONENT24_OES;
-        
-        glRenderbufferStorage(GL_RENDERBUFFER, depthComponent, backingWidth, backingHeight);
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, ViewFramebuffer);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ViewRenderbuffer);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ViewDepthRenderbuffer);
-        
-        core::dimension2d<u32> WindowSize(backingWidth, backingHeight);
-        CNullDriver::ScreenSize = WindowSize;
-        CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
-        
-        genericDriverInit(WindowSize, params.Stencilbuffer);
+
+		GLint backingWidth;
+		GLint backingHeight;
+		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
+		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
+
+		glGenRenderbuffers(1, &ViewDepthRenderbuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, ViewDepthRenderbuffer);
+
+		GLenum depthComponent = GL_DEPTH_COMPONENT16;
+
+		if (params.ZBufferBits >= 24)
+			depthComponent = GL_DEPTH_COMPONENT24_OES;
+
+		glRenderbufferStorage(GL_RENDERBUFFER, depthComponent, backingWidth, backingHeight);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, ViewFramebuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ViewRenderbuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ViewDepthRenderbuffer);
+
+		core::dimension2d<u32> WindowSize(backingWidth, backingHeight);
+		CNullDriver::ScreenSize = WindowSize;
+		CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
+
+		genericDriverInit(WindowSize, params.Stencilbuffer);
 #endif
 	}
 
@@ -288,9 +288,8 @@ namespace video
 		delete MaterialRenderer2D;
 		deleteAllTextures();
 
-		if (BridgeCalls)
-			delete BridgeCalls;
-        
+		delete BridgeCalls;
+
 #if defined(EGL_VERSION_1_0)
 		// HACK : the following is commented because destroying the context crashes under Linux (Thibault 04-feb-10)
 		/*eglMakeCurrent(EGL_NO_DISPLAY, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
@@ -303,21 +302,21 @@ namespace video
 			ReleaseDC((HWND)EglWindow, HDc);
 #endif
 #elif defined(GL_ES_VERSION_2_0)
-        if (0 != ViewFramebuffer)
-        {
-            glDeleteFramebuffers(1,&ViewFramebuffer);
-            ViewFramebuffer = 0;
-        }
-        if (0 != ViewRenderbuffer)
-        {
-            glDeleteRenderbuffers(1,&ViewRenderbuffer);
-            ViewRenderbuffer = 0;
-        }
-        if (0 != ViewDepthRenderbuffer)
-        {
-            glDeleteRenderbuffers(1,&ViewDepthRenderbuffer);
-            ViewDepthRenderbuffer = 0;
-        }
+		if (0 != ViewFramebuffer)
+		{
+			glDeleteFramebuffers(1,&ViewFramebuffer);
+			ViewFramebuffer = 0;
+		}
+		if (0 != ViewRenderbuffer)
+		{
+			glDeleteRenderbuffers(1,&ViewRenderbuffer);
+			ViewRenderbuffer = 0;
+		}
+		if (0 != ViewDepthRenderbuffer)
+		{
+			glDeleteRenderbuffers(1,&ViewDepthRenderbuffer);
+			ViewDepthRenderbuffer = 0;
+		}
 #endif
 	}
 
@@ -331,7 +330,7 @@ namespace video
 		printVersion();
 
 #if defined(EGL_VERSION_1_0)
-        os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
+		os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
 #endif
 
 		// print renderer information
@@ -344,9 +343,9 @@ namespace video
 		// load extensions
 		initExtensions(this,
 #if defined(EGL_VERSION_1_0)
-            EglDisplay,
+			EglDisplay,
 #endif
-            stencilBuffer);
+			stencilBuffer);
 
 		if (!BridgeCalls)
 			BridgeCalls = new COGLES2CallBridge(this);
@@ -406,7 +405,7 @@ namespace video
 
 	void COGLES2Driver::createMaterialRenderers()
 	{
-		// Load shaders from files (in future shaders will be merged with source code).
+		// Load shaders from files
 
 		// Fixed pipeline.
 
@@ -446,9 +445,29 @@ namespace video
 
 		if (FPVSFile)
 			FPVSFile->drop();
-
 		if (FPFSFile)
 			FPFSFile->drop();
+
+		// Create fixed pipeline materials.
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID_2_LAYER, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_ADD, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M2, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M4, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M2, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M4, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_DETAIL_MAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SPHERE_MAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_REFLECTION_2_LAYER, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL_REF, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_VERTEX_ALPHA, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_REFLECTION_2_LAYER, this));
+		// do not remove FPFSData here, we need it later on for
+		// ONE_TEXTURE_BLEND material
 
 		// Normal Mapping.
 
@@ -488,9 +507,15 @@ namespace video
 
 		if (NMVSFile)
 			NMVSFile->drop();
-
 		if (NMFSFile)
 			NMFSFile->drop();
+
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA, this));
+
+		delete NMVSData;
+		delete NMFSData;
 
 		// Parallax Mapping.
 
@@ -530,39 +555,20 @@ namespace video
 
 		if (PMVSFile)
 			PMVSFile->drop();
-
 		if (PMFSFile)
 			PMFSFile->drop();
-
-		// Create materials.		
-
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID_2_LAYER, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_ADD, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M2, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M4, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M2, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M4, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_DETAIL_MAP, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SPHERE_MAP, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_REFLECTION_2_LAYER, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ADD_COLOR, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL_REF, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_VERTEX_ALPHA, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_REFLECTION_2_LAYER, this));
-
-		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_SOLID, this));
-		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR, this));
-		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA, this));
 
 		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_SOLID, this));
 		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR, this));
 		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA, this));
 
 		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_ONETEXTURE_BLEND, this));
+
+		delete PMVSData;
+		delete PMFSData;
+		// now also remove the fixed pipeline data
+		delete FPVSData;
+		delete FPFSData;
 
 		// Create 2D material renderer.
 
@@ -607,16 +613,18 @@ namespace video
 			R2DFSFile->drop();
 
 		MaterialRenderer2D = new COGLES2Renderer2D(R2DVSData, R2DFSData, this);
+		delete R2DVSData;
+		delete R2DFSData;
 	}
 
 
 	//! presents the rendered scene on the screen, returns false if failed
 	bool COGLES2Driver::endScene()
 	{
-        CNullDriver::endScene();
-        
+		CNullDriver::endScene();
+
 #if defined(EGL_VERSION_1_0)
-        eglSwapBuffers(EglDisplay, EglSurface);
+		eglSwapBuffers(EglDisplay, EglSurface);
 		EGLint g = eglGetError();
 		if (EGL_SUCCESS != g)
 		{
@@ -630,13 +638,13 @@ namespace video
 			return false;
 		}
 #elif defined(GL_ES_VERSION_2_0)
-        glFlush();
-        glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
+		glFlush();
+		glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        Device->displayEnd();
+		Device->displayEnd();
 #endif
 #endif
-        
+
 		return true;
 	}
 
@@ -2019,7 +2027,7 @@ namespace video
 		// Texture parameters
 		setTextureRenderStates(material, resetAllRenderStates);
 	}
-    
+
 	//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
 	void COGLES2Driver::setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates)
 	{
@@ -2034,10 +2042,10 @@ namespace video
 			else
 				continue;
 
-			if(resetAllRenderstates)
+			if (resetAllRenderstates)
 				tmpTexture->getStatesCache().IsCached = false;
 
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
@@ -2049,7 +2057,7 @@ namespace video
 
 			if (material.UseMipMaps && CurrentTexture[i]->hasMipMaps())
 			{
-				if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+				if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 					material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
 				{
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -2064,7 +2072,7 @@ namespace video
 			}
 			else
 			{
-				if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
+				if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 					material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || tmpTexture->getStatesCache().MipMapStatus)
 				{
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -2087,13 +2095,13 @@ namespace video
 			}
 	#endif
 
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
+			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
 				tmpTexture->getStatesCache().WrapU = material.TextureLayer[i].TextureWrapU;
 			}
 
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
+			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
 				tmpTexture->getStatesCache().WrapV = material.TextureLayer[i].TextureWrapV;
@@ -2888,7 +2896,7 @@ namespace video
 	{
 		return Material;
 	}
-    
+
 	COGLES2CallBridge* COGLES2Driver::getBridgeCalls() const
 	{
 		return BridgeCalls;
@@ -2910,7 +2918,7 @@ namespace video
 
 		glCullFace(GL_BACK);
 		glDisable(GL_CULL_FACE);
-    
+
 		glDepthFunc(GL_LESS);
 		glDepthMask(GL_TRUE);
 		glDisable(GL_DEPTH_TEST);
@@ -2918,7 +2926,7 @@ namespace video
 
 	void COGLES2CallBridge::setBlendFunc(GLenum source, GLenum destination)
 	{
-		if(BlendSource != source || BlendDestination != destination)
+		if (BlendSource != source || BlendDestination != destination)
 		{
 			glBlendFunc(source, destination);
 
@@ -2929,72 +2937,72 @@ namespace video
 
 	void COGLES2CallBridge::setBlend(bool enable)
 	{
-		if(Blend != enable)
+		if (Blend != enable)
 		{
 			if (enable)
 				glEnable(GL_BLEND);
 			else
 				glDisable(GL_BLEND);
-                
+
 			Blend = enable;
 		}
 	}
 
 	void COGLES2CallBridge::setCullFaceFunc(GLenum mode)
 	{
-		if(CullFaceMode != mode)
+		if (CullFaceMode != mode)
 		{
 			glCullFace(mode);
-                
+
 			CullFaceMode = mode;
 		}
 	}
 
 	void COGLES2CallBridge::setCullFace(bool enable)
 	{
-		if(CullFace != enable)
+		if (CullFace != enable)
 		{
 			if (enable)
 				glEnable(GL_CULL_FACE);
 			else
 				glDisable(GL_CULL_FACE);
-                
+
 			CullFace = enable;
 		}
 	}
 
 	void COGLES2CallBridge::setDepthFunc(GLenum mode)
 	{
-		if(DepthFunc != mode)
+		if (DepthFunc != mode)
 		{
 			glDepthFunc(mode);
-                
+
 			DepthFunc = mode;
 		}
 	}
-        
+
 	void COGLES2CallBridge::setDepthMask(bool enable)
 	{
-		if(DepthMask != enable)
+		if (DepthMask != enable)
 		{
 			if (enable)
 				glDepthMask(GL_TRUE);
 			else
 				glDepthMask(GL_FALSE);
-                
+
 			DepthMask = enable;
 		}
 	}
 
 	void COGLES2CallBridge::setDepthTest(bool enable)
 	{
-		if(DepthTest != enable)
+		if (DepthTest != enable)
 		{
 			if (enable)
 				glEnable(GL_DEPTH_TEST);
 			else
 				glDisable(GL_DEPTH_TEST);
-                
+
 			DepthTest = enable;
 		}
 	}
@@ -3007,7 +3015,7 @@ namespace video
 			Program = program;
 		}
 	}
-        
+
 	void COGLES2CallBridge::setActiveTexture(GLenum texture)
 	{
 		if (ActiveTexture != texture)
@@ -3016,16 +3024,16 @@ namespace video
 			ActiveTexture = texture;
 		}
 	}
-        
+
 	void COGLES2CallBridge::setTexture(u32 stage)
 	{
 		if (stage < MATERIAL_MAX_TEXTURES)
 		{
-			if(Texture[stage] != Driver->CurrentTexture[stage])
+			if (Texture[stage] != Driver->CurrentTexture[stage])
 			{
 				setActiveTexture(GL_TEXTURE0 + stage);
 
-				if(Driver->CurrentTexture[stage])
+				if (Driver->CurrentTexture[stage])
 					glBindTexture(GL_TEXTURE_2D, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
 
 				Texture[stage] = Driver->CurrentTexture[stage];
