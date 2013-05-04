@@ -31,6 +31,6 @@ void main(void)
 	
 	vec4 TexCoord1 = vec4(inTexCoord1.x, inTexCoord1.y, 0.0, 0.0);
 	varTexCoord1 = vec4(uTextureMatrix1 * TexCoord1).xy;
-	
-	varVertexColor = inVertexColor.zyxw;
+
+	varVertexColor = inVertexColor.bgra;
 }

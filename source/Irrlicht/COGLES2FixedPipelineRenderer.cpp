@@ -60,7 +60,12 @@ void COGLES2FixedPipelineRenderer::OnSetMaterial(const video::SMaterial& materia
 
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-	if (FixedBlending)
+	if (Alpha)
+	{
+		Driver->getBridgeCalls()->setBlend(true);
+		Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else if (FixedBlending)
 	{
 		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		Driver->getBridgeCalls()->setBlend(true);
