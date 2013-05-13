@@ -218,7 +218,9 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 			break;
 		case ECF_A8R8G8B8:
 			PixelType=GL_UNSIGNED_BYTE;
-			if (!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888) && !Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
+			if (!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888) &&
+					!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888) &&
+					!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888))
 			{
 				convert=CColorConverter::convert_A8R8G8B8toA8B8G8R8;
 				InternalFormat=GL_RGBA;
