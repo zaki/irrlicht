@@ -85,7 +85,9 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 	}
 	while( IsReady == false );
 	
+#ifdef _DEBUG
 	assert( Android->window );
+#endif
 
 	// Create cursor control
 	CursorControl = new CCursorControl(this);

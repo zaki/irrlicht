@@ -72,8 +72,12 @@ IReadFile* CAndroidAssetFileArchive::createAndOpenFile(const io::path& filename)
 //! opens a file by index
 IReadFile* CAndroidAssetFileArchive::createAndOpenFile(u32 index)
 {
+#ifdef _DEBUG
     assert(false);
     // Since we can't list files, not much sense in giving them an index
+#endif
+
+    return 0;
 }
 
 void CAndroidAssetFileArchive::addDirectory(const io::path &dirname)

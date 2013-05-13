@@ -45,9 +45,9 @@ s32 CAndroidAssetReader::read(void* buffer, u32 sizeToRead)
       
 bool CAndroidAssetReader::seek(long finalPos, bool relativeMovement)
 {
-  long off = AAsset_seek(Asset, finalPos, relativeMovement ? SEEK_CUR
-			                                   : SEEK_SET);
-  return off = relativeMovement-1;
+  off_t status =  AAsset_seek(Asset, finalPos, relativeMovement ? SEEK_CUR : SEEK_SET);
+
+  return status+1;
 }
 
 long CAndroidAssetReader::getSize() const

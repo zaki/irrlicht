@@ -1,2 +1,2 @@
-APP_PLATFORM := android-9
-APP_MODULES := IrrAndroid
+APP_PLATFORM := android-10
+APP_MODULES := Irrlicht

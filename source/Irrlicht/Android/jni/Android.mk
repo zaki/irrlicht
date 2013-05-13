@@ -1,11 +1,25 @@
 LOCAL_PATH := $(call my-dir)/../..
+IRRLICHT_LIB_PATH := $(LOCAL_PATH)/../../lib/Android
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := IrrAndroid
+LOCAL_MODULE := Irrlicht
+IRRLICHT_LIB_NAME := lib$(LOCAL_MODULE).a
+
+LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_ -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
+
+ifndef NDEBUG
+LOCAL_CFLAGS += -g -D_DEBUG
+else
+LOCAL_CFLAGS += -fexpensive-optimizations -O3
+endif
+
+LOCAL_C_INCLUDES := ../../../include
 
 LOCAL_SRC_FILES := \
-					CIrrDeviceAndroid.cpp \
+					Android/CIrrDeviceAndroid.cpp \
+					Android/CAndroidAssetReader.cpp \
+					Android/CAndroidAssetFileArchive.cpp \
 					aesGladman/aescrypt.cpp \
 					aesGladman/aeskey.cpp \
 					aesGladman/aestab.cpp \
@@ -240,8 +254,6 @@ LOCAL_SRC_FILES := \
 					CXMLWriter.cpp \
 					CZBuffer.cpp \
 					CZipReader.cpp \
-					CAndroidAssetReader.cpp \
-					CAndroidAssetFileArchive.cpp \
 					IBurningShader.cpp \
 					Irrlicht.cpp \
 					irrXML.cpp \
@@ -316,14 +328,15 @@ LOCAL_SRC_FILES := \
 					libpng/pngwutil.c \
 					lzma/LzmaDec.c \
 zlib/adler32.c   zlib/crc32.c    zlib/gzclose.c  zlib/gzread.c   zlib/infback.c  zlib/inflate.c   zlib/trees.c    zlib/zutil.c\
-zlib/compress.c  zlib/deflate.c  zlib/gzlib.c    zlib/gzwrite.c  zlib/inffast.c  zlib/inftrees.c  zlib/uncompr.c					
+zlib/compress.c  zlib/deflate.c  zlib/gzlib.c    zlib/gzwrite.c  zlib/inffast.c  zlib/inftrees.c  zlib/uncompr.c
 
-LOCAL_C_INCLUDES := ../../../include
-
-LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_ -g -D_DEBUG
 LOCAL_STATIC_LIBRARIES := android_native_app_glue
 
 include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,android/native_app_glue)
+
+all: $(IRRLICHT_LIB_PATH)
+$(IRRLICHT_LIB_PATH) : $(TARGET_OUT)/$(IRRLICHT_LIB_NAME)
+	cp $< $@
 
