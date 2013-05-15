@@ -1035,9 +1035,11 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNor
 	return clone;
 }
 
-namespace {
+namespace
+{
 
-struct height_edge {
+struct height_edge
+{
 	u32 far;
 
 	u32 polycount;
@@ -1045,18 +1047,20 @@ struct height_edge {
 	core::vector3df normal[2];
 };
 
-enum {
+enum
+{
 	HEIGHT_TRIACCEL_MAX = 1024
 };
 
 }
 
 //! Optimizes the mesh using an algorithm tuned for heightmaps.
-void CMeshManipulator::heightmapOptimizeMesh(IMesh * const m, const f32 tolerance) const {
-
+void CMeshManipulator::heightmapOptimizeMesh(IMesh * const m, const f32 tolerance) const
+{
 	const u32 max = m->getMeshBufferCount();
 
-	for (u32 i = 0; i < max; i++) {
+	for (u32 i = 0; i < max; i++)
+	{
 		IMeshBuffer * const mb = m->getMeshBuffer(i);
 
 		heightmapOptimizeMesh(mb, tolerance);
@@ -1064,8 +1068,8 @@ void CMeshManipulator::heightmapOptimizeMesh(IMesh * const m, const f32 toleranc
 }
 
 //! Optimizes the mesh using an algorithm tuned for heightmaps.
-void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 tolerance) const {
-
+void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 tolerance) const
+{
 	using namespace core;
 	using namespace video;
 
@@ -1080,22 +1084,24 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 	// First an acceleration structure: given this vert, which triangles touch it?
 	// Using this drops two exponents off the algorightm complexity, O(n^4) > O(n^2)
 	// Other optimizations brought it down to O(n).
-	u32 *accel[verts];
-	for (u32 i = 0; i < verts; i++) {
+	u32 **accel = (u32 **) malloc(verts, sizeof(u32 *));
+	for (u32 i = 0; i < verts; i++)
+	{
 		accel[i] = (u32 *) calloc(HEIGHT_TRIACCEL_MAX, sizeof(u32));
 
-		for (u32 j = 0; j < HEIGHT_TRIACCEL_MAX; j++) {
+		for (u32 j = 0; j < HEIGHT_TRIACCEL_MAX; j++)
+		{
 			accel[i][j] = USHRT_MAX;
 		}
 	}
 
-	u16 cur[verts];
-	memset(cur, 0, verts * sizeof(u16));
-	for (u32 j = 0; j < idxs; j+=3) {
-
+	u16 *cur = (u16 *) calloc(verts, sizeof(u16));
+	for (u32 j = 0; j < idxs; j+=3)
+	{
 		u32 v = ind[j];
 
-		if (cur[v] >= HEIGHT_TRIACCEL_MAX) {
+		if (cur[v] >= HEIGHT_TRIACCEL_MAX)
+		{
 			os::Printer::log("Too complex mesh to optimize, aborting.");
 			goto donehere;
 		}
@@ -1106,7 +1112,8 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 		// Unrolled tri loop, parts 2 and 3
 		v = ind[j+1];
 
-		if (cur[v] >= HEIGHT_TRIACCEL_MAX) {
+		if (cur[v] >= HEIGHT_TRIACCEL_MAX)
+		{
 			os::Printer::log("Too complex mesh to optimize, aborting.");
 			goto donehere;
 		}
@@ -1116,7 +1123,8 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 
 		v = ind[j+2];
 
-		if (cur[v] >= HEIGHT_TRIACCEL_MAX) {
+		if (cur[v] >= HEIGHT_TRIACCEL_MAX)
+		{
 			os::Printer::log("Too complex mesh to optimize, aborting.");
 			goto donehere;
 		}
@@ -1124,9 +1132,11 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 		accel[v][cur[v]] = j;
 		cur[v]++;
 	}
+	free(cur);
 
 	// Built, go
-	for (u32 i = 0; i < verts; i++) {
+	for (u32 i = 0; i < verts; i++)
+	{
 		const vector3df &mypos = vert[i].Pos;
 
 		// find all edges of this vert
@@ -1135,24 +1145,31 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 		bool gotonext = false;
 		u32 j;
 		u16 cur;
-		for (cur = 0; accel[i][cur] != USHRT_MAX && cur < HEIGHT_TRIACCEL_MAX; cur++) {
+		for (cur = 0; accel[i][cur] != USHRT_MAX && cur < HEIGHT_TRIACCEL_MAX; cur++)
+		{
 			j = accel[i][cur];
 
 			u32 far1 = -1, far2 = -1;
-			if (ind[j] == i) {
+			if (ind[j] == i)
+			{
 				far1 = ind[j+1];
 				far2 = ind[j+2];
-			} else if (ind[j+1] == i) {
+			}
+			else if (ind[j+1] == i)
+			{
 				far1 = ind[j];
 				far2 = ind[j+2];
-			} else if (ind[j+2] == i) {
+			}
+			else if (ind[j+2] == i)
+			{
 				far1 = ind[j];
 				far2 = ind[j+1];
 			}
 
 			// Skip degenerate tris
 			if (vert[i].Pos == vert[far1].Pos ||
-				vert[far1].Pos == vert[far2].Pos) {
+				vert[far1].Pos == vert[far2].Pos)
+			{
 //				puts("skipping degenerate tri");
 				continue;
 			}
@@ -1161,12 +1178,15 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 			const u32 ecount = edges.size();
 			bool far1new = true, far2new = true;
 
-			for (u32 e = 0; e < ecount; e++) {
+			for (u32 e = 0; e < ecount; e++)
+			{
 				if (edges[e].far == far1 ||
-					edges[e].far == far2) {
+					edges[e].far == far2)
+				{
 
 					// Skip if over 2 polys
-					if (edges[e].polycount > 2) {
+					if (edges[e].polycount > 2)
+					{
 						gotonext = true;
 						goto almostnext;
 					}
@@ -1182,7 +1202,8 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 				}
 			}
 
-			if (far1new) {
+			if (far1new)
+			{
 				// New edge
 				height_edge ed;
 
@@ -1193,7 +1214,8 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 
 				edges.push_back(ed);
 			}
-			if (far2new) {
+			if (far2new)
+			{
 				// New edge
 				height_edge ed;
 
@@ -1207,15 +1229,17 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 		}
 
 		almostnext:
-		if (gotonext) continue;
-
+		if (gotonext)
+			continue;
 
 		// Edges found. Possible to simplify?
 
 		const u32 ecount = edges.size();
 //		printf("Vert %u has %u edges\n", i, ecount);
-		for (u32 e = 0; e < ecount; e++) {
-			for (u32 f = 0; f < ecount; f++) {
+		for (u32 e = 0; e < ecount; e++)
+		{
+			for (u32 f = 0; f < ecount; f++)
+			{
 				if (f == e) continue;
 
 				vector3df one = mypos - vert[edges[e].far].Pos;
@@ -1229,11 +1253,13 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 					continue;
 
 				// All other edges must have two polys
-				for (u32 g = 0; g < ecount; g++) {
+				for (u32 g = 0; g < ecount; g++)
+				{
 					if (g == e || g == f)
 						continue;
 
-					if (edges[g].polycount != 2) {
+					if (edges[g].polycount != 2)
+					{
 //						printf("%u: polycount not 2 (%u)\n",
 //							g, edges[g].polycount);
 						goto testnext;
@@ -1241,13 +1267,15 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 
 					// Normals must match
 					if (!edges[g].normal[0].equals(edges[g].normal[1],
-						tolerance)) {
+						tolerance))
+					{
 //						puts("Normals don't match");
 						goto testnext;
 					}
 
 					// Normals must not flip
-					for (u32 z = 0; z < edges[g].polycount; z++) {
+					for (u32 z = 0; z < edges[g].polycount; z++)
+					{
 						bool flat = false;
 						vector3df pos[3];
 						pos[0] =
@@ -1257,17 +1285,21 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 						pos[2] =
 							vert[ind[edges[g].polys[z] + 2]].Pos;
 
-						for (u32 y = 0; y < 3; y++) {
-							if (edges[g].polys[z] + y == i) {
+						for (u32 y = 0; y < 3; y++)
+						{
+							if (edges[g].polys[z] + y == i)
+							{
 								pos[y] = vert[edges[e].far].Pos;
 							}
 							else if (edges[g].polys[z] + y
-								== edges[e].far) {
+								== edges[e].far)
+							{
 								flat = true;
 								break;
 							}
 						}
-						if (!flat) {
+						if (!flat)
+						{
 							triangle3df temp(pos[0],
 								pos[1], pos[2]);
 							vector3df N = temp.getNormal();
@@ -1275,7 +1307,8 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 //							if (N.getLengthSQ() < 0.5f)
 //								puts("empty");
 
-							if (N != edges[g].normal[z]) {
+							if (N != edges[g].normal[z])
+							{
 //								puts("wouldflip");
 								goto testnext;
 							}
@@ -1283,14 +1316,16 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 					}
 
 					// Must not be on model edge
-					if (edges[g].polycount == 1) {
+					if (edges[g].polycount == 1)
+					{
 						goto testnext;
 					}
 
 				}
 
 				// Must not be on model edge
-				if (edges[e].polycount == 1) {
+				if (edges[e].polycount == 1)
+				{
 					goto testnext;
 				}
 
@@ -1306,9 +1341,11 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 	}
 
 donehere:
-	for (u32 i = 0; i < verts; i++) {
+	for (u32 i = 0; i < verts; i++)
+	{
 		free(accel[i]);
 	}
+	free(accel);
 }
 
 
