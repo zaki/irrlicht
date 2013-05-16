@@ -1084,11 +1084,10 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 	// First an acceleration structure: given this vert, which triangles touch it?
 	// Using this drops two exponents off the algorightm complexity, O(n^4) > O(n^2)
 	// Other optimizations brought it down to O(n).
-	u32 **accel = (u32 **) malloc(verts, sizeof(u32 *));
+	u32 **accel = (u32 **) malloc(verts * sizeof(u32 *));
 	for (u32 i = 0; i < verts; i++)
 	{
 		accel[i] = (u32 *) calloc(HEIGHT_TRIACCEL_MAX, sizeof(u32));
-
 		for (u32 j = 0; j < HEIGHT_TRIACCEL_MAX; j++)
 		{
 			accel[i][j] = USHRT_MAX;
