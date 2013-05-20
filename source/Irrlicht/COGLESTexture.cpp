@@ -35,7 +35,7 @@ COGLES1Texture::COGLES1Texture(IImage* origImage, const io::path& name, COGLES1D
 	// TODO ogl-es
 	// PixelFormat(GL_BGRA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
-	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	HasMipMaps(true), IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
 	UseStencil(false), ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
@@ -44,6 +44,13 @@ COGLES1Texture::COGLES1Texture(IImage* origImage, const io::path& name, COGLES1D
 
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageValues(origImage);
+
+	if (IImage::isCompressedFormat(origImage->getColorFormat())) // TO-DO add support for compressed textures
+	{
+		os::Printer::log("This driver doesn't support compressed textures.", ELL_ERROR);
+		IsCompressed = true;
+		return;
+	}
 
 	glGenTextures(1, &TextureName);
 
@@ -68,7 +75,7 @@ COGLES1Texture::COGLES1Texture(const io::path& name, COGLES1Driver* driver)
 	: ITexture(name), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
-	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	HasMipMaps(true), IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
@@ -80,7 +87,8 @@ COGLES1Texture::COGLES1Texture(const io::path& name, COGLES1Driver* driver)
 //! destructor
 COGLES1Texture::~COGLES1Texture()
 {
-	glDeleteTextures(1, &TextureName);
+	if (TextureName)
+		glDeleteTextures(1, &TextureName);
 	if (Image)
 		Image->drop();
 }

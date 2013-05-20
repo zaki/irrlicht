@@ -77,6 +77,7 @@ namespace video
 		"GL_IMG_read_format",
 		"GL_IMG_shader_binary",
 		"GL_IMG_texture_compression_pvrtc",
+		"GL_IMG_texture_compression_pvrtc2",
 		"GL_IMG_texture_env_enhanced_fixed_function",
 		"GL_IMG_texture_format_BGRA8888",
 		"GL_IMG_user_clip_plane",

@@ -809,78 +809,40 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 			switch(pixelFormat)
 			{
 				case DDS_PF_DXT1:
-				{
-					u32 curWidth = header.Width;
-					u32 curHeight = header.Height;
-
-					dataSize = ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 8;
-
-					do
-					{
-						if (curWidth > 1)
-							curWidth >>= 1;
-
-						if (curHeight > 1)
-							curHeight >>= 1;
-
-						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 8;
-					}
-					while (curWidth != 1 || curWidth != 1);
-
 					format = ECF_DXT1;
 					break;
-				}
 				case DDS_PF_DXT2:
 				case DDS_PF_DXT3:
-				{
-					u32 curWidth = header.Width;
-					u32 curHeight = header.Height;
-
-					dataSize = ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
-
-					do
-					{
-						if (curWidth > 1)
-							curWidth >>= 1;
-
-						if (curHeight > 1)
-							curHeight >>= 1;
-
-						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
-					}
-					while (curWidth != 1 || curWidth != 1);
-
 					format = ECF_DXT3;
 					break;
-				}
 				case DDS_PF_DXT4:
 				case DDS_PF_DXT5:
-				{
-					u32 curWidth = header.Width;
-					u32 curHeight = header.Height;
-
-					dataSize = ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
-
-					do
-					{
-						if (curWidth > 1)
-							curWidth >>= 1;
-
-						if (curHeight > 1)
-							curHeight >>= 1;
-
-						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
-					}
-					while (curWidth != 1 || curWidth != 1);
-
 					format = ECF_DXT5;
 					break;
-				}
 			}
 
-			if( format != ECF_UNKNOWN )
+			if (format != ECF_UNKNOWN)
 			{
-				if (!is3D) // Currently 3D textures are unsupported.
+				// Calculate image data size.
+				u32 curWidth = header.Width;
+				u32 curHeight = header.Height;
+
+				dataSize = IImage::getCompressedImageSize(format, curWidth, curHeight);
+
+				do
+				{
+					if (curWidth > 1)
+						curWidth >>= 1;
+
+					if (curHeight > 1)
+						curHeight >>= 1;
+
+					dataSize += IImage::getCompressedImageSize(format, curWidth, curHeight);
+				}
+				while (curWidth != 1 || curWidth != 1);
+
+				// Currently 3D textures are unsupported.
+				if (!is3D)
 				{
 					u8* data = new u8[dataSize];
 					file->read(data, dataSize);

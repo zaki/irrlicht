@@ -125,6 +125,16 @@ public:
 		case ECF_DXT4:
 		case ECF_DXT5:
 			return 32;
+		case ECF_PVRTC_R2G2B2:
+			return 6;
+		case ECF_PVRTC_A2R2G2B2:
+		case ECF_PVRTC2_A2R2G2B2:
+			return 8;
+		case ECF_PVRTC_R4G4B4:
+			return 12;
+		case ECF_PVRTC_A4R4G4B4:
+		case ECF_PVRTC2_A4R4G4B4:
+			return 16;
 		case ECF_R16F:
 			return 16;
 		case ECF_G16R16F:
@@ -142,6 +152,46 @@ public:
 		}
 	}
 
+	//! calculate compressed image size for selected width and height.
+	static u32 getCompressedImageSize(ECOLOR_FORMAT format, u32 width, u32 height)
+	{
+		if (!isCompressedFormat(format))
+			return 0;
+
+		u32 compressedImageSize = 0;
+
+		switch (format)
+		{
+			case ECF_DXT1:
+				compressedImageSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
+				break;
+			case ECF_DXT2:
+			case ECF_DXT3:
+			case ECF_DXT4:
+			case ECF_DXT5:
+				compressedImageSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
+				break;
+			case ECF_PVRTC_R2G2B2:
+			case ECF_PVRTC_A2R2G2B2:
+				compressedImageSize = (core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
+				break;
+			case ECF_PVRTC_R4G4B4:
+			case ECF_PVRTC_A4R4G4B4:
+				compressedImageSize = (core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
+				break;
+			case ECF_PVRTC2_A2R2G2B2:
+				compressedImageSize = core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
+				break;
+			case ECF_PVRTC2_A4R4G4B4:
+				compressedImageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
+				break;
+			default:
+				break;
+		}
+
+		return compressedImageSize;
+	}
+
 	//! test if this is compressed color format
 	static bool isCompressedFormat(const ECOLOR_FORMAT format)
 	{
@@ -152,6 +202,12 @@ public:
 			case ECF_DXT3:
 			case ECF_DXT4:
 			case ECF_DXT5:
+			case ECF_PVRTC_R2G2B2:
+			case ECF_PVRTC_A2R2G2B2:
+			case ECF_PVRTC2_A2R2G2B2:
+			case ECF_PVRTC_R4G4B4:
+			case ECF_PVRTC_A4R4G4B4:
+			case ECF_PVRTC2_A4R4G4B4:
 				return true;
 			default:
 				return false;

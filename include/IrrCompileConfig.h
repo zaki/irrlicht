@@ -630,6 +630,11 @@ B3D, MS3D or X meshes */
 #ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
 #undef _IRR_COMPILE_WITH_DDS_LOADER_
 #endif
+//! Define _IRR_COMPILE_WITH_PVR_LOADER_ if you want to load .pvr files
+#define _IRR_COMPILE_WITH_PVR_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_PVR_LOADER_
+#undef _IRR_COMPILE_WITH_PVR_LOADER_
+#endif
 //! Define _IRR_COMPILE_WITH_TGA_LOADER_ if you want to load .tga files
 #define _IRR_COMPILE_WITH_TGA_LOADER_
 #ifdef NO_IRR_COMPILE_WITH_TGA_LOADER_

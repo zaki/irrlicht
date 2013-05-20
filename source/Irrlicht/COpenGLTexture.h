@@ -137,11 +137,14 @@ protected:
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
 
 	//! Get the OpenGL color format parameters based on the given Irrlicht color format
-	GLint getOpenGLFormatAndParametersFromColorFormat(
-		ECOLOR_FORMAT format, GLint& filtering, GLenum& colorformat, GLenum& type);
+	void getFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLint& filtering,
+		GLenum& pixelFormat, GLenum& type);
 
 	//! get important numbers of the image and hw texture
 	void getImageValues(IImage* image);
+
+	//! check format compatibility.
+	bool checkFormatCompatibility();
 
 	//! copies the texture into an OpenGL texture.
 	/** \param newTexture True if method is called for a newly created texture for the first time. Otherwise call with false to improve memory handling.

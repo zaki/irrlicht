@@ -76,6 +76,24 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 			}
 		}
 
+		if(image->getColorFormat() == ECF_PVRTC_R2G2B2 || image->getColorFormat() == ECF_PVRTC_A2R2G2B2 || image->getColorFormat() == ECF_PVRTC_R4G4B4 || image->getColorFormat() == ECF_PVRTC_A4R4G4B4)
+		{
+			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
+			{
+				os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
+				return;
+			}
+		}
+
+		if(image->getColorFormat() == ECF_PVRTC2_A2R2G2B2 || image->getColorFormat() == ECF_PVRTC2_A4R4G4B4)
+		{
+			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
+			{
+				os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
+				return;
+			}
+		}
+
 		if (createTexture(flags, image))
 		{
 			if (copyTexture(image))

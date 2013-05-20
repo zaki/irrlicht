@@ -26,9 +26,9 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name,
 	{
 		bool IsCompressed = false;
 
-		if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+		if (IImage::isCompressedFormat(image->getColorFormat()))
 		{
-			os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+			os::Printer::log("This driver doesn't support compressed textures.", ELL_ERROR);
 			IsCompressed = true;
 		}
 

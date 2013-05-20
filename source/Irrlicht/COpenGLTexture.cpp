@@ -33,45 +33,34 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageValues(origImage);
-
-	if (ColorFormat == ECF_DXT1 || ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
+	
+	if (checkFormatCompatibility())
 	{
-		if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+		if (IsCompressed)
 		{
-			os::Printer::log("DXT texture compression not available.", ELL_ERROR);
-			return;
-		}
-
-		if(ImageSize != TextureSize)
-		{
-			os::Printer::log("Invalid size of image for compressed texture, size of image must be POT.", ELL_ERROR);
-			return;
-		}
-		else
-		{
-			IsCompressed = true;
 			Image = origImage;
 			Image->grab();
 			KeepImage = false;
 		}
-	}
-	else if (ImageSize==TextureSize)
-	{
-		Image = Driver->createImage(ColorFormat, ImageSize);
-		origImage->copyTo(Image);
-	}
-	else
-	{
-		Image = Driver->createImage(ColorFormat, TextureSize);
-		// scale texture
-		origImage->copyToScaling(Image);
-	}
-	glGenTextures(1, &TextureName);
-	uploadTexture(true, mipmapData);
-	if (!KeepImage)
-	{
-		Image->drop();
-		Image=0;
+		else if (ImageSize==TextureSize)
+		{
+			Image = Driver->createImage(ColorFormat, ImageSize);
+			origImage->copyTo(Image);
+		}
+		else
+		{
+			Image = Driver->createImage(ColorFormat, TextureSize);
+			origImage->copyToScaling(Image);
+		}
+
+		glGenTextures(1, &TextureName);
+		uploadTexture(true, mipmapData);
+
+		if (!KeepImage)
+		{
+			Image->drop();
+			Image=0;
+		}
 	}
 }
 
@@ -104,198 +93,216 @@ COpenGLTexture::~COpenGLTexture()
 ECOLOR_FORMAT COpenGLTexture::getBestColorFormat(ECOLOR_FORMAT format)
 {
 	ECOLOR_FORMAT destFormat = ECF_A8R8G8B8;
-	switch (format)
+
+	if (!IImage::isCompressedFormat(format))
 	{
-		case ECF_A1R5G5B5:
-			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_R5G6B5:
-			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_A8R8G8B8:
-			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
+		switch (format)
+		{
+			case ECF_A1R5G5B5:
+				if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
+					destFormat = ECF_A1R5G5B5;
+				break;
+			case ECF_R5G6B5:
+				if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
+					destFormat = ECF_A1R5G5B5;
+				break;
+			case ECF_A8R8G8B8:
+				if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
 					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_R8G8B8:
-			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
+					destFormat = ECF_A1R5G5B5;
+				break;
+			case ECF_R8G8B8:
+				if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
 					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				destFormat = ECF_A1R5G5B5;
-		default:
-		break;
+					destFormat = ECF_A1R5G5B5;
+				break;
+			default:
+				break;
+		}
 	}
+	else
+		destFormat = format;
+
 	if (Driver->getTextureCreationFlag(ETCF_NO_ALPHA_CHANNEL))
 	{
 		switch (destFormat)
 		{
 			case ECF_A1R5G5B5:
 				destFormat = ECF_R5G6B5;
-			break;
+				break;
 			case ECF_A8R8G8B8:
 				destFormat = ECF_R8G8B8;
-			break;
+				break;
 			default:
-			break;
+				break;
 		}
 	}
+
 	return destFormat;
 }
 
 
-//! Get opengl values for the GPU texture storage
-GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT format,
-				GLint& filtering,
-				GLenum& colorformat,
-				GLenum& type)
+//! Get the OpenGL color format parameters based on the given Irrlicht color format
+void COpenGLTexture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLint& filtering,
+	GLenum& pixelFormat, GLenum& type)
 {
-	// default
-	filtering = GL_LINEAR;
-	colorformat = GL_RGBA;
-	type = GL_UNSIGNED_BYTE;
-	GLenum internalformat = GL_RGBA;
-
 	switch(format)
 	{
 		case ECF_A1R5G5B5:
-			colorformat=GL_BGRA_EXT;
-			type=GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			internalformat =  GL_RGBA;
+			internalFormat = GL_RGBA;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA_EXT;
+			type = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 			break;
 		case ECF_R5G6B5:
-			colorformat=GL_RGB;
-			type=GL_UNSIGNED_SHORT_5_6_5;
-			internalformat =  GL_RGB;
+			internalFormat = GL_RGB;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_UNSIGNED_SHORT_5_6_5;
 			break;
 		case ECF_R8G8B8:
-			colorformat=GL_BGR;
-			type=GL_UNSIGNED_BYTE;
-			internalformat =  GL_RGB;
+			internalFormat = GL_RGB;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGR;
+			type = GL_UNSIGNED_BYTE;
 			break;
 		case ECF_A8R8G8B8:
-			colorformat=GL_BGRA_EXT;
+			internalFormat = GL_RGBA;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA_EXT;
 			if (Driver->Version > 101)
-				type=GL_UNSIGNED_INT_8_8_8_8_REV;
-			internalformat =  GL_RGBA;
+				type = GL_UNSIGNED_INT_8_8_8_8_REV;
+			else
+				type = GL_UNSIGNED_BYTE;
 			break;
+#ifdef GL_EXT_texture_compression_s3tc
 		case ECF_DXT1:
-			colorformat = GL_BGRA_EXT;
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA_EXT;
 			type = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 			break;
+#endif
+#ifdef GL_EXT_texture_compression_s3tc
 		case ECF_DXT2:
 		case ECF_DXT3:
-			colorformat = GL_BGRA_EXT;
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA_EXT;
 			type = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 			break;
+#endif
+#ifdef GL_EXT_texture_compression_s3tc
 		case ECF_DXT4:
 		case ECF_DXT5:
-			colorformat = GL_BGRA_EXT;
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA_EXT;
 			type = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			break;
-		case ECF_R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RED;
-			type = GL_FLOAT;
-
-			internalformat =  GL_R16F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
 #endif
-		}
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_R2G2B2:
+			internalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_A2R2G2B2:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_R4G4B4:
+			internalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_A4R4G4B4:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc2
+		case ECF_PVRTC2_A2R2G2B2:
+			internalFormat = COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc2
+		case ECF_PVRTC2_A4R4G4B4:
+			internalFormat = COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+			break;
+#endif
+#ifdef GL_ARB_texture_rg
+		case ECF_R16F:
+			internalFormat = GL_R16F;
+			filtering = GL_NEAREST;
+			pixelFormat = GL_RED;
+			type = GL_FLOAT;
 			break;
 		case ECF_G16R16F:
-		{
-#ifdef GL_ARB_texture_rg
+			internalFormat = GL_RG16F;
 			filtering = GL_NEAREST;
-			colorformat = GL_RG;
+			pixelFormat = GL_RG;
 			type = GL_FLOAT;
-
-			internalformat =  GL_RG16F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
-#endif
-		}
-			break;
-		case ECF_A16B16G16R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RGBA;
-			type = GL_FLOAT;
-
-			internalformat =  GL_RGBA16F_ARB;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGBA8;
-#endif
-		}
 			break;
 		case ECF_R32F:
-		{
-#ifdef GL_ARB_texture_rg
+			internalFormat = GL_R32F;
 			filtering = GL_NEAREST;
-			colorformat = GL_RED;
+			pixelFormat = GL_RED;
 			type = GL_FLOAT;
-
-			internalformat =  GL_R32F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
-#endif
-		}
 			break;
 		case ECF_G32R32F:
-		{
-#ifdef GL_ARB_texture_rg
+			internalFormat = GL_RG32F;
 			filtering = GL_NEAREST;
-			colorformat = GL_RG;
+			pixelFormat = GL_RG;
 			type = GL_FLOAT;
-
-			internalformat =  GL_RG32F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
+			break;
 #endif
-		}
+#ifdef GL_ARB_texture_float
+		case ECF_A16B16G16R16F:
+			internalFormat = GL_RGBA16F_ARB;
+			filtering = GL_NEAREST;
+			pixelFormat = GL_RGBA;
+			type = GL_FLOAT;
 			break;
 		case ECF_A32B32G32R32F:
-		{
-#ifdef GL_ARB_texture_float
+			internalFormat = GL_RGBA32F_ARB;
 			filtering = GL_NEAREST;
-			colorformat = GL_RGBA;
+			pixelFormat = GL_RGBA;
 			type = GL_FLOAT;
-
-			internalformat =  GL_RGBA32F_ARB;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGBA8;
-#endif
-		}
 			break;
+#endif
 		default:
-		{
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
-			internalformat =  GL_RGBA8;
-		}
+			break;
 	}
+
 #if defined(GL_ARB_framebuffer_sRGB) || defined(GL_EXT_framebuffer_sRGB)
 	if (Driver->Params.HandleSRGB)
 	{
-		if (internalformat==GL_RGBA)
-			internalformat=GL_SRGB_ALPHA_EXT;
-		else if (internalformat==GL_RGB)
-			internalformat=GL_SRGB_EXT;
+		if (internalFormat == GL_RGBA)
+			internalFormat = GL_SRGB_ALPHA_EXT;
+		else if (internalFormat == GL_RGB)
+			internalFormat = GL_SRGB_EXT;
 	}
 #endif
-	return internalformat;
 }
 
 
@@ -329,10 +336,78 @@ void COpenGLTexture::getImageValues(IImage* image)
 	}
 	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
-	if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
-		ColorFormat = image->getColorFormat();
-	else
-		ColorFormat = getBestColorFormat(image->getColorFormat());
+	ColorFormat = getBestColorFormat(image->getColorFormat());
+}
+
+
+//! check format compatibility.
+bool COpenGLTexture::checkFormatCompatibility()
+{
+	bool status = true;
+
+	switch (ColorFormat)
+	{
+		case ECF_DXT1:
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
+			{
+				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+				{
+					os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if(ImageSize != TextureSize)
+				{
+					os::Printer::log("Invalid size of image for DXTn compressed texture, size of image must be POT.", ELL_ERROR);
+					status = false;
+				}
+				else
+					IsCompressed = true;
+			}
+			break;
+		case ECF_PVRTC_R2G2B2:
+		case ECF_PVRTC_A2R2G2B2:
+		case ECF_PVRTC_R4G4B4:
+		case ECF_PVRTC_A4R4G4B4:
+			{
+				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
+				{
+					os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if(ImageSize != TextureSize)
+				{
+					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be POT.", ELL_ERROR);
+					status = false;
+				}
+				else if(TextureSize.Height != TextureSize.Width)
+				{
+					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be squared.", ELL_ERROR);
+					status = false;
+				}
+				else
+					IsCompressed = true;
+			}
+			break;
+		case ECF_PVRTC2_A2R2G2B2:
+		case ECF_PVRTC2_A4R4G4B4:
+			{
+				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
+				{
+					os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else
+					IsCompressed = true;
+			}
+			break;
+		default:
+			break;
+	}
+
+	return status;
 }
 
 
@@ -348,12 +423,13 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	}
 
 	// get correct opengl color data values
-	GLenum oldInternalFormat = InternalFormat;
-	GLint filtering;
-	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(ColorFormat, filtering, PixelFormat, PixelType);
+	GLint oldInternalFormat = InternalFormat;
+	GLint filtering = GL_LINEAR;
+	getFormatParameters(ColorFormat, InternalFormat, filtering, PixelFormat, PixelType);
+
 	// make sure we don't change the internal format of existing images
 	if (!newTexture)
-		InternalFormat=oldInternalFormat;
+		InternalFormat = oldInternalFormat;
 
     Driver->setActiveTexture(0, this);
 	Driver->getBridgeCalls()->setTexture(0, true);
@@ -397,29 +473,29 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		}
 
 		// enable bilinear filter without mipmaps
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if (filtering == GL_LINEAR)
+			StatesCache.BilinearFilter = true;
+		else
+			StatesCache.BilinearFilter = false;
 
-		StatesCache.BilinearFilter = true;
 		StatesCache.TrilinearFilter = false;
 		StatesCache.MipMapStatus = false;
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
 	}
 
 	// now get image data and upload to GPU
-	u32 compressedDataSize = 0;
+
+	u32 compressedImageSize = IImage::getCompressedImageSize(ColorFormat, image->getDimension().Width, image->getDimension().Height);
 
 	void* source = image->lock();
 	if (newTexture)
 	{
 		if (IsCompressed)
 		{
-			if(ColorFormat == ECF_DXT1)
-				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
-			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
-
 			Driver->extGlCompressedTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, image->getDimension().Width,
-				image->getDimension().Height, 0, compressedDataSize, source);
+				image->getDimension().Height, 0, compressedImageSize, source);
 		}
 		else
 			glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, image->getDimension().Width,
@@ -429,13 +505,8 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	{
 		if (IsCompressed)
 		{
-			if(ColorFormat == ECF_DXT1)
-				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
-			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-				compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
-
 			Driver->extGlCompressedTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
-				image->getDimension().Height, PixelFormat, compressedDataSize, source);
+				image->getDimension().Height, PixelFormat, compressedImageSize, source);
 		}
 		else
 			glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
@@ -448,7 +519,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		if (IsCompressed && !mipmapData)
 		{
 			if (image->hasMipMaps())
-				mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
+				mipmapData = static_cast<u8*>(image->lock())+compressedImageSize;
 			else
 				HasMipMaps = false;
 		}
@@ -458,12 +529,21 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		if (HasMipMaps) // might have changed in regenerateMipMapLevels
 		{
 			// enable bilinear mipmap filter
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			GLint filteringMipMaps = GL_LINEAR_MIPMAP_NEAREST;
 
-            StatesCache.BilinearFilter = true;
-            StatesCache.TrilinearFilter = false;
-            StatesCache.MipMapStatus = true;
+			if (filtering == GL_LINEAR)
+				StatesCache.BilinearFilter = true;
+			else
+			{
+				StatesCache.BilinearFilter = false;
+				filteringMipMaps = GL_NEAREST_MIPMAP_NEAREST;
+			}
+
+			StatesCache.TrilinearFilter = false;
+			StatesCache.MipMapStatus = false;
+
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filteringMipMaps);
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
 		}
 	}
 
@@ -701,7 +781,7 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 	}
 
 	// Manually create mipmaps or use prepared version
-	u32 compressedDataSize = 0;
+	u32 compressedImageSize = 0;
 	u32 width=Image->getDimension().Width;
 	u32 height=Image->getDimension().Height;
 	u32 i=0;
@@ -724,13 +804,10 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 
 		if (IsCompressed)
 		{
-			if(ColorFormat == ECF_DXT1)
-				compressedDataSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
-			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-				compressedDataSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
+			compressedImageSize = IImage::getCompressedImageSize(ColorFormat, width, height);
 
 			Driver->extGlCompressedTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width,
-				height, 0, compressedDataSize, target);
+				height, 0, compressedImageSize, target);
 		}
 		else
 			glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
@@ -740,7 +817,7 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 		if (mipmapData)
 		{
 			if (IsCompressed)
-				mipmapData = static_cast<u8*>(mipmapData)+compressedDataSize;
+				mipmapData = static_cast<u8*>(mipmapData)+compressedImageSize;
 			else
 				mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();
 
@@ -819,8 +896,8 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	ColorFormat = format;
 
-	GLint FilteringType;
-	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
+	GLint filtering = GL_LINEAR;
+	getFormatParameters(format, InternalFormat, filtering, PixelFormat, PixelType);
 
 	HasMipMaps = false;
 	IsRenderTarget = true;
@@ -836,11 +913,11 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
     Driver->setActiveTexture(0, this);
 	Driver->getBridgeCalls()->setTexture(0, true);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    if(FilteringType == GL_NEAREST)
+    if(filtering == GL_NEAREST)
         StatesCache.BilinearFilter = false;
     else
         StatesCache.BilinearFilter = true;

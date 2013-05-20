@@ -48,6 +48,24 @@ namespace video
 		//! DXT5 color format.
 		ECF_DXT5,
 
+		//! PVRTC RGB 2bpp
+		ECF_PVRTC_R2G2B2,
+
+		//! PVRTC ARGB 2bpp
+		ECF_PVRTC_A2R2G2B2,
+
+		//! PVRTC RGB 4bpp
+		ECF_PVRTC_R4G4B4,
+
+		//! PVRTC ARGB 4bpp
+		ECF_PVRTC_A4R4G4B4,
+
+		//! PVRTC2 ARGB 2bpp
+		ECF_PVRTC2_A2R2G2B2,
+
+		//! PVRTC2 ARGB 4bpp
+		ECF_PVRTC2_A4R4G4B4,
+
 		/** Floating Point formats. The following formats may only be used for render target textures. */
 
 		//! 16 bit floating point format using 16 bits for the red channel.

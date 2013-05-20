@@ -67,13 +67,11 @@ HasMipMaps(false), IsRenderTarget(false)
 
 	if (image)
 	{
-		if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+		if (IImage::isCompressedFormat(image->getColorFormat()))
 		{
-			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
-			{
-				os::Printer::log("DXT texture compression not available.", ELL_ERROR);
-				return;
-			}
+			os::Printer::log("This driver doesn't support compressed textures.", ELL_ERROR);
+			IsCompressed = true;
+			return;
 		}
 
 		if (createTexture(flags, image))

@@ -112,6 +112,7 @@ protected:
 
 	bool HasMipMaps;
 	bool IsRenderTarget;
+	bool IsCompressed;
 	bool AutomaticMipmapUpdate;
 	bool UseStencil;
 	bool ReadOnlyLock;

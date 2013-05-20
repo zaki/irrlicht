@@ -42,34 +42,53 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
-	IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES2Texture");
 	#endif
 
+#ifndef GL_BGRA
+	// whoa, pretty badly implemented extension...
+	if (Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888] ||
+		Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888] ||
+		Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888])
+		GL_BGRA = 0x80E1;
+	else
+		GL_BGRA = GL_RGBA;
+#endif
+
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageValues(origImage);
+	
+	if (checkFormatCompatibility())
+	{
+		if (IsCompressed)
+		{
+			Image = origImage;
+			Image->grab();
+			KeepImage = false;
+		}
+		else if (ImageSize==TextureSize)
+		{
+			Image = Driver->createImage(ColorFormat, ImageSize);
+			origImage->copyTo(Image);
+		}
+		else
+		{
+			Image = Driver->createImage(ColorFormat, TextureSize);
+			origImage->copyToScaling(Image);
+		}
 
-	glGenTextures(1, &TextureName);
+		glGenTextures(1, &TextureName);
+		uploadTexture(true, mipmapData);
 
-	if (ImageSize==TextureSize)
-	{
-		Image = Driver->createImage(ColorFormat, ImageSize);
-		origImage->copyTo(Image);
-	}
-	else
-	{
-		Image = Driver->createImage(ColorFormat, TextureSize);
-		// scale texture
-		origImage->copyToScaling(Image);
-	}
-	uploadTexture(true, mipmapData);
-	if (!KeepImage)
-	{
-		Image->drop();
-		Image=0;
+		if (!KeepImage)
+		{
+			Image->drop();
+			Image=0;
+		}
 	}
 }
 
@@ -79,7 +98,7 @@ COGLES2Texture::COGLES2Texture(const io::path& name, COGLES2Driver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
-	IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
@@ -102,43 +121,182 @@ COGLES2Texture::~COGLES2Texture()
 ECOLOR_FORMAT COGLES2Texture::getBestColorFormat(ECOLOR_FORMAT format)
 {
 	ECOLOR_FORMAT destFormat = ECF_A8R8G8B8;
-	switch (format)
+
+	if (!IImage::isCompressedFormat(format))
 	{
-		case ECF_A1R5G5B5:
-			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_R5G6B5:
-			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_A8R8G8B8:
-			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
+		switch (format)
+		{
+			case ECF_A1R5G5B5:
+				if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
+					destFormat = ECF_A1R5G5B5;
+				break;
+			case ECF_R5G6B5:
+				if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
+					destFormat = ECF_A1R5G5B5;
+				break;
+			case ECF_A8R8G8B8:
+				if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
 					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_R8G8B8:
-			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
+					destFormat = ECF_A1R5G5B5;
+				break;
+			case ECF_R8G8B8:
+				if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
 					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				destFormat = ECF_A1R5G5B5;
-		default:
-		break;
+					destFormat = ECF_A1R5G5B5;
+				break;
+			default:
+				break;
+		}
 	}
+	else
+		destFormat = format;
+
 	if (Driver->getTextureCreationFlag(ETCF_NO_ALPHA_CHANNEL))
 	{
 		switch (destFormat)
 		{
 			case ECF_A1R5G5B5:
 				destFormat = ECF_R5G6B5;
-			break;
+				break;
 			case ECF_A8R8G8B8:
 				destFormat = ECF_R8G8B8;
-			break;
+				break;
 			default:
-			break;
+				break;
 		}
 	}
+
 	return destFormat;
+}
+
+
+//! Get the OpenGL color format parameters based on the given Irrlicht color format
+void COGLES2Texture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLint& filtering,
+	GLenum& pixelFormat, GLenum& type, void(*&convert)(const void*, s32, void*))
+{
+	switch(format)
+	{
+		case ECF_A1R5G5B5:
+			internalFormat = GL_RGBA;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_UNSIGNED_SHORT_5_5_5_1;
+			convert = CColorConverter::convert_A1R5G5B5toR5G5B5A1;
+			break;
+		case ECF_R5G6B5:
+			internalFormat = GL_RGB;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_UNSIGNED_SHORT_5_6_5;
+			break;
+		case ECF_R8G8B8:
+			internalFormat = GL_RGB;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_UNSIGNED_BYTE;
+			convert = CColorConverter::convert_R8G8B8toB8G8R8;
+			break;
+		case ECF_A8R8G8B8:
+			filtering = GL_LINEAR;
+			type = GL_UNSIGNED_BYTE;
+			if (!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888) &&
+				!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888) &&
+				!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888))
+			{
+				internalFormat = GL_RGBA;
+				pixelFormat = GL_RGBA;
+				convert = CColorConverter::convert_A8R8G8B8toA8B8G8R8;
+			}
+			else
+			{
+				internalFormat = GL_BGRA;
+				pixelFormat = GL_BGRA;
+			}
+			break;
+#ifdef GL_EXT_texture_compression_s3tc
+		case ECF_DXT1:
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA;
+			type = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			break;
+#endif
+#ifdef GL_EXT_texture_compression_s3tc
+		case ECF_DXT2:
+		case ECF_DXT3:
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA;
+			type = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			break;
+#endif
+#ifdef GL_EXT_texture_compression_s3tc
+		case ECF_DXT4:
+		case ECF_DXT5:
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_BGRA;
+			type = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_R2G2B2:
+			internalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_A2R2G2B2:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_R4G4B4:
+			internalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_A4R4G4B4:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc2
+		case ECF_PVRTC2_A2R2G2B2:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc2
+		case ECF_PVRTC2_A4R4G4B4:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+			break;
+#endif
+		default:
+			os::Printer::log("Unsupported texture format", ELL_ERROR);
+			break;
+	}
+
+	// Hack for iPhone SDK, which requires a different InternalFormat
+#ifdef _IRR_IPHONE_PLATFORM_
+	if (internalFormat == GL_BGRA)
+		internalFormat = GL_RGBA;
+#endif
 }
 
 
@@ -147,7 +305,7 @@ void COGLES2Texture::getImageValues(IImage* image)
 {
 	if (!image)
 	{
-		os::Printer::log("No image for OpenGL texture.", ELL_ERROR);
+		os::Printer::log("No image for OpenGL ES2 texture.", ELL_ERROR);
 		return;
 	}
 
@@ -155,7 +313,7 @@ void COGLES2Texture::getImageValues(IImage* image)
 
 	if ( !ImageSize.Width || !ImageSize.Height)
 	{
-		os::Printer::log("Invalid size of image for OpenGL Texture.", ELL_ERROR);
+		os::Printer::log("Invalid size of image for OpenGL ES2 Texture.", ELL_ERROR);
 		return;
 	}
 
@@ -176,6 +334,77 @@ void COGLES2Texture::getImageValues(IImage* image)
 }
 
 
+//! check format compatibility.
+bool COGLES2Texture::checkFormatCompatibility()
+{
+	bool status = true;
+
+	switch (ColorFormat)
+	{
+		case ECF_DXT1:
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
+			{
+				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+				{
+					os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if(ImageSize != TextureSize)
+				{
+					os::Printer::log("Invalid size of image for DXTn compressed texture, size of image must be POT.", ELL_ERROR);
+					status = false;
+				}
+				else
+					IsCompressed = true;
+			}
+			break;
+		case ECF_PVRTC_R2G2B2:
+		case ECF_PVRTC_A2R2G2B2:
+		case ECF_PVRTC_R4G4B4:
+		case ECF_PVRTC_A4R4G4B4:
+			{
+				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
+				{
+					os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if(ImageSize != TextureSize)
+				{
+					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be POT.", ELL_ERROR);
+					status = false;
+				}
+				else if(TextureSize.Height != TextureSize.Width)
+				{
+					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be squared.", ELL_ERROR);
+					status = false;
+				}
+				else
+					IsCompressed = true;
+			}
+			break;
+		case ECF_PVRTC2_A2R2G2B2:
+		case ECF_PVRTC2_A4R4G4B4:
+			{
+				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
+				{
+					os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else
+					IsCompressed = true;
+			}
+			break;
+		default:
+			break;
+	}
+
+	return status;
+}
+
+
 //! copies the the texture into an open gl texture.
 void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 {
@@ -183,68 +412,20 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	IImage* image = level?MipImage:Image;
 	if (!image)
 	{
-		os::Printer::log("No image for OGLES2 texture to upload", ELL_ERROR);
+		os::Printer::log("No image for OpenGL ES2 texture to upload", ELL_ERROR);
 		return;
 	}
 
-#ifndef GL_BGRA
-	// whoa, pretty badly implemented extension...
-	if (Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888] || Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888])
-		GL_BGRA=0x80E1;
-	else
-		GL_BGRA=GL_RGBA;
-#endif
+	// get correct opengl color data values
+	GLint oldInternalFormat = InternalFormat;
+	GLint filtering = GL_LINEAR;
+	void(*convert)(const void*, s32, void*) = 0;
+	getFormatParameters(ColorFormat, InternalFormat, filtering, PixelFormat, PixelType, convert);
 
-	GLenum oldInternalFormat = InternalFormat;
-	void(*convert)(const void*, s32, void*)=0;
-	switch (Image->getColorFormat())
-	{
-		case ECF_A1R5G5B5:
-			InternalFormat=GL_RGBA;
-			PixelFormat=GL_RGBA;
-			PixelType=GL_UNSIGNED_SHORT_5_5_5_1;
-			convert=CColorConverter::convert_A1R5G5B5toR5G5B5A1;
-			break;
-		case ECF_R5G6B5:
-			InternalFormat=GL_RGB;
-			PixelFormat=GL_RGB;
-			PixelType=GL_UNSIGNED_SHORT_5_6_5;
-			break;
-		case ECF_R8G8B8:
-			InternalFormat=GL_RGB;
-			PixelFormat=GL_RGB;
-			PixelType=GL_UNSIGNED_BYTE;
-			convert=CColorConverter::convert_R8G8B8toB8G8R8;
-			break;
-		case ECF_A8R8G8B8:
-			PixelType=GL_UNSIGNED_BYTE;
-			if (!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888) &&
-					!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888) &&
-					!Driver->queryOpenGLFeature(COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888))
-			{
-				convert=CColorConverter::convert_A8R8G8B8toA8B8G8R8;
-				InternalFormat=GL_RGBA;
-				PixelFormat=GL_RGBA;
-			}
-			else
-			{
-				InternalFormat=GL_BGRA;
-				PixelFormat=GL_BGRA;
-			}
-			break;
-		default:
-			os::Printer::log("Unsupported texture format", ELL_ERROR);
-			break;
-	}
-	// Hack for iPhone SDK, which requires a different InternalFormat
-#ifdef _IRR_IPHONE_PLATFORM_
-	if (InternalFormat==GL_BGRA)
-		InternalFormat=GL_RGBA;
-#endif
-	// make sure we don't change the internal format of existing matrices
+	// make sure we don't change the internal format of existing images
 	if (!newTexture)
-		InternalFormat=oldInternalFormat;
-        
+		InternalFormat = oldInternalFormat;
+
     Driver->setActiveTexture(0, this);
 	Driver->getBridgeCalls()->setTexture(0);
 
@@ -254,9 +435,8 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	// mipmap handling for main texture
 	if (!level && newTexture)
 	{
-#ifndef DISABLE_MIPMAPPING
 		// auto generate if possible and no mipmap data is given
-		if (HasMipMaps && !mipmapData)
+		if (!IsCompressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
 			if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
 				glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
@@ -267,43 +447,27 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 			AutomaticMipmapUpdate=true;
 		}
-		else
-		{
-			// Either generate manually due to missing capability
-			// or use predefined mipmap data
-			AutomaticMipmapUpdate=false;
-			regenerateMipMapLevels(mipmapData);
-		}
 
-		if (HasMipMaps) // might have changed in regenerateMipMapLevels
-		{
-			// enable bilinear mipmap filter
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            
-            StatesCache.BilinearFilter = true;
-            StatesCache.TrilinearFilter = false;
-            StatesCache.MipMapStatus = true;
-		}
+		// enable bilinear filter without mipmaps
+		if (filtering == GL_LINEAR)
+			StatesCache.BilinearFilter = true;
 		else
-#else
-			HasMipMaps=false;
-			os::Printer::log("Did not create OpenGL texture mip maps.", ELL_INFORMATION);
-#endif
-		{
-			// enable bilinear filter without mipmaps
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            
-            StatesCache.BilinearFilter = true;
-            StatesCache.TrilinearFilter = false;
-            StatesCache.MipMapStatus = false;
-		}
+			StatesCache.BilinearFilter = false;
+
+		StatesCache.TrilinearFilter = false;
+		StatesCache.MipMapStatus = false;
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
 	}
 
 	// now get image data and upload to GPU
+
+	u32 compressedImageSize = IImage::getCompressedImageSize(ColorFormat, image->getDimension().Width, image->getDimension().Height);
+
 	void* source = image->lock();
-	IImage* tmpImage=0;
+
+	IImage* tmpImage = 0;
 
 	if (convert)
 	{
@@ -315,11 +479,27 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	}
 
 	if (newTexture)
-		glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, image->getDimension().Width,
-			image->getDimension().Height, 0, PixelFormat, PixelType, source);
+	{
+		if (IsCompressed)
+		{
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, image->getDimension().Width,
+				image->getDimension().Height, 0, compressedImageSize, source);
+		}
+		else
+			glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, image->getDimension().Width,
+				image->getDimension().Height, 0, PixelFormat, PixelType, source);
+	}
 	else
-		glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
-			image->getDimension().Height, PixelFormat, PixelType, source);
+	{
+		if (IsCompressed)
+		{
+			glCompressedTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
+				image->getDimension().Height, PixelFormat, compressedImageSize, source);
+		}
+		else
+			glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
+				image->getDimension().Height, PixelFormat, PixelType, source);
+	}
 
 	if (convert)
 	{
@@ -329,8 +509,38 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	else
 		image->unlock();
 
-	if (AutomaticMipmapUpdate)
-		glGenerateMipmap(GL_TEXTURE_2D);
+	if (!level && newTexture)
+	{
+		if (IsCompressed && !mipmapData)
+		{
+			if (image->hasMipMaps())
+				mipmapData = static_cast<u8*>(image->lock())+compressedImageSize;
+			else
+				HasMipMaps = false;
+		}
+
+		regenerateMipMapLevels(mipmapData);
+
+		if (HasMipMaps) // might have changed in regenerateMipMapLevels
+		{
+			// enable bilinear mipmap filter
+			GLint filteringMipMaps = GL_LINEAR_MIPMAP_NEAREST;
+
+			if (filtering == GL_LINEAR)
+				StatesCache.BilinearFilter = true;
+			else
+			{
+				StatesCache.BilinearFilter = false;
+				filteringMipMaps = GL_NEAREST_MIPMAP_NEAREST;
+			}
+
+			StatesCache.TrilinearFilter = false;
+			StatesCache.MipMapStatus = false;
+
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filteringMipMaps);
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
+		}
+	}
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
@@ -435,12 +645,32 @@ bool COGLES2Texture::hasMipMaps() const
 //! modifying the texture
 void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 {
-	if (AutomaticMipmapUpdate || !HasMipMaps || !Image)
-		return;
-	if ((Image->getDimension().Width==1) && (Image->getDimension().Height==1))
+	// texture require mipmaps?
+	if (!HasMipMaps)
 		return;
 
+	// we don't use custom data for mipmaps.
+	if (!mipmapData)
+	{
+		// compressed textures require custom data for prepare mipmaps.
+		if (IsCompressed)
+			return;
+
+		// hardware doesn't support generate mipmaps for certain texture but image data doesn't exist or is wrong.
+		if (!AutomaticMipmapUpdate && (!Image || (Image && ((Image->getDimension().Width==1) && (Image->getDimension().Height==1)))))
+			return;
+	}
+
+	// hardware moethods for generate mipmaps.
+	if (!mipmapData && AutomaticMipmapUpdate)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		return;
+	}
+
 	// Manually create mipmaps or use prepared version
+	u32 compressedImageSize = 0;
 	u32 width=Image->getDimension().Width;
 	u32 height=Image->getDimension().Height;
 	u32 i=0;
@@ -451,18 +681,35 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 			width>>=1;
 		if (height>1)
 			height>>=1;
+
 		++i;
+
 		if (!target)
 			target = new u8[width*height*Image->getBytesPerPixel()];
+
 		// create scaled version if no mipdata available
 		if (!mipmapData)
 			Image->copyToScaling(target, width, height, Image->getColorFormat());
-		glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
-				0, PixelFormat, PixelType, target);
+
+		if (IsCompressed)
+		{
+			compressedImageSize = IImage::getCompressedImageSize(ColorFormat, width, height);
+
+			glCompressedTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width,
+				height, 0, compressedImageSize, target);
+		}
+		else
+			glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
+					0, PixelFormat, PixelType, target);
+
 		// get next prepared mipmap data if available
 		if (mipmapData)
 		{
-			mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();
+			if (IsCompressed)
+				mipmapData = static_cast<u8*>(mipmapData)+compressedImageSize;
+			else
+				mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();
+
 			target = static_cast<u8*>(mipmapData);
 		}
 	}

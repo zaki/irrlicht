@@ -117,8 +117,15 @@ protected:
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
 
+	//! Get the OpenGL color format parameters based on the given Irrlicht color format
+	void getFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLint& filtering,
+		GLenum& pixelFormat, GLenum& type, void(*&convert)(const void*, s32, void*));
+
 	//! get important numbers of the image and hw texture
 	void getImageValues(IImage* image);
+
+	//! check format compatibility.
+	bool checkFormatCompatibility();
 
 	//! copies the texture into an OpenGL texture.
 	/** \param newTexture True if method is called for a newly created texture for the first time. Otherwise call with false to improve memory handling.
@@ -141,6 +148,7 @@ protected:
 	u8 MipLevelStored;
 	bool HasMipMaps;
 	bool IsRenderTarget;
+	bool IsCompressed;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
 	bool KeepImage;

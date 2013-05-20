@@ -92,6 +92,7 @@ namespace video
 			IRR_IMG_read_format, // 53
 			IRR_IMG_shader_binary, // 68
 			IRR_IMG_texture_compression_pvrtc, // 54
+			IRR_IMG_texture_compression_pvrtc2, // 140
 			IRR_IMG_texture_env_enhanced_fixed_function, // 58
 			IRR_IMG_texture_format_BGRA8888, // replaced by EXT version
 			IRR_IMG_user_clip_plane, // 57, was clip_planes
@@ -222,6 +223,10 @@ namespace video
 				return false;
 			case EVDF_TEXTURE_COMPRESSED_DXT:
 				return false; // NV Tegra need improvements here
+			case EVDF_TEXTURE_COMPRESSED_PVRTC:
+				return FeatureAvailable[IRR_IMG_texture_compression_pvrtc];
+			case EVDF_TEXTURE_COMPRESSED_PVRTC2:
+				return FeatureAvailable[IRR_IMG_texture_compression_pvrtc2];
 			case EVDF_STENCIL_BUFFER:
 				return StencilBuffer;
 			default:

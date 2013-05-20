@@ -200,6 +200,11 @@ namespace video
 					return true; // non-square is always supported
 				case EVDF_TEXTURE_NPOT:
 					return FeatureAvailable[IRR_APPLE_texture_2D_limited_npot];
+				case EVDF_TEXTURE_COMPRESSED_DXT:
+					return false; // NV Tegra need improvements here
+				case EVDF_TEXTURE_COMPRESSED_PVRTC:
+				case EVDF_TEXTURE_COMPRESSED_PVRTC2:
+					return false; // PowerVR need improvements here
 				default:
 					return false;
 			}

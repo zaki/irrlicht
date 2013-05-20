@@ -114,6 +114,7 @@ LOCAL_SRC_FILES := \
 					CImageWriterPPM.cpp \
 					CImageWriterPSD.cpp \
 					CImageWriterTGA.cpp \
+					CImageLoaderPVR.cpp \
 					CIrrDeviceConsole.cpp \
 					CIrrDeviceFB.cpp \
 					CIrrDeviceLinux.cpp \
