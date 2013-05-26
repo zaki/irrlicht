@@ -506,6 +506,8 @@
 		5E3EA6731586A27E00C17C1D /* IBurningShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047C415515B4400D9E53B /* IBurningShader.cpp */; };
 		5E3EA6771586A27E00C17C1D /* Irrlicht.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CC15515B4400D9E53B /* Irrlicht.cpp */; };
 		5E3EA6781586A27E00C17C1D /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CD15515B4400D9E53B /* irrXML.cpp */; };
+		5E92ED391752B6E800B93CC0 /* CImageLoaderPVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E92ED371752B6E800B93CC0 /* CImageLoaderPVR.cpp */; };
+		5E92ED3A1752B6E800B93CC0 /* CImageLoaderPVR.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E92ED381752B6E800B93CC0 /* CImageLoaderPVR.h */; };
 		5ED2483F1731568400A13B86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E215516CC00014DCBA /* UIKit.framework */; };
 		5ED248401731568400A13B86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E415516CC00014DCBA /* Foundation.framework */; };
 		5ED248411731568400A13B86 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E615516CC00014DCBA /* CoreGraphics.framework */; };
@@ -1281,7 +1283,9 @@
 		5E7CF769155187AB0014DCBA /* SoftwareDriver2_compile_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoftwareDriver2_compile_config.h; path = ../SoftwareDriver2_compile_config.h; sourceTree = "<group>"; };
 		5E7CF76A155187AB0014DCBA /* SoftwareDriver2_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoftwareDriver2_helper.h; path = ../SoftwareDriver2_helper.h; sourceTree = "<group>"; };
 		5E7CF76B155187AB0014DCBA /* wglext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wglext.h; path = ../wglext.h; sourceTree = "<group>"; };
-		5ED2483E1731568400A13B86 /* 17.HelloWorld_Mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = 17.HelloWorld_Mobile.app; path = HelloWorldMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E92ED371752B6E800B93CC0 /* CImageLoaderPVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CImageLoaderPVR.cpp; path = ../CImageLoaderPVR.cpp; sourceTree = "<group>"; };
+		5E92ED381752B6E800B93CC0 /* CImageLoaderPVR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CImageLoaderPVR.h; path = ../CImageLoaderPVR.h; sourceTree = "<group>"; };
+		5ED2483E1731568400A13B86 /* HelloWorldMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloWorldMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED2485B173157AD00A13B86 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = main.cpp; path = ../../../examples/17.HelloWorld_Mobile/main.cpp; sourceTree = "<group>"; };
 		5ED2486217315FA800A13B86 /* media */ = {isa = PBXFileReference; lastKnownFileType = folder; name = media; path = ../../../media; sourceTree = "<group>"; };
 		5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2FixedPipeline.fsh; sourceTree = "<group>"; };
@@ -1522,8 +1526,6 @@
 		5E3045C815515AD100D9E53B /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				5E3EA3351586811100C17C1D /* Devices */,
-				5E3EA1EE15867BD700C17C1D /* Libraries */,
 				5E3045DC15515B4400D9E53B /* BuiltInFont.h */,
 				5E30460C15515B4400D9E53B /* C3DSMeshFileLoader.cpp */,
 				5E30460D15515B4400D9E53B /* C3DSMeshFileLoader.h */,
@@ -1676,6 +1678,8 @@
 				5E3046A015515B4400D9E53B /* CImageLoaderPPM.h */,
 				5E3046A115515B4400D9E53B /* CImageLoaderPSD.cpp */,
 				5E3046A215515B4400D9E53B /* CImageLoaderPSD.h */,
+				5E92ED371752B6E800B93CC0 /* CImageLoaderPVR.cpp */,
+				5E92ED381752B6E800B93CC0 /* CImageLoaderPVR.h */,
 				5E3046A315515B4400D9E53B /* CImageLoaderRGB.cpp */,
 				5E3046A415515B4400D9E53B /* CImageLoaderRGB.h */,
 				5E3046A515515B4400D9E53B /* CImageLoaderTGA.cpp */,
@@ -1953,6 +1957,7 @@
 				5E3047BA15515B4400D9E53B /* CZBuffer.h */,
 				5E3047BB15515B4400D9E53B /* CZipReader.cpp */,
 				5E3047BC15515B4400D9E53B /* CZipReader.h */,
+				5E3EA3351586811100C17C1D /* Devices */,
 				5E3047BD15515B4400D9E53B /* dmfsupport.h */,
 				5E3047BE15515B4400D9E53B /* eglext.h */,
 				5E3047BF15515B4400D9E53B /* gles-ext.h */,
@@ -1970,6 +1975,7 @@
 				5E3047CF15515B4400D9E53B /* ITriangleRenderer.h */,
 				5E3047D015515B4400D9E53B /* IZBuffer.h */,
 				5EEAE04F171DF3C700C7BC68 /* leakHunter.cpp */,
+				5E3EA1EE15867BD700C17C1D /* Libraries */,
 				5E7CF763155187AA0014DCBA /* Octree.h */,
 				5E7CF764155187AA0014DCBA /* os.cpp */,
 				5E7CF765155187AA0014DCBA /* os.h */,
@@ -2174,7 +2180,7 @@
 			isa = PBXGroup;
 			children = (
 				5E7CF31215516E370014DCBA /* libIrrlicht.a */,
-				5ED2483E1731568400A13B86 /* 17.HelloWorld_Mobile.app */,
+				5ED2483E1731568400A13B86 /* HelloWorldMobile.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2406,6 +2412,7 @@
 				5EEAE04C171DF38900C7BC68 /* irrpack.h in Headers */,
 				5EEAE04D171DF38900C7BC68 /* irrunpack.h in Headers */,
 				5EEAE04E171DF38900C7BC68 /* leakHunter.h in Headers */,
+				5E92ED3A1752B6E800B93CC0 /* CImageLoaderPVR.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2444,7 +2451,7 @@
 			);
 			name = HelloWorldMobile;
 			productName = 17.HelloWorld_Mobile;
-			productReference = 5ED2483E1731568400A13B86 /* 17.HelloWorld_Mobile.app */;
+			productReference = 5ED2483E1731568400A13B86 /* HelloWorldMobile.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2817,6 +2824,7 @@
 				5E25C82B16A845D900320AA9 /* COGLES2FixedPipelineRenderer.cpp in Sources */,
 				5E25C82D16A845D900320AA9 /* COGLES2MaterialRenderer.cpp in Sources */,
 				5EEAE050171DF3C700C7BC68 /* leakHunter.cpp in Sources */,
+				5E92ED391752B6E800B93CC0 /* CImageLoaderPVR.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
