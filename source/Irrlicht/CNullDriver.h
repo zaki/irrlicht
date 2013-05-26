@@ -691,6 +691,9 @@ namespace video
 		// prints renderer version
 		void printVersion();
 
+		// Check support for compression texture format.
+		bool checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& textureSize) const;
+
 		//! normal map lookup 32 bit version
 		inline f32 nml32(int x, int y, int pitch, int height, s32 *p) const
 		{

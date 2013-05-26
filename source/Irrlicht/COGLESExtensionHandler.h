@@ -205,6 +205,10 @@ namespace video
 				case EVDF_TEXTURE_COMPRESSED_PVRTC:
 				case EVDF_TEXTURE_COMPRESSED_PVRTC2:
 					return false; // PowerVR need improvements here
+				case EVDF_TEXTURE_COMPRESSED_ETC1:
+					return false; // Android based devices need improvements here
+				case EVDF_TEXTURE_COMPRESSED_ETC2:
+					return false;
 				default:
 					return false;
 			}

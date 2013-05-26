@@ -34,7 +34,9 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageValues(origImage);
 	
-	if (checkFormatCompatibility())
+	IsCompressed = IImage::isCompressedFormat(ColorFormat);
+	
+	if (Driver->checkColorFormat(ColorFormat, origImage->getDimension()))
 	{
 		if (IsCompressed)
 		{
@@ -202,7 +204,7 @@ void COpenGLTexture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
-		case ECF_PVRTC_R2G2B2:
+		case ECF_PVRTC_RGB2:
 			internalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGB;
@@ -210,7 +212,7 @@ void COpenGLTexture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
-		case ECF_PVRTC_A2R2G2B2:
+		case ECF_PVRTC_ARGB2:
 			internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGBA;
@@ -218,7 +220,7 @@ void COpenGLTexture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
-		case ECF_PVRTC_R4G4B4:
+		case ECF_PVRTC_RGB4:
 			internalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGB;
@@ -226,7 +228,7 @@ void COpenGLTexture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
-		case ECF_PVRTC_A4R4G4B4:
+		case ECF_PVRTC_ARGB4:
 			internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGBA;
@@ -234,19 +236,43 @@ void COpenGLTexture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc2
-		case ECF_PVRTC2_A2R2G2B2:
-			internalFormat = COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+		case ECF_PVRTC2_ARGB2:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGBA;
-			type = COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+			type = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc2
-		case ECF_PVRTC2_A4R4G4B4:
-			internalFormat = COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+		case ECF_PVRTC2_ARGB4:
+			internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGBA;
-			type = COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+			type = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+			break;
+#endif
+#ifdef GL_OES_compressed_ETC1_RGB8_texture
+		case ECF_ETC1:
+			internalFormat = GL_ETC1_RGB8_OES;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_ETC1_RGB8_OES;
+			break;
+#endif
+#ifdef GL_ARB_ES3_compatibility
+		case ECF_ETC2_RGB:
+			internalFormat = GL_COMPRESSED_RGB8_ETC2;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGB;
+			type = GL_COMPRESSED_RGB8_ETC2;
+			break;
+#endif
+#ifdef GL_ARB_ES3_compatibility
+		case ECF_ETC2_ARGB:
+			internalFormat = GL_COMPRESSED_RGBA8_ETC2_EAC;
+			filtering = GL_LINEAR;
+			pixelFormat = GL_RGBA;
+			type = GL_COMPRESSED_RGBA8_ETC2_EAC;
 			break;
 #endif
 #ifdef GL_ARB_texture_rg
@@ -301,6 +327,12 @@ void COpenGLTexture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			internalFormat = GL_SRGB_ALPHA_EXT;
 		else if (internalFormat == GL_RGB)
 			internalFormat = GL_SRGB_EXT;
+#ifdef GL_ARB_ES3_compatibility
+		else if (internalFormat == GL_COMPRESSED_RGBA8_ETC2_EAC)
+			internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC;
+		else if (internalFormat == GL_COMPRESSED_RGB8_ETC2)
+			internalFormat = GL_COMPRESSED_SRGB8_ETC2;
+#endif
 	}
 #endif
 }
@@ -337,77 +369,6 @@ void COpenGLTexture::getImageValues(IImage* image)
 	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
 	ColorFormat = getBestColorFormat(image->getColorFormat());
-}
-
-
-//! check format compatibility.
-bool COpenGLTexture::checkFormatCompatibility()
-{
-	bool status = true;
-
-	switch (ColorFormat)
-	{
-		case ECF_DXT1:
-		case ECF_DXT2:
-		case ECF_DXT3:
-		case ECF_DXT4:
-		case ECF_DXT5:
-			{
-				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
-				{
-					os::Printer::log("DXT texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-				else if(ImageSize != TextureSize)
-				{
-					os::Printer::log("Invalid size of image for DXTn compressed texture, size of image must be POT.", ELL_ERROR);
-					status = false;
-				}
-				else
-					IsCompressed = true;
-			}
-			break;
-		case ECF_PVRTC_R2G2B2:
-		case ECF_PVRTC_A2R2G2B2:
-		case ECF_PVRTC_R4G4B4:
-		case ECF_PVRTC_A4R4G4B4:
-			{
-				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
-				{
-					os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-				else if(ImageSize != TextureSize)
-				{
-					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be POT.", ELL_ERROR);
-					status = false;
-				}
-				else if(TextureSize.Height != TextureSize.Width)
-				{
-					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be squared.", ELL_ERROR);
-					status = false;
-				}
-				else
-					IsCompressed = true;
-			}
-			break;
-		case ECF_PVRTC2_A2R2G2B2:
-		case ECF_PVRTC2_A4R4G4B4:
-			{
-				if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
-				{
-					os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-				else
-					IsCompressed = true;
-			}
-			break;
-		default:
-			break;
-	}
-
-	return status;
 }
 
 

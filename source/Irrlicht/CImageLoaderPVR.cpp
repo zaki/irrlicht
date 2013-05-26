@@ -95,22 +95,25 @@ IImage* CImageLoaderPVR::loadImage(io::IReadFile* file) const
 		switch(header.PixelFormat)
 		{
 			case 0: // PVRTC 2bpp RGB
-				format = ECF_PVRTC_R2G2B2;
+				format = ECF_PVRTC_RGB2;
 				break;
 			case 1: // PVRTC 2bpp RGBA
-				format = ECF_PVRTC_A2R2G2B2;
+				format = ECF_PVRTC_ARGB2;
 				break;
 			case 2: // PVRTC 4bpp RGB
-				format = ECF_PVRTC_R4G4B4;
+				format = ECF_PVRTC_RGB4;
 				break;
 			case 3: // PVRTC 4bpp RGBA
-				format = ECF_PVRTC_A4R4G4B4;
+				format = ECF_PVRTC_ARGB4;
 				break;
 			case 4: // PVRTC-II 2bpp
-				format = ECF_PVRTC2_A2R2G2B2;
+				format = ECF_PVRTC2_ARGB2;
 				break;
 			case 5: // PVRTC-II 4bpp
-				format = ECF_PVRTC2_A4R4G4B4;
+				format = ECF_PVRTC2_ARGB4;
+				break;
+			case 6: // ETC1
+				format = ECF_ETC1;
 				break;
 			case 7: // DXT1 / BC1
 				format = ECF_DXT1;
@@ -122,6 +125,15 @@ IImage* CImageLoaderPVR::loadImage(io::IReadFile* file) const
 			case 10: // DXT4
 			case 11: // DXT5 / BC3
 				format = ECF_DXT5;
+				break;
+			case 22: // ETC2 RGB
+				format = ECF_ETC2_RGB;
+				break;
+			case 23: // ETC2 RGBA
+				format = ECF_ETC2_ARGB;
+				break;
+			default:
+				format = ECF_UNKNOWN;
 				break;
 		}
 

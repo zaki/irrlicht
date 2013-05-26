@@ -2356,6 +2356,89 @@ void CNullDriver::printVersion()
 }
 
 
+// Check support for compression texture format.
+bool CNullDriver::checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& textureSize) const
+{
+	bool status = true;
+
+	switch (format)
+	{
+		case ECF_DXT1:
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
+			{
+				core::dimension2d<u32> potSize = textureSize.getOptimalSize(true, false);
+
+				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+				{
+					os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if(potSize != textureSize)
+				{
+					os::Printer::log("Invalid size of image for DXT compressed texture, size of image must be POT.", ELL_ERROR);
+					status = false;
+				}
+			}
+			break;
+		case ECF_PVRTC_RGB2:
+		case ECF_PVRTC_ARGB2:
+		case ECF_PVRTC_RGB4:
+		case ECF_PVRTC_ARGB4:
+			{
+				core::dimension2d<u32> potSize = textureSize.getOptimalSize(true, true);
+
+				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
+				{
+					os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if(potSize != textureSize)
+				{
+					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be POT and squared.", ELL_ERROR);
+					status = false;
+				}
+			}
+			break;
+		case ECF_PVRTC2_ARGB2:
+		case ECF_PVRTC2_ARGB4:
+			{
+				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
+				{
+					os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+			}
+			break;
+		case ECF_ETC1:
+			{
+				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_ETC1))
+				{
+					os::Printer::log("ETC1 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+			}
+			break;
+		case ECF_ETC2_RGB:
+		case ECF_ETC2_ARGB:
+			{
+				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_ETC2))
+				{
+					os::Printer::log("ETC2 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+			}
+			break;
+		default:
+			break;
+	}
+
+	return status;
+}
+
+
 //! creates a video driver
 IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 {

@@ -227,6 +227,10 @@ namespace video
 				return FeatureAvailable[IRR_IMG_texture_compression_pvrtc];
 			case EVDF_TEXTURE_COMPRESSED_PVRTC2:
 				return FeatureAvailable[IRR_IMG_texture_compression_pvrtc2];
+			case EVDF_TEXTURE_COMPRESSED_ETC1:
+				return FeatureAvailable[IRR_OES_compressed_ETC1_RGB8_texture];
+			case EVDF_TEXTURE_COMPRESSED_ETC2:
+				return false;
 			case EVDF_STENCIL_BUFFER:
 				return StencilBuffer;
 			default:

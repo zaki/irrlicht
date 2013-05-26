@@ -686,6 +686,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return true;
 	case EVDF_TEXTURE_COMPRESSED_PVRTC:
 	case EVDF_TEXTURE_COMPRESSED_PVRTC2:
+	case EVDF_TEXTURE_COMPRESSED_ETC1:
+	case EVDF_TEXTURE_COMPRESSED_ETC2:
 		return false;
 	default:
 		return false;

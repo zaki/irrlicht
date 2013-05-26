@@ -67,32 +67,10 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 
 	if (image)
 	{
-		if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
-		{
-			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
-			{
-				os::Printer::log("DXT texture compression not available.", ELL_ERROR);
-				return;
-			}
-		}
-
-		if(image->getColorFormat() == ECF_PVRTC_R2G2B2 || image->getColorFormat() == ECF_PVRTC_A2R2G2B2 || image->getColorFormat() == ECF_PVRTC_R4G4B4 || image->getColorFormat() == ECF_PVRTC_A4R4G4B4)
-		{
-			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
-			{
-				os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
-				return;
-			}
-		}
-
-		if(image->getColorFormat() == ECF_PVRTC2_A2R2G2B2 || image->getColorFormat() == ECF_PVRTC2_A4R4G4B4)
-		{
-			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
-			{
-				os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
-				return;
-			}
-		}
+		IsCompressed = IImage::isCompressedFormat(image->getColorFormat());
+	
+		if (!Driver->checkColorFormat(image->getColorFormat(), image->getDimension()))
+			return;
 
 		if (createTexture(flags, image))
 		{
@@ -445,13 +423,7 @@ bool CD3D9Texture::copyTexture(IImage * image)
 
 		if (IsCompressed)
 		{
-			u32 compressedDataSize = 0;
-
-			if(ColorFormat == ECF_DXT1)
-				compressedDataSize = ((TextureSize.Width + 3) / 4) * ((TextureSize.Height + 3) / 4) * 8;
-			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-				compressedDataSize = ((TextureSize.Width + 3) / 4) * ((TextureSize.Height + 3) / 4) * 16;
-
+			u32 compressedDataSize = IImage::getCompressedImageSize(ColorFormat, TextureSize.Width, TextureSize.Height);
 			memcpy(rect.pBits, image->lock(), compressedDataSize);
 		}
 		else

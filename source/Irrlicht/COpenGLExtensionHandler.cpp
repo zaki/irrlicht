@@ -793,7 +793,10 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_EXT_texture_compression_s3tc];
 	case EVDF_TEXTURE_COMPRESSED_PVRTC: // Currently disabled, but in future maybe special extension will be available.
 	case EVDF_TEXTURE_COMPRESSED_PVRTC2:
+	case EVDF_TEXTURE_COMPRESSED_ETC1:
 		return false;
+	case EVDF_TEXTURE_COMPRESSED_ETC2:
+		return FeatureAvailable[IRR_ARB_ES3_compatibility];
 	default:
 		return false;
 	};

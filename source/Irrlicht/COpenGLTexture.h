@@ -143,9 +143,6 @@ protected:
 	//! get important numbers of the image and hw texture
 	void getImageValues(IImage* image);
 
-	//! check format compatibility.
-	bool checkFormatCompatibility();
-
 	//! copies the texture into an OpenGL texture.
 	/** \param newTexture True if method is called for a newly created texture for the first time. Otherwise call with false to improve memory handling.
 	\param mipmapData Pointer to raw mipmap data, including all necessary mip levels, in the same format as the main texture image.

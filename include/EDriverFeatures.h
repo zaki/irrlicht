@@ -127,6 +127,12 @@ namespace video
 		//! Support for PVRTC2 compressed textures.
 		EVDF_TEXTURE_COMPRESSED_PVRTC2,
 
+		//! Support for ETC1 compressed textures.
+		EVDF_TEXTURE_COMPRESSED_ETC1,
+
+		//! Support for ETC2 compressed textures.
+		EVDF_TEXTURE_COMPRESSED_ETC2,
+
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT
 	};

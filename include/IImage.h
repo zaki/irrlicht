@@ -125,16 +125,21 @@ public:
 		case ECF_DXT4:
 		case ECF_DXT5:
 			return 32;
-		case ECF_PVRTC_R2G2B2:
-			return 6;
-		case ECF_PVRTC_A2R2G2B2:
-		case ECF_PVRTC2_A2R2G2B2:
-			return 8;
-		case ECF_PVRTC_R4G4B4:
+		case ECF_PVRTC_RGB2:
 			return 12;
-		case ECF_PVRTC_A4R4G4B4:
-		case ECF_PVRTC2_A4R4G4B4:
+		case ECF_PVRTC_ARGB2:
+		case ECF_PVRTC2_ARGB2:
 			return 16;
+		case ECF_PVRTC_RGB4:
+			return 24;
+		case ECF_PVRTC_ARGB4:
+		case ECF_PVRTC2_ARGB4:
+			return 32;
+		case ECF_ETC1:
+		case ECF_ETC2_RGB:
+			return 24;
+		case ECF_ETC2_ARGB:
+			return 32;
 		case ECF_R16F:
 			return 16;
 		case ECF_G16R16F:
@@ -171,19 +176,24 @@ public:
 			case ECF_DXT5:
 				compressedImageSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
 				break;
-			case ECF_PVRTC_R2G2B2:
-			case ECF_PVRTC_A2R2G2B2:
+			case ECF_PVRTC_RGB2:
+			case ECF_PVRTC_ARGB2:
 				compressedImageSize = (core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
 				break;
-			case ECF_PVRTC_R4G4B4:
-			case ECF_PVRTC_A4R4G4B4:
+			case ECF_PVRTC_RGB4:
+			case ECF_PVRTC_ARGB4:
 				compressedImageSize = (core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
 				break;
-			case ECF_PVRTC2_A2R2G2B2:
+			case ECF_PVRTC2_ARGB2:
 				compressedImageSize = core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
 				break;
-			case ECF_PVRTC2_A4R4G4B4:
+			case ECF_PVRTC2_ARGB4:
+			case ECF_ETC1:
+			case ECF_ETC2_RGB:
 				compressedImageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
+				break;
+			case ECF_ETC2_ARGB:
+				compressedImageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
 				break;
 			default:
 				break;
@@ -202,12 +212,15 @@ public:
 			case ECF_DXT3:
 			case ECF_DXT4:
 			case ECF_DXT5:
-			case ECF_PVRTC_R2G2B2:
-			case ECF_PVRTC_A2R2G2B2:
-			case ECF_PVRTC2_A2R2G2B2:
-			case ECF_PVRTC_R4G4B4:
-			case ECF_PVRTC_A4R4G4B4:
-			case ECF_PVRTC2_A4R4G4B4:
+			case ECF_PVRTC_RGB2:
+			case ECF_PVRTC_ARGB2:
+			case ECF_PVRTC2_ARGB2:
+			case ECF_PVRTC_RGB4:
+			case ECF_PVRTC_ARGB4:
+			case ECF_PVRTC2_ARGB4:
+			case ECF_ETC1:
+			case ECF_ETC2_RGB:
+			case ECF_ETC2_ARGB:
 				return true;
 			default:
 				return false;
@@ -220,6 +233,9 @@ public:
 	if it is restricted to RTTs. */
 	static bool isRenderTargetOnlyFormat(const ECOLOR_FORMAT format)
 	{
+		if (isCompressedFormat(format))
+			return false;
+
 		switch(format)
 		{
 			case ECF_A1R5G5B5:
