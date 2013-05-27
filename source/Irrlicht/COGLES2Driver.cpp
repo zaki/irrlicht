@@ -1762,7 +1762,12 @@ namespace video
 	//! returns a device dependent texture from a software surface (IImage)
 	video::ITexture* COGLES2Driver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 	{
-		return new COGLES2Texture(surface, name, mipmapData, this);
+		COGLES2Texture* texture = 0;
+
+		if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
+			texture = new COGLES2Texture(surface, name, mipmapData, this);
+
+		return texture;
 	}
 
 

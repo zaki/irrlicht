@@ -22,34 +22,22 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name,
 	setDebugName("CSoftwareTexture");
 	#endif
 
-	if (image)
+	OrigSize = image->getDimension();
+	core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
+
+	Image = new CImage(ECF_A1R5G5B5, OrigSize);
+
+	image->copyTo(Image);
+
+	if (optSize == OrigSize)
 	{
-		bool IsCompressed = false;
-
-		if (IImage::isCompressedFormat(image->getColorFormat()))
-		{
-			os::Printer::log("This driver doesn't support compressed textures.", ELL_ERROR);
-			IsCompressed = true;
-		}
-
-		OrigSize = image->getDimension();
-		core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
-
-		Image = new CImage(ECF_A1R5G5B5, OrigSize);
-
-		if (!IsCompressed)
-			image->copyTo(Image);
-
-		if (optSize == OrigSize)
-		{
-			Texture = Image;
-			Texture->grab();
-		}
-		else
-		{
-			Texture = new CImage(ECF_A1R5G5B5, optSize);
-			Image->copyToScaling(Texture);
-		}
+		Texture = Image;
+		Texture->grab();
+	}
+	else
+	{
+		Texture = new CImage(ECF_A1R5G5B5, optSize);
+		Image->copyToScaling(Texture);
 	}
 }
 

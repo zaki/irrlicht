@@ -45,13 +45,6 @@ COGLES1Texture::COGLES1Texture(IImage* origImage, const io::path& name, COGLES1D
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageValues(origImage);
 
-	if (IImage::isCompressedFormat(origImage->getColorFormat())) // TO-DO add support for compressed textures
-	{
-		os::Printer::log("This driver doesn't support compressed textures.", ELL_ERROR);
-		IsCompressed = true;
-		return;
-	}
-
 	glGenTextures(1, &TextureName);
 
 	Image = new CImage(ColorFormat, TextureSize);
@@ -166,6 +159,8 @@ void COGLES1Texture::getImageValues(IImage* image)
 	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
 	ColorFormat = getBestColorFormat(image->getColorFormat());
+
+	IsCompressed = IImage::isCompressedFormat(image->getColorFormat());
 }
 
 

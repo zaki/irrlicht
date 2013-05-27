@@ -30,57 +30,44 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 
 	memset32 ( MipMap, 0, sizeof ( MipMap ) );
 
-	if (image)
+	OrigSize = image->getDimension();
+	OriginalFormat = image->getColorFormat();
+
+	core::setbit_cond(Flags,
+			image->getColorFormat () == video::ECF_A8R8G8B8 ||
+			image->getColorFormat () == video::ECF_A1R5G5B5,
+			HAS_ALPHA);
+
+	core::dimension2d<u32> optSize(
+			OrigSize.getOptimalSize( 0 != ( Flags & NP2_SIZE ),
+			false, false,
+			( Flags & NP2_SIZE ) ? SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE : 0)
+		);
+
+	if ( OrigSize == optSize )
 	{
-		bool IsCompressed = false;
+		MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, image->getDimension());
 
-		if (IImage::isCompressedFormat(image->getColorFormat()))
-		{
-			os::Printer::log("This driver doesn't support compressed textures.", ELL_ERROR);
-			IsCompressed = true;
-		}
-
-		OrigSize = image->getDimension();
-		OriginalFormat = image->getColorFormat();
-
-		core::setbit_cond(Flags,
-				image->getColorFormat () == video::ECF_A8R8G8B8 ||
-				image->getColorFormat () == video::ECF_A1R5G5B5,
-				HAS_ALPHA);
-
-		core::dimension2d<u32> optSize(
-				OrigSize.getOptimalSize( 0 != ( Flags & NP2_SIZE ),
-				false, false,
-				( Flags & NP2_SIZE ) ? SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE : 0)
-			);
-
-		if ( OrigSize == optSize )
-		{
-			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, image->getDimension());
-
-			if (!IsCompressed)
-				image->copyTo(MipMap[0]);
-		}
-		else
-		{
-			char buf[256];
-			core::stringw showName ( name );
-			snprintf ( buf, 256, "Burningvideo: Warning Texture %ls reformat %dx%d -> %dx%d,%d",
-							showName.c_str(),
-							OrigSize.Width, OrigSize.Height, optSize.Width, optSize.Height,
-							BURNINGSHADER_COLOR_FORMAT
-						);
-
-			OrigSize = optSize;
-			os::Printer::log ( buf, ELL_WARNING );
-			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
-
-			if (!IsCompressed)
-				image->copyToScalingBoxFilter ( MipMap[0],0, false );
-		}
-
-		OrigImageDataSizeInPixels = (f32) 0.3f * MipMap[0]->getImageDataSizeInPixels();
+		image->copyTo(MipMap[0]);
 	}
+	else
+	{
+		char buf[256];
+		core::stringw showName ( name );
+		snprintf ( buf, 256, "Burningvideo: Warning Texture %ls reformat %dx%d -> %dx%d,%d",
+						showName.c_str(),
+						OrigSize.Width, OrigSize.Height, optSize.Width, optSize.Height,
+						BURNINGSHADER_COLOR_FORMAT
+					);
+
+		OrigSize = optSize;
+		os::Printer::log ( buf, ELL_WARNING );
+		MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
+
+		image->copyToScalingBoxFilter ( MipMap[0],0, false );
+	}
+
+	OrigImageDataSizeInPixels = (f32) 0.3f * MipMap[0]->getImageDataSizeInPixels();
 
 	regenerateMipMapLevels(mipmapData);
 }

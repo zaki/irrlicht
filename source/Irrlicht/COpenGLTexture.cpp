@@ -33,36 +33,31 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageValues(origImage);
-	
-	IsCompressed = IImage::isCompressedFormat(ColorFormat);
-	
-	if (Driver->checkColorFormat(ColorFormat, origImage->getDimension()))
+
+	if (IsCompressed)
 	{
-		if (IsCompressed)
-		{
-			Image = origImage;
-			Image->grab();
-			KeepImage = false;
-		}
-		else if (ImageSize==TextureSize)
-		{
-			Image = Driver->createImage(ColorFormat, ImageSize);
-			origImage->copyTo(Image);
-		}
-		else
-		{
-			Image = Driver->createImage(ColorFormat, TextureSize);
-			origImage->copyToScaling(Image);
-		}
+		Image = origImage;
+		Image->grab();
+		KeepImage = false;
+	}
+	else if (ImageSize==TextureSize)
+	{
+		Image = Driver->createImage(ColorFormat, ImageSize);
+		origImage->copyTo(Image);
+	}
+	else
+	{
+		Image = Driver->createImage(ColorFormat, TextureSize);
+		origImage->copyToScaling(Image);
+	}
 
-		glGenTextures(1, &TextureName);
-		uploadTexture(true, mipmapData);
+	glGenTextures(1, &TextureName);
+	uploadTexture(true, mipmapData);
 
-		if (!KeepImage)
-		{
-			Image->drop();
-			Image=0;
-		}
+	if (!KeepImage)
+	{
+		Image->drop();
+		Image=0;
 	}
 }
 
@@ -369,6 +364,8 @@ void COpenGLTexture::getImageValues(IImage* image)
 	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
 	ColorFormat = getBestColorFormat(image->getColorFormat());
+
+	IsCompressed = IImage::isCompressedFormat(image->getColorFormat());
 }
 
 

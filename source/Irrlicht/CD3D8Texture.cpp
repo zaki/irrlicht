@@ -65,25 +65,15 @@ HasMipMaps(false), IsRenderTarget(false)
 	if (Device)
 		Device->AddRef();
 
-	if (image)
+	if (createTexture(flags, image))
 	{
-		if (IImage::isCompressedFormat(image->getColorFormat()))
+		if (copyTexture(image))
 		{
-			os::Printer::log("This driver doesn't support compressed textures.", ELL_ERROR);
-			IsCompressed = true;
-			return;
+			regenerateMipMapLevels(mipmapData);
 		}
-
-		if (createTexture(flags, image))
-		{
-			if (copyTexture(image))
-			{
-				regenerateMipMapLevels(mipmapData);
-			}
-		}
-		else
-			os::Printer::log("Could not create DIRECT3D8 Texture.", ELL_WARNING);
 	}
+	else
+		os::Printer::log("Could not create DIRECT3D8 Texture.", ELL_WARNING);
 }
 
 

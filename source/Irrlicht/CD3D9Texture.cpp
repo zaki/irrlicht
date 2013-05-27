@@ -65,38 +65,32 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 	if (Device)
 		Device->AddRef();
 
-	if (image)
+	IsCompressed = IImage::isCompressedFormat(image->getColorFormat());
+
+	if (createTexture(flags, image))
 	{
-		IsCompressed = IImage::isCompressedFormat(image->getColorFormat());
-	
-		if (!Driver->checkColorFormat(image->getColorFormat(), image->getDimension()))
-			return;
-
-		if (createTexture(flags, image))
+		if (copyTexture(image))
 		{
-			if (copyTexture(image))
-			{
-				if (IsCompressed && !mipmapData)
-					if (HasMipMaps && image->hasMipMaps())
-					{
-						u32 compressedDataSize = 0;
+			if (IsCompressed && !mipmapData)
+				if (HasMipMaps && image->hasMipMaps())
+				{
+					u32 compressedDataSize = 0;
 
-						if(ColorFormat == ECF_DXT1)
-							compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
-						else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-							compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
+					if(ColorFormat == ECF_DXT1)
+						compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
+					else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
+						compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
 
-						mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
-					}
-					else
-						HasMipMaps = false;
+					mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
+				}
+				else
+					HasMipMaps = false;
 
-				regenerateMipMapLevels(mipmapData);
-			}
+			regenerateMipMapLevels(mipmapData);
 		}
-		else
-			os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 	}
+	else
+		os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 }
 
 

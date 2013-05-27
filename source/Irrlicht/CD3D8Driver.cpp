@@ -695,7 +695,12 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 //! returns a device dependent texture from a software surface (IImage)
 video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const io::path& name, void* mipmapData)
 {
-	return new CD3D8Texture(surface, this, TextureCreationFlags, name, mipmapData);
+	CD3D8Texture* texture = 0;
+
+	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
+		texture = new CD3D8Texture(surface, this, TextureCreationFlags, name, mipmapData);
+
+	return texture;
 }
 
 

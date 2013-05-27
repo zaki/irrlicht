@@ -249,7 +249,12 @@ bool CSoftwareDriver::endScene()
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
 ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
-	return new CSoftwareTexture(surface, name, false, mipmapData);
+	CSoftwareTexture* texture = 0;
+
+	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
+		texture = new CSoftwareTexture(surface, name, false, mipmapData);
+
+	return texture;
 }
 
 

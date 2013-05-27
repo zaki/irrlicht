@@ -515,7 +515,10 @@ video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io:
 	{
 		// create texture from surface
 		texture = createDeviceDependentTexture(image, hashName.size() ? hashName : file->getFileName() );
-		os::Printer::log("Loaded texture", file->getFileName());
+
+		if (texture)
+			os::Printer::log("Loaded texture", file->getFileName());
+
 		image->drop();
 	}
 
@@ -591,10 +594,12 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 	IImage* image = new CImage(format, size);
 	ITexture* t = createDeviceDependentTexture(image, name);
 	image->drop();
-	addTexture(t);
 
 	if (t)
+	{
+		addTexture(t);
 		t->drop();
+	}
 
 	return t;
 }
