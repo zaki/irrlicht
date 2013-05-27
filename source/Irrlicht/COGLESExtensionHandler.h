@@ -200,15 +200,16 @@ namespace video
 					return true; // non-square is always supported
 				case EVDF_TEXTURE_NPOT:
 					return FeatureAvailable[IRR_APPLE_texture_2D_limited_npot];
-				case EVDF_TEXTURE_COMPRESSED_DXT:
-					return false; // NV Tegra need improvements here
-				case EVDF_TEXTURE_COMPRESSED_PVRTC:
-				case EVDF_TEXTURE_COMPRESSED_PVRTC2:
-					return false; // PowerVR need improvements here
-				case EVDF_TEXTURE_COMPRESSED_ETC1:
-					return false; // Android based devices need improvements here
-				case EVDF_TEXTURE_COMPRESSED_ETC2:
-					return false;
+                case EVDF_TEXTURE_COMPRESSED_DXT:
+                    return false; // NV Tegra need improvements here
+                case EVDF_TEXTURE_COMPRESSED_PVRTC:
+                    return FeatureAvailable[IRR_IMG_texture_compression_pvrtc];
+                case EVDF_TEXTURE_COMPRESSED_PVRTC2:
+                    return false;
+                case EVDF_TEXTURE_COMPRESSED_ETC1:
+                    return FeatureAvailable[IRR_OES_compressed_ETC1_RGB8_texture];
+                case EVDF_TEXTURE_COMPRESSED_ETC2:
+                    return false;
 				default:
 					return false;
 			}

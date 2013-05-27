@@ -90,6 +90,10 @@ protected:
 
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
+    
+    //! Get the OpenGL color format parameters based on the given Irrlicht color format
+	void getFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLint& filtering,
+		GLenum& pixelFormat, GLenum& type, void(*&convert)(const void*, s32, void*));
 
 	//! convert the image into an internal image with better properties for this driver.
 	void getImageValues(IImage* image);
