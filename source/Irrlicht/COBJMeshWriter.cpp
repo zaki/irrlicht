@@ -64,7 +64,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 	// write OBJ MESH header
 
-	core::stringc name;
+	io::path name;
 	core::cutFilenameExtension(name,file->getFileName()) += ".mtl";
 	file->write("# exported by Irrlicht\n",23);
 	file->write("mtllib ",7);

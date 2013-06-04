@@ -8,6 +8,7 @@
 #include "SAnimatedMesh.h"
 #include "os.h"
 #include "irrMap.h"
+#include "triangle3d.h"
 
 namespace irr
 {
@@ -916,13 +917,30 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 			break;
 		}
 
-		// write the buffer's index list
-		core::array<u16> &Indices = *outIdx;
+		// Clean up any degenerate tris
+ 		core::array<u16> &Indices = *outIdx;
+		Indices.clear();
+		Indices.reallocate(indexCount);
+		for (u32 i = 0; i < indexCount; i+=3)
+ 		{
+			u16 a, b, c;
+			a = redirects[indices[i]];
+			b = redirects[indices[i+1]];
+			c = redirects[indices[i+2]];
 
-		Indices.set_used(indexCount);
-		for (u32 i=0; i<indexCount; ++i)
-		{
-			Indices[i] = redirects[ indices[i] ];
+			bool drop = false;
+
+			if (a == b || b == c || a == c)
+				drop = true;
+
+			// Open for other checks
+
+			if (!drop)
+			{
+				Indices.push_back(a);
+				Indices.push_back(b);
+				Indices.push_back(c);
+			}
 		}
 	}
 	return clone;
@@ -1015,6 +1033,318 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNor
 		recalculateTangents(clone, recalculateNormals, smooth, angleWeighted);
 
 	return clone;
+}
+
+namespace
+{
+
+struct height_edge
+{
+	u32 far;
+
+	u32 polycount;
+	u32 polys[2];
+	core::vector3df normal[2];
+};
+
+enum
+{
+	HEIGHT_TRIACCEL_MAX = 1024
+};
+
+}
+
+//! Optimizes the mesh using an algorithm tuned for heightmaps.
+void CMeshManipulator::heightmapOptimizeMesh(IMesh * const m, const f32 tolerance) const
+{
+	const u32 max = m->getMeshBufferCount();
+
+	for (u32 i = 0; i < max; i++)
+	{
+		IMeshBuffer * const mb = m->getMeshBuffer(i);
+
+		heightmapOptimizeMesh(mb, tolerance);
+	}
+}
+
+//! Optimizes the mesh using an algorithm tuned for heightmaps.
+void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 tolerance) const
+{
+	using namespace core;
+	using namespace video;
+
+	array<height_edge> edges;
+
+	const u32 idxs = mb->getIndexCount();
+	const u32 verts = mb->getVertexCount();
+
+	u16 *ind = mb->getIndices();
+	S3DVertex *vert = (S3DVertex *) mb->getVertices();
+
+	// First an acceleration structure: given this vert, which triangles touch it?
+	// Using this drops two exponents off the algorightm complexity, O(n^4) > O(n^2)
+	// Other optimizations brought it down to O(n).
+	u32 **accel = (u32 **) malloc(verts * sizeof(u32 *));
+	for (u32 i = 0; i < verts; i++)
+	{
+		accel[i] = (u32 *) calloc(HEIGHT_TRIACCEL_MAX, sizeof(u32));
+		for (u32 j = 0; j < HEIGHT_TRIACCEL_MAX; j++)
+		{
+			accel[i][j] = USHRT_MAX;
+		}
+	}
+
+	u16 *cur = (u16 *) calloc(verts, sizeof(u16));
+	for (u32 j = 0; j < idxs; j+=3)
+	{
+		u32 v = ind[j];
+
+		if (cur[v] >= HEIGHT_TRIACCEL_MAX)
+		{
+			os::Printer::log("Too complex mesh to optimize, aborting.");
+			goto donehere;
+		}
+
+		accel[v][cur[v]] = j;
+		cur[v]++;
+
+		// Unrolled tri loop, parts 2 and 3
+		v = ind[j+1];
+
+		if (cur[v] >= HEIGHT_TRIACCEL_MAX)
+		{
+			os::Printer::log("Too complex mesh to optimize, aborting.");
+			goto donehere;
+		}
+
+		accel[v][cur[v]] = j;
+		cur[v]++;
+
+		v = ind[j+2];
+
+		if (cur[v] >= HEIGHT_TRIACCEL_MAX)
+		{
+			os::Printer::log("Too complex mesh to optimize, aborting.");
+			goto donehere;
+		}
+
+		accel[v][cur[v]] = j;
+		cur[v]++;
+	}
+	free(cur);
+
+	// Built, go
+	for (u32 i = 0; i < verts; i++)
+	{
+		const vector3df &mypos = vert[i].Pos;
+
+		// find all edges of this vert
+		edges.clear();
+
+		bool gotonext = false;
+		u32 j;
+		u16 cur;
+		for (cur = 0; accel[i][cur] != USHRT_MAX && cur < HEIGHT_TRIACCEL_MAX; cur++)
+		{
+			j = accel[i][cur];
+
+			u32 far1 = -1, far2 = -1;
+			if (ind[j] == i)
+			{
+				far1 = ind[j+1];
+				far2 = ind[j+2];
+			}
+			else if (ind[j+1] == i)
+			{
+				far1 = ind[j];
+				far2 = ind[j+2];
+			}
+			else if (ind[j+2] == i)
+			{
+				far1 = ind[j];
+				far2 = ind[j+1];
+			}
+
+			// Skip degenerate tris
+			if (vert[i].Pos == vert[far1].Pos ||
+				vert[far1].Pos == vert[far2].Pos)
+			{
+//				puts("skipping degenerate tri");
+				continue;
+			}
+
+			// Edges found, check if we already added them
+			const u32 ecount = edges.size();
+			bool far1new = true, far2new = true;
+
+			for (u32 e = 0; e < ecount; e++)
+			{
+				if (edges[e].far == far1 ||
+					edges[e].far == far2)
+				{
+
+					// Skip if over 2 polys
+					if (edges[e].polycount > 2)
+					{
+						gotonext = true;
+						goto almostnext;
+					}
+					edges[e].polys[edges[e].polycount] = j;
+					edges[e].normal[edges[e].polycount] =
+						vert[i].Normal;
+					edges[e].polycount++;
+
+					if (edges[e].far == far1)
+						far1new = false;
+					else
+						far2new = false;
+				}
+			}
+
+			if (far1new)
+			{
+				// New edge
+				height_edge ed;
+
+				ed.far = far1;
+				ed.polycount = 1;
+				ed.polys[0] = j;
+				ed.normal[0] = vert[i].Normal;
+
+				edges.push_back(ed);
+			}
+			if (far2new)
+			{
+				// New edge
+				height_edge ed;
+
+				ed.far = far2;
+				ed.polycount = 1;
+				ed.polys[0] = j;
+				ed.normal[0] = vert[i].Normal;
+
+				edges.push_back(ed);
+			}
+		}
+
+		almostnext:
+		if (gotonext)
+			continue;
+
+		// Edges found. Possible to simplify?
+
+		const u32 ecount = edges.size();
+//		printf("Vert %u has %u edges\n", i, ecount);
+		for (u32 e = 0; e < ecount; e++)
+		{
+			for (u32 f = 0; f < ecount; f++)
+			{
+				if (f == e) continue;
+
+				vector3df one = mypos - vert[edges[e].far].Pos;
+				vector3df two = vert[edges[f].far].Pos - mypos;
+
+				one.normalize();
+				two.normalize();
+
+				// Straight line ?
+				if (!one.equals(two, tolerance) || one.getLengthSQ() < 0.5f)
+					continue;
+
+				// All other edges must have two polys
+				for (u32 g = 0; g < ecount; g++)
+				{
+					if (g == e || g == f)
+						continue;
+
+					if (edges[g].polycount != 2)
+					{
+//						printf("%u: polycount not 2 (%u)\n",
+//							g, edges[g].polycount);
+						goto testnext;
+					}
+
+					// Normals must match
+					if (!edges[g].normal[0].equals(edges[g].normal[1],
+						tolerance))
+					{
+//						puts("Normals don't match");
+						goto testnext;
+					}
+
+					// Normals must not flip
+					for (u32 z = 0; z < edges[g].polycount; z++)
+					{
+						bool flat = false;
+						vector3df pos[3];
+						pos[0] =
+							vert[ind[edges[g].polys[z]]].Pos;
+						pos[1] =
+							vert[ind[edges[g].polys[z] + 1]].Pos;
+						pos[2] =
+							vert[ind[edges[g].polys[z] + 2]].Pos;
+
+						for (u32 y = 0; y < 3; y++)
+						{
+							if (edges[g].polys[z] + y == i)
+							{
+								pos[y] = vert[edges[e].far].Pos;
+							}
+							else if (edges[g].polys[z] + y
+								== edges[e].far)
+							{
+								flat = true;
+								break;
+							}
+						}
+						if (!flat)
+						{
+							triangle3df temp(pos[0],
+								pos[1], pos[2]);
+							vector3df N = temp.getNormal();
+							N.normalize();
+//							if (N.getLengthSQ() < 0.5f)
+//								puts("empty");
+
+							if (N != edges[g].normal[z])
+							{
+//								puts("wouldflip");
+								goto testnext;
+							}
+						}
+					}
+
+					// Must not be on model edge
+					if (edges[g].polycount == 1)
+					{
+						goto testnext;
+					}
+
+				}
+
+				// Must not be on model edge
+				if (edges[e].polycount == 1)
+				{
+					goto testnext;
+				}
+
+				// OK, moving to welding position
+				vert[i] = vert[edges[e].far];
+//				printf("Contracted vert %u to %u\n",
+//					i, edges[e].far);
+			}
+		}
+
+
+		testnext:;
+	}
+
+donehere:
+	for (u32 i = 0; i < verts; i++)
+	{
+		free(accel[i]);
+	}
+	free(accel);
 }
 
 

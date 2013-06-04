@@ -86,6 +86,12 @@ public:
 
 	//! create a mesh optimized for the vertex cache
 	virtual IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh) const;
+
+	//! Optimizes the mesh using an algorithm tuned for heightmaps
+	virtual void heightmapOptimizeMesh(IMesh * const m, const f32 tolerance = core::ROUNDING_ERROR_f32) const;
+
+	//! Optimizes the mesh using an algorithm tuned for heightmaps
+	virtual void heightmapOptimizeMesh(IMeshBuffer * const m, const f32 tolerance = core::ROUNDING_ERROR_f32) const;
 };
 
 } // end namespace scene

@@ -2269,6 +2269,8 @@ void CXMeshFileLoader::readUntilEndOfLine()
 
 u16 CXMeshFileLoader::readBinWord()
 {
+	if (P>=End)
+		return 0;
 #ifdef __BIG_ENDIAN__
 	const u16 tmp = os::Byteswap::byteswap(*(u16 *)P);
 #else
@@ -2281,6 +2283,8 @@ u16 CXMeshFileLoader::readBinWord()
 
 u32 CXMeshFileLoader::readBinDWord()
 {
+	if (P>=End)
+		return 0;
 #ifdef __BIG_ENDIAN__
 	const u32 tmp = os::Byteswap::byteswap(*(u32 *)P);
 #else
