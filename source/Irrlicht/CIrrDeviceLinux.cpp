@@ -55,7 +55,7 @@ namespace irr
 	{
         #ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-                                         io::IFileSystem* io, CIrrDeviceWin32* device);
+                                         io::IFileSystem* io, CIrrDeviceLinux* device);
         #endif
         
         #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
