@@ -790,7 +790,7 @@ namespace quake3
 		for ( u32 i = 0; i!= stringList.size (); ++i )
 		{
 			video::ITexture* texture = 0;
-			for (u32 g = 0; g != 7 ; ++g)
+			for (u32 g = 0; g != 7; ++g)
 			{
 				core::cutFilenameExtension ( loadFile, stringList[i] );
 

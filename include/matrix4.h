@@ -2138,7 +2138,7 @@ namespace core
 		M[6] = (T)y;
 
 #if defined ( USE_MATRIX_TEST )
-		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f) ;
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f);
 #endif
 		return *this;
 	}
