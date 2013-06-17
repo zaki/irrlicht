@@ -40,10 +40,10 @@ public:
 
 	//! Prepares an array with new particles to emitt into the system
 	//! and returns how much new particles there are.
-	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray);
+	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray) _IRR_OVERRIDE_;
 
 	//! Set Mesh to emit particles from
-	virtual void setMesh( IMesh* mesh );
+	virtual void setMesh( IMesh* mesh ) _IRR_OVERRIDE_;
 
 	//! Set whether to use vertex normal for direction, or direction specified
 	virtual void setUseNormalDirection( bool useNormalDirection ) _IRR_OVERRIDE_ { UseNormalDirection = useNormalDirection; }

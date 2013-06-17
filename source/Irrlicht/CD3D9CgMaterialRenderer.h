@@ -53,12 +53,12 @@ public:
 
 	virtual ~CD3D9CgMaterialRenderer();
 
-	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services);
-	virtual bool OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype);
-	virtual void OnUnsetMaterial();
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_;
+	virtual bool OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_;
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_;
 
-	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates);
-	virtual IVideoDriver* getVideoDriver();
+	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates) _IRR_OVERRIDE_;
+	virtual IVideoDriver* getVideoDriver() _IRR_OVERRIDE_;
 
 protected:
 	void init(s32& materialType,

@@ -31,50 +31,50 @@ namespace scene
 		virtual ~CAnimatedMeshSceneNode();
 
 		//! sets the current frame. from now on the animation is played from this frame.
-		virtual void setCurrentFrame(f32 frame);
+		virtual void setCurrentFrame(f32 frame) _IRR_OVERRIDE_;
 
 		//! frame
-		virtual void OnRegisterSceneNode();
+		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
 
 		//! OnAnimate() is called just before rendering the whole scene.
-		virtual void OnAnimate(u32 timeMs);
+		virtual void OnAnimate(u32 timeMs) _IRR_OVERRIDE_;
 
 		//! renders the node.
-		virtual void render();
+		virtual void render() _IRR_OVERRIDE_;
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
 		//! sets the frames between the animation is looped.
 		//! the default is 0 - MaximalFrameCount of the mesh.
-		virtual bool setFrameLoop(s32 begin, s32 end);
+		virtual bool setFrameLoop(s32 begin, s32 end) _IRR_OVERRIDE_;
 
 		//! Sets looping mode which is on by default. If set to false,
 		//! animations will not be looped.
-		virtual void setLoopMode(bool playAnimationLooped);
+		virtual void setLoopMode(bool playAnimationLooped) _IRR_OVERRIDE_;
 
 		//! returns the current loop mode
-		virtual bool getLoopMode() const;
+		virtual bool getLoopMode() const _IRR_OVERRIDE_;
 
 		//! Sets a callback interface which will be called if an animation
 		//! playback has ended. Set this to 0 to disable the callback again.
-		virtual void setAnimationEndCallback(IAnimationEndCallBack* callback=0);
+		virtual void setAnimationEndCallback(IAnimationEndCallBack* callback=0) _IRR_OVERRIDE_;
 
 		//! sets the speed with which the animation is played
-		virtual void setAnimationSpeed(f32 framesPerSecond);
+		virtual void setAnimationSpeed(f32 framesPerSecond) _IRR_OVERRIDE_;
 
 		//! gets the speed with which the animation is played
-		virtual f32 getAnimationSpeed() const;
+		virtual f32 getAnimationSpeed() const _IRR_OVERRIDE_;
 
 		//! returns the material based on the zero based index i. To get the amount
 		//! of materials used by this scene node, use getMaterialCount().
 		//! This function is needed for inserting the node into the scene hirachy on a
 		//! optimal position for minimizing renderstate changes, but can also be used
 		//! to directly modify the material of a scene node.
-		virtual video::SMaterial& getMaterial(u32 i);
+		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
 
 		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount() const;
+		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
 
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.
@@ -83,57 +83,51 @@ namespace scene
 
 		//! Returns a pointer to a child node, which has the same transformation as
 		//! the corrsesponding joint, if the mesh in this scene node is a skinned mesh.
-		virtual IBoneSceneNode* getJointNode(const c8* jointName);
+		virtual IBoneSceneNode* getJointNode(const c8* jointName) _IRR_OVERRIDE_;
 
 		//! same as getJointNode(const c8* jointName), but based on id
-		virtual IBoneSceneNode* getJointNode(u32 jointID);
+		virtual IBoneSceneNode* getJointNode(u32 jointID) _IRR_OVERRIDE_;
 
 		//! Gets joint count.
-		virtual u32 getJointCount() const;
-
-		//! Deprecated command, please use getJointNode.
-		virtual ISceneNode* getMS3DJointNode(const c8* jointName);
-
-		//! Deprecated command, please use getJointNode.
-		virtual ISceneNode* getXJointNode(const c8* jointName);
+		virtual u32 getJointCount() const _IRR_OVERRIDE_;
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,
 		//! or to remove attached childs.
-		virtual bool removeChild(ISceneNode* child);
+		virtual bool removeChild(ISceneNode* child) _IRR_OVERRIDE_;
 
 		//! Starts a MD2 animation.
-		virtual bool setMD2Animation(EMD2_ANIMATION_TYPE anim);
+		virtual bool setMD2Animation(EMD2_ANIMATION_TYPE anim) _IRR_OVERRIDE_;
 
 		//! Starts a special MD2 animation.
-		virtual bool setMD2Animation(const c8* animationName);
+		virtual bool setMD2Animation(const c8* animationName) _IRR_OVERRIDE_;
 
 		//! Returns the current displayed frame number.
-		virtual f32 getFrameNr() const;
+		virtual f32 getFrameNr() const _IRR_OVERRIDE_;
 		//! Returns the current start frame number.
-		virtual s32 getStartFrame() const;
+		virtual s32 getStartFrame() const _IRR_OVERRIDE_;
 		//! Returns the current end frame number.
-		virtual s32 getEndFrame() const;
+		virtual s32 getEndFrame() const _IRR_OVERRIDE_;
 
 		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
 		/* In this way it is possible to change the materials a mesh causing all mesh scene nodes
 		referencing this mesh to change too. */
-		virtual void setReadOnlyMaterials(bool readonly);
+		virtual void setReadOnlyMaterials(bool readonly) _IRR_OVERRIDE_;
 
 		//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-		virtual bool isReadOnlyMaterials() const;
+		virtual bool isReadOnlyMaterials() const _IRR_OVERRIDE_;
 
 		//! Sets a new mesh
-		virtual void setMesh(IAnimatedMesh* mesh);
+		virtual void setMesh(IAnimatedMesh* mesh) _IRR_OVERRIDE_;
 
 		//! Returns the current mesh
 		virtual IAnimatedMesh* getMesh(void) _IRR_OVERRIDE_ { return Mesh; }
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the scene node.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_ANIMATED_MESH; }
@@ -143,27 +137,27 @@ namespace scene
 		const SMD3QuaternionTag* getMD3TagTransformation( const core::stringc & tagname);
 
 		//! updates the absolute position based on the relative and the parents position
-		virtual void updateAbsolutePosition();
+		virtual void updateAbsolutePosition() _IRR_OVERRIDE_;
 
 
 		//! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
-		virtual void setJointMode(E_JOINT_UPDATE_ON_RENDER mode);
+		virtual void setJointMode(E_JOINT_UPDATE_ON_RENDER mode) _IRR_OVERRIDE_;
 
 		//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
 		//! you must call animateJoints(), or the mesh will not animate
-		virtual void setTransitionTime(f32 Time);
+		virtual void setTransitionTime(f32 Time) _IRR_OVERRIDE_;
 
 		//! updates the joint positions of this mesh
-		virtual void animateJoints(bool CalculateAbsolutePositions=true);
+		virtual void animateJoints(bool CalculateAbsolutePositions=true) _IRR_OVERRIDE_;
 
 		//! render mesh ignoring its transformation. Used with ragdolls. (culling is unaffected)
-		virtual void setRenderFromIdentity( bool On );
+		virtual void setRenderFromIdentity( bool On ) _IRR_OVERRIDE_;
 
 		//! Creates a clone of this scene node and its children.
 		/** \param newParent An optional new parent.
 		\param newManager An optional new scene manager.
 		\return The newly created clone of this node. */
-		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
+		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
 	private:
 

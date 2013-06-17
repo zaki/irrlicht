@@ -79,39 +79,39 @@ public:
 	virtual ~COpenGLTexture();
 
 	//! lock function
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0);
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_;
 
 	//! unlock function
-	virtual void unlock();
+	virtual void unlock() _IRR_OVERRIDE_;
 
 	//! Returns original size of the texture (image).
-	virtual const core::dimension2d<u32>& getOriginalSize() const;
+	virtual const core::dimension2d<u32>& getOriginalSize() const _IRR_OVERRIDE_;
 
 	//! Returns size of the texture.
-	virtual const core::dimension2d<u32>& getSize() const;
+	virtual const core::dimension2d<u32>& getSize() const _IRR_OVERRIDE_;
 
 	//! returns driver type of texture (=the driver, that created it)
-	virtual E_DRIVER_TYPE getDriverType() const;
+	virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
 
 	//! returns color format of texture
-	virtual ECOLOR_FORMAT getColorFormat() const;
+	virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
 
 	//! returns pitch of texture (in bytes)
-	virtual u32 getPitch() const;
+	virtual u32 getPitch() const _IRR_OVERRIDE_;
 
 	//! return open gl texture name
 	GLuint getOpenGLTextureName() const;
 
 	//! return whether this texture has mipmaps
-	virtual bool hasMipMaps() const;
+	virtual bool hasMipMaps() const _IRR_OVERRIDE_;
 
 	//! Regenerates the mip map levels of the texture.
 	/** Useful after locking and modifying the texture
 	\param mipmapData Pointer to raw mipmap data, including all necessary mip levels, in the same format as the main texture image. If not set the mipmaps are derived from the main image. */
-	virtual void regenerateMipMapLevels(void* mipmapData=0);
+	virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_;
 
 	//! Is it a render target?
-	virtual bool isRenderTarget() const;
+	virtual bool isRenderTarget() const _IRR_OVERRIDE_;
 
 	//! Is it a FrameBufferObject?
 	virtual bool isFrameBufferObject() const;
@@ -186,13 +186,13 @@ public:
 	virtual ~COpenGLFBOTexture();
 
 	//! Is it a FrameBufferObject?
-	virtual bool isFrameBufferObject() const;
+	virtual bool isFrameBufferObject() const _IRR_OVERRIDE_;
 
 	//! Bind RenderTargetTexture
-	virtual void bindRTT();
+	virtual void bindRTT() _IRR_OVERRIDE_;
 
 	//! Unbind RenderTargetTexture
-	virtual void unbindRTT();
+	virtual void unbindRTT() _IRR_OVERRIDE_;
 
 	ITexture* DepthTexture;
 protected:
@@ -211,10 +211,10 @@ public:
 	virtual ~COpenGLFBODepthTexture();
 
 	//! Bind RenderTargetTexture
-	virtual void bindRTT();
+	virtual void bindRTT() _IRR_OVERRIDE_;
 
 	//! Unbind RenderTargetTexture
-	virtual void unbindRTT();
+	virtual void unbindRTT() _IRR_OVERRIDE_;
 
 	bool attach(ITexture*);
 

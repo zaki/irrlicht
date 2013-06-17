@@ -646,21 +646,6 @@ u32 CAnimatedMeshSceneNode::getJointCount() const
 }
 
 
-//! Returns a pointer to a child node, which has the same transformation as
-//! the corresponding joint, if the mesh in this scene node is a ms3d mesh.
-ISceneNode* CAnimatedMeshSceneNode::getMS3DJointNode(const c8* jointName)
-{
-	return  getJointNode(jointName);
-}
-
-
-//! Returns a pointer to a child node, which has the same transformation as
-//! the corresponding joint, if the mesh in this scene node is a .x mesh.
-ISceneNode* CAnimatedMeshSceneNode::getXJointNode(const c8* jointName)
-{
-	return  getJointNode(jointName);
-}
-
 //! Removes a child from this scene node.
 //! Implemented here, to be able to remove the shadow properly, if there is one,
 //! or to remove attached childs.

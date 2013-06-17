@@ -35,34 +35,34 @@ namespace scene
 		virtual ~CSceneNodeAnimatorCameraMaya();
 
 		//! Animates the scene node, currently only works on cameras
-		virtual void animateNode(ISceneNode* node, u32 timeMs);
+		virtual void animateNode(ISceneNode* node, u32 timeMs) _IRR_OVERRIDE_;
 
 		//! Event receiver
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! Returns the speed of movement in units per millisecond
-		virtual f32 getMoveSpeed() const;
+		virtual f32 getMoveSpeed() const _IRR_OVERRIDE_;
 
 		//! Sets the speed of movement in units per millisecond
-		virtual void setMoveSpeed(f32 moveSpeed);
+		virtual void setMoveSpeed(f32 moveSpeed) _IRR_OVERRIDE_;
 
 		//! Returns the rotation speed
-		virtual f32 getRotateSpeed() const;
+		virtual f32 getRotateSpeed() const _IRR_OVERRIDE_;
 
 		//! Set the rotation speed
-		virtual void setRotateSpeed(f32 rotateSpeed);
+		virtual void setRotateSpeed(f32 rotateSpeed) _IRR_OVERRIDE_;
 
 		//! Returns the zoom speed
-		virtual f32 getZoomSpeed() const;
+		virtual f32 getZoomSpeed() const _IRR_OVERRIDE_;
 
 		//! Set the zoom speed
-		virtual void setZoomSpeed(f32 zoomSpeed);
+		virtual void setZoomSpeed(f32 zoomSpeed) _IRR_OVERRIDE_;
 
 		//! Returns the current distance, i.e. orbit radius
-		virtual f32 getDistance() const;
+		virtual f32 getDistance() const _IRR_OVERRIDE_;
 
 		//! Set the distance
-		virtual void setDistance(f32 distance);
+		virtual void setDistance(f32 distance) _IRR_OVERRIDE_;
 
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const
@@ -80,7 +80,7 @@ namespace scene
 		/** Please note that you will have to drop
 		(IReferenceCounted::drop()) the returned pointer after calling
 		this. */
-		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
 	private:
 

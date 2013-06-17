@@ -25,7 +25,7 @@ public:
 	virtual ~CMetaTriangleSelector();
 
 	//! Get amount of all available triangles in this selector
-	virtual s32 getTriangleCount() const;
+	virtual s32 getTriangleCount() const _IRR_OVERRIDE_;
 
 	//! Gets all triangles.
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
@@ -43,25 +43,25 @@ public:
 
 	//! Adds a triangle selector to the collection of triangle selectors
 	//! in this metaTriangleSelector.
-	virtual void addTriangleSelector(ITriangleSelector* toAdd);
+	virtual void addTriangleSelector(ITriangleSelector* toAdd) _IRR_OVERRIDE_;
 
 	//! Removes a specific triangle selector which was added before	from the collection.
-	virtual bool removeTriangleSelector(ITriangleSelector* toRemove);
+	virtual bool removeTriangleSelector(ITriangleSelector* toRemove) _IRR_OVERRIDE_;
 
 	//! Removes all triangle selectors from the collection.
-	virtual void removeAllTriangleSelectors();
+	virtual void removeAllTriangleSelectors() _IRR_OVERRIDE_;
 
 	//! Get the scene node associated with a given triangle.
-	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const;
+	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const _IRR_OVERRIDE_;
 
 	// Get the number of TriangleSelectors that are part of this one
-	virtual u32 getSelectorCount() const;
+	virtual u32 getSelectorCount() const _IRR_OVERRIDE_;
 
 	// Get the TriangleSelector based on index based on getSelectorCount
-	virtual ITriangleSelector* getSelector(u32 index);
+	virtual ITriangleSelector* getSelector(u32 index) _IRR_OVERRIDE_;
 
 	// Get the TriangleSelector based on index based on getSelectorCount
-	virtual const ITriangleSelector* getSelector(u32 index) const;
+	virtual const ITriangleSelector* getSelector(u32 index) const _IRR_OVERRIDE_;
 
 private:
 

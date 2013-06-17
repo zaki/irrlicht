@@ -29,7 +29,7 @@ namespace scene
 		virtual ~CAnimatedMeshMD2();
 
 		//! returns the amount of frames. If the amount is 1, it is a static (=non animated) mesh.
-		virtual u32 getFrameCount() const;
+		virtual u32 getFrameCount() const _IRR_OVERRIDE_;
 
 		//! Gets the default animation speed of the animated mesh.
 		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
@@ -47,37 +47,37 @@ namespace scene
 		}
 
 		//! returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail. Note, that some Meshes will ignore the detail level.
-		virtual IMesh* getMesh(s32 frame, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1);
+		virtual IMesh* getMesh(s32 frame, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1) _IRR_OVERRIDE_;
 
 		//! returns amount of mesh buffers.
-		virtual u32 getMeshBufferCount() const;
+		virtual u32 getMeshBufferCount() const _IRR_OVERRIDE_;
 
 		//! returns pointer to a mesh buffer
-		virtual IMeshBuffer* getMeshBuffer(u32 nr) const;
+		virtual IMeshBuffer* getMeshBuffer(u32 nr) const _IRR_OVERRIDE_;
 
 		//! Returns pointer to a mesh buffer which fits a material
 		/** \param material: material to search for
 		\return Returns the pointer to the mesh buffer or
 		NULL if there is no such mesh buffer. */
-		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const;
+		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const _IRR_OVERRIDE_;
 
 		//! returns an axis aligned bounding box
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
 		//! set user axis aligned bounding box
-		virtual void setBoundingBox( const core::aabbox3df& box);
+		virtual void setBoundingBox( const core::aabbox3df& box) _IRR_OVERRIDE_;
 
 		//! sets a flag of all contained materials to a new value
-		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue);
+		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue) _IRR_OVERRIDE_;
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_;
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_;
 
 		//! Returns the type of the animated mesh.
-		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
+		virtual E_ANIMATED_MESH_TYPE getMeshType() const _IRR_OVERRIDE_;
 
 		//! Returns frame loop data for a special MD2 animation type.
 		virtual void getFrameLoop(EMD2_ANIMATION_TYPE,
@@ -88,11 +88,11 @@ namespace scene
 			s32& outBegin, s32& outEnd, s32& outFps) const;
 
 		//! Returns amount of md2 animations in this file.
-		virtual s32 getAnimationCount() const;
+		virtual s32 getAnimationCount() const _IRR_OVERRIDE_;
 
 		//! Returns name of md2 animation.
 		//! \param nr: Zero based index of animation.
-		virtual const c8* getAnimationName(s32 nr) const;
+		virtual const c8* getAnimationName(s32 nr) const _IRR_OVERRIDE_;
 
 
 		//

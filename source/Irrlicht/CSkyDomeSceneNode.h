@@ -21,16 +21,16 @@ class CSkyDomeSceneNode : public ISceneNode
 			f32 texturePercentage, f32 spherePercentage, f32 radius,
 			ISceneNode* parent, ISceneManager* smgr, s32 id);
 		virtual ~CSkyDomeSceneNode();
-		virtual void OnRegisterSceneNode();
-		virtual void render();
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
-		virtual video::SMaterial& getMaterial(u32 i);
-		virtual u32 getMaterialCount() const;
+		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
+		virtual void render() _IRR_OVERRIDE_;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
+		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_SKY_DOME; }
 
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
-		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
 	private:
 

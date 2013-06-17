@@ -26,37 +26,37 @@ namespace gui
 		virtual ~CGUIImage();
 
 		//! sets an image
-		virtual void setImage(video::ITexture* image);
+		virtual void setImage(video::ITexture* image) _IRR_OVERRIDE_;
 
 		//! Gets the image texture
-		virtual video::ITexture* getImage() const;
+		virtual video::ITexture* getImage() const _IRR_OVERRIDE_;
 
 		//! sets the color of the image
-		virtual void setColor(video::SColor color);
+		virtual void setColor(video::SColor color) _IRR_OVERRIDE_;
 
 		//! sets if the image should scale to fit the element
-		virtual void setScaleImage(bool scale);
+		virtual void setScaleImage(bool scale) _IRR_OVERRIDE_;
 
 		//! draws the element and its children
-		virtual void draw();
+		virtual void draw() _IRR_OVERRIDE_;
 
 		//! sets if the image should use its alpha channel to draw itself
-		virtual void setUseAlphaChannel(bool use);
+		virtual void setUseAlphaChannel(bool use) _IRR_OVERRIDE_;
 
 		//! Gets the color of the image
-		virtual video::SColor getColor() const;
+		virtual video::SColor getColor() const _IRR_OVERRIDE_;
 
 		//! Returns true if the image is scaled to fit, false if not
-		virtual bool isImageScaled() const;
+		virtual bool isImageScaled() const _IRR_OVERRIDE_;
 
 		//! Returns true if the image is using the alpha channel, false if not
-		virtual bool isAlphaChannelUsed() const;
+		virtual bool isAlphaChannelUsed() const _IRR_OVERRIDE_;
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
 
 	private:
 		video::ITexture* Texture;

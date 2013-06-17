@@ -257,6 +257,18 @@ namespace irr
 		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
 					f32 &brightness, f32 &contrast) =0;
 
+		//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behavior.
+		/** When set to 0 no double- and tripleclicks will be generated.
+		\param timeMs maximal time in milliseconds for two consecutive clicks to be recognized as double click
+		*/
+		virtual void setDoubleClickTime(u32 timeMs) =0;
+
+		//! Get the maximal elapsed time between 2 clicks to generate double- and tripleclicks for the mouse.
+		/** When return value is 0 no double- and tripleclicks will be generated.
+		\return maximal time in milliseconds for two consecutive clicks to be recognized as double click
+		*/
+		virtual u32 getDoubleClickTime() const =0;
+
 		//! Remove messages pending in the system message loop
 		/** This function is usually used after messages have been buffered for a longer time, for example
 		when loading a large scene. Clearing the message loop prevents that mouse- or buttonclicks which users

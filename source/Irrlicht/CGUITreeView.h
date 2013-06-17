@@ -30,24 +30,24 @@ namespace gui
 		~CGUITreeViewNode();
 
 		//! returns the owner (tree view) of this node
-		virtual IGUITreeView* getOwner() const;
+		virtual IGUITreeView* getOwner() const _IRR_OVERRIDE_;
 
 		//! Returns the parent node of this node.
-		virtual IGUITreeViewNode* getParent() const;
+		virtual IGUITreeViewNode* getParent() const _IRR_OVERRIDE_;
 
 		//! returns the text of the node
 		virtual const wchar_t* getText() const
 		{ return Text.c_str(); }
 
 		//! sets the text of the node
-		virtual void setText( const wchar_t* text );
+		virtual void setText( const wchar_t* text ) _IRR_OVERRIDE_;
 
 		//! returns the icon text of the node
 		virtual const wchar_t* getIcon() const
 		{ return Icon.c_str(); }
 
 		//! sets the icon text of the node
-		virtual void setIcon( const wchar_t* icon );
+		virtual void setIcon( const wchar_t* icon ) _IRR_OVERRIDE_;
 
 		//! returns the image index of the node
 		virtual u32 getImageIndex() const
@@ -96,7 +96,7 @@ namespace gui
 		{ return Children.getSize(); }
 
 		//! removes all children (recursive) from this node
-		virtual void clearChildren();
+		virtual void clearChildren() _IRR_OVERRIDE_;
 
 		//! returns true if this node has child nodes
 		virtual bool hasChildren() const
@@ -175,50 +175,50 @@ namespace gui
 				IReferenceCounted*			data2 = 0 );
 
 		//! Return the first child note from this node.
-		virtual IGUITreeViewNode* getFirstChild() const;
+		virtual IGUITreeViewNode* getFirstChild() const _IRR_OVERRIDE_;
 
 		//! Return the last child note from this node.
-		virtual IGUITreeViewNode* getLastChild() const;
+		virtual IGUITreeViewNode* getLastChild() const _IRR_OVERRIDE_;
 
 		//! Returns the preverse sibling node from this node.
-		virtual IGUITreeViewNode* getPrevSibling() const;
+		virtual IGUITreeViewNode* getPrevSibling() const _IRR_OVERRIDE_;
 
 		//! Returns the next sibling node from this node.
-		virtual IGUITreeViewNode* getNextSibling() const;
+		virtual IGUITreeViewNode* getNextSibling() const _IRR_OVERRIDE_;
 
 		//! Returns the next visible (expanded, may be out of scrolling) node from this node.
-		virtual IGUITreeViewNode* getNextVisible() const;
+		virtual IGUITreeViewNode* getNextVisible() const _IRR_OVERRIDE_;
 
 		//! Deletes a child node.
-		virtual bool deleteChild( IGUITreeViewNode* child );
+		virtual bool deleteChild( IGUITreeViewNode* child ) _IRR_OVERRIDE_;
 
 		//! Moves a child node one position up.
-		virtual bool moveChildUp( IGUITreeViewNode* child );
+		virtual bool moveChildUp( IGUITreeViewNode* child ) _IRR_OVERRIDE_;
 
 		//! Moves a child node one position down.
-		virtual bool moveChildDown( IGUITreeViewNode* child );
+		virtual bool moveChildDown( IGUITreeViewNode* child ) _IRR_OVERRIDE_;
 
 		//! Returns true if the node is expanded (children are visible).
 		virtual bool getExpanded() const
 		{ return Expanded; }
 
 		//! Sets if the node is expanded.
-		virtual void setExpanded( bool expanded );
+		virtual void setExpanded( bool expanded ) _IRR_OVERRIDE_;
 
 		//! Returns true if the node is currently selected.
-		virtual bool getSelected() const;
+		virtual bool getSelected() const _IRR_OVERRIDE_;
 
 		//! Sets this node as selected.
-		virtual void setSelected( bool selected );
+		virtual void setSelected( bool selected ) _IRR_OVERRIDE_;
 
 		//! Returns true if this node is the root node.
-		virtual bool isRoot() const;
+		virtual bool isRoot() const _IRR_OVERRIDE_;
 
 		//! Returns the level of this node.
-		virtual s32 getLevel() const;
+		virtual s32 getLevel() const _IRR_OVERRIDE_;
 
 		//! Returns true if this node is visible (all parents are expanded).
-		virtual bool isVisible() const;
+		virtual bool isVisible() const _IRR_OVERRIDE_;
 
 	private:
 
@@ -266,20 +266,20 @@ namespace gui
 		{ LinesVisible = visible; }
 
 		//! called if an event happened.
-		virtual bool OnEvent( const SEvent &event );
+		virtual bool OnEvent( const SEvent &event ) _IRR_OVERRIDE_;
 
 		//! draws the element and its children
-		virtual void draw();
+		virtual void draw() _IRR_OVERRIDE_;
 
 		//! Sets the font which should be used as icon font. This font is set to the Irrlicht engine
 		//! built-in-font by default. Icons can be displayed in front of every list item.
 		//! An icon is a string, displayed with the icon font. When using the build-in-font of the
 		//! Irrlicht engine as icon font, the icon strings defined in GUIIcons.h can be used.
-		virtual void setIconFont( IGUIFont* font );
+		virtual void setIconFont( IGUIFont* font ) _IRR_OVERRIDE_;
 
 		//! Sets the image list which should be used for the image and selected image of every node.
 		//! The default is 0 (no images).
-		virtual void setImageList( IGUIImageList* imageList );
+		virtual void setImageList( IGUIImageList* imageList ) _IRR_OVERRIDE_;
 
 		//! Returns the image list which is used for the nodes.
 		virtual IGUIImageList* getImageList() const

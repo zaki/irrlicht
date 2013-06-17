@@ -50,19 +50,19 @@ public:
 		const core::matrix4* transform=0) const;
 
 	//! Returns amount of all available triangles in this selector
-	virtual s32 getTriangleCount() const;
+	virtual s32 getTriangleCount() const _IRR_OVERRIDE_;
 
 	//! Return the scene node associated with a given triangle.
 	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const _IRR_OVERRIDE_ { return SceneNode; }
 
 	// Get the number of TriangleSelectors that are part of this one
-	virtual u32 getSelectorCount() const;
+	virtual u32 getSelectorCount() const _IRR_OVERRIDE_;
 
 	// Get the TriangleSelector based on index based on getSelectorCount
-	virtual ITriangleSelector* getSelector(u32 index);
+	virtual ITriangleSelector* getSelector(u32 index) _IRR_OVERRIDE_;
 
 	// Get the TriangleSelector based on index based on getSelectorCount
-	virtual const ITriangleSelector* getSelector(u32 index) const;
+	virtual const ITriangleSelector* getSelector(u32 index) const _IRR_OVERRIDE_;
 
 protected:
 	//! Create from a mesh

@@ -34,12 +34,12 @@ namespace scene
 				io::IFileSystem* fs, video::IVideoDriver* driver);
 
 		// IAnimatedMeshMD3
-		virtual void setInterpolationShift(u32 shift, u32 loopMode);
-		virtual SMD3Mesh* getOriginalMesh();
-		virtual SMD3QuaternionTagList* getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop);
+		virtual void setInterpolationShift(u32 shift, u32 loopMode) _IRR_OVERRIDE_;
+		virtual SMD3Mesh* getOriginalMesh() _IRR_OVERRIDE_;
+		virtual SMD3QuaternionTagList* getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) _IRR_OVERRIDE_;
 
 		//IAnimatedMesh
-		virtual u32 getFrameCount() const;
+		virtual u32 getFrameCount() const _IRR_OVERRIDE_;
 
 		//! Gets the default animation speed of the animated mesh.
 		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
@@ -58,28 +58,28 @@ namespace scene
 
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel,
 				s32 startFrameLoop, s32 endFrameLoop);
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
-		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual E_ANIMATED_MESH_TYPE getMeshType() const _IRR_OVERRIDE_;
 
 		//! returns amount of mesh buffers.
-		virtual u32 getMeshBufferCount() const;
+		virtual u32 getMeshBufferCount() const _IRR_OVERRIDE_;
 
 		//! returns pointer to a mesh buffer
-		virtual IMeshBuffer* getMeshBuffer(u32 nr) const;
+		virtual IMeshBuffer* getMeshBuffer(u32 nr) const _IRR_OVERRIDE_;
 
 		//! Returns pointer to a mesh buffer which fits a material
-		virtual IMeshBuffer* getMeshBuffer(const video::SMaterial &material) const;
+		virtual IMeshBuffer* getMeshBuffer(const video::SMaterial &material) const _IRR_OVERRIDE_;
 
-		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue);
+		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue) _IRR_OVERRIDE_;
 
 		//! set user axis aligned bounding box
-		virtual void setBoundingBox(const core::aabbox3df& box);
+		virtual void setBoundingBox(const core::aabbox3df& box) _IRR_OVERRIDE_;
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_;
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_;
 
 	private:
 		//! animates one frame

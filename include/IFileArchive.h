@@ -75,6 +75,9 @@ public:
 	//! get the archive type
 	virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_UNKNOWN; }
 
+	//! return the name (id) of the file Archive
+	virtual const io::path& getArchiveName() const =0;
+
 	//! An optionally used password string
 	/** This variable is publicly accessible from the interface in order to
 	avoid single access patterns to this place, and hence allow some more

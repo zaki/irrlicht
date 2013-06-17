@@ -42,22 +42,22 @@ namespace scene
 		virtual ~CSceneManager();
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
-		virtual IAnimatedMesh* getMesh(const io::path& filename);
+		virtual IAnimatedMesh* getMesh(const io::path& filename) _IRR_OVERRIDE_;
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
-		virtual IAnimatedMesh* getMesh(io::IReadFile* file);
+		virtual IAnimatedMesh* getMesh(io::IReadFile* file) _IRR_OVERRIDE_;
 
 		//! Returns an interface to the mesh cache which is shared beween all existing scene managers.
-		virtual IMeshCache* getMeshCache();
+		virtual IMeshCache* getMeshCache() _IRR_OVERRIDE_;
 
 		//! returns the video driver
-		virtual video::IVideoDriver* getVideoDriver();
+		virtual video::IVideoDriver* getVideoDriver() _IRR_OVERRIDE_;
 
 		//! return the gui environment
-		virtual gui::IGUIEnvironment* getGUIEnvironment();
+		virtual gui::IGUIEnvironment* getGUIEnvironment() _IRR_OVERRIDE_;
 
 		//! return the filesystem
-		virtual io::IFileSystem* getFileSystem();
+		virtual io::IFileSystem* getFileSystem() _IRR_OVERRIDE_;
 
 		//! adds Volume Lighting Scene Node.
 		//! the returned pointer must not be dropped.
@@ -102,16 +102,16 @@ namespace scene
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f));
 
 		//! renders the node.
-		virtual void render();
+		virtual void render() _IRR_OVERRIDE_;
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
 		//! registers a node for rendering it at a specific time.
-		virtual u32 registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS pass = ESNRP_AUTOMATIC);
+		virtual u32 registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS pass = ESNRP_AUTOMATIC) _IRR_OVERRIDE_;
 
 		//! draws all scene nodes
-		virtual void drawAll();
+		virtual void drawAll() _IRR_OVERRIDE_;
 
 		//! Adds a scene node for rendering using a octree to the scene graph. This a good method for rendering
 		//! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
@@ -271,29 +271,29 @@ namespace scene
 			ISceneNode* parent=0, s32 id=-1);
 
 		//! Adds an empty scene node.
-		virtual ISceneNode* addEmptySceneNode(ISceneNode* parent, s32 id=-1);
+		virtual ISceneNode* addEmptySceneNode(ISceneNode* parent, s32 id=-1) _IRR_OVERRIDE_;
 
 		//! Returns the root scene node. This is the scene node wich is parent
 		//! of all scene nodes. The root scene node is a special scene node which
 		//! only exists to manage all scene nodes. It is not rendered and cannot
 		//! be removed from the scene.
 		//! \return Pointer to the root scene node.
-		virtual ISceneNode* getRootSceneNode();
+		virtual ISceneNode* getRootSceneNode() _IRR_OVERRIDE_;
 
 		//! Returns the current active camera.
 		//! \return The active camera is returned. Note that this can be NULL, if there
 		//! was no camera created yet.
-		virtual ICameraSceneNode* getActiveCamera() const;
+		virtual ICameraSceneNode* getActiveCamera() const _IRR_OVERRIDE_;
 
 		//! Sets the active camera. The previous active camera will be deactivated.
 		//! \param camera: The new camera which should be active.
-		virtual void setActiveCamera(ICameraSceneNode* camera);
+		virtual void setActiveCamera(ICameraSceneNode* camera) _IRR_OVERRIDE_;
 
 		//! creates a rotation animator, which rotates the attached scene node around itself.
 		//! \param rotationPerSecond: Specifies the speed of the animation
 		//! \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
 		//! and the animator will animate it.
-		virtual ISceneNodeAnimator* createRotationAnimator(const core::vector3df& rotationPerSecond);
+		virtual ISceneNodeAnimator* createRotationAnimator(const core::vector3df& rotationPerSecond) _IRR_OVERRIDE_;
 
 		//! creates a fly circle animator
 		/** Lets the attached scene node fly around a center.
@@ -323,7 +323,7 @@ namespace scene
 
 		//! Creates a scene node animator, which deletes the scene node after
 		//! some time automaticly.
-		virtual ISceneNodeAnimator* createDeleteAnimator(u32 timeMS);
+		virtual ISceneNodeAnimator* createDeleteAnimator(u32 timeMS) _IRR_OVERRIDE_;
 
 
 		//! Creates a special scene node animator for doing automatic collision detection
@@ -342,14 +342,14 @@ namespace scene
 
 
 		//! Creates a simple ITriangleSelector, based on a mesh.
-		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node);
+		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node) _IRR_OVERRIDE_;
 
 		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
 		//! Details of the mesh associated with the node will be extracted internally.
 		//! Call ITriangleSelector::update() to have the triangle selector updated based
 		//! on the current frame of the animated mesh scene node.
 		//! \param: The animated mesh scene node from which to build the selector
-		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node);
+		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node) _IRR_OVERRIDE_;
 
 		//! Creates a simple ITriangleSelector, based on a mesh.
 		virtual ITriangleSelector* createOctreeTriangleSelector(IMesh* mesh,
@@ -360,7 +360,7 @@ namespace scene
 			ISceneNode* node);
 
 		//! Creates a meta triangle selector.
-		virtual IMetaTriangleSelector* createMetaTriangleSelector();
+		virtual IMetaTriangleSelector* createMetaTriangleSelector() _IRR_OVERRIDE_;
 
 		//! Creates a triangle selector which can select triangles from a terrain scene node
 		//! \param: Pointer to the created terrain scene node
@@ -369,145 +369,145 @@ namespace scene
 			ITerrainSceneNode* node, s32 LOD=0);
 
 		//! Adds an external mesh loader.
-		virtual void addExternalMeshLoader(IMeshLoader* externalLoader);
+		virtual void addExternalMeshLoader(IMeshLoader* externalLoader) _IRR_OVERRIDE_;
 
 		//! Returns the number of mesh loaders supported by Irrlicht at this time
-		virtual u32 getMeshLoaderCount() const;
+		virtual u32 getMeshLoaderCount() const _IRR_OVERRIDE_;
 
 		//! Retrieve the given mesh loader
-		virtual IMeshLoader* getMeshLoader(u32 index) const;
+		virtual IMeshLoader* getMeshLoader(u32 index) const _IRR_OVERRIDE_;
 
 		//! Adds an external scene loader.
-		virtual void addExternalSceneLoader(ISceneLoader* externalLoader);
+		virtual void addExternalSceneLoader(ISceneLoader* externalLoader) _IRR_OVERRIDE_;
 
 		//! Returns the number of scene loaders supported by Irrlicht at this time
-		virtual u32 getSceneLoaderCount() const;
+		virtual u32 getSceneLoaderCount() const _IRR_OVERRIDE_;
 
 		//! Retrieve the given scene loader
-		virtual ISceneLoader* getSceneLoader(u32 index) const;
+		virtual ISceneLoader* getSceneLoader(u32 index) const _IRR_OVERRIDE_;
 
 		//! Returns a pointer to the scene collision manager.
-		virtual ISceneCollisionManager* getSceneCollisionManager();
+		virtual ISceneCollisionManager* getSceneCollisionManager() _IRR_OVERRIDE_;
 
 		//! Returns a pointer to the mesh manipulator.
-		virtual IMeshManipulator* getMeshManipulator();
+		virtual IMeshManipulator* getMeshManipulator() _IRR_OVERRIDE_;
 
 		//! Sets the color of stencil buffers shadows drawn by the scene manager.
-		virtual void setShadowColor(video::SColor color);
+		virtual void setShadowColor(video::SColor color) _IRR_OVERRIDE_;
 
 		//! Returns the current color of shadows.
-		virtual video::SColor getShadowColor() const;
+		virtual video::SColor getShadowColor() const _IRR_OVERRIDE_;
 
 		//! Adds a scene node to the deletion queue.
-		virtual void addToDeletionQueue(ISceneNode* node);
+		virtual void addToDeletionQueue(ISceneNode* node) _IRR_OVERRIDE_;
 
 		//! Returns the first scene node with the specified id.
-		virtual ISceneNode* getSceneNodeFromId(s32 id, ISceneNode* start=0);
+		virtual ISceneNode* getSceneNodeFromId(s32 id, ISceneNode* start=0) _IRR_OVERRIDE_;
 
 		//! Returns the first scene node with the specified name.
-		virtual ISceneNode* getSceneNodeFromName(const c8* name, ISceneNode* start=0);
+		virtual ISceneNode* getSceneNodeFromName(const c8* name, ISceneNode* start=0) _IRR_OVERRIDE_;
 
 		//! Returns the first scene node with the specified type.
-		virtual ISceneNode* getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, ISceneNode* start=0);
+		virtual ISceneNode* getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, ISceneNode* start=0) _IRR_OVERRIDE_;
 
 		//! returns scene nodes by type.
-		virtual void getSceneNodesFromType(ESCENE_NODE_TYPE type, core::array<scene::ISceneNode*>& outNodes, ISceneNode* start=0);
+		virtual void getSceneNodesFromType(ESCENE_NODE_TYPE type, core::array<scene::ISceneNode*>& outNodes, ISceneNode* start=0) _IRR_OVERRIDE_;
 
 		//! Posts an input event to the environment. Usually you do not have to
 		//! use this method, it is used by the internal engine.
-		virtual bool postEventFromUser(const SEvent& event);
+		virtual bool postEventFromUser(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! Clears the whole scene. All scene nodes are removed.
-		virtual void clear();
+		virtual void clear() _IRR_OVERRIDE_;
 
 		//! Removes all children of this scene node
-		virtual void removeAll();
+		virtual void removeAll() _IRR_OVERRIDE_;
 
 		//! Returns interface to the parameters set in this scene.
-		virtual io::IAttributes* getParameters();
+		virtual io::IAttributes* getParameters() _IRR_OVERRIDE_;
 
 		//! Returns current render pass.
-		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() const;
+		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() const _IRR_OVERRIDE_;
 
 		//! Creates a new scene manager.
-		virtual ISceneManager* createNewSceneManager(bool cloneContent);
+		virtual ISceneManager* createNewSceneManager(bool cloneContent) _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_SCENE_MANAGER; }
 
 		//! Returns the default scene node factory which can create all built in scene nodes
-		virtual ISceneNodeFactory* getDefaultSceneNodeFactory();
+		virtual ISceneNodeFactory* getDefaultSceneNodeFactory() _IRR_OVERRIDE_;
 
 		//! Adds a scene node factory to the scene manager.
 		/** Use this to extend the scene manager with new scene node types which it should be
 		able to create automaticly, for example when loading data from xml files. */
-		virtual void registerSceneNodeFactory(ISceneNodeFactory* factoryToAdd);
+		virtual void registerSceneNodeFactory(ISceneNodeFactory* factoryToAdd) _IRR_OVERRIDE_;
 
 		//! Returns amount of registered scene node factories.
-		virtual u32 getRegisteredSceneNodeFactoryCount() const;
+		virtual u32 getRegisteredSceneNodeFactoryCount() const _IRR_OVERRIDE_;
 
 		//! Returns a scene node factory by index
-		virtual ISceneNodeFactory* getSceneNodeFactory(u32 index);
+		virtual ISceneNodeFactory* getSceneNodeFactory(u32 index) _IRR_OVERRIDE_;
 
 		//! Returns a typename from a scene node type or null if not found
-		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type);
+		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type) _IRR_OVERRIDE_;
 
 		//! Returns a typename from a scene node animator type or null if not found
-		virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type);
+		virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) _IRR_OVERRIDE_;
 
 		//! Adds a scene node to the scene by name
-		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0);
+		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0) _IRR_OVERRIDE_;
 
 		//! creates a scene node animator based on its type name
-		virtual ISceneNodeAnimator* createSceneNodeAnimator(const char* typeName, ISceneNode* target=0);
+		virtual ISceneNodeAnimator* createSceneNodeAnimator(const char* typeName, ISceneNode* target=0) _IRR_OVERRIDE_;
 
 		//! Returns the default scene node animator factory which can create all built-in scene node animators
-		virtual ISceneNodeAnimatorFactory* getDefaultSceneNodeAnimatorFactory();
+		virtual ISceneNodeAnimatorFactory* getDefaultSceneNodeAnimatorFactory() _IRR_OVERRIDE_;
 
 		//! Adds a scene node animator factory to the scene manager.
-		virtual void registerSceneNodeAnimatorFactory(ISceneNodeAnimatorFactory* factoryToAdd);
+		virtual void registerSceneNodeAnimatorFactory(ISceneNodeAnimatorFactory* factoryToAdd) _IRR_OVERRIDE_;
 
 		//! Returns amount of registered scene node animator factories.
-		virtual u32 getRegisteredSceneNodeAnimatorFactoryCount() const;
+		virtual u32 getRegisteredSceneNodeAnimatorFactoryCount() const _IRR_OVERRIDE_;
 
 		//! Returns a scene node animator factory by index
-		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index);
+		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index) _IRR_OVERRIDE_;
 
 		//! Saves the current scene into a file.
-		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
+		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) _IRR_OVERRIDE_;
 
 		//! Saves the current scene into a file.
-		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
+		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) _IRR_OVERRIDE_;
 
 		//! Saves the current scene into a file.
-		virtual bool saveScene(io::IXMLWriter* writer, const io::path& currentPath, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0);
+		virtual bool saveScene(io::IXMLWriter* writer, const io::path& currentPath, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* node=0) _IRR_OVERRIDE_;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0);
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) _IRR_OVERRIDE_;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0);
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0, ISceneNode* rootNode=0) _IRR_OVERRIDE_;
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the scene node.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 		//! Returns a mesh writer implementation if available
-		virtual IMeshWriter* createMeshWriter(EMESH_WRITER_TYPE type);
+		virtual IMeshWriter* createMeshWriter(EMESH_WRITER_TYPE type) _IRR_OVERRIDE_;
 
 		//! Get a skinned mesh, which is not available as header-only code
-		virtual ISkinnedMesh* createSkinnedMesh();
+		virtual ISkinnedMesh* createSkinnedMesh() _IRR_OVERRIDE_;
 
 		//! Sets ambient color of the scene
-		virtual void setAmbientLight(const video::SColorf &ambientColor);
+		virtual void setAmbientLight(const video::SColorf &ambientColor) _IRR_OVERRIDE_;
 
 		//! Returns ambient color of the scene
-		virtual const video::SColorf& getAmbientLight() const;
+		virtual const video::SColorf& getAmbientLight() const _IRR_OVERRIDE_;
 
 		//! Register a custom callbacks manager which gets callbacks during scene rendering.
-		virtual void setLightManager(ILightManager* lightManager);
+		virtual void setLightManager(ILightManager* lightManager) _IRR_OVERRIDE_;
 
 		//! Get current render time.
 		virtual E_SCENE_NODE_RENDER_PASS getCurrentRenderPass() const _IRR_OVERRIDE_ { return CurrentRenderPass; }
@@ -519,7 +519,7 @@ namespace scene
 		virtual const IGeometryCreator* getGeometryCreator(void) const _IRR_OVERRIDE_ { return GeometryCreator; }
 
 		//! returns if node is culled
-		virtual bool isCulled(const ISceneNode* node) const;
+		virtual bool isCulled(const ISceneNode* node) const _IRR_OVERRIDE_;
 
 	private:
 

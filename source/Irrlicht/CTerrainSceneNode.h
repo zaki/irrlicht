@@ -62,11 +62,11 @@ namespace scene
 		//! 1 material.
 		//! \param i: Zero based index i. UNUSED, left in for virtual purposes.
 		//! \return Returns the single material this scene node uses.
-		virtual video::SMaterial& getMaterial(u32 i);
+		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
 
 		//! Returns amount of materials used by this scene node ( always 1 )
 		//! \return Returns current count of materials used by this scene node ( always 1 )
-		virtual u32 getMaterialCount() const;
+		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
 
 		//! Gets the last scaling factor applied to the scene node.  This value only represents the
 		//! last scaling factor presented to the node.  For instance, if you make create the node
@@ -82,7 +82,7 @@ namespace scene
 
 		//! Scales the scene nodes vertices by the vector specified.
 		//! \param scale: Scaling factor to apply to the node.
-		virtual void setScale(const core::vector3df& scale);
+		virtual void setScale(const core::vector3df& scale) _IRR_OVERRIDE_;
 
 		//! Gets the last rotation factor applied to the scene node.
 		//! \return Returns the last rotation factor applied to the scene node.
@@ -93,7 +93,7 @@ namespace scene
 
 		//! Rotates the node. This only modifies the relative rotation of the node.
 		//! \param rotation: New rotation of the node in degrees.
-		virtual void setRotation(const core::vector3df& rotation);
+		virtual void setRotation(const core::vector3df& rotation) _IRR_OVERRIDE_;
 
 		//! Sets the pivot point for rotation of this node.
 		//! NOTE: The default for the RotationPivot will be the center of the individual tile.
@@ -101,36 +101,36 @@ namespace scene
 
 		//! Gets the last positioning vector applied to the scene node.
 		//! \return Returns the last position vector applied to the scene node.
-		virtual const core::vector3df& getPosition() const
+		virtual const core::vector3df& getPosition() const _IRR_OVERRIDE_
 		{
 			return TerrainData.Position;
 		}
 
 		//! Moves the scene nodes vertices by the vector specified.
 		//! \param newpos: Vector specifying how much to move each vertex of the scene node.
-		virtual void setPosition(const core::vector3df& newpos);
+		virtual void setPosition(const core::vector3df& newpos) _IRR_OVERRIDE_;
 
 		//! Updates the scene nodes indices if the camera has moved or rotated by a certain
 		//! threshold, which can be changed using the SetCameraMovementDeltaThreshold and
 		//! SetCameraRotationDeltaThreshold functions.  This also determines if a given patch
 		//! for the scene node is within the view frustum and if it's not the indices are not
 		//! generated for that patch.
-		virtual void OnRegisterSceneNode();
+		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
 
 		//! Render the scene node
-		virtual void render();
+		virtual void render() _IRR_OVERRIDE_;
 
 		//! Return the bounding box of the entire terrain.
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
 		//! Return the bounding box of a patch
-		virtual const core::aabbox3d<f32>& getBoundingBox(s32 patchX, s32 patchZ) const;
+		virtual const core::aabbox3d<f32>& getBoundingBox(s32 patchX, s32 patchZ) const _IRR_OVERRIDE_;
 
 		//! Return the number of indices currently used to draw the scene node.
 		virtual u32 getIndexCount() const _IRR_OVERRIDE_ { return IndicesToRender; }
 
 		//! Returns the mesh
-		virtual IMesh* getMesh();
+		virtual IMesh* getMesh() _IRR_OVERRIDE_;
 
 		//! Returns a pointer to the buffer used by the terrain (most users will not need this)
 		virtual IMeshBuffer* getRenderBuffer() _IRR_OVERRIDE_ { return RenderBuffer; }
@@ -138,7 +138,7 @@ namespace scene
 		//! Gets the meshbuffer data based on a specified Level of Detail.
 		//! \param mb: A reference to an IDynamicMeshBuffer object
 		//! \param LOD: The Level Of Detail you want the indices from.
-		virtual void getMeshBufferForLOD(IDynamicMeshBuffer& mb, s32 LOD=0) const;
+		virtual void getMeshBufferForLOD(IDynamicMeshBuffer& mb, s32 LOD=0) const _IRR_OVERRIDE_;
 
 		//! Gets the indices for a specified patch at a specified Level of Detail.
 		//! \param indices: A reference to an array of u32 indices.
@@ -154,13 +154,13 @@ namespace scene
 		//! Populates an array with the CurrentLOD of each patch.
 		//! \param LODs: A reference to a core::array<s32> to hold the values
 		//! \return Returns the number of elements in the array
-		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const;
+		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const _IRR_OVERRIDE_;
 
 		//! Manually sets the LOD of a patch
 		//! \param patchX: Patch x coordinate.
 		//! \param patchZ: Patch z coordinate.
 		//! \param LOD: The level of detail to set the patch to.
-		virtual void setLODOfPatch(s32 patchX, s32 patchZ, s32 LOD=0);
+		virtual void setLODOfPatch(s32 patchX, s32 patchZ, s32 LOD=0) _IRR_OVERRIDE_;
 
 		//! Returns center of terrain.
 		virtual const core::vector3df& getTerrainCenter() const
@@ -169,7 +169,7 @@ namespace scene
 		}
 
 		//! Returns center of terrain.
-		virtual f32 getHeight( f32 x, f32 y ) const;
+		virtual f32 getHeight( f32 x, f32 y ) const _IRR_OVERRIDE_;
 
 		//! Sets the movement camera threshold which is used to determine when to recalculate
 		//! indices for the scene node.  The default value is 10.0f.
@@ -196,10 +196,10 @@ namespace scene
 		//! scaling factors to these values. If you override these distances and then apply
 		//! a scale to the scene node, it is your responsibility to update the new distances to
 		//! work best with your new terrain size.
-		virtual bool overrideLODDistance( s32 LOD, f64 newDistance );
+		virtual bool overrideLODDistance( s32 LOD, f64 newDistance ) _IRR_OVERRIDE_;
 
 		//! Scales the two textures
-		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f);
+		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f) _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ {return ESNT_TERRAIN;}

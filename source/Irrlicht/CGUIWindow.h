@@ -27,50 +27,50 @@ namespace gui
 		virtual ~CGUIWindow();
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! update absolute position
-		virtual void updateAbsolutePosition();
+		virtual void updateAbsolutePosition() _IRR_OVERRIDE_;
 
 		//! draws the element and its children
-		virtual void draw();
+		virtual void draw() _IRR_OVERRIDE_;
 
 		//! Returns pointer to the close button
-		virtual IGUIButton* getCloseButton() const;
+		virtual IGUIButton* getCloseButton() const _IRR_OVERRIDE_;
 
 		//! Returns pointer to the minimize button
-		virtual IGUIButton* getMinimizeButton() const;
+		virtual IGUIButton* getMinimizeButton() const _IRR_OVERRIDE_;
 
 		//! Returns pointer to the maximize button
-		virtual IGUIButton* getMaximizeButton() const;
+		virtual IGUIButton* getMaximizeButton() const _IRR_OVERRIDE_;
 
 		//! Returns true if the window is draggable, false if not
-		virtual bool isDraggable() const;
+		virtual bool isDraggable() const _IRR_OVERRIDE_;
 
 		//! Sets whether the window is draggable
-		virtual void setDraggable(bool draggable);
+		virtual void setDraggable(bool draggable) _IRR_OVERRIDE_;
 
 		//! Set if the window background will be drawn
-		virtual void setDrawBackground(bool draw);
+		virtual void setDrawBackground(bool draw) _IRR_OVERRIDE_;
 
 		//! Get if the window background will be drawn
-		virtual bool getDrawBackground() const;
+		virtual bool getDrawBackground() const _IRR_OVERRIDE_;
 
 		//! Set if the window titlebar will be drawn
 		//! Note: If the background is not drawn, then the titlebar is automatically also not drawn
-		virtual void setDrawTitlebar(bool draw);
+		virtual void setDrawTitlebar(bool draw) _IRR_OVERRIDE_;
 
 		//! Get if the window titlebar will be drawn
-		virtual bool getDrawTitlebar() const;
+		virtual bool getDrawTitlebar() const _IRR_OVERRIDE_;
 
 		//! Returns the rectangle of the drawable area (without border and without titlebar)
-		virtual core::rect<s32> getClientRect() const;
+		virtual core::rect<s32> getClientRect() const _IRR_OVERRIDE_;
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
 
 	protected:
 

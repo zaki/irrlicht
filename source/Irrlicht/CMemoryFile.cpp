@@ -106,26 +106,7 @@ CMemoryWriteFile::~CMemoryWriteFile()
 }
 
 
-//! returns how much was read
-s32 CMemoryWriteFile::read(void* buffer, u32 sizeToRead)
-{
-	s32 amount = static_cast<s32>(sizeToRead);
-	if (Pos + amount > Len)
-		amount -= Pos + amount - Len;
-
-	if (amount <= 0)
-		return 0;
-
-	c8* p = (c8*)Buffer;
-	memcpy(buffer, p + Pos, amount);
-
-	Pos += amount;
-
-	return amount;
-}
-
-
-	//! returns how much was written
+//! returns how much was written
 s32 CMemoryWriteFile::write(const void* buffer, u32 sizeToWrite)
 {
 	s32 amount = static_cast<s32>(sizeToWrite);
@@ -169,13 +150,6 @@ bool CMemoryWriteFile::seek(long finalPos, bool relativeMovement)
 }
 
 
-//! returns size of file
-long CMemoryWriteFile::getSize() const
-{
-	return Len;
-}
-
-
 //! returns where in the file we are.
 long CMemoryWriteFile::getPos() const
 {
@@ -195,6 +169,7 @@ IReadFile* createMemoryReadFile(const void* memory, long size, const io::path& f
 	CMemoryReadFile* file = new CMemoryReadFile(memory, size, fileName, deleteMemoryWhenDropped);
 	return file;
 }
+
 
 IWriteFile* createMemoryWriteFile(void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped)
 {

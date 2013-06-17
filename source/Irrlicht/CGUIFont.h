@@ -54,29 +54,29 @@ public:
 			bool vcenter=false, const core::rect<s32>* clip=0);
 
 	//! returns the dimension of a text
-	virtual core::dimension2d<u32> getDimension(const wchar_t* text) const;
+	virtual core::dimension2d<u32> getDimension(const wchar_t* text) const _IRR_OVERRIDE_;
 
 	//! Calculates the index of the character in the text which is on a specific position.
-	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const;
+	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const _IRR_OVERRIDE_;
 
 	//! Returns the type of this font
 	virtual EGUI_FONT_TYPE getType() const _IRR_OVERRIDE_ { return EGFT_BITMAP; }
 
 	//! set an Pixel Offset on Drawing ( scale position on width )
-	virtual void setKerningWidth (s32 kerning);
-	virtual void setKerningHeight (s32 kerning);
+	virtual void setKerningWidth (s32 kerning) _IRR_OVERRIDE_;
+	virtual void setKerningHeight (s32 kerning) _IRR_OVERRIDE_;
 
 	//! set an Pixel Offset on Drawing ( scale position on width )
-	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const;
-	virtual s32 getKerningHeight() const;
+	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const _IRR_OVERRIDE_;
+	virtual s32 getKerningHeight() const _IRR_OVERRIDE_;
 
 	//! gets the sprite bank
-	virtual IGUISpriteBank* getSpriteBank() const;
+	virtual IGUISpriteBank* getSpriteBank() const _IRR_OVERRIDE_;
 
 	//! returns the sprite number from a given character
-	virtual u32 getSpriteNoFromChar(const wchar_t *c) const;
+	virtual u32 getSpriteNoFromChar(const wchar_t *c) const _IRR_OVERRIDE_;
 
-	virtual void setInvisibleCharacters( const wchar_t *s );
+	virtual void setInvisibleCharacters( const wchar_t *s ) _IRR_OVERRIDE_;
 
 private:
 

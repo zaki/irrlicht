@@ -23,10 +23,10 @@ public:
 	CImageWriterPCX();
 
 	//! return true if this writer can write a file with the given extension
-	virtual bool isAWriteableFileExtension(const io::path& filename) const;
+	virtual bool isAWriteableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
 
 	//! write image to file
-	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param) const;
+	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param) const _IRR_OVERRIDE_;
 };
 
 } // namespace video

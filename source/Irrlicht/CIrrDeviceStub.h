@@ -59,81 +59,81 @@ namespace irr
 		virtual ~CIrrDeviceStub();
 
 		//! returns the video driver
-		virtual video::IVideoDriver* getVideoDriver();
+		virtual video::IVideoDriver* getVideoDriver() _IRR_OVERRIDE_;
 
 		//! return file system
-		virtual io::IFileSystem* getFileSystem();
+		virtual io::IFileSystem* getFileSystem() _IRR_OVERRIDE_;
 
 		//! returns the gui environment
-		virtual gui::IGUIEnvironment* getGUIEnvironment();
+		virtual gui::IGUIEnvironment* getGUIEnvironment() _IRR_OVERRIDE_;
 
 		//! returns the scene manager
-		virtual scene::ISceneManager* getSceneManager();
+		virtual scene::ISceneManager* getSceneManager() _IRR_OVERRIDE_;
 
 		//! \return Returns a pointer to the mouse cursor control interface.
-		virtual gui::ICursorControl* getCursorControl();
+		virtual gui::ICursorControl* getCursorControl() _IRR_OVERRIDE_;
 
 		//! Returns a pointer to a list with all video modes supported by the gfx adapter.
-		virtual video::IVideoModeList* getVideoModeList();
+		virtual video::IVideoModeList* getVideoModeList() _IRR_OVERRIDE_;
 
 		//! Returns a pointer to the ITimer object. With it the current Time can be received.
-		virtual ITimer* getTimer();
+		virtual ITimer* getTimer() _IRR_OVERRIDE_;
 
 		//! Returns the version of the engine.
-		virtual const char* getVersion() const;
+		virtual const char* getVersion() const _IRR_OVERRIDE_;
 
 		//! send the event to the right receiver
-		virtual bool postEventFromUser(const SEvent& event);
+		virtual bool postEventFromUser(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! Sets a new event receiver to receive events
-		virtual void setEventReceiver(IEventReceiver* receiver);
+		virtual void setEventReceiver(IEventReceiver* receiver) _IRR_OVERRIDE_;
 
 		//! Returns pointer to the current event receiver. Returns 0 if there is none.
-		virtual IEventReceiver* getEventReceiver();
+		virtual IEventReceiver* getEventReceiver() _IRR_OVERRIDE_;
 
 		//! Sets the input receiving scene manager.
 		/** If set to null, the main scene manager (returned by GetSceneManager()) will receive the input */
-		virtual void setInputReceivingSceneManager(scene::ISceneManager* sceneManager);
+		virtual void setInputReceivingSceneManager(scene::ISceneManager* sceneManager) _IRR_OVERRIDE_;
 
 		//! Returns a pointer to the logger.
-		virtual ILogger* getLogger();
+		virtual ILogger* getLogger() _IRR_OVERRIDE_;
 
 		//! Provides access to the engine's currently set randomizer.
-		virtual IRandomizer* getRandomizer() const;
+		virtual IRandomizer* getRandomizer() const _IRR_OVERRIDE_;
 
 		//! Sets a new randomizer.
-		virtual void setRandomizer(IRandomizer* r);
+		virtual void setRandomizer(IRandomizer* r) _IRR_OVERRIDE_;
 
 		//! Creates a new default randomizer.
-		virtual IRandomizer* createDefaultRandomizer() const;
+		virtual IRandomizer* createDefaultRandomizer() const _IRR_OVERRIDE_;
 
 		//! Returns the operation system opertator object.
-		virtual IOSOperator* getOSOperator();
+		virtual IOSOperator* getOSOperator() _IRR_OVERRIDE_;
 
 		//! Checks if the window is running in fullscreen mode.
-		virtual bool isFullscreen() const;
+		virtual bool isFullscreen() const _IRR_OVERRIDE_;
 
 		//! get color format of the current window
-		virtual video::ECOLOR_FORMAT getColorFormat() const;
+		virtual video::ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
 
 		//! Activate any joysticks, and generate events for them.
-		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo) _IRR_OVERRIDE_;
 
 		//! Set the current Gamma Value for the Display
-		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast );
+		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast ) _IRR_OVERRIDE_;
 
 		//! Get the current Gamma Value for the Display
-		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
+		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast ) _IRR_OVERRIDE_;
 
 		//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behavior.
 		//! When set to 0 no double- and tripleclicks will be generated.
-		virtual void setDoubleClickTime( u32 timeMs );
+		virtual void setDoubleClickTime( u32 timeMs ) _IRR_OVERRIDE_;
 
 		//! Get the maximal elapsed time between 2 clicks to generate double- and tripleclicks for the mouse.
-		virtual u32 getDoubleClickTime() const;
+		virtual u32 getDoubleClickTime() const _IRR_OVERRIDE_;
 
 		//! Remove all messages pending in the system message loop
-		virtual void clearSystemMessages();
+		virtual void clearSystemMessages() _IRR_OVERRIDE_;
 
 
 	protected:
