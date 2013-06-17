@@ -26,40 +26,40 @@ public:
 	virtual void affect(u32 now, SParticle* particlearray, u32 count);
 
 	//! Set the point that particles will attract to
-	virtual void setPoint( const core::vector3df& point ) { Point = point; }
+	virtual void setPoint( const core::vector3df& point ) _IRR_OVERRIDE_ { Point = point; }
 
 	//! Set the speed, in game units per second that the particles will attract to the specified point
-	virtual void setSpeed( f32 speed ) { Speed = speed; }
+	virtual void setSpeed( f32 speed ) _IRR_OVERRIDE_ { Speed = speed; }
 
 	//! Set whether or not the particles are attracting or detracting
-	virtual void setAttract( bool attract ) { Attract = attract; }
+	virtual void setAttract( bool attract ) _IRR_OVERRIDE_ { Attract = attract; }
 
 	//! Set whether or not this will affect particles in the X direction
-	virtual void setAffectX( bool affect ) { AffectX = affect; }
+	virtual void setAffectX( bool affect ) _IRR_OVERRIDE_ { AffectX = affect; }
 
 	//! Set whether or not this will affect particles in the Y direction
-	virtual void setAffectY( bool affect ) { AffectY = affect; }
+	virtual void setAffectY( bool affect ) _IRR_OVERRIDE_ { AffectY = affect; }
 
 	//! Set whether or not this will affect particles in the Z direction
-	virtual void setAffectZ( bool affect ) { AffectZ = affect; }
+	virtual void setAffectZ( bool affect ) _IRR_OVERRIDE_ { AffectZ = affect; }
 
 	//! Get the point that particles are attracted to
-	virtual const core::vector3df& getPoint() const { return Point; }
+	virtual const core::vector3df& getPoint() const _IRR_OVERRIDE_ { return Point; }
 
 	//! Get the speed that points attract to the specified point
-	virtual f32 getSpeed() const { return Speed; }
+	virtual f32 getSpeed() const _IRR_OVERRIDE_ { return Speed; }
 
 	//! Get whether or not the particles are attracting or detracting
-	virtual bool getAttract() const { return Attract; }
+	virtual bool getAttract() const _IRR_OVERRIDE_ { return Attract; }
 
 	//! Get whether or not the particles X position are affected
-	virtual bool getAffectX() const { return AffectX; }
+	virtual bool getAffectX() const _IRR_OVERRIDE_ { return AffectX; }
 
 	//! Get whether or not the particles Y position are affected
-	virtual bool getAffectY() const { return AffectY; }
+	virtual bool getAffectY() const _IRR_OVERRIDE_ { return AffectY; }
 
 	//! Get whether or not the particles Z position are affected
-	virtual bool getAffectZ() const { return AffectZ; }
+	virtual bool getAffectZ() const _IRR_OVERRIDE_ { return AffectZ; }
 
 	//! Writes attributes of the object.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;

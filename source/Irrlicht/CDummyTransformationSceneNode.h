@@ -31,10 +31,10 @@ namespace scene
 		virtual core::matrix4 getRelativeTransformation() const;
 
 		//! does nothing.
-		virtual void render() {}
+		virtual void render() _IRR_OVERRIDE_ {}
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_DUMMY_TRANSFORMATION; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_DUMMY_TRANSFORMATION; }
 
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);

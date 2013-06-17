@@ -227,7 +227,7 @@ namespace video
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const;
 
-		virtual bool checkDriverReset() {return DriverWasReset;}
+		virtual bool checkDriverReset() _IRR_OVERRIDE_ {return DriverWasReset;}
 	private:
 
 		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.

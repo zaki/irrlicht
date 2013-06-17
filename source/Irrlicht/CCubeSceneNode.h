@@ -43,7 +43,7 @@ namespace scene
 		virtual u32 getMaterialCount() const;
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_CUBE; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_CUBE; }
 
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.
@@ -60,18 +60,18 @@ namespace scene
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
 		//! Sets a new mesh to display
-		virtual void setMesh(IMesh* mesh) {}
+		virtual void setMesh(IMesh* mesh) _IRR_OVERRIDE_ {}
 
 		//! Returns the current mesh
-		virtual IMesh* getMesh(void) { return Mesh; }
+		virtual IMesh* getMesh(void) _IRR_OVERRIDE_ { return Mesh; }
 
 		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
 		/* In this way it is possible to change the materials a mesh causing all mesh scene nodes
 		referencing this mesh to change too. */
-		virtual void setReadOnlyMaterials(bool readonly) {}
+		virtual void setReadOnlyMaterials(bool readonly) _IRR_OVERRIDE_ {}
 
 		//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-		virtual bool isReadOnlyMaterials() const { return false; }
+		virtual bool isReadOnlyMaterials() const _IRR_OVERRIDE_ { return false; }
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,

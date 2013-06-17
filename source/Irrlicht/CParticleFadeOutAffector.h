@@ -25,17 +25,17 @@ public:
 
 	//! Sets the targetColor, i.e. the color the particles will interpolate
 	//! to over time.
-	virtual void setTargetColor( const video::SColor& targetColor ) { TargetColor = targetColor; }
+	virtual void setTargetColor( const video::SColor& targetColor ) _IRR_OVERRIDE_ { TargetColor = targetColor; }
 
 	//! Sets the amount of time it takes for each particle to fade out.
-	virtual void setFadeOutTime( u32 fadeOutTime ) { FadeOutTime = fadeOutTime ? static_cast<f32>(fadeOutTime) : 1.0f; }
+	virtual void setFadeOutTime( u32 fadeOutTime ) _IRR_OVERRIDE_ { FadeOutTime = fadeOutTime ? static_cast<f32>(fadeOutTime) : 1.0f; }
 
 	//! Sets the targetColor, i.e. the color the particles will interpolate
 	//! to over time.
-	virtual const video::SColor& getTargetColor() const { return TargetColor; }
+	virtual const video::SColor& getTargetColor() const _IRR_OVERRIDE_ { return TargetColor; }
 
 	//! Sets the amount of time it takes for each particle to fade out.
-	virtual u32 getFadeOutTime() const { return static_cast<u32>(FadeOutTime); }
+	virtual u32 getFadeOutTime() const _IRR_OVERRIDE_ { return static_cast<u32>(FadeOutTime); }
 
 	//! Writes attributes of the object.
 	//! Implement this to expose the attributes of your scene node animator for

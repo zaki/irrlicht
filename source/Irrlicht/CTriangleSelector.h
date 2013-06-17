@@ -53,7 +53,7 @@ public:
 	virtual s32 getTriangleCount() const;
 
 	//! Return the scene node associated with a given triangle.
-	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const { return SceneNode; }
+	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const _IRR_OVERRIDE_ { return SceneNode; }
 
 	// Get the number of TriangleSelectors that are part of this one
 	virtual u32 getSelectorCount() const;

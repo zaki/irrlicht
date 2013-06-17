@@ -22,8 +22,6 @@ public:
 	CLightSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, video::SColorf color, f32 range);
 
-	virtual ~CLightSceneNode() { }
-
 	//! pre render event
 	virtual void OnRegisterSceneNode();
 
@@ -49,7 +47,7 @@ public:
 	virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 	//! Returns type of the scene node
-	virtual ESCENE_NODE_TYPE getType() const { return ESNT_LIGHT; }
+	virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_LIGHT; }
 
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;

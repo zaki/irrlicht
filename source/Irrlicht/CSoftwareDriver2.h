@@ -163,11 +163,10 @@ namespace video
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const;
 
-		virtual IDepthBuffer * getDepthBuffer () { return DepthBuffer; }
-		virtual IStencilBuffer * getStencilBuffer () { return StencilBuffer; }
+		IDepthBuffer * getDepthBuffer () { return DepthBuffer; }
+		IStencilBuffer * getStencilBuffer () { return StencilBuffer; }
 
 	protected:
-
 
 		//! sets a render target
 		void setRenderTarget(video::CImage* image);

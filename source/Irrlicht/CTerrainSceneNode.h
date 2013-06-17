@@ -127,13 +127,13 @@ namespace scene
 		virtual const core::aabbox3d<f32>& getBoundingBox(s32 patchX, s32 patchZ) const;
 
 		//! Return the number of indices currently used to draw the scene node.
-		virtual u32 getIndexCount() const { return IndicesToRender; }
+		virtual u32 getIndexCount() const _IRR_OVERRIDE_ { return IndicesToRender; }
 
 		//! Returns the mesh
 		virtual IMesh* getMesh();
 
 		//! Returns a pointer to the buffer used by the terrain (most users will not need this)
-		virtual IMeshBuffer* getRenderBuffer() { return RenderBuffer; }
+		virtual IMeshBuffer* getRenderBuffer() _IRR_OVERRIDE_ { return RenderBuffer; }
 
 		//! Gets the meshbuffer data based on a specified Level of Detail.
 		//! \param mb: A reference to an IDynamicMeshBuffer object
@@ -189,7 +189,7 @@ namespace scene
 		//! the geomipmap data changes.
 		//! param bVal: Boolean value representing whether or not to update selector dynamically.
 		//! NOTE: Temporarily disabled while working out issues with DynamicSelectorUpdate
-		virtual void setDynamicSelectorUpdate(bool bVal ) { DynamicSelectorUpdate = false; }
+		virtual void setDynamicSelectorUpdate(bool bVal ) _IRR_OVERRIDE_ { DynamicSelectorUpdate = false; }
 
 		//! Override the default generation of distance thresholds for determining the LOD a patch
 		//! is rendered at. If any LOD is overridden, then the scene node will no longer apply
@@ -202,7 +202,7 @@ namespace scene
 		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const {return ESNT_TERRAIN;}
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ {return ESNT_TERRAIN;}
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out,

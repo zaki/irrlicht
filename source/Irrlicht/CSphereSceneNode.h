@@ -44,7 +44,7 @@ namespace scene
 		virtual u32 getMaterialCount() const;
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_SPHERE; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_SPHERE; }
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -56,18 +56,18 @@ namespace scene
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
 		//! The mesh cannot be changed
-		virtual void setMesh(IMesh* mesh) {}
+		virtual void setMesh(IMesh* mesh) _IRR_OVERRIDE_ {}
 
 		//! Returns the current mesh
-		virtual IMesh* getMesh() { return Mesh; }
+		virtual IMesh* getMesh() _IRR_OVERRIDE_ { return Mesh; }
 
 		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
 		/* In this way it is possible to change the materials a mesh causing all mesh scene nodes
 		referencing this mesh to change too. */
-		virtual void setReadOnlyMaterials(bool readonly) {}
+		virtual void setReadOnlyMaterials(bool readonly) _IRR_OVERRIDE_ {}
 
 		//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-		virtual bool isReadOnlyMaterials() const { return false; }
+		virtual bool isReadOnlyMaterials() const _IRR_OVERRIDE_ { return false; }
 
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.

@@ -40,7 +40,7 @@ public:
 	}
 
 	//! Unlock function.
-	virtual void unlock() {}
+	virtual void unlock() _IRR_OVERRIDE_ {}
 
 	//! Returns width and height of image data.
 	virtual const core::dimension2d<u32>& getDimension() const;
@@ -79,7 +79,7 @@ public:
 	virtual ECOLOR_FORMAT getColorFormat() const;
 
 	//! returns pitch of image
-	virtual u32 getPitch() const { return Pitch; }
+	virtual u32 getPitch() const _IRR_OVERRIDE_ { return Pitch; }
 
 	//! copies this surface into another, scaling it to fit.
 	virtual void copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch=0);

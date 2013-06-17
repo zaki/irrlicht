@@ -1638,6 +1638,12 @@ namespace scene
 			current callbacks manager and restore the default behavior. */
 		virtual void setLightManager(ILightManager* lightManager) = 0;
 
+		//! Get current render pass.
+		virtual E_SCENE_NODE_RENDER_PASS getCurrentRenderPass() const =0;
+
+		//! Set current render pass.
+		virtual void setCurrentRenderPass(E_SCENE_NODE_RENDER_PASS nextPass) =0;
+
 		//! Get an instance of a geometry creator.
 		/** The geometry creator provides some helper methods to create various types of
 		basic geometry. This can be useful for custom scene nodes. */
