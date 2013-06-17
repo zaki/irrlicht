@@ -26,6 +26,8 @@ public:
 		video::SMaterial* material, f32 hillHeight, const core::dimension2d<f32>& countHills,
 		const core::dimension2d<f32>& textureRepeatCount) const;
 
+	IMesh* createGeoplaneMesh(f32 radius, u32 rows, u32 columns) const;
+
 	IMesh* createTerrainMesh(video::IImage* texture,
 		video::IImage* heightmap, const core::dimension2d<f32>& stretchSize,
 		f32 maxHeight, video::IVideoDriver* driver,
