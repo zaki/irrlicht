@@ -79,7 +79,7 @@ namespace scene
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh,
-			s32 id, bool zfailmethod=true, f32 infinity=1000.0f);
+			s32 id, bool zfailmethod=true, f32 infinity=1000.0f) _IRR_OVERRIDE_;
 
 		//! Returns a pointer to a child node, which has the same transformation as
 		//! the corrsesponding joint, if the mesh in this scene node is a skinned mesh.

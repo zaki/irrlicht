@@ -59,13 +59,13 @@ public:
 	//! \param topColor: the color to set the top vertices
 	//! \param bottomColor: the color to set the bottom vertices
 	virtual void setColor(const video::SColor& topColor,
-			const video::SColor& bottomColor);
+			const video::SColor& bottomColor) _IRR_OVERRIDE_;
 
 	//! Gets the color of the top and bottom vertices of the billboard
 	//! \param[out] topColor: stores the color of the top vertices
 	//! \param[out] bottomColor: stores the color of the bottom vertices
 	virtual void getColor(video::SColor& topColor,
-			video::SColor& bottomColor) const;
+			video::SColor& bottomColor) const _IRR_OVERRIDE_;
 
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;

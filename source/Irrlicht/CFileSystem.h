@@ -50,14 +50,14 @@ public:
 			bool ignoreCase = true, bool ignorePaths = true,
 			E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN,
 			const core::stringc& password="",
-			IFileArchive** retArchive = 0);
+			IFileArchive** retArchive = 0) _IRR_OVERRIDE_;
 
 	//! Adds an archive to the file system.
 	virtual bool addFileArchive(IReadFile* file, bool ignoreCase=true,
 			bool ignorePaths=true,
 			E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN,
 			const core::stringc& password="",
-			IFileArchive** retArchive = 0);
+			IFileArchive** retArchive = 0) _IRR_OVERRIDE_;
 
 	//! Adds an archive to the file system.
 	virtual bool addFileArchive(IFileArchive* archive) _IRR_OVERRIDE_;

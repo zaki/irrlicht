@@ -36,7 +36,7 @@ namespace io
 		virtual long getSize() const _IRR_OVERRIDE_;
 
 		//! returns if file is open
-		virtual bool isOpen() const
+		bool isOpen() const
 		{
 			return File != 0;
 		}

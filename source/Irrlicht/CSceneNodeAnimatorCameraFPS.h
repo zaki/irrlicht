@@ -74,13 +74,13 @@ namespace scene
 		virtual void setInvertMouse(bool invert) _IRR_OVERRIDE_;
 
 		//! This animator will receive events when attached to the active camera
-		virtual bool isEventReceiverEnabled() const
+		virtual bool isEventReceiverEnabled() const _IRR_OVERRIDE_
 		{
 			return true;
 		}
 
 		//! Returns the type of this animator
-		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const
+		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const _IRR_OVERRIDE_
 		{
 			return ESNAT_CAMERA_FPS;
 		}

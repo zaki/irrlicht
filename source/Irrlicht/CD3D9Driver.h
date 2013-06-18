@@ -65,7 +65,7 @@ namespace video
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
 				SColor color=SColor(255,0,0,0),
 				const SExposedVideoData& videoData=SExposedVideoData(),
-				core::rect<s32>* sourceRect=0);
+				core::rect<s32>* sourceRect=0) _IRR_OVERRIDE_;
 
 		//! applications must call this method after performing any rendering. returns false if failed.
 		virtual bool endScene() _IRR_OVERRIDE_;
@@ -82,12 +82,12 @@ namespace video
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture,
 			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0));
+			SColor color=video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
 
 		//! Sets multiple render targets
 		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
 			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0));
+			SColor color=video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
@@ -127,7 +127,7 @@ namespace video
 		//! Create occlusion query.
 		/** Use node for identification and mesh for occlusion test. */
 		virtual void addOcclusionQuery(scene::ISceneNode* node,
-				const scene::IMesh* mesh=0);
+				const scene::IMesh* mesh=0) _IRR_OVERRIDE_;
 
 		//! Remove occlusion query.
 		virtual void removeOcclusionQuery(scene::ISceneNode* node) _IRR_OVERRIDE_;
@@ -152,23 +152,23 @@ namespace video
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
-				E_INDEX_TYPE iType);
+				E_INDEX_TYPE iType) _IRR_OVERRIDE_;
 
 		//! draws a vertex primitive list in 2d
 		virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
-				E_INDEX_TYPE iType);
+				E_INDEX_TYPE iType) _IRR_OVERRIDE_;
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
+			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
 
 		//! Draws a part of the texture into the rectangle.
 		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
+			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
 
 		//! Draws a set of 2d images, using a color and the alpha channel of the texture.
 		virtual void draw2DImageBatch(const video::ITexture* texture,
@@ -176,24 +176,24 @@ namespace video
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect=0,
 				SColor color=SColor(255,255,255,255),
-				bool useAlphaChannelOfTexture=false);
+				bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
 
 		//!Draws an 2d rectangle with a gradient.
 		virtual void draw2DRectangle(const core::rect<s32>& pos,
 			SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
-			const core::rect<s32>* clip);
+			const core::rect<s32>* clip) _IRR_OVERRIDE_;
 
 		//! Draws a 2d line.
 		virtual void draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
-					SColor color=SColor(255,255,255,255));
+					SColor color=SColor(255,255,255,255)) _IRR_OVERRIDE_;
 
 		//! Draws a pixel.
 		virtual void drawPixel(u32 x, u32 y, const SColor & color) _IRR_OVERRIDE_;
 
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
-			const core::vector3df& end, SColor color = SColor(255,255,255,255));
+			const core::vector3df& end, SColor color = SColor(255,255,255,255)) _IRR_OVERRIDE_;
 
 		//! initialises the Direct3D API
 		bool initDriver(HWND hwnd, bool pureSoftware);
@@ -231,7 +231,7 @@ namespace video
 			video::SColor leftUpEdge = video::SColor(0,0,0,0),
 			video::SColor rightUpEdge = video::SColor(0,0,0,0),
 			video::SColor leftDownEdge = video::SColor(0,0,0,0),
-			video::SColor rightDownEdge = video::SColor(0,0,0,0));
+			video::SColor rightDownEdge = video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
 
 		//! Returns the maximum amount of primitives (mostly vertices) which
 		//! the device is able to render with one drawIndexedTriangleList
@@ -243,7 +243,7 @@ namespace video
 
 		//! Sets the fog mode.
 		virtual void setFog(SColor color, E_FOG_TYPE fogType, f32 start,
-			f32 end, f32 density, bool pixelFog, bool rangeFog);
+			f32 end, f32 density, bool pixelFog, bool rangeFog) _IRR_OVERRIDE_;
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
@@ -251,7 +251,7 @@ namespace video
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial,
-			bool resetAllRenderstates);
+			bool resetAllRenderstates) _IRR_OVERRIDE_;
 
 		//! Returns type of video driver
 		virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
@@ -289,7 +289,7 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer() _IRR_OVERRIDE_;
@@ -405,7 +405,7 @@ namespace video
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData = 0,
-			E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
+			E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT) _IRR_OVERRIDE_;
 
 		void createMaterialRenderers();
 

@@ -50,12 +50,12 @@ namespace scene
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 		//! How the relative transformation of the bone is used
-		virtual void setSkinningSpace( E_BONE_SKINNING_SPACE space )
+		virtual void setSkinningSpace(E_BONE_SKINNING_SPACE space) _IRR_OVERRIDE_
 		{
 			SkinningSpace=space;
 		}
 
-		virtual E_BONE_SKINNING_SPACE getSkinningSpace() const
+		virtual E_BONE_SKINNING_SPACE getSkinningSpace() const _IRR_OVERRIDE_
 		{
 			return SkinningSpace;
 		}

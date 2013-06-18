@@ -28,24 +28,24 @@ namespace scene
 		//! Returns the scene node, which is currently visible at the given
 		//! screen coordinates, viewed from the currently active camera.
 		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32>& pos,
-				s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0);
+				s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) _IRR_OVERRIDE_;
 
 		//! Returns the nearest scene node which collides with a 3d ray and
 		//! whose id matches a bitmask.
 		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32>& ray,
 						s32 idBitMask=0, bool bNoDebugObjects=false,
-						ISceneNode* root=0);
+						ISceneNode* root=0) _IRR_OVERRIDE_;
 
 		//! Returns the scene node, at which the overgiven camera is looking at and
 		//! which id matches the bitmask.
 		virtual ISceneNode* getSceneNodeFromCameraBB(ICameraSceneNode* camera,
-				s32 idBitMask=0, bool bNoDebugObjects = false);
+				s32 idBitMask=0, bool bNoDebugObjects = false) _IRR_OVERRIDE_;
 
 		//! Finds the collision point of a line and lots of triangles, if there is one.
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
 			ITriangleSelector* selector, core::vector3df& outCollisionPoint,
 			core::triangle3df& outTriangle,
-			ISceneNode* & outNode);
+			ISceneNode* & outNode) _IRR_OVERRIDE_;
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns
 		//! the resulting new position of the ellipsoid.
@@ -59,15 +59,15 @@ namespace scene
 			bool& outFalling,
 			ISceneNode*& outNode,
 			f32 slidingSpeed,
-			const core::vector3df& gravityDirectionAndSpeed);
+			const core::vector3df& gravityDirectionAndSpeed) _IRR_OVERRIDE_;
 
 		//! Returns a 3d ray which would go through the 2d screen coodinates.
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0);
+			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0) _IRR_OVERRIDE_;
 
 		//! Calculates 2d screen position from a 3d position.
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			const core::vector3df & pos, ICameraSceneNode* camera=0, bool useViewPort=false);
+			const core::vector3df & pos, ICameraSceneNode* camera=0, bool useViewPort=false) _IRR_OVERRIDE_;
 
 		//! Gets the scene node and nearest collision point for a ray based on
 		//! the nodes' id bitmasks, bounding boxes and triangle selectors.
@@ -77,7 +77,7 @@ namespace scene
 								core::triangle3df & outTriangle,
 								s32 idBitMask = 0,
 								ISceneNode * collisionRootNode = 0,
-								bool noDebugObjects = false);
+								bool noDebugObjects = false) _IRR_OVERRIDE_;
 
 
 	private:

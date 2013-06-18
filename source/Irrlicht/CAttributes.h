@@ -66,7 +66,7 @@ public:
 	//! \param readCurrentElementOnly: If set to true, reading only works if current element has the name 'attributes'.
 	//! IF set to false, the first appearing list attributes are read.
 	virtual bool read(io::IXMLReader* reader, bool readCurrentElementOnly=false,
-					const wchar_t* nonDefaultElementName = 0);
+					const wchar_t* nonDefaultElementName = 0) _IRR_OVERRIDE_;
 
 	//! Write these attributes into a xml file
 	virtual bool write(io::IXMLWriter* writer, bool writeXMLHeader=false, const wchar_t* nonDefaultElementName=0) _IRR_OVERRIDE_;

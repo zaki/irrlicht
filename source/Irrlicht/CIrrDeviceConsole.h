@@ -69,7 +69,7 @@ namespace irr
 		virtual bool isWindowMinimized() const _IRR_OVERRIDE_;
 
 		//! returns current window position (not supported for this device)
-		virtual core::position2di getWindowPosition()
+		virtual core::position2di getWindowPosition() _IRR_OVERRIDE_
 		{
 			return core::position2di(-1, -1);
 		}
@@ -93,7 +93,7 @@ namespace irr
 		virtual void restoreWindow() _IRR_OVERRIDE_;
 
 		//! Get the device type
-		virtual E_DEVICE_TYPE getType() const
+		virtual E_DEVICE_TYPE getType() const _IRR_OVERRIDE_
 		{
 				return EIDT_CONSOLE;
 		}
@@ -116,7 +116,7 @@ namespace irr
 			}
 
 			//! Changes the visible state of the mouse cursor.
-			virtual void setVisible(bool visible)
+			virtual void setVisible(bool visible) _IRR_OVERRIDE_
 			{
 				if(visible != IsVisible)
 				{
@@ -126,19 +126,19 @@ namespace irr
 			}
 
 			//! Returns if the cursor is currently visible.
-			virtual bool isVisible() const
+			virtual bool isVisible() const _IRR_OVERRIDE_
 			{
 				return IsVisible;
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(const core::position2d<f32> &pos)
+			virtual void setPosition(const core::position2d<f32> &pos) _IRR_OVERRIDE_
 			{
 				setPosition(pos.X, pos.Y);
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(f32 x, f32 y)
+			virtual void setPosition(f32 x, f32 y) _IRR_OVERRIDE_
 			{
 				if (!UseReferenceRect)
 					setPosition((s32)(x*WindowSize.Width), (s32)(y*WindowSize.Height));
@@ -147,25 +147,25 @@ namespace irr
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(const core::position2d<s32> &pos)
+			virtual void setPosition(const core::position2d<s32> &pos) _IRR_OVERRIDE_
 			{
 				setPosition(pos.X, pos.Y);
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(s32 x, s32 y)
+			virtual void setPosition(s32 x, s32 y) _IRR_OVERRIDE_
 			{
 				setInternalCursorPosition(core::position2di(x,y));
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual const core::position2d<s32>& getPosition()
+			virtual const core::position2d<s32>& getPosition() _IRR_OVERRIDE_
 			{
 				return CursorPos;
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual core::position2d<f32> getRelativePosition()
+			virtual core::position2d<f32> getRelativePosition() _IRR_OVERRIDE_
 			{
 				if (!UseReferenceRect)
 				{
@@ -178,7 +178,7 @@ namespace irr
 			}
 
 			//! Sets an absolute reference rect for calculating the cursor position.
-			virtual void setReferenceRect(core::rect<s32>* rect=0)
+			virtual void setReferenceRect(core::rect<s32>* rect=0) _IRR_OVERRIDE_
 			{
 				if (rect)
 				{
@@ -256,7 +256,7 @@ namespace gui
 		//! Draws some text and clips it to the specified rectangle if wanted.
 		virtual void draw(const wchar_t* text, const core::rect<s32>& position,
 			video::SColor color, bool hcenter=false, bool vcenter=false,
-			const core::rect<s32>* clip=0)
+			const core::rect<s32>* clip=0) _IRR_OVERRIDE_
 		{
 			core::rect<s32> Area = clip ? *clip : position;
 
@@ -304,7 +304,7 @@ namespace gui
 		}
 
 		//! Calculates the dimension of some text.
-		virtual core::dimension2d<u32> getDimension(const wchar_t* text) const
+		virtual core::dimension2d<u32> getDimension(const wchar_t* text) const _IRR_OVERRIDE_
 		{
 			return core::dimension2d<u32>(wcslen(text),1);
 		}

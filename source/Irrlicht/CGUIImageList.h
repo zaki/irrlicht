@@ -38,16 +38,16 @@ public:
 	//! \param clip: Optional pointer to a rectalgle against which the text will be clipped.
 	//! If the pointer is null, no clipping will be done.
 	virtual void draw( s32 index, const core::position2d<s32>& destPos,
-		const core::rect<s32>* clip = 0 );
+		const core::rect<s32>* clip = 0 ) _IRR_OVERRIDE_;
 
 	//! Returns the count of Images in the list.
 	//! \return Returns the count of Images in the list.
-	virtual s32 getImageCount() const
+	virtual s32 getImageCount() const _IRR_OVERRIDE_
 	{ return ImageCount; }
 
 	//! Returns the size of the images in the list.
 	//! \return Returns the size of the images in the list.
-	virtual core::dimension2d<s32> getImageSize() const
+	virtual core::dimension2d<s32> getImageSize() const _IRR_OVERRIDE_
 	{ return ImageSize; }
 
 private:

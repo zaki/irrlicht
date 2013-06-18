@@ -72,7 +72,7 @@ namespace scene
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh,
-			s32 id, bool zfailmethod=true, f32 infinity=10000.0f);
+			s32 id, bool zfailmethod=true, f32 infinity=10000.0f) _IRR_OVERRIDE_;
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,

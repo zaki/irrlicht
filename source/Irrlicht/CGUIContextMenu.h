@@ -42,11 +42,11 @@ namespace gui
 
 		//! Adds a menu item.
 		virtual u32 addItem(const wchar_t* text, s32 commandid,
-				bool enabled, bool hasSubMenu, bool checked, bool autoChecking);
+				bool enabled, bool hasSubMenu, bool checked, bool autoChecking) _IRR_OVERRIDE_;
 
 		//! Insert a menu item at specified position.
 		virtual u32 insertItem(u32 idx, const wchar_t* text, s32 commandId, bool enabled,
-			bool hasSubMenu, bool checked, bool autoChecking);
+			bool hasSubMenu, bool checked, bool autoChecking) _IRR_OVERRIDE_;
 
 		//! Find a item which has the given CommandId starting from given index
 		virtual s32 findItemWithCommandId(s32 commandId, u32 idxStartSearch) const _IRR_OVERRIDE_;

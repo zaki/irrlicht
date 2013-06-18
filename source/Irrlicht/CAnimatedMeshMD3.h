@@ -30,7 +30,7 @@ namespace scene
 		virtual ~CAnimatedMeshMD3();
 
 		//! loads a quake3 md3 file
-		virtual bool loadModelFile(u32 modelIndex, io::IReadFile* file,
+		bool loadModelFile(u32 modelIndex, io::IReadFile* file,
 				io::IFileSystem* fs, video::IVideoDriver* driver);
 
 		// IAnimatedMeshMD3
@@ -43,7 +43,7 @@ namespace scene
 
 		//! Gets the default animation speed of the animated mesh.
 		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
-		virtual f32 getAnimationSpeed() const
+		virtual f32 getAnimationSpeed() const _IRR_OVERRIDE_
 		{
 			return FramesPerSecond;
 		}
@@ -51,13 +51,13 @@ namespace scene
 		//! Gets the frame count of the animated mesh.
 		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
 		The actual speed is set in the scene node the mesh is instantiated in.*/
-		virtual void setAnimationSpeed(f32 fps)
+		virtual void setAnimationSpeed(f32 fps) _IRR_OVERRIDE_
 		{
 			FramesPerSecond=fps;
 		}
 
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel,
-				s32 startFrameLoop, s32 endFrameLoop);
+				s32 startFrameLoop, s32 endFrameLoop) _IRR_OVERRIDE_;
 		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const _IRR_OVERRIDE_;
 

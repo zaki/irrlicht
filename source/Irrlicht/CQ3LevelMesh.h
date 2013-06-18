@@ -40,7 +40,7 @@ namespace scene
 
 		//! Gets the default animation speed of the animated mesh.
 		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
-		virtual f32 getAnimationSpeed() const
+		virtual f32 getAnimationSpeed() const _IRR_OVERRIDE_
 		{
 			return FramesPerSecond;
 		}
@@ -48,7 +48,7 @@ namespace scene
 		//! Gets the frame count of the animated mesh.
 		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
 		The actual speed is set in the scene node the mesh is instantiated in.*/
-		virtual void setAnimationSpeed(f32 fps)
+		virtual void setAnimationSpeed(f32 fps) _IRR_OVERRIDE_
 		{
 			FramesPerSecond=fps;
 		}
@@ -57,7 +57,7 @@ namespace scene
 		//! lowest, 255 the highest detail. Note, that some Meshes will
 		//! ignore the detail level.
 		virtual IMesh* getMesh(s32 frameInMs, s32 detailLevel=255,
-				s32 startFrameLoop=-1, s32 endFrameLoop=-1);
+				s32 startFrameLoop=-1, s32 endFrameLoop=-1) _IRR_OVERRIDE_;
 
 		//! Returns an axis aligned bounding box of the mesh.
 		//! \return A bounding box of this mesh is returned.
@@ -93,13 +93,13 @@ namespace scene
 
 
 		//! returns amount of mesh buffers.
-		virtual u32 getMeshBufferCount() const
+		virtual u32 getMeshBufferCount() const _IRR_OVERRIDE_
 		{
 			return 0;
 		}
 
 		//! returns pointer to a mesh buffer
-		virtual IMeshBuffer* getMeshBuffer(u32 nr) const
+		virtual IMeshBuffer* getMeshBuffer(u32 nr) const _IRR_OVERRIDE_
 		{
 			return 0;
 		}
@@ -107,24 +107,24 @@ namespace scene
 		//! Returns pointer to a mesh buffer which fits a material
 		/** \param material: material to search for
 		\return Pointer to the mesh buffer or 0 if there is no such mesh buffer. */
-		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const
+		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const _IRR_OVERRIDE_
 		{
 			return 0;
 		}
 
-		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
+		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue) _IRR_OVERRIDE_
 		{
 			return;
 		}
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
+		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_
 		{
 			return;
 		}
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_
 		{
 			return;
 		}

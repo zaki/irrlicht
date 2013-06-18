@@ -65,7 +65,7 @@ namespace gui
 		\param color: The color of the sprite
 		*/
 		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index,
-				video::SColor color=video::SColor(255,255,255,255), bool loop=false);
+				video::SColor color=video::SColor(255,255,255,255), bool loop=false) _IRR_OVERRIDE_;
 
 		//! Sets if the button should behave like a push button. Which means it
 		//! can be in two states: Normal or Pressed. With a click on the button,

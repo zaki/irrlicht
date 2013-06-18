@@ -39,7 +39,7 @@ public:
 		:CSoftware2MaterialRenderer ( driver ) {}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return false;
 	}
@@ -57,7 +57,7 @@ public:
 
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
@@ -83,26 +83,26 @@ public:
 		: CSoftware2MaterialRenderer ( driver ) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 	}
 
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return false;
 	}
 
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_
 	{
 		return true;
 	};
 
 
-	virtual s32 getRenderCapability() const
+	virtual s32 getRenderCapability() const _IRR_OVERRIDE_
 	{
 		return 1;
 	}
