@@ -1306,7 +1306,7 @@ void CMeshManipulator::heightmapOptimizeMesh(IMeshBuffer * const mb, const f32 t
 //							if (N.getLengthSQ() < 0.5f)
 //								puts("empty");
 
-							if (N != edges[g].normal[z])
+							if (!N.equals(edges[g].normal[z], tolerance))
 							{
 //								puts("wouldflip");
 								goto testnext;
