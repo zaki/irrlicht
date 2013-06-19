@@ -224,7 +224,7 @@ void COBJMeshWriter::getVectorAsStringLine(const core::vector2df& v, core::strin
 {
 	s = core::stringc(v.X);
 	s += " ";
-	s += core::stringc(-v.Y);
+	s += core::stringc(1-v.Y);
 	s += "\n";
 }
 
