@@ -1,5 +1,5 @@
 
-Libpng 1.5.9 - February 18, 2012
+Libpng 1.6.2 - April 25, 2013
 
 This is a public release of libpng, intended for use in production codes.
 
@@ -8,30 +8,37 @@ Files available for download:
 Source files with LF line endings (for Unix/Linux) and with a
 "configure" script
 
-   libpng-1.5.9.tar.xz (LZMA-compressed, recommended)
-   libpng-1.5.9.tar.gz
-   libpng-1.5.9.tar.bz2
+   libpng-1.6.2.tar.xz (LZMA-compressed, recommended)
+   libpng-1.6.2.tar.gz
 
 Source files with CRLF line endings (for Windows), without the
 "configure" script
 
-   lpng159.7z  (LZMA-compressed, recommended)
-   lpng159.zip
+   lpng162.7z  (LZMA-compressed, recommended)
+   lpng162.zip
 
 Other information:
 
-   libpng-1.5.9-README.txt
-   libpng-1.5.9-LICENSE.txt
+   libpng-1.6.2-README.txt
+   libpng-1.6.2-LICENSE.txt
 
-Changes since the last public release (1.5.8):
+Changes since the last public release (1.6.1):
 
-  Rebuilt configure scripts in the tar distributions.
-  Removed two unused definitions from scripts/pnglibconf.h.prebuilt
-  Removed some unused arrays (with #ifdef) from png_read_push_finish_row().
-  Removed tests for no-longer-used *_EMPTY_PLTE_SUPPORTED from pngstruct.h
-  Fixed CVE-2011-3026 buffer overrun bug.  Deal more correctly with the test
-    on iCCP chunk length. Also removed spurious casts that may hide problems
-    on 16-bit systems.
+  Updated documentation of 1.5.x to 1.6.x changes in iCCP chunk handling.
+  Fixed incorrect warning of excess deflate data. End condition - the
+    warning would be produced if the end of the deflate stream wasn't read
+    in the last row.  The warning is harmless.
+  Corrected the test on user transform changes on read. It was in the
+    png_set of the transform function, but that doesn't matter unless the
+    transform function changes the rowbuf size, and that is only valid if
+    transform_info is called.
+  Corrected a misplaced closing bracket in contrib/libtests/pngvalid.c
+    (Flavio Medeiros).
+  Corrected length written to uncompressed iTXt chunks (Samuli Suominen).
+  Added contrib/tools/fixitxt.c, to repair the erroneous iTXt chunk length
+    written by libpng-1.6.0 and 1.6.1.
+  Disallow storing sRGB information when the sRGB is not supported.
+  Merge pngtest.c with libpng-1.7.0
 
 Send comments/corrections/commendations to png-mng-implement at lists.sf.net
 (subscription required; visit
