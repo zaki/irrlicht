@@ -216,6 +216,8 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
 {
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
+
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (Program2)
@@ -225,13 +227,10 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetBaseMaterial(material);
+
+		if (CallBack)
+			CallBack->OnSetMaterial(material);
 	}
-
-	//let callback know used material
-	if (CallBack)
-		CallBack->OnSetMaterial(material);
-
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
 }
 
 
