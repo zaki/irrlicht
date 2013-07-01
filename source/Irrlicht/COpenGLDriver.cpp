@@ -48,6 +48,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
+	FixedPipelineState(EOFPS_ENABLE),
 	CurrentTarget(ERT_FRAME_BUFFER), Params(params), BridgeCalls(0),
 	HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
 	DeviceType(EIDT_WIN32)
@@ -484,6 +485,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
+	FixedPipelineState(EOFPS_ENABLE),
 	CurrentTarget(ERT_FRAME_BUFFER), Params(params), BridgeCalls(0),
 	OSXDevice(device), DeviceType(EIDT_OSX)
 {
@@ -511,7 +513,8 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	BridgeCalls(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0),
-	ColorFormat(ECF_R8G8B8), CurrentTarget(ERT_FRAME_BUFFER), Params(params),
+	ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	X11Device(device), DeviceType(EIDT_X11)
 {
 	#ifdef _DEBUG
@@ -604,7 +607,8 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0),
-	ColorFormat(ECF_R8G8B8), CurrentTarget(ERT_FRAME_BUFFER), Params(params),
+	ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	BridgeCalls(0), SDLDevice(device), DeviceType(EIDT_SDL)
 {
 	#ifdef _DEBUG
@@ -2830,16 +2834,16 @@ GLint COpenGLDriver::getTextureWrapMode(const u8 clamp)
 }
 
 
-//! Can be called by an IMaterialRenderer to make its work easier.
-void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-	bool resetAllRenderStates, bool fixedPipeline)
+//! OpenGL version of setBasicRenderStates method.
+void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
+	bool resetAllRenderStates)
 {
 	// Fixed pipeline isn't important for shader based materials
 
-	if(fixedPipeline || resetAllRenderStates)
+	if (resetAllRenderStates || FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
 	{
 		// material colors
-		if (resetAllRenderStates ||
+		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.ColorMaterial != material.ColorMaterial)
 		{
 			switch (material.ColorMaterial)
@@ -2867,7 +2871,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 				glEnable(GL_COLOR_MATERIAL);
 		}
 
-		if (resetAllRenderStates ||
+		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.AmbientColor != material.AmbientColor ||
 			lastmaterial.DiffuseColor != material.DiffuseColor ||
 			lastmaterial.EmissiveColor != material.EmissiveColor ||
@@ -2907,7 +2911,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			}
 		}
 
-		if (resetAllRenderStates ||
+		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.SpecularColor != material.SpecularColor ||
 			lastmaterial.Shininess != material.Shininess ||
 			lastmaterial.ColorMaterial != material.ColorMaterial)
@@ -2937,7 +2941,8 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 
 		// shademode
-		if (resetAllRenderStates || (lastmaterial.GouraudShading != material.GouraudShading))
+		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+			lastmaterial.GouraudShading != material.GouraudShading)
 		{
 			if (material.GouraudShading)
 				glShadeModel(GL_SMOOTH);
@@ -2946,7 +2951,8 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 
 		// lighting
-		if (resetAllRenderStates || (lastmaterial.Lighting != material.Lighting))
+		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+			lastmaterial.Lighting != material.Lighting)
 		{
 			if (material.Lighting)
 				glEnable(GL_LIGHTING);
@@ -2955,7 +2961,8 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 
 		// fog
-		if (resetAllRenderStates || lastmaterial.FogEnable != material.FogEnable)
+		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+			lastmaterial.FogEnable != material.FogEnable)
 		{
 			if (material.FogEnable)
 				glEnable(GL_FOG);
@@ -2964,16 +2971,32 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 
 		// normalization
-		if (resetAllRenderStates || lastmaterial.NormalizeNormals != material.NormalizeNormals)
+		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+			lastmaterial.NormalizeNormals != material.NormalizeNormals)
 		{
 			if (material.NormalizeNormals)
 				glEnable(GL_NORMALIZE);
 			else
 				glDisable(GL_NORMALIZE);
 		}
+
+		// Set fixed pipeline as active.
+		FixedPipelineState = EOFPS_ENABLE;
+	}
+	else if (FixedPipelineState == EOFPS_ENABLE_TO_DISABLE)
+	{
+		glDisable(GL_COLOR_MATERIAL);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_FOG);
+		glDisable(GL_NORMALIZE);
+
+		// Set programmable pipeline as active.
+		FixedPipelineState = EOFPS_DISABLE;
 	}
 
-	// fillmode
+	// FixedPipelineState == EOFPS_DISABLE - driver doesn't calls functions related to fixed pipeline.
+
+	// fillmode - fixed pipeline call, but it emulate GL_LINES behaviour in rendering, so it stay here.
 	if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
 		glPolygonMode(GL_FRONT_AND_BACK, material.Wireframe ? GL_LINE : material.PointCloud? GL_POINT : GL_FILL);
 
@@ -3252,7 +3275,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 }
 
 //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
-void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline)
+void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates)
 {
 	// Set textures to TU/TIU and apply filters to them
 
@@ -3260,20 +3283,20 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 	{
 		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
 
-		if(fixedPipeline)
+		if(FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
 		{
 			if (i>0 && !MultiTextureExtension)
 				break;
 
 			if (!CurrentTexture[i])
 			{
-				BridgeCalls->setTexture(i, fixedPipeline);
+				BridgeCalls->setTexture(i, true);
 
 				continue;
 			}
 			else
 			{
-				BridgeCalls->setTexture(i, fixedPipeline);
+				BridgeCalls->setTexture(i, true);
 
 				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 			}
@@ -3282,7 +3305,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		{
 			if (CurrentTexture[i])
 			{
-				BridgeCalls->setTexture(i, fixedPipeline);
+				BridgeCalls->setTexture(i, false);
 			}
 			else
 				continue;
@@ -3409,6 +3432,12 @@ void COpenGLDriver::enableMaterial2D(bool enable)
 //! sets the needed renderstates
 void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
+	// 2d methods uses fixed pipeline
+	if (FixedPipelineState == COpenGLDriver::EOFPS_DISABLE)
+		FixedPipelineState = COpenGLDriver::EOFPS_DISABLE_TO_ENABLE;
+	else
+		FixedPipelineState = COpenGLDriver::EOFPS_ENABLE;
+
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
 		// unset last 3d material
@@ -3438,7 +3467,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		}
 		if (!OverrideMaterial2DEnabled)
 		{
-			setBasicRenderStates(InitMaterial2D, LastMaterial, true, true);
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
 			LastMaterial = InitMaterial2D;
 		}
 		BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -3451,7 +3480,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	if (OverrideMaterial2DEnabled)
 	{
 		OverrideMaterial2D.Lighting=false;
-		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false, true);
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
 		LastMaterial = OverrideMaterial2D;
 	}
 
@@ -3473,9 +3502,9 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	if (texture)
 	{
 		if (OverrideMaterial2DEnabled)
-			setTextureRenderStates(OverrideMaterial2D, false, true);
+			setTextureRenderStates(OverrideMaterial2D, false);
 		else
-			setTextureRenderStates(InitMaterial2D, false, true);
+			setTextureRenderStates(InitMaterial2D, false);
 
 		Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
 		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
@@ -4970,6 +4999,16 @@ GLenum COpenGLDriver::getZBufferBits() const
 		break;
 	}
 	return bits;
+}
+
+COpenGLDriver::E_OPENGL_FIXED_PIPELINE_STATE COpenGLDriver::getFixedPipelineState() const
+{
+	return FixedPipelineState;
+}
+
+void COpenGLDriver::setFixedPipelineState(COpenGLDriver::E_OPENGL_FIXED_PIPELINE_STATE state)
+{
+	FixedPipelineState = state;
 }
 
 const SMaterial& COpenGLDriver::getCurrentMaterial() const

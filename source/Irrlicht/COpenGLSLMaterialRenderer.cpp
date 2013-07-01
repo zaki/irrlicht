@@ -201,7 +201,7 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 bool COpenGLSLMaterialRenderer::OnRender(IMaterialRendererServices* service,
 					E_VERTEX_TYPE vtxtype)
 {
-    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, false);
+    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
 
 	// call callback to set shader constants
 	if (CallBack && (Program||Program2))
@@ -216,7 +216,10 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
 {
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
+	if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_ENABLE)
+		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE_TO_DISABLE);
+	else
+		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
@@ -231,6 +234,8 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 		if (CallBack)
 			CallBack->OnSetMaterial(material);
 	}
+
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 
@@ -505,7 +510,7 @@ void COpenGLSLMaterialRenderer::setBasicRenderStates(const SMaterial& material,
 						bool resetAllRenderstates)
 {
 	// forward
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 s32 COpenGLSLMaterialRenderer::getVertexShaderConstantID(const c8* name)
