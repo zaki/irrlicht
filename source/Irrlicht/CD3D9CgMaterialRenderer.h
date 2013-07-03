@@ -53,6 +53,8 @@ public:
 
 	virtual ~CD3D9CgMaterialRenderer();
 
+	virtual bool isTransparent() const _IRR_OVERRIDE_;
+
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_;
 	virtual bool OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_;
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_;
@@ -71,6 +73,8 @@ protected:
 		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
 		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
 		u32 vertices = 0);
+
+	IMaterialRenderer* BaseMaterial;
 
 	CD3D9Driver* Driver;
 };

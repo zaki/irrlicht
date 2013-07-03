@@ -4231,7 +4231,7 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
 			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
 			inType, outType, verticesOut,
-			callback,getMaterialRenderer(baseMaterial), userData);
+			callback,baseMaterial, userData);
 
 		r->drop();
 	}
