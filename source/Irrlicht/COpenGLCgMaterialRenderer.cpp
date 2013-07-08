@@ -93,6 +93,8 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 	else
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 	Material = material;
 
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -121,8 +123,6 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 		if (CallBack)
 			CallBack->OnSetMaterial(material);
 	}
-
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)

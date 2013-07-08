@@ -138,6 +138,8 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 	else
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexShader)
@@ -184,8 +186,6 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 		if (CallBack)
 			CallBack->OnSetMaterial(material);
 	}
-
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 

@@ -2834,16 +2834,18 @@ GLint COpenGLDriver::getTextureWrapMode(const u8 clamp)
 }
 
 
-//! OpenGL version of setBasicRenderStates method.
-void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
+//! Can be called by an IMaterialRenderer to make its work easier.
+void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 	bool resetAllRenderStates)
 {
 	// Fixed pipeline isn't important for shader based materials
 
-	if (resetAllRenderStates || FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
+	E_OPENGL_FIXED_PIPELINE_STATE tempState = FixedPipelineState;
+
+	if (resetAllRenderStates || tempState == EOFPS_ENABLE || tempState == EOFPS_DISABLE_TO_ENABLE)
 	{
 		// material colors
-		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.ColorMaterial != material.ColorMaterial)
 		{
 			switch (material.ColorMaterial)
@@ -2871,7 +2873,7 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 				glEnable(GL_COLOR_MATERIAL);
 		}
 
-		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.AmbientColor != material.AmbientColor ||
 			lastmaterial.DiffuseColor != material.DiffuseColor ||
 			lastmaterial.EmissiveColor != material.EmissiveColor ||
@@ -2911,7 +2913,7 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 			}
 		}
 
-		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.SpecularColor != material.SpecularColor ||
 			lastmaterial.Shininess != material.Shininess ||
 			lastmaterial.ColorMaterial != material.ColorMaterial)
@@ -2941,7 +2943,7 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 		}
 
 		// shademode
-		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.GouraudShading != material.GouraudShading)
 		{
 			if (material.GouraudShading)
@@ -2951,7 +2953,7 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 		}
 
 		// lighting
-		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.Lighting != material.Lighting)
 		{
 			if (material.Lighting)
@@ -2961,7 +2963,7 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 		}
 
 		// fog
-		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.FogEnable != material.FogEnable)
 		{
 			if (material.FogEnable)
@@ -2971,7 +2973,7 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 		}
 
 		// normalization
-		if (resetAllRenderStates || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE ||
+		if (resetAllRenderStates || tempState == EOFPS_DISABLE_TO_ENABLE ||
 			lastmaterial.NormalizeNormals != material.NormalizeNormals)
 		{
 			if (material.NormalizeNormals)
@@ -2981,9 +2983,9 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 		}
 
 		// Set fixed pipeline as active.
-		FixedPipelineState = EOFPS_ENABLE;
+		tempState = EOFPS_ENABLE;
 	}
-	else if (FixedPipelineState == EOFPS_ENABLE_TO_DISABLE)
+	else if (tempState == EOFPS_ENABLE_TO_DISABLE)
 	{
 		glDisable(GL_COLOR_MATERIAL);
 		glDisable(GL_LIGHTING);
@@ -2991,10 +2993,10 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 		glDisable(GL_NORMALIZE);
 
 		// Set programmable pipeline as active.
-		FixedPipelineState = EOFPS_DISABLE;
+		tempState = EOFPS_DISABLE;
 	}
 
-	// FixedPipelineState == EOFPS_DISABLE - driver doesn't calls functions related to fixed pipeline.
+	// tempState == EOFPS_DISABLE - driver doesn't calls functions related to fixed pipeline.
 
 	// fillmode - fixed pipeline call, but it emulate GL_LINES behaviour in rendering, so it stay here.
 	if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
@@ -3270,8 +3272,10 @@ void COpenGLDriver::setOpenGLBasicRenderStates(const SMaterial& material, const 
 		}
 	}
 
-	// be sure to leave in texture stage 0
-	BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
+	setTextureRenderStates(material, resetAllRenderStates);
+
+	// set current fixed pipeline state
+	FixedPipelineState = tempState;
 }
 
 //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
@@ -3417,6 +3421,9 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 
 		tmpTexture->getStatesCache().IsCached = true;
 	}
+
+	// be sure to leave in texture stage 0
+	BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
 }
 
 
