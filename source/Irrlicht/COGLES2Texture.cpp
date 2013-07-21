@@ -505,7 +505,45 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
 
-	return image->lock();
+	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
+	MipLevelStored = mipmapLevel;
+
+	if (!Image)
+		Image = new CImage(ECF_A8R8G8B8, ImageSize);
+	if (IsRenderTarget)
+	{
+		u8* pPixels = static_cast<u8*>(Image->lock());
+		if (!pPixels)
+		{
+			return 0;
+		}
+		// we need to keep the correct texture bound...
+		GLint tmpTexture;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
+		glBindTexture(GL_TEXTURE_2D, TextureName);
+
+	// TODO ogl-es
+	//	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, pPixels);
+
+		// opengl images are horizontally flipped, so we have to fix that here.
+		const u32 pitch=Image->getPitch();
+		u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
+		u8* tmpBuffer = new u8[pitch];
+		for (u32 i=0; i < ImageSize.Height; i += 2)
+		{
+			memcpy(tmpBuffer, pPixels, pitch);
+			memcpy(pPixels, p2, pitch);
+			memcpy(p2, tmpBuffer, pitch);
+			pPixels += pitch;
+			p2 -= pitch;
+		}
+		delete [] tmpBuffer;
+		Image->unlock();
+
+		//reset old bound texture
+		glBindTexture(GL_TEXTURE_2D, tmpTexture);
+	}
+	return Image->lock();
 }
 
 
