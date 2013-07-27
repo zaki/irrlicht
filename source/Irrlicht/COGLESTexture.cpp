@@ -44,9 +44,9 @@ COGLES1Texture::COGLES1Texture(IImage* origImage, const io::path& name, COGLES1D
     
 #ifndef GL_BGRA
 	// whoa, pretty badly implemented extension...
-	if (Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888] ||
-		Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888] ||
-		Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888])
+	if (Driver->FeatureAvailable[COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888] ||
+		Driver->FeatureAvailable[COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888] ||
+		Driver->FeatureAvailable[COGLES1ExtensionHandler::IRR_APPLE_texture_format_BGRA8888])
 		GL_BGRA = 0x80E1;
 	else
 		GL_BGRA = GL_RGBA;
