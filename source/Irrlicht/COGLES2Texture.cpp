@@ -107,6 +107,27 @@ COGLES2Texture::COGLES2Texture(const io::path& name, COGLES2Driver* driver)
 //! destructor
 COGLES2Texture::~COGLES2Texture()
 {
+	// Remove this texture from current texture list as well
+
+	for (u32 i = 0; i < Driver->MaxSupportedTextures; ++i)
+		if (Driver->CurrentTexture[i] == this)
+		{
+			Driver->setActiveTexture(i, 0);
+			Driver->getBridgeCalls()->setTexture(i);
+			Driver->CurrentTexture[i] = 0;
+		}
+
+	// Remove this texture from active materials as well	
+
+	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+	{
+		if (Driver->Material.TextureLayer[i].Texture == this)
+			Driver->Material.TextureLayer[i].Texture = 0;
+
+		if (Driver->LastMaterial.TextureLayer[i].Texture == this)
+			Driver->LastMaterial.TextureLayer[i].Texture = 0;
+	}
+
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
 	if (Image)
@@ -496,6 +517,9 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
+
+	Driver->setActiveTexture(0, 0);
+	Driver->getBridgeCalls()->setTexture(0);
 }
 
 
@@ -828,6 +852,9 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 #endif
 
 	unbindRTT();
+
+	Driver->setActiveTexture(0, 0);
+	Driver->getBridgeCalls()->setTexture(0);
 }
 
 

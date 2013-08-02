@@ -4072,6 +4072,7 @@ void COpenGLDriver::removeTexture(ITexture* texture)
 		return;
 
 	CNullDriver::removeTexture(texture);
+
 	// Remove this texture from CurrentTexture as well
 	CurrentTexture.remove(texture);
 }
@@ -5224,8 +5225,13 @@ void COpenGLCallBridge::setTexture(u32 stage, bool fixedPipeline)
 
 				glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
 			}
-			else if(fixedPipeline)
-				glDisable(GL_TEXTURE_2D);
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				if(fixedPipeline)
+					glDisable(GL_TEXTURE_2D);
+			}
 
 			TextureFixedPipeline[stage] = fixedPipeline;
 			Texture[stage] = Driver->CurrentTexture[stage];

@@ -25,7 +25,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true)
+	ReadOnlyLock(false), KeepImage(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -68,7 +68,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	MipmapLegacyMode(true), IsRenderTarget(false), IsCompressed(false),
-	AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true)
+	AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -79,6 +79,24 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 //! destructor
 COpenGLTexture::~COpenGLTexture()
 {
+	for (u32 i = 0; i < Driver->MaxSupportedTextures; ++i)
+		if (Driver->CurrentTexture[i] == this)
+		{
+			Driver->setActiveTexture(i, 0);
+			Driver->getBridgeCalls()->setTexture(i, true);
+		}
+
+	// Remove this texture from active materials as well	
+
+	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+	{
+		if (Driver->Material.TextureLayer[i].Texture == this)
+			Driver->Material.TextureLayer[i].Texture = 0;
+
+		if (Driver->LastMaterial.TextureLayer[i].Texture == this)
+			Driver->LastMaterial.TextureLayer[i].Texture = 0;
+	}
+
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
 	if (Image)
@@ -507,6 +525,9 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
+
+    Driver->setActiveTexture(0, 0);
+	Driver->getBridgeCalls()->setTexture(0, true);
 }
 
 
@@ -821,6 +842,9 @@ void COpenGLTexture::unbindRTT()
 
 	// Copy Our ViewPort To The Texture
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
+
+	Driver->setActiveTexture(0, 0);
+	Driver->getBridgeCalls()->setTexture(0, true);
 }
 
 
@@ -901,6 +925,9 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 #endif
 	unbindRTT();
+
+    Driver->setActiveTexture(0, 0);
+	Driver->getBridgeCalls()->setTexture(0, true);
 }
 
 
