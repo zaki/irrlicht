@@ -1716,7 +1716,7 @@ bool COGLES1Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 
 	if (!texture)
 	{
-		glBindTexture(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
 		return true;
 	}

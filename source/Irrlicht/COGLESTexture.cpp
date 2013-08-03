@@ -106,11 +106,9 @@ COGLES1Texture::~COGLES1Texture()
 		if (Driver->CurrentTexture[i] == this)
 		{
 			Driver->extGlActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_TEXTURE_2D);
 
-			Driver->setActiveTexture(i, 0);
-			Driver->getBridgeCalls()->setTexture(i);
 			Driver->CurrentTexture[i] = 0;
 		}
 
