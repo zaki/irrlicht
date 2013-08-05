@@ -495,10 +495,12 @@ public:
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
+		if (material.MaterialType != lastMaterial.MaterialType 
+			|| material.MaterialTypeParam != lastMaterial.MaterialTypeParam
+			|| resetAllRenderstates)
 		{
 			Driver->getBridgeCalls()->setAlphaTest(true);
-			Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, 0.5f);
+			Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, material.MaterialTypeParam == 0 ? 0.5 : material.MaterialTypeParam);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 	}
@@ -506,7 +508,7 @@ public:
 	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setAlphaTest(true);
-		Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, 0.5f);
+		Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, material.MaterialTypeParam == 0 ? 0.5 : material.MaterialTypeParam);
 	}
 
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
