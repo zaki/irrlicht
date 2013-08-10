@@ -279,7 +279,7 @@
             ev.MultiTouchInput.Y[idx] = nowTouchPoint.y*scale;
         }
         
-		ev.MultiTouchInput.Touched[idx] = 1;
+		ev.MultiTouchInput.Touched[idx] = 0;
 		idx ++;
 	}
     
