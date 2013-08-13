@@ -381,9 +381,7 @@ public:
 	{
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		if (material.MaterialType != lastMaterial.MaterialType 
-			||	material.MaterialTypeParam != lastMaterial.MaterialTypeParam 
-			|| resetAllRenderstates)
+		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			setTextureColorStage(pID3DDevice, 0,
 				D3DTA_TEXTURE, D3DTOP_MODULATE, D3DTA_CURRENT);
@@ -393,7 +391,8 @@ public:
 
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
-			pID3DDevice->SetRenderState(D3DRS_ALPHAREF, material.MaterialTypeParam == 0 ? 127 : material.MaterialTypeParam * 255.f);
+			// 127 is required by EMT_TRANSPARENT_ALPHA_CHANNEL_REF
+			pID3DDevice->SetRenderState(D3DRS_ALPHAREF, 127);
 			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}

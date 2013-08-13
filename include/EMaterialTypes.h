@@ -101,7 +101,7 @@ namespace video
 		EMT_TRANSPARENT_ALPHA_CHANNEL,
 
 		//! Makes the material transparent based on the texture alpha channel.
-		/** If the alpha channel value is greater than a certain value (default 127), a
+		/** If the alpha channel value is greater than 127, a
 		pixel is written to the target, otherwise not. This
 		material does not use alpha blending and is a lot faster
 		than EMT_TRANSPARENT_ALPHA_CHANNEL. It is ideal for drawing
@@ -109,12 +109,7 @@ namespace video
 		blurry but sharp. Only first texture is used. If you are
 		using this material with small textures and 3d object, it
 		is a good idea to load the texture in 32 bit mode
-		(video::IVideoDriver::setTextureCreationFlag()). 
-		By changing SMaterial::MaterialTypeParam you can control the value which is used 
-		to seperate transparent and opaque pixels. The range is 0-1 (corresponding to 0-255 values
-		for the alpha-channel test). 0 is special and like 0.5 interpreted as 127 
-		(if you really want no transparency at all use a very small value above 0)
-		*/
+		(video::IVideoDriver::setTextureCreationFlag()). */
 		EMT_TRANSPARENT_ALPHA_CHANNEL_REF,
 
 		//! Makes the material transparent based on the vertex alpha value.
