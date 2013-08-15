@@ -182,10 +182,10 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetBaseMaterial(material);
-
-		if (CallBack)
-			CallBack->OnSetMaterial(material);
 	}
+
+	if (CallBack)
+		CallBack->OnSetMaterial(material);
 }
 
 

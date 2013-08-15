@@ -119,10 +119,10 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetBaseMaterial(material);
-
-		if (CallBack)
-			CallBack->OnSetMaterial(material);
 	}
+
+	if (CallBack)
+		CallBack->OnSetMaterial(material);
 }
 
 bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)

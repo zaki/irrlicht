@@ -89,10 +89,10 @@ void CD3D9CgMaterialRenderer::OnSetMaterial(const SMaterial& material, const SMa
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetMaterial(material, material, true, this);
-
-		if (CallBack)
-			CallBack->OnSetMaterial(material);
 	}
+
+	if (CallBack)
+		CallBack->OnSetMaterial(material);
 }
 
 bool CD3D9CgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
