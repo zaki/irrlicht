@@ -543,7 +543,8 @@ void CBurningVideoDriver::setCurrentShader()
 			break;
 
 		case EMT_DETAIL_MAP:
-			shader = ETR_TEXTURE_GOURAUD_DETAIL_MAP;
+			if ( texture1 )
+				shader = ETR_TEXTURE_GOURAUD_DETAIL_MAP;
 			break;
 
 		case EMT_SPHERE_MAP:

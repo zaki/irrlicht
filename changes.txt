@@ -26,6 +26,11 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.1 (not yet released)
 
+ - Fix crash in SoftwareDriver2 when Material was EMT_DETAIL_MAP but texture[1] was not set (Thanks for fix by chronologicaldot)
+ - Fix buffer overrun in x-loader (Thanks for fix by Otaka)
+ - Fix cursor visibility update problem under Windows 8 (Thanks @luthyr for reporting)
+ - Fix irredit links in loadScene/saveScene docs.
+ - Fix issue in CAnimatedMeshSceneNode::clone which cause crash. (reported and fixed by luthyr)
  - Fix compiling errors for c++ builder (thx @Greatwolf for many patches and @cfanderek for reminding)
  - Initialized IColladaMeshWriter::GeometryWriting which was uninitialized.
  - Fix linker trouble with irr::core::equalsByUl when compiling Irrlicht as managed code (thx @  Memorial76 for a report + testcase)
@@ -54,7 +59,7 @@ Changes in 1.8 (7.11.2012)
 
  - Add another saveScene overload which allows to pass in a user-created XMLWriter. Patch suggested by eversilver.
 
- - quaternion conversions to and from matrix4 no longer invert rotations. 
+ - quaternion conversions to and from matrix4 no longer invert rotations.
    To test if your code was affected by this you can set IRR_TEST_BROKEN_QUATERNION_USE in quaternion.h and try to compile your application.
    Then on all compile-errors when you pass the matrix to the quaternion you can replace the matrix transposed matrix.
    For all errors you get on getMatrix() you can use quaternion::getMatrix_transposed instead.
@@ -62,13 +67,13 @@ Changes in 1.8 (7.11.2012)
  - CGUIEnvironment::loadGui - loading a gui into a target-element no longer messes up when the gui-file contained guienvironment serialization.
 
  - Colladawriter now exports materials per node when those are used in Irrlicht
- 
+
  - Colladawriter now writing matrices for node transformations as old solution did not work with CDummyTransformationSceneNode's.
- 
+
  - Colladawriter no longer create an extra node for the scenemanger as <visual_scene> has that job in Collada.
- 
+
  - Colladwriter no longer makes all Scenenodes children of ambient-light as that can be parallel on the same layer instead.
- 
+
  - Colladareader now creates the ambient-light correct instead of creating a point-light for it.
 
  - Add new parameter to array reallocate function. This prevents a reallocation in case the array would become smaller. As the reallocation operation is quite time consuming, this can be avoided on request now, on the expense of more memory consumption.
