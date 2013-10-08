@@ -100,10 +100,11 @@ public:
 	//! Checks if this vector equals the other one.
 	/** Takes floating point rounding errors into account.
 	\param other Vector to compare with.
+	\param tolerance Epsilon value for both - comparing X and Y.
 	\return True if the two vector are (almost) equal, else false. */
-	bool equals(const vector2d<T>& other) const
+	bool equals(const vector2d<T>& other, const T tolerance = (T)ROUNDING_ERROR_f32 ) const
 	{
-		return core::equals(X, other.X) && core::equals(Y, other.Y);
+		return core::equals(X, other.X, tolerance) && core::equals(Y, other.Y, tolerance);
 	}
 
 	vector2d<T>& set(T nx, T ny) {X=nx; Y=ny; return *this; }

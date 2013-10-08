@@ -1,6 +1,9 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- vector2d::equals now has an tolerance parameter for passing the epsilon (like vector3d had). Note that this changes the default 
+  behavior of vector2d::equals as well as functions using it like the operators for ==, !=, <, >, <=, >= when using vector2d with f64
+  as the tolerance is increased in that case (for f32 and integer values it shouldn't make any difference).
 - Material renderers which offers blending feature (eg. EMT_TRANSPARENT_ALPHA_CHANNEL, EMT_ONETEXTURE_BLEND etc.) require SMaterial::BlendOperation set to other value than EBO_NONE.
 - Removed support for built-in T&L variables in ASM/GLSL shaders (variables related to vertices eg. gl_MultiTexCoord0 are still supported). This change allow us to reduce CPU overhead in shader material renderers.
 - IGUIEnvironment::hasFocus has now a parameter checkSubElements as subelements are usually seen as part of an element. Default unfortunately must be false due to backward compatibility.
