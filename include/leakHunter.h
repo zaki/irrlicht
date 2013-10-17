@@ -28,7 +28,7 @@ namespace irr
 			//! Clear all IReferenceCounted objects inside LeakHunter
 			/** This does not affect the IReferenceCounted themselfes only the
 				counting of them. Usually you don't ever need to clear, but
-				sometimes it helps when for example you want for to ignore
+				sometimes it helps when for example you want to ignore
 				certain leaks.
 			*/
 			static void clearReferenceCountedObjects()
