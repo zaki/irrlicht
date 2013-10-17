@@ -22,9 +22,11 @@ namespace irr
 namespace io
 {
 
+ANativeActivity* CAndroidAssetReader::Activity = 0;
+
 CAndroidAssetReader::CAndroidAssetReader(const io::path &filename)
 {
-  AssetManager = CIrrDeviceAndroid::getAndroidApp()->activity->assetManager;
+  AssetManager = Activity->assetManager;
   Asset        = AAssetManager_open(AssetManager, 
 			            core::stringc(filename).c_str(),
 				    AASSET_MODE_RANDOM);

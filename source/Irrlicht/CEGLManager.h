@@ -25,22 +25,28 @@ namespace video
     {
     public:
         //! Constructor.
-        CEGLManager(const SIrrlichtCreationParameters& params, SExposedVideoData& data);
+        CEGLManager(const SIrrlichtCreationParameters& params, SExposedVideoData* data);
 
         //! Destructor.
         ~CEGLManager();
 
-        // Create window, display and surface.
-        bool createEGL();
+        // Initialize EGL.
+        bool initializeEGL();
 
-        // Destroy window, display and surface.
-        bool destroyEGL();
+        // Terminate EGL.
+        void terminateEGL();
+
+        // Create EGL surface.
+        bool createSurface();
+
+        // Destroy EGL surface.
+        void destroySurface();
 
         // Create EGL context.
         bool createContext();
 
         // Destroy EGL context.
-        bool destroyContext();
+        void destroyContext();
 
         // Swap buffers.
         void swapBuffers();
@@ -55,14 +61,15 @@ namespace video
 
         EGLConfig EglConfig;
 
-        bool EglReady;
-
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		HDC HDc;
 #endif
 
         SIrrlichtCreationParameters Params;
-        SExposedVideoData Data;
+        SExposedVideoData* Data;
+
+        EGLint MajorVersion;
+        EGLint MinorVersion;
     };
 }
 }

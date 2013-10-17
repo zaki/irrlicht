@@ -9,8 +9,11 @@
 
 #include "os.h"
 #include "CFileSystem.h"
+#include "CAndroidAssetReader.h"
 #include "CAndroidAssetFileArchive.h"
 #include "CEGLManager.h"
+#include "ISceneManager.h"
+#include "IGUIEnvironment.h"
 
 namespace irr	
 {
@@ -27,189 +30,110 @@ namespace irr
 namespace irr
 {
 
-android_app* CIrrDeviceAndroid::Android = NULL;
-
-//! constructor
 CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
-	: CIrrDeviceStub(param),
-	Animating(false),
-	IsReady(false),
-	IsClosing(false),
-	DeviceWidth(param.WindowSize.Width),
-	DeviceHeight(param.WindowSize.Height),
-	MouseX(0),
-	MouseY(0)
+	: CIrrDeviceStub(param), Focused(false), Initialized(false), Paused(true)
 {
-	int ident;
-	int events;
-	struct android_poll_source* source;
-	
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("CIrrDeviceAndroid");
-	#endif
+#endif
 	
 	// Get the interface to the native Android activity.
-	Android = (android_app *)(param.PrivateData);
+	Android = (android_app*)(param.PrivateData);
+
+	io::CAndroidAssetReader::Activity = Android->activity;
+	io::CAndroidAssetFileArchive::Activity = Android->activity;
 	
 	// Set the private data so we can use it in any static callbacks.
 	Android->userData = this;
 		
-	// Set the default command handler. This is a callback function
-	// that the Android OS invokes to send the native activity
-	// messages.
+	// Set the default command handler. This is a callback function that the Android
+	// OS invokes to send the native activity messages.
 	Android->onAppCmd = handleAndroidCommand;
 	
-	// Create a sensor manager to recieve touch screen events from the
-	// java acivity.
+	// Create a sensor manager to recieve touch screen events from the java acivity.
 	SensorManager = ASensorManager_getInstance();
-	SensorEventQueue = ASensorManager_createEventQueue(
-						SensorManager, Android->looper,
-						LOOPER_ID_USER, NULL, NULL);
+	SensorEventQueue = ASensorManager_createEventQueue(SensorManager, Android->looper, LOOPER_ID_USER, 0, 0);
 	Android->onInputEvent = handleInput;
-                          	
-	// Need to find a better way of doing this... but poll until the
-	// Android activity has been created and a window is open. The device
-	// cannot be created until the main window has been created by the
-	// Android OS.
+
+	// Create EGL manager.
+	EGLManager = new video::CEGLManager(CreationParams, &ExposedVideoData);
+
 	os::Printer::log("Waiting for Android activity window to be created.", ELL_DEBUG);
-	
-	do	
+
+	do
 	{
-		while( (ident = ALooper_pollAll(	0, NULL, &events,(void**)&source)) >= 0 )
-		{
-			// Process this event.
-			if( source != NULL )
-			{
-				source->process( Android, source );
-			}
-		}	
+		s32 Events = 0;
+		android_poll_source* Source = 0;
+
+		while ((ALooper_pollAll(((Focused && !Paused) || !Initialized) ? 0 : -1, 0, &Events, (void**)&Source)) >= 0)
+    	{
+			if(Source)
+				Source->process(Android, Source);
+		}
 	}
-	while( IsReady == false );
+	while(!Initialized);
 	
-#ifdef _DEBUG
-	assert( Android->window );
-#endif
+	io::CAndroidAssetFileArchive* Assets = new io::CAndroidAssetFileArchive(false, false);
+	Assets->addDirectory("media");
+	FileSystem->addFileArchive(Assets);
 
-	// Create cursor control
-	CursorControl = new CCursorControl(this);
-	
-	io::CAndroidAssetFileArchive *assets = io::createAndroidAssetFileArchive(false, false);
-	assets->addDirectory("media");
-	FileSystem->addFileArchive(assets);
-
-	// Create the driver.
-    getEGLManager()->createContext();
 	createDriver();
 		
 	if (VideoDriver)	
 		createGUIAndScene();
-
-	// TODO
-	//
-	// if engine->app->savedState is not NULL then use postEventFromUser() 
-	// with a custom android event so the user can use their own event 
-	// receiver in order to load the apps previous state.
-	// The message should have a pointer to be filled and a size variable
-	// of how much data has been saved. Android free's this data later so
-	// there's no need to free it manually.
-	
-	Animating = true;
 }
 
 
-CIrrDeviceAndroid::~CIrrDeviceAndroid(void)
+CIrrDeviceAndroid::~CIrrDeviceAndroid()
 {
+	if (GUIEnvironment)
+	{
+		GUIEnvironment->drop();
+		GUIEnvironment = 0;
+	}
+
+	if (SceneManager)
+	{
+		SceneManager->drop();
+		SceneManager = 0;
+	}
+
+	if (VideoDriver)
+	{
+		VideoDriver->drop();
+		VideoDriver = 0;
+	}
+
     delete EGLManager;
 }
 
-void CIrrDeviceAndroid::createDriver( void )
+bool CIrrDeviceAndroid::run()
 {
-    
-		
-	// Create the driver.
-	switch(CreationParams.DriverType)
-	{
-	case video::EDT_OGLES1:
-		#ifdef _IRR_COMPILE_WITH_OGLES1_		
-		VideoDriver = video::createOGLES1Driver(CreationParams, ExposedVideoData, FileSystem, EGLManager);
-		#else
-		os::Printer::log("No OpenGL ES 1.0 support compiled in.", ELL_ERROR);
-		#endif
-		break;
-		
-	case video::EDT_OGLES2:
-		#ifdef _IRR_COMPILE_WITH_OGLES2_
-		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem);
-		#else
-		os::Printer::log("No OpenGL ES 2.0 support compiled in.", ELL_ERROR);
-		#endif
-		break;		
+	if (!Initialized)
+		return false;
 
-	case video::EDT_NULL:
-		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
-		break;
-
-	default:
-		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
-		break;
-	}	
-}
-
-bool CIrrDeviceAndroid::run( void )
-{
-	bool close = false;
-	
-	// Read all pending events.
-	int ident;
-	int events;
-	struct android_poll_source* source;
-
-	// Check if Android is trying to shut us down.
-	if( IsClosing == true )
-		return( false );
-		
-	// If not animating, we will block forever waiting for events.
-	// If animating, we loop until all events are read, then continue
-	// to draw the next frame of animation.
-	while( ( ident = ALooper_pollAll(	( Animating || IsClosing ) ? 0 : -1, 
-										NULL, &events,
-										(void**)&source)) >= 0 )
-    {
-		// Process this event.
-		if( source != NULL )
-		{
-			source->process( Android, source );
-		}
-#if 0
-         // If a sensor has data, process it now.
-         if (ident == LOOPER_ID_USER) {
-             if (engine.accelerometerSensor != NULL) {
-                 ASensorEvent event;
-                 while (ASensorEventQueue_getEvents(engine.sensorEventQueue,
-                         &event, 1) > 0) {
-                    DEBUG_INFO1("accelerometer: x=%f y=%f z=%f",
-                            event.acceleration.x, event.acceleration.y,
-                             event.acceleration.z);
-                 }
-             }
-         }
-#endif
-		// Check if we are exiting.
-		if( Android->destroyRequested != 0 )
-		{                  
-			close = true;
-		}
-	}
-    	
 	os::Timer::tick();
-	return( !close );
+
+	s32 Events = 0;
+	android_poll_source* Source = 0;
+
+	while ((ALooper_pollAll(((Focused && !Paused) || !Initialized) ? 0 : -1, 0, &Events, (void**)&Source)) >= 0)
+    {
+		if(Source)
+			Source->process(Android, Source);
+
+		if(!Initialized)
+			break;
+	}
+
+	return Initialized;
 }
 
-void CIrrDeviceAndroid::yield( void )
+void CIrrDeviceAndroid::yield()
 {
 }
 
-void CIrrDeviceAndroid::sleep( u32 timeMs, bool pauseTimer )
+void CIrrDeviceAndroid::sleep(u32 timeMs, bool pauseTimer)
 {
 }
 
@@ -219,41 +143,41 @@ void CIrrDeviceAndroid::setWindowCaption(const wchar_t* text)
 
 bool CIrrDeviceAndroid::present(video::IImage* surface, void* windowId, core::rect<s32>* srcClip)
 {
-	return( true );
+	return true;
 }
 
-bool CIrrDeviceAndroid::isWindowActive( void ) const
+bool CIrrDeviceAndroid::isWindowActive() const
 {
-	return Animating;
+	return (Focused && !Paused);
 }
 
-bool CIrrDeviceAndroid::isWindowFocused( void ) const
+bool CIrrDeviceAndroid::isWindowFocused() const
 {
-	return Animating;
+	return Focused;
 }
 
-bool CIrrDeviceAndroid::isWindowMinimized( void ) const
+bool CIrrDeviceAndroid::isWindowMinimized() const
 {
-	return !Animating;
+	return !Focused;
 }
 
-void CIrrDeviceAndroid::closeDevice( void )
-{
-}
-
-void CIrrDeviceAndroid::setResizable( bool resize )
+void CIrrDeviceAndroid::closeDevice()
 {
 }
 
-void CIrrDeviceAndroid::minimizeWindow( void )
+void CIrrDeviceAndroid::setResizable(bool resize)
 {
 }
 
-void CIrrDeviceAndroid::maximizeWindow( void )
+void CIrrDeviceAndroid::minimizeWindow()
 {
 }
 
-void CIrrDeviceAndroid::restoreWindow( void )
+void CIrrDeviceAndroid::maximizeWindow()
+{
+}
+
+void CIrrDeviceAndroid::restoreWindow()
 {
 }
 
@@ -262,201 +186,161 @@ core::position2di CIrrDeviceAndroid::getWindowPosition()
 	return core::position2di(0, 0);
 }
 
-E_DEVICE_TYPE CIrrDeviceAndroid::getType( void ) const
+E_DEVICE_TYPE CIrrDeviceAndroid::getType() const
 {
-	return( EIDT_ANDROID );
+	return EIDT_ANDROID;
 }
-		
-///////////////////////////////
-///////////////////////////////
-
-void CIrrDeviceAndroid::handleAndroidCommand( struct android_app* app, s32 cmd )
+	
+void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 {
-    CIrrDeviceAndroid *deviceAndroid = (CIrrDeviceAndroid *)app->userData;
+    CIrrDeviceAndroid* Device = (CIrrDeviceAndroid*)app->userData;
+
     switch (cmd)
     {
         case APP_CMD_SAVE_STATE:
 			os::Printer::log("Android command APP_CMD_SAVE_STATE", ELL_DEBUG);        
-			
-			// TODO
-			//
-			// use postEventFromUser() with a custom android event so the user can
-			// use their own event receiver in order to save the apps state.
-			// The message should have a pointer to be filled and a size variable
-			// of ho emuch data has been saved.
-#if 0
-            // The system has asked us to save our current state.  Do so.
-            engine->app->savedState = malloc(sizeof(struct saved_state));
-            *((struct saved_state*)engine->app->savedState) = engine->state;
-            engine->app->savedStateSize = sizeof(struct saved_state);
-#endif
             break;
         case APP_CMD_INIT_WINDOW:
 			os::Printer::log("Android command APP_CMD_INIT_WINDOW", ELL_DEBUG);
-            deviceAndroid->getExposedVideoData().OGLESAndroid.window = Android->window;
-            deviceAndroid->getEGLManager()->createEGL();
-            deviceAndroid->IsReady = true;
-            deviceAndroid->Animating = true;
+            Device->getExposedVideoData().OGLESAndroid.window = app->window;
+            Device->getEGLManager()->initializeEGL();
+            Device->getEGLManager()->createSurface();
+            Device->getEGLManager()->createContext();
+            Device->Initialized = true;
             break;
         case APP_CMD_TERM_WINDOW:
 			os::Printer::log("Android command APP_CMD_TERM_WINDOW", ELL_DEBUG);
-            deviceAndroid->getEGLManager()->destroyEGL();
-            deviceAndroid->Animating = false;
+            Device->getEGLManager()->destroySurface();
             break;
         case APP_CMD_GAINED_FOCUS:
 			os::Printer::log("Android command APP_CMD_GAINED_FOCUS", ELL_DEBUG);        
-#if 0
-            // When our app gains focus, we start monitoring the accelerometer.
-            if (engine->accelerometerSensor != NULL) {
-                ASensorEventQueue_enableSensor(engine->sensorEventQueue,
-                        engine->accelerometerSensor);
-                // We'd like to get 60 events per second (in us).
-                ASensorEventQueue_setEventRate(engine->sensorEventQueue,
-                        engine->accelerometerSensor, (1000L/60)*1000);
-            }
-#endif
-			deviceAndroid->Animating = true;
+			Device->Focused = true;
             break;
         case APP_CMD_LOST_FOCUS:
 			os::Printer::log("Android command APP_CMD_LOST_FOCUS", ELL_DEBUG);
-            // When our app loses focus, we stop monitoring the accelerometer.
-            // This is to avoid consuming battery while not being used.
-#if 0
-            if (engine->accelerometerSensor != NULL) {
-                ASensorEventQueue_disableSensor(engine->sensorEventQueue,
-                        engine->accelerometerSensor);
-            }
-#endif
-            // Also stop animating.
-            deviceAndroid->Animating = false;
-
+            Device->Focused = false;
             break;
 		case APP_CMD_DESTROY:
-			// The application is being destroyed. We must close the native
-			// acitivity code and clean up otherwise the acitivity will stay
-			// active.
 			os::Printer::log("Android command APP_CMD_DESTROY", ELL_DEBUG);
-			deviceAndroid->IsClosing = true;		
+			Device->Initialized = false;
 			break;
-			
 		case APP_CMD_PAUSE:
 			os::Printer::log("Android command APP_CMD_PAUSE", ELL_DEBUG);
-			break;
-		
+			Device->Paused = true;
+			break;		
 		case APP_CMD_STOP:
 			os::Printer::log("Android command APP_CMD_STOP", ELL_DEBUG);
-			break;
-					
+			break;		
 		case APP_CMD_RESUME:
 			os::Printer::log("Android command APP_CMD_RESUME", ELL_DEBUG);
+			Device->Paused = false;
 			break;		
-		
 		default:
-			os::Printer::log("Unhandled android command",
-			                 core::stringc(cmd).c_str(), ELL_WARNING );
-						
+			break;						
     }
 }
 
-s32 CIrrDeviceAndroid::handleInput( struct android_app* app, AInputEvent* androidEvent )
+s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 {
-	CIrrDeviceAndroid *deviceAndroid = (CIrrDeviceAndroid *)app->userData;
-	int32_t eventAction;
-	int pointerCount = 0;
-	SEvent irrEvent;
-	int i = 0;
-	
-	if( AInputEvent_getType( androidEvent ) == AINPUT_EVENT_TYPE_MOTION )
+	CIrrDeviceAndroid* Device = (CIrrDeviceAndroid*)app->userData;
+	s32 Status = 0;
+
+	if (AInputEvent_getType(androidEvent) == AINPUT_EVENT_TYPE_MOTION)
 	{
-		// Get the number of pointers.
-		pointerCount = AMotionEvent_getPointerCount( androidEvent );
+		SEvent Event;
+		s32 PointerCount = AMotionEvent_getPointerCount(androidEvent);
+		s32 EventAction = AMotionEvent_getAction(androidEvent);
 
-		// Get the actual input event type.
-		eventAction = AMotionEvent_getAction( androidEvent );
+		bool MultiTouchEvent = true;
 
-		switch( eventAction )
+		switch (EventAction)
 		{
-			case AMOTION_EVENT_ACTION_DOWN:
-				if( pointerCount == 1 )
-				{
-					irrEvent.EventType = EET_MOUSE_INPUT_EVENT;
-					irrEvent.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
-				}
-				break;
-
-			case AMOTION_EVENT_ACTION_MOVE:
-				if( pointerCount == 1 )
-				{
-					irrEvent.EventType = EET_MOUSE_INPUT_EVENT;
-					irrEvent.MouseInput.Event = EMIE_MOUSE_MOVED;
-				}
-				else
-				{
-					irrEvent.EventType = EET_MULTI_TOUCH_EVENT;
-					irrEvent.MultiTouchInput.Event = EMTIE_MOVED;					
-				}	
-
-				deviceAndroid->postEventFromUser(irrEvent);			
-				break;
-
-			case AMOTION_EVENT_ACTION_UP:
-				if( pointerCount == 1 )
-				{
-					irrEvent.EventType = EET_MOUSE_INPUT_EVENT;
-					irrEvent.MouseInput.Event = EMIE_LMOUSE_LEFT_UP;
-				}						
-				break;
-			default:
-				os::Printer::log("Unhandled motion event",
-								 core::stringc(eventAction).c_str(),
-								 ELL_WARNING );
+		case AMOTION_EVENT_ACTION_DOWN:
+			Event.MultiTouchInput.Event = EMTIE_PRESSED_DOWN;
+			break;
+		case AMOTION_EVENT_ACTION_MOVE:
+			Event.MultiTouchInput.Event = EMTIE_MOVED;
+			break;
+		case AMOTION_EVENT_ACTION_UP:
+			Event.MultiTouchInput.Event = EMTIE_LEFT_UP;					
+			break;
+		default:
+			MultiTouchEvent = false;
+			break;
 		}
-				
-		if( pointerCount == 1 )
+
+		if (MultiTouchEvent)
 		{
-			// Fill in the details for a one touch event.
-			deviceAndroid->MouseX = irrEvent.MouseInput.X = AMotionEvent_getX(androidEvent, 0);
-			deviceAndroid->MouseY = irrEvent.MouseInput.Y = AMotionEvent_getY(androidEvent, 0);
-			irrEvent.MouseInput.ButtonStates = 0;
-		}
-		else if( pointerCount > 1 )
-		{
-			// Fill in the details for a multi touch event.
-			for( i=0 ; i<pointerCount ; i++ )
+			Event.EventType = EET_MULTI_TOUCH_EVENT;
+			Event.MultiTouchInput.clear();
+
+			for (s32 i = 0; i < PointerCount; ++i)
 			{
-				irrEvent.MultiTouchInput.Touched[i] = 1;
-				irrEvent.MultiTouchInput.PrevX[i] = irrEvent.MultiTouchInput.X[i];
-				irrEvent.MultiTouchInput.PrevY[i] = irrEvent.MultiTouchInput.Y[i];
-				irrEvent.MultiTouchInput.X[i] = AMotionEvent_getX(androidEvent, i);
-				irrEvent.MultiTouchInput.Y[i] = AMotionEvent_getY(androidEvent, i);
+				if (i >= NUMBER_OF_MULTI_TOUCHES)
+            		break;
+
+            	Event.MultiTouchInput.PrevX[i] = 0; // TODO
+            	Event.MultiTouchInput.PrevY[i] = 0; // TODO
+            	Event.MultiTouchInput.X[i] = AMotionEvent_getX(androidEvent, i);
+            	Event.MultiTouchInput.Y[i] = AMotionEvent_getX(androidEvent, i);
+
+				Event.MultiTouchInput.Touched[i] = true;
 			}
-			
-			// Reset the data for the rest of the pointers that aren't being used.
-			for( ;i<NUMBER_OF_MULTI_TOUCHES ; i++ )
-			{
-				irrEvent.MultiTouchInput.Touched[i] = 0;
-				irrEvent.MultiTouchInput.PrevX[i] = 0;
-				irrEvent.MultiTouchInput.PrevY[i] = 0;
-				irrEvent.MultiTouchInput.X[i] = 0;
-				irrEvent.MultiTouchInput.Y[i] = 0;
-			}			
+    
+			Device->postEventFromUser(Event);
+
+			Status = 1;
 		}
-		else
-		{
-			// Shouldn't ever get here, but just in case...
-			os::Printer::log("We had a input event but no pointers were active!", ELL_DEBUG);
-			return( 0 );
-		}
-		
-		deviceAndroid->postEventFromUser(irrEvent);
-		
-		return( 1 );
 	}
-	return( 0 );
+
+	return Status;
+}
+
+void CIrrDeviceAndroid::createDriver()
+{
+	switch(CreationParams.DriverType)
+	{
+	case video::EDT_OGLES1:
+#ifdef _IRR_COMPILE_WITH_OGLES1_		
+		VideoDriver = video::createOGLES1Driver(CreationParams, ExposedVideoData, FileSystem, EGLManager);
+#else
+		os::Printer::log("No OpenGL ES 1.0 support compiled in.", ELL_ERROR);
+#endif
+		break;		
+	case video::EDT_OGLES2:
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem);
+#else
+		os::Printer::log("No OpenGL ES 2.0 support compiled in.", ELL_ERROR);
+#endif
+		break;		
+	case video::EDT_NULL:
+		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
+		break;
+	case video::EDT_SOFTWARE:
+	case video::EDT_BURNINGSVIDEO:
+	case video::EDT_OPENGL:
+	case video::EDT_DIRECT3D8:
+	case video::EDT_DIRECT3D9:
+		os::Printer::log("This driver is not available in Linux. Try OpenGL ES 1.0 or ES 2.0.", ELL_ERROR);
+		break;
+	default:
+		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
+		break;
+	}	
+}
+
+video::SExposedVideoData& CIrrDeviceAndroid::getExposedVideoData()
+{
+	return ExposedVideoData;
+}
+
+video::CEGLManager* CIrrDeviceAndroid::getEGLManager()
+{
+	return EGLManager;
 }
 
 } // end namespace irr
 
 #endif
-
 

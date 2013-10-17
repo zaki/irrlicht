@@ -52,7 +52,12 @@ namespace io
       //! API does not return names of directories, they need to
       //! be added manually.
       virtual void addDirectory(const io::path &filename);
+
+		static ANativeActivity* Activity;
+
     protected:
+		static CAndroidAssetFileArchive* createAndroidAssetFileArchive(bool ignoreCase, bool ignorePaths);
+
       //! Android's asset manager - keep a copy here
       AAssetManager *AssetManager;
 

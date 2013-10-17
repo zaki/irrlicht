@@ -47,7 +47,6 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
     core::dimension2d<u32> WindowSize(0, 0);
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-    EGLManager->createEGL();
     EGLManager->createContext();
 
     WindowSize = params.WindowSize;
@@ -96,7 +95,6 @@ COGLES1Driver::~COGLES1Driver()
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 	EGLManager->destroyContext();
-    EGLManager->destroyEGL();
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	if (0 != ViewFramebuffer)
 	{

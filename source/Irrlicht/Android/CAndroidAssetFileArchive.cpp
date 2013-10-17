@@ -22,18 +22,19 @@ namespace irr
 namespace io
 {
 
-CAndroidAssetFileArchive *createAndroidAssetFileArchive(bool ignoreCase, bool ignorePaths)
+CAndroidAssetFileArchive *CAndroidAssetFileArchive::createAndroidAssetFileArchive(bool ignoreCase, bool ignorePaths)
 {
-    if(!CIrrDeviceAndroid::getAndroidApp())
+    if(!CAndroidAssetFileArchive::Activity)
         return NULL;
     return new CAndroidAssetFileArchive(ignoreCase, ignorePaths);
 }
 
+ANativeActivity* CAndroidAssetFileArchive::Activity = 0;
 
 CAndroidAssetFileArchive::CAndroidAssetFileArchive(bool ignoreCase, bool ignorePaths)
   : CFileList("/asset", ignoreCase, ignorePaths)
 {
-  AssetManager = CIrrDeviceAndroid::getAndroidApp()->activity->assetManager;
+  AssetManager = Activity->assetManager;
   addDirectory("");
 }
 

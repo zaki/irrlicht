@@ -15,6 +15,7 @@
 
 struct AAssetManager;
 struct AAsset;
+struct ANativeActivity;
 
 namespace irr
 {
@@ -56,7 +57,10 @@ namespace io
 
       /** Return true if the file could be opened. */
       bool isOpen() const { return Asset!=NULL; }
-    protected:
+
+		static ANativeActivity* Activity;
+
+    private:
         //! Android's asset manager - keep a copy here
         AAssetManager *AssetManager;
 
