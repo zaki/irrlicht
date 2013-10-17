@@ -3,11 +3,10 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "COGLESDriver.h"
-// needed here also because of the create methods' parameters
-#include "CNullDriver.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
+#include "CNullDriver.h"
 #include "COGLESTexture.h"
 #include "COGLESMaterialRenderer.h"
 #include "CImage.h"
@@ -22,223 +21,43 @@ namespace irr
 namespace video
 {
 
-//! constructor and init code
 COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
-		const SExposedVideoData& data, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-		, CIrrDeviceIPhone* device
+            const SExposedVideoData& data, io::IFileSystem* io
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+            , CEGLManager* eglManager
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+            , CIrrDeviceIPhone* device
 #endif
-		)
-: CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
+            ) : CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
-#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	,HDc(0)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+    , EGLManager(eglManager)
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-	,ViewFramebuffer(0)
-	,ViewRenderbuffer(0)
-	,ViewDepthRenderbuffer(0)
+    , Device(device), ViewFramebuffer(0),
+	ViewRenderbuffer(0), ViewDepthRenderbuffer(0)
 #endif
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("COGLESDriver");
-	#endif
-	ExposedData=data;
-#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	EglWindow = (NativeWindowType)data.OpenGLWin32.HWnd;
-	HDc = GetDC((HWND)EglWindow);
-	EglDisplay = eglGetDisplay((NativeDisplayType)HDc);
-#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-	EglWindow = (NativeWindowType)ExposedData.OpenGLLinux.X11Window;
-	EglDisplay = eglGetDisplay((NativeDisplayType)ExposedData.OpenGLLinux.X11Display);
+#endif
+
+	ExposedData = data;
+    core::dimension2d<u32> WindowSize(0, 0);
+
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+    EGLManager->createEGL();
+    EGLManager->createContext();
+
+    WindowSize = params.WindowSize;
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-	Device = device;
-#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EglWindow =	((struct android_app *)(params.PrivateData))->window;
-	EglDisplay = EGL_NO_DISPLAY;
-#endif
-#ifdef EGL_VERSION_1_0
-	if(EglDisplay == EGL_NO_DISPLAY)
-		EglDisplay = eglGetDisplay((NativeDisplayType) EGL_DEFAULT_DISPLAY);
-	if(EglDisplay == EGL_NO_DISPLAY)
-	{
-		os::Printer::log("Could not get OpenGL-ES1 display.");
-	}
-
-	EGLint majorVersion, minorVersion;
-	if (!eglInitialize(EglDisplay, &majorVersion, &minorVersion))
-	{
-		os::Printer::log("Could not initialize OpenGL-ES1 display.");
-	}
-	else
-		os::Printer::log("EGL version", core::stringc(majorVersion+(minorVersion/10.f)).c_str());
-
-	EGLint attribs[] =
-	{
-#if defined( _IRR_COMPILE_WITH_ANDROID_DEVICE_ )
-		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-		EGL_BLUE_SIZE, 8,
-		EGL_GREEN_SIZE, 8,
-		EGL_RED_SIZE, 8,
-		EGL_DEPTH_SIZE, 16,
-		EGL_NONE
-#else		
-		EGL_RED_SIZE, 5,
-		EGL_GREEN_SIZE, 5,
-		EGL_BLUE_SIZE, 5,
-		EGL_ALPHA_SIZE, params.WithAlphaChannel?1:0,
-		EGL_BUFFER_SIZE, params.Bits,
-		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-//		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
-		EGL_DEPTH_SIZE, params.ZBufferBits,
-		EGL_STENCIL_SIZE, params.Stencilbuffer,
-		EGL_SAMPLE_BUFFERS, params.AntiAlias?1:0,
-		EGL_SAMPLES, params.AntiAlias,
-#ifdef EGL_VERSION_1_3
-		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
-#endif
-		EGL_NONE, 0
-#endif		
-	};
-	EGLint contextAttrib[] =
-	{
-#ifdef EGL_VERSION_1_3
-		EGL_CONTEXT_CLIENT_VERSION, 1,
-#endif
-		EGL_NONE, 0
-	};
-	EGLConfig config;
-	EGLint num_configs;
-	u32 steps=5;
-	while (!eglChooseConfig(EglDisplay, attribs, &config, 1, &num_configs) || !num_configs)
-	{
-		switch (steps)
-		{
-		case 5: // samples
-			if (attribs[19]>2)
-			{
-				--attribs[19];
-			}
-			else
-			{
-				attribs[17]=0;
-				attribs[19]=0;
-				--steps;
-			}
-			break;
-		case 4: // alpha
-			if (attribs[7])
-			{
-				attribs[7]=0;
-				if (params.AntiAlias)
-				{
-					attribs[17]=1;
-					attribs[19]=params.AntiAlias;
-					steps=5;
-				}
-			}
-			else
-				--steps;
-			break;
-		case 3: // stencil
-			if (attribs[15])
-			{
-				attribs[15]=0;
-				if (params.AntiAlias)
-				{
-					attribs[17]=1;
-					attribs[19]=params.AntiAlias;
-					steps=5;
-				}
-			}
-			else
-				--steps;
-			break;
-		case 2: // depth size
-			if (attribs[13]>16)
-			{
-				attribs[13]-=8;
-			}
-			else
-				--steps;
-			break;
-		case 1: // buffer size
-			if (attribs[9]>16)
-			{
-				attribs[9]-=8;
-			}
-			else
-				--steps;
-			break;
-		default:
-			os::Printer::log("Could not get config for OpenGL-ES1 display.");
-			return;
-		}
-	}
-	if (params.AntiAlias && !attribs[17])
-		os::Printer::log("No multisampling.");
-	if (params.WithAlphaChannel && !attribs[7])
-		os::Printer::log("No alpha.");
-	if (params.Stencilbuffer && !attribs[15])
-		os::Printer::log("No stencil buffer.");
-	if (params.ZBufferBits > attribs[13])
-		os::Printer::log("No full depth buffer.");
-	if (params.Bits > attribs[9])
-		os::Printer::log("No full color buffer.");
-
-	#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-   /* EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
-    * guaranteed to be accepted by ANativeWindow_setBuffersGeometry().
-    * As soon as we picked a EGLConfig, we can safely reconfigure the
-    * ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID. */
-   EGLint format;
-   eglGetConfigAttrib(EglDisplay, config, EGL_NATIVE_VISUAL_ID, &format);
-
-   ANativeWindow_setBuffersGeometry(EglWindow, 0, 0, format);
-   #endif
-   
-	EglSurface = eglCreateWindowSurface(EglDisplay, config, EglWindow, NULL);
-	
-	if (EGL_NO_SURFACE==EglSurface)
-		EglSurface = eglCreateWindowSurface(EglDisplay, config, NULL, NULL);
-
-	if (EGL_NO_SURFACE==EglSurface)
-	{
-		testEGLError();
-		os::Printer::log("Could not create surface for OpenGL-ES1 display.");
-	}
-
-#ifdef EGL_VERSION_1_2
-	if (minorVersion>1)
-		eglBindAPI(EGL_OPENGL_ES_API);
-#endif
-	EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, contextAttrib);
-	if (testEGLError())
-	{
-		os::Printer::log("Could not create Context for OpenGL-ES1 display.");
-	}
-
-	eglMakeCurrent(EglDisplay, EglSurface, EglSurface, EglContext);
-	if (testEGLError())
-	{
-		os::Printer::log("Could not make Context current for OpenGL-ES1 display.");
-	}
-
-	genericDriverInit(params.WindowSize, params.Stencilbuffer);
-
-	// set vsync
-	if (params.Vsync)
-		eglSwapInterval(EglDisplay, 1);
-#elif defined(GL_VERSION_ES_CM_1_0)
 	glGenFramebuffersOES(1, &ViewFramebuffer);
 	glGenRenderbuffersOES(1, &ViewRenderbuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	ExposedData.OGLESIPhone.AppDelegate = Device;
     Device->displayInitialize(&ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
-#endif
 
 	GLint backingWidth;
 	GLint backingHeight;
@@ -259,12 +78,12 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, ViewRenderbuffer);
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
     
-    core::dimension2d<u32> WindowSize(backingWidth, backingHeight);
+    WindowSize = core::dimension2d<u32>(backingWidth, backingHeight);
     CNullDriver::ScreenSize = WindowSize;
     CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
-    
-	genericDriverInit(WindowSize, params.Stencilbuffer);
 #endif
+
+    genericDriverInit(WindowSize, params.Stencilbuffer);
 }
 
 
@@ -275,16 +94,10 @@ COGLES1Driver::~COGLES1Driver()
 	deleteMaterialRenders();
 	deleteAllTextures();
 
-#if defined(EGL_VERSION_1_0)
-	eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-	eglDestroyContext(EglDisplay, EglContext);
-	eglDestroySurface(EglDisplay, EglSurface);
-	eglTerminate(EglDisplay);
-#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	if (HDc)
-		ReleaseDC((HWND)EglWindow, HDc);
-#endif
-#elif defined(GL_VERSION_ES_CM_1_0)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+	EGLManager->destroyContext();
+    EGLManager->destroyEGL();
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	if (0 != ViewFramebuffer)
 	{
 		extGlDeleteFramebuffers(1,&ViewFramebuffer);
@@ -312,10 +125,6 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	Name=glGetString(GL_VERSION);
 	printVersion();
 
-#if defined(EGL_VERSION_1_0)
-	os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
-#endif
-
 	// print renderer information
 	vendorName = glGetString(GL_VENDOR);
 	os::Printer::log(vendorName.c_str(), ELL_INFORMATION);
@@ -324,11 +133,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		CurrentTexture[i]=0;
 	// load extensions
-	initExtensions(this,
-#if defined(EGL_VERSION_1_0)
-			EglDisplay,
-#endif
-			stencilBuffer);
+	initExtensions(this, stencilBuffer);
 	StencilBuffer=stencilBuffer;
 
 	DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
@@ -457,26 +262,12 @@ bool COGLES1Driver::endScene()
 {
 	CNullDriver::endScene();
 
-#if defined(EGL_VERSION_1_0)
-	eglSwapBuffers(EglDisplay, EglSurface);
-	EGLint g = eglGetError();
-	if (EGL_SUCCESS != g)
-	{
-		if (EGL_CONTEXT_LOST == g)
-		{
-			// o-oh, ogl-es has lost contexts...
-			os::Printer::log("Context lost, please restart your app.");
-		}
-		else
-			os::Printer::log("Could not swap buffers for OpenGL-ES1 driver.");
-		return false;
-	}
-#elif defined(GL_VERSION_ES_CM_1_0)
-	glFlush();
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+    EGLManager->swapBuffers();
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+    glFlush();
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
     Device->displayEnd();
-#endif
 #endif
 
 	return true;
@@ -490,11 +281,9 @@ bool COGLES1Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color);
 
-#if defined(GL_VERSION_ES_CM_1_0)
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
     Device->displayBegin();
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
-#endif
 #endif
 
 	GLbitfield mask = 0;
@@ -1828,49 +1617,6 @@ bool COGLES1Driver::testGLError()
 		os::Printer::log("GL_OUT_OF_MEMORY", ELL_ERROR); break;
 	};
 //	_IRR_DEBUG_BREAK_IF(true);
-	return true;
-#else
-	return false;
-#endif
-}
-
-
-bool COGLES1Driver::testEGLError()
-{
-#if defined(EGL_VERSION_1_0) && defined(_DEBUG)
-	EGLint g = eglGetError();
-	switch (g)
-	{
-		case EGL_SUCCESS: return false;
-		case EGL_NOT_INITIALIZED :
-			os::Printer::log("Not Initialized", ELL_ERROR); break;
-		case EGL_BAD_ACCESS:
-			os::Printer::log("Bad Access", ELL_ERROR); break;
-		case EGL_BAD_ALLOC:
-			os::Printer::log("Bad Alloc", ELL_ERROR); break;
-		case EGL_BAD_ATTRIBUTE:
-			os::Printer::log("Bad Attribute", ELL_ERROR); break;
-		case EGL_BAD_CONTEXT:
-			os::Printer::log("Bad Context", ELL_ERROR); break;
-		case EGL_BAD_CONFIG:
-			os::Printer::log("Bad Config", ELL_ERROR); break;
-		case EGL_BAD_CURRENT_SURFACE:
-			os::Printer::log("Bad Current Surface", ELL_ERROR); break;
-		case EGL_BAD_DISPLAY:
-			os::Printer::log("Bad Display", ELL_ERROR); break;
-		case EGL_BAD_SURFACE:
-			os::Printer::log("Bad Surface", ELL_ERROR); break;
-		case EGL_BAD_MATCH:
-			os::Printer::log("Bad Match", ELL_ERROR); break;
-		case EGL_BAD_PARAMETER:
-			os::Printer::log("Bad Parameter", ELL_ERROR); break;
-		case EGL_BAD_NATIVE_PIXMAP:
-			os::Printer::log("Bad Native Pixmap", ELL_ERROR); break;
-		case EGL_BAD_NATIVE_WINDOW:
-			os::Printer::log("Bad Native Window", ELL_ERROR); break;
-		case EGL_CONTEXT_LOST:
-			os::Printer::log("Context Lost", ELL_ERROR); break;
-	};
 	return true;
 #else
 	return false;
@@ -3275,51 +3021,27 @@ namespace irr
 namespace video
 {
 
-// -----------------------------------
-// WINDOWS VERSION
-// -----------------------------------
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
-		video::SExposedVideoData& data, io::IFileSystem* io)
-{
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	return new COGLES1Driver(params, data, io);
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_OGLES1_
-}
+		video::SExposedVideoData& data, io::IFileSystem* io
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+        , CEGLManager* eglManager
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+        , CIrrDeviceIPhone* device
 #endif
-
-// -----------------------------------
-// MACOSX VERSION
-// -----------------------------------
-#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, CIrrDeviceMacOSX *device)
+    )
 {
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-	return new COGLES1Driver(params, io, device);
+	return new COGLES1Driver(params, data, io
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+        , eglManager
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+        , device
+#endif
+    );
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OGLES1_
 }
-#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
-
-// -----------------------------------
-// IPHONE VERSION
-// -----------------------------------
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
-		video::SExposedVideoData& data, io::IFileSystem* io,
-		CIrrDeviceIPhone* device)
-{
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	return new COGLES1Driver(params, data, io, device);
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_OGLES1_
-}
-#endif // _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
 } // end namespace
 } // end namespace

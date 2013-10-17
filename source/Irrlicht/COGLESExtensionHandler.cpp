@@ -135,7 +135,7 @@ COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 		pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
 		pGlGenerateMipMapOES(0),
 #endif
-	EGLVersion(0), Version(0), MaxTextureUnits(0), MaxLights(0),
+	Version(0), MaxTextureUnits(0), MaxLights(0),
 	MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
 	MaxMultipleRenderTargets(1), MaxIndices(65535), MaxTextureSize(1),
 	MaxTextureLODBias(0.f), CommonProfile(false),
@@ -162,18 +162,8 @@ void COGLES1ExtensionHandler::dump() const
 }
 
 
-void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
-#ifdef EGL_VERSION_1_0
-		EGLDisplay display,
-#endif
-		bool withStencil)
+void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver, bool withStencil)
 {
-#ifdef EGL_VERSION_1_0
-	const f32 egl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
-	EGLVersion = static_cast<u16>(core::floor32(egl_ver)*100+core::round32(core::fract(egl_ver)*10.0f));
-	core::stringc eglExtensions = eglQueryString(display, EGL_EXTENSIONS);
-	os::Printer::log(eglExtensions.c_str());
-#endif
 	const core::stringc stringVer(glGetString(GL_VERSION));
 	CommonProfile = (stringVer[11]=='M');
 	const f32 ogl_ver = core::fast_atof(stringVer.c_str()+13);
@@ -250,6 +240,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 	MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
 
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 	if (FeatureAvailable[IRR_OES_draw_texture])
 	{
 		pGlDrawTexiOES = (PFNGLDRAWTEXIOES) eglGetProcAddress("glDrawTexiOES");
@@ -271,6 +262,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 		pGlFramebufferTexture2DOES = (PFNGLFRAMEBUFFERTEXTURE2DOES) eglGetProcAddress("glFramebufferTexture2DOES");
 		pGlGenerateMipMapOES = (PFNGLGENERATEMIPMAPOES) eglGetProcAddress("glGenerateMipMapOES");
 	}
+#endif
 #endif
 }
 

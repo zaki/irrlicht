@@ -15,6 +15,7 @@
 #include "IrrlichtDevice.h"
 #include "IImagePresenter.h"
 #include "ICursorControl.h"
+#include "CEGLManager.h"
 
 namespace irr
 {
@@ -140,6 +141,19 @@ namespace irr
 		};
 
         static android_app *getAndroidApp() { return Android; }
+
+        video::SExposedVideoData& getExposedVideoData()
+        {
+            return ExposedVideoData;
+        }
+
+        video::CEGLManager* getEGLManager()
+        {
+            if (!EGLManager)
+                EGLManager = new video::CEGLManager(CreationParams, ExposedVideoData);
+
+            return EGLManager;
+        }
 	private:
 	
 		static android_app *Android;
@@ -153,6 +167,9 @@ namespace irr
 		void createDriver( void );
 		static void handleAndroidCommand( struct android_app* app, s32 cmd );
 		static s32 handleInput( struct android_app* app, AInputEvent* event );
+
+        video::SExposedVideoData ExposedVideoData;
+        video::CEGLManager* EGLManager;
 	};
 
 } // end namespace irr

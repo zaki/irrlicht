@@ -146,6 +146,7 @@ LOCAL_SRC_FILES := \
 					COCTLoader.cpp \
 					COctreeSceneNode.cpp \
 					COctreeTriangleSelector.cpp \
+					CEGLManager.cpp \
 					COGLES2Driver.cpp \
 					COGLES2ExtensionHandler.cpp \
 					COGLES2MaterialRenderer.cpp \

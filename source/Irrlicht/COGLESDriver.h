@@ -7,35 +7,18 @@
 
 #include "IrrCompileConfig.h"
 
-#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-	#include "MacOSX/CIrrDeviceMacOSX.h"
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-	#include "iOS/CIrrDeviceiOS.h"
-#endif
-
-#include "SIrrCreationParameters.h"
-
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
+#include "SIrrCreationParameters.h"
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include <OpenGLES/ES1/gl.h>
-#include <OpenGLES/ES1/glext.h>
-#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-#include <EGL/egl.h>
-#include <GLES/gl.h>
-#include "android_native_app_glue.h"
-#else
-#include <GLES/egl.h>
-#include <GLES/gl.h>
-#endif
 #ifdef _MSC_VER
 	#pragma comment(lib, "libgles_cm.lib")
 #endif
+
 #include "COGLESExtensionHandler.h"
 
 namespace irr
@@ -48,22 +31,14 @@ namespace video
 	{
 		friend class COGLES1Texture;
 	public:
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
-				const SExposedVideoData& data,
-				io::IFileSystem* io);
+				const SExposedVideoData& data, io::IFileSystem* io
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+                , CEGLManager* eglManager
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+                , CIrrDeviceIPhone* device
 #endif
-
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-		COGLES1Driver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io, CIrrDeviceMacOSX *device);
-#endif
-	
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-		COGLES1Driver(const SIrrlichtCreationParameters& params,
-                const SExposedVideoData& data,
-                io::IFileSystem* io, CIrrDeviceIPhone* device);
-#endif
+                );
 
 		//! destructor
 		virtual ~COGLES1Driver();
@@ -290,9 +265,6 @@ namespace video
 		//! checks if an OpenGL error has happend and prints it
 		bool testGLError();
 
-		//! checks if an OGLES1 error has happend and prints it
-		bool testEGLError();
-
 		//! Set/unset a clipping plane.
 		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false);
 
@@ -392,19 +364,13 @@ namespace video
 		};
 		core::array<RequestedLight> RequestedLights;
 
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-		HDC HDc;
-#endif
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		CIrrDeviceIPhone* Device;
 		GLuint ViewFramebuffer;
 		GLuint ViewRenderbuffer;
 		GLuint ViewDepthRenderbuffer;
-#else
-		NativeWindowType EglWindow;
-		EGLDisplay EglDisplay;
-		EGLSurface EglSurface;
-		EGLContext EglContext;
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+        CEGLManager* EGLManager;
 #endif
 	};
 

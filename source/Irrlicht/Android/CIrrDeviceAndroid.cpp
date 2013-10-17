@@ -10,13 +10,14 @@
 #include "os.h"
 #include "CFileSystem.h"
 #include "CAndroidAssetFileArchive.h"
+#include "CEGLManager.h"
 
 namespace irr	
 {
 	namespace video
 	{
 		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,	
-			video::SExposedVideoData& data, io::IFileSystem* io);
+			video::SExposedVideoData& data, io::IFileSystem* io, video::CEGLManager* eglManager);
 
 		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 			video::SExposedVideoData& data, io::IFileSystem* io);
@@ -97,6 +98,7 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 	FileSystem->addFileArchive(assets);
 
 	// Create the driver.
+    getEGLManager()->createContext();
 	createDriver();
 		
 	if (VideoDriver)	
@@ -117,18 +119,19 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 
 CIrrDeviceAndroid::~CIrrDeviceAndroid(void)
 {
+    delete EGLManager;
 }
 
 void CIrrDeviceAndroid::createDriver( void )
 {
-	video::SExposedVideoData data;
+    
 		
 	// Create the driver.
 	switch(CreationParams.DriverType)
 	{
 	case video::EDT_OGLES1:
 		#ifdef _IRR_COMPILE_WITH_OGLES1_		
-		VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem);
+		VideoDriver = video::createOGLES1Driver(CreationParams, ExposedVideoData, FileSystem, EGLManager);
 		#else
 		os::Printer::log("No OpenGL ES 1.0 support compiled in.", ELL_ERROR);
 		#endif
@@ -136,7 +139,7 @@ void CIrrDeviceAndroid::createDriver( void )
 		
 	case video::EDT_OGLES2:
 		#ifdef _IRR_COMPILE_WITH_OGLES2_
-		VideoDriver = video::createOGLES2Driver(CreationParams, data, FileSystem);
+		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem);
 		#else
 		os::Printer::log("No OpenGL ES 2.0 support compiled in.", ELL_ERROR);
 		#endif
@@ -221,17 +224,17 @@ bool CIrrDeviceAndroid::present(video::IImage* surface, void* windowId, core::re
 
 bool CIrrDeviceAndroid::isWindowActive( void ) const
 {
-	return( true );
+	return Animating;
 }
 
 bool CIrrDeviceAndroid::isWindowFocused( void ) const
 {
-	return( false );
+	return Animating;
 }
 
 bool CIrrDeviceAndroid::isWindowMinimized( void ) const
 {
-	return( false );
+	return !Animating;
 }
 
 void CIrrDeviceAndroid::closeDevice( void )
@@ -290,10 +293,15 @@ void CIrrDeviceAndroid::handleAndroidCommand( struct android_app* app, s32 cmd )
             break;
         case APP_CMD_INIT_WINDOW:
 			os::Printer::log("Android command APP_CMD_INIT_WINDOW", ELL_DEBUG);
+            deviceAndroid->getExposedVideoData().OGLESAndroid.window = Android->window;
+            deviceAndroid->getEGLManager()->createEGL();
             deviceAndroid->IsReady = true;
+            deviceAndroid->Animating = true;
             break;
         case APP_CMD_TERM_WINDOW:
-			os::Printer::log("Android command APP_CMD_TERM_WINDOW", ELL_DEBUG);			
+			os::Printer::log("Android command APP_CMD_TERM_WINDOW", ELL_DEBUG);
+            deviceAndroid->getEGLManager()->destroyEGL();
+            deviceAndroid->Animating = false;
             break;
         case APP_CMD_GAINED_FOCUS:
 			os::Printer::log("Android command APP_CMD_GAINED_FOCUS", ELL_DEBUG);        

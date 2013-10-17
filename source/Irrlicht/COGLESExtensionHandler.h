@@ -9,22 +9,27 @@
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
+
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#include "CEGLManager.h"
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include "iOS/CIrrDeviceiOS.h"
+#endif
+
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 #include <OpenGLES/ES1/gl.h>
 #include <OpenGLES/ES1/glext.h>
-#elif defined(_IRR_ANDROID_PLATFORM_)
+#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 #include <GLES/gl.h>
 #include <GLES/glext.h>
-#include <EGL/egl.h>
 #else
-#include <GLES/egl.h>
 #include <GLES/gl.h>
-// seems to be missing...
 typedef char GLchar;
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 #include "gles-ext.h"
 #endif
 #endif
+
 #include "os.h"
 #include "EDriverFeatures.h"
 
@@ -150,7 +155,6 @@ namespace video
 			return FeatureAvailable[feature];
 		}
 
-		u16 EGLVersion;
 		u16 Version;
 		u8 MaxTextureUnits;
 		u8 MaxSupportedTextures;
@@ -217,11 +221,7 @@ namespace video
 
 		void dump() const;
 
-		void initExtensions(COGLES1Driver* driver,
-#ifdef EGL_VERSION_1_0
-				EGLDisplay display,
-#endif
-				bool withStencil);
+		void initExtensions(COGLES1Driver* driver, bool withStencil);
 
 	public:
 		void extGlBindFramebuffer(GLenum target, GLuint framebuffer)

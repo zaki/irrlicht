@@ -92,6 +92,13 @@ struct SExposedVideoData
 			void* View;
 			
 		} OGLESIPhone;
+
+        struct
+        {
+            //! The ANativeWindow object.
+            void* window;
+
+        } OGLESAndroid;
 	};
 };
 
