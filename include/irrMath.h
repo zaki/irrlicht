@@ -634,11 +634,11 @@ namespace core
 			);
 #else
 #  warn IRRLICHT_FAST_MATH not supported.
-		return (s32) floorf ( x );
+		return static_cast<s32>(floorf ( x ));
 #endif
 		return t;
 #else // no fast math
-		return (s32) floorf ( x );
+		return static_cast<s32>(floorf ( x ));
 #endif
 	}
 
@@ -667,11 +667,11 @@ namespace core
 			);
 #else
 #  warn IRRLICHT_FAST_MATH not supported.
-		return (s32) ceilf ( x );
+		return static_cast<s32>(ceilf ( x ));
 #endif
 		return t;
 #else // not fast math
-		return (s32) ceilf ( x );
+		return static_cast<s32>(ceilf ( x ));
 #endif
 	}
 
@@ -697,11 +697,11 @@ namespace core
 			);
 #else
 #  warn IRRLICHT_FAST_MATH not supported.
-		return (s32) round_(x);
+		return static_cast<s32>(round_(x));
 #endif
 		return t;
 #else // no fast math
-		return (s32) round_(x);
+		return static_cast<s32>(round_(x));
 #endif
 	}
 
