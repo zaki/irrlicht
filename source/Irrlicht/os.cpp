@@ -73,7 +73,7 @@ namespace irr
 namespace os
 {
 	//! prints a debuginfo string
-	void Printer::print(const c8* message)
+	void Printer::print(const c8* message, ELOG_LEVEL ll)
 	{
 #if defined (_WIN32_WCE )
 		core::stringw tmp(message);
@@ -150,9 +150,30 @@ namespace os
 {
 
 	//! prints a debuginfo string
-	void Printer::print(const c8* message)
+	void Printer::print(const c8* message, ELOG_LEVEL ll)
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "Irrlicht", "%s\n", message);
+		android_LogPriority LogLevel = ANDROID_LOG_UNKNOWN;
+
+		switch (ll)
+		{
+		case ELL_DEBUG:
+			LogLevel = ANDROID_LOG_DEBUG;
+			break;
+		case ELL_INFORMATION:
+			LogLevel = ANDROID_LOG_INFO;
+			break;
+		case ELL_WARNING:
+			LogLevel = ANDROID_LOG_WARN;
+			break;
+		case ELL_ERROR:
+			LogLevel = ANDROID_LOG_ERROR;
+			break;
+		default: // ELL_NONE
+			LogLevel = ANDROID_LOG_VERBOSE;
+			break;
+		}
+
+		__android_log_print(LogLevel, "Irrlicht", "%s\n", message);
 	}
 
 	void Timer::initTimer(bool usePerformanceTimer)
@@ -184,7 +205,7 @@ namespace os
 {
 
 	//! prints a debuginfo string
-	void Printer::print(const c8* message)
+	void Printer::print(const c8* message, ELOG_LEVEL ll)
 	{
 		printf("%s\n", message);
 	}
@@ -202,7 +223,7 @@ namespace os
 	}
 } // end namespace os
 
-#endif // end linux / windows
+#endif // end linux / android / windows
 
 namespace os
 {

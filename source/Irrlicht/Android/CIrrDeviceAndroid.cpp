@@ -22,8 +22,8 @@ namespace irr
 		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,	
 			video::SExposedVideoData& data, io::IFileSystem* io, video::CEGLManager* eglManager);
 
-		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
-			video::SExposedVideoData& data, io::IFileSystem* io);
+		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,	
+			video::SExposedVideoData& data, io::IFileSystem* io, video::CEGLManager* eglManager);
 	}	
 }
 
@@ -309,7 +309,7 @@ void CIrrDeviceAndroid::createDriver()
 		break;		
 	case video::EDT_OGLES2:
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem);
+		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem, EGLManager);
 #else
 		os::Printer::log("No OpenGL ES 2.0 support compiled in.", ELL_ERROR);
 #endif

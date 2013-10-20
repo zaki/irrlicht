@@ -85,8 +85,6 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
     genericDriverInit(WindowSize, params.Stencilbuffer);
 }
 
-
-//! destructor
 COGLES1Driver::~COGLES1Driver()
 {
 	RequestedLights.clear();
@@ -3018,6 +3016,10 @@ namespace irr
 {
 namespace video
 {
+
+#ifndef _IRR_COMPILE_WITH_OGLES1_
+class CEGLManager;
+#endif
 
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 		video::SExposedVideoData& data, io::IFileSystem* io

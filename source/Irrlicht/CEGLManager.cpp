@@ -111,6 +111,20 @@ bool CEGLManager::createSurface()
     if (EglSurface != EGL_NO_SURFACE)
         return true;
 
+	EGLint EglOpenGLBIT = 0;
+
+	switch (Params.DriverType)
+	{
+	case EDT_OGLES1:
+		EglOpenGLBIT = EGL_OPENGL_ES_BIT;
+		break;
+	case EDT_OGLES2:
+		EglOpenGLBIT = EGL_OPENGL_ES2_BIT;
+		break;
+	default:
+		break;
+	}
+
 	EGLint Attribs[] =
 	{
 		EGL_RED_SIZE, 8,
@@ -124,7 +138,7 @@ bool CEGLManager::createSurface()
 		EGL_SAMPLE_BUFFERS, Params.AntiAlias ? 1:0,
 		EGL_SAMPLES, Params.AntiAlias,
 #ifdef EGL_VERSION_1_3
-		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+		EGL_RENDERABLE_TYPE, EglOpenGLBIT,
 #endif
 		EGL_NONE, 0	
 	};
@@ -266,10 +280,24 @@ bool CEGLManager::createContext()
     if (EglContext != EGL_NO_CONTEXT)
         return true;
 
+	EGLint OpenGLESVersion = 0;
+
+	switch (Params.DriverType)
+	{
+	case EDT_OGLES1:
+		OpenGLESVersion = 1;
+		break;
+	case EDT_OGLES2:
+		OpenGLESVersion = 2;
+		break;
+	default:
+		break;
+	}
+
     EGLint ContextAttrib[] =
 	{
 #ifdef EGL_VERSION_1_3
-		EGL_CONTEXT_CLIENT_VERSION, 1,
+		EGL_CONTEXT_CLIENT_VERSION, OpenGLESVersion,
 #endif
 		EGL_NONE, 0
 	};

@@ -61,22 +61,15 @@ namespace video
 		friend class COGLES2Texture;
 
 	public:
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
+		//! constructor
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
-					const SExposedVideoData& data,
-					io::IFileSystem* io);
+				const SExposedVideoData& data, io::IFileSystem* io
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+                , CEGLManager* eglManager
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+                , CIrrDeviceIPhone* device
 #endif
-
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-		COGLES2Driver(const SIrrlichtCreationParameters& params,
-					io::IFileSystem* io, CIrrDeviceMacOSX *device);
-#endif
-
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-		COGLES2Driver(const SIrrlichtCreationParameters& params,
-					const SExposedVideoData& data,
-					io::IFileSystem* io, CIrrDeviceIPhone* device);
-#endif
+                );
 
 		//! destructor
 		virtual ~COGLES2Driver();
@@ -460,19 +453,13 @@ namespace video
 
 		COGLES2Renderer2D* MaterialRenderer2D;
 
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-		HDC HDc;
-#endif
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		CIrrDeviceIPhone* Device;
 		GLuint ViewFramebuffer;
 		GLuint ViewRenderbuffer;
 		GLuint ViewDepthRenderbuffer;
-#else
-		NativeWindowType EglWindow;
-		void* EglDisplay;
-		void* EglSurface;
-		void* EglContext;
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+        CEGLManager* EGLManager;
 #endif
 	};
 
