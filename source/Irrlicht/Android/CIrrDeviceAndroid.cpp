@@ -252,14 +252,17 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 		s32 EventAction = AMotionEvent_getAction(androidEvent);
 
 		bool MultiTouchEvent = true;
+		bool Touched = false;
 
 		switch (EventAction)
 		{
 		case AMOTION_EVENT_ACTION_DOWN:
 			Event.MultiTouchInput.Event = EMTIE_PRESSED_DOWN;
+			Touched = true;
 			break;
 		case AMOTION_EVENT_ACTION_MOVE:
 			Event.MultiTouchInput.Event = EMTIE_MOVED;
+			Touched = true;
 			break;
 		case AMOTION_EVENT_ACTION_UP:
 			Event.MultiTouchInput.Event = EMTIE_LEFT_UP;					
@@ -282,9 +285,9 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
             	Event.MultiTouchInput.PrevX[i] = 0; // TODO
             	Event.MultiTouchInput.PrevY[i] = 0; // TODO
             	Event.MultiTouchInput.X[i] = AMotionEvent_getX(androidEvent, i);
-            	Event.MultiTouchInput.Y[i] = AMotionEvent_getX(androidEvent, i);
+            	Event.MultiTouchInput.Y[i] = AMotionEvent_getY(androidEvent, i);
 
-				Event.MultiTouchInput.Touched[i] = true;
+				Event.MultiTouchInput.Touched[i] = Touched;
 			}
     
 			Device->postEventFromUser(Event);

@@ -111,6 +111,10 @@ bool CEGLManager::createSurface()
     if (EglSurface != EGL_NO_SURFACE)
         return true;
 
+#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+	EglWindow = (ANativeWindow*)Data->OGLESAndroid.window;
+#endif
+
 	EGLint EglOpenGLBIT = 0;
 
 	switch (Params.DriverType)
@@ -229,10 +233,6 @@ bool CEGLManager::createSurface()
 		os::Printer::log("No full color buffer.");
 
 #if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-    /* EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
-    * guaranteed to be accepted by ANativeWindow_setBuffersGeometry().
-    * As soon as we picked a EGLConfig, we can safely reconfigure the
-    * ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID. */
     EGLint Format = 0;
     eglGetConfigAttrib(EglDisplay, EglConfig, EGL_NATIVE_VISUAL_ID, &Format);
 
