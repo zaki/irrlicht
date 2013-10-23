@@ -203,6 +203,13 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
         case APP_CMD_INIT_WINDOW:
 			os::Printer::log("Android command APP_CMD_INIT_WINDOW", ELL_DEBUG);
             Device->getExposedVideoData().OGLESAndroid.window = app->window;
+
+			if (Device->CreationParams.WindowSize.Width == 0 || Device->CreationParams.WindowSize.Height == 0)
+			{
+				Device->CreationParams.WindowSize.Width = ANativeWindow_getWidth(app->window);
+				Device->CreationParams.WindowSize.Height = ANativeWindow_getHeight(app->window);
+			}
+													
             Device->getEGLManager()->initializeEGL();
             Device->getEGLManager()->createSurface();
             Device->getEGLManager()->createContext();
