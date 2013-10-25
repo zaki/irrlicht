@@ -3,10 +3,12 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "COGLESDriver.h"
+#include "SIrrCreationParameters.h" // for createDriver function
+#include "SExposedVideoData.h" // also
+#include "IFileSystem.h" // and here as well
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
-#include "CNullDriver.h"
 #include "COGLESTexture.h"
 #include "COGLESMaterialRenderer.h"
 #include "CImage.h"
@@ -3018,6 +3020,7 @@ namespace video
 {
 
 #ifndef _IRR_COMPILE_WITH_OGLES1_
+class IVideoDriver;
 class CEGLManager;
 #endif
 

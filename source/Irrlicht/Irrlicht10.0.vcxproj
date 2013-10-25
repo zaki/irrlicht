@@ -335,7 +335,7 @@
     </ProjectReference>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;libEGL.lib;libgles_cm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\bin\Win32-visualstudio\Irrlicht.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -995,7 +995,9 @@
     <ClInclude Include="CD3D9CgMaterialRenderer.h" />
     <ClInclude Include="CDefaultSceneNodeAnimatorFactory.h" />
     <ClInclude Include="CDefaultSceneNodeFactory.h" />
+    <ClInclude Include="CEGLManager.h" />
     <ClInclude Include="CGeometryCreator.h" />
+    <ClInclude Include="CImageLoaderPVR.h" />
     <ClInclude Include="CMeshCache.h" />
     <ClInclude Include="CMeshManipulator.h" />
     <ClInclude Include="COpenGLCgMaterialRenderer.h" />
@@ -1256,7 +1258,9 @@
     <ClCompile Include="CD3D9CgMaterialRenderer.cpp" />
     <ClCompile Include="CDefaultSceneNodeAnimatorFactory.cpp" />
     <ClCompile Include="CDefaultSceneNodeFactory.cpp" />
+    <ClCompile Include="CEGLManager.cpp" />
     <ClCompile Include="CGeometryCreator.cpp" />
+    <ClCompile Include="CImageLoaderPVR.cpp" />
     <ClCompile Include="CMeshCache.cpp" />
     <ClCompile Include="CMeshManipulator.cpp" />
     <ClCompile Include="COpenGLCgMaterialRenderer.cpp" />

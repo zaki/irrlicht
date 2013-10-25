@@ -13,7 +13,6 @@
 #include "IMaterialRendererServices.h"
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
-#include "SIrrCreationParameters.h"
 
 #ifdef _MSC_VER
 	#pragma comment(lib, "libgles_cm.lib")

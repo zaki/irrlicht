@@ -680,6 +680,8 @@
 		<Unit filename="CDepthBuffer.h" />
 		<Unit filename="CDummyTransformationSceneNode.cpp" />
 		<Unit filename="CDummyTransformationSceneNode.h" />
+		<Unit filename="CEGLManager.cpp" />
+		<Unit filename="CEGLManager.h" />
 		<Unit filename="CEmptySceneNode.cpp" />
 		<Unit filename="CEmptySceneNode.h" />
 		<Unit filename="CFPSCounter.cpp" />
@@ -760,6 +762,8 @@
 		<Unit filename="CImageLoaderPPM.h" />
 		<Unit filename="CImageLoaderPSD.cpp" />
 		<Unit filename="CImageLoaderPSD.h" />
+		<Unit filename="CImageLoaderPVR.cpp" />
+		<Unit filename="CImageLoaderPVR.h" />
 		<Unit filename="CImageLoaderRGB.cpp" />
 		<Unit filename="CImageLoaderRGB.h" />
 		<Unit filename="CImageLoaderTGA.cpp" />

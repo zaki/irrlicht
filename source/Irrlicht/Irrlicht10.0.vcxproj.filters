@@ -1318,9 +1318,6 @@
     <ClInclude Include="COGLES2Renderer2D.h">
       <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
     </ClInclude>
-    <ClInclude Include="COGLES2MaterialRenderer.h">
-      <Filter>Irrlicht\video\OpenGL-ES 2.x</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\driverChoice.h">
       <Filter>include\video</Filter>
     </ClInclude>
@@ -1353,6 +1350,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\SSharedMeshBuffer.h">
       <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CEGLManager.h">
+      <Filter>Irrlicht\video</Filter>
+    </ClInclude>
+    <ClInclude Include="CImageLoaderPVR.h">
+      <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2323,6 +2326,12 @@
     </ClCompile>
     <ClCompile Include="leakHunter.cpp">
       <Filter>Irrlicht\irr</Filter>
+    </ClCompile>
+    <ClCompile Include="CEGLManager.cpp">
+      <Filter>Irrlicht\video</Filter>
+    </ClCompile>
+    <ClCompile Include="CImageLoaderPVR.cpp">
+      <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

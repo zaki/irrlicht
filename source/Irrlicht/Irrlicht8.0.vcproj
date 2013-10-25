@@ -1476,6 +1476,14 @@
 				>
 			</File>
 			<File
+				RelativePath="CEGLManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CEGLManager.h"
+				>
+			</File>
+			<File
 				RelativePath="CVideoModeList.cpp"
 				>
 			</File>
@@ -1776,6 +1784,14 @@
 				</File>
 				<File
 					RelativePath="CImageLoaderPSD.h"
+					>
+				</File>
+				<File
+					RelativePath="CImageLoaderPVR.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CImageLoaderPVR.h"
 					>
 				</File>
 				<File
