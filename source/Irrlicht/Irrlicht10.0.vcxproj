@@ -335,7 +335,7 @@
     </ProjectReference>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;libEGL.lib;libgles_cm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;libEGL.lib;libglesv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\bin\Win32-visualstudio\Irrlicht.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

@@ -53,6 +53,8 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		return;
 
 	ContextManager->grab();
+	ContextManager->initialize();
+	ContextManager->createSurface();
 	ContextManager->createContext();
 
     WindowSize = params.WindowSize;
@@ -3029,7 +3031,7 @@ namespace video
 
 #ifndef _IRR_COMPILE_WITH_OGLES1_
 class IVideoDriver;
-class CEGLManager;
+class IContextManager;
 #endif
 
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
