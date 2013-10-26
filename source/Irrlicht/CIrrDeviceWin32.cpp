@@ -32,6 +32,9 @@
 #endif
 #endif
 #endif
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#include "CEGLManager.h"
+#endif
 
 namespace irr
 {
@@ -53,7 +56,13 @@ namespace irr
 		#endif
         
         #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
-        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io); 	 
+        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+        , IContextManager* contextManager
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+        , CIrrDeviceIPhone* device
+#endif
+		); 	 
         #endif 	 
         
         #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
@@ -1148,9 +1157,12 @@ void CIrrDeviceWin32::createDriver()
 			video::SExposedVideoData data;
 			data.OpenGLWin32.HWnd=HWnd;
 
+			ContextManager = new video::CEGLManager(CreationParams,&data);
+			ContextManager->initialize();
+			ContextManager->createSurface();
 			switchToFullScreen();
 
-			VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem);
+			VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem, ContextManager);
 			if (!VideoDriver)
 			{
 				os::Printer::log("Could not create OpenGL-ES1 driver.", ELL_ERROR);

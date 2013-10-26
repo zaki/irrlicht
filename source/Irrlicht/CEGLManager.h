@@ -15,26 +15,27 @@
 
 #include "SIrrCreationParameters.h"
 #include "SExposedVideoData.h"
+#include "IContextManager.h"
 
 namespace irr
 {
 namespace video
 {
     // EGL manager.
-    class CEGLManager
+    class CEGLManager : public IContextManager
     {
     public:
         //! Constructor.
         CEGLManager(const SIrrlichtCreationParameters& params, SExposedVideoData* data);
 
         //! Destructor.
-        ~CEGLManager();
+        virtual ~CEGLManager();
 
         // Initialize EGL.
-        bool initializeEGL();
+        bool initialize();
 
         // Terminate EGL.
-        void terminateEGL();
+        void terminate();
 
         // Create EGL surface.
         bool createSurface();

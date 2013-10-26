@@ -34,7 +34,7 @@ namespace video
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
 				const SExposedVideoData& data, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-                , CEGLManager* eglManager
+                , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
                 , CIrrDeviceIPhone* device
 #endif
@@ -370,7 +370,7 @@ namespace video
 		GLuint ViewRenderbuffer;
 		GLuint ViewDepthRenderbuffer;
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        CEGLManager* EGLManager;
+        IContextManager* ContextManager;
 #endif
 	};
 

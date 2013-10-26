@@ -26,7 +26,7 @@ namespace video
 COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
             const SExposedVideoData& data, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-            , CEGLManager* eglManager
+            , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
             , CIrrDeviceIPhone* device
 #endif
@@ -35,7 +35,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-    , EGLManager(eglManager)
+    , ContextManager(contextManager)
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
     , Device(device), ViewFramebuffer(0),
 	ViewRenderbuffer(0), ViewDepthRenderbuffer(0)
@@ -49,7 +49,11 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
     core::dimension2d<u32> WindowSize(0, 0);
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-    EGLManager->createContext();
+	if (!ContextManager)
+		return;
+
+	ContextManager->grab();
+	ContextManager->createContext();
 
     WindowSize = params.WindowSize;
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -94,7 +98,11 @@ COGLES1Driver::~COGLES1Driver()
 	deleteAllTextures();
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EGLManager->destroyContext();
+	if (ContextManager)
+	{
+		ContextManager->destroyContext();
+		ContextManager->drop();
+	}
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	if (0 != ViewFramebuffer)
 	{
@@ -261,7 +269,7 @@ bool COGLES1Driver::endScene()
 	CNullDriver::endScene();
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-    EGLManager->swapBuffers();
+    ContextManager->swapBuffers();
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
     glFlush();
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
@@ -3027,7 +3035,7 @@ class CEGLManager;
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 		video::SExposedVideoData& data, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , CEGLManager* eglManager
+        , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
         , CIrrDeviceIPhone* device
 #endif
@@ -3036,7 +3044,7 @@ IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 	return new COGLES1Driver(params, data, io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , eglManager
+        , contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
         , device
 #endif

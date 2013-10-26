@@ -12,7 +12,7 @@ namespace irr
 namespace video
 {
 
-CEGLManager::CEGLManager(const SIrrlichtCreationParameters& params, SExposedVideoData* data) : EglWindow(0), EglDisplay(EGL_NO_DISPLAY),
+CEGLManager::CEGLManager(const SIrrlichtCreationParameters& params, SExposedVideoData* data) : IContextManager(), EglWindow(0), EglDisplay(EGL_NO_DISPLAY),
     EglSurface(EGL_NO_SURFACE), EglContext(EGL_NO_CONTEXT), EglConfig(0), Params(params), Data(data), MajorVersion(0), MinorVersion(0)
 {
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
@@ -24,10 +24,10 @@ CEGLManager::~CEGLManager()
 {
     destroyContext();
     destroySurface();
-    terminateEGL();
+    terminate();
 }
 
-bool CEGLManager::initializeEGL()
+bool CEGLManager::initialize()
 {
     if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
         return true;
@@ -81,7 +81,7 @@ bool CEGLManager::initializeEGL()
     return true;
 }
 
-void CEGLManager::terminateEGL()
+void CEGLManager::terminate()
 {
     if (EglWindow == 0 && EglDisplay == EGL_NO_DISPLAY)
         return;

@@ -14,6 +14,7 @@
 #include "CEGLManager.h"
 #include "ISceneManager.h"
 #include "IGUIEnvironment.h"
+#include "CEGLManager.h"
 
 namespace irr	
 {
@@ -56,7 +57,7 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 	Android->onInputEvent = handleInput;
 
 	// Create EGL manager.
-	EGLManager = new video::CEGLManager(CreationParams, &ExposedVideoData);
+	ContextManager = new video::CEGLManager(CreationParams, &ExposedVideoData);
 
 	os::Printer::log("Waiting for Android activity window to be created.", ELL_DEBUG);
 
@@ -103,8 +104,6 @@ CIrrDeviceAndroid::~CIrrDeviceAndroid()
 		VideoDriver->drop();
 		VideoDriver = 0;
 	}
-
-    delete EGLManager;
 }
 
 bool CIrrDeviceAndroid::run()
@@ -210,14 +209,14 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 				Device->CreationParams.WindowSize.Height = ANativeWindow_getHeight(app->window);
 			}
 													
-            Device->getEGLManager()->initializeEGL();
-            Device->getEGLManager()->createSurface();
-            Device->getEGLManager()->createContext();
+            Device->getContextManager()->initialize();
+            Device->getContextManager()->createSurface();
+            Device->getContextManager()->createContext();
             Device->Initialized = true;
             break;
         case APP_CMD_TERM_WINDOW:
 			os::Printer::log("Android command APP_CMD_TERM_WINDOW", ELL_DEBUG);
-            Device->getEGLManager()->destroySurface();
+            Device->getContextManager()->destroySurface();
             break;
         case APP_CMD_GAINED_FOCUS:
 			os::Printer::log("Android command APP_CMD_GAINED_FOCUS", ELL_DEBUG);        
@@ -343,11 +342,6 @@ void CIrrDeviceAndroid::createDriver()
 video::SExposedVideoData& CIrrDeviceAndroid::getExposedVideoData()
 {
 	return ExposedVideoData;
-}
-
-video::CEGLManager* CIrrDeviceAndroid::getEGLManager()
-{
-	return EGLManager;
 }
 
 } // end namespace irr

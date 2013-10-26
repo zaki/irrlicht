@@ -13,7 +13,6 @@
 #include "IrrlichtDevice.h"
 #include "IImagePresenter.h"
 #include "ICursorControl.h"
-#include "CEGLManager.h"
 
 #include <android/sensor.h>
 #include <android_native_app_glue.h>
@@ -66,8 +65,6 @@ namespace irr
 
 		video::SExposedVideoData& getExposedVideoData();
 
-		video::CEGLManager* getEGLManager();
-
 		android_app* Android;
 		ASensorManager* SensorManager;
 		ASensorEventQueue* SensorEventQueue;
@@ -77,7 +74,6 @@ namespace irr
 		bool Paused;
 
 		video::SExposedVideoData ExposedVideoData;
-		video::CEGLManager* EGLManager;
 	};
 
 } // end namespace irr

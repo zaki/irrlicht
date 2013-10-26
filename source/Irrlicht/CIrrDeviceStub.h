@@ -9,6 +9,7 @@
 #include "IImagePresenter.h"
 #include "SIrrCreationParameters.h"
 #include "CVideoModeList.h"
+#include "IContextManager.h"
 
 namespace irr
 {
@@ -75,6 +76,9 @@ namespace irr
 
 		//! Returns a pointer to a list with all video modes supported by the gfx adapter.
 		virtual video::IVideoModeList* getVideoModeList();
+
+		//! return the context manager
+		virtual video::IContextManager* CIrrDeviceStub::getContextManager();
 
 		//! Returns a pointer to the ITimer object. With it the current Time can be received.
 		virtual ITimer* getTimer();
@@ -212,6 +216,7 @@ namespace irr
 		};
 		SMouseMultiClicks MouseMultiClicks;
 		video::CVideoModeList* VideoModeList;
+		video::IContextManager* ContextManager;
 		SIrrlichtCreationParameters CreationParams;
 		bool Close;
 	};

@@ -1013,6 +1013,7 @@
     <ClInclude Include="COGLESMaterialRenderer.h" />
     <ClInclude Include="COGLESTexture.h" />
     <ClInclude Include="CSceneManager.h" />
+    <ClInclude Include="IContextManager.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="CSMFMeshFileLoader.h" />
     <ClInclude Include="C3DSMeshFileLoader.h" />
