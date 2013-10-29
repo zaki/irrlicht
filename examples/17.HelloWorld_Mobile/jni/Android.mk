@@ -2,6 +2,11 @@ LOCAL_PATH := $(call my-dir)/..
 IRRLICHT_PROJECT_PATH := $(LOCAL_PATH)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := Irrlicht
+LOCAL_SRC_FILES := $(IRRLICHT_PROJECT_PATH)/../../lib/Android/libIrrlicht.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 
 LOCAL_MODULE := HelloWorldMobile
 
@@ -21,9 +26,9 @@ LOCAL_C_INCLUDES := ../../include
 
 LOCAL_SRC_FILES := main.cpp
 
-LOCAL_LDLIBS := -L$(LOCAL_PATH)/../../lib/Android -lEGL -llog -lGLESv1_CM -lGLESv2 -lz -landroid -lIrrlicht
+LOCAL_LDLIBS := -lEGL -llog -lGLESv1_CM -lGLESv2 -lz -landroid
 
-LOCAL_STATIC_LIBRARIES := android_native_app_glue
+LOCAL_STATIC_LIBRARIES := Irrlicht android_native_app_glue
 
 include $(BUILD_SHARED_LIBRARY)
 

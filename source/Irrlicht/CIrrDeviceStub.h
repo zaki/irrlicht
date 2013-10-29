@@ -78,7 +78,7 @@ namespace irr
 		virtual video::IVideoModeList* getVideoModeList();
 
 		//! return the context manager
-		virtual video::IContextManager* CIrrDeviceStub::getContextManager();
+		virtual video::IContextManager* getContextManager();
 
 		//! Returns a pointer to the ITimer object. With it the current Time can be received.
 		virtual ITimer* getTimer();

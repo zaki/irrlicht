@@ -80,10 +80,8 @@ bool CImageWriterBMP::writeImage(io::IWriteFile* file, IImage* image, u32 param)
 		CColorConverter_convertFORMATtoFORMAT
 			= CColorConverter::convert_R5G6B5toR8G8B8;
 		break;
-#ifndef _DEBUG
 	default:
 		break;
-#endif
 	}
 
 	// couldn't find a color converter

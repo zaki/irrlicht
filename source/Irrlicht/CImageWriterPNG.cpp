@@ -161,11 +161,9 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 	case ECF_A1R5G5B5:
 		CColorConverter::convert_A1R5G5B5toA8R8G8B8(data,image->getDimension().Height*image->getDimension().Width,tmpImage);
 		break;
-#ifndef _DEBUG
 		// TODO: Error handling in case of unsupported color format
 	default:
 		break;
-#endif
 	}
 	image->unlock();
 

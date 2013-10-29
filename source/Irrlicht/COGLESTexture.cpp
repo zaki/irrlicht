@@ -761,6 +761,8 @@ COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<u32>& size,
 	case ECF_R5G6B5:
 		InternalFormat = GL_RGB565_OES;
 		break;
+	default:
+		break;
 	}
 	PixelFormat = GL_RGBA;
 	PixelType = GL_UNSIGNED_BYTE;

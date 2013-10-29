@@ -21,10 +21,10 @@ namespace irr
 	namespace video
 	{
 		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,	
-			video::SExposedVideoData& data, io::IFileSystem* io, video::CEGLManager* eglManager);
+			video::SExposedVideoData& data, io::IFileSystem* io, video::IContextManager* contextManager);
 
 		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,	
-			video::SExposedVideoData& data, io::IFileSystem* io, video::CEGLManager* eglManager);
+			video::SExposedVideoData& data, io::IFileSystem* io, video::IContextManager* contextManager);
 	}	
 }
 
@@ -73,15 +73,6 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 		}
 	}
 	while(!Initialized);
-	
-	io::CAndroidAssetFileArchive* Assets = new io::CAndroidAssetFileArchive(false, false);
-	Assets->addDirectory("media");
-	FileSystem->addFileArchive(Assets);
-
-	createDriver();
-		
-	if (VideoDriver)	
-		createGUIAndScene();
 }
 
 
@@ -162,6 +153,7 @@ bool CIrrDeviceAndroid::isWindowMinimized() const
 
 void CIrrDeviceAndroid::closeDevice()
 {
+	ANativeActivity_finish(Android->activity);
 }
 
 void CIrrDeviceAndroid::setResizable(bool resize)
@@ -212,6 +204,19 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
             Device->getContextManager()->initialize();
             Device->getContextManager()->createSurface();
             Device->getContextManager()->createContext();
+
+			if (!Device->Initialized)
+			{
+				io::CAndroidAssetFileArchive* Assets = new io::CAndroidAssetFileArchive(false, false);
+				Assets->addDirectory("media");
+				Device->FileSystem->addFileArchive(Assets);
+
+				Device->createDriver();
+		
+				if (Device->VideoDriver)	
+					Device->createGUIAndScene();
+			}
+
             Device->Initialized = true;
             break;
         case APP_CMD_TERM_WINDOW:
@@ -311,14 +316,14 @@ void CIrrDeviceAndroid::createDriver()
 	{
 	case video::EDT_OGLES1:
 #ifdef _IRR_COMPILE_WITH_OGLES1_		
-		VideoDriver = video::createOGLES1Driver(CreationParams, ExposedVideoData, FileSystem, EGLManager);
+		VideoDriver = video::createOGLES1Driver(CreationParams, ExposedVideoData, FileSystem, ContextManager);
 #else
 		os::Printer::log("No OpenGL ES 1.0 support compiled in.", ELL_ERROR);
 #endif
 		break;		
 	case video::EDT_OGLES2:
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem, EGLManager);
+		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem, ContextManager);
 #else
 		os::Printer::log("No OpenGL ES 2.0 support compiled in.", ELL_ERROR);
 #endif
