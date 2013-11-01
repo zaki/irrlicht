@@ -16,16 +16,16 @@
 #include "IGUIEnvironment.h"
 #include "CEGLManager.h"
 
-namespace irr	
+namespace irr
 {
 	namespace video
 	{
-		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,	
+		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 			video::SExposedVideoData& data, io::IFileSystem* io, video::IContextManager* contextManager);
 
-		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,	
+		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 			video::SExposedVideoData& data, io::IFileSystem* io, video::IContextManager* contextManager);
-	}	
+	}
 }
 
 namespace irr
@@ -37,20 +37,20 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 #ifdef _DEBUG
 	setDebugName("CIrrDeviceAndroid");
 #endif
-	
+
 	// Get the interface to the native Android activity.
 	Android = (android_app*)(param.PrivateData);
 
 	io::CAndroidAssetReader::Activity = Android->activity;
 	io::CAndroidAssetFileArchive::Activity = Android->activity;
-	
+
 	// Set the private data so we can use it in any static callbacks.
 	Android->userData = this;
-		
+
 	// Set the default command handler. This is a callback function that the Android
 	// OS invokes to send the native activity messages.
 	Android->onAppCmd = handleAndroidCommand;
-	
+
 	// Create a sensor manager to recieve touch screen events from the java acivity.
 	SensorManager = ASensorManager_getInstance();
 	SensorEventQueue = ASensorManager_createEventQueue(SensorManager, Android->looper, LOOPER_ID_USER, 0, 0);
@@ -67,7 +67,7 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 		android_poll_source* Source = 0;
 
 		while ((ALooper_pollAll(((Focused && !Paused) || !Initialized) ? 0 : -1, 0, &Events, (void**)&Source)) >= 0)
-    	{
+		{
 			if(Source)
 				Source->process(Android, Source);
 		}
@@ -108,7 +108,7 @@ bool CIrrDeviceAndroid::run()
 	android_poll_source* Source = 0;
 
 	while ((ALooper_pollAll(((Focused && !Paused) || !Initialized) ? 0 : -1, 0, &Events, (void**)&Source)) >= 0)
-    {
+	{
 		if(Source)
 			Source->process(Android, Source);
 
@@ -181,29 +181,29 @@ E_DEVICE_TYPE CIrrDeviceAndroid::getType() const
 {
 	return EIDT_ANDROID;
 }
-	
+
 void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 {
-    CIrrDeviceAndroid* Device = (CIrrDeviceAndroid*)app->userData;
+	CIrrDeviceAndroid* Device = (CIrrDeviceAndroid*)app->userData;
 
-    switch (cmd)
-    {
-        case APP_CMD_SAVE_STATE:
-			os::Printer::log("Android command APP_CMD_SAVE_STATE", ELL_DEBUG);        
-            break;
-        case APP_CMD_INIT_WINDOW:
+	switch (cmd)
+	{
+		case APP_CMD_SAVE_STATE:
+			os::Printer::log("Android command APP_CMD_SAVE_STATE", ELL_DEBUG);
+		break;
+		case APP_CMD_INIT_WINDOW:
 			os::Printer::log("Android command APP_CMD_INIT_WINDOW", ELL_DEBUG);
-            Device->getExposedVideoData().OGLESAndroid.window = app->window;
+			Device->getExposedVideoData().OGLESAndroid.window = app->window;
 
 			if (Device->CreationParams.WindowSize.Width == 0 || Device->CreationParams.WindowSize.Height == 0)
 			{
 				Device->CreationParams.WindowSize.Width = ANativeWindow_getWidth(app->window);
 				Device->CreationParams.WindowSize.Height = ANativeWindow_getHeight(app->window);
 			}
-													
-            Device->getContextManager()->initialize();
-            Device->getContextManager()->createSurface();
-            Device->getContextManager()->createContext();
+
+			Device->getContextManager()->initialize();
+			Device->getContextManager()->createSurface();
+			Device->getContextManager()->createContext();
 
 			if (!Device->Initialized)
 			{
@@ -212,25 +212,24 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 				Device->FileSystem->addFileArchive(Assets);
 
 				Device->createDriver();
-		
-				if (Device->VideoDriver)	
+
+				if (Device->VideoDriver)
 					Device->createGUIAndScene();
 			}
-
-            Device->Initialized = true;
-            break;
-        case APP_CMD_TERM_WINDOW:
+			Device->Initialized = true;
+		break;
+		case APP_CMD_TERM_WINDOW:
 			os::Printer::log("Android command APP_CMD_TERM_WINDOW", ELL_DEBUG);
-            Device->getContextManager()->destroySurface();
-            break;
-        case APP_CMD_GAINED_FOCUS:
-			os::Printer::log("Android command APP_CMD_GAINED_FOCUS", ELL_DEBUG);        
+			Device->getContextManager()->destroySurface();
+		break;
+		case APP_CMD_GAINED_FOCUS:
+			os::Printer::log("Android command APP_CMD_GAINED_FOCUS", ELL_DEBUG);
 			Device->Focused = true;
-            break;
-        case APP_CMD_LOST_FOCUS:
+		break;
+		case APP_CMD_LOST_FOCUS:
 			os::Printer::log("Android command APP_CMD_LOST_FOCUS", ELL_DEBUG);
-            Device->Focused = false;
-            break;
+			Device->Focused = false;
+		break;
 		case APP_CMD_DESTROY:
 			os::Printer::log("Android command APP_CMD_DESTROY", ELL_DEBUG);
 			Device->Initialized = false;
@@ -238,17 +237,17 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 		case APP_CMD_PAUSE:
 			os::Printer::log("Android command APP_CMD_PAUSE", ELL_DEBUG);
 			Device->Paused = true;
-			break;		
+			break;
 		case APP_CMD_STOP:
 			os::Printer::log("Android command APP_CMD_STOP", ELL_DEBUG);
-			break;		
+			break;
 		case APP_CMD_RESUME:
 			os::Printer::log("Android command APP_CMD_RESUME", ELL_DEBUG);
 			Device->Paused = false;
-			break;		
+			break;
 		default:
-			break;						
-    }
+			break;
+	}
 }
 
 s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
@@ -276,7 +275,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 			Touched = true;
 			break;
 		case AMOTION_EVENT_ACTION_UP:
-			Event.MultiTouchInput.Event = EMTIE_LEFT_UP;					
+			Event.MultiTouchInput.Event = EMTIE_LEFT_UP;
 			break;
 		default:
 			MultiTouchEvent = false;
@@ -291,16 +290,15 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 			for (s32 i = 0; i < PointerCount; ++i)
 			{
 				if (i >= NUMBER_OF_MULTI_TOUCHES)
-            		break;
+					break;
 
-            	Event.MultiTouchInput.PrevX[i] = 0; // TODO
-            	Event.MultiTouchInput.PrevY[i] = 0; // TODO
-            	Event.MultiTouchInput.X[i] = AMotionEvent_getX(androidEvent, i);
-            	Event.MultiTouchInput.Y[i] = AMotionEvent_getY(androidEvent, i);
-
+				Event.MultiTouchInput.PrevX[i] = 0; // TODO
+				Event.MultiTouchInput.PrevY[i] = 0; // TODO
+				Event.MultiTouchInput.X[i] = AMotionEvent_getX(androidEvent, i);
+				Event.MultiTouchInput.Y[i] = AMotionEvent_getY(androidEvent, i);
 				Event.MultiTouchInput.Touched[i] = Touched;
 			}
-    
+
 			Device->postEventFromUser(Event);
 
 			Status = 1;
@@ -315,19 +313,19 @@ void CIrrDeviceAndroid::createDriver()
 	switch(CreationParams.DriverType)
 	{
 	case video::EDT_OGLES1:
-#ifdef _IRR_COMPILE_WITH_OGLES1_		
+#ifdef _IRR_COMPILE_WITH_OGLES1_
 		VideoDriver = video::createOGLES1Driver(CreationParams, ExposedVideoData, FileSystem, ContextManager);
 #else
 		os::Printer::log("No OpenGL ES 1.0 support compiled in.", ELL_ERROR);
 #endif
-		break;		
+		break;
 	case video::EDT_OGLES2:
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem, ContextManager);
 #else
 		os::Printer::log("No OpenGL ES 2.0 support compiled in.", ELL_ERROR);
 #endif
-		break;		
+		break;
 	case video::EDT_NULL:
 		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 		break;
@@ -336,12 +334,12 @@ void CIrrDeviceAndroid::createDriver()
 	case video::EDT_OPENGL:
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
-		os::Printer::log("This driver is not available in Linux. Try OpenGL ES 1.0 or ES 2.0.", ELL_ERROR);
+		os::Printer::log("This driver is not available in Android. Try OpenGL ES 1.0 or ES 2.0.", ELL_ERROR);
 		break;
 	default:
 		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;
-	}	
+	}
 }
 
 video::SExposedVideoData& CIrrDeviceAndroid::getExposedVideoData()
