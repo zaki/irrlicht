@@ -32,6 +32,7 @@ bool CEGLManager::initialize()
     if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
         return true;
 
+	// Window is depend on platform.
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 	EglWindow = (NativeWindowType)Data->OpenGLWin32.HWnd;
 	HDc = GetDC((HWND)EglWindow);
@@ -44,6 +45,7 @@ bool CEGLManager::initialize()
     EglDisplay = eglGetDisplay((NativeDisplayType) EGL_DEFAULT_DISPLAY);
 #endif
 
+	// We must check if EGL display is valid.
 	if (EglDisplay == EGL_NO_DISPLAY)
     {
 		os::Printer::log("Could not get EGL display.");
@@ -59,6 +61,7 @@ bool CEGLManager::initialize()
         return false;
     }
 
+	// Initialize EGL here.
 	if (!eglInitialize(EglDisplay, &MajorVersion, &MinorVersion))
     {
 		os::Printer::log("Could not initialize EGL display.");
@@ -86,6 +89,7 @@ void CEGLManager::terminate()
     if (EglWindow == 0 && EglDisplay == EGL_NO_DISPLAY)
         return;
 
+	// We should unbind current EGL context before terminate EGL.
     eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
 	eglTerminate(EglDisplay);
@@ -111,12 +115,15 @@ bool CEGLManager::createSurface()
     if (EglSurface != EGL_NO_SURFACE)
         return true;
 
+	// We should assign new WindowID on platforms, where WindowID may change at runtime,
+	// at this time only Android support this feature.
 #if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 	EglWindow = (ANativeWindow*)Data->OGLESAndroid.window;
 #endif
 
 	EGLint EglOpenGLBIT = 0;
 
+	// We need properly OpenGL BIT.
 	switch (Params.DriverType)
 	{
 	case EDT_OGLES1:
@@ -151,6 +158,7 @@ bool CEGLManager::createSurface()
 	EGLint NumConfigs = 0;
 	u32 Steps = 5;
 
+	// Choose the best EGL config.
 	while (!eglChooseConfig(EglDisplay, Attribs, &EglConfig, 1, &NumConfigs) || !NumConfigs)
 	{
 		switch (Steps)
@@ -238,7 +246,8 @@ bool CEGLManager::createSurface()
 
     ANativeWindow_setBuffersGeometry(EglWindow, 0, 0, Format);
 #endif
-   
+	
+	// Now we are able to create EGL surface.
 	EglSurface = eglCreateWindowSurface(EglDisplay, EglConfig, EglWindow, 0);
 	
 	if (EGL_NO_SURFACE == EglSurface)
@@ -252,9 +261,11 @@ bool CEGLManager::createSurface()
 		eglBindAPI(EGL_OPENGL_ES_API);
 #endif
 
+	// FIX-ME
     if (Params.Vsync)
 		eglSwapInterval(EglDisplay, 1);
 
+	// If EGL context already exist we should activate it.
     if (EglContext != EGL_NO_CONTEXT)
         eglMakeCurrent(EglDisplay, EglSurface, EglSurface, EglContext);
 
@@ -266,6 +277,7 @@ void CEGLManager::destroySurface()
     if (EglSurface == EGL_NO_SURFACE)
         return;
 
+	// We should unbind current EGL context before destroy EGL surface.
     eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
     eglDestroySurface(EglDisplay, EglSurface);
@@ -320,7 +332,9 @@ void CEGLManager::destroyContext()
     if (EglContext == EGL_NO_CONTEXT)
         return;
 
+	// We must unbind current EGL context before destroy it.
     eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+
 	eglDestroyContext(EglDisplay, EglContext);
 
     EglContext = EGL_NO_CONTEXT;
