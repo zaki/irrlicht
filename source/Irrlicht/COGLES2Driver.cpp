@@ -37,7 +37,7 @@ namespace video
 {
 
 COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
-			const SExposedVideoData& data, io::IFileSystem* io
+			io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
             , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -58,7 +58,6 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 	setDebugName("COGLES2Driver");
 #endif
 
-	ExposedData = data;
     core::dimension2d<u32> WindowSize(0, 0);
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
@@ -66,11 +65,12 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 		return;
 
 	ContextManager->grab();
-	ContextManager->initialize();
-	ContextManager->createSurface();
-	ContextManager->createContext();
+	ContextManager->generateSurface();
+	ContextManager->generateContext();
+	ExposedData = ContextManager->getContext();
+	ContextManager->activateContext(ExposedData);
 
-    WindowSize = params.WindowSize;
+	WindowSize = params.WindowSize;
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	glGenFramebuffers(1, &ViewFramebuffer);
 	glGenRenderbuffers(1, &ViewRenderbuffer);
@@ -100,10 +100,10 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 
 	WindowSize = core::dimension2d<u32>(backingWidth, backingHeight);
 	CNullDriver::ScreenSize = WindowSize;
-    CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
+	CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
 #endif
 
-    genericDriverInit(WindowSize, params.Stencilbuffer);
+	genericDriverInit(WindowSize, params.Stencilbuffer);
 }
 
 COGLES2Driver::~COGLES2Driver()
@@ -119,6 +119,7 @@ COGLES2Driver::~COGLES2Driver()
 	if (ContextManager)
 	{
 		ContextManager->destroyContext();
+		ContextManager->destroySurface();
 		ContextManager->drop();
 	}
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -2872,7 +2873,7 @@ class IContextManager;
 #endif
 
 IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
-		video::SExposedVideoData& data, io::IFileSystem* io
+		io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -2881,7 +2882,7 @@ IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
     )
 {
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-	return new COGLES2Driver(params, data, io
+	return new COGLES2Driver(params, io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)

@@ -24,7 +24,7 @@ namespace video
 {
 
 COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
-            const SExposedVideoData& data, io::IFileSystem* io
+            io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
             , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -45,7 +45,6 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	setDebugName("COGLESDriver");
 #endif
 
-	ExposedData = data;
     core::dimension2d<u32> WindowSize(0, 0);
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
@@ -53,9 +52,10 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		return;
 
 	ContextManager->grab();
-	ContextManager->initialize();
-	ContextManager->createSurface();
-	ContextManager->createContext();
+	ContextManager->generateSurface();
+	ContextManager->generateContext();
+	ExposedData = ContextManager->getContext();
+	ContextManager->activateContext(ExposedData);
 
     WindowSize = params.WindowSize;
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -103,6 +103,7 @@ COGLES1Driver::~COGLES1Driver()
 	if (ContextManager)
 	{
 		ContextManager->destroyContext();
+		ContextManager->destroySurface();
 		ContextManager->drop();
 	}
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -3035,7 +3036,7 @@ class IContextManager;
 #endif
 
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
-		video::SExposedVideoData& data, io::IFileSystem* io
+		io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -3044,7 +3045,7 @@ IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
     )
 {
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-	return new COGLES1Driver(params, data, io
+	return new COGLES1Driver(params, io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)

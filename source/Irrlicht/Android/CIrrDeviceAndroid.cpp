@@ -21,7 +21,7 @@ namespace irr
 	namespace video
 	{
 		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
-			video::SExposedVideoData& data, io::IFileSystem* io, video::IContextManager* contextManager);
+			io::IFileSystem* io, video::IContextManager* contextManager);
 
 		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 			video::SExposedVideoData& data, io::IFileSystem* io, video::IContextManager* contextManager);
@@ -57,7 +57,7 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 	Android->onInputEvent = handleInput;
 
 	// Create EGL manager.
-	ContextManager = new video::CEGLManager(CreationParams, &ExposedVideoData);
+	ContextManager = new video::CEGLManager();
 
 	os::Printer::log("Waiting for Android activity window to be created.", ELL_DEBUG);
 
@@ -201,9 +201,10 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 				Device->CreationParams.WindowSize.Height = ANativeWindow_getHeight(app->window);
 			}
 
-			Device->getContextManager()->initialize();
-			Device->getContextManager()->createSurface();
-			Device->getContextManager()->createContext();
+			Device->getContextManager()->initialize(CreationParams, ExposedVideoData);
+			Device->getContextManager()->generateSurface();
+			Device->getContextManager()->generateContext();
+			Device->getContextManager()->activateContext(Device->getContextManager()->getContext());
 
 			if (!Device->Initialized)
 			{
@@ -314,7 +315,7 @@ void CIrrDeviceAndroid::createDriver()
 	{
 	case video::EDT_OGLES1:
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-		VideoDriver = video::createOGLES1Driver(CreationParams, ExposedVideoData, FileSystem, ContextManager);
+		VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
 #else
 		os::Printer::log("No OpenGL ES 1.0 support compiled in.", ELL_ERROR);
 #endif

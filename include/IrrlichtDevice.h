@@ -34,6 +34,10 @@ namespace irr
 		class ISceneManager;
 	} // end namespace scene
 
+	namespace video {
+		class IContextManager;
+	} // end namespace video
+
 	//! The Irrlicht device. You can create it with createDevice() or createDeviceEx().
 	/** This is the most important class of the Irrlicht Engine. You can
 	access everything in the engine if you have a pointer to an instance of
@@ -292,6 +296,9 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
 					f32 &brightness, f32 &contrast) =0;
+
+		//! Get context manager
+		virtual video::IContextManager* getContextManager() =0;
 
 		//! Remove messages pending in the system message loop
 		/** This function is usually used after messages have been buffered for a longer time, for example

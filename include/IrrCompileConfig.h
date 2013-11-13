@@ -198,10 +198,13 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 /** If you do not wish the engine to be compiled with OpenGL, comment this
 define out. */
 #if !defined(_IRR_IPHONE_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
-#define _IRR_COMPILE_WITH_OPENGL_
+//#define _IRR_COMPILE_WITH_OPENGL_
 #endif
 #ifdef NO_IRR_COMPILE_WITH_OPENGL_
 #undef _IRR_COMPILE_WITH_OPENGL_
+#endif
+#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_WGL_MANAGER_)
+#define _IRR_COMPILE_WITH_WGL_MANAGER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
@@ -214,6 +217,9 @@ define out. */
  #define _IRR_COMPILE_WITH_OGLES1_
 #ifdef NO_IRR_COMPILE_WITH_OGLES1_
 #undef _IRR_COMPILE_WITH_OGLES1_
+#endif
+#if defined(_IRR_COMPILE_WITH_OGLES1_) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
+#define _IRR_COMPILE_WITH_EGL_MANAGER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_OGLES2_ to compile the Irrlicht engine with OpenGL-ES 2.x.
@@ -235,6 +241,9 @@ define out. */
 #else
 #define IRR_OGLES2_SHADER_PATH "../../media/Shaders/"
 #endif
+#endif
+#if defined(_IRR_COMPILE_WITH_OGLES2_) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
+#define _IRR_COMPILE_WITH_EGL_MANAGER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver

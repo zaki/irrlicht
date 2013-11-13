@@ -1357,7 +1357,10 @@
     <ClInclude Include="CImageLoaderPVR.h">
       <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="IContextManager.h">
+    <ClInclude Include="CWGLManager.h">
+      <Filter>Irrlicht\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IContextManager.h">
       <Filter>include\video</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2335,6 +2338,9 @@
     </ClCompile>
     <ClCompile Include="CImageLoaderPVR.cpp">
       <Filter>Irrlicht\video\Null\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="CWGLManager.cpp">
+      <Filter>Irrlicht\video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

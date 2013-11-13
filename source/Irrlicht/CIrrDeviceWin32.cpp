@@ -35,6 +35,9 @@
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 #include "CEGLManager.h"
 #endif
+#if defined(_IRR_WINDOWS_API_)
+#include "CWGLManager.h"
+#endif
 
 namespace irr
 {
@@ -52,11 +55,11 @@ namespace irr
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-			io::IFileSystem* io, CIrrDeviceWin32* device);
+			io::IFileSystem* io, IContextManager* contextManager);
 		#endif
         
         #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
-        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io
+        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -66,7 +69,7 @@ namespace irr
         #endif 	 
         
         #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
-        IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io
+        IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -934,8 +937,8 @@ namespace irr
 
 //! constructor
 CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
-: CIrrDeviceStub(params), HWnd(0), ChangedToFullScreen(false), Resized(false),
-	ExternalWindow(false), Win32CursorControl(0), JoyControl(0)
+: CIrrDeviceStub(params), ChangedToFullScreen(false), Resized(false),
+	ExternalWindow(false), Win32CursorControl(0), JoyControl(0), HWnd(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceWin32");
@@ -1019,9 +1022,13 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		}
 
 		// create window
-
 		HWnd = CreateWindow( ClassName, __TEXT(""), style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
+		if (!HWnd)
+		{
+			os::Printer::log("Window could not be created.", ELL_ERROR);
+		}
+			
 		CreationParams.WindowId = HWnd;
 //		CreationParams.WindowSize.Width = realWidth;
 //		CreationParams.WindowSize.Height = realHeight;
@@ -1143,14 +1150,17 @@ void CIrrDeviceWin32::createDriver()
 		break;
 
 	case video::EDT_OPENGL:
-
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		switchToFullScreen();
-
-		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
-		if (!VideoDriver)
 		{
-			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
+			switchToFullScreen();
+
+			ContextManager = new video::CWGLManager();
+			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
+			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
+			if (!VideoDriver)
+			{
+				os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
+			}
 		}
 		#else
 		os::Printer::log("OpenGL driver was not compiled in.", ELL_ERROR);
@@ -1160,13 +1170,11 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_OGLES1:
 		#ifdef _IRR_COMPILE_WITH_OGLES1_
 		{
-			video::SExposedVideoData data;
-			data.OpenGLWin32.HWnd=HWnd;
-
-			ContextManager = new video::CEGLManager(CreationParams,&data);
 			switchToFullScreen();
+			ContextManager = new video::CEGLManager();
+			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
 
-			VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem, ContextManager);
+			VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
 			if (!VideoDriver)
 			{
 				os::Printer::log("Could not create OpenGL-ES1 driver.", ELL_ERROR);
@@ -1180,13 +1188,11 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_OGLES2:
 		#ifdef _IRR_COMPILE_WITH_OGLES2_
 		{ 	 
-			video::SExposedVideoData data;
-			data.OpenGLWin32.HWnd=HWnd;
-
-			ContextManager = new video::CEGLManager(CreationParams,&data);
 			switchToFullScreen();
+			ContextManager = new video::CEGLManager();
+			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
 
-			VideoDriver = video::createOGLES2Driver(CreationParams, data, FileSystem, ContextManager);
+			VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
 			if (!VideoDriver)
 			{
 				os::Printer::log("Could not create OpenGL-ES2 driver.", ELL_ERROR);
@@ -1855,7 +1861,7 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 	r = GetDeviceGammaRamp ( dc, ramp ) == TRUE;
 	ReleaseDC(HWnd, dc);
 
-	if ( r )
+	if (r)
 	{
 		calculateGammaFromRamp(red, ramp[0]);
 		calculateGammaFromRamp(green, ramp[1]);
@@ -1866,7 +1872,6 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 	contrast = 0.f;
 
 	return r;
-
 }
 
 
@@ -1881,7 +1886,7 @@ void CIrrDeviceWin32::handleSystemMessages()
 		// deadkey handling.
 
 		if (ExternalWindow && msg.hwnd == HWnd)
-			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
+			WndProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
 		else
 			DispatchMessage(&msg);
 

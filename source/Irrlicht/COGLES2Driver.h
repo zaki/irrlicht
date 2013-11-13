@@ -26,23 +26,15 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#else
-#include <EGL/eglplatform.h>
-#endif
-
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
 
+#include "COGLES2ExtensionHandler.h"
 #ifdef _MSC_VER
-#pragma comment(lib, "libEGL.lib")
 #pragma comment(lib, "libGLESv2.lib")
 #endif
-#include "COGLES2ExtensionHandler.h"
 
 namespace irr
 {
@@ -63,7 +55,7 @@ namespace video
 	public:
 		//! constructor
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
-				const SExposedVideoData& data, io::IFileSystem* io
+				io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
                 , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)

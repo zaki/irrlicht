@@ -406,15 +406,13 @@ namespace irr
 
 		void resizeIfNecessary();
 
-		HWND HWnd;
-
 		bool ChangedToFullScreen;
 		bool Resized;
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
-		DEVMODE DesktopMode;
-
 		SJoystickWin32Control* JoyControl;
+		DEVMODE DesktopMode;
+		HWND HWnd;
 	};
 
 } // end namespace irr

@@ -4,6 +4,8 @@
 
 #include "CEGLManager.h"
 
+#ifdef _IRR_COMPILE_WITH_EGL_MANAGER_
+
 #include "irrString.h"
 #include "os.h"
 
@@ -12,12 +14,12 @@ namespace irr
 namespace video
 {
 
-CEGLManager::CEGLManager(const SIrrlichtCreationParameters& params, SExposedVideoData* data) : IContextManager(), EglWindow(0), EglDisplay(EGL_NO_DISPLAY),
-    EglSurface(EGL_NO_SURFACE), EglContext(EGL_NO_CONTEXT), EglConfig(0), Params(params), Data(data), MajorVersion(0), MinorVersion(0)
+CEGLManager::CEGLManager() : IContextManager(), EglWindow(0), EglDisplay(EGL_NO_DISPLAY),
+    EglSurface(EGL_NO_SURFACE), EglContext(EGL_NO_CONTEXT), EglConfig(0), MajorVersion(0), MinorVersion(0)
 {
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-    HDc = 0;
-#endif
+	#ifdef _DEBUG
+	setDebugName("CWGLManager");
+	#endif
 }
 
 CEGLManager::~CEGLManager()
@@ -27,16 +29,20 @@ CEGLManager::~CEGLManager()
     terminate();
 }
 
-bool CEGLManager::initialize()
+bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SExposedVideoData& data)
 {
-    if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
+	// store new data
+	Params=params;
+	Data=data;
+
+	if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
         return true;
 
 	// Window is depend on platform.
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	EglWindow = (NativeWindowType)Data->OpenGLWin32.HWnd;
-	HDc = GetDC((HWND)EglWindow);
-	EglDisplay = eglGetDisplay((NativeDisplayType)HDc);
+	EglWindow = (NativeWindowType)Data.OpenGLWin32.HWnd;
+	Data.OpenGLWin32.HDc = GetDC((HWND)EglWindow);
+	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLWin32.HDc);
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 	EglWindow = (NativeWindowType)Data->OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data->OpenGLLinux.X11Display);
@@ -49,15 +55,7 @@ bool CEGLManager::initialize()
 	if (EglDisplay == EGL_NO_DISPLAY)
     {
 		os::Printer::log("Could not get EGL display.");
-
-#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	    if (HDc)
-        {
-		    ReleaseDC((HWND)EglWindow, HDc);
-            HDc = 0;
-        }
-#endif
-
+		terminate();
         return false;
     }
 
@@ -67,15 +65,7 @@ bool CEGLManager::initialize()
 		os::Printer::log("Could not initialize EGL display.");
 
         EglDisplay = EGL_NO_DISPLAY;
-
-#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-	    if (HDc)
-        {
-		    ReleaseDC((HWND)EglWindow, HDc);
-            HDc = 0;
-        }
-#endif
-
+		terminate();
         return false;
     }
 	else
@@ -89,17 +79,20 @@ void CEGLManager::terminate()
     if (EglWindow == 0 && EglDisplay == EGL_NO_DISPLAY)
         return;
 
-	// We should unbind current EGL context before terminate EGL.
-    eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+	if (EglDisplay != EGL_NO_DISPLAY)
+	{
+		// We should unbind current EGL context before terminate EGL.
+		eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
-	eglTerminate(EglDisplay);
-    EglDisplay = EGL_NO_DISPLAY;
+		eglTerminate(EglDisplay);
+		EglDisplay = EGL_NO_DISPLAY;
+	}
 
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-    if (HDc)
+	if (Data.OpenGLWin32.HDc)
     {
-        ReleaseDC((HWND)EglWindow, HDc);
-        HDc = 0;
+		ReleaseDC((HWND)EglWindow, (HDC)Data.OpenGLWin32.HDc);
+        Data.OpenGLWin32.HDc = 0;
     }
 #endif
 
@@ -107,7 +100,7 @@ void CEGLManager::terminate()
     MinorVersion = 0;
 }
 
-bool CEGLManager::createSurface()
+bool CEGLManager::generateSurface()
 {
     if (EglDisplay == EGL_NO_DISPLAY)
         return false;
@@ -117,13 +110,15 @@ bool CEGLManager::createSurface()
 
 	// We should assign new WindowID on platforms, where WindowID may change at runtime,
 	// at this time only Android support this feature.
+	// this needs an update method instead!
+
 #if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EglWindow = (ANativeWindow*)Data->OGLESAndroid.window;
+	EglWindow = (ANativeWindow*)Data.OGLESAndroid.window;
 #endif
 
 	EGLint EglOpenGLBIT = 0;
 
-	// We need properly OpenGL BIT.
+	// We need proper OpenGL BIT.
 	switch (Params.DriverType)
 	{
 	case EDT_OGLES1:
@@ -246,7 +241,7 @@ bool CEGLManager::createSurface()
 
     ANativeWindow_setBuffersGeometry(EglWindow, 0, 0, Format);
 #endif
-	
+   
 	// Now we are able to create EGL surface.
 	EglSurface = eglCreateWindowSurface(EglDisplay, EglConfig, EglWindow, 0);
 	
@@ -261,13 +256,8 @@ bool CEGLManager::createSurface()
 		eglBindAPI(EGL_OPENGL_ES_API);
 #endif
 
-	// FIX-ME
     if (Params.Vsync)
 		eglSwapInterval(EglDisplay, 1);
-
-	// If EGL context already exist we should activate it.
-    if (EglContext != EGL_NO_CONTEXT)
-        eglMakeCurrent(EglDisplay, EglSurface, EglSurface, EglContext);
 
     return true;
 }
@@ -278,13 +268,13 @@ void CEGLManager::destroySurface()
         return;
 
 	// We should unbind current EGL context before destroy EGL surface.
-    eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+	eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
     eglDestroySurface(EglDisplay, EglSurface);
     EglSurface = EGL_NO_SURFACE;
 }
 
-bool CEGLManager::createContext()
+bool CEGLManager::generateContext()
 {
     if (EglDisplay == EGL_NO_DISPLAY || EglSurface == EGL_NO_SURFACE)
         return false;
@@ -317,13 +307,10 @@ bool CEGLManager::createContext()
 	EglContext = eglCreateContext(EglDisplay, EglConfig, EGL_NO_CONTEXT, ContextAttrib);
 
 	if (testEGLError())
+	{
 		os::Printer::log("Could not create EGL context.");
-
-	eglMakeCurrent(EglDisplay, EglSurface, EglSurface, EglContext);
-
-	if (testEGLError())
-		os::Printer::log("Could not make EGL context current.");
-
+		return false;
+	}
     return true;
 }
 
@@ -333,16 +320,32 @@ void CEGLManager::destroyContext()
         return;
 
 	// We must unbind current EGL context before destroy it.
-    eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-
+	eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 	eglDestroyContext(EglDisplay, EglContext);
 
     EglContext = EGL_NO_CONTEXT;
 }
 
-void CEGLManager::swapBuffers()
+bool CEGLManager::activateContext(const SExposedVideoData& videoData)
 {
-    eglSwapBuffers(EglDisplay, EglSurface);
+	eglMakeCurrent(EglDisplay, EglSurface, EglSurface, EglContext);
+
+	if (testEGLError())
+	{
+		os::Printer::log("Could not make EGL context current.");
+		return false;
+	}
+	return true;
+}
+
+const SExposedVideoData& CEGLManager::getContext() const
+{
+	return Data;
+}
+
+bool CEGLManager::swapBuffers()
+{
+    return (eglSwapBuffers(EglDisplay, EglSurface)==EGL_TRUE);
 }
 
 bool CEGLManager::testEGLError()
@@ -409,3 +412,4 @@ bool CEGLManager::testEGLError()
 }
 }
 
+#endif

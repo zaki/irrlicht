@@ -271,7 +271,7 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" />
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\Include;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\Include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\Include;C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\Include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">obj\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">obj\$(Configuration)64\</IntDir>
@@ -290,7 +290,7 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_PCEMULATION_2.07.27.0484\Builds\OGLES2\WindowsPC\Lib;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\WindowsX86\Lib;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
@@ -335,7 +335,7 @@
     </ProjectReference>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;libEGL.lib;libglesv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\bin\Win32-visualstudio\Irrlicht.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -836,6 +836,7 @@
     <ClInclude Include="..\..\include\EDriverFeatures.h" />
     <ClInclude Include="..\..\include\EMaterialFlags.h" />
     <ClInclude Include="..\..\include\IAnimatedMeshMD3.h" />
+    <ClInclude Include="..\..\include\IContextManager.h" />
     <ClInclude Include="..\..\include\IEventReceiver.h" />
     <ClInclude Include="..\..\include\ILogger.h" />
     <ClInclude Include="..\..\include\IOSOperator.h" />
@@ -1013,7 +1014,7 @@
     <ClInclude Include="COGLESMaterialRenderer.h" />
     <ClInclude Include="COGLESTexture.h" />
     <ClInclude Include="CSceneManager.h" />
-    <ClInclude Include="IContextManager.h" />
+    <ClInclude Include="CWGLManager.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="CSMFMeshFileLoader.h" />
     <ClInclude Include="C3DSMeshFileLoader.h" />
@@ -1301,6 +1302,7 @@
     <ClCompile Include="CQ3LevelMesh.cpp" />
     <ClCompile Include="CSkinnedMesh.cpp" />
     <ClCompile Include="CSTLMeshFileLoader.cpp" />
+    <ClCompile Include="CWGLManager.cpp" />
     <ClCompile Include="CXMeshFileLoader.cpp" />
     <ClCompile Include="CAnimatedMeshSceneNode.cpp" />
     <ClCompile Include="CBillboardSceneNode.cpp" />

@@ -13,6 +13,8 @@
 #include "IMaterialRendererServices.h"
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
+#include "SIrrCreationParameters.h"
+#include "IContextManager.h"
 
 #ifdef _MSC_VER
 	#pragma comment(lib, "libgles_cm.lib")
@@ -32,7 +34,7 @@ namespace video
 	public:
 		//! constructor
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
-				const SExposedVideoData& data, io::IFileSystem* io
+				io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
                 , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
