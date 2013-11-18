@@ -100,6 +100,13 @@ namespace video
 		//! creates a Texture
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8);
 
+		//! Creates a texture from a loaded IImage.
+		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0);
+
+		//! Creates a cube texture from loaded IImages.
+		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
+
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 						bool clearZBuffer, SColor color);
@@ -667,17 +674,19 @@ namespace video
 		void deleteAllTextures();
 
 		//! opens the file and loads it into the surface
-		video::ITexture* loadTextureFromFile(io::IReadFile* file, const io::path& hashName = "");
+		ITexture* loadTextureFromFile(io::IReadFile* file, const io::path& hashName = "");
 
 		//! adds a surface, not loaded or created by the Irrlicht Engine
-		void addTexture(video::ITexture* surface);
-
-		//! Creates a texture from a loaded IImage.
-		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0);
+		void addTexture(ITexture* surface);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0);
+		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0);
+
+		//! returns a device dependent texture from a software surface (IImage)
+		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
+		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
@@ -693,6 +702,10 @@ namespace video
 
 		// Check support for compression texture format.
 		bool checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& textureSize) const;
+
+		// Check support for compression texture format.
+		bool checkTextureCube(IImage* posXImage, IImage* negXImage, IImage* posYImage, IImage* negYImage,
+			IImage* posZImage, IImage* negZImage) const;
 
 		//! normal map lookup 32 bit version
 		inline f32 nml32(int x, int y, int pitch, int height, s32 *p) const

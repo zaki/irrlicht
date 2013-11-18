@@ -8,6 +8,7 @@
 #include "ITexture.h"
 #include "IImage.h"
 #include "SMaterialLayer.h"
+#include "irrArray.h"
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -75,6 +76,10 @@ public:
 	//! constructor
 	COpenGLTexture(IImage* surface, const io::path& name, void* mipmapData=0, COpenGLDriver* driver=0);
 
+	//! constructor
+	COpenGLTexture(const io::path& name, IImage* posXImage, IImage* negXImage, IImage* posYImage,
+		IImage* negYImage, IImage* posZImage, IImage* negZImage, COpenGLDriver* driver=0);
+
 	//! destructor
 	virtual ~COpenGLTexture();
 
@@ -101,6 +106,9 @@ public:
 
 	//! return open gl texture name
 	GLuint getOpenGLTextureName() const;
+
+	//! return open gl texture type
+	GLenum getOpenGLTextureType() const;
 
 	//! return whether this texture has mipmaps
 	virtual bool hasMipMaps() const;
@@ -145,18 +153,21 @@ protected:
 
 	//! copies the texture into an OpenGL texture.
 	/** \param newTexture True if method is called for a newly created texture for the first time. Otherwise call with false to improve memory handling.
+	\param imageNumber Inform which image should be used for upload.
+	\param regMipmap Inform if regenerate mipmap should be call.
 	\param mipmapData Pointer to raw mipmap data, including all necessary mip levels, in the same format as the main texture image.
 	\param mipLevel If set to non-zero, only that specific miplevel is updated, using the MipImage member. */
-	void uploadTexture(bool newTexture=false, void* mipmapData=0, u32 mipLevel=0);
+	void uploadTexture(bool newTexture=false, u32 imageNumber=0, bool regMipmap = false, void* mipmapData=0, u32 mipLevel=0);
 
 	core::dimension2d<u32> ImageSize;
 	core::dimension2d<u32> TextureSize;
 	ECOLOR_FORMAT ColorFormat;
 	COpenGLDriver* Driver;
-	IImage* Image;
+	core::array<IImage*> Image;
 	IImage* MipImage;
 
 	GLuint TextureName;
+	GLenum TextureType;
 	GLint InternalFormat;
 	GLenum PixelFormat;
 	GLenum PixelType;

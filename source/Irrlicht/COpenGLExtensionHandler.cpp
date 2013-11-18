@@ -797,6 +797,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return false;
 	case EVDF_TEXTURE_COMPRESSED_ETC2:
 		return FeatureAvailable[IRR_ARB_ES3_compatibility];
+	case EVDF_TEXTURE_CUBE_MAP:
+		return FeatureAvailable[IRR_ARB_texture_cube_map];
 	default:
 		return false;
 	};

@@ -441,8 +441,13 @@ namespace video
 
 		//! inits the parts of the open gl driver used on all platforms
 		bool genericDriverInit();
+
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
+		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
+
+		//! returns a device dependent texture from a software surface (IImage)
+		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
@@ -671,7 +676,9 @@ namespace video
 
 		void setClientActiveTexture(GLenum texture);
 
-		void setTexture(u32 stage, bool fixedPipeline);
+		void getTexture(u32 stage, GLenum& type, bool& fixedPipeline);
+
+		void setTexture(u32 stage, GLenum type, bool fixedPipeline);
 
 	private:
 		COpenGLDriver* Driver;
@@ -702,6 +709,7 @@ namespace video
 		GLenum ClientActiveTexture;
 
 		const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+		GLenum TextureType[MATERIAL_MAX_TEXTURES];
 		bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
 	};
 

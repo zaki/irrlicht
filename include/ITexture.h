@@ -86,6 +86,38 @@ enum E_TEXTURE_LOCK_MODE
 	ETLM_WRITE_ONLY
 };
 
+//! Enumeration describing the type of ITexture.
+enum E_TEXTURE_TYPE
+{
+	//! 2D texture.
+	ETT_2D,
+
+	//! Cube texture.
+	ETT_CUBE
+};
+
+//! Enumeration describing the type of cube texture surfaces.
+enum E_TEXTURE_CUBE_SURFACE
+{
+	//! Positive x-face of the cubemap
+	ETCS_POSX = 0,
+
+	//! Negative x-face of the cubemap
+	ETCS_NEGX = 1,
+
+	//! Positive y-face of the cubemap
+	ETCS_POSY = 2,
+
+	//! Negative y-face of the cubemap
+	ETCS_NEGY = 3,
+
+	//! Positive z-face of the cubemap
+	ETCS_POSZ = 4,
+
+	//! Negative z-face of the cubemap
+	ETCS_NEGZ = 5
+};
+
 //! Interface of a Video Driver dependent Texture.
 /** An ITexture is created by an IVideoDriver by using IVideoDriver::addTexture
 or IVideoDriver::getTexture. After that, the texture may only be used by this
@@ -100,7 +132,7 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const io::path& name) : NamedPath(name)
+	ITexture(const io::path& name, E_TEXTURE_TYPE type = ETT_2D) : NamedPath(name), Type(type)
 	{
 	}
 
@@ -189,6 +221,9 @@ public:
 
 	//! Get name of texture (in most cases this is the filename)
 	const io::SNamedPath& getName() const { return NamedPath; }
+	
+	//! Returns the type of texture
+	E_TEXTURE_TYPE getType() const { return Type; }
 
 protected:
 
@@ -209,6 +244,8 @@ protected:
 	}
 
 	io::SNamedPath NamedPath;
+	
+	E_TEXTURE_TYPE Type;
 };
 
 

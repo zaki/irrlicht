@@ -562,22 +562,6 @@ video::ITexture* CNullDriver::findTexture(const io::path& filename)
 }
 
 
-//! Creates a texture from a loaded IImage.
-ITexture* CNullDriver::addTexture(const io::path& name, IImage* image, void* mipmapData)
-{
-	if ( 0 == name.size() || !image)
-		return 0;
-
-	ITexture* t = createDeviceDependentTexture(image, name, mipmapData);
-	if (t)
-	{
-		addTexture(t);
-		t->drop();
-	}
-	return t;
-}
-
-
 //! creates a Texture
 ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 				  const io::path& name, ECOLOR_FORMAT format)
@@ -605,6 +589,37 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 }
 
 
+//! Creates a texture from a loaded IImage.
+ITexture* CNullDriver::addTexture(const io::path& name, IImage* image, void* mipmapData)
+{
+	if ( 0 == name.size() || !image)
+		return 0;
+
+	ITexture* t = createDeviceDependentTexture(image, name, mipmapData);
+	if (t)
+	{
+		addTexture(t);
+		t->drop();
+	}
+	return t;
+}
+
+
+//! Creates a cube texture from loaded IImages.
+ITexture* CNullDriver::addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
+{
+	if ( 0 == name.size() || !posXImage || !negXImage || !posYImage || !negYImage || !posZImage || !negZImage)
+		return 0;
+
+	ITexture* t = createDeviceDependentTextureCube(name, posXImage, negXImage, posYImage, negYImage, posZImage, negZImage);
+	if (t)
+	{
+		addTexture(t);
+		t->drop();
+	}
+	return t;
+}
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
@@ -613,6 +628,14 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 	return new SDummyTexture(name);
 }
 
+
+//! returns a device dependent texture from a software surface (IImage)
+//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
+ITexture* CNullDriver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
+{
+	return new SDummyTexture(name);
+}
 
 //! set or reset special render targets
 bool CNullDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
@@ -2441,6 +2464,32 @@ bool CNullDriver::checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d
 	}
 
 	return status;
+}
+
+
+// Check support for compression texture format.
+bool CNullDriver::checkTextureCube(IImage* posXImage, IImage* negXImage, IImage* posYImage, IImage* negYImage,
+	IImage* posZImage, IImage* negZImage) const
+{
+	if (!queryFeature(EVDF_TEXTURE_CUBE_MAP))
+		return false;
+
+	IImage* image[6] = {
+		posXImage,
+		negXImage,
+		posYImage,
+		negYImage,
+		posZImage,
+		negZImage
+	};
+
+	for (u32 i = 1; i < 6; ++i)
+	{
+		if (image[0]->getDimension() != image[i]->getDimension() || image[0]->getColorFormat() != image[i]->getColorFormat())
+			return false;
+	}
+
+	return true;
 }
 
 

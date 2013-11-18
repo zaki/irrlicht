@@ -1354,6 +1354,8 @@
     <ClInclude Include="CImageLoaderPVR.h">
       <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClInclude>
+    <ClInclude Include="CEGLManager.h" />
+    <ClInclude Include="CWGLManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2327,6 +2329,8 @@
     <ClCompile Include="CImageLoaderPVR.cpp">
       <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClCompile>
+    <ClCompile Include="CEGLManager.cpp" />
+    <ClCompile Include="CWGLManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Irrlicht.rc" />

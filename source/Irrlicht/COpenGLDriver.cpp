@@ -2188,7 +2188,7 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 	for (u32 i=fromStage; i<MaxSupportedTextures; ++i)
 	{
 		result &= setActiveTexture(i, 0);
-		BridgeCalls->setTexture(i, true);
+		BridgeCalls->setTexture(i, GL_TEXTURE_2D, true);
 	}
 	return result;
 }
@@ -2227,12 +2227,29 @@ inline void COpenGLDriver::getGLTextureMatrix(GLfloat *o, const core::matrix4& m
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
+ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
 	COpenGLTexture* texture = 0;
 
 	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
 		texture = new COpenGLTexture(surface, name, mipmapData, this);
+
+	return texture;
+}
+
+
+//! returns a device dependent texture from a software surface (IImage)
+ITexture* COpenGLDriver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
+{
+	COpenGLTexture* texture = 0;
+
+	if (posXImage && negXImage && posYImage && negYImage && posZImage && negZImage &&
+		checkTextureCube(posXImage, negXImage, posYImage, negYImage, posZImage, negZImage) &&
+		checkColorFormat(posXImage->getColorFormat(), posXImage->getDimension()))
+	{
+		texture = new COpenGLTexture(name, posXImage, negXImage, posYImage, negYImage, posZImage, negZImage, this);
+	}
 
 	return texture;
 }
@@ -2864,6 +2881,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
 	{
 		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
+		GLenum tmpTextureType = (tmpTexture) ? tmpTexture->getOpenGLTextureType() : GL_TEXTURE_2D;
 
 		if(fixedPipeline)
 		{
@@ -2872,13 +2890,13 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 
 			if (!CurrentTexture[i])
 			{
-				BridgeCalls->setTexture(i, fixedPipeline);
+				BridgeCalls->setTexture(i, tmpTextureType, fixedPipeline);
 
 				continue;
 			}
 			else
 			{
-				BridgeCalls->setTexture(i, fixedPipeline);
+				BridgeCalls->setTexture(i, tmpTextureType, fixedPipeline);
 
 				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 			}
@@ -2887,7 +2905,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		{
 			if (CurrentTexture[i])
 			{
-				BridgeCalls->setTexture(i, fixedPipeline);
+				BridgeCalls->setTexture(i, tmpTextureType, fixedPipeline);
 			}
 			else
 				continue;
@@ -2904,10 +2922,10 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 				if (material.TextureLayer[i].LODBias)
 				{
 					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, tmp);
+					glTexParameterf(tmpTextureType, GL_TEXTURE_LOD_BIAS, tmp);
 				}
 				else
-					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.f);
+					glTexParameterf(tmpTextureType, GL_TEXTURE_LOD_BIAS, 0.f);
 
 				tmpTexture->getStatesCache().LODBias = material.TextureLayer[i].LODBias;
 			}
@@ -2938,7 +2956,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 			material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
 		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+			glTexParameteri(tmpTextureType, GL_TEXTURE_MAG_FILTER,
 				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
 			tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
@@ -2950,7 +2968,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
 			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				glTexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 					material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
 					material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
 					GL_NEAREST_MIPMAP_NEAREST);
@@ -2965,7 +2983,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || tmpTexture->getStatesCache().MipMapStatus)
 			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				glTexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 					(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
 				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
@@ -2978,7 +2996,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
 			(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
 		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+			glTexParameteri(tmpTextureType, GL_TEXTURE_MAX_ANISOTROPY_EXT,
 				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
 
 			tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
@@ -2987,13 +3005,13 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 
 		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
 		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
+			glTexParameteri(tmpTextureType, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
 			tmpTexture->getStatesCache().WrapU = material.TextureLayer[i].TextureWrapU;
 		}
 
 		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
 		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
+			glTexParameteri(tmpTextureType, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
 			tmpTexture->getStatesCache().WrapV = material.TextureLayer[i].TextureWrapV;
 		}
 
@@ -4608,6 +4626,7 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 	{
 		Texture[i] = 0;
+		TextureType[i] = GL_TEXTURE_2D;
 		TextureFixedPipeline[i] = true;
 	}
 
@@ -4811,30 +4830,43 @@ void COpenGLCallBridge::setClientActiveTexture(GLenum texture)
 	}
 }
 
-void COpenGLCallBridge::setTexture(u32 stage, bool fixedPipeline)
+void COpenGLCallBridge::getTexture(u32 stage, GLenum& type, bool& fixedPipeline)
 {
 	if (stage < MATERIAL_MAX_TEXTURES)
 	{
-		if((fixedPipeline && TextureFixedPipeline[stage] != fixedPipeline) || Texture[stage] != Driver->CurrentTexture[stage])
+		type = TextureType[stage];
+		fixedPipeline = TextureFixedPipeline[stage];
+	}
+}
+
+void COpenGLCallBridge::setTexture(u32 stage, GLenum type, bool fixedPipeline)
+{
+	if (stage < MATERIAL_MAX_TEXTURES)
+	{
+		if((fixedPipeline && TextureFixedPipeline[stage] != fixedPipeline) || Texture[stage] != Driver->CurrentTexture[stage] || type != TextureType[stage])
 		{
 			setActiveTexture(GL_TEXTURE0_ARB + stage);
 
 			if(Driver->CurrentTexture[stage])
 			{
 				if(fixedPipeline)
-					glEnable(GL_TEXTURE_2D);
+				{
+					glDisable(TextureType[stage]);
+					glEnable(type);
+				}
 
-				glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
+				glBindTexture(type, static_cast<const COpenGLTexture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
 			}
 			else
 			{
-				glBindTexture(GL_TEXTURE_2D, 0);
+				glBindTexture(type, 0);
 
 				if(fixedPipeline)
-					glDisable(GL_TEXTURE_2D);
+					glDisable(TextureType[stage]);
 			}
 
 			TextureFixedPipeline[stage] = fixedPipeline;
+			TextureType[stage] = type;
 			Texture[stage] = Driver->CurrentTexture[stage];
 		}
 	}
