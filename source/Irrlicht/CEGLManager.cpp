@@ -44,10 +44,10 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	Data.OpenGLWin32.HDc = GetDC((HWND)EglWindow);
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLWin32.HDc);
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-	EglWindow = (NativeWindowType)Data->OpenGLLinux.X11Window;
-	EglDisplay = eglGetDisplay((NativeDisplayType)Data->OpenGLLinux.X11Display);
+	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
+	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
 #elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EglWindow =	(ANativeWindow*)Data->OGLESAndroid.window;
+	EglWindow =	(ANativeWindow*)Data.OGLESAndroid.window;
     EglDisplay = eglGetDisplay((NativeDisplayType) EGL_DEFAULT_DISPLAY);
 #endif
 

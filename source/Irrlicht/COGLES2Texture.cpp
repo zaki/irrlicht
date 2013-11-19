@@ -39,8 +39,8 @@ namespace video
 
 //! constructor for usual textures
 COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mipmapData, COGLES2Driver* driver)
-	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
-	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
+	: ITexture(name, ETT_2D), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
@@ -64,35 +64,117 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 
 	if (IsCompressed)
 	{
-		Image = origImage;
-		Image->grab();
+		Image.push_back(origImage);
+		Image[0]->grab();
 		KeepImage = false;
 	}
 	else if (ImageSize==TextureSize)
 	{
-		Image = Driver->createImage(ColorFormat, ImageSize);
-		origImage->copyTo(Image);
+		Image.push_back(Driver->createImage(ColorFormat, ImageSize));
+		origImage->copyTo(Image[0]);
 	}
 	else
 	{
-		Image = Driver->createImage(ColorFormat, TextureSize);
-		origImage->copyToScaling(Image);
+		Image.push_back(Driver->createImage(ColorFormat, TextureSize));
+		origImage->copyToScaling(Image[0]);
 	}
 
 	glGenTextures(1, &TextureName);
-	uploadTexture(true, mipmapData);
+	uploadTexture(true, 0, true, mipmapData);
 
 	if (!KeepImage)
 	{
-		Image->drop();
-		Image=0;
+		Image[0]->drop();
+
+		Image.clear();
+	}
+}
+
+
+//! constructor for cube textures
+COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* negXImage, IImage* posYImage,
+	IImage* negYImage, IImage* posZImage, IImage* negZImage, COGLES2Driver* driver)
+		: ITexture(name, ETT_CUBE), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+		TextureName(0), TextureType(GL_TEXTURE_CUBE_MAP), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
+		PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), IsRenderTarget(false), IsCompressed(false),
+		AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true)
+{
+	#ifdef _DEBUG
+	setDebugName("COpenGLTexture");
+	#endif
+
+#ifndef GL_BGRA
+	// whoa, pretty badly implemented extension...
+	if (Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888] ||
+		Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888] ||
+		Driver->FeatureAvailable[COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888])
+		GL_BGRA = 0x80E1;
+	else
+		GL_BGRA = GL_RGBA;
+#endif
+
+	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	getImageValues(posXImage);
+
+	if (IsCompressed)
+	{
+		Image.push_back(posXImage);
+		Image.push_back(negXImage);
+		Image.push_back(posYImage);
+		Image.push_back(negYImage);
+		Image.push_back(posZImage);
+		Image.push_back(negZImage);
+
+		for (u32 i = 0; i < 6; ++i)
+			Image[i]->grab();
+
+		KeepImage = false;
+	}
+	else if (ImageSize==TextureSize)
+	{
+		for (u32 i = 0; i < 6; ++i)
+			Image.push_back(Driver->createImage(ColorFormat, ImageSize));
+
+		posXImage->copyTo(Image[0]);
+		negXImage->copyTo(Image[1]);
+		posYImage->copyTo(Image[2]);
+		negYImage->copyTo(Image[3]);
+		posZImage->copyTo(Image[4]);
+		negZImage->copyTo(Image[5]);
+	}
+	else
+	{
+		for (u32 i = 0; i < 6; ++i)
+			Image.push_back(Driver->createImage(ColorFormat, ImageSize));
+
+		posXImage->copyToScaling(Image[0]);
+		negXImage->copyToScaling(Image[1]);
+		posYImage->copyToScaling(Image[2]);
+		negYImage->copyToScaling(Image[3]);
+		posZImage->copyToScaling(Image[4]);
+		negZImage->copyToScaling(Image[5]);
+	}
+
+	glGenTextures(1, &TextureName);
+
+	for (u32 i = 0; i < 5; ++i)
+		uploadTexture(true, i, false);
+
+	uploadTexture(true, 5, true);
+
+	if (!KeepImage)
+	{
+		for (u32 i = 0; i < Image.size(); ++i)
+			Image[i]->drop();
+
+		Image.clear();
 	}
 }
 
 
 //! constructor for basic setup (only for derived classes)
 COGLES2Texture::COGLES2Texture(const io::path& name, COGLES2Driver* driver)
-	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+	: ITexture(name, ETT_2D), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
@@ -113,7 +195,7 @@ COGLES2Texture::~COGLES2Texture()
 		if (Driver->CurrentTexture[i] == this)
 		{
 			Driver->setActiveTexture(i, 0);
-			Driver->getBridgeCalls()->setTexture(i);
+			Driver->getBridgeCalls()->setTexture(i, TextureType);
 			Driver->CurrentTexture[i] = 0;
 		}
 
@@ -130,8 +212,8 @@ COGLES2Texture::~COGLES2Texture()
 
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
-	if (Image)
-		Image->drop();
+	for (u32 i = 0; i < Image.size(); ++i)
+		Image[i]->drop();
 }
 
 
@@ -379,10 +461,10 @@ void COGLES2Texture::getImageValues(IImage* image)
 
 
 //! copies the the texture into an open gl texture.
-void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
+void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMipmap, void* mipmapData, u32 level)
 {
 	// check which image needs to be uploaded
-	IImage* image = level?MipImage:Image;
+	IImage* image = level?MipImage:Image[imageNumber];
 	if (!image)
 	{
 		os::Printer::log("No image for OpenGL ES2 texture to upload", ELL_ERROR);
@@ -400,7 +482,7 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		InternalFormat = oldInternalFormat;
 
     Driver->setActiveTexture(0, this);
-	Driver->getBridgeCalls()->setTexture(0);
+	Driver->getBridgeCalls()->setTexture(0, TextureType);
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
@@ -409,7 +491,7 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!level && newTexture)
 	{
 		// auto generate if possible and no mipmap data is given
-		if (!IsCompressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		if (!IsCompressed && HasMipMaps && !mipmapData && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE) && regMipmap)
 		{
 			if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
 				glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
@@ -430,8 +512,39 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		StatesCache.TrilinearFilter = false;
 		StatesCache.MipMapStatus = false;
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
+		glTexParameteri(TextureType, GL_TEXTURE_MIN_FILTER, filtering);
+		glTexParameteri(TextureType, GL_TEXTURE_MAG_FILTER, filtering);
+	}
+
+	// get texture type
+
+	GLenum tmpTextureType = GL_TEXTURE_2D;
+	
+	if (TextureType == GL_TEXTURE_CUBE_MAP)
+	{
+		switch(imageNumber)
+		{
+		case 0:
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+			break;
+		case 1:
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+			break;
+		case 2:
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+			break;
+		case 3:
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+			break;
+		case 4:
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+			break;
+		case 5:
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+			break;
+		default:
+			break;
+		}
 	}
 
 	// now get image data and upload to GPU
@@ -455,22 +568,22 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	{
 		if (IsCompressed)
 		{
-			glCompressedTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, image->getDimension().Width,
+			glCompressedTexImage2D(tmpTextureType, 0, InternalFormat, image->getDimension().Width,
 				image->getDimension().Height, 0, compressedImageSize, source);
 		}
 		else
-			glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, image->getDimension().Width,
+			glTexImage2D(tmpTextureType, level, InternalFormat, image->getDimension().Width,
 				image->getDimension().Height, 0, PixelFormat, PixelType, source);
 	}
 	else
 	{
 		if (IsCompressed)
 		{
-			glCompressedTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
+			glCompressedTexSubImage2D(tmpTextureType, 0, 0, 0, image->getDimension().Width,
 				image->getDimension().Height, PixelFormat, compressedImageSize, source);
 		}
 		else
-			glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, image->getDimension().Width,
+			glTexSubImage2D(tmpTextureType, level, 0, 0, image->getDimension().Width,
 				image->getDimension().Height, PixelFormat, PixelType, source);
 	}
 
@@ -482,7 +595,7 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	else
 		image->unlock();
 
-	if (!level && newTexture)
+	if (!level && newTexture && regMipmap)
 	{
 		if (IsCompressed && !mipmapData)
 		{
@@ -510,8 +623,8 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 			StatesCache.TrilinearFilter = false;
 			StatesCache.MipMapStatus = false;
 
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filteringMipMaps);
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
+			glTexParameteri(TextureType, GL_TEXTURE_MIN_FILTER, filteringMipMaps);
+			glTexParameteri(TextureType, GL_TEXTURE_MAG_FILTER, filtering);
 		}
 	}
 
@@ -519,38 +632,53 @@ void COGLES2Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
 
 	Driver->setActiveTexture(0, 0);
-	Driver->getBridgeCalls()->setTexture(0);
+	Driver->getBridgeCalls()->setTexture(0, TextureType);
 }
 
 
 //! lock function
 void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
+	if (IsCompressed || Type != ETT_2D) // TO-DO
+		return 0;
+
 	// store info about which image is locked
-	IImage* image = (mipmapLevel==0)?Image:MipImage;
+	IImage* image = 0;
+	
+	if (mipmapLevel==0)
+	{
+		if (Image.size() > 0)
+			image = Image[0];
+	}
+	else
+	{
+		image = MipImage;
+	}
 
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
 
-	if (!Image)
-		Image = new CImage(ECF_A8R8G8B8, ImageSize);
+	if (Image.size() == 0)
+		Image.push_back(new CImage(ECF_A8R8G8B8, ImageSize));
 	if (IsRenderTarget)
 	{
-		u8* pPixels = static_cast<u8*>(Image->lock());
+		u8* pPixels = static_cast<u8*>(Image[0]->lock());
 		if (!pPixels)
 		{
 			return 0;
 		}
 		// we need to keep the correct texture bound...
-		GLint tmpTexture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
-		glBindTexture(GL_TEXTURE_2D, TextureName);
+		const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
+		GLuint tmpTextureType = GL_TEXTURE_2D;
+		GLint tmpTextureName = (tmpTexture) ? tmpTexture->getOpenGLTextureName() : 0;
+		Driver->getBridgeCalls()->getTexture(0, tmpTextureType);
+		glBindTexture(TextureType, TextureName);
 
 	// TODO ogl-es
-	//	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, pPixels);
+	//	glGetTexImage(TextureType, 0, GL_BGRA, GL_UNSIGNED_BYTE, pPixels);
 
 		// opengl images are horizontally flipped, so we have to fix that here.
-		const u32 pitch=Image->getPitch();
+		const u32 pitch=Image[0]->getPitch();
 		u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
 		u8* tmpBuffer = new u8[pitch];
 		for (u32 i=0; i < ImageSize.Height; i += 2)
@@ -562,27 +690,41 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 			p2 -= pitch;
 		}
 		delete [] tmpBuffer;
-		Image->unlock();
+		Image[0]->unlock();
 
 		//reset old bound texture
-		glBindTexture(GL_TEXTURE_2D, tmpTexture);
+		glBindTexture(tmpTextureType, tmpTextureName);
 	}
-	return Image->lock();
+	return Image[0]->lock();
 }
 
 
 //! unlock function
 void COGLES2Texture::unlock()
 {
+	if (IsCompressed || Type != ETT_2D) // TO-DO
+		return;
+
 	// test if miplevel or main texture was locked
-	IImage* image = MipImage?MipImage:Image;
+	IImage* image = 0;
+	
+	if (!MipImage)
+	{
+		if (Image.size() > 0)
+			image = Image[0];
+	}
+	else
+	{
+		image = MipImage;
+	}
+
 	if (!image)
 		return;
 	// unlock image to see changes
 	image->unlock();
 	// copy texture data to GPU
 	if (!ReadOnlyLock)
-		uploadTexture(false, 0, MipLevelStored);
+		uploadTexture(false, 0, true, 0, MipLevelStored);
 	ReadOnlyLock = false;
 	// cleanup local image
 	if (MipImage)
@@ -592,12 +734,12 @@ void COGLES2Texture::unlock()
 	}
 	else if (!KeepImage)
 	{
-		Image->drop();
-		Image=0;
+		Image[0]->drop();
+		Image.clear();
 	}
 	// update information
-	if (Image)
-		ColorFormat=Image->getColorFormat();
+	if (Image.size() > 0)
+		ColorFormat=Image[0]->getColorFormat();
 	else
 		ColorFormat=ECF_A8R8G8B8;
 }
@@ -634,8 +776,8 @@ ECOLOR_FORMAT COGLES2Texture::getColorFormat() const
 //! returns pitch of texture (in bytes)
 u32 COGLES2Texture::getPitch() const
 {
-	if (Image)
-		return Image->getPitch();
+	if (Image.size() > 0)
+		return Image[0]->getPitch();
 	else
 		return 0;
 }
@@ -645,6 +787,13 @@ u32 COGLES2Texture::getPitch() const
 GLuint COGLES2Texture::getOpenGLTextureName() const
 {
 	return TextureName;
+}
+
+
+//! return open gl texture type
+GLenum COGLES2Texture::getOpenGLTextureType() const
+{
+	return TextureType;
 }
 
 
@@ -671,22 +820,38 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 			return;
 
 		// hardware doesn't support generate mipmaps for certain texture but image data doesn't exist or is wrong.
-		if (!AutomaticMipmapUpdate && (!Image || (Image && ((Image->getDimension().Width==1) && (Image->getDimension().Height==1)))))
+		if (!AutomaticMipmapUpdate && (Image.size() == 0 || (Image.size() > 0 && ((Image[0]->getDimension().Width==1) && (Image[0]->getDimension().Height==1)))))
 			return;
 	}
 
 	// hardware moethods for generate mipmaps.
 	if (!mipmapData && AutomaticMipmapUpdate)
 	{
-		glGenerateMipmap(GL_TEXTURE_2D);
+		const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
+		GLuint tmpTextureType = GL_TEXTURE_2D;
+		GLint tmpTextureName = (tmpTexture) ? tmpTexture->getOpenGLTextureName() : 0;
+		Driver->getBridgeCalls()->getTexture(0, tmpTextureType);
+		glBindTexture(TextureType, TextureName);
+		glGenerateMipmap(TextureType);
+		glBindTexture(tmpTextureType, tmpTextureName);
 
 		return;
 	}
 
-	// Manually create mipmaps or use prepared version
+	// only 2D textures are supported in manual creation mipmaps process.
+	if (Type != ETT_2D)
+		return;
+
+	const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
+	GLuint tmpTextureType = GL_TEXTURE_2D;
+	GLint tmpTextureName = (tmpTexture) ? tmpTexture->getOpenGLTextureName() : 0;
+	Driver->getBridgeCalls()->getTexture(0, tmpTextureType);
+	glBindTexture(TextureType, TextureName);
+ 
+ 	// Manually create mipmaps or use prepared version
 	u32 compressedImageSize = 0;
-	u32 width=Image->getDimension().Width;
-	u32 height=Image->getDimension().Height;
+	u32 width=Image[0]->getDimension().Width;
+	u32 height=Image[0]->getDimension().Height;
 	u32 i=0;
 	u8* target = static_cast<u8*>(mipmapData);
 	do
@@ -699,21 +864,21 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 		++i;
 
 		if (!target)
-			target = new u8[width*height*Image->getBytesPerPixel()];
+			target = new u8[width*height*Image[0]->getBytesPerPixel()];
 
 		// create scaled version if no mipdata available
 		if (!mipmapData)
-			Image->copyToScaling(target, width, height, Image->getColorFormat());
+			Image[0]->copyToScaling(target, width, height, Image[0]->getColorFormat());
 
 		if (IsCompressed)
 		{
 			compressedImageSize = IImage::getCompressedImageSize(ColorFormat, width, height);
 
-			glCompressedTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width,
+			glCompressedTexImage2D(TextureType, i, InternalFormat, width,
 				height, 0, compressedImageSize, target);
 		}
 		else
-			glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
+			glTexImage2D(TextureType, i, InternalFormat, width, height,
 					0, PixelFormat, PixelType, target);
 
 		// get next prepared mipmap data if available
@@ -722,7 +887,7 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 			if (IsCompressed)
 				mipmapData = static_cast<u8*>(mipmapData)+compressedImageSize;
 			else
-				mipmapData = static_cast<u8*>(mipmapData)+width*height*Image->getBytesPerPixel();
+				mipmapData = static_cast<u8*>(mipmapData)+width*height*Image[0]->getBytesPerPixel();
 
 			target = static_cast<u8*>(mipmapData);
 		}
@@ -731,6 +896,8 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 	// cleanup
 	if (!mipmapData)
 		delete [] target;
+
+	glBindTexture(tmpTextureType, tmpTextureName);
 }
 
 
@@ -829,7 +996,7 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 	glGenTextures(1, &TextureName);
     
     Driver->setActiveTexture(0, this);
-	Driver->getBridgeCalls()->setTexture(0);
+	Driver->getBridgeCalls()->setTexture(0, TextureType);
     
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -854,7 +1021,7 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 	unbindRTT();
 
 	Driver->setActiveTexture(0, 0);
-	Driver->getBridgeCalls()->setTexture(0);
+	Driver->getBridgeCalls()->setTexture(0, TextureType);
 }
 
 

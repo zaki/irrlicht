@@ -1560,7 +1560,7 @@ bool COGLES2Driver::endScene()
 
 
 	//! returns a device dependent texture from a software surface (IImage)
-	video::ITexture* COGLES2Driver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
+	ITexture* COGLES2Driver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 	{
 		COGLES2Texture* texture = 0;
 
@@ -1568,6 +1568,23 @@ bool COGLES2Driver::endScene()
 			texture = new COGLES2Texture(surface, name, mipmapData, this);
 
 		return texture;
+}
+
+
+	//! returns a device dependent texture from a software surface (IImage)
+	ITexture* COGLES2Driver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+		IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
+	{
+		COGLES2Texture* texture = 0;
+
+		if (posXImage && negXImage && posYImage && negYImage && posZImage && negZImage &&
+			checkTextureCube(posXImage, negXImage, posYImage, negYImage, posZImage, negZImage) &&
+			checkColorFormat(posXImage->getColorFormat(), posXImage->getDimension()))
+		{
+			texture = new COGLES2Texture(name, posXImage, negXImage, posYImage, negYImage, posZImage, negZImage, this);
+		}
+ 
+ 		return texture;
 	}
 
 
@@ -1841,9 +1858,10 @@ bool COGLES2Driver::endScene()
 		for (s32 i = MaxTextureUnits-1; i>= 0; --i)
 		{
 			const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(CurrentTexture[i]);
+			GLenum tmpTextureType = (tmpTexture) ? tmpTexture->getOpenGLTextureType() : GL_TEXTURE_2D;
 
 			if (CurrentTexture[i])
-				BridgeCalls->setTexture(i);
+				BridgeCalls->setTexture(i, tmpTextureType);
 			else
 				continue;
 
@@ -1853,7 +1871,7 @@ bool COGLES2Driver::endScene()
 			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
 			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				glTexParameteri(tmpTextureType, GL_TEXTURE_MAG_FILTER,
 					(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
 				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
@@ -1865,7 +1883,7 @@ bool COGLES2Driver::endScene()
 				if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 					material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
 				{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					glTexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 						material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
 						material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
 						GL_NEAREST_MIPMAP_NEAREST);
@@ -1880,7 +1898,7 @@ bool COGLES2Driver::endScene()
 				if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 					material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || tmpTexture->getStatesCache().MipMapStatus)
 				{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					glTexParameteri(tmpTextureType, GL_TEXTURE_MIN_FILTER,
 						(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
 					tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
@@ -1893,7 +1911,7 @@ bool COGLES2Driver::endScene()
 			if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
 				(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
 			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+				glTexParameteri(tmpTextureType, GL_TEXTURE_MAX_ANISOTROPY_EXT,
 					material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
 
 				tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
@@ -1902,13 +1920,13 @@ bool COGLES2Driver::endScene()
 
 			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
 			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
+				glTexParameteri(tmpTextureType, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
 				tmpTexture->getStatesCache().WrapU = material.TextureLayer[i].TextureWrapU;
 			}
 
 			if (!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
 			{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
+				glTexParameteri(tmpTextureType, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
 				tmpTexture->getStatesCache().WrapV = material.TextureLayer[i].TextureWrapV;
 			}
 
@@ -2716,7 +2734,10 @@ bool COGLES2Driver::endScene()
 		// Initial OpenGL values from specification.
 
 		for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+		{
 			Texture[i] = 0;
+			TextureType[i] = GL_TEXTURE_2D;
+		}
 
 		glBlendFunc(GL_ONE, GL_ZERO);
 		glDisable(GL_BLEND);
@@ -2830,7 +2851,13 @@ bool COGLES2Driver::endScene()
 		}
 	}
 
-	void COGLES2CallBridge::setTexture(u32 stage)
+	void COGLES2CallBridge::getTexture(u32 stage, GLenum& type)
+	{
+ 		if (stage < MATERIAL_MAX_TEXTURES)
+			type = TextureType[stage];
+	}
+
+	void COGLES2CallBridge::setTexture(u32 stage, GLenum type)
 	{
 		if (stage < MATERIAL_MAX_TEXTURES)
 		{
@@ -2839,10 +2866,11 @@ bool COGLES2Driver::endScene()
 				setActiveTexture(GL_TEXTURE0 + stage);
 
 				if (Driver->CurrentTexture[stage])
-					glBindTexture(GL_TEXTURE_2D, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
+					glBindTexture(type, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
 				else
-					glBindTexture(GL_TEXTURE_2D, 0);
+					glBindTexture(type, 0);
 
+				TextureType[stage] = type;
 				Texture[stage] = Driver->CurrentTexture[stage];
 			}
 		}

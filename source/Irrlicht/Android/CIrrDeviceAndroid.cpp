@@ -24,7 +24,7 @@ namespace irr
 			io::IFileSystem* io, video::IContextManager* contextManager);
 
 		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
-			video::SExposedVideoData& data, io::IFileSystem* io, video::IContextManager* contextManager);
+			io::IFileSystem* io, video::IContextManager* contextManager);
 	}
 }
 
@@ -201,7 +201,7 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 				Device->CreationParams.WindowSize.Height = ANativeWindow_getHeight(app->window);
 			}
 
-			Device->getContextManager()->initialize(CreationParams, ExposedVideoData);
+			Device->getContextManager()->initialize(Device->CreationParams, Device->ExposedVideoData);
 			Device->getContextManager()->generateSurface();
 			Device->getContextManager()->generateContext();
 			Device->getContextManager()->activateContext(Device->getContextManager()->getContext());
@@ -322,7 +322,7 @@ void CIrrDeviceAndroid::createDriver()
 		break;
 	case video::EDT_OGLES2:
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-		VideoDriver = video::createOGLES2Driver(CreationParams, ExposedVideoData, FileSystem, ContextManager);
+		VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
 #else
 		os::Printer::log("No OpenGL ES 2.0 support compiled in.", ELL_ERROR);
 #endif

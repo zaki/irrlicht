@@ -372,7 +372,11 @@ namespace video
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
+		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
+
+		//! returns a device dependent texture from a software surface (IImage)
+		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OGLES1
 		inline void createGLMatrix(float gl_matrix[16], const core::matrix4& m);
@@ -491,7 +495,9 @@ namespace video
         
         void setActiveTexture(GLenum texture);
         
-        void setTexture(u32 stage);
+        void getTexture(u32 stage, GLenum& type);
+
+		void setTexture(u32 stage, GLenum type);
 
 		// Viewport calls.
 
@@ -516,6 +522,7 @@ namespace video
 		GLenum ActiveTexture;
 
         const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+		GLenum TextureType[MATERIAL_MAX_TEXTURES];
 
 		core::rect<s32> Viewport;
     };

@@ -218,6 +218,7 @@ namespace video
 			case EVDF_ALPHA_TO_COVERAGE:
 			case EVDF_POLYGON_OFFSET:
 			case EVDF_TEXTURE_MATRIX:
+			case EVDF_TEXTURE_CUBE_MAP:
 				return true;
 			case EVDF_ARB_VERTEX_PROGRAM_1:
 			case EVDF_ARB_FRAGMENT_PROGRAM_1:
