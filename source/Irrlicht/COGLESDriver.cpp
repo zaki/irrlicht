@@ -57,14 +57,14 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData);
 
-    WindowSize = params.WindowSize;
+	WindowSize = params.WindowSize;
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	glGenFramebuffersOES(1, &ViewFramebuffer);
 	glGenRenderbuffersOES(1, &ViewRenderbuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
 
 	ExposedData.OGLESIPhone.AppDelegate = Device;
-    Device->displayInitialize(&ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
+	Device->displayInitialize(&ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
 
 	GLint backingWidth;
 	GLint backingHeight;
