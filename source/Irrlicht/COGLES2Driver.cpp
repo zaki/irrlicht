@@ -44,8 +44,8 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
             , CIrrDeviceIPhone* device
 #endif
             ) : CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
-	Transformation3DChanged(true), AntiAlias(params.AntiAlias), BridgeCalls(0),
+	BridgeCalls(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
+	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8)
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
     , ContextManager(contextManager)

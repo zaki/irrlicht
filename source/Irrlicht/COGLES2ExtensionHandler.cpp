@@ -161,8 +161,8 @@ namespace video
 
 	COGLES2ExtensionHandler::COGLES2ExtensionHandler() :
 			Version(0), MaxTextureUnits(0), MaxSupportedTextures(0),
-			MaxAnisotropy(1), MaxTextureSize(1),
-			MaxIndices(0xffff), MaxTextureLODBias(0.f),
+			MaxAnisotropy(1), MaxIndices(0xffff),
+			MaxTextureSize(1), MaxTextureLODBias(0.f),
 			StencilBuffer(false)
 	{
 		for (u32 i=0; i<IRR_OGLES2_Feature_Count; ++i)

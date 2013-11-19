@@ -57,11 +57,11 @@ namespace video
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-                , IContextManager* contextManager
+		, IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-                , CIrrDeviceIPhone* device
+		, CIrrDeviceIPhone* device
 #endif
-                );
+		);
 
 		//! destructor
 		virtual ~COGLES2Driver();
@@ -228,9 +228,9 @@ namespace video
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial, bool resetAllRenderstates);
-        
-        //! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
-        virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates);
+
+		//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
+		virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates);
 
 		//! Get a vertex shader constant index.
 		virtual s32 getVertexShaderConstantID(const c8* name);
@@ -285,8 +285,8 @@ namespace video
 				u32 verticesOut = 0,
 				IShaderConstantSetCallBack* callback = 0,
 				E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-                s32 userData=0,
-                E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
+				s32 userData=0,
+				E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT);
 
 		//! Returns pointer to the IGPUProgrammingServices interface.
 		virtual IGPUProgrammingServices* getGPUProgrammingServices();
@@ -357,14 +357,14 @@ namespace video
 		GLenum getZBufferBits() const;
 
 		//! Get current material.
-        const SMaterial& getCurrentMaterial() const;
+		const SMaterial& getCurrentMaterial() const;
 
 		//! Get bridge calls.
-        COGLES2CallBridge* getBridgeCalls() const;
+		COGLES2CallBridge* getBridgeCalls() const;
 
 	private:
 		// Bridge calls.
-        COGLES2CallBridge* BridgeCalls;
+		COGLES2CallBridge* BridgeCalls;
 
 		void uploadClipPlane(u32 index);
 
@@ -375,7 +375,7 @@ namespace video
 		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData);
 
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OGLES1
@@ -455,17 +455,17 @@ namespace video
 		GLuint ViewRenderbuffer;
 		GLuint ViewDepthRenderbuffer;
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        IContextManager* ContextManager;
+		IContextManager* ContextManager;
 #endif
 	};
 
-    //! This bridge between Irlicht pseudo OpenGL calls
-    //! and true OpenGL calls.
-    
-    class COGLES2CallBridge
-    {
-    public:
-        COGLES2CallBridge(COGLES2Driver* driver);
+	//! This bridge between Irlicht pseudo OpenGL calls
+	//! and true OpenGL calls.
+
+	class COGLES2CallBridge
+	{
+	public:
+		COGLES2CallBridge(COGLES2Driver* driver);
 
 		// Blending calls.
 
@@ -478,33 +478,33 @@ namespace video
 		void setCullFaceFunc(GLenum mode);
 
 		void setCullFace(bool enable);
-        
-        // Depth calls.
+
+		// Depth calls.
 
 		void setDepthFunc(GLenum mode);
 
-        void setDepthMask(bool enable);
+		void setDepthMask(bool enable);
 
 		void setDepthTest(bool enable);
 
 		// Program calls.
 
 		void setProgram(GLuint program);
-        
-        // Texture calls.
-        
-        void setActiveTexture(GLenum texture);
-        
-        void getTexture(u32 stage, GLenum& type);
+
+		// Texture calls.
+
+		void setActiveTexture(GLenum texture);
+
+		void getTexture(u32 stage, GLenum& type);
 
 		void setTexture(u32 stage, GLenum type);
 
 		// Viewport calls.
 
 		void setViewport(const core::rect<s32>& viewport);
-        
-    private:
-        COGLES2Driver* Driver;
+
+	private:
+		COGLES2Driver* Driver;
 
 		GLenum BlendSource;
 		GLenum BlendDestination;
@@ -512,20 +512,20 @@ namespace video
 
 		GLenum CullFaceMode;
 		bool CullFace;
-        
+
 		GLenum DepthFunc;
-        bool DepthMask;
-        bool DepthTest;
+		bool DepthMask;
+		bool DepthTest;
 
 		GLuint Program;
-        
+
 		GLenum ActiveTexture;
 
-        const ITexture* Texture[MATERIAL_MAX_TEXTURES];
+		const ITexture* Texture[MATERIAL_MAX_TEXTURES];
 		GLenum TextureType[MATERIAL_MAX_TEXTURES];
 
 		core::rect<s32> Viewport;
-    };
+	};
 
 } // end namespace video
 } // end namespace irr
