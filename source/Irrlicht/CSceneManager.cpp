@@ -1504,7 +1504,7 @@ void CSceneManager::drawAll()
 		}
 
 #ifdef _IRR_SCENEMANAGER_DEBUG
-		Parameters.setAttribute("drawn_solid", (s32) SolidNodeList.size() );
+		Parameters->setAttribute("drawn_solid", (s32) SolidNodeList.size() );
 #endif
 		SolidNodeList.set_used(0);
 
@@ -1569,7 +1569,7 @@ void CSceneManager::drawAll()
 		}
 
 #ifdef _IRR_SCENEMANAGER_DEBUG
-		Parameters.setAttribute ( "drawn_transparent", (s32) TransparentNodeList.size() );
+		Parameters->setAttribute ( "drawn_transparent", (s32) TransparentNodeList.size() );
 #endif
 		TransparentNodeList.set_used(0);
 
