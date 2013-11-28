@@ -54,11 +54,10 @@ The Irrlicht Engine SDK version 1.9
   easily comprehensible.
 
   The Irrlicht Engine is a static lib under linux. A precompiled version can be
-  generated from the sources using the Makefile in source/Irrlicht. Unzip the
-  file source.zip in the /source directory. Run 'make' in the newly created
-  subfolder source/Irrlicht. After this you should be able to 'make' all
-  example applications in /examples. You can run the examples directly from the
-  directory they are created in.
+  generated from the sources using the Makefile in source/Irrlicht. Run 'make' in 
+  that subfolder. After this you should be able to 'make' all
+  example applications in /examples by calling the buildAllExamples script. You 
+  can run the examples then from the bin folder.
 
   It is also possible to use Irrlicht as shared object
   (libIrrlicht.so.versionNumber). Use the proper makefile target for this by

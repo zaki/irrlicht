@@ -300,7 +300,7 @@ namespace core
 	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const s64 a, const s64 tolerance = 0)
 	{
-		return abs_(a) > tolerance;
+		return abs_(a) <= tolerance;
 	}
 #endif
 

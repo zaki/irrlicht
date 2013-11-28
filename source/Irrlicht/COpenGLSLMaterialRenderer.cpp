@@ -163,23 +163,14 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 		if (!createShader(GL_GEOMETRY_SHADER_EXT, geometryShaderProgram))
 			return;
 #if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4)
-		if (Program2)
+		if (Program2) // Geometry shaders are supported only in OGL2.x+ drivers.
 		{
-			Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_INPUT_TYPE_EXT, Driver->primitiveTypeToGL(inType));
-			Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_OUTPUT_TYPE_EXT, Driver->primitiveTypeToGL(outType));
+			Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_INPUT_TYPE_EXT, Driver->primitiveTypeToGL(inType));
+			Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_OUTPUT_TYPE_EXT, Driver->primitiveTypeToGL(outType));
 			if (verticesOut==0)
-				Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
+				Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
 			else
-				Driver->extGlProgramParameteri((GLhandleARB)Program2, GL_GEOMETRY_VERTICES_OUT_EXT, core::min_(verticesOut, Driver->MaxGeometryVerticesOut));
-		}
-		else
-		{
-			Driver->extGlProgramParameteri(Program, GL_GEOMETRY_INPUT_TYPE_EXT, Driver->primitiveTypeToGL(inType));
-			Driver->extGlProgramParameteri(Program, GL_GEOMETRY_OUTPUT_TYPE_EXT, Driver->primitiveTypeToGL(outType));
-			if (verticesOut==0)
-				Driver->extGlProgramParameteri(Program, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
-			else
-				Driver->extGlProgramParameteri(Program, GL_GEOMETRY_VERTICES_OUT_EXT, core::min_(verticesOut, Driver->MaxGeometryVerticesOut));
+				Driver->extGlProgramParameteri(Program2, GL_GEOMETRY_VERTICES_OUT_EXT, core::min_(verticesOut, Driver->MaxGeometryVerticesOut));
 		}
 #elif defined(GL_NV_geometry_program4)
 		if (verticesOut==0)

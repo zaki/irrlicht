@@ -506,7 +506,7 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 		chdir([path fileSystemRepresentation]);
 		[path release];
 	}
-
+    NSWindow* a;
 	uname(&name);
 	Operator = new COSOperator(name.version);
 	os::Printer::log(name.version,ELL_INFORMATION);

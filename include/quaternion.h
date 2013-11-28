@@ -676,7 +676,7 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 		if (axis.getLength()==0)
 		{
 			axis.set(0.f,1.f,0.f);
-			axis.crossProduct(v0);
+			axis = axis.crossProduct(v0);
 		}
 		// same as fromAngleAxis(core::PI, axis).normalize();
 		return set(axis.X, axis.Y, axis.Z, 0).normalize();
