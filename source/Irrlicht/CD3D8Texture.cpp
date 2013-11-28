@@ -396,11 +396,13 @@ bool CD3D8Texture::createMipMaps(u32 level)
 	{
 		if (upperDesc.Format == D3DFMT_A1R5G5B5)
 			copy16BitMipMap((char*)upperlr.pBits, (char*)lowerlr.pBits,
+							upperDesc.Width, upperDesc.Height,
 							lowerDesc.Width, lowerDesc.Height,
 							upperlr.Pitch, lowerlr.Pitch);
 		else
 		if (upperDesc.Format == D3DFMT_A8R8G8B8)
 			copy32BitMipMap((char*)upperlr.pBits, (char*)lowerlr.pBits,
+							upperDesc.Width, upperDesc.Height,
 							lowerDesc.Width, lowerDesc.Height,
 							upperlr.Pitch, lowerlr.Pitch);
 		else
@@ -452,65 +454,30 @@ ECOLOR_FORMAT CD3D8Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
 
 
 void CD3D8Texture::copy16BitMipMap(char* src, char* tgt,
-				   s32 width, s32 height,
-				   s32 pitchsrc, s32 pitchtgt) const
+				   const s32 srcWidth, const s32 srcHeight,
+				   const s32 width, const s32 height,
+				   const s32 pitchsrc, const s32 pitchtgt) const
 {
-	u16 c;
-
-	for (int x=0; x<width; ++x)
+	const s32 dy_max = (srcHeight==1?1:2);
+	const s32 dx_max = (srcWidth==1?1:2);
+	const s32 blockcount= dx_max*dy_max;
+	for (s32 y=0; y<height; ++y)
 	{
-		for (int y=0; y<height; ++y)
+		for (s32 x=0; x<width; ++x)
 		{
-			s32 a=0, r=0, g=0, b=0;
-
-			for (int dx=0; dx<2; ++dx)
+			u32 a=0, r=0, g=0, b=0;
+			for (s32 dy=0; dy<dy_max; ++dy)
 			{
-				for (int dy=0; dy<2; ++dy)
+				const s32 tgy = (y*2)+dy;
+				for (s32 dx=0; dx<dx_max; ++dx)
 				{
-					int tgx = (x*2)+dx;
-					int tgy = (y*2)+dy;
+					const s32 tgx = (x*2)+dx;
 
-					c = *(u16*)((void*)&src[(tgx*2)+(tgy*pitchsrc)]);
-
-					a += getAlpha(c);
-					r += getRed(c);
-					g += getGreen(c);
-					b += getBlue(c);
-				}
-			}
-
-			a /= 4;
-			r /= 4;
-			g /= 4;
-			b /= 4;
-
-			c = ((a & 0x1) <<15) | ((r & 0x1F)<<10) | ((g & 0x1F)<<5) | (b & 0x1F);
-			*(u16*)((void*)&tgt[(x*2)+(y*pitchtgt)]) = c;
-		}
-	}
-}
-
-
-void CD3D8Texture::copy32BitMipMap(char* src, char* tgt,
-				   s32 width, s32 height,
-				   s32 pitchsrc, s32 pitchtgt) const
-{
-	SColor c;
-
-	for (int x=0; x<width; ++x)
-	{
-		for (int y=0; y<height; ++y)
-		{
-			s32 a=0, r=0, g=0, b=0;
-
-			for (int dx=0; dx<2; ++dx)
-			{
-				for (int dy=0; dy<2; ++dy)
-				{
-					int tgx = (x*2)+dx;
-					int tgy = (y*2)+dy;
-
-					c = *(u32*)((void*)&src[(tgx<<2)+(tgy*pitchsrc)]);
+					SColor c;
+					if (ColorFormat == ECF_A1R5G5B5)
+						c = A1R5G5B5toA8R8G8B8(*(u16*)(&src[(tgx*2)+(tgy*pitchsrc)]));
+					else
+						c = R5G6B5toA8R8G8B8(*(u16*)(&src[(tgx*2)+(tgy*pitchsrc)]));
 
 					a += c.getAlpha();
 					r += c.getRed();
@@ -519,13 +486,60 @@ void CD3D8Texture::copy32BitMipMap(char* src, char* tgt,
 				}
 			}
 
-			a >>= 2;
-			r >>= 2;
-			g >>= 2;
-			b >>= 2;
+			a /= blockcount;
+			r /= blockcount;
+			g /= blockcount;
+			b /= blockcount;
 
-			c = ((a & 0xff)<<24) | ((r & 0xff)<<16) | ((g & 0xff)<<8) | (b & 0xff);
-			*(u32*)((void*)&tgt[(x*4)+(y*pitchtgt)]) = c.color;
+			u16 c;
+			if (ColorFormat == ECF_A1R5G5B5)
+				c = RGBA16(r,g,b,a);
+			else
+				c = A8R8G8B8toR5G6B5(SColor(a,r,g,b).color);
+			*(u16*)(&tgt[(x*2)+(y*pitchtgt)]) = c;
+		}
+	}
+}
+
+
+void CD3D8Texture::copy32BitMipMap(char* src, char* tgt,
+				   const s32 srcWidth, const s32 srcHeight,
+				   const s32 width, const s32 height,
+				   const s32 pitchsrc, const s32 pitchtgt) const
+{
+	const s32 dy_max = (srcHeight==1?1:2);
+	const s32 dx_max = (srcWidth==1?1:2);
+	const s32 blockcount= dx_max*dy_max;
+	for (s32 y=0; y<height; ++y)
+	{
+		for (s32 x=0; x<width; ++x)
+		{
+			u32 a=0, r=0, g=0, b=0;
+			SColor c;
+
+			for (s32 dy=0; dy<dy_max; ++dy)
+			{
+				const s32 tgy = (y*2)+dy;
+				for (s32 dx=0; dx<dx_max; ++dx)
+				{
+					const s32 tgx = (x*2)+dx;
+
+					c = *(u32*)(&src[(tgx*4)+(tgy*pitchsrc)]);
+
+					a += c.getAlpha();
+					r += c.getRed();
+					g += c.getGreen();
+					b += c.getBlue();
+				}
+			}
+
+			a /= blockcount;
+			r /= blockcount;
+			g /= blockcount;
+			b /= blockcount;
+
+			c.set(a, r, g, b);
+			*(u32*)(&tgt[(x*4)+(y*pitchtgt)]) = c.color;
 		}
 	}
 }

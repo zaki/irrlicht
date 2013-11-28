@@ -255,11 +255,13 @@ bool CD3D9Texture::createMipMaps(u32 level)
 	{
 		if ((upperDesc.Format == D3DFMT_A1R5G5B5) || (upperDesc.Format == D3DFMT_R5G6B5))
 			copy16BitMipMap((char*)upperlr.pBits, (char*)lowerlr.pBits,
+					upperDesc.Width, upperDesc.Height,
 					lowerDesc.Width, lowerDesc.Height,
 					upperlr.Pitch, lowerlr.Pitch);
 		else
 		if (upperDesc.Format == D3DFMT_A8R8G8B8)
 			copy32BitMipMap((char*)upperlr.pBits, (char*)lowerlr.pBits,
+					upperDesc.Width, upperDesc.Height,
 					lowerDesc.Width, lowerDesc.Height,
 					upperlr.Pitch, lowerlr.Pitch);
 		else
@@ -581,19 +583,22 @@ bool CD3D9Texture::hasMipMaps() const
 
 
 void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
-				   s32 width, s32 height,
-				   s32 pitchsrc, s32 pitchtgt) const
+				   const s32 srcWidth, const s32 srcHeight,
+				   const s32 width, const s32 height,
+				   const s32 pitchsrc, const s32 pitchtgt) const
 {
+	const s32 dy_max = (srcHeight==1?1:2);
+	const s32 dx_max = (srcWidth==1?1:2);
+	const s32 blockcount= dx_max*dy_max;
 	for (s32 y=0; y<height; ++y)
 	{
 		for (s32 x=0; x<width; ++x)
 		{
 			u32 a=0, r=0, g=0, b=0;
-
-			for (s32 dy=0; dy<2; ++dy)
+			for (s32 dy=0; dy<dy_max; ++dy)
 			{
 				const s32 tgy = (y*2)+dy;
-				for (s32 dx=0; dx<2; ++dx)
+				for (s32 dx=0; dx<dx_max; ++dx)
 				{
 					const s32 tgx = (x*2)+dx;
 
@@ -610,10 +615,10 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 				}
 			}
 
-			a /= 4;
-			r /= 4;
-			g /= 4;
-			b /= 4;
+			a /= blockcount;
+			r /= blockcount;
+			g /= blockcount;
+			b /= blockcount;
 
 			u16 c;
 			if (ColorFormat == ECF_A1R5G5B5)
@@ -627,9 +632,13 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 
 
 void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
-				   s32 width, s32 height,
-				   s32 pitchsrc, s32 pitchtgt) const
+				   const s32 srcWidth, const s32 srcHeight,
+				   const s32 width, const s32 height,
+				   const s32 pitchsrc, const s32 pitchtgt) const
 {
+	const s32 dy_max = (srcHeight==1?1:2);
+	const s32 dx_max = (srcWidth==1?1:2);
+	const s32 blockcount= dx_max*dy_max;
 	for (s32 y=0; y<height; ++y)
 	{
 		for (s32 x=0; x<width; ++x)
@@ -637,10 +646,10 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 			u32 a=0, r=0, g=0, b=0;
 			SColor c;
 
-			for (s32 dy=0; dy<2; ++dy)
+			for (s32 dy=0; dy<dy_max; ++dy)
 			{
 				const s32 tgy = (y*2)+dy;
-				for (s32 dx=0; dx<2; ++dx)
+				for (s32 dx=0; dx<dx_max; ++dx)
 				{
 					const s32 tgx = (x*2)+dx;
 
@@ -653,10 +662,10 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 				}
 			}
 
-			a /= 4;
-			r /= 4;
-			g /= 4;
-			b /= 4;
+			a /= blockcount;
+			r /= blockcount;
+			g /= blockcount;
+			b /= blockcount;
 
 			c.set(a, r, g, b);
 			*(u32*)(&tgt[(x*4)+(y*pitchtgt)]) = c.color;
