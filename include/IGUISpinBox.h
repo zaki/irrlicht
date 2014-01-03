@@ -24,7 +24,7 @@ namespace gui
 		//! Validate when enter was pressed
 		EGUI_SBV_ENTER = 2,
 		//! Validate when the editbox loses the focus
-		EGUI_SBV_LOSE_FOCUS = 4,
+		EGUI_SBV_LOSE_FOCUS = 4
 	};
 
 
