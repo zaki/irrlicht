@@ -23,7 +23,7 @@ namespace
 		irr::u32 n=1;	// new index
 		for(irr::u32 j=1;j<array.size();++j)
 		{
-			if (array[j].frame < array[j-1].frame) 
+			if (array[j].frame < array[n-1].frame) 
 				continue; //bad frame, unneeded and may cause problems
 			if ( n != j )
 				array[n] = array[j];
