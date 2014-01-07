@@ -115,11 +115,11 @@ namespace irr
 
 		//! gets text from the clipboard
 		//! \return Returns 0 if no string is in there.
-		virtual const c8* getTextFromClipboard() const _IRR_OVERRIDE_;
+		virtual const c8* getTextFromClipboard() const;
 
 		//! copies text to the clipboard
 		//! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
-		virtual void copyToClipboard(const c8* text) const _IRR_OVERRIDE_;
+		virtual void copyToClipboard(const c8* text) const;
 
 		//! Remove all messages pending in the system message loop
 		virtual void clearSystemMessages() _IRR_OVERRIDE_;
