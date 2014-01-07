@@ -32,19 +32,19 @@ public:
 	CGUISpriteBank(IGUIEnvironment* env);
 	virtual ~CGUISpriteBank();
 
-	virtual core::array< core::rect<s32> >& getPositions();
-	virtual core::array< SGUISprite >& getSprites();
+	virtual core::array< core::rect<s32> >& getPositions() _IRR_OVERRIDE_;
+	virtual core::array< SGUISprite >& getSprites() _IRR_OVERRIDE_;
 
-	virtual u32 getTextureCount() const;
-	virtual video::ITexture* getTexture(u32 index) const;
-	virtual void addTexture(video::ITexture* texture);
-	virtual void setTexture(u32 index, video::ITexture* texture);
+	virtual u32 getTextureCount() const _IRR_OVERRIDE_;
+	virtual video::ITexture* getTexture(u32 index) const _IRR_OVERRIDE_;
+	virtual void addTexture(video::ITexture* texture) _IRR_OVERRIDE_;
+	virtual void setTexture(u32 index, video::ITexture* texture) _IRR_OVERRIDE_;
 
 	//! Add the texture and use it for a single non-animated sprite.
-	virtual s32 addTextureAsSprite(video::ITexture* texture);
+	virtual s32 addTextureAsSprite(video::ITexture* texture) _IRR_OVERRIDE_;
 
 	//! clears sprites, rectangles and textures
-	virtual void clear();
+	virtual void clear() _IRR_OVERRIDE_;
 
 	//! Draws a sprite in 2d with position and color
 	virtual void draw2DSprite(u32 index, const core::position2di& pos, const core::rect<s32>* clip=0,

@@ -28,22 +28,22 @@ namespace gui
 		virtual ~CGUIMeshViewer();
 
 		//! sets the mesh to be shown
-		virtual void setMesh(scene::IAnimatedMesh* mesh);
+		virtual void setMesh(scene::IAnimatedMesh* mesh) _IRR_OVERRIDE_;
 
 		//! Gets the displayed mesh
-		virtual scene::IAnimatedMesh* getMesh() const;
+		virtual scene::IAnimatedMesh* getMesh() const _IRR_OVERRIDE_;
 
 		//! sets the material
-		virtual void setMaterial(const video::SMaterial& material);
+		virtual void setMaterial(const video::SMaterial& material) _IRR_OVERRIDE_;
 
 		//! gets the material
-		virtual const video::SMaterial& getMaterial() const;
+		virtual const video::SMaterial& getMaterial() const _IRR_OVERRIDE_;
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! draws the element and its children
-		virtual void draw();
+		virtual void draw() _IRR_OVERRIDE_;
 
 	private:
 

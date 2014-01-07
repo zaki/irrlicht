@@ -29,19 +29,19 @@ namespace io
 		virtual ~CMemoryReadFile();
 
 		//! returns how much was read
-		virtual s32 read(void* buffer, u32 sizeToRead);
+		virtual s32 read(void* buffer, u32 sizeToRead) _IRR_OVERRIDE_;
 
 		//! changes position in file, returns true if successful
-		virtual bool seek(long finalPos, bool relativeMovement = false);
+		virtual bool seek(long finalPos, bool relativeMovement = false) _IRR_OVERRIDE_;
 
 		//! returns size of file
-		virtual long getSize() const;
+		virtual long getSize() const _IRR_OVERRIDE_;
 
 		//! returns where in the file we are.
-		virtual long getPos() const;
+		virtual long getPos() const _IRR_OVERRIDE_;
 
 		//! returns name of file
-		virtual const io::path& getFileName() const;
+		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
 
 	private:
 
@@ -65,23 +65,17 @@ namespace io
 		//! Destructor
 		virtual ~CMemoryWriteFile();
 
-		//! returns how much was read
-		virtual s32 read(void* buffer, u32 sizeToRead);
-
 		//! returns how much was written
-		virtual s32 write(const void* buffer, u32 sizeToWrite);
+		virtual s32 write(const void* buffer, u32 sizeToWrite) _IRR_OVERRIDE_;
 
 		//! changes position in file, returns true if successful
-		virtual bool seek(long finalPos, bool relativeMovement = false);
-
-		//! returns size of file
-		virtual long getSize() const;
+		virtual bool seek(long finalPos, bool relativeMovement = false) _IRR_OVERRIDE_;
 
 		//! returns where in the file we are.
-		virtual long getPos() const;
+		virtual long getPos() const _IRR_OVERRIDE_;
 
 		//! returns name of file
-		virtual const io::path& getFileName() const;
+		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
 
 	private:
 

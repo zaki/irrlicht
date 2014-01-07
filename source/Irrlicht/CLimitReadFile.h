@@ -30,21 +30,21 @@ namespace io
 		virtual ~CLimitReadFile();
 
 		//! returns how much was read
-		virtual s32 read(void* buffer, u32 sizeToRead);
+		virtual s32 read(void* buffer, u32 sizeToRead) _IRR_OVERRIDE_;
 
 		//! changes position in file, returns true if successful
 		//! if relativeMovement==true, the pos is changed relative to current pos,
 		//! otherwise from begin of file
-		virtual bool seek(long finalPos, bool relativeMovement = false);
+		virtual bool seek(long finalPos, bool relativeMovement = false) _IRR_OVERRIDE_;
 
 		//! returns size of file
-		virtual long getSize() const;
+		virtual long getSize() const _IRR_OVERRIDE_;
 
 		//! returns where in the file we are.
-		virtual long getPos() const;
+		virtual long getPos() const _IRR_OVERRIDE_;
 
 		//! returns name of file
-		virtual const io::path& getFileName() const;
+		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
 
 	private:
 

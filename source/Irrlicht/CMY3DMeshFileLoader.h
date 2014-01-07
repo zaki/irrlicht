@@ -75,9 +75,9 @@ public:
 	CMY3DMeshFileLoader(ISceneManager *scmgr, io::IFileSystem* fs);
 	virtual ~CMY3DMeshFileLoader();
 
-	virtual bool isALoadableFileExtension(const io::path& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
 
-	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
+	virtual IAnimatedMesh* createMesh(io::IReadFile* file) _IRR_OVERRIDE_;
 
 	//! getting access to the nodes (with transparent material), creating
 	//! while loading .my3d file

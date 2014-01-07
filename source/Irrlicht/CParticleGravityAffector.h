@@ -23,7 +23,7 @@ public:
 		u32 timeForceLost = 1000);
 
 	//! Affects a particle.
-	virtual void affect(u32 now, SParticle* particlearray, u32 count);
+	virtual void affect(u32 now, SParticle* particlearray, u32 count) _IRR_OVERRIDE_;
 
 	//! Set the time in milliseconds when the gravity force is totally
 	//! lost and the particle does not move any more.
@@ -42,14 +42,14 @@ public:
 	//! Writes attributes of the object.
 	//! Implement this to expose the attributes of your scene node animator for
 	//! scripting languages, editors, debuggers or xml serialization purposes.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
 	//! Reads attributes of the object.
 	//! Implement this to set the attributes of your scene node animator for
 	//! scripting languages, editors, debuggers or xml deserialization purposes.
 	//! \param startIndex: start index where to start reading attributes.
 	//! \return: returns last index of an attribute read by this affector
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
 
 private:
 	f32 TimeForceLost;

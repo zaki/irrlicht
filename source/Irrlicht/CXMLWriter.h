@@ -29,7 +29,7 @@ namespace io
 		virtual ~CXMLWriter();
 
 		//! Writes a xml 1.0 header like <?xml version="1.0"?>
-		virtual void writeXMLHeader();
+		virtual void writeXMLHeader() _IRR_OVERRIDE_;
 
 		//! Writes an xml element with maximal 5 attributes
 		virtual void writeElement(const wchar_t* name, bool empty=false,
@@ -44,17 +44,17 @@ namespace io
 				core::array<core::stringw> &names, core::array<core::stringw> &values);
 
 		//! Writes a comment into the xml file
-		virtual void writeComment(const wchar_t* comment);
+		virtual void writeComment(const wchar_t* comment) _IRR_OVERRIDE_;
 
 		//! Writes the closing tag for an element. Like </foo>
-		virtual void writeClosingTag(const wchar_t* name);
+		virtual void writeClosingTag(const wchar_t* name) _IRR_OVERRIDE_;
 
 		//! Writes a text into the file. All occurrences of special characters like
 		//! & (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automaticly replaced.
-		virtual void writeText(const wchar_t* text);
+		virtual void writeText(const wchar_t* text) _IRR_OVERRIDE_;
 
 		//! Writes a line break
-		virtual void writeLineBreak();
+		virtual void writeLineBreak() _IRR_OVERRIDE_;
 
 		struct XMLSpecialCharacters
 		{

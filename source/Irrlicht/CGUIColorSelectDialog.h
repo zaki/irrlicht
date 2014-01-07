@@ -31,13 +31,13 @@ namespace gui
 		virtual ~CGUIColorSelectDialog();
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! draws the element and its children
-		virtual void draw();
+		virtual void draw() _IRR_OVERRIDE_;
 
-		virtual video::SColor getColor();
-		virtual video::SColorHSL getColorHSL();
+		virtual video::SColor getColor() _IRR_OVERRIDE_;
+		virtual video::SColorHSL getColorHSL() _IRR_OVERRIDE_;
 
 	private:
 

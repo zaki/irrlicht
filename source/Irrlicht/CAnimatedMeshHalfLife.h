@@ -485,32 +485,32 @@ namespace scene
 		virtual ~CAnimatedMeshHalfLife();
 
 		//! loads a Halflife mdl file
-		virtual bool loadModelFile( io::IReadFile* file, ISceneManager * smgr );
+		bool loadModelFile( io::IReadFile* file, ISceneManager * smgr );
 
 		//IAnimatedMesh
-		virtual u32 getFrameCount() const;
-		virtual IMesh* getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop);
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
-		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
-		virtual void renderModel ( u32 param, video::IVideoDriver * driver, const core::matrix4 &absoluteTransformation);
+		virtual u32 getFrameCount() const _IRR_OVERRIDE_;
+		virtual IMesh* getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) _IRR_OVERRIDE_;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual E_ANIMATED_MESH_TYPE getMeshType() const _IRR_OVERRIDE_;
+		void renderModel ( u32 param, video::IVideoDriver * driver, const core::matrix4 &absoluteTransformation);
 
 		//! returns amount of mesh buffers.
-		virtual u32 getMeshBufferCount() const;
+		virtual u32 getMeshBufferCount() const _IRR_OVERRIDE_;
 		//! returns pointer to a mesh buffer
-		virtual IMeshBuffer* getMeshBuffer(u32 nr) const;
+		virtual IMeshBuffer* getMeshBuffer(u32 nr) const _IRR_OVERRIDE_;
 		//! Returns pointer to a mesh buffer which fits a material
-		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const;
+		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const _IRR_OVERRIDE_;
 
-		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue);
+		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue) _IRR_OVERRIDE_;
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_;
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_;
 
 		//! set user axis aligned bounding box
-		virtual void setBoundingBox(const core::aabbox3df& box);
+		virtual void setBoundingBox(const core::aabbox3df& box) _IRR_OVERRIDE_;
 
 		//! Gets the default animation speed of the animated mesh.
 		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
@@ -609,14 +609,14 @@ namespace scene
 
 		//! returns true if the file maybe is able to be loaded by this class
 		/** based on the file extension (e.g. ".bsp") */
-		virtual bool isALoadableFileExtension(const io::path& filename) const;
+		virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
 
 		//! creates/loads an animated mesh from the file.
 		/** \return Pointer to the created mesh. Returns 0 if loading failed.
 		If you no longer need the mesh, you should call IAnimatedMesh::drop().
 		See IReferenceCounted::drop() for more information.
 		*/
-		virtual IAnimatedMesh* createMesh(io::IReadFile* file);
+		virtual IAnimatedMesh* createMesh(io::IReadFile* file) _IRR_OVERRIDE_;
 
 	private:
 		scene::ISceneManager* SceneManager;

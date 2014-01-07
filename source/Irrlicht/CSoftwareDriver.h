@@ -25,19 +25,19 @@ namespace video
 		virtual ~CSoftwareDriver();
 
 		//! queries the features of the driver, returns true if feature is available
-		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
+		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const _IRR_OVERRIDE_;
 
 		//! sets transformation
-		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
+		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat) _IRR_OVERRIDE_;
 
 		//! sets a material
-		virtual void setMaterial(const SMaterial& material);
+		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 						bool clearZBuffer, SColor color);
 
 		//! sets a viewport
-		virtual void setViewPort(const core::rect<s32>& area);
+		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
 
 		//! clears the zbuffer
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
@@ -46,14 +46,14 @@ namespace video
 				core::rect<s32>* sourceRect=0);
 
 		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene();
+		virtual bool endScene() _IRR_OVERRIDE_;
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
-		virtual void OnResize(const core::dimension2d<u32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size) _IRR_OVERRIDE_;
 
 		//! returns size of the current render target
-		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
 
 		//! draws a vertex primitive list
 		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
@@ -84,39 +84,39 @@ namespace video
 								SColor color=SColor(255,255,255,255));
 
 		//! Draws a single pixel
-		virtual void drawPixel(u32 x, u32 y, const SColor & color);
+		virtual void drawPixel(u32 x, u32 y, const SColor & color) _IRR_OVERRIDE_;
 
 		//! \return Returns the name of the video driver. Example: In case of the Direct3D8
 		//! driver, it would return "Direct3D8.1".
-		virtual const wchar_t* getName() const;
+		virtual const wchar_t* getName() const _IRR_OVERRIDE_;
 
 		//! Returns type of video driver
-		virtual E_DRIVER_TYPE getDriverType() const;
+		virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
 
 		//! get color format of the current color buffer
-		virtual ECOLOR_FORMAT getColorFormat() const;
+		virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
 
 		//! Returns the transformation set by setTransform
-		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
+		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const _IRR_OVERRIDE_;
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0) _IRR_OVERRIDE_;
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! Clears the ZBuffer.
-		virtual void clearZBuffer();
+		virtual void clearZBuffer() _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
-		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER);
+		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
 
 		//! Returns the maximum amount of primitives (mostly vertices) which
 		//! the device is able to render with one drawIndexedTriangleList
 		//! call.
-		virtual u32 getMaximalPrimitiveCount() const;
+		virtual u32 getMaximalPrimitiveCount() const _IRR_OVERRIDE_;
 
 	protected:
 

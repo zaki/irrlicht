@@ -24,23 +24,23 @@ namespace gui
 		CGUIMenu(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
 		//! draws the element and its children
-		virtual void draw();
+		virtual void draw() _IRR_OVERRIDE_;
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! Updates the absolute position.
-		virtual void updateAbsolutePosition();
+		virtual void updateAbsolutePosition() _IRR_OVERRIDE_;
 
 	protected:
 
-		virtual void recalculateSize();
+		virtual void recalculateSize() _IRR_OVERRIDE_;
 
 		//! returns the item highlight-area
-		virtual core::rect<s32> getHRect(const SItem& i, const core::rect<s32>& absolute) const;
+		virtual core::rect<s32> getHRect(const SItem& i, const core::rect<s32>& absolute) const _IRR_OVERRIDE_;
 
 		//! Gets drawing rect of Item
-		virtual core::rect<s32> getRect(const SItem& i, const core::rect<s32>& absolute) const;
+		virtual core::rect<s32> getRect(const SItem& i, const core::rect<s32>& absolute) const _IRR_OVERRIDE_;
 	};
 
 } // end namespace gui

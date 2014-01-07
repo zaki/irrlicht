@@ -38,51 +38,51 @@ namespace scene
 		//! Returns if the attached scene node is falling, which means that
 		//! there is no blocking wall from the scene node in the direction of
 		//! the gravity.
-		virtual bool isFalling() const;
+		virtual bool isFalling() const _IRR_OVERRIDE_;
 
 		//! Sets the radius of the ellipsoid with which collision detection and
 		//! response is done.
-		virtual void setEllipsoidRadius(const core::vector3df& radius);
+		virtual void setEllipsoidRadius(const core::vector3df& radius) _IRR_OVERRIDE_;
 
 		//! Returns the radius of the ellipsoid with which the collision detection and
 		//! response is done.
-		virtual core::vector3df getEllipsoidRadius() const;
+		virtual core::vector3df getEllipsoidRadius() const _IRR_OVERRIDE_;
 
 		//! Sets the gravity of the environment.
-		virtual void setGravity(const core::vector3df& gravity);
+		virtual void setGravity(const core::vector3df& gravity) _IRR_OVERRIDE_;
 
 		//! 'Jump' the animator, by adding a jump speed opposite to its gravity
-		virtual void jump(f32 jumpSpeed);
+		virtual void jump(f32 jumpSpeed) _IRR_OVERRIDE_;
 
 		//! Should the Target react on collision ( default = true )
-		virtual void setAnimateTarget ( bool enable );
-		virtual bool getAnimateTarget () const;
+		virtual void setAnimateTarget ( bool enable ) _IRR_OVERRIDE_;
+		virtual bool getAnimateTarget () const _IRR_OVERRIDE_;
 
 		//! Returns current vector of gravity.
-		virtual core::vector3df getGravity() const;
+		virtual core::vector3df getGravity() const _IRR_OVERRIDE_;
 
 		//! Sets the translation of the ellipsoid for collision detection.
-		virtual void setEllipsoidTranslation(const core::vector3df &translation);
+		virtual void setEllipsoidTranslation(const core::vector3df &translation) _IRR_OVERRIDE_;
 
 		//! Returns the translation of the ellipsoid for collision detection.
-		virtual core::vector3df getEllipsoidTranslation() const;
+		virtual core::vector3df getEllipsoidTranslation() const _IRR_OVERRIDE_;
 
 		//! Sets a triangle selector holding all triangles of the world with which
 		//! the scene node may collide.
-		virtual void setWorld(ITriangleSelector* newWorld);
+		virtual void setWorld(ITriangleSelector* newWorld) _IRR_OVERRIDE_;
 
 		//! Returns the current triangle selector containing all triangles for
 		//! collision detection.
-		virtual ITriangleSelector* getWorld() const;
+		virtual ITriangleSelector* getWorld() const _IRR_OVERRIDE_;
 
 		//! animates a scene node
-		virtual void animateNode(ISceneNode* node, u32 timeMs);
+		virtual void animateNode(ISceneNode* node, u32 timeMs) _IRR_OVERRIDE_;
 
 		//! Writes attributes of the scene node animator.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the scene node animator.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node animator
 		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const _IRR_OVERRIDE_ { return ESNAT_COLLISION_RESPONSE; }
@@ -91,7 +91,7 @@ namespace scene
 		/** Please note that you will have to drop
 		(IReferenceCounted::drop()) the returned pointer after calling
 		this. */
-		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
 		//! Set the single node that this animator will act on.
 		virtual void setTargetNode(ISceneNode * node) _IRR_OVERRIDE_ { setNode(node); }
@@ -117,7 +117,7 @@ namespace scene
 		/** \param callback: collision callback handler that will be called when a collision
 		occurs. Set this to 0 to disable the callback.
 		*/
-		virtual void setCollisionCallback(ICollisionCallback* callback);
+		virtual void setCollisionCallback(ICollisionCallback* callback) _IRR_OVERRIDE_;
 
 	private:
 

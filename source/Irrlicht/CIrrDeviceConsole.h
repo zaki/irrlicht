@@ -47,26 +47,26 @@ namespace irr
 		virtual ~CIrrDeviceConsole();
 
 		//! runs the device. Returns false if device wants to be deleted
-		virtual bool run();
+		virtual bool run() _IRR_OVERRIDE_;
 
 		//! Cause the device to temporarily pause execution and let other processes to run
 		// This should bring down processor usage without major performance loss for Irrlicht
-		virtual void yield();
+		virtual void yield() _IRR_OVERRIDE_;
 
 		//! Pause execution and let other processes to run for a specified amount of time.
-		virtual void sleep(u32 timeMs, bool pauseTimer);
+		virtual void sleep(u32 timeMs, bool pauseTimer) _IRR_OVERRIDE_;
 
 		//! sets the caption of the window
-		virtual void setWindowCaption(const wchar_t* text);
+		virtual void setWindowCaption(const wchar_t* text) _IRR_OVERRIDE_;
 
 		//! returns if window is active. if not, nothing need to be drawn
-		virtual bool isWindowActive() const;
+		virtual bool isWindowActive() const _IRR_OVERRIDE_;
 
 		//! returns if window has focus
-		virtual bool isWindowFocused() const;
+		virtual bool isWindowFocused() const _IRR_OVERRIDE_;
 
 		//! returns if window is minimized
-		virtual bool isWindowMinimized() const;
+		virtual bool isWindowMinimized() const _IRR_OVERRIDE_;
 
 		//! returns current window position (not supported for this device)
 		virtual core::position2di getWindowPosition()
@@ -75,22 +75,22 @@ namespace irr
 		}
 
 		//! presents a surface in the client area
-		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0);
+		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0) _IRR_OVERRIDE_;
 
 		//! notifies the device that it should close itself
-		virtual void closeDevice();
+		virtual void closeDevice() _IRR_OVERRIDE_;
 
 		//! Sets if the window should be resizable in windowed mode.
-		virtual void setResizable(bool resize=false);
+		virtual void setResizable(bool resize=false) _IRR_OVERRIDE_;
 
 		//! Minimizes the window.
-		virtual void minimizeWindow();
+		virtual void minimizeWindow() _IRR_OVERRIDE_;
 
 		//! Maximizes the window.
-		virtual void maximizeWindow();
+		virtual void maximizeWindow() _IRR_OVERRIDE_;
 
 		//! Restores the window size.
-		virtual void restoreWindow();
+		virtual void restoreWindow() _IRR_OVERRIDE_;
 
 		//! Get the device type
 		virtual E_DEVICE_TYPE getType() const
@@ -310,7 +310,7 @@ namespace gui
 		}
 
 		//! Calculates the index of the character in the text which is on a specific position.
-		virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const _IRR_OVERRIDE_ { return pixel_x; };
+		virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const _IRR_OVERRIDE_ { return pixel_x; } _IRR_OVERRIDE_;
 
 		//! No kerning
 		virtual void setKerningWidth (s32 kerning) _IRR_OVERRIDE_ { }

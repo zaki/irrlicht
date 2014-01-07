@@ -31,19 +31,19 @@ namespace scene
 		//! destructor
 		virtual ~CTextSceneNode();
 
-		virtual void OnRegisterSceneNode();
+		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
 
 		//! renders the node.
-		virtual void render();
+		virtual void render() _IRR_OVERRIDE_;
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
 		//! sets the text string
-		virtual void setText(const wchar_t* text);
+		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
 
 		//! sets the color of the text
-		virtual void setTextColor(video::SColor color);
+		virtual void setTextColor(video::SColor color) _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_TEXT; }
@@ -70,50 +70,50 @@ namespace scene
 		virtual ~CBillboardTextSceneNode();
 
 		//! sets the vertex positions etc
-		virtual void OnAnimate(u32 timeMs);
+		virtual void OnAnimate(u32 timeMs) _IRR_OVERRIDE_;
 
 		//! registers the node into the transparent pass
-		virtual void OnRegisterSceneNode();
+		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
 
 		//! renders the node.
-		virtual void render();
+		virtual void render() _IRR_OVERRIDE_;
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
 		//! sets the text string
-		virtual void setText(const wchar_t* text);
+		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
 
 		//! sets the color of the text
-		virtual void setTextColor(video::SColor color);
+		virtual void setTextColor(video::SColor color) _IRR_OVERRIDE_;
 
 		//! sets the size of the billboard
-		virtual void setSize(const core::dimension2d<f32>& size);
+		virtual void setSize(const core::dimension2d<f32>& size) _IRR_OVERRIDE_;
 
 		//! gets the size of the billboard
-		virtual const core::dimension2d<f32>& getSize() const;
+		virtual const core::dimension2d<f32>& getSize() const _IRR_OVERRIDE_;
 
-		virtual video::SMaterial& getMaterial(u32 i);
+		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
 
 		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount() const;
+		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_TEXT; }
 
 		//! Set the color of all vertices of the billboard
 		//! \param overallColor: the color to set
-		virtual void setColor(const video::SColor & overallColor);
+		virtual void setColor(const video::SColor & overallColor) _IRR_OVERRIDE_;
 
 		//! Set the color of the top and bottom vertices of the billboard
 		//! \param topColor: the color to set the top vertices
 		//! \param bottomColor: the color to set the bottom vertices
-		virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor);
+		virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor) _IRR_OVERRIDE_;
 
 		//! Gets the color of the top and bottom vertices of the billboard
 		//! \param topColor: stores the color of the top vertices
 		//! \param bottomColor: stores the color of the bottom vertices
-		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const;
+		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const _IRR_OVERRIDE_;
 
 		virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth)
 		{

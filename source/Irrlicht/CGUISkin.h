@@ -30,49 +30,49 @@ namespace gui
 		virtual ~CGUISkin();
 
 		//! returns default color
-		virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const;
+		virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const _IRR_OVERRIDE_;
 
 		//! sets a default color
-		virtual void setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor);
+		virtual void setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor) _IRR_OVERRIDE_;
 
 		//! returns size for the given size type
-		virtual s32 getSize(EGUI_DEFAULT_SIZE size) const;
+		virtual s32 getSize(EGUI_DEFAULT_SIZE size) const _IRR_OVERRIDE_;
 
 		//! sets a default size
-		virtual void setSize(EGUI_DEFAULT_SIZE which, s32 size);
+		virtual void setSize(EGUI_DEFAULT_SIZE which, s32 size) _IRR_OVERRIDE_;
 
 		//! returns the default font
-		virtual IGUIFont* getFont(EGUI_DEFAULT_FONT which=EGDF_DEFAULT) const;
+		virtual IGUIFont* getFont(EGUI_DEFAULT_FONT which=EGDF_DEFAULT) const _IRR_OVERRIDE_;
 
 		//! sets a default font
-		virtual void setFont(IGUIFont* font, EGUI_DEFAULT_FONT which=EGDF_DEFAULT);
+		virtual void setFont(IGUIFont* font, EGUI_DEFAULT_FONT which=EGDF_DEFAULT) _IRR_OVERRIDE_;
 
 		//! sets the sprite bank used for drawing icons
-		virtual void setSpriteBank(IGUISpriteBank* bank);
+		virtual void setSpriteBank(IGUISpriteBank* bank) _IRR_OVERRIDE_;
 
 		//! gets the sprite bank used for drawing icons
-		virtual IGUISpriteBank* getSpriteBank() const;
+		virtual IGUISpriteBank* getSpriteBank() const _IRR_OVERRIDE_;
 
 		//! Returns a default icon
 		/** Returns the sprite index within the sprite bank */
-		virtual u32 getIcon(EGUI_DEFAULT_ICON icon) const;
+		virtual u32 getIcon(EGUI_DEFAULT_ICON icon) const _IRR_OVERRIDE_;
 
 		//! Sets a default icon
 		/** Sets the sprite index used for drawing icons like arrows,
 		close buttons and ticks in checkboxes
 		\param icon: Enum specifying which icon to change
 		\param index: The sprite index used to draw this icon */
-		virtual void setIcon(EGUI_DEFAULT_ICON icon, u32 index);
+		virtual void setIcon(EGUI_DEFAULT_ICON icon, u32 index) _IRR_OVERRIDE_;
 
 		//! Returns a default text.
 		/** For example for Message box button captions:
 		"OK", "Cancel", "Yes", "No" and so on. */
-		virtual const wchar_t* getDefaultText(EGUI_DEFAULT_TEXT text) const;
+		virtual const wchar_t* getDefaultText(EGUI_DEFAULT_TEXT text) const _IRR_OVERRIDE_;
 
 		//! Sets a default text.
 		/** For example for Message box button captions:
 		"OK", "Cancel", "Yes", "No" and so on. */
-		virtual void setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText);
+		virtual void setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText) _IRR_OVERRIDE_;
 
 		//! draws a standard 3d button pane
 		/** Used for drawing for example buttons in normal state.
@@ -212,17 +212,17 @@ namespace gui
 
 
 		//! get the type of this skin
-		virtual EGUI_SKIN_TYPE getType() const;
+		virtual EGUI_SKIN_TYPE getType() const _IRR_OVERRIDE_;
 
 		//! Writes attributes of the object.
 		//! Implement this to expose the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml serialization purposes.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the object.
 		//! Implement this to set the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml deserialization purposes.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 	private:
 

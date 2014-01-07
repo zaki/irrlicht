@@ -38,25 +38,25 @@ public:
 	virtual ~CD3D8Texture();
 
 	//! lock function
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0);
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_;
 
 	//! unlock function
-	virtual void unlock();
+	virtual void unlock() _IRR_OVERRIDE_;
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<u32>& getOriginalSize() const;
+	virtual const core::dimension2d<u32>& getOriginalSize() const _IRR_OVERRIDE_;
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<u32>& getSize() const;
+	virtual const core::dimension2d<u32>& getSize() const _IRR_OVERRIDE_;
 
 	//! returns driver type of texture (=the driver, who created the texture)
-	virtual E_DRIVER_TYPE getDriverType() const;
+	virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
 
 	//! returns color format of texture
-	virtual ECOLOR_FORMAT getColorFormat() const;
+	virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
 
 	//! returns pitch of texture (in bytes)
-	virtual u32 getPitch() const;
+	virtual u32 getPitch() const _IRR_OVERRIDE_;
 
 	//! returns the DIRECT3D8 Texture
 	IDirect3DTexture8* getDX8Texture() const;
@@ -66,10 +66,10 @@ public:
 
 	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
-	virtual void regenerateMipMapLevels(void* mipmapData=0);
+	virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_;
 
 	//! returns if it is a render target
-	virtual bool isRenderTarget() const;
+	virtual bool isRenderTarget() const _IRR_OVERRIDE_;
 
 	//! Returns pointer to the render target surface
 	IDirect3DSurface8* getRenderTargetSurface();

@@ -29,40 +29,40 @@ namespace scene
 
 		virtual ~CVolumeLightSceneNode();
 
-		virtual void OnRegisterSceneNode();
+		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
 
 		//! renders the node.
-		virtual void render();
+		virtual void render() _IRR_OVERRIDE_;
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
 		//! returns the material based on the zero based index i.
-		virtual video::SMaterial& getMaterial(u32 i);
+		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
 
 		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount() const;
+		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_VOLUME_LIGHT; }
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the scene node.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 		//! Creates a clone of this scene node and its children.
-		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
+		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
-		virtual void setSubDivideU(const u32 inU);
-		virtual void setSubDivideV(const u32 inV);
+		virtual void setSubDivideU(const u32 inU) _IRR_OVERRIDE_;
+		virtual void setSubDivideV(const u32 inV) _IRR_OVERRIDE_;
 
 		virtual u32 getSubDivideU() const _IRR_OVERRIDE_ { return SubdivideU; }
 		virtual u32 getSubDivideV() const _IRR_OVERRIDE_ { return SubdivideV; }
 
-		virtual void setFootColor(const video::SColor inColor);
-		virtual void setTailColor(const video::SColor inColor);
+		virtual void setFootColor(const video::SColor inColor) _IRR_OVERRIDE_;
+		virtual void setTailColor(const video::SColor inColor) _IRR_OVERRIDE_;
 
 		virtual video::SColor getFootColor() const _IRR_OVERRIDE_ { return FootColor; }
 		virtual video::SColor getTailColor() const _IRR_OVERRIDE_ { return TailColor; }

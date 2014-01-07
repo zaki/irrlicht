@@ -28,19 +28,19 @@ namespace video
 		virtual ~CBurningVideoDriver();
 
 		//! queries the features of the driver, returns true if feature is available
-		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
+		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const _IRR_OVERRIDE_;
 
 		//! sets transformation
-		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
+		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat) _IRR_OVERRIDE_;
 
 		//! sets a material
-		virtual void setMaterial(const SMaterial& material);
+		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 						bool clearZBuffer, SColor color);
 
 		//! sets a viewport
-		virtual void setViewPort(const core::rect<s32>& area);
+		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
 
 		//! clears the zbuffer
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
@@ -49,35 +49,35 @@ namespace video
 				core::rect<s32>* sourceRect=0);
 
 		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene();
+		virtual bool endScene() _IRR_OVERRIDE_;
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
-		virtual void OnResize(const core::dimension2d<u32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size) _IRR_OVERRIDE_;
 
 		//! returns size of the current render target
-		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
 
 		//! deletes all dynamic lights there are
-		virtual void deleteAllDynamicLights();
+		virtual void deleteAllDynamicLights() _IRR_OVERRIDE_;
 
 		//! adds a dynamic light, returning an index to the light
 		//! \param light: the light data to use to create the light
 		//! \return An index to the light, or -1 if an error occurs
-		virtual s32 addDynamicLight(const SLight& light);
+		virtual s32 addDynamicLight(const SLight& light) _IRR_OVERRIDE_;
 
 		//! Turns a dynamic light on or off
 		//! \param lightIndex: the index returned by addDynamicLight
 		//! \param turnOn: true to turn the light on, false to turn it off
-		virtual void turnLightOn(s32 lightIndex, bool turnOn);
+		virtual void turnLightOn(s32 lightIndex, bool turnOn) _IRR_OVERRIDE_;
 
 		//! returns the maximal amount of dynamic lights the device can handle
-		virtual u32 getMaximalDynamicLightAmount() const;
+		virtual u32 getMaximalDynamicLightAmount() const _IRR_OVERRIDE_;
 
 		//! Sets the dynamic ambient light color. The default color is
 		//! (0,0,0,0) which means it is dark.
 		//! \param color: New color of the ambient light.
-		virtual void setAmbientLight(const SColorf& color);
+		virtual void setAmbientLight(const SColorf& color) _IRR_OVERRIDE_;
 
 		//! draws a vertex primitive list
 		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
@@ -113,40 +113,40 @@ namespace video
 					SColor color=SColor(255,255,255,255));
 
 		//! Draws a single pixel
-		virtual void drawPixel(u32 x, u32 y, const SColor & color);
+		virtual void drawPixel(u32 x, u32 y, const SColor & color) _IRR_OVERRIDE_;
 
 		//! \return Returns the name of the video driver. Example: In case of the DirectX8
 		//! driver, it would return "Direct3D8.1".
-		virtual const wchar_t* getName() const;
+		virtual const wchar_t* getName() const _IRR_OVERRIDE_;
 
 		//! Returns type of video driver
-		virtual E_DRIVER_TYPE getDriverType() const;
+		virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
 
 		//! get color format of the current color buffer
-		virtual ECOLOR_FORMAT getColorFormat() const;
+		virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
 
 		//! Returns the transformation set by setTransform
-		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
+		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const _IRR_OVERRIDE_;
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! Clears the DepthBuffer.
-		virtual void clearZBuffer();
+		virtual void clearZBuffer() _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
-		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER);
+		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
 
 		//! Returns the maximum amount of primitives (mostly vertices) which
 		//! the device is able to render with one drawIndexedTriangleList
 		//! call.
-		virtual u32 getMaximalPrimitiveCount() const;
+		virtual u32 getMaximalPrimitiveCount() const _IRR_OVERRIDE_;
 
 		//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 		//! this: First, draw all geometry. Then use this method, to draw the shadow
 		//! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
-		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0);
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail=true, u32 debugDataVisible=0) _IRR_OVERRIDE_;
 
 		//! Fills the stencil shadow with color. After the shadow volume has been drawn
 		//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
@@ -158,10 +158,10 @@ namespace video
 			video::SColor rightDownEdge = video::SColor(0,0,0,0));
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo();
+		virtual core::stringc getVendorInfo() _IRR_OVERRIDE_;
 
 		//! Returns the maximum texture size supported.
-		virtual core::dimension2du getMaxTextureSize() const;
+		virtual core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
 
 		IDepthBuffer * getDepthBuffer () { return DepthBuffer; }
 		IStencilBuffer * getStencilBuffer () { return StencilBuffer; }
@@ -176,7 +176,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0) _IRR_OVERRIDE_;
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;

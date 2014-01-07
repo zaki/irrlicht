@@ -22,22 +22,22 @@ namespace video
 		CVideoModeList();
 
 		//! Gets amount of video modes in the list.
-		virtual s32 getVideoModeCount() const;
+		virtual s32 getVideoModeCount() const _IRR_OVERRIDE_;
 
 		//! Returns the screen size of a video mode in pixels.
-		virtual core::dimension2d<u32> getVideoModeResolution(s32 modeNumber) const;
+		virtual core::dimension2d<u32> getVideoModeResolution(s32 modeNumber) const _IRR_OVERRIDE_;
 
 		//! Returns the screen size of an optimal video mode in pixels.
-		virtual core::dimension2d<u32> getVideoModeResolution(const core::dimension2d<u32>& minSize, const core::dimension2d<u32>& maxSize) const;
+		virtual core::dimension2d<u32> getVideoModeResolution(const core::dimension2d<u32>& minSize, const core::dimension2d<u32>& maxSize) const _IRR_OVERRIDE_;
 
 		//! Returns the pixel depth of a video mode in bits.
-		virtual s32 getVideoModeDepth(s32 modeNumber) const;
+		virtual s32 getVideoModeDepth(s32 modeNumber) const _IRR_OVERRIDE_;
 
 		//! Returns current desktop screen resolution.
-		virtual const core::dimension2d<u32>& getDesktopResolution() const;
+		virtual const core::dimension2d<u32>& getDesktopResolution() const _IRR_OVERRIDE_;
 
 		//! Returns the pixel depth of a video mode in bits.
-		virtual s32 getDesktopDepth() const;
+		virtual s32 getDesktopDepth() const _IRR_OVERRIDE_;
 
 		//! adds a new mode to the list
 		void addMode(const core::dimension2d<u32>& size, s32 depth);

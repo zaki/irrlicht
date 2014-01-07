@@ -54,12 +54,12 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services);
 
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_;
 
-	virtual void OnUnsetMaterial();
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_;
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const;
+	virtual bool isTransparent() const _IRR_OVERRIDE_;
 
 protected:
 

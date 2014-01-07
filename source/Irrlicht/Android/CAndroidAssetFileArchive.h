@@ -54,6 +54,9 @@ namespace io
       virtual void addDirectory(const io::path &filename);
 
 		static ANativeActivity* Activity;
+		
+		//! return the name (id) of the file Archive
+		virtual const io::path& getArchiveName() const _IRR_OVERRIDE_ {return Path;}
 
     protected:
 		static CAndroidAssetFileArchive* createAndroidAssetFileArchive(bool ignoreCase, bool ignorePaths);

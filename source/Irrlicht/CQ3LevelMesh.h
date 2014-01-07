@@ -36,7 +36,7 @@ namespace scene
 
 		//! returns the amount of frames in milliseconds. If the amount
 		//! is 1, it is a static (=non animated) mesh.
-		virtual u32 getFrameCount() const;
+		virtual u32 getFrameCount() const _IRR_OVERRIDE_;
 
 		//! Gets the default animation speed of the animated mesh.
 		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
@@ -61,33 +61,33 @@ namespace scene
 
 		//! Returns an axis aligned bounding box of the mesh.
 		//! \return A bounding box of this mesh is returned.
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
-		virtual void setBoundingBox( const core::aabbox3df& box);
+		virtual void setBoundingBox( const core::aabbox3df& box) _IRR_OVERRIDE_;
 
 		//! Returns the type of the animated mesh.
-		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
+		virtual E_ANIMATED_MESH_TYPE getMeshType() const _IRR_OVERRIDE_;
 
 		//! loads the shader definition
-		virtual void getShader( io::IReadFile* file );
+		void getShader( io::IReadFile* file );
 
 		//! loads the shader definition
-		virtual const quake3::IShader * getShader( const c8 * filename, bool fileNameIsValid=true );
+		virtual const quake3::IShader * getShader( const c8 * filename, bool fileNameIsValid=true ) _IRR_OVERRIDE_;
 
 		//! returns a already loaded Shader
-		virtual const quake3::IShader * getShader( u32 index  ) const;
+		virtual const quake3::IShader * getShader( u32 index  ) const _IRR_OVERRIDE_;
 
 
 		//! loads a configuration file
-		virtual void getConfiguration( io::IReadFile* file );
+		void getConfiguration( io::IReadFile* file );
 		//! get's an interface to the entities
-		virtual quake3::tQ3EntityList & getEntityList();
+		virtual quake3::tQ3EntityList & getEntityList() _IRR_OVERRIDE_;
 
 		//! returns the requested brush entity
-		virtual IMesh* getBrushEntityMesh(s32 num) const;
+		virtual IMesh* getBrushEntityMesh(s32 num) const _IRR_OVERRIDE_;
 
 		//! returns the requested brush entity
-		virtual IMesh* getBrushEntityMesh(quake3::IEntity &ent) const;
+		virtual IMesh* getBrushEntityMesh(quake3::IEntity &ent) const _IRR_OVERRIDE_;
 
 		//Link to held meshes? ...
 

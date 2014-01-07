@@ -149,6 +149,7 @@ CTarReader::~CTarReader()
 		File->drop();
 }
 
+
 const IFileList* CTarReader::getFileList() const
 {
 	return this;

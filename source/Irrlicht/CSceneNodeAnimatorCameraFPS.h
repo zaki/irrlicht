@@ -36,42 +36,42 @@ namespace scene
 		virtual ~CSceneNodeAnimatorCameraFPS();
 
 		//! Animates the scene node, currently only works on cameras
-		virtual void animateNode(ISceneNode* node, u32 timeMs);
+		virtual void animateNode(ISceneNode* node, u32 timeMs) _IRR_OVERRIDE_;
 
 		//! Event receiver
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
 
 		//! Returns the speed of movement in units per second
-		virtual f32 getMoveSpeed() const;
+		virtual f32 getMoveSpeed() const _IRR_OVERRIDE_;
 
 		//! Sets the speed of movement in units per second
-		virtual void setMoveSpeed(f32 moveSpeed);
+		virtual void setMoveSpeed(f32 moveSpeed) _IRR_OVERRIDE_;
 
 		//! Returns the rotation speed
-		virtual f32 getRotateSpeed() const;
+		virtual f32 getRotateSpeed() const _IRR_OVERRIDE_;
 
 		//! Set the rotation speed
-		virtual void setRotateSpeed(f32 rotateSpeed);
+		virtual void setRotateSpeed(f32 rotateSpeed) _IRR_OVERRIDE_;
 
 		//! Sets the keyboard mapping for this animator (old style)
 		//! \param keymap: an array of keyboard mappings, see SKeyMap
 		//! \param count: the size of the keyboard map array
-		virtual void setKeyMap(SKeyMap *map, u32 count);
+		virtual void setKeyMap(SKeyMap *map, u32 count) _IRR_OVERRIDE_;
 
 		//! Sets the keyboard mapping for this animator
 		//!	\param keymap The new keymap array
-		virtual void setKeyMap(const core::array<SKeyMap>& keymap);
+		virtual void setKeyMap(const core::array<SKeyMap>& keymap) _IRR_OVERRIDE_;
 
 		//! Gets the keyboard mapping for this animator
-		virtual const core::array<SKeyMap>& getKeyMap() const;
+		virtual const core::array<SKeyMap>& getKeyMap() const _IRR_OVERRIDE_;
 
 		//! Sets whether vertical movement should be allowed.
-		virtual void setVerticalMovement(bool allow);
+		virtual void setVerticalMovement(bool allow) _IRR_OVERRIDE_;
 
 		//! Sets whether the Y axis of the mouse should be inverted.
 		/** If enabled then moving the mouse down will cause
 		the camera to look up. It is disabled by default. */
-		virtual void setInvertMouse(bool invert);
+		virtual void setInvertMouse(bool invert) _IRR_OVERRIDE_;
 
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const
@@ -89,7 +89,7 @@ namespace scene
 		/** Please note that you will have to drop
 		(IReferenceCounted::drop()) the returned pointer once you're
 		done with it. */
-		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
 	private:
 		void allKeysUp();

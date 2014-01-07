@@ -78,24 +78,24 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services);
 
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_;
 
-	virtual void OnUnsetMaterial();
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_;
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const;
+	virtual bool isTransparent() const _IRR_OVERRIDE_;
 
 	// implementations for the render services
-	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates);
-	virtual s32 getVertexShaderConstantID(const c8* name);
-	virtual s32 getPixelShaderConstantID(const c8* name);
-	virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
-	virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1);
-	virtual bool setVertexShaderConstant(s32 index, const f32* floats, int count);
-	virtual bool setVertexShaderConstant(s32 index, const s32* ints, int count);
-	virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count);
-	virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count);
-	virtual IVideoDriver* getVideoDriver();
+	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates) _IRR_OVERRIDE_;
+	virtual s32 getVertexShaderConstantID(const c8* name) _IRR_OVERRIDE_;
+	virtual s32 getPixelShaderConstantID(const c8* name) _IRR_OVERRIDE_;
+	virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1) _IRR_OVERRIDE_;
+	virtual void setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1) _IRR_OVERRIDE_;
+	virtual bool setVertexShaderConstant(s32 index, const f32* floats, int count) _IRR_OVERRIDE_;
+	virtual bool setVertexShaderConstant(s32 index, const s32* ints, int count) _IRR_OVERRIDE_;
+	virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count) _IRR_OVERRIDE_;
+	virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count) _IRR_OVERRIDE_;
+	virtual IVideoDriver* getVideoDriver() _IRR_OVERRIDE_;
 
 protected:
 

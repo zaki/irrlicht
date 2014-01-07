@@ -37,9 +37,9 @@ namespace video
 class CImageLoaderLMP : public irr::video::IImageLoader
 {
 public:
-	virtual bool isALoadableFileExtension(const io::path& filename) const;
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
-	virtual irr::video::IImage* loadImage(irr::io::IReadFile* file) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
+	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const _IRR_OVERRIDE_;
+	virtual irr::video::IImage* loadImage(irr::io::IReadFile* file) const _IRR_OVERRIDE_;
 };
 
 #endif
@@ -50,18 +50,18 @@ public:
 class CImageLoaderWAL : public irr::video::IImageLoader
 {
 public:
-	virtual bool isALoadableFileExtension(const io::path& filename) const;
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
-	virtual irr::video::IImage* loadImage(irr::io::IReadFile* file) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
+	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const _IRR_OVERRIDE_;
+	virtual irr::video::IImage* loadImage(irr::io::IReadFile* file) const _IRR_OVERRIDE_;
 };
 
 //! An Irrlicht image loader for Halflife 1 engine textures
 class CImageLoaderWAL2 : public irr::video::IImageLoader
 {
 public:
-	virtual bool isALoadableFileExtension(const io::path& filename) const;
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
-	virtual irr::video::IImage* loadImage(irr::io::IReadFile* file) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
+	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const _IRR_OVERRIDE_;
+	virtual irr::video::IImage* loadImage(irr::io::IReadFile* file) const _IRR_OVERRIDE_;
 };
 
 // byte-align structures

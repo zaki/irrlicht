@@ -27,28 +27,28 @@ namespace io
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".zip")
-		virtual bool isALoadableFileFormat(const io::path& filename) const;
+		virtual bool isALoadableFileFormat(const io::path& filename) const _IRR_OVERRIDE_;
 
 		//! Check if the file might be loaded by this class
 		/** Check might look into the file.
 		\param file File handle to check.
 		\return True if file seems to be loadable. */
-		virtual bool isALoadableFileFormat(io::IReadFile* file) const;
+		virtual bool isALoadableFileFormat(io::IReadFile* file) const _IRR_OVERRIDE_;
 
 		//! Check to see if the loader can create archives of this type.
 		/** Check based on the archive type.
 		\param fileType The archive type to check.
 		\return True if the archile loader supports this type, false if not */
-		virtual bool isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const;
+		virtual bool isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const _IRR_OVERRIDE_;
 
 		//! Creates an archive from the filename
 		/** \param file File handle to check.
 		\return Pointer to newly created archive, or 0 upon error. */
-		virtual IFileArchive* createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const;
+		virtual IFileArchive* createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const _IRR_OVERRIDE_;
 
 		//! creates/loads an archive from the file.
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
-		virtual IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
+		virtual IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const _IRR_OVERRIDE_;
 
 	private:
 		io::IFileSystem* FileSystem;
@@ -64,16 +64,19 @@ namespace io
 				bool ignoreCase, bool ignorePaths);
 
 		//! opens a file by index
-		virtual IReadFile* createAndOpenFile(u32 index);
+		virtual IReadFile* createAndOpenFile(u32 index) _IRR_OVERRIDE_;
 
 		//! opens a file by file name
-		virtual IReadFile* createAndOpenFile(const io::path& filename);
+		virtual IReadFile* createAndOpenFile(const io::path& filename) _IRR_OVERRIDE_;
 
 		//! returns the list of files
-		virtual const IFileList* getFileList() const;
+		virtual const IFileList* getFileList() const _IRR_OVERRIDE_;
 
 		//! get the class Type
 		virtual E_FILE_ARCHIVE_TYPE getType() const _IRR_OVERRIDE_ { return EFAT_FOLDER; }
+
+		//! return the name (id) of the file Archive
+		virtual const io::path& getArchiveName() const _IRR_OVERRIDE_ {return Path;}
 
 	private:
 

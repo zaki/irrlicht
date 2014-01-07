@@ -36,7 +36,7 @@ public:
 
 	//! Prepares an array with new particles to emitt into the system
 	//! and returns how much new particles there are.
-	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray);
+	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray) _IRR_OVERRIDE_;
 
 	//! Set direction the emitter emits particles.
 	virtual void setDirection( const core::vector3df& newDirection ) _IRR_OVERRIDE_ { Direction = newDirection; }
@@ -54,10 +54,10 @@ public:
 	virtual void setMaxStartColor( const video::SColor& color ) _IRR_OVERRIDE_ { MaxStartColor = color; }
 
 	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MaxStartSize = size; };
+	virtual void setMaxStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MaxStartSize = size; }
 
 	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MinStartSize = size; };
+	virtual void setMinStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MinStartSize = size; }
 
 	//! Set the minimum particle life-time in milliseconds
 	virtual void setMinLifeTime( u32 lifeTimeMin ) _IRR_OVERRIDE_ { MinLifeTime = lifeTimeMin; }
@@ -105,10 +105,10 @@ public:
 	virtual const core::aabbox3df& getBox() const _IRR_OVERRIDE_ { return Box; }
 
 	//! Writes attributes of the object.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
 	//! Reads attributes of the object.
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
 
 private:
 
