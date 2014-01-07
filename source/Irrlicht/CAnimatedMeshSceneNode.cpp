@@ -1098,9 +1098,12 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	newNode->Looping = Looping;
 	newNode->ReadOnlyMaterials = ReadOnlyMaterials;
 	newNode->LoopCallBack = LoopCallBack;
+	if (newNode->LoopCallBack)
+		newNode->LoopCallBack->grab();	
 	newNode->PassCount = PassCount;
 	newNode->Shadow = Shadow;
-	newNode->Shadow->grab();
+	if (newNode->Shadow)
+		newNode->Shadow->grab();
 	newNode->JointChildSceneNodes = JointChildSceneNodes;
 	newNode->PretransitingSave = PretransitingSave;
 	newNode->RenderFromIdentity = RenderFromIdentity;
