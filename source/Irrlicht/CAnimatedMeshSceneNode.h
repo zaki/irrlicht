@@ -127,7 +127,7 @@ namespace scene
 		virtual void setMesh(IAnimatedMesh* mesh);
 
 		//! Returns the current mesh
-		virtual IAnimatedMesh* getMesh(void) { return Mesh; }
+		virtual IAnimatedMesh* getMesh(void) _IRR_OVERRIDE_ { return Mesh; }
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -136,7 +136,7 @@ namespace scene
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_ANIMATED_MESH; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_ANIMATED_MESH; }
 
 		// returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
 		// or the absolutetransformation if it's a normal scenenode

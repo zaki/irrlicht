@@ -46,87 +46,87 @@ public:
 	virtual void setMesh( IMesh* mesh );
 
 	//! Set whether to use vertex normal for direction, or direction specified
-	virtual void setUseNormalDirection( bool useNormalDirection ) { UseNormalDirection = useNormalDirection; }
+	virtual void setUseNormalDirection( bool useNormalDirection ) _IRR_OVERRIDE_ { UseNormalDirection = useNormalDirection; }
 
 	//! Set direction the emitter emits particles
-	virtual void setDirection( const core::vector3df& newDirection ) { Direction = newDirection; }
+	virtual void setDirection( const core::vector3df& newDirection ) _IRR_OVERRIDE_ { Direction = newDirection; }
 
 	//! Set the amount that the normal is divided by for getting a particles direction
-	virtual void setNormalDirectionModifier( f32 normalDirectionModifier ) { NormalDirectionModifier = normalDirectionModifier; }
+	virtual void setNormalDirectionModifier( f32 normalDirectionModifier ) _IRR_OVERRIDE_ { NormalDirectionModifier = normalDirectionModifier; }
 
 	//! Sets whether to emit min<->max particles for every vertex per second, or to pick
 	//! min<->max vertices every second
-	virtual void setEveryMeshVertex( bool everyMeshVertex ) { EveryMeshVertex = everyMeshVertex; }
+	virtual void setEveryMeshVertex( bool everyMeshVertex ) _IRR_OVERRIDE_ { EveryMeshVertex = everyMeshVertex; }
 
 	//! Set minimum number of particles the emitter emits per second
-	virtual void setMinParticlesPerSecond( u32 minPPS ) { MinParticlesPerSecond = minPPS; }
+	virtual void setMinParticlesPerSecond( u32 minPPS ) _IRR_OVERRIDE_ { MinParticlesPerSecond = minPPS; }
 
 	//! Set maximum number of particles the emitter emits per second
-	virtual void setMaxParticlesPerSecond( u32 maxPPS ) { MaxParticlesPerSecond = maxPPS; }
+	virtual void setMaxParticlesPerSecond( u32 maxPPS ) _IRR_OVERRIDE_ { MaxParticlesPerSecond = maxPPS; }
 
 	//! Set minimum starting color for particles
-	virtual void setMinStartColor( const video::SColor& color ) { MinStartColor = color; }
+	virtual void setMinStartColor( const video::SColor& color ) _IRR_OVERRIDE_ { MinStartColor = color; }
 
 	//! Set maximum starting color for particles
-	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
+	virtual void setMaxStartColor( const video::SColor& color ) _IRR_OVERRIDE_ { MaxStartColor = color; }
 
 	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; }
+	virtual void setMaxStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MaxStartSize = size; }
 
 	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; }
+	virtual void setMinStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MinStartSize = size; }
 
 	//! Set the minimum particle life-time in milliseconds
-	virtual void setMinLifeTime( u32 lifeTimeMin ) { MinLifeTime = lifeTimeMin; }
+	virtual void setMinLifeTime( u32 lifeTimeMin ) _IRR_OVERRIDE_ { MinLifeTime = lifeTimeMin; }
 
 	//! Set the maximum particle life-time in milliseconds
-	virtual void setMaxLifeTime( u32 lifeTimeMax ) { MaxLifeTime = lifeTimeMax; }
+	virtual void setMaxLifeTime( u32 lifeTimeMax ) _IRR_OVERRIDE_ { MaxLifeTime = lifeTimeMax; }
 
 	//!	Set maximal random derivation from the direction
-	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) { MaxAngleDegrees = maxAngleDegrees; }
+	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) _IRR_OVERRIDE_ { MaxAngleDegrees = maxAngleDegrees; }
 
 	//! Get Mesh we're emitting particles from
-	virtual const IMesh* getMesh() const { return Mesh; }
+	virtual const IMesh* getMesh() const _IRR_OVERRIDE_ { return Mesh; }
 
 	//! Get whether to use vertex normal for direciton, or direction specified
-	virtual bool isUsingNormalDirection() const { return UseNormalDirection; }
+	virtual bool isUsingNormalDirection() const _IRR_OVERRIDE_ { return UseNormalDirection; }
 
 	//! Get direction the emitter emits particles
-	virtual const core::vector3df& getDirection() const { return Direction; }
+	virtual const core::vector3df& getDirection() const _IRR_OVERRIDE_ { return Direction; }
 
 	//! Get the amount that the normal is divided by for getting a particles direction
-	virtual f32 getNormalDirectionModifier() const { return NormalDirectionModifier; }
+	virtual f32 getNormalDirectionModifier() const _IRR_OVERRIDE_ { return NormalDirectionModifier; }
 
 	//! Gets whether to emit min<->max particles for every vertex per second, or to pick
 	//! min<->max vertices every second
-	virtual bool getEveryMeshVertex() const { return EveryMeshVertex; }
+	virtual bool getEveryMeshVertex() const _IRR_OVERRIDE_ { return EveryMeshVertex; }
 
 	//! Get the minimum number of particles the emitter emits per second
-	virtual u32 getMinParticlesPerSecond() const { return MinParticlesPerSecond; }
+	virtual u32 getMinParticlesPerSecond() const _IRR_OVERRIDE_ { return MinParticlesPerSecond; }
 
 	//! Get the maximum number of particles the emitter emits per second
-	virtual u32 getMaxParticlesPerSecond() const { return MaxParticlesPerSecond; }
+	virtual u32 getMaxParticlesPerSecond() const _IRR_OVERRIDE_ { return MaxParticlesPerSecond; }
 
 	//! Get the minimum starting color for particles
-	virtual const video::SColor& getMinStartColor() const { return MinStartColor; }
+	virtual const video::SColor& getMinStartColor() const _IRR_OVERRIDE_ { return MinStartColor; }
 
 	//! Get the maximum starting color for particles
-	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
+	virtual const video::SColor& getMaxStartColor() const _IRR_OVERRIDE_ { return MaxStartColor; }
 
 	//! Gets the maximum starting size for particles
-	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
+	virtual const core::dimension2df& getMaxStartSize() const _IRR_OVERRIDE_ { return MaxStartSize; }
 
 	//! Gets the minimum starting size for particles
-	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
+	virtual const core::dimension2df& getMinStartSize() const _IRR_OVERRIDE_ { return MinStartSize; }
 
 	//! Get the minimum particle life-time in milliseconds
-	virtual u32 getMinLifeTime() const { return MinLifeTime; }
+	virtual u32 getMinLifeTime() const _IRR_OVERRIDE_ { return MinLifeTime; }
 
 	//! Get the maximum particle life-time in milliseconds
-	virtual u32 getMaxLifeTime() const { return MaxLifeTime; }
+	virtual u32 getMaxLifeTime() const _IRR_OVERRIDE_ { return MaxLifeTime; }
 
 	//!	Get maximal random derivation from the direction
-	virtual s32 getMaxAngleDegrees() const { return MaxAngleDegrees; }
+	virtual s32 getMaxAngleDegrees() const _IRR_OVERRIDE_ { return MaxAngleDegrees; }
 
 private:
 

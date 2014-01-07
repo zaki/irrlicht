@@ -73,7 +73,7 @@ namespace io
 		virtual const IFileList* getFileList() const;
 
 		//! get the class Type
-		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_FOLDER; }
+		virtual E_FILE_ARCHIVE_TYPE getType() const _IRR_OVERRIDE_ { return EFAT_FOLDER; }
 
 	private:
 

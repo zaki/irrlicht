@@ -85,7 +85,7 @@ namespace scene
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
 		//! Returns type of the scene node animator
-		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return ESNAT_COLLISION_RESPONSE; }
+		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const _IRR_OVERRIDE_ { return ESNAT_COLLISION_RESPONSE; }
 
 		//! Creates a clone of this animator.
 		/** Please note that you will have to drop
@@ -94,23 +94,23 @@ namespace scene
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
 		//! Set the single node that this animator will act on.
-		virtual void setTargetNode(ISceneNode * node) { setNode(node); }
+		virtual void setTargetNode(ISceneNode * node) _IRR_OVERRIDE_ { setNode(node); }
 
 		//! Gets the single node that this animator is acting on.
-		virtual ISceneNode* getTargetNode(void) const { return Object; }
+		virtual ISceneNode* getTargetNode(void) const _IRR_OVERRIDE_ { return Object; }
 
 		//! Returns true if a collision occurred during the last animateNode()
-		virtual bool collisionOccurred() const { return CollisionOccurred; }
+		virtual bool collisionOccurred() const _IRR_OVERRIDE_ { return CollisionOccurred; }
 
 		//! Returns the last point of collision.
-		virtual const core::vector3df & getCollisionPoint() const { return CollisionPoint; }
+		virtual const core::vector3df & getCollisionPoint() const _IRR_OVERRIDE_ { return CollisionPoint; }
 
 		//! Returns the last triangle that caused a collision.
-		virtual const core::triangle3df & getCollisionTriangle() const { return CollisionTriangle; }
+		virtual const core::triangle3df & getCollisionTriangle() const _IRR_OVERRIDE_ { return CollisionTriangle; }
 
-		virtual const core::vector3df & getCollisionResultPosition(void) const { return CollisionResultPosition; }
+		virtual const core::vector3df & getCollisionResultPosition(void) const _IRR_OVERRIDE_ { return CollisionResultPosition; }
 
-		virtual ISceneNode* getCollisionNode(void) const { return CollisionNode; }
+		virtual ISceneNode* getCollisionNode(void) const _IRR_OVERRIDE_ { return CollisionNode; }
 
 
 		//! Sets a callback interface which will be called if a collision occurs.

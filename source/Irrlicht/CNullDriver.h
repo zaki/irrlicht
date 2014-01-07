@@ -625,7 +625,7 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return "Not available on this driver.";}
+		virtual core::stringc getVendorInfo() _IRR_OVERRIDE_ {return "Not available on this driver.";}
 
 		//! Set the minimum number of vertices for which a hw buffer will be created
 		/** \param count Number of vertices to set as minimum. */
@@ -667,7 +667,7 @@ namespace video
 		virtual ITexture* createRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name=0);
 
-		virtual bool checkDriverReset() {return false;}
+		virtual bool checkDriverReset() _IRR_OVERRIDE_ {return false;}
 	protected:
 
 		//! deletes all textures
@@ -744,14 +744,14 @@ namespace video
 		{
 			SDummyTexture(const io::path& name) : ITexture(name), size(0,0) {};
 
-			virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) { return 0; };
-			virtual void unlock(){}
-			virtual const core::dimension2d<u32>& getOriginalSize() const { return size; }
-			virtual const core::dimension2d<u32>& getSize() const { return size; }
-			virtual E_DRIVER_TYPE getDriverType() const { return video::EDT_NULL; }
-			virtual ECOLOR_FORMAT getColorFormat() const { return video::ECF_A1R5G5B5; };
-			virtual u32 getPitch() const { return 0; }
-			virtual void regenerateMipMapLevels(void* mipmapData=0) {};
+			virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_ { return 0; };
+			virtual void unlock()_IRR_OVERRIDE_ {}
+			virtual const core::dimension2d<u32>& getOriginalSize() const _IRR_OVERRIDE_ { return size; }
+			virtual const core::dimension2d<u32>& getSize() const _IRR_OVERRIDE_ { return size; }
+			virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_ { return video::EDT_NULL; }
+			virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_ { return video::ECF_A1R5G5B5; };
+			virtual u32 getPitch() const _IRR_OVERRIDE_ { return 0; }
+			virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_ {};
 			core::dimension2d<u32> size;
 		};
 		core::array<SSurface> Textures;

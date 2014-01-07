@@ -26,7 +26,7 @@ class CSkyDomeSceneNode : public ISceneNode
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 		virtual video::SMaterial& getMaterial(u32 i);
 		virtual u32 getMaterialCount() const;
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_SKY_DOME; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_SKY_DOME; }
 
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);

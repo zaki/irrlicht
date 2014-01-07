@@ -44,7 +44,7 @@ namespace scene
 		virtual u32 getMaterialCount() const;
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_VOLUME_LIGHT; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_VOLUME_LIGHT; }
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -58,14 +58,14 @@ namespace scene
 		virtual void setSubDivideU(const u32 inU);
 		virtual void setSubDivideV(const u32 inV);
 
-		virtual u32 getSubDivideU() const { return SubdivideU; }
-		virtual u32 getSubDivideV() const { return SubdivideV; }
+		virtual u32 getSubDivideU() const _IRR_OVERRIDE_ { return SubdivideU; }
+		virtual u32 getSubDivideV() const _IRR_OVERRIDE_ { return SubdivideV; }
 
 		virtual void setFootColor(const video::SColor inColor);
 		virtual void setTailColor(const video::SColor inColor);
 
-		virtual video::SColor getFootColor() const { return FootColor; }
-		virtual video::SColor getTailColor() const { return TailColor; }
+		virtual video::SColor getFootColor() const _IRR_OVERRIDE_ { return FootColor; }
+		virtual video::SColor getTailColor() const _IRR_OVERRIDE_ { return TailColor; }
 
 	private:
 		void constructLight();

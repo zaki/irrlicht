@@ -310,16 +310,16 @@ namespace gui
 		}
 
 		//! Calculates the index of the character in the text which is on a specific position.
-		virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const { return pixel_x; };
+		virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const _IRR_OVERRIDE_ { return pixel_x; };
 
 		//! No kerning
-		virtual void setKerningWidth (s32 kerning) { }
-		virtual void setKerningHeight (s32 kerning) { }
-		virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const {return 0;}
-		virtual s32 getKerningHeight() const  { return 0;}
-		virtual void setInvisibleCharacters( const wchar_t *s ) { }
+		virtual void setKerningWidth (s32 kerning) _IRR_OVERRIDE_ { }
+		virtual void setKerningHeight (s32 kerning) _IRR_OVERRIDE_ { }
+		virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const _IRR_OVERRIDE_ {return 0;}
+		virtual s32 getKerningHeight() const  _IRR_OVERRIDE_ { return 0;}
+		virtual void setInvisibleCharacters( const wchar_t *s ) _IRR_OVERRIDE_ { }
 		// I guess this is an OS specific font
-		virtual EGUI_FONT_TYPE getType() const { return EGFT_OS; }
+		virtual EGUI_FONT_TYPE getType() const _IRR_OVERRIDE_ { return EGFT_OS; }
 	private:
 		CIrrDeviceConsole* Device;
 		core::stringw tempText;

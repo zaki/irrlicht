@@ -304,13 +304,13 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return VendorName;}
+		virtual core::stringc getVendorInfo() _IRR_OVERRIDE_ {return VendorName;}
 
 		//! Enable the 2d override material
 		virtual void enableMaterial2D(bool enable=true);
 
 		//! Check if the driver was recently reset.
-		virtual bool checkDriverReset() {return DriverWasReset;}
+		virtual bool checkDriverReset() _IRR_OVERRIDE_ {return DriverWasReset;}
 
 		// removes the depth struct from the DepthSurface array
 		void removeDepthSurface(SDepthSurface* depth);

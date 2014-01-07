@@ -1179,10 +1179,10 @@ protected:
 	void reset()
 	{
 		if (IsFloat)
-			for (u32 i=0; i < Count ; ++i)
+			for (u32 i=0; i < Count; ++i)
 				ValueF[i] = 0.0f;
 		else
-			for (u32 i=0; i < Count ; ++i)
+			for (u32 i=0; i < Count; ++i)
 				ValueI[i] = 0;
 	}
 

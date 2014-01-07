@@ -433,7 +433,7 @@ namespace scene
 		virtual ISceneManager* createNewSceneManager(bool cloneContent);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_SCENE_MANAGER; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_SCENE_MANAGER; }
 
 		//! Returns the default scene node factory which can create all built in scene nodes
 		virtual ISceneNodeFactory* getDefaultSceneNodeFactory();
@@ -510,13 +510,13 @@ namespace scene
 		virtual void setLightManager(ILightManager* lightManager);
 
 		//! Get current render time.
-		virtual E_SCENE_NODE_RENDER_PASS getCurrentRendertime() const { return CurrentRendertime; }
+		virtual E_SCENE_NODE_RENDER_PASS getCurrentRenderPass() const _IRR_OVERRIDE_ { return CurrentRenderPass; }
 
 		//! Set current render time.
-		virtual void setCurrentRendertime(E_SCENE_NODE_RENDER_PASS currentRendertime) { CurrentRendertime = currentRendertime; }
+		virtual void setCurrentRenderPass(E_SCENE_NODE_RENDER_PASS nextPass) _IRR_OVERRIDE_ { CurrentRenderPass = nextPass; }
 
 		//! Get an instance of a geometry creator.
-		virtual const IGeometryCreator* getGeometryCreator(void) const { return GeometryCreator; }
+		virtual const IGeometryCreator* getGeometryCreator(void) const _IRR_OVERRIDE_ { return GeometryCreator; }
 
 		//! returns if node is culled
 		virtual bool isCulled(const ISceneNode* node) const;
@@ -636,7 +636,7 @@ namespace scene
 		//! Mesh cache
 		IMeshCache* MeshCache;
 
-		E_SCENE_NODE_RENDER_PASS CurrentRendertime;
+		E_SCENE_NODE_RENDER_PASS CurrentRenderPass;
 
 		//! An optional callbacks manager to allow the user app finer control
 		//! over the scene lighting and rendering.

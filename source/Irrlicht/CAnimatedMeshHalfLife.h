@@ -528,10 +528,10 @@ namespace scene
 		}
 
 		//! Get the Animation List
-		virtual IAnimationList* getAnimList () { return &AnimList; }
+		IAnimationList* getAnimList () { return &AnimList; }
 
 		//! Return the named Body List of this Animated Mesh
-		virtual IBodyList *getBodyList() { return &BodyList; }
+		IBodyList *getBodyList() { return &BodyList; }
 
 	private:
 

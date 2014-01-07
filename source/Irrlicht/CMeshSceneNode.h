@@ -52,13 +52,13 @@ namespace scene
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_MESH; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_MESH; }
 
 		//! Sets a new mesh
 		virtual void setMesh(IMesh* mesh);
 
 		//! Returns the current mesh
-		virtual IMesh* getMesh(void) { return Mesh; }
+		virtual IMesh* getMesh(void) _IRR_OVERRIDE_ { return Mesh; }
 
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.

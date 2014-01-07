@@ -39,94 +39,94 @@ public:
 	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray);
 
 	//! Set the center of the radius for the cylinder, at one end of the cylinder
-	virtual void setCenter( const core::vector3df& center ) { Center = center; }
+	virtual void setCenter( const core::vector3df& center ) _IRR_OVERRIDE_ { Center = center; }
 
 	//! Set the normal of the cylinder
-	virtual void setNormal( const core::vector3df& normal ) { Normal = normal; }
+	virtual void setNormal( const core::vector3df& normal ) _IRR_OVERRIDE_ { Normal = normal; }
 
 	//! Set the radius of the cylinder
-	virtual void setRadius( f32 radius ) { Radius = radius; }
+	virtual void setRadius( f32 radius ) _IRR_OVERRIDE_ { Radius = radius; }
 
 	//! Set the length of the cylinder
-	virtual void setLength( f32 length ) { Length = length; }
+	virtual void setLength( f32 length ) _IRR_OVERRIDE_ { Length = length; }
 
 	//! Set whether or not to draw points inside the cylinder
-	virtual void setOutlineOnly( bool outlineOnly ) { OutlineOnly = outlineOnly; }
+	virtual void setOutlineOnly( bool outlineOnly ) _IRR_OVERRIDE_ { OutlineOnly = outlineOnly; }
 
 	//! Set direction the emitter emits particles
-	virtual void setDirection( const core::vector3df& newDirection ) { Direction = newDirection; }
+	virtual void setDirection( const core::vector3df& newDirection ) _IRR_OVERRIDE_ { Direction = newDirection; }
 
 	//! Set direction the emitter emits particles
-	virtual void setMinParticlesPerSecond( u32 minPPS ) { MinParticlesPerSecond = minPPS; }
+	virtual void setMinParticlesPerSecond( u32 minPPS ) _IRR_OVERRIDE_ { MinParticlesPerSecond = minPPS; }
 
 	//! Set direction the emitter emits particles
-	virtual void setMaxParticlesPerSecond( u32 maxPPS ) { MaxParticlesPerSecond = maxPPS; }
+	virtual void setMaxParticlesPerSecond( u32 maxPPS ) _IRR_OVERRIDE_ { MaxParticlesPerSecond = maxPPS; }
 
 	//! Set direction the emitter emits particles
-	virtual void setMinStartColor( const video::SColor& color ) { MinStartColor = color; }
+	virtual void setMinStartColor( const video::SColor& color ) _IRR_OVERRIDE_ { MinStartColor = color; }
 
 	//! Set direction the emitter emits particles
-	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
+	virtual void setMaxStartColor( const video::SColor& color ) _IRR_OVERRIDE_ { MaxStartColor = color; }
 
 	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; }
+	virtual void setMaxStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MaxStartSize = size; }
 
 	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; }
+	virtual void setMinStartSize( const core::dimension2df& size ) _IRR_OVERRIDE_ { MinStartSize = size; }
 
 	//! Set the minimum particle life-time in milliseconds
-	virtual void setMinLifeTime( u32 lifeTimeMin ) { MinLifeTime = lifeTimeMin; }
+	virtual void setMinLifeTime( u32 lifeTimeMin ) _IRR_OVERRIDE_ { MinLifeTime = lifeTimeMin; }
 
 	//! Set the maximum particle life-time in milliseconds
-	virtual void setMaxLifeTime( u32 lifeTimeMax ) { MaxLifeTime = lifeTimeMax; }
+	virtual void setMaxLifeTime( u32 lifeTimeMax ) _IRR_OVERRIDE_ { MaxLifeTime = lifeTimeMax; }
 
 	//!	Maximal random derivation from the direction
-	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) { MaxAngleDegrees = maxAngleDegrees; }
+	virtual void setMaxAngleDegrees( s32 maxAngleDegrees ) _IRR_OVERRIDE_ { MaxAngleDegrees = maxAngleDegrees; }
 
 	//! Get the center of the cylinder
-	virtual const core::vector3df& getCenter() const { return Center; }
+	virtual const core::vector3df& getCenter() const _IRR_OVERRIDE_ { return Center; }
 
 	//! Get the normal of the cylinder
-	virtual const core::vector3df& getNormal() const { return Normal; }
+	virtual const core::vector3df& getNormal() const _IRR_OVERRIDE_ { return Normal; }
 
 	//! Get the radius of the cylinder
-	virtual f32 getRadius() const { return Radius; }
+	virtual f32 getRadius() const _IRR_OVERRIDE_ { return Radius; }
 
 	//! Get the center of the cylinder
-	virtual f32 getLength() const { return Length; }
+	virtual f32 getLength() const _IRR_OVERRIDE_ { return Length; }
 
 	//! Get whether or not to draw points inside the cylinder
-	virtual bool getOutlineOnly() const { return OutlineOnly; }
+	virtual bool getOutlineOnly() const _IRR_OVERRIDE_ { return OutlineOnly; }
 
 	//! Gets direction the emitter emits particles
-	virtual const core::vector3df& getDirection() const { return Direction; }
+	virtual const core::vector3df& getDirection() const _IRR_OVERRIDE_ { return Direction; }
 
 	//! Gets direction the emitter emits particles
-	virtual u32 getMinParticlesPerSecond() const { return MinParticlesPerSecond; }
+	virtual u32 getMinParticlesPerSecond() const _IRR_OVERRIDE_ { return MinParticlesPerSecond; }
 
 	//! Gets direction the emitter emits particles
-	virtual u32 getMaxParticlesPerSecond() const { return MaxParticlesPerSecond; }
+	virtual u32 getMaxParticlesPerSecond() const _IRR_OVERRIDE_ { return MaxParticlesPerSecond; }
 
 	//! Gets direction the emitter emits particles
-	virtual const video::SColor& getMinStartColor() const { return MinStartColor; }
+	virtual const video::SColor& getMinStartColor() const _IRR_OVERRIDE_ { return MinStartColor; }
 
 	//! Gets direction the emitter emits particles
-	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
+	virtual const video::SColor& getMaxStartColor() const _IRR_OVERRIDE_ { return MaxStartColor; }
 
 	//! Gets the maximum starting size for particles
-	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; }
+	virtual const core::dimension2df& getMaxStartSize() const _IRR_OVERRIDE_ { return MaxStartSize; }
 
 	//! Gets the minimum starting size for particles
-	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; }
+	virtual const core::dimension2df& getMinStartSize() const _IRR_OVERRIDE_ { return MinStartSize; }
 
 	//! Get the minimum particle life-time in milliseconds
-	virtual u32 getMinLifeTime() const { return MinLifeTime; }
+	virtual u32 getMinLifeTime() const _IRR_OVERRIDE_ { return MinLifeTime; }
 
 	//! Get the maximum particle life-time in milliseconds
-	virtual u32 getMaxLifeTime() const { return MaxLifeTime; }
+	virtual u32 getMaxLifeTime() const _IRR_OVERRIDE_ { return MaxLifeTime; }
 
 	//!	Maximal random derivation from the direction
-	virtual s32 getMaxAngleDegrees() const { return MaxAngleDegrees; }
+	virtual s32 getMaxAngleDegrees() const _IRR_OVERRIDE_ { return MaxAngleDegrees; }
 
 	//! Writes attributes of the object.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;

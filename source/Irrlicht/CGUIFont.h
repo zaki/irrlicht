@@ -60,7 +60,7 @@ public:
 	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const;
 
 	//! Returns the type of this font
-	virtual EGUI_FONT_TYPE getType() const { return EGFT_BITMAP; }
+	virtual EGUI_FONT_TYPE getType() const _IRR_OVERRIDE_ { return EGFT_BITMAP; }
 
 	//! set an Pixel Offset on Drawing ( scale position on width )
 	virtual void setKerningWidth (s32 kerning);

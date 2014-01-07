@@ -32,13 +32,13 @@ namespace video
 		virtual const core::dimension2d<u32>& getSize() const;
 
 		//! locks the zbuffer
-		virtual void* lock() { return (void*) Buffer; }
+		virtual void* lock() _IRR_OVERRIDE_ { return (void*) Buffer; }
 
 		//! unlocks the zbuffer
-		virtual void unlock() {}
+		virtual void unlock() _IRR_OVERRIDE_ {}
 
 		//! returns pitch of depthbuffer (in bytes)
-		virtual u32 getPitch() const { return Pitch; }
+		virtual u32 getPitch() const _IRR_OVERRIDE_ { return Pitch; }
 
 
 	private:
@@ -70,13 +70,13 @@ namespace video
 		virtual const core::dimension2d<u32>& getSize() const;
 
 		//! locks the zbuffer
-		virtual void* lock() { return (void*) Buffer; }
+		virtual void* lock() _IRR_OVERRIDE_ { return (void*) Buffer; }
 
 		//! unlocks the zbuffer
-		virtual void unlock() {}
+		virtual void unlock() _IRR_OVERRIDE_ {}
 
 		//! returns pitch of depthbuffer (in bytes)
-		virtual u32 getPitch() const { return Pitch; }
+		virtual u32 getPitch() const _IRR_OVERRIDE_ { return Pitch; }
 
 
 	private:

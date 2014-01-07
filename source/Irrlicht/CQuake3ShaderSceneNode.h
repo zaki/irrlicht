@@ -40,12 +40,12 @@ public:
 	virtual video::SMaterial& getMaterial(u32 i);
 
 	//! Returns type of the scene node
-	virtual ESCENE_NODE_TYPE getType() const { return ESNT_Q3SHADER_SCENE_NODE; }
+	virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_Q3SHADER_SCENE_NODE; }
 
-	virtual void setMesh(IMesh* mesh){}
-	virtual IMesh* getMesh() { return Mesh; }
-	virtual void setReadOnlyMaterials(bool readonly) {}
-	virtual bool isReadOnlyMaterials() const { return true; }
+	virtual void setMesh(IMesh* mesh)_IRR_OVERRIDE_ {}
+	virtual IMesh* getMesh() _IRR_OVERRIDE_ { return Mesh; }
+	virtual void setReadOnlyMaterials(bool readonly) _IRR_OVERRIDE_ {}
+	virtual bool isReadOnlyMaterials() const _IRR_OVERRIDE_ { return true; }
 
 	//! Creates shadow volume scene node as child of this node
 	//! and returns a pointer to it.

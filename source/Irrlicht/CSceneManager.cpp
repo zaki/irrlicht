@@ -188,7 +188,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 : ISceneNode(0, 0), Driver(driver), FileSystem(fs), GUIEnvironment(gui),
 	CursorControl(cursorControl), CollisionManager(0),
 	ActiveCamera(0), ShadowColor(150,0,0,0), AmbientLight(0,0,0,0), Parameters(0),
-	MeshCache(cache), CurrentRendertime(ESNRP_NONE), LightManager(0),
+	MeshCache(cache), CurrentRenderPass(ESNRP_NONE), LightManager(0),
 	IRR_XML_FORMAT_SCENE(L"irr_scene"), IRR_XML_FORMAT_NODE(L"node"), IRR_XML_FORMAT_NODE_ATTR_TYPE(L"type")
 {
 	#ifdef _DEBUG
@@ -1391,11 +1391,11 @@ void CSceneManager::drawAll()
 
 	//render camera scenes
 	{
-		CurrentRendertime = ESNRP_CAMERA;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+		CurrentRenderPass = ESNRP_CAMERA;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
 		if (LightManager)
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 
 		for (i=0; i<CameraList.size(); ++i)
 			CameraList[i]->render();
@@ -1403,17 +1403,17 @@ void CSceneManager::drawAll()
 		CameraList.set_used(0);
 
 		if (LightManager)
-			LightManager->OnRenderPassPostRender(CurrentRendertime);
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 
 	//render lights scenes
 	{
-		CurrentRendertime = ESNRP_LIGHT;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+		CurrentRenderPass = ESNRP_LIGHT;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
 		if (LightManager)
 		{
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 		}
 		else
 		{
@@ -1447,17 +1447,17 @@ void CSceneManager::drawAll()
 			LightList[i]->render();
 
 		if (LightManager)
-			LightManager->OnRenderPassPostRender(CurrentRendertime);
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 
 	// render skyboxes
 	{
-		CurrentRendertime = ESNRP_SKY_BOX;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+		CurrentRenderPass = ESNRP_SKY_BOX;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
 		if (LightManager)
 		{
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 			for (i=0; i<SkyBoxList.size(); ++i)
 			{
 				ISceneNode* node = SkyBoxList[i];
@@ -1475,20 +1475,20 @@ void CSceneManager::drawAll()
 		SkyBoxList.set_used(0);
 
 		if (LightManager)
-			LightManager->OnRenderPassPostRender(CurrentRendertime);
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 
 
 	// render default objects
 	{
-		CurrentRendertime = ESNRP_SOLID;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+		CurrentRenderPass = ESNRP_SOLID;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
 		SolidNodeList.sort(); // sort by textures
 
 		if (LightManager)
 		{
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 			for (i=0; i<SolidNodeList.size(); ++i)
 			{
 				ISceneNode* node = SolidNodeList[i].Node;
@@ -1507,17 +1507,17 @@ void CSceneManager::drawAll()
 		SolidNodeList.set_used(0);
 
 		if (LightManager)
-			LightManager->OnRenderPassPostRender(CurrentRendertime);
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 
 	// render shadows
 	{
-		CurrentRendertime = ESNRP_SHADOW;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+		CurrentRenderPass = ESNRP_SHADOW;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
 		if (LightManager)
 		{
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 			for (i=0; i<ShadowNodeList.size(); ++i)
 			{
 				ISceneNode* node = ShadowNodeList[i];
@@ -1539,18 +1539,18 @@ void CSceneManager::drawAll()
 		ShadowNodeList.set_used(0);
 
 		if (LightManager)
-			LightManager->OnRenderPassPostRender(CurrentRendertime);
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 
 	// render transparent objects.
 	{
-		CurrentRendertime = ESNRP_TRANSPARENT;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+		CurrentRenderPass = ESNRP_TRANSPARENT;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
 		TransparentNodeList.sort(); // sort by distance from camera
 		if (LightManager)
 		{
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 
 			for (i=0; i<TransparentNodeList.size(); ++i)
 			{
@@ -1570,19 +1570,19 @@ void CSceneManager::drawAll()
 		TransparentNodeList.set_used(0);
 
 		if (LightManager)
-			LightManager->OnRenderPassPostRender(CurrentRendertime);
+			LightManager->OnRenderPassPostRender(CurrentRenderPass);
 	}
 
 	// render transparent effect objects.
 	{
-		CurrentRendertime = ESNRP_TRANSPARENT_EFFECT;
-		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRendertime) != 0);
+		CurrentRenderPass = ESNRP_TRANSPARENT_EFFECT;
+		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
 		TransparentEffectNodeList.sort(); // sort by distance from camera
 
 		if (LightManager)
 		{
-			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			LightManager->OnRenderPassPreRender(CurrentRenderPass);
 
 			for (i=0; i<TransparentEffectNodeList.size(); ++i)
 			{
@@ -1608,7 +1608,7 @@ void CSceneManager::drawAll()
 	LightList.set_used(0);
 	clearDeletionList();
 
-	CurrentRendertime = ESNRP_NONE;
+	CurrentRenderPass = ESNRP_NONE;
 }
 
 void CSceneManager::setLightManager(ILightManager* lightManager)
@@ -2010,7 +2010,7 @@ io::IAttributes* CSceneManager::getParameters()
 //! Returns current render pass.
 E_SCENE_NODE_RENDER_PASS CSceneManager::getSceneNodeRenderPass() const
 {
-	return CurrentRendertime;
+	return CurrentRenderPass;
 }
 
 

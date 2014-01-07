@@ -27,17 +27,17 @@ public:
 
 	//! Set the time in milliseconds when the gravity force is totally
 	//! lost and the particle does not move any more.
-	virtual void setTimeForceLost( f32 timeForceLost ) { TimeForceLost = timeForceLost; }
+	virtual void setTimeForceLost( f32 timeForceLost ) _IRR_OVERRIDE_ { TimeForceLost = timeForceLost; }
 
 	//! Set the direction and force of gravity.
-	virtual void setGravity( const core::vector3df& gravity ) { Gravity = gravity; }
+	virtual void setGravity( const core::vector3df& gravity ) _IRR_OVERRIDE_ { Gravity = gravity; }
 
 	//! Set the time in milliseconds when the gravity force is totally
 	//! lost and the particle does not move any more.
-	virtual f32 getTimeForceLost() const { return TimeForceLost; }
+	virtual f32 getTimeForceLost() const _IRR_OVERRIDE_ { return TimeForceLost; }
 
 	//! Set the direction and force of gravity.
-	virtual const core::vector3df& getGravity() const { return Gravity; }
+	virtual const core::vector3df& getGravity() const _IRR_OVERRIDE_ { return Gravity; }
 
 	//! Writes attributes of the object.
 	//! Implement this to expose the attributes of your scene node animator for

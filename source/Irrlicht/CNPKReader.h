@@ -74,9 +74,6 @@ namespace io
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
 		virtual io::IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
 
-		//! Returns the type of archive created by this loader
-		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_NPK; }
-
 	private:
 		io::IFileSystem* FileSystem;
 	};
@@ -108,7 +105,7 @@ namespace io
 		virtual const IFileList* getFileList() const;
 
 		//! get the class Type
-		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_NPK; }
+		virtual E_FILE_ARCHIVE_TYPE getType() const _IRR_OVERRIDE_ { return EFAT_NPK; }
 
 	private:
 

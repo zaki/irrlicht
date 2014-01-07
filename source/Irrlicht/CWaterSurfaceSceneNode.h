@@ -36,7 +36,7 @@ namespace scene
 		virtual void setMesh(IMesh* mesh);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_WATER_SURFACE; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_WATER_SURFACE; }
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;

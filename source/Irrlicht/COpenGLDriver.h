@@ -399,7 +399,7 @@ namespace video
 		virtual void enableMaterial2D(bool enable=true);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return VendorName;}
+		virtual core::stringc getVendorInfo() _IRR_OVERRIDE_ {return VendorName;}
 
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const;

@@ -35,7 +35,7 @@ public:
 
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
-	virtual void OnSetMaterial(const SMaterial& material) { }
+	virtual void OnSetMaterial(const SMaterial& material) _IRR_OVERRIDE_ { }
 	virtual void OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services);

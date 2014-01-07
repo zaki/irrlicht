@@ -328,15 +328,13 @@ void process_uncomp(
 //-----------------------------------------------------------
 void flush_outbuf(unsigned char *out_buf, int out_buf_size)
 {
-    register int pos=0;
-
-    if(!outbuf_cnt)
+    if (!outbuf_cnt)
        return;        // nothing to do */
 
     // send no. of unencoded bytes to be sent
     put_byte((unsigned char)(outbuf_cnt - 1), out_buf, out_buf_size);
 
-    for ( ; outbuf_cnt; outbuf_cnt--)
+    for (int pos=0; outbuf_cnt; outbuf_cnt--)
        put_byte((unsigned char)outbuf[pos++], out_buf, out_buf_size);
 }
 //---------------------------------------------------
@@ -409,7 +407,7 @@ int rle_decode (
             nReadedBytes++;
 
             // uncompress a chunk
-            for ( ; i ; i--)
+            for (; i; --i)
             {
                 if (nDecodedBytes<out_buf_size)
                     out_buf[nDecodedBytes] = ch;
@@ -419,9 +417,8 @@ int rle_decode (
         else
         {
             // copy out some uncompressed bytes
-            i = ch + 1;     // i is the no. of bytes
-            // uncompress a chunk
-            for ( ; i ; i--)
+	    // i is the no. of bytes
+            for (i = ch + 1; i; --i)
             {
                 if (nReadedBytes>=in_buf_size)
                     break;
