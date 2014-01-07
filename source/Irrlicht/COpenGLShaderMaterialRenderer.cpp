@@ -133,6 +133,8 @@ bool COpenGLShaderMaterialRenderer::OnRender(IMaterialRendererServices* service,
 void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
+
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexShader)
@@ -175,13 +177,10 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetBaseMaterial(material);
+
+		if (CallBack)
+			CallBack->OnSetMaterial(material);
 	}
-
-	//let callback know used material
-	if (CallBack)
-		CallBack->OnSetMaterial(material);
-
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 
