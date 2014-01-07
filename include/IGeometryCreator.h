@@ -67,6 +67,16 @@ public:
 		return createHillPlaneMesh(tileSize, tileCount, material, 0.f, core::dimension2df(), textureRepeatCount);
 	}
 
+	//! Create a geoplane.
+	/**
+	\param radius Radius of the plane
+	\param rows How many rows to place
+	\param columns How many columns to place
+	\return Generated mesh.
+	*/
+	virtual IMesh* createGeoplaneMesh(f32 radius = 5.f,
+			u32 rows = 16, u32 columns = 16) const =0;
+
 	//! Create a terrain mesh from an image representing a heightfield.
 	/**
 	\param texture The texture to apply to the terrain.
