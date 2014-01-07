@@ -3,6 +3,7 @@ Changes in 1.9 (not yet released)
  - Removed VS6 .dsw / .dsp project files - VS6 is no longer supported.
 
 - Added support for PVR textures. Loader offer support for compressed DXT1-5, PVRTC/PVRTC-II, ETC1/ETC2 texture formats.
+- Collada loader now instantiates camera nodes which had been ignore so far (thx @NemoStein for the test .dae)
 - line2d::intersectWith has a new parameter to allow ignoring intersections with coincident lines
 - vector2d::equals now has an tolerance parameter for passing the epsilon (like vector3d had). Note that this changes the default 
   behavior of vector2d::equals as well as functions using it like the operators for ==, !=, <, >, <=, >= when using vector2d with f64
