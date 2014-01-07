@@ -33,7 +33,7 @@ namespace scene
 
 		//! Gets the default animation speed of the animated mesh.
 		/** \return Amount of frames per second. If the amount is 0, it is a static, non animated mesh. */
-		virtual f32 getAnimationSpeed() const
+		virtual f32 getAnimationSpeed() const _IRR_OVERRIDE_
 		{
 			return FramesPerSecond;
 		}
@@ -41,7 +41,7 @@ namespace scene
 		//! Gets the frame count of the animated mesh.
 		/** \param fps Frames per second to play the animation with. If the amount is 0, it is not animated.
 		The actual speed is set in the scene node the mesh is instantiated in.*/
-		virtual void setAnimationSpeed(f32 fps)
+		virtual void setAnimationSpeed(f32 fps) _IRR_OVERRIDE_
 		{
 			FramesPerSecond=fps;
 		}
@@ -81,11 +81,11 @@ namespace scene
 
 		//! Returns frame loop data for a special MD2 animation type.
 		virtual void getFrameLoop(EMD2_ANIMATION_TYPE,
-			s32& outBegin, s32& outEnd, s32& outFps) const;
+			s32& outBegin, s32& outEnd, s32& outFps) const _IRR_OVERRIDE_;
 
 		//! Returns frame loop data for a special MD2 animation type.
 		virtual bool getFrameLoop(const c8* name,
-			s32& outBegin, s32& outEnd, s32& outFps) const;
+			s32& outBegin, s32& outEnd, s32& outFps) const _IRR_OVERRIDE_;
 
 		//! Returns amount of md2 animations in this file.
 		virtual s32 getAnimationCount() const _IRR_OVERRIDE_;

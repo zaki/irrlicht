@@ -42,7 +42,7 @@ public:
 	//! Loads the scene into the scene manager.
 	virtual bool loadScene(io::IReadFile* file,
 		ISceneUserDataSerializer* userDataSerializer=0,
-		ISceneNode* rootNode=0);
+		ISceneNode* rootNode=0) _IRR_OVERRIDE_;
 
 private:
 

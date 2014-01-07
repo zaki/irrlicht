@@ -71,8 +71,8 @@ public:
 	virtual IGUISkin* createSkin(EGUI_SKIN_TYPE type) _IRR_OVERRIDE_;
 
 	//! Creates the image list from the given texture.
-	virtual IGUIImageList* createImageList( video::ITexture* texture,
-					core::dimension2d<s32> imageSize, bool useAlphaChannel );
+	virtual IGUIImageList* createImageList(video::ITexture* texture,
+					core::dimension2d<s32> imageSize, bool useAlphaChannel) _IRR_OVERRIDE_;
 
 	//! returns the font
 	virtual IGUIFont* getFont(const io::path& filename) _IRR_OVERRIDE_;
@@ -97,73 +97,76 @@ public:
 
 	//! adds a window. The returned pointer must not be dropped.
 	virtual IGUIWindow* addWindow(const core::rect<s32>& rectangle, bool modal = false,
-		const wchar_t* text=0, IGUIElement* parent=0, s32 id=-1);
+		const wchar_t* text=0, IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! adds a modal screen. The returned pointer must not be dropped.
 	virtual IGUIElement* addModalScreen(IGUIElement* parent) _IRR_OVERRIDE_;
 
 	//! Adds a message box.
 	virtual IGUIWindow* addMessageBox(const wchar_t* caption, const wchar_t* text=0,
-		bool modal = true, s32 flag = EMBF_OK, IGUIElement* parent=0, s32 id=-1, video::ITexture* image=0);
+		bool modal = true, s32 flag = EMBF_OK, IGUIElement* parent=0, s32 id=-1, video::ITexture* image=0) _IRR_OVERRIDE_;
 
 	//! adds a scrollbar. The returned pointer must not be dropped.
 	virtual IGUIScrollBar* addScrollBar(bool horizontal, const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1);
+		IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! Adds an image element.
 	virtual IGUIImage* addImage(video::ITexture* image, core::position2d<s32> pos,
-		bool useAlphaChannel=true, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0);
+		bool useAlphaChannel=true, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) _IRR_OVERRIDE_;
 
 	//! adds an image. The returned pointer must not be dropped.
 	virtual IGUIImage* addImage(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0, bool useAlphaChannel=true);
+		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0, bool useAlphaChannel=true) _IRR_OVERRIDE_;
 
 	//! adds a checkbox
-	virtual IGUICheckBox* addCheckBox(bool checked, const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) _IRR_OVERRIDE_;
+	virtual IGUICheckBox* addCheckBox(bool checked, const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) _IRR_OVERRIDE_;
 
 	//! adds a list box
 	virtual IGUIListBox* addListBox(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false);
+		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false) _IRR_OVERRIDE_;
 
 	//! adds a tree view
 	virtual IGUITreeView* addTreeView(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false,
-		bool scrollBarVertical = true, bool scrollBarHorizontal = false);
+		bool scrollBarVertical = true, bool scrollBarHorizontal = false) _IRR_OVERRIDE_;
 
 	//! adds an mesh viewer. The returned pointer must not be dropped.
-	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) _IRR_OVERRIDE_;
+	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) _IRR_OVERRIDE_;
 
 	//! Adds a file open dialog.
 	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title = 0,
 			bool modal=true, IGUIElement* parent=0, s32 id=-1,
-			bool restoreCWD=false, io::path::char_type* startDir=0);
+			bool restoreCWD=false, io::path::char_type* startDir=0) _IRR_OVERRIDE_;
 
 	//! Adds a color select dialog.
-	virtual IGUIColorSelectDialog* addColorSelectDialog(const wchar_t* title = 0, bool modal=true, IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
+	virtual IGUIColorSelectDialog* addColorSelectDialog(const wchar_t* title = 0,
+		bool modal=true, IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! adds a static text. The returned pointer must not be dropped.
 	virtual IGUIStaticText* addStaticText(const wchar_t* text, const core::rect<s32>& rectangle,
-		bool border=false, bool wordWrap=true, IGUIElement* parent=0, s32 id=-1, bool drawBackground = false);
+		bool border=false, bool wordWrap=true, IGUIElement* parent=0, s32 id=-1, bool drawBackground = false) _IRR_OVERRIDE_;
 
 	//! Adds an edit box. The returned pointer must not be dropped.
 	virtual IGUIEditBox* addEditBox(const wchar_t* text, const core::rect<s32>& rectangle,
-		bool border=false, IGUIElement* parent=0, s32 id=-1);
+		bool border=false, IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! Adds a spin box to the environment
 	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle,
-		bool border=false,IGUIElement* parent=0, s32 id=-1);
+		bool border=false,IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! Adds a tab control to the environment.
 	virtual IGUITabControl* addTabControl(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, bool fillbackground=false, bool border=true, s32 id=-1);
+		IGUIElement* parent=0, bool fillbackground=false, bool border=true, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! Adds tab to the environment.
 	virtual IGUITab* addTab(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1);
+		IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! Adds a context menu to the environment.
 	virtual IGUIContextMenu* addContextMenu(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1);
+		IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! Adds a menu to the environment.
 	virtual IGUIContextMenu* addMenu(IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
@@ -174,11 +177,11 @@ public:
 
 	//! Adds a combo box to the environment.
 	virtual IGUIComboBox* addComboBox(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1);
+		IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
 
 	//! Adds a table element.
 	virtual IGUITable* addTable(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false);
+		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false) _IRR_OVERRIDE_;
 
 	//! sets the focus to an element
 	virtual bool setFocus(IGUIElement* element) _IRR_OVERRIDE_;

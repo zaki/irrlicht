@@ -76,7 +76,7 @@ public:
 	virtual ~COpenGLSLMaterialRenderer();
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services);
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_;
 
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_;
 

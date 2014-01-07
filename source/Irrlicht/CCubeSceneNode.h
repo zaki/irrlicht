@@ -48,7 +48,7 @@ namespace scene
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh,
-			s32 id, bool zfailmethod=true, f32 infinity=10000.0f);
+			s32 id, bool zfailmethod=true, f32 infinity=10000.0f) _IRR_OVERRIDE_;
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;

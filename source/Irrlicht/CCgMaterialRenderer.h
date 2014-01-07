@@ -38,7 +38,7 @@ public:
 	CGenum getSpace() const;
 	CGtype getType() const;
 
-	virtual void update(const void* data, const SMaterial& material) const = 0 _IRR_OVERRIDE_;
+	virtual void update(const void* data, const SMaterial& material) const = 0;
 
 protected:
 	core::stringc Name;
@@ -52,7 +52,7 @@ class CCgUniform1f : public CCgUniform
 public:
 	CCgUniform1f(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform2f : public CCgUniform
@@ -60,7 +60,7 @@ class CCgUniform2f : public CCgUniform
 public:
 	CCgUniform2f(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform3f : public CCgUniform
@@ -68,7 +68,7 @@ class CCgUniform3f : public CCgUniform
 public:
 	CCgUniform3f(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform4f : public CCgUniform
@@ -76,7 +76,7 @@ class CCgUniform4f : public CCgUniform
 public:
 	CCgUniform4f(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform1i : public CCgUniform
@@ -84,7 +84,7 @@ class CCgUniform1i : public CCgUniform
 public:
 	CCgUniform1i(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform2i : public CCgUniform
@@ -92,7 +92,7 @@ class CCgUniform2i : public CCgUniform
 public:
 	CCgUniform2i(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform3i : public CCgUniform
@@ -100,7 +100,7 @@ class CCgUniform3i : public CCgUniform
 public:
 	CCgUniform3i(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform4i : public CCgUniform
@@ -108,7 +108,7 @@ class CCgUniform4i : public CCgUniform
 public:
 	CCgUniform4i(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniform4x4f : public CCgUniform
@@ -116,7 +116,7 @@ class CCgUniform4x4f : public CCgUniform
 public:
 	CCgUniform4x4f(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgUniformSampler2D : public CCgUniform
@@ -124,7 +124,7 @@ class CCgUniformSampler2D : public CCgUniform
 public:
 	CCgUniformSampler2D(const CGparameter& parameter, bool global);
 
-	void update(const void* data, const SMaterial& material) const;
+	virtual void update(const void* data, const SMaterial& material) const _IRR_OVERRIDE_;
 };
 
 class CCgMaterialRenderer : public IMaterialRenderer, public IMaterialRendererServices
@@ -133,13 +133,8 @@ public:
 	CCgMaterialRenderer(IShaderConstantSetCallBack* callback = 0, IMaterialRenderer* baseMaterial = 0, s32 userData = 0);
 	virtual ~CCgMaterialRenderer();
 
-	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services) = 0 _IRR_OVERRIDE_;
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) = 0 _IRR_OVERRIDE_;
-	virtual void OnUnsetMaterial() = 0 _IRR_OVERRIDE_;
-
 	virtual bool isTransparent() const _IRR_OVERRIDE_;
 
-	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates) = 0 _IRR_OVERRIDE_;
 	virtual s32 getVertexShaderConstantID(const c8* name) _IRR_OVERRIDE_;
 	virtual s32 getPixelShaderConstantID(const c8* name) _IRR_OVERRIDE_;
 	virtual void setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount=1) _IRR_OVERRIDE_;
@@ -148,7 +143,6 @@ public:
 	virtual bool setVertexShaderConstant(s32 index, const s32* ints, int count) _IRR_OVERRIDE_;
 	virtual bool setPixelShaderConstant(s32 index, const f32* floats, int count) _IRR_OVERRIDE_;
 	virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count) _IRR_OVERRIDE_;
-	virtual IVideoDriver* getVideoDriver() = 0 _IRR_OVERRIDE_;
 
 protected:
 	void getUniformList();

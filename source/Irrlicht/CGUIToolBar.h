@@ -35,7 +35,7 @@ namespace gui
 		//! Adds a button to the tool bar
 		virtual IGUIButton* addButton(s32 id=-1, const wchar_t* text=0,const wchar_t* tooltiptext=0,
 			video::ITexture* img=0, video::ITexture* pressed=0,
-			bool isPushButton=false, bool useAlphaChannel=false);
+			bool isPushButton=false, bool useAlphaChannel=false) _IRR_OVERRIDE_;
 
 	private:
 

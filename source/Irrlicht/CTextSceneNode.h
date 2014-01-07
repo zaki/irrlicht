@@ -17,7 +17,6 @@ namespace irr
 namespace scene
 {
 
-
 	class CTextSceneNode : public ITextSceneNode
 	{
 	public:
@@ -115,12 +114,12 @@ namespace scene
 		//! \param bottomColor: stores the color of the bottom vertices
 		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const _IRR_OVERRIDE_;
 
-		virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth)
+		virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth) _IRR_OVERRIDE_
 		{
 			setSize(core::dimension2df(bottomEdgeWidth, height));
 		}
 
-		virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const
+		virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const _IRR_OVERRIDE_
 		{
 			height = Size.Height;
 			bottomEdgeWidth = Size.Width;

@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_
 	{
 		Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, true);
 		return true;
@@ -57,7 +57,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -81,7 +81,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -152,7 +152,7 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material)
+	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
 	{
 		E_BLEND_FACTOR srcFact,dstFact;
 		E_MODULATE_FUNC modulate;
@@ -216,7 +216,7 @@ public:
 		}
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #ifdef GL_ARB_texture_env_combine
@@ -233,7 +233,7 @@ public:
 		Driver->getBridgeCalls()->setAlphaTest(false);
 	}
 
-	virtual void OnUnsetBaseMaterial()
+	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
 	{
 #ifdef GL_ARB_texture_env_combine
 		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE);
@@ -250,7 +250,7 @@ public:
 
 	//! Returns if the material is transparent.
 	/** Is not always transparent, but mostly. */
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
@@ -266,7 +266,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -299,7 +299,7 @@ public:
 		}
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
@@ -325,7 +325,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -338,24 +338,24 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material)
+	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		Driver->getBridgeCalls()->setBlend(true);
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	virtual void OnUnsetBaseMaterial()
+	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
@@ -371,7 +371,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -398,7 +398,7 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material)
+	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
 	{
 #ifdef GL_ARB_texture_env_combine
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
@@ -419,7 +419,7 @@ public:
 		Driver->getBridgeCalls()->setBlend(true);
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		// default values
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -433,7 +433,7 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	virtual void OnUnsetBaseMaterial()
+	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
 	{
 #ifdef GL_ARB_texture_env_combine
 		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE );
@@ -445,7 +445,7 @@ public:
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
@@ -461,7 +461,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -492,7 +492,7 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material)
+	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
 	{
 #ifdef GL_ARB_texture_env_combine
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
@@ -516,7 +516,7 @@ public:
 		Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, material.MaterialTypeParam);
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #ifdef GL_ARB_texture_env_combine
@@ -528,7 +528,7 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	virtual void OnUnsetBaseMaterial()
+	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
 	{
 #ifdef GL_ARB_texture_env_combine
 		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE );
@@ -540,7 +540,7 @@ public:
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
@@ -556,7 +556,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -569,24 +569,24 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material)
+	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setAlphaTest(true);
 		Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, 0.5f);
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setAlphaTest(false);
 	}
 
-	virtual void OnUnsetBaseMaterial()
+	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setAlphaTest(false);
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return false;  // this material is not really transparent because it does no blending.
 	}
@@ -602,7 +602,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -690,7 +690,7 @@ public:
 		}
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
@@ -718,7 +718,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -746,7 +746,7 @@ public:
 		}
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
@@ -767,7 +767,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(1);
 		// texture needs to be flipped for OpenGL
@@ -786,7 +786,7 @@ public:
 		}
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		glDisable(GL_TEXTURE_GEN_S);
 		glDisable(GL_TEXTURE_GEN_T);
@@ -803,7 +803,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -832,7 +832,7 @@ public:
 		}
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
@@ -858,7 +858,7 @@ public:
 		: COpenGLMaterialRenderer(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services)
+		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
@@ -909,7 +909,7 @@ public:
 		}
 	}
 
-	virtual void OnUnsetMaterial()
+	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
@@ -926,7 +926,7 @@ public:
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const
+	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}

@@ -22,7 +22,7 @@ namespace scene
 		virtual void animateNode(ISceneNode* node, u32 timeMs) _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node animator
-		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const
+		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const _IRR_OVERRIDE_
 		{
 			return ESNAT_DELETION;
 		}

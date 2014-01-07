@@ -36,49 +36,49 @@ namespace gui
 		virtual IGUITreeViewNode* getParent() const _IRR_OVERRIDE_;
 
 		//! returns the text of the node
-		virtual const wchar_t* getText() const
+		virtual const wchar_t* getText() const _IRR_OVERRIDE_
 		{ return Text.c_str(); }
 
 		//! sets the text of the node
 		virtual void setText( const wchar_t* text ) _IRR_OVERRIDE_;
 
 		//! returns the icon text of the node
-		virtual const wchar_t* getIcon() const
+		virtual const wchar_t* getIcon() const _IRR_OVERRIDE_
 		{ return Icon.c_str(); }
 
 		//! sets the icon text of the node
 		virtual void setIcon( const wchar_t* icon ) _IRR_OVERRIDE_;
 
 		//! returns the image index of the node
-		virtual u32 getImageIndex() const
+		virtual u32 getImageIndex() const _IRR_OVERRIDE_
 		{ return ImageIndex; }
 
 		//! sets the image index of the node
-		virtual void setImageIndex( u32 imageIndex )
+		virtual void setImageIndex( u32 imageIndex ) _IRR_OVERRIDE_
 		{ ImageIndex = imageIndex; }
 
 		//! returns the image index of the node
-		virtual u32 getSelectedImageIndex() const
+		virtual u32 getSelectedImageIndex() const _IRR_OVERRIDE_
 		{ return SelectedImageIndex; }
 
 		//! sets the image index of the node
-		virtual void setSelectedImageIndex( u32 imageIndex )
+		virtual void setSelectedImageIndex( u32 imageIndex ) _IRR_OVERRIDE_
 		{ SelectedImageIndex = imageIndex; }
 
 		//! returns the user data (void*) of this node
-		virtual void* getData() const
+		virtual void* getData() const _IRR_OVERRIDE_
 		{ return Data; }
 
 		//! sets the user data (void*) of this node
-		virtual void setData( void* data )
+		virtual void setData( void* data ) _IRR_OVERRIDE_
 		{ Data = data; }
 
 		//! returns the user data2 (IReferenceCounted) of this node
-		virtual IReferenceCounted* getData2() const
+		virtual IReferenceCounted* getData2() const _IRR_OVERRIDE_
 		{ return Data2; }
 
 		//! sets the user data2 (IReferenceCounted) of this node
-		virtual void setData2( IReferenceCounted* data )
+		virtual void setData2( IReferenceCounted* data ) _IRR_OVERRIDE_
 		{
 			if( Data2 )
 			{
@@ -92,14 +92,14 @@ namespace gui
 		}
 
 		//! returns the child item count
-		virtual u32 getChildCount() const
+		virtual u32 getChildCount() const _IRR_OVERRIDE_
 		{ return Children.getSize(); }
 
 		//! removes all children (recursive) from this node
 		virtual void clearChildren() _IRR_OVERRIDE_;
 
 		//! returns true if this node has child nodes
-		virtual bool hasChildren() const
+		virtual bool hasChildren() const _IRR_OVERRIDE_
 		{ return !Children.empty(); }
 
 		//! Adds a new node behind the last child node.
@@ -117,7 +117,7 @@ namespace gui
 				s32 imageIndex = -1,
 				s32 selectedImageIndex = -1,
 				void* data = 0,
-				IReferenceCounted* data2 = 0);
+				IReferenceCounted* data2 = 0) _IRR_OVERRIDE_;
 
 		//! Adds a new node before the first child node.
 		//! \param text text of the new node
@@ -134,7 +134,7 @@ namespace gui
 				s32					imageIndex = -1,
 				s32					selectedImageIndex = -1,
 				void*					data = 0,
-				IReferenceCounted*			data2 = 0 );
+				IReferenceCounted*			data2 = 0 ) _IRR_OVERRIDE_;
 
 		//! Adds a new node behind the other node.
 		//! The other node has also te be a child node from this node.
@@ -153,7 +153,7 @@ namespace gui
 				s32					imageIndex = -1,
 				s32					selectedImageIndex = -1,
 				void*					data = 0,
-				IReferenceCounted*			data2 = 0 );
+				IReferenceCounted*			data2 = 0 ) _IRR_OVERRIDE_;
 
 		//! Adds a new node before the other node.
 		//! The other node has also te be a child node from this node.
@@ -172,7 +172,7 @@ namespace gui
 				s32					imageIndex = -1,
 				s32					selectedImageIndex = -1,
 				void*					data = 0,
-				IReferenceCounted*			data2 = 0 );
+				IReferenceCounted*			data2 = 0 ) _IRR_OVERRIDE_;
 
 		//! Return the first child note from this node.
 		virtual IGUITreeViewNode* getFirstChild() const _IRR_OVERRIDE_;
@@ -199,7 +199,7 @@ namespace gui
 		virtual bool moveChildDown( IGUITreeViewNode* child ) _IRR_OVERRIDE_;
 
 		//! Returns true if the node is expanded (children are visible).
-		virtual bool getExpanded() const
+		virtual bool getExpanded() const _IRR_OVERRIDE_
 		{ return Expanded; }
 
 		//! Sets if the node is expanded.
@@ -250,19 +250,19 @@ namespace gui
 		virtual ~CGUITreeView();
 
 		//! returns the root node (not visible) from the tree.
-		virtual IGUITreeViewNode* getRoot() const
+		virtual IGUITreeViewNode* getRoot() const _IRR_OVERRIDE_
 		{ return Root; }
 
 		//! returns the selected node of the tree or 0 if none is selected
-		virtual IGUITreeViewNode* getSelected() const
+		virtual IGUITreeViewNode* getSelected() const _IRR_OVERRIDE_
 		{ return Selected; }
 
 		//! returns true if the tree lines are visible
-		virtual bool getLinesVisible() const
+		virtual bool getLinesVisible() const _IRR_OVERRIDE_
 		{ return LinesVisible; }
 
 		//! sets if the tree lines are visible
-		virtual void setLinesVisible( bool visible )
+		virtual void setLinesVisible( bool visible ) _IRR_OVERRIDE_
 		{ LinesVisible = visible; }
 
 		//! called if an event happened.
@@ -282,19 +282,19 @@ namespace gui
 		virtual void setImageList( IGUIImageList* imageList ) _IRR_OVERRIDE_;
 
 		//! Returns the image list which is used for the nodes.
-		virtual IGUIImageList* getImageList() const
+		virtual IGUIImageList* getImageList() const _IRR_OVERRIDE_
 		{ return ImageList; }
 
 		//! Sets if the image is left of the icon. Default is true.
-		virtual void setImageLeftOfIcon( bool bLeftOf )
+		virtual void setImageLeftOfIcon( bool bLeftOf ) _IRR_OVERRIDE_
 		{ ImageLeftOfIcon = bLeftOf; }
 
 		//! Returns if the Image is left of the icon. Default is true.
-		virtual bool getImageLeftOfIcon() const
+		virtual bool getImageLeftOfIcon() const _IRR_OVERRIDE_
 		{ return ImageLeftOfIcon; }
 
 		//! Returns the node which is associated to the last event.
-		virtual IGUITreeViewNode* getLastEventNode() const
+		virtual IGUITreeViewNode* getLastEventNode() const _IRR_OVERRIDE_
 		{ return LastEventNode; }
 
 	private:

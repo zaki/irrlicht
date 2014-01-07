@@ -66,7 +66,7 @@ public:
 
 	//! Reads forward to the next xml node.
 	//! \return Returns false, if there was no further node.
-	virtual bool read()
+	virtual bool read() _IRR_OVERRIDE_
 	{
 		// if not end reached, parse the node
 		if (P && ((unsigned int)(P - TextBegin) < TextSize - 1) && (*P != 0))
@@ -80,21 +80,21 @@ public:
 
 
 	//! Returns the type of the current XML node.
-	virtual EXML_NODE getNodeType() const
+	virtual EXML_NODE getNodeType() const _IRR_OVERRIDE_
 	{
 		return CurrentNodeType;
 	}
 
 
 	//! Returns attribute count of the current XML node.
-	virtual unsigned int getAttributeCount() const
+	virtual unsigned int getAttributeCount() const _IRR_OVERRIDE_
 	{
 		return Attributes.size();
 	}
 
 
 	//! Returns name of an attribute.
-	virtual const char_type* getAttributeName(int idx) const
+	virtual const char_type* getAttributeName(int idx) const _IRR_OVERRIDE_
 	{
 		if ((u32)idx >= Attributes.size())
 			return 0;
@@ -104,7 +104,7 @@ public:
 
 
 	//! Returns the value of an attribute.
-	virtual const char_type* getAttributeValue(int idx) const
+	virtual const char_type* getAttributeValue(int idx) const _IRR_OVERRIDE_
 	{
 		if ((unsigned int)idx >= Attributes.size())
 			return 0;
@@ -114,7 +114,7 @@ public:
 
 
 	//! Returns the value of an attribute.
-	virtual const char_type* getAttributeValue(const char_type* name) const
+	virtual const char_type* getAttributeValue(const char_type* name) const _IRR_OVERRIDE_
 	{
 		const SAttribute* attr = getAttributeByName(name);
 		if (!attr)
@@ -125,7 +125,7 @@ public:
 
 
 	//! Returns the value of an attribute
-	virtual const char_type* getAttributeValueSafe(const char_type* name) const
+	virtual const char_type* getAttributeValueSafe(const char_type* name) const _IRR_OVERRIDE_
 	{
 		const SAttribute* attr = getAttributeByName(name);
 		if (!attr)
@@ -137,7 +137,7 @@ public:
 
 
 	//! Returns the value of an attribute as integer.
-	int getAttributeValueAsInt(const char_type* name) const
+	virtual int getAttributeValueAsInt(const char_type* name) const _IRR_OVERRIDE_
 	{
 		const SAttribute* attr = getAttributeByName(name);
 		if (!attr)
@@ -149,7 +149,7 @@ public:
 
 
 	//! Returns the value of an attribute as integer.
-	int getAttributeValueAsInt(int idx) const
+	virtual int getAttributeValueAsInt(int idx) const _IRR_OVERRIDE_
 	{
 		const char_type* attrvalue = getAttributeValue(idx);
 		if (!attrvalue)
@@ -161,7 +161,7 @@ public:
 
 
 	//! Returns the value of an attribute as float.
-	float getAttributeValueAsFloat(const char_type* name) const
+	virtual float getAttributeValueAsFloat(const char_type* name) const _IRR_OVERRIDE_
 	{
 		const SAttribute* attr = getAttributeByName(name);
 		if (!attr)
@@ -173,7 +173,7 @@ public:
 
 
 	//! Returns the value of an attribute as float.
-	float getAttributeValueAsFloat(int idx) const
+	virtual float getAttributeValueAsFloat(int idx) const _IRR_OVERRIDE_
 	{
 		const char_type* attrvalue = getAttributeValue(idx);
 		if (!attrvalue)
@@ -185,33 +185,33 @@ public:
 
 
 	//! Returns the name of the current node.
-	virtual const char_type* getNodeName() const
+	virtual const char_type* getNodeName() const _IRR_OVERRIDE_
 	{
 		return NodeName.c_str();
 	}
 
 
 	//! Returns data of the current node.
-	virtual const char_type* getNodeData() const
+	virtual const char_type* getNodeData() const _IRR_OVERRIDE_
 	{
 		return NodeName.c_str();
 	}
 
 
 	//! Returns if an element is an empty element, like <foo />
-	virtual bool isEmptyElement() const
+	virtual bool isEmptyElement() const _IRR_OVERRIDE_
 	{
 		return IsEmptyElement;
 	}
 
 	//! Returns format of the source xml file.
-	virtual ETEXT_FORMAT getSourceFormat() const
+	virtual ETEXT_FORMAT getSourceFormat() const _IRR_OVERRIDE_
 	{
 		return SourceFormat;
 	}
 
 	//! Returns format of the strings returned by the parser.
-	virtual ETEXT_FORMAT getParserFormat() const
+	virtual ETEXT_FORMAT getParserFormat() const _IRR_OVERRIDE_
 	{
 		return TargetFormat;
 	}

@@ -46,7 +46,7 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material) _IRR_OVERRIDE_ { }
 	virtual void OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
-		bool resetAllRenderstates, video::IMaterialRendererServices* services);
+		bool resetAllRenderstates, video::IMaterialRendererServices* services) _IRR_OVERRIDE_;
 
 private:
 

@@ -68,9 +68,10 @@ namespace irr
 
 		//! \return Returns a pointer to a list with all video modes
 		//! supported by the gfx adapter.
-		video::IVideoModeList* getVideoModeList();
+		virtual video::IVideoModeList* getVideoModeList() _IRR_OVERRIDE_;
 
 		//! Notifies the device, that it has been resized
+		/** Must be publis as it is called from free function (event handler) */
 		void OnResized();
 
 		//! Sets if the window should be resizable in windowed mode.
@@ -101,7 +102,7 @@ namespace irr
 		virtual void clearSystemMessages() _IRR_OVERRIDE_;
 
 		//! Get the device type
-		virtual E_DEVICE_TYPE getType() const
+		virtual E_DEVICE_TYPE getType() const _IRR_OVERRIDE_
 		{
 				return EIDT_WIN32;
 		}
@@ -133,7 +134,7 @@ namespace irr
 			~CCursorControl();
 
 			//! Changes the visible state of the mouse cursor.
-			virtual void setVisible(bool visible)
+			virtual void setVisible(bool visible) _IRR_OVERRIDE_
 			{
 				CURSORINFO info;
 				info.cbSize = sizeof(CURSORINFO);
@@ -171,20 +172,20 @@ namespace irr
 			}
 
 			//! Returns if the cursor is currently visible.
-			virtual bool isVisible() const
+			virtual bool isVisible() const _IRR_OVERRIDE_
 			{
 				_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 				return IsVisible;
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(const core::position2d<f32> &pos)
+			virtual void setPosition(const core::position2d<f32> &pos) _IRR_OVERRIDE_
 			{
 				setPosition(pos.X, pos.Y);
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(f32 x, f32 y)
+			virtual void setPosition(f32 x, f32 y) _IRR_OVERRIDE_
 			{
 				if (!UseReferenceRect)
 					setPosition(core::round32(x*WindowSize.Width), core::round32(y*WindowSize.Height));
@@ -193,13 +194,13 @@ namespace irr
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(const core::position2d<s32> &pos)
+			virtual void setPosition(const core::position2d<s32> &pos) _IRR_OVERRIDE_
 			{
 				setPosition(pos.X, pos.Y);
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(s32 x, s32 y)
+			virtual void setPosition(s32 x, s32 y) _IRR_OVERRIDE_
 			{
 				if (UseReferenceRect)
 				{
@@ -218,14 +219,14 @@ namespace irr
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual const core::position2d<s32>& getPosition()
+			virtual const core::position2d<s32>& getPosition() _IRR_OVERRIDE_
 			{
 				updateInternalCursorPosition();
 				return CursorPos;
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual core::position2d<f32> getRelativePosition()
+			virtual core::position2d<f32> getRelativePosition() _IRR_OVERRIDE_
 			{
 				updateInternalCursorPosition();
 
@@ -240,7 +241,7 @@ namespace irr
 			}
 
 			//! Sets an absolute reference rect for calculating the cursor position.
-			virtual void setReferenceRect(core::rect<s32>* rect=0)
+			virtual void setReferenceRect(core::rect<s32>* rect=0) _IRR_OVERRIDE_
 			{
 				if (rect)
 				{
@@ -260,7 +261,7 @@ namespace irr
 			}
 
 			/** Used to notify the cursor that the window was resized. */
-			virtual void OnResize(const core::dimension2d<u32>& size)
+			void OnResize(const core::dimension2d<u32>& size)
 			{
 				WindowSize = size;
 				if (size.Width!=0)
@@ -301,7 +302,7 @@ namespace irr
 			virtual void setActiveIcon(gui::ECURSOR_ICON iconId) _IRR_OVERRIDE_;
 
 			//! Gets the currently active icon
-			virtual gui::ECURSOR_ICON getActiveIcon() const
+			virtual gui::ECURSOR_ICON getActiveIcon() const _IRR_OVERRIDE_
 			{
 				return ActiveIcon;
 			}

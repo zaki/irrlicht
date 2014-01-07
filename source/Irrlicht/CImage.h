@@ -34,7 +34,7 @@ public:
 	virtual ~CImage();
 
 	//! Lock function.
-	virtual void* lock()
+	virtual void* lock() _IRR_OVERRIDE_
 	{
 		return Data;
 	}
@@ -96,7 +96,7 @@ public:
 	//! copies this surface into another, using the alpha mask, an cliprect and a color to add with
 	virtual void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos,
 			const core::rect<s32>& sourceRect, const SColor &color,
-			const core::rect<s32>* clipRect = 0);
+			const core::rect<s32>* clipRect = 0) _IRR_OVERRIDE_;
 
 	//! copies this surface into another, scaling it to fit, appyling a box filter
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false) _IRR_OVERRIDE_;

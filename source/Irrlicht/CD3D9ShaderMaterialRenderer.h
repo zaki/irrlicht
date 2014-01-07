@@ -39,7 +39,7 @@ public:
 	~CD3D9ShaderMaterialRenderer();
 
 	virtual void OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
-		bool resetAllRenderstates, video::IMaterialRendererServices* services);
+		bool resetAllRenderstates, video::IMaterialRendererServices* services) _IRR_OVERRIDE_;
 
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_;
 
