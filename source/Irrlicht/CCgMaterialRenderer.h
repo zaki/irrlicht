@@ -130,10 +130,10 @@ public:
 class CCgMaterialRenderer : public IMaterialRenderer, public IMaterialRendererServices
 {
 public:
-	CCgMaterialRenderer(IShaderConstantSetCallBack* callback = 0, IMaterialRenderer* baseMaterial = 0, s32 userData = 0);
+	CCgMaterialRenderer(IShaderConstantSetCallBack* callback = 0, s32 userData = 0);
 	virtual ~CCgMaterialRenderer();
 
-	virtual bool isTransparent() const _IRR_OVERRIDE_;
+	virtual bool isTransparent() const = 0;
 
 	virtual s32 getVertexShaderConstantID(const c8* name) _IRR_OVERRIDE_;
 	virtual s32 getPixelShaderConstantID(const c8* name) _IRR_OVERRIDE_;
@@ -148,7 +148,6 @@ protected:
 	void getUniformList();
 
 	IShaderConstantSetCallBack* CallBack;
-	IMaterialRenderer* BaseMaterial;
 	s32 UserData;
 
 	core::array<CCgUniform*> UniformInfo;

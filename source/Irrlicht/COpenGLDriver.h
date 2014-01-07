@@ -286,15 +286,7 @@ namespace video
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-			bool resetAllRenderstates) _IRR_OVERRIDE_
-		{
-			setOpenGLBasicRenderStates(material, lastmaterial, resetAllRenderstates);
-			setTextureRenderStates(material, resetAllRenderstates);
-		}
-
-		//! OpenGL version of setBasicRenderStates method.
-		void setOpenGLBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-			bool resetAllRenderstates);
+			bool resetAllRenderstates) _IRR_OVERRIDE_;
 
 		//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
 		virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates);

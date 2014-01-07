@@ -221,6 +221,8 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 	else
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (Program2)
@@ -234,8 +236,6 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 		if (CallBack)
 			CallBack->OnSetMaterial(material);
 	}
-
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 

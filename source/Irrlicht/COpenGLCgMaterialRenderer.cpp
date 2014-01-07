@@ -8,6 +8,7 @@
 #include "COpenGLCgMaterialRenderer.h"
 #include "COpenGLDriver.h"
 #include "COpenGLTexture.h"
+#include "COpenGLMaterialRenderer.h"
 
 namespace irr
 {
@@ -38,12 +39,21 @@ COpenGLCgMaterialRenderer::COpenGLCgMaterialRenderer(COpenGLDriver* driver, s32&
 	const c8* fragmentProgram, const c8* fragmentEntry, E_PIXEL_SHADER_TYPE fragmentProfile,
 	const c8* geometryProgram, const c8* geometryEntry, E_GEOMETRY_SHADER_TYPE geometryProfile,
 	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType, u32 vertices,
-	IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData) :
-	Driver(driver), CCgMaterialRenderer(callback, baseMaterial, userData)
+	IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData) :
+	BaseMaterial(0), Driver(driver), CCgMaterialRenderer(callback, userData)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLCgMaterialRenderer");
 	#endif
+
+	if (baseMaterial == EMT_ONETEXTURE_BLEND || baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA ||
+		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
+	{
+		BaseMaterial = static_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
+	}
+
+	if (BaseMaterial)
+		BaseMaterial->grab();
 
 	init(materialType, vertexProgram, vertexEntry, vertexProfile, fragmentProgram, fragmentEntry, fragmentProfile,
 		geometryProgram, geometryEntry, geometryProfile, inType, outType, vertices);
@@ -51,6 +61,9 @@ COpenGLCgMaterialRenderer::COpenGLCgMaterialRenderer(COpenGLDriver* driver, s32&
 
 COpenGLCgMaterialRenderer::~COpenGLCgMaterialRenderer()
 {
+	if(BaseMaterial)
+		BaseMaterial->drop();
+
 	if (VertexProgram)
 	{
 		cgGLUnloadProgram(VertexProgram);
@@ -68,12 +81,19 @@ COpenGLCgMaterialRenderer::~COpenGLCgMaterialRenderer()
 	}
 }
 
+bool COpenGLCgMaterialRenderer::isTransparent() const
+{
+	return BaseMaterial ? BaseMaterial->isTransparent() : false;
+}
+
 void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services)
 {
 	if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_ENABLE)
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE_TO_DISABLE);
 	else
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
+
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 	Material = material;
 
@@ -103,8 +123,6 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 		if (CallBack)
 			CallBack->OnSetMaterial(material);
 	}
-
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
