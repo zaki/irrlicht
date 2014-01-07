@@ -137,10 +137,10 @@ void CD3D8ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetMaterial(material, material, true, services);
-
-		if (CallBack)
-			CallBack->OnSetMaterial(material);
 	}
+
+	if (CallBack)
+		CallBack->OnSetMaterial(material);
 }
 
 void CD3D8ShaderMaterialRenderer::OnUnsetMaterial()

@@ -232,10 +232,10 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetBaseMaterial(material);
-
-		if (CallBack)
-			CallBack->OnSetMaterial(material);
 	}
+
+	if (CallBack)
+		CallBack->OnSetMaterial(material);
 }
 
 
