@@ -28,8 +28,7 @@ public:
 	//! Set the point that particles will attract to
 	virtual void setPoint( const core::vector3df& point ) { Point = point; }
 
-	//! Set the speed, in game units per second that the particles will attract to
-	//! the specified point
+	//! Set the speed, in game units per second that the particles will attract to the specified point
 	virtual void setSpeed( f32 speed ) { Speed = speed; }
 
 	//! Set whether or not the particles are attracting or detracting
