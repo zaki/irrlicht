@@ -73,8 +73,9 @@ class line2d
 		When set to false the function will check for the first intersection point when extending the lines.
 		\param out: If there is an intersection, the location of the
 		intersection will be stored in this vector.
+		\param ignoreCoincidentLines: When true coincident lines (lines above each other) are never considered as interesecting. When false the center of the overlapping part is returned.
 		\return True if there is an intersection, false if not. */
-		bool intersectWith(const line2d<T>& l, vector2d<T>& out, bool checkOnlySegments=true) const
+		bool intersectWith(const line2d<T>& l, vector2d<T>& out, bool checkOnlySegments=true, bool ignoreCoincidentLines=false) const
 		{
 			// Uses the method given at:
 			// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
@@ -91,7 +92,7 @@ class line2d
 			{
 				// The lines are either coincident or parallel
 				// if both numerators are 0, the lines are coincident
-				if(equals(numeratorA, 0.f) && equals(numeratorB, 0.f))
+				if(!ignoreCoincidentLines && equals(numeratorA, 0.f) && equals(numeratorB, 0.f))
 				{
 					// Try and find a common endpoint
 					if(l.start == start || l.end == start)

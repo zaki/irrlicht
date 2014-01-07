@@ -971,10 +971,7 @@ void CIrrDeviceMacOSX::createDriver()
 void CIrrDeviceMacOSX::flush()
 {
 	if (CGLContext != NULL)
-	{
-		glFinish();
 		CGLFlushDrawable(CGLContext);
-	}
 }
 
 bool CIrrDeviceMacOSX::run()

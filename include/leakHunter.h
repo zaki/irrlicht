@@ -14,7 +14,7 @@ namespace irr
 {
 	class IReferenceCounted;
 
-	//! A calls helping to find unrelease objects of type IReferenceCounted.
+	//! A class helping to find unreleased objects of type IReferenceCounted.
 	/** To use this you have recompile Irrlicht with _IRR_COMPILE_WITH_LEAK_HUNTER_.
 		Note that this will slow down your application and should only be used for debugging.
 		The way to use is that you can check after you closed and dropped your last Irrlicht device
@@ -26,9 +26,9 @@ namespace irr
 			friend class IReferenceCounted;
 
 			//! Clear all IReferenceCounted objects inside LeakHunter
-			/** This does not affect the IReferenceCounted themselfes only the
+			/** This does not affect the IReferenceCounted themselves only the
 				counting of them. Usually you don't ever need to clear, but
-				sometimes it helps when for example you want for to ignore
+				sometimes it helps when for example you want to ignore
 				certain leaks.
 			*/
 			static void clearReferenceCountedObjects()
@@ -36,6 +36,7 @@ namespace irr
 				ReferenceCountedObjects.clear();
 			}
 
+			//! Access all objects which are currently reference counted.
 			static inline irr::core::array<const IReferenceCounted*> getReferenceCountedObjects()
 			{
 				return ReferenceCountedObjects;
