@@ -1905,7 +1905,7 @@ public:
 		if ( Value )
 			return core::stringw(Value->getName().getPath().c_str());
 
-		return core::stringw(0);
+		return core::stringw();
 	}
 
 	virtual core::stringc getString() _IRR_OVERRIDE_
@@ -1917,7 +1917,7 @@ public:
 		if ( Value )
 			return core::stringc(Value->getName().getPath().c_str());
 
-		return core::stringc(0);
+		return core::stringc();
 	}
 
 	virtual void setString(const char* text) _IRR_OVERRIDE_
