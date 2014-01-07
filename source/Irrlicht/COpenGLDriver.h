@@ -42,6 +42,14 @@ namespace video
 		friend class COpenGLCallBridge;
 		friend class COpenGLTexture;
 	public:
+		// Information about state of fixed pipeline activity.
+		enum E_OPENGL_FIXED_PIPELINE_STATE
+		{
+			EOFPS_ENABLE = 0, // fixed pipeline.
+			EOFPS_DISABLE, // programmable pipeline.
+			EOFPS_ENABLE_TO_DISABLE, // switch from fixed to programmable pipeline.
+			EOFPS_DISABLE_TO_ENABLE // switch from programmable to fixed pipeline.
+		};
 
 		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
@@ -280,16 +288,16 @@ namespace video
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 			bool resetAllRenderstates) _IRR_OVERRIDE_
 		{
-			setBasicRenderStates(material, lastmaterial, resetAllRenderstates, true);
-			setTextureRenderStates(material, resetAllRenderstates, true);
+			setOpenGLBasicRenderStates(material, lastmaterial, resetAllRenderstates);
+			setTextureRenderStates(material, resetAllRenderstates);
 		}
 
-		//! Can be called by an IMaterialRenderer to make its work easier.
-		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
-			bool resetAllRenderstates, bool fixedPipeline);
+		//! OpenGL version of setBasicRenderStates method.
+		void setOpenGLBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
+			bool resetAllRenderstates);
 
 		//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
-		virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates, bool fixedPipeline);
+		virtual void setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates);
 
 		//! Get a vertex shader constant index.
 		virtual s32 getVertexShaderConstantID(const c8* name) _IRR_OVERRIDE_;
@@ -418,6 +426,12 @@ namespace video
 
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
+
+		//! Return info about fixed pipeline state.
+		E_OPENGL_FIXED_PIPELINE_STATE getFixedPipelineState() const;
+
+		//! Set info about fixed pipeline state.
+		void setFixedPipelineState(E_OPENGL_FIXED_PIPELINE_STATE state);
 
 		//! Get current material.
 		const SMaterial& getCurrentMaterial() const;
@@ -587,6 +601,8 @@ namespace video
 
 		//! Color buffer format
 		ECOLOR_FORMAT ColorFormat;
+
+		E_OPENGL_FIXED_PIPELINE_STATE FixedPipelineState;
 
 		//! Render target type for render operations
 		E_RENDER_TARGET CurrentTarget;

@@ -38,7 +38,7 @@ public:
 
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_
 	{
-		Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, true);
+		Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
 		return true;
 	}
 
@@ -59,8 +59,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (resetAllRenderstates || (material.MaterialType != lastMaterial.MaterialType))
 		{
@@ -83,8 +88,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 //		if (material.MaterialType != lastMaterial.MaterialType ||
 //			material.MaterialTypeParam != lastMaterial.MaterialTypeParam ||
@@ -209,8 +219,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -268,8 +283,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if ((material.MaterialType != lastMaterial.MaterialType) || resetAllRenderstates)
 		{
@@ -314,8 +334,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -383,6 +408,11 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
@@ -457,8 +487,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(1);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -503,8 +538,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -619,8 +659,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -668,12 +713,17 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(1);
 		// texture needs to be flipped for OpenGL
 		core::matrix4 tmp = Driver->getTransform(ETS_TEXTURE_0);
 		tmp[5]*=-1;
 		Driver->setTransform(ETS_TEXTURE_0, tmp);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -704,8 +754,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -759,8 +814,13 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
 	{
+		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		else
+			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+
 		Driver->disableTextures(2);
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, true);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{

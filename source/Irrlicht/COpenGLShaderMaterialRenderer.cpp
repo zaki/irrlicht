@@ -120,7 +120,7 @@ void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr,
 
 bool COpenGLShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 {
-    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false, false);
+    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
 
 	// call callback to set shader constants
 	if (CallBack && (VertexShader || PixelShader[0]))
@@ -133,7 +133,10 @@ bool COpenGLShaderMaterialRenderer::OnRender(IMaterialRendererServices* service,
 void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates, false);
+	if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_ENABLE)
+		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE_TO_DISABLE);
+	else
+		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
@@ -181,6 +184,8 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 		if (CallBack)
 			CallBack->OnSetMaterial(material);
 	}
+
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 
