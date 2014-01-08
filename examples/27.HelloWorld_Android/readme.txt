@@ -61,6 +61,14 @@ res:
 	 
 assets: 
 	Files in here are distributed with your app. It's acting like a typical file system.
+	
+assets/media/Shaders: 
+	Shader code needed by the OGLES2 driver to simulate a fixed function pipeline. 
+	In the example this code is automatically copied within the Android.mk makefile.
+	The path where the shaders are searched is set in the IRR_OGLES2_SHADER_PATH define in IrrCompileConfig.h
+	The names are hardcoded so they have to be identical to those found in media/Shaders.
+	You can rewrite the shaders, but ensure to add some working shaders files by those names.
+	The OGLES1 driver doesn't need those files.
 
 obj: 
 	(not sure... but seems all objects files needed for linking are put in here before linking - even the libs)
