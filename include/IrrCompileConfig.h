@@ -935,5 +935,19 @@ precision will be lower but speed higher. currently X86 only
 	#endif
 #endif
 
+#ifdef _DEBUG
+	//! A few attributes are written in CSceneManager when _IRR_SCENEMANAGER_DEBUG is enabled
+	// NOTE: Those attributes were used always until 1.8.0 and became a global define for 1.8.1
+	// which is only enabled in debug because it had a large (sometimes >5%) impact on speed.
+	// A better solution in the long run is to break the interface and remove _all_ attribute
+	// access in functions like CSceneManager::drawAll and instead put that information in some
+	// own struct/class or in CSceneManager.
+	// See http://irrlicht.sourceforge.net/forum/viewtopic.php?f=2&t=48211 for the discussion.
+	#define _IRR_SCENEMANAGER_DEBUG
+	#ifdef NO_IRR_SCENEMANAGER_DEBUG
+		#undef _IRR_SCENEMANAGER_DEBUG
+	#endif
+#endif
+
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__
 

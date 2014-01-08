@@ -632,6 +632,7 @@ namespace scene
 		video::SColorf AmbientLight;
 
 		//! String parameters
+		// NOTE: Attributes are slow and should only be used for debug-info and not in release
 		io::CAttributes* Parameters;
 
 		//! Mesh cache

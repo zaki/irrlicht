@@ -173,9 +173,6 @@
 
 #include "CGeometryCreator.h"
 
-//! Enable debug features
-#define SCENEMANAGER_DEBUG
-
 namespace irr
 {
 namespace scene
@@ -1329,7 +1326,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 		break;
 	}
 
-#ifdef SCENEMANAGER_DEBUG
+#ifdef _IRR_SCENEMANAGER_DEBUG
 	s32 index = Parameters->findAttribute("calls");
 	Parameters->setAttribute(index, Parameters->getAttributeAsInt(index)+1);
 
@@ -1351,12 +1348,14 @@ void CSceneManager::drawAll()
 	if (!Driver)
 		return;
 
+#ifdef _IRR_SCENEMANAGER_DEBUG
 	// reset attributes
 	Parameters->setAttribute("culled", 0);
 	Parameters->setAttribute("calls", 0);
 	Parameters->setAttribute("drawn_solid", 0);
 	Parameters->setAttribute("drawn_transparent", 0);
 	Parameters->setAttribute("drawn_transparent_effect", 0);
+#endif
 
 	u32 i; // new ISO for scoping problem in some compilers
 
@@ -1367,6 +1366,7 @@ void CSceneManager::drawAll()
 	Driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
 	for (i=video::ETS_COUNT-1; i>=video::ETS_TEXTURE_0; --i)
 		Driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
+	// TODO: This should not use an attribute here but a real parameter when necessary (too slow!)
 	Driver->setAllowZWriteOnTransparent(Parameters->getAttributeAsBool(ALLOW_ZWRITE_ON_TRANSPARENT));
 
 	// do animations and other stuff.
@@ -1503,7 +1503,9 @@ void CSceneManager::drawAll()
 				SolidNodeList[i].Node->render();
 		}
 
-		Parameters->setAttribute("drawn_solid", (s32) SolidNodeList.size());
+#ifdef _IRR_SCENEMANAGER_DEBUG
+		Parameters->setAttribute("drawn_solid", (s32) SolidNodeList.size() );
+#endif
 		SolidNodeList.set_used(0);
 
 		if (LightManager)
@@ -1566,7 +1568,9 @@ void CSceneManager::drawAll()
 				TransparentNodeList[i].Node->render();
 		}
 
-		Parameters->setAttribute("drawn_transparent", (s32) TransparentNodeList.size());
+#ifdef _IRR_SCENEMANAGER_DEBUG
+		Parameters->setAttribute ( "drawn_transparent", (s32) TransparentNodeList.size() );
+#endif
 		TransparentNodeList.set_used(0);
 
 		if (LightManager)
@@ -1597,8 +1601,9 @@ void CSceneManager::drawAll()
 			for (i=0; i<TransparentEffectNodeList.size(); ++i)
 				TransparentEffectNodeList[i].Node->render();
 		}
-
+#ifdef _IRR_SCENEMANAGER_DEBUG
 		Parameters->setAttribute("drawn_transparent_effect", (s32) TransparentEffectNodeList.size());
+#endif
 		TransparentEffectNodeList.set_used(0);
 	}
 

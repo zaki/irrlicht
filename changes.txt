@@ -31,13 +31,23 @@ Changes in 1.9 (not yet released)
 - Add getters IGUIButton::isDrawBorderEnabled and IGUIButton::isDrawBackgroundEnabled
 
 --------------------------
-Changes in 1.8.1 (not yet released)
+Changes in 1.8.1 (17.11.2013)
 
+ - Improved OpenGL performance under OSX (Thanks devonsoft for reporting).
+ - Fixed OSX compilation issues.
+ - [KNOWN BUG] Software driver doesn't work properly under OSX 10.9.
+ - For speed improvement the following attributes accessible by ISceneManager::getParameters() are no longer updated in release: 
+   "culled", "calls", "drawn_solid", "drawn_transparent", "drawn_transparent_effect".
+   They can be enabled by compiling Irrlicht with the define _IRR_SCENEMANAGER_DEBUG. 
+   Thanks @hendu for reporting, see http://irrlicht.sourceforge.net/forum/viewtopic.php?f=2&t=48211 for the discussion.
+ - Fix compile problem with CIrrDeviceSDL on VS2008 (and maybe other systems). Thanks @HellFlip for reporting.
+ - Fix quaternion::rotationFromTo() (Thanks @takamoto for reporting)
+ - Fix iszero for s64 (Thanks @chronologicaldot for reporting)
  - Fix crash in SoftwareDriver2 when Material was EMT_DETAIL_MAP but texture[1] was not set (Thanks for fix by chronologicaldot)
  - Fix buffer overrun in x-loader (Thanks for fix by Otaka)
  - Fix cursor visibility update problem under Windows 8 (Thanks @luthyr for reporting)
  - Fix irredit links in loadScene/saveScene docs.
- - Fix issue in CAnimatedMeshSceneNode::clone which cause crash. (reported and fixed by luthyr)
+ - Fix issue in CAnimatedMeshSceneNode::clone which caused a crash. (reported and fixed by luthyr)
  - Fix compiling errors for c++ builder (thx @Greatwolf for many patches and @cfanderek for reminding)
  - Initialized IColladaMeshWriter::GeometryWriting which was uninitialized.
  - Fix linker trouble with irr::core::equalsByUl when compiling Irrlicht as managed code (thx @  Memorial76 for a report + testcase)

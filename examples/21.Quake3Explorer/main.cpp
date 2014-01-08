@@ -2028,6 +2028,7 @@ void CQuake3EventHandler::Animate()
 		IVideoDriver * driver = Game->Device->getVideoDriver();
 
 		IAttributes * attr = smgr->getParameters();
+#ifdef _IRR_SCENEMANAGER_DEBUG					
 		swprintf ( msg, 128,
 			L"Q3 %s [%ls], FPS:%03d Tri:%.03fm Cull %d/%d nodes (%d,%d,%d)",
 			Game->CurrentMapName.c_str(),
@@ -2040,6 +2041,15 @@ void CQuake3EventHandler::Animate()
 			attr->getAttributeAsInt ( "drawn_transparent" ),
 			attr->getAttributeAsInt ( "drawn_transparent_effect" )
 			);
+#else
+swprintf ( msg, 128,
+			L"Q3 %s [%ls], FPS:%03d Tri:%.03fm",
+			Game->CurrentMapName.c_str(),
+			driver->getName(),
+			driver->getFPS (),
+			(f32) driver->getPrimitiveCountDrawn( 0 ) * ( 1.f / 1000000.f )
+			);		
+#endif		
 		Game->Device->setWindowCaption( msg );
 
 		swprintf ( msg, 128,

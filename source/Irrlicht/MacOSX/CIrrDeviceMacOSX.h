@@ -10,6 +10,10 @@
 
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 
+#import <AppKit/NSWindow.h>
+#import <AppKit/NSOpenGL.h>
+#import <AppKit/NSBitmapImageRep.h>
+
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
 #include "IImagePresenter.h"
@@ -18,16 +22,6 @@
 
 #include <OpenGL/OpenGL.h>
 #include <map>
-
-#ifdef __MAC_10_6
-@class NSWindow;
-@class NSOpenGLContext;
-@class NSBitmapImageRep;
-#else
-class NSWindow;
-class NSOpenGLContext;
-class NSBitmapImageRep;
-#endif
 
 namespace irr
 {
