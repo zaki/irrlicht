@@ -12,8 +12,6 @@
 #elif defined(_IRR_IPHONE_PLATFORM_)
 	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
-#elif defined(_IRR_ANDROID_PLATFORM_)
-	#include <android_native_app_glue.h>
 #endif
 
 using namespace irr;
@@ -38,7 +36,7 @@ using namespace gui;
 @end
 #endif
 
-#if !defined(_IRR_IPHONE_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
+#if !defined(_IRR_IPHONE_PLATFORM_)
 class EventReceiver_basic : public IEventReceiver
 {
 private:
@@ -192,11 +190,7 @@ public:
 };
 #endif
 
-#ifdef _IRR_ANDROID_PLATFORM_
-IrrlichtDevice *startup(android_app* app)
-#else
 IrrlichtDevice *startup()
-#endif
 {
 	// create device
 	IrrlichtDevice *device = 0;
@@ -213,16 +207,6 @@ IrrlichtDevice *startup()
 	param.AntiAlias  = 0;
     
     	device = createDeviceEx(param);
-#elif defined(_IRR_ANDROID_PLATFORM_)
-	SIrrlichtCreationParameters param;
-	param.DriverType = EDT_OGLES2;
-	param.WindowSize = dimension2d<u32>(480,854);
-	param.PrivateData = app;
-	param.Bits = 24;
-    	param.ZBufferBits = 16;
-	param.AntiAlias  = 0;
-
-	device = createDeviceEx(param);
 #elif defined(_IRR_USE_WINDOWS_CE_DEVICE_)
 	// set to standard mobile fullscreen 240x320
 	device = createDevice(EDT_OPENGL, dimension2d<u32>(240, 320), 16, true);
@@ -237,7 +221,7 @@ IrrlichtDevice *startup()
 	ISceneManager* smgr = device->getSceneManager();
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
     
-#if defined(_IRR_IPHONE_PLATFORM_) || defined(_IRR_ANDROID_PLATFORM_)
+#if defined(_IRR_IPHONE_PLATFORM_)
     	stringc mediaPath = "media/";
 #else
     	stringc mediaPath = "../../media/";
@@ -259,7 +243,7 @@ IrrlichtDevice *startup()
 		rect<s32>(140,15,200,30), false, false, 0, 100 );
 
 
-#if !defined(_IRR_IPHONE_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
+#if !defined(_IRR_IPHONE_PLATFORM_) 
     // programmable quit button isn't allowed on iOS.
 	guienv->addButton(core::rect<int>(200,10,238,30), 0, 2, L"Quit");
 #endif
@@ -314,7 +298,7 @@ int run ( IrrlichtDevice *device )
 	return 1;
 }
 
-#if !defined(_IRR_IPHONE_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
+#if !defined(_IRR_IPHONE_PLATFORM_) 
 int example_customscenenode()
 {
 	// create device
@@ -498,18 +482,12 @@ int example_terrain()
 
 #ifdef _IRR_IPHONE_PLATFORM_
 IrrlichtDevice* example_helloworld()
-#elif defined(_IRR_ANDROID_PLATFORM_)
-int example_helloworld(android_app* app)
 #else
 int example_helloworld()
 #endif
 {
 	// create device
-#ifdef _IRR_ANDROID_PLATFORM_
-	IrrlichtDevice *device = startup(app);
-#else
 	IrrlichtDevice *device = startup();
-#endif
 
 	if (device == 0)
 #ifdef _IRR_IPHONE_PLATFORM_
@@ -522,7 +500,7 @@ int example_helloworld()
 	ISceneManager* smgr = device->getSceneManager();
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
 
-#if defined(_IRR_IPHONE_PLATFORM_) || defined(_IRR_ANDROID_PLATFORM_)
+#if defined(_IRR_IPHONE_PLATFORM_) 
     	stringc mediaPath = "media/";
 #else
     	stringc mediaPath = "../../media/";
@@ -566,11 +544,6 @@ int example_helloworld()
 
 #ifdef _IRR_IPHONE_PLATFORM_
     	return device;
-#elif defined(_IRR_ANDROID_PLATFORM_)
-	run(device);
-	device->drop();
-
-	return 0;
 #else
 	EventReceiver_basic receiver(device);
 	device->setEventReceiver(&receiver);
@@ -648,11 +621,7 @@ int example_helloworld()
 @end
 #endif
 
-#ifndef _IRR_ANDROID_PLATFORM_
 int main(int argc, char *argv[])
-#else
-void android_main(android_app* app)
-#endif
 {
 #ifdef _IRR_IPHONE_PLATFORM_
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
@@ -660,9 +629,6 @@ void android_main(android_app* app)
 	[pool release];
 
 	return retVal;
-#elif defined(_IRR_ANDROID_PLATFORM_)
-	app_dummy();
-	example_helloworld(app);
 #else
 	example_helloworld();
 	example_customscenenode();
@@ -671,4 +637,3 @@ void android_main(android_app* app)
 	return 0;
 #endif
 }
-
