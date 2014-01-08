@@ -91,10 +91,15 @@ private:
 	bool createMipMaps(u32 level=1);
 
 	void copy16BitMipMap(char* src, char* tgt,
-		s32 width, s32 height, s32 pitchsrc, s32 pitchtgt) const;
+			const s32 srcWidth, const s32 srcHeight,
+			const s32 width, const s32 height,
+			const s32 pitchsrc, const s32 pitchtgt) const;
 
+	//! Helper function for mipmap generation.
 	void copy32BitMipMap(char* src, char* tgt,
-		s32 width, s32 height, s32 pitchsrc, s32 pitchtgt) const;
+			const s32 srcWidth, const s32 srcHeight,
+			const s32 width, const s32 height,
+			const s32 pitchsrc, const s32 pitchtgt) const;
 
 	IDirect3DDevice8* Device;
 	IDirect3DTexture8* Texture;

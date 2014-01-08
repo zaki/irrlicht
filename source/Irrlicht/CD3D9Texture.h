@@ -94,11 +94,15 @@ private:
 
 	//! Helper function for mipmap generation.
 	void copy16BitMipMap(char* src, char* tgt,
-		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
+			const s32 srcWidth, const s32 srcHeight,
+			const s32 width, const s32 height,
+			const s32 pitchsrc, const s32 pitchtgt) const;
 
 	//! Helper function for mipmap generation.
 	void copy32BitMipMap(char* src, char* tgt,
-		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
+			const s32 srcWidth, const s32 srcHeight,
+			const s32 width, const s32 height,
+			const s32 pitchsrc, const s32 pitchtgt) const;
 
 	//! set Pitch based on the d3d format
 	void setPitch(D3DFORMAT d3dformat);
