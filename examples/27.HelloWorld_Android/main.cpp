@@ -28,33 +28,15 @@ enum GUI_IDS
 IrrlichtDevice *startup(android_app* app)
 {
 	// create device
-	IrrlichtDevice *device = 0;
-    
 	SIrrlichtCreationParameters param;
 	param.DriverType = EDT_OGLES2;
 	param.WindowSize = dimension2d<u32>(480,854);
 	param.PrivateData = app;
 	param.Bits = 24;
-    	param.ZBufferBits = 16;
+	param.ZBufferBits = 16;
 	param.AntiAlias  = 0;
 
-	device = createDeviceEx(param);
-	if (!device)
-		return 0;
-
-	IVideoDriver* driver = device->getVideoDriver();
-	ISceneManager* smgr = device->getSceneManager();
-	IGUIEnvironment* guienv = device->getGUIEnvironment();
-    
-   	stringc mediaPath = "media/";
-
-	IGUIStaticText *text = guienv->addStaticText(L"FPS: 25",
-		rect<s32>(140,15,200,30), false, false, 0, GUI_INFO_FPS );
-
-	// add irrlicht logo
-	guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
-					core::position2d<s32>(0,-2));
-	return device;
+	return createDeviceEx(param);
 }
 
 /*! mainloop
@@ -91,7 +73,6 @@ int example_helloworld(android_app* app)
 {
 	// create device
 	IrrlichtDevice *device = startup(app);
-
 	if (device == 0)
        	return 1;
 
@@ -100,6 +81,15 @@ int example_helloworld(android_app* app)
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
 
    	stringc mediaPath = "media/";
+	
+	
+	IGUIStaticText *text = guienv->addStaticText(L"FPS: 25",
+		rect<s32>(140,15,200,30), false, false, 0, GUI_INFO_FPS );
+
+	// add irrlicht logo
+	guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
+					core::position2d<s32>(0,-2));
+	
 
 	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "sydney.md2");
 
