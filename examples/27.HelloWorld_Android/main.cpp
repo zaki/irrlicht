@@ -138,6 +138,7 @@ int run ( IrrlichtDevice *device )
 				stat->setText ( str.c_str() );
 			}
 		}
+		device->yield(); // probably nicer to the battery
 	}
 
 	return 1;

@@ -121,10 +121,25 @@ bool CIrrDeviceAndroid::run()
 
 void CIrrDeviceAndroid::yield()
 {
+	struct timespec ts = {0,1};
+	nanosleep(&ts, NULL);	
 }
 
 void CIrrDeviceAndroid::sleep(u32 timeMs, bool pauseTimer)
 {
+	const bool wasStopped = Timer ? Timer->isStopped() : true;
+
+	struct timespec ts;
+	ts.tv_sec = (time_t) (timeMs / 1000);
+	ts.tv_nsec = (long) (timeMs % 1000) * 1000000;
+
+	if (pauseTimer && !wasStopped)
+		Timer->stop();
+
+	nanosleep(&ts, NULL);
+
+	if (pauseTimer && !wasStopped)
+		Timer->start();	
 }
 
 void CIrrDeviceAndroid::setWindowCaption(const wchar_t* text)
