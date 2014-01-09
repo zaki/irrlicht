@@ -51,7 +51,7 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 	// OS invokes to send the native activity messages.
 	Android->onAppCmd = handleAndroidCommand;
 
-	// Create a sensor manager to recieve touch screen events from the java acivity.
+	// Create a sensor manager to receive touch screen events from the java activity.
 	SensorManager = ASensorManager_getInstance();
 	SensorEventQueue = ASensorManager_createEventQueue(SensorManager, Android->looper, LOOPER_ID_USER, 0, 0);
 	Android->onInputEvent = handleInput;

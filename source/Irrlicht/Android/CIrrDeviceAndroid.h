@@ -56,11 +56,11 @@ namespace irr
 		
 		virtual E_DEVICE_TYPE getType() const;
 
+	private:
+		
 		static void handleAndroidCommand(android_app* app, int32_t cmd);
 
 		static s32 handleInput(android_app* app, AInputEvent* event);
-
-	private:
 
 		void createDriver();
 

@@ -31,7 +31,7 @@ Solution: Run "android sdk" in sdk/tools and install API 10.
 FILES
 -----
 AndroidManifest.xml: 
-	Every Android application needs one of those to describe the needs of the applicaiton. 
+	Every Android application needs one of those to describe the needs of the application. 
 	Must have exactly this name.
     See http://developer.android.com/guide/topics/manifest/manifest-intro.html
 					 
