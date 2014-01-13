@@ -11,13 +11,13 @@ using namespace video;
 /** Tests that the geometry creator does what it says it does. */
 bool testGeometryCreator(void)
 {
-    IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
-										core::dimension2du(160,120), 32);
-    if (!device)
-        return false;
+	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
+					core::dimension2du(160,120), 32);
+	if (!device)
+		return false;
 
-    IVideoDriver* driver = device->getVideoDriver();
-    ISceneManager* smgr = device->getSceneManager();
+	IVideoDriver* driver = device->getVideoDriver();
+	ISceneManager* smgr = device->getSceneManager();
 	(void)smgr->addCameraSceneNode(0, vector3df(0, 0, -50));
 
 	const IGeometryCreator * geom = smgr->getGeometryCreator();
@@ -94,9 +94,10 @@ bool testGeometryCreator(void)
 	video::IImage* colorMapImage = driver->createImageFromFile("../media/terrain-texture.jpg");
 	video::IImage* heightMapImage = driver->createImageFromFile("../media/terrain-heightmap.bmp");
 
-	scene::IAnimatedMesh* terrain = smgr->addTerrainMesh("TerrainMeshName", colorMapImage, heightMapImage,
-		core::dimension2d<f32>(40, 40), // size of a pixel
-		8*40); // maximum height
+	scene::IAnimatedMesh* terrain = smgr->addTerrainMesh("TerrainMeshName",
+			colorMapImage, heightMapImage,
+			core::dimension2d<f32>(40, 40), // size of a pixel
+			8*40); // maximum height
 	colorMapImage->drop();
 	colorMapImage = 0;
 	heightMapImage->drop();
@@ -119,7 +120,8 @@ bool testGeometryCreator(void)
 
 	device->closeDevice();
 	device->run();
-    device->drop();
+	device->drop();
 
-    return result;
+	return result;
 }
+
