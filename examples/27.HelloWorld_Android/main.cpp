@@ -9,6 +9,7 @@
 #ifdef _IRR_ANDROID_PLATFORM_
 
 #include <android_native_app_glue.h>
+#include "android_tools.h"
 
 using namespace irr;
 using namespace core;
@@ -134,8 +135,7 @@ int run ( IrrlichtDevice *device )
 			{
 				stringw str = L"FPS: ";
 				str += (s32)device->getVideoDriver()->getFPS();
-
-				stat->setText ( str.c_str() );
+//				stat->setText ( str.c_str() );
 			}
 		}
 		device->yield(); // probably nicer to the battery
@@ -159,15 +159,33 @@ int example_helloworld(android_app* app)
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
 	
 	// access to the Android native window
-	ANativeWindow* nativeWindow = static_cast<ANativeWindow*>(driver->getExposedVideoData().OGLESAndroid.window);
+	ANativeWindow* nativeWindow = static_cast<ANativeWindow*>(driver->getExposedVideoData().OGLESAndroid.Window);
 	int32_t windowWidth = ANativeWindow_getWidth(app->window);
 	int32_t windowHeight = ANativeWindow_getHeight(app->window);
+	
+	// get display metrics (accessing the Java functions of the JVM directly in this case as there is no NDK function for that yet)
+	irr::android::SDisplayMetrics displayMetrics;
+	memset(&displayMetrics, 0, sizeof displayMetrics);
+	irr::android::getDisplayMetrics(app, displayMetrics);
 
+	// Wherever you put your media. But it must be inside the assets folder.
+	// This example copies the media in the Android.mk makefile.
    	stringc mediaPath = "media/";
+
+	// Set the font-size depending on your device
+	// dpi=dots per inch. 1 inch = 2.54 cm
+	// (xdpi and ydpi are typically very similar or identical, but certainly don't have to be)	
+	IGUISkin* skin = guienv->getSkin();
+	IGUIFont* font = 0;
+	if ( displayMetrics.xdpi < 100 )	// just guessing some value where fontsize might start to get too small
+		font = guienv->getFont(mediaPath + "fonthaettenschweiler.bmp");
+	else
+		font = guienv->getFont(mediaPath + "bigfont.png");
+	if (font)
+		skin->setFont(font);
 	
-	
-	IGUIStaticText *text = guienv->addStaticText(L"FPS: 25",
-		rect<s32>(10,15,200,30), false, false, 0, GUI_INFO_FPS );
+	IGUIStaticText *text = guienv->addStaticText(stringw(displayMetrics.xdpi).c_str(),
+		rect<s32>(15,15,300,60), false, false, 0, GUI_INFO_FPS );
 
 	// add irrlicht logo
 	IGUIImage * logo = guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
@@ -175,7 +193,9 @@ int example_helloworld(android_app* app)
 	s32 minLogoWidth = windowWidth/3;
 	if ( logo && logo->getRelativePosition().getWidth() < minLogoWidth )
 	{
-		// scale to make it better visible on high-res devices		
+		// Scale to make it better visible on high-res devices		
+		// We could also work with displayMetrics.widthPixels, but it's generally better to work with the windowWidth which already subtract 
+		// things like a taskbar which your device might have.
 		logo->setScaleImage(true);
 		core::rect<s32> logoPos(logo->getRelativePosition());
 		f32 scale = (f32)minLogoWidth/(f32)logoPos.getWidth();

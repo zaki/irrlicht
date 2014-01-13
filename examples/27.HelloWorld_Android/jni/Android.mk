@@ -24,7 +24,7 @@ endif
 
 LOCAL_C_INCLUDES := ../../include
 
-LOCAL_SRC_FILES := main.cpp
+LOCAL_SRC_FILES := main.cpp android_tools.cpp
 
 LOCAL_LDLIBS := -lEGL -llog -lGLESv1_CM -lGLESv2 -lz -landroid
 
@@ -44,4 +44,6 @@ $(shell cp $(IRRLICHT_PROJECT_PATH)/../../media/Shaders/*.* $(IRRLICHT_PROJECT_P
 $(shell cp $(IRRLICHT_PROJECT_PATH)/../../media/irrlichtlogo3.png $(IRRLICHT_PROJECT_PATH)/assets/media/)
 $(shell cp $(IRRLICHT_PROJECT_PATH)/../../media/sydney.md2 $(IRRLICHT_PROJECT_PATH)/assets/media/)
 $(shell cp $(IRRLICHT_PROJECT_PATH)/../../media/sydney.bmp $(IRRLICHT_PROJECT_PATH)/assets/media/)
+$(shell cp $(IRRLICHT_PROJECT_PATH)/../../media/fonthaettenschweiler.bmp $(IRRLICHT_PROJECT_PATH)/assets/media/)
+$(shell cp $(IRRLICHT_PROJECT_PATH)/../../media/bigfont.png $(IRRLICHT_PROJECT_PATH)/assets/media/)
 

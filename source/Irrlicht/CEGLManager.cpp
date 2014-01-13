@@ -47,7 +47,7 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
 #elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EglWindow =	(ANativeWindow*)Data.OGLESAndroid.window;
+	EglWindow =	(ANativeWindow*)Data.OGLESAndroid.Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType) EGL_DEFAULT_DISPLAY);
 #endif
 
@@ -113,7 +113,7 @@ bool CEGLManager::generateSurface()
 	// this needs an update method instead!
 
 #if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	EglWindow = (ANativeWindow*)Data.OGLESAndroid.window;
+	EglWindow = (ANativeWindow*)Data.OGLESAndroid.Window;
 #endif
 
 	EGLint EglOpenGLBIT = 0;

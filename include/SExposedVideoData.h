@@ -96,7 +96,7 @@ struct SExposedVideoData
         struct
         {
             //! The ANativeWindow object.
-            void* window;
+            void* Window;
 
         } OGLESAndroid;
 	};

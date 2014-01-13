@@ -1,6 +1,6 @@
------
-SETUP
------
+------------
+REQUIREMENTS
+------------
 
 To use Android you need to have installed:
 - Android SDK (from http://developer.android.com)
@@ -10,6 +10,10 @@ To use Android you need to have installed:
 - GNU Make 3.81 or later
 - A recent version of awk
 - On Windows you need to have Cygwin (at least version 1.7) installed 
+
+----------------------------
+BUILDING Irrlicht & your App
+----------------------------
 
 1. Assign your Android SDK path to an ANDROID_HOME environment variable.
 2. Add $ANDROID_HOME/tools and $ANDROID_HOME/platform-tools and the Android NDK main folder to your PATH environment variable.
@@ -56,8 +60,11 @@ jni/Application.mk:
 					
 res: 
 	A folder with resources which are compiled into your application and can be accessed via ID's. 
-	There is also support for things like different target resolutions.
+	Unfortunately no direct NDK access to resources at the time of writing this. So you either have
+	to access them with java-code and copy to c++ somehow or you have to use hacks to read the format
+	directly (which is done by some apps, but not future-safe and google recommends not doing that).
 	Please check the official "App Resources" android developer documention, as this is rather complex.
+	We use it only for the application icons in this example.
 	 
 assets: 
 	Files in here are distributed with your app. It's acting like a typical file system.
@@ -78,9 +85,3 @@ libs:
 
 src: 
 	Created by our makefile because the ant build.xml in the android sdk needs it for some reason. It's empty (so far?).
-
-----------
-DEPLOYMENT
-----------
-When you require EDT_OGLES2 your android:glEsVersion in AndroidManifest.xml should be "0x00020000"
-while for EDT_OGLES1 it should be "0x00010000".
