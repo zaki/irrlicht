@@ -135,7 +135,7 @@ int run ( IrrlichtDevice *device )
 			{
 				stringw str = L"FPS: ";
 				str += (s32)device->getVideoDriver()->getFPS();
-//				stat->setText ( str.c_str() );
+				stat->setText ( str.c_str() );
 			}
 		}
 		device->yield(); // probably nicer to the battery
@@ -184,6 +184,7 @@ int example_helloworld(android_app* app)
 	if (font)
 		skin->setFont(font);
 	
+	// A field to show some text. Comment out stat->setText in run() if you want to see the dpi instead of the fps.
 	IGUIStaticText *text = guienv->addStaticText(stringw(displayMetrics.xdpi).c_str(),
 		rect<s32>(15,15,300,60), false, false, 0, GUI_INFO_FPS );
 
@@ -194,8 +195,9 @@ int example_helloworld(android_app* app)
 	if ( logo && logo->getRelativePosition().getWidth() < minLogoWidth )
 	{
 		// Scale to make it better visible on high-res devices		
-		// We could also work with displayMetrics.widthPixels, but it's generally better to work with the windowWidth which already subtract 
+		// We could also work with displayMetrics.widthPixels, but it's generally better to work with the windowWidth which already subtracts 
 		// things like a taskbar which your device might have.
+		// Even better would be using dpi here - but when we would miss an example of how to access nativeWindow ;-)
 		logo->setScaleImage(true);
 		core::rect<s32> logoPos(logo->getRelativePosition());
 		f32 scale = (f32)minLogoWidth/(f32)logoPos.getWidth();
@@ -236,8 +238,12 @@ int example_helloworld(android_app* app)
 	*/
 	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 
+	/*
+		Mainloop. Application never quit themself in Android. The OS is responsible for that.
+	*/
 	run(device);
 	
+	/* Cleanup */
 	device->setEventReceiver(0);
 	device->closeDevice();
 	device->drop();
