@@ -31,13 +31,6 @@ Solution: Run "android sdk" in sdk/tools and install API 10.
 		  in the Application.mk's for the project and for Irrlicht. In this case you 
 		  should likely also change the android:minSdkVersion in the AndroidManifest.xml
 		  
-When the application starts but has some problems it can help to look at the console output from Irrlicht.
-This information is also good to know when you ask for help in the Irrlicht forums.
-The Irrlicht logging messages are send to the Android logging system using the tag "Irrlicht". 
-You can watch them with the command: adb logcat Irrlicht:V *:S 
-(this means Irrlicht _V_erbose and all other messages _S_ilent).
-See http://developer.android.com/tools/debugging/debugging-log.html for more advanced log options.
-
 -----
 FILES
 -----

@@ -1,7 +1,5 @@
-/** Example 27 Helloworld_Android
-	This example shows Hello World for Android.
-	You need a GUI, because otherwise you can't quit the application.
-	You need a Filesystem, which is relative based to your executable.
+/** Example 027 Helloworld_Android
+	This example shows a simple application for Android.
 */
 
 #include <irrlicht.h>
@@ -27,8 +25,8 @@ enum GUI_IDS
 
 
 /*
-	Android is using multitouch events
-	We move around our Irrlicht logo to show how to use them.
+	Android is using multitouch events.
+	We allow users to move around the Irrlicht logo as example of how to use those.
 */
 class MyEventReceiver : public IEventReceiver
 {
@@ -93,10 +91,10 @@ private:
 	irr::core::position2d<irr::s32> TouchStartPos;
 };
 
-/*!
+/*
 	You have currently the choice between 2 drivers:
-	EDT_OGLES1 Is basically a opengl fixed function pipeline.
-	EDT_OGLES2 Is a shader pipeline. Irrlicht comes with shaders to simulate 
+	EDT_OGLES1 is basically a opengl fixed function pipeline.
+	EDT_OGLES2 is a shader pipeline. Irrlicht comes with shaders to simulate 
                typical fixed function materials. For this to work the 
                corresponding shaders from the Irrlicht media/Shaders folder are
                copied to the application assets folder (done in the Makefile).
@@ -113,10 +111,17 @@ IrrlichtDevice *startup(android_app* app)
 	param.ZBufferBits = 16;
 	param.AntiAlias  = 0;
 
+	/* Logging is written to a file. So your application should disable all logging when you distribute your
+       application or it can fill up that file over time.
+	*/
+#ifndef _DEBUG
+	param.LoggingLevel = ELL_NONE;	
+#endif	
+	
 	return createDeviceEx(param);
 }
 
-/*! mainloop
+/* Mainloop.
 */
 int run ( IrrlichtDevice *device )
 {
@@ -144,6 +149,7 @@ int run ( IrrlichtDevice *device )
 	return 1;
 }
 
+/* Main application code. */
 int example_helloworld(android_app* app)
 {
 	// create device
@@ -157,24 +163,40 @@ int example_helloworld(android_app* app)
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
+	ILogger* logger = device->getLogger();
 	
-	// access to the Android native window
+	/* Access to the Android native window. You often need this when accessing NDK functions like we are doing here.
+	   Note that windowWidth/windowHeight have already subtracted things like the taskbar which your device might have,
+	   so you get the real size of your render-window.
+	*/
 	ANativeWindow* nativeWindow = static_cast<ANativeWindow*>(driver->getExposedVideoData().OGLESAndroid.Window);
 	int32_t windowWidth = ANativeWindow_getWidth(app->window);
 	int32_t windowHeight = ANativeWindow_getHeight(app->window);
 	
-	// get display metrics (accessing the Java functions of the JVM directly in this case as there is no NDK function for that yet)
+	/* Get display metrics. We are accessing the Java functions of the JVM directly in this case as there is no NDK function for that yet.
+	   Checkout android_tools.cpp if you want to know how that is done. */
 	irr::android::SDisplayMetrics displayMetrics;
 	memset(&displayMetrics, 0, sizeof displayMetrics);
 	irr::android::getDisplayMetrics(app, displayMetrics);
 
-	// Wherever you put your media. But it must be inside the assets folder.
-	// This example copies the media in the Android.mk makefile.
+	/* For troubleshooting you can use the Irrlicht logger.
+       The Irrlicht logging messages are send to the Android logging system using the tag "Irrlicht". 
+	   They stay in a file there, so you can check them even after running your app.
+       You can watch them with the command: "adb logcat Irrlicht:V *:S"
+       (this means Irrlicht _V_erbose and all other messages _S_ilent).
+	   Clean the logging file with: "adb logcat -c".
+       See http://developer.android.com/tools/debugging/debugging-log.html for more advanced log options.
+	*/
+	char strDisplay[1000];
+	sprintf(strDisplay, "Window size:(%d/%d)\nDisplay size:(%d/%d)", windowWidth, windowHeight, displayMetrics.widthPixels, displayMetrics.heightPixels);
+	logger->log(strDisplay);
+	
+	/* Your media must be somewhere inside the assets folder. The assets folder is the root for the file system.
+	   This example copies the media in the Android.mk makefile. */
    	stringc mediaPath = "media/";
 
-	// Set the font-size depending on your device
-	// dpi=dots per inch. 1 inch = 2.54 cm
-	// (xdpi and ydpi are typically very similar or identical, but certainly don't have to be)	
+	/* Set the font-size depending on your device.
+	   dpi=dots per inch. 1 inch = 2.54 cm. */
 	IGUISkin* skin = guienv->getSkin();
 	IGUIFont* font = 0;
 	if ( displayMetrics.xdpi < 100 )	// just guessing some value where fontsize might start to get too small
@@ -194,10 +216,8 @@ int example_helloworld(android_app* app)
 	s32 minLogoWidth = windowWidth/3;
 	if ( logo && logo->getRelativePosition().getWidth() < minLogoWidth )
 	{
-		// Scale to make it better visible on high-res devices		
-		// We could also work with displayMetrics.widthPixels, but it's generally better to work with the windowWidth which already subtracts 
-		// things like a taskbar which your device might have.
-		// Even better would be using dpi here - but when we would miss an example of how to access nativeWindow ;-)
+		/* Scale to make it better visible on high-res devices (we could also work with dpi here).
+		*/
 		logo->setScaleImage(true);
 		core::rect<s32> logoPos(logo->getRelativePosition());
 		f32 scale = (f32)minLogoWidth/(f32)logoPos.getWidth();
@@ -260,3 +280,6 @@ void android_main(android_app* app)
 }
 
 #endif	// defined(_IRR_ANDROID_PLATFORM_)
+
+/*
+**/
