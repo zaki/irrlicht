@@ -16,9 +16,9 @@ ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
 endif
 
-OGLESLIBS := -L$(HOME)/irrlicht/SDKPackage-ogles1/Builds/OGLES/LinuxPC/Lib -lGLES_CM
+OGLESLIBS := -lEGL -lGLESv1_CM -lGLESv2
 # target specific settings
-all_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L../../lib/Linux -lIrrlicht $(OGLESLIBS) -lXxf86vm -lXext -lX11 -lXcursor
+all_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L../../lib/Linux -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -lXcursor $(OGLESLIBS)
 all_linux clean_linux: SYSTEM=Linux
 all_win32: LDFLAGS = -L../../lib/Win32-gcc -lIrrlicht
 static_win32: LDFLAGS += -lgdi32 -lopengl32 -ld3dx9d -lwinmm -lm

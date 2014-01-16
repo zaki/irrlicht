@@ -17,15 +17,6 @@
 
 #ifdef _IRR_COMPILE_WITH_X11_
 
-#ifdef _IRR_COMPILE_WITH_OPENGL_
-#include <GL/gl.h>
-#define GLX_GLXEXT_LEGACY 1
-#include <GL/glx.h>
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-#include "glxext.h"
-#endif
-#endif
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
@@ -399,17 +390,12 @@ namespace irr
 		SizeID oldRandrMode;
 		Rotation oldRandrRotation;
 		#endif
-		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		GLXWindow glxWin;
-		GLXContext Context;
-		#endif
 #endif
 		u32 Width, Height;
 		bool WindowHasFocus;
 		bool WindowMinimized;
 		bool UseXVidMode;
 		bool UseXRandR;
-		bool UseGLXWindow;
 		bool ExternalWindow;
 		int AutorepeatSupport;
 

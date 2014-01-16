@@ -18,7 +18,7 @@ CEGLManager::CEGLManager() : IContextManager(), EglWindow(0), EglDisplay(EGL_NO_
     EglSurface(EGL_NO_SURFACE), EglContext(EGL_NO_CONTEXT), EglConfig(0), MajorVersion(0), MinorVersion(0)
 {
 	#ifdef _DEBUG
-	setDebugName("CWGLManager");
+	setDebugName("CEGLManager");
 	#endif
 }
 

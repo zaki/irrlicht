@@ -198,13 +198,16 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 /** If you do not wish the engine to be compiled with OpenGL, comment this
 define out. */
 #if !defined(_IRR_IPHONE_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
-//#define _IRR_COMPILE_WITH_OPENGL_
+#define _IRR_COMPILE_WITH_OPENGL_
 #endif
 #ifdef NO_IRR_COMPILE_WITH_OPENGL_
 #undef _IRR_COMPILE_WITH_OPENGL_
 #endif
 #if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_WGL_MANAGER_)
 #define _IRR_COMPILE_WITH_WGL_MANAGER_
+#endif
+#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_X11_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_GLX_MANAGER_)
+#define _IRR_COMPILE_WITH_GLX_MANAGER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
@@ -214,7 +217,7 @@ define out. */
  it should be usually the only HW accelerated one. OpenGL is currently disabled
  if using this driver, to avoid problems with the ogl-es emulators.
  */
- #define _IRR_COMPILE_WITH_OGLES1_
+#define _IRR_COMPILE_WITH_OGLES1_
 #ifdef NO_IRR_COMPILE_WITH_OGLES1_
 #undef _IRR_COMPILE_WITH_OGLES1_
 #endif
@@ -229,7 +232,7 @@ define out. */
  it should be usually the only HW accelerated one. OpenGL is currently disabled
  if using this driver, to avoid problems with the ogl-es emulators.
  */
-// #define _IRR_COMPILE_WITH_OGLES2_
+#define _IRR_COMPILE_WITH_OGLES2_
 #ifdef NO_IRR_COMPILE_WITH_OGLES2_
 #undef _IRR_COMPILE_WITH_OGLES2_
 #endif
