@@ -1061,7 +1061,7 @@ bool CIrrDeviceLinux::run()
 					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 					irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 
-					event.xkey.state = 0; // ignore shift-ctrl states for figuring out the key
+					event.xkey.state &= ~(ControlMask|ShiftMask); // ignore shift-ctrl states for figuring out the key
 					XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
 					const s32 idx = KeyMap.binary_search(mp);
 					if (idx != -1)
