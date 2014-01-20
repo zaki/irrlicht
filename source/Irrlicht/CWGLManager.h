@@ -14,15 +14,8 @@
 #include "IContextManager.h"
 #include "SColor.h"
 
-// include windows headers for HWND
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <GL/gl.h>
-#include "wglext.h"
-
-#ifdef _MSC_VER
-	#pragma comment(lib, "OpenGL32.lib")
-#endif
 
 namespace irr
 {
@@ -69,7 +62,7 @@ namespace video
         SIrrlichtCreationParameters Params;
 		SExposedVideoData PrimaryContext;
         SExposedVideoData CurrentContext;
-		GLuint PixelFormat;
+		s32 PixelFormat;
 		PIXELFORMATDESCRIPTOR pfd;
 		ECOLOR_FORMAT ColorFormat;
 	};
