@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add ISceneNodeAnimator::setStartTime/getStartTime to allow resetting movement animators.
 - Improve speed for finalizing skinned meshes (removal of unnecessary frames after loading) (thx @ichtyander for the testmodel)
 - Collada loader now instantiates camera nodes which had been ignore so far (thx @NemoStein for the test .dae)
 - line2d::intersectWith has a new parameter to allow ignoring intersections with coincident lines

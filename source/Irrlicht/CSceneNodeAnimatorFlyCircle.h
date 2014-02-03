@@ -38,6 +38,18 @@ namespace scene
 		(IReferenceCounted::drop()) the returned pointer after calling
 		this. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) _IRR_OVERRIDE_;
+		
+		//! Reset a time-based movement by changing the starttime. 
+		virtual void setStartTime(u32 time) _IRR_OVERRIDE_
+		{
+			StartTime = time;
+		}
+		
+		//! Get the starttime. 
+		virtual irr::u32 getStartTime() const _IRR_OVERRIDE_
+		{
+			return StartTime;
+		}		
 
 	private:
 		// do some initial calculations

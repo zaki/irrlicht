@@ -2,9 +2,11 @@ Checklist for Irrlicht developers for doing releases.
 
 - PRE-BUILD TESTS:
 - - Run tests in the tests folder
-- - compile and run all examples for testing (preferably on all platforms, 
+- - Compile and run all examples for testing (preferably on all platforms, 
 compilers, settings ... until you are certain enough stuff works sufficiently). 
 Ask for help for platforms which you don't own.
+- - Compile the tools on all platforms you have. Note that some tools are in the buildall-examples VS project files on Windows, but on Linux 
+command line you have to compile them individually.
 
 - VERSION UPDATES:
 - - check IRRLICHT_SDK_VERSION (in IrrCompileConfig.h)
