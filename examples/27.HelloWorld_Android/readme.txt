@@ -41,6 +41,9 @@ AndroidManifest.xml:
 					 
 build.xml: 
 	Ant build file to create the final package
+	
+project.properties
+	Contains the build target (and maybe other project properties). Must exist.
 
 jni: 
 	A folder by this name _must_ exist. 
