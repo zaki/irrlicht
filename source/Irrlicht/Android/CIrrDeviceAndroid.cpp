@@ -221,7 +221,7 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 			if (!device->Initialized)
 			{
 				io::CAndroidAssetFileArchive* assets = new io::CAndroidAssetFileArchive( device->Android->activity->assetManager, false, false);
-				assets->addDirectory("media");
+				assets->addDirectoryToFileList("");
 				device->FileSystem->addFileArchive(assets);
 				assets->drop();
 

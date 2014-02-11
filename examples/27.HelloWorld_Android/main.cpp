@@ -164,6 +164,7 @@ int example_helloworld(android_app* app)
 	ISceneManager* smgr = device->getSceneManager();
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
 	ILogger* logger = device->getLogger();
+	IFileSystem * fs = device->getFileSystem();
 	
 	/* Access to the Android native window. You often need this when accessing NDK functions like we are doing here.
 	   Note that windowWidth/windowHeight have already subtracted things like the taskbar which your device might have,
@@ -194,6 +195,19 @@ int example_helloworld(android_app* app)
 	/* Your media must be somewhere inside the assets folder. The assets folder is the root for the file system.
 	   This example copies the media in the Android.mk makefile. */
    	stringc mediaPath = "media/";
+	
+	// The Android assets file-system does not know which sub-directories it has (blame google).
+	// So we have to add all sub-directories in assets manually. Otherwise we could still open the files, 
+	// but existFile checks will fail (which are for example needed by getFont).
+	for ( u32 i=0; i < fs->getFileArchiveCount(); ++i )
+	{
+		IFileArchive* archive = fs->getFileArchive(i);
+		if ( archive->getType() == EFAT_ANDROID_ASSET )
+		{
+			archive->addDirectoryToFileList("media");	// no trailing slash allowed
+			break;
+		}
+	}
 
 	/* Set the font-size depending on your device.
 	   dpi=dots per inch. 1 inch = 2.54 cm. */

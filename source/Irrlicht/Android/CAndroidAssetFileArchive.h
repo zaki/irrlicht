@@ -23,7 +23,7 @@ namespace io
 {
 
 /*!
-	Android asset file system written August 2012 by J.Henrichs
+	Android asset file system written August 2012 by J.Henrichs (later reworked by others).
 */
 	class CAndroidAssetFileArchive : public virtual IFileArchive,
                                           virtual CFileList
@@ -51,7 +51,7 @@ namespace io
 		//! Add a directory to read files from. Since the Android 
 		//! API does not return names of directories, they need to
 		//! be added manually.
-		virtual void addDirectory(const io::path &filename);
+		virtual void addDirectoryToFileList(const io::path &filename);
 
 		//! return the name (id) of the file Archive
 		virtual const io::path& getArchiveName() const _IRR_OVERRIDE_ {return Path;}
