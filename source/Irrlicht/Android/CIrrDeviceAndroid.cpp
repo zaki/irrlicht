@@ -41,9 +41,6 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 	// Get the interface to the native Android activity.
 	Android = (android_app*)(param.PrivateData);
 
-	io::CAndroidAssetReader::Activity = Android->activity;
-	io::CAndroidAssetFileArchive::Activity = Android->activity;
-
 	// Set the private data so we can use it in any static callbacks.
 	Android->userData = this;
 
@@ -199,7 +196,7 @@ E_DEVICE_TYPE CIrrDeviceAndroid::getType() const
 
 void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 {
-	CIrrDeviceAndroid* Device = (CIrrDeviceAndroid*)app->userData;
+	CIrrDeviceAndroid* device = (CIrrDeviceAndroid*)app->userData;
 
 	switch (cmd)
 	{
@@ -208,58 +205,59 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 		break;
 		case APP_CMD_INIT_WINDOW:
 			os::Printer::log("Android command APP_CMD_INIT_WINDOW", ELL_DEBUG);
-			Device->getExposedVideoData().OGLESAndroid.Window = app->window;
+			device->getExposedVideoData().OGLESAndroid.Window = app->window;
 
-			if (Device->CreationParams.WindowSize.Width == 0 || Device->CreationParams.WindowSize.Height == 0)
+			if (device->CreationParams.WindowSize.Width == 0 || device->CreationParams.WindowSize.Height == 0)
 			{
-				Device->CreationParams.WindowSize.Width = ANativeWindow_getWidth(app->window);
-				Device->CreationParams.WindowSize.Height = ANativeWindow_getHeight(app->window);
+				device->CreationParams.WindowSize.Width = ANativeWindow_getWidth(app->window);
+				device->CreationParams.WindowSize.Height = ANativeWindow_getHeight(app->window);
 			}
 
-			Device->getContextManager()->initialize(Device->CreationParams, Device->ExposedVideoData);
-			Device->getContextManager()->generateSurface();
-			Device->getContextManager()->generateContext();
-			Device->getContextManager()->activateContext(Device->getContextManager()->getContext());
+			device->getContextManager()->initialize(device->CreationParams, device->ExposedVideoData);
+			device->getContextManager()->generateSurface();
+			device->getContextManager()->generateContext();
+			device->getContextManager()->activateContext(device->getContextManager()->getContext());
 
-			if (!Device->Initialized)
+			if (!device->Initialized)
 			{
-				io::CAndroidAssetFileArchive* Assets = new io::CAndroidAssetFileArchive(false, false);
-				Assets->addDirectory("media");
-				Device->FileSystem->addFileArchive(Assets);
+				io::CAndroidAssetFileArchive* assets = new io::CAndroidAssetFileArchive( device->Android->activity->assetManager, false, false);
+				assets->addDirectory("media");
+				device->FileSystem->addFileArchive(assets);
+				assets->drop();
 
-				Device->createDriver();
+				device->createDriver();
 
-				if (Device->VideoDriver)
-					Device->createGUIAndScene();
+				if (device->VideoDriver)
+					device->createGUIAndScene();
 			}
-			Device->Initialized = true;
+			device->Initialized = true;
 		break;
 		case APP_CMD_TERM_WINDOW:
 			os::Printer::log("Android command APP_CMD_TERM_WINDOW", ELL_DEBUG);
-			Device->getContextManager()->destroySurface();
+			device->getContextManager()->destroySurface();
 		break;
 		case APP_CMD_GAINED_FOCUS:
 			os::Printer::log("Android command APP_CMD_GAINED_FOCUS", ELL_DEBUG);
-			Device->Focused = true;
+			device->Focused = true;
 		break;
 		case APP_CMD_LOST_FOCUS:
 			os::Printer::log("Android command APP_CMD_LOST_FOCUS", ELL_DEBUG);
-			Device->Focused = false;
+			device->Focused = false;
 		break;
 		case APP_CMD_DESTROY:
 			os::Printer::log("Android command APP_CMD_DESTROY", ELL_DEBUG);
-			Device->Initialized = false;
+			device->Initialized = false;
 			break;
 		case APP_CMD_PAUSE:
 			os::Printer::log("Android command APP_CMD_PAUSE", ELL_DEBUG);
-			Device->Paused = true;
+			device->Paused = true;
 			break;
 		case APP_CMD_STOP:
 			os::Printer::log("Android command APP_CMD_STOP", ELL_DEBUG);
 			break;
 		case APP_CMD_RESUME:
 			os::Printer::log("Android command APP_CMD_RESUME", ELL_DEBUG);
-			Device->Paused = false;
+			device->Paused = false;
 			break;
 		default:
 			break;
@@ -268,7 +266,7 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 
 s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 {
-	CIrrDeviceAndroid* Device = (CIrrDeviceAndroid*)app->userData;
+	CIrrDeviceAndroid* device = (CIrrDeviceAndroid*)app->userData;
 	s32 Status = 0;
 
 	if (AInputEvent_getType(androidEvent) == AINPUT_EVENT_TYPE_MOTION)
@@ -315,7 +313,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 				Event.MultiTouchInput.Touched[i] = Touched;
 			}
 
-			Device->postEventFromUser(Event);
+			device->postEventFromUser(Event);
 
 			Status = 1;
 		}

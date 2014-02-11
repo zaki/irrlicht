@@ -429,6 +429,11 @@ bool CFileSystem::addFileArchive(IReadFile* file, bool ignoreCase,
 //! Adds an archive to the file system.
 bool CFileSystem::addFileArchive(IFileArchive* archive)
 {
+	if ( !archive )
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+		return false;
+	}
 	for (u32 i=0; i < FileArchives.size(); ++i)
 	{
 		if (archive == FileArchives[i])
@@ -437,7 +442,9 @@ bool CFileSystem::addFileArchive(IFileArchive* archive)
 			return false;
 		}
 	}
+	archive->grab();
 	FileArchives.push_back(archive);
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;
 }
 

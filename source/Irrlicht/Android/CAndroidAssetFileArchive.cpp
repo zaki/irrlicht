@@ -22,20 +22,10 @@ namespace irr
 namespace io
 {
 
-CAndroidAssetFileArchive *CAndroidAssetFileArchive::createAndroidAssetFileArchive(bool ignoreCase, bool ignorePaths)
+CAndroidAssetFileArchive::CAndroidAssetFileArchive(AAssetManager *assetManager, bool ignoreCase, bool ignorePaths)
+  : CFileList("/asset", ignoreCase, ignorePaths), AssetManager(assetManager)
 {
-    if(!CAndroidAssetFileArchive::Activity)
-        return NULL;
-    return new CAndroidAssetFileArchive(ignoreCase, ignorePaths);
-}
-
-ANativeActivity* CAndroidAssetFileArchive::Activity = 0;
-
-CAndroidAssetFileArchive::CAndroidAssetFileArchive(bool ignoreCase, bool ignorePaths)
-  : CFileList("/asset", ignoreCase, ignorePaths)
-{
-  AssetManager = Activity->assetManager;
-  addDirectory("");
+	addDirectory("");
 }
 
 
@@ -61,7 +51,7 @@ const IFileList* CAndroidAssetFileArchive::getFileList() const
 //! opens a file by file name
 IReadFile* CAndroidAssetFileArchive::createAndOpenFile(const io::path& filename)
 {
-    CAndroidAssetReader *reader = new CAndroidAssetReader(filename);
+    CAndroidAssetReader *reader = new CAndroidAssetReader(AssetManager, filename);
 
     if(reader->isOpen())
         return reader;
@@ -83,22 +73,20 @@ IReadFile* CAndroidAssetFileArchive::createAndOpenFile(u32 index)
 
 void CAndroidAssetFileArchive::addDirectory(const io::path &dirname)
 {
- 
-  AAssetDir *dir = AAssetManager_openDir(AssetManager, core::stringc(dirname).c_str());
-  if(!dir)
-    return;
+	AAssetDir *dir = AAssetManager_openDir(AssetManager, core::stringc(dirname).c_str());
+	if(!dir)
+		return;
 
-  addItem(dirname, 0, 0, /*isDir*/true, getFileCount());
-  while(const char *filename = AAssetDir_getNextFileName(dir))
-  {
-    core::stringc full_filename= dirname=="" ? filename
+	addItem(dirname, 0, 0, /*isDir*/true, getFileCount());
+	while(const char *filename = AAssetDir_getNextFileName(dir))
+	{
+		core::stringc full_filename= dirname=="" ? filename
                                              : dirname+"/"+filename;
 
-    // We can't get the size without opening the file - so for performance
-    // reasons we set the file size to 0.
-    addItem(full_filename, /*offet*/0, /*size*/0, /*isDir*/false, 
-	    getFileCount());
-  }
+		// We can't get the size without opening the file - so for performance
+		// reasons we set the file size to 0.
+		addItem(full_filename, /*offet*/0, /*size*/0, /*isDir*/false, getFileCount());
+	}
 }
 
 } // end namespace io

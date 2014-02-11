@@ -15,56 +15,52 @@
 
 #include <android_native_app_glue.h>
 #include <android/native_activity.h>
-#include <android/log.h>
 
 namespace irr
 {
 namespace io
 {
 
-ANativeActivity* CAndroidAssetReader::Activity = 0;
-
-CAndroidAssetReader::CAndroidAssetReader(const io::path &filename)
+CAndroidAssetReader::CAndroidAssetReader(AAssetManager *assetManager, const io::path &filename)
+	: AssetManager(assetManager), Filename(filename)
 {
-  AssetManager = Activity->assetManager;
-  Asset        = AAssetManager_open(AssetManager, 
-			            core::stringc(filename).c_str(),
+	Asset = AAssetManager_open(AssetManager, 
+					core::stringc(filename).c_str(),
 				    AASSET_MODE_RANDOM);
-  Filename     = filename;
 
 }
 
 CAndroidAssetReader::~CAndroidAssetReader()
 {
-  if(Asset)
-    AAsset_close(Asset);
+	if(Asset)
+		AAsset_close(Asset);
 }
 
 s32 CAndroidAssetReader::read(void* buffer, u32 sizeToRead)
 {
-  return AAsset_read(Asset, buffer, sizeToRead);
+	return AAsset_read(Asset, buffer, sizeToRead);
 }
       
 bool CAndroidAssetReader::seek(long finalPos, bool relativeMovement)
 {
-  off_t status =  AAsset_seek(Asset, finalPos, relativeMovement ? SEEK_CUR : SEEK_SET);
+	off_t status =  AAsset_seek(Asset, finalPos, relativeMovement ? SEEK_CUR : SEEK_SET);
 
-  return status+1;
+	return status+1;
 }
 
 long CAndroidAssetReader::getSize() const
 {
-  return AAsset_getLength(Asset);
+	return AAsset_getLength(Asset);
 }
       
 long CAndroidAssetReader::getPos() const
 {
-  return AAsset_getLength(Asset) - AAsset_getRemainingLength(Asset);
+	return AAsset_getLength(Asset) - AAsset_getRemainingLength(Asset);
 }
       
 const io::path& CAndroidAssetReader::getFileName() const
 {
-  return Filename;
+	return Filename;
 }
 
 
