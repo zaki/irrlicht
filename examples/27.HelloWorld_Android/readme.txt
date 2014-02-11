@@ -34,19 +34,23 @@ Solution: Run "android sdk" in sdk/tools and install API 10.
 -----
 FILES
 -----
+
 AndroidManifest.xml: 
 	Every Android application needs one of those to describe the needs of the application. 
 	Must have exactly this name.
     See http://developer.android.com/guide/topics/manifest/manifest-intro.html
 					 
 build.xml: 
-	Ant build file to create the final package
+	Ant build file to create the final package. 
+	You might want to create a new one as described in the Android documentation:
+	http://developer.android.com/tools/projects/projects-cmdline.html
+	That will then also update project.properties.
 	
 project.properties
 	Contains the build target (and maybe other project properties). Must exist.
 
 jni: 
-	A folder by this name _must_ exist. 
+	A folder by this name must exist below the folder where you have build.xml. 
 	Usually it contains the native (c/c++) source files, but in our case we put 
 	the source-files one level higher (with LOCAL_PATH in Android.mk).
 	 
@@ -62,7 +66,7 @@ jni/Application.mk:
 	More info about this can be found in the ndk docs.
 					
 res: 
-	A folder with resources which are compiled into your application and can be accessed via ID's. 
+	A folder with resources which districuted with your application and can be accessed via ID's. 
 	Unfortunately no direct NDK access to resources at the time of writing this. So you either have
 	to access them with java-code and copy to c++ somehow or you have to use hacks to read the format
 	directly (which is done by some apps, but not future-safe and google recommends not doing that).
@@ -70,7 +74,7 @@ res:
 	We use it only for the application icons in this example.
 	 
 assets: 
-	Files in here are distributed with your app. It's acting like a typical file system.
+	Files in here are distributed with your app. It's acting like a read-only file system.
 	
 assets/media/Shaders: 
 	Shader code needed by the OGLES2 driver to simulate a fixed function pipeline. 
@@ -81,10 +85,11 @@ assets/media/Shaders:
 	The OGLES1 driver doesn't need those files.
 
 obj: 
-	(not sure... but seems all objects files needed for linking are put in here before linking - even the libs)
+	All object and library files mentioned in the Android.mk are put in here before linking.
 
 libs: 
-	The result of compiling your application is always a lib (probably because native code can't run directly but only as lib).
+	Contains the binaries of your application after compilation. The application itself is a lib(probably because native code can't run directly but only as lib).
 
 src: 
-	Created by our makefile because the ant build.xml in the android sdk needs it for some reason. It's empty (so far?).
+	The src folder is needed when you have Java sources and should only contain .java and .aidl files.
+	Although the examples doesn't use Java the makefile creates this folder as the ant build.xml in the android sdk needs it.
