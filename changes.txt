@@ -1,6 +1,8 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Bugfix: getFont for xml-fonts now also works for fonts inside archives (thx @Neirdan for bugreport)
+- Added function irr::core::mergeFilename 
 - Add ISceneNodeAnimator::setStartTime/getStartTime to allow resetting movement animators.
 - Improve speed for finalizing skinned meshes (removal of unnecessary frames after loading) (thx @ichtyander for the testmodel)
 - Collada loader now instantiates camera nodes which had been ignore so far (thx @NemoStein for the test .dae)
