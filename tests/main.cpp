@@ -49,7 +49,7 @@ int main(int argumentCount, char * arguments[])
 	// Note that to interactively debug a test, you will generally want to move it
 	// (temporarily) to the beginning of the list, since each test runs in its own
 	// process.
-
+	
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	// Now the simple tests without device
 	TEST(testIrrArray);
@@ -84,6 +84,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(sceneNodeAnimator);
 	TEST(meshLoaders);
 	TEST(testTimer);
+	TEST(testCoreutil);	
 	// software drivers only
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
