@@ -455,15 +455,13 @@ namespace core
 	{
 #ifdef IRRLICHT_FAST_MATH
 		return;
-#ifdef feclearexcept
+	#ifdef feclearexcept
 		feclearexcept(FE_ALL_EXCEPT);
-#elif defined(_MSC_VER)
+	#elif defined(_MSC_VER)
 		__asm fnclex;
-#elif defined(__GNUC__) && defined(__x86__)
+	#elif defined(__GNUC__) && defined(__x86__)
 		__asm__ __volatile__ ("fclex \n\t");
-#else
-#  warn clearFPUException not supported.
-#endif
+	#endif
 #endif
 	}
 
@@ -540,6 +538,7 @@ namespace core
 		// bi ts of the mantissa
 		// One Newtown-Raphson Iteration:
 		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
+#if defined(_MSC_VER)				
 		f32 rec;
 		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
 		__asm movss xmm1, f               // xmm1 = f
@@ -550,8 +549,9 @@ namespace core
 										  //        - f * rcpss(f) * rcpss(f)
 		__asm movss rec, xmm0             // return xmm0
 		return rec;
-
-
+#else // no support yet for other compilers
+		return 1.f / f;
+#endif
 		//! i do not divide through 0.. (fpu expection)
 		// instead set f to a high value to get a return value near zero..
 		// -1000000000000.f.. is use minus to stay negative..
@@ -580,6 +580,7 @@ namespace core
 		// bi ts of the mantissa
 		// One Newtown-Raphson Iteration:
 		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
+#if defined(_MSC_VER)		
 		f32 rec;
 		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
 		__asm movss xmm1, f               // xmm1 = f
@@ -590,7 +591,9 @@ namespace core
 										  //        - f * rcpss(f) * rcpss(f)
 		__asm movss rec, xmm0             // return xmm0
 		return rec;
-
+#else // no support yet for other compilers
+		return 1.f / f;
+#endif
 
 /*
 		// SSE reciprocal estimate, accurate to 12 significant bits of
@@ -633,7 +636,6 @@ namespace core
 			: "st"
 			);
 #else
-#  warn IRRLICHT_FAST_MATH not supported.
 		return (s32) floorf ( x );
 #endif
 		return t;
@@ -666,7 +668,6 @@ namespace core
 			: "st"
 			);
 #else
-#  warn IRRLICHT_FAST_MATH not supported.
 		return (s32) ceilf ( x );
 #endif
 		return t;
@@ -696,7 +697,6 @@ namespace core
 			: "st"
 			);
 #else
-#  warn IRRLICHT_FAST_MATH not supported.
 		return (s32) round_(x);
 #endif
 		return t;

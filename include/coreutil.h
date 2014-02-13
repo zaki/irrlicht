@@ -137,7 +137,7 @@ inline s32 isInSameDirectory ( const io::path& path, const io::path& file )
 	return subB - subA;
 }
 
-// splits a path into components
+//! splits a path into components
 static inline void splitFilename(const io::path &name, io::path* path=0,
 		io::path* filename=0, io::path* extension=0, bool make_lower=false)
 {
@@ -169,6 +169,29 @@ static inline void splitFilename(const io::path &name, io::path* path=0,
 	}
 	if ( filename )
 		*filename = name.subString ( 0, extpos, make_lower );
+}
+
+//! create a filename from components
+static inline io::path mergeFilename(const io::path& path, const io::path& filename, const io::path& extension = "")
+{
+	io::path result(path);
+	
+	if ( !result.empty() )
+	{
+		fschar_t last = result.lastChar();
+		if ( last != _IRR_TEXT('/') && last != _IRR_TEXT('\\') )
+			result += _IRR_TEXT('/');
+	}
+	if ( !filename.empty() )
+		result += filename;
+	if ( !extension.empty() )
+	{
+		if ( !result.empty() && extension[0] != _IRR_TEXT('.') )
+			result += _IRR_TEXT('.');
+		result += extension;
+	}
+	
+	return result;
 }
 
 

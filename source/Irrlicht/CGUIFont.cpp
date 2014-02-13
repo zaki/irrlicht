@@ -6,6 +6,7 @@
 #ifdef _IRR_COMPILE_WITH_GUI_
 
 #include "os.h"
+#include "coreutil.h"
 #include "IGUIEnvironment.h"
 #include "IXMLReader.h"
 #include "IReadFile.h"
@@ -63,7 +64,7 @@ CGUIFont::~CGUIFont()
 
 
 //! loads a font file from xml
-bool CGUIFont::load(io::IXMLReader* xml)
+bool CGUIFont::load(io::IXMLReader* xml, const io::path& directory)
 {
 	if (!SpriteBank)
 		return false;
@@ -89,7 +90,8 @@ bool CGUIFont::load(io::IXMLReader* xml)
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 				// load texture
-				SpriteBank->setTexture(i, Driver->getTexture(fn));
+				io::path textureFullName = core::mergeFilename(directory, fn);
+				SpriteBank->setTexture(i, Driver->getTexture(textureFullName));
 
 				// set previous mip-map+filter state
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, mipmap);

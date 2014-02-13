@@ -68,6 +68,24 @@ namespace scene
 		{
 			return false;
 		}
+		
+		//! Reset a time-based movement by changing the starttime.
+		/** By default most animators start on object creation.
+			Commonly you will use irr::ITimer::getTime().
+			This value is ignored by animators which don't work with a starttime. 
+			CSceneNodeAnimatorRotation currently overwrites this value constantly (might be changed in the future).
+		*/
+		virtual void setStartTime(u32 time)
+		{
+		}
+		
+		//! Get the starttime. 
+		/** This will return 0 for by animators which don't work with a starttime. */
+		virtual irr::u32 getStartTime() const
+		{
+			return 0;
+		}
+		
 	};
 
 

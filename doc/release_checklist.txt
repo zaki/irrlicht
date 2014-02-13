@@ -1,0 +1,60 @@
+Checklist for Irrlicht developers for doing releases.
+
+- PRE-BUILD TESTS:
+- - Run tests in the tests folder
+- - Compile and run all examples for testing (preferably on all platforms, 
+compilers, settings ... until you are certain enough stuff works sufficiently). 
+Ask for help for platforms which you don't own.
+- - Compile the tools on all platforms you have. Note that some tools are in the buildall-examples VS project files on Windows, but on Linux 
+command line you have to compile them individually.
+
+- VERSION UPDATES:
+- - check IRRLICHT_SDK_VERSION (in IrrCompileConfig.h)
+- - check version number in the Makefile
+- - update readme.txt (version number, supported compilers)
+- - Add new release information (date+version-number) in changes.txt
+- - go through folders if other .txt files still make sense (things change and updating those files tends to be forgotten)
+
+- BUILDING THE RELEASE
+- - run a clean build for buildAllExamples in the examples folder with the 
+target compiler for 32-bit and for release (preferably oldest supported VS 
+compiler, otherwise oldest you have still installed)
+- - when possible compile the dll for MinGW on Windows (in release and with -s for smaller size)
+- - when possible compile the dll for 64 bit (again with Visual Studio and release)
+- - run makedocumentation in scripts\doc\irrlicht
+- - create a target directory, like irrlicht-1.8.1 for example
+- - svn export to the target directory
+- - copy the subfolders of doctemp into the doc folder of the target directory
+- - copy all .exe files (except test.exe) from bin\Win32-VisualStudio (.pdb's are not necessary)
+- - copy Irrlicht.dll from bin\Win32-visualstudio 
+- - copy the files in lib\Win32-visualstudio
+- - copy Irrlicht.dll from bin\Win64-VisualStudio 
+- - copy the files in lib\Win64-visualstudio 
+- - copy Irrlicht.dll from bin\Win32-gcc 
+- - copy the files in lib\Win32-gcc
+- - remove the tests folder
+- - remove scripts folder (if the release comes with docs, if you do a release 
+without docs for smaller filesizes then the script folder has to stay in).
+- - create a zip file 
+- - figure out how to fix unix access right for shell-scripts in the zip file (my 
+trick so far is: unzip in Linux, set +x for all .sh files, zip again)
+
+RELEASING:
+- - upload the zip-file somewhere, then download it again on all platforms and do 
+  another quick test with that file (do examples still run, can you compile)
+- - give the link to the zip out on the mailinglist for others to look at
+- - Upload new documentation (the content of doc/html) to: web.sourceforge.net 
+  (sftp protocol, user and passwd are your sourceforge account, the folder 
+  might not be shown - but you can still cd into it!):
+  /home/project-web/i/ir/irrlicht/htdocs 
+  Best create first a folder with a new name, copy stuff in there, test (just 
+  check the website), rename old folder and give new folder the "docu" name. 
+  Then you can delete the old folder if you want.
+- - update changes.txt (also in /home/project-web/i/ir/irrlicht/htdocs)
+- - upload the zip by logging in to sourceforge and using the "Files" menu (needs 
+	admin privileges and it's the 'Files' menu between 'Summary' and 'Reviews'). 
+	The target is in one of the Irrlicht SDK subfolders. Then click the "i" beside 
+	the file and "select all" to make it the active download.
+- - write a forum post, tell everyone in facebook, reddit, your friends...
+- - login to wordpress at http://irrlicht.sourceforge.net/wp-login.php, update the 
+	downloads section and write a release post.

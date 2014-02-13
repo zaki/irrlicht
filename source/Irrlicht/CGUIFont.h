@@ -46,7 +46,8 @@ public:
 	bool load(io::IReadFile* file);
 
 	//! loads a font from an XML file
-	bool load(io::IXMLReader* xml);
+	//\param directory Directory in which the bitmaps can be found
+	bool load(io::IXMLReader* xml, const io::path& directory);
 
 	//! draws an text and clips it to the specified rectangle if wanted
 	virtual void draw(const core::stringw& text, const core::rect<s32>& position,
