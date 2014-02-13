@@ -1001,7 +1001,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 		if (!setActiveTexture(0, texture))
 			return;
 		setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
-		const GLint crop[] = {sourceRect.UpperLeftCorner.X, getCurrentRenderTargetSize().Height-sourceRect.LowerRightCorner.Y, sourceRect.getWidth(), sourceRect.getHeight()};
+		const GLint crop[] = {sourceRect.UpperLeftCorner.X, static_cast<GLint>(getCurrentRenderTargetSize().Height-sourceRect.LowerRightCorner.Y), sourceRect.getWidth(), sourceRect.getHeight()};
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, crop);
 
 		const bool isRTT = true;//texture->isRenderTarget();

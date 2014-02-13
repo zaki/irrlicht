@@ -1268,6 +1268,7 @@
 		5E3EA323158680E900C17C1D /* pngwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngwrite.c; path = ../libpng/pngwrite.c; sourceTree = "<group>"; };
 		5E3EA324158680E900C17C1D /* pngwtran.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngwtran.c; path = ../libpng/pngwtran.c; sourceTree = "<group>"; };
 		5E3EA325158680E900C17C1D /* pngwutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngwutil.c; path = ../libpng/pngwutil.c; sourceTree = "<group>"; };
+		5E5ADCAB18AD6643003CC7DF /* IContextManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IContextManager.h; path = ../../../include/IContextManager.h; sourceTree = "<group>"; };
 		5E7CF2E215516CC00014DCBA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5E7CF2E415516CC00014DCBA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5E7CF2E615516CC00014DCBA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1375,6 +1376,7 @@
 				5E30448315515AC500D9E53B /* IBoneSceneNode.h */,
 				5E30448415515AC500D9E53B /* ICameraSceneNode.h */,
 				5E30448515515AC500D9E53B /* IColladaMeshWriter.h */,
+				5E5ADCAB18AD6643003CC7DF /* IContextManager.h */,
 				5E30448615515AC500D9E53B /* ICursorControl.h */,
 				5E30448715515AC500D9E53B /* IDummyTransformationSceneNode.h */,
 				5E30448815515AC500D9E53B /* IDynamicMeshBuffer.h */,

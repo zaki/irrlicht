@@ -125,17 +125,17 @@ COGLES2Driver::~COGLES2Driver()
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	if (0 != ViewFramebuffer)
 	{
-		extGlDeleteFramebuffers(1,&ViewFramebuffer);
+		glDeleteFramebuffers(1,&ViewFramebuffer);
 		ViewFramebuffer = 0;
 	}
 	if (0 != ViewRenderbuffer)
 	{
-		extGlDeleteRenderbuffers(1,&ViewRenderbuffer);
+		glDeleteRenderbuffers(1,&ViewRenderbuffer);
 		ViewRenderbuffer = 0;
 	}
 	if (0 != ViewDepthRenderbuffer)
 	{
-		extGlDeleteRenderbuffers(1,&ViewDepthRenderbuffer);
+		glDeleteRenderbuffers(1,&ViewDepthRenderbuffer);
 		ViewDepthRenderbuffer = 0;
 	}
 #endif
@@ -441,7 +441,7 @@ bool COGLES2Driver::endScene()
 		ContextManager->swapBuffers();
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
     glFlush();
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
     Device->displayEnd();
 #endif
 
