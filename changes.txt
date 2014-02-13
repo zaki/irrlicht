@@ -33,6 +33,11 @@ Changes in 1.9 (not yet released)
 - Add getters IGUIButton::isDrawBorderEnabled and IGUIButton::isDrawBackgroundEnabled
 
 --------------------------
+Changes in 1.8.2
+
+ - Makefile for the new IrrFontTool links now correctly to libfontconfig
+
+--------------------------
 Changes in 1.8.1 (17.11.2013)
 
  - Improved OpenGL performance under OSX (Thanks devonsoft for reporting).
