@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Windows">
 				<Option platforms="Windows;" />
-				<Option output="..\..\bin\win32-gcc\GUIEditor.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin/win32-gcc/GUIEditor.exe" prefix_auto="0" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option projectResourceIncludeDirsRelation="1" />
@@ -16,12 +16,12 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add directory="..\..\lib\Win32-gcc" />
+					<Add directory="../../lib/Win32-gcc" />
 				</Linker>
 			</Target>
 			<Target title="Linux">
 				<Option platforms="Unix;" />
-				<Option output="..\..\bin\Linux\GUIEditor" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin/Linux/GUIEditor" prefix_auto="0" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option projectResourceIncludeDirsRelation="1" />
@@ -33,7 +33,8 @@
 					<Add library="Irrlicht" />
 					<Add library="Xxf86vm" />
 					<Add library="GL" />
-					<Add directory="..\..\lib\Linux" />
+					<Add library="X11" />
+					<Add directory="../../lib/Linux" />
 				</Linker>
 			</Target>
 		</Build>
@@ -41,7 +42,7 @@
 			<Add alias="All" targets="Windows;Linux;" />
 		</VirtualTargets>
 		<Compiler>
-			<Add directory="..\..\include" />
+			<Add directory="../../include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
