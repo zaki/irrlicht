@@ -591,12 +591,10 @@ namespace irr
     namespace video
     {
         IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
-                                         video::SExposedVideoData& data, io::IFileSystem* io,
-                                         CIrrDeviceIPhone* device);
+                                         io::IFileSystem* io, CIrrDeviceIPhone* device);
         
         IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
-                                         video::SExposedVideoData& data, io::IFileSystem* io,
-                                         CIrrDeviceIPhone* device);
+                                         io::IFileSystem* io, CIrrDeviceIPhone* device);
     }
 }
 
@@ -686,8 +684,7 @@ namespace irr
             case video::EDT_OGLES1:
 #ifdef _IRR_COMPILE_WITH_OGLES1_
             {
-                video::SExposedVideoData data;
-                VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem, this);
+                VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, this);
             }
 #else
                 os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR);
@@ -697,8 +694,7 @@ namespace irr
             case video::EDT_OGLES2:
 #ifdef _IRR_COMPILE_WITH_OGLES2_
             {
-                video::SExposedVideoData data;
-                VideoDriver = video::createOGLES2Driver(CreationParams, data, FileSystem, this);
+                VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, this);
             }
 #else
                 os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR);

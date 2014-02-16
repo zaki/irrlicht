@@ -517,14 +517,6 @@
 		5ED24864173161C900A13B86 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2EA15516CC00014DCBA /* OpenGLES.framework */; };
 		5ED24865173161F200A13B86 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EDC9F971638D8CF00E65F28 /* CoreMotion.framework */; };
 		5ED248661731622A00A13B86 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E815516CC00014DCBA /* QuartzCore.framework */; };
-		5ED248741731788700A13B86 /* COGLES2FixedPipeline.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */; };
-		5ED248751731788700A13B86 /* COGLES2FixedPipeline.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */; };
-		5ED248761731788700A13B86 /* COGLES2NormalMap.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */; };
-		5ED248771731788700A13B86 /* COGLES2NormalMap.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */; };
-		5ED248781731788700A13B86 /* COGLES2ParallaxMap.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */; };
-		5ED248791731788700A13B86 /* COGLES2ParallaxMap.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248711731788700A13B86 /* COGLES2ParallaxMap.vsh */; };
-		5ED2487A1731788700A13B86 /* COGLES2Renderer2D.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248721731788700A13B86 /* COGLES2Renderer2D.fsh */; };
-		5ED2487B1731788700A13B86 /* COGLES2Renderer2D.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */; };
 		5ED2487C173178DC00A13B86 /* COGLES2FixedPipeline.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */; };
 		5ED2487D173178DC00A13B86 /* COGLES2FixedPipeline.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */; };
 		5ED2487E173178DC00A13B86 /* COGLES2NormalMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */; };
@@ -2835,14 +2827,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5ED2485E173157AD00A13B86 /* main.cpp in Sources */,
-				5ED248741731788700A13B86 /* COGLES2FixedPipeline.fsh in Sources */,
-				5ED248751731788700A13B86 /* COGLES2FixedPipeline.vsh in Sources */,
-				5ED248761731788700A13B86 /* COGLES2NormalMap.fsh in Sources */,
-				5ED248771731788700A13B86 /* COGLES2NormalMap.vsh in Sources */,
-				5ED248781731788700A13B86 /* COGLES2ParallaxMap.fsh in Sources */,
-				5ED248791731788700A13B86 /* COGLES2ParallaxMap.vsh in Sources */,
-				5ED2487A1731788700A13B86 /* COGLES2Renderer2D.fsh in Sources */,
-				5ED2487B1731788700A13B86 /* COGLES2Renderer2D.vsh in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2861,9 +2845,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/Irrlicht.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = iOS_Prefix.pch;
-				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2874,8 +2855,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/Irrlicht.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = iOS_Prefix.pch;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2886,9 +2865,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2896,13 +2874,11 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				SDKROOT = iphoneos;
-				SHARED_PRECOMPS_DIR = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -2911,16 +2887,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				COPY_PHASE_STRIP = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_VERSION = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "NDEBUG=1";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				SDKROOT = iphoneos;
-				SHARED_PRECOMPS_DIR = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2929,8 +2903,6 @@
 		5ED248551731568400A13B86 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
@@ -2938,13 +2910,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = "";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				HEADER_SEARCH_PATHS = ../../../include;
 				INFOPLIST_FILE = "$(SRCROOT)/example-info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
-				ONLY_ACTIVE_ARCH = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -2954,8 +2923,6 @@
 		5ED248561731568400A13B86 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
@@ -2963,12 +2930,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = "";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				HEADER_SEARCH_PATHS = ../../../include;
 				INFOPLIST_FILE = "$(SRCROOT)/example-info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
