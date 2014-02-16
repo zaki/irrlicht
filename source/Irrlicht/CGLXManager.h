@@ -16,8 +16,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-// we can't include glx.h here, because gl.h has incompatible types with ogl es headers and it cause redefinition errors,
-// thats why we use ugly trick with void* types and casts.
+// we can't include glx.h here, because gl.h has incompatible types with ogl es headers and it
+// cause redefinition errors, thats why we use ugly trick with void* types and casts.
 
 namespace irr
 {

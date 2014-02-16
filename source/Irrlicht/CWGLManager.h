@@ -21,7 +21,7 @@ namespace irr
 {
 namespace video
 {
-    // EGL manager.
+    // WGL manager.
     class CWGLManager : public IContextManager
     {
     public:
