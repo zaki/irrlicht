@@ -230,6 +230,7 @@ namespace irr
 		//! Resize the render window.
 		/**	This will only work in windowed mode and is not yet supported on all systems.
 		It does set the drawing/clientDC size of the window, the window decorations are added to that.
+		You get the current window size with IVideoDriver::getScreenSize() (might be unified in future)
 		*/
 		virtual void setWindowSize(const irr::core::dimension2d<u32>& size) = 0;
 

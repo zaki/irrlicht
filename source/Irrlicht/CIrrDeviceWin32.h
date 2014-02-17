@@ -77,6 +77,9 @@ namespace irr
 		//! Sets if the window should be resizable in windowed mode.
 		virtual void setResizable(bool resize=false) _IRR_OVERRIDE_;
 
+		//! Resize the render window.
+		virtual void setWindowSize(const irr::core::dimension2d<u32>& size) _IRR_OVERRIDE_;
+
 		//! Minimizes the window.
 		virtual void minimizeWindow() _IRR_OVERRIDE_;
 
