@@ -1341,6 +1341,20 @@ void CIrrDeviceLinux::setResizable(bool resize)
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 }
 
+//! Resize the render window.
+void CIrrDeviceLinux::setWindowSize(const irr::core::dimension2d<u32>& size)
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+	if (CreationParams.DriverType == video::EDT_NULL || CreationParams.Fullscreen )
+		return;
+
+	XWindowChanges values;
+	values.width = size.Width;
+	values.height = size.Height;
+	XConfigureWindow(display, window, CWWidth | CWHeight, &values);
+	XFlush(display);
+#endif // #ifdef _IRR_COMPILE_WITH_X11_
+}
 
 //! Return pointer to a list with all video modes supported by the gfx adapter.
 video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()

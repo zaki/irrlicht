@@ -227,6 +227,12 @@ namespace irr
 		\param resize Flag whether the window should be resizable. */
 		virtual void setResizable(bool resize=false) = 0;
 
+		//! Resize the render window.
+		/**	This will only work in windowed mode and is not yet supported on all systems.
+		It does set the drawing/clientDC size of the window, the window decorations are added to that.
+		*/
+		virtual void setWindowSize(const irr::core::dimension2d<u32>& size) = 0;
+
 		//! Minimizes the window if possible.
 		virtual void minimizeWindow() =0;
 

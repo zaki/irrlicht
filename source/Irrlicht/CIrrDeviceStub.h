@@ -135,6 +135,8 @@ namespace irr
 		//! Remove all messages pending in the system message loop
 		virtual void clearSystemMessages() _IRR_OVERRIDE_;
 
+		//! Resize the render window.
+		virtual void setWindowSize(const irr::core::dimension2d<u32>& size) _IRR_OVERRIDE_ {}
 
 	protected:
 
