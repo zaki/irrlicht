@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Bugfix: IGUIElement::addChild now prevents setting an element as it's own child.
 - Bugfix: getFont for xml-fonts now also works for fonts inside archives (thx @Neirdan for bugreport)
 - Added function irr::core::mergeFilename 
 - Add ISceneNodeAnimator::setStartTime/getStartTime to allow resetting movement animators.
