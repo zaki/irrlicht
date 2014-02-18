@@ -83,6 +83,7 @@
 		<Unit filename="burningsVideo.cpp" />
 		<Unit filename="collisionResponseAnimator.cpp" />
 		<Unit filename="color.cpp" />
+		<Unit filename="coreutil.cpp" />
 		<Unit filename="createImage.cpp" />
 		<Unit filename="cursorSetVisible.cpp" />
 		<Unit filename="disambiguateTextures.cpp" />
