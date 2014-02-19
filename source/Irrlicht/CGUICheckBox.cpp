@@ -89,7 +89,6 @@ bool CGUICheckBox::OnEvent(const SEvent& event)
 			if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 			{
 				bool wasPressed = Pressed;
-				Environment->removeFocus(this);
 				Pressed = false;
 
 				if (wasPressed && Parent)
