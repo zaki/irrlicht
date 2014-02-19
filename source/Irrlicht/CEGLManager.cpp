@@ -308,7 +308,7 @@ bool CEGLManager::generateContext()
 
 	if (testEGLError())
 	{
-		os::Printer::log("Could not create EGL context.");
+		os::Printer::log("Could not create EGL context.", ELL_ERROR);
 		return false;
 	}
     return true;

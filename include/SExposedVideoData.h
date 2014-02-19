@@ -82,6 +82,15 @@ struct SExposedVideoData
         
         struct
 		{
+            //! The NSOpenGLContext object.
+            void* Context;
+            
+            //! The NSWindow object.
+			void* Window;
+		} OpenGLOSX;
+        
+        struct
+		{
 			//! The UIApplicationDelegate object.
 			void* AppDelegate;
 			

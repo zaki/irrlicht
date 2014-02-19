@@ -68,7 +68,8 @@ namespace video
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device);
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+        bool initDriver();
 		#endif
 
 		//! destructor
@@ -614,9 +615,6 @@ namespace video
 		S3DVertex Quad2DVertices[4];
 		static const u16 Quad2DIndices[4];
 
-		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-			CIrrDeviceMacOSX *OSXDevice;
-		#endif
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 			CIrrDeviceSDL *SDLDevice;
 		#endif

@@ -48,6 +48,7 @@
 
 - (void)windowWillClose:(id)sender
 {
+    _device->setWindow(nil);
 	_quit = TRUE;
 }
 

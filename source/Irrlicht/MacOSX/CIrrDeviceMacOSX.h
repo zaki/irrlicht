@@ -94,10 +94,10 @@ namespace irr
 				return EIDT_OSX;
 		}
 
-		void flush();
 		void setMouseLocation(int x, int y);
 		void setResize(int width, int height);
 		void setCursorVisible(bool visible);
+        void setWindow(NSWindow* window);
 
 	private:
 
@@ -228,10 +228,9 @@ namespace irr
 		void postKeyEvent(void *event, irr::SEvent &ievent, bool pressed);
 		void pollJoysticks();
 
-		NSWindow *Window;
-		CGLContextObj CGLContext;
-		NSOpenGLContext *OGLContext;
-		NSBitmapImageRep *SoftwareDriverTarget;
+		NSWindow* Window;
+        CGDirectDisplayID Display;
+		NSBitmapImageRep* SoftwareDriverTarget;
 		std::map<int,int> KeyCodes;
 		int DeviceWidth;
 		int DeviceHeight;
