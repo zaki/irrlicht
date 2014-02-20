@@ -313,7 +313,7 @@ namespace core
 
 			const f64 z1 = core::squareroot(X*X + Z*Z);
 
-			tmp = (T)(atan2((f64)z1, (f64)Y) * RADTODEG64 - 90.0);
+			tmp = (atan2((f64)z1, (f64)Y) * RADTODEG64 - 90.0);
 			angle.X = (T)tmp;
 
 			if (angle.X < 0)
