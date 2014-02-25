@@ -204,7 +204,7 @@ int example_helloworld(android_app* app)
 		IFileArchive* archive = fs->getFileArchive(i);
 		if ( archive->getType() == EFAT_ANDROID_ASSET )
 		{
-			archive->addDirectoryToFileList("media");	// no trailing slash allowed
+			archive->addDirectoryToFileList(mediaPath);
 			break;
 		}
 	}

@@ -70,8 +70,13 @@ IReadFile* CAndroidAssetFileArchive::createAndOpenFile(u32 index)
     return createAndOpenFile(filename);
 }
 
-void CAndroidAssetFileArchive::addDirectoryToFileList(const io::path &dirname)
+void CAndroidAssetFileArchive::addDirectoryToFileList(const io::path &dirname_)
 {
+	io::path dirname(dirname_);
+	fschar_t lastChar = dirname.lastChar();	
+	if ( lastChar == '/' || lastChar == '\\' )
+		dirname.erase(dirname.size()-1);
+	
 	// os::Printer::log("addDirectoryToFileList:", dirname.c_str(), ELL_DEBUG);
 	if  (findFile(dirname, true) >= 0 )
 		return;	// was already added
