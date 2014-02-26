@@ -183,8 +183,8 @@ int example_helloworld(android_app* app)
 	/* For troubleshooting you can use the Irrlicht logger.
        The Irrlicht logging messages are send to the Android logging system using the tag "Irrlicht". 
 	   They stay in a file there, so you can check them even after running your app.
-       You can watch them with the command: "adb logcat Irrlicht:V *:S"
-       (this means Irrlicht _V_erbose and all other messages _S_ilent).
+       You can watch them with the command: "adb logcat Irrlicht:V DEBUG:V *:S"
+       This means Irrlicht _V_erbose, debug messages verbose (p.E callstack on crashes) and all other messages _S_ilent.
 	   Clean the logging file with: "adb logcat -c".
        See http://developer.android.com/tools/debugging/debugging-log.html for more advanced log options.
 	*/
