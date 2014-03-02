@@ -12,6 +12,7 @@
 #ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
 
 #include "CMY3DMeshFileLoader.h"
+#include "CMeshTextureLoader.h"
 
 #include "SAnimatedMesh.h"
 #include "SMeshBuffer.h"
@@ -60,6 +61,8 @@ CMY3DMeshFileLoader::CMY3DMeshFileLoader(ISceneManager* scmgr, io::IFileSystem* 
 
 	if (FileSystem)
 		FileSystem->grab();
+
+	TextureLoader = new CMeshTextureLoader( FileSystem, SceneManager->getVideoDriver() );
 }
 
 
@@ -78,16 +81,15 @@ bool CMY3DMeshFileLoader::isALoadableFileExtension(const io::path& filename) con
 
 IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 {
+	if ( getMeshTextureLoader() )
+	{
+		getMeshTextureLoader()->setMeshFile(file);
+		getMeshTextureLoader()->setTexturePath(SceneManager->getParameters()->getAttributeAsString(MY3D_TEXTURE_PATH));
+	}
+
 	MaterialEntry.clear();
 	MeshBufferEntry.clear();
 	ChildNodes.clear();
-
-	// working directory (from which we load the scene)
-	core::stringc filepath = FileSystem->getFileDir(file->getFileName());
-	if (filepath==".")
-		filepath="";
-	else
-		filepath.append("/");
 
 	// read file into memory
 	SMyFileHeader fileHeader;
@@ -133,9 +135,6 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 		os::Printer::log("Can not find MY3D_MAT_LIST_ID, loading failed!", ELL_ERROR);
 		return 0;
 	}
-
-	core::stringc texturePath =
-		SceneManager->getParameters()->getAttributeAsString(MY3D_TEXTURE_PATH);
 
 	file->read(&id, sizeof(id));
 #ifdef __BIG_ENDIAN__
@@ -188,12 +187,9 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				const bool oldMipMapState = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 				SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
-				me.Texture2FileName = texturePath.size() ? texturePath : filepath;
-				me.Texture2FileName.append("Lightmaps/");
+				me.Texture2FileName = "Lightmaps/";
 				me.Texture2FileName.append(name);
-
-				if (name.size())
-					me.Texture2 = SceneManager->getVideoDriver()->getTexture(me.Texture2FileName);
+				me.Texture2 = getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(me.Texture2FileName) : NULL;
 
 				me.MaterialType = video::EMT_LIGHTMAP_M2;
 				gotLightMap = true;
@@ -203,21 +199,26 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			else
 			if (!gotLightMap && gotMainMap)
 			{
-				me.Texture2FileName = texturePath.size() ? texturePath : filepath;
-				me.Texture2FileName.append(name);
-
-				if (name.size())
-					me.Texture2 = SceneManager->getVideoDriver()->getTexture(me.Texture2FileName);
+				if ( getMeshTextureLoader() )
+				{
+					me.Texture2 = getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(name) : NULL;
+					me.Texture2FileName = getMeshTextureLoader()->getRecentTextureName();
+				}
+				else
+					me.Texture2FileName = name;
 
 				me.MaterialType = video::EMT_REFLECTION_2_LAYER;
 			}
 			else
 			if (!gotMainMap && !gotLightMap)
 			{
-				me.Texture1FileName = filepath;
-				me.Texture1FileName.append(name);
-				if (name.size())
-					me.Texture1 = SceneManager->getVideoDriver()->getTexture(me.Texture1FileName);
+				if ( getMeshTextureLoader() )
+				{
+					me.Texture1 = getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(name) : NULL;
+					me.Texture1FileName = getMeshTextureLoader()->getRecentTextureName();
+				}
+				else
+					me.Texture1FileName = name;
 
 				gotMainMap = true;
 				me.MaterialType = video::EMT_SOLID;

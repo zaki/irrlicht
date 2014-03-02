@@ -6,6 +6,7 @@
 #ifdef _IRR_COMPILE_WITH_OBJ_LOADER_
 
 #include "COBJMeshFileLoader.h"
+#include "CMeshTextureLoader.h"
 #include "IMeshManipulator.h"
 #include "IVideoDriver.h"
 #include "SMesh.h"
@@ -38,6 +39,8 @@ COBJMeshFileLoader::COBJMeshFileLoader(scene::ISceneManager* smgr, io::IFileSyst
 
 	if (FileSystem)
 		FileSystem->grab();
+
+	TextureLoader = new CMeshTextureLoader( FileSystem, SceneManager->getVideoDriver() );
 }
 
 
@@ -63,6 +66,12 @@ bool COBJMeshFileLoader::isALoadableFileExtension(const io::path& filename) cons
 //! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 {
+	if (!file)
+		return 0;
+
+	if ( getMeshTextureLoader() )
+		getMeshTextureLoader()->setMeshFile(file);
+
 	const long filesize = file->getSize();
 	if (!filesize)
 		return 0;
@@ -420,31 +429,13 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 		currMaterial->Meshbuffer->Material.setFlag(video::EMF_TEXTURE_WRAP, video::ETC_CLAMP);
 
 	io::path texname(textureNameBuf);
-	texname.replace('\\', '/');
-
 	video::ITexture * texture = 0;
 	bool newTexture=false;
-	if (texname.size())
+	if (texname.size() && getMeshTextureLoader())
 	{
- 		io::path texnameWithUserPath( SceneManager->getParameters()->getAttributeAsString(OBJ_TEXTURE_PATH) );
- 		if ( texnameWithUserPath.size() )
- 		{
- 			texnameWithUserPath += '/';
- 			texnameWithUserPath += texname;
- 		}
- 		if (FileSystem->existFile(texnameWithUserPath))
- 			texture = SceneManager->getVideoDriver()->getTexture(texnameWithUserPath);
-		else if (FileSystem->existFile(texname))
-		{
-			newTexture = SceneManager->getVideoDriver()->findTexture(texname) == 0;
-			texture = SceneManager->getVideoDriver()->getTexture(texname);
-		}
-		else
-		{
-			newTexture = SceneManager->getVideoDriver()->findTexture(relPath + texname) == 0;
-			// try to read in the relative path, the .obj is loaded from
-			texture = SceneManager->getVideoDriver()->getTexture( relPath + texname );
-		}
+		texture = getMeshTextureLoader()->getTexture(texname);
+		newTexture = !getMeshTextureLoader()->wasRecentTextureInCache();
+
 	}
 	if ( texture )
 	{
@@ -495,6 +486,13 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, const io::path& relPath)
 	{
 		os::Printer::log("Could not open material file", realFile, ELL_WARNING);
 		return;
+	}
+
+	if ( getMeshTextureLoader() )
+	{
+		getMeshTextureLoader()->setMaterialFile(mtlReader);
+		getMeshTextureLoader()->setCheckForCachedTextures(true);
+		getMeshTextureLoader()->setTexturePath(SceneManager->getParameters()->getAttributeAsString(OBJ_TEXTURE_PATH));
 	}
 
 	const long filesize = mtlReader->getSize();

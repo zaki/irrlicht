@@ -7,6 +7,7 @@
 #ifdef _IRR_COMPILE_WITH_X_LOADER_
 
 #include "CXMeshFileLoader.h"
+#include "CMeshTextureLoader.h"
 #include "os.h"
 
 #include "fast_atof.h"
@@ -35,6 +36,8 @@ CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* 
 	#ifdef _DEBUG
 	setDebugName("CXMeshFileLoader");
 	#endif
+
+	TextureLoader = new CMeshTextureLoader( FileSystem, SceneManager->getVideoDriver() );
 }
 
 
@@ -50,10 +53,13 @@ bool CXMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* CXMeshFileLoader::createMesh(io::IReadFile* f)
+IAnimatedMesh* CXMeshFileLoader::createMesh(io::IReadFile* file)
 {
-	if (!f)
+	if (!file)
 		return 0;
+
+	if ( getMeshTextureLoader() )
+		getMeshTextureLoader()->setMeshFile(file);
 
 #ifdef _XREADER_DEBUG
 	u32 time = os::Timer::getRealTime();
@@ -61,7 +67,7 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(io::IReadFile* f)
 
 	AnimatedMesh = new CSkinnedMesh();
 
-	if (load(f))
+	if (load(file))
 	{
 		AnimatedMesh->finalize();
 	}
@@ -458,7 +464,6 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 	P = &Buffer[16];
 
 	readUntilEndOfLine();
-	FilePath = FileSystem->getFileDir(file->getFileName()) + "/";
 
 	return true;
 }
@@ -1524,19 +1529,8 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 			if (!parseDataObjectTextureFilename(TextureFileName))
 				return false;
 
-			// original name
-			if (FileSystem->existFile(TextureFileName))
-				material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName));
-			// mesh path
-			else
-			{
-				TextureFileName=FilePath + FileSystem->getFileBasename(TextureFileName);
-				if (FileSystem->existFile(TextureFileName))
-					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName));
-				// working directory
-				else
-					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(FileSystem->getFileBasename(TextureFileName)));
-			}
+			material.setTexture( textureLayer, getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(TextureFileName) : NULL );
+
 			++textureLayer;
 			if (textureLayer==2)
 				material.MaterialType=video::EMT_LIGHTMAP;
@@ -1549,19 +1543,8 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 			if (!parseDataObjectTextureFilename(TextureFileName))
 				return false;
 
-			// original name
-			if (FileSystem->existFile(TextureFileName))
-				material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName));
-			// mesh path
-			else
-			{
-				TextureFileName=FilePath + FileSystem->getFileBasename(TextureFileName);
-				if (FileSystem->existFile(TextureFileName))
-					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName));
-				// working directory
-				else
-					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(FileSystem->getFileBasename(TextureFileName)));
-			}
+			material.setTexture( 1, getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(TextureFileName) : NULL );
+
 			if (textureLayer==1)
 				++textureLayer;
 		}

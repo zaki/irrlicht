@@ -926,6 +926,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\..\..\include\IMeshTextureLoader.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\IMeshWriter.h"
 					>
 				</File>
@@ -2422,6 +2426,14 @@
 				</File>
 				<File
 					RelativePath=".\CMeshSceneNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CMeshTextureLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CMeshTextureLoader.h"
 					>
 				</File>
 				<File
