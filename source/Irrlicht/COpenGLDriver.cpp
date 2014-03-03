@@ -108,7 +108,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CgContext = 0;
 	#endif
 }
-    
+
     //! inits the open gl driver
 bool COpenGLDriver::initDriver()
 {
@@ -116,7 +116,7 @@ bool COpenGLDriver::initDriver()
     ContextManager->generateContext();
     ExposedData=ContextManager->getContext();
     ContextManager->activateContext(ExposedData);
-        
+
     genericDriverInit();
 
     return true;
@@ -934,7 +934,10 @@ void COpenGLDriver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
 #else
 				0);
 #endif
-		testGLError();
+		if ( testGLError() )
+		{
+			os::Printer::log("Occlusion Query failed", ELL_ERROR);
+		}
 	}
 }
 
@@ -961,7 +964,11 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 						0,
 #endif
 						&available);
-		testGLError();
+			if ( testGLError() )
+			{
+				os::Printer::log("extGlGetQueryObjectiv failed", ELL_ERROR);
+			}
+		}
 		if (available==GL_TRUE)
 		{
 			extGlGetQueryObjectiv(OcclusionQueries[index].UID,
@@ -976,7 +983,10 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 			if (queryFeature(EVDF_OCCLUSION_QUERY))
 				OcclusionQueries[index].Result = available;
 		}
-		testGLError();
+		if ( testGLError() )
+		{
+			os::Printer::log("extGlGetQueryObjectiv failed", ELL_ERROR);
+		}
 	}
 }
 
@@ -2189,7 +2199,7 @@ ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io:
 
 
 //! returns a device dependent texture from a software surface (IImage)
-ITexture* COpenGLDriver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+ITexture* COpenGLDriver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
 {
 	COpenGLTexture* texture = 0;
@@ -4364,7 +4374,10 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		}
 		glReadBuffer(tgt);
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, type, pixels);
-		testGLError();
+		if ( testGLError() )
+		{
+			os::Printer::log("glReadPixels failed", ELL_ERROR);
+		}
 		glReadBuffer(GL_BACK);
 	}
 
@@ -4403,6 +4416,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		newImage->unlock();
 		if (testGLError() || !pixels)
 		{
+			os::Printer::log("createScreenShot failed", ELL_ERROR);
 			newImage->drop();
 			return 0;
 		}

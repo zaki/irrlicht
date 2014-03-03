@@ -159,7 +159,7 @@ COpenGLTexture::~COpenGLTexture()
 			Driver->getBridgeCalls()->setTexture(i, TextureType, true);
 		}
 
-	// Remove this texture from active materials as well	
+	// Remove this texture from active materials as well
 
 	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 	{
@@ -484,7 +484,9 @@ void COpenGLTexture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 	Driver->getBridgeCalls()->setTexture(0, TextureType, true);
 
 	if (Driver->testGLError())
-		os::Printer::log("Could not bind Texture", ELL_ERROR);
+	{
+		os::Printer::log("Could not bind Texture", getName(), ELL_ERROR);
+	}
 
 	// mipmap handling for main texture
 	if (!level && newTexture)
@@ -537,7 +539,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 	// get texture type
 
 	GLenum tmpTextureType = GL_TEXTURE_2D;
-	
+
 	if (TextureType == GL_TEXTURE_CUBE_MAP)
 	{
 		switch(imageNumber)
@@ -643,7 +645,7 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	// store info about which image is locked
 	IImage* image = 0;
-	
+
 	if (mipmapLevel==0)
 	{
 		if (Image.size() > 0)
@@ -772,7 +774,7 @@ void COpenGLTexture::unlock()
 
 	// test if miplevel or main texture was locked
 	IImage* image = 0;
-	
+
 	if (!MipImage)
 	{
 		if (Image.size() > 0)
