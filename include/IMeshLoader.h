@@ -7,6 +7,7 @@
 
 #include "IReferenceCounted.h"
 #include "path.h"
+#include "IMeshTextureLoader.h"
 
 namespace irr
 {
@@ -27,8 +28,15 @@ class IMeshLoader : public virtual IReferenceCounted
 {
 public:
 
+	//! Constructor
+	IMeshLoader() : TextureLoader(0) {}
+
 	//! Destructor
-	virtual ~IMeshLoader() {}
+	virtual ~IMeshLoader()
+	{
+		if ( TextureLoader )
+			TextureLoader->drop();
+	}
 
 	//! Returns true if the file might be loaded by this class.
 	/** This decision should be based on the file extension (e.g. ".cob")
@@ -43,6 +51,35 @@ public:
 	If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	See IReferenceCounted::drop() for more information. */
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file) = 0;
+
+	//! Set a new texture loader which this meshloader can use when searching for textures.
+	/** NOTE: Not all meshloaders do support this interface. Meshloaders which
+	support it will return a non-null value in getMeshTextureLoader from the start. Setting a
+	texture-loader to a meshloader which doesn't support it won't help.
+	\param textureLoader The textureloader to use. When set to NULL the mesh will not load any textures.
+	*/
+	virtual void setMeshTextureLoader(IMeshTextureLoader* textureLoader)
+	{
+		if ( textureLoader != TextureLoader )
+		{
+			if ( textureLoader )
+				textureLoader->grab();
+			if ( TextureLoader )
+				TextureLoader->drop();
+			TextureLoader = textureLoader;
+		}
+	}
+
+	//! Get the texture loader used when this meshloder searches for textures.
+	/** NOTE: not all meshloaders support this interface so this can return NULL.
+	*/
+	virtual IMeshTextureLoader* getMeshTextureLoader() const
+	{
+		return TextureLoader;
+	}
+
+protected:
+	IMeshTextureLoader* TextureLoader;
 };
 
 
@@ -50,4 +87,3 @@ public:
 } // end namespace irr
 
 #endif
-

@@ -431,12 +431,18 @@ ITexture* CNullDriver::getTexture(const io::path& filename)
 
 	ITexture* texture = findTexture(absolutePath);
 	if (texture)
+	{
+		texture->updateSource(ETS_FROM_CACHE);
 		return texture;
+	}
 
 	// Then try the raw filename, which might be in an Archive
 	texture = findTexture(filename);
 	if (texture)
+	{
+		texture->updateSource(ETS_FROM_CACHE);
 		return texture;
+	}
 
 	// Now try to open the file using the complete path.
 	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath);
@@ -453,6 +459,7 @@ ITexture* CNullDriver::getTexture(const io::path& filename)
 		texture = findTexture(file->getFileName());
 		if (texture)
 		{
+			texture->updateSource(ETS_FROM_CACHE);
 			file->drop();
 			return texture;
 		}
@@ -462,6 +469,7 @@ ITexture* CNullDriver::getTexture(const io::path& filename)
 
 		if (texture)
 		{
+			texture->updateSource(ETS_FROM_FILE);
 			addTexture(texture);
 			texture->drop(); // drop it because we created it, one grab too much
 		}
@@ -487,12 +495,16 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 		texture = findTexture(file->getFileName());
 
 		if (texture)
+		{
+			texture->updateSource(ETS_FROM_CACHE);
 			return texture;
+		}
 
 		texture = loadTextureFromFile(file);
 
 		if (texture)
 		{
+			texture->updateSource(ETS_FROM_FILE);
 			addTexture(texture);
 			texture->drop(); // drop it because we created it, one grab too much
 		}

@@ -539,12 +539,12 @@ namespace scene
 		}
 
 
-		//! Enables or disables automatic culling based on the bounding box.
-		/** Automatic culling is enabled by default. Note that not
+		//! Set a culling style or disable culling completely. 
+		/** Box cullling (EAC_BOX) is set by default. Note that not
 		all SceneNodes support culling and that some nodes always cull
 		their geometry because it is their only reason for existence,
 		for example the OctreeSceneNode.
-		\param state The culling state to be used. */
+		\param state The culling state to be used. Check E_CULLING_TYPE for possible values.*/
 		void setAutomaticCulling( u32 state)
 		{
 			AutomaticCullingState = state;

@@ -118,6 +118,19 @@ enum E_TEXTURE_CUBE_SURFACE
 	ETCS_NEGZ = 5
 };
 
+//! Where did the last IVideoDriver::getTexture call find this texture
+enum E_TEXTURE_SOURCE
+{
+	//! IVideoDriver::getTexture was never called (texture created otherwise)
+	ETS_UNKNOWN,
+
+	//! Texture has been found in cache
+	ETS_FROM_CACHE,
+
+	//! Texture had to be loaded
+	ETS_FROM_FILE
+};
+
 //! Interface of a Video Driver dependent Texture.
 /** An ITexture is created by an IVideoDriver by using IVideoDriver::addTexture
 or IVideoDriver::getTexture. After that, the texture may only be used by this
@@ -132,7 +145,7 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const io::path& name, E_TEXTURE_TYPE type = ETT_2D) : NamedPath(name), Type(type)
+	ITexture(const io::path& name, E_TEXTURE_TYPE type = ETT_2D) : NamedPath(name), Source(ETS_UNKNOWN), Type(type)
 	{
 	}
 
@@ -225,6 +238,12 @@ public:
 	//! Returns the type of texture
 	E_TEXTURE_TYPE getType() const { return Type; }
 
+	//! Check where the last IVideoDriver::getTexture found this texture
+	E_TEXTURE_SOURCE getSource() const { return Source; }
+
+	//! Used internally by the engine to update Source status on IVideoDriver::getTexture calls.
+	void updateSource(E_TEXTURE_SOURCE source) { Source = source; }
+
 protected:
 
 	//! Helper function, helps to get the desired texture creation format from the flags.
@@ -244,7 +263,7 @@ protected:
 	}
 
 	io::SNamedPath NamedPath;
-	
+	E_TEXTURE_SOURCE Source;
 	E_TEXTURE_TYPE Type;
 };
 

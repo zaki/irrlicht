@@ -15,6 +15,10 @@ namespace video
 {
 	class IVideoDriver;
 }
+namespace io
+{
+	class IFileSystem;
+}
 
 namespace scene
 {
@@ -24,7 +28,7 @@ class CSMFMeshFileLoader : public virtual IMeshLoader
 {
 public:
 
-	CSMFMeshFileLoader(video::IVideoDriver* driver);
+	CSMFMeshFileLoader(irr::io::IFileSystem* fs, video::IVideoDriver* driver);
 
 	//! Returns true if the file might be loaded by this class.
 	virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;

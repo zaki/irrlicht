@@ -135,6 +135,7 @@ LOCAL_SRC_FILES := \
 					CMeshCache.cpp \
 					CMeshManipulator.cpp \
 					CMeshSceneNode.cpp \
+					CMeshTextureLoader.cpp \
 					CMetaTriangleSelector.cpp \
 					CMountPointReader.cpp \
 					CMS3DMeshFileLoader.cpp \

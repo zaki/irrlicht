@@ -153,6 +153,7 @@
     <ClCompile Include="burningsVideo.cpp" />
     <ClCompile Include="collisionResponseAnimator.cpp" />
     <ClCompile Include="color.cpp" />
+    <ClCompile Include="coreutil.cpp" />
     <ClCompile Include="createImage.cpp" />
     <ClCompile Include="cursorSetVisible.cpp" />
     <ClCompile Include="disambiguateTextures.cpp" />

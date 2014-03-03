@@ -1740,6 +1740,28 @@ void CIrrDeviceWin32::OnResized()
 	Resized = true;
 }
 
+//! Resize the render window.
+void CIrrDeviceWin32::setWindowSize(const irr::core::dimension2d<u32>& size)
+{
+	if (ExternalWindow || !getVideoDriver() || CreationParams.Fullscreen)
+		return;
+
+	// get size of the window for the give size of the client area
+	LONG_PTR style = GetWindowLongPtr(HWnd, GWL_STYLE);
+	LONG_PTR exStyle = GetWindowLongPtr(HWnd, GWL_EXSTYLE);
+	RECT clientSize;
+	clientSize.top = 0;
+	clientSize.left = 0;
+	clientSize.right = size.Width;
+	clientSize.bottom = size.Height;
+	AdjustWindowRectEx(&clientSize, style, false, exStyle);
+	const s32 realWidth = clientSize.right - clientSize.left;
+	const s32 realHeight = clientSize.bottom - clientSize.top;
+
+	UINT flags = SWP_NOACTIVATE|SWP_NOCOPYBITS|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER;
+	SetWindowPos(HWnd, HWND_TOP, 0, 0, realWidth, realHeight, flags);
+}
+
 //! Sets if the window should be resizable in windowed mode.
 void CIrrDeviceWin32::setResizable(bool resize)
 {

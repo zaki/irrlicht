@@ -6,6 +6,7 @@
 #ifdef _IRR_COMPILE_WITH_COLLADA_LOADER_
 
 #include "CColladaFileLoader.h"
+#include "CMeshTextureLoader.h"
 #include "os.h"
 #include "IXMLReader.h"
 #include "IDummyTransformationSceneNode.h"
@@ -329,6 +330,8 @@ CColladaFileLoader::CColladaFileLoader(scene::ISceneManager* smgr,
 	#ifdef _DEBUG
 	setDebugName("CColladaFileLoader");
 	#endif
+
+	TextureLoader = new CMeshTextureLoader( FileSystem, SceneManager->getVideoDriver() );
 }
 
 
@@ -360,6 +363,9 @@ IAnimatedMesh* CColladaFileLoader::createMesh(io::IReadFile* file)
 	io::IXMLReaderUTF8* reader = FileSystem->createXMLReaderUTF8(file);
 	if (!reader)
 		return 0;
+
+	if ( getMeshTextureLoader() )
+		getMeshTextureLoader()->setMeshFile(file);
 
 	CurrentlyLoadingMesh = file->getFileName();
 	CreateInstances = SceneManager->getParameters()->getAttributeAsBool(
@@ -2799,9 +2805,7 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri, SCol
 			{
 				if (Images[i].Source.size() && Images[i].SourceIsFilename)
 				{
-					if (FileSystem->existFile(Images[i].Source))
-						return driver->getTexture(Images[i].Source);
-					return driver->getTexture((FileSystem->getFileDir(CurrentlyLoadingMesh)+"/"+Images[i].Source));
+					return getMeshTextureLoader() ? getMeshTextureLoader()->getTexture( Images[i].Source ) : NULL;
 				}
 				else
 				if (Images[i].Source.size())

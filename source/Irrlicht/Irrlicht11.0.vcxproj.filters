@@ -363,6 +363,9 @@
     <ClInclude Include="..\..\include\IMeshSceneNode.h">
       <Filter>include\scene</Filter>
     </ClInclude>
+	<ClInclude Include="..\..\include\IMeshTextureLoader.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\IMeshWriter.h">
       <Filter>include\scene</Filter>
     </ClInclude>
@@ -631,6 +634,9 @@
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClInclude>
     <ClInclude Include="CMD3MeshFileLoader.h">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClInclude>
+	<ClInclude Include="CMeshTextureLoader.h">
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClInclude>
     <ClInclude Include="CMS3DMeshFileLoader.h">
@@ -1424,6 +1430,9 @@
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClCompile>
     <ClCompile Include="CMD3MeshFileLoader.cpp">
+      <Filter>Irrlicht\scene\loaders</Filter>
+    </ClCompile>
+	<ClCompile Include="CMeshTextureLoader.cpp">
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClCompile>
     <ClCompile Include="CMS3DMeshFileLoader.cpp">

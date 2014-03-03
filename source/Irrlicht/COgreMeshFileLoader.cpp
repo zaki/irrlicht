@@ -7,6 +7,7 @@
 #ifdef _IRR_COMPILE_WITH_OGRE_LOADER_
 
 #include "COgreMeshFileLoader.h"
+#include "CMeshTextureLoader.h"
 #include "os.h"
 #include "SMeshBuffer.h"
 #include "SAnimatedMesh.h"
@@ -76,6 +77,8 @@ COgreMeshFileLoader::COgreMeshFileLoader(io::IFileSystem* fs, video::IVideoDrive
 
 	if (Driver)
 		Driver->grab();
+
+	TextureLoader = new CMeshTextureLoader( FileSystem, Driver );
 }
 
 
@@ -109,6 +112,12 @@ bool COgreMeshFileLoader::isALoadableFileExtension(const io::path& filename) con
 //! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* COgreMeshFileLoader::createMesh(io::IReadFile* file)
 {
+	if ( !file )
+		return 0;
+
+	if ( getMeshTextureLoader() )
+		getMeshTextureLoader()->setMeshFile(file);
+
 	s16 id;
 
 	file->read(&id, 2);
@@ -469,10 +478,13 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 			material=Materials[k].Techniques[0].Passes[0].Material;
 			for (u32 i=0; i<Materials[k].Techniques[0].Passes[0].Texture.Filename.size(); ++i)
 			{
-				if (FileSystem->existFile(Materials[k].Techniques[0].Passes[0].Texture.Filename[i]))
-					material.setTexture(i, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename[i]));
-				else
-					material.setTexture(i, Driver->getTexture((CurrentlyLoadingFromPath+"/"+FileSystem->getFileBasename(Materials[k].Techniques[0].Passes[0].Texture.Filename[i]))));
+				video::ITexture * texture = NULL;
+				if ( getMeshTextureLoader() )
+				{
+					texture = getMeshTextureLoader()->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename[i]);
+					if ( texture )
+						material.setTexture(i, texture);
+				}
 			}
 			break;
 		}

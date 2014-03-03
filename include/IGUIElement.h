@@ -278,9 +278,9 @@ public:
 	//! Adds a GUI element as new child of this element.
 	virtual void addChild(IGUIElement* child)
 	{
-		addChildToEnd(child);
-		if (child)
+		if ( child && child != this )
 		{
+			addChildToEnd(child);
 			child->updateAbsolutePosition();
 		}
 	}

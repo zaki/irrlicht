@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\coreutil.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\createImage.cpp"
 				>
 			</File>

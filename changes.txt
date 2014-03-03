@@ -6,6 +6,12 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add ITexture::getSource which can be used to check where the last IVideoDriver::getTexture call found the texture.
+- Add IMeshTextureLoader interface and replace texture-loading algorithms in most meshloaders.
+- CGUICheckBox no longer gives up focus on EMIE_LMOUSE_LEFT_UP (thx @Demre for reporting)
+- Bugfix: IGUIElement::addChild now prevents setting an element as it's own child.
+- GUI editor improvements (prevent crash, improve UI)
+- Add IrrlichtDevice::setWindowSize. 
 - Bugfix: getFont for xml-fonts now also works for fonts inside archives (thx @Neirdan for bugreport)
 - Added function irr::core::mergeFilename 
 - Add ISceneNodeAnimator::setStartTime/getStartTime to allow resetting movement animators.

@@ -29,24 +29,24 @@ namespace scene
 	**/
 	const c8* const ALLOW_ZWRITE_ON_TRANSPARENT = "Allow_ZWrite_On_Transparent";
 
-	//! Name of the parameter for changing the texture path of the built-in csm loader.
-	/** Use it like this:
+	//! Deprecated, use IMeshLoader::getMeshTextureLoader()->setTexturePath instead.
+	/** Was used for changing the texture path of the built-in csm loader like this:
 	\code
 	SceneManager->getParameters()->setAttribute(scene::CSM_TEXTURE_PATH, "path/to/your/textures");
 	\endcode
 	**/
 	const c8* const CSM_TEXTURE_PATH = "CSM_TexturePath";
 
-	//! Name of the parameter for changing the texture path of the built-in lmts loader.
-	/** Use it like this:
+	//! Deprecated, use IMeshLoader::getMeshTextureLoader()->setTexturePath instead.
+	/** Was used for changing the texture path of the built-in lmts loader like this:
 	\code
 	SceneManager->getParameters()->setAttribute(scene::LMTS_TEXTURE_PATH, "path/to/your/textures");
 	\endcode
 	**/
 	const c8* const LMTS_TEXTURE_PATH = "LMTS_TexturePath";
 
-	//! Name of the parameter for changing the texture path of the built-in my3d loader.
-	/** Use it like this:
+	//! Deprecated, use IMeshLoader::getMeshTextureLoader()->setTexturePath instead.
+	/** Was used for changing the texture path of the built-in MY3D loader like this:
 	\code
 	SceneManager->getParameters()->setAttribute(scene::MY3D_TEXTURE_PATH, "path/to/your/textures");
 	\endcode
@@ -66,7 +66,7 @@ namespace scene
 	*/
 	const c8* const COLLADA_CREATE_SCENE_INSTANCES = "COLLADA_CreateSceneInstances";
 
-	//! Name of the parameter for changing the texture path of the built-in DMF loader.
+	//! Deprecated, use IMeshLoader::getMeshTextureLoader()->setTexturePath instead.
 	/** This path is prefixed to the file names defined in the Deled file when loading
 	textures. This allows to alter the paths for a specific project setting.
 	Use it like this:
@@ -111,8 +111,8 @@ namespace scene
 	const c8* const DMF_FLIP_ALPHA_TEXTURES = "DMF_FlipAlpha";
 
 
-	//! Name of the parameter for changing the texture path of the built-in obj loader.
-	/** Use it like this:
+	//! Deprecated, use IMeshLoader::getMeshTextureLoader()->setTexturePath instead.
+	/** Was used for changing the texture path of the built-in obj loader like this:
 	\code
 	SceneManager->getParameters()->setAttribute(scene::OBJ_TEXTURE_PATH, "path/to/your/textures");
 	\endcode
@@ -145,8 +145,8 @@ namespace scene
 	**/
 	const c8* const B3D_LOADER_IGNORE_MIPMAP_FLAG = "B3D_IgnoreMipmapFlag";
 
-	//! Name of the parameter for changing the texture path of the built-in b3d loader.
-	/** Use it like this:
+	//! Deprecated, use IMeshLoader::getMeshTextureLoader()->setTexturePath instead.
+	/** Was used for changing the texture path of the built-in b3d loader like this:
 	\code
 	SceneManager->getParameters()->setAttribute(scene::B3D_TEXTURE_PATH, "path/to/your/textures");
 	\endcode

@@ -68,8 +68,7 @@ namespace scene
 
 		scene::IMesh* createCSMMesh(io::IReadFile* file);
 
-		scene::IMesh* createIrrlichtMesh(const CSMFile* csmFile,
-			const core::stringc& textureRoot, const io::path& lmprefix);
+		scene::IMesh* createIrrlichtMesh(const CSMFile* csmFile, const io::path& lmprefix);
 
 		io::IFileSystem* FileSystem;
 		scene::ISceneManager* SceneManager;

@@ -10,6 +10,7 @@
 #ifdef _IRR_COMPILE_WITH_B3D_LOADER_
 
 #include "CB3DMeshFileLoader.h"
+#include "CMeshTextureLoader.h"
 
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
@@ -32,6 +33,8 @@ CB3DMeshFileLoader::CB3DMeshFileLoader(scene::ISceneManager* smgr)
 	#ifdef _DEBUG
 	setDebugName("CB3DMeshFileLoader");
 	#endif
+
+	TextureLoader = new CMeshTextureLoader( SceneManager->getFileSystem(), SceneManager->getVideoDriver() );
 }
 
 
@@ -47,12 +50,15 @@ bool CB3DMeshFileLoader::isALoadableFileExtension(const io::path& filename) cons
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* CB3DMeshFileLoader::createMesh(io::IReadFile* f)
+IAnimatedMesh* CB3DMeshFileLoader::createMesh(io::IReadFile* file)
 {
-	if (!f)
+	if (!file)
 		return 0;
 
-	B3DFile = f;
+	if ( getMeshTextureLoader() )
+		getMeshTextureLoader()->setMeshFile(file);
+
+	B3DFile = file;
 	AnimatedMesh = new scene::CSkinnedMesh();
 	ShowWarning = true; // If true a warning is issued if too many textures are used
 	VerticesStart=0;
@@ -1028,6 +1034,12 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 
 void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 {
+	if ( getMeshTextureLoader() )
+	{
+		if ( SceneManager->getParameters()->existsAttribute(B3D_TEXTURE_PATH) )
+			getMeshTextureLoader()->setTexturePath( SceneManager->getParameters()->getAttributeAsString(B3D_TEXTURE_PATH) );
+	}
+
 	const bool previous32BitTextureFlag = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_ALWAYS_32_BIT);
 	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
@@ -1043,23 +1055,7 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 			if (!SceneManager->getParameters()->getAttributeAsBool(B3D_LOADER_IGNORE_MIPMAP_FLAG))
 				SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, (B3dTexture->Flags & 0x8) ? true:false);
 			{
-				video::ITexture* tex = 0;
-				io::IFileSystem* fs = SceneManager->getFileSystem();
-				io::path texnameWithUserPath( SceneManager->getParameters()->getAttributeAsString(B3D_TEXTURE_PATH) );
-				if ( texnameWithUserPath.size() )
-				{
-					texnameWithUserPath += '/';
-					texnameWithUserPath += B3dTexture->TextureName;
-				}
-				if (fs->existFile(texnameWithUserPath))
-					tex = SceneManager->getVideoDriver()->getTexture(texnameWithUserPath);
-				else if (fs->existFile(B3dTexture->TextureName))
-					tex = SceneManager->getVideoDriver()->getTexture(B3dTexture->TextureName);
-				else if (fs->existFile(fs->getFileDir(B3DFile->getFileName()) +"/"+ fs->getFileBasename(B3dTexture->TextureName)))
-					tex = SceneManager->getVideoDriver()->getTexture(fs->getFileDir(B3DFile->getFileName()) +"/"+ fs->getFileBasename(B3dTexture->TextureName));
-				else
-					tex = SceneManager->getVideoDriver()->getTexture(fs->getFileBasename(B3dTexture->TextureName));
-
+				video::ITexture* tex = getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(B3dTexture->TextureName) : NULL;
 				material.Material.setTexture(i, tex);
 			}
 			if (material.Textures[i]->Flags & 0x10) // Clamp U

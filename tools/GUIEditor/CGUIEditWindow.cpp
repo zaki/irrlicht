@@ -37,16 +37,16 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	if (!skin)
 		return;
 
-	s32 th = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
-
-	setRelativePosition(core::rect<s32>(50,50,250,500));
+	core::rect<s32> dlgRect(50,50,250,500);
+	setRelativePosition(dlgRect);
 	setMinSize(core::dimension2du(200,200));
 
-	IGUITabControl *TabControl = environment->addTabControl(core::rect<s32>(1,th+5,199,449), this, false, true);
+	s32 th = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	IGUITabControl *TabControl = environment->addTabControl(core::rect<s32>(1,th+5,dlgRect.getWidth()-1,dlgRect.getHeight()-1), this, false, true);
 	TabControl->setSubElement(true);
 	TabControl->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 
-	TabControl->addTab(L"Tools");
+	//TabControl->addTab(L"Tools");
 	//L"Texture Cache Browser"
 	//L"Font Browser"
 	//L"Font Generator"
@@ -83,7 +83,8 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	TreeView->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	IGUITreeViewNode* treenode = TreeView->getRoot();
 	//treenode->addChildFront(L"Elements");
-	ResizeButton = environment->addButton(core::rect<s32>(199-th,449-th,199,449), this);
+
+	ResizeButton = environment->addButton(core::rect<s32>(dlgRect.getWidth()-(th+1),dlgRect.getHeight()-(th+1),dlgRect.getWidth()-1,dlgRect.getHeight()-1), this);
 	ResizeButton->setDrawBorder(false);
 	ResizeButton->setEnabled(false);
 	ResizeButton->setSpriteBank(skin->getSpriteBank());
@@ -92,6 +93,7 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	ResizeButton->grab();
 	ResizeButton->setSubElement(true);
 	ResizeButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
+
 	updateTree();
 }
 
