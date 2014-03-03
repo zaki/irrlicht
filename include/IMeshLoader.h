@@ -53,7 +53,10 @@ public:
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file) = 0;
 
 	//! Set a new texture loader which this meshloader can use when searching for textures.
-	/** \param textureLoader The textureloader to use. When set to NULL the mesh will not load any textures.
+	/** NOTE: Not all meshloaders do support this interface. Meshloaders which
+	support it will return a non-null value in getMeshTextureLoader from the start. Setting a
+	texture-loader to a meshloader which doesn't support it won't help.
+	\param textureLoader The textureloader to use. When set to NULL the mesh will not load any textures.
 	*/
 	virtual void setMeshTextureLoader(IMeshTextureLoader* textureLoader)
 	{
@@ -68,6 +71,8 @@ public:
 	}
 
 	//! Get the texture loader used when this meshloder searches for textures.
+	/** NOTE: not all meshloaders support this interface so this can return NULL.
+	*/
 	virtual IMeshTextureLoader* getMeshTextureLoader() const
 	{
 		return TextureLoader;

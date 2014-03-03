@@ -187,12 +187,7 @@ namespace scene
 		 *      architecture and calculating lighting. Irrlicht can
 		 *      directly import .csm files thanks to the IrrCSM library
 		 *      created by Saurav Mohapatra which is now integrated
-		 *      directly in Irrlicht. If you are using this loader,
-		 *      please note that you'll have to set the path of the
-		 *      textures before loading .csm files. You can do this
-		 *      using
-		 *      SceneManager-&gt;getParameters()-&gt;setAttribute(scene::CSM_TEXTURE_PATH,
-		 *      &quot;path/to/your/textures&quot;);</TD>
+		 *      directly in Irrlicht.
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>COLLADA (.dae, .xml)</TD>
@@ -232,9 +227,8 @@ namespace scene
 		 *        game-development. With this loader, it is possible to
 		 *        directly load all geometry is as well as textures and
 		 *        lightmaps from .dmf files. To set texture and
-		 *        material paths, see scene::DMF_USE_MATERIALS_DIRS and
-		 *        scene::DMF_TEXTURE_PATH. It is also possible to flip
-		 *        the alpha texture by setting
+		 *        material paths, see scene::DMF_USE_MATERIALS_DIRS.
+		 *        It is also possible to flip the alpha texture by setting
 		 *        scene::DMF_FLIP_ALPHA_TEXTURES to true and to set the
 		 *        material transparent reference value by setting
 		 *        scene::DMF_ALPHA_CHANNEL_REF to a float between 0 and
@@ -297,12 +291,7 @@ namespace scene
 		 *        3D packages. With this built-in importer, Irrlicht
 		 *        can read and display those files directly. This
 		 *        loader was written by Zhuck Dimitry who also created
-		 *        the whole My3DTools package. If you are using this
-		 *        loader, please note that you can set the path of the
-		 *        textures before loading .my3d files. You can do this
-		 *        using
-		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(scene::MY3D_TEXTURE_PATH,
-		 *        &quot;path/to/your/textures&quot;);
+		 *        the whole My3DTools package.
 		 *        </TD>
 		 *    </TR>
 		 *    <TR>
@@ -331,11 +320,7 @@ namespace scene
 		 *      <TD>LMTools is a set of tools (Windows &amp; Linux) for
 		 *        creating lightmaps. Irrlicht can directly read .lmts
 		 *        files thanks to<br> the importer created by Jonas
-		 *        Petersen. If you are using this loader, please note
-		 *        that you can set the path of the textures before
-		 *        loading .lmts files. You can do this using
-		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(scene::LMTS_TEXTURE_PATH,
-		 *        &quot;path/to/your/textures&quot;);
+		 *        Petersen.
 		 *        Notes for<br> this version of the loader:<br>
 		 *        - It does not recognise/support user data in the
 		 *          *.lmts files.<br>
@@ -1433,10 +1418,7 @@ namespace scene
 
 		//! Get interface to the parameters set in this scene.
 		/** String parameters can be used by plugins and mesh loaders.
-		For example the CMS and LMTS loader want a parameter named 'CSM_TexturePath'
-		and 'LMTS_TexturePath' set to the path were attached textures can be found. See
-		CSM_TEXTURE_PATH, LMTS_TEXTURE_PATH, MY3D_TEXTURE_PATH,
-		COLLADA_CREATE_SCENE_INSTANCES, DMF_TEXTURE_PATH and DMF_USE_MATERIALS_DIRS*/
+		See	COLLADA_CREATE_SCENE_INSTANCES and DMF_USE_MATERIALS_DIRS */
 		virtual io::IAttributes* getParameters() = 0;
 
 		//! Get current render pass.
