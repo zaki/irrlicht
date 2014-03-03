@@ -111,12 +111,6 @@ irr::video::ITexture* CMeshTextureLoader::getTexture(const irr::io::path& textur
 	return NULL;
 }
 
-//! Check which texture-name was last recently used.
-const irr::io::path& CMeshTextureLoader::getRecentTextureName() const
-{
-	return TextureName;
-}
-
 //! Check if the last call to getTexture found a texture which was already cached.
 bool CMeshTextureLoader::wasRecentTextureInCache() const
 {

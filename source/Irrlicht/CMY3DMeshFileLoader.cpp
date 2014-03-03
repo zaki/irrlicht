@@ -202,7 +202,8 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				if ( getMeshTextureLoader() )
 				{
 					me.Texture2 = getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(name) : NULL;
-					me.Texture2FileName = getMeshTextureLoader()->getRecentTextureName();
+					if ( me.Texture2 )
+						me.Texture2FileName = me.Texture2->getName();
 				}
 				else
 					me.Texture2FileName = name;
@@ -215,7 +216,8 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				if ( getMeshTextureLoader() )
 				{
 					me.Texture1 = getMeshTextureLoader() ? getMeshTextureLoader()->getTexture(name) : NULL;
-					me.Texture1FileName = getMeshTextureLoader()->getRecentTextureName();
+					if ( me.Texture1 )
+						me.Texture1FileName = me.Texture1->getName();
 				}
 				else
 					me.Texture1FileName = name;

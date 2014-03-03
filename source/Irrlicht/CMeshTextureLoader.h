@@ -35,12 +35,6 @@ public:
 	\return Pointer to the texture. Returns 0 if loading failed.*/
 	virtual irr::video::ITexture* getTexture(const irr::io::path& textureName)  _IRR_OVERRIDE_;
 
-	//! Check which texture-name was last recently used.
-	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
-	It's updated on getTexture calls. When those succeed this will return the full name which was
-	used to find the texture. Then getTexture failed it will contain the last name which was tried. */
-	virtual const irr::io::path& getRecentTextureName() const  _IRR_OVERRIDE_;
-
 	//! Check if the last call to getTexture found a texture which was already cached.
 	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
 		This will only work when a) CheckForCachedTextures is set to true and b) getTexture was
