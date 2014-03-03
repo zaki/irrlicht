@@ -412,7 +412,10 @@ namespace scene
 	scene::IMesh* CCSMLoader::createIrrlichtMesh(const CSMFile* csmFile, const io::path& lmprefix)
 	{
 		if ( getMeshTextureLoader() )
-			getMeshTextureLoader()->setTexturePath( SceneManager->getParameters()->getAttributeAsString(CSM_TEXTURE_PATH) );
+		{
+			if ( SceneManager->getParameters()->existsAttribute(CSM_TEXTURE_PATH) )
+				getMeshTextureLoader()->setTexturePath( SceneManager->getParameters()->getAttributeAsString(CSM_TEXTURE_PATH) );
+		}
 
 		scene::SMesh *pMesh = new scene::SMesh();
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();

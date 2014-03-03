@@ -1036,7 +1036,8 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 {
 	if ( getMeshTextureLoader() )
 	{
-		getMeshTextureLoader()->setTexturePath( SceneManager->getParameters()->getAttributeAsString(B3D_TEXTURE_PATH) );
+		if ( SceneManager->getParameters()->existsAttribute(B3D_TEXTURE_PATH) )
+			getMeshTextureLoader()->setTexturePath( SceneManager->getParameters()->getAttributeAsString(B3D_TEXTURE_PATH) );
 	}
 
 	const bool previous32BitTextureFlag = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_ALWAYS_32_BIT);

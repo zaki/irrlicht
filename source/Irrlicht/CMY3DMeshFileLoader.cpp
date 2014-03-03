@@ -84,7 +84,8 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 	if ( getMeshTextureLoader() )
 	{
 		getMeshTextureLoader()->setMeshFile(file);
-		getMeshTextureLoader()->setTexturePath(SceneManager->getParameters()->getAttributeAsString(MY3D_TEXTURE_PATH));
+		if ( SceneManager->getParameters()->existsAttribute(MY3D_TEXTURE_PATH) )
+			getMeshTextureLoader()->setTexturePath(SceneManager->getParameters()->getAttributeAsString(MY3D_TEXTURE_PATH));
 	}
 
 	MaterialEntry.clear();

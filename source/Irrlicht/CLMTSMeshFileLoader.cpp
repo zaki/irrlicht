@@ -333,7 +333,10 @@ void CLMTSMeshFileLoader::loadTextures(SMesh* mesh)
 	id2id.reallocate(Header.TextureCount);
 
 	if ( getMeshTextureLoader() )
-		getMeshTextureLoader()->setTexturePath(Parameters->getAttributeAsString(LMTS_TEXTURE_PATH));
+	{
+		if ( Parameters->existsAttribute(LMTS_TEXTURE_PATH) )
+			getMeshTextureLoader()->setTexturePath(Parameters->getAttributeAsString(LMTS_TEXTURE_PATH));
+	}
 
 	core::stringc s;
 	for (u32 t=0; t<Header.TextureCount; ++t)

@@ -487,7 +487,8 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, const io::path& relPath)
 	if ( getMeshTextureLoader() )
 	{
 		getMeshTextureLoader()->setMaterialFile(mtlReader);
-		getMeshTextureLoader()->setTexturePath(SceneManager->getParameters()->getAttributeAsString(OBJ_TEXTURE_PATH));
+		if ( SceneManager->getParameters()->existsAttribute(OBJ_TEXTURE_PATH) )
+			getMeshTextureLoader()->setTexturePath(SceneManager->getParameters()->getAttributeAsString(OBJ_TEXTURE_PATH));
 	}
 
 	const long filesize = mtlReader->getSize();
