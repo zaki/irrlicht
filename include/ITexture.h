@@ -86,6 +86,19 @@ enum E_TEXTURE_LOCK_MODE
 	ETLM_WRITE_ONLY
 };
 
+//! Where did the last IVideoDriver::getTexture call find this texture
+enum E_TEXTURE_SOURCE
+{
+	//! IVideoDriver::getTexture was never called (texture created otherwise)
+	ETS_UNKNOWN,
+
+	//! Texture has been found in cache
+	ETS_FROM_CACHE,
+
+	//! Texture had to be loaded
+	ETS_FROM_FILE
+};
+
 //! Interface of a Video Driver dependent Texture.
 /** An ITexture is created by an IVideoDriver by using IVideoDriver::addTexture
 or IVideoDriver::getTexture. After that, the texture may only be used by this
@@ -100,7 +113,7 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const io::path& name) : NamedPath(name)
+	ITexture(const io::path& name) : NamedPath(name), Source(ETS_UNKNOWN)
 	{
 	}
 
@@ -190,6 +203,12 @@ public:
 	//! Get name of texture (in most cases this is the filename)
 	const io::SNamedPath& getName() const { return NamedPath; }
 
+	//! Check where the last IVideoDriver::getTexture found this texture
+	E_TEXTURE_SOURCE getSource() const { return Source; }
+
+	//! Used internally by the engine to update Source status on IVideoDriver::getTexture calls.
+	void updateSource(E_TEXTURE_SOURCE source) { Source = source; }
+
 protected:
 
 	//! Helper function, helps to get the desired texture creation format from the flags.
@@ -209,6 +228,7 @@ protected:
 	}
 
 	io::SNamedPath NamedPath;
+	E_TEXTURE_SOURCE Source;
 };
 
 
