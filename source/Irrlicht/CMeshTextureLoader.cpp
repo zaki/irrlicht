@@ -31,10 +31,10 @@ const irr::io::path& CMeshTextureLoader::getTexturePath() const
 
 bool CMeshTextureLoader::checkTextureName( const irr::io::path& filename)
 {
-	os::Printer::log("CheckTextureName:", core::stringc(filename).c_str(), ELL_DEBUG);
+	//os::Printer::log("CheckTextureName:", core::stringc(filename).c_str(), ELL_DEBUG);
 	if (FileSystem->existFile(filename))
 	{
-		os::Printer::log("file exists", ELL_DEBUG);
+		//os::Printer::log("file exists", ELL_DEBUG);
 		TextureName = filename;
 		return true;
 	}
