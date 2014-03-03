@@ -31,10 +31,6 @@ class IMeshTextureLoader : public virtual IReferenceCounted
 {
 public:
 
-	//! Constructor
-	IMeshTextureLoader() : CheckForCachedTextures(false)
-	{}
-
 	//! Destructor
 	virtual ~IMeshTextureLoader() {}
 
@@ -51,13 +47,6 @@ public:
 	\return Pointer to the texture. Returns 0 if loading failed.*/
 	virtual irr::video::ITexture* getTexture(const irr::io::path& textureName) = 0;
 
-	//! Check if the last call to getTexture found a texture which was already cached.
-	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
-		This will only work when a) CheckForCachedTextures is set to true and b) getTexture was
-		successful.
-	\return When true the textuer was already cached. When false the texture was loaded newly. */
-	virtual bool wasRecentTextureInCache() const = 0;
-
 	//! Meshloaders will search paths relative to the meshFile.
 	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
 		Any values you set here will likely be overwritten internally. */
@@ -67,25 +56,6 @@ public:
 	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
 	Any values you set here will likely be overwritten internally.	*/
 	virtual void setMaterialFile(const irr::io::IReadFile* materialFile)  = 0;
-
-	//! Enable checking if a texture was already cached before loading.
-	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
-	It's mostly used to modify texture when they are first loaded.
-	\param enableCacheCheck On true getTexture calls will update information
-	which can be received by wasRecentTextureInCache.*/
-	void setCheckForCachedTextures(bool enableCacheCheck)
-	{
-		CheckForCachedTextures = enableCacheCheck;
-	}
-
-	//! Are checks enabled which look if textures where cached before loading
-	bool getCheckForCachedTextures() const
-	{
-		return CheckForCachedTextures;
-	}
-
-private:
-	bool CheckForCachedTextures;
 };
 
 

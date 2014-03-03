@@ -35,13 +35,6 @@ public:
 	\return Pointer to the texture. Returns 0 if loading failed.*/
 	virtual irr::video::ITexture* getTexture(const irr::io::path& textureName)  _IRR_OVERRIDE_;
 
-	//! Check if the last call to getTexture found a texture which was already cached.
-	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
-		This will only work when a) CheckForCachedTextures is set to true and b) getTexture was
-		successful.
-	\return When true the textuer was already cached. When false the texture was loaded newly. */
-	virtual bool wasRecentTextureInCache() const  _IRR_OVERRIDE_;
-
 	//! Meshloaders will search paths relative to the meshFile.
 	/** Usually you do not have to use this method, it is used internally by IMeshLoader's.
 		Any values you set here will likely be overwritten internally. */
@@ -68,7 +61,7 @@ protected:
 	}
 
 	// Save the texturename when it's a an existing file
-	bool checkTextureName( const irr::io::path& filename, bool checkCache);
+	bool checkTextureName( const irr::io::path& filename);
 
 private:
 	irr::io::IFileSystem * FileSystem;
@@ -79,7 +72,6 @@ private:
 	const irr::io::IReadFile* MaterialFile;
 	irr::io::path MaterialPath;
 	irr::io::path TextureName;
-	bool WasRecentTextureCached;
 };
 
 } // end namespace scene

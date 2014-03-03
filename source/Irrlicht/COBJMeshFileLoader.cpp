@@ -429,41 +429,37 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 		currMaterial->Meshbuffer->Material.setFlag(video::EMF_TEXTURE_WRAP, video::ETC_CLAMP);
 
 	io::path texname(textureNameBuf);
-	video::ITexture * texture = 0;
-	bool newTexture=false;
 	if (texname.size() && getMeshTextureLoader())
 	{
-		texture = getMeshTextureLoader()->getTexture(texname);
-		newTexture = !getMeshTextureLoader()->wasRecentTextureInCache();
-
-	}
-	if ( texture )
-	{
-		if (type==0)
-			currMaterial->Meshbuffer->Material.setTexture(0, texture);
-		else if (type==1)
+		video::ITexture * texture = getMeshTextureLoader()->getTexture(texname);
+		if ( texture )
 		{
-			if (newTexture)
-				SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
-			currMaterial->Meshbuffer->Material.setTexture(1, texture);
-			currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
-			currMaterial->Meshbuffer->Material.MaterialTypeParam=0.035f;
+			if (type==0)
+				currMaterial->Meshbuffer->Material.setTexture(0, texture);
+			else if (type==1)
+			{
+				if ( texture->getSource() == video::ETS_FROM_FILE)
+					SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
+				currMaterial->Meshbuffer->Material.setTexture(1, texture);
+				currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
+				currMaterial->Meshbuffer->Material.MaterialTypeParam=0.035f;
+			}
+			else if (type==2)
+			{
+				currMaterial->Meshbuffer->Material.setTexture(0, texture);
+				currMaterial->Meshbuffer->Material.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
+			}
+			else if (type==3)
+			{
+	//						currMaterial->Meshbuffer->Material.Textures[1] = texture;
+	//						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
+			}
+			// Set diffuse material color to white so as not to affect texture color
+			// Because Maya set diffuse color Kd to black when you use a diffuse color map
+			// But is this the right thing to do?
+			currMaterial->Meshbuffer->Material.DiffuseColor.set(
+				currMaterial->Meshbuffer->Material.DiffuseColor.getAlpha(), 255, 255, 255 );
 		}
-		else if (type==2)
-		{
-			currMaterial->Meshbuffer->Material.setTexture(0, texture);
-			currMaterial->Meshbuffer->Material.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
-		}
-		else if (type==3)
-		{
-//						currMaterial->Meshbuffer->Material.Textures[1] = texture;
-//						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
-		}
-		// Set diffuse material color to white so as not to affect texture color
-		// Because Maya set diffuse color Kd to black when you use a diffuse color map
-		// But is this the right thing to do?
-		currMaterial->Meshbuffer->Material.DiffuseColor.set(
-			currMaterial->Meshbuffer->Material.DiffuseColor.getAlpha(), 255, 255, 255 );
 	}
 	return bufPtr;
 }
@@ -491,7 +487,6 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, const io::path& relPath)
 	if ( getMeshTextureLoader() )
 	{
 		getMeshTextureLoader()->setMaterialFile(mtlReader);
-		getMeshTextureLoader()->setCheckForCachedTextures(true);
 		getMeshTextureLoader()->setTexturePath(SceneManager->getParameters()->getAttributeAsString(OBJ_TEXTURE_PATH));
 	}
 

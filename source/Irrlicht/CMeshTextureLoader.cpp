@@ -12,7 +12,6 @@ CMeshTextureLoader::CMeshTextureLoader(irr::io::IFileSystem* fs, irr::video::IVi
 , VideoDriver(driver)
 , MeshFile(0)
 , MaterialFile(0)
-, WasRecentTextureCached(false)
 {
 }
 
@@ -29,12 +28,11 @@ const irr::io::path& CMeshTextureLoader::getTexturePath() const
 	return TexturePath;
 }
 
-bool CMeshTextureLoader::checkTextureName( const irr::io::path& filename, bool checkCache)
+bool CMeshTextureLoader::checkTextureName( const irr::io::path& filename)
 {
 	if (FileSystem->existFile(filename))
 	{
 		TextureName = filename;
-		WasRecentTextureCached = checkCache && VideoDriver->findTexture(TextureName) != 0;
 		return true;
 	}
 
@@ -51,20 +49,18 @@ irr::video::ITexture* CMeshTextureLoader::getTexture(const irr::io::path& textur
 	irr::io::path simplifiedTexName(textureName);
 	simplifiedTexName.replace(_IRR_TEXT('\\'),_IRR_TEXT('/'));
 
-	bool checkCache = getCheckForCachedTextures();
-
 	// user defined texture path
 	if ( !TexturePath.empty() )
 	{
-		if ( checkTextureName(TexturePath + simplifiedTexName, checkCache) )
+		if ( checkTextureName(TexturePath + simplifiedTexName) )
 			return VideoDriver->getTexture(TextureName);
 
-		if ( checkTextureName(TexturePath + FileSystem->getFileBasename(simplifiedTexName), checkCache) )
+		if ( checkTextureName(TexturePath + FileSystem->getFileBasename(simplifiedTexName)) )
 			return VideoDriver->getTexture(TextureName);
 	}
 
 	// just the name itself
-	if ( checkTextureName(simplifiedTexName, checkCache) )
+	if ( checkTextureName(simplifiedTexName) )
 		return VideoDriver->getTexture(TextureName);
 
 	// look in files relative to the folder of the meshfile
@@ -77,10 +73,10 @@ irr::video::ITexture* CMeshTextureLoader::getTexture(const irr::io::path& textur
 		}
 		if ( !MeshPath.empty() )
 		{
-			if ( checkTextureName(MeshPath + simplifiedTexName, checkCache) )
+			if ( checkTextureName(MeshPath + simplifiedTexName) )
 				return VideoDriver->getTexture(TextureName);
 
-			if ( checkTextureName(MeshPath + FileSystem->getFileBasename(simplifiedTexName), checkCache) )
+			if ( checkTextureName(MeshPath + FileSystem->getFileBasename(simplifiedTexName)) )
 				return VideoDriver->getTexture(TextureName);
 		}
 	}
@@ -95,26 +91,20 @@ irr::video::ITexture* CMeshTextureLoader::getTexture(const irr::io::path& textur
 		}
 		if ( !MaterialPath.empty() )
 		{
-			if ( checkTextureName(MaterialPath + simplifiedTexName, checkCache) )
+			if ( checkTextureName(MaterialPath + simplifiedTexName) )
 				return VideoDriver->getTexture(TextureName);
 
-			if ( checkTextureName(MaterialPath + FileSystem->getFileBasename(simplifiedTexName), checkCache) )
+			if ( checkTextureName(MaterialPath + FileSystem->getFileBasename(simplifiedTexName)) )
 				return VideoDriver->getTexture(TextureName);
 		}
 	}
 
 	// check current working directory
-	if ( checkTextureName(FileSystem->getFileBasename(simplifiedTexName), checkCache) )
+	if ( checkTextureName(FileSystem->getFileBasename(simplifiedTexName)) )
 		return VideoDriver->getTexture(TextureName);
 
 	TextureName = _IRR_TEXT("");
 	return NULL;
-}
-
-//! Check if the last call to getTexture found a texture which was already cached.
-bool CMeshTextureLoader::wasRecentTextureInCache() const
-{
-	return WasRecentTextureCached;
 }
 
 //! Meshloaders will search paths relative to the meshFile.
