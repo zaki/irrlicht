@@ -955,6 +955,7 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 			return;
 		GLint available = block?GL_TRUE:GL_FALSE;
 		if (!block)
+        {
 			extGlGetQueryObjectiv(OcclusionQueries[index].UID,
 #ifdef GL_ARB_occlusion_query
 						GL_QUERY_RESULT_AVAILABLE_ARB,

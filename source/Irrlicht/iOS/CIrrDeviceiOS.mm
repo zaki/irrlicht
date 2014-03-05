@@ -73,255 +73,154 @@
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	UITouch *touch = [touches anyObject];
-	CGPoint touchPoint = [touch locationInView:self];
-    
     float scale = 1.0f;
     
     if ([self respondsToSelector:@selector(setContentScaleFactor:)])
         scale = [[UIScreen mainScreen] scale];
-        
+    
     bool Landscape = false;
     
     if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-        || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
+                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
         Landscape = true;
     
-	// event as mouse.
 	irr::SEvent ev;
-	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
-	ev.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
+	ev.TouchInput.Event = irr::ETIE_PRESSED_DOWN;
     
-	if(Landscape)
-    {
-        ev.MouseInput.X = touchPoint.y*scale;
-        ev.MouseInput.Y = touchPoint.x*scale;
-    }
-    else
-    {
-        ev.MouseInput.X = touchPoint.x*scale;
-        ev.MouseInput.Y = touchPoint.y*scale;
-    }
-    
-	ev.MouseInput.ButtonStates = 0;
-    Device->postEventFromUser(ev);
-    
-	// event as multi touch
-	CGPoint nowTouchPoint, prevTouchPoint;
-	ev.EventType = irr::EET_MULTI_TOUCH_EVENT;
-	ev.MultiTouchInput.Event = irr::EMTIE_PRESSED_DOWN;
-	ev.MultiTouchInput.clear();
-	int idx = 0;
-    
-	for (touch in touches)
+	for (UITouch* touch in touches)
 	{
-		if (idx >= irr::NUMBER_OF_MULTI_TOUCHES)
-            break;
+        ev.TouchInput.ID = (size_t)touch;
 
-		prevTouchPoint = [touch previousLocationInView:self];
-		nowTouchPoint = [touch locationInView:self];
+		CGPoint touchPoint = [touch locationInView:self];
         
         if(Landscape)
         {
-            ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.y*scale;
-            ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.x*scale;
-            ev.MultiTouchInput.X[idx] = nowTouchPoint.y*scale;
-            ev.MultiTouchInput.Y[idx] = nowTouchPoint.x*scale;
+            ev.TouchInput.X = touchPoint.y*scale;
+            ev.TouchInput.Y = touchPoint.x*scale;
         }
         else
         {
-            ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x*scale;
-            ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y*scale;
-            ev.MultiTouchInput.X[idx] = nowTouchPoint.x*scale;
-            ev.MultiTouchInput.Y[idx] = nowTouchPoint.y*scale;
+            ev.TouchInput.X = touchPoint.x*scale;
+            ev.TouchInput.Y = touchPoint.y*scale;
         }
         
-		ev.MultiTouchInput.Touched[idx] = 1;
-		idx ++;
+        Device->postEventFromUser(ev);
 	}
-    
-	Device->postEventFromUser(ev);
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	UITouch *touch = [touches anyObject];
-	CGPoint touchPoint = [touch locationInView:self];
-    
     float scale = 1.0f;
     
     if ([self respondsToSelector:@selector(setContentScaleFactor:)])
         scale = [[UIScreen mainScreen] scale];
-        
+    
     bool Landscape = false;
     
     if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-        || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
+                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
         Landscape = true;
-
+    
 	irr::SEvent ev;
-	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
-	ev.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
+	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
+	ev.TouchInput.Event = irr::ETIE_MOVED;
     
-    if(Landscape)
-    {
-        ev.MouseInput.X = touchPoint.y*scale;
-        ev.MouseInput.Y = touchPoint.x*scale;
-    }
-    else
-    {
-        ev.MouseInput.X = touchPoint.x*scale;
-        ev.MouseInput.Y = touchPoint.y*scale;
-    }
-    
-	ev.MouseInput.ButtonStates = 0;
-	Device->postEventFromUser(ev);
-
-	CGPoint nowTouchPoint, prevTouchPoint;
-	ev.EventType = irr::EET_MULTI_TOUCH_EVENT;
-	ev.MultiTouchInput.Event = irr::EMTIE_MOVED;
-	ev.MultiTouchInput.clear();
-	int idx = 0;
-    
-	for (touch in touches)
+	for (UITouch* touch in touches)
 	{
-		if (idx >= irr::NUMBER_OF_MULTI_TOUCHES)
-            break;
+        ev.TouchInput.ID = (size_t)touch;
 
-		prevTouchPoint = [touch previousLocationInView:self];
-		nowTouchPoint = [touch locationInView:self];
+		CGPoint touchPoint = [touch locationInView:self];
         
         if(Landscape)
         {
-            ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.y*scale;
-            ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.x*scale;
-            ev.MultiTouchInput.X[idx] = nowTouchPoint.y*scale;
-            ev.MultiTouchInput.Y[idx] = nowTouchPoint.x*scale;
+            ev.TouchInput.X = touchPoint.y*scale;
+            ev.TouchInput.Y = touchPoint.x*scale;
         }
         else
         {
-            ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x*scale;
-            ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y*scale;
-            ev.MultiTouchInput.X[idx] = nowTouchPoint.x*scale;
-            ev.MultiTouchInput.Y[idx] = nowTouchPoint.y*scale;
+            ev.TouchInput.X = touchPoint.x*scale;
+            ev.TouchInput.Y = touchPoint.y*scale;
         }
         
-		ev.MultiTouchInput.Touched[idx] = 1;
-		idx ++;
+        Device->postEventFromUser(ev);
 	}
-    
-	Device->postEventFromUser(ev);
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	//NSLog(@">> IrrIPhoneView.touchesEnded");
-    
-	UITouch *touch = [touches anyObject];
-	CGPoint touchPoint = [touch locationInView:self];
-    
     float scale = 1.0f;
     
     if ([self respondsToSelector:@selector(setContentScaleFactor:)])
         scale = [[UIScreen mainScreen] scale];
-        
+    
     bool Landscape = false;
     
     if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-        || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
+                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
         Landscape = true;
-
+    
 	irr::SEvent ev;
-	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
-	ev.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
+	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
+	ev.TouchInput.Event = irr::ETIE_LEFT_UP;
     
-	if(Landscape)
-    {
-        ev.MouseInput.X = touchPoint.y*scale;
-        ev.MouseInput.Y = touchPoint.x*scale;
-    }
-    else
-    {
-        ev.MouseInput.X = touchPoint.x*scale;
-        ev.MouseInput.Y = touchPoint.y*scale;
-    }
-    
-	ev.MouseInput.ButtonStates = 0;
-	Device->postEventFromUser(ev);
-    
-    
-	CGPoint nowTouchPoint, prevTouchPoint;
-	ev.EventType = irr::EET_MULTI_TOUCH_EVENT;
-	ev.MultiTouchInput.Event = irr::EMTIE_LEFT_UP;
-	ev.MultiTouchInput.clear();
-	int idx = 0;
-    
-	for (touch in touches)
+	for (UITouch* touch in touches)
 	{
-		if (idx >= irr::NUMBER_OF_MULTI_TOUCHES)
-            break;
+        ev.TouchInput.ID = (size_t)touch;
 
-		prevTouchPoint = [touch previousLocationInView:self];
-		nowTouchPoint = [touch locationInView:self];
+		CGPoint touchPoint = [touch locationInView:self];
         
         if(Landscape)
         {
-            ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.y*scale;
-            ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.x*scale;
-            ev.MultiTouchInput.X[idx] = nowTouchPoint.y*scale;
-            ev.MultiTouchInput.Y[idx] = nowTouchPoint.x*scale;
+            ev.TouchInput.X = touchPoint.y*scale;
+            ev.TouchInput.Y = touchPoint.x*scale;
         }
         else
         {
-            ev.MultiTouchInput.PrevX[idx] = prevTouchPoint.x*scale;
-            ev.MultiTouchInput.PrevY[idx] = prevTouchPoint.y*scale;
-            ev.MultiTouchInput.X[idx] = nowTouchPoint.x*scale;
-            ev.MultiTouchInput.Y[idx] = nowTouchPoint.y*scale;
+            ev.TouchInput.X = touchPoint.x*scale;
+            ev.TouchInput.Y = touchPoint.y*scale;
         }
         
-		ev.MultiTouchInput.Touched[idx] = 0;
-		idx ++;
+        Device->postEventFromUser(ev);
 	}
-    
-	Device->postEventFromUser(ev);
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	//NSLog(@">> IrrIPhoneView.touchesCancelled");
-    
-	UITouch *touch = [touches anyObject];
-	CGPoint touchPoint = [touch locationInView:self];
-    
     float scale = 1.0f;
     
     if ([self respondsToSelector:@selector(setContentScaleFactor:)])
         scale = [[UIScreen mainScreen] scale];
-        
+    
     bool Landscape = false;
     
     if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-        || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
+                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
         Landscape = true;
-
+    
 	irr::SEvent ev;
-	ev.EventType = irr::EET_MOUSE_INPUT_EVENT;
-	ev.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
+	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
+	ev.TouchInput.Event = irr::ETIE_LEFT_UP;
     
-	if(Landscape)
-    {
-        ev.MouseInput.X = touchPoint.y*scale;
-        ev.MouseInput.Y = touchPoint.x*scale;
-    }
-    else
-    {
-        ev.MouseInput.X = touchPoint.x*scale;
-        ev.MouseInput.Y = touchPoint.y*scale;
-    }
-    
-	ev.MouseInput.ButtonStates = 0;
-    
-	Device->postEventFromUser(ev);
+	for (UITouch* touch in touches)
+	{
+        ev.TouchInput.ID = (size_t)touch;
+
+		CGPoint touchPoint = [touch locationInView:self];
+        
+        if(Landscape)
+        {
+            ev.TouchInput.X = touchPoint.y*scale;
+            ev.TouchInput.Y = touchPoint.x*scale;
+        }
+        else
+        {
+            ev.TouchInput.X = touchPoint.x*scale;
+            ev.TouchInput.Y = touchPoint.y*scale;
+        }
+        
+        Device->postEventFromUser(ev);
+	}
 }
 
 @end

@@ -506,6 +506,8 @@
 		5E3EA6731586A27E00C17C1D /* IBurningShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047C415515B4400D9E53B /* IBurningShader.cpp */; };
 		5E3EA6771586A27E00C17C1D /* Irrlicht.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CC15515B4400D9E53B /* Irrlicht.cpp */; };
 		5E3EA6781586A27E00C17C1D /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CD15515B4400D9E53B /* irrXML.cpp */; };
+		5E4C3FEE18C7C8FF002AEDAF /* CMeshTextureLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E4C3FEC18C7C8FF002AEDAF /* CMeshTextureLoader.cpp */; };
+		5E4C3FEF18C7C8FF002AEDAF /* CMeshTextureLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E4C3FED18C7C8FF002AEDAF /* CMeshTextureLoader.h */; };
 		5E92ED391752B6E800B93CC0 /* CImageLoaderPVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E92ED371752B6E800B93CC0 /* CImageLoaderPVR.cpp */; };
 		5E92ED3A1752B6E800B93CC0 /* CImageLoaderPVR.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E92ED381752B6E800B93CC0 /* CImageLoaderPVR.h */; };
 		5ED2483F1731568400A13B86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E215516CC00014DCBA /* UIKit.framework */; };
@@ -1260,6 +1262,9 @@
 		5E3EA323158680E900C17C1D /* pngwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngwrite.c; path = ../libpng/pngwrite.c; sourceTree = "<group>"; };
 		5E3EA324158680E900C17C1D /* pngwtran.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngwtran.c; path = ../libpng/pngwtran.c; sourceTree = "<group>"; };
 		5E3EA325158680E900C17C1D /* pngwutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngwutil.c; path = ../libpng/pngwutil.c; sourceTree = "<group>"; };
+		5E4C3FEB18C7C8C2002AEDAF /* IMeshTextureLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMeshTextureLoader.h; path = ../../../include/IMeshTextureLoader.h; sourceTree = "<group>"; };
+		5E4C3FEC18C7C8FF002AEDAF /* CMeshTextureLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMeshTextureLoader.cpp; path = ../CMeshTextureLoader.cpp; sourceTree = "<group>"; };
+		5E4C3FED18C7C8FF002AEDAF /* CMeshTextureLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMeshTextureLoader.h; path = ../CMeshTextureLoader.h; sourceTree = "<group>"; };
 		5E5ADCAB18AD6643003CC7DF /* IContextManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IContextManager.h; path = ../../../include/IContextManager.h; sourceTree = "<group>"; };
 		5E7CF2E215516CC00014DCBA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5E7CF2E415516CC00014DCBA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1420,6 +1425,7 @@
 				5E3044B615515AC500D9E53B /* IMeshLoader.h */,
 				5E3044B715515AC500D9E53B /* IMeshManipulator.h */,
 				5E3044B815515AC500D9E53B /* IMeshSceneNode.h */,
+				5E4C3FEB18C7C8C2002AEDAF /* IMeshTextureLoader.h */,
 				5E3044B915515AC500D9E53B /* IMeshWriter.h */,
 				5E3044BA15515AC500D9E53B /* IMetaTriangleSelector.h */,
 				5E3044BB15515AC500D9E53B /* IOSOperator.h */,
@@ -1734,6 +1740,8 @@
 				5E3046DF15515B4400D9E53B /* CMeshManipulator.h */,
 				5E3046E015515B4400D9E53B /* CMeshSceneNode.cpp */,
 				5E3046E115515B4400D9E53B /* CMeshSceneNode.h */,
+				5E4C3FEC18C7C8FF002AEDAF /* CMeshTextureLoader.cpp */,
+				5E4C3FED18C7C8FF002AEDAF /* CMeshTextureLoader.h */,
 				5E3046E215515B4400D9E53B /* CMetaTriangleSelector.cpp */,
 				5E3046E315515B4400D9E53B /* CMetaTriangleSelector.h */,
 				5E3046E415515B4400D9E53B /* CMountPointReader.cpp */,
@@ -2279,6 +2287,7 @@
 				5E3EA3DB1586A22F00C17C1D /* IGUIElement.h in Headers */,
 				5E3EA3DC1586A22F00C17C1D /* IGUIElementFactory.h in Headers */,
 				5E3EA3DD1586A22F00C17C1D /* IGUIEnvironment.h in Headers */,
+				5E4C3FEF18C7C8FF002AEDAF /* CMeshTextureLoader.h in Headers */,
 				5E3EA3DE1586A22F00C17C1D /* IGUIFileOpenDialog.h in Headers */,
 				5E3EA3DF1586A22F00C17C1D /* IGUIFont.h in Headers */,
 				5E3EA3E01586A22F00C17C1D /* IGUIFontBitmap.h in Headers */,
@@ -2531,6 +2540,7 @@
 				5E3EA4771586A27C00C17C1D /* jcmaster.c in Sources */,
 				5E3EA4781586A27C00C17C1D /* jcomapi.c in Sources */,
 				5E3EA4791586A27C00C17C1D /* jcparam.c in Sources */,
+				5E4C3FEE18C7C8FF002AEDAF /* CMeshTextureLoader.cpp in Sources */,
 				5E3EA47A1586A27C00C17C1D /* jcprepct.c in Sources */,
 				5E3EA47B1586A27C00C17C1D /* jcsample.c in Sources */,
 				5E3EA47C1586A27C00C17C1D /* jctrans.c in Sources */,
