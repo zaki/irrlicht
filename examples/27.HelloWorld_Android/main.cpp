@@ -31,41 +31,45 @@ enum GUI_IDS
 class MyEventReceiver : public IEventReceiver
 {
 public:
-	MyEventReceiver(IrrlichtDevice *device ) : Device(device), SpriteToMove(0) 
+	MyEventReceiver(IrrlichtDevice *device ) : Device(device), SpriteToMove(0), TouchID(-1)
 	{
 	}
 
 	virtual bool OnEvent(const SEvent& event)
 	{
-		if (event.EventType == EET_MULTI_TOUCH_EVENT)
+		if (event.EventType == EET_TOUCH_INPUT_EVENT)
 		{
-			switch ( event.MultiTouchInput.Event)
+			switch (event.TouchInput.Event)
 			{
-				case EMTIE_PRESSED_DOWN:
+				case ETIE_PRESSED_DOWN:
 				{
-			
-					// We only work with the first for now, but could be up to NUMBER_OF_MULTI_TOUCHES touches.
-					position2d<s32> touchPoint(event.MultiTouchInput.X[0], event.MultiTouchInput.Y[0]);
-					IGUIElement * logo = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_IRR_LOGO );
-					if ( logo && logo->isPointInside (touchPoint) )
+					// We only work with the first for now.
+					if ( TouchID == -1 )
 					{
-						SpriteToMove = logo;
-						SpriteStartRect =  SpriteToMove->getRelativePosition();
-						TouchStartPos = touchPoint;
+						TouchID = event.TouchInput.ID;
+						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
+						IGUIElement * logo = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_IRR_LOGO );
+						if ( logo && logo->isPointInside (touchPoint) )
+						{
+							SpriteToMove = logo;
+							SpriteStartRect =  SpriteToMove->getRelativePosition();
+							TouchStartPos = touchPoint;
+						}
 					}
 					break;
 				}
-				case EMTIE_MOVED:
-					if ( SpriteToMove )
+				case ETIE_MOVED:
+					if ( SpriteToMove && TouchID == event.TouchInput.ID )
 					{
-						position2d<s32> touchPoint(event.MultiTouchInput.X[0], event.MultiTouchInput.Y[0]);
+						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
 						MoveSprite(touchPoint);
 					}
 					break;
-				case EMTIE_LEFT_UP:
-					if ( SpriteToMove )
+				case ETIE_LEFT_UP:
+					if ( SpriteToMove && TouchID == event.TouchInput.ID )
 					{
-						position2d<s32> touchPoint(event.MultiTouchInput.X[0], event.MultiTouchInput.Y[0]);
+						TouchID = -1;
+						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
 						MoveSprite(touchPoint);
 						SpriteToMove = 0;						
 					}
@@ -89,6 +93,7 @@ private:
 	irr::gui::IGUIElement * SpriteToMove;
 	irr::core::rect<s32> SpriteStartRect;
 	irr::core::position2d<irr::s32> TouchStartPos;
+	irr::s32 TouchID;
 };
 
 /*

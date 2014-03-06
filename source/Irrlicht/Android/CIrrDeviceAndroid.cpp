@@ -272,48 +272,58 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 	if (AInputEvent_getType(androidEvent) == AINPUT_EVENT_TYPE_MOTION)
 	{
 		SEvent Event;
-		s32 PointerCount = AMotionEvent_getPointerCount(androidEvent);
+		Event.EventType = EET_TOUCH_INPUT_EVENT;
+
 		s32 EventAction = AMotionEvent_getAction(androidEvent);
+		s32 EventType =  EventAction & AMOTION_EVENT_ACTION_MASK;
 
-		bool MultiTouchEvent = true;
-		bool Touched = false;
+		bool TouchReceived = true;
 
-		switch (EventAction)
+		switch (EventType)
 		{
 		case AMOTION_EVENT_ACTION_DOWN:
-			Event.MultiTouchInput.Event = EMTIE_PRESSED_DOWN;
-			Touched = true;
+		case AMOTION_EVENT_ACTION_POINTER_DOWN:
+			Event.TouchInput.Event = ETIE_PRESSED_DOWN;
 			break;
 		case AMOTION_EVENT_ACTION_MOVE:
-			Event.MultiTouchInput.Event = EMTIE_MOVED;
-			Touched = true;
+			Event.TouchInput.Event = ETIE_MOVED;
 			break;
 		case AMOTION_EVENT_ACTION_UP:
-			Event.MultiTouchInput.Event = EMTIE_LEFT_UP;
+		case AMOTION_EVENT_ACTION_POINTER_UP:
+		case AMOTION_EVENT_ACTION_CANCEL:
+			Event.TouchInput.Event = ETIE_LEFT_UP;
 			break;
 		default:
-			MultiTouchEvent = false;
+			TouchReceived = false;
 			break;
 		}
 
-		if (MultiTouchEvent)
+		if (TouchReceived)
 		{
-			Event.EventType = EET_MULTI_TOUCH_EVENT;
-			Event.MultiTouchInput.clear();
-
-			for (s32 i = 0; i < PointerCount; ++i)
+			// Process all touches for move action.
+			if (Event.TouchInput.Event == ETIE_MOVED)
 			{
-				if (i >= NUMBER_OF_MULTI_TOUCHES)
-					break;
+				s32 PointerCount = AMotionEvent_getPointerCount(androidEvent);
 
-				Event.MultiTouchInput.PrevX[i] = 0; // TODO
-				Event.MultiTouchInput.PrevY[i] = 0; // TODO
-				Event.MultiTouchInput.X[i] = AMotionEvent_getX(androidEvent, i);
-				Event.MultiTouchInput.Y[i] = AMotionEvent_getY(androidEvent, i);
-				Event.MultiTouchInput.Touched[i] = Touched;
+				for (s32 i = 0; i < PointerCount; ++i)
+				{
+					Event.TouchInput.ID = AMotionEvent_getPointerId(androidEvent, i);
+					Event.TouchInput.X = AMotionEvent_getX(androidEvent, i);
+					Event.TouchInput.Y = AMotionEvent_getY(androidEvent, i);
+
+					device->postEventFromUser(Event);
+				}
 			}
+			else // Process one touch for other actions.
+			{
+				s32 PointerIndex = (EventAction & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
 
-			device->postEventFromUser(Event);
+				Event.TouchInput.ID = AMotionEvent_getPointerId(androidEvent, PointerIndex);
+				Event.TouchInput.X = AMotionEvent_getX(androidEvent, PointerIndex);
+				Event.TouchInput.Y = AMotionEvent_getY(androidEvent, PointerIndex);
+
+				device->postEventFromUser(Event);
+			}
 
 			Status = 1;
 		}
