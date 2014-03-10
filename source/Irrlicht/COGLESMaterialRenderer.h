@@ -347,7 +347,7 @@ public:
 		{
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.5f);
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 	}
 
@@ -408,7 +408,7 @@ public:
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
 				if (material.MaterialType == EMT_LIGHTMAP_ADD)
-					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD_SIGNED);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD);
 				else
 					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 
