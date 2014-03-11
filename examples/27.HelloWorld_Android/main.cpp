@@ -46,11 +46,11 @@ public:
 					// We only work with the first for now.
 					if ( TouchID == -1 )
 					{
-						TouchID = event.TouchInput.ID;
 						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
 						IGUIElement * logo = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_IRR_LOGO );
 						if ( logo && logo->isPointInside (touchPoint) )
 						{
+							TouchID = event.TouchInput.ID;
 							SpriteToMove = logo;
 							SpriteStartRect =  SpriteToMove->getRelativePosition();
 							TouchStartPos = touchPoint;
