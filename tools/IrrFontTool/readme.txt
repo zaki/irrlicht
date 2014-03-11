@@ -11,3 +11,6 @@ newFontTool:
 	just windows. It will create multiple image files and an .xml file 
 	containing meta information for the generated font.
 	You can find it as FontTool.exe in the /bin directory.
+	
+A third tool to create fonts for Irrlicht is web-based on maintained by armen:
+http://armen138.me/FontMapper/
