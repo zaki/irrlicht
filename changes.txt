@@ -41,6 +41,7 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.2
 
+ - C::B project files work again on newer Linux-distributions which have cleaned up their dev-lib dependencies.
  - Makefile for the new IrrFontTool links now correctly to libfontconfig
 
 --------------------------
