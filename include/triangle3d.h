@@ -24,7 +24,7 @@ namespace core
 		//! Constructor for an all 0 triangle
 		triangle3d() {}
 		//! Constructor for triangle with given three vertices
-		triangle3d(vector3d<T> v1, vector3d<T> v2, vector3d<T> v3) : pointA(v1), pointB(v2), pointC(v3) {}
+		triangle3d(const vector3d<T>& v1, const vector3d<T>& v2, const vector3d<T>& v3) : pointA(v1), pointB(v2), pointC(v3) {}
 
 		//! Equality operator
 		bool operator==(const triangle3d<T>& other) const
