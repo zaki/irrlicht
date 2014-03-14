@@ -754,7 +754,7 @@ void CIrrDeviceSDL::maximizeWindow()
 }
 
 //! Get the position of this window on screen
-core::position2di getWindowPosition()
+core::position2di CIrrDeviceSDL::getWindowPosition()
 {
     return core::position2di(-1, -1);
 }

@@ -55,16 +55,18 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 CIrrDeviceStub::~CIrrDeviceStub()
 {
 	VideoModeList->drop();
-	FileSystem->drop();
 
 	if (GUIEnvironment)
 		GUIEnvironment->drop();
 
+	if (SceneManager)
+		SceneManager->drop();
+	
 	if (VideoDriver)
 		VideoDriver->drop();
 
-	if (SceneManager)
-		SceneManager->drop();
+	if ( FileSystem )
+		FileSystem->drop();
 
 	if (InputReceivingSceneManager)
 		InputReceivingSceneManager->drop();
