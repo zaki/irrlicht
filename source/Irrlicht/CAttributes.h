@@ -447,10 +447,10 @@ public:
 	*/
 
 	//! Adds an attribute as rectangle
-	virtual void addRect(const c8* attributeName, core::rect<s32> value) _IRR_OVERRIDE_;
+	virtual void addRect(const c8* attributeName, const core::rect<s32>& value) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as rectangle
-	virtual void setAttribute(const c8* attributeName, core::rect<s32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::rect<s32>& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as rectangle
 	//! \param attributeName: Name of the attribute to get.
@@ -463,7 +463,7 @@ public:
 	virtual core::rect<s32> getAttributeAsRect(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as rectangle
-	virtual void setAttribute(s32 index, core::rect<s32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::rect<s32>& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -473,10 +473,10 @@ public:
 	*/
 
 	//! Adds an attribute as dimension2d
-	virtual void addDimension2d(const c8* attributeName, core::dimension2d<u32> value) _IRR_OVERRIDE_;
+	virtual void addDimension2d(const c8* attributeName, const core::dimension2d<u32>& value) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as dimension2d
-	virtual void setAttribute(const c8* attributeName, core::dimension2d<u32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::dimension2d<u32>& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as dimension2d
 	//! \param attributeName: Name of the attribute to get.
@@ -489,7 +489,7 @@ public:
 	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as dimension2d
-	virtual void setAttribute(s32 index, core::dimension2d<u32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::dimension2d<u32>& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -523,10 +523,10 @@ public:
 	*/
 
 	//! Adds an attribute as quaternion
-	virtual void addQuaternion(const c8* attributeName, core::quaternion v) _IRR_OVERRIDE_;
+	virtual void addQuaternion(const c8* attributeName, const core::quaternion& v) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as quaternion
-	virtual void setAttribute(const c8* attributeName, core::quaternion v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::quaternion& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a quaternion
 	//! \param attributeName: Name of the attribute to get.
@@ -539,7 +539,7 @@ public:
 	virtual core::quaternion getAttributeAsQuaternion(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as quaternion
-	virtual void setAttribute(s32 index, core::quaternion v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::quaternion& v) _IRR_OVERRIDE_;
 
 	/*
 
@@ -601,7 +601,7 @@ public:
 	//! Adds an attribute as 3d triangle
 	virtual void addTriangle3d(const c8* attributeName, const core::triangle3df& v) _IRR_OVERRIDE_;
 
-	//! Sets an attribute as 3d trianle
+	//! Sets an attribute as 3d triangle
 	virtual void setAttribute(const c8* attributeName, const core::triangle3df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a 3d triangle
@@ -702,7 +702,7 @@ public:
 
 	*/
 
-	//! Adds an attribute as user pointner
+	//! Adds an attribute as user pointer
 	virtual void addUserPointer(const c8* attributeName, void* userPointer) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as user pointer

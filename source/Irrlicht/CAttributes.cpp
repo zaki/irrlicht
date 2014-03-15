@@ -390,7 +390,7 @@ core::position2di CAttributes::getAttributeAsPosition2d(const c8* attributeName,
 }
 
 //! Sets a attribute as rectangle
-void CAttributes::setAttribute(const c8* attributeName, core::rect<s32> value)
+void CAttributes::setAttribute(const c8* attributeName, const core::rect<s32>& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -412,7 +412,7 @@ core::rect<s32> CAttributes::getAttributeAsRect(const c8* attributeName, const c
 }
 
 //! Sets a attribute as dimension2d
-void CAttributes::setAttribute(const c8* attributeName, core::dimension2d<u32> value)
+void CAttributes::setAttribute(const c8* attributeName, const core::dimension2d<u32>& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -869,13 +869,13 @@ void CAttributes::addPosition2d(const c8* attributeName, const core::position2di
 }
 
 //! Adds an attribute as rectangle
-void CAttributes::addRect(const c8* attributeName, core::rect<s32> value)
+void CAttributes::addRect(const c8* attributeName, const core::rect<s32>& value)
 {
 	Attributes.push_back(new CRectAttribute(attributeName, value));
 }
 
 //! Adds an attribute as dimension2d
-void CAttributes::addDimension2d(const c8* attributeName, core::dimension2d<u32> value)
+void CAttributes::addDimension2d(const c8* attributeName, const core::dimension2d<u32>& value)
 {
 	Attributes.push_back(new CDimension2dAttribute(attributeName, value));
 }
@@ -971,14 +971,14 @@ void CAttributes::setAttribute(s32 index, const core::position2di& v)
 }
 
 //! Sets a attribute as rectangle
-void CAttributes::setAttribute(s32 index, core::rect<s32> v)
+void CAttributes::setAttribute(s32 index, const core::rect<s32>& v)
 {
 	if ((u32)index < Attributes.size())
 		Attributes[index]->setRect(v);
 }
 
 //! Sets a attribute as dimension2d
-void CAttributes::setAttribute(s32 index, core::dimension2d<u32> v)
+void CAttributes::setAttribute(s32 index, const core::dimension2d<u32>& v)
 {
 	if ((u32)index < Attributes.size())
 		Attributes[index]->setDimension2d(v);
@@ -1054,14 +1054,14 @@ void CAttributes::setAttribute(s32 index, const core::matrix4& v)
 
 
 //! Adds an attribute as quaternion
-void CAttributes::addQuaternion(const c8* attributeName, core::quaternion v)
+void CAttributes::addQuaternion(const c8* attributeName, const core::quaternion& v)
 {
 	Attributes.push_back(new CQuaternionAttribute(attributeName, v));
 }
 
 
 //! Sets an attribute as quaternion
-void CAttributes::setAttribute(const c8* attributeName, core::quaternion v)
+void CAttributes::setAttribute(const c8* attributeName, const core::quaternion& v)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -1094,7 +1094,7 @@ core::quaternion CAttributes::getAttributeAsQuaternion(s32 index)
 }
 
 //! Sets an attribute as quaternion
-void CAttributes::setAttribute(s32 index, core::quaternion v)
+void CAttributes::setAttribute(s32 index, const core::quaternion& v)
 {
 if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setQuaternion(v);
@@ -1333,7 +1333,7 @@ void CAttributes::setAttribute(s32 index, const core::line3df& v)
 }
 
 
-//! Adds an attribute as user pointner
+//! Adds an attribute as user pointer
 void CAttributes::addUserPointer(const c8* attributeName, void* userPointer)
 {
 	Attributes.push_back(new CUserPointerAttribute(attributeName, userPointer));
