@@ -189,9 +189,9 @@ namespace scene
 		\return Returns the scene node containing the hit triangle nearest to ray.start.
 		If no collision is detected, then 0 is returned. */
 		virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(
-								core::line3df ray,
-								core::vector3df & outCollisionPoint,
-								core::triangle3df & outTriangle,
+								const core::line3df& ray,
+								core::vector3df& outCollisionPoint,
+								core::triangle3df& outTriangle,
 								s32 idBitMask = 0,
 								ISceneNode * collisionRootNode = 0,
 								bool noDebugObjects = false) = 0;

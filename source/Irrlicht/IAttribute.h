@@ -75,21 +75,21 @@ public:
 	virtual void setColor(video::SColor color)	{};
 	virtual void setBool(bool boolValue)		{};
 	virtual void setBinary(void* data, s32 maxLenght) {};
-	virtual void setVector(core::vector3df v)	{};
+	virtual void setVector(const core::vector3df& v)	{};
 	virtual void setPosition(core::position2di v)	{};
 	virtual void setRect(core::rect<s32> v)		{};
 	virtual void setQuaternion(core::quaternion v) {};
 	virtual void setMatrix(core::matrix4 v) {};
-	virtual void setTriangle(core::triangle3df v) {};
+	virtual void setTriangle(const core::triangle3df& v) {};
 	virtual void setVector2d(core::vector2df v) {};
 	virtual void setVector2d(core::vector2di v) {};
 	virtual void setLine2d(core::line2df v) {};
 	virtual void setLine2d(core::line2di v) {};
-	virtual void setLine3d(core::line3df v) {};
-	virtual void setLine3d(core::line3di v) {};
+	virtual void setLine3d(const core::line3df& v) {};
+	virtual void setLine3d(const core::line3di& v) {};
 	virtual void setDimension2d(core::dimension2du v) {};
-	virtual void setBBox(core::aabbox3d<f32> v) {};
-	virtual void setPlane(core::plane3df v) {};
+	virtual void setBBox(const core::aabbox3d<f32>& v) {};
+	virtual void setPlane(const core::plane3df& v) {};
 	virtual void setUserPointer(void* v)	{};
 
 	virtual void setEnum(const char* enumValue, const char* const* enumerationLiterals) {};

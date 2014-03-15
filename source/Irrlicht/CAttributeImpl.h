@@ -233,7 +233,7 @@ public:
 	}
 
 
-	CNumbersAttribute(const char* name, core::vector3df value) :
+	CNumbersAttribute(const char* name, const core::vector3df& value) :
 		ValueI(), ValueF(), Count(3), IsFloat(true)
 	{
 		Name = name;
@@ -281,7 +281,7 @@ public:
 		ValueF.push_back(value.W);
 	}
 
-	CNumbersAttribute(const char* name, core::aabbox3d<f32> value) :
+	CNumbersAttribute(const char* name, const core::aabbox3d<f32>& value) :
 		ValueI(), ValueF(), Count(6), IsFloat(true)
 	{
 		Name = name;
@@ -293,7 +293,7 @@ public:
 		ValueF.push_back(value.MaxEdge.Z);
 	}
 
-	CNumbersAttribute(const char* name, core::plane3df value) :
+	CNumbersAttribute(const char* name, const core::plane3df& value) :
 		ValueI(), ValueF(), Count(4), IsFloat(true)
 	{
 		Name = name;
@@ -303,7 +303,7 @@ public:
 		ValueF.push_back(value.D);
 	}
 
-	CNumbersAttribute(const char* name, core::triangle3df value) :
+	CNumbersAttribute(const char* name, const core::triangle3df& value) :
 		ValueI(), ValueF(), Count(9), IsFloat(true)
 	{
 		Name = name;
@@ -354,7 +354,7 @@ public:
 		ValueF.push_back(value.end.Y);
 	}
 
-	CNumbersAttribute(const char* name, core::line3df value) :
+	CNumbersAttribute(const char* name, const core::line3df& value) :
 		ValueI(), ValueF(), Count(6), IsFloat(true)
 	{
 		Name = name;
@@ -847,7 +847,7 @@ public:
 		}
 	}
 
-	virtual void setVector(core::vector3df v) _IRR_OVERRIDE_
+	virtual void setVector(const core::vector3df& v) _IRR_OVERRIDE_
 	{
 		reset();
 		if (IsFloat)
@@ -960,7 +960,7 @@ public:
 		}
 	}
 
-	virtual void setBoundingBox(core::aabbox3d<f32> value)
+	virtual void setBoundingBox(const core::aabbox3d<f32>& value)
 	{
 		reset();
 		if (IsFloat)
@@ -983,7 +983,7 @@ public:
 		}
 	}
 
-	virtual void setPlane(core::plane3df value) _IRR_OVERRIDE_
+	virtual void setPlane(const core::plane3df& value) _IRR_OVERRIDE_
 	{
 		reset();
 		if (IsFloat)
@@ -1002,7 +1002,7 @@ public:
 		}
 	}
 
-	virtual void setTriangle3d(core::triangle3df value)
+	virtual void setTriangle3d(const core::triangle3df& value)
 	{
 		reset();
 		if (IsFloat)
@@ -1306,7 +1306,7 @@ class CVector3DAttribute : public CNumbersAttribute
 {
 public:
 
-	CVector3DAttribute(const char* name, core::vector3df value) : CNumbersAttribute(name, value) {}
+	CVector3DAttribute(const char* name, const core::vector3df& value) : CNumbersAttribute(name, value) {}
 
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_
 	{
@@ -1454,7 +1454,7 @@ class CBBoxAttribute : public CNumbersAttribute
 {
 public:
 
-	CBBoxAttribute(const char* name, core::aabbox3df value) : CNumbersAttribute(name, value) { }
+	CBBoxAttribute(const char* name, const core::aabbox3df& value) : CNumbersAttribute(name, value) { }
 
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_
 	{
@@ -1472,7 +1472,7 @@ class CPlaneAttribute : public CNumbersAttribute
 {
 public:
 
-	CPlaneAttribute(const char* name, core::plane3df value) : CNumbersAttribute(name, value) { }
+	CPlaneAttribute(const char* name, const core::plane3df& value) : CNumbersAttribute(name, value) { }
 
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_
 	{
@@ -1490,7 +1490,7 @@ class CTriangleAttribute : public CNumbersAttribute
 {
 public:
 
-	CTriangleAttribute(const char* name, core::triangle3df value) : CNumbersAttribute(name, value) { }
+	CTriangleAttribute(const char* name, const core::triangle3df& value) : CNumbersAttribute(name, value) { }
 
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_
 	{
@@ -1532,7 +1532,7 @@ class CLine3dAttribute : public CNumbersAttribute
 {
 public:
 
-	CLine3dAttribute(const char* name, core::line3df value) : CNumbersAttribute(name, value) { }
+	CLine3dAttribute(const char* name, const core::line3df& value) : CNumbersAttribute(name, value) { }
 
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_
 	{

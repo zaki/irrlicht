@@ -222,7 +222,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
 
 ISceneNode* CSceneCollisionManager::getSceneNodeAndCollisionPointFromRay(
-						core::line3df ray,
+						const core::line3df& ray,
 						core::vector3df & outCollisionPoint,
 						core::triangle3df & outTriangle,
 						s32 idBitMask,
@@ -258,7 +258,8 @@ ISceneNode* CSceneCollisionManager::getSceneNodeAndCollisionPointFromRay(
 	// node in order to find the nearest collision point, so sorting them by
 	// bounding box would be pointless.
 
-	getPickedNodeFromBBAndSelector(collisionRootNode, ray, idBitMask,
+	core::line3df rayRest(ray);
+	getPickedNodeFromBBAndSelector(collisionRootNode, rayRest, idBitMask,
 					noDebugObjects, bestDistanceSquared, bestNode,
 					outCollisionPoint, outTriangle);
 	return bestNode;
@@ -754,7 +755,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 
 
 core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
-	SCollisionData &colData, core::vector3df pos, core::vector3df vel)
+	SCollisionData &colData, const core::vector3df& pos, const core::vector3df& vel)
 {
 	f32 veryCloseDistance = colData.slidingSpeed;
 
