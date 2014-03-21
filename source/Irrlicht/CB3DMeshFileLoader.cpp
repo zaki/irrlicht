@@ -164,7 +164,7 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *inJoint)
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "read ChunkNODE";
-	os::Printer::log(logStr.c_str(), joint->Name.c_str());
+	os::Printer::log(logStr.c_str(), joint->Name.c_str(), ELL_DEBUG);
 #endif
 
 	f32 position[3], scale[3], rotation[4];
@@ -250,7 +250,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *inJoint)
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "read ChunkMESH";
-	os::Printer::log(logStr.c_str());
+	os::Printer::log(logStr.c_str(), ELL_DEBUG);
 #endif
 
 	s32 brushID;
@@ -346,7 +346,7 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *inJoint)
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "ChunkVRTS";
-	os::Printer::log(logStr.c_str());
+	os::Printer::log(logStr.c_str(), ELL_DEBUG);
 #endif
 
 	const s32 max_tex_coords = 3;
@@ -452,7 +452,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "ChunkTRIS";
-	os::Printer::log(logStr.c_str());
+	os::Printer::log(logStr.c_str(), ELL_DEBUG);
 #endif
 
 	bool showVertexWarning=false;
@@ -574,7 +574,7 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *inJoint)
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "read ChunkBONE";
-	os::Printer::log(logStr.c_str());
+	os::Printer::log(logStr.c_str(), ELL_DEBUG);
 #endif
 
 	if (B3dStack.getLast().length > 8)
@@ -621,7 +621,7 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *inJoint)
 		for ( u32 i=1; i < B3dStack.size(); ++i )
 			logStr += "-";
 		logStr += "read ChunkKEYS";
-		os::Printer::log(logStr.c_str());
+		os::Printer::log(logStr.c_str(), ELL_DEBUG);
 	}
 #endif
 
@@ -765,7 +765,7 @@ bool CB3DMeshFileLoader::readChunkANIM()
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "read ChunkANIM";
-	os::Printer::log(logStr.c_str());
+	os::Printer::log(logStr.c_str(), ELL_DEBUG);
 #endif
 
 	s32 animFlags; //not stored\used
@@ -796,7 +796,7 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "read ChunkTEXS";
-	os::Printer::log(logStr.c_str());
+	os::Printer::log(logStr.c_str(), ELL_DEBUG);
 #endif
 
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
@@ -807,7 +807,7 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 		readString(B3dTexture.TextureName);
 		B3dTexture.TextureName.replace('\\','/');
 #ifdef _B3D_READER_DEBUG
-		os::Printer::log("read Texture", B3dTexture.TextureName.c_str());
+		os::Printer::log("read Texture", B3dTexture.TextureName.c_str(), ELL_DEBUG);
 #endif
 
 		B3DFile->read(&B3dTexture.Flags, sizeof(s32));
@@ -817,8 +817,8 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 		B3dTexture.Blend = os::Byteswap::byteswap(B3dTexture.Blend);
 #endif
 #ifdef _B3D_READER_DEBUG
-		os::Printer::log("Flags", core::stringc(B3dTexture.Flags).c_str());
-		os::Printer::log("Blend", core::stringc(B3dTexture.Blend).c_str());
+		os::Printer::log("Flags", core::stringc(B3dTexture.Flags).c_str(), ELL_DEBUG);
+		os::Printer::log("Blend", core::stringc(B3dTexture.Blend).c_str(), ELL_DEBUG);
 #endif
 		readFloats(&B3dTexture.Xpos, 1);
 		readFloats(&B3dTexture.Ypos, 1);
@@ -840,7 +840,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 	for ( u32 i=1; i < B3dStack.size(); ++i )
 		logStr += "-";
 	logStr += "read ChunkBRUS";
-	os::Printer::log(logStr.c_str());
+	os::Printer::log(logStr.c_str(), ELL_DEBUG);
 #endif
 
 	u32 n_texs;
@@ -861,7 +861,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		core::stringc name;
 		readString(name);
 #ifdef _B3D_READER_DEBUG
-		os::Printer::log("read Material", name);
+		os::Printer::log("read Material", name, ELL_DEBUG);
 #endif
 		Materials.push_back(SB3dMaterial());
 		SB3dMaterial& B3dMaterial=Materials.getLast();
@@ -879,8 +879,8 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		B3dMaterial.fx = os::Byteswap::byteswap(B3dMaterial.fx);
 #endif
 #ifdef _B3D_READER_DEBUG
-		os::Printer::log("Blend", core::stringc(B3dMaterial.blend).c_str());
-		os::Printer::log("FX", core::stringc(B3dMaterial.fx).c_str());
+		os::Printer::log("Blend", core::stringc(B3dMaterial.blend).c_str(), ELL_DEBUG);
+		os::Printer::log("FX", core::stringc(B3dMaterial.fx).c_str(), ELL_DEBUG);
 #endif
 
 		u32 i;
@@ -896,8 +896,8 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			{
 				B3dMaterial.Textures[i]=&Textures[texture_id];
 #ifdef _B3D_READER_DEBUG
-				os::Printer::log("Layer", core::stringc(i).c_str());
-				os::Printer::log("using texture", Textures[texture_id].TextureName.c_str());
+				os::Printer::log("Layer", core::stringc(i).c_str(), ELL_DEBUG);
+				os::Printer::log("using texture", Textures[texture_id].TextureName.c_str(), ELL_DEBUG);
 #endif
 			}
 			else
