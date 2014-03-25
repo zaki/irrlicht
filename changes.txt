@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add IGUIImages::setDrawBounds/getDrawBounds to allow coding stuff like progress bars.
 - Add IGUIImages::setSourceRect/getSourceRect to allow using only parts of an image (can also be used to mirror and scroll them).
 - Dev-Cpp project file removed (wasn't really supported for some time already)
 - Collada dae-loader now set's the vertex colors (thx @sf17k for report and test-models)

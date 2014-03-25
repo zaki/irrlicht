@@ -58,11 +58,29 @@ namespace gui
 		//! Returns the customized source rectangle of the image to be used.
 		virtual core::rect<s32> getSourceRect() const _IRR_OVERRIDE_;
 
+		//! Restrict drawing-area.
+		virtual void setDrawBounds(const core::rect<f32>& drawBoundUVs) _IRR_OVERRIDE_;
+
+		//! Get drawing-area restrictions.
+		virtual core::rect<f32> getDrawBounds() const _IRR_OVERRIDE_;
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+
+	protected:
+		void checkBounds(core::rect<s32>& rect)
+		{
+			f32 clipWidth = (f32)rect.getWidth();
+			f32 clipHeight = (f32)rect.getHeight();
+
+			rect.UpperLeftCorner.X += core::round32(DrawBounds.UpperLeftCorner.X*clipWidth);
+			rect.UpperLeftCorner.Y += core::round32(DrawBounds.UpperLeftCorner.Y*clipHeight);
+			rect.LowerRightCorner.X -= core::round32((1.f-DrawBounds.LowerRightCorner.X)*clipWidth);
+			rect.LowerRightCorner.Y -= core::round32((1.f-DrawBounds.LowerRightCorner.Y)*clipHeight);
+		}
 
 	private:
 		video::ITexture* Texture;
@@ -70,6 +88,7 @@ namespace gui
 		bool UseAlphaChannel;
 		bool ScaleImage;
 		core::rect<s32> SourceRect;
+		core::rect<f32> DrawBounds;
 	};
 
 
