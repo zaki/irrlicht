@@ -186,6 +186,10 @@ void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 	out->addColor	("Color", Color);
 	out->addBool	("ScaleImage", ScaleImage);
 	out->addRect 	("SourceRect", SourceRect);
+	out->addFloat   ("DrawBoundsX1", DrawBounds.UpperLeftCorner.X);
+	out->addFloat   ("DrawBoundsY1", DrawBounds.UpperLeftCorner.Y);
+	out->addFloat   ("DrawBoundsX2", DrawBounds.LowerRightCorner.X);
+	out->addFloat   ("DrawBoundsY2", DrawBounds.LowerRightCorner.Y);
 }
 
 
@@ -199,6 +203,12 @@ void CGUIImage::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 	setColor(in->getAttributeAsColor("Color", Color));
 	setScaleImage(in->getAttributeAsBool("ScaleImage", UseAlphaChannel));
 	setSourceRect(in->getAttributeAsRect("SourceRect", SourceRect));
+
+	DrawBounds.UpperLeftCorner.X = in->getAttributeAsFloat("DrawBoundsX1", DrawBounds.UpperLeftCorner.X);
+	DrawBounds.UpperLeftCorner.Y = in->getAttributeAsFloat("DrawBoundsY1", DrawBounds.UpperLeftCorner.Y);
+	DrawBounds.LowerRightCorner.X = in->getAttributeAsFloat("DrawBoundsX2", DrawBounds.LowerRightCorner.X);
+	DrawBounds.LowerRightCorner.Y = in->getAttributeAsFloat("DrawBoundsY2", DrawBounds.LowerRightCorner.Y);
+	setDrawBounds(DrawBounds);
 }
 
 
