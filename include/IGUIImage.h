@@ -48,6 +48,14 @@ namespace gui
 
 		//! Returns true if the image is using the alpha channel, false if not
 		virtual bool isAlphaChannelUsed() const = 0;
+
+		//! Sets the source rectangle of the image. By default the full image is used.
+		/** \param sourceRect coordinates inside the image or an area with size 0 for using the full image (default). */
+		virtual void setSourceRect(const core::rect<s32>& sourceRect) = 0;
+
+		//! Returns the customized source rectangle of the image to be used.
+		/** By default an empty rectangle of width and height 0 is returned which means the full image is used. */
+		virtual core::rect<s32> getSourceRect() const = 0;
 	};
 
 

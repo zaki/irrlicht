@@ -1,6 +1,8 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add IGUIImages::setSourceRect/getSourceRect to allow using only parts of an image (can also be used to mirror and scroll them).
+- Dev-Cpp project file removed (wasn't really supported for some time already)
 - Collada dae-loader now set's the vertex colors (thx @sf17k for report and test-models)
 - IAttributes interface changed. Parameters are now passed by const-ref instead of per value.
 - Fix c::b project obj folder names. Some static builds had used the shared folders (thx @ gerdb for reporting)
