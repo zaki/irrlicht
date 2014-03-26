@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix bug that ListBox would not allow to 'tab' to the next element (thx @ FlavourBoat for reporting)
 - IGUIEnvironment::getNextElement now public (was only in CGUIEnvironment before).
 - Add an overwrite mode to editbox. Patch provided by Adam(aka kingadami).
 - Add IGUIImages::setDrawBounds/getDrawBounds to allow coding stuff like progress bars.

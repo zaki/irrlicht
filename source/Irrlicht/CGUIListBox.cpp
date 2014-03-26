@@ -303,6 +303,10 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				}
 				return true;
 			}
+			else if (event.KeyInput.Key == KEY_TAB )
+			{
+				return false;
+			}
 			else if (event.KeyInput.PressedDown && event.KeyInput.Char)
 			{
 				// change selection based on text as it is typed.
