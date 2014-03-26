@@ -259,9 +259,10 @@ public:
 	//! reads an element
 	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* node) _IRR_OVERRIDE_;
 
-private:
+	//! Find the next element which would be selected when pressing the tab-key
+	virtual IGUIElement* getNextElement(bool reverse=false, bool group=false);
 
-	IGUIElement* getNextElement(bool reverse=false, bool group=false);
+private:
 
 	void updateHoveredElement(core::position2d<s32> mousePos);
 
