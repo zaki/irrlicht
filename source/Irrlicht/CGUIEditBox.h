@@ -167,6 +167,7 @@ namespace gui
 		bool processMouse(const SEvent& event);
 		s32 getCursorPos(s32 x, s32 y);
 
+		bool OverwriteMode;
 		bool MouseMarking;
 		bool Border;
 		bool Background;
