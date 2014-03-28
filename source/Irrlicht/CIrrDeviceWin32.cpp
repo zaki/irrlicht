@@ -797,7 +797,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Handle unicode and deadkeys in a way that works since Windows 95 and nt4.0
 			// Using ToUnicode instead would be shorter, but would to my knowledge not run on 95 and 98.
 			WORD keyChars[2];
-			UINT scanCode = HIWORD(lParam) & 0x7FFF;
+			UINT scanCode = HIWORD(lParam);
 			int conversionResult = ToAsciiEx(wParam,scanCode,allKeys,keyChars,0,KEYBOARD_INPUT_HKL);
 			if (conversionResult == 1)
 			{
@@ -1835,13 +1835,24 @@ void CIrrDeviceWin32::handleSystemMessages()
 
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		// No message translation because we don't use WM_CHAR and it would conflict with our
-		// deadkey handling.
-
 		if (ExternalWindow && msg.hwnd == HWnd)
-			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
+		{
+			if (msg.hwnd == HWnd)
+            {
+				WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
+            }
+            else
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+		}
 		else
+		{
+			// No message translation because we don't use WM_CHAR and it would conflict with our
+			// deadkey handling.
 			DispatchMessage(&msg);
+		}
 
 		if (msg.message == WM_QUIT)
 			Close = true;
