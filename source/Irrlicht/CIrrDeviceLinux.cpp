@@ -881,9 +881,9 @@ bool CIrrDeviceLinux::createInputContext()
 	// One one side it would be nicer to let users do that - on the other hand
 	// not setting the environment locale will not work when using i18n X11 functions.
 	// So users would have to call it always or their input is broken badly.
-	// We can restore immediately - so shouldn't mess with anything in users apps.
+	// We can restore immediately - so won't mess with anything in users apps.
 	core::stringc oldLocale(setlocale(LC_CTYPE, NULL));	
-	setlocale(LC_CTYPE, "");	// use environmenbt locale
+	setlocale(LC_CTYPE, "");	// use environment locale
 	
 	if ( !XSupportsLocale() )
 	{
