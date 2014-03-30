@@ -69,7 +69,7 @@ public:
 	}
 
 
-	//! Returns the position rectangle relative to it's parent
+	//! Returns the relative rectangle of this element.
 	core::rect<s32> getRelativePosition() const
 	{
 		return RelativeRect;
@@ -717,8 +717,10 @@ public:
 
 
 	//! Returns the type of the gui element.
-	/** If you wrote your own GUIElements, you need to set the type for your element as first parameter
-	in the constructor of IGUIElement. For own (=unknown) elements, use ::EGUIET_ELEMENT as type */
+	/** This is needed for the .NET wrapper but will be used
+	later for serializing and deserializing.
+	If you wrote your own GUIElements, you need to set the type for your element as first parameter
+	in the constructor of IGUIElement. For own (=unknown) elements, simply use EGUIET_ELEMENT as type */
 	EGUI_ELEMENT_TYPE getType() const
 	{
 		return Type;
@@ -740,8 +742,8 @@ public:
 
 
 	//! Returns the type name of the gui element.
-	/** This is needed for serializing elements. For serializing your own elements, override this function
-	and return your own type name which is created by your irr::gui::IGUIElementFactory */
+	/** This is needed serializing elements. For serializing your own elements, override this function
+	and return your own type name which is created by your IGUIElementFactory */
 	virtual const c8* getTypeName() const
 	{
 		return GUIElementTypeNames[Type];
