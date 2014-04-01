@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <sys/utsname.h>
 #include <time.h>
-#include <locale.h>  
+#include <locale.h>
 #include "IEventReceiver.h"
 #include "ISceneManager.h"
 #include "IGUIEnvironment.h"
@@ -131,7 +131,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 #ifdef _IRR_COMPILE_WITH_X11_
 	createInputContext();
 #endif
-	
+
 	createGUIAndScene();
 }
 
@@ -167,7 +167,7 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 	}
 
 	destroyInputContext();
-	
+
 	if (XDisplay)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -875,23 +875,23 @@ void CIrrDeviceLinux::createDriver()
 	}
 }
 
-#ifdef _IRR_COMPILE_WITH_X11_	
+#ifdef _IRR_COMPILE_WITH_X11_
 bool CIrrDeviceLinux::createInputContext()
 {
 	// One one side it would be nicer to let users do that - on the other hand
 	// not setting the environment locale will not work when using i18n X11 functions.
 	// So users would have to call it always or their input is broken badly.
 	// We can restore immediately - so won't mess with anything in users apps.
-	core::stringc oldLocale(setlocale(LC_CTYPE, NULL));	
+	core::stringc oldLocale(setlocale(LC_CTYPE, NULL));
 	setlocale(LC_CTYPE, "");	// use environment locale
-	
+
 	if ( !XSupportsLocale() )
 	{
 		os::Printer::log("Locale not supported. Falling back to non-i18n input.", ELL_WARNING);
 		setlocale(LC_CTYPE, oldLocale.c_str());
 		return false;
 	}
-	
+
 	XInputMethod = XOpenIM(XDisplay, NULL, NULL, NULL);
 	if ( !XInputMethod )
 	{
@@ -904,8 +904,8 @@ bool CIrrDeviceLinux::createInputContext()
 	XGetIMValues(XInputMethod, XNQueryInputStyle, &im_supported_styles, (char*)NULL);
 	XIMStyle bestStyle = 0;
 	// TODO: If we want to support languages like chinese or japanese as well we probably have to work with callbacks here.
-	XIMStyle supportedStyle = XIMPreeditNone | XIMStatusNone;	
-    for(int i=0; i < im_supported_styles->count_styles; ++i) 
+	XIMStyle supportedStyle = XIMPreeditNone | XIMStatusNone;
+    for(int i=0; i < im_supported_styles->count_styles; ++i)
 	{
         XIMStyle style = im_supported_styles->supported_styles[i];
         if ((style & supportedStyle) == style) /* if we can handle it */
@@ -915,19 +915,19 @@ bool CIrrDeviceLinux::createInputContext()
 		}
     }
 	XFree(im_supported_styles);
-	
+
 	if ( !bestStyle )
 	{
 		XDestroyIC(XInputContext);
 		XInputContext = 0;
-		
+
 		os::Printer::log("XInputMethod has no input style we can use. Falling back to non-i18n input.", ELL_WARNING);
 		setlocale(LC_CTYPE, oldLocale.c_str());
 		return false;
 	}
 
-	XInputContext = XCreateIC(XInputMethod, 
-							XNInputStyle, bestStyle, 
+	XInputContext = XCreateIC(XInputMethod,
+							XNInputStyle, bestStyle,
 							XNClientWindow, XWindow,
 							(char*)NULL);
 	if (!XInputContext )
@@ -959,7 +959,7 @@ void CIrrDeviceLinux::destroyInputContext()
 EKEY_CODE CIrrDeviceLinux::getKeyCode(XEvent &event)
 {
 	EKEY_CODE keyCode = (EKEY_CODE)0;
-	
+
 	SKeyMap mp;
 	mp.X11Key = XkbKeycodeToKeysym(XDisplay, event.xkey.keycode, 0, 0);
 	// mp.X11Key = XKeycodeToKeysym(XDisplay, event.xkey.keycode, 0);	// deprecated, if we still find platforms which need that we have to use some define
@@ -972,10 +972,10 @@ EKEY_CODE CIrrDeviceLinux::getKeyCode(XEvent &event)
 	{
 		// Any value is better than none, that allows at least using the keys.
 		// Worst case is that some keys will be identical, still better than _all_
-		// unknown keys being identical.		
+		// unknown keys being identical.
 		if ( !mp.X11Key )
 		{
-			keyCode = (EKEY_CODE)event.xkey.keycode; 
+			keyCode = (EKEY_CODE)event.xkey.keycode;
 			os::Printer::log("No such X11Key, using event keycode", core::stringc(event.xkey.keycode).c_str(), ELL_INFORMATION);
 		}
 		else if (idx == -1)
@@ -991,7 +991,7 @@ EKEY_CODE CIrrDeviceLinux::getKeyCode(XEvent &event)
  	}
 	return keyCode;
 }
-#endif	
+#endif
 
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceLinux::run()
@@ -1185,7 +1185,7 @@ bool CIrrDeviceLinux::run()
 
 			case KeyPress:
 				{
-					SKeyMap mp;					
+					SKeyMap mp;
 					if ( XInputContext )
 					{
 						wchar_t buf[8]={0};
@@ -1206,7 +1206,7 @@ bool CIrrDeviceLinux::run()
 #if 0 // Most of those are fine - but useful to have the info when debugging Irrlicht itself.
 							if ( status == XLookupNone )
 								os::Printer::log("XLookupNone", ELL_INFORMATION);
-							else if ( status ==  XLookupKeySym )	
+							else if ( status ==  XLookupKeySym )
 								// Getting this also when user did not set setlocale(LC_ALL, ""); and using an unknown locale
 								// XSupportsLocale doesn't seeem to catch that unfortunately - any other ideas to catch it are welcome.
 								os::Printer::log("XLookupKeySym", ELL_INFORMATION);
@@ -1224,7 +1224,7 @@ bool CIrrDeviceLinux::run()
 						XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
 						irrevent.KeyInput.Char = ((wchar_t*)(buf))[0];
 					}
-					
+
 					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
 					irrevent.KeyInput.PressedDown = true;
 					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
@@ -1771,7 +1771,7 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_backslash, KEY_OEM_5));
 	KeyMap.push_back(SKeyMap(XK_bracketright, KEY_OEM_6));
 	KeyMap.push_back(SKeyMap(XK_asciicircum, KEY_OEM_5));
-	KeyMap.push_back(SKeyMap(XK_dead_circumflex, KEY_OEM_5));	
+	KeyMap.push_back(SKeyMap(XK_dead_circumflex, KEY_OEM_5));
 	KeyMap.push_back(SKeyMap(XK_degree, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_underscore, KEY_MINUS)); //?
 	KeyMap.push_back(SKeyMap(XK_grave, KEY_OEM_3));
