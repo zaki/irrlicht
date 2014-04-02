@@ -91,11 +91,40 @@ public:
 	virtual void clear() = 0;
 
 	//! Draws a sprite in 2d with position and color
+	/**
+	\param index Index of SGUISprite to draw
+	\param pos Target position - depending on center value either the left-top or the sprite center is used as pivot
+	\param clip Clipping rectangle, can be 0 when clipping is not wanted.
+	\param color Color with which the image is drawn.
+		Note that the alpha component is used. If alpha is other than
+		255, the image will be transparent.
+	\param starttime Tick when the first frame was drawn (only difference currenttime-starttime matters).
+	\param currenttime To calculate the frame of animated sprites
+	\param loop When true animations are looped
+	\param center When true pivot is set to the sprite-center. So it affects pos.
+	*/
 	virtual void draw2DSprite(u32 index, const core::position2di& pos,
 			const core::rect<s32>* clip=0,
 			const video::SColor& color= video::SColor(255,255,255,255),
 			u32 starttime=0, u32 currenttime=0,
 			bool loop=true, bool center=false) = 0;
+
+	//! Draws a sprite in 2d with destination rectangle and colors
+	/**
+		\param index Index of SGUISprite to draw
+		\param destRect The sprite will be scaled to fit this target rectangle
+		\param clip Clipping rectangle, can be 0 when clipping is not wanted.
+		\param colors Array of 4 colors denoting the color values of
+		the corners of the destRect
+		\param timeTicks Current frame for animated sprites
+		(same as currenttime-starttime in other draw2DSprite function)
+		\param loop When true animations are looped
+	*/
+	virtual void draw2DSprite(u32 index, const core::rect<s32>& destRect,
+			const core::rect<s32>* clip=0,
+			const video::SColor * const colors=0,
+			u32 timeTicks = 0,
+			bool loop=true) = 0;
 
 	//! Draws a sprite batch in 2d using an array of positions and a color
 	virtual void draw2DSpriteBatch(const core::array<u32>& indices, const core::array<core::position2di>& pos,

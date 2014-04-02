@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Spritebanks can now draw scaled sprites and are a little easier to use.
 - Improved i18n key input for X11 (languages like cyrillic work now).
 - Fix bug that ListBox would not allow to 'tab' to the next element (thx @ FlavourBoat for reporting)
 - IGUIEnvironment::getNextElement now public (was only in CGUIEnvironment before).
