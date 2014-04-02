@@ -199,9 +199,9 @@ public:
 	more information. */
 	virtual IGUIFont* getBuiltInFont() const = 0;
 
-	//! Returns pointer to the sprite bank with the specified file name.
-	/** Loads the bank if it was not loaded before.
-	\param filename Filename of the sprite bank's origin.
+	//! Returns pointer to the sprite bank which was added with addEmptySpriteBank
+	/** TODO: This should load files in the future, but not implemented so far.
+	\param filename Name of a spritebank added with addEmptySpriteBank
 	\return Pointer to the sprite bank. Returns 0 if it could not be loaded.
 	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUISpriteBank* getSpriteBank(const io::path& filename) = 0;
