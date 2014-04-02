@@ -331,7 +331,7 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 
 
 //! Returns whether the element has focus
-bool CGUIEnvironment::hasFocus(IGUIElement* element, bool checkSubElements) const
+bool CGUIEnvironment::hasFocus(const IGUIElement* element, bool checkSubElements) const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	if (element == Focus)
@@ -941,7 +941,7 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 	{
 		if (!(*it)->isSubElement())
 		{
-			writer->writeLineBreak();			
+			writer->writeLineBreak();
 			writeGUIElement(writer, (*it));
 		}
 	}

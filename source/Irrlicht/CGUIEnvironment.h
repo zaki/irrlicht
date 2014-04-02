@@ -190,7 +190,7 @@ public:
 	virtual bool removeFocus(IGUIElement* element) _IRR_OVERRIDE_;
 
 	//! Returns if the element has focus
-	virtual bool hasFocus(IGUIElement* element, bool checkSubElements=false) const _IRR_OVERRIDE_;
+	virtual bool hasFocus(const IGUIElement* element, bool checkSubElements=false) const _IRR_OVERRIDE_;
 
 	//! Returns the element with the focus
 	virtual IGUIElement* getFocus() const _IRR_OVERRIDE_;
