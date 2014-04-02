@@ -20,11 +20,16 @@ namespace gui
 	class IGUIFont;
 	class IGUISpriteBank;
 
+	//! Current state of buttons used for drawing sprites.
+	//! Note that up to 3 states can be active at the same time:
+	//! EGBS_BUTTON_UP or EGBS_BUTTON_DOWN
+	//! EGBS_BUTTON_MOUSE_OVER or EGBS_BUTTON_MOUSE_OFF
+	//! EGBS_BUTTON_FOCUSED or EGBS_BUTTON_NOT_FOCUSED
 	enum EGUI_BUTTON_STATE
 	{
-		//! The button is not pressed
+		//! The button is not pressed.
 		EGBS_BUTTON_UP=0,
-		//! The button is currently pressed down
+		//! The button is currently pressed down.
 		EGBS_BUTTON_DOWN,
 		//! The mouse cursor is over the button
 		EGBS_BUTTON_MOUSE_OVER,
@@ -34,12 +39,14 @@ namespace gui
 		EGBS_BUTTON_FOCUSED,
 		//! The button doesn't have the focus
 		EGBS_BUTTON_NOT_FOCUSED,
+		//! The button is disabled All other states are ignored in that case.
+		EGBS_BUTTON_DISABLED,
 		//! not used, counts the number of enumerated items
 		EGBS_COUNT
 	};
 
 	//! Names for gui button state icons
-	const c8* const GUIButtonStateNames[] =
+	const c8* const GUIButtonStateNames[EGBS_COUNT+1] =
 	{
 		"buttonUp",
 		"buttonDown",
@@ -47,8 +54,52 @@ namespace gui
 		"buttonMouseOff",
 		"buttonFocused",
 		"buttonNotFocused",
-		0,
-		0,
+		"buttonDisabled",
+		0	// count
+	};
+
+	//! State of buttons used for drawing texture images.
+	//! Note that only a single state is active at a time
+	//! Also when no image is defined for a state it will use images from another state
+	//! and if that state is not set from the replacement for that,etc.
+	//! So in many cases setting EGBIS_IMAGE_UP and EGBIS_IMAGE_DOWN is sufficient.
+	enum EGUI_BUTTON_IMAGE_STATE
+	{
+		//! When no other states have images they will all use this one.
+		EGBIS_IMAGE_UP,
+		//! When not set EGBIS_IMAGE_UP is used.
+		EGBIS_IMAGE_UP_MOUSEOVER,
+		//! When not set EGBIS_IMAGE_UP_MOUSEOVER is used.
+		EGBIS_IMAGE_UP_FOCUSED,
+		//! When not set EGBIS_IMAGE_UP_FOCUSED is used.
+		EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER,
+		//! When not set EGBIS_IMAGE_UP is used.
+		EGBIS_IMAGE_DOWN,
+		//! When not set EGBIS_IMAGE_DOWN is used.
+		EGBIS_IMAGE_DOWN_MOUSEOVER,
+		//! When not set EGBIS_IMAGE_DOWN_MOUSEOVER is used.
+		EGBIS_IMAGE_DOWN_FOCUSED,
+		//! When not set EGBIS_IMAGE_DOWN_FOCUSED is used.
+		EGBIS_IMAGE_DOWN_FOCUSED_MOUSEOVER,
+		//! When not set EGBIS_IMAGE_UP or EGBIS_IMAGE_DOWN are used (depending on button state).
+		EGBIS_IMAGE_DISABLED,
+		//! not used, counts the number of enumerated items
+		EGBIS_COUNT
+	};
+
+	//! Names for gui button image states
+	const c8* const GUIButtonImageStateNames[EGBIS_COUNT+1] =
+	{
+		"Image",	// not "ImageUp" as it otherwise breaks serialization of old files
+		"ImageUpOver",
+		"ImageUpFocused",
+		"ImageUpFocusedOver",
+		"PressedImage",	// not "ImageDown" as it otherwise breaks serialization of old files
+		"ImageDownOver",
+		"ImageDownFocused",
+		"ImageDownFocusedOver",
+		"ImageDisabled",
+		0	// count
 	};
 
 	//! GUI Button interface.
@@ -77,38 +128,71 @@ namespace gui
 		font of the active skin otherwise */
 		virtual IGUIFont* getActiveFont() const = 0;
 
+		//! Sets an image which should be displayed on the button when it is in the given state.
+		/** Only one image-state can be active at a time. Images are drawn below sprites.
+		If a state is without image it will try to use images from other states as described
+		in ::EGUI_BUTTON_IMAGE_STATE.
+		Images are a little less flexible than sprites, but easier to use.
+		\param state: One of ::EGUI_BUTTON_IMAGE_STATE
+		\param image: Image to be displayed or NULL to remove the image
+		\param sourceRect: Source rectangle on the image texture. When width or height are 0 then the full texture-size is used (default). */
+		virtual void setImage(EGUI_BUTTON_IMAGE_STATE state, video::ITexture* image=0, const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0)) = 0;
+
 		//! Sets an image which should be displayed on the button when it is in normal state.
-		/** \param image: Image to be displayed */
+		/** This is identical to calling setImage(EGBIS_IMAGE_UP, image); and might be deprecated in future revisions.
+		\param image: Image to be displayed */
 		virtual void setImage(video::ITexture* image=0) = 0;
 
 		//! Sets a background image for the button when it is in normal state.
-		/** \param image: Texture containing the image to be displayed
-		\param pos: Position in the texture, where the image is located */
-		virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) = 0;
+		/** This is identical to calling setImage(EGBIS_IMAGE_UP, image, sourceRect); and might be deprecated in future revisions.
+		\param image: Texture containing the image to be displayed
+		\param sourceRect: Position in the texture, where the image is located.
+		When width or height are 0 then the full texture-size is used */
+		virtual void setImage(video::ITexture* image, const core::rect<s32>& sourceRect) = 0;
 
 		//! Sets a background image for the button when it is in pressed state.
-		/** If no images is specified for the pressed state via
+		/** This is identical to calling setImage(EGBIS_IMAGE_DOWN, image); and might be deprecated in future revisions.
+		If no images is specified for the pressed state via
 		setPressedImage(), this image is also drawn in pressed state.
 		\param image: Image to be displayed */
 		virtual void setPressedImage(video::ITexture* image=0) = 0;
 
 		//! Sets an image which should be displayed on the button when it is in pressed state.
-		/** \param image: Texture containing the image to be displayed
-		\param pos: Position in the texture, where the image is located */
-		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) = 0;
+		/** This is identical to calling setImage(EGBIS_IMAGE_DOWN, image, sourceRect); and might be deprecated in future revisions.
+		\param image: Texture containing the image to be displayed
+		\param sourceRect: Position in the texture, where the image is located */
+		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& sourceRect) = 0;
+
 
 		//! Sets the sprite bank used by the button
+		/** NOTE: The spritebank itself is _not_ serialized so far. The sprites are serialized.
+		Which means after loading the gui you still have to set the spritebank manually. */
 		virtual void setSpriteBank(IGUISpriteBank* bank=0) = 0;
 
 		//! Sets the animated sprite for a specific button state
-		/** \param index: Number of the sprite within the sprite bank, use -1 for no sprite
+		/** Several sprites can be drawn at the same time.
+		Sprites can be animated.
+		Sprites are drawn above the images.
+		\param index: Number of the sprite within the sprite bank, use -1 for no sprite
 		\param state: State of the button to set the sprite for
 		\param index: The sprite number from the current sprite bank
 		\param color: The color of the sprite
 		\param loop: True if the animation should loop, false if not
-		*/
+		\param scale: True if the sprite should scale to button size, false if not	*/
 		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index,
-				video::SColor color=video::SColor(255,255,255,255), bool loop=false) = 0;
+				video::SColor color=video::SColor(255,255,255,255), bool loop=false, bool scale=false) = 0;
+
+		//! Get the sprite-index for the given state or -1 when no sprite is set
+		virtual s32 getSpriteIndex(EGUI_BUTTON_STATE state) const = 0;
+
+		//! Get the sprite color for the given state. Color is only used when a sprite is set.
+		virtual video::SColor getSpriteColor(EGUI_BUTTON_STATE state) const = 0;
+
+		//! Returns if the sprite in the given state does loop
+		virtual bool getSpriteLoop(EGUI_BUTTON_STATE state) const = 0;
+
+		//! Returns if the sprite in the given state is scaled
+		virtual bool getSpriteScale(EGUI_BUTTON_STATE state) const = 0;
 
 		//! Sets if the button should behave like a push button.
 		/** Which means it can be in two states: Normal or Pressed. With a click on the button,

@@ -183,14 +183,18 @@ namespace gui
 		EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT,
 		//! maximal space to reserve for messagebox text-height
 		EGDS_MESSAGE_BOX_MAX_TEXT_HEIGHT,
-		//! pixels to move the button image to the right when a pushbutton is pressed
+		//! pixels to move an unscaled button image to the right when a button is pressed and the unpressed image looks identical
 		EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X,
-		//! pixels to move the button image down when a pushbutton is pressed
+		//! pixels to move an unscaled button image down when a button is pressed  and the unpressed image looks identical
 		EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y,
-		//! pixels to move the button text to the right when a pushbutton is pressed
+		//! pixels to move the button text to the right when a button is pressed
 		EGDS_BUTTON_PRESSED_TEXT_OFFSET_X,
-		//! pixels to move the button text down when a pushbutton is pressed
+		//! pixels to move the button text down when a button is pressed
 		EGDS_BUTTON_PRESSED_TEXT_OFFSET_Y,
+		//! pixels to move an unscaled button sprite to the right when a button is pressed
+		EGDS_BUTTON_PRESSED_SPRITE_OFFSET_X,
+		//! pixels to move an unscaled button sprite down when a button is pressed
+		EGDS_BUTTON_PRESSED_SPRITE_OFFSET_Y,
 
 		//! this value is not used, it only specifies the amount of default sizes
 		//! available.
@@ -222,6 +226,8 @@ namespace gui
 		"ButtonPressedImageOffsetY"
 		"ButtonPressedTextOffsetX",
 		"ButtonPressedTextOffsetY",
+		"ButtonPressedSpriteOffsetX",
+		"ButtonPressedSpriteOffsetY",
 		0
 	};
 
