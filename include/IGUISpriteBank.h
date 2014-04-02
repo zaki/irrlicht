@@ -22,16 +22,34 @@ namespace gui
 {
 
 //! A single sprite frame.
+// Note for implementer: Can't fix variable names to uppercase as this is a public interface used since a while
 struct SGUISpriteFrame
 {
+	SGUISpriteFrame() : textureNumber(0), rectNumber(0)
+	{
+	}
+
+	SGUISpriteFrame(u32 textureIndex, u32 positionIndex)
+	: textureNumber(textureIndex), rectNumber(positionIndex)
+	{
+	}
+
+	//! Texture index in IGUISpriteBank
 	u32 textureNumber;
+
+	//! Index in IGUISpriteBank::getPositions()
 	u32 rectNumber;
 };
 
 //! A sprite composed of several frames.
+// Note for implementer: Can't fix variable names to uppercase as this is a public interface used since a while
 struct SGUISprite
 {
-	SGUISprite() : Frames(), frameTime(0) {}
+	SGUISprite() : frameTime(0) {}
+	SGUISprite(const SGUISpriteFrame& firstFrame) : frameTime(0)
+	{
+		Frames.push_back(firstFrame);
+	}
 
 	core::array<SGUISpriteFrame> Frames;
 	u32 frameTime;
@@ -65,11 +83,11 @@ public:
 	virtual void setTexture(u32 index, video::ITexture* texture) = 0;
 
 	//! Add the texture and use it for a single non-animated sprite.
-	//! The texture and the corresponding rectangle and sprite will all be added to the end of each array.
-	//! returns the index of the sprite or -1 on failure
+	/** The texture and the corresponding rectangle and sprite will all be added to the end of each array.
+	 \returns The index of the sprite or -1 on failure */
 	virtual s32 addTextureAsSprite(video::ITexture* texture) = 0;
 
-	//! clears sprites, rectangles and textures
+	//! Clears sprites, rectangles and textures
 	virtual void clear() = 0;
 
 	//! Draws a sprite in 2d with position and color
