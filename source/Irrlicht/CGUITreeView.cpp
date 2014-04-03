@@ -451,7 +451,7 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 
 	if ( scrollBarVertical )
 	{
-		ScrollBarV = new CGUIScrollBar( false, Environment, this, 0,
+		ScrollBarV = new CGUIScrollBar( false, Environment, this, -1,
 			core::rect<s32>(	RelativeRect.getWidth() - s,
 			0,
 			RelativeRect.getWidth(),
@@ -467,7 +467,7 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 
 	if ( scrollBarHorizontal )
 	{
-		ScrollBarH = new CGUIScrollBar( true, Environment, this, 1,
+		ScrollBarH = new CGUIScrollBar( true, Environment, this, -1,
 			core::rect<s32>( 0, RelativeRect.getHeight() - s, RelativeRect.getWidth() - s, RelativeRect.getHeight() ),
 			!clip );
 		ScrollBarH->drop();
@@ -847,16 +847,15 @@ void CGUITreeView::draw()
 		frameRect.LowerRightCorner.Y -= ScrollBarV->getPos();
 	}
 
-	if ( ScrollBarH )
-	{
-		frameRect.UpperLeftCorner.X -= ScrollBarH->getPos();
-		frameRect.LowerRightCorner.X -= ScrollBarH->getPos();
-	}
-
 	IGUITreeViewNode* node = Root->getFirstChild();
 	while( node )
 	{
 		frameRect.UpperLeftCorner.X = AbsoluteRect.UpperLeftCorner.X + 1 + node->getLevel() * IndentWidth;
+		if ( ScrollBarH )
+		{
+			frameRect.UpperLeftCorner.X -= ScrollBarH->getPos();
+			frameRect.LowerRightCorner.X -= ScrollBarH->getPos();
+		}
 
 		if( frameRect.LowerRightCorner.Y >= AbsoluteRect.UpperLeftCorner.Y
 			&& frameRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y )
