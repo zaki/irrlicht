@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Focus behavior of IGUIEnvironment now controllable (right-click focus, mouse-over focus). Disabled elements no longer get the focus unless users enforce it.
 - Buttons can now now have 7 more image-states, 1 more sprite-state and the sprites are now scaleable.
 - Spritebanks can now draw scaled sprites and are a little easier to use.
 - Improved i18n key input for X11 (languages like cyrillic work now).

@@ -260,7 +260,13 @@ public:
 	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* node) _IRR_OVERRIDE_;
 
 	//! Find the next element which would be selected when pressing the tab-key
-	virtual IGUIElement* getNextElement(bool reverse=false, bool group=false);
+	virtual IGUIElement* getNextElement(bool reverse=false, bool group=false) _IRR_OVERRIDE_;
+
+	//! Set the way the gui will handle focus changes
+	virtual void setFocusBehavior(u32 flags) _IRR_OVERRIDE_;
+
+	//! Get the way the gui does handle focus changes
+	virtual u32 getFocusBehavior() const _IRR_OVERRIDE_;
 
 private:
 
@@ -314,6 +320,7 @@ private:
 	io::IFileSystem* FileSystem;
 	IEventReceiver* UserReceiver;
 	IOSOperator* Operator;
+	u32 FocusFlags;
 	static const io::path DefaultFontName;
 };
 
