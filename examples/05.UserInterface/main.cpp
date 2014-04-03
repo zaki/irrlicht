@@ -217,7 +217,7 @@ int main()
 	creates a window and the third opens a file open dialog. The third
 	parameter is the id of the button, with which we can easily identify
 	the button in the event receiver.
-	*/	
+	*/
 
 	env->addButton(rect<s32>(10,240,110,240 + 32), 0, GUI_ID_QUIT_BUTTON,
 			L"Quit", L"Exits Program");
@@ -262,7 +262,7 @@ int main()
 
 
 	/*
-	And at last, we create a nice Irrlicht Engine logo in the top left corner. 
+	And at last, we create a nice Irrlicht Engine logo in the top left corner.
 	*/
 	env->addImage(driver->getTexture("../../media/irrlichtlogo2.png"),
 			position2d<int>(10,10));
@@ -278,7 +278,7 @@ int main()
 		driver->beginScene(true, true, SColor(0,200,200,200));
 
 		env->drawAll();
-	
+
 		driver->endScene();
 	}
 

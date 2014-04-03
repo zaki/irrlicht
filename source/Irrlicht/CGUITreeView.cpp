@@ -631,38 +631,26 @@ bool CGUITreeView::OnEvent( const SEvent &event )
 
 				case EMIE_LMOUSE_PRESSED_DOWN:
 
-					if (Environment->hasFocus(this) && !AbsoluteClippingRect.isPointInside(p) )
-					{
-						Environment->removeFocus(this);
-						return false;
-					}
-
-					if( Environment->hasFocus( this ) &&
-						(	( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
+					if( ( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
 						( ScrollBarH && ScrollBarH->getAbsolutePosition().isPointInside( p ) &&	ScrollBarH->OnEvent( event ) )
-						)
 						)
 					{
 						return true;
 					}
 
 					Selecting = true;
-					Environment->setFocus( this );
 					return true;
 					break;
 
 				case EMIE_LMOUSE_LEFT_UP:
-					if( Environment->hasFocus( this ) &&
-						(	( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
+					if( ( ScrollBarV && ScrollBarV->getAbsolutePosition().isPointInside( p ) && ScrollBarV->OnEvent( event ) ) ||
 						( ScrollBarH && ScrollBarH->getAbsolutePosition().isPointInside( p ) &&	ScrollBarH->OnEvent( event ) )
-						)
 						)
 					{
 						return true;
 					}
 
 					Selecting = false;
-					Environment->removeFocus( this );
 					mouseAction( event.MouseInput.X, event.MouseInput.Y );
 					return true;
 					break;

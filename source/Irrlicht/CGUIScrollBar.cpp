@@ -166,7 +166,6 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 					DraggedBySlider = SliderRect.isPointInside(p);
 					TrayClick = !DraggedBySlider;
 					DesiredPos = getPosFromMousePos(p);
-					Environment->setFocus ( this );
 					return true;
 				}
 				break;

@@ -224,7 +224,7 @@ bool CGUIEnvironment::setFocus(IGUIElement* element)
 		return false;
 	}
 
-	// GUI Environment should not get the focus
+	// GUI Environment should just reset the focus to 0
 	if (element == this)
 		element = 0;
 
