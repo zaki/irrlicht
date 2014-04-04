@@ -965,6 +965,7 @@
     <ClInclude Include="..\..\include\EGUIAlignment.h" />
     <ClInclude Include="..\..\include\EGUIElementTypes.h" />
     <ClInclude Include="..\..\include\EMessageBoxFlags.h" />
+	<ClInclude Include="..\..\include\EFocusFlags.h" />
     <ClInclude Include="..\..\include\ICursorControl.h" />
     <ClInclude Include="..\..\include\IGUIButton.h" />
     <ClInclude Include="..\..\include\IGUICheckbox.h" />
