@@ -28,7 +28,7 @@ enum EFOCUS_FLAG
 	EFF_SET_ON_TAB = 0x8,
 
 	//! When set it's possible to set the focus to disabled elements.
-	EFF_CAN_FOCUS_DISABLED = 0x16,
+	EFF_CAN_FOCUS_DISABLED = 0x16
 };
 
 } // namespace gui
