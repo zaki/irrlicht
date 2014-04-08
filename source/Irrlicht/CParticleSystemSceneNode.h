@@ -217,17 +217,18 @@ private:
 	core::array<SParticle> Particles;
 	core::dimension2d<f32> ParticleSize;
 	u32 LastEmitTime;
-	s32 MaxParticles;
 
 	SMeshBuffer* Buffer;
 
-	enum E_PARTICLES_PRIMITIVE
-	{
-		EPP_POINT=0,
-		EPP_BILLBOARD,
-		EPP_POINTSPRITE
-	};
-	E_PARTICLES_PRIMITIVE ParticlePrimitive;
+// TODO: That was obviously planned by someone at some point and sounds like a good idea.
+// But seems it was never implemented.
+//	enum E_PARTICLES_PRIMITIVE
+//	{
+//		EPP_POINT=0,
+//		EPP_BILLBOARD,
+//		EPP_POINTSPRITE
+//	};
+//	E_PARTICLES_PRIMITIVE ParticlePrimitive;
 
 	bool ParticlesAreGlobal;
 };

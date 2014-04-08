@@ -369,10 +369,7 @@ namespace scene
 			void tesselate(s32 level);
 
 		private:
-			s32	Level;
-
 			core::array<S3DVertex2TCoords_64> column[3];
-
 		};
 		SBezier Bezier;
 

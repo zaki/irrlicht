@@ -168,8 +168,6 @@ private:
 	ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
 
-	core::array<CSkinnedMesh::SJoint*> *AllJoints;
-
 	CSkinnedMesh* AnimatedMesh;
 
 	c8* Buffer;

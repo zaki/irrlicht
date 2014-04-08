@@ -137,7 +137,7 @@ private:
 	io::IReadFile *File;
 	c8 *Buffer;
 	bool IsBinaryFile, IsWrongEndian, EndOfFile;
-	s32 LineLength, WordLength;
+	s32 WordLength;
 	c8 *StartPointer, *EndPointer, *LineEndPointer;
 };
 

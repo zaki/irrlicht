@@ -141,7 +141,7 @@ namespace scene
 #ifndef ZONE_H
 	// NOTE: this was a void*, but that crashes on 64bit.
 	// I have found no mdl format desc, so not sure what it's meant to be, but s32 at least works.
-	typedef s32 cache_user_t;	
+	typedef s32 cache_user_t;
 #endif
 
 	// demand loaded sequence groups
@@ -593,7 +593,7 @@ namespace scene
 
 #ifdef HL_TEXTURE_ATLAS
 		STextureAtlas TextureAtlas;
-		video::ITexture *TextureMaster;
+//		video::ITexture *TextureMaster;
 #endif
 
 	};

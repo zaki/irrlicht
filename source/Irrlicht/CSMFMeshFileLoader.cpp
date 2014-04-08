@@ -21,7 +21,6 @@ namespace scene
 {
 
 CSMFMeshFileLoader::CSMFMeshFileLoader(irr::io::IFileSystem* fs, video::IVideoDriver* driver)
-: Driver(driver)
 {
 	TextureLoader = new CMeshTextureLoader( fs, driver );
 }
