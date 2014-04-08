@@ -314,6 +314,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorCameraMaya::createClone(ISceneNode* node, 
 {
 	CSceneNodeAnimatorCameraMaya * newAnimator =
 		new CSceneNodeAnimatorCameraMaya(CursorControl, RotateSpeed, ZoomSpeed, TranslateSpeed);
+	newAnimator->cloneMembers(this);
 	return newAnimator;
 }
 

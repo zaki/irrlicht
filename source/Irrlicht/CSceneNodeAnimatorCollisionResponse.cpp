@@ -243,6 +243,8 @@ void CSceneNodeAnimatorCollisionResponse::setNode(ISceneNode* node)
 //! Writes attributes of the scene node animator.
 void CSceneNodeAnimatorCollisionResponse::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
+	ISceneNodeAnimatorCollisionResponse::serializeAttributes(out, options);
+
 	out->addVector3d("Radius", Radius);
 	out->addVector3d("Gravity", Gravity);
 	out->addVector3d("Translation", Translation);
@@ -253,10 +255,12 @@ void CSceneNodeAnimatorCollisionResponse::serializeAttributes(io::IAttributes* o
 //! Reads attributes of the scene node animator.
 void CSceneNodeAnimatorCollisionResponse::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	Radius = in->getAttributeAsVector3d("Radius");
-	Gravity = in->getAttributeAsVector3d("Gravity");
-	Translation = in->getAttributeAsVector3d("Translation");
-	AnimateCameraTarget = in->getAttributeAsBool("AnimateCameraTarget");
+	ISceneNodeAnimatorCollisionResponse::deserializeAttributes(in, options);
+
+	Radius = in->getAttributeAsVector3d("Radius", Radius);
+	Gravity = in->getAttributeAsVector3d("Gravity", Gravity);
+	Translation = in->getAttributeAsVector3d("Translation", Translation);
+	AnimateCameraTarget = in->getAttributeAsBool("AnimateCameraTarget", AnimateCameraTarget);
 }
 
 
@@ -267,7 +271,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode*
 	CSceneNodeAnimatorCollisionResponse * newAnimator =
 		new CSceneNodeAnimatorCollisionResponse(newManager, World, Object, Radius,
 				(Gravity * 1000.0f), Translation, SlidingSpeed);
-
+	newAnimator->cloneMembers(this);
 	return newAnimator;
 }
 

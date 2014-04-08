@@ -427,7 +427,7 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		if (newParticles && array)
 		{
 			s32 j=Particles.size();
-			if (newParticles > 16250-j)
+			if (newParticles > 16250-j)	// avoid having more than 64k vertices in the scenenode
 				newParticles=16250-j;
 			Particles.set_used(j+newParticles);
 			for (s32 i=j; i<j+newParticles; ++i)
