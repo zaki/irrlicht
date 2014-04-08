@@ -94,7 +94,7 @@ void CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		}
 	}
 
-	if ((StartFrame==EndFrame))
+	if (StartFrame==EndFrame)
 	{
 		CurrentFrameNr = (f32)StartFrame; //Support for non animated meshes
 	}
@@ -1099,7 +1099,7 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	newNode->ReadOnlyMaterials = ReadOnlyMaterials;
 	newNode->LoopCallBack = LoopCallBack;
 	if (newNode->LoopCallBack)
-		newNode->LoopCallBack->grab();	
+		newNode->LoopCallBack->grab();
 	newNode->PassCount = PassCount;
 	newNode->Shadow = Shadow;
 	if (newNode->Shadow)
