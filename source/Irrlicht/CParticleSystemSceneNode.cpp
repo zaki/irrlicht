@@ -417,9 +417,11 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 	u32 timediff = time - LastEmitTime;
 	LastEmitTime = time;
 
+
+	int stop = isVisible() ? 0 : getInvisibleBehavior();
 	// run emitter
 
-	if (Emitter && IsVisible)
+	if (Emitter && !(stop & EPI_STOP_EMITTERS) )
 	{
 		SParticle* array = 0;
 		s32 newParticles = Emitter->emitt(now, timediff, array);
@@ -441,9 +443,12 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 	}
 
 	// run affectors
-	core::list<IParticleAffector*>::Iterator ait = AffectorList.begin();
-	for (; ait != AffectorList.end(); ++ait)
-		(*ait)->affect(now, Particles.pointer(), Particles.size());
+	if ( !(stop & EPI_STOP_AFFECTORS) )
+	{
+		core::list<IParticleAffector*>::Iterator ait = AffectorList.begin();
+		for (; ait != AffectorList.end(); ++ait)
+			(*ait)->affect(now, Particles.pointer(), Particles.size());
+	}
 
 	if (ParticlesAreGlobal)
 		Buffer->BoundingBox.reset(AbsoluteTransformation.getTranslation());
@@ -451,25 +456,28 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		Buffer->BoundingBox.reset(core::vector3df(0,0,0));
 
 	// animate all particles
-	f32 scale = (f32)timediff;
-
-	for (u32 i=0; i<Particles.size();)
+	if ( !(stop & EPI_STOP_ANIMATING) )
 	{
-		// erase is pretty expensive!
-		if (now > Particles[i].endTime)
+		f32 scale = (f32)timediff;
+
+		for (u32 i=0; i<Particles.size();)
 		{
-			// Particle order does not seem to matter.
-			// So we can delete by switching with last particle and deleting that one.
-			// This is a lot faster and speed is very important here as the erase otherwise
-			// can cause noticable freezes.
-			Particles[i] = Particles[Particles.size()-1];
-			Particles.erase( Particles.size()-1 );
-		}
-		else
-		{
-			Particles[i].pos += (Particles[i].vector * scale);
-			Buffer->BoundingBox.addInternalPoint(Particles[i].pos);
-			++i;
+			// erase is pretty expensive!
+			if (now > Particles[i].endTime)
+			{
+				// Particle order does not seem to matter.
+				// So we can delete by switching with last particle and deleting that one.
+				// This is a lot faster and speed is very important here as the erase otherwise
+				// can cause noticable freezes.
+				Particles[i] = Particles[Particles.size()-1];
+				Particles.erase( Particles.size()-1 );
+			}
+			else
+			{
+				Particles[i].pos += (Particles[i].vector * scale);
+				Buffer->BoundingBox.addInternalPoint(Particles[i].pos);
+				++i;
+			}
 		}
 	}
 
@@ -502,6 +510,14 @@ void CParticleSystemSceneNode::setParticlesAreGlobal(bool global)
 void CParticleSystemSceneNode::clearParticles()
 {
 	Particles.set_used(0);
+}
+
+//! Sets if the node should be visible or not.
+void CParticleSystemSceneNode::setVisible(bool isVisible)
+{
+	IParticleSystemSceneNode::setVisible(isVisible);
+	if ( !isVisible && getInvisibleBehavior() & EPI_CLEAR_ON_INVISIBLE )
+		clearParticles();
 }
 
 //! Sets the size of all particles.

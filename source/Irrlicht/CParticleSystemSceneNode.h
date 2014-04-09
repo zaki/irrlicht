@@ -194,6 +194,9 @@ public:
 	//! Remove all currently visible particles
 	virtual void clearParticles() _IRR_OVERRIDE_;
 
+	//! Sets if the node should be visible or not.
+	virtual void setVisible(bool isVisible) _IRR_OVERRIDE_;
+
 	//! Do manually update the particles.
 	//! This should only be called when you want to render the node outside the scenegraph,
 	//! as the node will care about this otherwise automatically.

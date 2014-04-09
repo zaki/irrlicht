@@ -41,8 +41,21 @@ You can for example easily create a campfire by doing this:
 	p->addAffector(paf);
 	paf->drop();
 \endcode
-
 */
+
+//! Bitflags to control particle behavior when the IParticleSystemSceneNode is invisible
+enum EParticleInvisible
+{
+	//! Stop emitting new particles when invisible
+	EPI_STOP_EMITTERS = 1,
+	//! No longer affect particles when invisible
+	EPI_STOP_AFFECTORS = 2,
+	//! Stop updating particle positions or deleting them when invisible
+	EPI_STOP_ANIMATING = 4,
+	//! Clear all particles when node gets invisible
+	EPI_CLEAR_ON_INVISIBLE = 8
+};
+
 class IParticleSystemSceneNode : public ISceneNode
 {
 public:
@@ -52,7 +65,10 @@ public:
 		const core::vector3df& position = core::vector3df(0,0,0),
 		const core::vector3df& rotation = core::vector3df(0,0,0),
 		const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f))
-			: ISceneNode(parent, mgr, id, position, rotation, scale) {}
+			: ISceneNode(parent, mgr, id, position, rotation, scale)
+			, ParticleInvisibleBehavior(EPI_STOP_EMITTERS|EPI_STOP_AFFECTORS|EPI_STOP_ANIMATING|EPI_CLEAR_ON_INVISIBLE)
+	{
+	}
 
 	//! Sets the size of all particles.
 	virtual void setParticleSize(
@@ -63,6 +79,24 @@ public:
 	particle system scene node too, otherwise they completely ignore it.
 	Default is true. */
 	virtual void setParticlesAreGlobal(bool global=true) = 0;
+
+	//! Sets how particles behave when this node is invisible
+	/** Default is: EPIB_STOP_EMITTERS|EPIB_STOP_AFFECTORS|EPIB_STOP_ANIMATING|EPI_CLEAR_ON_INVISIBLE
+	\param flags Any combination of ::EParticleInvisibleBehavior flags
+	*/
+	virtual void setInvisibleBehavior(irr::u32 flags)
+	{
+		ParticleInvisibleBehavior = flags;
+	}
+
+	//! Gets how particles behave when this node is invisible
+	/**
+	\return A combination of ::EParticleInvisibleBehavior flags
+	*/
+	virtual irr::u32 getInvisibleBehavior() const
+	{
+		return ParticleInvisibleBehavior;
+	}
 
 	//! Remove all currently visible particles
 	virtual void clearParticles() = 0;
@@ -503,11 +537,24 @@ public:
 	virtual IParticleRotationAffector* createRotationAffector(
 		const core::vector3df& speed = core::vector3df(5.0f,5.0f,5.0f),
 		const core::vector3df& pivotPoint = core::vector3df(0.0f,0.0f,0.0f) ) = 0;
+
+	//! Writes attributes of the scene node.
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_
+	{
+		out->addInt("ParticleInvisibleBehavior", ParticleInvisibleBehavior);
+	}
+
+	//! Reads attributes of the scene node.
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_
+	{
+		ParticleInvisibleBehavior = in->getAttributeAsInt("ParticleInvisibleBehavior", ParticleInvisibleBehavior);
+	}
+
+protected:
+	s32 ParticleInvisibleBehavior;
 };
 
 } // end namespace scene
 } // end namespace irr
 
-
 #endif
-
