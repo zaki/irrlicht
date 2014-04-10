@@ -220,6 +220,7 @@ private:
 	core::array<SParticle> Particles;
 	core::dimension2d<f32> ParticleSize;
 	u32 LastEmitTime;
+	core::matrix4 LastAbsoluteTransformation;
 
 	SMeshBuffer* Buffer;
 

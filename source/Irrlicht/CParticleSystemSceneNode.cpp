@@ -410,6 +410,7 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 	if (LastEmitTime==0)
 	{
 		LastEmitTime = time;
+		LastAbsoluteTransformation = AbsoluteTransformation;
 		return;
 	}
 
@@ -418,10 +419,11 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 	LastEmitTime = time;
 
 
-	int stop = isVisible() ? 0 : getInvisibleBehavior();
+	bool visible = isVisible();
+	int behavior = getParticleBehavior();
 	// run emitter
 
-	if (Emitter && !(stop & EPI_STOP_EMITTERS) )
+	if (Emitter && (visible || behavior & EPB_INVISIBLE_EMITTING) )
 	{
 		SParticle* array = 0;
 		s32 newParticles = Emitter->emitt(now, timediff, array);
@@ -435,15 +437,54 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 			for (s32 i=j; i<j+newParticles; ++i)
 			{
 				Particles[i]=array[i-j];
-				AbsoluteTransformation.rotateVect(Particles[i].startVector);
-				if (ParticlesAreGlobal)
-					AbsoluteTransformation.transformVect(Particles[i].pos);
+
+				if ( ParticlesAreGlobal && behavior & EPB_EMITTER_FRAME_INTERPOLATION )
+				{
+					// Interpolate between current node transformations and last ones.
+					// (Lazy solution - calculating twice and interpolating results)
+					f32 randInterpolate = (f32)(os::Randomizer::rand() % 101) / 100.f;	// 0 to 1
+					core::vector3df posNow(Particles[i].pos);
+					core::vector3df posLast(Particles[i].pos);
+
+					AbsoluteTransformation.transformVect(posNow);
+					LastAbsoluteTransformation.transformVect(posLast);
+					Particles[i].pos = posNow.getInterpolated(posLast, randInterpolate);
+
+					if ( !(behavior & EPB_EMITTER_VECTOR_IGNORE_ROTATION) )
+					{
+						core::vector3df vecNow(Particles[i].startVector);
+						core::vector3df vecOld(Particles[i].startVector);
+						AbsoluteTransformation.rotateVect(vecNow);
+						LastAbsoluteTransformation.rotateVect(vecOld);
+						Particles[i].startVector = vecNow.getInterpolated(vecOld, randInterpolate);
+
+						vecNow = Particles[i].vector;
+						vecOld = Particles[i].vector;
+						AbsoluteTransformation.rotateVect(vecNow);
+						LastAbsoluteTransformation.rotateVect(vecOld);
+						Particles[i].vector = vecNow.getInterpolated(vecOld, randInterpolate);
+					}
+				}
+				else
+				{
+					if (ParticlesAreGlobal)
+						AbsoluteTransformation.transformVect(Particles[i].pos);
+
+					if ( !(behavior & EPB_EMITTER_VECTOR_IGNORE_ROTATION) )
+					{
+						if (!ParticlesAreGlobal)
+							AbsoluteTransformation.rotateVect(Particles[i].pos);
+
+						AbsoluteTransformation.rotateVect(Particles[i].startVector);
+						AbsoluteTransformation.rotateVect(Particles[i].vector);
+					}
+				}
 			}
 		}
 	}
 
 	// run affectors
-	if ( !(stop & EPI_STOP_AFFECTORS) )
+	if ( visible || behavior & EPB_INVISIBLE_AFFECTING )
 	{
 		core::list<IParticleAffector*>::Iterator ait = AffectorList.begin();
 		for (; ait != AffectorList.end(); ++ait)
@@ -456,7 +497,7 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		Buffer->BoundingBox.reset(core::vector3df(0,0,0));
 
 	// animate all particles
-	if ( !(stop & EPI_STOP_ANIMATING) )
+	if ( visible || behavior & EPB_INVISIBLE_ANIMATING )
 	{
 		f32 scale = (f32)timediff;
 
@@ -495,6 +536,8 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		core::matrix4 absinv( AbsoluteTransformation, core::matrix4::EM4CONST_INVERSE );
 		absinv.transformBoxEx(Buffer->BoundingBox);
 	}
+
+	LastAbsoluteTransformation = AbsoluteTransformation;
 }
 
 
@@ -516,8 +559,11 @@ void CParticleSystemSceneNode::clearParticles()
 void CParticleSystemSceneNode::setVisible(bool isVisible)
 {
 	IParticleSystemSceneNode::setVisible(isVisible);
-	if ( !isVisible && getInvisibleBehavior() & EPI_CLEAR_ON_INVISIBLE )
+	if ( !isVisible && getParticleBehavior() & EPB_CLEAR_ON_INVISIBLE )
+	{
 		clearParticles();
+		LastEmitTime = 0;
+	}
 }
 
 //! Sets the size of all particles.

@@ -43,17 +43,29 @@ You can for example easily create a campfire by doing this:
 \endcode
 */
 
-//! Bitflags to control particle behavior when the IParticleSystemSceneNode is invisible
-enum EParticleInvisible
+//! Bitflags to control particle behavior
+enum EParticleBehavior
 {
-	//! Stop emitting new particles when invisible
-	EPI_STOP_EMITTERS = 1,
-	//! No longer affect particles when invisible
-	EPI_STOP_AFFECTORS = 2,
-	//! Stop updating particle positions or deleting them when invisible
-	EPI_STOP_ANIMATING = 4,
+	//! Continue emitting new particles even when the node is invisible
+	EPB_INVISIBLE_EMITTING = 1,
+
+	//! Continue affecting particles even when the node is invisible
+	EPB_INVISIBLE_AFFECTING = 2,
+
+	//! Continue updating particle positions or deleting them even when the node is invisible
+	EPB_INVISIBLE_ANIMATING = 4,
+
 	//! Clear all particles when node gets invisible
-	EPI_CLEAR_ON_INVISIBLE = 8
+	EPB_CLEAR_ON_INVISIBLE = 8,
+
+	//! Particle movement direction on emitting ignores the node rotation
+	//! This is mainly to allow backward compatible behavior to Irrlicht 1.8
+	EPB_EMITTER_VECTOR_IGNORE_ROTATION = 16,
+
+	//! On emitting global particles interpolate the positions randomly between the last and current node transformations.
+	//! This can be set to avoid gaps caused by fast node movement or low framerates, but will be somewhat
+	//! slower to calculate.
+	EPB_EMITTER_FRAME_INTERPOLATION = 32
 };
 
 class IParticleSystemSceneNode : public ISceneNode
@@ -66,7 +78,7 @@ public:
 		const core::vector3df& rotation = core::vector3df(0,0,0),
 		const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f))
 			: ISceneNode(parent, mgr, id, position, rotation, scale)
-			, ParticleInvisibleBehavior(EPI_STOP_EMITTERS|EPI_STOP_AFFECTORS|EPI_STOP_ANIMATING|EPI_CLEAR_ON_INVISIBLE)
+			, ParticleBehavior(0)
 	{
 	}
 
@@ -80,22 +92,22 @@ public:
 	Default is true. */
 	virtual void setParticlesAreGlobal(bool global=true) = 0;
 
-	//! Sets how particles behave when this node is invisible
-	/** Default is: EPIB_STOP_EMITTERS|EPIB_STOP_AFFECTORS|EPIB_STOP_ANIMATING|EPI_CLEAR_ON_INVISIBLE
-	\param flags Any combination of ::EParticleInvisibleBehavior flags
-	*/
-	virtual void setInvisibleBehavior(irr::u32 flags)
+
+	//! Bitflags to change the particle behavior
+	/**
+	\param flags A combination of ::EParticleBehavior bit-flags. Default is 0.	*/
+	virtual void setParticleBehavior(irr::u32 flags)
 	{
-		ParticleInvisibleBehavior = flags;
+		ParticleBehavior = flags;
 	}
 
-	//! Gets how particles behave when this node is invisible
+
+	//! Gets how particles behave in different situations
 	/**
-	\return A combination of ::EParticleInvisibleBehavior flags
-	*/
-	virtual irr::u32 getInvisibleBehavior() const
+	\return A combination of ::EParticleBehavior flags */
+	virtual irr::u32 getParticleBehavior() const
 	{
-		return ParticleInvisibleBehavior;
+		return ParticleBehavior;
 	}
 
 	//! Remove all currently visible particles
@@ -541,17 +553,17 @@ public:
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_
 	{
-		out->addInt("ParticleInvisibleBehavior", ParticleInvisibleBehavior);
+		out->addInt("ParticleBehavior", ParticleBehavior);
 	}
 
 	//! Reads attributes of the scene node.
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_
 	{
-		ParticleInvisibleBehavior = in->getAttributeAsInt("ParticleInvisibleBehavior", ParticleInvisibleBehavior);
+		ParticleBehavior = in->getAttributeAsInt("ParticleBehavior", ParticleBehavior);
 	}
 
 protected:
-	s32 ParticleInvisibleBehavior;
+	s32 ParticleBehavior;
 };
 
 } // end namespace scene
