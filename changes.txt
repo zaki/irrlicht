@@ -57,6 +57,8 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.2
 
+ - IGUIStaticText::getTextHeight returns now the correct height for texts with newlines even WordWrap is not set.
+ - Crashfix for CGUIEditBox. CGUIEditBox::setMultiLine must break text when changed or other functions like getTextDimension can crash afterward for strings with newline characters.
  - CGUIEditBox and the GUI-Editor now convert pasted text correctly using mbstowcs.
  - C::B project files work again on newer Linux-distributions which have cleaned up their dev-lib dependencies.
  - Makefile for the new IrrFontTool links now correctly to libfontconfig
