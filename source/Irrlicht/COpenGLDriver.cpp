@@ -2722,8 +2722,14 @@ void COpenGLDriver::setRenderStates3DMode()
 
 		// set new material.
 		if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
+		{
+			// force blending if necessary
+			if (Material.BlendOperation == EBO_NONE && MaterialRenderers[Material.MaterialType].Renderer->isTransparent())
+				Material.BlendOperation = EBO_ADD;
+
 			MaterialRenderers[Material.MaterialType].Renderer->OnSetMaterial(
 				Material, LastMaterial, ResetRenderStates, this);
+		}
 
 		LastMaterial = Material;
 		ResetRenderStates = false;
@@ -3052,8 +3058,11 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// zwrite
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
+		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (material.BlendOperation == EBO_NONE &&
+			!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
+		{
 			BridgeCalls->setDepthMask(true);
+		}
 		else
 			BridgeCalls->setDepthMask(false);
 	}

@@ -671,14 +671,6 @@ namespace video
 		\return True if the materials are equal, else false. */
 		inline bool operator==(const SMaterial& b) const
 		{ return !(b!=*this); }
-
-		bool isTransparent() const
-		{
-			return MaterialType==EMT_TRANSPARENT_ADD_COLOR ||
-				MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL ||
-				MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA ||
-				MaterialType==EMT_TRANSPARENT_REFLECTION_2_LAYER;
-		}
 	};
 
 	//! global const identity Material
