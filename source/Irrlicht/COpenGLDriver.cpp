@@ -2722,14 +2722,8 @@ void COpenGLDriver::setRenderStates3DMode()
 
 		// set new material.
 		if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
-		{
-			// force blending if necessary
-			if (Material.BlendOperation == EBO_NONE && MaterialRenderers[Material.MaterialType].Renderer->isTransparent())
-				Material.BlendOperation = EBO_ADD;
-
 			MaterialRenderers[Material.MaterialType].Renderer->OnSetMaterial(
 				Material, LastMaterial, ResetRenderStates, this);
-		}
 
 		LastMaterial = Material;
 		ResetRenderStates = false;

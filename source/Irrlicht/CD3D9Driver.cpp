@@ -2076,14 +2076,8 @@ bool CD3D9Driver::setRenderStates3DMode()
 		// set new material.
 
 		if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-		{
-			// force blending if necessary
-			if (Material.BlendOperation == EBO_NONE && MaterialRenderers[Material.MaterialType].Renderer->isTransparent())
-				Material.BlendOperation = EBO_ADD;
-
 			MaterialRenderers[Material.MaterialType].Renderer->OnSetMaterial(
 				Material, LastMaterial, ResetRenderStates, this);
-		}
 	}
 
 	bool shaderOK = true;

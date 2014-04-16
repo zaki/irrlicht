@@ -35,7 +35,7 @@ namespace video
 		EBF_SRC_ALPHA_SATURATE		//!< src	(min(srcA, 1-destA), idem, ...)
 	};
 
-	//! Values defining the blend operation used when blend is enabled
+	//! Values defining the blend operation
 	enum E_BLEND_OPERATION
 	{
 		EBO_NONE = 0,	//!< No blending happens

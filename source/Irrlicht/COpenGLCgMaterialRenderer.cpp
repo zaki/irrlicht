@@ -93,10 +93,6 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 	else
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
-
-	Material = material;
-
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexProgram)
@@ -116,13 +112,17 @@ void COpenGLCgMaterialRenderer::OnSetMaterial(const SMaterial& material, const S
 			cgGLEnableProfile(GeometryProfile);
 			cgGLBindProgram(GeometryProgram);
 		}
-
-		if (BaseMaterial)
-			BaseMaterial->OnSetBaseMaterial(material);
 	}
+
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
+	if (BaseMaterial)
+        BaseMaterial->OnSetBaseMaterial(material);
 
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
+
+    Material = material;
 }
 
 bool COpenGLCgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
@@ -154,9 +154,9 @@ void COpenGLCgMaterialRenderer::OnUnsetMaterial()
 	}
 
 	if (BaseMaterial)
-		BaseMaterial->OnUnsetMaterial();
+		BaseMaterial->OnUnsetBaseMaterial();
 
-	Material = IdentityMaterial;;
+	Material = IdentityMaterial;
 }
 
 void COpenGLCgMaterialRenderer::setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates)

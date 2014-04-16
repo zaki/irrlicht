@@ -75,10 +75,6 @@ bool CD3D9CgMaterialRenderer::isTransparent() const
 
 void CD3D9CgMaterialRenderer::OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services)
 {
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
-
-	Material = material;
-
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexProgram)
@@ -86,13 +82,17 @@ void CD3D9CgMaterialRenderer::OnSetMaterial(const SMaterial& material, const SMa
 
 		if (FragmentProgram)
 			cgD3D9BindProgram(FragmentProgram);
-
-		if (BaseMaterial)
-			BaseMaterial->OnSetMaterial(material, material, true, this);
 	}
+
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
+	if (BaseMaterial)
+        BaseMaterial->OnSetMaterial(material, lastMaterial, resetAllRenderstates, this);
 
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
+
+    Material = material;
 }
 
 bool CD3D9CgMaterialRenderer::OnRender(IMaterialRendererServices* services, E_VERTEX_TYPE vtxtype)
@@ -115,7 +115,7 @@ void CD3D9CgMaterialRenderer::OnUnsetMaterial()
 	if (BaseMaterial)
 		BaseMaterial->OnUnsetMaterial();
 
-	Material = IdentityMaterial;;
+	Material = IdentityMaterial;
 }
 
 void CD3D9CgMaterialRenderer::setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates)

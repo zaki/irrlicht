@@ -138,8 +138,6 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 	else
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
-
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexShader)
@@ -179,10 +177,12 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 			glEnable(GL_FRAGMENT_PROGRAM_NV);
 #endif
 		}
-
-		if (BaseMaterial)
-			BaseMaterial->OnSetBaseMaterial(material);
 	}
+
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
+	if (BaseMaterial)
+        BaseMaterial->OnSetBaseMaterial(material);
 
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
