@@ -235,7 +235,7 @@ bool CIrrDeviceFB::run()
 		{
 			irr::SEvent irrevent;
 			irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
-			irrevent.KeyInput.PressedDown = true;
+			irrevent.KeyInput.PressedDown = (ev.value == 1);
 
 			switch (ev.code)
 			{
@@ -264,6 +264,84 @@ bool CIrrDeviceFB::run()
 				break;
 				case KEY_DOWN:
 					irrevent.KeyInput.Key = (EKEY_CODE)0x28;
+				break;
+				case KEY_A:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x41;
+				break;
+				case KEY_B:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x42;
+				break;
+				case KEY_C:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x43;
+				break;
+				case KEY_D:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x44;
+				break;
+				case KEY_E:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x45;
+				break;
+				case KEY_F:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x46;
+				break;
+				case KEY_G:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x47;
+				break;
+				case KEY_H:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x48;
+				break;
+				case KEY_I:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x49;
+				break;
+				case KEY_J:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x4A;
+				break;
+				case KEY_K:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x4B;
+				break;
+				case KEY_L:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x4C;
+				break;
+				case KEY_M:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x4D;
+				break;
+				case KEY_N:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x4E;
+				break;
+				case KEY_O:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x4F;
+				break;
+				case KEY_P:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x50;
+				break;
+				case KEY_Q:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x51;
+				break;
+				case KEY_R:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x52;
+				break;
+				case KEY_S:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x53;
+				break;
+				case KEY_T:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x54;
+				break;
+				case KEY_U:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x55;
+				break;
+				case KEY_V:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x56;
+				break;
+				case KEY_W:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x57;
+				break;
+				case KEY_X:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x58;
+				break;
+				case KEY_Y:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x59;
+				break;
+				case KEY_Z:
+					irrevent.KeyInput.Key = (EKEY_CODE)0x5A;
 				break;
 				default:
 					irrevent.KeyInput.Key = (EKEY_CODE)0;
