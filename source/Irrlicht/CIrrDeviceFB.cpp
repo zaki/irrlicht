@@ -27,8 +27,18 @@
 #include "COSOperator.h"
 #include "CColorConverter.h"
 #include "SIrrCreationParameters.h"
+#include "CEGLManager.h"
 
 #include <linux/input.h>
+
+namespace irr
+{
+	namespace video
+	{
+		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, video::IContextManager* contextManager);
+	}
+}
 
 namespace irr
 {
@@ -206,6 +216,25 @@ void CIrrDeviceFB::createDriver()
 		#endif
 		break;
 
+	case video::EDT_OGLES2:
+		#ifdef _IRR_COMPILE_WITH_OGLES2_
+		{
+			video::SExposedVideoData data;
+			s32 width = 0;
+			s32 height = 0;
+			NativeDisplayType display = fbGetDisplay(0);
+			fbGetDisplayGeometry(display, &width, &height);
+			data.OpenGLFB.Window = (void*)fbCreateWindow(display, 0, 0, width, height);
+			ContextManager = new video::CEGLManager();
+			ContextManager->initialize(CreationParams, data);
+			VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
+		}
+		#else
+		os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR);
+		#endif
+		break;
+
+	case video::EDT_OGLES1:
 	case video::EDT_OPENGL:
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:

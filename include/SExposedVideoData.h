@@ -79,35 +79,39 @@ struct SExposedVideoData
 			void* X11Context;
 			unsigned long X11Window;
 		} OpenGLLinux;
-        
-        struct
+
+		struct
 		{
-            //! The NSOpenGLContext object.
-            void* Context;
-            
-            //! The NSWindow object.
+			//! The EGLNativeWindowType object.
+			void* Window;	
+		} OpenGLFB;
+        
+		struct
+		{
+			//! The NSOpenGLContext object.
+			void* Context;
+
+			//! The NSWindow object.
 			void* Window;
 		} OpenGLOSX;
         
-        struct
+		struct
 		{
 			//! The UIApplicationDelegate object.
 			void* AppDelegate;
-			
+
 			//! The EAGLContext object.
 			void* Context;
 			
 			//! The subview UIView object where the drawing happens.
-			void* View;
-			
+			void* View;	
 		} OGLESIPhone;
 
-        struct
-        {
-            //! The ANativeWindow object.
-            void* Window;
-
-        } OGLESAndroid;
+		struct
+		{
+			//! The ANativeWindow object.
+			void* Window;
+		} OGLESAndroid;
 	};
 };
 

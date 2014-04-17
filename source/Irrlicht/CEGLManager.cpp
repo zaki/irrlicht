@@ -48,7 +48,10 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
 #elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 	EglWindow =	(ANativeWindow*)Data.OGLESAndroid.Window;
-	EglDisplay = eglGetDisplay((NativeDisplayType) EGL_DEFAULT_DISPLAY);
+	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+#elif defined(_IRR_COMPILE_WITH_FB_DEVICE_)
+	EglWindow = (NativeWindowType)Data.OpenGLFB.Window;
+	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY); 
 #endif
 
 	// We must check if EGL display is valid.

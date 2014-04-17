@@ -38,7 +38,7 @@ namespace video
 
 COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 			io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
             , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
             , CIrrDeviceIPhone* device
@@ -47,7 +47,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 	BridgeCalls(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8)
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
     , ContextManager(contextManager)
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
     , Device(device), ViewFramebuffer(0),
@@ -60,7 +60,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 
     core::dimension2d<u32> WindowSize(0, 0);
 
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
 	if (!ContextManager)
 		return;
 
@@ -115,7 +115,7 @@ COGLES2Driver::~COGLES2Driver()
 
 	delete BridgeCalls;
 
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
 	if (ContextManager)
 	{
 		ContextManager->destroyContext();
@@ -436,7 +436,7 @@ bool COGLES2Driver::endScene()
 {
 	CNullDriver::endScene();
 
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
     if (ContextManager)
 		ContextManager->swapBuffers();
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -2902,7 +2902,7 @@ class IContextManager;
 
 IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
         , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
         , CIrrDeviceIPhone* device
@@ -2911,7 +2911,7 @@ IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 {
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 	return new COGLES2Driver(params, io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
         , contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
         , device
