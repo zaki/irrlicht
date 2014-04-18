@@ -450,7 +450,7 @@ public:
 	{
 		s32 oldSelected = ComboTexture->getSelected();
 		s32 selectNew = -1;
-		const wchar_t * oldTextureName = 0;
+		core::stringw oldTextureName;
 		if ( oldSelected >= 0 )
 		{
 			oldTextureName = ComboTexture->getItem(oldSelected);
@@ -461,7 +461,7 @@ public:
 			video::ITexture * texture = driver->getTextureByIndex(i);
 			core::stringw name( texture->getName() );
 			ComboTexture->addItem( name.c_str() );
-			if ( oldTextureName && selectNew < 0 && name == oldTextureName )
+			if ( !oldTextureName.empty() && selectNew < 0 && name == oldTextureName )
 				selectNew = i;
 		}
 

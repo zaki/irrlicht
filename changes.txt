@@ -58,7 +58,8 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.2
 
- - Fix bug in IGUISkin serialization which messed up serialization of the button-pressed offsets (Thanks at @Midnight for reporting).
+ - Example 22 no longer select a random texture after loading a new texture (thanks at mongoose7 for reporting).
+ - Fix bug in IGUISkin serialization which messed up serialization of the button-pressed offsets (thanks at Midnight for reporting).
  - IGUIStaticText::getTextHeight returns now the correct height for texts with newlines even WordWrap is not set.
  - Crashfix for CGUIEditBox. CGUIEditBox::setMultiLine must break text when changed or other functions like getTextDimension can crash afterward for strings with newline characters.
  - CGUIEditBox and the GUI-Editor now convert pasted text correctly using mbstowcs.
