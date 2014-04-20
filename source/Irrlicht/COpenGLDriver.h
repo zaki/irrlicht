@@ -643,8 +643,9 @@ namespace video
 
 	class COpenGLCallBridge
 	{
-		public:
+	public:
 		COpenGLCallBridge(COpenGLDriver* driver);
+		~COpenGLCallBridge();
 
 		// Alpha calls.
 
@@ -654,9 +655,17 @@ namespace video
 
 		// Blending calls.
 
+		void setBlendEquation(GLenum mode);
+
+		void setBlendEquationIndexed(GLuint index, GLenum mode);
+
 		void setBlendFunc(GLenum source, GLenum destination);
 
+		void setBlendFuncIndexed(GLuint index, GLenum source, GLenum destination);
+
 		void setBlend(bool enable);
+
+		void setBlendIndexed(GLuint index, bool enable);
 
 		// Client state calls.
 
@@ -686,7 +695,7 @@ namespace video
 
 		void setClientActiveTexture(GLenum texture);
 
-		void setTexture(u32 stage, bool fixedPipeline);
+		void setTexture(GLuint stage, bool fixedPipeline);
 
 	private:
 		COpenGLDriver* Driver;
@@ -695,9 +704,11 @@ namespace video
 		GLclampf AlphaRef;
 		bool AlphaTest;
 
-		GLenum BlendSource;
-		GLenum BlendDestination;
-		bool Blend;
+		GLenum* BlendEquation;
+		GLenum* BlendSource;
+		GLenum* BlendDestination;
+		bool* Blend;
+		GLuint BlendIndexCount;
 
 		bool ClientStateVertex;
 		bool ClientStateNormal;

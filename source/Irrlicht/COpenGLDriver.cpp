@@ -3109,43 +3109,43 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			case EBO_SUBTRACT:
 #if defined(GL_EXT_blend_subtract)
 				if (FeatureAvailable[IRR_EXT_blend_subtract] || (Version>=120))
-					extGlBlendEquation(GL_FUNC_SUBTRACT_EXT);
+					BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT_EXT);
 #elif defined(GL_VERSION_1_2)
 				if (Version>=120)
-					extGlBlendEquation(GL_FUNC_SUBTRACT);
+					BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT);
 #endif
 				break;
 			case EBO_REVSUBTRACT:
 #if defined(GL_EXT_blend_subtract)
 				if (FeatureAvailable[IRR_EXT_blend_subtract] || (Version>=120))
-					extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
+					BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
 #elif defined(GL_VERSION_1_2)
 				if (Version>=120)
-					extGlBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+					BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 #endif
 				break;
 			case EBO_MIN:
 #if defined(GL_EXT_blend_minmax)
 				if (FeatureAvailable[IRR_EXT_blend_minmax] || (Version>=120))
-					extGlBlendEquation(GL_MIN_EXT);
+					BridgeCalls->setBlendEquation(GL_MIN_EXT);
 #elif defined(GL_VERSION_1_2)
 				if (Version>=120)
-					extGlBlendEquation(GL_MIN);
+					BridgeCalls->setBlendEquation(GL_MIN);
 #endif
 				break;
 			case EBO_MAX:
 #if defined(GL_EXT_blend_minmax)
 				if (FeatureAvailable[IRR_EXT_blend_minmax] || (Version>=120))
-					extGlBlendEquation(GL_MAX_EXT);
+					BridgeCalls->setBlendEquation(GL_MAX_EXT);
 #elif defined(GL_VERSION_1_2)
 				if (Version>=120)
-					extGlBlendEquation(GL_MAX);
+					BridgeCalls->setBlendEquation(GL_MAX);
 #endif
 				break;
 			case EBO_MIN_FACTOR:
 #if defined(GL_AMD_blend_minmax_factor)
 				if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-					extGlBlendEquation(GL_FACTOR_MIN_AMD);
+					BridgeCalls->setBlendEquation(GL_FACTOR_MIN_AMD);
 #endif
 				// fallback in case of missing extension
 #if defined(GL_VERSION_1_2)
@@ -3153,13 +3153,13 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 				else
 #endif
 				if (Version>=120)
-					extGlBlendEquation(GL_MIN);
+					BridgeCalls->setBlendEquation(GL_MIN);
 #endif
 				break;
 			case EBO_MAX_FACTOR:
 #if defined(GL_AMD_blend_minmax_factor)
 				if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-					extGlBlendEquation(GL_FACTOR_MAX_AMD);
+					BridgeCalls->setBlendEquation(GL_FACTOR_MAX_AMD);
 #endif
 				// fallback in case of missing extension
 #if defined(GL_VERSION_1_2)
@@ -3167,34 +3167,36 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 				else
 #endif
 				if (Version>=120)
-					extGlBlendEquation(GL_MAX);
+					BridgeCalls->setBlendEquation(GL_MAX);
 #endif
 				break;
 			case EBO_MIN_ALPHA:
 #if defined(GL_SGIX_blend_alpha_minmax)
 				if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
-					extGlBlendEquation(GL_ALPHA_MIN_SGIX);
+					BridgeCalls->setBlendEquation(GL_ALPHA_MIN_SGIX);
 				// fallback in case of missing extension
 				else
 					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						extGlBlendEquation(GL_MIN_EXT);
+						BridgeCalls->setBlendEquation(GL_MIN_EXT);
 #endif
 				break;
 			case EBO_MAX_ALPHA:
 #if defined(GL_SGIX_blend_alpha_minmax)
 				if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
-					extGlBlendEquation(GL_ALPHA_MAX_SGIX);
+					BridgeCalls->setBlendEquation(GL_ALPHA_MAX_SGIX);
 				// fallback in case of missing extension
 				else
 					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						extGlBlendEquation(GL_MAX_EXT);
+						BridgeCalls->setBlendEquation(GL_MAX_EXT);
 #endif
 				break;
 			default:
 #if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
-				extGlBlendEquation(GL_FUNC_ADD_EXT);
+				if (Version>=120)
+					BridgeCalls->setBlendEquation(GL_FUNC_ADD_EXT);
 #elif defined(GL_VERSION_1_2)
-				extGlBlendEquation(GL_FUNC_ADD);
+				if (Version>=120)
+					BridgeCalls->setBlendEquation(GL_FUNC_ADD);
 #endif
 				break;
 			}
@@ -4564,50 +4566,50 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 					(targets[i].ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 				if (targets[i].BlendOp==EBO_NONE)
-					extGlDisableIndexed(GL_BLEND, i);
+					BridgeCalls->setBlendIndexed(i, false);
 				else
-					extGlEnableIndexed(GL_BLEND, i);
+					BridgeCalls->setBlendIndexed(i, true);
 			}
 #if defined(GL_AMD_draw_buffers_blend) || defined(GL_ARB_draw_buffers_blend)
 			if (FeatureAvailable[IRR_AMD_draw_buffers_blend] || FeatureAvailable[IRR_ARB_draw_buffers_blend])
 			{
-				extGlBlendFuncIndexed(i, getGLBlend(targets[i].BlendFuncSrc), getGLBlend(targets[i].BlendFuncDst));
+				BridgeCalls->setBlendFuncIndexed(i, getGLBlend(targets[i].BlendFuncSrc), getGLBlend(targets[i].BlendFuncDst));
 				switch(targets[i].BlendOp)
 				{
 				case EBO_SUBTRACT:
-					extGlBlendEquationIndexed(i, GL_FUNC_SUBTRACT);
+					BridgeCalls->setBlendEquationIndexed(i, GL_FUNC_SUBTRACT);
 					break;
 				case EBO_REVSUBTRACT:
-					extGlBlendEquationIndexed(i, GL_FUNC_REVERSE_SUBTRACT);
+					BridgeCalls->setBlendEquationIndexed(i, GL_FUNC_REVERSE_SUBTRACT);
 					break;
 				case EBO_MIN:
-					extGlBlendEquationIndexed(i, GL_MIN);
+					BridgeCalls->setBlendEquationIndexed(i, GL_MIN);
 					break;
 				case EBO_MAX:
-					extGlBlendEquationIndexed(i, GL_MAX);
+					BridgeCalls->setBlendEquationIndexed(i, GL_MAX);
 					break;
 				case EBO_MIN_FACTOR:
 				case EBO_MIN_ALPHA:
 #if defined(GL_AMD_blend_minmax_factor)
 					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-						extGlBlendEquationIndexed(i, GL_FACTOR_MIN_AMD);
+						BridgeCalls->setBlendEquationIndexed(i, GL_FACTOR_MIN_AMD);
 					// fallback in case of missing extension
 					else
 #endif
-						extGlBlendEquation(GL_MIN);
+						BridgeCalls->setBlendEquationIndexed(i, GL_MIN);
 					break;
 				case EBO_MAX_FACTOR:
 				case EBO_MAX_ALPHA:
 #if defined(GL_AMD_blend_minmax_factor)
 					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-						extGlBlendEquationIndexed(i, GL_FACTOR_MAX_AMD);
+						BridgeCalls->setBlendEquationIndexed(i, GL_FACTOR_MAX_AMD);
 					// fallback in case of missing extension
 					else
 #endif
-						extGlBlendEquation(GL_MAX);
+						BridgeCalls->setBlendEquationIndexed(i, GL_MAX);
 				break;
 				default:
-					extGlBlendEquationIndexed(i, GL_FUNC_ADD);
+					BridgeCalls->setBlendEquationIndexed(i, GL_FUNC_ADD);
 					break;
 				}
 			}
@@ -5044,13 +5046,31 @@ const CGcontext& COpenGLDriver::getCgContext()
 
 COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	AlphaMode(GL_ALWAYS), AlphaRef(0.0f), AlphaTest(false),
-	BlendSource(GL_ONE), BlendDestination(GL_ZERO), Blend(false),
 	ClientStateVertex(false), ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false),
 	CullFaceMode(GL_BACK), CullFace(false),
 	DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), MatrixMode(GL_MODELVIEW),
 	ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB)
 {
-	// Initial OpenGL values from specification.
+	BlendIndexCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->MaxMultipleRenderTargets));
+
+	BlendEquation = new GLenum[BlendIndexCount];
+	BlendSource = new GLenum[BlendIndexCount];
+	BlendDestination = new GLenum[BlendIndexCount];
+	Blend = new bool[BlendIndexCount];
+
+	for (u32 i = 0; i < BlendIndexCount; ++i)
+	{
+#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
+		BlendEquation[i] = GL_FUNC_ADD_EXT;
+#elif defined(GL_VERSION_1_2)
+		BlendEquation[i] = GL_FUNC_ADD;
+#endif
+
+		BlendSource[i] = GL_ONE;
+		BlendDestination[i] = GL_ZERO;
+
+		Blend[i] = false;
+	}
 
 	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 	{
@@ -5058,8 +5078,18 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 		TextureFixedPipeline[i] = true;
 	}
 
+	// Initial OpenGL values from specification.
+
 	glAlphaFunc(GL_ALWAYS, 0.0f);
 	glDisable(GL_ALPHA_TEST);
+
+#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
+	if (Driver->Version >= 120)
+		Driver->extGlBlendEquation(GL_FUNC_ADD_EXT);
+#elif defined(GL_VERSION_1_2)
+	if (Driver->Version >= 120)
+		Driver->extGlBlendEquation(GL_FUNC_ADD);
+#endif
 
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glDisable(GL_BLEND);
@@ -5086,6 +5116,14 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+COpenGLCallBridge::~COpenGLCallBridge()
+{
+	delete[] BlendEquation;
+	delete[] BlendSource;
+	delete[] BlendDestination;
+	delete[] Blend;
+}
+
 void COpenGLCallBridge::setAlphaFunc(GLenum mode, GLclampf ref)
 {
 	if(AlphaMode != mode || AlphaRef != ref)
@@ -5109,26 +5147,76 @@ void COpenGLCallBridge::setAlphaTest(bool enable)
 	}
 }
 
+void COpenGLCallBridge::setBlendEquation(GLenum mode)
+{
+	if (BlendEquation[0] != mode)
+	{
+		Driver->extGlBlendEquation(mode);
+
+		for (GLuint i = 0; i < BlendIndexCount; ++i)
+			BlendEquation[i] = mode;
+	}
+}
+
+void COpenGLCallBridge::setBlendEquationIndexed(GLuint index, GLenum mode)
+{
+	if (index < BlendIndexCount && BlendEquation[index] != mode)
+	{
+		Driver->extGlBlendEquationIndexed(index, mode);
+
+		BlendEquation[index] = mode;
+	}
+}
+
 void COpenGLCallBridge::setBlendFunc(GLenum source, GLenum destination)
 {
-	if(BlendSource != source || BlendDestination != destination)
+	if (BlendSource[0] != source || BlendDestination[0] != destination)
 	{
 		glBlendFunc(source, destination);
 
-		BlendSource = source;
-		BlendDestination = destination;
+		for (GLuint i = 0; i < BlendIndexCount; ++i)
+		{
+			BlendSource[i] = source;
+			BlendDestination[i] = destination;
+		}
+	}
+}
+
+void COpenGLCallBridge::setBlendFuncIndexed(GLuint index, GLenum source, GLenum destination)
+{
+	if (index < BlendIndexCount && (BlendSource[index] != source || BlendDestination[index] != destination))
+	{
+		Driver->extGlBlendFuncIndexed(index, source, destination);
+
+		BlendSource[index] = source;
+		BlendDestination[index] = destination;
 	}
 }
 
 void COpenGLCallBridge::setBlend(bool enable)
 {
-	if(Blend != enable)
+	if (Blend[0] != enable)
 	{
 		if (enable)
 			glEnable(GL_BLEND);
 		else
 			glDisable(GL_BLEND);
-		Blend = enable;
+
+		for (GLuint i = 0; i < BlendIndexCount; ++i)
+			Blend[i] = enable;
+	}
+}
+
+void COpenGLCallBridge::setBlendIndexed(GLuint index, bool enable)
+{
+	if (index < BlendIndexCount && Blend[index] != enable)
+	{
+		if (enable)
+			Driver->extGlEnableIndexed(GL_BLEND, index);
+		else
+			Driver->extGlDisableIndexed(GL_BLEND, index);
+
+		Blend[index] = enable;
 	}
 }
 
@@ -5258,7 +5346,7 @@ void COpenGLCallBridge::setClientActiveTexture(GLenum texture)
 	}
 }
 
-void COpenGLCallBridge::setTexture(u32 stage, bool fixedPipeline)
+void COpenGLCallBridge::setTexture(GLuint stage, bool fixedPipeline)
 {
 	if (stage < MATERIAL_MAX_TEXTURES)
 	{
