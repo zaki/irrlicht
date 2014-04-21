@@ -637,8 +637,7 @@ COpenGLDriver::~COpenGLDriver()
 		cgDestroyContext(CgContext);
 	#endif
 
-	if (BridgeCalls)
-		delete BridgeCalls;
+	delete BridgeCalls;
 
 	RequestedLights.clear();
 
@@ -3095,110 +3094,102 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 	}
 
-	if (queryFeature(EVDF_BLEND_OPERATIONS) &&
-		(resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation))
+	// Blend Equation
+	if (resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation)
 	{
 		if (material.BlendOperation==EBO_NONE)
 			BridgeCalls->setBlend(false);
 		else
 		{
 			BridgeCalls->setBlend(true);
-#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op) || defined(GL_VERSION_1_2)
-			switch (material.BlendOperation)
+
+#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op) || defined(GL_VERSION_1_4)
+			if (queryFeature(EVDF_BLEND_OPERATIONS))
 			{
-			case EBO_SUBTRACT:
-#if defined(GL_EXT_blend_subtract)
-				if (FeatureAvailable[IRR_EXT_blend_subtract] || (Version>=120))
-					BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT_EXT);
-#elif defined(GL_VERSION_1_2)
-				if (Version>=120)
+				switch (material.BlendOperation)
+				{
+				case EBO_SUBTRACT:
+#if defined(GL_VERSION_1_4)
 					BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT);
+#elif defined(GL_EXT_blend_subtract)
+					BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT_EXT);
 #endif
-				break;
-			case EBO_REVSUBTRACT:
-#if defined(GL_EXT_blend_subtract)
-				if (FeatureAvailable[IRR_EXT_blend_subtract] || (Version>=120))
-					BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
-#elif defined(GL_VERSION_1_2)
-				if (Version>=120)
+					break;
+				case EBO_REVSUBTRACT:
+#if defined(GL_VERSION_1_4)
 					BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+#elif defined(GL_EXT_blend_subtract)
+					BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
 #endif
-				break;
-			case EBO_MIN:
-#if defined(GL_EXT_blend_minmax)
-				if (FeatureAvailable[IRR_EXT_blend_minmax] || (Version>=120))
+					break;
+				case EBO_MIN:
+#if defined(GL_VERSION_1_4)
+					BridgeCalls->setBlendEquation(GL_MIN);
+#elif defined(GL_EXT_blend_minmax)
 					BridgeCalls->setBlendEquation(GL_MIN_EXT);
-#elif defined(GL_VERSION_1_2)
-				if (Version>=120)
-					BridgeCalls->setBlendEquation(GL_MIN);
 #endif
-				break;
-			case EBO_MAX:
-#if defined(GL_EXT_blend_minmax)
-				if (FeatureAvailable[IRR_EXT_blend_minmax] || (Version>=120))
+					break;
+				case EBO_MAX:
+#if defined(GL_VERSION_1_4)
+					BridgeCalls->setBlendEquation(GL_MAX);
+#elif defined(GL_EXT_blend_minmax)
 					BridgeCalls->setBlendEquation(GL_MAX_EXT);
-#elif defined(GL_VERSION_1_2)
-				if (Version>=120)
-					BridgeCalls->setBlendEquation(GL_MAX);
 #endif
-				break;
-			case EBO_MIN_FACTOR:
+					break;
+				case EBO_MIN_FACTOR:
 #if defined(GL_AMD_blend_minmax_factor)
-				if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-					BridgeCalls->setBlendEquation(GL_FACTOR_MIN_AMD);
+					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+						BridgeCalls->setBlendEquation(GL_FACTOR_MIN_AMD);
 #endif
 				// fallback in case of missing extension
-#if defined(GL_VERSION_1_2)
+#if defined(GL_VERSION_1_4)
 #if defined(GL_AMD_blend_minmax_factor)
-				else
+					else
 #endif
-				if (Version>=120)
-					BridgeCalls->setBlendEquation(GL_MIN);
+						BridgeCalls->setBlendEquation(GL_MIN);
 #endif
-				break;
-			case EBO_MAX_FACTOR:
+					break;
+				case EBO_MAX_FACTOR:
 #if defined(GL_AMD_blend_minmax_factor)
-				if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-					BridgeCalls->setBlendEquation(GL_FACTOR_MAX_AMD);
+					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+						BridgeCalls->setBlendEquation(GL_FACTOR_MAX_AMD);
 #endif
 				// fallback in case of missing extension
-#if defined(GL_VERSION_1_2)
+#if defined(GL_VERSION_1_4)
 #if defined(GL_AMD_blend_minmax_factor)
-				else
+					else
 #endif
-				if (Version>=120)
-					BridgeCalls->setBlendEquation(GL_MAX);
+						BridgeCalls->setBlendEquation(GL_MAX);
 #endif
-				break;
-			case EBO_MIN_ALPHA:
+					break;
+				case EBO_MIN_ALPHA:
 #if defined(GL_SGIX_blend_alpha_minmax)
-				if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
-					BridgeCalls->setBlendEquation(GL_ALPHA_MIN_SGIX);
-				// fallback in case of missing extension
-				else
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						BridgeCalls->setBlendEquation(GL_MIN_EXT);
+					if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
+						BridgeCalls->setBlendEquation(GL_ALPHA_MIN_SGIX);
+					// fallback in case of missing extension
+					else
+						if (FeatureAvailable[IRR_EXT_blend_minmax])
+							BridgeCalls->setBlendEquation(GL_MIN_EXT);
 #endif
-				break;
-			case EBO_MAX_ALPHA:
+					break;
+				case EBO_MAX_ALPHA:
 #if defined(GL_SGIX_blend_alpha_minmax)
-				if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
-					BridgeCalls->setBlendEquation(GL_ALPHA_MAX_SGIX);
-				// fallback in case of missing extension
-				else
-					if (FeatureAvailable[IRR_EXT_blend_minmax])
-						BridgeCalls->setBlendEquation(GL_MAX_EXT);
+					if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
+						BridgeCalls->setBlendEquation(GL_ALPHA_MAX_SGIX);
+					// fallback in case of missing extension
+					else
+						if (FeatureAvailable[IRR_EXT_blend_minmax])
+							BridgeCalls->setBlendEquation(GL_MAX_EXT);
 #endif
-				break;
-			default:
-#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
-				if (Version>=120)
-					BridgeCalls->setBlendEquation(GL_FUNC_ADD_EXT);
-#elif defined(GL_VERSION_1_2)
-				if (Version>=120)
+					break;
+				default:
+#if defined(GL_VERSION_1_4)
 					BridgeCalls->setBlendEquation(GL_FUNC_ADD);
+#elif defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
+					BridgeCalls->setBlendEquation(GL_FUNC_ADD_EXT);
 #endif
-				break;
+					break;
+				}
 			}
 #endif
 		}
@@ -5060,10 +5051,10 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 
 	for (u32 i = 0; i < BlendIndexCount; ++i)
 	{
-#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
-		BlendEquation[i] = GL_FUNC_ADD_EXT;
-#elif defined(GL_VERSION_1_2)
+#if defined(GL_VERSION_1_4)
 		BlendEquation[i] = GL_FUNC_ADD;
+#elif defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
+		BlendEquation[i] = GL_FUNC_ADD_EXT;
 #endif
 
 		BlendSource[i] = GL_ONE;
@@ -5083,13 +5074,14 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	glAlphaFunc(GL_ALWAYS, 0.0f);
 	glDisable(GL_ALPHA_TEST);
 
-#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
-	if (Driver->Version >= 120)
-		Driver->extGlBlendEquation(GL_FUNC_ADD_EXT);
-#elif defined(GL_VERSION_1_2)
-	if (Driver->Version >= 120)
+	if (Driver->queryFeature(EVDF_BLEND_OPERATIONS))
+	{
+#if defined(GL_VERSION_1_4)
 		Driver->extGlBlendEquation(GL_FUNC_ADD);
+#elif defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
+		Driver->extGlBlendEquation(GL_FUNC_ADD_EXT);
 #endif
+	}
 
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glDisable(GL_BLEND);
