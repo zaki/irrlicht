@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- IGUIElement::getElementFromPoint now virtual
 - Fixed issue with wrongly enabled Z-writing for transparent shader materials. Thanks Hendu for this fix.
 - Allow more control over particle behavior. This also changed the default behavior.
 - ISceneNodeAnimators can now be disabled and paused.
