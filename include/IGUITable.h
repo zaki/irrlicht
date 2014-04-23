@@ -102,9 +102,9 @@ namespace gui
 		virtual s32 getColumnCount() const = 0;
 
 		//! Makes a column active. This will trigger an ordering process.
-		/** \param idx: The id of the column to make active.
+		/** \param idx: The id of the column to make active or a negative number to make non active.
 		\param doOrder: Do also the ordering which depending on mode for active column
-		\return True if successful. */
+		\return True when the column could be set active (aka - it did exist). */
 		virtual bool setActiveColumn(s32 idx, bool doOrder=false) = 0;
 
 		//! Returns which header is currently active
@@ -188,10 +188,10 @@ namespace gui
 		//! clears the table, deletes all items in the table
 		virtual void clear() = 0;
 
-		//! Set flags, as defined in EGUI_TABLE_DRAW_FLAGS, which influence the layout
+		//! Set flags, as defined in ::EGUI_TABLE_DRAW_FLAGS, which influence the layout
 		virtual void setDrawFlags(s32 flags) = 0;
 
-		//! Get the flags, as defined in EGUI_TABLE_DRAW_FLAGS, which influence the layout
+		//! Get the flags, as defined in ::EGUI_TABLE_DRAW_FLAGS, which influence the layout
 		virtual s32 getDrawFlags() const = 0;
 	};
 
