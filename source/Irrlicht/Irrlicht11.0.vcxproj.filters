@@ -108,6 +108,9 @@
     <ClInclude Include="..\..\include\IEventReceiver.h">
       <Filter>include</Filter>
     </ClInclude>
+	<ClInclude Include="..\..\include\CProfiler.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\ILogger.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -541,6 +544,9 @@
       <Filter>include\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IGUIMeshViewer.h">
+      <Filter>include\gui</Filter>
+    </ClInclude>
+	<ClInclude Include="..\..\include\IGUIProfiler.h">
       <Filter>include\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IGUIScrollBar.h">
@@ -1026,6 +1032,9 @@
     <ClInclude Include="os.h">
       <Filter>Irrlicht\irr</Filter>
     </ClInclude>
+	<ClInclude Include="EProfileIDs.h">
+      <Filter>Irrlicht\irr</Filter>
+    </ClInclude>
     <ClInclude Include="lzma\LzmaDec.h">
       <Filter>Irrlicht\irr\extern</Filter>
     </ClInclude>
@@ -1257,7 +1266,10 @@
     <ClInclude Include="CGUIModalScreen.h">
       <Filter>Irrlicht\gui</Filter>
     </ClInclude>
-    <ClInclude Include="CGUIScrollBar.h">
+    <ClInclude Include="CGUIProfiler.h">
+      <Filter>Irrlicht\gui</Filter>
+    </ClInclude>
+	<ClInclude Include="CGUIScrollBar.h">
       <Filter>Irrlicht\gui</Filter>
     </ClInclude>
     <ClInclude Include="CGUISkin.h">
@@ -1823,6 +1835,9 @@
     <ClCompile Include="os.cpp">
       <Filter>Irrlicht\irr</Filter>
     </ClCompile>
+	<ClCompile Include="CProfiler.cpp">
+      <Filter>Irrlicht\irr</Filter>
+    </ClCompile>
 	<ClCompile Include="leakHunter.cpp">
       <Filter>Irrlicht\irr</Filter>
     </ClCompile>
@@ -2213,7 +2228,10 @@
     <ClCompile Include="CGUIModalScreen.cpp">
       <Filter>Irrlicht\gui</Filter>
     </ClCompile>
-    <ClCompile Include="CGUIScrollBar.cpp">
+    <ClCompile Include="CGUIProfiler.cpp">
+      <Filter>Irrlicht\gui</Filter>
+    </ClCompile>
+	<ClCompile Include="CGUIScrollBar.cpp">
       <Filter>Irrlicht\gui</Filter>
     </ClCompile>
     <ClCompile Include="CGUISkin.cpp">

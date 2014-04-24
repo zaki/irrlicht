@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add a code profiler (stop-watch style)
 - Add override font to IGUITable
 - IGUITable can now disable the active column.
 - IGUIElement::getElementFromPoint now virtual

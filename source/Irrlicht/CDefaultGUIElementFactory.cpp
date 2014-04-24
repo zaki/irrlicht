@@ -27,6 +27,7 @@
 #include "IGUIToolbar.h"
 #include "IGUIWindow.h"
 #include "IGUITreeView.h"
+#include "IGUIProfiler.h"
 
 namespace irr
 {
@@ -96,6 +97,8 @@ IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IG
 			return Environment->addSpinBox(L"0.0", core::rect<s32>(0,0,100,100), true, parent);
 		case EGUIET_TREE_VIEW:
 			return Environment->addTreeView(core::rect<s32>(0,0,100,100),parent);
+		case EGUIET_PROFILER:
+			return Environment->addProfilerDisplay(core::rect<s32>(0,0,100,100), parent);
 		default:
  			return 0;
 	}

@@ -15,6 +15,8 @@
 #include "IReadFile.h"
 #include "IWriteFile.h"
 #include "ISceneLoader.h"
+#include "EProfileIDs.h"
+#include "CProfiler.h"
 
 #include "os.h"
 
@@ -308,6 +310,24 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	ISceneNodeAnimatorFactory* animatorFactory = new CDefaultSceneNodeAnimatorFactory(this, CursorControl);
 	registerSceneNodeAnimatorFactory(animatorFactory);
 	animatorFactory->drop();
+
+	IRR_PROFILE(
+		static bool initProfile = false;
+		if (!initProfile )
+		{
+			initProfile = true;
+			getProfiler().add(EPID_SM_DRAW_ALL, L"drawAll", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_ANIMATE, L"animate", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_RENDER_CAMERAS, L"cameras", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_RENDER_LIGHTS, L"lights", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_RENDER_SKYBOXES, L"skyboxes", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_RENDER_DEFAULT, L"defaultnodes", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_RENDER_SHADOWS, L"shadows", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_RENDER_TRANSPARENT, L"transp.nodes", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_RENDER_EFFECT, L"effectnodes", L"Irrlicht scene");
+			getProfiler().add(EPID_SM_REGISTER, L"reg.render.node", L"Irrlicht scene");
+		}
+ 	)
 }
 
 
@@ -1228,6 +1248,7 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 //! registers a node for rendering it at a specific time.
 u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS pass)
 {
+	IRR_PROFILE(CProfileScope p1(EPID_SM_REGISTER);)
 	u32 taken = 0;
 
 	switch(pass)
@@ -1345,6 +1366,8 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 //! draws all scene nodes
 void CSceneManager::drawAll()
 {
+	IRR_PROFILE(CProfileScope psAll(EPID_SM_DRAW_ALL);)
+
 	if (!Driver)
 		return;
 
@@ -1370,18 +1393,22 @@ void CSceneManager::drawAll()
 	Driver->setAllowZWriteOnTransparent(Parameters->getAttributeAsBool(ALLOW_ZWRITE_ON_TRANSPARENT));
 
 	// do animations and other stuff.
+	IRR_PROFILE(getProfiler().start(EPID_SM_ANIMATE));
 	OnAnimate(os::Timer::getTime());
+	IRR_PROFILE(getProfiler().stop(EPID_SM_ANIMATE));
 
 	/*!
 		First Scene Node for prerendering should be the active camera
 		consistent Camera is needed for culling
 	*/
+	IRR_PROFILE(getProfiler().start(EPID_SM_RENDER_CAMERAS));
 	camWorldPos.set(0,0,0);
 	if (ActiveCamera)
 	{
 		ActiveCamera->render();
 		camWorldPos = ActiveCamera->getAbsolutePosition();
 	}
+	IRR_PROFILE(getProfiler().stop(EPID_SM_RENDER_CAMERAS));
 
 	// let all nodes register themselves
 	OnRegisterSceneNode();
@@ -1391,6 +1418,7 @@ void CSceneManager::drawAll()
 
 	//render camera scenes
 	{
+		IRR_PROFILE(CProfileScope psCam(EPID_SM_RENDER_CAMERAS);)
 		CurrentRenderPass = ESNRP_CAMERA;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
@@ -1408,6 +1436,7 @@ void CSceneManager::drawAll()
 
 	//render lights scenes
 	{
+		IRR_PROFILE(CProfileScope psLights(EPID_SM_RENDER_LIGHTS);)
 		CurrentRenderPass = ESNRP_LIGHT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
@@ -1452,6 +1481,7 @@ void CSceneManager::drawAll()
 
 	// render skyboxes
 	{
+		IRR_PROFILE(CProfileScope psSkyBox(EPID_SM_RENDER_SKYBOXES);)
 		CurrentRenderPass = ESNRP_SKY_BOX;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
@@ -1481,6 +1511,7 @@ void CSceneManager::drawAll()
 
 	// render default objects
 	{
+		IRR_PROFILE(CProfileScope psDefault(EPID_SM_RENDER_DEFAULT);)
 		CurrentRenderPass = ESNRP_SOLID;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
@@ -1514,6 +1545,7 @@ void CSceneManager::drawAll()
 
 	// render shadows
 	{
+		IRR_PROFILE(CProfileScope psShadow(EPID_SM_RENDER_SHADOWS);)
 		CurrentRenderPass = ESNRP_SHADOW;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
@@ -1546,6 +1578,7 @@ void CSceneManager::drawAll()
 
 	// render transparent objects.
 	{
+		IRR_PROFILE(CProfileScope psTrans(EPID_SM_RENDER_TRANSPARENT);)
 		CurrentRenderPass = ESNRP_TRANSPARENT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 
@@ -1579,6 +1612,7 @@ void CSceneManager::drawAll()
 
 	// render transparent effect objects.
 	{
+		IRR_PROFILE(CProfileScope psEffect(EPID_SM_RENDER_EFFECT);)
 		CurrentRenderPass = ESNRP_TRANSPARENT_EFFECT;
 		Driver->getOverrideMaterial().Enabled = ((Driver->getOverrideMaterial().EnablePasses & CurrentRenderPass) != 0);
 

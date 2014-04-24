@@ -35,6 +35,7 @@
 #include "CGUIMenu.h"
 #include "CGUIToolBar.h"
 #include "CGUITable.h"
+#include "CGUIProfiler.h"
 
 #include "CDefaultGUIElementFactory.h"
 #include "IWriteFile.h"
@@ -1127,6 +1128,13 @@ IGUITable* CGUIEnvironment::addTable(const core::rect<s32>& rectangle, IGUIEleme
 	return b;
 }
 
+	//! Adds an element to display the information from the Irrlicht profiler
+IGUIProfiler* CGUIEnvironment::addProfilerDisplay(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id)
+{
+	CGUIProfiler* p = new CGUIProfiler(this, parent ? parent : this, id, rectangle);
+	p->drop();
+	return p;
+}
 
 //! Adds an image element.
 IGUIImage* CGUIEnvironment::addImage(video::ITexture* image, core::position2d<s32> pos,

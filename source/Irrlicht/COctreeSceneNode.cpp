@@ -12,6 +12,8 @@
 #include "IMaterialRenderer.h"
 #include "os.h"
 #include "CShadowVolumeSceneNode.h"
+#include "EProfileIDs.h"
+#include "CProfiler.h"
 
 namespace irr
 {
@@ -31,6 +33,16 @@ COctreeSceneNode::COctreeSceneNode(ISceneNode* parent, ISceneManager* mgr,
 #ifdef _DEBUG
 	setDebugName("COctreeSceneNode");
 #endif
+
+	IRR_PROFILE(
+		static bool initProfile = false;
+		if (!initProfile )
+		{
+			initProfile = true;
+			getProfiler().add(EPID_OC_RENDER, L"render octnode", L"Irrlicht scene");
+			getProfiler().add(EPID_OC_CALCPOLYS, L"calc octnode", L"Irrlicht scene");
+		}
+ 	)
 }
 
 
@@ -89,6 +101,7 @@ void COctreeSceneNode::OnRegisterSceneNode()
 //! renders the node.
 void COctreeSceneNode::render()
 {
+	IRR_PROFILE(CProfileScope psRender(EPID_OC_RENDER);)
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 	if (VertexType == -1 || !driver)
@@ -122,10 +135,12 @@ void COctreeSceneNode::render()
 	{
 	case video::EVT_STANDARD:
 		{
+			IRR_PROFILE(getProfiler().start(EPID_OC_CALCPOLYS));
 			if (BoxBased)
 				StdOctree->calculatePolys(box);
 			else
 				StdOctree->calculatePolys(frust);
+			IRR_PROFILE(getProfiler().stop(EPID_OC_CALCPOLYS));
 
 			const Octree<video::S3DVertex>::SIndexData* d = StdOctree->getIndexData();
 
@@ -170,10 +185,12 @@ void COctreeSceneNode::render()
 		break;
 	case video::EVT_2TCOORDS:
 		{
+			IRR_PROFILE(getProfiler().start(EPID_OC_CALCPOLYS));
 			if (BoxBased)
 				LightMapOctree->calculatePolys(box);
 			else
 				LightMapOctree->calculatePolys(frust);
+			IRR_PROFILE(getProfiler().stop(EPID_OC_CALCPOLYS));
 
 			const Octree<video::S3DVertex2TCoords>::SIndexData* d = LightMapOctree->getIndexData();
 
@@ -236,10 +253,12 @@ void COctreeSceneNode::render()
 		break;
 	case video::EVT_TANGENTS:
 		{
+			IRR_PROFILE(getProfiler().start(EPID_OC_CALCPOLYS));
 			if (BoxBased)
 				TangentsOctree->calculatePolys(box);
 			else
 				TangentsOctree->calculatePolys(frust);
+			IRR_PROFILE(getProfiler().stop(EPID_OC_CALCPOLYS));
 
 			const Octree<video::S3DVertexTangents>::SIndexData* d =  TangentsOctree->getIndexData();
 
