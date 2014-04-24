@@ -1,3 +1,7 @@
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+// Written by Michael Zeilfelder
+
 #ifndef __PROFILER_H_INCLUDED__
 #define __PROFILER_H_INCLUDED__
 
@@ -90,7 +94,6 @@ private:
 // And also why it works with id's instead of strings in the start/stop functions even if it makes using
 // the class slightly harder.
 // The class comes without reference-counting because the profiler-instance is never released (TBD).
-// But it's _not_ a singleton (also TBD), life-time is only guaranteed after globals are intialized.
 class CProfiler
 {
 public:

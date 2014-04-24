@@ -1,5 +1,6 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
+// Written by Michael Zeilfelder
 
 // TODO: We should have more pages for groups that don't fit into the display area.
 // 		So additional to CurrentGroupIdx we would also have a current-page-for-current-group thing.
