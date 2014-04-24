@@ -12,6 +12,7 @@ namespace irr
 {
 namespace gui
 {
+	class IGUIFont;
 
 	//! modes for ordering used when a column header is clicked
 	enum EGUI_COLUMN_ORDERING
@@ -193,6 +194,20 @@ namespace gui
 
 		//! Get the flags, as defined in ::EGUI_TABLE_DRAW_FLAGS, which influence the layout
 		virtual s32 getDrawFlags() const = 0;
+
+		//! Sets another skin independent font.
+		/** If this is set to zero, the button uses the font of the skin.
+		\param font: New font to set. */
+		virtual void setOverrideFont(IGUIFont* font=0) = 0;
+
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont(void) const = 0;
+
+		//! Get the font which is used right now for drawing
+		/** Currently this is the override font when one is set and the
+		font of the active skin otherwise */
+		virtual IGUIFont* getActiveFont() const = 0;
 	};
 
 
