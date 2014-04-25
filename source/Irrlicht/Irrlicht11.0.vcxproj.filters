@@ -108,7 +108,7 @@
     <ClInclude Include="..\..\include\IEventReceiver.h">
       <Filter>include</Filter>
     </ClInclude>
-	<ClInclude Include="..\..\include\CProfiler.h">
+	<ClInclude Include="..\..\include\IProfiler.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\ILogger.h">
@@ -1030,6 +1030,9 @@
       <Filter>Irrlicht\irr</Filter>
     </ClInclude>
     <ClInclude Include="os.h">
+      <Filter>Irrlicht\irr</Filter>
+    </ClInclude>
+	<ClInclude Include="CProfiler.h">
       <Filter>Irrlicht\irr</Filter>
     </ClInclude>
 	<ClInclude Include="EProfileIDs.h">

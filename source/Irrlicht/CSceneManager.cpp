@@ -16,7 +16,7 @@
 #include "IWriteFile.h"
 #include "ISceneLoader.h"
 #include "EProfileIDs.h"
-#include "CProfiler.h"
+#include "IProfiler.h"
 
 #include "os.h"
 

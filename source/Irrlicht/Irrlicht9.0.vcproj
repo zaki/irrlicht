@@ -686,7 +686,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\CProfiler.h"
+				RelativePath="..\..\include\IProfiler.h"
 				>
 			</File>
 			<File
@@ -2738,6 +2738,10 @@
 				</File>
 				<File
 					RelativePath="CProfiler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CProfiler.h"
 					>
 				</File>
 				<File

@@ -310,7 +310,7 @@
 				RelativePath="..\..\include\IEventReceiver.h">
 			</File>
 			<File
-				RelativePath="..\..\include\CProfiler.h">
+				RelativePath="..\..\include\IProfiler.h">
 			</File>
 			<File
 				RelativePath="..\..\include\IFileArchive.h">
@@ -1442,6 +1442,9 @@
 			</File>
 			<File
 				RelativePath=".\CProfiler.cpp">
+			</File>
+			<File
+				RelativePath=".\CProfiler.h">
 			</File>
 			<File
 				RelativePath=".\EProfileIDs.h">
