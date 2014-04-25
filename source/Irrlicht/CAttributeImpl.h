@@ -2032,9 +2032,24 @@ public:
 
 	virtual void setString(const char* text) _IRR_OVERRIDE_
 	{
-		u32 tmp;
-		sscanf(text, "0x%x", &tmp);
-		Value = (void *) tmp;
+		size_t val = 0;
+		switch ( sizeof(void*) )
+		{
+			case 4:
+			{
+				unsigned int tmp; // not using an irrlicht type - sscanf with %x needs always unsigned int
+				sscanf(text, "0x%x", &tmp);
+				val = (size_t)tmp;
+			}
+			break;
+			case 8:
+			{
+				unsigned long long tmp = strtoull(text, NULL, 16);
+				val = (size_t)tmp;
+			}
+			break;
+		}
+		Value = (void *)val;
 	}
 
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_
