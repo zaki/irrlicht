@@ -64,13 +64,14 @@ struct SProfileData
 		return TimeSum;
 	}
 
+private:
+
 	//! Convert the whole data into a string
 	core::stringw getAsString() const;
 
 	//! Return a string which describes the columns returned by getAsString
 	static core::stringw makeTitleString();
 
-private:
 	// just to be used for searching as it does no initialization besides id
 	SProfileData(u32 id) : Id(id) {}
 
@@ -94,7 +95,7 @@ private:
 // And also why it works with id's instead of strings in the start/stop functions even if it makes using
 // the class slightly harder.
 // The class comes without reference-counting because the profiler-instance is never released (TBD).
-class CProfiler
+class IRRLICHT_API CProfiler
 {
 public:
 	//! Constructor. You could use this to create a new profiler, but usually getProfiler() is used to access the global instance.
@@ -260,7 +261,7 @@ But you can use the profiler for profiling your own projects without that. */
 IRRLICHT_API CProfiler& IRRCALLCONV getProfiler();
 
 //! Class where the objects profile their own life-time.
-/** This is a compfort wrapper around the CProfiler start/stop mechanism which is easier to use
+/** This is a comfort wrapper around the CProfiler start/stop mechanism which is easier to use
 when you want to profile a scope. You only have to create an object and it will profile it's own lifetime
 for the given id. */
 class CProfileScope
@@ -277,7 +278,7 @@ public:
 
 	//! Object will create the given name, groupName combination for the id if it doesn't exist already
 	/** \param id: Should be >= 0 as negative id's are reserved for Irrlicht. Also very large numbers (near INT_MAX) might
-	have been created already by the autoamtic add function of ::CProfiler.
+	have been created already by the automatic add function of ::CProfiler.
 	\param name: Name for displaying profile data.
 	\param groupName: Each id belongs into a group - this helps on displaying profile data. */
 	CProfileScope(s32 id, const core::stringw &name, const core::stringw &groupName)
