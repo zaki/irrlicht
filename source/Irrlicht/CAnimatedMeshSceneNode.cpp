@@ -164,7 +164,7 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 			video::IMaterialRenderer* rnd =
 				driver->getMaterialRenderer(Materials[i].MaterialType);
 
-			if ((rnd && rnd->isTransparent()) || Materials[i].BlendOperation != video::EBO_NONE)
+			if ((rnd && rnd->isTransparent()) || Materials[i].isTransparent())
 				++transparentCount;
 			else
 				++solidCount;

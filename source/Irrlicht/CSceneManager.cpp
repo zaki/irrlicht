@@ -1317,7 +1317,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 			{
 				video::IMaterialRenderer* rnd =
 					Driver->getMaterialRenderer(node->getMaterial(i).MaterialType);
-				if ((rnd && rnd->isTransparent()) || node->getMaterial(i).BlendOperation != video::EBO_NONE)
+				if ((rnd && rnd->isTransparent()) || node->getMaterial(i).isTransparent())
 				{
 					// register as transparent node
 					TransparentNodeEntry e(node, camWorldPos);

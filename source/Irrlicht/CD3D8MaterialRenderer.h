@@ -12,6 +12,7 @@
 #include <d3d8.h>
 
 #include "IMaterialRenderer.h"
+#include "CD3D8Driver.h"
 
 namespace irr
 {
@@ -55,7 +56,7 @@ class CD3D8MaterialRenderer : public IMaterialRenderer
 public:
 
 	//! Constructor
-	CD3D8MaterialRenderer(IDirect3DDevice8* d3ddev, video::IVideoDriver* driver)
+	CD3D8MaterialRenderer(IDirect3DDevice8* d3ddev, CD3D8Driver* driver)
 		: pID3DDevice(d3ddev), Driver(driver)
 	{
 	}
@@ -63,7 +64,7 @@ public:
 protected:
 
 	IDirect3DDevice8* pID3DDevice;
-	video::IVideoDriver* Driver;
+	CD3D8Driver* Driver;
 };
 
 
@@ -72,7 +73,7 @@ class CD3D8MaterialRenderer_SOLID : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_SOLID(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_SOLID(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -95,7 +96,7 @@ class CD3D8MaterialRenderer_ONETEXTURE_BLEND : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_ONETEXTURE_BLEND(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_ONETEXTURE_BLEND(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -113,19 +114,11 @@ public:
 			u32 alphaSource;
 			unpack_textureBlendFunc ( srcFact, dstFact, modulate, alphaSource, material.MaterialTypeParam );
 
-			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO)
-			{
-				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-			}
-			else
-			{
-				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, getD3DBlend ( srcFact ) );
-				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, getD3DBlend ( dstFact ) );
-			}
+            Driver->getBridgeCalls()->setBlend(true);
+            Driver->getBridgeCalls()->setBlendFunc(Driver->getD3DBlend(srcFact), Driver->getD3DBlend(dstFact));
 
 			setTextureColorStage(pID3DDevice, 0,
-				D3DTA_TEXTURE, getD3DModulate(modulate), D3DTA_DIFFUSE);
+				D3DTA_TEXTURE, CD3D8MaterialRenderer::getD3DModulate(modulate), D3DTA_DIFFUSE);
 
 			if ( alphaSource && (textureBlendFunc_hasAlpha ( srcFact ) || textureBlendFunc_hasAlpha ( dstFact ) ))
 			{
@@ -151,7 +144,7 @@ public:
 
     virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		Driver->getBridgeCalls()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent.
@@ -163,41 +156,6 @@ public:
 	{
 		return true;
 	}
-
-	private:
-
-		u32 getD3DBlend ( E_BLEND_FACTOR factor ) const
-		{
-			u32 r = 0;
-		switch ( factor )
-			{
-				case EBF_ZERO:					r = D3DBLEND_ZERO; break;
-				case EBF_ONE:					r = D3DBLEND_ONE; break;
-				case EBF_DST_COLOR:				r = D3DBLEND_DESTCOLOR; break;
-				case EBF_ONE_MINUS_DST_COLOR:	r = D3DBLEND_INVDESTCOLOR; break;
-				case EBF_SRC_COLOR:				r = D3DBLEND_SRCCOLOR; break;
-				case EBF_ONE_MINUS_SRC_COLOR:	r = D3DBLEND_INVSRCCOLOR; break;
-				case EBF_SRC_ALPHA:				r = D3DBLEND_SRCALPHA; break;
-				case EBF_ONE_MINUS_SRC_ALPHA:	r = D3DBLEND_INVSRCALPHA; break;
-				case EBF_DST_ALPHA:				r = D3DBLEND_DESTALPHA; break;
-				case EBF_ONE_MINUS_DST_ALPHA:	r = D3DBLEND_INVDESTALPHA; break;
-				case EBF_SRC_ALPHA_SATURATE:	r = D3DBLEND_SRCALPHASAT; break;
-			}
-			return r;
-		}
-
-		u32 getD3DModulate ( E_MODULATE_FUNC func ) const
-		{
-			u32 r = D3DTOP_MODULATE;
-			switch ( func )
-			{
-				case EMFN_MODULATE_1X: r = D3DTOP_MODULATE; break;
-				case EMFN_MODULATE_2X: r = D3DTOP_MODULATE2X; break;
-				case EMFN_MODULATE_4X: r = D3DTOP_MODULATE4X; break;
-			}
-			return r;
-		}
-
 };
 
 
@@ -206,7 +164,7 @@ class CD3D8MaterialRenderer_SOLID_2_LAYER : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_SOLID_2_LAYER(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_SOLID_2_LAYER(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -230,7 +188,7 @@ class CD3D8MaterialRenderer_TRANSPARENT_ADD_COLOR : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_TRANSPARENT_ADD_COLOR(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_TRANSPARENT_ADD_COLOR(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -238,9 +196,8 @@ public:
 	{
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-        pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-        pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-        pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+        Driver->getBridgeCalls()->setBlend(true);
+        Driver->getBridgeCalls()->setBlendFunc(D3DBLEND_ONE, D3DBLEND_INVSRCCOLOR);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -253,7 +210,7 @@ public:
 
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		Driver->getBridgeCalls()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent. The scene management needs to know this
@@ -270,7 +227,7 @@ class CD3D8MaterialRenderer_TRANSPARENT_VERTEX_ALPHA : public CD3D8MaterialRende
 {
 public:
 
-	CD3D8MaterialRenderer_TRANSPARENT_VERTEX_ALPHA(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_TRANSPARENT_VERTEX_ALPHA(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -278,9 +235,8 @@ public:
 	{
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-        pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-        pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		Driver->getBridgeCalls()->setBlend(true);
+		Driver->getBridgeCalls()->setBlendFunc(D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -294,7 +250,7 @@ public:
 
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		Driver->getBridgeCalls()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent. The scene managment needs to know this
@@ -311,7 +267,7 @@ class CD3D8MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL : public CD3D8MaterialRend
 {
 public:
 
-	CD3D8MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -319,9 +275,8 @@ public:
 	{
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-        pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-        pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+		Driver->getBridgeCalls()->setBlend(true);
+		Driver->getBridgeCalls()->setBlendFunc(D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates
 			|| material.MaterialTypeParam != lastMaterial.MaterialTypeParam )
@@ -341,7 +296,7 @@ public:
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		Driver->getBridgeCalls()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent. The scene managment needs to know this
@@ -358,7 +313,7 @@ class CD3D8MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF : public CD3D8Material
 {
 public:
 
-	CD3D8MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -400,7 +355,7 @@ class CD3D8MaterialRenderer_LIGHTMAP : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_LIGHTMAP(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_LIGHTMAP(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -443,7 +398,7 @@ class CD3D8MaterialRenderer_DETAIL_MAP : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_DETAIL_MAP(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_DETAIL_MAP(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -468,7 +423,7 @@ class CD3D8MaterialRenderer_SPHERE_MAP : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_SPHERE_MAP(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_SPHERE_MAP(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -503,7 +458,7 @@ class CD3D8MaterialRenderer_REFLECTION_2_LAYER : public CD3D8MaterialRenderer
 {
 public:
 
-	CD3D8MaterialRenderer_REFLECTION_2_LAYER(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_REFLECTION_2_LAYER(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -539,7 +494,7 @@ class CD3D8MaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER : public CD3D8Materia
 {
 public:
 
-	CD3D8MaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(IDirect3DDevice8* p, video::IVideoDriver* d)
+	CD3D8MaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(IDirect3DDevice8* p, CD3D8Driver* d)
 		: CD3D8MaterialRenderer(p, d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -547,9 +502,8 @@ public:
 	{
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-        pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-        pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		Driver->getBridgeCalls()->setBlend(true);
+		Driver->getBridgeCalls()->setBlendFunc(D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -571,7 +525,7 @@ public:
 		pID3DDevice->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 		pID3DDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
 		pID3DDevice->SetTransform(D3DTS_TEXTURE1, &UnitMatrixD3D8);
-		pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		Driver->getBridgeCalls()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent. The scene managment needs to know this

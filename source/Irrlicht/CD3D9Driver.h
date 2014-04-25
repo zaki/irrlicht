@@ -31,6 +31,8 @@ namespace irr
 {
 namespace video
 {
+	class CD3D9CallBridge;
+
 	struct SDepthSurface : public IReferenceCounted
 	{
 		SDepthSurface() : Surface(0)
@@ -53,6 +55,7 @@ namespace video
 	{
 	public:
 
+		friend class CD3D9CallBridge;
 		friend class CD3D9Texture;
 
 		//! constructor
@@ -332,6 +335,15 @@ namespace video
 		//! Get Irrlicht color format from D3D color format.
 		ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format) const;
 
+		//! Get D3D blending factor.
+		u32 getD3DBlend(E_BLEND_FACTOR factor) const;
+
+		//! Get D3D modulate.
+		u32 getD3DModulate(E_MODULATE_FUNC func) const;
+
+		//! Get bridge calls.
+		CD3D9CallBridge* getBridgeCalls() const;
+
 		//! Get Cg context
 		#ifdef _IRR_COMPILE_WITH_CG_
 		const CGcontext& getCgContext();
@@ -427,6 +439,8 @@ namespace video
 			return v;
 		}
 
+		CD3D9CallBridge* BridgeCalls;
+
 		E_RENDER_MODE CurrentRenderMode;
 		D3DPRESENT_PARAMETERS present;
 
@@ -486,6 +500,37 @@ namespace video
 		#endif
 	};
 
+	//! This bridge between Irlicht pseudo D3D8 calls
+	//! and true D3D8 calls.
+
+	class CD3D9CallBridge
+	{
+	public:
+		CD3D9CallBridge(IDirect3DDevice9* p, CD3D9Driver* driver);
+
+		// Blending calls.
+
+		void setBlendOperation(DWORD mode);
+
+		void setBlendFunc(DWORD source, DWORD destination);
+
+		void setBlendFuncSeparate(DWORD sourceRGB, DWORD destinationRGB, DWORD sourceAlpha, DWORD destinationAlpha);
+
+		void setBlend(bool enable);
+
+	private:
+		IDirect3DDevice9* pID3DDevice;
+
+		DWORD BlendOperation;
+		DWORD BlendSourceRGB;
+		DWORD BlendDestinationRGB;
+		DWORD BlendSourceAlpha;
+		DWORD BlendDestinationAlpha;
+		bool Blend;
+		bool BlendSeparate;
+
+		bool FeatureBlendSeparate;
+	};
 
 } // end namespace video
 } // end namespace irr

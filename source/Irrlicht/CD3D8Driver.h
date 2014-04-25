@@ -25,8 +25,11 @@ namespace irr
 {
 namespace video
 {
+	class CD3D8CallBridge;
+
 	class CD3D8Driver : public CNullDriver, IMaterialRendererServices
 	{
+		friend class CD3D8CallBridge;
 		friend class CD3D8Texture;
 
 	public:
@@ -228,6 +231,16 @@ namespace video
 		virtual core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
 
 		virtual bool checkDriverReset() _IRR_OVERRIDE_ {return DriverWasReset;}
+
+		//! Get D3D blending factor.
+		u32 getD3DBlend(E_BLEND_FACTOR factor) const;
+
+		//! Get D3D modulate.
+		u32 getD3DModulate(E_MODULATE_FUNC func) const;
+
+		//! Get bridge calls.
+		CD3D8CallBridge* getBridgeCalls() const;
+
 	private:
 
 		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -295,6 +308,8 @@ namespace video
 			return v;
 		}
 
+		CD3D8CallBridge* BridgeCalls;
+
 		E_RENDER_MODE CurrentRenderMode;
 		D3DPRESENT_PARAMETERS present;
 
@@ -330,6 +345,31 @@ namespace video
 		SColorf AmbientLight;
 
 		SIrrlichtCreationParameters Params;
+	};
+
+	//! This bridge between Irlicht pseudo D3D8 calls
+	//! and true D3D8 calls.
+
+	class CD3D8CallBridge
+	{
+	public:
+		CD3D8CallBridge(IDirect3DDevice8* p);
+
+		// Blending calls.
+
+		void setBlendOperation(DWORD mode);
+
+		void setBlendFunc(DWORD source, DWORD destination);
+
+		void setBlend(bool enable);
+
+	private:
+		IDirect3DDevice8* pID3DDevice;
+
+		DWORD BlendOperation;
+		DWORD BlendSource;
+		DWORD BlendDestination;
+		bool Blend;
 	};
 
 } // end namespace video

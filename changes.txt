@@ -1,6 +1,10 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Added support for separate blending in OpenGL and D3D9 drivers.
+- Added pack_textureBlendFuncSeparate and unpack_textureBlendFuncSeparate functions, which allow to use separate blending functions in OpenGL.
+- Added BlendFactor field to SMaterial which allow user to set blending factor per SMaterial set call without use EMT_ONETEXTURE_BLEND type.
+- Fixed issue with blending operation set to EBO_NONE and some transparent material types.
 - Add a code profiler (stop-watch style)
 - Add override font to IGUITable
 - IGUITable can now disable the active column.
