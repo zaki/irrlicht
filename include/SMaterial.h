@@ -713,7 +713,7 @@ namespace video
 		{
 			bool status = false;
 
-			if (BlendOperation != EBO_NONE)
+			if (BlendOperation != EBO_NONE && BlendFactor != 0.f)
 			{
 				E_BLEND_FACTOR srcRGBFact = EBF_ZERO;
 				E_BLEND_FACTOR dstRGBFact = EBF_ZERO;
