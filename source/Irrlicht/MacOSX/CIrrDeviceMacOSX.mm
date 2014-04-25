@@ -1339,14 +1339,13 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	c.y = p.y;
 
 #ifdef __MAC_10_6
-	/*CGEventSourceRef SourceRef = CGEventSourceCreate(0);
-	CGEventSourceSetLocalEventsSuppressionInterval(SourceRef, 0);
-	CFRelease(SourceRef);*/
-	CGSetLocalEventsSuppressionInterval(0);
+    CGEventRef ev = CGEventCreateMouseEvent(0, kCGEventMouseMoved, c, 0);
+    CGEventPost(kCGHIDEventTap, ev);
+    CFRelease(ev);
 #else
-	CGSetLocalEventsSuppressionInterval(0);
+    CGSetLocalEventsSuppressionInterval(0);
+    CGWarpMouseCursorPosition(c);
 #endif
-	CGWarpMouseCursorPosition(c);
 }
 
 
