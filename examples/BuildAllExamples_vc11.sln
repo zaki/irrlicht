@@ -1,5 +1,5 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "..\source\Irrlicht\Irrlicht11.0.vcxproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
 EndProject
@@ -144,6 +144,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "25.XmlHandling", "25.XmlHan
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "24.CursorControl", "30.Profiling\Profiling_vc11.vcxproj", "{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -156,8 +158,6 @@ Global
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug|Win32.Build.0 = Debug|Win32
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug|x64.ActiveCfg = Debug|x64
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug|x64.Build.0 = Debug|x64
-		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug|x64.Build.2 = Static lib - Release - Fast FPU|x64
-		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug|x64.Build.4 = SDL-Debug|x64
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release|Win32.ActiveCfg = Release|Win32
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release|Win32.Build.0 = Release|Win32
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release|x64.ActiveCfg = Release|x64
@@ -402,6 +402,14 @@ Global
 		{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}.Release|Win32.Build.0 = Release|Win32
 		{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}.Release|x64.ActiveCfg = Release|x64
 		{8FDA260E-EF27-4F8C-8720-7AF707DD0D9E}.Release|x64.Build.0 = Release|x64
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Debug|Win32.ActiveCfg = Debug|Win32
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Debug|Win32.Build.0 = Debug|Win32
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Debug|x64.ActiveCfg = Debug|x64
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Debug|x64.Build.0 = Debug|x64
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Release|Win32.ActiveCfg = Release|Win32
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Release|Win32.Build.0 = Release|Win32
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Release|x64.ActiveCfg = Release|x64
+		{65D9DE2E-B73E-4ADF-96D1-BF4A8B7F4F97}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

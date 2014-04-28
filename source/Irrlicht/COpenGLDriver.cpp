@@ -48,12 +48,12 @@ const u16 COpenGLDriver::Quad2DIndices[4] = { 0, 1, 2, 3 };
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceWin32* device)
-: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
+: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), BridgeCalls(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	FixedPipelineState(EOFPS_ENABLE),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params), BridgeCalls(0),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
 	DeviceType(EIDT_WIN32)
 {
@@ -155,10 +155,10 @@ bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),             // Size Of This Pixel Format Descriptor
 		1,                                         // Version Number
-		PFD_DRAW_TO_WINDOW |                       // Format Must Support Window
+		(DWORD)(PFD_DRAW_TO_WINDOW |               // Format Must Support Window
 		PFD_SUPPORT_OPENGL |                       // Format Must Support OpenGL
 		(Params.Doublebuffer?PFD_DOUBLEBUFFER:0) | // Must Support Double Buffering
-		(Params.Stereobuffer?PFD_STEREO:0),        // Must Support Stereo Buffer
+		(Params.Stereobuffer?PFD_STEREO:0)),       // Must Support Stereo Buffer
 		PFD_TYPE_RGBA,                             // Request An RGBA Format
 		Params.Bits,                               // Select Our Color Depth
 		0, 0, 0, 0, 0, 0,                          // Color Bits Ignored

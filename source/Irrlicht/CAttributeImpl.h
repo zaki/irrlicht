@@ -2044,7 +2044,11 @@ public:
 			break;
 			case 8:
 			{
+#ifdef _MSC_VER
+				unsigned __int64 tmp = _strtoui64(text, NULL, 16);
+#else
 				unsigned long long tmp = strtoull(text, NULL, 16);
+#endif
 				val = (size_t)tmp;
 			}
 			break;
