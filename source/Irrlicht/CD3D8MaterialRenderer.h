@@ -118,7 +118,7 @@ public:
             Driver->getBridgeCalls()->setBlendFunc(Driver->getD3DBlend(srcFact), Driver->getD3DBlend(dstFact));
 
 			setTextureColorStage(pID3DDevice, 0,
-				D3DTA_TEXTURE, CD3D8MaterialRenderer::getD3DModulate(modulate), D3DTA_DIFFUSE);
+				D3DTA_TEXTURE, Driver->getD3DModulate(modulate), D3DTA_DIFFUSE);
 
 			if ( alphaSource && (textureBlendFunc_hasAlpha ( srcFact ) || textureBlendFunc_hasAlpha ( dstFact ) ))
 			{
