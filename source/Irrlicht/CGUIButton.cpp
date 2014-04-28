@@ -355,7 +355,7 @@ EGUI_BUTTON_IMAGE_STATE CGUIButton::getImageState(bool pressed) const
 	// figure state we should have
 	EGUI_BUTTON_IMAGE_STATE state = EGBIS_IMAGE_DISABLED;
 	bool focused = Environment->hasFocus(this);
-	bool mouseOver = Environment->getHovered() == this;
+	bool mouseOver = static_cast<const IGUIElement*>(Environment->getHovered()) == this;	// (static cast for Borland)
 	if (isEnabled())
 	{
 		if ( pressed )
