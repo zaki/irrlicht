@@ -116,7 +116,7 @@ void CGUIProfiler::updateDisplay()
 			}
 		}
 
-		// IGUITable has no page-wise scrolling yet. The following code can be replaced when we add that at.
+		// IGUITable has no page-wise scrolling yet. The following code can be replaced when we add that.
 		// For now we use some CGUITable implementation info to figure this out.
 		// (If you wonder why I didn't code page-scrolling directly in CGUITable ... because then it needs to be a
 		// public interface and I don't have enough time currently to design & implement that well)
