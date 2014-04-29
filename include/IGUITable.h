@@ -13,6 +13,7 @@ namespace irr
 namespace gui
 {
 	class IGUIFont;
+	class IGUIScrollBar;
 
 	//! modes for ordering used when a column header is clicked
 	enum EGUI_COLUMN_ORDERING
@@ -208,6 +209,15 @@ namespace gui
 		/** Currently this is the override font when one is set and the
 		font of the active skin otherwise */
 		virtual IGUIFont* getActiveFont() const = 0;
+
+		//! Get the height of items/rows
+		virtual s32 getItemHeight() const = 0;
+
+		//! Access the vertical scrollbar
+		virtual IGUIScrollBar* getVerticalScrollBar() const = 0;
+
+		//! Access the horizontal scrollbar
+		virtual IGUIScrollBar* getHorizontalScrollBar() const = 0;
 	};
 
 

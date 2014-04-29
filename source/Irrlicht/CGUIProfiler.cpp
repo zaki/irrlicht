@@ -1,11 +1,6 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // Written by Michael Zeilfelder
-
-// TODO: We should have more pages for groups that don't fit into the display area.
-// 		So additional to CurrentGroupIdx we would also have a current-page-for-current-group thing.
-//		The interface doesn't have to be changed for that - just the implementation.
-
 #include "CGUIProfiler.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
 
