@@ -580,7 +580,7 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 			IGUIElement * focusCandidate = Hovered;
 
 			// Only allow enabled elements to be focused (unless EFF_CAN_FOCUS_DISABLED is set)
-			if ( !Hovered->isEnabled() && !(FocusFlags & EFF_CAN_FOCUS_DISABLED))
+			if ( Hovered && !Hovered->isEnabled() && !(FocusFlags & EFF_CAN_FOCUS_DISABLED))
 				focusCandidate = NULL;	// we still remove focus from the active element
 
 			// Please don't merge this into a single if clause, it's easier to debug the way it is
