@@ -1934,7 +1934,13 @@ public:
 		}
 	}
 
-	virtual void setTexture(video::ITexture* value)
+	virtual void setTexture(video::ITexture* texture, const path& filename) _IRR_OVERRIDE_
+	{
+		OverrideName = filename;
+		setTexture(texture);
+	};
+
+	void setTexture(video::ITexture* value)
 	{
 		if ( value == Value )
 			return;
