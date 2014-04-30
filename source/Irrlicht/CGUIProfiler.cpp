@@ -217,6 +217,7 @@ void CGUIProfiler::firstPage(bool includeOverview)
 		CurrentGroupIdx = 0;
     else
 		CurrentGroupIdx = 1; // can be invalid
+	CurrentGroupPage = 0;
 }
 
 
