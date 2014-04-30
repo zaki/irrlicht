@@ -255,7 +255,7 @@ public:
 							{
 								irr::f32 gapZ = z > 0 ? (z-1)*GAP : 0.f;
 								irr::f32 posZ = -halfSizeZ + z*extent.Z + gapZ;
-								scene::IMeshSceneNode * node = SceneManager->addMeshSceneNode (mesh, NULL, -1, vector3df(posX, posY, posZ) );
+								scene::IAnimatedMeshSceneNode * node = SceneManager->addAnimatedMeshSceneNode(aniMesh, NULL, -1, vector3df(posX, posY, posZ) );
 								node->setMaterialFlag(video::EMF_LIGHTING, false);
 							}
 						}
