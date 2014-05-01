@@ -1082,13 +1082,13 @@ void CGUITreeView::setImageList( IGUIImageList* imageList )
 }
 
 //! Access the vertical scrollbar
-IGUIScrollBar* CGUITreeView::getVerticalScrollBar() const _IRR_OVERRIDE_
+IGUIScrollBar* CGUITreeView::getVerticalScrollBar() const
 {
 	return ScrollBarV;
 }
 
 //! Access the horizontal scrollbar
-IGUIScrollBar* CGUITreeView::getHorizontalScrollBar() const _IRR_OVERRIDE_
+IGUIScrollBar* CGUITreeView::getHorizontalScrollBar() const
 {
 	return ScrollBarH;
 }
