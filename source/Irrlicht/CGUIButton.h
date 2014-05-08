@@ -10,6 +10,7 @@
 
 #include "IGUIButton.h"
 #include "IGUISpriteBank.h"
+#include "ITexture.h"
 #include "SColor.h"
 
 namespace irr
@@ -43,17 +44,32 @@ namespace gui
 		//! Get the font which is used right now for drawing
 		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
 
-		//! Sets an image which should be displayed on the button when it is in normal state.
-		virtual void setImage(video::ITexture* image=0) _IRR_OVERRIDE_;
+		//! Sets an image which should be displayed on the button when it is in the given state.
+		virtual void setImage(EGUI_BUTTON_IMAGE_STATE state, video::ITexture* image=0, const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0))  _IRR_OVERRIDE_;
 
 		//! Sets an image which should be displayed on the button when it is in normal state.
-		virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) _IRR_OVERRIDE_;
+		virtual void setImage(video::ITexture* image=0) _IRR_OVERRIDE_
+		{
+			setImage(EGBIS_IMAGE_UP, image);
+		}
+
+		//! Sets an image which should be displayed on the button when it is in normal state.
+		virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) _IRR_OVERRIDE_
+		{
+			setImage(EGBIS_IMAGE_UP, image, pos);
+		}
 
 		//! Sets an image which should be displayed on the button when it is in pressed state.
-		virtual void setPressedImage(video::ITexture* image=0) _IRR_OVERRIDE_;
+		virtual void setPressedImage(video::ITexture* image=0) _IRR_OVERRIDE_
+		{
+			setImage(EGBIS_IMAGE_DOWN, image);
+		}
 
 		//! Sets an image which should be displayed on the button when it is in pressed state.
-		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) _IRR_OVERRIDE_;
+		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) _IRR_OVERRIDE_
+		{
+			setImage(EGBIS_IMAGE_DOWN, image, pos);
+		}
 
 		//! Sets the sprite bank used by the button
 		virtual void setSpriteBank(IGUISpriteBank* bank=0) _IRR_OVERRIDE_;
@@ -65,7 +81,20 @@ namespace gui
 		\param color: The color of the sprite
 		*/
 		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index,
-				video::SColor color=video::SColor(255,255,255,255), bool loop=false) _IRR_OVERRIDE_;
+				video::SColor color=video::SColor(255,255,255,255),
+				bool loop=false, bool scale=false) _IRR_OVERRIDE_;
+
+		//! Get the sprite-index for the given state or -1 when no sprite is set
+		virtual s32 getSpriteIndex(EGUI_BUTTON_STATE state) const _IRR_OVERRIDE_;
+
+		//! Get the sprite color for the given state. Color is only used when a sprite is set.
+		virtual video::SColor getSpriteColor(EGUI_BUTTON_STATE state) const _IRR_OVERRIDE_;
+
+		//! Returns if the sprite in the given state does loop
+		virtual bool getSpriteLoop(EGUI_BUTTON_STATE state) const _IRR_OVERRIDE_;
+
+		//! Returns if the sprite in the given state is scaled
+		virtual bool getSpriteScale(EGUI_BUTTON_STATE state) const _IRR_OVERRIDE_;
 
 		//! Sets if the button should behave like a push button. Which means it
 		//! can be in two states: Normal or Pressed. With a click on the button,
@@ -105,25 +134,75 @@ namespace gui
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
 
+	protected:
+		void drawSprite(EGUI_BUTTON_STATE state, u32 startTime, const core::position2di& center);
+		EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed) const;
+
 	private:
 
 		struct ButtonSprite
 		{
+			ButtonSprite() : Index(-1), Loop(false), Scale(false)
+			{
+			}
+
+			bool operator==(const ButtonSprite& other) const
+			{
+				return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
+			}
+
 			s32 Index;
 			video::SColor Color;
 			bool Loop;
+			bool Scale;
 		};
 
 		ButtonSprite ButtonSprites[EGBS_COUNT];
-
 		IGUISpriteBank* SpriteBank;
+
+		struct ButtonImage
+		{
+			ButtonImage() : Texture(0), SourceRect(core::rect<s32>(0,0,0,0))
+			{
+			}
+
+			ButtonImage(const ButtonImage& other) : Texture(0), SourceRect(core::rect<s32>(0,0,0,0))
+			{
+				*this = other;
+			}
+
+			~ButtonImage()
+			{
+				if ( Texture )
+					Texture->drop();
+			}
+
+			ButtonImage& operator=(const ButtonImage& other)
+			{
+				if ( this == &other )
+					return *this;
+
+				if (other.Texture)
+					other.Texture->grab();
+				if ( Texture )
+					Texture->drop();
+				Texture = other.Texture;
+				SourceRect = other.SourceRect;
+			}
+
+			bool operator==(const ButtonImage& other) const
+			{
+				return Texture == other.Texture && SourceRect == other.SourceRect;
+			}
+
+
+			video::ITexture* Texture;
+			core::rect<s32> SourceRect;
+		};
+
+		ButtonImage ButtonImages[EGBIS_COUNT];
+
 		IGUIFont* OverrideFont;
-
-		video::ITexture* Image;
-		video::ITexture* PressedImage;
-
-		core::rect<s32> ImageRect;
-		core::rect<s32> PressedImageRect;
 
 		u32 ClickTime, HoverTime, FocusTime;
 

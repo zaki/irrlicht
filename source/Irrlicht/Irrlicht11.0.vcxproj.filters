@@ -498,6 +498,9 @@
     <ClInclude Include="..\..\include\EMessageBoxFlags.h">
       <Filter>include\gui</Filter>
     </ClInclude>
+	<ClInclude Include="..\..\include\EFocusFlags.h">
+      <Filter>include\gui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\ICursorControl.h">
       <Filter>include\gui</Filter>
     </ClInclude>

@@ -588,21 +588,18 @@ bool CGUITable::OnEvent(const SEvent &event)
 
 				case EMIE_LMOUSE_PRESSED_DOWN:
 
-					if (Environment->hasFocus(this) &&
-						VerticalScrollBar->isVisible() &&
+					if (VerticalScrollBar->isVisible() &&
 						VerticalScrollBar->getAbsolutePosition().isPointInside(p) &&
 						VerticalScrollBar->OnEvent(event))
 						return true;
 
-					if (Environment->hasFocus(this) &&
-						HorizontalScrollBar->isVisible() &&
+					if (HorizontalScrollBar->isVisible() &&
 						HorizontalScrollBar->getAbsolutePosition().isPointInside(p) &&
 						HorizontalScrollBar->OnEvent(event))
 						return true;
 
 					if ( dragColumnStart( event.MouseInput.X, event.MouseInput.Y ) )
 					{
-						Environment->setFocus(this);
 						return true;
 					}
 
@@ -610,28 +607,21 @@ bool CGUITable::OnEvent(const SEvent &event)
 						return true;
 
 					Selecting = true;
-					Environment->setFocus(this);
 					return true;
 
 				case EMIE_LMOUSE_LEFT_UP:
 
 					CurrentResizedColumn = -1;
 					Selecting = false;
-					if (!getAbsolutePosition().isPointInside(p))
-					{
-						Environment->removeFocus(this);
-					}
 
-					if (Environment->hasFocus(this) &&
-						VerticalScrollBar->isVisible() &&
+					if (VerticalScrollBar->isVisible() &&
 						VerticalScrollBar->getAbsolutePosition().isPointInside(p) &&
 						VerticalScrollBar->OnEvent(event))
 					{
 						return true;
 					}
 
-					if (Environment->hasFocus(this) &&
-						HorizontalScrollBar->isVisible() &&
+					if (HorizontalScrollBar->isVisible() &&
 						HorizontalScrollBar->getAbsolutePosition().isPointInside(p) &&
 						HorizontalScrollBar->OnEvent(event))
 					{

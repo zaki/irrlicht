@@ -640,9 +640,11 @@ public:
 	\param first: element with the highest/lowest known tab order depending on search direction
 	\param closest: the closest match, depending on tab order and direction
 	\param includeInvisible: includes invisible elements in the search (default=false)
+	\param includeDisabled: includes disabled elements in the search (default=false)
 	\return true if successfully found an element, false to continue searching/fail */
 	bool getNextElement(s32 startOrder, bool reverse, bool group,
-		IGUIElement*& first, IGUIElement*& closest, bool includeInvisible=false) const
+		IGUIElement*& first, IGUIElement*& closest, bool includeInvisible=false,
+		bool includeDisabled=false) const
 	{
 		// we'll stop searching if we find this number
 		s32 wanted = startOrder + ( reverse ? -1 : 1 );
@@ -659,47 +661,51 @@ public:
 			if ( ( (*it)->isVisible() || includeInvisible ) &&
 				(group == true || (*it)->isTabGroup() == false) )
 			{
-				// only check tab stops and those with the same group status
-				if ((*it)->isTabStop() && ((*it)->isTabGroup() == group))
+				// ignore disabled, but children are checked (disabled is currently per element ignoring parent states)
+				if ( (*it)->isEnabled() || includeDisabled )
 				{
-					currentOrder = (*it)->getTabOrder();
-
-					// is this what we're looking for?
-					if (currentOrder == wanted)
+					// only check tab stops and those with the same group status
+					if ((*it)->isTabStop() && ((*it)->isTabGroup() == group))
 					{
-						closest = *it;
-						return true;
-					}
+						currentOrder = (*it)->getTabOrder();
 
-					// is it closer than the current closest?
-					if (closest)
-					{
-						closestOrder = closest->getTabOrder();
-						if ( ( reverse && currentOrder > closestOrder && currentOrder < startOrder)
-							||(!reverse && currentOrder < closestOrder && currentOrder > startOrder))
+						// is this what we're looking for?
+						if (currentOrder == wanted)
+						{
+							closest = *it;
+							return true;
+						}
+
+						// is it closer than the current closest?
+						if (closest)
+						{
+							closestOrder = closest->getTabOrder();
+							if ( ( reverse && currentOrder > closestOrder && currentOrder < startOrder)
+								||(!reverse && currentOrder < closestOrder && currentOrder > startOrder))
+							{
+								closest = *it;
+							}
+						}
+						else
+						if ( (reverse && currentOrder < startOrder) || (!reverse && currentOrder > startOrder) )
 						{
 							closest = *it;
 						}
-					}
-					else
-					if ( (reverse && currentOrder < startOrder) || (!reverse && currentOrder > startOrder) )
-					{
-						closest = *it;
-					}
 
-					// is it before the current first?
-					if (first)
-					{
-						closestOrder = first->getTabOrder();
+						// is it before the current first?
+						if (first)
+						{
+							closestOrder = first->getTabOrder();
 
-						if ( (reverse && closestOrder < currentOrder) || (!reverse && closestOrder > currentOrder) )
+							if ( (reverse && closestOrder < currentOrder) || (!reverse && closestOrder > currentOrder) )
+							{
+								first = *it;
+							}
+						}
+						else
 						{
 							first = *it;
 						}
-					}
-					else
-					{
-						first = *it;
 					}
 				}
 				// search within children

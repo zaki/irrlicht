@@ -262,7 +262,6 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 				DragStart.X = event.MouseInput.X;
 				DragStart.Y = event.MouseInput.Y;
 				Dragging = true;
-				Environment->setFocus(this);
 				return true;
 			case EMIE_LMOUSE_LEFT_UP:
 				Dragging = false;

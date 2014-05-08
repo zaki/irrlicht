@@ -82,7 +82,6 @@ bool CGUICheckBox::OnEvent(const SEvent& event)
 			{
 				Pressed = true;
 				CheckTime = os::Timer::getTime();
-				Environment->setFocus(this);
 				return true;
 			}
 			else

@@ -247,6 +247,9 @@
 				RelativePath="..\..\include\EMessageBoxFlags.h">
 			</File>
 			<File
+				RelativePath="..\..\include\EFocusFlags.h">
+			</File>
+			<File
 				RelativePath="..\..\include\ESceneNodeAnimatorTypes.h">
 			</File>
 			<File

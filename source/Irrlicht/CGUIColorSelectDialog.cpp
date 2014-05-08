@@ -363,11 +363,9 @@ bool CGUIColorSelectDialog::OnEvent(const SEvent& event)
 				DragStart.X = event.MouseInput.X;
 				DragStart.Y = event.MouseInput.Y;
 				Dragging = true;
-				Environment->setFocus(this);
 				return true;
 			case EMIE_LMOUSE_LEFT_UP:
 				Dragging = false;
-				Environment->removeFocus(this);
 				return true;
 			case EMIE_MOUSE_MOVED:
 				if (Dragging)

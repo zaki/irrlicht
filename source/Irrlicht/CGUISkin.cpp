@@ -123,6 +123,8 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Sizes[EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y] = 1;
 	Sizes[EGDS_BUTTON_PRESSED_TEXT_OFFSET_X] = 0;
 	Sizes[EGDS_BUTTON_PRESSED_TEXT_OFFSET_Y] = 2;
+	Sizes[EGDS_BUTTON_PRESSED_SPRITE_OFFSET_X] = 0;
+	Sizes[EGDS_BUTTON_PRESSED_SPRITE_OFFSET_Y] = 0;
 
 	Texts[EGDT_MSG_BOX_OK] = L"OK";
 	Texts[EGDT_MSG_BOX_CANCEL] = L"Cancel";
@@ -970,9 +972,7 @@ void CGUISkin::draw2DRectangle(IGUIElement* element,
 }
 
 
-//! Writes attributes of the object.
-//! Implement this to expose the attributes of your scene node animator for
-//! scripting languages, editors, debuggers or xml serialization purposes.
+//! Writes attributes of the skin
 void CGUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	u32 i;
@@ -990,25 +990,21 @@ void CGUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrite
 }
 
 
-//! Reads attributes of the object.
-//! Implement this to set the attributes of your scene node animator for
-//! scripting languages, editors, debuggers or xml deserialization purposes.
+//! Reads attributes of the skikn
 void CGUISkin::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	// TODO: This is not nice code for downward compatibility, whenever new values are added and users
-	// load an old skin the corresponding values will be set to 0.
 	u32 i;
 	for (i=0; i<EGDC_COUNT; ++i)
-		Colors[i] = in->getAttributeAsColor(GUISkinColorNames[i]);
+		Colors[i] = in->getAttributeAsColor(GUISkinColorNames[i], Colors[i]);
 
 	for (i=0; i<EGDS_COUNT; ++i)
-		Sizes[i] = in->getAttributeAsInt(GUISkinSizeNames[i]);
+		Sizes[i] = in->getAttributeAsInt(GUISkinSizeNames[i], Sizes[i]);
 
 	for (i=0; i<EGDT_COUNT; ++i)
-		Texts[i] = in->getAttributeAsStringW(GUISkinTextNames[i]);
+		Texts[i] = in->getAttributeAsStringW(GUISkinTextNames[i], Texts[i]);
 
 	for (i=0; i<EGDI_COUNT; ++i)
-		Icons[i] = in->getAttributeAsInt(GUISkinIconNames[i]);
+		Icons[i] = in->getAttributeAsInt(GUISkinIconNames[i], Icons[i]);
 }
 
 

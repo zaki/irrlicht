@@ -785,6 +785,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\EFocusFlags.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\ICursorControl.h"
 					>
 				</File>

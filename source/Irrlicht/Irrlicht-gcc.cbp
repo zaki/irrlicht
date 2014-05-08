@@ -439,6 +439,7 @@
 		<Unit filename="../../include/EMaterialTypes.h" />
 		<Unit filename="../../include/EMeshWriterEnums.h" />
 		<Unit filename="../../include/EMessageBoxFlags.h" />
+		<Unit filename="../../include/EFocusFlags.h" />
 		<Unit filename="../../include/EPrimitiveTypes.h" />
 		<Unit filename="../../include/ESceneNodeAnimatorTypes.h" />
 		<Unit filename="../../include/ESceneNodeTypes.h" />

@@ -216,14 +216,10 @@ namespace gui
 		//! get the type of this skin
 		virtual EGUI_SKIN_TYPE getType() const _IRR_OVERRIDE_;
 
-		//! Writes attributes of the object.
-		//! Implement this to expose the attributes of your scene node animator for
-		//! scripting languages, editors, debuggers or xml serialization purposes.
+		//! Writes attributes of the skin
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
 
-		//! Reads attributes of the object.
-		//! Implement this to set the attributes of your scene node animator for
-		//! scripting languages, editors, debuggers or xml deserialization purposes.
+		//! Reads attributes of the skin
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 	private:
