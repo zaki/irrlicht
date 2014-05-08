@@ -7,6 +7,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Improved i18n key input for X11 (languages like cyrillic work now).
 - Fix bug that ListBox would not allow to 'tab' to the next element (thx @ FlavourBoat for reporting)
 - IGUIEnvironment::getNextElement now public (was only in CGUIEnvironment before).
 - Add an overwrite mode to editbox. Patch provided by Adam(aka kingadami).
@@ -18,7 +19,7 @@ Changes in 1.9 (not yet released)
 - Fix c::b project obj folder names. Some static builds had used the shared folders (thx @ gerdb for reporting)
 - Add ITexture::getSource which can be used to check where the last IVideoDriver::getTexture call found the texture.
 - Add IMeshTextureLoader interface and replace texture-loading algorithms in most meshloaders.
-- CGUICheckBox no longer gives up focus on EMIE_LMOUSE_LEFT_UP (thx @Demre for reporting)
+- CGUICheckBox no longer gives up focus on EMIE_LMOUSE_LEFT_UP (thx @Demre and @REDDemon for reporting)
 - Bugfix: IGUIElement::addChild now prevents setting an element as it's own child.
 - GUI editor improvements (prevent crash, improve UI)
 - Add IrrlichtDevice::setWindowSize. 

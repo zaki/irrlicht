@@ -147,6 +147,12 @@ namespace irr
 		void initXAtoms();
 
 		bool switchToFullscreen(bool reset=false);
+	
+#ifdef _IRR_COMPILE_WITH_X11_	
+		bool createInputContext();
+		void destroyInputContext();
+		EKEY_CODE getKeyCode(XEvent &event);
+#endif	
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -385,6 +391,8 @@ namespace irr
 		XSetWindowAttributes attributes;
 		XSizeHints* StdHints;
 		XImage* SoftwareImage;
+		XIM XInputMethod;
+		XIC XInputContext;
 		mutable core::stringc Clipboard;
 		#ifdef _IRR_LINUX_X11_VIDMODE_
 		XF86VidModeModeInfo oldVideoMode;

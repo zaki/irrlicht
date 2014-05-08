@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <sys/utsname.h>
 #include <time.h>
+#include <locale.h>
 #include "IEventReceiver.h"
 #include "ISceneManager.h"
 #include "IGUIEnvironment.h"
@@ -68,7 +69,7 @@ namespace irr
         , CIrrDeviceIPhone* device
 #endif
 	);
-        #endif 	 
+        #endif
 
 	#ifdef _IRR_COMPILE_WITH_OGLES2_
 	IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
@@ -100,6 +101,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param),
 #ifdef _IRR_COMPILE_WITH_X11_
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
+	XInputMethod(0), XInputContext(0),
 #endif
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	WindowHasFocus(false), WindowMinimized(false),
@@ -144,8 +146,14 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	// create driver
 	createDriver();
 
-	if (VideoDriver)
-		createGUIAndScene();
+	if (!VideoDriver)
+		return;
+
+#ifdef _IRR_COMPILE_WITH_X11_
+	createInputContext();
+#endif
+
+	createGUIAndScene();
 }
 
 
@@ -178,6 +186,8 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		VideoDriver->drop();
 		VideoDriver = NULL;
 	}
+
+	destroyInputContext();
 
 	if (display)
 	{
@@ -642,6 +652,123 @@ void CIrrDeviceLinux::createDriver()
 	}
 }
 
+#ifdef _IRR_COMPILE_WITH_X11_
+bool CIrrDeviceLinux::createInputContext()
+{
+	// One one side it would be nicer to let users do that - on the other hand
+	// not setting the environment locale will not work when using i18n X11 functions.
+	// So users would have to call it always or their input is broken badly.
+	// We can restore immediately - so shouldn't mess with anything in users apps.
+	core::stringc oldLocale(setlocale(LC_CTYPE, NULL));
+	setlocale(LC_CTYPE, "");	// use environmenbt locale
+
+	if ( !XSupportsLocale() )
+	{
+		os::Printer::log("Locale not supported. Falling back to non-i18n input.", ELL_WARNING);
+		setlocale(LC_CTYPE, oldLocale.c_str());
+		return false;
+	}
+
+	XInputMethod = XOpenIM(display, NULL, NULL, NULL);
+	if ( !XInputMethod )
+	{
+		setlocale(LC_CTYPE, oldLocale.c_str());
+		os::Printer::log("XOpenIM failed to create an input method. Falling back to non-i18n input.", ELL_WARNING);
+		return false;
+	}
+
+	XIMStyles *im_supported_styles;
+	XGetIMValues(XInputMethod, XNQueryInputStyle, &im_supported_styles, (char*)NULL);
+	XIMStyle bestStyle = 0;
+	// TODO: If we want to support languages like chinese or japanese as well we probably have to work with callbacks here.
+	XIMStyle supportedStyle = XIMPreeditNone | XIMStatusNone;
+    for(int i=0; i < im_supported_styles->count_styles; ++i)
+	{
+        XIMStyle style = im_supported_styles->supported_styles[i];
+        if ((style & supportedStyle) == style) /* if we can handle it */
+		{
+            bestStyle = style;
+			break;
+		}
+    }
+	XFree(im_supported_styles);
+
+	if ( !bestStyle )
+	{
+		XDestroyIC(XInputContext);
+		XInputContext = 0;
+
+		os::Printer::log("XInputMethod has no input style we can use. Falling back to non-i18n input.", ELL_WARNING);
+		setlocale(LC_CTYPE, oldLocale.c_str());
+		return false;
+	}
+
+	XInputContext = XCreateIC(XInputMethod,
+							XNInputStyle, bestStyle,
+							XNClientWindow, window,
+							(char*)NULL);
+	if (!XInputContext )
+	{
+		os::Printer::log("XInputContext failed to create an input context. Falling back to non-i18n input.", ELL_WARNING);
+		setlocale(LC_CTYPE, oldLocale.c_str());
+		return false;
+	}
+	XSetICFocus(XInputContext);
+	setlocale(LC_CTYPE, oldLocale.c_str());
+	return true;
+}
+
+void CIrrDeviceLinux::destroyInputContext()
+{
+	if ( XInputContext )
+	{
+		XUnsetICFocus(XInputContext);
+		XDestroyIC(XInputContext);
+		XInputContext = 0;
+	}
+	if ( XInputMethod )
+	{
+		XCloseIM(XInputMethod);
+		XInputMethod = 0;
+	}
+}
+
+EKEY_CODE CIrrDeviceLinux::getKeyCode(XEvent &event)
+{
+	EKEY_CODE keyCode = (EKEY_CODE)0;
+
+	SKeyMap mp;
+	mp.X11Key = XkbKeycodeToKeysym(display, event.xkey.keycode, 0, 0);
+	// mp.X11Key = XKeycodeToKeysym(display, event.xkey.keycode, 0);	// deprecated, if we still find platforms which need that we have to use some define
+	const s32 idx = KeyMap.binary_search(mp);
+	if (idx != -1)
+	{
+		keyCode = (EKEY_CODE)KeyMap[idx].Win32Key;
+	}
+	if (keyCode == 0)
+	{
+		// Any value is better than none, that allows at least using the keys.
+		// Worst case is that some keys will be identical, still better than _all_
+		// unknown keys being identical.
+		if ( !mp.X11Key )
+		{
+			keyCode = (EKEY_CODE)event.xkey.keycode;
+			os::Printer::log("No such X11Key, using event keycode", core::stringc(event.xkey.keycode).c_str(), ELL_INFORMATION);
+		}
+		else if (idx == -1)
+		{
+			keyCode = (EKEY_CODE)mp.X11Key;
+			os::Printer::log("EKEY_CODE not found, using orig. X11 keycode", core::stringc(mp.X11Key).c_str(), ELL_INFORMATION);
+		}
+		else
+		{
+			keyCode = (EKEY_CODE)mp.X11Key;
+			os::Printer::log("EKEY_CODE is 0, using orig. X11 keycode", core::stringc(mp.X11Key).c_str(), ELL_INFORMATION);
+		}
+ 	}
+	return keyCode;
+}
+#endif
 
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceLinux::run()
@@ -818,52 +945,68 @@ bool CIrrDeviceLinux::run()
 						(next_event.xkey.keycode == event.xkey.keycode) &&
 						(next_event.xkey.time - event.xkey.time) < 2)	// usually same time, but on some systems a difference of 1 is possible
 					{
-						/* Ignore the key release event */
+						// Ignore the key release event
 						break;
 					}
 				}
-				// fall-through in case the release should be handled
+
+				irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
+				irrevent.KeyInput.PressedDown = false;
+				irrevent.KeyInput.Char = 0;	// on release that's undefined
+				irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
+				irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
+				irrevent.KeyInput.Key = getKeyCode(event);
+
+				postEventFromUser(irrevent);
+				break;
+
 			case KeyPress:
 				{
 					SKeyMap mp;
-					char buf[8]={0};
-					XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
-
-					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
-					irrevent.KeyInput.PressedDown = (event.type == KeyPress);
-//					mbtowc(&irrevent.KeyInput.Char, buf, sizeof(buf));
-					irrevent.KeyInput.Char = ((wchar_t*)(buf))[0];
-					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
-					irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
-
-					event.xkey.state &= ~(ControlMask|ShiftMask); // ignore shift-ctrl states for figuring out the key
-					XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
-					const s32 idx = KeyMap.binary_search(mp);
-					if (idx != -1)
+					if ( XInputContext )
 					{
-						irrevent.KeyInput.Key = (EKEY_CODE)KeyMap[idx].Win32Key;
-					}
-					else
-					{
-						irrevent.KeyInput.Key = (EKEY_CODE)0;
-					}
-					if (irrevent.KeyInput.Key == 0)
-					{
-						// 1:1 mapping to windows-keys would require testing for keyboard type (us, ger, ...)
-						// So unless we do that we will have some unknown keys here.
-						if (idx == -1)
+						wchar_t buf[8]={0};
+						Status status;
+						int strLen = XwcLookupString(XInputContext, &event.xkey, buf, sizeof(buf), &mp.X11Key, &status);
+						if ( status == XBufferOverflow )
 						{
-							os::Printer::log("Could not find EKEY_CODE, using orig. X11 keycode instead", core::stringc(event.xkey.keycode).c_str(), ELL_INFORMATION);
+							os::Printer::log("XwcLookupString needs a larger buffer", ELL_INFORMATION);
+						}
+						if ( strLen > 0 && (status == XLookupChars || status == XLookupBoth) )
+						{
+							if ( strLen > 1 )
+								os::Printer::log("Additional returned characters dropped", ELL_INFORMATION);
+							irrevent.KeyInput.Char = buf[0];
 						}
 						else
 						{
-							os::Printer::log("EKEY_CODE is 0, using orig. X11 keycode instead", core::stringc(event.xkey.keycode).c_str(), ELL_INFORMATION);
+#if 0 // Most of those are fine - but useful to have the info when debugging Irrlicht itself.
+							if ( status == XLookupNone )
+								os::Printer::log("XLookupNone", ELL_INFORMATION);
+							else if ( status ==  XLookupKeySym )
+								// Getting this also when user did not set setlocale(LC_ALL, ""); and using an unknown locale
+								// XSupportsLocale doesn't seeem to catch that unfortunately - any other ideas to catch it are welcome.
+								os::Printer::log("XLookupKeySym", ELL_INFORMATION);
+							else if ( status ==  XBufferOverflow )
+								os::Printer::log("XBufferOverflow", ELL_INFORMATION);
+							else if ( strLen == 0 )
+								os::Printer::log("no string", ELL_INFORMATION);
+#endif
+							irrevent.KeyInput.Char = 0;
 						}
-						// Any value is better than none, that allows at least using the keys.
-						// Worst case is that some keys will be identical, still better than _all_
-						// unknown keys being identical.
-						irrevent.KeyInput.Key = (EKEY_CODE)event.xkey.keycode;
 					}
+					else	// Old version without InputContext. Does not support i18n, but good to have as fallback.
+					{
+						char buf[8]={0};
+						XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
+						irrevent.KeyInput.Char = ((wchar_t*)(buf))[0];
+					}
+
+					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
+					irrevent.KeyInput.PressedDown = true;
+					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
+					irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
+					irrevent.KeyInput.Key = getKeyCode(event);
 
 					postEventFromUser(irrevent);
 				}
@@ -1249,6 +1392,7 @@ void CIrrDeviceLinux::createKeyMap()
 	// I don't know if this is the best method  to create
 	// the lookuptable, but I'll leave it like that until
 	// I find a better version.
+	// Search for missing numbers in keysymdef.h
 
 #ifdef _IRR_COMPILE_WITH_X11_
 	KeyMap.reallocate(84);
@@ -1404,10 +1548,13 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_backslash, KEY_OEM_5));
 	KeyMap.push_back(SKeyMap(XK_bracketright, KEY_OEM_6));
 	KeyMap.push_back(SKeyMap(XK_asciicircum, KEY_OEM_5));
+	KeyMap.push_back(SKeyMap(XK_dead_circumflex, KEY_OEM_5));
 	KeyMap.push_back(SKeyMap(XK_degree, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_underscore, KEY_MINUS)); //?
 	KeyMap.push_back(SKeyMap(XK_grave, KEY_OEM_3));
+	KeyMap.push_back(SKeyMap(XK_dead_grave, KEY_OEM_3));
 	KeyMap.push_back(SKeyMap(XK_acute, KEY_OEM_6));
+	KeyMap.push_back(SKeyMap(XK_dead_acute, KEY_OEM_6));
 	KeyMap.push_back(SKeyMap(XK_a, KEY_KEY_A));
 	KeyMap.push_back(SKeyMap(XK_b, KEY_KEY_B));
 	KeyMap.push_back(SKeyMap(XK_c, KEY_KEY_C));
