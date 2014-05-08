@@ -414,6 +414,7 @@
 		<Unit filename="../../include/CDynamicMeshBuffer.h" />
 		<Unit filename="../../include/CIndexBuffer.h" />
 		<Unit filename="../../include/CMeshBuffer.h" />
+		<Unit filename="../../include/CProfiler.h" />
 		<Unit filename="../../include/CVertexBuffer.h" />
 		<Unit filename="../../include/EAttributes.h" />
 		<Unit filename="../../include/ECullingTypes.h" />
@@ -470,6 +471,7 @@
 		<Unit filename="../../include/IGUIInOutFader.h" />
 		<Unit filename="../../include/IGUIListBox.h" />
 		<Unit filename="../../include/IGUIMeshViewer.h" />
+		<Unit filename="../../include/IGUIProfiler.h" />
 		<Unit filename="../../include/IGUIScrollBar.h" />
 		<Unit filename="../../include/IGUISkin.h" />
 		<Unit filename="../../include/IGUISpinBox.h" />
@@ -715,6 +717,8 @@
 		<Unit filename="CGUIMessageBox.h" />
 		<Unit filename="CGUIModalScreen.cpp" />
 		<Unit filename="CGUIModalScreen.h" />
+		<Unit filename="CGUIProfiler.cpp" />
+		<Unit filename="CGUIProfiler.h" />
 		<Unit filename="CGUIScrollBar.cpp" />
 		<Unit filename="CGUIScrollBar.h" />
 		<Unit filename="CGUISkin.cpp" />
@@ -891,6 +895,7 @@
 		<Unit filename="CParticleSphereEmitter.h" />
 		<Unit filename="CParticleSystemSceneNode.cpp" />
 		<Unit filename="CParticleSystemSceneNode.h" />
+		<Unit filename="CProfiler.cpp" />
 		<Unit filename="CQ3LevelMesh.cpp" />
 		<Unit filename="CQ3LevelMesh.h" />
 		<Unit filename="CQuake3ShaderSceneNode.cpp" />
@@ -1011,6 +1016,7 @@
 		<Unit filename="CZBuffer.h" />
 		<Unit filename="CZipReader.cpp" />
 		<Unit filename="CZipReader.h" />
+		<Unit filename="EProfileIDs.h" />
 		<Unit filename="IAttribute.h" />
 		<Unit filename="IBurningShader.cpp" />
 		<Unit filename="IBurningShader.h" />

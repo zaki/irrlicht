@@ -156,6 +156,15 @@
 #undef _IRR_COMPILE_WITH_LEAK_HUNTER_
 #endif
 
+//! Enable profiling information in the engine
+/** NOTE: The profiler itself always exists and can be used by applications.
+This define is about the engine creating profile data
+while it runs and enabling it will slow down the engine. */
+//#define _IRR_COMPILE_WITH_PROFILING_
+#ifdef NO_IRR_COMPILE_WITH_PROFILING_
+#undef _IRR_COMPILE_WITH_PROFILING_
+#endif
+
 //! Define _IRR_COMPILE_WITH_DIRECT3D_8_ and _IRR_COMPILE_WITH_DIRECT3D_9_ to
 //! compile the Irrlicht engine with Direct3D8 and/or DIRECT3D9.
 /** If you only want to use the software device or opengl you can disable those defines.

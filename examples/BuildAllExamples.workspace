@@ -2,7 +2,7 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Build all examples">
 		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" />
-		<Project filename="01.HelloWorld/HelloWorld.cbp" active="1" />
+		<Project filename="01.HelloWorld/HelloWorld.cbp" />
 		<Project filename="02.Quake3Map/Quake3Map.cbp" />
 		<Project filename="03.CustomSceneNode/CustomSceneNode.cbp" />
 		<Project filename="04.Movement/Movement.cbp" />
@@ -27,6 +27,7 @@
 		<Project filename="24.CursorControl/CursorControl.cbp" />
 		<Project filename="25.XmlHandling/XmlHandling.cbp" />
 		<Project filename="26.OcclusionQuery/OcclusionQuery.cbp" />
+		<Project filename="30.Profiling/Profiling.cbp" />
 		<Project filename="Demo/demo.cbp" />
 		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" />
 		<Project filename="../tools/MeshConverter/MeshConverter.cbp" />

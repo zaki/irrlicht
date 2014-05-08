@@ -91,6 +91,9 @@ enum EGUI_ELEMENT_TYPE
 	//! The root of the GUI
 	EGUIET_ROOT,
 
+	//! IGUIProfiler
+	EGUIET_PROFILER,
+
 	//! Not an element, amount of elements in there
 	EGUIET_COUNT,
 
@@ -127,6 +130,7 @@ const c8* const GUIElementTypeNames[] =
 	"window",
 	"element",
 	"root",
+	"profiler",
 	0
 };
 

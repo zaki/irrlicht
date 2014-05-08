@@ -587,6 +587,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\..\include\CProfiler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\..\include\ILogger.h"
 				>
 			</File>
@@ -1199,6 +1203,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\..\..\include\IGUIProfiler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\IGUIScrollBar.h"
 					>
 				</File>
@@ -1389,6 +1397,14 @@
 			</File>
 			<File
 				RelativePath="CGUIModalScreen.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUIProfiler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUIProfiler.h"
 				>
 			</File>
 			<File
@@ -3015,6 +3031,14 @@
 			</File>
 			<File
 				RelativePath="os.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CProfiler.cpp"
+				>
+			</File>
+			<File
+				RelativePath="EProfileIDs.h"
 				>
 			</File>
 			<File

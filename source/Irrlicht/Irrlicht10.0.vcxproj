@@ -838,6 +838,7 @@
     <ClInclude Include="..\..\include\IAnimatedMeshMD3.h" />
     <ClInclude Include="..\..\include\IContextManager.h" />
     <ClInclude Include="..\..\include\IEventReceiver.h" />
+	<ClInclude Include="..\..\include\CProfiler.h" />
     <ClInclude Include="..\..\include\ILogger.h" />
     <ClInclude Include="..\..\include\IOSOperator.h" />
     <ClInclude Include="..\..\include\IRandomizer.h" />
@@ -985,6 +986,7 @@
     <ClInclude Include="..\..\include\IGUIInOutFader.h" />
     <ClInclude Include="..\..\include\IGUIListBox.h" />
     <ClInclude Include="..\..\include\IGUIMeshViewer.h" />
+	<ClInclude Include="..\..\include\IGUIProfiler.h" />
     <ClInclude Include="..\..\include\IGUIScrollBar.h" />
     <ClInclude Include="..\..\include\IGUISkin.h" />
     <ClInclude Include="..\..\include\IGUISpinBox.h" />
@@ -1166,6 +1168,7 @@
     <ClInclude Include="COSOperator.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="os.h" />
+	<ClInclude Include="EProfileIDs.h" />
     <ClInclude Include="lzma\LzmaDec.h" />
     <ClInclude Include="lzma\Types.h" />
     <ClInclude Include="zlib\crc32.h" />
@@ -1243,7 +1246,8 @@
     <ClInclude Include="CGUIMeshViewer.h" />
     <ClInclude Include="CGUIMessageBox.h" />
     <ClInclude Include="CGUIModalScreen.h" />
-    <ClInclude Include="CGUIScrollBar.h" />
+    <ClInclude Include="CGUIProfiler.h" />
+	<ClInclude Include="CGUIScrollBar.h" />
     <ClInclude Include="CGUISkin.h" />
     <ClInclude Include="CGUISpinBox.h" />
     <ClInclude Include="CGUISpriteBank.h" />
@@ -1444,6 +1448,7 @@
     <ClCompile Include="Irrlicht.cpp" />
     <ClCompile Include="leakHunter.cpp" />
     <ClCompile Include="os.cpp" />
+	<ClCompile Include="CProfiler.cpp" />
     <ClCompile Include="lzma\LzmaDec.c" />
     <ClCompile Include="zlib\adler32.c" />
     <ClCompile Include="zlib\compress.c" />
@@ -1573,7 +1578,8 @@
     <ClCompile Include="CGUIMeshViewer.cpp" />
     <ClCompile Include="CGUIMessageBox.cpp" />
     <ClCompile Include="CGUIModalScreen.cpp" />
-    <ClCompile Include="CGUIScrollBar.cpp" />
+    <ClCompile Include="CGUIProfiler.cpp" />
+	<ClCompile Include="CGUIScrollBar.cpp" />
     <ClCompile Include="CGUISkin.cpp" />
     <ClCompile Include="CGUISpinBox.cpp" />
     <ClCompile Include="CGUISpriteBank.cpp" />

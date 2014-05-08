@@ -59,6 +59,7 @@ class IGUIComboBox;
 class IGUIToolBar;
 class IGUIButton;
 class IGUIWindow;
+class IGUIProfiler;
 class IGUIElementFactory;
 
 //! GUI Environment. Used as factory and manager of all other GUI elements.
@@ -539,6 +540,14 @@ public:
 	more information. */
 	virtual IGUITable* addTable(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false) =0;
+
+	//! Adds an element to display the information from the Irrlicht profiler
+	/** \param rectangle Rectangle specifying the borders of the element.
+	\param parent Parent of the element. When 0 the environment itself will
+	be the parent.
+	\param id An identifier for the element. */
+	virtual IGUIProfiler* addProfilerDisplay(const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Get the default element factory which can create all built-in elements
 	/** \return Pointer to the factory.

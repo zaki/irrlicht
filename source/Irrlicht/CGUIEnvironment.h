@@ -183,6 +183,10 @@ public:
 	virtual IGUITable* addTable(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false) _IRR_OVERRIDE_;
 
+	//! Adds an element to display the information from the Irrlicht profiler
+	virtual IGUIProfiler* addProfilerDisplay(const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1) _IRR_OVERRIDE_;
+
 	//! sets the focus to an element
 	virtual bool setFocus(IGUIElement* element) _IRR_OVERRIDE_;
 
