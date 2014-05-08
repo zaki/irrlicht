@@ -135,11 +135,11 @@ namespace gui
 
 		struct ListItem
 		{
-			ListItem() : icon(-1)
+			ListItem() : Icon(-1)
 			{}
 
-			core::stringw text;
-			s32 icon;
+			core::stringw Text;
+			s32 Icon;
 
 			// A multicolor extension
 			struct ListItemOverrideColor

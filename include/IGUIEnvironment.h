@@ -611,6 +611,14 @@ public:
 
 	//! reads an element
 	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* node) =0;
+
+	//! Find the next element which would be selected when pressing the tab-key
+	/** If you set the focus for the result you can manually force focus-changes like they
+	would happen otherwise by the tab-keys.
+	\param reverse When true it will search backward (toward lower TabOrder numbers, like shift+tab)
+	\param group When true it will search for the next tab-group (like ctrl+tab)
+	*/
+	virtual IGUIElement* getNextElement(bool reverse=false, bool group=false) = 0;
 };
 
 

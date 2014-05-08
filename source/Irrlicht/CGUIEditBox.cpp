@@ -31,7 +31,7 @@ namespace gui
 CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border,
 		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 		const core::rect<s32>& rectangle)
-	: IGUIEditBox(environment, parent, id, rectangle), MouseMarking(false),
+	: IGUIEditBox(environment, parent, id, rectangle), OverwriteMode(false), MouseMarking(false),
 	Border(border), Background(true), OverrideColorEnabled(false), MarkBegin(0), MarkEnd(0),
 	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
 	Operator(0), BlinkStartTime(0), CursorBlinkTime(350), CursorChar(L"_"), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
@@ -626,6 +626,12 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			textChanged = true;
 		}
 		break;
+	case KEY_INSERT:
+		if ( !isEnabled() )
+			break;
+
+		OverwriteMode = !OverwriteMode;
+		break;
 	case KEY_DELETE:
 		if ( !isEnabled() )
 			break;
@@ -903,9 +909,25 @@ void CGUIEditBox::draw()
 				setTextRect(cursorLine);
 				CurrentTextRect.UpperLeftCorner.X += charcursorpos;
 
-				font->draw(CursorChar, CurrentTextRect,
-					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
-					false, true, &localClipRect);
+				if ( OverwriteMode )
+				{
+					core::stringw character = Text.subString(CursorPos,1);
+					s32 mend = font->getDimension(character.c_str()).Width;
+					//Make sure the cursor box has at least some width to it
+					if ( mend <= 0 )
+						mend = font->getDimension(CursorChar.c_str()).Width;
+					CurrentTextRect.LowerRightCorner.X = CurrentTextRect.UpperLeftCorner.X + mend;
+					skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), CurrentTextRect, &localClipRect);
+					font->draw(character.c_str(), CurrentTextRect,
+								OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
+								false, true, &localClipRect);
+				}
+				else
+				{
+					font->draw(CursorChar, CurrentTextRect,
+						OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
+						false, true, &localClipRect);
+				}
 			}
 		}
 	}
@@ -1346,6 +1368,37 @@ void CGUIEditBox::inputChar(wchar_t c)
 				s.append( Text.subString(realmend, Text.size()-realmend) );
 				Text = s;
 				CursorPos = realmbgn+1;
+			}
+			else if ( OverwriteMode )
+			{
+				//check to see if we are at the end of the text
+				if ( (u32)CursorPos != Text.size())
+				{
+					s = Text.subString(0, CursorPos);
+					s.append(c);
+					if ( Text[CursorPos] == L'\n')
+					{
+						//just keep appending to the current line
+						//This follows the behavior of over gui libraries behaviors
+						s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
+					}
+					else
+					{
+						//replace the next character
+						s.append( Text.subString(CursorPos + 1,Text.size() - CursorPos + 1));
+					}
+					Text = s;
+					++CursorPos;
+				}
+				else
+				{
+					// add new character because we are at the end of the string
+					s = Text.subString(0, CursorPos);
+					s.append(c);
+					s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
+					Text = s;
+					++CursorPos;
+				}
 			}
 			else
 			{

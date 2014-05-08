@@ -82,7 +82,7 @@ const wchar_t* CGUIListBox::getListItem(u32 id) const
 	if (id>=Items.size())
 		return 0;
 
-	return Items[id].text.c_str();
+	return Items[id].Text.c_str();
 }
 
 
@@ -92,7 +92,7 @@ s32 CGUIListBox::getIcon(u32 id) const
 	if (id>=Items.size())
 		return -1;
 
-	return Items[id].icon;
+	return Items[id].Icon;
 }
 
 
@@ -220,7 +220,7 @@ void CGUIListBox::setSelected(const wchar_t *item)
 	{
 		for ( index = 0; index < (s32) Items.size(); ++index )
 		{
-			if ( Items[index].text == item )
+			if ( Items[index].Text == item )
 				break;
 		}
 	}
@@ -303,6 +303,10 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				}
 				return true;
 			}
+			else if (event.KeyInput.Key == KEY_TAB )
+			{
+				return false;
+			}
 			else if (event.KeyInput.PressedDown && event.KeyInput.Char)
 			{
 				// change selection based on text as it is typed.
@@ -329,17 +333,17 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				// dont change selection if the key buffer matches the current item
 				if (Selected > -1 && KeyBuffer.size() > 1)
 				{
-					if (Items[Selected].text.size() >= KeyBuffer.size() &&
-						KeyBuffer.equals_ignore_case(Items[Selected].text.subString(0,KeyBuffer.size())))
+					if (Items[Selected].Text.size() >= KeyBuffer.size() &&
+						KeyBuffer.equals_ignore_case(Items[Selected].Text.subString(0,KeyBuffer.size())))
 						return true;
 				}
 
 				s32 current;
 				for (current = start+1; current < (s32)Items.size(); ++current)
 				{
-					if (Items[current].text.size() >= KeyBuffer.size())
+					if (Items[current].Text.size() >= KeyBuffer.size())
 					{
-						if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
+						if (KeyBuffer.equals_ignore_case(Items[current].Text.subString(0,KeyBuffer.size())))
 						{
 							if (Parent && Selected != current && !Selecting && !MoveOverSelect)
 							{
@@ -357,9 +361,9 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				}
 				for (current = 0; current <= start; ++current)
 				{
-					if (Items[current].text.size() >= KeyBuffer.size())
+					if (Items[current].Text.size() >= KeyBuffer.size())
 					{
-						if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
+						if (KeyBuffer.equals_ignore_case(Items[current].Text.subString(0,KeyBuffer.size())))
 						{
 							if (Parent && Selected != current && !Selecting && !MoveOverSelect)
 							{
@@ -541,7 +545,7 @@ void CGUIListBox::draw()
 
 			if (Font)
 			{
-				if (IconBank && (Items[i].icon > -1))
+				if (IconBank && (Items[i].Icon > -1))
 				{
 					core::position2di iconPos = textRect.UpperLeftCorner;
 					iconPos.Y += textRect.getHeight() / 2;
@@ -549,14 +553,14 @@ void CGUIListBox::draw()
 
 					if ( i==Selected && hl )
 					{
-						IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
+						IconBank->draw2DSprite( (u32)Items[i].Icon, iconPos, &clientClip,
 							hasItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) ?
 							getItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_ICON_HIGHLIGHT),
 							selectTime, os::Timer::getTime(), false, true);
 					}
 					else
 					{
-						IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
+						IconBank->draw2DSprite( (u32)Items[i].Icon, iconPos, &clientClip,
 							hasItemOverrideColor(i, EGUI_LBC_ICON) ? getItemOverrideColor(i, EGUI_LBC_ICON) : getItemDefaultColor(EGUI_LBC_ICON),
 							0 , (i==Selected) ? os::Timer::getTime() : 0, false, true);
 					}
@@ -566,14 +570,14 @@ void CGUIListBox::draw()
 
 				if ( i==Selected && hl )
 				{
-					Font->draw(Items[i].text.c_str(), textRect,
+					Font->draw(Items[i].Text.c_str(), textRect,
 						hasItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) ?
 						getItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_TEXT_HIGHLIGHT),
 						false, true, &clientClip);
 				}
 				else
 				{
-					Font->draw(Items[i].text.c_str(), textRect,
+					Font->draw(Items[i].Text.c_str(), textRect,
 						hasItemOverrideColor(i, EGUI_LBC_TEXT) ? getItemOverrideColor(i, EGUI_LBC_TEXT) : getItemDefaultColor(EGUI_LBC_TEXT),
 						false, true, &clientClip);
 				}
@@ -594,8 +598,8 @@ void CGUIListBox::draw()
 u32 CGUIListBox::addItem(const wchar_t* text, s32 icon)
 {
 	ListItem i;
-	i.text = text;
-	i.icon = icon;
+	i.Text = text;
+	i.Icon = icon;
 
 	Items.push_back(i);
 	recalculateItemHeight();
@@ -692,7 +696,7 @@ void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	{
 		core::stringc label("text");
 		label += i;
-		out->addString(label.c_str(), Items[i].text.c_str() );
+		out->addString(label.c_str(), Items[i].Text.c_str() );
 
 		for ( s32 c=0; c < (s32)EGUI_LBC_COUNT; ++c )
 		{
@@ -733,9 +737,9 @@ void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 		ListItem item;
 
 		label += i;
-		item.text = in->getAttributeAsStringW(label.c_str());
+		item.Text = in->getAttributeAsStringW(label.c_str());
 
-		addItem(item.text.c_str(), item.icon);
+		addItem(item.Text.c_str(), item.Icon);
 
 		for ( u32 c=0; c < EGUI_LBC_COUNT; ++c )
 		{
@@ -776,8 +780,8 @@ void CGUIListBox::setItem(u32 index, const wchar_t* text, s32 icon)
 	if ( index >= Items.size() )
 		return;
 
-	Items[index].text = text;
-	Items[index].icon = icon;
+	Items[index].Text = text;
+	Items[index].Icon = icon;
 
 	recalculateItemHeight();
 	recalculateItemWidth(icon);
@@ -789,8 +793,8 @@ void CGUIListBox::setItem(u32 index, const wchar_t* text, s32 icon)
 s32 CGUIListBox::insertItem(u32 index, const wchar_t* text, s32 icon)
 {
 	ListItem i;
-	i.text = text;
-	i.icon = icon;
+	i.Text = text;
+	i.Icon = icon;
 
 	Items.insert(i, index);
 	recalculateItemHeight();

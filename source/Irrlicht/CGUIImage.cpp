@@ -18,7 +18,7 @@ namespace gui
 //! constructor
 CGUIImage::CGUIImage(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 : IGUIImage(environment, parent, id, rectangle), Texture(0), Color(255,255,255,255),
-	UseAlphaChannel(false), ScaleImage(false)
+	UseAlphaChannel(false), ScaleImage(false), DrawBounds(0.f, 0.f, 1.f, 1.f)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIImage");
@@ -88,18 +88,28 @@ void CGUIImage::draw()
 		{
 			const video::SColor Colors[] = {Color,Color,Color,Color};
 
+			core::rect<s32> clippingRect(AbsoluteClippingRect);
+			checkBounds(clippingRect);
+
 			driver->draw2DImage(Texture, AbsoluteRect, sourceRect,
-				&AbsoluteClippingRect, Colors, UseAlphaChannel);
+				&clippingRect, Colors, UseAlphaChannel);
 		}
 		else
 		{
+			core::rect<s32> clippingRect(AbsoluteRect.UpperLeftCorner, sourceRect.getSize());
+			checkBounds(clippingRect);
+			clippingRect.clipAgainst(AbsoluteClippingRect);
+
 			driver->draw2DImage(Texture, AbsoluteRect.UpperLeftCorner, sourceRect,
-				&AbsoluteClippingRect, Color, UseAlphaChannel);
+				&clippingRect, Color, UseAlphaChannel);
 		}
 	}
 	else
 	{
-		skin->draw2DRectangle(this, skin->getColor(EGDC_3D_DARK_SHADOW), AbsoluteRect, &AbsoluteClippingRect);
+		core::rect<s32> clippingRect(AbsoluteClippingRect);
+		checkBounds(clippingRect);
+
+		skin->draw2DRectangle(this, skin->getColor(EGDC_3D_DARK_SHADOW), AbsoluteRect, &clippingRect);
 	}
 
 	IGUIElement::draw();
@@ -146,6 +156,25 @@ core::rect<s32> CGUIImage::getSourceRect() const
 	return SourceRect;
 }
 
+//! Restrict target drawing-area.
+void CGUIImage::setDrawBounds(const core::rect<f32>& drawBoundUVs)
+{
+	DrawBounds = drawBoundUVs;
+	DrawBounds.UpperLeftCorner.X = core::clamp(DrawBounds.UpperLeftCorner.X, 0.f, 1.f);
+	DrawBounds.UpperLeftCorner.Y = core::clamp(DrawBounds.UpperLeftCorner.Y, 0.f, 1.f);
+	DrawBounds.LowerRightCorner.X = core::clamp(DrawBounds.LowerRightCorner.X, 0.f, 1.f);
+	DrawBounds.LowerRightCorner.X = core::clamp(DrawBounds.LowerRightCorner.X, 0.f, 1.f);
+	if ( DrawBounds.UpperLeftCorner.X > DrawBounds.LowerRightCorner.X )
+		DrawBounds.UpperLeftCorner.X = DrawBounds.LowerRightCorner.X;
+	if ( DrawBounds.UpperLeftCorner.Y > DrawBounds.LowerRightCorner.Y )
+		DrawBounds.UpperLeftCorner.Y = DrawBounds.LowerRightCorner.Y;
+}
+
+//! Get target drawing-area restrictions.
+core::rect<f32> CGUIImage::getDrawBounds() const
+{
+	return DrawBounds;
+}
 
 //! Writes attributes of the element.
 void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
@@ -157,6 +186,10 @@ void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 	out->addColor	("Color", Color);
 	out->addBool	("ScaleImage", ScaleImage);
 	out->addRect 	("SourceRect", SourceRect);
+	out->addFloat   ("DrawBoundsX1", DrawBounds.UpperLeftCorner.X);
+	out->addFloat   ("DrawBoundsY1", DrawBounds.UpperLeftCorner.Y);
+	out->addFloat   ("DrawBoundsX2", DrawBounds.LowerRightCorner.X);
+	out->addFloat   ("DrawBoundsY2", DrawBounds.LowerRightCorner.Y);
 }
 
 
@@ -170,6 +203,12 @@ void CGUIImage::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 	setColor(in->getAttributeAsColor("Color", Color));
 	setScaleImage(in->getAttributeAsBool("ScaleImage", UseAlphaChannel));
 	setSourceRect(in->getAttributeAsRect("SourceRect", SourceRect));
+
+	DrawBounds.UpperLeftCorner.X = in->getAttributeAsFloat("DrawBoundsX1", DrawBounds.UpperLeftCorner.X);
+	DrawBounds.UpperLeftCorner.Y = in->getAttributeAsFloat("DrawBoundsY1", DrawBounds.UpperLeftCorner.Y);
+	DrawBounds.LowerRightCorner.X = in->getAttributeAsFloat("DrawBoundsX2", DrawBounds.LowerRightCorner.X);
+	DrawBounds.LowerRightCorner.Y = in->getAttributeAsFloat("DrawBoundsY2", DrawBounds.LowerRightCorner.Y);
+	setDrawBounds(DrawBounds);
 }
 
 
