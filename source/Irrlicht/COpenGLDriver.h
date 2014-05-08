@@ -447,10 +447,10 @@ namespace video
 		bool genericDriverInit();
 
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData) _IRR_OVERRIDE_;	
+		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData) _IRR_OVERRIDE_;
 
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
@@ -631,8 +631,9 @@ namespace video
 
 	class COpenGLCallBridge
 	{
-		public:
+	public:
 		COpenGLCallBridge(COpenGLDriver* driver);
+		~COpenGLCallBridge();
 
 		// Alpha calls.
 
@@ -642,9 +643,17 @@ namespace video
 
 		// Blending calls.
 
+		void setBlendEquation(GLenum mode);
+
+		void setBlendEquationIndexed(GLuint index, GLenum mode);
+
 		void setBlendFunc(GLenum source, GLenum destination);
 
+		void setBlendFuncIndexed(GLuint index, GLenum source, GLenum destination);
+
 		void setBlend(bool enable);
+
+		void setBlendIndexed(GLuint index, bool enable);
 
 		// Client state calls.
 
@@ -674,9 +683,9 @@ namespace video
 
 		void setClientActiveTexture(GLenum texture);
 
-		void getTexture(u32 stage, GLenum& type, bool& fixedPipeline);
+		void getTexture(GLuint stage, GLenum& type, bool& fixedPipeline);
 
-		void setTexture(u32 stage, GLenum type, bool fixedPipeline);
+		void setTexture(GLuint stage, GLenum type, bool fixedPipeline);
 
 	private:
 		COpenGLDriver* Driver;
@@ -685,9 +694,11 @@ namespace video
 		GLclampf AlphaRef;
 		bool AlphaTest;
 
-		GLenum BlendSource;
-		GLenum BlendDestination;
-		bool Blend;
+		GLenum* BlendEquation;
+		GLenum* BlendSource;
+		GLenum* BlendDestination;
+		bool* Blend;
+		GLuint BlendIndexCount;
 
 		bool ClientStateVertex;
 		bool ClientStateNormal;
