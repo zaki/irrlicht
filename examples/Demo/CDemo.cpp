@@ -37,7 +37,7 @@ CDemo::~CDemo()
 
 void CDemo::run()
 {
-	core::dimension2d<u32> resolution ( 800, 600 );
+	core::dimension2d<u32> resolution (800, 600);
 
 	if ( driverType == video::EDT_BURNINGSVIDEO || driverType == video::EDT_SOFTWARE )
 	{
@@ -52,7 +52,7 @@ void CDemo::run()
 	params.Fullscreen=fullscreen;
 	params.Stencilbuffer=shadows;
 	params.Vsync=vsync;
-	params.AntiAlias=aa;
+	params.AntiAlias=aa?8:0;
 	params.EventReceiver=this;
 
 	device = createDeviceEx(params);
