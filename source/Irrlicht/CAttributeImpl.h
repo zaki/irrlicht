@@ -1268,6 +1268,14 @@ public:
 		setInt((s32)floatValue);
 	}
 
+	virtual core::stringc getString() _IRR_OVERRIDE_
+	{
+		char tmp[10];
+		const video::SColor c = getColor();
+		sprintf(tmp, "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getGreen(), c.getBlue());
+		return core::stringc(tmp);
+	}
+
 	virtual core::stringw getStringW() _IRR_OVERRIDE_
 	{
 		char tmp[10];
@@ -1279,7 +1287,9 @@ public:
 	virtual void setString(const char* text) _IRR_OVERRIDE_
 	{
 		u32 c;
-		if (sscanf(text, "%08x", &c)!=1)
+		int characters;
+		int items = sscanf(text, "%08x%n", &c, &characters);
+		if (items != 1 || characters != 8 )
 		{
 			CNumbersAttribute::setString(text);
 		}
@@ -1934,7 +1944,13 @@ public:
 		}
 	}
 
-	virtual void setTexture(video::ITexture* value)
+	virtual void setTexture(video::ITexture* texture, const path& filename) _IRR_OVERRIDE_
+	{
+		OverrideName = filename;
+		setTexture(texture);
+	};
+
+	void setTexture(video::ITexture* value)
 	{
 		if ( value == Value )
 			return;

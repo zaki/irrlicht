@@ -45,6 +45,7 @@
 				<Linker>
 					<Add library="Xxf86vm" />
 					<Add library="GL" />
+					<Add library="X11" />
 					<Add directory="../lib/Linux/" />
 				</Linker>
 			</Target>
@@ -62,6 +63,7 @@
 				<Linker>
 					<Add library="Xxf86vm" />
 					<Add library="GL" />
+					<Add library="X11" />
 					<Add directory="../lib/Linux/" />
 				</Linker>
 			</Target>

@@ -7,6 +7,8 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix serializing colors as strings. Was previously mixing up strings with number-arrays and hex color values. Now using hex color values always, but also fixed the the handling when it get's number-array strings.
+- Fix IAttributes::setAttribute implementation for textures (did do nothing before).
 - Added support for separate blending in OpenGL and D3D9 drivers.
 - Added pack_textureBlendFuncSeparate and unpack_textureBlendFuncSeparate functions, which allow to use separate blending functions in OpenGL.
 - Added BlendFactor field to SMaterial which allow user to set blending factor per SMaterial set call without use EMT_ONETEXTURE_BLEND type.

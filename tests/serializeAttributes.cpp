@@ -297,6 +297,34 @@ bool XmlSerialization(io::IFileSystem * fs, video::IVideoDriver * driver )
 	return origMock == copyMock;
 }
 
+// All attributes can also be read/written in string format
+bool stringSerialization(io::IFileSystem * fs)
+{
+	SerializableMock mock;
+	mock.set();
+
+	io::IAttributes* attr = fs->createEmptyAttributes();
+	mock.serializeAttributes(attr, 0);
+
+	for ( s32 i=0; i< (s32)attr->getAttributeCount(); ++i )
+	{
+		core::stringw value(attr->getAttributeAsString(i));
+		attr->setAttribute(i, value.c_str() );
+		core::stringw value2(attr->getAttributeAsString(i));
+
+		if ( value != value2 )
+		{
+			logTestString("old-string: %s new-string: %s for %d.%s in %s:%d\n"
+				, core::stringc(value).c_str(), core::stringc(value2).c_str(), i, attr->getAttributeName(i), __FILE__, __LINE__ );
+			return false;
+		}
+	}
+
+	attr->drop();
+
+	return true;
+}
+
 bool serializeAttributes()
 {
 	bool result = true;
@@ -325,6 +353,12 @@ bool serializeAttributes()
 	if ( !result )
 	{
 		logTestString("XmlSerialization failed in %s:%d\n", __FILE__, __LINE__ );
+	}
+
+	result &= stringSerialization(fs);
+	if ( !result )
+	{
+		logTestString("stringSerialization failed in %s:%d\n", __FILE__, __LINE__ );
 	}
 
 	device->closeDevice();
