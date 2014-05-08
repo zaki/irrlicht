@@ -97,7 +97,7 @@ void CGUITable::addColumn(const wchar_t* caption, s32 columnIndex)
 		}
 	}
 
-	if (ActiveTab == -1)
+	if (ActiveTab == -1 && Columns.size() == 1)	// first column added - make it active automatically
 		ActiveTab = 0;
 
 	recalculateWidths();
@@ -136,11 +136,10 @@ s32 CGUITable::getRowCount() const
 
 bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 {
-	if (idx < 0 || idx >= (s32)Columns.size())
-		return false;
+	if ( idx >= (s32)Columns.size() )
+		idx = -1;
 
 	bool changed = (ActiveTab != idx);
-
 	ActiveTab = idx;
 	if ( ActiveTab < 0 )
 		return false;

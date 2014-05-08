@@ -239,14 +239,14 @@ public:
 	\return The topmost GUI element at that point, or 0 if there are
 	no candidate elements at this point.
 	*/
-	IGUIElement* getElementFromPoint(const core::position2d<s32>& point)
+	virtual IGUIElement* getElementFromPoint(const core::position2d<s32>& point)
 	{
 		IGUIElement* target = 0;
 
 		// we have to search from back to front, because later children
 		// might be drawn over the top of earlier ones.
 
-		core::list<IGUIElement*>::Iterator it = Children.getLast();
+		core::list<IGUIElement*>::ConstIterator it = Children.getLast();
 
 		if (isVisible())
 		{
