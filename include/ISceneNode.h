@@ -119,7 +119,10 @@ namespace scene
 					// node without the iterator becoming invalid
 					ISceneNodeAnimator* anim = *ait;
 					++ait;
-					anim->animateNode(this, timeMs);
+					if ( anim->isEnabled() )
+					{
+						anim->animateNode(this, timeMs);
+					}
 				}
 
 				// update absolute position
@@ -539,7 +542,7 @@ namespace scene
 		}
 
 
-		//! Set a culling style or disable culling completely. 
+		//! Set a culling style or disable culling completely.
 		/** Box cullling (EAC_BOX) is set by default. Note that not
 		all SceneNodes support culling and that some nodes always cull
 		their geometry because it is their only reason for existence,

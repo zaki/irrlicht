@@ -34,7 +34,7 @@ CParticleSystemSceneNode::CParticleSystemSceneNode(bool createDefaultEmitter,
 	const core::vector3df& scale)
 	: IParticleSystemSceneNode(parent, mgr, id, position, rotation, scale),
 	Emitter(0), ParticleSize(core::dimension2d<f32>(5.0f, 5.0f)), LastEmitTime(0),
-	MaxParticles(0xffff), Buffer(0), ParticlesAreGlobal(true)
+	Buffer(0), ParticlesAreGlobal(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CParticleSystemSceneNode");
@@ -410,6 +410,7 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 	if (LastEmitTime==0)
 	{
 		LastEmitTime = time;
+		LastAbsoluteTransformation = AbsoluteTransformation;
 		return;
 	}
 
@@ -417,9 +418,12 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 	u32 timediff = time - LastEmitTime;
 	LastEmitTime = time;
 
+
+	bool visible = isVisible();
+	int behavior = getParticleBehavior();
 	// run emitter
 
-	if (Emitter && IsVisible)
+	if (Emitter && (visible || behavior & EPB_INVISIBLE_EMITTING) )
 	{
 		SParticle* array = 0;
 		s32 newParticles = Emitter->emitt(now, timediff, array);
@@ -427,23 +431,65 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		if (newParticles && array)
 		{
 			s32 j=Particles.size();
-			if (newParticles > 16250-j)
+			if (newParticles > 16250-j)	// avoid having more than 64k vertices in the scenenode
 				newParticles=16250-j;
 			Particles.set_used(j+newParticles);
 			for (s32 i=j; i<j+newParticles; ++i)
 			{
 				Particles[i]=array[i-j];
-				AbsoluteTransformation.rotateVect(Particles[i].startVector);
-				if (ParticlesAreGlobal)
-					AbsoluteTransformation.transformVect(Particles[i].pos);
+
+				if ( ParticlesAreGlobal && behavior & EPB_EMITTER_FRAME_INTERPOLATION )
+				{
+					// Interpolate between current node transformations and last ones.
+					// (Lazy solution - calculating twice and interpolating results)
+					f32 randInterpolate = (f32)(os::Randomizer::rand() % 101) / 100.f;	// 0 to 1
+					core::vector3df posNow(Particles[i].pos);
+					core::vector3df posLast(Particles[i].pos);
+
+					AbsoluteTransformation.transformVect(posNow);
+					LastAbsoluteTransformation.transformVect(posLast);
+					Particles[i].pos = posNow.getInterpolated(posLast, randInterpolate);
+
+					if ( !(behavior & EPB_EMITTER_VECTOR_IGNORE_ROTATION) )
+					{
+						core::vector3df vecNow(Particles[i].startVector);
+						core::vector3df vecOld(Particles[i].startVector);
+						AbsoluteTransformation.rotateVect(vecNow);
+						LastAbsoluteTransformation.rotateVect(vecOld);
+						Particles[i].startVector = vecNow.getInterpolated(vecOld, randInterpolate);
+
+						vecNow = Particles[i].vector;
+						vecOld = Particles[i].vector;
+						AbsoluteTransformation.rotateVect(vecNow);
+						LastAbsoluteTransformation.rotateVect(vecOld);
+						Particles[i].vector = vecNow.getInterpolated(vecOld, randInterpolate);
+					}
+				}
+				else
+				{
+					if (ParticlesAreGlobal)
+						AbsoluteTransformation.transformVect(Particles[i].pos);
+
+					if ( !(behavior & EPB_EMITTER_VECTOR_IGNORE_ROTATION) )
+					{
+						if (!ParticlesAreGlobal)
+							AbsoluteTransformation.rotateVect(Particles[i].pos);
+
+						AbsoluteTransformation.rotateVect(Particles[i].startVector);
+						AbsoluteTransformation.rotateVect(Particles[i].vector);
+					}
+				}
 			}
 		}
 	}
 
 	// run affectors
-	core::list<IParticleAffector*>::Iterator ait = AffectorList.begin();
-	for (; ait != AffectorList.end(); ++ait)
-		(*ait)->affect(now, Particles.pointer(), Particles.size());
+	if ( visible || behavior & EPB_INVISIBLE_AFFECTING )
+	{
+		core::list<IParticleAffector*>::Iterator ait = AffectorList.begin();
+		for (; ait != AffectorList.end(); ++ait)
+			(*ait)->affect(now, Particles.pointer(), Particles.size());
+	}
 
 	if (ParticlesAreGlobal)
 		Buffer->BoundingBox.reset(AbsoluteTransformation.getTranslation());
@@ -451,25 +497,28 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		Buffer->BoundingBox.reset(core::vector3df(0,0,0));
 
 	// animate all particles
-	f32 scale = (f32)timediff;
-
-	for (u32 i=0; i<Particles.size();)
+	if ( visible || behavior & EPB_INVISIBLE_ANIMATING )
 	{
-		// erase is pretty expensive!
-		if (now > Particles[i].endTime)
+		f32 scale = (f32)timediff;
+
+		for (u32 i=0; i<Particles.size();)
 		{
-			// Particle order does not seem to matter.
-			// So we can delete by switching with last particle and deleting that one.
-			// This is a lot faster and speed is very important here as the erase otherwise
-			// can cause noticable freezes.
-			Particles[i] = Particles[Particles.size()-1];
-			Particles.erase( Particles.size()-1 );
-		}
-		else
-		{
-			Particles[i].pos += (Particles[i].vector * scale);
-			Buffer->BoundingBox.addInternalPoint(Particles[i].pos);
-			++i;
+			// erase is pretty expensive!
+			if (now > Particles[i].endTime)
+			{
+				// Particle order does not seem to matter.
+				// So we can delete by switching with last particle and deleting that one.
+				// This is a lot faster and speed is very important here as the erase otherwise
+				// can cause noticable freezes.
+				Particles[i] = Particles[Particles.size()-1];
+				Particles.erase( Particles.size()-1 );
+			}
+			else
+			{
+				Particles[i].pos += (Particles[i].vector * scale);
+				Buffer->BoundingBox.addInternalPoint(Particles[i].pos);
+				++i;
+			}
 		}
 	}
 
@@ -487,6 +536,8 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		core::matrix4 absinv( AbsoluteTransformation, core::matrix4::EM4CONST_INVERSE );
 		absinv.transformBoxEx(Buffer->BoundingBox);
 	}
+
+	LastAbsoluteTransformation = AbsoluteTransformation;
 }
 
 
@@ -502,6 +553,17 @@ void CParticleSystemSceneNode::setParticlesAreGlobal(bool global)
 void CParticleSystemSceneNode::clearParticles()
 {
 	Particles.set_used(0);
+}
+
+//! Sets if the node should be visible or not.
+void CParticleSystemSceneNode::setVisible(bool isVisible)
+{
+	IParticleSystemSceneNode::setVisible(isVisible);
+	if ( !isVisible && getParticleBehavior() & EPB_CLEAR_ON_INVISIBLE )
+	{
+		clearParticles();
+		LastEmitTime = 0;
+	}
 }
 
 //! Sets the size of all particles.

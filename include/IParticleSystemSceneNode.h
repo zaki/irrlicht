@@ -41,8 +41,33 @@ You can for example easily create a campfire by doing this:
 	p->addAffector(paf);
 	paf->drop();
 \endcode
-
 */
+
+//! Bitflags to control particle behavior
+enum EParticleBehavior
+{
+	//! Continue emitting new particles even when the node is invisible
+	EPB_INVISIBLE_EMITTING = 1,
+
+	//! Continue affecting particles even when the node is invisible
+	EPB_INVISIBLE_AFFECTING = 2,
+
+	//! Continue updating particle positions or deleting them even when the node is invisible
+	EPB_INVISIBLE_ANIMATING = 4,
+
+	//! Clear all particles when node gets invisible
+	EPB_CLEAR_ON_INVISIBLE = 8,
+
+	//! Particle movement direction on emitting ignores the node rotation
+	//! This is mainly to allow backward compatible behavior to Irrlicht 1.8
+	EPB_EMITTER_VECTOR_IGNORE_ROTATION = 16,
+
+	//! On emitting global particles interpolate the positions randomly between the last and current node transformations.
+	//! This can be set to avoid gaps caused by fast node movement or low framerates, but will be somewhat
+	//! slower to calculate.
+	EPB_EMITTER_FRAME_INTERPOLATION = 32
+};
+
 class IParticleSystemSceneNode : public ISceneNode
 {
 public:
@@ -52,7 +77,10 @@ public:
 		const core::vector3df& position = core::vector3df(0,0,0),
 		const core::vector3df& rotation = core::vector3df(0,0,0),
 		const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f))
-			: ISceneNode(parent, mgr, id, position, rotation, scale) {}
+			: ISceneNode(parent, mgr, id, position, rotation, scale)
+			, ParticleBehavior(0)
+	{
+	}
 
 	//! Sets the size of all particles.
 	virtual void setParticleSize(
@@ -63,6 +91,24 @@ public:
 	particle system scene node too, otherwise they completely ignore it.
 	Default is true. */
 	virtual void setParticlesAreGlobal(bool global=true) = 0;
+
+
+	//! Bitflags to change the particle behavior
+	/**
+	\param flags A combination of ::EParticleBehavior bit-flags. Default is 0.	*/
+	virtual void setParticleBehavior(irr::u32 flags)
+	{
+		ParticleBehavior = flags;
+	}
+
+
+	//! Gets how particles behave in different situations
+	/**
+	\return A combination of ::EParticleBehavior flags */
+	virtual irr::u32 getParticleBehavior() const
+	{
+		return ParticleBehavior;
+	}
 
 	//! Remove all currently visible particles
 	virtual void clearParticles() = 0;
@@ -503,11 +549,24 @@ public:
 	virtual IParticleRotationAffector* createRotationAffector(
 		const core::vector3df& speed = core::vector3df(5.0f,5.0f,5.0f),
 		const core::vector3df& pivotPoint = core::vector3df(0.0f,0.0f,0.0f) ) = 0;
+
+	//! Writes attributes of the scene node.
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_
+	{
+		out->addInt("ParticleBehavior", ParticleBehavior);
+	}
+
+	//! Reads attributes of the scene node.
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_
+	{
+		ParticleBehavior = in->getAttributeAsInt("ParticleBehavior", ParticleBehavior);
+	}
+
+protected:
+	s32 ParticleBehavior;
 };
 
 } // end namespace scene
 } // end namespace irr
 
-
 #endif
-

@@ -188,6 +188,7 @@ namespace gui
 					Texture->drop();
 				Texture = other.Texture;
 				SourceRect = other.SourceRect;
+				return *this;
 			}
 
 			bool operator==(const ButtonImage& other) const

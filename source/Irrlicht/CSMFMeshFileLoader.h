@@ -38,8 +38,6 @@ public:
 private:
 
 	void loadLimb(io::IReadFile* file, scene::SMesh* mesh, const core::matrix4 &parentTransformation);
-
-	video::IVideoDriver* Driver;
 };
 
 } // end namespace scene

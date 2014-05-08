@@ -345,6 +345,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorCameraFPS::createClone(ISceneNode* node, I
 	CSceneNodeAnimatorCameraFPS * newAnimator =
 		new CSceneNodeAnimatorCameraFPS(CursorControl,	RotateSpeed, MoveSpeed, JumpSpeed,
 											0, 0, NoVerticalMovement);
+	newAnimator->cloneMembers(this);
 	newAnimator->setKeyMap(KeyMap);
 	return newAnimator;
 }

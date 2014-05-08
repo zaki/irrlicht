@@ -7,6 +7,9 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Allow more control over particle behavior. This also changed the default behavior.
+- ISceneNodeAnimators can now be disabled and paused.
+- Maya camera no longer get's stuck in "rotating" state when a mouse-up event is lost (thx @ JLouisB for reporting).
 - Focus behavior of IGUIEnvironment now controllable (right-click focus, mouse-over focus). Disabled elements no longer get the focus unless users enforce it.
 - Buttons can now now have 7 more image-states, 1 more sprite-state and the sprites are now scaleable.
 - Spritebanks can now draw scaled sprites and are a little easier to use.

@@ -20,7 +20,6 @@
 					<Add option="-g" />
 					<Add option="-W" />
 					<Add option="-O0" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-DWIN32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -62,7 +61,6 @@
 					<Add option="-O2" />
 					<Add option="-Wall" />
 					<Add option="-W" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -103,10 +101,9 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-W" />
 					<Add option="-Wall" />
+					<Add option="-W" />
 					<Add option="-ffast-math" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -145,12 +142,11 @@
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-W" />
+					<Add option="-Wextra" />
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-W" />
 					<Add option="-O0" />
-					<Add option="-Wextra" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-DWIN32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -189,7 +185,6 @@
 					<Add option="-O2" />
 					<Add option="-Wall" />
 					<Add option="-W" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -227,10 +222,9 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-Os" />
 					<Add option="-O3" />
-					<Add option="-W" />
 					<Add option="-Wall" />
+					<Add option="-W" />
 					<Add option="-ffast-math" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_WINDOWS" />
@@ -269,9 +263,7 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-O0" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-fPIC" />
-					<Add option="-fno-exceptions" />
 					<Add option="-D_DEBUG" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
@@ -296,9 +288,7 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-Wextra" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-fPIC" />
-					<Add option="-fno-exceptions" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
@@ -322,10 +312,8 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-Wextra" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-fPIC" />
 					<Add option="-ffast-math" />
-					<Add option="-fno-exceptions" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
@@ -351,8 +339,6 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-O0" />
-					<Add option="-Wno-unused-parameter" />
-					<Add option="-fno-exceptions" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_DEBUG" />
 					<Add directory="../../include" />
@@ -377,7 +363,6 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-Wextra" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-fno-exceptions" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add directory="../../include" />
@@ -402,9 +387,7 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-Wextra" />
-					<Add option="-Wno-unused-parameter" />
 					<Add option="-ffast-math" />
-					<Add option="-fno-exceptions" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
@@ -421,6 +404,12 @@
 		<VirtualTargets>
 			<Add alias="All" targets="Win32 - Debug - dll;Win32 - Release - accurate math - dll;Win32 - Release - fast math - dll;" />
 		</VirtualTargets>
+		<Compiler>
+			<Add option="-Wno-unused-parameter" />
+			<Add option="-fno-exceptions" />
+			<Add option="-fno-rtti" />
+			<Add option="-fstrict-aliasing" />
+		</Compiler>
 		<Unit filename="../../changes.txt" />
 		<Unit filename="../../include/CDynamicMeshBuffer.h" />
 		<Unit filename="../../include/CIndexBuffer.h" />
@@ -432,6 +421,7 @@
 		<Unit filename="../../include/EDeviceTypes.h" />
 		<Unit filename="../../include/EDriverFeatures.h" />
 		<Unit filename="../../include/EDriverTypes.h" />
+		<Unit filename="../../include/EFocusFlags.h" />
 		<Unit filename="../../include/EGUIAlignment.h" />
 		<Unit filename="../../include/EGUIElementTypes.h" />
 		<Unit filename="../../include/EHardwareBufferFlags.h" />
@@ -439,7 +429,6 @@
 		<Unit filename="../../include/EMaterialTypes.h" />
 		<Unit filename="../../include/EMeshWriterEnums.h" />
 		<Unit filename="../../include/EMessageBoxFlags.h" />
-		<Unit filename="../../include/EFocusFlags.h" />
 		<Unit filename="../../include/EPrimitiveTypes.h" />
 		<Unit filename="../../include/ESceneNodeAnimatorTypes.h" />
 		<Unit filename="../../include/ESceneNodeTypes.h" />

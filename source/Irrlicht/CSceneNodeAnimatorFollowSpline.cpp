@@ -14,12 +14,14 @@ namespace scene
 CSceneNodeAnimatorFollowSpline::CSceneNodeAnimatorFollowSpline(u32 time,
 	const core::array<core::vector3df>& points, f32 speed,
 	f32 tightness, bool loop, bool pingpong)
-: ISceneNodeAnimatorFinishing(0), Points(points), Speed(speed), Tightness(tightness), StartTime(time)
+: ISceneNodeAnimatorFinishing(0), Points(points), Speed(speed), Tightness(tightness)
 , Loop(loop), PingPong(pingpong)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorFollowSpline");
 	#endif
+
+	StartTime = time;
 }
 
 
@@ -44,7 +46,7 @@ void CSceneNodeAnimatorFollowSpline::animateNode(ISceneNode* node, u32 timeMs)
 	}
 	if (pSize==1)
 	{
-		if ( timeMs > StartTime )
+		if ( timeMs > (StartTime+PauseTimeSum) )
 		{
 			node->setPosition(Points[0]);
 			if ( !Loop )
@@ -53,7 +55,7 @@ void CSceneNodeAnimatorFollowSpline::animateNode(ISceneNode* node, u32 timeMs)
 		return;
 	}
 
-	const f32 dt = ( (timeMs-StartTime) * Speed * 0.001f );
+	const f32 dt = ( (timeMs-(StartTime+PauseTimeSum)) * Speed * 0.001f );
 	const s32 unwrappedIdx = core::floor32( dt );
 	if ( !Loop && unwrappedIdx >= (s32)pSize-1 )
 	{
@@ -91,6 +93,8 @@ void CSceneNodeAnimatorFollowSpline::animateNode(ISceneNode* node, u32 timeMs)
 //! Writes attributes of the scene node animator.
 void CSceneNodeAnimatorFollowSpline::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
+	ISceneNodeAnimatorFinishing::serializeAttributes(out, options);
+
 	out->addFloat("Speed", Speed);
 	out->addFloat("Tightness", Tightness);
 	out->addBool("Loop", Loop);
@@ -118,6 +122,8 @@ void CSceneNodeAnimatorFollowSpline::serializeAttributes(io::IAttributes* out, i
 //! Reads attributes of the scene node animator.
 void CSceneNodeAnimatorFollowSpline::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
+	ISceneNodeAnimatorFinishing::deserializeAttributes(in, options);
+
 	Speed = in->getAttributeAsFloat("Speed");
 	Tightness = in->getAttributeAsFloat("Tightness");
 	Loop = in->getAttributeAsBool("Loop");
@@ -151,6 +157,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorFollowSpline::createClone(ISceneNode* node
 {
 	CSceneNodeAnimatorFollowSpline * newAnimator =
 		new CSceneNodeAnimatorFollowSpline(StartTime, Points, Speed, Tightness);
+	newAnimator->cloneMembers(this);
 
 	return newAnimator;
 }

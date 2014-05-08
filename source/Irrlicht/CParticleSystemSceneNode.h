@@ -194,6 +194,9 @@ public:
 	//! Remove all currently visible particles
 	virtual void clearParticles() _IRR_OVERRIDE_;
 
+	//! Sets if the node should be visible or not.
+	virtual void setVisible(bool isVisible) _IRR_OVERRIDE_;
+
 	//! Do manually update the particles.
 	//! This should only be called when you want to render the node outside the scenegraph,
 	//! as the node will care about this otherwise automatically.
@@ -217,17 +220,19 @@ private:
 	core::array<SParticle> Particles;
 	core::dimension2d<f32> ParticleSize;
 	u32 LastEmitTime;
-	s32 MaxParticles;
+	core::matrix4 LastAbsoluteTransformation;
 
 	SMeshBuffer* Buffer;
 
-	enum E_PARTICLES_PRIMITIVE
-	{
-		EPP_POINT=0,
-		EPP_BILLBOARD,
-		EPP_POINTSPRITE
-	};
-	E_PARTICLES_PRIMITIVE ParticlePrimitive;
+// TODO: That was obviously planned by someone at some point and sounds like a good idea.
+// But seems it was never implemented.
+//	enum E_PARTICLES_PRIMITIVE
+//	{
+//		EPP_POINT=0,
+//		EPP_BILLBOARD,
+//		EPP_POINTSPRITE
+//	};
+//	E_PARTICLES_PRIMITIVE ParticlePrimitive;
 
 	bool ParticlesAreGlobal;
 };

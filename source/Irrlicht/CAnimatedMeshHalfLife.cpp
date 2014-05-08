@@ -203,7 +203,7 @@ CAnimatedMeshHalfLife::CAnimatedMeshHalfLife()
 	OwnTexModel(false), SequenceIndex(0), CurrentFrame(0), FramesPerSecond(25.f),
 	SkinGroupSelection(0)
 #ifdef HL_TEXTURE_ATLAS
-	, TextureMaster(0)
+//	, TextureMaster(0)
 #endif
 {
 #ifdef _DEBUG

@@ -15,7 +15,7 @@ namespace scene
 CSceneNodeAnimatorTexture::CSceneNodeAnimatorTexture(const core::array<video::ITexture*>& textures,
 					 s32 timePerFrame, bool loop, u32 now)
 : ISceneNodeAnimatorFinishing(0),
-	TimePerFrame(timePerFrame), StartTime(now), Loop(loop)
+	TimePerFrame(timePerFrame), Loop(loop)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorTexture");
@@ -29,6 +29,7 @@ CSceneNodeAnimatorTexture::CSceneNodeAnimatorTexture(const core::array<video::IT
 		Textures.push_back(textures[i]);
 	}
 
+	StartTime = now;
 	FinishTime = now + (timePerFrame * Textures.size());
 }
 
@@ -56,10 +57,10 @@ void CSceneNodeAnimatorTexture::animateNode(ISceneNode* node, u32 timeMs)
 
 	if (Textures.size())
 	{
-		const u32 t = (timeMs-StartTime);
+		const u32 t = (timeMs-(StartTime+PauseTimeSum));
 
 		u32 idx = 0;
-		if (!Loop && timeMs >= FinishTime)
+		if (!Loop && timeMs >= FinishTime+PauseTimeSum)
 		{
 			idx = Textures.size() - 1;
 			HasFinished = true;
@@ -78,6 +79,8 @@ void CSceneNodeAnimatorTexture::animateNode(ISceneNode* node, u32 timeMs)
 //! Writes attributes of the scene node animator.
 void CSceneNodeAnimatorTexture::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
+	ISceneNodeAnimatorFinishing::serializeAttributes(out, options);
+
 	out->addInt("TimePerFrame", TimePerFrame);
 	out->addBool("Loop", Loop);
 
@@ -101,6 +104,8 @@ void CSceneNodeAnimatorTexture::serializeAttributes(io::IAttributes* out, io::SA
 //! Reads attributes of the scene node animator.
 void CSceneNodeAnimatorTexture::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
+	ISceneNodeAnimatorFinishing::deserializeAttributes(in, options);
+
 	TimePerFrame = in->getAttributeAsInt("TimePerFrame");
 	Loop = in->getAttributeAsBool("Loop");
 
@@ -130,6 +135,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorTexture::createClone(ISceneNode* node, ISc
 {
 	CSceneNodeAnimatorTexture * newAnimator =
 		new CSceneNodeAnimatorTexture(Textures, TimePerFrame, Loop, StartTime);
+	newAnimator->cloneMembers(this);
 
 	return newAnimator;
 }
