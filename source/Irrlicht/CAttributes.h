@@ -370,10 +370,10 @@ public:
 	*/
 
 	//! Adds an attribute as 3d vector
-	virtual void addVector3d(const c8* attributeName, core::vector3df value) _IRR_OVERRIDE_;
+	virtual void addVector3d(const c8* attributeName, const core::vector3df& value) _IRR_OVERRIDE_;
 
 	//! Sets a attribute as 3d vector
-	virtual void setAttribute(const c8* attributeName, core::vector3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::vector3df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as 3d vector
 	//! \param attributeName: Name of the attribute to get.
@@ -386,7 +386,7 @@ public:
 	virtual core::vector3df getAttributeAsVector3d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as vector
-	virtual void setAttribute(s32 index, core::vector3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::vector3df& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -396,10 +396,10 @@ public:
 	*/
 
 	//! Adds an attribute as 2d vector
-	virtual void addVector2d(const c8* attributeName, core::vector2df value) _IRR_OVERRIDE_;
+	virtual void addVector2d(const c8* attributeName, const core::vector2df& value) _IRR_OVERRIDE_;
 
 	//! Sets a attribute as 2d vector
-	virtual void setAttribute(const c8* attributeName, core::vector2df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::vector2df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as 2d vector
 	//! \param attributeName: Name of the attribute to get.
@@ -412,7 +412,7 @@ public:
 	virtual core::vector2df getAttributeAsVector2d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as vector
-	virtual void setAttribute(s32 index, core::vector2df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::vector2df& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -422,10 +422,10 @@ public:
 	*/
 
 	//! Adds an attribute as 2d position
-	virtual void addPosition2d(const c8* attributeName, core::position2di value) _IRR_OVERRIDE_;
+	virtual void addPosition2d(const c8* attributeName, const core::position2di& value) _IRR_OVERRIDE_;
 
 	//! Sets a attribute as 2d position
-	virtual void setAttribute(const c8* attributeName, core::position2di v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::position2di& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as position
 	//! \param attributeName: Name of the attribute to get.
@@ -438,7 +438,7 @@ public:
 	virtual core::position2di getAttributeAsPosition2d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as 2d position
-	virtual void setAttribute(s32 index, core::position2di v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::position2di& v) _IRR_OVERRIDE_;
 
 	/*
 
@@ -447,10 +447,10 @@ public:
 	*/
 
 	//! Adds an attribute as rectangle
-	virtual void addRect(const c8* attributeName, core::rect<s32> value) _IRR_OVERRIDE_;
+	virtual void addRect(const c8* attributeName, const core::rect<s32>& value) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as rectangle
-	virtual void setAttribute(const c8* attributeName, core::rect<s32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::rect<s32>& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as rectangle
 	//! \param attributeName: Name of the attribute to get.
@@ -463,7 +463,7 @@ public:
 	virtual core::rect<s32> getAttributeAsRect(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as rectangle
-	virtual void setAttribute(s32 index, core::rect<s32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::rect<s32>& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -473,10 +473,10 @@ public:
 	*/
 
 	//! Adds an attribute as dimension2d
-	virtual void addDimension2d(const c8* attributeName, core::dimension2d<u32> value) _IRR_OVERRIDE_;
+	virtual void addDimension2d(const c8* attributeName, const core::dimension2d<u32>& value) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as dimension2d
-	virtual void setAttribute(const c8* attributeName, core::dimension2d<u32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::dimension2d<u32>& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as dimension2d
 	//! \param attributeName: Name of the attribute to get.
@@ -489,7 +489,7 @@ public:
 	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as dimension2d
-	virtual void setAttribute(s32 index, core::dimension2d<u32> v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::dimension2d<u32>& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -523,10 +523,10 @@ public:
 	*/
 
 	//! Adds an attribute as quaternion
-	virtual void addQuaternion(const c8* attributeName, core::quaternion v) _IRR_OVERRIDE_;
+	virtual void addQuaternion(const c8* attributeName, const core::quaternion& v) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as quaternion
-	virtual void setAttribute(const c8* attributeName, core::quaternion v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::quaternion& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a quaternion
 	//! \param attributeName: Name of the attribute to get.
@@ -539,7 +539,7 @@ public:
 	virtual core::quaternion getAttributeAsQuaternion(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as quaternion
-	virtual void setAttribute(s32 index, core::quaternion v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::quaternion& v) _IRR_OVERRIDE_;
 
 	/*
 
@@ -548,10 +548,10 @@ public:
 	*/
 
 	//! Adds an attribute as axis aligned bounding box
-	virtual void addBox3d(const c8* attributeName, core::aabbox3df v) _IRR_OVERRIDE_;
+	virtual void addBox3d(const c8* attributeName, const core::aabbox3df& v) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as axis aligned bounding box
-	virtual void setAttribute(const c8* attributeName, core::aabbox3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::aabbox3df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a axis aligned bounding box
 	//! \param attributeName: Name of the attribute to get.
@@ -564,7 +564,7 @@ public:
 	virtual core::aabbox3df getAttributeAsBox3d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as axis aligned bounding box
-	virtual void setAttribute(s32 index, core::aabbox3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::aabbox3df& v) _IRR_OVERRIDE_;
 
 	/*
 
@@ -573,10 +573,10 @@ public:
 	*/
 
 	//! Adds an attribute as 3d plane
-	virtual void addPlane3d(const c8* attributeName, core::plane3df v) _IRR_OVERRIDE_;
+	virtual void addPlane3d(const c8* attributeName, const core::plane3df& v) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as 3d plane
-	virtual void setAttribute(const c8* attributeName, core::plane3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::plane3df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a 3d plane
 	//! \param attributeName: Name of the attribute to get.
@@ -589,7 +589,7 @@ public:
 	virtual core::plane3df getAttributeAsPlane3d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as 3d plane
-	virtual void setAttribute(s32 index, core::plane3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::plane3df& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -599,10 +599,10 @@ public:
 	*/
 
 	//! Adds an attribute as 3d triangle
-	virtual void addTriangle3d(const c8* attributeName, core::triangle3df v) _IRR_OVERRIDE_;
+	virtual void addTriangle3d(const c8* attributeName, const core::triangle3df& v) _IRR_OVERRIDE_;
 
-	//! Sets an attribute as 3d trianle
-	virtual void setAttribute(const c8* attributeName, core::triangle3df v) _IRR_OVERRIDE_;
+	//! Sets an attribute as 3d triangle
+	virtual void setAttribute(const c8* attributeName, const core::triangle3df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a 3d triangle
 	//! \param attributeName: Name of the attribute to get.
@@ -615,7 +615,7 @@ public:
 	virtual core::triangle3df getAttributeAsTriangle3d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as 3d triangle
-	virtual void setAttribute(s32 index, core::triangle3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::triangle3df& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -625,10 +625,10 @@ public:
 	*/
 
 	//! Adds an attribute as a 2d line
-	virtual void addLine2d(const c8* attributeName, core::line2df v) _IRR_OVERRIDE_;
+	virtual void addLine2d(const c8* attributeName, const core::line2df& v) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as a 2d line
-	virtual void setAttribute(const c8* attributeName, core::line2df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::line2df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a 2d line
 	//! \param attributeName: Name of the attribute to get.
@@ -641,7 +641,7 @@ public:
 	virtual core::line2df getAttributeAsLine2d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as a 2d line
-	virtual void setAttribute(s32 index, core::line2df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::line2df& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -651,10 +651,10 @@ public:
 	*/
 
 	//! Adds an attribute as a 3d line
-	virtual void addLine3d(const c8* attributeName, core::line3df v) _IRR_OVERRIDE_;
+	virtual void addLine3d(const c8* attributeName, const core::line3df& v) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as a 3d line
-	virtual void setAttribute(const c8* attributeName, core::line3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(const c8* attributeName, const core::line3df& v) _IRR_OVERRIDE_;
 
 	//! Gets an attribute as a 3d line
 	//! \param attributeName: Name of the attribute to get.
@@ -667,7 +667,7 @@ public:
 	virtual core::line3df getAttributeAsLine3d(s32 index) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as a 3d line
-	virtual void setAttribute(s32 index, core::line3df v) _IRR_OVERRIDE_;
+	virtual void setAttribute(s32 index, const core::line3df& v) _IRR_OVERRIDE_;
 
 
 	/*
@@ -702,7 +702,7 @@ public:
 
 	*/
 
-	//! Adds an attribute as user pointner
+	//! Adds an attribute as user pointer
 	virtual void addUserPointer(const c8* attributeName, void* userPointer) _IRR_OVERRIDE_;
 
 	//! Sets an attribute as user pointer

@@ -72,9 +72,9 @@ namespace scene
 		//! Gets the scene node and nearest collision point for a ray based on
 		//! the nodes' id bitmasks, bounding boxes and triangle selectors.
 		virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(
-								core::line3df ray,
-								core::vector3df & outCollisionPoint,
-								core::triangle3df & outTriangle,
+								const core::line3df& ray,
+								core::vector3df& outCollisionPoint,
+								core::triangle3df& outTriangle,
 								s32 idBitMask = 0,
 								ISceneNode * collisionRootNode = 0,
 								bool noDebugObjects = false) _IRR_OVERRIDE_;
@@ -141,7 +141,7 @@ namespace scene
 			ISceneNode*& outNode);
 
 		core::vector3df collideWithWorld(s32 recursionDepth, SCollisionData &colData,
-			core::vector3df pos, core::vector3df vel);
+			const core::vector3df& pos, const core::vector3df& vel);
 
 		inline bool getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root);
 

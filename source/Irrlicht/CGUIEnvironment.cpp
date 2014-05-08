@@ -930,10 +930,8 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 		}
 
 		writer->writeLineBreak();
-		writer->writeLineBreak();
 
 		attr->write(writer);
-		writer->writeLineBreak();
 	}
 
 	// write children
@@ -942,14 +940,16 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 	for (; it != node->getChildren().end(); ++it)
 	{
 		if (!(*it)->isSubElement())
+		{
+			writer->writeLineBreak();			
 			writeGUIElement(writer, (*it));
+		}
 	}
 
 	// write closing brace if required
 	if (attr->getAttributeCount() != 0)
 	{
 		writer->writeClosingTag(name);
-		writer->writeLineBreak();
 		writer->writeLineBreak();
 	}
 

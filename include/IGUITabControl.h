@@ -14,7 +14,7 @@ namespace irr
 namespace gui
 {
 	//! A tab-page, onto which other gui elements could be added.
-	/** IGUITab refers to the page itself, not to the tab in the tabbar of an IGUITabControl. */
+	/** IGUITab refers mostly to the page itself, but also carries some data about the tab in the tabbar of an IGUITabControl. */
 	class IGUITab : public IGUIElement
 	{
 	public:
@@ -41,7 +41,7 @@ namespace gui
 		//! returns the color of the background
 		virtual video::SColor getBackgroundColor() const = 0;
 
-		//! sets the color of the text
+		//! sets the color of it's text in  the tab-bar
 		virtual void setTextColor(video::SColor c) = 0;
 
 		//! gets the color of the text

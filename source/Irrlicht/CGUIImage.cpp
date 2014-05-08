@@ -78,18 +78,22 @@ void CGUIImage::draw()
 
 	if (Texture)
 	{
+		core::rect<s32> sourceRect(SourceRect);
+		if (sourceRect.getWidth() == 0 || sourceRect.getHeight() == 0)
+		{
+			sourceRect = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(Texture->getOriginalSize()));
+		}
+
 		if (ScaleImage)
 		{
 			const video::SColor Colors[] = {Color,Color,Color,Color};
 
-			driver->draw2DImage(Texture, AbsoluteRect,
-				core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(Texture->getOriginalSize())),
+			driver->draw2DImage(Texture, AbsoluteRect, sourceRect,
 				&AbsoluteClippingRect, Colors, UseAlphaChannel);
 		}
 		else
 		{
-			driver->draw2DImage(Texture, AbsoluteRect.UpperLeftCorner,
-				core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(Texture->getOriginalSize())),
+			driver->draw2DImage(Texture, AbsoluteRect.UpperLeftCorner, sourceRect,
 				&AbsoluteClippingRect, Color, UseAlphaChannel);
 		}
 	}
@@ -130,6 +134,18 @@ bool CGUIImage::isAlphaChannelUsed() const
 	return UseAlphaChannel;
 }
 
+//! Sets the source rectangle of the image. By default the full image is used.
+void CGUIImage::setSourceRect(const core::rect<s32>& sourceRect)
+{
+	SourceRect = sourceRect;
+}
+
+//! Returns the customized source rectangle of the image to be used.
+core::rect<s32> CGUIImage::getSourceRect() const
+{
+	return SourceRect;
+}
+
 
 //! Writes attributes of the element.
 void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
@@ -140,7 +156,7 @@ void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 	out->addBool	("UseAlphaChannel", UseAlphaChannel);
 	out->addColor	("Color", Color);
 	out->addBool	("ScaleImage", ScaleImage);
-
+	out->addRect 	("SourceRect", SourceRect);
 }
 
 
@@ -149,10 +165,11 @@ void CGUIImage::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 {
 	IGUIImage::deserializeAttributes(in,options);
 
-	setImage(in->getAttributeAsTexture("Texture"));
-	setUseAlphaChannel(in->getAttributeAsBool("UseAlphaChannel"));
-	setColor(in->getAttributeAsColor("Color"));
-	setScaleImage(in->getAttributeAsBool("ScaleImage"));
+	setImage(in->getAttributeAsTexture("Texture", Texture));
+	setUseAlphaChannel(in->getAttributeAsBool("UseAlphaChannel", UseAlphaChannel));
+	setColor(in->getAttributeAsColor("Color", Color));
+	setScaleImage(in->getAttributeAsBool("ScaleImage", UseAlphaChannel));
+	setSourceRect(in->getAttributeAsRect("SourceRect", SourceRect));
 }
 
 

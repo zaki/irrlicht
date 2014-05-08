@@ -7,6 +7,10 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add IGUIImages::setSourceRect/getSourceRect to allow using only parts of an image (can also be used to mirror and scroll them).
+- Dev-Cpp project file removed (wasn't really supported for some time already)
+- Collada dae-loader now set's the vertex colors (thx @sf17k for report and test-models)
+- IAttributes interface changed. Parameters are now passed by const-ref instead of per value.
 - Fix c::b project obj folder names. Some static builds had used the shared folders (thx @ gerdb for reporting)
 - Add ITexture::getSource which can be used to check where the last IVideoDriver::getTexture call found the texture.
 - Add IMeshTextureLoader interface and replace texture-loading algorithms in most meshloaders.

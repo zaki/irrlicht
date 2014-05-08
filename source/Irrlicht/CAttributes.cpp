@@ -368,7 +368,7 @@ video::SColorf CAttributes::getAttributeAsColorf(const c8* attributeName, const 
 }
 
 //! Sets a attribute as 2d position
-void CAttributes::setAttribute(const c8* attributeName, core::position2di value)
+void CAttributes::setAttribute(const c8* attributeName, const core::position2di& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -390,7 +390,7 @@ core::position2di CAttributes::getAttributeAsPosition2d(const c8* attributeName,
 }
 
 //! Sets a attribute as rectangle
-void CAttributes::setAttribute(const c8* attributeName, core::rect<s32> value)
+void CAttributes::setAttribute(const c8* attributeName, const core::rect<s32>& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -412,7 +412,7 @@ core::rect<s32> CAttributes::getAttributeAsRect(const c8* attributeName, const c
 }
 
 //! Sets a attribute as dimension2d
-void CAttributes::setAttribute(const c8* attributeName, core::dimension2d<u32> value)
+void CAttributes::setAttribute(const c8* attributeName, const core::dimension2d<u32>& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -434,7 +434,7 @@ core::dimension2d<u32> CAttributes::getAttributeAsDimension2d(const c8* attribut
 }
 
 //! Sets a attribute as vector
-void CAttributes::setAttribute(const c8* attributeName, core::vector3df value)
+void CAttributes::setAttribute(const c8* attributeName, const core::vector3df& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -444,7 +444,7 @@ void CAttributes::setAttribute(const c8* attributeName, core::vector3df value)
 }
 
 //! Sets a attribute as vector
-void CAttributes::setAttribute(const c8* attributeName, core::vector2df value)
+void CAttributes::setAttribute(const c8* attributeName, const core::vector2df& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -850,32 +850,32 @@ void CAttributes::addColorf(const c8* attributeName, video::SColorf value)
 }
 
 //! Adds an attribute as 3d vector
-void CAttributes::addVector3d(const c8* attributeName, core::vector3df value)
+void CAttributes::addVector3d(const c8* attributeName, const core::vector3df& value)
 {
 	Attributes.push_back(new CVector3DAttribute(attributeName, value));
 }
 
 //! Adds an attribute as 2d vector
-void CAttributes::addVector2d(const c8* attributeName, core::vector2df value)
+void CAttributes::addVector2d(const c8* attributeName, const core::vector2df& value)
 {
 	Attributes.push_back(new CVector2DAttribute(attributeName, value));
 }
 
 
 //! Adds an attribute as 2d position
-void CAttributes::addPosition2d(const c8* attributeName, core::position2di value)
+void CAttributes::addPosition2d(const c8* attributeName, const core::position2di& value)
 {
 	Attributes.push_back(new CPosition2DAttribute(attributeName, value));
 }
 
 //! Adds an attribute as rectangle
-void CAttributes::addRect(const c8* attributeName, core::rect<s32> value)
+void CAttributes::addRect(const c8* attributeName, const core::rect<s32>& value)
 {
 	Attributes.push_back(new CRectAttribute(attributeName, value));
 }
 
 //! Adds an attribute as dimension2d
-void CAttributes::addDimension2d(const c8* attributeName, core::dimension2d<u32> value)
+void CAttributes::addDimension2d(const c8* attributeName, const core::dimension2d<u32>& value)
 {
 	Attributes.push_back(new CDimension2dAttribute(attributeName, value));
 }
@@ -950,35 +950,35 @@ void CAttributes::setAttribute(s32 index, video::SColorf color)
 }
 
 //! Sets a attribute as vector
-void CAttributes::setAttribute(s32 index, core::vector3df v)
+void CAttributes::setAttribute(s32 index, const core::vector3df& v)
 {
 	if ((u32)index < Attributes.size())
 		Attributes[index]->setVector(v);
 }
 
 //! Sets a attribute as vector
-void CAttributes::setAttribute(s32 index, core::vector2df v)
+void CAttributes::setAttribute(s32 index, const core::vector2df& v)
 {
 	if ((u32)index < Attributes.size())
 		Attributes[index]->setVector2d(v);
 }
 
 //! Sets a attribute as position
-void CAttributes::setAttribute(s32 index, core::position2di v)
+void CAttributes::setAttribute(s32 index, const core::position2di& v)
 {
 	if ((u32)index < Attributes.size())
 		Attributes[index]->setPosition(v);
 }
 
 //! Sets a attribute as rectangle
-void CAttributes::setAttribute(s32 index, core::rect<s32> v)
+void CAttributes::setAttribute(s32 index, const core::rect<s32>& v)
 {
 	if ((u32)index < Attributes.size())
 		Attributes[index]->setRect(v);
 }
 
 //! Sets a attribute as dimension2d
-void CAttributes::setAttribute(s32 index, core::dimension2d<u32> v)
+void CAttributes::setAttribute(s32 index, const core::dimension2d<u32>& v)
 {
 	if ((u32)index < Attributes.size())
 		Attributes[index]->setDimension2d(v);
@@ -1054,14 +1054,14 @@ void CAttributes::setAttribute(s32 index, const core::matrix4& v)
 
 
 //! Adds an attribute as quaternion
-void CAttributes::addQuaternion(const c8* attributeName, core::quaternion v)
+void CAttributes::addQuaternion(const c8* attributeName, const core::quaternion& v)
 {
 	Attributes.push_back(new CQuaternionAttribute(attributeName, v));
 }
 
 
 //! Sets an attribute as quaternion
-void CAttributes::setAttribute(const c8* attributeName, core::quaternion v)
+void CAttributes::setAttribute(const c8* attributeName, const core::quaternion& v)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -1094,20 +1094,20 @@ core::quaternion CAttributes::getAttributeAsQuaternion(s32 index)
 }
 
 //! Sets an attribute as quaternion
-void CAttributes::setAttribute(s32 index, core::quaternion v)
+void CAttributes::setAttribute(s32 index, const core::quaternion& v)
 {
 if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setQuaternion(v);
 }
 
 //! Adds an attribute as axis aligned bounding box
-void CAttributes::addBox3d(const c8* attributeName, core::aabbox3df v)
+void CAttributes::addBox3d(const c8* attributeName, const core::aabbox3df& v)
 {
 	Attributes.push_back(new CBBoxAttribute(attributeName, v));
 }
 
 //! Sets an attribute as axis aligned bounding box
-void CAttributes::setAttribute(const c8* attributeName, core::aabbox3df v)
+void CAttributes::setAttribute(const c8* attributeName, const core::aabbox3df& v)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -1140,20 +1140,20 @@ core::aabbox3df CAttributes::getAttributeAsBox3d(s32 index)
 }
 
 //! Sets an attribute as axis aligned bounding box
-void CAttributes::setAttribute(s32 index, core::aabbox3df v)
+void CAttributes::setAttribute(s32 index, const core::aabbox3df& v)
 {
 if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setBBox(v);
 }
 
 //! Adds an attribute as 3d plane
-void CAttributes::addPlane3d(const c8* attributeName, core::plane3df v)
+void CAttributes::addPlane3d(const c8* attributeName, const core::plane3df& v)
 {
 	Attributes.push_back(new CPlaneAttribute(attributeName, v));
 }
 
 //! Sets an attribute as 3d plane
-void CAttributes::setAttribute(const c8* attributeName, core::plane3df v)
+void CAttributes::setAttribute(const c8* attributeName, const core::plane3df& v)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -1186,20 +1186,20 @@ core::plane3df CAttributes::getAttributeAsPlane3d(s32 index)
 }
 
 //! Sets an attribute as 3d plane
-void CAttributes::setAttribute(s32 index, core::plane3df v)
+void CAttributes::setAttribute(s32 index, const core::plane3df& v)
 {
 	if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setPlane(v);
 }
 
 //! Adds an attribute as 3d triangle
-void CAttributes::addTriangle3d(const c8* attributeName, core::triangle3df v)
+void CAttributes::addTriangle3d(const c8* attributeName, const core::triangle3df& v)
 {
 	Attributes.push_back(new CTriangleAttribute(attributeName, v));
 }
 
 //! Sets an attribute as 3d triangle
-void CAttributes::setAttribute(const c8* attributeName, core::triangle3df v)
+void CAttributes::setAttribute(const c8* attributeName, const core::triangle3df& v)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -1233,20 +1233,20 @@ core::triangle3df CAttributes::getAttributeAsTriangle3d(s32 index)
 }
 
 //! Sets an attribute as 3d triangle
-void CAttributes::setAttribute(s32 index, core::triangle3df v)
+void CAttributes::setAttribute(s32 index, const core::triangle3df& v)
 {
 	if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setTriangle(v);
 }
 
 //! Adds an attribute as a 2d line
-void CAttributes::addLine2d(const c8* attributeName, core::line2df v)
+void CAttributes::addLine2d(const c8* attributeName, const core::line2df& v)
 {
 	Attributes.push_back(new CLine2dAttribute(attributeName, v));
 }
 
 //! Sets an attribute as a 2d line
-void CAttributes::setAttribute(const c8* attributeName, core::line2df v)
+void CAttributes::setAttribute(const c8* attributeName, const core::line2df& v)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -1279,20 +1279,20 @@ core::line2df CAttributes::getAttributeAsLine2d(s32 index)
 }
 
 //! Sets an attribute as a 2d line
-void CAttributes::setAttribute(s32 index, core::line2df v)
+void CAttributes::setAttribute(s32 index, const core::line2df& v)
 {
 	if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setLine2d(v);
 }
 
 //! Adds an attribute as a 3d line
-void CAttributes::addLine3d(const c8* attributeName, core::line3df v)
+void CAttributes::addLine3d(const c8* attributeName, const core::line3df& v)
 {
 	Attributes.push_back(new CLine3dAttribute(attributeName, v));
 }
 
 //! Sets an attribute as a 3d line
-void CAttributes::setAttribute(const c8* attributeName, core::line3df v)
+void CAttributes::setAttribute(const c8* attributeName, const core::line3df& v)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -1325,7 +1325,7 @@ core::line3df CAttributes::getAttributeAsLine3d(s32 index)
 }
 
 //! Sets an attribute as a 3d line
-void CAttributes::setAttribute(s32 index, core::line3df v)
+void CAttributes::setAttribute(s32 index, const core::line3df& v)
 {
 	if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setLine3d(v);
@@ -1333,7 +1333,7 @@ void CAttributes::setAttribute(s32 index, core::line3df v)
 }
 
 
-//! Adds an attribute as user pointner
+//! Adds an attribute as user pointer
 void CAttributes::addUserPointer(const c8* attributeName, void* userPointer)
 {
 	Attributes.push_back(new CUserPointerAttribute(attributeName, userPointer));

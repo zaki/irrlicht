@@ -52,6 +52,12 @@ namespace gui
 		//! Returns true if the image is using the alpha channel, false if not
 		virtual bool isAlphaChannelUsed() const _IRR_OVERRIDE_;
 
+		//! Sets the source rectangle of the image. By default the full image is used.
+		virtual void setSourceRect(const core::rect<s32>& sourceRect) _IRR_OVERRIDE_;
+
+		//! Returns the customized source rectangle of the image to be used.
+		virtual core::rect<s32> getSourceRect() const _IRR_OVERRIDE_;
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
@@ -63,7 +69,7 @@ namespace gui
 		video::SColor Color;
 		bool UseAlphaChannel;
 		bool ScaleImage;
-
+		core::rect<s32> SourceRect;
 	};
 
 

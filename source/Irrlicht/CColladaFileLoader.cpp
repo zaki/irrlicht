@@ -124,7 +124,7 @@ namespace
 	const core::stringc profileCOMMONAttributeName = "COMMON";
 
 	const char* const inputSemanticNames[] = {"POSITION", "VERTEX", "NORMAL", "TEXCOORD",
-		"UV", "TANGENT", "IMAGE", "TEXTURE", 0};
+		"UV", "TANGENT", "IMAGE", "TEXTURE", "COLOR", 0};
 
 	// We have to read ambient lights like other light types here, so we need a type for it
 	const video::E_LIGHT_TYPE ELT_AMBIENT = video::E_LIGHT_TYPE(video::ELT_COUNT+1);
@@ -2192,6 +2192,15 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 						break;
 					case ECIS_TANGENT:
 						break;
+					case ECIS_COLOR:
+					{
+						video::SColorf col;
+						col.r = localInputs[k].Data[idx+0];
+						col.g = localInputs[k].Data[idx+1];
+						col.b = localInputs[k].Data[idx+2];
+						vtx.Color = col.toSColor();
+						break;
+					}
 					default:
 						break;
 					}
@@ -2326,6 +2335,15 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 						break;
 					case ECIS_TANGENT:
 						break;
+					case ECIS_COLOR:
+					{
+						video::SColorf col;
+						col.r = localInputs[k].Data[idx+0];
+						col.g = localInputs[k].Data[idx+1];
+						col.b = localInputs[k].Data[idx+2];
+						vtx.Color = col.toSColor();
+						break;
+					}
 					default:
 						break;
 					}
