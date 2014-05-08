@@ -1572,7 +1572,7 @@ bool COGLES2Driver::endScene()
 
 
 	//! returns a device dependent texture from a software surface (IImage)
-	ITexture* COGLES2Driver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+	ITexture* COGLES2Driver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 		IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
 	{
 		COGLES2Texture* texture = 0;
@@ -1583,7 +1583,7 @@ bool COGLES2Driver::endScene()
 		{
 			texture = new COGLES2Texture(name, posXImage, negXImage, posYImage, negYImage, posZImage, negZImage, this);
 		}
- 
+
  		return texture;
 	}
 
@@ -1771,7 +1771,8 @@ bool COGLES2Driver::endScene()
 		// ZWrite
 	//	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 		{
-			if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
+			if (material.ZWriteEnable && (AllowZWriteOnTransparent || (material.BlendOperation == EBO_NONE &&
+					!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
 				BridgeCalls->setDepthMask(true);
 			else
 				BridgeCalls->setDepthMask(false);

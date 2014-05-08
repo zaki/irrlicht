@@ -70,21 +70,21 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	GLint backingHeight;
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
-	
+
 	glGenRenderbuffersOES(1, &ViewDepthRenderbuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
-    
+
     GLenum depthComponent = GL_DEPTH_COMPONENT16_OES;
-    
+
     if(params.ZBufferBits >= 24)
         depthComponent = GL_DEPTH_COMPONENT24_OES;
-    
+
 	glRenderbufferStorageOES(GL_RENDERBUFFER_OES, depthComponent, backingWidth, backingHeight);
-    
+
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, ViewRenderbuffer);
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
-    
+
     WindowSize = core::dimension2d<u32>(backingWidth, backingHeight);
     CNullDriver::ScreenSize = WindowSize;
     CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
@@ -611,7 +611,7 @@ COGLES1Driver::SHWBufferLink *COGLES1Driver::createHardwareBuffer(const scene::I
 
 void COGLES1Driver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
-	if (!_HWBuffer) 
+	if (!_HWBuffer)
 		return;
 
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
@@ -1952,7 +1952,8 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 	// zwrite
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
+		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (material.BlendOperation == EBO_NONE &&
+					!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
 		{
 			glDepthMask(GL_TRUE);
 		}
@@ -2011,7 +2012,7 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
 			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 	}
- 
+
 	// thickness
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 	{
