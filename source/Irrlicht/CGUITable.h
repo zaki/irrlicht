@@ -143,6 +143,15 @@ namespace gui
 		//! Get the flags, as defined in EGUI_TABLE_DRAW_FLAGS, which influence the layout
 		virtual s32 getDrawFlags() const _IRR_OVERRIDE_;
 
+		//! Sets another skin independent font.
+		virtual void setOverrideFont(IGUIFont* font=0) _IRR_OVERRIDE_;
+
+		//! Gets the override font (if any)
+		virtual IGUIFont* getOverrideFont() const _IRR_OVERRIDE_;
+
+		//! Get the font which is used right now for drawing
+		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
+
 		//! Writes attributes of the object.
 		//! Implement this to expose the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml serialization purposes.
@@ -196,7 +205,6 @@ namespace gui
 
 		core::array< Column > Columns;
 		core::array< Row > Rows;
-		gui::IGUIFont* Font;
 		gui::IGUIScrollBar* VerticalScrollBar;
 		gui::IGUIScrollBar* HorizontalScrollBar;
 		bool Clip;
@@ -216,6 +224,8 @@ namespace gui
 		s32 ActiveTab;
 		EGUI_ORDERING_MODE CurrentOrdering;
 		s32 DrawFlags;
+
+		gui::IGUIFont* OverrideFont;
 	};
 
 } // end namespace gui
