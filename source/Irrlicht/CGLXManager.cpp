@@ -29,7 +29,7 @@ namespace video
 {
 
 CGLXManager::CGLXManager(const SIrrlichtCreationParameters& params, const SExposedVideoData& videodata, int screennr)
-	: Params(params), PrimaryContext(videodata), visual(0)
+	: Params(params), PrimaryContext(videodata), VisualInfo(0), glxFBConfig(0), GlxWin(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGLXManager");
@@ -201,9 +201,9 @@ os::Printer::log("GLX >= 1.3", ELL_DEBUG);
 				typedef XVisualInfo * ( * PFNGLXGETVISUALFROMFBCONFIGPROC) (Display *dpy, GLXFBConfig config);
 				PFNGLXGETVISUALFROMFBCONFIGPROC glxGetVisualFromFBConfig= (PFNGLXGETVISUALFROMFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXGetVisualFromFBConfig"));
 				if (glxGetVisualFromFBConfig)
-					visual = glxGetVisualFromFBConfig(display,(GLXFBConfig)glxFBConfig);
+					VisualInfo = glxGetVisualFromFBConfig(display,(GLXFBConfig)glxFBConfig);
 #else
-					visual = glXGetVisualFromFBConfig(display,(GLXFBConfig)glxFBConfig);
+					VisualInfo = glXGetVisualFromFBConfig(display,(GLXFBConfig)glxFBConfig);
 #endif
 			}
 		}
@@ -233,21 +233,21 @@ os::Printer::log("GLX >= 1.3", ELL_DEBUG);
 				None
 			};
 
-			visual=glXChooseVisual(display, screennr, visualAttrBuffer);
-			if (!visual)
+			VisualInfo=glXChooseVisual(display, screennr, visualAttrBuffer);
+			if (!VisualInfo)
 			{
 				if (Params.Stencilbuffer)
 					os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
 				Params.Stencilbuffer = !Params.Stencilbuffer;
 				visualAttrBuffer[13]=Params.Stencilbuffer?1:0;
 
-				visual=glXChooseVisual(display, screennr, visualAttrBuffer);
-				if (!visual && Params.Doublebuffer)
+				VisualInfo=glXChooseVisual(display, screennr, visualAttrBuffer);
+				if (!VisualInfo && Params.Doublebuffer)
 				{
 					os::Printer::log("No doublebuffering available.", ELL_WARNING);
 					Params.Doublebuffer=false;
 					visualAttrBuffer[14] = GLX_USE_GL;
-					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
+					VisualInfo=glXChooseVisual(display, screennr, visualAttrBuffer);
 				}
 			}
 		}
@@ -287,22 +287,22 @@ bool CGLXManager::generateSurface()
 {
 	if (glxFBConfig)
 	{
-		glxWin=glXCreateWindow((Display*)CurrentContext.OpenGLLinux.X11Display,(GLXFBConfig)glxFBConfig,CurrentContext.OpenGLLinux.X11Window,NULL);
-		if (!glxWin)
+		GlxWin=glXCreateWindow((Display*)CurrentContext.OpenGLLinux.X11Display,(GLXFBConfig)glxFBConfig,CurrentContext.OpenGLLinux.X11Window,NULL);
+		if (!GlxWin)
 		{
 			os::Printer::log("Could not create GLX window.", ELL_WARNING);
 			return false;
 		}
 
-		CurrentContext.OpenGLLinux.X11Window=glxWin;
+		CurrentContext.OpenGLLinux.X11Window=GlxWin;
 	}
 	return true;
 }
 
 void CGLXManager::destroySurface()
 {
-	if (glxWin)
-		glXDestroyWindow((Display*)CurrentContext.OpenGLLinux.X11Display, glxWin);
+	if (GlxWin)
+		glXDestroyWindow((Display*)CurrentContext.OpenGLLinux.X11Display, GlxWin);
 }
 
 bool CGLXManager::generateContext()
@@ -311,7 +311,7 @@ bool CGLXManager::generateContext()
 
 	if (glxFBConfig)
 	{
-		if (glxWin)
+		if (GlxWin)
 		{
 			// create glx context
 			context = glXCreateNewContext((Display*)CurrentContext.OpenGLLinux.X11Display, (GLXFBConfig)glxFBConfig, GLX_RGBA_TYPE, NULL, True);
@@ -329,7 +329,7 @@ bool CGLXManager::generateContext()
 	}
 	else
 	{
-		context = glXCreateContext((Display*)CurrentContext.OpenGLLinux.X11Display, visual, NULL, True);
+		context = glXCreateContext((Display*)CurrentContext.OpenGLLinux.X11Display, VisualInfo, NULL, True);
 		if (!context)
 		{
 			os::Printer::log("Could not create GLX rendering context.", ELL_WARNING);
@@ -397,7 +397,7 @@ void CGLXManager::destroyContext()
 {
 	if (CurrentContext.OpenGLLinux.X11Context)
 	{
-		if (glxWin)
+		if (GlxWin)
 		{
 			if (!glXMakeContextCurrent((Display*)CurrentContext.OpenGLLinux.X11Display, None, None, NULL))
 				os::Printer::log("Could not release glx context.", ELL_WARNING);

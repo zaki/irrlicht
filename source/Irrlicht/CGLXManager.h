@@ -60,15 +60,15 @@ namespace video
         // Swap buffers.
         bool swapBuffers();
 
-        XVisualInfo* getVisual() const {return visual;} // return XVisualInfo
+        XVisualInfo* getVisual() const {return VisualInfo;} // return XVisualInfo
 
     private:
         SIrrlichtCreationParameters Params;
         SExposedVideoData PrimaryContext;
         SExposedVideoData CurrentContext;
-        XVisualInfo* visual;
+        XVisualInfo* VisualInfo;
         void* glxFBConfig; // GLXFBConfig
-        XID glxWin; // GLXWindow
+        XID GlxWin; // GLXWindow
         ECOLOR_FORMAT ColorFormat;
 	};
 }

@@ -147,12 +147,12 @@ namespace irr
 		void initXAtoms();
 
 		bool switchToFullscreen(bool reset=false);
-	
-#ifdef _IRR_COMPILE_WITH_X11_	
+
+#ifdef _IRR_COMPILE_WITH_X11_
 		bool createInputContext();
 		void destroyInputContext();
 		EKEY_CODE getKeyCode(XEvent &event);
-#endif	
+#endif
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -173,9 +173,9 @@ namespace irr
 				if (!Null)
 				{
 					if ( !IsVisible )
-						XDefineCursor( Device->display, Device->window, invisCursor );
+						XDefineCursor( Device->XDisplay, Device->XWindow, InvisCursor );
 					else
-						XUndefineCursor( Device->display, Device->window );
+						XUndefineCursor( Device->XDisplay, Device->XWindow );
 				}
 #endif
 			}
@@ -213,9 +213,9 @@ namespace irr
 				{
 					if (UseReferenceRect)
 					{
-						XWarpPointer(Device->display,
+						XWarpPointer(Device->XDisplay,
 							None,
-							Device->window, 0, 0,
+							Device->XWindow, 0, 0,
 							Device->Width,
 							Device->Height,
 							ReferenceRect.UpperLeftCorner.X + x,
@@ -224,13 +224,13 @@ namespace irr
 					}
 					else
 					{
-						XWarpPointer(Device->display,
+						XWarpPointer(Device->XDisplay,
 							None,
-							Device->window, 0, 0,
+							Device->XWindow, 0, 0,
 							Device->Width,
 							Device->Height, x, y);
 					}
-					XFlush(Device->display);
+					XFlush(Device->XDisplay);
 				}
 #endif
 				CursorPos.X = x;
@@ -317,15 +317,15 @@ namespace irr
 				if ( PlatformBehavior&gui::ECPB_X11_CACHE_UPDATES && !os::Timer::isStopped() )
 				{
 					u32 now = os::Timer::getTime();
-					if (now <= lastQuery)
+					if (now <= LastQuery)
 						return;
-					lastQuery = now;
+					LastQuery = now;
 				}
 
 				Window tmp;
 				int itmp1, itmp2;
 				unsigned  int maskreturn;
-				XQueryPointer(Device->display, Device->window,
+				XQueryPointer(Device->XDisplay, Device->XWindow,
 					&tmp, &tmp,
 					&itmp1, &itmp2,
 					&CursorPos.X, &CursorPos.Y, &maskreturn);
@@ -346,8 +346,8 @@ namespace irr
 			core::rect<s32> ReferenceRect;
 #ifdef _IRR_COMPILE_WITH_X11_
 			gui::ECURSOR_PLATFORM_BEHAVIOR PlatformBehavior;
-			u32 lastQuery;
-			Cursor invisCursor;
+			u32 LastQuery;
+			Cursor InvisCursor;
 
 			struct CursorFrameX11
 			{
@@ -384,22 +384,22 @@ namespace irr
 #ifdef _IRR_COMPILE_WITH_X11_
 		friend class COpenGLDriver;
 
-		Display *display;
-		XVisualInfo* visual;
-		int screennr;
-		Window window;
-		XSetWindowAttributes attributes;
+		Display *XDisplay;
+		XVisualInfo* VisualInfo;
+		int Screennr;
+		Window XWindow;
+		XSetWindowAttributes WndAttributes;
 		XSizeHints* StdHints;
 		XImage* SoftwareImage;
 		XIM XInputMethod;
 		XIC XInputContext;
 		mutable core::stringc Clipboard;
 		#ifdef _IRR_LINUX_X11_VIDMODE_
-		XF86VidModeModeInfo oldVideoMode;
+		XF86VidModeModeInfo OldVideoMode;
 		#endif
 		#ifdef _IRR_LINUX_X11_RANDR_
-		SizeID oldRandrMode;
-		Rotation oldRandrRotation;
+		SizeID OldRandrMode;
+		Rotation OldRandrRotation;
 		#endif
 #endif
 		u32 Width, Height;
