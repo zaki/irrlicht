@@ -1081,6 +1081,18 @@ void CGUITreeView::setImageList( IGUIImageList* imageList )
 	}
 }
 
+//! Access the vertical scrollbar
+IGUIScrollBar* CGUITreeView::getVerticalScrollBar() const
+{
+	return ScrollBarV;
+}
+
+//! Access the horizontal scrollbar
+IGUIScrollBar* CGUITreeView::getHorizontalScrollBar() const
+{
+	return ScrollBarH;
+}
+
 } // end namespace gui
 } // end namespace irr
 

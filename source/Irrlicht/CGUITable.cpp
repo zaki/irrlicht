@@ -1099,6 +1099,24 @@ IGUIFont* CGUITable::getActiveFont() const
 	return 0;
 }
 
+//! Get the height of items/rows
+s32 CGUITable::getItemHeight() const
+{
+	return ItemHeight;
+}
+
+//! Access the vertical scrollbar
+IGUIScrollBar* CGUITable::getVerticalScrollBar() const
+{
+	return VerticalScrollBar;
+}
+
+//! Access the horizontal scrollbar
+IGUIScrollBar* CGUITable::getHorizontalScrollBar() const
+{
+	return HorizontalScrollBar;
+}
+
 //! Writes attributes of the element.
 void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {

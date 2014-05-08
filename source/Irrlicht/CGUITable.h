@@ -152,6 +152,15 @@ namespace gui
 		//! Get the font which is used right now for drawing
 		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
 
+		//! Get the height of items/rows
+		virtual s32 getItemHeight() const _IRR_OVERRIDE_;
+
+		//! Access the vertical scrollbar
+		virtual IGUIScrollBar* getVerticalScrollBar() const _IRR_OVERRIDE_;
+
+		//! Access the horizontal scrollbar
+		virtual IGUIScrollBar* getHorizontalScrollBar() const _IRR_OVERRIDE_;
+
 		//! Writes attributes of the object.
 		//! Implement this to expose the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml serialization purposes.

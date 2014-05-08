@@ -297,6 +297,12 @@ namespace gui
 		virtual IGUITreeViewNode* getLastEventNode() const _IRR_OVERRIDE_
 		{ return LastEventNode; }
 
+		//! Access the vertical scrollbar
+		virtual IGUIScrollBar* getVerticalScrollBar() const _IRR_OVERRIDE_;
+
+		//! Access the horizontal scrollbar
+		virtual IGUIScrollBar* getHorizontalScrollBar() const _IRR_OVERRIDE_;
+
 	private:
 		//! calculates the heigth of an node and of all visible nodes.
 		void recalculateItemHeight();

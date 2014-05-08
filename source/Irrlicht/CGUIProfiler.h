@@ -69,6 +69,8 @@ namespace gui
 		IProfiler * Profiler;
 		irr::gui::IGUITable* DisplayTable;
 		irr::u32 CurrentGroupIdx;
+		irr::s32 CurrentGroupPage;
+		irr::s32 NumGroupPages;
 		bool IgnoreUncalled;
 	};
 

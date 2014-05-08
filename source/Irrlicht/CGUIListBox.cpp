@@ -906,6 +906,11 @@ void CGUIListBox::setDrawBackground(bool draw)
     DrawBack = draw;
 }
 
+//! Access the vertical scrollbar
+IGUIScrollBar* CGUIListBox::getVerticalScrollBar() const
+{
+	return ScrollBar;
+}
 
 } // end namespace gui
 } // end namespace irr
