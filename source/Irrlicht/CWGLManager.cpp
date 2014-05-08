@@ -92,10 +92,10 @@ bool CWGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	PIXELFORMATDESCRIPTOR tmp_pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),             // Size Of This Pixel Format Descriptor
 		1,                                         // Version Number
-		PFD_DRAW_TO_WINDOW |                       // Format Must Support Window
+		(DWORD)(PFD_DRAW_TO_WINDOW |               // Format Must Support Window
 		PFD_SUPPORT_OPENGL |                       // Format Must Support OpenGL
 		(Params.Doublebuffer?PFD_DOUBLEBUFFER:0) | // Must Support Double Buffering
-		(Params.Stereobuffer?PFD_STEREO:0),        // Must Support Stereo Buffer
+		(Params.Stereobuffer?PFD_STEREO:0)),       // Must Support Stereo Buffer
 		PFD_TYPE_RGBA,                             // Request An RGBA Format
 		Params.Bits,                               // Select Our Color Depth
 		0, 0, 0, 0, 0, 0,                          // Color Bits Ignored

@@ -52,12 +52,12 @@ const u16 COpenGLDriver::Quad2DIndices[4] = { 0, 1, 2, 3 };
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const ::irr::SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, IContextManager* contextManager)
-: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
+: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), BridgeCalls(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	FixedPipelineState(EOFPS_ENABLE),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params), BridgeCalls(0),
+	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
 	ContextManager(contextManager), DeviceType(EIDT_WIN32)
 {
 	#ifdef _DEBUG

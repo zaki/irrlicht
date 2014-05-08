@@ -1668,7 +1668,7 @@ IGUIElement* CGUIEnvironment::getNextElement(bool reverse, bool group)
 	// find the element
 	IGUIElement *closest = 0;
 	IGUIElement *first = 0;
-	startPos->getNextElement(startOrder, reverse, group, first, closest, false, FocusFlags & EFF_CAN_FOCUS_DISABLED);
+	startPos->getNextElement(startOrder, reverse, group, first, closest, false, (FocusFlags & EFF_CAN_FOCUS_DISABLED) != 0);
 
 	if (closest)
 		return closest; // we found an element
