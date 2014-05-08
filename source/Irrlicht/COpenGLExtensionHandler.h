@@ -1220,11 +1220,6 @@ class COpenGLExtensionHandler
 	void extGlGetBufferParameteriv (GLenum target, GLenum pname, GLint *params);
 	void extGlGetBufferPointerv (GLenum target, GLenum pname, GLvoid **params);
 	void extGlProvokingVertex(GLenum mode);
-	void extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
-	void extGlEnableIndexed(GLenum target, GLuint index);
-	void extGlDisableIndexed(GLenum target, GLuint index);
-	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
-	void extGlBlendEquationIndexed(GLuint buf, GLenum mode);
 	void extGlProgramParameteri(GLuint program, GLenum pname, GLint value);
 
 	// occlusion query
@@ -1237,11 +1232,21 @@ class COpenGLExtensionHandler
 	void extGlGetQueryObjectiv(GLuint id, GLenum pname, GLint *params);
 	void extGlGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params);
 
+	// blend
+	void extGlBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
+	void extGlBlendEquation(GLenum mode);
+
+	// indexed
+	void extGlEnableIndexed(GLenum target, GLuint index);
+	void extGlDisableIndexed(GLenum target, GLuint index);
+	void extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
+	void extGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+	void extGlBlendEquationIndexed(GLuint buf, GLenum mode);
+	void extGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+
 	// generic vsync setting method for several extensions
 	void extGlSwapInterval(int interval);
-
-	// blend operations
-	void extGlBlendEquation(GLenum mode);
 
 	// the global feature array
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
@@ -1347,13 +1352,6 @@ class COpenGLExtensionHandler
 		PFNGLGETBUFFERPOINTERVARBPROC pGlGetBufferPointervARB;
 		PFNGLPROVOKINGVERTEXPROC pGlProvokingVertexARB;
 		PFNGLPROVOKINGVERTEXEXTPROC pGlProvokingVertexEXT;
-		PFNGLCOLORMASKINDEXEDEXTPROC pGlColorMaskIndexedEXT;
-		PFNGLENABLEINDEXEDEXTPROC pGlEnableIndexedEXT;
-		PFNGLDISABLEINDEXEDEXTPROC pGlDisableIndexedEXT;
-		PFNGLBLENDFUNCINDEXEDAMDPROC pGlBlendFuncIndexedAMD;
-		PFNGLBLENDFUNCIPROC pGlBlendFunciARB;
-		PFNGLBLENDEQUATIONINDEXEDAMDPROC pGlBlendEquationIndexedAMD;
-		PFNGLBLENDEQUATIONIPROC pGlBlendEquationiARB;
 		PFNGLPROGRAMPARAMETERIARBPROC pGlProgramParameteriARB;
 		PFNGLPROGRAMPARAMETERIEXTPROC pGlProgramParameteriEXT;
 		PFNGLGENQUERIESARBPROC pGlGenQueriesARB;
@@ -1371,8 +1369,25 @@ class COpenGLExtensionHandler
 		PFNGLENDOCCLUSIONQUERYNVPROC pGlEndOcclusionQueryNV;
 		PFNGLGETOCCLUSIONQUERYIVNVPROC pGlGetOcclusionQueryivNV;
 		PFNGLGETOCCLUSIONQUERYUIVNVPROC pGlGetOcclusionQueryuivNV;
+		// Blend
+		PFNGLBLENDFUNCSEPARATEEXTPROC pGlBlendFuncSeparateEXT;
+		PFNGLBLENDFUNCSEPARATEPROC pGlBlendFuncSeparate;
 		PFNGLBLENDEQUATIONEXTPROC pGlBlendEquationEXT;
 		PFNGLBLENDEQUATIONPROC pGlBlendEquation;
+		PFNGLBLENDEQUATIONSEPARATEEXTPROC pGlBlendEquationSeparateEXT;
+		PFNGLBLENDEQUATIONSEPARATEPROC pGlBlendEquationSeparate;
+		// Indexed
+		PFNGLENABLEINDEXEDEXTPROC pGlEnableIndexedEXT;
+		PFNGLDISABLEINDEXEDEXTPROC pGlDisableIndexedEXT;
+		PFNGLCOLORMASKINDEXEDEXTPROC pGlColorMaskIndexedEXT;
+		PFNGLBLENDFUNCINDEXEDAMDPROC pGlBlendFuncIndexedAMD;
+		PFNGLBLENDFUNCIPROC pGlBlendFunciARB;
+		PFNGLBLENDFUNCSEPARATEINDEXEDAMDPROC pGlBlendFuncSeparateIndexedAMD;
+		PFNGLBLENDFUNCSEPARATEIPROC pGlBlendFuncSeparateiARB;
+		PFNGLBLENDEQUATIONINDEXEDAMDPROC pGlBlendEquationIndexedAMD;
+		PFNGLBLENDEQUATIONIPROC pGlBlendEquationiARB;
+		PFNGLBLENDEQUATIONSEPARATEINDEXEDAMDPROC pGlBlendEquationSeparateIndexedAMD;
+		PFNGLBLENDEQUATIONSEPARATEIPROC pGlBlendEquationSeparateiARB;
 		#if defined(WGL_EXT_swap_control)
 		PFNWGLSWAPINTERVALEXTPROC pWglSwapIntervalEXT;
 		#endif
@@ -2455,76 +2470,6 @@ inline void COpenGLExtensionHandler::extGlProvokingVertex(GLenum mode)
 #endif
 }
 
-
-inline void COpenGLExtensionHandler::extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
-{
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlColorMaskIndexedEXT)
-		pGlColorMaskIndexedEXT(buf, r, g, b, a);
-#elif defined(GL_EXT_draw_buffers2)
-	glColorMaskIndexedEXT(buf, r, g, b, a);
-#else
-	os::Printer::log("glColorMaskIndexed not supported", ELL_ERROR);
-#endif
-}
-
-
-inline void COpenGLExtensionHandler::extGlEnableIndexed(GLenum target, GLuint index)
-{
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlEnableIndexedEXT)
-		pGlEnableIndexedEXT(target, index);
-#elif defined(GL_EXT_draw_buffers2)
-	glEnableIndexedEXT(target, index);
-#else
-	os::Printer::log("glEnableIndexed not supported", ELL_ERROR);
-#endif
-}
-
-inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint index)
-{
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlDisableIndexedEXT)
-		pGlDisableIndexedEXT(target, index);
-#elif defined(GL_EXT_draw_buffers2)
-	glDisableIndexedEXT(target, index);
-#else
-	os::Printer::log("glDisableIndexed not supported", ELL_ERROR);
-#endif
-}
-
-inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
-{
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendFunciARB)
-		pGlBlendFunciARB(buf, src, dst);
-	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendFuncIndexedAMD)
-		pGlBlendFuncIndexedAMD(buf, src, dst);
-#elif defined(GL_ARB_draw_buffers_blend)
-	glBlendFunciARB(buf, src, dst);
-#elif defined(GL_AMD_draw_buffers_blend)
-	glBlendFuncIndexedAMD(buf, src, dst);
-#else
-	os::Printer::log("glBlendFuncIndexed not supported", ELL_ERROR);
-#endif
-}
-
-inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenum mode)
-{
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendEquationiARB)
-		pGlBlendEquationiARB(buf, mode);
-	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendEquationIndexedAMD)
-		pGlBlendEquationIndexedAMD(buf, mode);
-#elif defined(GL_ARB_draw_buffers_blend)
-	glBlendEquationiARB(buf, mode);
-#elif defined(GL_AMD_draw_buffers_blend)
-	glBlendEquationIndexedAMD(buf, mode);
-#else
-	os::Printer::log("glBlendEquationIndexed not supported", ELL_ERROR);
-#endif
-}
-
 inline void COpenGLExtensionHandler::extGlProgramParameteri(GLuint program, GLenum pname, GLint value)
 {
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
@@ -2671,6 +2616,138 @@ inline void COpenGLExtensionHandler::extGlGetQueryObjectuiv(GLuint id, GLenum pn
 #endif
 }
 
+inline void COpenGLExtensionHandler::extGlBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBlendFuncSeparate)
+		pGlBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+	else if (pGlBlendFuncSeparateEXT)
+		pGlBlendFuncSeparateEXT(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+#elif defined(GL_VERSION_1_4)
+	glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+#elif defined(GL_EXT_blend_func_separate)
+	glBlendFuncSeparateEXT(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+#else
+	os::Printer::log("glBlendFuncSeparate not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBlendEquation(GLenum mode)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBlendEquation)
+		pGlBlendEquation(mode);
+	else if (pGlBlendEquationEXT)
+		pGlBlendEquationEXT(mode);
+#elif defined(GL_VERSION_1_4)
+	glBlendEquation(mode);
+#elif defined(GL_EXT_blend_minmax)
+	glBlendEquationEXT(mode);
+#else
+	os::Printer::log("glBlendEquation not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlEnableIndexed(GLenum target, GLuint index)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlEnableIndexedEXT)
+		pGlEnableIndexedEXT(target, index);
+#elif defined(GL_EXT_draw_buffers2)
+	glEnableIndexedEXT(target, index);
+#else
+	os::Printer::log("glEnableIndexed not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint index)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlDisableIndexedEXT)
+		pGlDisableIndexedEXT(target, index);
+#elif defined(GL_EXT_draw_buffers2)
+	glDisableIndexedEXT(target, index);
+#else
+	os::Printer::log("glDisableIndexed not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlColorMaskIndexedEXT)
+		pGlColorMaskIndexedEXT(buf, r, g, b, a);
+#elif defined(GL_EXT_draw_buffers2)
+	glColorMaskIndexedEXT(buf, r, g, b, a);
+#else
+	os::Printer::log("glColorMaskIndexed not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendFunciARB)
+		pGlBlendFunciARB(buf, src, dst);
+	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendFuncIndexedAMD)
+		pGlBlendFuncIndexedAMD(buf, src, dst);
+#elif defined(GL_ARB_draw_buffers_blend)
+	glBlendFunciARB(buf, src, dst);
+#elif defined(GL_AMD_draw_buffers_blend)
+	glBlendFuncIndexedAMD(buf, src, dst);
+#else
+	os::Printer::log("glBlendFuncIndexed not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendFuncSeparateiARB)
+		pGlBlendFuncSeparateiARB(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendFuncSeparateIndexedAMD)
+		pGlBlendFuncSeparateIndexedAMD(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+#elif defined(GL_ARB_draw_buffers_blend)
+	glBlendFuncSeparateiARB(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+#elif defined(GL_AMD_draw_buffers_blend)
+	glBlendFuncSeparateIndexedAMD(buf, srcRGB, dstRGB, srcAlpha, dstAlpha);
+#else
+	os::Printer::log("glBlendFuncSeparateIndexed not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenum mode)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendEquationiARB)
+		pGlBlendEquationiARB(buf, mode);
+	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendEquationIndexedAMD)
+		pGlBlendEquationIndexedAMD(buf, mode);
+#elif defined(GL_ARB_draw_buffers_blend)
+	glBlendEquationiARB(buf, mode);
+#elif defined(GL_AMD_draw_buffers_blend)
+	glBlendEquationIndexedAMD(buf, mode);
+#else
+	os::Printer::log("glBlendEquationIndexed not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendEquationSeparateiARB)
+		pGlBlendEquationSeparateiARB(buf, modeRGB, modeAlpha);
+	else if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendEquationSeparateIndexedAMD)
+		pGlBlendEquationSeparateIndexedAMD(buf, modeRGB, modeAlpha);
+#elif defined(GL_ARB_draw_buffers_blend)
+	glBlendEquationSeparateiARB(buf, modeRGB, modeAlpha);
+#elif defined(GL_AMD_draw_buffers_blend)
+	glBlendEquationSeparateIndexedAMD(buf, modeRGB, modeAlpha);
+#else
+	os::Printer::log("glBlendEquationSeparateIndexed not supported", ELL_ERROR);
+#endif
+}
+
 inline void COpenGLExtensionHandler::extGlSwapInterval(int interval)
 {
 	// we have wglext, so try to use that
@@ -2709,22 +2786,6 @@ inline void COpenGLExtensionHandler::extGlSwapInterval(int interval)
 	pGlXSwapIntervalMESA(interval);
 #endif
 #endif
-#endif
-}
-
-inline void COpenGLExtensionHandler::extGlBlendEquation(GLenum mode)
-{
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlBlendEquation)
-		pGlBlendEquation(mode);
-	else if (pGlBlendEquationEXT)
-		pGlBlendEquationEXT(mode);
-#elif defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_logic_op)
-	glBlendEquationEXT(mode);
-#elif defined(GL_VERSION_1_2)
-	glBlendEquation(mode);
-#else
-	os::Printer::log("glBlendEquation not supported", ELL_ERROR);
 #endif
 }
 

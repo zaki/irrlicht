@@ -1593,36 +1593,40 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flag);
 	}
 
-	if (queryFeature(EVDF_BLEND_OPERATIONS) &&
-		(resetAllRenderstates|| lastmaterial.BlendOperation != material.BlendOperation))
+    // Blend Operation
+	if (resetAllRenderstates || lastmaterial.BlendOperation != material.BlendOperation)
 	{
 		if (material.BlendOperation==EBO_NONE)
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		else
 		{
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			switch (material.BlendOperation)
+
+			if (queryFeature(EVDF_BLEND_OPERATIONS))
 			{
-			case EBO_MAX:
-			case EBO_MAX_FACTOR:
-			case EBO_MAX_ALPHA:
-				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
-				break;
-			case EBO_MIN:
-			case EBO_MIN_FACTOR:
-			case EBO_MIN_ALPHA:
-				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
-				break;
-			case EBO_SUBTRACT:
-				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
-				break;
-			case EBO_REVSUBTRACT:
-				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
-				break;
-			default:
-				pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-				break;
-			}
+                switch (material.BlendOperation)
+                {
+                case EBO_MAX:
+                case EBO_MAX_FACTOR:
+                case EBO_MAX_ALPHA:
+                    pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
+                    break;
+                case EBO_MIN:
+                case EBO_MIN_FACTOR:
+                case EBO_MIN_ALPHA:
+                    pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
+                    break;
+                case EBO_SUBTRACT:
+                    pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_SUBTRACT);
+                    break;
+                case EBO_REVSUBTRACT:
+                    pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+                    break;
+                default:
+                    pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+                    break;
+                }
+            }
 		}
 	}
 
