@@ -179,7 +179,7 @@
 				<Option platforms="Windows;" />
 				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../obj/win32-gcc-release-dll" />
+				<Option object_output="../obj/win32-gcc-release-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -342,7 +342,7 @@
 				<Option platforms="Unix;" />
 				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../obj/linux-gcc-debug-shared" />
+				<Option object_output="../obj/linux-gcc-debug-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -370,7 +370,7 @@
 				<Option platforms="Unix;" />
 				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../obj/linux-gcc-release-shared" />
+				<Option object_output="../obj/linux-gcc-release-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -395,7 +395,7 @@
 				<Option platforms="Unix;" />
 				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../obj/linux-gcc-release-fast-shared" />
+				<Option object_output="../obj/linux-gcc-release-fast-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -506,7 +506,6 @@
 		<Unit filename="../../include/IMeshLoader.h" />
 		<Unit filename="../../include/IMeshManipulator.h" />
 		<Unit filename="../../include/IMeshSceneNode.h" />
-		<Unit filename="../../include/IMeshTextureLoader.h" />
 		<Unit filename="../../include/IMeshTextureLoader.h" />
 		<Unit filename="../../include/IMeshWriter.h" />
 		<Unit filename="../../include/IMetaTriangleSelector.h" />
