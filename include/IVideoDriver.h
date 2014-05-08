@@ -197,6 +197,7 @@ namespace video
 						case EMF_COLOR_MATERIAL: material.ColorMaterial = Material.ColorMaterial; break;
 						case EMF_USE_MIP_MAPS: material.UseMipMaps = Material.UseMipMaps; break;
 						case EMF_BLEND_OPERATION: material.BlendOperation = Material.BlendOperation; break;
+						case EMF_BLEND_FACTOR: material.BlendFactor = Material.BlendFactor; break;
 						case EMF_POLYGON_OFFSET:
 							material.PolygonOffsetDirection = Material.PolygonOffsetDirection;
 							material.PolygonOffsetFactor = Material.PolygonOffsetFactor; break;

@@ -649,7 +649,11 @@ namespace video
 
 		void setBlendFunc(GLenum source, GLenum destination);
 
+		void setBlendFuncSeparate(GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha);
+
 		void setBlendFuncIndexed(GLuint index, GLenum source, GLenum destination);
+
+		void setBlendFuncSeparateIndexed(GLuint index, GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha);
 
 		void setBlend(bool enable);
 
@@ -695,8 +699,10 @@ namespace video
 		bool AlphaTest;
 
 		GLenum* BlendEquation;
-		GLenum* BlendSource;
-		GLenum* BlendDestination;
+		GLenum* BlendSourceRGB;
+		GLenum* BlendDestinationRGB;
+		GLenum* BlendSourceAlpha;
+		GLenum* BlendDestinationAlpha;
 		bool* Blend;
 		GLuint BlendIndexCount;
 

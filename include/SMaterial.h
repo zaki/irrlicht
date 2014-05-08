@@ -113,27 +113,53 @@ namespace video
 		EAS_TEXTURE
 	};
 
-	//! EMT_ONETEXTURE_BLEND: pack srcFact, dstFact, Modulate and alpha source to MaterialTypeParam
+	//! Pack srcFact, dstFact, Modulate and alpha source to MaterialTypeParam or BlendFactor
 	/** alpha source can be an OR'ed combination of E_ALPHA_SOURCE values. */
-	inline f32 pack_textureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
+	inline f32 pack_textureBlendFunc(const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact,
+			const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE)
 	{
-		const u32 tmp = (alphaSource << 12) | (modulate << 8) | (srcFact << 4) | dstFact;
+		const u32 tmp = (alphaSource << 20) | (modulate << 16) | (srcFact << 12) | (dstFact << 8) | (srcFact << 4) | dstFact;
 		return FR(tmp);
 	}
 
-	//! EMT_ONETEXTURE_BLEND: unpack srcFact & dstFact and Modulo to MaterialTypeParam
+	//! Pack srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, Modulate and alpha source to MaterialTypeParam or BlendFactor
+	/** alpha source can be an OR'ed combination of E_ALPHA_SOURCE values. */
+	inline f32 pack_textureBlendFuncSeparate(const E_BLEND_FACTOR srcRGBFact, const E_BLEND_FACTOR dstRGBFact,
+			const E_BLEND_FACTOR srcAlphaFact, const E_BLEND_FACTOR dstAlphaFact,
+			const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE)
+	{
+		const u32 tmp = (alphaSource << 20) | (modulate << 16) | (srcAlphaFact << 12) | (dstAlphaFact << 8) | (srcRGBFact << 4) | dstRGBFact;
+		return FR(tmp);
+	}
+
+	//! Unpack srcFact, dstFact, modulo and alphaSource factors
 	/** The fields don't use the full byte range, so we could pack even more... */
-	inline void unpack_textureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
-			E_MODULATE_FUNC &modulo, u32& alphaSource, const f32 param )
+	inline void unpack_textureBlendFunc(E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
+			E_MODULATE_FUNC &modulo, u32& alphaSource, const f32 param)
 	{
 		const u32 state = IR(param);
-		alphaSource = (state & 0x0000F000) >> 12;
-		modulo = E_MODULATE_FUNC( ( state & 0x00000F00 ) >> 8 );
+		alphaSource = (state & 0x00F00000) >> 20;
+		modulo = E_MODULATE_FUNC( ( state & 0x000F0000 ) >> 16 );
 		srcFact = E_BLEND_FACTOR ( ( state & 0x000000F0 ) >> 4 );
 		dstFact = E_BLEND_FACTOR ( ( state & 0x0000000F ) );
 	}
 
-	//! EMT_ONETEXTURE_BLEND: has BlendFactor Alphablending
+	//! Unpack srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulo and alphaSource factors
+	/** The fields don't use the full byte range, so we could pack even more... */
+	inline void unpack_textureBlendFuncSeparate(E_BLEND_FACTOR &srcRGBFact, E_BLEND_FACTOR &dstRGBFact,
+			E_BLEND_FACTOR &srcAlphaFact, E_BLEND_FACTOR &dstAlphaFact,
+			E_MODULATE_FUNC &modulo, u32& alphaSource, const f32 param)
+	{
+		const u32 state = IR(param);
+		alphaSource = (state & 0x00F00000) >> 20;
+		modulo = E_MODULATE_FUNC( ( state & 0x000F0000 ) >> 16 );
+		srcAlphaFact = E_BLEND_FACTOR ( ( state & 0x0000F000 ) >> 12 );
+		dstAlphaFact = E_BLEND_FACTOR ( ( state & 0x00000F00 ) >> 8 );
+		srcRGBFact = E_BLEND_FACTOR ( ( state & 0x000000F0 ) >> 4 );
+		dstRGBFact = E_BLEND_FACTOR ( ( state & 0x0000000F ) );
+	}
+
+	//! has blend factor alphablending
 	inline bool textureBlendFunc_hasAlpha ( const E_BLEND_FACTOR factor )
 	{
 		switch ( factor )
@@ -234,7 +260,7 @@ namespace video
 			EmissiveColor(0,0,0,0), SpecularColor(255,255,255,255),
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE), ColorMask(ECP_ALL),
-			ColorMaterial(ECM_DIFFUSE), BlendOperation(EBO_NONE),
+			ColorMaterial(ECM_DIFFUSE), BlendOperation(EBO_NONE), BlendFactor(0.0f),
 			PolygonOffsetFactor(0), PolygonOffsetDirection(EPO_FRONT),
 			Wireframe(false), PointCloud(false), GouraudShading(true),
 			Lighting(true), ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
@@ -288,6 +314,7 @@ namespace video
 			ColorMask = other.ColorMask;
 			ColorMaterial = other.ColorMaterial;
 			BlendOperation = other.BlendOperation;
+			BlendFactor = other.BlendFactor;
 			PolygonOffsetFactor = other.PolygonOffsetFactor;
 			PolygonOffsetDirection = other.PolygonOffsetDirection;
 			UseMipMaps = other.UseMipMaps;
@@ -391,9 +418,14 @@ namespace video
 		u8 ColorMaterial:3;
 
 		//! Store the blend operation of choice
-		/** Values to be chosen from E_BLEND_OPERATION. The actual way to use this value
-		is not yet determined, so ignore it for now. */
+		/** Values to be chosen from E_BLEND_OPERATION. */
 		E_BLEND_OPERATION BlendOperation:4;
+
+		//! Store the blend factors
+		/** textureBlendFunc/textureBlendFuncSeparate functions should be used to write
+		properly blending factors to this parameter. If you use EMT_ONETEXTURE_BLEND
+		type for this material, this field should be equal to MaterialTypeParam. */
+		f32 BlendFactor;
 
 		//! Factor specifying how far the polygon offset should be made
 		/** Specifying 0 disables the polygon offset. The direction is specified spearately.
@@ -559,6 +591,8 @@ namespace video
 					UseMipMaps = value; break;
 				case EMF_BLEND_OPERATION:
 					BlendOperation = value?EBO_ADD:EBO_NONE; break;
+				case EMF_BLEND_FACTOR:
+					break;
 				case EMF_POLYGON_OFFSET:
 					PolygonOffsetFactor = value?1:0;
 					PolygonOffsetDirection = EPO_BACK;
@@ -620,6 +654,8 @@ namespace video
 					return UseMipMaps;
 				case EMF_BLEND_OPERATION:
 					return BlendOperation != EBO_NONE;
+				case EMF_BLEND_FACTOR:
+					return BlendFactor != 0.f;
 				case EMF_POLYGON_OFFSET:
 					return PolygonOffsetFactor != 0;
 			}
@@ -656,6 +692,7 @@ namespace video
 				ColorMask != b.ColorMask ||
 				ColorMaterial != b.ColorMaterial ||
 				BlendOperation != b.BlendOperation ||
+				BlendFactor != b.BlendFactor ||
 				PolygonOffsetFactor != b.PolygonOffsetFactor ||
 				PolygonOffsetDirection != b.PolygonOffsetDirection ||
 				UseMipMaps != b.UseMipMaps;
@@ -671,6 +708,31 @@ namespace video
 		\return True if the materials are equal, else false. */
 		inline bool operator==(const SMaterial& b) const
 		{ return !(b!=*this); }
+
+		bool isTransparent() const
+		{
+			bool status = false;
+
+			if (BlendOperation != EBO_NONE && BlendFactor != 0.f)
+			{
+				E_BLEND_FACTOR srcRGBFact = EBF_ZERO;
+				E_BLEND_FACTOR dstRGBFact = EBF_ZERO;
+				E_BLEND_FACTOR srcAlphaFact = EBF_ZERO;
+				E_BLEND_FACTOR dstAlphaFact = EBF_ZERO;
+				E_MODULATE_FUNC modulo = EMFN_MODULATE_1X;
+				u32 alphaSource = 0;
+
+				unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulo, alphaSource, BlendFactor);
+
+				if (textureBlendFunc_hasAlpha(srcRGBFact) || textureBlendFunc_hasAlpha(dstRGBFact) ||
+					textureBlendFunc_hasAlpha(srcAlphaFact) || textureBlendFunc_hasAlpha(dstAlphaFact))
+				{
+					status = true;
+				} 
+			}
+
+			return status;
+		}
 	};
 
 	//! global const identity Material

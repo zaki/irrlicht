@@ -203,8 +203,6 @@ COpenGLDriver::~COpenGLDriver()
 		cgDestroyContext(CgContext);
 	#endif
 
-	delete BridgeCalls;
-
 	RequestedLights.clear();
 
 	deleteMaterialRenders();
@@ -215,6 +213,8 @@ COpenGLDriver::~COpenGLDriver()
 	deleteAllTextures();
 	removeAllOcclusionQueries();
 	removeAllHardwareBuffers();
+
+	delete BridgeCalls;
 
 	if (ContextManager)
 	{
@@ -2626,7 +2626,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// zwrite
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (material.BlendOperation == EBO_NONE &&
+		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (!material.isTransparent() &&
 			!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
 		{
 			BridgeCalls->setDepthMask(true);
@@ -2670,104 +2670,124 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// Blend Equation
-	if (resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation)
-	{
-		if (material.BlendOperation==EBO_NONE)
-			BridgeCalls->setBlend(false);
-		else
-		{
-			BridgeCalls->setBlend(true);
+    if (material.BlendOperation == EBO_NONE)
+        BridgeCalls->setBlend(false);
+    else
+    {
+        BridgeCalls->setBlend(true);
 
 #if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op) || defined(GL_VERSION_1_4)
-			if (queryFeature(EVDF_BLEND_OPERATIONS))
-			{
-				switch (material.BlendOperation)
-				{
-				case EBO_SUBTRACT:
+        if (queryFeature(EVDF_BLEND_OPERATIONS))
+        {
+            switch (material.BlendOperation)
+            {
+            case EBO_SUBTRACT:
 #if defined(GL_VERSION_1_4)
-					BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT);
+                BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT);
 #elif defined(GL_EXT_blend_subtract)
-					BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT_EXT);
+                BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT_EXT);
 #endif
-					break;
-				case EBO_REVSUBTRACT:
+                break;
+            case EBO_REVSUBTRACT:
 #if defined(GL_VERSION_1_4)
-					BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+                BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 #elif defined(GL_EXT_blend_subtract)
-					BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
+                BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT_EXT);
 #endif
-					break;
-				case EBO_MIN:
+                break;
+            case EBO_MIN:
 #if defined(GL_VERSION_1_4)
-					BridgeCalls->setBlendEquation(GL_MIN);
+                BridgeCalls->setBlendEquation(GL_MIN);
 #elif defined(GL_EXT_blend_minmax)
-					BridgeCalls->setBlendEquation(GL_MIN_EXT);
+                BridgeCalls->setBlendEquation(GL_MIN_EXT);
 #endif
-					break;
-				case EBO_MAX:
+                break;
+            case EBO_MAX:
 #if defined(GL_VERSION_1_4)
-					BridgeCalls->setBlendEquation(GL_MAX);
+                BridgeCalls->setBlendEquation(GL_MAX);
 #elif defined(GL_EXT_blend_minmax)
-					BridgeCalls->setBlendEquation(GL_MAX_EXT);
+                BridgeCalls->setBlendEquation(GL_MAX_EXT);
 #endif
-					break;
-				case EBO_MIN_FACTOR:
+                break;
+            case EBO_MIN_FACTOR:
 #if defined(GL_AMD_blend_minmax_factor)
-					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-						BridgeCalls->setBlendEquation(GL_FACTOR_MIN_AMD);
+                if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+                    BridgeCalls->setBlendEquation(GL_FACTOR_MIN_AMD);
 #endif
 				// fallback in case of missing extension
 #if defined(GL_VERSION_1_4)
 #if defined(GL_AMD_blend_minmax_factor)
-					else
+                else
 #endif
-						BridgeCalls->setBlendEquation(GL_MIN);
+                    BridgeCalls->setBlendEquation(GL_MIN);
 #endif
-					break;
-				case EBO_MAX_FACTOR:
+                break;
+            case EBO_MAX_FACTOR:
 #if defined(GL_AMD_blend_minmax_factor)
-					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-						BridgeCalls->setBlendEquation(GL_FACTOR_MAX_AMD);
+                if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
+                    BridgeCalls->setBlendEquation(GL_FACTOR_MAX_AMD);
 #endif
 				// fallback in case of missing extension
 #if defined(GL_VERSION_1_4)
 #if defined(GL_AMD_blend_minmax_factor)
-					else
+                else
 #endif
-						BridgeCalls->setBlendEquation(GL_MAX);
+                    BridgeCalls->setBlendEquation(GL_MAX);
 #endif
-					break;
-				case EBO_MIN_ALPHA:
+                break;
+            case EBO_MIN_ALPHA:
 #if defined(GL_SGIX_blend_alpha_minmax)
-					if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
-						BridgeCalls->setBlendEquation(GL_ALPHA_MIN_SGIX);
-					// fallback in case of missing extension
-					else
-						if (FeatureAvailable[IRR_EXT_blend_minmax])
-							BridgeCalls->setBlendEquation(GL_MIN_EXT);
+                if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
+                    BridgeCalls->setBlendEquation(GL_ALPHA_MIN_SGIX);
+                // fallback in case of missing extension
+                else
+                    if (FeatureAvailable[IRR_EXT_blend_minmax])
+                        BridgeCalls->setBlendEquation(GL_MIN_EXT);
 #endif
-					break;
-				case EBO_MAX_ALPHA:
+                break;
+            case EBO_MAX_ALPHA:
 #if defined(GL_SGIX_blend_alpha_minmax)
-					if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
-						BridgeCalls->setBlendEquation(GL_ALPHA_MAX_SGIX);
-					// fallback in case of missing extension
-					else
-						if (FeatureAvailable[IRR_EXT_blend_minmax])
-							BridgeCalls->setBlendEquation(GL_MAX_EXT);
+                if (FeatureAvailable[IRR_SGIX_blend_alpha_minmax])
+                    BridgeCalls->setBlendEquation(GL_ALPHA_MAX_SGIX);
+                // fallback in case of missing extension
+                else
+                    if (FeatureAvailable[IRR_EXT_blend_minmax])
+                        BridgeCalls->setBlendEquation(GL_MAX_EXT);
 #endif
-					break;
-				default:
+                break;
+            default:
 #if defined(GL_VERSION_1_4)
-					BridgeCalls->setBlendEquation(GL_FUNC_ADD);
+                BridgeCalls->setBlendEquation(GL_FUNC_ADD);
 #elif defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
-					BridgeCalls->setBlendEquation(GL_FUNC_ADD_EXT);
+                BridgeCalls->setBlendEquation(GL_FUNC_ADD_EXT);
 #endif
-					break;
-				}
-			}
-#endif
+                break;
+            }
 		}
+#endif
+	}
+
+    // Blend Factor
+    if (material.BlendFactor != 0.f)
+	{
+        E_BLEND_FACTOR srcRGBFact = EBF_ZERO;
+        E_BLEND_FACTOR dstRGBFact = EBF_ZERO;
+        E_BLEND_FACTOR srcAlphaFact = EBF_ZERO;
+        E_BLEND_FACTOR dstAlphaFact = EBF_ZERO;
+        E_MODULATE_FUNC modulo = EMFN_MODULATE_1X;
+        u32 alphaSource = 0;
+
+        unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulo, alphaSource, material.BlendFactor);
+
+        if (queryFeature(EVDF_BLEND_SEPARATE))
+        {
+            BridgeCalls->setBlendFuncSeparate(getGLBlend(srcRGBFact), getGLBlend(dstRGBFact),
+                getGLBlend(srcAlphaFact), getGLBlend(dstAlphaFact));
+        }
+        else
+        {
+            BridgeCalls->setBlendFunc(getGLBlend(srcRGBFact), getGLBlend(dstRGBFact));
+        }
 	}
 
 	// Polygon Offset
@@ -4626,8 +4646,10 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	BlendIndexCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->MaxMultipleRenderTargets));
 
 	BlendEquation = new GLenum[BlendIndexCount];
-	BlendSource = new GLenum[BlendIndexCount];
-	BlendDestination = new GLenum[BlendIndexCount];
+	BlendSourceRGB = new GLenum[BlendIndexCount];
+	BlendDestinationRGB = new GLenum[BlendIndexCount];
+	BlendSourceAlpha = new GLenum[BlendIndexCount];
+	BlendDestinationAlpha = new GLenum[BlendIndexCount];
 	Blend = new bool[BlendIndexCount];
 
 	for (u32 i = 0; i < BlendIndexCount; ++i)
@@ -4638,8 +4660,10 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 		BlendEquation[i] = GL_FUNC_ADD_EXT;
 #endif
 
-		BlendSource[i] = GL_ONE;
-		BlendDestination[i] = GL_ZERO;
+		BlendSourceRGB[i] = GL_ONE;
+		BlendDestinationRGB[i] = GL_ZERO;
+		BlendSourceAlpha[i] = GL_ONE;
+		BlendDestinationAlpha[i] = GL_ZERO;
 
 		Blend[i] = false;
 	}
@@ -4693,8 +4717,10 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 COpenGLCallBridge::~COpenGLCallBridge()
 {
 	delete[] BlendEquation;
-	delete[] BlendSource;
-	delete[] BlendDestination;
+	delete[] BlendSourceRGB;
+	delete[] BlendDestinationRGB;
+    delete[] BlendSourceAlpha;
+	delete[] BlendDestinationAlpha;
 	delete[] Blend;
 }
 
@@ -4744,27 +4770,78 @@ void COpenGLCallBridge::setBlendEquationIndexed(GLuint index, GLenum mode)
 
 void COpenGLCallBridge::setBlendFunc(GLenum source, GLenum destination)
 {
-	if (BlendSource[0] != source || BlendDestination[0] != destination)
+	if (BlendSourceRGB[0] != source || BlendDestinationRGB[0] != destination ||
+        BlendSourceAlpha[0] != source || BlendDestinationAlpha[0] != destination)
 	{
 		glBlendFunc(source, destination);
 
 		for (GLuint i = 0; i < BlendIndexCount; ++i)
 		{
-			BlendSource[i] = source;
-			BlendDestination[i] = destination;
+			BlendSourceRGB[i] = source;
+			BlendDestinationRGB[i] = destination;
+			BlendSourceAlpha[i] = source;
+			BlendDestinationAlpha[i] = destination;
 		}
 	}
 }
 
+void COpenGLCallBridge::setBlendFuncSeparate(GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha)
+{
+    if (sourceRGB != sourceAlpha || destinationRGB != destinationAlpha)
+    {
+        if (BlendSourceRGB[0] != sourceRGB || BlendDestinationRGB[0] != destinationRGB ||
+            BlendSourceAlpha[0] != sourceAlpha || BlendDestinationAlpha[0] != destinationAlpha)
+        {
+            Driver->extGlBlendFuncSeparate(sourceRGB, destinationRGB, sourceAlpha, destinationAlpha);
+
+            for (GLuint i = 0; i < BlendIndexCount; ++i)
+            {
+                BlendSourceRGB[i] = sourceRGB;
+                BlendDestinationRGB[i] = destinationRGB;
+                BlendSourceAlpha[i] = sourceAlpha;
+                BlendDestinationAlpha[i] = destinationAlpha;
+            }
+        }
+    }
+    else
+    {
+        setBlendFunc(sourceRGB, destinationRGB);
+    }
+}
+
 void COpenGLCallBridge::setBlendFuncIndexed(GLuint index, GLenum source, GLenum destination)
 {
-	if (index < BlendIndexCount && (BlendSource[index] != source || BlendDestination[index] != destination))
+	if (index < BlendIndexCount && (BlendSourceRGB[index] != source || BlendDestinationRGB[index] != destination ||
+        BlendSourceAlpha[index] != source || BlendDestinationAlpha[index] != destination))
 	{
 		Driver->extGlBlendFuncIndexed(index, source, destination);
 
-		BlendSource[index] = source;
-		BlendDestination[index] = destination;
+        BlendSourceRGB[index] = source;
+        BlendDestinationRGB[index] = destination;
+        BlendSourceAlpha[index] = source;
+        BlendDestinationAlpha[index] = destination;
 	}
+}
+
+void COpenGLCallBridge::setBlendFuncSeparateIndexed(GLuint index, GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha)
+{
+    if (sourceRGB != sourceAlpha || destinationRGB != destinationAlpha)
+    {
+        if (index < BlendIndexCount && (BlendSourceRGB[index] != sourceRGB || BlendDestinationRGB[index] != destinationRGB ||
+            BlendSourceAlpha[index] != sourceAlpha || BlendDestinationAlpha[index] != destinationAlpha))
+        {
+            Driver->extGlBlendFuncSeparateIndexed(index, sourceRGB, destinationRGB, sourceAlpha, destinationAlpha);
+
+            BlendSourceRGB[index] = sourceRGB;
+            BlendDestinationRGB[index] = destinationRGB;
+            BlendSourceAlpha[index] = sourceAlpha;
+            BlendDestinationAlpha[index] = destinationAlpha;
+        }
+    }
+    else
+    {
+        setBlendFuncIndexed(index, sourceRGB, destinationRGB);
+    }
 }
 
 void COpenGLCallBridge::setBlend(bool enable)
