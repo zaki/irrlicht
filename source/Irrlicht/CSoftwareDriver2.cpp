@@ -486,7 +486,8 @@ void CBurningVideoDriver::setCurrentShader()
 
 	bool zMaterialTest =	Material.org.ZBuffer != ECFN_DISABLED &&
 							Material.org.ZWriteEnable &&
-							( AllowZWriteOnTransparent || !Material.org.isTransparent() );
+							( AllowZWriteOnTransparent || (Material.org.BlendOperation == EBO_NONE &&
+							!MaterialRenderers[Material.org.MaterialType].Renderer->isTransparent()) );
 
 	EBurningFFShader shader = zMaterialTest ? ETR_TEXTURE_GOURAUD : ETR_TEXTURE_GOURAUD_NOZ;
 

@@ -112,8 +112,6 @@ bool CD3D8ShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E
 void CD3D8ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {
-	services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
-
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexShader)
@@ -134,10 +132,12 @@ void CD3D8ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material
 			if (FAILED(pID3DDevice->SetPixelShader(PixelShader)))
 				os::Printer::log("Could not set pixel shader.", ELL_ERROR);
 		}
-
-		if (BaseMaterial)
-			BaseMaterial->OnSetMaterial(material, material, true, services);
 	}
+
+	services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
+	if (BaseMaterial)
+        BaseMaterial->OnSetMaterial(material, lastMaterial, resetAllRenderstates, services);
 
 	if (CallBack)
 		CallBack->OnSetMaterial(material);

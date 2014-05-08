@@ -2627,8 +2627,11 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// zwrite
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
+		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (material.BlendOperation == EBO_NONE &&
+			!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
+		{
 			BridgeCalls->setDepthMask(true);
+		}
 		else
 			BridgeCalls->setDepthMask(false);
 	}

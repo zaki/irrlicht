@@ -35,7 +35,7 @@ namespace video
 		EBF_SRC_ALPHA_SATURATE		//!< src	(min(srcA, 1-destA), idem, ...)
 	};
 
-	//! Values defining the blend operation used when blend is enabled
+	//! Values defining the blend operation
 	enum E_BLEND_OPERATION
 	{
 		EBO_NONE = 0,	//!< No blending happens
@@ -671,14 +671,6 @@ namespace video
 		\return True if the materials are equal, else false. */
 		inline bool operator==(const SMaterial& b) const
 		{ return !(b!=*this); }
-
-		bool isTransparent() const
-		{
-			return MaterialType==EMT_TRANSPARENT_ADD_COLOR ||
-				MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL ||
-				MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA ||
-				MaterialType==EMT_TRANSPARENT_REFLECTION_2_LAYER;
-		}
 	};
 
 	//! global const identity Material

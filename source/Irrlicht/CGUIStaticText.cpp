@@ -542,12 +542,18 @@ s32 CGUIStaticText::getTextHeight() const
 	if (!font)
 		return 0;
 
-	s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
-
 	if (WordWrap)
-		height *= BrokenText.size();
-
-	return height;
+	{
+		s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
+		return height* BrokenText.size();
+	}
+	else
+	{
+		// TODO: Text can have multiple lines which are not in BrokenText
+		// This is likely not correct. But as I have no time for further
+		// investigation I just fix it for now by return the true height here.
+		return font->getDimension(Text.c_str()).Height;
+	}
 }
 
 

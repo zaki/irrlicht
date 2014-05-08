@@ -7,6 +7,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fixed issue with wrongly enabled Z-writing for transparent shader materials. Thanks Hendu for this fix.
 - Allow more control over particle behavior. This also changed the default behavior.
 - ISceneNodeAnimators can now be disabled and paused.
 - Maya camera no longer get's stuck in "rotating" state when a mouse-up event is lost (thx @ JLouisB for reporting).
@@ -28,14 +29,14 @@ Changes in 1.9 (not yet released)
 - CGUICheckBox no longer gives up focus on EMIE_LMOUSE_LEFT_UP (thx @Demre and @REDDemon for reporting)
 - Bugfix: IGUIElement::addChild now prevents setting an element as it's own child.
 - GUI editor improvements (prevent crash, improve UI)
-- Add IrrlichtDevice::setWindowSize. 
+- Add IrrlichtDevice::setWindowSize.
 - Bugfix: getFont for xml-fonts now also works for fonts inside archives (thx @Neirdan for bugreport)
-- Added function irr::core::mergeFilename 
+- Added function irr::core::mergeFilename
 - Add ISceneNodeAnimator::setStartTime/getStartTime to allow resetting movement animators.
 - Improve speed for finalizing skinned meshes (removal of unnecessary frames after loading) (thx @ichtyander for the testmodel)
 - Collada loader now instantiates camera nodes which had been ignore so far (thx @NemoStein for the test .dae)
 - line2d::intersectWith has a new parameter to allow ignoring intersections with coincident lines
-- vector2d::equals now has an tolerance parameter for passing the epsilon (like vector3d had). Note that this changes the default 
+- vector2d::equals now has an tolerance parameter for passing the epsilon (like vector3d had). Note that this changes the default
   behavior of vector2d::equals as well as functions using it like the operators for ==, !=, <, >, <=, >= when using vector2d with f64
   as the tolerance is increased in that case (for f32 and integer values it shouldn't make any difference).
 - Material renderers which offers blending feature (eg. EMT_TRANSPARENT_ALPHA_CHANNEL, EMT_ONETEXTURE_BLEND etc.) require SMaterial::BlendOperation set to other value than EBO_NONE.
@@ -63,6 +64,10 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.2
 
+ - Example 22 no longer select a random texture after loading a new texture (thanks at mongoose7 for reporting).
+ - Fix bug in IGUISkin serialization which messed up serialization of the button-pressed offsets (thanks at Midnight for reporting).
+ - IGUIStaticText::getTextHeight returns now the correct height for texts with newlines even WordWrap is not set.
+ - Crashfix for CGUIEditBox. CGUIEditBox::setMultiLine must break text when changed or other functions like getTextDimension can crash afterward for strings with newline characters.
  - CGUIEditBox and the GUI-Editor now convert pasted text correctly using mbstowcs.
  - C::B project files work again on newer Linux-distributions which have cleaned up their dev-lib dependencies.
  - Makefile for the new IrrFontTool links now correctly to libfontconfig
@@ -73,9 +78,9 @@ Changes in 1.8.1 (17.11.2013)
  - Improved OpenGL performance under OSX (Thanks devonsoft for reporting).
  - Fixed OSX compilation issues.
  - [KNOWN BUG] Software driver doesn't work properly under OSX 10.9.
- - For speed improvement the following attributes accessible by ISceneManager::getParameters() are no longer updated in release: 
+ - For speed improvement the following attributes accessible by ISceneManager::getParameters() are no longer updated in release:
    "culled", "calls", "drawn_solid", "drawn_transparent", "drawn_transparent_effect".
-   They can be enabled by compiling Irrlicht with the define _IRR_SCENEMANAGER_DEBUG. 
+   They can be enabled by compiling Irrlicht with the define _IRR_SCENEMANAGER_DEBUG.
    Thanks @hendu for reporting, see http://irrlicht.sourceforge.net/forum/viewtopic.php?f=2&t=48211 for the discussion.
  - Fix compile problem with CIrrDeviceSDL on VS2008 (and maybe other systems). Thanks @HellFlip for reporting.
  - Fix quaternion::rotationFromTo() (Thanks @takamoto for reporting)

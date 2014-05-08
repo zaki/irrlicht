@@ -223,7 +223,7 @@ namespace gui
 		"MessageBoxMinTextHeight",
 		"MessageBoxMaxTextHeight",
 		"ButtonPressedImageOffsetX",
-		"ButtonPressedImageOffsetY"
+		"ButtonPressedImageOffsetY",
 		"ButtonPressedTextOffsetX",
 		"ButtonPressedTextOffsetY",
 		"ButtonPressedSpriteOffsetX",

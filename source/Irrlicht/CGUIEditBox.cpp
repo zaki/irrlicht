@@ -190,6 +190,7 @@ bool CGUIEditBox::isWordWrapEnabled() const
 void CGUIEditBox::setMultiLine(bool enable)
 {
 	MultiLine = enable;
+	breakText();
 }
 
 
