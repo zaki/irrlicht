@@ -96,6 +96,7 @@ LOCAL_SRC_FILES := \
 					CGUIToolBar.cpp \
 					CGUITreeView.cpp \
 					CGUIWindow.cpp \
+					CGUIProfiler.cpp \
 					CImage.cpp \
 					CImageLoaderBMP.cpp \
 					CImageLoaderDDS.cpp \
@@ -184,6 +185,7 @@ LOCAL_SRC_FILES := \
 					CParticleSystemSceneNode.cpp \
 					CPLYMeshFileLoader.cpp \
 					CPLYMeshWriter.cpp \
+					CProfiler.cpp \
 					CQ3LevelMesh.cpp \
 					CQuake3ShaderSceneNode.cpp \
 					CReadFile.cpp \
