@@ -57,25 +57,25 @@ namespace irr
 		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 			io::IFileSystem* io, IContextManager* contextManager);
 		#endif
-        
-        #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
+
+        #ifdef _IRR_COMPILE_WITH_OGLES1_
         IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
         , CIrrDeviceIPhone* device
 #endif
-		); 	 
-        #endif 	 
-        
-        #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
+		);
+        #endif
+
+        #ifdef _IRR_COMPILE_WITH_OGLES2_
         IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
         , CIrrDeviceIPhone* device
 #endif
-		); 	 
+		);
         #endif
 	}
 } // end namespace irr
@@ -824,7 +824,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Handle unicode and deadkeys in a way that works since Windows 95 and nt4.0
 			// Using ToUnicode instead would be shorter, but would to my knowledge not run on 95 and 98.
 			WORD keyChars[2];
-			UINT scanCode = HIWORD(lParam) & 0x7FFF;
+			UINT scanCode = HIWORD(lParam);
 			int conversionResult = ToAsciiEx(wParam,scanCode,allKeys,keyChars,0,KEYBOARD_INPUT_HKL);
 			if (conversionResult == 1)
 			{
@@ -1028,7 +1028,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		{
 			os::Printer::log("Window could not be created.", ELL_ERROR);
 		}
-			
+
 		CreationParams.WindowId = HWnd;
 //		CreationParams.WindowSize.Width = realWidth;
 //		CreationParams.WindowSize.Height = realHeight;
@@ -1187,7 +1187,7 @@ void CIrrDeviceWin32::createDriver()
 
 	case video::EDT_OGLES2:
 		#ifdef _IRR_COMPILE_WITH_OGLES2_
-		{ 	 
+		{
 			switchToFullScreen();
 			ContextManager = new video::CEGLManager();
 			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
@@ -1904,13 +1904,24 @@ void CIrrDeviceWin32::handleSystemMessages()
 
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		// No message translation because we don't use WM_CHAR and it would conflict with our
-		// deadkey handling.
-
 		if (ExternalWindow && msg.hwnd == HWnd)
-			WndProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+		{
+			if (msg.hwnd == HWnd)
+            {
+				WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
+            }
+            else
+            {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
+		}
 		else
+		{
+			// No message translation because we don't use WM_CHAR and it would conflict with our
+			// deadkey handling.
 			DispatchMessage(&msg);
+		}
 
 		if (msg.message == WM_QUIT)
 			Close = true;
