@@ -13,7 +13,7 @@
 namespace irr
 {
 
-class CProfiler;
+class IProfiler;
 struct SProfileData;
 
 namespace gui
@@ -66,7 +66,7 @@ namespace gui
 		void fillRow(u32 rowIndex, const SProfileData& data, bool overviewTitle, bool groupTitle);
 		void rebuildColumns();
 
-		CProfiler * Profiler;
+		IProfiler * Profiler;
 		irr::gui::IGUITable* DisplayTable;
 		irr::u32 CurrentGroupIdx;
 		bool IgnoreUncalled;

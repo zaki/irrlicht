@@ -376,7 +376,7 @@ if "osx" in env["platform"] :
 
 
 # sources of the examples
-srcexamples = ["01.HelloWorld", "02.Quake3Map", "03.CustomSceneNode", "04.Movement", "05.UserInterface", "06.2DGraphics", "07.Collision", "08.SpecialFX", "09.Meshviewer", "10.Shaders", "11.PerPixelLighting", "12.TerrainRendering", "13.RenderToTexture", "15.LoadIrrFile", "16.Quake3MapShader", "17.HelloWorld_Mobile", "18.SplitScreen", "19.MouseAndJoystick", "20.ManagedLights", "22.MaterialViewer", "23.SMeshHandling", "24.CursorControl", "25.XmlHandling", "26.OcclusionQuery"]
+srcexamples = ["01.HelloWorld", "02.Quake3Map", "03.CustomSceneNode", "04.Movement", "05.UserInterface", "06.2DGraphics", "07.Collision", "08.SpecialFX", "09.Meshviewer", "10.Shaders", "11.PerPixelLighting", "12.TerrainRendering", "13.RenderToTexture", "15.LoadIrrFile", "16.Quake3MapShader", "17.HelloWorld_Mobile", "18.SplitScreen", "19.MouseAndJoystick", "20.ManagedLights", "22.MaterialViewer", "23.SMeshHandling", "24.CursorControl", "25.XmlHandling", "26.OcclusionQuery", "30.Profiling"]
 if "win" in env["platform"] :
     srcexamples.append("14.Win32Window")
 # ===================================================================================================================

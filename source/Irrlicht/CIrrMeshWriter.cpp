@@ -272,13 +272,10 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 			Writer->writeText(str.c_str());
 		}
 
-		if (i % maxIndicesPerLine != maxIndicesPerLine)
-		{
-			if (i % maxIndicesPerLine == maxIndicesPerLine-1)
-				Writer->writeLineBreak();
-			else
-				Writer->writeText(L" ");
-		}
+		if (i % maxIndicesPerLine == maxIndicesPerLine-1)
+			Writer->writeLineBreak();
+		else
+			Writer->writeText(L" ");
 	}
 
 	if ((indexCount-1) % maxIndicesPerLine != maxIndicesPerLine-1)

@@ -288,9 +288,23 @@ int main()
 	if (driverType==video::EDT_COUNT)
 		return 1;
 
+	/*
+		Profiler is independent of the device - so we can time the device setup
+	*/
+	MY_PROFILE(s32 pDev = getProfiler().add(L"createDevice", L"group a");)
+	MY_PROFILE(getProfiler().start(pDev);)
+
 	IrrlichtDevice * device = createDevice(driverType, core::dimension2d<u32>(640, 480));
 	if (device == 0)
+	{
+		/*
+			When working with start/stop you should add a stop to all exit paths.
+			Although in this case it wouldn't matter as we don't do anything with it when we quit here.
+		*/
+		MY_PROFILE(getProfiler().stop(pDev);)
 		return 1; // could not create selected driver.
+	}
+	MY_PROFILE(getProfiler().stop(pDev);)
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	IGUIEnvironment* env = device->getGUIEnvironment();

@@ -13,7 +13,7 @@
 #include "os.h"
 #include "CShadowVolumeSceneNode.h"
 #include "EProfileIDs.h"
-#include "CProfiler.h"
+#include "IProfiler.h"
 
 namespace irr
 {
