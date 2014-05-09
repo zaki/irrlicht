@@ -412,7 +412,7 @@ bool CIrrDeviceLinux::createWindow()
 	{
 		video::SExposedVideoData data;
 		data.OpenGLLinux.X11Display = XDisplay;
-		ContextManager = new video::CGLXManager(CreationParams,data, screennr);
+		ContextManager = new video::CGLXManager(CreationParams,data, Screennr);
 		VisualInfo = ((video::CGLXManager*)ContextManager)->getVisual();
 	}
 
