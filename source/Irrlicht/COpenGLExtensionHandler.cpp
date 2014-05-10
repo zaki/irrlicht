@@ -801,6 +801,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_BLEND_OPERATIONS:
 		return (Version>=140) || FeatureAvailable[IRR_EXT_blend_minmax] ||
 			FeatureAvailable[IRR_EXT_blend_subtract] || FeatureAvailable[IRR_EXT_blend_logic_op];
+	case EVDF_BLEND_SEPARATE:
+		return (Version>=140) || FeatureAvailable[IRR_EXT_blend_func_separate];
 	case EVDF_TEXTURE_MATRIX:
 		return true;
 	case EVDF_TEXTURE_COMPRESSED_DXT:
