@@ -128,6 +128,7 @@ COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 		pGlDrawTexiOES(0), pGlDrawTexfOES(0),
 		pGlDrawTexivOES(0), pGlDrawTexfvOES(0),
+		pGlBlendEquationOES(0), pGlBlendFuncSeparateOES(0),
 		pGlBindRenderbufferOES(0), pGlDeleteRenderbuffersOES(0),
 		pGlGenRenderbuffersOES(0), pGlRenderbufferStorageOES(0),
 		pGlBindFramebufferOES(0), pGlDeleteFramebuffersOES(0),
@@ -247,6 +248,14 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver, bool withSte
 		pGlDrawTexfOES = (PFNGLDRAWTEXFOES) eglGetProcAddress("glDrawTexfOES");
 		pGlDrawTexivOES = (PFNGLDRAWTEXIVOES) eglGetProcAddress("glDrawTexivOES");
 		pGlDrawTexfvOES = (PFNGLDRAWTEXFVOES) eglGetProcAddress("glDrawTexfvOES");
+	}
+	if (FeatureAvailable[IRR_OES_blend_subtract])
+	{
+		pGlBlendEquationOES = (PFNGLBLENDEQUATIONOESPROC) eglGetProcAddress("glBlendEquationOES");
+	}
+	if (FeatureAvailable[IRR_OES_blend_func_separate])
+	{
+		pGlBlendFuncSeparateOES = (PFNGLBLENDFUNCSEPARATEOESPROC) eglGetProcAddress("glBlendFuncSeparateOES");
 	}
 	if (FeatureAvailable[IRR_OES_framebuffer_object])
 	{

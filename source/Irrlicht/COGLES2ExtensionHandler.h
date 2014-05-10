@@ -217,6 +217,8 @@ namespace video
 			case EVDF_COLOR_MASK:
 			case EVDF_ALPHA_TO_COVERAGE:
 			case EVDF_POLYGON_OFFSET:
+			case EVDF_BLEND_OPERATIONS:
+			case EVDF_BLEND_SEPARATE:
 			case EVDF_TEXTURE_MATRIX:
 			case EVDF_TEXTURE_CUBE_MAP:
 				return true;
@@ -228,8 +230,6 @@ namespace video
 			case EVDF_MRT_COLOR_MASK:
 			case EVDF_MRT_BLEND_FUNC:
 			case EVDF_OCCLUSION_QUERY:
-				return false;
-			case EVDF_BLEND_OPERATIONS:
 				return false;
 			case EVDF_TEXTURE_COMPRESSED_DXT:
 				return false; // NV Tegra need improvements here

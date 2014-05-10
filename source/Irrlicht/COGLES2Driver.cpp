@@ -44,9 +44,9 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
             , CIrrDeviceIPhone* device
 #endif
             ) : CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
-	BridgeCalls(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
+	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8)
+	RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8), BridgeCalls(0)
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
     , ContextManager(contextManager)
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -1691,7 +1691,7 @@ bool COGLES2Driver::endScene()
 		{
 			// Reset Texture Stages
 			BridgeCalls->setBlend(false);
-			BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			BridgeCalls->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
 			ResetRenderStates = true;
 		}
@@ -1812,30 +1812,43 @@ bool COGLES2Driver::endScene()
 				(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 		}
 
-		// Blend operation
-		if (resetAllRenderStates|| lastmaterial.BlendOperation != material.BlendOperation)
+		// Blend Equation
+		if (material.BlendOperation == EBO_NONE)
+		    BridgeCalls->setBlend(false);
+		else
 		{
-			if (material.BlendOperation==EBO_NONE)
-				BridgeCalls->setBlend(false);
-			else
-			{
-				BridgeCalls->setBlend(true);
+		    BridgeCalls->setBlend(true);
 
-				switch (material.BlendOperation)
-				{
-				case EBO_ADD:
-					glBlendEquation(GL_FUNC_ADD);
-					break;
-				case EBO_SUBTRACT:
-					glBlendEquation(GL_FUNC_SUBTRACT);
-					break;
-				case EBO_REVSUBTRACT:
-					glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-					break;
-				default:
-					break;
-				}
+			switch (material.BlendOperation)
+			{
+			case EBO_ADD:
+				BridgeCalls->setBlendEquation(GL_FUNC_ADD);
+				break;
+			case EBO_SUBTRACT:
+				BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT);
+				break;
+			case EBO_REVSUBTRACT:
+				BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+				break;
+			default:
+				break;
 			}
+		}
+
+		// Blend Factor
+		if (material.BlendFactor != 0.f)
+		{
+		    E_BLEND_FACTOR srcRGBFact = EBF_ZERO;
+		    E_BLEND_FACTOR dstRGBFact = EBF_ZERO;
+		    E_BLEND_FACTOR srcAlphaFact = EBF_ZERO;
+		    E_BLEND_FACTOR dstAlphaFact = EBF_ZERO;
+		    E_MODULATE_FUNC modulo = EMFN_MODULATE_1X;
+		    u32 alphaSource = 0;
+
+		    unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulo, alphaSource, material.BlendFactor);
+
+			BridgeCalls->setBlendFuncSeparate(getGLBlend(srcRGBFact), getGLBlend(dstRGBFact),
+				getGLBlend(srcAlphaFact), getGLBlend(dstAlphaFact));
 		}
 
 		// Anti aliasing
@@ -2727,7 +2740,8 @@ bool COGLES2Driver::endScene()
 	}
 
 	COGLES2CallBridge::COGLES2CallBridge(COGLES2Driver* driver) : Driver(driver),
-		BlendSource(GL_ONE), BlendDestination(GL_ZERO), Blend(false),
+		BlendEquation(GL_FUNC_ADD), BlendSourceRGB(GL_ONE), BlendDestinationRGB(GL_ZERO),
+		BlendSourceAlpha(GL_ONE), BlendDestinationAlpha(GL_ZERO), Blend(false),
 		CullFaceMode(GL_BACK), CullFace(false),
 		DepthFunc(GL_LESS), DepthMask(true), DepthTest(false),
 		Program(0), ActiveTexture(GL_TEXTURE0), Viewport(core::rect<s32>(0, 0, 0, 0))
@@ -2751,14 +2765,48 @@ bool COGLES2Driver::endScene()
 		glDisable(GL_DEPTH_TEST);
 	}
 
+	void COGLES2CallBridge::setBlendEquation(GLenum mode)
+	{
+		if (BlendEquation != mode)
+		{
+			glBlendEquation(mode);
+
+			BlendEquation = mode;
+		}
+	}
+
 	void COGLES2CallBridge::setBlendFunc(GLenum source, GLenum destination)
 	{
-		if (BlendSource != source || BlendDestination != destination)
+		if (BlendSourceRGB != source || BlendDestinationRGB != destination ||
+		    BlendSourceAlpha != source || BlendDestinationAlpha != destination)
 		{
 			glBlendFunc(source, destination);
 
-			BlendSource = source;
-			BlendDestination = destination;
+			BlendSourceRGB = source;
+			BlendDestinationRGB = destination;
+			BlendSourceAlpha = source;
+			BlendDestinationAlpha = destination;
+		}
+	}
+
+	void COGLES2CallBridge::setBlendFuncSeparate(GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha)
+	{
+		if (sourceRGB != sourceAlpha || destinationRGB != destinationAlpha)
+		{
+		    if (BlendSourceRGB != sourceRGB || BlendDestinationRGB != destinationRGB ||
+		        BlendSourceAlpha != sourceAlpha || BlendDestinationAlpha != destinationAlpha)
+		    {
+		        glBlendFuncSeparate(sourceRGB, destinationRGB, sourceAlpha, destinationAlpha);
+
+				BlendSourceRGB = sourceRGB;
+				BlendDestinationRGB = destinationRGB;
+				BlendSourceAlpha = sourceAlpha;
+				BlendDestinationAlpha = destinationAlpha;
+		    }
+		}
+		else
+		{
+		    setBlendFunc(sourceRGB, destinationRGB);
 		}
 	}
 

@@ -33,7 +33,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
             ) : CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8), BridgeCalls(0)
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
     , ContextManager(contextManager)
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -99,6 +99,8 @@ COGLES1Driver::~COGLES1Driver()
 	deleteMaterialRenders();
 	deleteAllTextures();
 
+	delete BridgeCalls;
+
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 	if (ContextManager)
 	{
@@ -143,6 +145,10 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 		CurrentTexture[i]=0;
 	// load extensions
 	initExtensions(this, stencilBuffer);
+
+	if (!BridgeCalls)
+		BridgeCalls = new COGLES1CallBridge(this);
+
 	StencilBuffer=stencilBuffer;
 
 	DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
@@ -1639,9 +1645,9 @@ void COGLES1Driver::setRenderStates3DMode()
 	if (CurrentRenderMode != ERM_3D)
 	{
 		// Reset Texture Stages
-		glDisable(GL_BLEND);
+		BridgeCalls->setBlend(false);
 		glDisable(GL_ALPHA_TEST);
-		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		BridgeCalls->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
 		// switch back the matrices
 		glMatrixMode(GL_MODELVIEW);
@@ -2013,6 +2019,61 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 	}
 
+	// Blend Equation
+	if (material.BlendOperation == EBO_NONE)
+		BridgeCalls->setBlend(false);
+	else
+	{
+		BridgeCalls->setBlend(true);
+
+		if (queryFeature(EVDF_BLEND_OPERATIONS))
+		{
+			switch (material.BlendOperation)
+			{
+			case EBO_ADD:
+#if defined(GL_OES_blend_subtract)
+				BridgeCalls->setBlendEquation(GL_FUNC_ADD_OES);
+#endif
+				break;
+			case EBO_SUBTRACT:
+#if defined(GL_OES_blend_subtract)
+				BridgeCalls->setBlendEquation(GL_FUNC_SUBTRACT_OES);
+#endif
+				break;
+			case EBO_REVSUBTRACT:
+#if defined(GL_OES_blend_subtract)
+				BridgeCalls->setBlendEquation(GL_FUNC_REVERSE_SUBTRACT_OES);
+#endif
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+    // Blend Factor
+    if (material.BlendFactor != 0.f)
+	{
+        E_BLEND_FACTOR srcRGBFact = EBF_ZERO;
+        E_BLEND_FACTOR dstRGBFact = EBF_ZERO;
+        E_BLEND_FACTOR srcAlphaFact = EBF_ZERO;
+        E_BLEND_FACTOR dstAlphaFact = EBF_ZERO;
+        E_MODULATE_FUNC modulo = EMFN_MODULATE_1X;
+        u32 alphaSource = 0;
+
+        unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulo, alphaSource, material.BlendFactor);
+
+        if (queryFeature(EVDF_BLEND_SEPARATE))
+        {
+            BridgeCalls->setBlendFuncSeparate(getGLBlend(srcRGBFact), getGLBlend(dstRGBFact),
+                getGLBlend(srcAlphaFact), getGLBlend(dstAlphaFact));
+        }
+        else
+        {
+            BridgeCalls->setBlendFunc(getGLBlend(srcRGBFact), getGLBlend(dstRGBFact));
+        }
+	}
+
 	// thickness
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 	{
@@ -2109,7 +2170,6 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
 			LastMaterial = InitMaterial2D;
 		}
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	if (OverrideMaterial2DEnabled)
 	{
@@ -2120,13 +2180,14 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (alphaChannel || alpha)
 	{
-		glEnable(GL_BLEND);
+		BridgeCalls->setBlend(true);
+		BridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.f);
 	}
 	else
 	{
-		glDisable(GL_BLEND);
+		BridgeCalls->setBlend(false);
 		glDisable(GL_ALPHA_TEST);
 	}
 
@@ -3019,6 +3080,113 @@ void COGLES1Driver::enableClipPlane(u32 index, bool enable)
 core::dimension2du COGLES1Driver::getMaxTextureSize() const
 {
 	return core::dimension2du(MaxTextureSize, MaxTextureSize);
+}
+
+
+GLenum COGLES1Driver::getGLBlend(E_BLEND_FACTOR factor) const
+{
+	GLenum r = 0;
+	switch (factor)
+	{
+		case EBF_ZERO:			r = GL_ZERO; break;
+		case EBF_ONE:			r = GL_ONE; break;
+		case EBF_DST_COLOR:		r = GL_DST_COLOR; break;
+		case EBF_ONE_MINUS_DST_COLOR:	r = GL_ONE_MINUS_DST_COLOR; break;
+		case EBF_SRC_COLOR:		r = GL_SRC_COLOR; break;
+		case EBF_ONE_MINUS_SRC_COLOR:	r = GL_ONE_MINUS_SRC_COLOR; break;
+		case EBF_SRC_ALPHA:		r = GL_SRC_ALPHA; break;
+		case EBF_ONE_MINUS_SRC_ALPHA:	r = GL_ONE_MINUS_SRC_ALPHA; break;
+		case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
+		case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
+		case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
+	}
+	return r;
+}
+
+
+COGLES1CallBridge* COGLES1Driver::getBridgeCalls() const
+{
+	return BridgeCalls;
+}
+
+
+COGLES1CallBridge::COGLES1CallBridge(COGLES1Driver* driver) : Driver(driver),
+#if defined(GL_OES_blend_subtract)
+	BlendEquation(GL_FUNC_ADD_OES),
+#endif
+	BlendSourceRGB(GL_ONE), BlendDestinationRGB(GL_ZERO),
+	BlendSourceAlpha(GL_ONE), BlendDestinationAlpha(GL_ZERO),
+	Blend(false)
+{
+	// Initial OpenGL ES1.x values from specification.
+
+	if (Driver->queryFeature(EVDF_BLEND_OPERATIONS))
+	{
+#if defined(GL_OES_blend_subtract)
+		Driver->extGlBlendEquation(GL_FUNC_ADD_OES);
+#endif
+	}
+
+	glBlendFunc(GL_ONE, GL_ZERO);
+	glDisable(GL_BLEND);
+}
+
+void COGLES1CallBridge::setBlendEquation(GLenum mode)
+{
+	if (BlendEquation != mode)
+	{
+		Driver->extGlBlendEquation(mode);
+
+		BlendEquation = mode;
+	}
+}
+
+void COGLES1CallBridge::setBlendFunc(GLenum source, GLenum destination)
+{
+	if (BlendSourceRGB != source || BlendDestinationRGB != destination ||
+        BlendSourceAlpha != source || BlendDestinationAlpha != destination)
+	{
+		glBlendFunc(source, destination);
+
+		BlendSourceRGB = source;
+		BlendDestinationRGB = destination;
+		BlendSourceAlpha = source;
+		BlendDestinationAlpha = destination;
+	}
+}
+
+void COGLES1CallBridge::setBlendFuncSeparate(GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha)
+{
+    if (sourceRGB != sourceAlpha || destinationRGB != destinationAlpha)
+    {
+        if (BlendSourceRGB != sourceRGB || BlendDestinationRGB != destinationRGB ||
+            BlendSourceAlpha != sourceAlpha || BlendDestinationAlpha != destinationAlpha)
+        {
+            Driver->extGlBlendFuncSeparate(sourceRGB, destinationRGB, sourceAlpha, destinationAlpha);
+
+			BlendSourceRGB = sourceRGB;
+			BlendDestinationRGB = destinationRGB;
+			BlendSourceAlpha = sourceAlpha;
+			BlendDestinationAlpha = destinationAlpha;
+        }
+    }
+    else
+    {
+        setBlendFunc(sourceRGB, destinationRGB);
+    }
+}
+
+void COGLES1CallBridge::setBlend(bool enable)
+{
+	if (Blend != enable)
+	{
+		if (enable)
+			glEnable(GL_BLEND);
+		else
+			glDisable(GL_BLEND);
+
+		Blend = enable;
+	}
 }
 
 } // end namespace

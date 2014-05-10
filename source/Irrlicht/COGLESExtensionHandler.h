@@ -200,6 +200,12 @@ namespace video
 					return Version>100; // Supported in version 1.1
 				case EVDF_STENCIL_BUFFER:
 					return StencilBuffer;
+				case EVDF_BLEND_OPERATIONS:
+					return FeatureAvailable[IRR_OES_blend_subtract];
+				case EVDF_BLEND_SEPARATE:
+					return FeatureAvailable[IRR_OES_blend_func_separate];
+				case EVDF_FRAMEBUFFER_OBJECT:
+					return FeatureAvailable[IRR_OES_framebuffer_object];
 				case EVDF_TEXTURE_NSQUARE:
 					return true; // non-square is always supported
 				case EVDF_TEXTURE_NPOT:
@@ -224,6 +230,30 @@ namespace video
 		void initExtensions(COGLES1Driver* driver, bool withStencil);
 
 	public:
+		void extGlBlendEquation(GLenum mode)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlBlendEquationOES)
+				pGlBlendEquationOES(mode);
+#elif defined(GL_OES_blend_subtract)
+			glBlendEquationOES(mode);
+#else
+			os::Printer::log("glBlendEquation not supported", ELL_ERROR);
+#endif
+		}
+
+		void extGlBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlBlendFuncSeparateOES)
+				pGlBlendFuncSeparateOES(srcRGB, dstRGB, srcAlpha, dstAlpha);
+#elif defined(GL_OES_blend_func_separate)
+			glBlendFuncSeparateOES(srcRGB, dstRGB, srcAlpha, dstAlpha);
+#else
+			os::Printer::log("glBlendFuncSeparate not supported", ELL_ERROR);
+#endif
+		}
+
 		void extGlBindFramebuffer(GLenum target, GLuint framebuffer)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
@@ -439,6 +469,8 @@ namespace video
 		typedef void (GL_APIENTRYP PFNGLDRAWTEXIVOES) (const GLint* coords);
 		typedef void (GL_APIENTRYP PFNGLDRAWTEXFOES) (GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height);
 		typedef void (GL_APIENTRYP PFNGLDRAWTEXFVOES) (const GLfloat* coords);
+		typedef void (GL_APIENTRYP PFNGLBLENDEQUATIONOESPROC) (GLenum mode);
+		typedef void (GL_APIENTRYP PFNGLBLENDFUNCSEPARATEOESPROC) (GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
 		typedef GLboolean (GL_APIENTRYP PFNGLISRENDERBUFFEROES) (GLuint renderbuffer);
 		typedef void (GL_APIENTRYP PFNGLBINDRENDERBUFFEROES) (GLenum target, GLuint renderbuffer);
 		typedef void (GL_APIENTRYP PFNGLDELETERENDERBUFFERSOES) (GLsizei n, const GLuint* renderbuffers);
@@ -459,6 +491,8 @@ namespace video
 		PFNGLDRAWTEXFOES pGlDrawTexfOES;
 		PFNGLDRAWTEXIVOES pGlDrawTexivOES;
 		PFNGLDRAWTEXFVOES pGlDrawTexfvOES;
+		PFNGLBLENDEQUATIONOESPROC pGlBlendEquationOES;
+		PFNGLBLENDFUNCSEPARATEOESPROC pGlBlendFuncSeparateOES;
 		PFNGLBINDRENDERBUFFEROES pGlBindRenderbufferOES;
 		PFNGLDELETERENDERBUFFERSOES pGlDeleteRenderbuffersOES;
 		PFNGLGENRENDERBUFFERSOES pGlGenRenderbuffersOES;

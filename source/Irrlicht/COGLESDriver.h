@@ -26,6 +26,7 @@ namespace irr
 {
 namespace video
 {
+	class COGLES1CallBridge;
 	class COGLES1Texture;
 
 	class COGLES1Driver : public CNullDriver, public IMaterialRendererServices, public COGLES1ExtensionHandler
@@ -282,8 +283,13 @@ namespace video
 		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
 		void removeDepthTexture(ITexture* texture);
 
-	private:
+		//! Convert E_BLEND_FACTOR to OpenGL equivalent
+		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
+		//! Get bridge calls.
+		COGLES1CallBridge* getBridgeCalls() const;
+
+	private:
 		void uploadClipPlane(u32 index);
 
 		//! inits the opengl-es driver
@@ -366,6 +372,8 @@ namespace video
 		};
 		core::array<RequestedLight> RequestedLights;
 
+		COGLES1CallBridge* BridgeCalls;
+
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		CIrrDeviceIPhone* Device;
 		GLuint ViewFramebuffer;
@@ -374,6 +382,35 @@ namespace video
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
         IContextManager* ContextManager;
 #endif
+	};
+
+	//! This bridge between Irlicht pseudo OpenGL ES1.x calls
+	//! and true OpenGL ES1.x calls.
+
+	class COGLES1CallBridge
+	{
+	public:
+		COGLES1CallBridge(COGLES1Driver* driver);
+
+		// Blending calls.
+
+		void setBlendEquation(GLenum mode);
+
+		void setBlendFunc(GLenum source, GLenum destination);
+
+		void setBlendFuncSeparate(GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha);
+
+		void setBlend(bool enable);
+
+	private:
+		COGLES1Driver* Driver;
+
+		GLenum BlendEquation;
+		GLenum BlendSourceRGB;
+		GLenum BlendDestinationRGB;
+		GLenum BlendSourceAlpha;
+		GLenum BlendDestinationAlpha;
+		bool Blend;
 	};
 
 } // end namespace video

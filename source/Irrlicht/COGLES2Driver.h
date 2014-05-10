@@ -364,9 +364,6 @@ namespace video
 		COGLES2CallBridge* getBridgeCalls() const;
 
 	private:
-		// Bridge calls.
-		COGLES2CallBridge* BridgeCalls;
-
 		void uploadClipPlane(u32 index);
 
 		//! inits the opengl-es driver
@@ -450,6 +447,8 @@ namespace video
 
 		COGLES2Renderer2D* MaterialRenderer2D;
 
+		COGLES2CallBridge* BridgeCalls;
+
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		CIrrDeviceIPhone* Device;
 		GLuint ViewFramebuffer;
@@ -470,7 +469,11 @@ namespace video
 
 		// Blending calls.
 
+		void setBlendEquation(GLenum mode);
+
 		void setBlendFunc(GLenum source, GLenum destination);
+
+		void setBlendFuncSeparate(GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha);
 
 		void setBlend(bool enable);
 
@@ -507,8 +510,11 @@ namespace video
 	private:
 		COGLES2Driver* Driver;
 
-		GLenum BlendSource;
-		GLenum BlendDestination;
+		GLenum BlendEquation;
+		GLenum BlendSourceRGB;
+		GLenum BlendDestinationRGB;
+		GLenum BlendSourceAlpha;
+		GLenum BlendDestinationAlpha;
 		bool Blend;
 
 		GLenum CullFaceMode;

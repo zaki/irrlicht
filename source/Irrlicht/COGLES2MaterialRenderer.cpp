@@ -160,32 +160,36 @@ void COGLES2MaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
 {
-	Driver->getBridgeCalls()->setProgram(Program);
+	COGLES2CallBridge* bridgeCalls = Driver->getBridgeCalls();
+
+	bridgeCalls->setProgram(Program);
 
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 	if (Alpha)
 	{
-		Driver->getBridgeCalls()->setBlend(true);
-		Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		bridgeCalls->setBlend(true);
+		bridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	else if (FixedBlending)
 	{
-		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		Driver->getBridgeCalls()->setBlend(true);
+		bridgeCalls->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		bridgeCalls->setBlend(true);
 	}
 	else if (Blending)
 	{
-		E_BLEND_FACTOR srcFact,dstFact;
+		E_BLEND_FACTOR srcRGBFact,dstRGBFact,srcAlphaFact,dstAlphaFact;
 		E_MODULATE_FUNC modulate;
 		u32 alphaSource;
-		unpack_textureBlendFunc(srcFact, dstFact, modulate, alphaSource, material.MaterialTypeParam);
+		unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulate, alphaSource, material.MaterialTypeParam);
 
-		Driver->getBridgeCalls()->setBlendFunc(Driver->getGLBlend(srcFact), Driver->getGLBlend(dstFact));
-		Driver->getBridgeCalls()->setBlend(true);
+		bridgeCalls->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
+			Driver->getGLBlend(srcAlphaFact), Driver->getGLBlend(dstAlphaFact));
+
+		bridgeCalls->setBlend(true);
 	}
 	else
-		Driver->getBridgeCalls()->setBlend(false);
+		bridgeCalls->setBlend(false);
 
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
