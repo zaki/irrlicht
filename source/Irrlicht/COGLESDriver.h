@@ -7,13 +7,14 @@
 
 #include "IrrCompileConfig.h"
 
+#include "SIrrCreationParameters.h"
+
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
-#include "SIrrCreationParameters.h"
 #include "IContextManager.h"
 
 #ifdef _MSC_VER

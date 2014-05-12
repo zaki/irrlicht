@@ -5,7 +5,7 @@
 #ifndef C_PARTICLE_SCALE_AFFECTOR_H
 #define C_PARTICLE_SCALE_AFFECTOR_H
 
-#include <IParticleAffector.h>
+#include "IParticleAffector.h"
 
 namespace irr
 {

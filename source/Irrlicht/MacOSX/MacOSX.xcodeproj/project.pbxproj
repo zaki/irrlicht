@@ -496,6 +496,8 @@
 		5E23E67118AF90CE00372DBC /* CWGLManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E23E66718AF90CE00372DBC /* CWGLManager.cpp */; };
 		5E25C81C16A83DC700320AA9 /* leakHunter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C81B16A83DC700320AA9 /* leakHunter.cpp */; };
 		5E25C82216A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */; };
+		5E30A6EC1921586B00C90671 /* CProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A6E31921586A00C90671 /* CProfiler.cpp */; };
+		5E30A6F71921588F00C90671 /* CGUIProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A6F51921588F00C90671 /* CGUIProfiler.cpp */; };
 		5E38B0F818B5619D00202D3A /* CNSOGLManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5E38B0F618B5619D00202D3A /* CNSOGLManager.mm */; };
 		5E5484EC168A959900119951 /* CCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5484EA168A959800119951 /* CCgMaterialRenderer.cpp */; };
 		5E5484F1168A95D500119951 /* COpenGLCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */; };
@@ -1628,7 +1630,7 @@
 		4C53DF850A484C240014E966 /* COCTLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = COCTLoader.h; sourceTree = "<group>"; };
 		4C53DF8A0A484C240014E966 /* COgreMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = COgreMeshFileLoader.cpp; sourceTree = "<group>"; };
 		4C53DF8B0A484C240014E966 /* COgreMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = COgreMeshFileLoader.h; sourceTree = "<group>"; };
-		4C53DF8C0A484C240014E966 /* COpenGLDriver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 30; lineEnding = 2; path = COpenGLDriver.cpp; sourceTree = "<group>"; };
+		4C53DF8C0A484C240014E966 /* COpenGLDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = COpenGLDriver.cpp; sourceTree = "<group>"; };
 		4C53DF8D0A484C240014E966 /* COpenGLDriver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = COpenGLDriver.h; sourceTree = "<group>"; };
 		4C53DF8E0A484C240014E966 /* COpenGLMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = COpenGLMaterialRenderer.h; sourceTree = "<group>"; };
 		4C53DF8F0A484C240014E966 /* COpenGLNormalMapRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLNormalMapRenderer.cpp; sourceTree = "<group>"; };
@@ -2005,6 +2007,18 @@
 		5E25C81E16A83E4500320AA9 /* leakHunter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = leakHunter.h; sourceTree = "<group>"; };
 		5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CD3D9CgMaterialRenderer.cpp; sourceTree = "<group>"; };
 		5E25C82116A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CD3D9CgMaterialRenderer.h; sourceTree = "<group>"; };
+		5E30A6E31921586A00C90671 /* CProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CProfiler.cpp; sourceTree = "<group>"; };
+		5E30A6E41921586A00C90671 /* CProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CProfiler.h; sourceTree = "<group>"; };
+		5E30A6E51921586A00C90671 /* CSceneLoaderIrr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSceneLoaderIrr.h; sourceTree = "<group>"; };
+		5E30A6E61921586A00C90671 /* CSMFMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSMFMeshFileLoader.h; sourceTree = "<group>"; };
+		5E30A6E71921586A00C90671 /* CWADReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CWADReader.h; sourceTree = "<group>"; };
+		5E30A6E81921586A00C90671 /* EProfileIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EProfileIDs.h; sourceTree = "<group>"; };
+		5E30A6E91921586A00C90671 /* IAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAttribute.h; sourceTree = "<group>"; };
+		5E30A6EA1921586A00C90671 /* ISceneNodeAnimatorFinishing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISceneNodeAnimatorFinishing.h; sourceTree = "<group>"; };
+		5E30A6EB1921586A00C90671 /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
+		5E30A6F51921588F00C90671 /* CGUIProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGUIProfiler.cpp; sourceTree = "<group>"; };
+		5E30A6F61921588F00C90671 /* CGUIProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGUIProfiler.h; sourceTree = "<group>"; };
+		5E30A6F9192158A300C90671 /* CBlit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBlit.h; sourceTree = "<group>"; };
 		5E38B0F518B5619D00202D3A /* CNSOGLManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CNSOGLManager.h; sourceTree = "<group>"; };
 		5E38B0F618B5619D00202D3A /* CNSOGLManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CNSOGLManager.mm; sourceTree = "<group>"; };
 		5E5484EA168A959800119951 /* CCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCgMaterialRenderer.cpp; sourceTree = "<group>"; };
@@ -2547,16 +2561,18 @@
 		0910BA810D1F6BB800D46B04 /* gui */ = {
 			isa = PBXGroup;
 			children = (
-				34FFD9CB0F6601AC00420884 /* element */,
 				4C53DEE60A484C220014E966 /* BuiltInFont.h */,
 				5DD480580C7D945800728AA9 /* CDefaultGUIElementFactory.cpp */,
 				5DD480590C7D945800728AA9 /* CDefaultGUIElementFactory.h */,
 				4C53DF3C0A484C230014E966 /* CGUIFont.cpp */,
 				4C53DF3D0A484C230014E966 /* CGUIFont.h */,
+				5E30A6F51921588F00C90671 /* CGUIProfiler.cpp */,
+				5E30A6F61921588F00C90671 /* CGUIProfiler.h */,
 				4C53DF4E0A484C230014E966 /* CGUISkin.cpp */,
 				4C53DF4F0A484C230014E966 /* CGUISkin.h */,
 				5DD480620C7D947B00728AA9 /* CGUISpriteBank.cpp */,
 				5DD480630C7D947B00728AA9 /* CGUISpriteBank.h */,
+				34FFD9CB0F6601AC00420884 /* element */,
 			);
 			name = gui;
 			sourceTree = "<group>";
@@ -3600,13 +3616,23 @@
 		4C6DC9960A486B110017A6E5 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				95E5858C12FCE388004946C6 /* CTRNormalMap.cpp */,
 				95E5857512FCE2CB004946C6 /* CAnimatedMeshHalfLife.cpp */,
-				95E5859112FCE3A1004946C6 /* CTRStencilShadow.cpp */,
-				95E5857612FCE2CB004946C6 /* CAnimatedMeshHalfLife.h */,
+				5E30A6E31921586A00C90671 /* CProfiler.cpp */,
 				95E5857B12FCE2DE004946C6 /* CSceneLoaderIrr.cpp */,
 				95E5859412FCE3F5004946C6 /* CSMFMeshFileLoader.cpp */,
+				95E5858C12FCE388004946C6 /* CTRNormalMap.cpp */,
+				95E5859112FCE3A1004946C6 /* CTRStencilShadow.cpp */,
 				95E5857012FCE277004946C6 /* CWADReader.cpp */,
+				95E5857612FCE2CB004946C6 /* CAnimatedMeshHalfLife.h */,
+				5E30A6F9192158A300C90671 /* CBlit.h */,
+				5E30A6E41921586A00C90671 /* CProfiler.h */,
+				5E30A6E51921586A00C90671 /* CSceneLoaderIrr.h */,
+				5E30A6E61921586A00C90671 /* CSMFMeshFileLoader.h */,
+				5E30A6E71921586A00C90671 /* CWADReader.h */,
+				5E30A6E81921586A00C90671 /* EProfileIDs.h */,
+				5E30A6E91921586A00C90671 /* IAttribute.h */,
+				5E30A6EA1921586A00C90671 /* ISceneNodeAnimatorFinishing.h */,
+				5E30A6EB1921586A00C90671 /* resource.h */,
 				0910BA810D1F6BB800D46B04 /* gui */,
 				0910BA820D1F6C3900D46B04 /* io */,
 				0910BA830D1F6CA600D46B04 /* irr */,
@@ -4951,6 +4977,7 @@
 				5E23E67118AF90CE00372DBC /* CWGLManager.cpp in Sources */,
 				4CA25BF70A485EAD00B4E469 /* jfdctint.c in Sources */,
 				4CA25BF80A485EAD00B4E469 /* jidctflt.c in Sources */,
+				5E30A6EC1921586B00C90671 /* CProfiler.cpp in Sources */,
 				4CA25BF90A485EAD00B4E469 /* jidctfst.c in Sources */,
 				4CA25BFA0A485EAD00B4E469 /* jidctint.c in Sources */,
 				4CA25C000A485EAD00B4E469 /* jmemmgr.c in Sources */,
@@ -5021,6 +5048,7 @@
 				4C53E45C0A4856B30014E966 /* CTRTextureWire2.cpp in Sources */,
 				4C53E45D0A4856B30014E966 /* CTRTextureFlatWire.cpp in Sources */,
 				4C53E45E0A4856B30014E966 /* CTRGouraud2.cpp in Sources */,
+				5E30A6F71921588F00C90671 /* CGUIProfiler.cpp in Sources */,
 				4C53E45F0A4856B30014E966 /* CEmptySceneNode.cpp in Sources */,
 				4C53E4600A4856B30014E966 /* CTRTextureLightMap2_Add.cpp in Sources */,
 				4C53E4610A4856B30014E966 /* CReadFile.cpp in Sources */,

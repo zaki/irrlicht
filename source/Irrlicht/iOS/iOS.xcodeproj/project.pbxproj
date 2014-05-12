@@ -8,189 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		5E25C82B16A845D900320AA9 /* COGLES2FixedPipelineRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C82816A845D900320AA9 /* COGLES2FixedPipelineRenderer.cpp */; };
-		5E25C82C16A845D900320AA9 /* COGLES2FixedPipelineRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E25C82916A845D900320AA9 /* COGLES2FixedPipelineRenderer.h */; };
 		5E25C82D16A845D900320AA9 /* COGLES2MaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C82A16A845D900320AA9 /* COGLES2MaterialRenderer.cpp */; };
-		5E3EA3A41586A22E00C17C1D /* aabbox3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30445E15515AC500D9E53B /* aabbox3d.h */; };
-		5E3EA3A51586A22E00C17C1D /* CDynamicMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30445F15515AC500D9E53B /* CDynamicMeshBuffer.h */; };
-		5E3EA3A61586A22E00C17C1D /* CIndexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446015515AC500D9E53B /* CIndexBuffer.h */; };
-		5E3EA3A71586A22E00C17C1D /* CMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446115515AC500D9E53B /* CMeshBuffer.h */; };
-		5E3EA3A81586A22E00C17C1D /* coreutil.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446215515AC500D9E53B /* coreutil.h */; };
-		5E3EA3A91586A22E00C17C1D /* CVertexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446315515AC500D9E53B /* CVertexBuffer.h */; };
-		5E3EA3AA1586A22E00C17C1D /* dimension2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446415515AC500D9E53B /* dimension2d.h */; };
-		5E3EA3AB1586A22E00C17C1D /* driverChoice.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446515515AC500D9E53B /* driverChoice.h */; };
-		5E3EA3AC1586A22E00C17C1D /* EAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446615515AC500D9E53B /* EAttributes.h */; };
-		5E3EA3AD1586A22E00C17C1D /* ECullingTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446715515AC500D9E53B /* ECullingTypes.h */; };
-		5E3EA3AE1586A22E00C17C1D /* EDebugSceneTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446815515AC500D9E53B /* EDebugSceneTypes.h */; };
-		5E3EA3AF1586A22E00C17C1D /* EDeviceTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446915515AC500D9E53B /* EDeviceTypes.h */; };
-		5E3EA3B01586A22E00C17C1D /* EDriverFeatures.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446A15515AC500D9E53B /* EDriverFeatures.h */; };
-		5E3EA3B11586A22E00C17C1D /* EDriverTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446B15515AC500D9E53B /* EDriverTypes.h */; };
-		5E3EA3B21586A22E00C17C1D /* EGUIAlignment.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446C15515AC500D9E53B /* EGUIAlignment.h */; };
-		5E3EA3B31586A22E00C17C1D /* EGUIElementTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446D15515AC500D9E53B /* EGUIElementTypes.h */; };
-		5E3EA3B41586A22E00C17C1D /* EHardwareBufferFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446E15515AC500D9E53B /* EHardwareBufferFlags.h */; };
-		5E3EA3B51586A22E00C17C1D /* EMaterialFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30446F15515AC500D9E53B /* EMaterialFlags.h */; };
-		5E3EA3B61586A22E00C17C1D /* EMaterialTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447015515AC500D9E53B /* EMaterialTypes.h */; };
-		5E3EA3B71586A22E00C17C1D /* EMeshWriterEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447115515AC500D9E53B /* EMeshWriterEnums.h */; };
-		5E3EA3B81586A22E00C17C1D /* EMessageBoxFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447215515AC500D9E53B /* EMessageBoxFlags.h */; };
-		5E3EA3B91586A22E00C17C1D /* EPrimitiveTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447315515AC500D9E53B /* EPrimitiveTypes.h */; };
-		5E3EA3BA1586A22E00C17C1D /* ESceneNodeAnimatorTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447415515AC500D9E53B /* ESceneNodeAnimatorTypes.h */; };
-		5E3EA3BB1586A22E00C17C1D /* ESceneNodeTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447515515AC500D9E53B /* ESceneNodeTypes.h */; };
-		5E3EA3BC1586A22E00C17C1D /* EShaderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447615515AC500D9E53B /* EShaderTypes.h */; };
-		5E3EA3BD1586A22E00C17C1D /* ETerrainElements.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447715515AC500D9E53B /* ETerrainElements.h */; };
-		5E3EA3BE1586A22E00C17C1D /* EVertexAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447815515AC500D9E53B /* EVertexAttributes.h */; };
-		5E3EA3BF1586A22E00C17C1D /* fast_atof.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447915515AC500D9E53B /* fast_atof.h */; };
-		5E3EA3C01586A22E00C17C1D /* heapsort.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447A15515AC500D9E53B /* heapsort.h */; };
-		5E3EA3C11586A22E00C17C1D /* IAnimatedMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447B15515AC500D9E53B /* IAnimatedMesh.h */; };
-		5E3EA3C21586A22E00C17C1D /* IAnimatedMeshMD2.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447C15515AC500D9E53B /* IAnimatedMeshMD2.h */; };
-		5E3EA3C31586A22E00C17C1D /* IAnimatedMeshMD3.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447D15515AC500D9E53B /* IAnimatedMeshMD3.h */; };
-		5E3EA3C41586A22E00C17C1D /* IAnimatedMeshSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447E15515AC500D9E53B /* IAnimatedMeshSceneNode.h */; };
-		5E3EA3C51586A22E00C17C1D /* IAttributeExchangingObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30447F15515AC500D9E53B /* IAttributeExchangingObject.h */; };
-		5E3EA3C61586A22E00C17C1D /* IAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448015515AC500D9E53B /* IAttributes.h */; };
-		5E3EA3C71586A22E00C17C1D /* IBillboardSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448115515AC500D9E53B /* IBillboardSceneNode.h */; };
-		5E3EA3C81586A22E00C17C1D /* IBillboardTextSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448215515AC500D9E53B /* IBillboardTextSceneNode.h */; };
-		5E3EA3C91586A22E00C17C1D /* IBoneSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448315515AC500D9E53B /* IBoneSceneNode.h */; };
-		5E3EA3CA1586A22E00C17C1D /* ICameraSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448415515AC500D9E53B /* ICameraSceneNode.h */; };
-		5E3EA3CB1586A22E00C17C1D /* IColladaMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448515515AC500D9E53B /* IColladaMeshWriter.h */; };
-		5E3EA3CC1586A22E00C17C1D /* ICursorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448615515AC500D9E53B /* ICursorControl.h */; };
-		5E3EA3CD1586A22F00C17C1D /* IDummyTransformationSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448715515AC500D9E53B /* IDummyTransformationSceneNode.h */; };
-		5E3EA3CE1586A22F00C17C1D /* IDynamicMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448815515AC500D9E53B /* IDynamicMeshBuffer.h */; };
-		5E3EA3CF1586A22F00C17C1D /* IEventReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448915515AC500D9E53B /* IEventReceiver.h */; };
-		5E3EA3D01586A22F00C17C1D /* IFileArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448A15515AC500D9E53B /* IFileArchive.h */; };
-		5E3EA3D11586A22F00C17C1D /* IFileList.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448B15515AC500D9E53B /* IFileList.h */; };
-		5E3EA3D21586A22F00C17C1D /* IFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448C15515AC500D9E53B /* IFileSystem.h */; };
-		5E3EA3D31586A22F00C17C1D /* IGeometryCreator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448D15515AC500D9E53B /* IGeometryCreator.h */; };
-		5E3EA3D41586A22F00C17C1D /* IGPUProgrammingServices.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448E15515AC500D9E53B /* IGPUProgrammingServices.h */; };
-		5E3EA3D51586A22F00C17C1D /* IGUIButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30448F15515AC500D9E53B /* IGUIButton.h */; };
-		5E3EA3D61586A22F00C17C1D /* IGUICheckBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449015515AC500D9E53B /* IGUICheckBox.h */; };
-		5E3EA3D71586A22F00C17C1D /* IGUIColorSelectDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449115515AC500D9E53B /* IGUIColorSelectDialog.h */; };
-		5E3EA3D81586A22F00C17C1D /* IGUIComboBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449215515AC500D9E53B /* IGUIComboBox.h */; };
-		5E3EA3D91586A22F00C17C1D /* IGUIContextMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449315515AC500D9E53B /* IGUIContextMenu.h */; };
-		5E3EA3DA1586A22F00C17C1D /* IGUIEditBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449415515AC500D9E53B /* IGUIEditBox.h */; };
-		5E3EA3DB1586A22F00C17C1D /* IGUIElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449515515AC500D9E53B /* IGUIElement.h */; };
-		5E3EA3DC1586A22F00C17C1D /* IGUIElementFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449615515AC500D9E53B /* IGUIElementFactory.h */; };
-		5E3EA3DD1586A22F00C17C1D /* IGUIEnvironment.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449715515AC500D9E53B /* IGUIEnvironment.h */; };
-		5E3EA3DE1586A22F00C17C1D /* IGUIFileOpenDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449815515AC500D9E53B /* IGUIFileOpenDialog.h */; };
-		5E3EA3DF1586A22F00C17C1D /* IGUIFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449915515AC500D9E53B /* IGUIFont.h */; };
-		5E3EA3E01586A22F00C17C1D /* IGUIFontBitmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449A15515AC500D9E53B /* IGUIFontBitmap.h */; };
-		5E3EA3E11586A22F00C17C1D /* IGUIImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449B15515AC500D9E53B /* IGUIImage.h */; };
-		5E3EA3E21586A22F00C17C1D /* IGUIImageList.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449C15515AC500D9E53B /* IGUIImageList.h */; };
-		5E3EA3E31586A22F00C17C1D /* IGUIInOutFader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449D15515AC500D9E53B /* IGUIInOutFader.h */; };
-		5E3EA3E41586A22F00C17C1D /* IGUIListBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449E15515AC500D9E53B /* IGUIListBox.h */; };
-		5E3EA3E51586A22F00C17C1D /* IGUIMeshViewer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30449F15515AC500D9E53B /* IGUIMeshViewer.h */; };
-		5E3EA3E61586A22F00C17C1D /* IGUIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A015515AC500D9E53B /* IGUIScrollBar.h */; };
-		5E3EA3E71586A22F00C17C1D /* IGUISkin.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A115515AC500D9E53B /* IGUISkin.h */; };
-		5E3EA3E81586A22F00C17C1D /* IGUISpinBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A215515AC500D9E53B /* IGUISpinBox.h */; };
-		5E3EA3E91586A22F00C17C1D /* IGUISpriteBank.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A315515AC500D9E53B /* IGUISpriteBank.h */; };
-		5E3EA3EA1586A22F00C17C1D /* IGUIStaticText.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A415515AC500D9E53B /* IGUIStaticText.h */; };
-		5E3EA3EB1586A22F00C17C1D /* IGUITabControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A515515AC500D9E53B /* IGUITabControl.h */; };
-		5E3EA3EC1586A22F00C17C1D /* IGUITable.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A615515AC500D9E53B /* IGUITable.h */; };
-		5E3EA3ED1586A22F00C17C1D /* IGUIToolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A715515AC500D9E53B /* IGUIToolbar.h */; };
-		5E3EA3EE1586A22F00C17C1D /* IGUITreeView.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A815515AC500D9E53B /* IGUITreeView.h */; };
-		5E3EA3EF1586A22F00C17C1D /* IGUIWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044A915515AC500D9E53B /* IGUIWindow.h */; };
-		5E3EA3F01586A22F00C17C1D /* IImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044AA15515AC500D9E53B /* IImage.h */; };
-		5E3EA3F11586A22F00C17C1D /* IImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044AB15515AC500D9E53B /* IImageLoader.h */; };
-		5E3EA3F21586A22F00C17C1D /* IImageWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044AC15515AC500D9E53B /* IImageWriter.h */; };
-		5E3EA3F31586A22F00C17C1D /* IIndexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044AD15515AC500D9E53B /* IIndexBuffer.h */; };
-		5E3EA3F41586A22F00C17C1D /* ILightManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044AE15515AC500D9E53B /* ILightManager.h */; };
-		5E3EA3F51586A22F00C17C1D /* ILightSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044AF15515AC500D9E53B /* ILightSceneNode.h */; };
-		5E3EA3F61586A22F00C17C1D /* ILogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B015515AC500D9E53B /* ILogger.h */; };
-		5E3EA3F71586A22F00C17C1D /* IMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B115515AC500D9E53B /* IMaterialRenderer.h */; };
-		5E3EA3F81586A22F00C17C1D /* IMaterialRendererServices.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B215515AC500D9E53B /* IMaterialRendererServices.h */; };
-		5E3EA3F91586A22F00C17C1D /* IMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B315515AC500D9E53B /* IMesh.h */; };
-		5E3EA3FA1586A22F00C17C1D /* IMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B415515AC500D9E53B /* IMeshBuffer.h */; };
-		5E3EA3FB1586A22F00C17C1D /* IMeshCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B515515AC500D9E53B /* IMeshCache.h */; };
-		5E3EA3FC1586A22F00C17C1D /* IMeshLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B615515AC500D9E53B /* IMeshLoader.h */; };
-		5E3EA3FD1586A22F00C17C1D /* IMeshManipulator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B715515AC500D9E53B /* IMeshManipulator.h */; };
-		5E3EA3FE1586A22F00C17C1D /* IMeshSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B815515AC500D9E53B /* IMeshSceneNode.h */; };
-		5E3EA3FF1586A22F00C17C1D /* IMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044B915515AC500D9E53B /* IMeshWriter.h */; };
-		5E3EA4001586A22F00C17C1D /* IMetaTriangleSelector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044BA15515AC500D9E53B /* IMetaTriangleSelector.h */; };
-		5E3EA4011586A22F00C17C1D /* IOSOperator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044BB15515AC500D9E53B /* IOSOperator.h */; };
-		5E3EA4021586A22F00C17C1D /* IParticleAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044BC15515AC500D9E53B /* IParticleAffector.h */; };
-		5E3EA4031586A22F00C17C1D /* IParticleAnimatedMeshSceneNodeEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044BD15515AC500D9E53B /* IParticleAnimatedMeshSceneNodeEmitter.h */; };
-		5E3EA4041586A22F00C17C1D /* IParticleAttractionAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044BE15515AC500D9E53B /* IParticleAttractionAffector.h */; };
-		5E3EA4051586A22F00C17C1D /* IParticleBoxEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044BF15515AC500D9E53B /* IParticleBoxEmitter.h */; };
-		5E3EA4061586A22F00C17C1D /* IParticleCylinderEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C015515AC500D9E53B /* IParticleCylinderEmitter.h */; };
-		5E3EA4071586A22F00C17C1D /* IParticleEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C115515AC500D9E53B /* IParticleEmitter.h */; };
-		5E3EA4081586A22F00C17C1D /* IParticleFadeOutAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C215515AC500D9E53B /* IParticleFadeOutAffector.h */; };
-		5E3EA4091586A22F00C17C1D /* IParticleGravityAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C315515AC500D9E53B /* IParticleGravityAffector.h */; };
-		5E3EA40A1586A22F00C17C1D /* IParticleMeshEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C415515AC500D9E53B /* IParticleMeshEmitter.h */; };
-		5E3EA40B1586A22F00C17C1D /* IParticleRingEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C515515AC500D9E53B /* IParticleRingEmitter.h */; };
-		5E3EA40C1586A22F00C17C1D /* IParticleRotationAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C615515AC500D9E53B /* IParticleRotationAffector.h */; };
-		5E3EA40D1586A22F00C17C1D /* IParticleSphereEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C715515AC500D9E53B /* IParticleSphereEmitter.h */; };
-		5E3EA40E1586A22F00C17C1D /* IParticleSystemSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C815515AC500D9E53B /* IParticleSystemSceneNode.h */; };
-		5E3EA40F1586A22F00C17C1D /* IQ3LevelMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044C915515AC500D9E53B /* IQ3LevelMesh.h */; };
-		5E3EA4101586A22F00C17C1D /* IQ3Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044CA15515AC500D9E53B /* IQ3Shader.h */; };
-		5E3EA4111586A22F00C17C1D /* IRandomizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044CB15515AC500D9E53B /* IRandomizer.h */; };
-		5E3EA4121586A22F00C17C1D /* IReadFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044CC15515AC500D9E53B /* IReadFile.h */; };
-		5E3EA4131586A22F00C17C1D /* IReferenceCounted.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044CD15515AC500D9E53B /* IReferenceCounted.h */; };
-		5E3EA4141586A22F00C17C1D /* irrAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044CE15515AC500D9E53B /* irrAllocator.h */; };
-		5E3EA4151586A22F00C17C1D /* irrArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044CF15515AC500D9E53B /* irrArray.h */; };
-		5E3EA4161586A22F00C17C1D /* IrrCompileConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D015515AC500D9E53B /* IrrCompileConfig.h */; };
-		5E3EA4171586A22F00C17C1D /* irrlicht.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D115515AC500D9E53B /* irrlicht.h */; };
-		5E3EA4181586A22F00C17C1D /* IrrlichtDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D215515AC500D9E53B /* IrrlichtDevice.h */; };
-		5E3EA4191586A22F00C17C1D /* irrList.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D315515AC500D9E53B /* irrList.h */; };
-		5E3EA41A1586A22F00C17C1D /* irrMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D415515AC500D9E53B /* irrMap.h */; };
-		5E3EA41B1586A22F00C17C1D /* irrMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D515515AC500D9E53B /* irrMath.h */; };
-		5E3EA41C1586A22F00C17C1D /* irrString.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D615515AC500D9E53B /* irrString.h */; };
-		5E3EA41D1586A22F00C17C1D /* irrTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D715515AC500D9E53B /* irrTypes.h */; };
-		5E3EA41E1586A22F00C17C1D /* irrXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D815515AC500D9E53B /* irrXML.h */; };
-		5E3EA41F1586A22F00C17C1D /* ISceneCollisionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044D915515AC500D9E53B /* ISceneCollisionManager.h */; };
-		5E3EA4201586A22F00C17C1D /* ISceneLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044DA15515AC500D9E53B /* ISceneLoader.h */; };
-		5E3EA4211586A22F00C17C1D /* ISceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044DB15515AC500D9E53B /* ISceneManager.h */; };
-		5E3EA4221586A22F00C17C1D /* ISceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044DC15515AC500D9E53B /* ISceneNode.h */; };
-		5E3EA4231586A22F00C17C1D /* ISceneNodeAnimator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044DD15515AC500D9E53B /* ISceneNodeAnimator.h */; };
-		5E3EA4241586A22F00C17C1D /* ISceneNodeAnimatorCameraFPS.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044DE15515AC500D9E53B /* ISceneNodeAnimatorCameraFPS.h */; };
-		5E3EA4251586A22F00C17C1D /* ISceneNodeAnimatorCameraMaya.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044DF15515AC500D9E53B /* ISceneNodeAnimatorCameraMaya.h */; };
-		5E3EA4261586A22F00C17C1D /* ISceneNodeAnimatorCollisionResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E015515AC500D9E53B /* ISceneNodeAnimatorCollisionResponse.h */; };
-		5E3EA4271586A22F00C17C1D /* ISceneNodeAnimatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E115515AC500D9E53B /* ISceneNodeAnimatorFactory.h */; };
-		5E3EA4281586A22F00C17C1D /* ISceneNodeFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E215515AC500D9E53B /* ISceneNodeFactory.h */; };
-		5E3EA4291586A22F00C17C1D /* ISceneUserDataSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E315515AC500D9E53B /* ISceneUserDataSerializer.h */; };
-		5E3EA42A1586A22F00C17C1D /* IShaderConstantSetCallBack.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E415515AC500D9E53B /* IShaderConstantSetCallBack.h */; };
-		5E3EA42B1586A22F00C17C1D /* IShadowVolumeSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E515515AC500D9E53B /* IShadowVolumeSceneNode.h */; };
-		5E3EA42C1586A22F00C17C1D /* ISkinnedMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E615515AC500D9E53B /* ISkinnedMesh.h */; };
-		5E3EA42D1586A22F00C17C1D /* ITerrainSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E715515AC500D9E53B /* ITerrainSceneNode.h */; };
-		5E3EA42E1586A22F00C17C1D /* ITextSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E815515AC500D9E53B /* ITextSceneNode.h */; };
-		5E3EA42F1586A22F00C17C1D /* ITexture.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044E915515AC500D9E53B /* ITexture.h */; };
-		5E3EA4301586A22F00C17C1D /* ITimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044EA15515AC500D9E53B /* ITimer.h */; };
-		5E3EA4311586A22F00C17C1D /* ITriangleSelector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044EB15515AC500D9E53B /* ITriangleSelector.h */; };
-		5E3EA4321586A22F00C17C1D /* IVertexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044EC15515AC500D9E53B /* IVertexBuffer.h */; };
-		5E3EA4331586A22F00C17C1D /* IVideoDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044ED15515AC500D9E53B /* IVideoDriver.h */; };
-		5E3EA4341586A22F00C17C1D /* IVideoModeList.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044EE15515AC500D9E53B /* IVideoModeList.h */; };
-		5E3EA4351586A22F00C17C1D /* IVolumeLightSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044EF15515AC500D9E53B /* IVolumeLightSceneNode.h */; };
-		5E3EA4361586A22F00C17C1D /* IWriteFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F015515AC500D9E53B /* IWriteFile.h */; };
-		5E3EA4371586A22F00C17C1D /* IXMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F115515AC500D9E53B /* IXMLReader.h */; };
-		5E3EA4381586A22F00C17C1D /* IXMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F215515AC500D9E53B /* IXMLWriter.h */; };
-		5E3EA4391586A22F00C17C1D /* Keycodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F315515AC500D9E53B /* Keycodes.h */; };
-		5E3EA43A1586A22F00C17C1D /* line2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F415515AC500D9E53B /* line2d.h */; };
-		5E3EA43B1586A22F00C17C1D /* line3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F515515AC500D9E53B /* line3d.h */; };
-		5E3EA43C1586A22F00C17C1D /* matrix4.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F615515AC500D9E53B /* matrix4.h */; };
-		5E3EA43D1586A22F00C17C1D /* path.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F715515AC500D9E53B /* path.h */; };
-		5E3EA43E1586A22F00C17C1D /* plane3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F815515AC500D9E53B /* plane3d.h */; };
-		5E3EA43F1586A22F00C17C1D /* position2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044F915515AC500D9E53B /* position2d.h */; };
-		5E3EA4401586A22F00C17C1D /* quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044FA15515AC500D9E53B /* quaternion.h */; };
-		5E3EA4411586A22F00C17C1D /* rect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044FB15515AC500D9E53B /* rect.h */; };
-		5E3EA4421586A22F00C17C1D /* S3DVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044FC15515AC500D9E53B /* S3DVertex.h */; };
-		5E3EA4431586A22F00C17C1D /* SAnimatedMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044FD15515AC500D9E53B /* SAnimatedMesh.h */; };
-		5E3EA4441586A22F00C17C1D /* SceneParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044FE15515AC500D9E53B /* SceneParameters.h */; };
-		5E3EA4451586A22F00C17C1D /* SColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3044FF15515AC500D9E53B /* SColor.h */; };
-		5E3EA4461586A22F00C17C1D /* SExposedVideoData.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450015515AC500D9E53B /* SExposedVideoData.h */; };
-		5E3EA4471586A22F00C17C1D /* SIrrCreationParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450115515AC500D9E53B /* SIrrCreationParameters.h */; };
-		5E3EA4481586A22F00C17C1D /* SKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450215515AC500D9E53B /* SKeyMap.h */; };
-		5E3EA4491586A22F00C17C1D /* SLight.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450315515AC500D9E53B /* SLight.h */; };
-		5E3EA44A1586A22F00C17C1D /* SMaterial.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450415515AC500D9E53B /* SMaterial.h */; };
-		5E3EA44B1586A22F00C17C1D /* SMaterialLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450515515AC500D9E53B /* SMaterialLayer.h */; };
-		5E3EA44C1586A22F00C17C1D /* SMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450615515AC500D9E53B /* SMesh.h */; };
-		5E3EA44D1586A22F00C17C1D /* SMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450715515AC500D9E53B /* SMeshBuffer.h */; };
-		5E3EA44E1586A22F00C17C1D /* SMeshBufferLightMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450815515AC500D9E53B /* SMeshBufferLightMap.h */; };
-		5E3EA44F1586A22F00C17C1D /* SMeshBufferTangents.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450915515AC500D9E53B /* SMeshBufferTangents.h */; };
-		5E3EA4501586A22F00C17C1D /* SParticle.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450A15515AC500D9E53B /* SParticle.h */; };
-		5E3EA4511586A22F00C17C1D /* SSharedMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450B15515AC500D9E53B /* SSharedMeshBuffer.h */; };
-		5E3EA4521586A22F00C17C1D /* SSkinMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450C15515AC500D9E53B /* SSkinMeshBuffer.h */; };
-		5E3EA4531586A22F00C17C1D /* SVertexIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450D15515AC500D9E53B /* SVertexIndex.h */; };
-		5E3EA4541586A22F00C17C1D /* SVertexManipulator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450E15515AC500D9E53B /* SVertexManipulator.h */; };
-		5E3EA4551586A22F00C17C1D /* SViewFrustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30450F15515AC500D9E53B /* SViewFrustum.h */; };
-		5E3EA4561586A22F00C17C1D /* triangle3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30451015515AC500D9E53B /* triangle3d.h */; };
-		5E3EA4571586A22F00C17C1D /* vector2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30451115515AC500D9E53B /* vector2d.h */; };
-		5E3EA4581586A22F00C17C1D /* vector3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E30451215515AC500D9E53B /* vector3d.h */; };
+		5E30A71519215C1400C90671 /* CCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70119215C1400C90671 /* CCgMaterialRenderer.cpp */; };
+		5E30A71719215C1400C90671 /* CD3D9CgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70319215C1400C90671 /* CD3D9CgMaterialRenderer.cpp */; };
+		5E30A71919215C1400C90671 /* CEGLManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70519215C1400C90671 /* CEGLManager.cpp */; };
+		5E30A71B19215C1400C90671 /* CGLXManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70719215C1400C90671 /* CGLXManager.cpp */; };
+		5E30A71D19215C1400C90671 /* CGUIProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70919215C1400C90671 /* CGUIProfiler.cpp */; };
+		5E30A72019215C1400C90671 /* CNSOGLManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70C19215C1400C90671 /* CNSOGLManager.mm */; };
+		5E30A72119215C1400C90671 /* COpenGLCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70D19215C1400C90671 /* COpenGLCgMaterialRenderer.cpp */; };
+		5E30A72319215C1400C90671 /* CProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A70F19215C1400C90671 /* CProfiler.cpp */; };
+		5E30A72519215C1400C90671 /* CWGLManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A71119215C1400C90671 /* CWGLManager.cpp */; };
 		5E3EA45B1586A27C00C17C1D /* CIrrDeviceiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EA1C21586440400C17C1D /* CIrrDeviceiOS.mm */; };
 		5E3EA45C1586A27C00C17C1D /* aescrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EA1F015867C3F00C17C1D /* aescrypt.cpp */; };
 		5E3EA45D1586A27C00C17C1D /* aeskey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3EA1F115867C3F00C17C1D /* aeskey.cpp */; };
@@ -507,9 +334,7 @@
 		5E3EA6771586A27E00C17C1D /* Irrlicht.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CC15515B4400D9E53B /* Irrlicht.cpp */; };
 		5E3EA6781586A27E00C17C1D /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CD15515B4400D9E53B /* irrXML.cpp */; };
 		5E4C3FEE18C7C8FF002AEDAF /* CMeshTextureLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E4C3FEC18C7C8FF002AEDAF /* CMeshTextureLoader.cpp */; };
-		5E4C3FEF18C7C8FF002AEDAF /* CMeshTextureLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E4C3FED18C7C8FF002AEDAF /* CMeshTextureLoader.h */; };
 		5E92ED391752B6E800B93CC0 /* CImageLoaderPVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E92ED371752B6E800B93CC0 /* CImageLoaderPVR.cpp */; };
-		5E92ED3A1752B6E800B93CC0 /* CImageLoaderPVR.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E92ED381752B6E800B93CC0 /* CImageLoaderPVR.h */; };
 		5ED2483F1731568400A13B86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E215516CC00014DCBA /* UIKit.framework */; };
 		5ED248401731568400A13B86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E415516CC00014DCBA /* Foundation.framework */; };
 		5ED248411731568400A13B86 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E615516CC00014DCBA /* CoreGraphics.framework */; };
@@ -529,9 +354,6 @@
 		5ED24883173178DC00A13B86 /* COGLES2Renderer2D.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */; };
 		5ED2488817317FFC00A13B86 /* Interface_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2488617317FFC00A13B86 /* Interface_iPad.xib */; };
 		5ED2488917317FFC00A13B86 /* Interface_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2488717317FFC00A13B86 /* Interface_iPhone.xib */; };
-		5EEAE04C171DF38900C7BC68 /* irrpack.h in Headers */ = {isa = PBXBuildFile; fileRef = 5EEAE049171DF38900C7BC68 /* irrpack.h */; };
-		5EEAE04D171DF38900C7BC68 /* irrunpack.h in Headers */ = {isa = PBXBuildFile; fileRef = 5EEAE04A171DF38900C7BC68 /* irrunpack.h */; };
-		5EEAE04E171DF38900C7BC68 /* leakHunter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5EEAE04B171DF38900C7BC68 /* leakHunter.h */; };
 		5EEAE050171DF3C700C7BC68 /* leakHunter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EEAE04F171DF3C700C7BC68 /* leakHunter.cpp */; };
 /* End PBXBuildFile section */
 
@@ -1172,6 +994,29 @@
 		5E3047CE15515B4400D9E53B /* ISceneNodeAnimatorFinishing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISceneNodeAnimatorFinishing.h; path = ../ISceneNodeAnimatorFinishing.h; sourceTree = "<group>"; };
 		5E3047CF15515B4400D9E53B /* ITriangleRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ITriangleRenderer.h; path = ../ITriangleRenderer.h; sourceTree = "<group>"; };
 		5E3047D015515B4400D9E53B /* IZBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IZBuffer.h; path = ../IZBuffer.h; sourceTree = "<group>"; };
+		5E30A6FB19215BBD00C90671 /* EFocusFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EFocusFlags.h; path = ../../../include/EFocusFlags.h; sourceTree = "<group>"; };
+		5E30A6FC19215BBD00C90671 /* IGUIProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IGUIProfiler.h; path = ../../../include/IGUIProfiler.h; sourceTree = "<group>"; };
+		5E30A6FD19215BBD00C90671 /* IProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IProfiler.h; path = ../../../include/IProfiler.h; sourceTree = "<group>"; };
+		5E30A70119215C1400C90671 /* CCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCgMaterialRenderer.cpp; path = ../CCgMaterialRenderer.cpp; sourceTree = "<group>"; };
+		5E30A70219215C1400C90671 /* CCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCgMaterialRenderer.h; path = ../CCgMaterialRenderer.h; sourceTree = "<group>"; };
+		5E30A70319215C1400C90671 /* CD3D9CgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CD3D9CgMaterialRenderer.cpp; path = ../CD3D9CgMaterialRenderer.cpp; sourceTree = "<group>"; };
+		5E30A70419215C1400C90671 /* CD3D9CgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CD3D9CgMaterialRenderer.h; path = ../CD3D9CgMaterialRenderer.h; sourceTree = "<group>"; };
+		5E30A70519215C1400C90671 /* CEGLManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CEGLManager.cpp; path = ../CEGLManager.cpp; sourceTree = "<group>"; };
+		5E30A70619215C1400C90671 /* CEGLManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CEGLManager.h; path = ../CEGLManager.h; sourceTree = "<group>"; };
+		5E30A70719215C1400C90671 /* CGLXManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CGLXManager.cpp; path = ../CGLXManager.cpp; sourceTree = "<group>"; };
+		5E30A70819215C1400C90671 /* CGLXManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGLXManager.h; path = ../CGLXManager.h; sourceTree = "<group>"; };
+		5E30A70919215C1400C90671 /* CGUIProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CGUIProfiler.cpp; path = ../CGUIProfiler.cpp; sourceTree = "<group>"; };
+		5E30A70A19215C1400C90671 /* CGUIProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGUIProfiler.h; path = ../CGUIProfiler.h; sourceTree = "<group>"; };
+		5E30A70B19215C1400C90671 /* CNSOGLManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CNSOGLManager.h; path = ../CNSOGLManager.h; sourceTree = "<group>"; };
+		5E30A70C19215C1400C90671 /* CNSOGLManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CNSOGLManager.mm; path = ../CNSOGLManager.mm; sourceTree = "<group>"; };
+		5E30A70D19215C1400C90671 /* COpenGLCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = COpenGLCgMaterialRenderer.cpp; path = ../COpenGLCgMaterialRenderer.cpp; sourceTree = "<group>"; };
+		5E30A70E19215C1400C90671 /* COpenGLCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = COpenGLCgMaterialRenderer.h; path = ../COpenGLCgMaterialRenderer.h; sourceTree = "<group>"; };
+		5E30A70F19215C1400C90671 /* CProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CProfiler.cpp; path = ../CProfiler.cpp; sourceTree = "<group>"; };
+		5E30A71019215C1400C90671 /* CProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CProfiler.h; path = ../CProfiler.h; sourceTree = "<group>"; };
+		5E30A71119215C1400C90671 /* CWGLManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CWGLManager.cpp; path = ../CWGLManager.cpp; sourceTree = "<group>"; };
+		5E30A71219215C1400C90671 /* CWGLManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CWGLManager.h; path = ../CWGLManager.h; sourceTree = "<group>"; };
+		5E30A71319215C1400C90671 /* EProfileIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EProfileIDs.h; path = ../EProfileIDs.h; sourceTree = "<group>"; };
+		5E30A71419215C1400C90671 /* gles3-ext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gles3-ext.h"; path = "../gles3-ext.h"; sourceTree = "<group>"; };
 		5E3EA1C11586440400C17C1D /* CIrrDeviceiOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceiOS.h; sourceTree = "<group>"; };
 		5E3EA1C21586440400C17C1D /* CIrrDeviceiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CIrrDeviceiOS.mm; sourceTree = "<group>"; };
 		5E3EA1F015867C3F00C17C1D /* aescrypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = aescrypt.cpp; path = ../aesGladman/aescrypt.cpp; sourceTree = "<group>"; };
@@ -1347,6 +1192,7 @@
 				5E30446915515AC500D9E53B /* EDeviceTypes.h */,
 				5E30446A15515AC500D9E53B /* EDriverFeatures.h */,
 				5E30446B15515AC500D9E53B /* EDriverTypes.h */,
+				5E30A6FB19215BBD00C90671 /* EFocusFlags.h */,
 				5E30446C15515AC500D9E53B /* EGUIAlignment.h */,
 				5E30446D15515AC500D9E53B /* EGUIElementTypes.h */,
 				5E30446E15515AC500D9E53B /* EHardwareBufferFlags.h */,
@@ -1400,6 +1246,7 @@
 				5E30449D15515AC500D9E53B /* IGUIInOutFader.h */,
 				5E30449E15515AC500D9E53B /* IGUIListBox.h */,
 				5E30449F15515AC500D9E53B /* IGUIMeshViewer.h */,
+				5E30A6FC19215BBD00C90671 /* IGUIProfiler.h */,
 				5E3044A015515AC500D9E53B /* IGUIScrollBar.h */,
 				5E3044A115515AC500D9E53B /* IGUISkin.h */,
 				5E3044A215515AC500D9E53B /* IGUISpinBox.h */,
@@ -1442,6 +1289,7 @@
 				5E3044C615515AC500D9E53B /* IParticleRotationAffector.h */,
 				5E3044C715515AC500D9E53B /* IParticleSphereEmitter.h */,
 				5E3044C815515AC500D9E53B /* IParticleSystemSceneNode.h */,
+				5E30A6FD19215BBD00C90671 /* IProfiler.h */,
 				5E3044C915515AC500D9E53B /* IQ3LevelMesh.h */,
 				5E3044CA15515AC500D9E53B /* IQ3Shader.h */,
 				5E3044CB15515AC500D9E53B /* IRandomizer.h */,
@@ -1552,6 +1400,8 @@
 				5E30462215515B4400D9E53B /* CBurningShader_Raster_Reference.cpp */,
 				5E30462315515B4400D9E53B /* CCameraSceneNode.cpp */,
 				5E30462415515B4400D9E53B /* CCameraSceneNode.h */,
+				5E30A70119215C1400C90671 /* CCgMaterialRenderer.cpp */,
+				5E30A70219215C1400C90671 /* CCgMaterialRenderer.h */,
 				5E30462515515B4400D9E53B /* CColladaFileLoader.cpp */,
 				5E30462615515B4400D9E53B /* CColladaFileLoader.h */,
 				5E30462715515B4400D9E53B /* CColladaMeshWriter.cpp */,
@@ -1573,6 +1423,8 @@
 				5E30463715515B4400D9E53B /* CD3D8ShaderMaterialRenderer.h */,
 				5E30463815515B4400D9E53B /* CD3D8Texture.cpp */,
 				5E30463915515B4400D9E53B /* CD3D8Texture.h */,
+				5E30A70319215C1400C90671 /* CD3D9CgMaterialRenderer.cpp */,
+				5E30A70419215C1400C90671 /* CD3D9CgMaterialRenderer.h */,
 				5E30463A15515B4400D9E53B /* CD3D9Driver.cpp */,
 				5E30463B15515B4400D9E53B /* CD3D9Driver.h */,
 				5E30463C15515B4400D9E53B /* CD3D9HLSLMaterialRenderer.cpp */,
@@ -1598,6 +1450,8 @@
 				5E30465015515B4400D9E53B /* CDMFLoader.h */,
 				5E30465115515B4400D9E53B /* CDummyTransformationSceneNode.cpp */,
 				5E30465215515B4400D9E53B /* CDummyTransformationSceneNode.h */,
+				5E30A70519215C1400C90671 /* CEGLManager.cpp */,
+				5E30A70619215C1400C90671 /* CEGLManager.h */,
 				5E30465315515B4400D9E53B /* CEmptySceneNode.cpp */,
 				5E30465415515B4400D9E53B /* CEmptySceneNode.h */,
 				5E30465515515B4400D9E53B /* CFileList.cpp */,
@@ -1608,6 +1462,8 @@
 				5E30465A15515B4400D9E53B /* CFPSCounter.h */,
 				5E30465B15515B4400D9E53B /* CGeometryCreator.cpp */,
 				5E30465C15515B4400D9E53B /* CGeometryCreator.h */,
+				5E30A70719215C1400C90671 /* CGLXManager.cpp */,
+				5E30A70819215C1400C90671 /* CGLXManager.h */,
 				5E30465D15515B4400D9E53B /* CGUIButton.cpp */,
 				5E30465E15515B4400D9E53B /* CGUIButton.h */,
 				5E30465F15515B4400D9E53B /* CGUICheckBox.cpp */,
@@ -1642,6 +1498,8 @@
 				5E30467C15515B4400D9E53B /* CGUIMessageBox.h */,
 				5E30467D15515B4400D9E53B /* CGUIModalScreen.cpp */,
 				5E30467E15515B4400D9E53B /* CGUIModalScreen.h */,
+				5E30A70919215C1400C90671 /* CGUIProfiler.cpp */,
+				5E30A70A19215C1400C90671 /* CGUIProfiler.h */,
 				5E30467F15515B4400D9E53B /* CGUIScrollBar.cpp */,
 				5E30468015515B4400D9E53B /* CGUIScrollBar.h */,
 				5E30468115515B4400D9E53B /* CGUISkin.cpp */,
@@ -1753,6 +1611,8 @@
 				5E3046EA15515B4400D9E53B /* CMY3DMeshFileLoader.h */,
 				5E3046EB15515B4400D9E53B /* CNPKReader.cpp */,
 				5E3046EC15515B4400D9E53B /* CNPKReader.h */,
+				5E30A70B19215C1400C90671 /* CNSOGLManager.h */,
+				5E30A70C19215C1400C90671 /* CNSOGLManager.mm */,
 				5E3046ED15515B4400D9E53B /* CNullDriver.cpp */,
 				5E3046EE15515B4400D9E53B /* CNullDriver.h */,
 				5E3046EF15515B4400D9E53B /* COBJMeshFileLoader.cpp */,
@@ -1790,6 +1650,8 @@
 				5E30471115515B4400D9E53B /* COGLESTexture.h */,
 				5E30471215515B4400D9E53B /* COgreMeshFileLoader.cpp */,
 				5E30471315515B4400D9E53B /* COgreMeshFileLoader.h */,
+				5E30A70D19215C1400C90671 /* COpenGLCgMaterialRenderer.cpp */,
+				5E30A70E19215C1400C90671 /* COpenGLCgMaterialRenderer.h */,
 				5E30471415515B4400D9E53B /* COpenGLDriver.cpp */,
 				5E30471515515B4400D9E53B /* COpenGLDriver.h */,
 				5E30471615515B4400D9E53B /* COpenGLExtensionHandler.cpp */,
@@ -1839,6 +1701,8 @@
 				5E30474215515B4400D9E53B /* CPLYMeshFileLoader.h */,
 				5E30474315515B4400D9E53B /* CPLYMeshWriter.cpp */,
 				5E30474415515B4400D9E53B /* CPLYMeshWriter.h */,
+				5E30A70F19215C1400C90671 /* CProfiler.cpp */,
+				5E30A71019215C1400C90671 /* CProfiler.h */,
 				5E30474515515B4400D9E53B /* CQ3LevelMesh.cpp */,
 				5E30474615515B4400D9E53B /* CQ3LevelMesh.h */,
 				5E30474715515B4400D9E53B /* CQuake3ShaderSceneNode.cpp */,
@@ -1946,6 +1810,8 @@
 				5E3047AD15515B4400D9E53B /* CWADReader.h */,
 				5E3047AE15515B4400D9E53B /* CWaterSurfaceSceneNode.cpp */,
 				5E3047AF15515B4400D9E53B /* CWaterSurfaceSceneNode.h */,
+				5E30A71119215C1400C90671 /* CWGLManager.cpp */,
+				5E30A71219215C1400C90671 /* CWGLManager.h */,
 				5E3047B015515B4400D9E53B /* CWriteFile.cpp */,
 				5E3047B115515B4400D9E53B /* CWriteFile.h */,
 				5E3047B215515B4400D9E53B /* CXMeshFileLoader.cpp */,
@@ -1962,8 +1828,10 @@
 				5E3EA3351586811100C17C1D /* Devices */,
 				5E3047BD15515B4400D9E53B /* dmfsupport.h */,
 				5E3047BE15515B4400D9E53B /* eglext.h */,
+				5E30A71319215C1400C90671 /* EProfileIDs.h */,
 				5E3047BF15515B4400D9E53B /* gles-ext.h */,
 				5E3047C015515B4400D9E53B /* gles2-ext.h */,
+				5E30A71419215C1400C90671 /* gles3-ext.h */,
 				5E3047C115515B4400D9E53B /* glext.h */,
 				5E3047C215515B4400D9E53B /* glxext.h */,
 				5E3047C315515B4400D9E53B /* IAttribute.h */,
@@ -2229,193 +2097,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E3EA3A41586A22E00C17C1D /* aabbox3d.h in Headers */,
-				5E3EA3A51586A22E00C17C1D /* CDynamicMeshBuffer.h in Headers */,
-				5E3EA3A61586A22E00C17C1D /* CIndexBuffer.h in Headers */,
-				5E3EA3A71586A22E00C17C1D /* CMeshBuffer.h in Headers */,
-				5E3EA3A81586A22E00C17C1D /* coreutil.h in Headers */,
-				5E3EA3A91586A22E00C17C1D /* CVertexBuffer.h in Headers */,
-				5E3EA3AA1586A22E00C17C1D /* dimension2d.h in Headers */,
-				5E3EA3AB1586A22E00C17C1D /* driverChoice.h in Headers */,
-				5E3EA3AC1586A22E00C17C1D /* EAttributes.h in Headers */,
-				5E3EA3AD1586A22E00C17C1D /* ECullingTypes.h in Headers */,
-				5E3EA3AE1586A22E00C17C1D /* EDebugSceneTypes.h in Headers */,
-				5E3EA3AF1586A22E00C17C1D /* EDeviceTypes.h in Headers */,
-				5E3EA3B01586A22E00C17C1D /* EDriverFeatures.h in Headers */,
-				5E3EA3B11586A22E00C17C1D /* EDriverTypes.h in Headers */,
-				5E3EA3B21586A22E00C17C1D /* EGUIAlignment.h in Headers */,
-				5E3EA3B31586A22E00C17C1D /* EGUIElementTypes.h in Headers */,
-				5E3EA3B41586A22E00C17C1D /* EHardwareBufferFlags.h in Headers */,
-				5E3EA3B51586A22E00C17C1D /* EMaterialFlags.h in Headers */,
-				5E3EA3B61586A22E00C17C1D /* EMaterialTypes.h in Headers */,
-				5E3EA3B71586A22E00C17C1D /* EMeshWriterEnums.h in Headers */,
-				5E3EA3B81586A22E00C17C1D /* EMessageBoxFlags.h in Headers */,
-				5E3EA3B91586A22E00C17C1D /* EPrimitiveTypes.h in Headers */,
-				5E3EA3BA1586A22E00C17C1D /* ESceneNodeAnimatorTypes.h in Headers */,
-				5E3EA3BB1586A22E00C17C1D /* ESceneNodeTypes.h in Headers */,
-				5E3EA3BC1586A22E00C17C1D /* EShaderTypes.h in Headers */,
-				5E3EA3BD1586A22E00C17C1D /* ETerrainElements.h in Headers */,
-				5E3EA3BE1586A22E00C17C1D /* EVertexAttributes.h in Headers */,
-				5E3EA3BF1586A22E00C17C1D /* fast_atof.h in Headers */,
-				5E3EA3C01586A22E00C17C1D /* heapsort.h in Headers */,
-				5E3EA3C11586A22E00C17C1D /* IAnimatedMesh.h in Headers */,
-				5E3EA3C21586A22E00C17C1D /* IAnimatedMeshMD2.h in Headers */,
-				5E3EA3C31586A22E00C17C1D /* IAnimatedMeshMD3.h in Headers */,
-				5E3EA3C41586A22E00C17C1D /* IAnimatedMeshSceneNode.h in Headers */,
-				5E3EA3C51586A22E00C17C1D /* IAttributeExchangingObject.h in Headers */,
-				5E3EA3C61586A22E00C17C1D /* IAttributes.h in Headers */,
-				5E3EA3C71586A22E00C17C1D /* IBillboardSceneNode.h in Headers */,
-				5E3EA3C81586A22E00C17C1D /* IBillboardTextSceneNode.h in Headers */,
-				5E3EA3C91586A22E00C17C1D /* IBoneSceneNode.h in Headers */,
-				5E3EA3CA1586A22E00C17C1D /* ICameraSceneNode.h in Headers */,
-				5E3EA3CB1586A22E00C17C1D /* IColladaMeshWriter.h in Headers */,
-				5E3EA3CC1586A22E00C17C1D /* ICursorControl.h in Headers */,
-				5E3EA3CD1586A22F00C17C1D /* IDummyTransformationSceneNode.h in Headers */,
-				5E3EA3CE1586A22F00C17C1D /* IDynamicMeshBuffer.h in Headers */,
-				5E3EA3CF1586A22F00C17C1D /* IEventReceiver.h in Headers */,
-				5E3EA3D01586A22F00C17C1D /* IFileArchive.h in Headers */,
-				5E3EA3D11586A22F00C17C1D /* IFileList.h in Headers */,
-				5E3EA3D21586A22F00C17C1D /* IFileSystem.h in Headers */,
-				5E3EA3D31586A22F00C17C1D /* IGeometryCreator.h in Headers */,
-				5E3EA3D41586A22F00C17C1D /* IGPUProgrammingServices.h in Headers */,
-				5E3EA3D51586A22F00C17C1D /* IGUIButton.h in Headers */,
-				5E3EA3D61586A22F00C17C1D /* IGUICheckBox.h in Headers */,
-				5E3EA3D71586A22F00C17C1D /* IGUIColorSelectDialog.h in Headers */,
-				5E3EA3D81586A22F00C17C1D /* IGUIComboBox.h in Headers */,
-				5E3EA3D91586A22F00C17C1D /* IGUIContextMenu.h in Headers */,
-				5E3EA3DA1586A22F00C17C1D /* IGUIEditBox.h in Headers */,
-				5E3EA3DB1586A22F00C17C1D /* IGUIElement.h in Headers */,
-				5E3EA3DC1586A22F00C17C1D /* IGUIElementFactory.h in Headers */,
-				5E3EA3DD1586A22F00C17C1D /* IGUIEnvironment.h in Headers */,
-				5E4C3FEF18C7C8FF002AEDAF /* CMeshTextureLoader.h in Headers */,
-				5E3EA3DE1586A22F00C17C1D /* IGUIFileOpenDialog.h in Headers */,
-				5E3EA3DF1586A22F00C17C1D /* IGUIFont.h in Headers */,
-				5E3EA3E01586A22F00C17C1D /* IGUIFontBitmap.h in Headers */,
-				5E3EA3E11586A22F00C17C1D /* IGUIImage.h in Headers */,
-				5E3EA3E21586A22F00C17C1D /* IGUIImageList.h in Headers */,
-				5E3EA3E31586A22F00C17C1D /* IGUIInOutFader.h in Headers */,
-				5E3EA3E41586A22F00C17C1D /* IGUIListBox.h in Headers */,
-				5E3EA3E51586A22F00C17C1D /* IGUIMeshViewer.h in Headers */,
-				5E3EA3E61586A22F00C17C1D /* IGUIScrollBar.h in Headers */,
-				5E3EA3E71586A22F00C17C1D /* IGUISkin.h in Headers */,
-				5E3EA3E81586A22F00C17C1D /* IGUISpinBox.h in Headers */,
-				5E3EA3E91586A22F00C17C1D /* IGUISpriteBank.h in Headers */,
-				5E3EA3EA1586A22F00C17C1D /* IGUIStaticText.h in Headers */,
-				5E3EA3EB1586A22F00C17C1D /* IGUITabControl.h in Headers */,
-				5E3EA3EC1586A22F00C17C1D /* IGUITable.h in Headers */,
-				5E3EA3ED1586A22F00C17C1D /* IGUIToolbar.h in Headers */,
-				5E3EA3EE1586A22F00C17C1D /* IGUITreeView.h in Headers */,
-				5E3EA3EF1586A22F00C17C1D /* IGUIWindow.h in Headers */,
-				5E3EA3F01586A22F00C17C1D /* IImage.h in Headers */,
-				5E3EA3F11586A22F00C17C1D /* IImageLoader.h in Headers */,
-				5E3EA3F21586A22F00C17C1D /* IImageWriter.h in Headers */,
-				5E3EA3F31586A22F00C17C1D /* IIndexBuffer.h in Headers */,
-				5E3EA3F41586A22F00C17C1D /* ILightManager.h in Headers */,
-				5E3EA3F51586A22F00C17C1D /* ILightSceneNode.h in Headers */,
-				5E3EA3F61586A22F00C17C1D /* ILogger.h in Headers */,
-				5E3EA3F71586A22F00C17C1D /* IMaterialRenderer.h in Headers */,
-				5E3EA3F81586A22F00C17C1D /* IMaterialRendererServices.h in Headers */,
-				5E3EA3F91586A22F00C17C1D /* IMesh.h in Headers */,
-				5E3EA3FA1586A22F00C17C1D /* IMeshBuffer.h in Headers */,
-				5E3EA3FB1586A22F00C17C1D /* IMeshCache.h in Headers */,
-				5E3EA3FC1586A22F00C17C1D /* IMeshLoader.h in Headers */,
-				5E3EA3FD1586A22F00C17C1D /* IMeshManipulator.h in Headers */,
-				5E3EA3FE1586A22F00C17C1D /* IMeshSceneNode.h in Headers */,
-				5E3EA3FF1586A22F00C17C1D /* IMeshWriter.h in Headers */,
-				5E3EA4001586A22F00C17C1D /* IMetaTriangleSelector.h in Headers */,
-				5E3EA4011586A22F00C17C1D /* IOSOperator.h in Headers */,
-				5E3EA4021586A22F00C17C1D /* IParticleAffector.h in Headers */,
-				5E3EA4031586A22F00C17C1D /* IParticleAnimatedMeshSceneNodeEmitter.h in Headers */,
-				5E3EA4041586A22F00C17C1D /* IParticleAttractionAffector.h in Headers */,
-				5E3EA4051586A22F00C17C1D /* IParticleBoxEmitter.h in Headers */,
-				5E3EA4061586A22F00C17C1D /* IParticleCylinderEmitter.h in Headers */,
-				5E3EA4071586A22F00C17C1D /* IParticleEmitter.h in Headers */,
-				5E3EA4081586A22F00C17C1D /* IParticleFadeOutAffector.h in Headers */,
-				5E3EA4091586A22F00C17C1D /* IParticleGravityAffector.h in Headers */,
-				5E3EA40A1586A22F00C17C1D /* IParticleMeshEmitter.h in Headers */,
-				5E3EA40B1586A22F00C17C1D /* IParticleRingEmitter.h in Headers */,
-				5E3EA40C1586A22F00C17C1D /* IParticleRotationAffector.h in Headers */,
-				5E3EA40D1586A22F00C17C1D /* IParticleSphereEmitter.h in Headers */,
-				5E3EA40E1586A22F00C17C1D /* IParticleSystemSceneNode.h in Headers */,
-				5E3EA40F1586A22F00C17C1D /* IQ3LevelMesh.h in Headers */,
-				5E3EA4101586A22F00C17C1D /* IQ3Shader.h in Headers */,
-				5E3EA4111586A22F00C17C1D /* IRandomizer.h in Headers */,
-				5E3EA4121586A22F00C17C1D /* IReadFile.h in Headers */,
-				5E3EA4131586A22F00C17C1D /* IReferenceCounted.h in Headers */,
-				5E3EA4141586A22F00C17C1D /* irrAllocator.h in Headers */,
-				5E3EA4151586A22F00C17C1D /* irrArray.h in Headers */,
-				5E3EA4161586A22F00C17C1D /* IrrCompileConfig.h in Headers */,
-				5E3EA4171586A22F00C17C1D /* irrlicht.h in Headers */,
-				5E3EA4181586A22F00C17C1D /* IrrlichtDevice.h in Headers */,
-				5E3EA4191586A22F00C17C1D /* irrList.h in Headers */,
-				5E3EA41A1586A22F00C17C1D /* irrMap.h in Headers */,
-				5E3EA41B1586A22F00C17C1D /* irrMath.h in Headers */,
-				5E3EA41C1586A22F00C17C1D /* irrString.h in Headers */,
-				5E3EA41D1586A22F00C17C1D /* irrTypes.h in Headers */,
-				5E3EA41E1586A22F00C17C1D /* irrXML.h in Headers */,
-				5E3EA41F1586A22F00C17C1D /* ISceneCollisionManager.h in Headers */,
-				5E3EA4201586A22F00C17C1D /* ISceneLoader.h in Headers */,
-				5E3EA4211586A22F00C17C1D /* ISceneManager.h in Headers */,
-				5E3EA4221586A22F00C17C1D /* ISceneNode.h in Headers */,
-				5E3EA4231586A22F00C17C1D /* ISceneNodeAnimator.h in Headers */,
-				5E3EA4241586A22F00C17C1D /* ISceneNodeAnimatorCameraFPS.h in Headers */,
-				5E3EA4251586A22F00C17C1D /* ISceneNodeAnimatorCameraMaya.h in Headers */,
-				5E3EA4261586A22F00C17C1D /* ISceneNodeAnimatorCollisionResponse.h in Headers */,
-				5E3EA4271586A22F00C17C1D /* ISceneNodeAnimatorFactory.h in Headers */,
-				5E3EA4281586A22F00C17C1D /* ISceneNodeFactory.h in Headers */,
-				5E3EA4291586A22F00C17C1D /* ISceneUserDataSerializer.h in Headers */,
-				5E3EA42A1586A22F00C17C1D /* IShaderConstantSetCallBack.h in Headers */,
-				5E3EA42B1586A22F00C17C1D /* IShadowVolumeSceneNode.h in Headers */,
-				5E3EA42C1586A22F00C17C1D /* ISkinnedMesh.h in Headers */,
-				5E3EA42D1586A22F00C17C1D /* ITerrainSceneNode.h in Headers */,
-				5E3EA42E1586A22F00C17C1D /* ITextSceneNode.h in Headers */,
-				5E3EA42F1586A22F00C17C1D /* ITexture.h in Headers */,
-				5E3EA4301586A22F00C17C1D /* ITimer.h in Headers */,
-				5E3EA4311586A22F00C17C1D /* ITriangleSelector.h in Headers */,
-				5E3EA4321586A22F00C17C1D /* IVertexBuffer.h in Headers */,
-				5E3EA4331586A22F00C17C1D /* IVideoDriver.h in Headers */,
-				5E3EA4341586A22F00C17C1D /* IVideoModeList.h in Headers */,
-				5E3EA4351586A22F00C17C1D /* IVolumeLightSceneNode.h in Headers */,
-				5E3EA4361586A22F00C17C1D /* IWriteFile.h in Headers */,
-				5E3EA4371586A22F00C17C1D /* IXMLReader.h in Headers */,
-				5E3EA4381586A22F00C17C1D /* IXMLWriter.h in Headers */,
-				5E3EA4391586A22F00C17C1D /* Keycodes.h in Headers */,
-				5E3EA43A1586A22F00C17C1D /* line2d.h in Headers */,
-				5E3EA43B1586A22F00C17C1D /* line3d.h in Headers */,
-				5E3EA43C1586A22F00C17C1D /* matrix4.h in Headers */,
-				5E3EA43D1586A22F00C17C1D /* path.h in Headers */,
-				5E3EA43E1586A22F00C17C1D /* plane3d.h in Headers */,
-				5E3EA43F1586A22F00C17C1D /* position2d.h in Headers */,
-				5E3EA4401586A22F00C17C1D /* quaternion.h in Headers */,
-				5E3EA4411586A22F00C17C1D /* rect.h in Headers */,
-				5E3EA4421586A22F00C17C1D /* S3DVertex.h in Headers */,
-				5E3EA4431586A22F00C17C1D /* SAnimatedMesh.h in Headers */,
-				5E3EA4441586A22F00C17C1D /* SceneParameters.h in Headers */,
-				5E3EA4451586A22F00C17C1D /* SColor.h in Headers */,
-				5E3EA4461586A22F00C17C1D /* SExposedVideoData.h in Headers */,
-				5E3EA4471586A22F00C17C1D /* SIrrCreationParameters.h in Headers */,
-				5E3EA4481586A22F00C17C1D /* SKeyMap.h in Headers */,
-				5E3EA4491586A22F00C17C1D /* SLight.h in Headers */,
-				5E3EA44A1586A22F00C17C1D /* SMaterial.h in Headers */,
-				5E3EA44B1586A22F00C17C1D /* SMaterialLayer.h in Headers */,
-				5E3EA44C1586A22F00C17C1D /* SMesh.h in Headers */,
-				5E3EA44D1586A22F00C17C1D /* SMeshBuffer.h in Headers */,
-				5E3EA44E1586A22F00C17C1D /* SMeshBufferLightMap.h in Headers */,
-				5E3EA44F1586A22F00C17C1D /* SMeshBufferTangents.h in Headers */,
-				5E3EA4501586A22F00C17C1D /* SParticle.h in Headers */,
-				5E3EA4511586A22F00C17C1D /* SSharedMeshBuffer.h in Headers */,
-				5E3EA4521586A22F00C17C1D /* SSkinMeshBuffer.h in Headers */,
-				5E3EA4531586A22F00C17C1D /* SVertexIndex.h in Headers */,
-				5E3EA4541586A22F00C17C1D /* SVertexManipulator.h in Headers */,
-				5E3EA4551586A22F00C17C1D /* SViewFrustum.h in Headers */,
-				5E3EA4561586A22F00C17C1D /* triangle3d.h in Headers */,
-				5E3EA4571586A22F00C17C1D /* vector2d.h in Headers */,
-				5E3EA4581586A22F00C17C1D /* vector3d.h in Headers */,
-				5E25C82C16A845D900320AA9 /* COGLES2FixedPipelineRenderer.h in Headers */,
-				5EEAE04C171DF38900C7BC68 /* irrpack.h in Headers */,
-				5EEAE04D171DF38900C7BC68 /* irrunpack.h in Headers */,
-				5EEAE04E171DF38900C7BC68 /* leakHunter.h in Headers */,
-				5E92ED3A1752B6E800B93CC0 /* CImageLoaderPVR.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2519,6 +2200,7 @@
 				5E3EA4621586A27C00C17C1D /* pwd2key.cpp in Sources */,
 				5E3EA4631586A27C00C17C1D /* sha1.cpp in Sources */,
 				5E3EA4641586A27C00C17C1D /* sha2.cpp in Sources */,
+				5E30A71919215C1400C90671 /* CEGLManager.cpp in Sources */,
 				5E3EA4651586A27C00C17C1D /* blocksort.c in Sources */,
 				5E3EA4661586A27C00C17C1D /* bzcompress.c in Sources */,
 				5E3EA4671586A27C00C17C1D /* bzlib.c in Sources */,
@@ -2553,6 +2235,7 @@
 				5E3EA4831586A27C00C17C1D /* jdcolor.c in Sources */,
 				5E3EA4841586A27C00C17C1D /* jddctmgr.c in Sources */,
 				5E3EA4851586A27C00C17C1D /* jdhuff.c in Sources */,
+				5E30A72119215C1400C90671 /* COpenGLCgMaterialRenderer.cpp in Sources */,
 				5E3EA4861586A27C00C17C1D /* jdinput.c in Sources */,
 				5E3EA4871586A27C00C17C1D /* jdmainct.c in Sources */,
 				5E3EA4881586A27C00C17C1D /* jdmarker.c in Sources */,
@@ -2577,6 +2260,7 @@
 				5E3EA49B1586A27C00C17C1D /* pngerror.c in Sources */,
 				5E3EA49C1586A27C00C17C1D /* pngget.c in Sources */,
 				5E3EA49D1586A27C00C17C1D /* pngmem.c in Sources */,
+				5E30A71B19215C1400C90671 /* CGLXManager.cpp in Sources */,
 				5E3EA49E1586A27C00C17C1D /* pngpread.c in Sources */,
 				5E3EA49F1586A27C00C17C1D /* pngread.c in Sources */,
 				5E3EA4A01586A27C00C17C1D /* pngrio.c in Sources */,
@@ -2584,7 +2268,9 @@
 				5E3EA4A21586A27C00C17C1D /* pngrutil.c in Sources */,
 				5E3EA4A31586A27C00C17C1D /* pngset.c in Sources */,
 				5E3EA4A41586A27C00C17C1D /* pngtrans.c in Sources */,
+				5E30A71519215C1400C90671 /* CCgMaterialRenderer.cpp in Sources */,
 				5E3EA4A51586A27C00C17C1D /* pngwio.c in Sources */,
+				5E30A71719215C1400C90671 /* CD3D9CgMaterialRenderer.cpp in Sources */,
 				5E3EA4A61586A27C00C17C1D /* pngwrite.c in Sources */,
 				5E3EA4A71586A27C00C17C1D /* pngwtran.c in Sources */,
 				5E3EA4A81586A27C00C17C1D /* pngwutil.c in Sources */,
@@ -2648,6 +2334,7 @@
 				5E3EA51B1586A27D00C17C1D /* CGUIEnvironment.cpp in Sources */,
 				5E3EA51D1586A27D00C17C1D /* CGUIFileOpenDialog.cpp in Sources */,
 				5E3EA51F1586A27D00C17C1D /* CGUIFont.cpp in Sources */,
+				5E30A72019215C1400C90671 /* CNSOGLManager.mm in Sources */,
 				5E3EA5211586A27D00C17C1D /* CGUIImage.cpp in Sources */,
 				5E3EA5231586A27D00C17C1D /* CGUIImageList.cpp in Sources */,
 				5E3EA5251586A27D00C17C1D /* CGUIInOutFader.cpp in Sources */,
@@ -2715,6 +2402,7 @@
 				5E3EA5A21586A27D00C17C1D /* COCTLoader.cpp in Sources */,
 				5E3EA5A41586A27D00C17C1D /* COctreeSceneNode.cpp in Sources */,
 				5E3EA5A61586A27D00C17C1D /* COctreeTriangleSelector.cpp in Sources */,
+				5E30A72319215C1400C90671 /* CProfiler.cpp in Sources */,
 				5E3EA5A81586A27D00C17C1D /* COGLES2Driver.cpp in Sources */,
 				5E3EA5AA1586A27D00C17C1D /* COGLES2ExtensionHandler.cpp in Sources */,
 				5E3EA5AF1586A27D00C17C1D /* COGLES2NormalMapRenderer.cpp in Sources */,
@@ -2728,6 +2416,7 @@
 				5E3EA5C31586A27D00C17C1D /* COpenGLDriver.cpp in Sources */,
 				5E3EA5C51586A27D00C17C1D /* COpenGLExtensionHandler.cpp in Sources */,
 				5E3EA5C81586A27D00C17C1D /* COpenGLNormalMapRenderer.cpp in Sources */,
+				5E30A71D19215C1400C90671 /* CGUIProfiler.cpp in Sources */,
 				5E3EA5CA1586A27D00C17C1D /* COpenGLParallaxMapRenderer.cpp in Sources */,
 				5E3EA5CC1586A27D00C17C1D /* COpenGLShaderMaterialRenderer.cpp in Sources */,
 				5E3EA5CE1586A27D00C17C1D /* COpenGLSLMaterialRenderer.cpp in Sources */,
@@ -2770,6 +2459,7 @@
 				5E3EA6181586A27D00C17C1D /* CSkyDomeSceneNode.cpp in Sources */,
 				5E3EA61A1586A27D00C17C1D /* CSMFMeshFileLoader.cpp in Sources */,
 				5E3EA61D1586A27D00C17C1D /* CSoftwareDriver.cpp in Sources */,
+				5E30A72519215C1400C90671 /* CWGLManager.cpp in Sources */,
 				5E3EA61F1586A27D00C17C1D /* CSoftwareDriver2.cpp in Sources */,
 				5E3EA6211586A27D00C17C1D /* CSoftwareTexture.cpp in Sources */,
 				5E3EA6231586A27D00C17C1D /* CSoftwareTexture2.cpp in Sources */,

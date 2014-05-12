@@ -10,18 +10,6 @@
 
 #include "IrrCompileConfig.h"
 
-#if defined(_IRR_WINDOWS_API_)
-// include windows headers for HWND
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-#include "MacOSX/CIrrDeviceMacOSX.h"
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include "iOS/CIrrDeviceiOS.h"
-#endif
-
 #include "SIrrCreationParameters.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
@@ -32,6 +20,16 @@
 #include "fast_atof.h"
 #include "COGLES2ExtensionHandler.h"
 #include "IContextManager.h"
+
+#if defined(_IRR_WINDOWS_API_)
+// include windows headers for HWND
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include "iOS/CIrrDeviceiOS.h"
+#endif
 
 #ifdef _MSC_VER
 #pragma comment(lib, "libGLESv2.lib")
