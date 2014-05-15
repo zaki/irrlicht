@@ -218,7 +218,7 @@ public:
 
 		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		Driver->getBridgeCalls()->setBlend(true);
-		
+
 		if ((material.MaterialType != lastMaterial.MaterialType) || resetAllRenderstates)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	}
@@ -253,7 +253,7 @@ public:
 
 		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		Driver->getBridgeCalls()->setBlend(true);
-		
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
@@ -306,7 +306,7 @@ public:
 
 		Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		Driver->getBridgeCalls()->setBlend(true);
-		
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates
 			|| material.MaterialTypeParam != lastMaterial.MaterialTypeParam )
 		{
@@ -600,7 +600,7 @@ public:
 
 		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		Driver->getBridgeCalls()->setBlend(true);
-		
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))

@@ -41,7 +41,7 @@ COGLES1Texture::COGLES1Texture(IImage* origImage, const io::path& name, COGLES1D
 	#ifdef _DEBUG
 	setDebugName("COGLES1Texture");
 	#endif
-    
+
 #ifndef GL_BGRA
 	// whoa, pretty badly implemented extension...
 	if (Driver->FeatureAvailable[COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888] ||
@@ -112,7 +112,7 @@ COGLES1Texture::~COGLES1Texture()
 			Driver->CurrentTexture[i] = 0;
 		}
 
-	// Remove this texture from active materials as well	
+	// Remove this texture from active materials as well
 
 	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 	{
