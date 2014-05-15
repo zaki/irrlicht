@@ -243,29 +243,15 @@ void COGLES1Driver::createMaterialRenderers()
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(this));
 
 	// add normal map renderers
-	s32 tmp = 0;
-	video::IMaterialRenderer* renderer = 0;
 // TODO ogl-es
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
-//	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
-//	renderer->drop();
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
-//	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
-//	renderer->drop();
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
-//	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
-//	renderer->drop();
 
 	// add parallax map renderers
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
-//	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
-//	renderer->drop();
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
-//	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
-//	renderer->drop();
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
-//	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
-//	renderer->drop();
 
 	// add basic 1 texture blending
 	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_ONETEXTURE_BLEND(this));
@@ -2344,6 +2330,8 @@ void COGLES1Driver::assignHardwareLight(u32 lightIndex)
 		glLightf(lidx, GL_SPOT_EXPONENT, 0.0f);
 		glLightf(lidx, GL_SPOT_CUTOFF, 180.0f);
 	break;
+	case video::ELT_COUNT:
+		return;
 	}
 
 	// set diffuse color
