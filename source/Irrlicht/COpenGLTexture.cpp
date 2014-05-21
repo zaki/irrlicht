@@ -97,6 +97,8 @@ COpenGLTexture::~COpenGLTexture()
 		glDeleteTextures(1, &TextureName);
 	if (Image)
 		Image->drop();
+
+	Driver->getBridgeCalls()->resetTexture(this);
 }
 
 

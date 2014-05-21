@@ -5415,6 +5415,24 @@ void COpenGLCallBridge::setClientActiveTexture(GLenum texture)
 	}
 }
 
+void COpenGLCallBridge::resetTexture(const ITexture* texture)
+{
+	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+	{
+		if (Texture[i] == texture)
+		{
+			setActiveTexture(GL_TEXTURE0_ARB + i);
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			if (TextureFixedPipeline[i])
+				glDisable(GL_TEXTURE_2D);
+
+			Texture[i] = 0;
+		}
+	}
+}
+
 void COpenGLCallBridge::setTexture(GLuint stage, bool fixedPipeline)
 {
 	if (stage < MATERIAL_MAX_TEXTURES)
