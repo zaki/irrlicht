@@ -100,29 +100,6 @@ COGLES1Texture::COGLES1Texture(const io::path& name, COGLES1Driver* driver)
 //! destructor
 COGLES1Texture::~COGLES1Texture()
 {
-	// Remove this texture from current texture list as well
-
-	for (u32 i = 0; i < Driver->MaxSupportedTextures; ++i)
-		if (Driver->CurrentTexture[i] == this)
-		{
-			Driver->extGlActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glDisable(GL_TEXTURE_2D);
-
-			Driver->CurrentTexture[i] = 0;
-		}
-
-	// Remove this texture from active materials as well
-
-	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-	{
-		if (Driver->Material.TextureLayer[i].Texture == this)
-			Driver->Material.TextureLayer[i].Texture = 0;
-
-		if (Driver->LastMaterial.TextureLayer[i].Texture == this)
-			Driver->LastMaterial.TextureLayer[i].Texture = 0;
-	}
-
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
 	if (Image)
@@ -722,76 +699,81 @@ void COGLES1Texture::unbindRTT()
 
 #ifdef GL_OES_framebuffer_object
 // helper function for render to texture
-static bool checkFBOStatus(COGLES1Driver* Driver);
+static bool checkOGLES1FBOStatus(COGLES1Driver* Driver);
 #endif
 
 
 //! RTT ColorFrameBuffer constructor
 COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<u32>& size,
-                                const io::path& name,
-                                COGLES1Driver* driver, ECOLOR_FORMAT format)
+					const io::path& name, COGLES1Driver* driver,
+					ECOLOR_FORMAT format)
 	: COGLES1Texture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES1Texture_FBO");
 	#endif
 
-	ECOLOR_FORMAT col = getBestColorFormat(format);
-	switch (col)
-	{
-	case ECF_A8R8G8B8:
-#ifdef GL_OES_rgb8_rgba8
-		if (driver->queryOpenGLFeature(video::COGLES1ExtensionHandler::IRR_OES_rgb8_rgba8))
-			InternalFormat = GL_RGBA8_OES;
-		else
-#endif
-		InternalFormat = GL_RGB5_A1_OES;
-		break;
-	case ECF_R8G8B8:
-#ifdef GL_OES_rgb8_rgba8
-		if (driver->queryOpenGLFeature(video::COGLES1ExtensionHandler::IRR_OES_rgb8_rgba8))
-			InternalFormat = GL_RGB8_OES;
-		else
-#endif
-		InternalFormat = GL_RGB565_OES;
-		break;
-	case ECF_A1R5G5B5:
-		InternalFormat = GL_RGB5_A1_OES;
-		break;
-	case ECF_R5G6B5:
-		InternalFormat = GL_RGB565_OES;
-		break;
-	default:
-		break;
-	}
-	PixelFormat = GL_RGBA;
-	PixelType = GL_UNSIGNED_BYTE;
 	ImageSize = size;
+	TextureSize = size;
 	HasMipMaps = false;
 	IsRenderTarget = true;
+	ColorFormat = getBestColorFormat(format);
+
+	switch (ColorFormat)
+	{
+	case ECF_A8R8G8B8:
+		InternalFormat = GL_RGBA;
+		PixelFormat = GL_RGBA;
+		PixelType = GL_UNSIGNED_BYTE;
+		break;
+	case ECF_R8G8B8:
+		InternalFormat = GL_RGB;
+		PixelFormat = GL_RGB;
+		PixelType = GL_UNSIGNED_BYTE;
+		break;
+		break;
+	case ECF_A1R5G5B5:
+		InternalFormat = GL_RGBA;
+		PixelFormat = GL_RGBA;
+		PixelType = GL_UNSIGNED_SHORT_5_5_5_1;
+		break;
+		break;
+	case ECF_R5G6B5:
+		InternalFormat = GL_RGB;
+		PixelFormat = GL_RGB;
+		PixelType = GL_UNSIGNED_SHORT_5_6_5;
+		break;
+	default:
+		os::Printer::log( "color format not handled", ELL_WARNING );
+		break;
+	}
 
 #ifdef GL_OES_framebuffer_object
 	// generate frame buffer
 	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_OES, ColorFrameBuffer);
+	bindRTT();
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
+    glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
-		ImageSize.Height, 0, PixelFormat, PixelType, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);           
+	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
+
+#ifdef _DEBUG
+	Driver->testGLError();
+#endif
 
 	// attach color texture to frame buffer
-	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_OES,
-						GL_COLOR_ATTACHMENT0_OES,
-						GL_TEXTURE_2D,
-						TextureName,
-						0);
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, TextureName, 0);
+#ifdef _DEBUG
+	checkOGLES1FBOStatus(Driver);
 #endif
+
+	glBindTexture(GL_TEXTURE_2D, TextureName);
 	unbindRTT();
+#endif
 }
 
 
@@ -801,8 +783,10 @@ COGLES1FBOTexture::~COGLES1FBOTexture()
 	if (DepthTexture)
 		if (DepthTexture->drop())
 			Driver->removeDepthTexture(DepthTexture);
+#ifdef GL_OES_framebuffer_object
 	if (ColorFrameBuffer)
 		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
+#endif
 }
 
 
@@ -840,7 +824,7 @@ COGLES1FBODepthTexture::COGLES1FBODepthTexture(
 		const io::path& name,
 		COGLES1Driver* driver,
 		bool useStencil)
-	: COGLES1FBOTexture(size, name, driver), DepthRenderBuffer(0),
+	: COGLES1Texture(name, driver), DepthRenderBuffer(0),
 	StencilRenderBuffer(0), UseStencil(useStencil)
 {
 #ifdef _DEBUG
@@ -848,56 +832,73 @@ COGLES1FBODepthTexture::COGLES1FBODepthTexture(
 #endif
 
 	ImageSize = size;
-#ifdef GL_OES_depth24
-	InternalFormat = GL_DEPTH_COMPONENT24_OES;
-#elif defined(GL_OES_depth32)
-	InternalFormat = GL_DEPTH_COMPONENT32_OES;
-#else
-	InternalFormat = GL_DEPTH_COMPONENT16_OES;
-#endif
-
+	TextureSize = size;
+	InternalFormat = GL_RGBA;
 	PixelFormat = GL_RGBA;
 	PixelType = GL_UNSIGNED_BYTE;
 	HasMipMaps = false;
 
-	if (useStencil)
+#if defined(GL_OES_framebuffer_object)
+	GLenum internalFormatDepth = GL_DEPTH_COMPONENT16_OES;
+
+#if defined(GL_OES_depth24)
+	if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_depth24))
+		internalFormatDepth = GL_DEPTH_COMPONENT24_OES;
+#endif
+
+	bool stencilSupported = true;
+	GLenum internalFormatStencil = 0;
+
+#if defined(GL_OES_packed_depth_stencil)
+	if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_packed_depth_stencil))
+		internalFormatStencil = GL_DEPTH24_STENCIL8_OES;
+	else
+#endif
+#if defined(GL_OES_stencil8)
+	if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_stencil8))
+		internalFormatStencil = GL_OES_stencil8;
+	else
+#endif
+#if defined(GL_OES_stencil4)
+	if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_stencil4))
+		internalFormatStencil = GL_OES_stencil4;
+	else
+#endif
+#if defined(GL_OES_stencil1)
+	if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_stencil1))
+		internalFormatStencil = GL_OES_stencil1;
+	else
+#endif
+		stencilSupported = false;
+
+	if (useStencil && stencilSupported)
 	{
-#ifdef GL_OES_packed_depth_stencil
-		glGenTextures(1, &DepthRenderBuffer);
-		glBindTexture(GL_TEXTURE_2D, DepthRenderBuffer);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		Driver->extGlGenRenderbuffers(1, &DepthRenderBuffer);
+		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, DepthRenderBuffer);
+#if defined(GL_OES_packed_depth_stencil)
 		if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_packed_depth_stencil))
 		{
-			// generate packed depth stencil texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL_OES, ImageSize.Width,
-				ImageSize.Height, 0, GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES, 0);
+			// generate packed depth stencil buffer
+			Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES, internalFormatStencil, ImageSize.Width, ImageSize.Height);
 			StencilRenderBuffer = DepthRenderBuffer; // stencil is packed with depth
-			return;
 		}
+		else // generate separate stencil and depth textures
 #endif
-#if defined(GL_OES_framebuffer_object) && (defined(GL_OES_stencil1) || defined(GL_OES_stencil4) || defined(GL_OES_stencil8))
-		// generate stencil buffer
-		Driver->extGlGenRenderbuffers(1, &StencilRenderBuffer);
-		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, StencilRenderBuffer);
-		Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES,
-#if defined(GL_OES_stencil8)
-				GL_STENCIL_INDEX8_OES,
-#elif defined(GL_OES_stencil4)
-				GL_STENCIL_INDEX4_OES,
-#elif defined(GL_OES_stencil1)
-				GL_STENCIL_INDEX1_OES,
-#endif
-				ImageSize.Width, ImageSize.Height);
-#endif
+		{
+			Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES, internalFormatDepth, ImageSize.Width, ImageSize.Height);
+
+			Driver->extGlGenRenderbuffers(1, &StencilRenderBuffer);
+			Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, StencilRenderBuffer);
+			Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES, internalFormatStencil, ImageSize.Width, ImageSize.Height);
+		}
 	}
-#ifdef GL_OES_framebuffer_object
-	// generate depth buffer
-	Driver->extGlGenRenderbuffers(1, &DepthRenderBuffer);
-	Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, DepthRenderBuffer);
-	Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES,
-			InternalFormat, ImageSize.Width, ImageSize.Height);
+	else
+	{
+		// generate depth buffer
+		Driver->extGlGenRenderbuffers(1, &DepthRenderBuffer);
+		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, DepthRenderBuffer);
+		Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES, internalFormatDepth, ImageSize.Width, ImageSize.Height);
+	}
 #endif
 }
 
@@ -905,54 +906,45 @@ COGLES1FBODepthTexture::COGLES1FBODepthTexture(
 //! destructor
 COGLES1FBODepthTexture::~COGLES1FBODepthTexture()
 {
-	if (DepthRenderBuffer && UseStencil)
-		glDeleteTextures(1, &DepthRenderBuffer);
-	else
+#ifdef GL_OES_framebuffer_object
+	if (DepthRenderBuffer)
 		Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
+
 	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
-		glDeleteTextures(1, &StencilRenderBuffer);
+		Driver->extGlDeleteRenderbuffers(1, &StencilRenderBuffer);
+#endif
 }
 
 
 //combine depth texture and rtt
-void COGLES1FBODepthTexture::attach(ITexture* renderTex)
+bool COGLES1FBODepthTexture::attach(ITexture* renderTex)
 {
-	if (!renderTex)
-		return;
-	video::COGLES1FBOTexture* rtt = static_cast<video::COGLES1FBOTexture*>(renderTex);
-	rtt->bindRTT();
 #ifdef GL_OES_framebuffer_object
-	if (UseStencil)
-	{
-		// attach stencil texture to stencil buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_OES,
-						GL_STENCIL_ATTACHMENT_OES,
-						GL_TEXTURE_2D,
-						StencilRenderBuffer,
-						0);
+	if (!renderTex)
+		return false;
+	COGLES1FBOTexture* rtt = static_cast<COGLES1FBOTexture*>(renderTex);
+	rtt->bindRTT();
 
-		// attach depth texture to depth buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_OES,
-						GL_DEPTH_ATTACHMENT_OES,
-						GL_TEXTURE_2D,
-						DepthRenderBuffer,
-						0);
-	}
-	else
-	{
-		// attach depth renderbuffer to depth buffer
-		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_OES,
-						GL_DEPTH_ATTACHMENT_OES,
-						GL_RENDERBUFFER_OES,
-						DepthRenderBuffer);
-	}
+	// attach stencil texture to stencil buffer
+	if (UseStencil)
+		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_OES, GL_STENCIL_ATTACHMENT_OES, GL_RENDERBUFFER_OES, StencilRenderBuffer);
+
+	// attach depth renderbuffer to depth buffer
+	Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, DepthRenderBuffer);
+
 	// check the status
-	if (!checkFBOStatus(Driver))
+	if (!checkOGLES1FBOStatus(Driver))
+	{
 		os::Printer::log("FBO incomplete");
-#endif
+		return false;
+	}
 	rtt->DepthTexture=this;
 	grab(); // grab the depth buffer, not the RTT
 	rtt->unbindRTT();
+	return true;
+#else
+	return false;
+#endif
 }
 
 
@@ -969,7 +961,7 @@ void COGLES1FBODepthTexture::unbindRTT()
 
 
 #ifdef GL_OES_framebuffer_object
-bool checkFBOStatus(COGLES1Driver* Driver)
+bool checkOGLES1FBOStatus(COGLES1Driver* Driver)
 {
 	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_OES);
 

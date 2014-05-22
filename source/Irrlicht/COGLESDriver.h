@@ -284,6 +284,8 @@ namespace video
 		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
 		void removeDepthTexture(ITexture* texture);
 
+		void removeTexture(ITexture* texture);
+
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
@@ -291,6 +293,73 @@ namespace video
 		COGLES1CallBridge* getBridgeCalls() const;
 
 	private:
+
+		class STextureStageCache
+		{
+		public:
+			STextureStageCache()
+			{
+				for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+					CurrentTexture[i] = 0;
+			}
+
+			~STextureStageCache()
+			{
+				clear();
+			}
+
+			void set(u32 stage, const ITexture* tex)
+			{
+				if (stage < MATERIAL_MAX_TEXTURES)
+				{
+					const ITexture* oldTexture = CurrentTexture[stage];
+
+					if (tex)
+						tex->grab();
+
+					CurrentTexture[stage] = tex;
+
+					if (oldTexture)
+						oldTexture->drop();
+				}
+			}
+
+			const ITexture* operator[](int stage) const
+			{
+				if ((u32)stage < MATERIAL_MAX_TEXTURES)
+					return CurrentTexture[stage];
+				else
+					return 0;
+			}
+
+			void remove(ITexture* tex)
+			{
+				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
+				{
+					if (CurrentTexture[i] == tex)
+					{
+						tex->drop();
+						CurrentTexture[i] = 0;
+					}
+				}
+			}
+
+			void clear()
+			{
+				for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+				{
+					if (CurrentTexture[i])
+					{
+						CurrentTexture[i]->drop();
+						CurrentTexture[i] = 0;
+					}
+				}
+			}
+
+		private:
+			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		};
+
 		void uploadClipPlane(u32 index);
 
 		//! inits the opengl-es driver
@@ -346,7 +415,7 @@ namespace video
 
 		SMaterial Material, LastMaterial;
 		COGLES1Texture* RenderTargetTexture;
-		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		STextureStageCache CurrentTexture;
 		core::array<ITexture*> DepthTextures;
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;

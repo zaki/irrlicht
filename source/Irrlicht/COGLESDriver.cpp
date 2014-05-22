@@ -96,6 +96,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 COGLES1Driver::~COGLES1Driver()
 {
 	RequestedLights.clear();
+	CurrentTexture.clear();
 	deleteMaterialRenders();
 	deleteAllTextures();
 
@@ -140,9 +141,8 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	vendorName = glGetString(GL_VENDOR);
 	os::Printer::log(vendorName.c_str(), ELL_INFORMATION);
 
-	u32 i;
-	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		CurrentTexture[i]=0;
+	CurrentTexture.clear();
+
 	// load extensions
 	initExtensions(this, stencilBuffer);
 
@@ -171,6 +171,8 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 
 	UserClipPlane.reallocate(MaxUserClipPlanes);
 	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
+
+	u32 i = 0;
 	for (i=0; i<MaxUserClipPlanes; ++i)
 	{
 		UserClipPlane.push_back(core::plane3df());
@@ -1502,7 +1504,7 @@ bool COGLES1Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	if (MultiTextureExtension)
 		extGlActiveTexture(GL_TEXTURE0 + stage);
 
-	CurrentTexture[stage]=texture;
+	CurrentTexture.set(stage,texture);
 
 	if (!texture)
 	{
@@ -1514,6 +1516,7 @@ bool COGLES1Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	{
 		if (texture->getDriverType() != EDT_OGLES1)
 		{
+			CurrentTexture.set(stage, 0);
 			glDisable(GL_TEXTURE_2D);
 			os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
 			return false;
@@ -2785,14 +2788,25 @@ ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& si
 		rtt = new COGLES1FBOTexture(size, name, this, format);
 		if (rtt)
 		{
+			bool success = false;
 			addTexture(rtt);
+
 			ITexture* tex = createDepthTexture(rtt);
 			if (tex)
 			{
-				static_cast<video::COGLES1FBODepthTexture*>(tex)->attach(rtt);
+				success = static_cast<video::COGLES1FBODepthTexture*>(tex)->attach(rtt);
+				if (!success)
+				{
+					removeDepthTexture(tex);
+				}
 				tex->drop();
 			}
 			rtt->drop();
+			if (!success)
+			{
+				removeTexture(rtt);
+				rtt=0;
+			}
 		}
 	}
 	else
@@ -3018,6 +3032,16 @@ void COGLES1Driver::removeDepthTexture(ITexture* texture)
 			return;
 		}
 	}
+}
+
+
+void COGLES1Driver::removeTexture(ITexture* texture)
+{
+	if (!texture)
+		return;
+
+	CNullDriver::removeTexture(texture);
+	CurrentTexture.remove(texture);
 }
 
 

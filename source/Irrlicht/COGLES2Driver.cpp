@@ -109,6 +109,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 COGLES2Driver::~COGLES2Driver()
 {
 	RequestedLights.clear();
+	CurrentTexture.clear();
 	deleteMaterialRenders();
 	delete MaterialRenderer2D;
 	deleteAllTextures();
@@ -154,9 +155,8 @@ COGLES2Driver::~COGLES2Driver()
 		vendorName = glGetString(GL_VENDOR);
 		os::Printer::log(vendorName.c_str(), ELL_INFORMATION);
 
-		u32 i;
-		for (i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-			CurrentTexture[i] = 0;
+		CurrentTexture.clear();
+
 		// load extensions
 		initExtensions(this, stencilBuffer);
 
@@ -1496,13 +1496,13 @@ bool COGLES2Driver::endScene()
 		if (CurrentTexture[stage]==texture)
 			return true;
 
-		CurrentTexture[stage] = texture;
+		CurrentTexture.set(stage,texture);
 
 		if (!texture)
 			return true;
 		else if (texture->getDriverType() != EDT_OGLES2)
 		{
-			CurrentTexture[stage] = 0;
+			CurrentTexture.set(stage, 0);
 			os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
 			return false;
 		}
@@ -2631,6 +2631,15 @@ bool COGLES2Driver::endScene()
 		}
 	}
 
+	void COGLES2Driver::removeTexture(ITexture* texture)
+	{
+		if (!texture)
+			return;
+
+		CNullDriver::removeTexture(texture);
+		CurrentTexture.remove(texture);
+	}
+
 	void COGLES2Driver::deleteFramebuffers(s32 n, const u32 *framebuffers)
 	{
 		glDeleteFramebuffers(n, framebuffers);
@@ -2888,6 +2897,21 @@ bool COGLES2Driver::endScene()
 		{
 			glUseProgram(program);
 			Program = program;
+		}
+	}
+
+	void COGLES2CallBridge::resetTexture(const ITexture* texture)
+	{
+		for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+		{
+			if (Texture[i] == texture)
+			{
+				setActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				Texture[i] = 0;
+				TextureType[i] = GL_TEXTURE_2D;
+			}
 		}
 	}
 

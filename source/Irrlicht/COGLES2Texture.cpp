@@ -40,7 +40,7 @@ namespace video
 //! constructor for usual textures
 COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mipmapData, COGLES2Driver* driver)
 	: ITexture(name, ETT_2D), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
-	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
+	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
@@ -95,7 +95,7 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* negXImage, IImage* posYImage,
 	IImage* negYImage, IImage* posZImage, IImage* negZImage, COGLES2Driver* driver)
 		: ITexture(name, ETT_CUBE), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
-		TextureName(0), TextureType(GL_TEXTURE_CUBE_MAP), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
+		TextureName(0), TextureType(GL_TEXTURE_CUBE_MAP), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 		PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), IsRenderTarget(false), IsCompressed(false),
 		AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true)
 {
@@ -175,7 +175,7 @@ COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* 
 //! constructor for basic setup (only for derived classes)
 COGLES2Texture::COGLES2Texture(const io::path& name, COGLES2Driver* driver)
 	: ITexture(name, ETT_2D), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
-	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
+	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true)
@@ -189,31 +189,12 @@ COGLES2Texture::COGLES2Texture(const io::path& name, COGLES2Driver* driver)
 //! destructor
 COGLES2Texture::~COGLES2Texture()
 {
-	// Remove this texture from current texture list as well
-
-	for (u32 i = 0; i < Driver->MaxSupportedTextures; ++i)
-		if (Driver->CurrentTexture[i] == this)
-		{
-			Driver->setActiveTexture(i, 0);
-			Driver->getBridgeCalls()->setTexture(i, TextureType);
-			Driver->CurrentTexture[i] = 0;
-		}
-
-	// Remove this texture from active materials as well	
-
-	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-	{
-		if (Driver->Material.TextureLayer[i].Texture == this)
-			Driver->Material.TextureLayer[i].Texture = 0;
-
-		if (Driver->LastMaterial.TextureLayer[i].Texture == this)
-			Driver->LastMaterial.TextureLayer[i].Texture = 0;
-	}
-
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
 	for (u32 i = 0; i < Image.size(); ++i)
 		Image[i]->drop();
+
+	Driver->getBridgeCalls()->resetTexture(this);
 }
 
 
@@ -1009,7 +990,7 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
 
 #ifdef _DEBUG
-	driver->testGLError();
+	Driver->testGLError();
 #endif
 
 	// attach color texture to frame buffer
@@ -1018,10 +999,10 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 	checkOGLES2FBOStatus(Driver);
 #endif
 
-	unbindRTT();
-
 	Driver->setActiveTexture(0, 0);
 	Driver->getBridgeCalls()->setTexture(0, TextureType);
+
+	unbindRTT();
 }
 
 
