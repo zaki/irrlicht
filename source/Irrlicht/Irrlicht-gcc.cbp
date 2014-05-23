@@ -683,6 +683,8 @@
 		<Unit filename="CFileList.h" />
 		<Unit filename="CFileSystem.cpp" />
 		<Unit filename="CFileSystem.h" />
+		<Unit filename="CGLXManager.cpp" />
+		<Unit filename="CGLXManager.h" />
 		<Unit filename="CGUIButton.cpp" />
 		<Unit filename="CGUIButton.h" />
 		<Unit filename="CGUICheckBox.cpp" />
