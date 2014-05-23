@@ -10,6 +10,8 @@
 #include "dimension2d.h"
 #include "ILogger.h"
 #include "position2d.h"
+#include "path.h"
+#include "IrrCompileConfig.h"
 
 namespace irr
 {
@@ -48,7 +50,14 @@ namespace irr
 			DriverMultithreaded(false),
 			UsePerformanceTimer(true),
 			SDK_version_do_not_use(IRRLICHT_SDK_VERSION),
-			PrivateData(0)
+			PrivateData(0),
+	#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
+			OGLES2ShaderPath("")
+	#elif defined(_IRR_ANDROID_PLATFORM_)
+			OGLES2ShaderPath("media/Shaders/")
+	#else
+			OGLES2ShaderPath("../../media/Shaders/")
+	#endif
 		{
 		}
 
@@ -81,6 +90,7 @@ namespace irr
 			DisplayAdapter = other.DisplayAdapter;
 			UsePerformanceTimer = other.UsePerformanceTimer;
 			PrivateData = other.PrivateData;
+			OGLES2ShaderPath = other.OGLES2ShaderPath;
 			return *this;
 		}
 
@@ -295,12 +305,17 @@ namespace irr
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.
 		This is needed for sdk version checks. */
 		const c8* const SDK_version_do_not_use;
-		
+
 		//! Define some private data storage.
 		/** Used when platform devices need access to OS specific data structures etc.
 		This is only used for Android at th emoment in order to access the native
 		Java RE. */
 		void *PrivateData;
+
+		//! Set the path where default-shaders to simulate the fixed-function pipeline can be found.
+		/** This is about the shaders which can be found in media/Shaders by default. It's only necessary
+		to set when using OGL-ES 2.0 */
+		irr::io::path OGLES2ShaderPath;
 	};
 
 

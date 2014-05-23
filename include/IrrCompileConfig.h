@@ -249,15 +249,6 @@ define out. */
 #ifdef NO_IRR_COMPILE_WITH_OGLES2_
 #undef _IRR_COMPILE_WITH_OGLES2_
 #endif
-#ifndef IRR_OGLES2_SHADER_PATH
-#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
-#define IRR_OGLES2_SHADER_PATH ""
-#elif defined(_IRR_ANDROID_PLATFORM_)
-#define IRR_OGLES2_SHADER_PATH "media/Shaders/"
-#else
-#define IRR_OGLES2_SHADER_PATH "../../media/Shaders/"
-#endif
-#endif
 #if defined(_IRR_COMPILE_WITH_OGLES2_) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
 #define _IRR_COMPILE_WITH_EGL_MANAGER_
 #endif

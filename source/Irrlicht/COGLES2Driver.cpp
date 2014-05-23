@@ -45,7 +45,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 #endif
             ) : CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
-	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
+	Transformation3DChanged(true), AntiAlias(params.AntiAlias), OGLES2ShaderPath(params.OGLES2ShaderPath),
 	RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8), BridgeCalls(0)
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
     , ContextManager(contextManager)
@@ -215,219 +215,127 @@ COGLES2Driver::~COGLES2Driver()
 		return true;
 	}
 
+	void COGLES2Driver::loadShaderData(const io::path& vertexShaderName, const io::path& fragmentShaderName, c8** vertexShaderData, c8** fragmentShaderData)
+	{
+		io::path vsPath(OGLES2ShaderPath);
+		vsPath += vertexShaderName;
+
+		io::path fsPath(OGLES2ShaderPath);
+		fsPath += fragmentShaderName;
+
+		*vertexShaderData = 0;
+		*fragmentShaderData = 0;
+
+		io::IReadFile* vsFile = FileSystem->createAndOpenFile(vsPath);
+		if ( !vsFile )
+		{
+			core::stringw warning(L"Warning: Missing shader files needed to simulate fixed function materials:\n");
+			warning += core::stringw(vsPath) + L"\n";
+			warning += L"Shaderpath can be changed in SIrrCreationParamters::OGLES2ShaderPath";
+			os::Printer::log(warning.c_str(), ELL_WARNING);
+			return;
+		}
+
+		io::IReadFile* fsFile = FileSystem->createAndOpenFile(fsPath);
+		if ( !fsFile )
+		{
+			core::stringw warning(L"Warning: Missing shader files needed to simulate fixed function materials:\n");
+			warning += core::stringw(fsPath) + L"\n";
+			warning += L"Shaderpath can be changed in SIrrCreationParamters::OGLES2ShaderPath";
+			os::Printer::log(warning.c_str(), ELL_WARNING);
+			return;
+		}
+
+		long size = vsFile->getSize();
+		if (size)
+		{
+			*vertexShaderData = new c8[size+1];
+			vsFile->read(*vertexShaderData, size);
+			(*vertexShaderData)[size] = 0;
+		}
+
+		size = fsFile->getSize();
+		if (size)
+		{
+			// if both handles are the same we must reset the file
+			if (fsFile == vsFile)
+				fsFile->seek(0);
+
+			*fragmentShaderData = new c8[size+1];
+			fsFile->read(*fragmentShaderData, size);
+			(*fragmentShaderData)[size] = 0;
+		}
+
+		vsFile->drop();
+		fsFile->drop();
+	}
 
 	void COGLES2Driver::createMaterialRenderers()
 	{
 		// Load shaders from files
 
 		// Fixed pipeline.
-
-		core::stringc FPVSPath = IRR_OGLES2_SHADER_PATH;
-		FPVSPath += "COGLES2FixedPipeline.vsh";
-
-		core::stringc FPFSPath = IRR_OGLES2_SHADER_PATH;
-		FPFSPath += "COGLES2FixedPipeline.fsh";
-
-		io::IReadFile* FPVSFile = FileSystem->createAndOpenFile(FPVSPath);
-		io::IReadFile* FPFSFile = FileSystem->createAndOpenFile(FPFSPath);
-
-		c8* FPVSData = 0;
-		c8* FPFSData = 0;
-
-		long Size = FPVSFile->getSize();
-
-		if (Size)
-		{
-			FPVSData = new c8[Size+1];
-			FPVSFile->read(FPVSData, Size);
-			FPVSData[Size] = 0;
-		}
-
-		Size = FPFSFile->getSize();
-
-		if (Size)
-		{
-			// if both handles are the same we must reset the file
-			if (FPFSFile == FPVSFile)
-				FPFSFile->seek(0);
-
-			FPFSData = new c8[Size+1];
-			FPFSFile->read(FPFSData, Size);
-			FPFSData[Size] = 0;
-		}
-
-		if (FPVSFile)
-			FPVSFile->drop();
-		if (FPFSFile)
-			FPFSFile->drop();
+		c8* vsFixedPipelineData = 0;
+		c8* fsFixedPipelineData = 0;
+		loadShaderData(io::path("COGLES2FixedPipeline.vsh"), io::path("COGLES2FixedPipeline.fsh"), &vsFixedPipelineData, &fsFixedPipelineData);
 
 		// Create fixed pipeline materials.
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SOLID_2_LAYER, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_ADD, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M2, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_M4, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M2, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_LIGHTMAP_LIGHTING_M4, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_DETAIL_MAP, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_SPHERE_MAP, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_REFLECTION_2_LAYER, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ADD_COLOR, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_ALPHA_CHANNEL_REF, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_VERTEX_ALPHA, this));
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_TRANSPARENT_REFLECTION_2_LAYER, this));
-		// do not remove FPFSData here, we need it later on for
-		// ONE_TEXTURE_BLEND material
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_SOLID_2_LAYER, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_LIGHTMAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_LIGHTMAP_ADD, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_LIGHTMAP_M2, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_LIGHTMAP_M4, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_LIGHTMAP_LIGHTING, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_LIGHTMAP_LIGHTING_M2, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_LIGHTMAP_LIGHTING_M4, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_DETAIL_MAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_SPHERE_MAP, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_REFLECTION_2_LAYER, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_TRANSPARENT_ALPHA_CHANNEL, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_TRANSPARENT_ALPHA_CHANNEL_REF, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_TRANSPARENT_VERTEX_ALPHA, this));
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_TRANSPARENT_REFLECTION_2_LAYER, this));
+		// do not remove fsFixedPipelineData here, we need it later on for ONE_TEXTURE_BLEND material
 
 		// Normal Mapping.
+		c8* vsNormalMapData = 0;
+		c8* fsNormalMapData = 0;
+		loadShaderData(io::path("COGLES2NormalMap.vsh"), io::path("COGLES2NormalMap.fsh"), &vsNormalMapData, &fsNormalMapData);
 
-		core::stringc NMVSPath = IRR_OGLES2_SHADER_PATH;
-		NMVSPath += "COGLES2NormalMap.vsh";
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(vsNormalMapData, fsNormalMapData, EMT_NORMAL_MAP_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(vsNormalMapData, fsNormalMapData, EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(vsNormalMapData, fsNormalMapData, EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA, this));
 
-		core::stringc NMFSPath = IRR_OGLES2_SHADER_PATH;
-		NMFSPath += "COGLES2NormalMap.fsh";
-
-		io::IReadFile* NMVSFile = FileSystem->createAndOpenFile(NMVSPath);
-		io::IReadFile* NMFSFile = FileSystem->createAndOpenFile(NMFSPath);
-
-		c8* NMVSData = 0;
-		c8* NMFSData = 0;
-
-		Size = NMVSFile->getSize();
-
-		if (Size)
-		{
-			NMVSData = new c8[Size+1];
-			NMVSFile->read(NMVSData, Size);
-			NMVSData[Size] = 0;
-		}
-
-		Size = NMFSFile->getSize();
-
-		if (Size)
-		{
-			// if both handles are the same we must reset the file
-			if (NMFSFile == NMVSFile)
-				NMFSFile->seek(0);
-
-			NMFSData = new c8[Size+1];
-			NMFSFile->read(NMFSData, Size);
-			NMFSData[Size] = 0;
-		}
-
-		if (NMVSFile)
-			NMVSFile->drop();
-		if (NMFSFile)
-			NMFSFile->drop();
-
-		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_SOLID, this));
-		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR, this));
-		addAndDropMaterialRenderer(new COGLES2NormalMapRenderer(NMVSData, NMFSData, EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA, this));
-
-		delete NMVSData;
-		delete NMFSData;
+		delete[] vsNormalMapData;
+		delete[] fsNormalMapData;
 
 		// Parallax Mapping.
+		c8* vsParallaxMapData = 0;
+		c8* fsParallaxMapData = 0;
+		loadShaderData(io::path("COGLES2ParallaxMap.vsh"), io::path("COGLES2ParallaxMap.fsh"), &vsParallaxMapData, &fsParallaxMapData);
 
-		core::stringc PMVSPath = IRR_OGLES2_SHADER_PATH;
-		PMVSPath += "COGLES2ParallaxMap.vsh";
+		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(vsParallaxMapData, fsParallaxMapData, EMT_PARALLAX_MAP_SOLID, this));
+		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(vsParallaxMapData, fsParallaxMapData, EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR, this));
+		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(vsParallaxMapData, fsParallaxMapData, EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA, this));
 
-		core::stringc PMFSPath = IRR_OGLES2_SHADER_PATH;
-		PMFSPath += "COGLES2ParallaxMap.fsh";
+		delete[] vsParallaxMapData;
+		delete[] fsParallaxMapData;
 
-		io::IReadFile* PMVSFile = FileSystem->createAndOpenFile(FPVSPath);
-		io::IReadFile* PMFSFile = FileSystem->createAndOpenFile(FPFSPath);
+		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(vsFixedPipelineData, fsFixedPipelineData, EMT_ONETEXTURE_BLEND, this));
 
-		c8* PMVSData = 0;
-		c8* PMFSData = 0;
-
-		Size = PMVSFile->getSize();
-
-		if (Size)
-		{
-			PMVSData = new c8[Size+1];
-			PMVSFile->read(PMVSData, Size);
-			PMVSData[Size] = 0;
-		}
-
-		Size = PMFSFile->getSize();
-
-		if (Size)
-		{
-			// if both handles are the same we must reset the file
-			if (PMFSFile == PMVSFile)
-				PMFSFile->seek(0);
-
-			PMFSData = new c8[Size+1];
-			PMFSFile->read(PMFSData, Size);
-			PMFSData[Size] = 0;
-		}
-
-		if (PMVSFile)
-			PMVSFile->drop();
-		if (PMFSFile)
-			PMFSFile->drop();
-
-		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_SOLID, this));
-		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR, this));
-		addAndDropMaterialRenderer(new COGLES2ParallaxMapRenderer(PMVSData, PMFSData, EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA, this));
-
-		addAndDropMaterialRenderer(new COGLES2FixedPipelineRenderer(FPVSData, FPFSData, EMT_ONETEXTURE_BLEND, this));
-
-		delete PMVSData;
-		delete PMFSData;
-		// now also remove the fixed pipeline data
-		delete FPVSData;
-		delete FPFSData;
+		delete[] vsFixedPipelineData;
+		delete[] fsFixedPipelineData;
 
 		// Create 2D material renderer.
+		c8* vs2DData = 0;
+		c8* fs2DData = 0;
+		loadShaderData(io::path("COGLES2Renderer2D.vsh"), io::path("COGLES2Renderer2D.fsh"), &vs2DData, &fs2DData);
 
-		core::stringc R2DVSPath = IRR_OGLES2_SHADER_PATH;
-		R2DVSPath += "COGLES2Renderer2D.vsh";
-
-		core::stringc R2DFSPath = IRR_OGLES2_SHADER_PATH;
-		R2DFSPath += "COGLES2Renderer2D.fsh";
-
-		io::IReadFile* R2DVSFile = FileSystem->createAndOpenFile(R2DVSPath);
-		io::IReadFile* R2DFSFile = FileSystem->createAndOpenFile(R2DFSPath);
-
-		c8* R2DVSData = 0;
-		c8* R2DFSData = 0;
-
-		Size = R2DVSFile->getSize();
-
-		if (Size)
-		{
-			R2DVSData = new c8[Size+1];
-			R2DVSFile->read(R2DVSData, Size);
-			R2DVSData[Size] = 0;
-		}
-
-		Size = R2DFSFile->getSize();
-
-		if (Size)
-		{
-			// if both handles are the same we must reset the file
-			if (R2DFSFile == PMVSFile)
-				R2DFSFile->seek(0);
-
-			R2DFSData = new c8[Size+1];
-			R2DFSFile->read(R2DFSData, Size);
-			R2DFSData[Size] = 0;
-		}
-
-		if (R2DVSFile)
-			R2DVSFile->drop();
-
-		if (R2DFSFile)
-			R2DFSFile->drop();
-
-		MaterialRenderer2D = new COGLES2Renderer2D(R2DVSData, R2DFSData, this);
-		delete R2DVSData;
-		delete R2DFSData;
+		MaterialRenderer2D = new COGLES2Renderer2D(vs2DData, fs2DData, this);
+		delete[] vs2DData;
+		delete[] fs2DData;
 	}
 
 
