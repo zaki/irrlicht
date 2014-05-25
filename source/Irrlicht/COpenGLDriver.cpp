@@ -1107,8 +1107,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID);
 
-	//copy data to graphics card
-	glGetError(); // clear error storage
+	// copy data to graphics card
 	if (!newBuffer)
 		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, vbuf);
 	else
@@ -1125,7 +1124,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return (glGetError() == GL_NO_ERROR);
+	return (!testGLError());
 #else
 	return false;
 #endif
@@ -1182,8 +1181,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
 
-	//copy data to graphics card
-	glGetError(); // clear error storage
+	// copy data to graphics card
 	if (!newBuffer)
 		extGlBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexCount * indexSize, indices);
 	else
@@ -1200,7 +1198,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return (glGetError() == GL_NO_ERROR);
+	return (!testGLError());
 #else
 	return false;
 #endif
