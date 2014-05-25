@@ -895,6 +895,9 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 	GLbitfield mask = 0;
 	if (backBuffer)
 	{
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		Material.ColorMask = ECP_ALL;
+
 		const f32 inv = 1.0f / 255.0f;
 		glClearColor(color.getRed() * inv, color.getGreen() * inv,
 				color.getBlue() * inv, color.getAlpha() * inv);
@@ -905,8 +908,8 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 	if (zBuffer)
 	{
 		BridgeCalls->setDepthMask(true);
+		Material.ZWriteEnable = true;
 
-		LastMaterial.ZWriteEnable=true;
  		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
