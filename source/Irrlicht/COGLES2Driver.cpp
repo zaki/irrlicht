@@ -367,6 +367,9 @@ bool COGLES2Driver::endScene()
 
 		if (backBuffer)
 		{
+			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+			Material.ColorMask = ECP_ALL;
+
 			const f32 inv = 1.0f / 255.0f;
 			glClearColor(color.getRed() * inv, color.getGreen() * inv,
 						color.getBlue() * inv, color.getAlpha() * inv);
@@ -377,12 +380,13 @@ bool COGLES2Driver::endScene()
 		if (zBuffer)
 		{
 			glDepthMask(GL_TRUE);
-			LastMaterial.ZWriteEnable = true;
+			Material.ZWriteEnable = true;
+
 			mask |= GL_DEPTH_BUFFER_BIT;
 		}
 
 		glClear(mask);
-		testGLError();
+
 		return true;
 	}
 
@@ -2378,6 +2382,9 @@ bool COGLES2Driver::endScene()
 		GLbitfield mask = 0;
 		if (clearBackBuffer)
 		{
+			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+			Material.ColorMask = ECP_ALL;
+
 			const f32 inv = 1.0f / 255.0f;
 			glClearColor(color.getRed() * inv, color.getGreen() * inv,
 						color.getBlue() * inv, color.getAlpha() * inv);
@@ -2387,12 +2394,12 @@ bool COGLES2Driver::endScene()
 		if (clearZBuffer)
 		{
 			glDepthMask(GL_TRUE);
-			LastMaterial.ZWriteEnable = true;
+			Material.ZWriteEnable = true;
+
 			mask |= GL_DEPTH_BUFFER_BIT;
 		}
 
 		glClear(mask);
-		testGLError();
 
 		return true;
 	}
@@ -2411,14 +2418,10 @@ bool COGLES2Driver::endScene()
 	//! Clears the ZBuffer.
 	void COGLES2Driver::clearZBuffer()
 	{
-		GLboolean enabled = GL_TRUE;
-		glGetBooleanv(GL_DEPTH_WRITEMASK, &enabled);
-
 		glDepthMask(GL_TRUE);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		Material.ZWriteEnable = true;
 
-		glDepthMask(enabled);
-		testGLError();
+		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
 
