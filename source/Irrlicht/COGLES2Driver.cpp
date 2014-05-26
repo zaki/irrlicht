@@ -1746,7 +1746,7 @@ bool COGLES2Driver::endScene()
 		}
 
 		// Blend Factor
-		if (material.BlendFactor != 0.f)
+		if (IR(material.BlendFactor) & 0xFFFFFFFF)
 		{
 		    E_BLEND_FACTOR srcRGBFact = EBF_ZERO;
 		    E_BLEND_FACTOR dstRGBFact = EBF_ZERO;
