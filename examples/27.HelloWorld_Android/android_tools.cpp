@@ -117,6 +117,7 @@ bool getDisplayMetrics(android_app* app, SDisplayMetrics & metrics)
 void setSoftInputVisibility(android_app* app, bool visible)
 {
 	// NOTE: Unfortunately ANativeActivity_showSoftInput from the NDK does not work and Google does not care.
+	// This is based on the solution from @Ratamovic from here: http://stackoverflow.com/questions/5864790/how-to-show-the-soft-keyboard-on-native-activity
 	
 	if (!app || !app->activity || !app->activity->vm )
 		return;
