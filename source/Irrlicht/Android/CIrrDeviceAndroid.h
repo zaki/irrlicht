@@ -53,16 +53,18 @@ namespace irr
 		virtual void restoreWindow();
 
 		virtual core::position2di getWindowPosition();
-		
+
 		virtual E_DEVICE_TYPE getType() const;
 
 	private:
-		
+
 		static void handleAndroidCommand(android_app* app, int32_t cmd);
 
 		static s32 handleInput(android_app* app, AInputEvent* event);
 
 		void createDriver();
+
+		void createKeyMap();
 
 		video::SExposedVideoData& getExposedVideoData();
 
@@ -73,8 +75,12 @@ namespace irr
 		bool Focused;
 		bool Initialized;
 		bool Paused;
+	
+		JNIEnv* JNIEnvAttachedToVM;
 
 		video::SExposedVideoData ExposedVideoData;
+
+		core::array<EKEY_CODE> KeyMap;
 	};
 
 } // end namespace irr

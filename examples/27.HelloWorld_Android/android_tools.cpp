@@ -2,6 +2,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "android_tools.h"
+#include <android/log.h>	// for the occasional debugging, style: __android_log_print(ANDROID_LOG_VERBOSE, "Irrlicht", "%s\n", "We do log");
 
 namespace irr 
 {
@@ -111,6 +112,70 @@ bool getDisplayMetrics(android_app* app, SDisplayMetrics & metrics)
 	
 	app->activity->vm->DetachCurrentThread();
 	return true;
+}
+
+void setSoftInputVisibility(android_app* app, bool visible)
+{
+	// NOTE: Unfortunately ANativeActivity_showSoftInput from the NDK does not work and Google does not care.
+	
+	if (!app || !app->activity || !app->activity->vm )
+		return;
+	
+	JNIEnv* jni = 0;
+	app->activity->vm->AttachCurrentThread(&jni, NULL);
+	if (!jni )
+		return;
+	
+	// get all the classes we want to access from the JVM (could be cached)
+	jclass classNativeActivity = jni->FindClass("android/app/NativeActivity");
+	jclass classInputMethodManager = jni->FindClass("android/view/inputmethod/InputMethodManager");
+	jclass classWindow = jni->FindClass("android/view/Window");
+	jclass classView = jni->FindClass("android/view/View");
+	
+	if (classNativeActivity && classInputMethodManager && classWindow)
+	{
+		// Get all the methods we want to access from the JVM classes (could be cached)
+		jmethodID mid_getSystemService = jni->GetMethodID(classNativeActivity, "getSystemService","(Ljava/lang/String;)Ljava/lang/Object;");
+		jmethodID mid_showSoftInput = jni->GetMethodID(classInputMethodManager, "showSoftInput", "(Landroid/view/View;I)Z");						
+		jmethodID mid_hideSoftInput = jni->GetMethodID(classInputMethodManager, "hideSoftInputFromWindow", "(Landroid/os/IBinder;I)Z");
+		jmethodID mid_getWindow = jni->GetMethodID(classNativeActivity, "getWindow", "()Landroid/view/Window;");
+		jmethodID mid_getWindowToken = jni->GetMethodID(classView, "getWindowToken", "()Landroid/os/IBinder;");
+		jmethodID mid_getDecorView = jni->GetMethodID(classWindow, "getDecorView", "()Landroid/view/View;");
+
+		if ( mid_getSystemService && mid_showSoftInput && mid_hideSoftInput && mid_getWindow && mid_getDecorView && mid_getWindowToken )
+		{
+			jstring paramInput = jni->NewStringUTF("input_method"); 
+			jobject objInputMethodManager = jni->CallObjectMethod(app->activity->clazz, mid_getSystemService, paramInput); 
+			jni->DeleteLocalRef(paramInput); 
+
+			jobject objWindow = jni->CallObjectMethod(app->activity->clazz, mid_getWindow);
+			
+			if ( visible && objInputMethodManager && objWindow)
+			{
+				jobject objDecorView = jni->CallObjectMethod(objWindow, mid_getDecorView);				
+				if ( objDecorView )
+				{
+					int showFlags = 0;
+					jni->CallObjectMethod(objInputMethodManager, mid_showSoftInput, objDecorView, showFlags);
+				}
+			}
+			else if ( !visible && objInputMethodManager && objWindow )
+			{
+				jobject objDecorView = jni->CallObjectMethod(objWindow, mid_getDecorView);				
+				if ( objDecorView )
+				{
+					jobject objBinder = jni->CallObjectMethod(objDecorView, mid_getWindowToken);							
+					if ( objBinder )
+					{
+						int hideFlags = 0;
+						jni->CallBooleanMethod(objInputMethodManager, mid_hideSoftInput, objBinder, hideFlags);
+					}
+				}
+			}
+		}
+	}
+	
+	app->activity->vm->DetachCurrentThread();	
 }
 
 } // namespace android

@@ -23,9 +23,10 @@ struct SDisplayMetrics
 	irr::f32 ydpi; 
 };
 
-// Access SDisplayMetrics
+//! Access SDisplayMetrics
 extern bool getDisplayMetrics(android_app* app, SDisplayMetrics & metrics);
 
+extern void setSoftInputVisibility(android_app* app, bool visible);
 }
 }
 

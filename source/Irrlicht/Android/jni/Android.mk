@@ -20,6 +20,7 @@ LOCAL_SRC_FILES := \
 					Android/CIrrDeviceAndroid.cpp \
 					Android/CAndroidAssetReader.cpp \
 					Android/CAndroidAssetFileArchive.cpp \
+					Android/CKeyEventWrapper.cpp \
 					aesGladman/aescrypt.cpp \
 					aesGladman/aeskey.cpp \
 					aesGladman/aestab.cpp \

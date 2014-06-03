@@ -8,6 +8,7 @@
 
 #include <android_native_app_glue.h>
 #include "android_tools.h"
+#include "android/window.h"
 
 using namespace irr;
 using namespace core;
@@ -31,7 +32,7 @@ enum GUI_IDS
 class MyEventReceiver : public IEventReceiver
 {
 public:
-	MyEventReceiver(IrrlichtDevice *device ) : Device(device), SpriteToMove(0), TouchID(-1)
+	MyEventReceiver(IrrlichtDevice *device, android_app* app ) : Device(device), AndroidApp(app), SpriteToMove(0), TouchID(-1)
 	{
 	}
 
@@ -39,6 +40,21 @@ public:
 	{
 		if (event.EventType == EET_TOUCH_INPUT_EVENT)
 		{
+			/*
+				For now we fake mouse-events. Touch-events will be handled inside Irrlicht in the future, but until
+				that is implemented you can use this workaround to get a GUI which works at least for simple elements like
+				buttons. That workaround does ignore multi-touch events - if you need several buttons pressed at the same
+				time you have to handle that yourself.
+			*/
+			SEvent fakeMouseEvent;
+			fakeMouseEvent.EventType = EET_MOUSE_INPUT_EVENT;
+			fakeMouseEvent.MouseInput.X = event.TouchInput.X;
+			fakeMouseEvent.MouseInput.Y = event.TouchInput.Y;
+			fakeMouseEvent.MouseInput.Shift = false;
+			fakeMouseEvent.MouseInput.Control = false;
+			fakeMouseEvent.MouseInput.ButtonStates = 0;
+			fakeMouseEvent.MouseInput.Event = EMIE_COUNT;
+			
 			switch (event.TouchInput.Event)
 			{
 				case ETIE_PRESSED_DOWN:
@@ -46,6 +62,8 @@ public:
 					// We only work with the first for now.
 					if ( TouchID == -1 )
 					{
+						fakeMouseEvent.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
+						
 						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
 						IGUIElement * logo = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_IRR_LOGO );
 						if ( logo && logo->isPointInside (touchPoint) )
@@ -59,21 +77,61 @@ public:
 					break;
 				}
 				case ETIE_MOVED:
-					if ( SpriteToMove && TouchID == event.TouchInput.ID )
+					if ( TouchID == event.TouchInput.ID )
 					{
-						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
-						MoveSprite(touchPoint);
+						fakeMouseEvent.MouseInput.Event = EMIE_MOUSE_MOVED;
+						fakeMouseEvent.MouseInput.ButtonStates = EMBSM_LEFT;
+
+						if ( SpriteToMove && TouchID == event.TouchInput.ID )
+						{
+							
+							position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
+							MoveSprite(touchPoint);
+						}
 					}
 					break;
 				case ETIE_LEFT_UP:
-					if ( SpriteToMove && TouchID == event.TouchInput.ID )
+					if ( TouchID == event.TouchInput.ID )
 					{
-						TouchID = -1;
-						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
-						MoveSprite(touchPoint);
-						SpriteToMove = 0;						
+						fakeMouseEvent.MouseInput.Event = EMIE_LMOUSE_LEFT_UP;
+						
+						if ( SpriteToMove )
+						{
+							TouchID = -1;
+							position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
+							MoveSprite(touchPoint);
+							SpriteToMove = 0;						
+						}
 					}
 					break;
+				default:
+					break;
+			}
+			
+			if ( fakeMouseEvent.MouseInput.Event != EMIE_COUNT )
+			{
+				Device->postEventFromUser(fakeMouseEvent);
+			}
+		}
+		else if ( event.EventType == EET_GUI_EVENT )
+		{
+			/* 
+				Show and hide the soft input keyboard when an edit-box get's the focus.
+			*/
+			switch(event.GUIEvent.EventType)
+			{
+                case EGET_ELEMENT_FOCUS_LOST:
+					if ( event.GUIEvent.Caller->getType() == EGUIET_EDIT_BOX )
+					{
+						android::setSoftInputVisibility(AndroidApp, false);
+					}
+                break;					
+                case EGET_ELEMENT_FOCUSED:					
+					if ( event.GUIEvent.Caller->getType() == EGUIET_EDIT_BOX )
+					{
+						android::setSoftInputVisibility(AndroidApp, true);
+					}
+                break;
 				default:
 					break;
 			}
@@ -90,6 +148,7 @@ public:
 	
 private:
 	IrrlichtDevice * Device;
+	android_app* AndroidApp;
 	irr::gui::IGUIElement * SpriteToMove;
 	irr::core::rect<s32> SpriteStartRect;
 	irr::core::position2d<irr::s32> TouchStartPos;
@@ -108,7 +167,7 @@ IrrlichtDevice *startup(android_app* app)
 {
 	// create device
 	SIrrlichtCreationParameters param;
-//	param.DriverType = EDT_OGLES1;				// android:glEsVersion in AndroidManifest.xml should be "0x00010000"
+//	param.DriverType = EDT_OGLES1;				// android:glEsVersion in AndroidManifest.xml should be "0x00010000" (requesting 0x00020000 will also guarantee that ES1 works)
 	param.DriverType = EDT_OGLES2;				// android:glEsVersion in AndroidManifest.xml should be "0x00020000"
 	param.WindowSize = dimension2d<u32>(0,0);	// using 0,0 it will automatically set it to the maximal size
 	param.PrivateData = app;
@@ -128,7 +187,7 @@ IrrlichtDevice *startup(android_app* app)
 
 /* Mainloop.
 */
-int run ( IrrlichtDevice *device )
+int mainloop( IrrlichtDevice *device )
 {
 	IGUIElement *stat = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_INFO_FPS );
 	
@@ -161,8 +220,10 @@ int example_helloworld(android_app* app)
 	IrrlichtDevice *device = startup(app);
 	if (device == 0)
        	return 1;
+	
+//	ANativeActivity_setWindowFlags(app->activity, AWINDOW_FLAG_FULLSCREEN, 0);
 
-	MyEventReceiver receiver(device);
+	MyEventReceiver receiver(device, app);
 	device->setEventReceiver(&receiver);
 	
 	IVideoDriver* driver = device->getVideoDriver();
@@ -228,10 +289,11 @@ int example_helloworld(android_app* app)
 	// A field to show some text. Comment out stat->setText in run() if you want to see the dpi instead of the fps.
 	IGUIStaticText *text = guienv->addStaticText(stringw(displayMetrics.xdpi).c_str(),
 		rect<s32>(15,15,300,60), false, false, 0, GUI_INFO_FPS );
+	guienv->addEditBox( L"", rect<s32>(15,70,300,100));
 
 	// add irrlicht logo
 	IGUIImage * logo = guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
-					core::position2d<s32>(10,40), true, 0, GUI_IRR_LOGO);
+					core::position2d<s32>(10,110), true, 0, GUI_IRR_LOGO);
 	s32 minLogoWidth = windowWidth/3;
 	if ( logo && logo->getRelativePosition().getWidth() < minLogoWidth )
 	{
@@ -280,7 +342,7 @@ int example_helloworld(android_app* app)
 	/*
 		Mainloop. Application never quit themself in Android. The OS is responsible for that.
 	*/
-	run(device);
+	mainloop(device);
 	
 	/* Cleanup */
 	device->setEventReceiver(0);

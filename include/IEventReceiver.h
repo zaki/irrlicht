@@ -348,6 +348,10 @@ struct SEvent
 
 		//! Key which has been pressed or released
 		EKEY_CODE Key;
+		
+		//! System dependent code. Only set for systems which are described below, otherwise undefined.
+		//! Android: int32_t with physical key as returned by AKeyEvent_getKeyCode
+		u32 SystemKeyCode;
 
 		//! If not true, then the key was left up
 		bool PressedDown:1;
