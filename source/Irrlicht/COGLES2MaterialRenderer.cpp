@@ -188,8 +188,6 @@ void COGLES2MaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 
 		bridgeCalls->setBlend(true);
 	}
-	else
-		bridgeCalls->setBlend(false);
 
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
