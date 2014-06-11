@@ -129,6 +129,12 @@ public:
                 case EGET_ELEMENT_FOCUSED:					
 					if ( event.GUIEvent.Caller->getType() == EGUIET_EDIT_BOX )
 					{
+						// TODO: couldn't figure out yet how to send existing text to Android.
+						// Wouldn't matter much - except that Android does for some unknown reason
+						// absorb all delete-key events when it thinks there is no text.
+						// So it's not possible to remove text which is already in the editbox.
+						static_cast<gui::IGUIEditBox*>(event.GUIEvent.Caller)->setText(L"");
+
 						android::setSoftInputVisibility(AndroidApp, true);
 					}
                 break;
