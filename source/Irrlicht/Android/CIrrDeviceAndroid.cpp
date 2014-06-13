@@ -249,6 +249,11 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 		break;
 		case APP_CMD_DESTROY:
 			os::Printer::log("Android command APP_CMD_DESTROY", ELL_DEBUG);
+			if ( device->JNIEnvAttachedToVM )
+			{
+				device->JNIEnvAttachedToVM  = 0;
+				device->Android->activity->vm->DetachCurrentThread();
+			}
 			device->Initialized = false;
 			break;
 		case APP_CMD_PAUSE:
@@ -378,7 +383,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 			else
 				event.KeyInput.Shift = false;
 			event.KeyInput.Control = false;
-			
+
 			// Having memory allocations + going through JNI for each key-press is pretty bad (slow). 
 			// So we do it only for those keys which are likely text-characters and avoid it for all other keys.
 			// So it's fast for keys like game controller input and special keys. And text keys are typically 
@@ -391,27 +396,28 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 				// It means JNIEnvAttachedToVM will never get detached as I don't know a safe way where to do that 
 				// (we could attach & detach each time, but that would probably be slow)
 				// Also - it has to be each time as it get's invalid when the application mode changes.
-				if ( device->Android && device->Android->activity && device->Android->activity->vm )
+				if ( device->Initialized && device->Android && device->Android->activity && device->Android->activity->vm )
 				{
 					JavaVMAttachArgs attachArgs;
 					attachArgs.version = JNI_VERSION_1_6;
 					attachArgs.name = 0;
 					attachArgs.group = NULL;
 
-					// Not a big problem calling it each time - it's a no-op when the thread already is attached
+					// Not a big problem calling it each time - it's a no-op when the thread already is attached.
+					// And we have to do that as someone else can have detached the thread in the meantime.
 					jint result = device->Android->activity->vm->AttachCurrentThread(&device->JNIEnvAttachedToVM, &attachArgs);
 					if(result == JNI_ERR)
 					{
 						os::Printer::log("AttachCurrentThread for the JNI environment failed.", ELL_WARNING);
 						device->JNIEnvAttachedToVM = 0;
 					}
-				}				
 				
-				if ( device->JNIEnvAttachedToVM )
-				{
-					jni::CKeyEventWrapper * keyEventWrapper = new jni::CKeyEventWrapper(device->JNIEnvAttachedToVM, keyAction, keyCode);
-					event.KeyInput.Char = keyEventWrapper->getUnicodeChar(keyMetaState);
-					delete keyEventWrapper;
+					if ( device->JNIEnvAttachedToVM )
+					{
+						jni::CKeyEventWrapper * keyEventWrapper = new jni::CKeyEventWrapper(device->JNIEnvAttachedToVM, keyAction, keyCode);
+						event.KeyInput.Char = keyEventWrapper->getUnicodeChar(keyMetaState);
+						delete keyEventWrapper;
+					}
 				}
 			}
 			else
@@ -419,7 +425,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 				// os::Printer::log("keyCode: ", core::stringc(keyCode).c_str(), ELL_DEBUG);
 				event.KeyInput.Char = 0;
 			}
-			
+		
 			device->postEventFromUser(event);
 		}
 		break;
