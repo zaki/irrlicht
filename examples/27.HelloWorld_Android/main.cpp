@@ -21,7 +21,8 @@ using namespace gui;
 enum GUI_IDS
 {
 	GUI_INFO_FPS,
-	GUI_IRR_LOGO
+	GUI_IRR_LOGO,
+	GUI_LIST_COMMANDS
 };
 
 
@@ -32,8 +33,14 @@ enum GUI_IDS
 class MyEventReceiver : public IEventReceiver
 {
 public:
-	MyEventReceiver(IrrlichtDevice *device, android_app* app ) : Device(device), AndroidApp(app), SpriteToMove(0), TouchID(-1)
+	MyEventReceiver(android_app* app ) 
+	: Device(0), AndroidApp(app), SpriteToMove(0), TouchID(-1)
 	{
+	}
+	
+	void Init(IrrlichtDevice *device)
+	{
+		Device = device;
 	}
 
 	virtual bool OnEvent(const SEvent& event)
@@ -63,15 +70,18 @@ public:
 					if ( TouchID == -1 )
 					{
 						fakeMouseEvent.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
-						
-						position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
-						IGUIElement * logo = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_IRR_LOGO );
-						if ( logo && logo->isPointInside (touchPoint) )
+				
+						if (Device)
 						{
-							TouchID = event.TouchInput.ID;
-							SpriteToMove = logo;
-							SpriteStartRect =  SpriteToMove->getRelativePosition();
-							TouchStartPos = touchPoint;
+							position2d<s32> touchPoint(event.TouchInput.X, event.TouchInput.Y);
+							IGUIElement * logo = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_IRR_LOGO );
+							if ( logo && logo->isPointInside (touchPoint) )
+							{
+								TouchID = event.TouchInput.ID;
+								SpriteToMove = logo;
+								SpriteStartRect =  SpriteToMove->getRelativePosition();
+								TouchStartPos = touchPoint;
+							}
 						}
 					}
 					break;
@@ -108,7 +118,7 @@ public:
 					break;
 			}
 			
-			if ( fakeMouseEvent.MouseInput.Event != EMIE_COUNT )
+			if ( fakeMouseEvent.MouseInput.Event != EMIE_COUNT && Device )
 			{
 				Device->postEventFromUser(fakeMouseEvent);
 			}
@@ -142,7 +152,68 @@ public:
 					break;
 			}
 		}
-
+		else if ( event.EventType == EET_SYSTEM_EVENT && event.SystemEvent.EventType == ESET_ANDROID_CMD )
+		{
+			static u32 count = 0;
+			core::stringw cmd(count++);
+			cmd += L".";
+			
+			switch ( event.SystemEvent.AndroidCmd.Cmd )
+			{
+				case APP_CMD_INPUT_CHANGED:
+					cmd += L"INPUT_CHANGED"; 
+					break;
+				case APP_CMD_INIT_WINDOW:
+					cmd += L"INIT_WINDOW"; 
+					break;
+				case APP_CMD_TERM_WINDOW:
+					cmd += L"TERM_WINDOW"; 
+					break;
+				case APP_CMD_WINDOW_RESIZED:
+					cmd += L"WINDOW_RESIZED"; 
+					break;
+				case APP_CMD_WINDOW_REDRAW_NEEDED:
+					cmd += L"WINDOW_REDRAW_NEEDED"; 
+					break;
+				case APP_CMD_CONTENT_RECT_CHANGED:
+					cmd += L"CONTENT_RECT_CHANGED"; 
+					break;
+				case APP_CMD_GAINED_FOCUS:
+					cmd += L"GAINED_FOCUS"; 
+					break;
+				case APP_CMD_LOST_FOCUS:
+					cmd += L"LOST_FOCUS"; 
+					break;
+				case APP_CMD_CONFIG_CHANGED:
+					cmd += L"CONFIG_CHANGED"; 
+					break;
+				case APP_CMD_LOW_MEMORY:
+					cmd += L"LOW_MEMORY"; 
+					break;
+				case APP_CMD_START:
+					cmd += L"START"; 
+					break;
+				case APP_CMD_RESUME:
+					cmd += L"RESUME"; 
+					break;
+				case APP_CMD_SAVE_STATE:
+					cmd += L"SAVE_STATE"; 
+					break;
+				case APP_CMD_PAUSE:
+					cmd += L"PAUSE"; 
+					break;
+				case APP_CMD_STOP:
+					cmd += L"STOP"; 
+					break;
+				case APP_CMD_DESTROY:
+					cmd += L"DESTROY"; 
+					break;
+			}
+			AndroidCommands.push_front(cmd);
+			if ( AndroidCommands.size() > 10 )
+				AndroidCommands.erase(AndroidCommands.size()-1);
+		}
+		
 		return false;
 	}
 	
@@ -152,13 +223,16 @@ public:
 		SpriteToMove->setRelativePosition(SpriteStartRect.UpperLeftCorner + move);
 	}
 	
+	const core::array<core::stringw>& GetAndroidCommands() const { return AndroidCommands; }
+	
 private:
 	IrrlichtDevice * Device;
 	android_app* AndroidApp;
-	irr::gui::IGUIElement * SpriteToMove;
-	irr::core::rect<s32> SpriteStartRect;
-	irr::core::position2d<irr::s32> TouchStartPos;
-	irr::s32 TouchID;
+	gui::IGUIElement * SpriteToMove;
+	core::rect<s32> SpriteStartRect;
+	core::position2d<irr::s32> TouchStartPos;
+	s32 TouchID;
+	core::array<core::stringw> AndroidCommands;
 };
 
 /*
@@ -169,7 +243,7 @@ private:
                corresponding shaders from the Irrlicht media/Shaders folder are
                copied to the application assets folder (done in the Makefile).
 */
-IrrlichtDevice *startup(android_app* app)
+IrrlichtDevice *startup(android_app* app, IEventReceiver * eventReceiver)
 {
 	// create device
 	SIrrlichtCreationParameters param;
@@ -180,6 +254,7 @@ IrrlichtDevice *startup(android_app* app)
 	param.Bits = 24;
 	param.ZBufferBits = 16;
 	param.AntiAlias  = 0;
+	param. EventReceiver = eventReceiver;
 
 	/* Logging is written to a file. So your application should disable all logging when you distribute your
        application or it can fill up that file over time.
@@ -196,6 +271,7 @@ IrrlichtDevice *startup(android_app* app)
 int mainloop( IrrlichtDevice *device )
 {
 	IGUIElement *stat = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_INFO_FPS );
+	IGUIListBox *listCommands = static_cast<IGUIListBox*>(device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_LIST_COMMANDS ));
 	
 	while(device->run())
 	{
@@ -212,6 +288,17 @@ int mainloop( IrrlichtDevice *device )
 				str += (s32)device->getVideoDriver()->getFPS();
 				stat->setText ( str.c_str() );
 			}
+			
+			if ( listCommands )
+			{
+				listCommands->clear();
+				MyEventReceiver * eventReceiver = static_cast<MyEventReceiver*>(device->getEventReceiver());
+				const core::array<core::stringw>& commands = eventReceiver->GetAndroidCommands();
+				for ( u32 i=0; i<commands.size(); ++i )
+				{
+					 listCommands->insertItem (0, commands[i].c_str(), 0);
+				}
+			}
 		}
 		device->yield(); // probably nicer to the battery
 	}
@@ -222,16 +309,17 @@ int mainloop( IrrlichtDevice *device )
 /* Main application code. */
 int example_helloworld(android_app* app)
 {
+	MyEventReceiver receiver(app);
+	
 	// create device
-	IrrlichtDevice *device = startup(app);
+	IrrlichtDevice *device = startup(app, &receiver);
 	if (device == 0)
        	return 1;
 	
+	receiver.Init(device);
+	
 //	ANativeActivity_setWindowFlags(app->activity, AWINDOW_FLAG_FULLSCREEN, 0);
 
-	MyEventReceiver receiver(device, app);
-	device->setEventReceiver(&receiver);
-	
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
@@ -296,10 +384,13 @@ int example_helloworld(android_app* app)
 	IGUIStaticText *text = guienv->addStaticText(stringw(displayMetrics.xdpi).c_str(),
 		rect<s32>(15,15,300,60), false, false, 0, GUI_INFO_FPS );
 	guienv->addEditBox( L"", rect<s32>(15,70,300,100));
+	
+	// A listbox which shows the android commands
+	guienv->addListBox(rect<s32>(15,110,300,460), 0, GUI_LIST_COMMANDS, true);
 
 	// add irrlicht logo
 	IGUIImage * logo = guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
-					core::position2d<s32>(10,110), true, 0, GUI_IRR_LOGO);
+					core::position2d<s32>(410,10), true, 0, GUI_IRR_LOGO);
 	s32 minLogoWidth = windowWidth/3;
 	if ( logo && logo->getRelativePosition().getWidth() < minLogoWidth )
 	{
@@ -346,7 +437,7 @@ int example_helloworld(android_app* app)
 	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 
 	/*
-		Mainloop. Application never quit themself in Android. The OS is responsible for that.
+		Mainloop. Applications usually never quit themself in Android. The OS is responsible for that.
 	*/
 	mainloop(device);
 	

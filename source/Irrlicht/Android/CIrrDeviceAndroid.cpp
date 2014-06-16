@@ -200,6 +200,13 @@ E_DEVICE_TYPE CIrrDeviceAndroid::getType() const
 void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 {
 	CIrrDeviceAndroid* device = (CIrrDeviceAndroid*)app->userData;
+	
+	SEvent event;
+	event.EventType = EET_SYSTEM_EVENT;
+	event.SystemEvent.EventType = ESET_ANDROID_CMD;
+	event.SystemEvent.AndroidCmd.Cmd = cmd;
+	if ( device->postEventFromUser(event) )
+		return;
 
 	switch (cmd)
 	{
