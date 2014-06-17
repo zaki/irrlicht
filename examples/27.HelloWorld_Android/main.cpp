@@ -36,6 +36,24 @@ public:
 	MyEventReceiver(android_app* app ) 
 	: Device(0), AndroidApp(app), SpriteToMove(0), TouchID(-1)
 	{
+		// Map to translate android commands into strings
+		// The APP_CMD_ enums come from android_native_app_glue.h from the Android NDK.
+		MapCmdToString[APP_CMD_INPUT_CHANGED]        = core::stringw(L"INPUT_CHANGED");
+		MapCmdToString[APP_CMD_INIT_WINDOW]          = core::stringw(L"INIT_WINDOW");
+		MapCmdToString[APP_CMD_TERM_WINDOW]          = core::stringw(L"TERM_WINDOW");
+		MapCmdToString[APP_CMD_WINDOW_RESIZED]       = core::stringw(L"WINDOW_RESIZED");
+		MapCmdToString[APP_CMD_WINDOW_REDRAW_NEEDED] = core::stringw(L"WINDOW_REDRAW_NEEDED");
+		MapCmdToString[APP_CMD_CONTENT_RECT_CHANGED] = core::stringw(L"CONTENT_RECT_CHANGED");
+		MapCmdToString[APP_CMD_GAINED_FOCUS]         = core::stringw(L"GAINED_FOCUS");
+		MapCmdToString[APP_CMD_LOST_FOCUS]           = core::stringw(L"LOST_FOCUS");
+		MapCmdToString[APP_CMD_CONFIG_CHANGED]       = core::stringw(L"CONFIG_CHANGED");
+		MapCmdToString[APP_CMD_LOW_MEMORY]           = core::stringw(L"LOW_MEMORY");
+		MapCmdToString[APP_CMD_START]                = core::stringw(L"START");
+		MapCmdToString[APP_CMD_RESUME]               = core::stringw(L"RESUME");
+		MapCmdToString[APP_CMD_SAVE_STATE]           = core::stringw(L"SAVE_STATE");
+		MapCmdToString[APP_CMD_PAUSE]                = core::stringw(L"PAUSE");
+		MapCmdToString[APP_CMD_STOP]                 = core::stringw(L"STOP");
+		MapCmdToString[APP_CMD_DESTROY]              = core::stringw(L"DESTROY");
 	}
 	
 	void Init(IrrlichtDevice *device)
@@ -152,66 +170,19 @@ public:
 					break;
 			}
 		}
+		/*
+			Catch native commands. Those can be useful if you need adddional handling which Irrlicht 
+			does not do internally. 
+		*/
 		else if ( event.EventType == EET_SYSTEM_EVENT && event.SystemEvent.EventType == ESET_ANDROID_CMD )
 		{
 			static u32 count = 0;
 			core::stringw cmd(count++);
 			cmd += L".";
-			
-			switch ( event.SystemEvent.AndroidCmd.Cmd )
-			{
-				case APP_CMD_INPUT_CHANGED:
-					cmd += L"INPUT_CHANGED"; 
-					break;
-				case APP_CMD_INIT_WINDOW:
-					cmd += L"INIT_WINDOW"; 
-					break;
-				case APP_CMD_TERM_WINDOW:
-					cmd += L"TERM_WINDOW"; 
-					break;
-				case APP_CMD_WINDOW_RESIZED:
-					cmd += L"WINDOW_RESIZED"; 
-					break;
-				case APP_CMD_WINDOW_REDRAW_NEEDED:
-					cmd += L"WINDOW_REDRAW_NEEDED"; 
-					break;
-				case APP_CMD_CONTENT_RECT_CHANGED:
-					cmd += L"CONTENT_RECT_CHANGED"; 
-					break;
-				case APP_CMD_GAINED_FOCUS:
-					cmd += L"GAINED_FOCUS"; 
-					break;
-				case APP_CMD_LOST_FOCUS:
-					cmd += L"LOST_FOCUS"; 
-					break;
-				case APP_CMD_CONFIG_CHANGED:
-					cmd += L"CONFIG_CHANGED"; 
-					break;
-				case APP_CMD_LOW_MEMORY:
-					cmd += L"LOW_MEMORY"; 
-					break;
-				case APP_CMD_START:
-					cmd += L"START"; 
-					break;
-				case APP_CMD_RESUME:
-					cmd += L"RESUME"; 
-					break;
-				case APP_CMD_SAVE_STATE:
-					cmd += L"SAVE_STATE"; 
-					break;
-				case APP_CMD_PAUSE:
-					cmd += L"PAUSE"; 
-					break;
-				case APP_CMD_STOP:
-					cmd += L"STOP"; 
-					break;
-				case APP_CMD_DESTROY:
-					cmd += L"DESTROY"; 
-					break;
-			}
-			AndroidCommands.push_front(cmd);
-			if ( AndroidCommands.size() > 10 )
-				AndroidCommands.erase(AndroidCommands.size()-1);
+			cmd += MapCmdToString[event.SystemEvent.AndroidCmd.Cmd];
+			AndroidCommands.push_back(cmd);
+			if ( AndroidCommands.size() > 12 )
+				AndroidCommands.erase(0);
 		}
 		
 		return false;
@@ -232,6 +203,7 @@ private:
 	core::rect<s32> SpriteStartRect;
 	core::position2d<irr::s32> TouchStartPos;
 	s32 TouchID;
+	core::map<s32, core::stringw> MapCmdToString;
 	core::array<core::stringw> AndroidCommands;
 };
 
@@ -273,22 +245,34 @@ int mainloop( IrrlichtDevice *device )
 	IGUIElement *stat = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_INFO_FPS );
 	IGUIListBox *listCommands = static_cast<IGUIListBox*>(device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_LIST_COMMANDS ));
 	
+	u32 loop = 0;	// loop is reset when the app is destroyed unlike runCounter
+	static u32 runCounter = 0;
+	static u32 drawCounter = 0;
+	
 	while(device->run())
 	{
 		if (device->isWindowActive())
 		{
-			device->getVideoDriver()->beginScene(true, true, SColor(0,100,100,100));
-			device->getSceneManager()->drawAll();
-			device->getGUIEnvironment()->drawAll();
-			device->getVideoDriver()->endScene ();
-
+			/*
+				Show FPS and some counters to show which parts of an app run 
+				in different app-lifecycle states.
+			*/
 			if ( stat )
 			{
-				stringw str = L"FPS: ";
+				stringw str = L"FPS:";
 				str += (s32)device->getVideoDriver()->getFPS();
+				str += L" r:";
+				str += runCounter;
+				str += L" d:";
+				str += drawCounter;
+				str += L" l:";
+				str += loop;
 				stat->setText ( str.c_str() );
 			}
 			
+			/*
+				Show last application commands
+			*/
 			if ( listCommands )
 			{
 				listCommands->clear();
@@ -296,11 +280,20 @@ int mainloop( IrrlichtDevice *device )
 				const core::array<core::stringw>& commands = eventReceiver->GetAndroidCommands();
 				for ( u32 i=0; i<commands.size(); ++i )
 				{
-					 listCommands->insertItem (0, commands[i].c_str(), 0);
+					 listCommands->insertItem (i, commands[i].c_str(), 0);
 				}
 			}
+
+			device->getVideoDriver()->beginScene(true, true, SColor(0,100,100,100));
+			device->getSceneManager()->drawAll();
+			device->getGUIEnvironment()->drawAll();
+			device->getVideoDriver()->endScene ();
+			
+			++drawCounter;			
 		}
 		device->yield(); // probably nicer to the battery
+		++runCounter;
+		++loop;
 	}
 
 	return 1;
@@ -379,18 +372,15 @@ int example_helloworld(android_app* app)
 		font = guienv->getFont(mediaPath + "bigfont.png");
 	if (font)
 		skin->setFont(font);
-	
+
 	// A field to show some text. Comment out stat->setText in run() if you want to see the dpi instead of the fps.
 	IGUIStaticText *text = guienv->addStaticText(stringw(displayMetrics.xdpi).c_str(),
-		rect<s32>(15,15,300,60), false, false, 0, GUI_INFO_FPS );
-	guienv->addEditBox( L"", rect<s32>(15,70,300,100));
+		rect<s32>(5,5,635,30), false, false, 0, GUI_INFO_FPS );
+	guienv->addEditBox( L"", rect<s32>(5,40,475,65));
 	
-	// A listbox which shows the android commands
-	guienv->addListBox(rect<s32>(15,110,300,460), 0, GUI_LIST_COMMANDS, true);
-
 	// add irrlicht logo
 	IGUIImage * logo = guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
-					core::position2d<s32>(410,10), true, 0, GUI_IRR_LOGO);
+					core::position2d<s32>(5,70), true, 0, GUI_IRR_LOGO);
 	s32 minLogoWidth = windowWidth/3;
 	if ( logo && logo->getRelativePosition().getWidth() < minLogoWidth )
 	{
@@ -403,7 +393,9 @@ int example_helloworld(android_app* app)
 		logoPos.LowerRightCorner.Y = logoPos.UpperLeftCorner.Y + (s32)((f32)logoPos.getHeight()*scale);
 		logo->setRelativePosition(logoPos);
 	}
-	
+
+	// A listbox which shows the android commands
+	guienv->addListBox(rect<s32>(5,160,300,580), 0, GUI_LIST_COMMANDS, true);
 
 	// Add a 3d model. Note that you might need to add light when using other models.
 	// A copy of that model must be inside the assets folder to be installed to Android.
