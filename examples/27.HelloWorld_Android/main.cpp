@@ -405,36 +405,22 @@ int example_helloworld(android_app* app)
 	}
 	
 
-	// Add a 3d model
-	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "sydney.md2");
+	// Add a 3d model. Note that you might need to add light when using other models.
+	// A copy of that model must be inside the assets folder to be installed to Android.
+	// In this example we do that copying in the Makefile jni/Android.mk 
+	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "dwarf.x");
 	if (!mesh)
 	{
 		device->drop();
        	return 1;
 	}
+	smgr->addAnimatedMeshSceneNode( mesh );
+
 
 	/*
-	To let the mesh look a little bit nicer, we change its material. We
-	disable lighting because we do not have a dynamic light in here, and
-	the mesh would be totally black otherwise. Then we set the frame loop,
-	such that the predefined STAND animation is used. And last, we apply a
-	texture to the mesh. Without it the mesh would be drawn using only a
-	color.
+	To look at the mesh, we place a camera.
 	*/
-	IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );	
-	if (node)
-	{
-		node->setMaterialFlag(EMF_LIGHTING, false);
-		node->setMD2Animation(scene::EMAT_STAND);
-		node->setMaterialTexture( 0, driver->getTexture(mediaPath + "sydney.bmp") );
-	}
-
-	/*
-	To look at the mesh, we place a camera into 3d space at the position
-	(0, 30, -40). The camera looks from there to (0,5,0), which is
-	approximately the place where our md2 model is.
-	*/
-	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
+	smgr->addCameraSceneNode(0, vector3df(15,40,-90), vector3df(0,30,0));
 
 	/*
 		Mainloop. Applications usually never quit themself in Android. The OS is responsible for that.
