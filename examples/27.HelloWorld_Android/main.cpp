@@ -22,7 +22,6 @@ enum GUI_IDS
 {
 	GUI_INFO_FPS,
 	GUI_IRR_LOGO,
-	GUI_LIST_COMMANDS
 };
 
 
@@ -171,17 +170,67 @@ private:
 	s32 TouchID;
 };
 
-/*
-	You have currently the choice between 2 drivers:
-	EDT_OGLES1 is basically a opengl fixed function pipeline.
-	EDT_OGLES2 is a shader pipeline. Irrlicht comes with shaders to simulate 
-               typical fixed function materials. For this to work the 
-               corresponding shaders from the Irrlicht media/Shaders folder are
-               copied to the application assets folder (done in the Makefile).
+/* Mainloop.
 */
-IrrlichtDevice *startup(android_app* app, IEventReceiver * eventReceiver)
+void mainloop( IrrlichtDevice *device, IGUIStaticText * infoText )
 {
-	// create device
+	u32 loop = 0;	// loop is reset when the app is destroyed unlike runCounter
+	static u32 runCounter = 0;	// static's seem to survive even an app-destroy message (not sure if that's guaranteed).
+	while(device->run())
+	{
+		/*
+			The window seems to be always active in this setup.
+			That's because when it's not active Android will stop the code from running.
+		*/
+		if (device->isWindowActive())
+		{
+			/*
+				Show FPS and some counters to show which parts of an app run 
+				in different app-lifecycle states.
+			*/
+			if ( infoText )
+			{
+				stringw str = L"FPS:";
+				str += (s32)device->getVideoDriver()->getFPS();
+				str += L" r:";
+				str += runCounter;
+				str += L" l:";
+				str += loop;
+				infoText->setText ( str.c_str() );
+			}
+			
+			device->getVideoDriver()->beginScene(true, true, SColor(0,100,100,100));
+			device->getSceneManager()->drawAll();
+			device->getGUIEnvironment()->drawAll();
+			device->getVideoDriver()->endScene ();
+		}
+		device->yield(); // probably nicer to the battery
+		++runCounter;
+		++loop;
+	}
+}
+
+/* Main application code. */
+void android_main(android_app* app)
+{
+	// Make sure glue isn't stripped.
+	app_dummy();
+	
+	/*
+		The receiver can already receive system events while createDeviceEx is called.
+		So we create it first.
+	*/
+	MyEventReceiver receiver(app);
+
+	/*
+		Create the device.
+		You have currently the choice between 2 drivers:
+		EDT_OGLES1 is basically a opengl fixed function pipeline.
+		EDT_OGLES2 is a shader pipeline. Irrlicht comes with shaders to simulate 
+				   typical fixed function materials. For this to work the 
+				   corresponding shaders from the Irrlicht media/Shaders folder are
+				   copied to the application assets folder (done in the Makefile).
+	*/
 	SIrrlichtCreationParameters param;
 //	param.DriverType = EDT_OGLES1;				// android:glEsVersion in AndroidManifest.xml should be "0x00010000" (requesting 0x00020000 will also guarantee that ES1 works)
 	param.DriverType = EDT_OGLES2;				// android:glEsVersion in AndroidManifest.xml should be "0x00020000"
@@ -190,7 +239,7 @@ IrrlichtDevice *startup(android_app* app, IEventReceiver * eventReceiver)
 	param.Bits = 24;
 	param.ZBufferBits = 16;
 	param.AntiAlias  = 0;
-	param. EventReceiver = eventReceiver;
+	param. EventReceiver = &receiver;
 
 	/* Logging is written to a file. So your application should disable all logging when you distribute your
        application or it can fill up that file over time.
@@ -199,64 +248,9 @@ IrrlichtDevice *startup(android_app* app, IEventReceiver * eventReceiver)
 	param.LoggingLevel = ELL_NONE;	
 #endif	
 	
-	return createDeviceEx(param);
-}
-
-/* Mainloop.
-*/
-int mainloop( IrrlichtDevice *device )
-{
-	IGUIElement *stat = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId ( GUI_INFO_FPS );
-	
-	u32 loop = 0;	// loop is reset when the app is destroyed unlike runCounter
-	static u32 runCounter = 0;
-	static u32 drawCounter = 0;
-	
-	while(device->run())
-	{
-		if (device->isWindowActive())
-		{
-			/*
-				Show FPS and some counters to show which parts of an app run 
-				in different app-lifecycle states.
-			*/
-			if ( stat )
-			{
-				stringw str = L"FPS:";
-				str += (s32)device->getVideoDriver()->getFPS();
-				str += L" r:";
-				str += runCounter;
-				str += L" d:";
-				str += drawCounter;
-				str += L" l:";
-				str += loop;
-				stat->setText ( str.c_str() );
-			}
-			
-			device->getVideoDriver()->beginScene(true, true, SColor(0,100,100,100));
-			device->getSceneManager()->drawAll();
-			device->getGUIEnvironment()->drawAll();
-			device->getVideoDriver()->endScene ();
-			
-			++drawCounter;			
-		}
-		device->yield(); // probably nicer to the battery
-		++runCounter;
-		++loop;
-	}
-
-	return 1;
-}
-
-/* Main application code. */
-int example_helloworld(android_app* app)
-{
-	MyEventReceiver receiver(app);
-	
-	// create device
-	IrrlichtDevice *device = startup(app, &receiver);
+	IrrlichtDevice *device = createDeviceEx(param);
 	if (device == 0)
-       	return 1;
+       	return;
 	
 	receiver.Init(device);
 	
@@ -343,14 +337,17 @@ int example_helloworld(android_app* app)
 		logo->setRelativePosition(logoPos);
 	}
 
-	// Add a 3d model. Note that you might need to add light when using other models.
-	// A copy of that model must be inside the assets folder to be installed to Android.
-	// In this example we do that copying in the Makefile jni/Android.mk 
+	/* 
+		Add a 3d model. Note that you might need to add light when using other models.
+		A copy of the model and it's textures must be inside the assets folder to be installed to Android.
+		In this example we do copy it to the assets folder in the Makefile jni/Android.mk 
+	*/
 	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "dwarf.x");
 	if (!mesh)
 	{
+		device->closeDevice();
 		device->drop();
-       	return 1;
+       	return;
 	}
 	smgr->addAnimatedMeshSceneNode( mesh );
 
@@ -363,22 +360,12 @@ int example_helloworld(android_app* app)
 	/*
 		Mainloop. Applications usually never quit themself in Android. The OS is responsible for that.
 	*/
-	mainloop(device);
+	mainloop(device, text);
 	
 	/* Cleanup */
 	device->setEventReceiver(0);
 	device->closeDevice();
 	device->drop();
-
-	return 0;
-}
-
-void android_main(android_app* app)
-{
-	// Make sure glue isn't stripped.
-	app_dummy();
-	
-	example_helloworld(app);
 }
 
 #endif	// defined(_IRR_ANDROID_PLATFORM_)
