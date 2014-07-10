@@ -1,9 +1,6 @@
-// Copyright (C) 2013 Patryk Nadrowski
-// Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
-// driver implemented by Amundis.
+// Copyright (C) 2014 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in Irrlicht.h
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OGLES2_
@@ -23,7 +20,6 @@ namespace video
 {
 
 
-//! Constructor
 COGLES2MaterialRenderer::COGLES2MaterialRenderer(COGLES2Driver* driver,
 		s32& outMaterialTypeNr,
 		const c8* vertexShaderProgram,
@@ -33,12 +29,12 @@ COGLES2MaterialRenderer::COGLES2MaterialRenderer(COGLES2Driver* driver,
 		s32 userData)
 	: Driver(driver), CallBack(callback), Alpha(false), Blending(false), FixedBlending(false), Program(0), UserData(userData)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("COGLES2MaterialRenderer");
-	#endif
+#endif
 
 	if (baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL ||
-		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF || baseMaterial == EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA ||
+		baseMaterial == EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA ||
 		baseMaterial == EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA)
 	{
 		Alpha = true;
@@ -58,8 +54,6 @@ COGLES2MaterialRenderer::COGLES2MaterialRenderer(COGLES2Driver* driver,
 }
 
 
-//! constructor only for use by derived classes who want to
-//! create a fall back material for example.
 COGLES2MaterialRenderer::COGLES2MaterialRenderer(COGLES2Driver* driver,
 					IShaderConstantSetCallBack* callback,
 					E_MATERIAL_TYPE baseMaterial, s32 userData)
@@ -84,7 +78,6 @@ COGLES2MaterialRenderer::COGLES2MaterialRenderer(COGLES2Driver* driver,
 }
 
 
-//! Destructor
 COGLES2MaterialRenderer::~COGLES2MaterialRenderer()
 {
 	if (CallBack)
@@ -137,7 +130,6 @@ void COGLES2MaterialRenderer::init(s32& outMaterialTypeNr,
 	if (!linkProgram())
 		return;
 
-	// register myself as new material
 	if (addMaterial)
 		outMaterialTypeNr = Driver->addMaterialRenderer(this);
 }
@@ -147,7 +139,6 @@ bool COGLES2MaterialRenderer::OnRender(IMaterialRendererServices* service, E_VER
 {
     Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
 
-	// call callback to set shader constants
 	if (CallBack && Program)
 		CallBack->OnSetConstants(this, UserData);
 
@@ -199,10 +190,15 @@ void COGLES2MaterialRenderer::OnUnsetMaterial()
 }
 
 
-//! Returns if the material is transparent.
 bool COGLES2MaterialRenderer::isTransparent() const
 {
 	return (Alpha || Blending || FixedBlending);
+}
+
+
+s32 COGLES2MaterialRenderer::getRenderCapability() const
+{
+	return 0;
 }
 
 
@@ -221,7 +217,7 @@ bool COGLES2MaterialRenderer::createShader(GLenum shaderType, const char* shader
 		if (status != GL_TRUE)
 		{
 			os::Printer::log("GLSL shader failed to compile", ELL_ERROR);
-			// check error message and log it
+
 			GLint maxLength=0;
 			GLint length;
 
@@ -259,7 +255,7 @@ bool COGLES2MaterialRenderer::linkProgram()
 		if (!status)
 		{
 			os::Printer::log("GLSL shader program failed to link", ELL_ERROR);
-			// check error message and log it
+
 			GLint maxLength=0;
 			GLsizei length;
 
@@ -276,17 +272,12 @@ bool COGLES2MaterialRenderer::linkProgram()
 			return false;
 		}
 
-		// get uniforms information
-
 		GLint num = 0;
 
 		glGetProgramiv(Program, GL_ACTIVE_UNIFORMS, &num);
 
 		if (num == 0)
-		{
-			// no uniforms
 			return true;
-		}
 
 		GLint maxlen = 0;
 
@@ -298,7 +289,7 @@ bool COGLES2MaterialRenderer::linkProgram()
 			return false;
 		}
 
-		// seems that some implementations use an extra null terminator
+		// seems that some implementations use an extra null terminator.
 		++maxlen;
 		c8 *buf = new c8[maxlen];
 
@@ -312,7 +303,19 @@ bool COGLES2MaterialRenderer::linkProgram()
 
 			GLint size;
 			glGetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLchar*>(buf));
-			ui.name = buf;
+
+            core::stringc name = "";
+
+			// array support, workaround for some bugged drivers.
+			for (s32 i = 0; i < maxlen; ++i)
+			{
+				if (buf[i] == '[' || buf[i] == '\0')
+					break;
+
+                name += buf[i];
+			}
+
+			ui.name = name;
 			ui.location = glGetUniformLocation(Program, buf);
 
 			UniformInfo.push_back(ui);
@@ -329,7 +332,6 @@ void COGLES2MaterialRenderer::setBasicRenderStates(const SMaterial& material,
 						const SMaterial& lastMaterial,
 						bool resetAllRenderstates)
 {
-	// forward
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
@@ -461,8 +463,9 @@ IVideoDriver* COGLES2MaterialRenderer::getVideoDriver()
 	return Driver;
 }
 
-} // end namespace video
-} // end namespace irr
+}
+}
 
 
 #endif
+

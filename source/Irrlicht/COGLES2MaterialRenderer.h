@@ -1,9 +1,6 @@
-// Copyright (C) 2013 Patryk Nadrowski
-// Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
-// driver implemented by Amundis.
+// Copyright (C) 2014 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in Irrlicht.h
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #ifndef __C_OGLES2_SL_MATERIAL_RENDERER_H_INCLUDED__
 #define __C_OGLES2_SL_MATERIAL_RENDERER_H_INCLUDED__
@@ -36,13 +33,10 @@ namespace video
 
 class COGLES2Driver;
 
-//! Class for using GLSL shaders with OpenGL ES 2.0
-//! Please note: This renderer implements its own IMaterialRendererServices
 class COGLES2MaterialRenderer : public IMaterialRenderer, public IMaterialRendererServices
 {
 public:
 
-	//! Constructor
 	COGLES2MaterialRenderer(
 		COGLES2Driver* driver, 
 		s32& outMaterialTypeNr, 
@@ -52,7 +46,6 @@ public:
 		E_MATERIAL_TYPE baseMaterial = EMT_SOLID,
 		s32 userData = 0);
 
-	//! Destructor
 	virtual ~COGLES2MaterialRenderer();
 
 	GLuint getProgram() const;
@@ -64,10 +57,10 @@ public:
 
 	virtual void OnUnsetMaterial();
 
-	//! Returns if the material is transparent.
 	virtual bool isTransparent() const;
 
-	// implementations for the render services
+	virtual s32 getRenderCapability() const;
+
 	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates);
 	
 	virtual s32 getVertexShaderConstantID(const c8* name);
@@ -83,8 +76,6 @@ public:
 
 protected:
 
-	//! constructor only for use by derived classes who want to
-	//! create a fall back material for example.
 	COGLES2MaterialRenderer(COGLES2Driver* driver,
 					IShaderConstantSetCallBack* callback = 0,
 					E_MATERIAL_TYPE baseMaterial = EMT_SOLID,
@@ -115,8 +106,9 @@ protected:
 };
 
 
-} // end namespace video
-} // end namespace irr
+}
+}
 
-#endif // compile with OpenGL ES 2.0
-#endif // if included
+#endif
+#endif
+

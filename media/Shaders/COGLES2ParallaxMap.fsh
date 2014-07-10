@@ -1,49 +1,82 @@
-// Copyright (C) 2009-2010 Amundis
-// Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
-// This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in Irrlicht.h
 #define MAX_LIGHTS 2
 
 precision mediump float;
 
-uniform sampler2D texture0;
-uniform sampler2D texture1;
+/* Uniforms */
 
-//uniform vec4 uLightDiffuse[MAX_LIGHTS];
-uniform float uHeightScale;
+uniform float uFactor;
+uniform sampler2D uTextureUnit0;
+uniform sampler2D uTextureUnit1;
+uniform int uFogUsage;
+uniform int uFogType;
+uniform vec4 uFogColor;
+uniform float uFogStart;
+uniform float uFogEnd;
+uniform float uFogDensity;
 
-varying vec4 varTexCoord;
-varying vec3 varLightVector[MAX_LIGHTS];
-varying vec4 varLightColor[MAX_LIGHTS];
-varying vec3 varEyeVector;
+/* Varyings */
 
-varying vec4 debug;
+varying vec2 vTexCoord;
+varying vec3 vEyeVector;
+varying vec3 vLightVector[MAX_LIGHTS];
+varying vec4 vLightColor[MAX_LIGHTS];
+varying float vFogCoord;
 
-void main(void)
+float computeFog()
 {
-	// fetch color and normal map
-	vec4 normalMap = texture2D(texture1, varTexCoord.xy) *  2.0 - 1.0;
+	const float LOG2 = 1.442695;
+	float FogFactor = 0.0;
 
-	// height = height * scale
-	normalMap *= uHeightScale;
-	
-	// calculate new texture coord: height * eye + oldTexCoord
-	vec2 offset = varEyeVector.xy * normalMap.w + varTexCoord.xy;
+	if (uFogType == 0) // Exp
+	{
+		FogFactor = exp2(-uFogDensity * vFogCoord * LOG2);
+	}
+	else if (uFogType == 1) // Linear
+	{
+		float Scale = 1.0 / (uFogEnd - uFogStart);
+		FogFactor = (uFogEnd - vFogCoord) * Scale;
+	}
+	else if (uFogType == 2) // Exp2
+	{
+		FogFactor = exp2(-uFogDensity * uFogDensity * vFogCoord * vFogCoord * LOG2);
+	}
 
-	// fetch new textures
-	vec4 colorMap  = texture2D(texture0, offset);
-	normalMap = normalize(texture2D(texture1, offset) * 2.0 - 1.0); 
-	
-	// calculate color of light 0
-	vec4 color = clamp(varLightColor[0], 0.0, 1.0) * dot(normalMap.xyz, normalize(varLightVector[0].xyz));
-	
-	// calculate color of light 1
-	color += clamp(varLightColor[1], 0.0, 1.0) * dot(normalMap.xyz, normalize(varLightVector[1].xyz));
+	FogFactor = clamp(FogFactor, 0.0, 1.0);
 
-	//luminance * base color
-	color *= colorMap;
-	color.a = varLightColor[0].a;
+	return FogFactor;
+}
+
+void main()
+{
+	vec4 TempFetch = texture2D(uTextureUnit1, vTexCoord) *  2.0 - 1.0;
+	TempFetch *= uFactor;
+
+	vec3 EyeVector = normalize(vEyeVector);
+	vec2 TexCoord = EyeVector.xy * TempFetch.w + vTexCoord;
+
+	vec4 Color  = texture2D(uTextureUnit0, TexCoord);
+	vec3 Normal = texture2D(uTextureUnit1, TexCoord).xyz *  2.0 - 1.0;
+
+	vec4 FinalColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+	for (int i = 0; i < int(MAX_LIGHTS); i++)
+	{
+		vec3 LightVector = normalize(vLightVector[i]);
+
+		float Lambert = max(dot(LightVector, Normal), 0.0);
+		FinalColor += vec4(Lambert) * vLightColor[i];
+	}
+
+	FinalColor *= Color;
+	FinalColor.w = vLightColor[0].w;
+
+	if (bool(uFogUsage))
+	{
+		float FogFactor = computeFog();
+		vec4 FogColor = uFogColor;
+		FogColor.a = 1.0;
+		FinalColor = mix(FogColor, FinalColor, FogFactor);
+	}
 	
-	gl_FragColor = color;
+	gl_FragColor = FinalColor;
 }
