@@ -20,8 +20,8 @@ namespace video
 
 COGLES2MaterialParallaxMapCB::COGLES2MaterialParallaxMapCB() :
 	FirstUpdate(true), WVPMatrixID(-1), WVMatrixID(-1), EyePositionID(-1), LightPositionID(-1), LightColorID(-1), FactorID(-1), TextureUnit0ID(-1), TextureUnit1ID(-1),
-	FogUsageID(-1), FogTypeID(-1), FogColorID(-1), FogStartID(-1), FogEndID(-1), FogDensityID(-1), Factor(0.02f), TextureUnit0(0), TextureUnit1(1),
-	FogUsage(0), FogType(1), FogColor(SColorf(0.f, 0.f, 0.f, 1.f)), FogStart(0.f), FogEnd(0.f), FogDensity(0.f)
+	FogEnableID(-1), FogTypeID(-1), FogColorID(-1), FogStartID(-1), FogEndID(-1), FogDensityID(-1), Factor(0.02f), TextureUnit0(0), TextureUnit1(1),
+	FogEnable(0), FogType(1), FogColor(SColorf(0.f, 0.f, 0.f, 1.f)), FogStart(0.f), FogEnd(0.f), FogDensity(0.f)
 {
 	for (u32 i = 0; i < 2; ++i)
 	{
@@ -38,9 +38,9 @@ void COGLES2MaterialParallaxMapCB::OnSetMaterial(const SMaterial& material)
 		Factor = 0.02f;
 
 	if (material.FogEnable)
-		FogUsage = 1;
+		FogEnable = 1;
 	else
-		FogUsage = 0;
+		FogEnable = 0;
 }
 
 void COGLES2MaterialParallaxMapCB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
@@ -57,7 +57,7 @@ void COGLES2MaterialParallaxMapCB::OnSetConstants(IMaterialRendererServices* ser
 		FactorID = services->getVertexShaderConstantID("uFactor");
 		TextureUnit0ID = services->getVertexShaderConstantID("uTextureUnit0");
 		TextureUnit1ID = services->getVertexShaderConstantID("uTextureUnit1");
-		FogUsageID = services->getVertexShaderConstantID("uFogUsage");
+		FogEnableID = services->getVertexShaderConstantID("uFogEnable");
 		FogTypeID = services->getVertexShaderConstantID("uFogType");
 		FogColorID = services->getVertexShaderConstantID("uFogColor");
 		FogStartID = services->getVertexShaderConstantID("uFogStart");
@@ -115,9 +115,9 @@ void COGLES2MaterialParallaxMapCB::OnSetConstants(IMaterialRendererServices* ser
 	services->setPixelShaderConstant(TextureUnit0ID, &TextureUnit0, 1);
 	services->setPixelShaderConstant(TextureUnit1ID, &TextureUnit1, 1);
 
-	services->setPixelShaderConstant(FogUsageID, &FogUsage, 1);
+	services->setPixelShaderConstant(FogEnableID, &FogEnable, 1);
 
-	if (FogUsage)
+	if (FogEnable)
 	{
 		SColor TempColor(0);
 		E_FOG_TYPE TempType = EFT_FOG_LINEAR;
@@ -133,7 +133,7 @@ void COGLES2MaterialParallaxMapCB::OnSetConstants(IMaterialRendererServices* ser
 		services->setPixelShaderConstant(FogColorID, reinterpret_cast<f32*>(&FogColor), 4);
 		services->setPixelShaderConstant(FogStartID, &FogStart, 1);
 		services->setPixelShaderConstant(FogEndID, &FogEnd, 1);
-		services->setPixelShaderConstant(FogDensity, &FogDensity, 1);
+		services->setPixelShaderConstant(FogDensityID, &FogDensity, 1);
 	}
 }
 

@@ -8,32 +8,181 @@
 
 #include "COGLES2FixedPipelineRenderer.h"
 #include "IVideoDriver.h"
+#include "SLight.h"
 
 namespace irr
 {
 namespace video
 {
 
+// Base callback
+
+COGLES2MaterialBaseCB::COGLES2MaterialBaseCB() :
+	FirstUpdateBase(true), WVPMatrixID(-1), WVMatrixID(-1), NMatrixID(-1), MaterialAmbientID(-1), MaterialDiffuseID(-1), MaterialSpecularID(-1), MaterialShininessID(-1), LightCountID(-1), LightTypeID(-1),
+	LightPositionID(-1), LightDirectionID(-1), LightAttenuationID(-1), LightAmbientID(-1), LightDiffuseID(-1), LightSpecularID(-1), FogEnableID(-1), FogTypeID(-1), FogColorID(-1), FogStartID(-1),
+	FogEndID(-1), FogDensityID(-1), LightEnable(false), MaterialAmbient(SColorf(0.f, 0.f, 0.f)), MaterialDiffuse(SColorf(0.f, 0.f, 0.f)), MaterialSpecular(SColorf(0.f, 0.f, 0.f)),
+	MaterialShininess(0.f), FogEnable(0), FogType(1), FogColor(SColorf(0.f, 0.f, 0.f, 1.f)), FogStart(0.f), FogEnd(0.f), FogDensity(0.f)
+{
+	for (u32 i = 0; i < 8; ++i)
+	{
+		LightType[i] = 0;
+		LightPosition[i] = core::vector3df(0.f, 0.f, 0.f);
+		LightDirection[i] = core::vector3df(0.f, 0.f, 0.f);
+		LightAttenuation[i] = core::vector3df(0.f, 0.f, 0.f);
+		LightAmbient[i] = SColorf(0.f, 0.f, 0.f);
+		LightDiffuse[i] = SColorf(0.f, 0.f, 0.f);
+		LightSpecular[i] = SColorf(0.f, 0.f, 0.f);
+	}
+}
+
+void COGLES2MaterialBaseCB::OnSetMaterial(const SMaterial& material)
+{
+	LightEnable = material.Lighting;
+	MaterialAmbient = SColorf(material.AmbientColor);
+	MaterialDiffuse = SColorf(material.DiffuseColor);
+	MaterialSpecular = SColorf(material.SpecularColor);
+	MaterialShininess = material.Shininess;
+
+	FogEnable = material.FogEnable ? 1 : 0;
+}
+
+void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
+{
+	IVideoDriver* driver = services->getVideoDriver();
+
+	if (FirstUpdateBase)
+	{
+		WVPMatrixID = services->getVertexShaderConstantID("uWVPMatrix");
+		WVMatrixID = services->getVertexShaderConstantID("uWVMatrix");
+		NMatrixID = services->getVertexShaderConstantID("uNMatrix");
+		MaterialAmbientID = services->getVertexShaderConstantID("uMaterialAmbient");
+		MaterialDiffuseID = services->getVertexShaderConstantID("uMaterialDiffuse");
+		MaterialSpecularID = services->getVertexShaderConstantID("uMaterialSpecular");
+		MaterialShininessID = services->getVertexShaderConstantID("uMaterialShininess");
+		LightCountID = services->getVertexShaderConstantID("uLightCount");
+		LightTypeID = services->getVertexShaderConstantID("uLightType");
+		LightPositionID = services->getVertexShaderConstantID("uLightPosition");
+		LightDirectionID = services->getVertexShaderConstantID("uLightDirection");
+		LightAttenuationID = services->getVertexShaderConstantID("uLightAttenuation");
+		LightAmbientID = services->getVertexShaderConstantID("uLightAmbient");
+		LightDiffuseID = services->getVertexShaderConstantID("uLightDiffuse");
+		LightSpecularID = services->getVertexShaderConstantID("uLightSpecular");
+		FogEnableID = services->getVertexShaderConstantID("uFogEnable");
+		FogTypeID = services->getVertexShaderConstantID("uFogType");
+		FogColorID = services->getVertexShaderConstantID("uFogColor");
+		FogStartID = services->getVertexShaderConstantID("uFogStart");
+		FogEndID = services->getVertexShaderConstantID("uFogEnd");
+		FogDensityID = services->getVertexShaderConstantID("uFogDensity");
+
+		FirstUpdateBase = false;
+	}
+
+	const core::matrix4 W = driver->getTransform(ETS_WORLD);
+	const core::matrix4 V = driver->getTransform(ETS_VIEW);
+	const core::matrix4 P = driver->getTransform(ETS_PROJECTION);
+
+	core::matrix4 Matrix = P * V * W;
+	services->setPixelShaderConstant(WVPMatrixID, Matrix.pointer(), 16);
+
+	Matrix = V * W;
+	services->setPixelShaderConstant(WVMatrixID, Matrix.pointer(), 16);
+
+	Matrix.makeInverse();
+	services->setPixelShaderConstant(NMatrixID, Matrix.getTransposed().pointer(), 16);
+
+	s32 LightCount = LightEnable ? driver->getDynamicLightCount() : 0;
+	services->setPixelShaderConstant(LightCountID, &LightCount, 1);
+
+	if (LightCount > 0)
+	{
+		services->setPixelShaderConstant(MaterialAmbientID, reinterpret_cast<f32*>(&MaterialAmbient), 4);
+		services->setPixelShaderConstant(MaterialDiffuseID, reinterpret_cast<f32*>(&MaterialDiffuse), 4);
+		services->setPixelShaderConstant(MaterialSpecularID, reinterpret_cast<f32*>(&MaterialSpecular), 4);
+		services->setPixelShaderConstant(MaterialShininessID, &MaterialShininess, 1);
+
+		Matrix = V;
+
+		for (s32 i = 0; i < LightCount; ++i)
+		{
+			SLight CurrentLight = driver->getDynamicLight(i);
+
+			Matrix.transformVect(CurrentLight.Position);
+
+			switch (CurrentLight.Type)
+			{
+			case ELT_DIRECTIONAL:
+				LightType[i] = 2;
+				break;
+			case ELT_SPOT:
+				LightType[i] = 1;
+				break;
+			default: // ELT_POINT
+				LightType[i] = 0;
+				break;
+			}
+
+			LightPosition[i] = CurrentLight.Position;
+			LightDirection[i] = CurrentLight.Direction;
+			LightAttenuation[i] = CurrentLight.Attenuation;
+			LightAmbient[i] = CurrentLight.AmbientColor;
+			LightDiffuse[i] = CurrentLight.DiffuseColor;
+			LightSpecular[i] = CurrentLight.SpecularColor;
+		}
+
+		services->setPixelShaderConstant(LightTypeID, reinterpret_cast<f32*>(LightType), 24);
+		services->setPixelShaderConstant(LightPositionID, reinterpret_cast<f32*>(LightPosition), 24);
+		services->setPixelShaderConstant(LightDirectionID, reinterpret_cast<f32*>(LightDirection), 24);
+		services->setPixelShaderConstant(LightAttenuationID, reinterpret_cast<f32*>(LightAttenuation), 24);
+		services->setPixelShaderConstant(LightAmbientID, reinterpret_cast<f32*>(LightAmbient), 32);
+		services->setPixelShaderConstant(LightDiffuseID, reinterpret_cast<f32*>(LightDiffuse), 32);
+		services->setPixelShaderConstant(LightSpecularID, reinterpret_cast<f32*>(LightSpecular), 32);
+	}
+
+	services->setPixelShaderConstant(FogEnableID, &FogEnable, 1);
+
+	if (FogEnable)
+	{
+		SColor TempColor(0);
+		E_FOG_TYPE TempType = EFT_FOG_LINEAR;
+		bool TempPerFragment = false;
+		bool TempRange = false;
+
+		driver->getFog(TempColor, TempType, FogStart, FogEnd, FogDensity, TempPerFragment, TempRange);
+
+		FogType = (s32)TempType;
+		FogColor = SColorf(TempColor);
+
+		services->setPixelShaderConstant(FogTypeID, &FogType, 1);
+		services->setPixelShaderConstant(FogColorID, reinterpret_cast<f32*>(&FogColor), 4);
+		services->setPixelShaderConstant(FogStartID, &FogStart, 1);
+		services->setPixelShaderConstant(FogEndID, &FogEnd, 1);
+		services->setPixelShaderConstant(FogDensityID, &FogDensity, 1);
+	}
+}
+
 // EMT_SOLID + EMT_TRANSPARENT_ADD_COLOR + EMT_TRANSPARENT_ALPHA_CHANNEL + EMT_TRANSPARENT_VERTEX_ALPHA + EMT_ONETEXTURE_BLEND
 
 COGLES2MaterialSolidCB::COGLES2MaterialSolidCB() :
-	FirstUpdate(true), MVPMatrixID(-1), TMatrix0ID(-1), AlphaRefID(-1), TextureUsage0ID(-1), TextureUnit0ID(-1), AlphaRef(0.5f), TextureUsage0(0), TextureUnit0(0)
+	FirstUpdate(true), TMatrix0ID(-1), AlphaRefID(-1), TextureUsage0ID(-1), TextureUnit0ID(-1), AlphaRef(0.5f), TextureUsage0(0), TextureUnit0(0)
 {
 }
 
 void COGLES2MaterialSolidCB::OnSetMaterial(const SMaterial& material)
 {
+	COGLES2MaterialBaseCB::OnSetMaterial(material);
+
 	AlphaRef = material.MaterialTypeParam;
 	TextureUsage0 = (material.TextureLayer[0].Texture) ? 1 : 0;
 }
 
 void COGLES2MaterialSolidCB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
 {
+	COGLES2MaterialBaseCB::OnSetConstants(services, userData);
+
 	IVideoDriver* driver = services->getVideoDriver();
 
 	if (FirstUpdate)
 	{
-		MVPMatrixID = services->getVertexShaderConstantID("uMVPMatrix");
 		TMatrix0ID = services->getVertexShaderConstantID("uTMatrix0");
 		AlphaRefID = services->getVertexShaderConstantID("uAlphaRef");
 		TextureUsage0ID = services->getVertexShaderConstantID("uTextureUsage0");
@@ -42,12 +191,7 @@ void COGLES2MaterialSolidCB::OnSetConstants(IMaterialRendererServices* services,
 		FirstUpdate = false;
 	}
 
-	core::matrix4 Matrix = driver->getTransform(ETS_PROJECTION);
-	Matrix *= driver->getTransform(ETS_VIEW);
-	Matrix *= driver->getTransform(ETS_WORLD);
-	services->setPixelShaderConstant(MVPMatrixID, Matrix.pointer(), 16);
-
-	Matrix = driver->getTransform(ETS_TEXTURE_0);
+	core::matrix4 Matrix = driver->getTransform(ETS_TEXTURE_0);
 	services->setPixelShaderConstant(TMatrix0ID, Matrix.pointer(), 16);
 
 	services->setPixelShaderConstant(AlphaRefID, &AlphaRef, 1);
@@ -58,24 +202,27 @@ void COGLES2MaterialSolidCB::OnSetConstants(IMaterialRendererServices* services,
 // EMT_SOLID_2_LAYER + EMT_DETAIL_MAP
 
 COGLES2MaterialSolid2CB::COGLES2MaterialSolid2CB() :
-	FirstUpdate(true), MVPMatrixID(-1), TMatrix0ID(-1), TMatrix1ID(-1), TextureUsage0ID(-1), TextureUsage1ID(-1), TextureUnit0ID(-1), TextureUnit1ID(-1),
+	FirstUpdate(true), TMatrix0ID(-1), TMatrix1ID(-1), TextureUsage0ID(-1), TextureUsage1ID(-1), TextureUnit0ID(-1), TextureUnit1ID(-1),
 	TextureUsage0(0), TextureUsage1(0), TextureUnit0(0), TextureUnit1(1)
 {
 }
 
 void COGLES2MaterialSolid2CB::OnSetMaterial(const SMaterial& material)
 {
+	COGLES2MaterialBaseCB::OnSetMaterial(material);
+
 	TextureUsage0 = (material.TextureLayer[0].Texture) ? 1 : 0;
 	TextureUsage1 = (material.TextureLayer[1].Texture) ? 1 : 0;
 }
 
 void COGLES2MaterialSolid2CB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
 {
+	COGLES2MaterialBaseCB::OnSetConstants(services, userData);
+
 	IVideoDriver* driver = services->getVideoDriver();
 
 	if (FirstUpdate)
 	{
-		MVPMatrixID = services->getVertexShaderConstantID("uMVPMatrix");
 		TMatrix0ID = services->getVertexShaderConstantID("uTMatrix0");
 		TMatrix1ID = services->getVertexShaderConstantID("uTMatrix1");
 		TextureUsage0ID = services->getVertexShaderConstantID("uTextureUsage0");
@@ -86,12 +233,7 @@ void COGLES2MaterialSolid2CB::OnSetConstants(IMaterialRendererServices* services
 		FirstUpdate = false;
 	}
 
-	core::matrix4 Matrix = driver->getTransform(ETS_PROJECTION);
-	Matrix *= driver->getTransform(ETS_VIEW);
-	Matrix *= driver->getTransform(ETS_WORLD);
-	services->setPixelShaderConstant(MVPMatrixID, Matrix.pointer(), 16);
-
-	Matrix = driver->getTransform(ETS_TEXTURE_0);
+	core::matrix4 Matrix = driver->getTransform(ETS_TEXTURE_0);
 	services->setPixelShaderConstant(TMatrix0ID, Matrix.pointer(), 16);
 
 	Matrix = driver->getTransform(ETS_TEXTURE_1);
@@ -106,24 +248,27 @@ void COGLES2MaterialSolid2CB::OnSetConstants(IMaterialRendererServices* services
 // EMT_LIGHTMAP + EMT_LIGHTMAP_ADD + EMT_LIGHTMAP_M2 + EMT_LIGHTMAP_M4
 
 COGLES2MaterialLightmapCB::COGLES2MaterialLightmapCB(float modulate) :
-	FirstUpdate(true), MVPMatrixID(-1), TMatrix0ID(-1), TMatrix1ID(-1), ModulateID(-1), TextureUsage0ID(-1), TextureUsage1ID(-1), TextureUnit0ID(-1), TextureUnit1ID(-1),
+	FirstUpdate(true), TMatrix0ID(-1), TMatrix1ID(-1), ModulateID(-1), TextureUsage0ID(-1), TextureUsage1ID(-1), TextureUnit0ID(-1), TextureUnit1ID(-1),
 	Modulate(modulate), TextureUsage0(0), TextureUsage1(0), TextureUnit0(0), TextureUnit1(1)
 {
 }
 
 void COGLES2MaterialLightmapCB::OnSetMaterial(const SMaterial& material)
 {
+	COGLES2MaterialBaseCB::OnSetMaterial(material);
+
 	TextureUsage0 = (material.TextureLayer[0].Texture) ? 1 : 0;
 	TextureUsage1 = (material.TextureLayer[1].Texture) ? 1 : 0;
 }
 
 void COGLES2MaterialLightmapCB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
 {
+	COGLES2MaterialBaseCB::OnSetConstants(services, userData);
+
 	IVideoDriver* driver = services->getVideoDriver();
 
 	if (FirstUpdate)
 	{
-		MVPMatrixID = services->getVertexShaderConstantID("uMVPMatrix");
 		TMatrix0ID = services->getVertexShaderConstantID("uTMatrix0");
 		TMatrix1ID = services->getVertexShaderConstantID("uTMatrix1");
 		ModulateID = services->getVertexShaderConstantID("uModulate");
@@ -135,12 +280,7 @@ void COGLES2MaterialLightmapCB::OnSetConstants(IMaterialRendererServices* servic
 		FirstUpdate = false;
 	}
 
-	core::matrix4 Matrix = driver->getTransform(ETS_PROJECTION);
-	Matrix *= driver->getTransform(ETS_VIEW);
-	Matrix *= driver->getTransform(ETS_WORLD);
-	services->setPixelShaderConstant(MVPMatrixID, Matrix.pointer(), 16);
-
-	Matrix = driver->getTransform(ETS_TEXTURE_0);
+	core::matrix4 Matrix = driver->getTransform(ETS_TEXTURE_0);
 	services->setPixelShaderConstant(TMatrix0ID, Matrix.pointer(), 16);
 
 	Matrix = driver->getTransform(ETS_TEXTURE_1);
@@ -156,26 +296,27 @@ void COGLES2MaterialLightmapCB::OnSetConstants(IMaterialRendererServices* servic
 // EMT_SPHERE_MAP + EMT_REFLECTION_2_LAYER + EMT_TRANSPARENT_REFLECTION_2_LAYER
 
 COGLES2MaterialReflectionCB::COGLES2MaterialReflectionCB() :
-	FirstUpdate(true), MVPMatrixID(-1), MVMatrixID(-1), NMatrixID(-1), TMatrix0ID(-1), TextureUsage0ID(-1), TextureUsage1ID(-1), TextureUnit0ID(-1), TextureUnit1ID(-1),
+	FirstUpdate(true), TMatrix0ID(-1), TextureUsage0ID(-1), TextureUsage1ID(-1), TextureUnit0ID(-1), TextureUnit1ID(-1),
 	TextureUsage0(0), TextureUsage1(0), TextureUnit0(0), TextureUnit1(1)
 {
 }
 
 void COGLES2MaterialReflectionCB::OnSetMaterial(const SMaterial& material)
 {
+	COGLES2MaterialBaseCB::OnSetMaterial(material);
+
 	TextureUsage0 = (material.TextureLayer[0].Texture) ? 1 : 0;
 	TextureUsage1 = (material.TextureLayer[1].Texture) ? 1 : 0;
 }
 
 void COGLES2MaterialReflectionCB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
 {
+	COGLES2MaterialBaseCB::OnSetConstants(services, userData);
+
 	IVideoDriver* driver = services->getVideoDriver();
 
 	if (FirstUpdate)
 	{
-		MVPMatrixID = services->getVertexShaderConstantID("uMVPMatrix");
-		MVMatrixID = services->getVertexShaderConstantID("uMVMatrix");
-		NMatrixID = services->getVertexShaderConstantID("uNMatrix");
 		TMatrix0ID = services->getVertexShaderConstantID("uTMatrix0");
 		TextureUsage0ID = services->getVertexShaderConstantID("uTextureUsage0");
 		TextureUsage1ID = services->getVertexShaderConstantID("uTextureUsage1");
@@ -185,20 +326,7 @@ void COGLES2MaterialReflectionCB::OnSetConstants(IMaterialRendererServices* serv
 		FirstUpdate = false;
 	}
 
-	core::matrix4 Matrix = driver->getTransform(ETS_PROJECTION);
-	Matrix *= driver->getTransform(ETS_VIEW);
-	Matrix *= driver->getTransform(ETS_WORLD);
-	services->setPixelShaderConstant(MVPMatrixID, Matrix.pointer(), 16);
-
-	Matrix = driver->getTransform(ETS_VIEW);
-	Matrix *= driver->getTransform(ETS_WORLD);
-	services->setPixelShaderConstant(MVMatrixID, Matrix.pointer(), 16);
-
-	Matrix.makeInverse();
-	Matrix = Matrix.getTransposed();
-	services->setPixelShaderConstant(NMatrixID, Matrix.pointer(), 16);
-
-	Matrix = driver->getTransform(ETS_TEXTURE_0);
+	core::matrix4 Matrix = driver->getTransform(ETS_TEXTURE_0);
 	services->setPixelShaderConstant(TMatrix0ID, Matrix.pointer(), 16);
 
 	services->setPixelShaderConstant(TextureUsage0ID, &TextureUsage0, 1);

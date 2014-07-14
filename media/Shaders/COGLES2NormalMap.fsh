@@ -6,7 +6,7 @@ precision mediump float;
 
 uniform sampler2D uTextureUnit0;
 uniform sampler2D uTextureUnit1;
-uniform int uFogUsage;
+uniform int uFogEnable;
 uniform int uFogType;
 uniform vec4 uFogColor;
 uniform float uFogStart;
@@ -62,7 +62,7 @@ void main()
 	FinalColor *= Color;
 	FinalColor.w = vLightColor[0].w;
 
-	if (bool(uFogUsage))
+	if (bool(uFogEnable))
 	{
 		float FogFactor = computeFog();
 		vec4 FogColor = uFogColor;

@@ -35,7 +35,7 @@ protected:
 	s32 LightColorID;
 	s32 TextureUnit0ID;
 	s32 TextureUnit1ID;
-	s32 FogUsageID;
+	s32 FogEnableID;
 	s32 FogTypeID;
 	s32 FogColorID;
 	s32 FogStartID;
@@ -46,7 +46,7 @@ protected:
 	SColorf LightColor[2];
 	s32 TextureUnit0;
 	s32 TextureUnit1;
-	s32 FogUsage;
+	s32 FogEnable;
 	s32 FogType;
 	SColorf FogColor;
 	f32 FogStart;
