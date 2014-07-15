@@ -169,6 +169,27 @@ protected:
 	s32 TextureUnit1;
 };
 
+class COGLES2MaterialOneTextureBlendCB : public COGLES2MaterialBaseCB
+{
+public:
+	COGLES2MaterialOneTextureBlendCB();
+
+	virtual void OnSetMaterial(const SMaterial& material);
+	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData);
+
+protected:
+	bool FirstUpdate;
+
+	s32 TMatrix0ID;
+	s32 BlendTypeID;
+	s32 TextureUsage0ID;
+	s32 TextureUnit0ID;
+
+	s32 BlendType;
+	s32 TextureUsage0;
+	s32 TextureUnit0;
+};
+
 }
 }
 

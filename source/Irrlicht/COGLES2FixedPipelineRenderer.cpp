@@ -160,7 +160,7 @@ void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, 
 	}
 }
 
-// EMT_SOLID + EMT_TRANSPARENT_ADD_COLOR + EMT_TRANSPARENT_ALPHA_CHANNEL + EMT_TRANSPARENT_VERTEX_ALPHA + EMT_ONETEXTURE_BLEND
+// EMT_SOLID + EMT_TRANSPARENT_ADD_COLOR + EMT_TRANSPARENT_ALPHA_CHANNEL + EMT_TRANSPARENT_VERTEX_ALPHA
 
 COGLES2MaterialSolidCB::COGLES2MaterialSolidCB() :
 	FirstUpdate(true), TMatrix0ID(-1), AlphaRefID(-1), TextureUsage0ID(-1), TextureUnit0ID(-1), AlphaRef(0.5f), TextureUsage0(0), TextureUnit0(0)
@@ -333,6 +333,63 @@ void COGLES2MaterialReflectionCB::OnSetConstants(IMaterialRendererServices* serv
 	services->setPixelShaderConstant(TextureUsage1ID, &TextureUsage1, 1);
 	services->setPixelShaderConstant(TextureUnit0ID, &TextureUnit0, 1);
 	services->setPixelShaderConstant(TextureUnit1ID, &TextureUnit1, 1);
+}
+
+// EMT_ONETEXTURE_BLEND
+
+COGLES2MaterialOneTextureBlendCB::COGLES2MaterialOneTextureBlendCB() :
+	FirstUpdate(true), TMatrix0ID(-1), BlendTypeID(-1), TextureUsage0ID(-1), TextureUnit0ID(-1), BlendType(0), TextureUsage0(0), TextureUnit0(0)
+{
+}
+
+void COGLES2MaterialOneTextureBlendCB::OnSetMaterial(const SMaterial& material)
+{
+	COGLES2MaterialBaseCB::OnSetMaterial(material);
+
+	BlendType = 0;
+
+	E_BLEND_FACTOR srcRGBFact,dstRGBFact,srcAlphaFact,dstAlphaFact;
+	E_MODULATE_FUNC modulate;
+	u32 alphaSource;
+	unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulate, alphaSource, material.MaterialTypeParam);
+
+	if (textureBlendFunc_hasAlpha(srcRGBFact) || textureBlendFunc_hasAlpha(dstRGBFact) || textureBlendFunc_hasAlpha(srcAlphaFact) || textureBlendFunc_hasAlpha(dstAlphaFact))
+	{
+		if (alphaSource == EAS_VERTEX_COLOR)
+		{
+			BlendType = 1;
+		}
+		else if (alphaSource == EAS_TEXTURE)
+		{
+			BlendType = 2;
+		}
+	}
+
+	TextureUsage0 = (material.TextureLayer[0].Texture) ? 1 : 0;
+}
+
+void COGLES2MaterialOneTextureBlendCB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
+{
+	COGLES2MaterialBaseCB::OnSetConstants(services, userData);
+
+	IVideoDriver* driver = services->getVideoDriver();
+
+	if (FirstUpdate)
+	{
+		TMatrix0ID = services->getVertexShaderConstantID("uTMatrix0");
+		BlendTypeID = services->getVertexShaderConstantID("uBlendType");
+		TextureUsage0ID = services->getVertexShaderConstantID("uTextureUsage0");
+		TextureUnit0ID = services->getVertexShaderConstantID("uTextureUnit0");
+
+		FirstUpdate = false;
+	}
+
+	core::matrix4 Matrix = driver->getTransform(ETS_TEXTURE_0);
+	services->setPixelShaderConstant(TMatrix0ID, Matrix.pointer(), 16);
+
+	services->setPixelShaderConstant(BlendTypeID, &BlendType, 1);
+	services->setPixelShaderConstant(TextureUsage0ID, &TextureUsage0, 1);
+	services->setPixelShaderConstant(TextureUnit0ID, &TextureUnit0, 1);
 }
 
 }
