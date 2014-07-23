@@ -2217,6 +2217,8 @@ bool COGLES2Driver::endScene()
 			glDrawArrays(GL_TRIANGLES, 0, count);
 		}
 
+		glDisableVertexAttribArray(EVA_POSITION);
+
 		glDisable(GL_STENCIL_TEST);
 
 		Material.FogEnable = fog;
@@ -2254,7 +2256,8 @@ bool COGLES2Driver::endScene()
 		vertices[3] = S3DVertex(-1.f, -1.f, 0.9f, 0, 0, 1, rightDownEdge, 0, 0);
 		drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 
-		glClear(GL_STENCIL_BUFFER_BIT);
+		if (clearStencilBuffer)
+			glClear(GL_STENCIL_BUFFER_BIT);
 
 		glDisable(GL_STENCIL_TEST);
 	}

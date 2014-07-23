@@ -2442,46 +2442,44 @@ void COGLES1Driver::setViewPort(const core::rect<s32>& area)
 
 
 //! Draws a shadow volume into the stencil buffer.
-void COGLES1Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+void COGLES1Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
+	const u32 count=triangles.size();
 	if (!StencilBuffer || !count)
 		return;
 
-	// unset last 3d material
-	if (CurrentRenderMode == ERM_3D &&
-		static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
-	{
-		MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
-		ResetRenderStates = true;
-	}
-
-	// store current OGLES1 state
+	u8 colorMask = LastMaterial.ColorMask;
 	const GLboolean lightingEnabled = glIsEnabled(GL_LIGHTING);
 	const GLboolean fogEnabled = glIsEnabled(GL_FOG);
 	const GLboolean cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
-	GLint cullFaceMode;
+
+	GLint cullFaceMode = 0;
 	glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
-	GLint depthFunc;
+	GLint depthFunc = 0;
 	glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
-	GLboolean depthMask;
+	GLboolean depthMask = 0;
 	glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
 	glDepthFunc(GL_LEQUAL);
-	glDepthMask(GL_FALSE); // no depth buffer writing
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE ); // no color buffer drawing
-	glEnable(GL_STENCIL_TEST);
-	glEnable(GL_POLYGON_OFFSET_FILL);
-	glPolygonOffset(0.0f, 1.0f);
+	glDepthMask(GL_FALSE);
+
+	if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
+	{
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		glEnable(GL_STENCIL_TEST);
+	}
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),&triangles[0]);
+	glVertexPointer(3, GL_FLOAT, sizeof(core::vector3df), triangles.const_pointer());
+
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
 
 	GLenum decr = GL_DECR;
 	GLenum incr = GL_INCR;
+
 #if defined(GL_OES_stencil_wrap)
 	if (FeatureAvailable[IRR_OES_stencil_wrap])
 	{
@@ -2489,84 +2487,92 @@ void COGLES1Driver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		incr = GL_INCR_WRAP_OES;
 	}
 #endif
+
 	glEnable(GL_CULL_FACE);
-	if (!zfail)
+
+	if (zfail)
 	{
-		// ZPASS Method
+		glCullFace(GL_FRONT);
+		glStencilOp(GL_KEEP, incr, GL_KEEP);
+		glDrawArrays(GL_TRIANGLES, 0, count);
 
 		glCullFace(GL_BACK);
+		glStencilOp(GL_KEEP, decr, GL_KEEP);
+		glDrawArrays(GL_TRIANGLES, 0, count);
+	}
+	else // zpass
+	{
+		glCullFace(GL_BACK);
 		glStencilOp(GL_KEEP, GL_KEEP, incr);
-		glDrawArrays(GL_TRIANGLES,0,count);
+		glDrawArrays(GL_TRIANGLES, 0, count);
 
 		glCullFace(GL_FRONT);
 		glStencilOp(GL_KEEP, GL_KEEP, decr);
-		glDrawArrays(GL_TRIANGLES,0,count);
-	}
-	else
-	{
-		// ZFAIL Method
-
-		glStencilOp(GL_KEEP, incr, GL_KEEP);
-		glCullFace(GL_FRONT);
-		glDrawArrays(GL_TRIANGLES,0,count);
-
-		glStencilOp(GL_KEEP, decr, GL_KEEP);
-		glCullFace(GL_BACK);
-		glDrawArrays(GL_TRIANGLES,0,count);
+		glDrawArrays(GL_TRIANGLES, 0, count);
 	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+	glColorMask((colorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+			(colorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+			(colorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+			(colorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+
 	glDisable(GL_STENCIL_TEST);
+
 	if (lightingEnabled)
 		glEnable(GL_LIGHTING);
+
 	if (fogEnabled)
 		glEnable(GL_FOG);
+
 	if (cullFaceEnabled)
 		glEnable(GL_CULL_FACE);
 	else
 		glDisable(GL_CULL_FACE);
+
 	glCullFace(cullFaceMode);
 	glDepthFunc(depthFunc);
 	glDepthMask(depthMask);
 }
 
 
-void COGLES1Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
-	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
+void COGLES1Driver::drawStencilShadow(bool clearStencilBuffer,
+		video::SColor leftUpEdge, video::SColor rightUpEdge,
+		video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
 	if (!StencilBuffer)
 		return;
 
 	disableTextures();
 
-	// store attributes
+	u8 colorMask = LastMaterial.ColorMask;
 	const GLboolean lightingEnabled = glIsEnabled(GL_LIGHTING);
 	const GLboolean fogEnabled = glIsEnabled(GL_FOG);
-	GLboolean depthMask;
-	glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
-	GLint shadeModel;
-	glGetIntegerv(GL_SHADE_MODEL, &shadeModel);
 	const GLboolean blendEnabled = glIsEnabled(GL_BLEND);
-	GLint blendSrc, blendDst;
+
+	GLboolean depthMask = 0;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+	GLint shadeModel = 0;
+	glGetIntegerv(GL_SHADE_MODEL, &shadeModel);
+	GLint blendSrc = 0, blendDst = 0;
 	glGetIntegerv(GL_BLEND_SRC, &blendSrc);
 	glGetIntegerv(GL_BLEND_DST, &blendDst);
 
-	glDisable( GL_LIGHTING );
+	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
 	glDepthMask(GL_FALSE);
 
-	glShadeModel( GL_FLAT );
-	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glShadeModel(GL_FLAT);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnable( GL_STENCIL_TEST );
+	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 0, ~0);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-	// draw a shadow rectangle covering the entire screen using stencil buffer
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
@@ -2574,30 +2580,39 @@ void COGLES1Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glPushMatrix();
 	glLoadIdentity();
 
-	u16 indices[] = {0,1,2,3};
+	u16 indices[] = {0, 1, 2, 3};
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(-1.f,-1.f,0.9f, 0,0,1, leftDownEdge, 0,0);
-	vertices[1] = S3DVertex(-1.f, 1.f,0.9f, 0,0,1, leftUpEdge, 0,0);
-	vertices[2] = S3DVertex( 1.f, 1.f,0.9f, 0,0,1, rightUpEdge, 0,0);
-	vertices[3] = S3DVertex( 1.f,-1.f,0.9f, 0,0,1, rightDownEdge, 0,0);
-	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
+	vertices[0] = S3DVertex(-1.f, 1.f, 0.9f, 0, 0, 1, leftDownEdge, 0, 0);
+	vertices[1] = S3DVertex(1.f, 1.f, 0.9f, 0, 0, 1, leftUpEdge, 0, 0);
+	vertices[2] = S3DVertex(1.f, -1.f, 0.9f, 0, 0, 1, rightUpEdge, 0, 0);
+	vertices[3] = S3DVertex(-1.f, -1.f, 0.9f, 0, 0, 1, rightDownEdge, 0, 0);
+	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 
 	if (clearStencilBuffer)
 		glClear(GL_STENCIL_BUFFER_BIT);
 
-	// restore settings
+	glColorMask((colorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+			(colorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+			(colorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+			(colorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+
+	glDisable(GL_STENCIL_TEST);
+
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
-	glDisable(GL_STENCIL_TEST);
+
 	if (lightingEnabled)
 		glEnable(GL_LIGHTING);
+
 	if (fogEnabled)
 		glEnable(GL_FOG);
-	glDepthMask(depthMask);
-	glShadeModel(shadeModel);
+
 	if (!blendEnabled)
 		glDisable(GL_BLEND);
+
+	glDepthMask(depthMask);
+	glShadeModel(shadeModel);
 	glBlendFunc(blendSrc, blendDst);
 }
 
