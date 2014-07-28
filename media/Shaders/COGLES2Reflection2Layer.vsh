@@ -29,6 +29,8 @@ uniform vec4 uLightAmbient[MAX_LIGHTS];
 uniform vec4 uLightDiffuse[MAX_LIGHTS];
 uniform vec4 uLightSpecular[MAX_LIGHTS];
 
+uniform float uThickness;
+
 /* Varyings */
 
 varying vec2 vTextureCoord0;
@@ -89,6 +91,7 @@ void spotLight(in int index, in vec3 position, in vec3 normal, inout vec4 ambien
 void main()
 {
 	gl_Position = uWVPMatrix * vec4(inVertexPosition, 1.0);
+	gl_PointSize = uThickness;
 
 	vec4 TextureCoord0 = vec4(inTexCoord0.x, inTexCoord0.y, 0.0, 0.0);
 	vTextureCoord0 = vec4(uTMatrix0 * TextureCoord0).xy;

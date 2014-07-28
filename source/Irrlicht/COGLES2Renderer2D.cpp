@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in irrlicht.h
+// For conditions of distribution and use, see copyright notice in Irrlicht.h
 
 #include "IrrCompileConfig.h"
 
@@ -31,6 +31,7 @@ COGLES2Renderer2D::COGLES2Renderer2D(const c8* vertexShaderProgram, const c8* pi
 
 	// These states don't change later.
 
+	ThicknessID = getPixelShaderConstantID("uThickness");
 	TextureUsageID = getPixelShaderConstantID("uTextureUsage");
 	s32 TextureUnitID = getPixelShaderConstantID("uTextureUnit");	
 
@@ -51,6 +52,8 @@ void COGLES2Renderer2D::OnSetMaterial(const video::SMaterial& material,
 {
 	Driver->getBridgeCalls()->setProgram(Program);
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+	f32 Thickness = (material.Thickness > 0.f) ? material.Thickness : 1.f;
+	setPixelShaderConstant(ThicknessID, &Thickness, 1);
 }
 
 bool COGLES2Renderer2D::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)

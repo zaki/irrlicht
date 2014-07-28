@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in irrlicht.h
+// For conditions of distribution and use, see copyright notice in Irrlicht.h
 
 #include "IrrCompileConfig.h"
 
@@ -20,8 +20,8 @@ namespace video
 COGLES2MaterialBaseCB::COGLES2MaterialBaseCB() :
 	FirstUpdateBase(true), WVPMatrixID(-1), WVMatrixID(-1), NMatrixID(-1), MaterialAmbientID(-1), MaterialDiffuseID(-1), MaterialSpecularID(-1), MaterialShininessID(-1), LightCountID(-1), LightTypeID(-1),
 	LightPositionID(-1), LightDirectionID(-1), LightAttenuationID(-1), LightAmbientID(-1), LightDiffuseID(-1), LightSpecularID(-1), FogEnableID(-1), FogTypeID(-1), FogColorID(-1), FogStartID(-1),
-	FogEndID(-1), FogDensityID(-1), LightEnable(false), MaterialAmbient(SColorf(0.f, 0.f, 0.f)), MaterialDiffuse(SColorf(0.f, 0.f, 0.f)), MaterialSpecular(SColorf(0.f, 0.f, 0.f)),
-	MaterialShininess(0.f), FogEnable(0), FogType(1), FogColor(SColorf(0.f, 0.f, 0.f, 1.f)), FogStart(0.f), FogEnd(0.f), FogDensity(0.f)
+	FogEndID(-1), FogDensityID(-1), ThicknessID(-1), LightEnable(false), MaterialAmbient(SColorf(0.f, 0.f, 0.f)), MaterialDiffuse(SColorf(0.f, 0.f, 0.f)), MaterialSpecular(SColorf(0.f, 0.f, 0.f)),
+	MaterialShininess(0.f), FogEnable(0), FogType(1), FogColor(SColorf(0.f, 0.f, 0.f, 1.f)), FogStart(0.f), FogEnd(0.f), FogDensity(0.f), Thickness(1.f)
 {
 	for (u32 i = 0; i < 8; ++i)
 	{
@@ -44,6 +44,8 @@ void COGLES2MaterialBaseCB::OnSetMaterial(const SMaterial& material)
 	MaterialShininess = material.Shininess;
 
 	FogEnable = material.FogEnable ? 1 : 0;
+
+	Thickness = (material.Thickness > 0.f) ? material.Thickness : 1.f;
 }
 
 void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, s32 userData)
@@ -73,6 +75,7 @@ void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, 
 		FogStartID = services->getVertexShaderConstantID("uFogStart");
 		FogEndID = services->getVertexShaderConstantID("uFogEnd");
 		FogDensityID = services->getVertexShaderConstantID("uFogDensity");
+		ThicknessID = services->getVertexShaderConstantID("uThickness");
 
 		FirstUpdateBase = false;
 	}
@@ -158,6 +161,8 @@ void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, 
 		services->setPixelShaderConstant(FogEndID, &FogEnd, 1);
 		services->setPixelShaderConstant(FogDensityID, &FogDensity, 1);
 	}
+
+	services->setPixelShaderConstant(ThicknessID, &Thickness, 1);
 }
 
 // EMT_SOLID + EMT_TRANSPARENT_ADD_COLOR + EMT_TRANSPARENT_ALPHA_CHANNEL + EMT_TRANSPARENT_VERTEX_ALPHA

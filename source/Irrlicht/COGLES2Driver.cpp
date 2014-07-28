@@ -1,7 +1,4 @@
-// Copyright (C) 2013 Patryk Nadrowski
-// Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// OpenGL ES driver implemented by Christian Stehno and first OpenGL ES 2.0
-// driver implemented by Amundis.
+// Copyright (C) 2014 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -770,131 +767,85 @@ bool COGLES2Driver::endScene()
 			const void* indexList, u32 primitiveCount,
 			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 	{
-		testGLError();
-		if (!checkPrimitiveCount(primitiveCount))
-			return;
-
-		setRenderStates3DMode();
-
-		drawVertexPrimitiveList2d3d(vertices, vertexCount, (const u16*)indexList, primitiveCount, vType, pType, iType);
-	}
-
-
-	void COGLES2Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertexCount,
-			const void* indexList, u32 primitiveCount,
-			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType, bool threed)
-	{
 		if (!primitiveCount || !vertexCount)
 			return;
 
-		if (!threed && !checkPrimitiveCount(primitiveCount))
+		if (!checkPrimitiveCount(primitiveCount))
 			return;
 
 		CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
-		//TODO: treat #ifdef GL_OES_point_size_array outside this if
+		setRenderStates3DMode();
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glEnableVertexAttribArray(EVA_NORMAL);
+		glEnableVertexAttribArray(EVA_TCOORD0);
+
+		switch (vType)
 		{
-			glEnableVertexAttribArray(EVA_COLOR);
-			glEnableVertexAttribArray(EVA_POSITION);
-			if ((pType != scene::EPT_POINTS) && (pType != scene::EPT_POINT_SPRITES))
+		case EVT_STANDARD:
+			if (vertices)
 			{
-				glEnableVertexAttribArray(EVA_TCOORD0);
+				glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+				glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Normal);
+				glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+				glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
 			}
-#ifdef GL_OES_point_size_array
-			else if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness == 0.0f))
-				glEnableClientState(GL_POINT_SIZE_ARRAY_OES);
-#endif
-			if (threed && (pType != scene::EPT_POINTS) && (pType != scene::EPT_POINT_SPRITES))
+			else
 			{
-				glEnableVertexAttribArray(EVA_NORMAL);
+				glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), 0);
+				glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex), buffer_offset(12));
+				glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), buffer_offset(24));
+				glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), buffer_offset(28));
 			}
 
-			switch (vType)
+			break;
+		case EVT_2TCOORDS:
+			glEnableVertexAttribArray(EVA_TCOORD1);
+
+			if (vertices)
 			{
-			case EVT_STANDARD:
-				if (vertices)
-				{
-#ifdef GL_OES_point_size_array
-					if ((pType == scene::EPT_POINTS) || (pType == scene::EPT_POINT_SPRITES))
-					{
-						if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness == 0.0f))
-							glPointSizePointerOES(GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Normal.X);
-					}
-					else
-#endif
-						glVertexAttribPointer(EVA_POSITION, (threed ? 3 : 2), GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
-					if (threed)
-						glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Normal);
-					glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
-					glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
-
-				}
-				else
-				{
-					glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), 0);
-					glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex), buffer_offset(12));
-					glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), buffer_offset(24));
-					glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), buffer_offset(28));
-				}
-
-				if (CurrentTexture[1])
-				{
-					// There must be some optimisation here as it uses the same texture coord !
-					glEnableVertexAttribArray(EVA_TCOORD1);
-					if (vertices)
-						glVertexAttribPointer(EVA_TCOORD1, 2, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
-					else
-						glVertexAttribPointer(EVA_TCOORD1, 2, GL_FLOAT, false, sizeof(S3DVertex), buffer_offset(28));
-				}
-				break;
-			case EVT_2TCOORDS:
-				glEnableVertexAttribArray(EVA_TCOORD1);
-				if (vertices)
-				{
-					glVertexAttribPointer(EVA_POSITION, (threed ? 3 : 2), GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
-					if (threed)
-						glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
-					glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
-					glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
-					glVertexAttribPointer(EVA_TCOORD1, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
-				}
-				else
-				{
-					glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(0));
-					glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(12));
-					glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex2TCoords), buffer_offset(24));
-					glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(28));
-					glVertexAttribPointer(EVA_TCOORD1, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(36));
-
-				}
-				break;
-			case EVT_TANGENTS:
-				glEnableVertexAttribArray(EVA_TANGENT);
-				glEnableVertexAttribArray(EVA_BINORMAL);
-				if (vertices)
-				{
-					glVertexAttribPointer(EVA_POSITION, (threed ? 3 : 2), GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Pos);
-					if (threed)
-						glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Normal);
-					glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Color);
-					glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
-					glVertexAttribPointer(EVA_TANGENT, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
-					glVertexAttribPointer(EVA_BINORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
-				}
-				else
-				{
-					glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(0));
-					glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(12));
-					glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertexTangents), buffer_offset(24));
-					glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(28));
-					glVertexAttribPointer(EVA_TANGENT, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(36));
-					glVertexAttribPointer(EVA_BINORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(48));
-				}
-				break;
+				glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
+				glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
+				glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
+				glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
+				glVertexAttribPointer(EVA_TCOORD1, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
 			}
+			else
+			{
+				glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(0));
+				glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(12));
+				glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex2TCoords), buffer_offset(24));
+				glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(28));
+				glVertexAttribPointer(EVA_TCOORD1, 2, GL_FLOAT, false, sizeof(S3DVertex2TCoords), buffer_offset(36));
+			}
+			break;
+		case EVT_TANGENTS:
+			glEnableVertexAttribArray(EVA_TANGENT);
+			glEnableVertexAttribArray(EVA_BINORMAL);
+
+			if (vertices)
+			{
+				glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Pos);
+				glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Normal);
+				glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Color);
+				glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
+				glVertexAttribPointer(EVA_TANGENT, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
+				glVertexAttribPointer(EVA_BINORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
+			}
+			else
+			{
+				glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(0));
+				glVertexAttribPointer(EVA_NORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(12));
+				glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertexTangents), buffer_offset(24));
+				glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(28));
+				glVertexAttribPointer(EVA_TANGENT, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(36));
+				glVertexAttribPointer(EVA_BINORMAL, 3, GL_FLOAT, false, sizeof(S3DVertexTangents), buffer_offset(48));
+			}
+			break;
 		}
 
-		// draw everything
 		GLenum indexSize = 0;
 
 		switch (iType)
@@ -923,41 +874,8 @@ bool COGLES2Driver::endScene()
 		{
 			case scene::EPT_POINTS:
 			case scene::EPT_POINT_SPRITES:
-			{
-#ifdef GL_OES_point_sprite
-				if (pType == scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
-					glEnable(GL_POINT_SPRITE_OES);
-#endif
-				// if ==0 we use the point size array
-				if (Material.Thickness != 0.f)
-				{
-//						float quadratic[] = {0.0f, 0.0f, 10.01f};
-					//TODO : OpenGL ES 2.0 Port GL_POINT_DISTANCE_ATTENUATION
-					//glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, quadratic);
-//						float maxParticleSize = 1.0f;
-					//TODO : OpenGL ES 2.0 Port GL_POINT_SIZE_MAX
-					//glGetFloatv(GL_POINT_SIZE_MAX, &maxParticleSize);
-//			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
-//			glPointParameterf(GL_POINT_SIZE_MAX,maxParticleSize);
-//			glPointParameterf(GL_POINT_SIZE_MIN,Material.Thickness);
-					//TODO : OpenGL ES 2.0 Port GL_POINT_FADE_THRESHOLD_SIZE
-					//glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, 60.0f);
-					//glPointSize(Material.Thickness);
-				}
-#ifdef GL_OES_point_sprite
-				if (pType == scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
-					glTexEnvf(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE);
-#endif
 				glDrawArrays(GL_POINTS, 0, primitiveCount);
-#ifdef GL_OES_point_sprite
-				if (pType == scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
-				{
-					glDisable(GL_POINT_SPRITE_OES);
-					glTexEnvf(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
-				}
-#endif
-			}
-			break;
+				break;
 			case scene::EPT_LINE_STRIP:
 				glDrawElements(GL_LINE_STRIP, primitiveCount + 1, indexSize, indexList);
 				break;
@@ -976,41 +894,27 @@ bool COGLES2Driver::endScene()
 			case scene::EPT_TRIANGLES:
 				glDrawElements((LastMaterial.Wireframe) ? GL_LINES : (LastMaterial.PointCloud) ? GL_POINTS : GL_TRIANGLES, primitiveCount*3, indexSize, indexList);
 				break;
-			case scene::EPT_QUAD_STRIP:
-// TODO ogl-es
-//		glDrawElements(GL_QUAD_STRIP, primitiveCount*2+2, indexSize, indexList);
-				break;
-			case scene::EPT_QUADS:
-// TODO ogl-es
-//		glDrawElements(GL_QUADS, primitiveCount*4, indexSize, indexList);
-				break;
-			case scene::EPT_POLYGON:
-// TODO ogl-es
-//		glDrawElements(GL_POLYGON, primitiveCount, indexSize, indexList);
+			default:
 				break;
 		}
 
+		switch (vType)
 		{
-			if (vType == EVT_TANGENTS)
-			{
-				glDisableVertexAttribArray(EVA_TANGENT);
-				glDisableVertexAttribArray(EVA_BINORMAL);
-			}
-			if ((vType != EVT_STANDARD) || CurrentTexture[1])
-			{
-				glDisableVertexAttribArray(EVA_TCOORD1);
-			}
-
-#ifdef GL_OES_point_size_array
-			if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness == 0.0f))
-				glDisableClientState(GL_POINT_SIZE_ARRAY_OES);
-#endif
-			glDisableVertexAttribArray(EVA_POSITION);
-			glDisableVertexAttribArray(EVA_NORMAL);
-			glDisableVertexAttribArray(EVA_COLOR);
-			glDisableVertexAttribArray(EVA_TCOORD0);
+		case EVT_2TCOORDS:
+			glDisableVertexAttribArray(EVA_TCOORD1);
+			break;
+		case EVT_TANGENTS:
+			glDisableVertexAttribArray(EVA_TANGENT);
+			glDisableVertexAttribArray(EVA_BINORMAL);
+			break;
+		default:
+			break;
 		}
-		testGLError();
+
+		glDisableVertexAttribArray(EVA_POSITION);
+		glDisableVertexAttribArray(EVA_NORMAL);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_TCOORD0);
 	}
 
 
@@ -1137,7 +1041,17 @@ bool COGLES2Driver::endScene()
 		vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
 		vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
 		vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-		drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glEnableVertexAttribArray(EVA_TCOORD0);
+		glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+		glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+		glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+		glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, indices);
+		glDisableVertexAttribArray(EVA_TCOORD0);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_POSITION);
 	}
 
 
@@ -1283,10 +1197,16 @@ bool COGLES2Driver::endScene()
 
 		if (vtx.size())
 		{
-			drawVertexPrimitiveList2d3d(vtx.pointer(), vtx.size(),
-				indices.pointer(), indices.size() / 3,
-				EVT_STANDARD, scene::EPT_TRIANGLES,
-				EIT_16BIT, false);
+			glEnableVertexAttribArray(EVA_POSITION);
+			glEnableVertexAttribArray(EVA_COLOR);
+			glEnableVertexAttribArray(EVA_TCOORD0);
+			glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &vtx[0].Pos);
+			glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &vtx[0].Color);
+			glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), &vtx[0].TCoords);
+			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, indices.pointer());
+			glDisableVertexAttribArray(EVA_TCOORD0);
+			glDisableVertexAttribArray(EVA_COLOR);
+			glDisableVertexAttribArray(EVA_POSITION);
 		}
 	}
 
@@ -1350,10 +1270,21 @@ bool COGLES2Driver::endScene()
 		vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, useColor[3], tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
 		vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, useColor[2], tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
 		vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, useColor[1], tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-		drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glEnableVertexAttribArray(EVA_TCOORD0);
+		glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+		glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+		glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+		glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, indices);
+		glDisableVertexAttribArray(EVA_TCOORD0);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_POSITION);
 
 		if (clipRect)
 			glDisable(GL_SCISSOR_TEST);
+
 		testGLError();
 	}
 
@@ -1397,6 +1328,7 @@ bool COGLES2Driver::endScene()
 		core::array<u16> quadIndices;
 		vertices.reallocate(indices.size()*4);
 		quadIndices.reallocate(indices.size()*3);
+
 		for (u32 i = 0; i < indices.size(); ++i)
 		{
 			const s32 currentIndex = indices[i];
@@ -1430,13 +1362,24 @@ bool COGLES2Driver::endScene()
 
 			targetPos.X += sourceRects[currentIndex].getWidth();
 		}
+
 		if (vertices.size())
-			drawVertexPrimitiveList2d3d(vertices.pointer(), vertices.size(),
-					quadIndices.pointer(), vertices.size()/2,
-					video::EVT_STANDARD, scene::EPT_TRIANGLES,
-					EIT_16BIT, false);
+		{
+			glEnableVertexAttribArray(EVA_POSITION);
+			glEnableVertexAttribArray(EVA_COLOR);
+			glEnableVertexAttribArray(EVA_TCOORD0);
+			glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &vertices[0].Pos);
+			glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &vertices[0].Color);
+			glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), &vertices[0].TCoords);
+			glDrawElements(GL_TRIANGLES, quadIndices.size(), GL_UNSIGNED_SHORT, quadIndices.pointer());
+			glDisableVertexAttribArray(EVA_TCOORD0);
+			glDisableVertexAttribArray(EVA_COLOR);
+			glDisableVertexAttribArray(EVA_POSITION);
+		}
+
 		if (clipRect)
 			glDisable(GL_SCISSOR_TEST);
+
 		testGLError();
 	}
 
@@ -1470,7 +1413,14 @@ bool COGLES2Driver::endScene()
 		vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, color, 0, 0);
 		vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, color, 0, 0);
 		vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, color, 0, 0);
-		drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+		glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+		glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, indices);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_POSITION);
 	}
 
 
@@ -1508,7 +1458,14 @@ bool COGLES2Driver::endScene()
 		vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, colorRightUp, 0, 0);
 		vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, colorRightDown, 0, 0);
 		vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, colorLeftDown, 0, 0);
-		drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+		glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+		glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, indices);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_POSITION);
 	}
 
 
@@ -1516,21 +1473,33 @@ bool COGLES2Driver::endScene()
 	void COGLES2Driver::draw2DLine(const core::position2d<s32>& start,
 			const core::position2d<s32>& end, SColor color)
 	{
-		disableTextures();
-		setRenderStates2DMode(color.getAlpha() < 255, false, false);
+		if (start==end)
+			drawPixel(start.X, start.Y, color);
+		else
+		{
+			disableTextures();
+			setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
-		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+			const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
-		f32 startX = (f32)start.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 endX = (f32)end.X / (f32)renderTargetSize.Width * 2.f - 1.f;
-		f32 startY = 2.f - (f32)start.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
-		f32 endY = 2.f - (f32)end.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+			f32 startX = (f32)start.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+			f32 endX = (f32)end.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+			f32 startY = 2.f - (f32)start.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+			f32 endY = 2.f - (f32)end.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 
-		u16 indices[] = {0, 1};
-		S3DVertex vertices[2];
-		vertices[0] = S3DVertex(startX, startY, 0, 0, 0, 1, color, 0, 0);
-		vertices[1] = S3DVertex(endX, endY, 0, 0, 0, 1, color, 1, 1);
-		drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES, EIT_16BIT, false);
+			u16 indices[] = {0, 1};
+			S3DVertex vertices[2];
+			vertices[0] = S3DVertex(startX, startY, 0, 0, 0, 1, color, 0, 0);
+			vertices[1] = S3DVertex(endX, endY, 0, 0, 0, 1, color, 1, 1);
+
+			glEnableVertexAttribArray(EVA_POSITION);
+			glEnableVertexAttribArray(EVA_COLOR);
+			glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+			glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+			glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, indices);
+			glDisableVertexAttribArray(EVA_COLOR);
+			glDisableVertexAttribArray(EVA_POSITION);
+		}
 	}
 
 
@@ -1543,13 +1512,20 @@ bool COGLES2Driver::endScene()
 
 		disableTextures();
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
+
 		f32 X = (f32)x / (f32)renderTargetSize.Width * 2.f - 1.f;
 		f32 Y = 2.f - (f32)y / (f32)renderTargetSize.Height * 2.f - 1.f;
 
-		u16 indices[] = {0};
 		S3DVertex vertices[1];
 		vertices[0] = S3DVertex(X, Y, 0, 0, 0, 1, color, 0, 0);
-		drawVertexPrimitiveList2d3d(vertices, 1, indices, 1, video::EVT_STANDARD, scene::EPT_POINTS, EIT_16BIT, false);
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+		glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+		glDrawArrays(GL_POINTS, 0, 1);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_POSITION);
 	}
 
 
@@ -1910,6 +1886,9 @@ bool COGLES2Driver::endScene()
 				getGLBlend(srcAlphaFact), getGLBlend(dstAlphaFact));
 		}
 
+		if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
+			glLineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
+
 		// Anti aliasing
 		if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing)
 		{
@@ -2254,7 +2233,14 @@ bool COGLES2Driver::endScene()
 		vertices[1] = S3DVertex(1.f, 1.f, 0.9f, 0, 0, 1, leftUpEdge, 0, 0);
 		vertices[2] = S3DVertex(1.f, -1.f, 0.9f, 0, 0, 1, rightUpEdge, 0, 0);
 		vertices[3] = S3DVertex(-1.f, -1.f, 0.9f, 0, 0, 1, rightDownEdge, 0, 0);
-		drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+		glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+		glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, indices);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_POSITION);
 
 		if (clearStencilBuffer)
 			glClear(GL_STENCIL_BUFFER_BIT);
@@ -2273,7 +2259,14 @@ bool COGLES2Driver::endScene()
 		S3DVertex vertices[2];
 		vertices[0] = S3DVertex(start.X, start.Y, start.Z, 0, 0, 1, color, 0, 0);
 		vertices[1] = S3DVertex(end.X, end.Y, end.Z, 0, 0, 1, color, 0, 0);
-		drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES);
+
+		glEnableVertexAttribArray(EVA_POSITION);
+		glEnableVertexAttribArray(EVA_COLOR);
+		glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+		glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+		glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, indices);
+		glDisableVertexAttribArray(EVA_COLOR);
+		glDisableVertexAttribArray(EVA_POSITION);
 	}
 
 

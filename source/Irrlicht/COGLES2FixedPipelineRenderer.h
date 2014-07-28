@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in irrlicht.h
+// For conditions of distribution and use, see copyright notice in Irrlicht.h
 
 #ifndef __C_OGLES2_FIXED_PIPELINE_SHADER_H_INCLUDED__
 #define __C_OGLES2_FIXED_PIPELINE_SHADER_H_INCLUDED__
@@ -53,6 +53,8 @@ protected:
 	s32 FogEndID;
 	s32 FogDensityID;
 
+	s32 ThicknessID;
+
 	bool LightEnable;
 	SColorf MaterialAmbient;
 	SColorf MaterialDiffuse;
@@ -73,6 +75,8 @@ protected:
 	f32 FogStart;
 	f32 FogEnd;
 	f32 FogDensity;
+
+	f32 Thickness;
 };
 
 class COGLES2MaterialSolidCB : public COGLES2MaterialBaseCB

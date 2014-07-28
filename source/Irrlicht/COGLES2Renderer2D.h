@@ -1,6 +1,6 @@
 // Copyright (C) 2014 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in irrlicht.h
+// For conditions of distribution and use, see copyright notice in Irrlicht.h
 
 #ifndef __C_OGLES2_RENDERER_2D_H_INCLUDED__
 #define __C_OGLES2_RENDERER_2D_H_INCLUDED__
@@ -30,6 +30,7 @@ public:
 	void setTexture(const ITexture* texture);
 
 protected:
+	s32 ThicknessID;
 	s32 TextureUsageID;
 
 	const ITexture* Texture;
