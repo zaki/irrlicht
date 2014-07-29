@@ -152,28 +152,12 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 //! destructor
 COpenGLTexture::~COpenGLTexture()
 {
-	for (u32 i = 0; i < Driver->MaxSupportedTextures; ++i)
-		if (Driver->CurrentTexture[i] == this)
-		{
-			Driver->setActiveTexture(i, 0);
-			Driver->getBridgeCalls()->setTexture(i, TextureType, true);
-		}
-
-	// Remove this texture from active materials as well
-
-	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-	{
-		if (Driver->Material.TextureLayer[i].Texture == this)
-			Driver->Material.TextureLayer[i].Texture = 0;
-
-		if (Driver->LastMaterial.TextureLayer[i].Texture == this)
-			Driver->LastMaterial.TextureLayer[i].Texture = 0;
-	}
-
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
 	for (u32 i = 0; i < Image.size(); ++i)
 		Image[i]->drop();
+
+	Driver->getBridgeCalls()->resetTexture(this);
 }
 
 

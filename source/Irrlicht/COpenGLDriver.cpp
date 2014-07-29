@@ -4967,6 +4967,23 @@ void COpenGLCallBridge::setMatrixMode(GLenum mode)
 	}
 }
 
+void COpenGLCallBridge::resetTexture(const ITexture* texture)
+{
+	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+	{
+		if (Texture[i] == texture)
+		{
+			if (Driver->MultiTextureExtension)
+				Driver->extGlActiveTexture(GL_TEXTURE0 + i);
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			Texture[i] = 0;
+			TextureType[i] = GL_TEXTURE_2D;
+		}
+	}
+}
+
 void COpenGLCallBridge::setActiveTexture(GLenum texture)
 {
 	if (Driver->MultiTextureExtension && ActiveTexture != texture)
