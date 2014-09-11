@@ -38,17 +38,30 @@
 @interface IrrIPhoneView : UIView
 {
     irr::CIrrDeviceIPhone* Device;
-    UIViewController* ViewController;
+    float Scale;
 }
+- (id)initWithFrame:(CGRect)frame;
 - (void) dealloc;
 - (void) setDevice:(irr::CIrrDeviceIPhone*)device;
-- (void) setViewController:(UIViewController*)viewController;
 @end
 
 @implementation IrrIPhoneView
 + (Class) layerClass
 {
 	return [CAEAGLLayer class];
+}
+
+- (id)initWithFrame:(CGRect)frame;
+{
+    self = [super initWithFrame: frame];
+    if (self)
+    {
+        Scale = 1.0f;
+        
+        if ([self respondsToSelector:@selector(setContentScaleFactor:)])
+            Scale = [[UIScreen mainScreen] scale];
+    }
+    return self;
 }
 
 - (void) dealloc
@@ -66,24 +79,8 @@
 	Device = device; 
 }
 
-- (void) setViewController:(UIViewController*)viewController
-{
-	ViewController = viewController; 
-}
-
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    float scale = 1.0f;
-    
-    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
-        scale = [[UIScreen mainScreen] scale];
-    
-    bool Landscape = false;
-    
-    if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
-        Landscape = true;
-    
 	irr::SEvent ev;
 	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
 	ev.TouchInput.Event = irr::ETIE_PRESSED_DOWN;
@@ -94,34 +91,15 @@
 
 		CGPoint touchPoint = [touch locationInView:self];
         
-        if(Landscape)
-        {
-            ev.TouchInput.X = touchPoint.y*scale;
-            ev.TouchInput.Y = touchPoint.x*scale;
-        }
-        else
-        {
-            ev.TouchInput.X = touchPoint.x*scale;
-            ev.TouchInput.Y = touchPoint.y*scale;
-        }
-        
+        ev.TouchInput.X = touchPoint.x*Scale;
+        ev.TouchInput.Y = touchPoint.y*Scale;
+
         Device->postEventFromUser(ev);
 	}
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    float scale = 1.0f;
-    
-    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
-        scale = [[UIScreen mainScreen] scale];
-    
-    bool Landscape = false;
-    
-    if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
-        Landscape = true;
-    
 	irr::SEvent ev;
 	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
 	ev.TouchInput.Event = irr::ETIE_MOVED;
@@ -132,16 +110,8 @@
 
 		CGPoint touchPoint = [touch locationInView:self];
         
-        if(Landscape)
-        {
-            ev.TouchInput.X = touchPoint.y*scale;
-            ev.TouchInput.Y = touchPoint.x*scale;
-        }
-        else
-        {
-            ev.TouchInput.X = touchPoint.x*scale;
-            ev.TouchInput.Y = touchPoint.y*scale;
-        }
+        ev.TouchInput.X = touchPoint.x*Scale;
+        ev.TouchInput.Y = touchPoint.y*Scale;
         
         Device->postEventFromUser(ev);
 	}
@@ -149,17 +119,6 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    float scale = 1.0f;
-    
-    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
-        scale = [[UIScreen mainScreen] scale];
-    
-    bool Landscape = false;
-    
-    if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
-        Landscape = true;
-    
 	irr::SEvent ev;
 	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
 	ev.TouchInput.Event = irr::ETIE_LEFT_UP;
@@ -170,16 +129,8 @@
 
 		CGPoint touchPoint = [touch locationInView:self];
         
-        if(Landscape)
-        {
-            ev.TouchInput.X = touchPoint.y*scale;
-            ev.TouchInput.Y = touchPoint.x*scale;
-        }
-        else
-        {
-            ev.TouchInput.X = touchPoint.x*scale;
-            ev.TouchInput.Y = touchPoint.y*scale;
-        }
+        ev.TouchInput.X = touchPoint.x*Scale;
+        ev.TouchInput.Y = touchPoint.y*Scale;
         
         Device->postEventFromUser(ev);
 	}
@@ -187,17 +138,6 @@
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    float scale = 1.0f;
-    
-    if ([self respondsToSelector:@selector(setContentScaleFactor:)])
-        scale = [[UIScreen mainScreen] scale];
-    
-    bool Landscape = false;
-    
-    if(ViewController &&  (ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-                           || ViewController.interfaceOrientation == UIInterfaceOrientationLandscapeRight))
-        Landscape = true;
-    
 	irr::SEvent ev;
 	ev.EventType = irr::EET_TOUCH_INPUT_EVENT;
 	ev.TouchInput.Event = irr::ETIE_LEFT_UP;
@@ -208,16 +148,8 @@
 
 		CGPoint touchPoint = [touch locationInView:self];
         
-        if(Landscape)
-        {
-            ev.TouchInput.X = touchPoint.y*scale;
-            ev.TouchInput.Y = touchPoint.x*scale;
-        }
-        else
-        {
-            ev.TouchInput.X = touchPoint.x*scale;
-            ev.TouchInput.Y = touchPoint.y*scale;
-        }
+        ev.TouchInput.X = touchPoint.x*Scale;
+        ev.TouchInput.Y = touchPoint.y*Scale;
         
         Device->postEventFromUser(ev);
 	}
@@ -231,6 +163,7 @@
 	
 	EAGLContext* context;
 	IrrIPhoneView* view;
+    UIViewController* viewController;
 	irr::CIrrDeviceIPhone* dev;
     CMMotionManager* motionManager;
     CMAttitude* referenceAttitude;
@@ -268,6 +201,7 @@
 	{
 		context = nil;
 		view = nil;
+        viewController = nil;
 		dev = device;
         motionManager = [[CMMotionManager alloc] init];
         referenceAttitude = nil;
@@ -280,6 +214,9 @@
     [self deactivateGyroscope];
     [self deactivateDeviceMotion];
     [motionManager release];
+    [context release];
+    [view release];
+    [viewController release];
 	[super dealloc];
 }
 - (void) applicationWillResignActive: (UIApplication *) application
@@ -297,13 +234,16 @@
 - (void) displayCreateInWindow: (UIWindow**) window Width: (int) w Height: (int) h DriverType: (bool) type
 {    
 	// Create our view.
-	CGRect rect = [[UIScreen mainScreen] applicationFrame];
+
+    CGRect rect = [[UIScreen mainScreen] bounds];
+    
+    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
+        rect.size = CGSizeMake(rect.size.height, rect.size.width);
+    
     view = [[IrrIPhoneView alloc] initWithFrame: rect];
     
     if ([view respondsToSelector:@selector(setContentScaleFactor:)])
-    {
         view.ContentScaleFactor = [[UIScreen mainScreen] scale];
-    }
     
 	view.layer.opaque = YES;
 	if (nil != *window)
@@ -311,12 +251,13 @@
         if ((*window).rootViewController != nil)
         {
             (*window).rootViewController.view = view;
-            [view setViewController: (*window).rootViewController];
         }
         else
         {
-            [(*window) addSubview: view];
-            [view setViewController: nil];
+            viewController = [[UIViewController alloc] init];
+            viewController.view = view;
+            
+            (*window).rootViewController = viewController;
         }
 	}
     
@@ -550,6 +491,7 @@ namespace irr
 
     CIrrDeviceIPhone::~CIrrDeviceIPhone()
     {
+        [((IrrIPhoneDevice*)DeviceM) release];
     }
     
     bool CIrrDeviceIPhone::createDisplay()

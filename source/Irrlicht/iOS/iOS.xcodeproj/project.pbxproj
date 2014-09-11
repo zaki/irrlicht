@@ -334,6 +334,26 @@
 		5E3EA6771586A27E00C17C1D /* Irrlicht.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CC15515B4400D9E53B /* Irrlicht.cpp */; };
 		5E3EA6781586A27E00C17C1D /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E3047CD15515B4400D9E53B /* irrXML.cpp */; };
 		5E4C3FEE18C7C8FF002AEDAF /* CMeshTextureLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E4C3FEC18C7C8FF002AEDAF /* CMeshTextureLoader.cpp */; };
+		5E52893919C20FD90028DEC8 /* COGLES2DetailMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52892B19C20FB20028DEC8 /* COGLES2DetailMap.fsh */; };
+		5E52893A19C20FD90028DEC8 /* COGLES2LightmapAdd.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52892C19C20FB20028DEC8 /* COGLES2LightmapAdd.fsh */; };
+		5E52893B19C20FD90028DEC8 /* COGLES2LightmapModulate.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52892D19C20FB20028DEC8 /* COGLES2LightmapModulate.fsh */; };
+		5E52893C19C20FD90028DEC8 /* COGLES2OneTextureBlend.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52892E19C20FB20028DEC8 /* COGLES2OneTextureBlend.fsh */; };
+		5E52893D19C20FD90028DEC8 /* COGLES2Reflection2Layer.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52892F19C20FB20028DEC8 /* COGLES2Reflection2Layer.fsh */; };
+		5E52893E19C20FD90028DEC8 /* COGLES2Reflection2Layer.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893019C20FB20028DEC8 /* COGLES2Reflection2Layer.vsh */; };
+		5E52893F19C20FD90028DEC8 /* COGLES2Solid.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893119C20FB20028DEC8 /* COGLES2Solid.fsh */; };
+		5E52894019C20FD90028DEC8 /* COGLES2Solid.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893219C20FB20028DEC8 /* COGLES2Solid.vsh */; };
+		5E52894119C20FD90028DEC8 /* COGLES2Solid2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893319C20FB20028DEC8 /* COGLES2Solid2.vsh */; };
+		5E52894219C20FD90028DEC8 /* COGLES2Solid2Layer.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893419C20FB20028DEC8 /* COGLES2Solid2Layer.fsh */; };
+		5E52894319C20FD90028DEC8 /* COGLES2SphereMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893519C20FB20028DEC8 /* COGLES2SphereMap.fsh */; };
+		5E52894419C20FD90028DEC8 /* COGLES2SphereMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893619C20FB20028DEC8 /* COGLES2SphereMap.vsh */; };
+		5E52894519C20FD90028DEC8 /* COGLES2TransparentAlphaChannelRef.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893719C20FB20028DEC8 /* COGLES2TransparentAlphaChannelRef.fsh */; };
+		5E52894619C20FD90028DEC8 /* COGLES2TransparentVertexAlpha.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5E52893819C20FB20028DEC8 /* COGLES2TransparentVertexAlpha.fsh */; };
+		5E52894719C20FD90028DEC8 /* COGLES2NormalMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */; };
+		5E52894819C20FD90028DEC8 /* COGLES2NormalMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */; };
+		5E52894919C20FD90028DEC8 /* COGLES2ParallaxMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */; };
+		5E52894A19C20FD90028DEC8 /* COGLES2ParallaxMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248711731788700A13B86 /* COGLES2ParallaxMap.vsh */; };
+		5E52894B19C20FD90028DEC8 /* COGLES2Renderer2D.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248721731788700A13B86 /* COGLES2Renderer2D.fsh */; };
+		5E52894C19C20FD90028DEC8 /* COGLES2Renderer2D.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */; };
 		5E92ED391752B6E800B93CC0 /* CImageLoaderPVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E92ED371752B6E800B93CC0 /* CImageLoaderPVR.cpp */; };
 		5ED2483F1731568400A13B86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E215516CC00014DCBA /* UIKit.framework */; };
 		5ED248401731568400A13B86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E415516CC00014DCBA /* Foundation.framework */; };
@@ -344,14 +364,6 @@
 		5ED24864173161C900A13B86 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2EA15516CC00014DCBA /* OpenGLES.framework */; };
 		5ED24865173161F200A13B86 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EDC9F971638D8CF00E65F28 /* CoreMotion.framework */; };
 		5ED248661731622A00A13B86 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E7CF2E815516CC00014DCBA /* QuartzCore.framework */; };
-		5ED2487C173178DC00A13B86 /* COGLES2FixedPipeline.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */; };
-		5ED2487D173178DC00A13B86 /* COGLES2FixedPipeline.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */; };
-		5ED2487E173178DC00A13B86 /* COGLES2NormalMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */; };
-		5ED2487F173178DC00A13B86 /* COGLES2NormalMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */; };
-		5ED24880173178DC00A13B86 /* COGLES2ParallaxMap.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */; };
-		5ED24881173178DC00A13B86 /* COGLES2ParallaxMap.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248711731788700A13B86 /* COGLES2ParallaxMap.vsh */; };
-		5ED24882173178DC00A13B86 /* COGLES2Renderer2D.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248721731788700A13B86 /* COGLES2Renderer2D.fsh */; };
-		5ED24883173178DC00A13B86 /* COGLES2Renderer2D.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 5ED248731731788700A13B86 /* COGLES2Renderer2D.vsh */; };
 		5ED2488817317FFC00A13B86 /* Interface_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2488617317FFC00A13B86 /* Interface_iPad.xib */; };
 		5ED2488917317FFC00A13B86 /* Interface_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5ED2488717317FFC00A13B86 /* Interface_iPhone.xib */; };
 		5EEAE050171DF3C700C7BC68 /* leakHunter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EEAE04F171DF3C700C7BC68 /* leakHunter.cpp */; };
@@ -1110,6 +1122,20 @@
 		5E4C3FEB18C7C8C2002AEDAF /* IMeshTextureLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMeshTextureLoader.h; path = ../../../include/IMeshTextureLoader.h; sourceTree = "<group>"; };
 		5E4C3FEC18C7C8FF002AEDAF /* CMeshTextureLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMeshTextureLoader.cpp; path = ../CMeshTextureLoader.cpp; sourceTree = "<group>"; };
 		5E4C3FED18C7C8FF002AEDAF /* CMeshTextureLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMeshTextureLoader.h; path = ../CMeshTextureLoader.h; sourceTree = "<group>"; };
+		5E52892B19C20FB20028DEC8 /* COGLES2DetailMap.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2DetailMap.fsh; sourceTree = "<group>"; };
+		5E52892C19C20FB20028DEC8 /* COGLES2LightmapAdd.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2LightmapAdd.fsh; sourceTree = "<group>"; };
+		5E52892D19C20FB20028DEC8 /* COGLES2LightmapModulate.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2LightmapModulate.fsh; sourceTree = "<group>"; };
+		5E52892E19C20FB20028DEC8 /* COGLES2OneTextureBlend.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2OneTextureBlend.fsh; sourceTree = "<group>"; };
+		5E52892F19C20FB20028DEC8 /* COGLES2Reflection2Layer.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2Reflection2Layer.fsh; sourceTree = "<group>"; };
+		5E52893019C20FB20028DEC8 /* COGLES2Reflection2Layer.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2Reflection2Layer.vsh; sourceTree = "<group>"; };
+		5E52893119C20FB20028DEC8 /* COGLES2Solid.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2Solid.fsh; sourceTree = "<group>"; };
+		5E52893219C20FB20028DEC8 /* COGLES2Solid.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2Solid.vsh; sourceTree = "<group>"; };
+		5E52893319C20FB20028DEC8 /* COGLES2Solid2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2Solid2.vsh; sourceTree = "<group>"; };
+		5E52893419C20FB20028DEC8 /* COGLES2Solid2Layer.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2Solid2Layer.fsh; sourceTree = "<group>"; };
+		5E52893519C20FB20028DEC8 /* COGLES2SphereMap.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2SphereMap.fsh; sourceTree = "<group>"; };
+		5E52893619C20FB20028DEC8 /* COGLES2SphereMap.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2SphereMap.vsh; sourceTree = "<group>"; };
+		5E52893719C20FB20028DEC8 /* COGLES2TransparentAlphaChannelRef.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2TransparentAlphaChannelRef.fsh; sourceTree = "<group>"; };
+		5E52893819C20FB20028DEC8 /* COGLES2TransparentVertexAlpha.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = COGLES2TransparentVertexAlpha.fsh; sourceTree = "<group>"; };
 		5E5ADCAB18AD6643003CC7DF /* IContextManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IContextManager.h; path = ../../../include/IContextManager.h; sourceTree = "<group>"; };
 		5E7CF2E215516CC00014DCBA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5E7CF2E415516CC00014DCBA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1131,8 +1157,6 @@
 		5ED2483E1731568400A13B86 /* HelloWorldMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloWorldMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ED2485B173157AD00A13B86 /* main.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = main.cpp; path = ../../../examples/17.HelloWorld_Mobile/main.cpp; sourceTree = "<group>"; };
 		5ED2486217315FA800A13B86 /* media */ = {isa = PBXFileReference; lastKnownFileType = folder; name = media; path = ../../../media; sourceTree = "<group>"; };
-		5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2FixedPipeline.fsh; sourceTree = "<group>"; };
-		5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2FixedPipeline.vsh; sourceTree = "<group>"; };
 		5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2NormalMap.fsh; sourceTree = "<group>"; };
 		5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2NormalMap.vsh; sourceTree = "<group>"; };
 		5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = COGLES2ParallaxMap.fsh; sourceTree = "<group>"; };
@@ -2077,8 +2101,20 @@
 		5ED2486B1731788700A13B86 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				5ED2486C1731788700A13B86 /* COGLES2FixedPipeline.fsh */,
-				5ED2486D1731788700A13B86 /* COGLES2FixedPipeline.vsh */,
+				5E52892B19C20FB20028DEC8 /* COGLES2DetailMap.fsh */,
+				5E52892C19C20FB20028DEC8 /* COGLES2LightmapAdd.fsh */,
+				5E52892D19C20FB20028DEC8 /* COGLES2LightmapModulate.fsh */,
+				5E52892E19C20FB20028DEC8 /* COGLES2OneTextureBlend.fsh */,
+				5E52892F19C20FB20028DEC8 /* COGLES2Reflection2Layer.fsh */,
+				5E52893019C20FB20028DEC8 /* COGLES2Reflection2Layer.vsh */,
+				5E52893119C20FB20028DEC8 /* COGLES2Solid.fsh */,
+				5E52893219C20FB20028DEC8 /* COGLES2Solid.vsh */,
+				5E52893319C20FB20028DEC8 /* COGLES2Solid2.vsh */,
+				5E52893419C20FB20028DEC8 /* COGLES2Solid2Layer.fsh */,
+				5E52893519C20FB20028DEC8 /* COGLES2SphereMap.fsh */,
+				5E52893619C20FB20028DEC8 /* COGLES2SphereMap.vsh */,
+				5E52893719C20FB20028DEC8 /* COGLES2TransparentAlphaChannelRef.fsh */,
+				5E52893819C20FB20028DEC8 /* COGLES2TransparentVertexAlpha.fsh */,
 				5ED2486E1731788700A13B86 /* COGLES2NormalMap.fsh */,
 				5ED2486F1731788700A13B86 /* COGLES2NormalMap.vsh */,
 				5ED248701731788700A13B86 /* COGLES2ParallaxMap.fsh */,
@@ -2169,14 +2205,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5ED2487C173178DC00A13B86 /* COGLES2FixedPipeline.fsh in Resources */,
-				5ED2487D173178DC00A13B86 /* COGLES2FixedPipeline.vsh in Resources */,
-				5ED2487E173178DC00A13B86 /* COGLES2NormalMap.fsh in Resources */,
-				5ED2487F173178DC00A13B86 /* COGLES2NormalMap.vsh in Resources */,
-				5ED24880173178DC00A13B86 /* COGLES2ParallaxMap.fsh in Resources */,
-				5ED24881173178DC00A13B86 /* COGLES2ParallaxMap.vsh in Resources */,
-				5ED24882173178DC00A13B86 /* COGLES2Renderer2D.fsh in Resources */,
-				5ED24883173178DC00A13B86 /* COGLES2Renderer2D.vsh in Resources */,
+				5E52893919C20FD90028DEC8 /* COGLES2DetailMap.fsh in Resources */,
+				5E52893A19C20FD90028DEC8 /* COGLES2LightmapAdd.fsh in Resources */,
+				5E52893B19C20FD90028DEC8 /* COGLES2LightmapModulate.fsh in Resources */,
+				5E52893C19C20FD90028DEC8 /* COGLES2OneTextureBlend.fsh in Resources */,
+				5E52893D19C20FD90028DEC8 /* COGLES2Reflection2Layer.fsh in Resources */,
+				5E52893E19C20FD90028DEC8 /* COGLES2Reflection2Layer.vsh in Resources */,
+				5E52893F19C20FD90028DEC8 /* COGLES2Solid.fsh in Resources */,
+				5E52894019C20FD90028DEC8 /* COGLES2Solid.vsh in Resources */,
+				5E52894119C20FD90028DEC8 /* COGLES2Solid2.vsh in Resources */,
+				5E52894219C20FD90028DEC8 /* COGLES2Solid2Layer.fsh in Resources */,
+				5E52894319C20FD90028DEC8 /* COGLES2SphereMap.fsh in Resources */,
+				5E52894419C20FD90028DEC8 /* COGLES2SphereMap.vsh in Resources */,
+				5E52894519C20FD90028DEC8 /* COGLES2TransparentAlphaChannelRef.fsh in Resources */,
+				5E52894619C20FD90028DEC8 /* COGLES2TransparentVertexAlpha.fsh in Resources */,
+				5E52894719C20FD90028DEC8 /* COGLES2NormalMap.fsh in Resources */,
+				5E52894819C20FD90028DEC8 /* COGLES2NormalMap.vsh in Resources */,
+				5E52894919C20FD90028DEC8 /* COGLES2ParallaxMap.fsh in Resources */,
+				5E52894A19C20FD90028DEC8 /* COGLES2ParallaxMap.vsh in Resources */,
+				5E52894B19C20FD90028DEC8 /* COGLES2Renderer2D.fsh in Resources */,
+				5E52894C19C20FD90028DEC8 /* COGLES2Renderer2D.vsh in Resources */,
 				5ED2486317315FA800A13B86 /* media in Resources */,
 				5ED2488817317FFC00A13B86 /* Interface_iPad.xib in Resources */,
 				5ED2488917317FFC00A13B86 /* Interface_iPhone.xib in Resources */,
