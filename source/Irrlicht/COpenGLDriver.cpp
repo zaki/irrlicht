@@ -725,9 +725,6 @@ bool COpenGLDriver::genericDriverInit()
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-	// Reset The Current Viewport
-	glViewport(0, 0, Params.WindowSize.Width, Params.WindowSize.Height);
-
 	UserClipPlanes.reallocate(MaxUserClipPlanes);
 	for (i=0; i<MaxUserClipPlanes; ++i)
 		UserClipPlanes.push_back(SUserClipPlane());
@@ -3807,20 +3804,14 @@ void COpenGLDriver::setAmbientLight(const SColorf& color)
 // method just a bit.
 void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 {
-	if (area == ViewPort)
-		return;
 	core::rect<s32> vp = area;
-	core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
+	core::rect<s32> rendert(0, 0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
 	vp.clipAgainst(rendert);
 
-	if (vp.getHeight()>0 && vp.getWidth()>0)
-	{
-		glViewport(vp.UpperLeftCorner.X,
-				getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(),
-				vp.getWidth(), vp.getHeight());
+	if (vp.getHeight() > 0 && vp.getWidth() > 0)
+		BridgeCalls->setViewport(vp.UpperLeftCorner.X, getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(), vp.getWidth(), vp.getHeight());
 
-		ViewPort = vp;
-	}
+	ViewPort = vp;
 }
 
 
@@ -4135,7 +4126,7 @@ void COpenGLDriver::removeTexture(ITexture* texture)
 void COpenGLDriver::OnResize(const core::dimension2d<u32>& size)
 {
 	CNullDriver::OnResize(size);
-	glViewport(0, 0, size.Width, size.Height);
+	BridgeCalls->setViewport(0, 0, size.Width, size.Height);
 	Transformation3DChanged = true;
 }
 
@@ -4449,7 +4440,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		if (texture)
 		{
 			// we want to set a new target. so do this.
-			glViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
+			BridgeCalls->setViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
 			RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
 			// calls glDrawBuffer as well
 			RenderTargetTexture->bindRTT();
@@ -4458,7 +4449,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		}
 		else
 		{
-			glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
+			BridgeCalls->setViewport(0, 0, ScreenSize.Width, ScreenSize.Height);
 			RenderTargetTexture = 0;
 			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 			CurrentTarget=ERT_FRAME_BUFFER;
@@ -5061,7 +5052,7 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	ClientStateVertex(false), ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false),
 	CullFaceMode(GL_BACK), CullFace(false),
 	DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), MatrixMode(GL_MODELVIEW),
-	ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB)
+	ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB), ViewportX(0), ViewportY(0)
 {
 	BlendIndexCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->MaxMultipleRenderTargets));
 
@@ -5131,6 +5122,11 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	const core::dimension2d<u32> ScreenSize = Driver->getScreenSize();
+	ViewportWidth = ScreenSize.Width;
+	ViewportHeight = ScreenSize.Height;
+	glViewport(ViewportX, ViewportY, ViewportWidth, ViewportHeight);
 }
 
 COpenGLCallBridge::~COpenGLCallBridge()
@@ -5455,6 +5451,18 @@ void COpenGLCallBridge::setTexture(GLuint stage, bool fixedPipeline)
 			TextureFixedPipeline[stage] = fixedPipeline;
 			Texture[stage] = Driver->CurrentTexture[stage];
 		}
+	}
+}
+
+void COpenGLCallBridge::setViewport(GLint viewportX, GLint viewportY, GLsizei viewportWidth, GLsizei viewportHeight)
+{
+	if (ViewportX != viewportX || ViewportY != viewportY || ViewportWidth != viewportWidth || ViewportHeight != viewportHeight)
+	{
+		glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
+		ViewportX = viewportX;
+		ViewportY = viewportY;
+		ViewportWidth = viewportWidth;
+		ViewportHeight = viewportHeight;
 	}
 }
 

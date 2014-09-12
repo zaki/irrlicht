@@ -703,6 +703,10 @@ namespace video
 
 		void setTexture(GLuint stage, bool fixedPipeline);
 
+		// Viewport calls.
+
+		void setViewport(GLint viewportX, GLint viewportY, GLsizei viewportWidth, GLsizei viewportHeight);
+
 	private:
 		COpenGLDriver* Driver;
 
@@ -737,6 +741,11 @@ namespace video
 
 		const ITexture* Texture[MATERIAL_MAX_TEXTURES];
 		bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
+
+		GLint ViewportX;
+		GLint ViewportY;
+		GLsizei ViewportWidth;
+		GLsizei ViewportHeight;
 	};
 
 } // end namespace video
