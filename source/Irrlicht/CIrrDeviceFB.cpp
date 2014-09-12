@@ -35,8 +35,15 @@ namespace irr
 {
 	namespace video
 	{
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
+			io::IFileSystem* io, video::IContextManager* contextManager);
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OGLES2_
 		IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 			io::IFileSystem* io, video::IContextManager* contextManager);
+#endif
 	}
 }
 
@@ -235,6 +242,23 @@ void CIrrDeviceFB::createDriver()
 		break;
 
 	case video::EDT_OGLES1:
+		#ifdef _IRR_COMPILE_WITH_OGLES1_
+		{
+			video::SExposedVideoData data;
+			s32 width = 0;
+			s32 height = 0;
+			NativeDisplayType display = fbGetDisplay(0);
+			fbGetDisplayGeometry(display, &width, &height);
+			data.OpenGLFB.Window = (void*)fbCreateWindow(display, 0, 0, width, height);
+			ContextManager = new video::CEGLManager();
+			ContextManager->initialize(CreationParams, data);
+			VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
+		}
+		#else
+		os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR);
+		#endif
+		break;
+
 	case video::EDT_OPENGL:
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
