@@ -685,9 +685,20 @@ bool CIrrDeviceLinux::createWindow()
 				y = CreationParams.WindowPosition.Y;
 		}
 
-		// create new Window
-		// Remove window manager decoration in fullscreen
-		WndAttributes.override_redirect = CreationParams.Fullscreen;
+		Atom *list = 0;
+		Atom type = 0;
+		int form = 0;
+		unsigned long remain = 0, len = 0;
+
+		Atom WMCheck = XInternAtom(XDisplay, "_NET_SUPPORTING_WM_CHECK", false);
+		Status s = XGetWindowProperty(XDisplay, DefaultRootWindow(XDisplay), WMCheck, 0L, 1L, False, XA_WINDOW,
+			&type, &form, &len, &remain, (unsigned char **)&list);
+
+		bool netWM = (s == Success) && len;
+
+ 		// create new Window
+ 		// Remove window manager decoration in fullscreen
+		WndAttributes.override_redirect = !netWM && CreationParams.Fullscreen;	
 		XWindow = XCreateWindow(XDisplay,
 				RootWindow(XDisplay, VisualInfo->screen),
 				x, y, Width, Height, 0, VisualInfo->depth,
@@ -702,14 +713,45 @@ bool CIrrDeviceLinux::createWindow()
 		XSetWMProtocols(XDisplay, XWindow, &wmDelete, 1);
 		if (CreationParams.Fullscreen)
 		{
-			XSetInputFocus(XDisplay, XWindow, RevertToParent, CurrentTime);
-			int grabKb = XGrabKeyboard(XDisplay, XWindow, True, GrabModeAsync,
-				GrabModeAsync, CurrentTime);
-			IrrPrintXGrabError(grabKb, "XGrabKeyboard");
-			int grabPointer = XGrabPointer(XDisplay, XWindow, True, ButtonPressMask,
-				GrabModeAsync, GrabModeAsync, XWindow, None, CurrentTime);
-			IrrPrintXGrabError(grabPointer, "XGrabPointer");
-			XWarpPointer(XDisplay, None, XWindow, 0, 0, 0, 0, 0, 0);
+			if (netWM)
+			{
+				// Workaround for Gnome which sometimes creates window smaller than display
+				XSizeHints *hints = XAllocSizeHints();
+				hints->flags=PMinSize;
+				hints->min_width=Width;
+				hints->min_height=Height;
+				XSetWMNormalHints(XDisplay, XWindow, hints);
+				XFree(hints);
+
+				// Set the fullscreen mode via the window manager. This allows alt-tabing, volume hot keys & others.
+				// Get the needed atom from there freedesktop names
+				Atom WMStateAtom = XInternAtom(XDisplay, "_NET_WM_STATE", true);
+				Atom WMFullscreenAtom = XInternAtom(XDisplay, "_NET_WM_STATE_FULLSCREEN", true);
+				// Set the fullscreen property
+				XChangeProperty(XDisplay, XWindow, WMStateAtom, XA_ATOM, 32, PropModeReplace, reinterpret_cast<unsigned char *>(& WMFullscreenAtom), 1);
+
+				// Notify the root window
+				XEvent xev = {0}; // The event should be filled with zeros before setting its attributes
+
+				xev.type = ClientMessage;
+				xev.xclient.window = XWindow;
+				xev.xclient.message_type = WMStateAtom;
+				xev.xclient.format = 32;
+				xev.xclient.data.l[0] = 1;
+				xev.xclient.data.l[1] = WMFullscreenAtom;
+				XSendEvent(XDisplay, DefaultRootWindow(XDisplay), false, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+			}
+			else
+			{
+				XSetInputFocus(XDisplay, XWindow, RevertToParent, CurrentTime);
+				int grabKb = XGrabKeyboard(XDisplay, XWindow, True, GrabModeAsync,
+					GrabModeAsync, CurrentTime);
+				IrrPrintXGrabError(grabKb, "XGrabKeyboard");
+				int grabPointer = XGrabPointer(XDisplay, XWindow, True, ButtonPressMask,
+					GrabModeAsync, GrabModeAsync, XWindow, None, CurrentTime);
+				IrrPrintXGrabError(grabPointer, "XGrabPointer");
+				XWarpPointer(XDisplay, None, XWindow, 0, 0, 0, 0, 0, 0);
+			}
 		}
 	}
 	else
