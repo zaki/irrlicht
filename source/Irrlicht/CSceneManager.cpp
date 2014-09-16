@@ -1204,7 +1204,18 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 
 	// can be seen by a bounding sphere
 	if (!result && (node->getAutomaticCulling() & scene::EAC_FRUSTUM_SPHERE))
-	{ // requires bbox diameter
+	{
+		const core::aabbox3df nbox = node->getTransformedBoundingBox();
+		const float rad = nbox.getRadius();
+		const core::vector3df center = nbox.getCenter();
+
+		const float camrad = cam->getViewFrustum()->getBoundingRadius();
+		const core::vector3df camcenter = cam->getViewFrustum()->getBoundingCenter();
+
+		const float dist = (center - camcenter).getLengthSQ();
+		const float maxdist = (rad + camrad) * (rad + camrad);
+
+		result = dist > maxdist;
 	}
 
 	// can be seen by cam pyramid planes ?
