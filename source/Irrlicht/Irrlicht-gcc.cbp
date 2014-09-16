@@ -1277,6 +1277,7 @@
 		<Unit filename="lzma\Types.h" />
 		<Unit filename="os.cpp" />
 		<Unit filename="os.h" />
+		<Unit filename="utf8.cpp" />
 		<Unit filename="zlib\adler32.c">
 			<Option compilerVar="CC" />
 		</Unit>

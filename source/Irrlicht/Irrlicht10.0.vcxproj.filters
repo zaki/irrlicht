@@ -1838,6 +1838,9 @@
     <ClCompile Include="os.cpp">
       <Filter>Irrlicht\irr</Filter>
     </ClCompile>
+    <ClCompile Include="utf8.cpp">
+      <Filter>Irrlicht\irr</Filter>
+    </ClCompile>
     <ClCompile Include="CProfiler.cpp">
       <Filter>Irrlicht\irr</Filter>
     </ClCompile>

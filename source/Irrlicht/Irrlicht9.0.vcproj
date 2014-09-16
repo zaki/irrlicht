@@ -2735,6 +2735,9 @@
 				<File
 					RelativePath="os.cpp"
 					>
+				<File
+					RelativePath="utf8.cpp"
+					>
 				</File>
 				<File
 					RelativePath="CProfiler.cpp"
