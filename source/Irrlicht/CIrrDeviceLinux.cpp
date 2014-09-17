@@ -698,7 +698,7 @@ bool CIrrDeviceLinux::createWindow()
 
  		// create new Window
  		// Remove window manager decoration in fullscreen
-		WndAttributes.override_redirect = !netWM && CreationParams.Fullscreen;	
+		WndAttributes.override_redirect = !netWM && CreationParams.Fullscreen;
 		XWindow = XCreateWindow(XDisplay,
 				RootWindow(XDisplay, VisualInfo->screen),
 				x, y, Width, Height, 0, VisualInfo->depth,
