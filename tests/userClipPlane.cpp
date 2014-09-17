@@ -12,6 +12,8 @@ static bool withSphere(video::E_DRIVER_TYPE type)
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	stabilizeScreenBackground(driver);
+
 	driver->setClipPlane(0, core::plane3df(core::vector3df(0,18,0), core::vector3df(0,-1,0)), true);
 	smgr->addLightSceneNode(0, core::vector3df(30,30,50));
 	// create first sphere
