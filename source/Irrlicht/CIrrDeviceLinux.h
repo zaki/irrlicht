@@ -393,6 +393,7 @@ namespace irr
 		XImage* SoftwareImage;
 		XIM XInputMethod;
 		XIC XInputContext;
+		bool HasNetWM;
 		mutable core::stringc Clipboard;
 		#ifdef _IRR_LINUX_X11_VIDMODE_
 		XF86VidModeModeInfo OldVideoMode;

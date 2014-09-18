@@ -89,6 +89,9 @@ namespace
 	Atom X_ATOM_TARGETS;
 	Atom X_ATOM_UTF8_STRING;
 	Atom X_ATOM_TEXT;
+	Atom X_ATOM_NETWM_MAXIMIZE_VERT;
+	Atom X_ATOM_NETWM_MAXIMIZE_HORZ;
+	Atom X_ATOM_NETWM_STATE;	
 };
 
 namespace irr
@@ -102,6 +105,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 #ifdef _IRR_COMPILE_WITH_X11_
 	XDisplay(0), VisualInfo(0), Screennr(0), XWindow(0), StdHints(0), SoftwareImage(0),
 	XInputMethod(0), XInputContext(0),
+	HasNetWM(false),
 #endif
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	WindowHasFocus(false), WindowMinimized(false),
@@ -555,6 +559,11 @@ bool CIrrDeviceLinux::createWindow()
 	}
 
 	initXAtoms();
+	
+	// check netwm support
+	Atom WMCheck = XInternAtom(XDisplay, "_NET_SUPPORTING_WM_CHECK", true);
+	if (WMCheck != None)
+		HasNetWM = true;
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 	return true;
@@ -997,9 +1006,13 @@ bool CIrrDeviceLinux::run()
 					}
 					else	// Old version without InputContext. Does not support i18n, but good to have as fallback.
 					{
-						char buf[8]={0};
-						XLookupString(&event.xkey, buf, sizeof(buf), &mp.X11Key, NULL);
-						irrevent.KeyInput.Char = ((wchar_t*)(buf))[0];
+						union
+						{
+							char buf[8];
+							wchar_t wbuf[2];
+						} tmp = {0};
+						XLookupString(&event.xkey, tmp.buf, sizeof(tmp.buf), &mp.X11Key, NULL);
+						irrevent.KeyInput.Char = tmp.wbuf[0];
 					}
 
 					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
@@ -1366,6 +1379,23 @@ void CIrrDeviceLinux::minimizeWindow()
 void CIrrDeviceLinux::maximizeWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
+	// Maximize is not implemented in bare X, it's a WM construct.
+	if (HasNetWM)
+	{
+		XEvent ev = {0};
+
+		ev.type = ClientMessage;
+		ev.xclient.window = XWindow;
+		ev.xclient.message_type = X_ATOM_NETWM_STATE;
+		ev.xclient.format = 32;
+		ev.xclient.data.l[0] = 1; // _NET_WM_STATE_ADD
+		ev.xclient.data.l[1] = X_ATOM_NETWM_MAXIMIZE_VERT;
+		ev.xclient.data.l[2] = X_ATOM_NETWM_MAXIMIZE_HORZ;
+
+		XSendEvent(XDisplay, DefaultRootWindow(XDisplay), false,
+				SubstructureNotifyMask|SubstructureRedirectMask, &ev);
+	}
+	
 	XMapWindow(XDisplay, XWindow);
 #endif
 }
@@ -1375,6 +1405,23 @@ void CIrrDeviceLinux::maximizeWindow()
 void CIrrDeviceLinux::restoreWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
+	// Maximize is not implemented in bare X, it's a WM construct.
+	if (HasNetWM)
+	{
+		XEvent ev = {0};
+
+		ev.type = ClientMessage;
+		ev.xclient.window = XWindow;
+		ev.xclient.message_type = X_ATOM_NETWM_STATE;
+		ev.xclient.format = 32;
+		ev.xclient.data.l[0] = 0; // _NET_WM_STATE_REMOVE
+		ev.xclient.data.l[1] = X_ATOM_NETWM_MAXIMIZE_VERT;
+		ev.xclient.data.l[2] = X_ATOM_NETWM_MAXIMIZE_HORZ;
+
+		XSendEvent(XDisplay, DefaultRootWindow(XDisplay), false,
+				SubstructureNotifyMask|SubstructureRedirectMask, &ev);
+	}
+	
 	XMapWindow(XDisplay, XWindow);
 #endif
 }
@@ -1920,6 +1967,9 @@ void CIrrDeviceLinux::initXAtoms()
 	X_ATOM_TARGETS = XInternAtom(XDisplay, "TARGETS", False);
 	X_ATOM_UTF8_STRING = XInternAtom (XDisplay, "UTF8_STRING", False);
 	X_ATOM_TEXT = XInternAtom (XDisplay, "TEXT", False);
+	X_ATOM_NETWM_MAXIMIZE_VERT = XInternAtom(XDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", true);
+	X_ATOM_NETWM_MAXIMIZE_HORZ = XInternAtom(XDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", true);
+	X_ATOM_NETWM_STATE = XInternAtom(XDisplay, "_NET_WM_STATE", true);	
 #endif
 }
 
