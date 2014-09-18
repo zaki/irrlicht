@@ -1017,6 +1017,13 @@ void CSkinnedMesh::finalize()
 
 	if (HasAnimation)
 	{
+		irr::u32 redundantPosKeys = 0;
+		irr::u32 unorderedPosKeys = 0;
+		irr::u32 redundantScaleKeys = 0;
+		irr::u32 unorderedScaleKeys = 0;
+		irr::u32 redundantRotationKeys = 0;
+		irr::u32 unorderedRotationKeys = 0;
+		
 		//--- optimize and check keyframes ---
 		for(i=0;i<AllJoints.size();++i)
 		{
@@ -1024,44 +1031,14 @@ void CSkinnedMesh::finalize()
 			core::array<SScaleKey> &ScaleKeys = AllJoints[i]->ScaleKeys;
 			core::array<SRotationKey> &RotationKeys = AllJoints[i]->RotationKeys;
 
-			// drop identical middle keys - we only need the first and last frame
-			irr::u32 dropped = dropMiddleKeys<SPositionKey>(PositionKeys, identicalPos);
-			if ( dropped > 0 )
-			{
-				os::Printer::log("Skinned Mesh - unneeded position frames kicked:", core::stringc(dropped).c_str(), ELL_DEBUG);
-			}
-			
-			// drop frames with bad keys (frames out of order)
-			dropped = dropBadKeys<SPositionKey>(PositionKeys);
-			if ( dropped > 0 )
-			{
-				irr::os::Printer::log("Skinned Mesh - bad position frames kicked:", irr::core::stringc(dropped).c_str(), irr::ELL_DEBUG);				
-			}
-			
-			dropped = dropMiddleKeys<SScaleKey>(ScaleKeys, identicalScale);
-			if ( dropped > 0 )
-			{
-				os::Printer::log("Skinned Mesh - unneeded scale frames kicked:", core::stringc(dropped).c_str(), ELL_DEBUG);
-			}
-			
-			dropped = dropBadKeys<SScaleKey>(ScaleKeys);
-			if ( dropped > 0 )
-			{
-				irr::os::Printer::log("Skinned Mesh - bad scale frames kicked:", irr::core::stringc(dropped).c_str(), irr::ELL_DEBUG);				
-			}
-			
-			dropped = dropMiddleKeys<SRotationKey>(RotationKeys, identicalRotation);
-			if ( dropped > 0 )
-			{
-				os::Printer::log("Skinned Mesh - unneeded rotation frames kicked:", core::stringc(dropped).c_str(), ELL_DEBUG);
-			}
-			
-			dropped = dropBadKeys<SRotationKey>(RotationKeys);
-			if ( dropped > 0 )
-			{
-				irr::os::Printer::log("Skinned Mesh - bad rotation frames kicked:", irr::core::stringc(dropped).c_str(), irr::ELL_DEBUG);				
-			}
-
+			// redundant = identical middle keys - we only need the first and last frame
+			// unordered = frames which are out of order - we can't handle those
+			redundantPosKeys += dropMiddleKeys<SPositionKey>(PositionKeys, identicalPos);
+			unorderedPosKeys += dropBadKeys<SPositionKey>(PositionKeys);
+			redundantScaleKeys += dropMiddleKeys<SScaleKey>(ScaleKeys, identicalScale);
+			unorderedScaleKeys += dropBadKeys<SScaleKey>(ScaleKeys);
+			redundantRotationKeys += dropMiddleKeys<SRotationKey>(RotationKeys, identicalRotation);
+			unorderedRotationKeys += dropBadKeys<SRotationKey>(RotationKeys);
 
 			//Fill empty keyframe areas
 			if (PositionKeys.size())
@@ -1123,6 +1100,31 @@ void CSkinnedMesh::finalize()
 					Key->frame=AnimationFrames;
 				}
 			}
+		}
+
+		if ( redundantPosKeys > 0 )
+		{
+			os::Printer::log("Skinned Mesh - redundant position frames kicked:", core::stringc(redundantPosKeys).c_str(), ELL_DEBUG);
+		}
+		if ( unorderedPosKeys > 0 )
+		{
+			irr::os::Printer::log("Skinned Mesh - unsorted position frames kicked:", irr::core::stringc(unorderedPosKeys).c_str(), irr::ELL_DEBUG);				
+		}
+		if ( redundantScaleKeys > 0 )
+		{
+			os::Printer::log("Skinned Mesh - redundant scale frames kicked:", core::stringc(redundantScaleKeys).c_str(), ELL_DEBUG);
+		}
+		if ( unorderedScaleKeys > 0 )
+		{
+			irr::os::Printer::log("Skinned Mesh - unsorted scale frames kicked:", irr::core::stringc(unorderedScaleKeys).c_str(), irr::ELL_DEBUG);
+		}
+		if ( redundantRotationKeys > 0 )
+		{
+			os::Printer::log("Skinned Mesh - redundant rotation frames kicked:", core::stringc(redundantRotationKeys).c_str(), ELL_DEBUG);
+		}
+		if ( unorderedRotationKeys > 0 )
+		{
+			irr::os::Printer::log("Skinned Mesh - unsorted rotation frames kicked:", irr::core::stringc(unorderedRotationKeys).c_str(), irr::ELL_DEBUG);
 		}
 	}
 
