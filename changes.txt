@@ -83,6 +83,13 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.2
 
+ - Fix bug with multiple SetPixelFormat calls. (reported and fixed by anontypist)
+ - Fix bug related to memory release in PNG image loader. Thanks elephoenix for it.
+ - Fix crash in CGUIListBox when users pressed end key folled by any other key in an empty, focused list box (thanks at porcus for report and patch).
+ - Fix use of enabling defines for wal2 (halflife) image loader. Thanks to hendu for noticing.
+ - Fix userClipPlane test by inserting the stabilizeScreenBackground call
+ - Demo enables antialiasing now correct (thanks to Mel for noticing).
+ - Update glext.h (bug #429)
  - Example 22 no longer select a random texture after loading a new texture (thanks at mongoose7 for reporting).
  - Fix bug in IGUISkin serialization which messed up serialization of the button-pressed offsets (thanks at Midnight for reporting).
  - IGUIStaticText::getTextHeight returns now the correct height for texts with newlines even WordWrap is not set.

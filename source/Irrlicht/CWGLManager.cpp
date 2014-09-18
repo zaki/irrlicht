@@ -363,13 +363,13 @@ bool CWGLManager::generateSurface()
 			if (PixelFormat)
 				break;
 		}
-	}
-
-	// set pixel format
-	if (!SetPixelFormat(HDc, PixelFormat, &pfd))
-	{
-		os::Printer::log("Cannot set the pixel format.", ELL_ERROR);
-		return false;
+		
+		// set pixel format
+		if (!SetPixelFormat(HDc, PixelFormat, &pfd))
+		{
+			os::Printer::log("Cannot set the pixel format.", ELL_ERROR);
+			return false;
+		}
 	}
 
 	if (pfd.cAlphaBits != 0)
