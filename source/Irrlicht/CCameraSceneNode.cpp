@@ -36,6 +36,7 @@ CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 i
 
 	recalculateProjectionMatrix();
 	recalculateViewArea();
+	ViewArea.setFarNearDistance(ZFar - ZNear);
 }
 
 
@@ -201,6 +202,7 @@ void CCameraSceneNode::setNearValue(f32 f)
 {
 	ZNear = f;
 	recalculateProjectionMatrix();
+	ViewArea.setFarNearDistance(ZFar - ZNear);
 }
 
 
@@ -208,6 +210,7 @@ void CCameraSceneNode::setFarValue(f32 f)
 {
 	ZFar = f;
 	recalculateProjectionMatrix();
+	ViewArea.setFarNearDistance(ZFar - ZNear);
 }
 
 

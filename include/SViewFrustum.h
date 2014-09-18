@@ -45,7 +45,7 @@ namespace scene
 
 
 		//! Default Constructor
-		SViewFrustum() {}
+		SViewFrustum() : BoundingRadius(0.f), FarNearDistance(0.f) {}
 
 		//! Copy Constructor
 		SViewFrustum(const SViewFrustum& other);
@@ -87,8 +87,17 @@ namespace scene
 		//! returns a bounding box enclosing the whole view frustum
 		const core::aabbox3d<f32> &getBoundingBox() const;
 
-		//! recalculates the bounding box member based on the planes
+		//! recalculates the bounding box and sphere based on the planes
 		inline void recalculateBoundingBox();
+
+		//! get the bounding sphere's radius (of an optimized sphere, not the AABB's)
+		float getBoundingRadius() const;
+
+		//! get the bounding sphere's radius (of an optimized sphere, not the AABB's)
+		core::vector3df getBoundingCenter() const;
+
+		//! the cam should tell the frustum the distance between far and near
+		void setFarNearDistance(float distance);
 
 		//! get the given state's matrix based on frustum E_TRANSFORMATION_STATE
 		core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state);
@@ -118,8 +127,15 @@ namespace scene
 			ETS_COUNT_FRUSTUM
 		};
 
+		//! recalculates the bounding sphere based on the planes
+		inline void recalculateBoundingSphere();
+
 		//! Hold a copy of important transform matrices
 		core::matrix4 Matrices[ETS_COUNT_FRUSTUM];
+
+		float BoundingRadius;
+		float FarNearDistance;
+		core::vector3df BoundingCenter;
 	};
 
 
@@ -137,11 +153,15 @@ namespace scene
 
 		for (i=0; i<ETS_COUNT_FRUSTUM; ++i)
 			Matrices[i]=other.Matrices[i];
+
+		BoundingRadius = other.BoundingRadius;
+		FarNearDistance = other.FarNearDistance;
+		BoundingCenter = other.BoundingCenter;
 	}
 
 	inline SViewFrustum::SViewFrustum(const core::matrix4& mat)
 	{
-		setFrom ( mat );
+		setFrom(mat);
 	}
 
 
@@ -248,6 +268,24 @@ namespace scene
 		boundingBox.addInternalPoint(getFarRightUp());
 		boundingBox.addInternalPoint(getFarLeftDown());
 		boundingBox.addInternalPoint(getFarRightDown());
+
+		// Also recalculate the bounding sphere when the bbox changes
+		recalculateBoundingSphere();
+	}
+
+	inline float SViewFrustum::getBoundingRadius() const
+	{
+		return BoundingRadius;
+	}
+
+	inline core::vector3df SViewFrustum::getBoundingCenter() const
+	{
+		return BoundingCenter;
+	}
+
+	inline void SViewFrustum::setFarNearDistance(float distance)
+	{
+		FarNearDistance = distance;
 	}
 
 	//! This constructor creates a view frustum based on a projection
@@ -307,7 +345,7 @@ namespace scene
 	/*!
 		View Frustum depends on Projection & View Matrix
 	*/
-	inline core::matrix4& SViewFrustum::getTransform(video::E_TRANSFORMATION_STATE state )
+	inline core::matrix4& SViewFrustum::getTransform(video::E_TRANSFORMATION_STATE state)
 	{
 		u32 index = 0;
 		switch ( state )
@@ -325,7 +363,7 @@ namespace scene
 	/*!
 		View Frustum depends on Projection & View Matrix
 	*/
-	inline const core::matrix4& SViewFrustum::getTransform(video::E_TRANSFORMATION_STATE state ) const
+	inline const core::matrix4& SViewFrustum::getTransform(video::E_TRANSFORMATION_STATE state) const
 	{
 		u32 index = 0;
 		switch ( state )
@@ -362,6 +400,45 @@ namespace scene
 		return wasClipped;
 	}
 
+	inline void SViewFrustum::recalculateBoundingSphere()
+	{
+		// Find the center
+		const float shortlen = (getNearLeftUp() - getNearRightUp()).getLength();
+		const float longlen = (getFarLeftUp() - getFarRightUp()).getLength();
+
+		const float farlen = FarNearDistance;
+		const float fartocenter = (farlen + (shortlen - longlen) * (shortlen + longlen)/(4*farlen)) / 2;
+		const float neartocenter = farlen - fartocenter;
+
+		BoundingCenter = cameraPosition + -planes[VF_NEAR_PLANE].Normal * neartocenter;
+
+		// Find the radius
+		core::vector3df dir[8];
+		dir[0] = getFarLeftUp() - BoundingCenter;
+		dir[1] = getFarRightUp() - BoundingCenter;
+		dir[2] = getFarLeftDown() - BoundingCenter;
+		dir[3] = getFarRightDown() - BoundingCenter;
+		dir[4] = getNearRightDown() - BoundingCenter;
+		dir[5] = getNearLeftDown() - BoundingCenter;
+		dir[6] = getNearRightUp() - BoundingCenter;
+		dir[7] = getNearLeftUp() - BoundingCenter;
+
+		u32 i = 0;
+		float diam[8] = { 0.f };
+
+		for (i = 0; i < 8; ++i)
+			diam[i] = dir[i].getLengthSQ();
+
+		float longest = 0;
+
+		for (i = 0; i < 8; ++i)
+		{
+			if (diam[i] > longest)
+				longest = diam[i];
+		}
+
+		BoundingRadius = sqrtf(longest);
+	}
 
 } // end namespace scene
 } // end namespace irr
