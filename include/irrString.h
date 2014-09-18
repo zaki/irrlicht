@@ -27,6 +27,9 @@ This means that c8 strings are treated as ASCII/Latin-1, not UTF-8, and
 are simply expanded to the equivalent wchar_t, while Unicode/wchar_t
 characters are truncated to 8-bit ASCII/Latin-1 characters, discarding all
 other information in the wchar_t.
+
+Helper functions for converting between UTF-8 and wchar_t are provided
+outside the string class for explicit use.
 */
 
 enum eLocaleID
@@ -67,6 +70,18 @@ static inline u32 locale_upper ( u32 x )
 	// ansi
 	return x >= 'a' && x <= 'z' ? x + ( 'A' - 'a' ) : x;
 }
+
+//! Convert this utf-8-encoded string to the platform's wchar.
+/** The resulting string is always NULL-terminated and well-formed.
+\param len The size of the output buffer in bytes.
+*/
+void utf8ToWchar(const char *in, wchar_t *out, const u64 len);
+
+//! Convert this wchar string to utf-8.
+/** The resulting string is always NULL-terminated and well-formed.
+\param len The size of the output buffer in bytes.
+*/
+void wcharToUtf8(const wchar_t *in, char *out, const u64 len);
 
 
 template <typename T, typename TAlloc = irrAllocator<T> >
@@ -1359,7 +1374,6 @@ typedef string<c8> stringc;
 
 //! Typedef for wide character strings
 typedef string<wchar_t> stringw;
-
 
 } // end namespace core
 } // end namespace irr

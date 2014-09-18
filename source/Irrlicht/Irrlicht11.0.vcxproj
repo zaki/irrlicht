@@ -1453,6 +1453,7 @@
     <ClCompile Include="COSOperator.cpp" />
     <ClCompile Include="Irrlicht.cpp" />
     <ClCompile Include="os.cpp" />
+    <ClCompile Include="utf8.cpp" />
 	<ClCompile Include="CProfiler.cpp" />
 	<ClCompile Include="leakHunter.cpp" />
     <ClCompile Include="lzma\LzmaDec.c" />

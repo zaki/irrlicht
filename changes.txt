@@ -7,6 +7,8 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Added helper functions for converting between wchar and utf-8. Patch provided by Hendu.
+- Added sphere frustum culling support. Patch provided by Hendu.
 - Fixed issues with setViewPort method under OpenGL. (reported by anontypist)
 - Fixed several selection, highlighting and clipping bugs in CGUITreeview (thx @ AReichl for the patch + test)
 - Removed DllMain from the static windows build (thx @ AReichl for reporting)
