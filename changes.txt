@@ -7,6 +7,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- ISceneNode::deserializeAttributes uses now old values for parameters which are not in the attributes (thx @entity for noticing).
 - Add interface for easier access to scrollbars for IGUIListBox, IGUITreeView and IGUITable
 - Fix serializing colors as strings. Was previously mixing up strings with number-arrays and hex color values. Now using hex color values always, but also fixed the the handling when it get's number-array strings.
 - Fix IAttributes::setAttribute implementation for textures (did do nothing before).

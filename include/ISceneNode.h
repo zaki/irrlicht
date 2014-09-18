@@ -730,23 +730,26 @@ namespace scene
 		{
 			if (!in)
 				return;
-			Name = in->getAttributeAsString("Name");
-			ID = in->getAttributeAsInt("Id");
+			Name = in->getAttributeAsString("Name", Name);
+			ID = in->getAttributeAsInt("Id", ID);
 
-			setPosition(in->getAttributeAsVector3d("Position"));
-			setRotation(in->getAttributeAsVector3d("Rotation"));
-			setScale(in->getAttributeAsVector3d("Scale"));
+			setPosition(in->getAttributeAsVector3d("Position", RelativeTranslation));
+			setRotation(in->getAttributeAsVector3d("Rotation", RelativeRotation));
+			setScale(in->getAttributeAsVector3d("Scale", RelativeRotation));
 
-			IsVisible = in->getAttributeAsBool("Visible");
-			s32 tmpState = in->getAttributeAsEnumeration("AutomaticCulling",
-					scene::AutomaticCullingNames);
-			if (tmpState != -1)
-				AutomaticCullingState = (u32)tmpState;
-			else
-				AutomaticCullingState = in->getAttributeAsInt("AutomaticCulling");
+			IsVisible = in->getAttributeAsBool("Visible", IsVisible);
+			if (in->existsAttribute("AutomaticCulling"))
+			{
+				s32 tmpState = in->getAttributeAsEnumeration("AutomaticCulling",
+						scene::AutomaticCullingNames);
+				if (tmpState != -1)
+					AutomaticCullingState = (u32)tmpState;
+				else
+					AutomaticCullingState = in->getAttributeAsInt("AutomaticCulling");
+			}
 
-			DebugDataVisible = in->getAttributeAsInt("DebugDataVisible");
-			IsDebugObject = in->getAttributeAsBool("IsDebugObject");
+			DebugDataVisible = in->getAttributeAsInt("DebugDataVisible", DebugDataVisible);
+			IsDebugObject = in->getAttributeAsBool("IsDebugObject", IsDebugObject);
 
 			updateAbsolutePosition();
 		}

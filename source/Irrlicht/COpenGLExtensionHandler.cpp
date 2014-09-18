@@ -802,19 +802,11 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Version>=140) || FeatureAvailable[IRR_EXT_blend_minmax] ||
 			FeatureAvailable[IRR_EXT_blend_subtract] || FeatureAvailable[IRR_EXT_blend_logic_op];
 	case EVDF_BLEND_SEPARATE:
-		return (Version >= 140) || FeatureAvailable[IRR_EXT_blend_func_separate];
+		return (Version>=140) || FeatureAvailable[IRR_EXT_blend_func_separate];
 	case EVDF_TEXTURE_MATRIX:
 		return true;
 	case EVDF_TEXTURE_COMPRESSED_DXT:
 		return FeatureAvailable[IRR_EXT_texture_compression_s3tc];
-	case EVDF_TEXTURE_COMPRESSED_PVRTC: // Currently disabled, but in future maybe special extension will be available.
-	case EVDF_TEXTURE_COMPRESSED_PVRTC2:
-	case EVDF_TEXTURE_COMPRESSED_ETC1:
-		return false;
-	case EVDF_TEXTURE_COMPRESSED_ETC2:
-		return FeatureAvailable[IRR_ARB_ES3_compatibility];
-	case EVDF_TEXTURE_CUBE_MAP:
-		return FeatureAvailable[IRR_ARB_texture_cube_map];
 	default:
 		return false;
 	};
