@@ -441,6 +441,9 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 	GLbitfield mask = 0;
 	if (backBuffer)
 	{
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		Material.ColorMask = ECP_ALL;
+
 		const f32 inv = 1.0f / 255.0f;
 		glClearColor(color.getRed() * inv, color.getGreen() * inv,
 				color.getBlue() * inv, color.getAlpha() * inv);
@@ -451,8 +454,8 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 	if (zBuffer)
 	{
 		BridgeCalls->setDepthMask(true);
+		Material.ZWriteEnable = true;
 
-		LastMaterial.ZWriteEnable=true;
  		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
@@ -634,8 +637,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID);
 
-	//copy data to graphics card
-	glGetError(); // clear error storage
+	// copy data to graphics card
 	if (!newBuffer)
 		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, vbuf);
 	else
@@ -652,7 +654,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return (glGetError() == GL_NO_ERROR);
+	return (!testGLError());
 #else
 	return false;
 #endif
@@ -709,8 +711,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
 
-	//copy data to graphics card
-	glGetError(); // clear error storage
+	// copy data to graphics card
 	if (!newBuffer)
 		extGlBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexCount * indexSize, indices);
 	else
@@ -727,7 +728,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return (glGetError() == GL_NO_ERROR);
+	return (!testGLError());
 #else
 	return false;
 #endif
@@ -2756,7 +2757,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
     // Blend Factor
-    if (material.BlendFactor != 0.f)
+	if (IR(material.BlendFactor) & 0xFFFFFFFF)
 	{
         E_BLEND_FACTOR srcRGBFact = EBF_ZERO;
         E_BLEND_FACTOR dstRGBFact = EBF_ZERO;
