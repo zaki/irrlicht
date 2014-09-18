@@ -7,6 +7,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fixed issues with setViewPort method under OpenGL. (reported by anontypist)
 - Fixed several selection, highlighting and clipping bugs in CGUITreeview (thx @ AReichl for the patch + test)
 - Removed DllMain from the static windows build (thx @ AReichl for reporting)
 - Fixed maximize/minimize under Linux by supporting NETWM hints. Patch provided by hendu.
