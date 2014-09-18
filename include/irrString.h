@@ -75,13 +75,13 @@ static inline u32 locale_upper ( u32 x )
 /** The resulting string is always NULL-terminated and well-formed.
 \param len The size of the output buffer in bytes.
 */
-void utf8ToWchar(const char *in, wchar_t *out, const u64 len);
+IRRLICHT_API void utf8ToWchar(const char *in, wchar_t *out, const u64 len);
 
 //! Convert this wchar string to utf-8.
 /** The resulting string is always NULL-terminated and well-formed.
 \param len The size of the output buffer in bytes.
 */
-void wcharToUtf8(const wchar_t *in, char *out, const u64 len);
+IRRLICHT_API void wcharToUtf8(const wchar_t *in, char *out, const u64 len);
 
 
 template <typename T, typename TAlloc = irrAllocator<T> >
