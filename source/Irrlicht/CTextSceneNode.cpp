@@ -61,7 +61,7 @@ void CTextSceneNode::render()
 		SceneManager->getActiveCamera());
 
 	core::rect<s32> r(pos, core::dimension2d<s32>(1,1));
-	Font->draw(Text.c_str(), r, Color, true, true);
+	Font->draw(Text, r, Color, true, true);
 }
 
 

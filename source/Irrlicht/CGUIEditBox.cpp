@@ -423,133 +423,74 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			return false;
 		}
 	}
-	// default keyboard handling
-	else
-	switch(event.KeyInput.Key)
+	// Some special keys - but only handle them if KeyInput.Char is null as on some systems (X11) they might have same key-code as ansi-keys otherwise
+	else if (event.KeyInput.Char == 0)
 	{
-	case KEY_END:
+		switch(event.KeyInput.Key)
 		{
-			s32 p = Text.size();
-			if (WordWrap || MultiLine)
+		case KEY_END:
 			{
-				p = getLineFromPos(CursorPos);
-				p = BrokenTextPositions[p] + (s32)BrokenText[p].size();
-				if (p > 0 && (Text[p-1] == L'\r' || Text[p-1] == L'\n' ))
-					p-=1;
-			}
+				s32 p = Text.size();
+				if (WordWrap || MultiLine)
+				{
+					p = getLineFromPos(CursorPos);
+					p = BrokenTextPositions[p] + (s32)BrokenText[p].size();
+					if (p > 0 && (Text[p-1] == L'\r' || Text[p-1] == L'\n' ))
+						p-=1;
+				}
 
-			if (event.KeyInput.Shift)
-			{
-				if (MarkBegin == MarkEnd)
-					newMarkBegin = CursorPos;
+				if (event.KeyInput.Shift)
+				{
+					if (MarkBegin == MarkEnd)
+						newMarkBegin = CursorPos;
 
-				newMarkEnd = p;
-			}
-			else
-			{
-				newMarkBegin = 0;
-				newMarkEnd = 0;
-			}
-			CursorPos = p;
-			BlinkStartTime = os::Timer::getTime();
-		}
-		break;
-	case KEY_HOME:
-		{
-
-			s32 p = 0;
-			if (WordWrap || MultiLine)
-			{
-				p = getLineFromPos(CursorPos);
-				p = BrokenTextPositions[p];
-			}
-
-			if (event.KeyInput.Shift)
-			{
-				if (MarkBegin == MarkEnd)
-					newMarkBegin = CursorPos;
-				newMarkEnd = p;
-			}
-			else
-			{
-				newMarkBegin = 0;
-				newMarkEnd = 0;
-			}
-			CursorPos = p;
-			BlinkStartTime = os::Timer::getTime();
-		}
-		break;
-	case KEY_RETURN:
-		if (MultiLine)
-		{
-			inputChar(L'\n');
-		}
-		else
-		{
-			calculateScrollPos();
-			sendGuiEvent( EGET_EDITBOX_ENTER );
-		}
-		return true;
-	case KEY_LEFT:
-
-		if (event.KeyInput.Shift)
-		{
-			if (CursorPos > 0)
-			{
-				if (MarkBegin == MarkEnd)
-					newMarkBegin = CursorPos;
-
-				newMarkEnd = CursorPos-1;
-			}
-		}
-		else
-		{
-			newMarkBegin = 0;
-			newMarkEnd = 0;
-		}
-
-		if (CursorPos > 0) CursorPos--;
-		BlinkStartTime = os::Timer::getTime();
-		break;
-
-	case KEY_RIGHT:
-		if (event.KeyInput.Shift)
-		{
-			if (Text.size() > (u32)CursorPos)
-			{
-				if (MarkBegin == MarkEnd)
-					newMarkBegin = CursorPos;
-
-				newMarkEnd = CursorPos+1;
-			}
-		}
-		else
-		{
-			newMarkBegin = 0;
-			newMarkEnd = 0;
-		}
-
-		if (Text.size() > (u32)CursorPos) CursorPos++;
-		BlinkStartTime = os::Timer::getTime();
-		break;
-	case KEY_UP:
-		if (MultiLine || (WordWrap && BrokenText.size() > 1) )
-		{
-			s32 lineNo = getLineFromPos(CursorPos);
-			s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin > MarkEnd ? MarkBegin : MarkEnd);
-			if (lineNo > 0)
-			{
-				s32 cp = CursorPos - BrokenTextPositions[lineNo];
-				if ((s32)BrokenText[lineNo-1].size() < cp)
-					CursorPos = BrokenTextPositions[lineNo-1] + core::max_((u32)1, BrokenText[lineNo-1].size())-1;
+					newMarkEnd = p;
+				}
 				else
-					CursorPos = BrokenTextPositions[lineNo-1] + cp;
+				{
+					newMarkBegin = 0;
+					newMarkEnd = 0;
+				}
+				CursorPos = p;
+				BlinkStartTime = os::Timer::getTime();
 			}
+			break;
+		case KEY_HOME:
+			{
+
+				s32 p = 0;
+				if (WordWrap || MultiLine)
+				{
+					p = getLineFromPos(CursorPos);
+					p = BrokenTextPositions[p];
+				}
+
+				if (event.KeyInput.Shift)
+				{
+					if (MarkBegin == MarkEnd)
+						newMarkBegin = CursorPos;
+					newMarkEnd = p;
+				}
+				else
+				{
+					newMarkBegin = 0;
+					newMarkEnd = 0;
+				}
+				CursorPos = p;
+				BlinkStartTime = os::Timer::getTime();
+			}
+			break;
+		case KEY_LEFT:
 
 			if (event.KeyInput.Shift)
 			{
-				newMarkBegin = mb;
-				newMarkEnd = CursorPos;
+				if (CursorPos > 0)
+				{
+					if (MarkBegin == MarkEnd)
+						newMarkBegin = CursorPos;
+
+					newMarkEnd = CursorPos-1;
+				}
 			}
 			else
 			{
@@ -557,161 +498,231 @@ bool CGUIEditBox::processKey(const SEvent& event)
 				newMarkEnd = 0;
 			}
 
-		}
-		else
-		{
+			if (CursorPos > 0) CursorPos--;
+			BlinkStartTime = os::Timer::getTime();
+			break;
+
+		case KEY_RIGHT:
+			if (event.KeyInput.Shift)
+			{
+				if (Text.size() > (u32)CursorPos)
+				{
+					if (MarkBegin == MarkEnd)
+						newMarkBegin = CursorPos;
+
+					newMarkEnd = CursorPos+1;
+				}
+			}
+			else
+			{
+				newMarkBegin = 0;
+				newMarkEnd = 0;
+			}
+
+			if (Text.size() > (u32)CursorPos) CursorPos++;
+			BlinkStartTime = os::Timer::getTime();
+			break;
+		case KEY_UP:
+			if (MultiLine || (WordWrap && BrokenText.size() > 1) )
+			{
+				s32 lineNo = getLineFromPos(CursorPos);
+				s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin > MarkEnd ? MarkBegin : MarkEnd);
+				if (lineNo > 0)
+				{
+					s32 cp = CursorPos - BrokenTextPositions[lineNo];
+					if ((s32)BrokenText[lineNo-1].size() < cp)
+						CursorPos = BrokenTextPositions[lineNo-1] + core::max_((u32)1, BrokenText[lineNo-1].size())-1;
+					else
+						CursorPos = BrokenTextPositions[lineNo-1] + cp;
+				}
+
+				if (event.KeyInput.Shift)
+				{
+					newMarkBegin = mb;
+					newMarkEnd = CursorPos;
+				}
+				else
+				{
+					newMarkBegin = 0;
+					newMarkEnd = 0;
+				}
+
+			}
+			else
+			{
+				return false;
+			}
+			break;
+		case KEY_DOWN:
+			if (MultiLine || (WordWrap && BrokenText.size() > 1) )
+			{
+				s32 lineNo = getLineFromPos(CursorPos);
+				s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin < MarkEnd ? MarkBegin : MarkEnd);
+				if (lineNo < (s32)BrokenText.size()-1)
+				{
+					s32 cp = CursorPos - BrokenTextPositions[lineNo];
+					if ((s32)BrokenText[lineNo+1].size() < cp)
+						CursorPos = BrokenTextPositions[lineNo+1] + core::max_((u32)1, BrokenText[lineNo+1].size())-1;
+					else
+						CursorPos = BrokenTextPositions[lineNo+1] + cp;
+				}
+
+				if (event.KeyInput.Shift)
+				{
+					newMarkBegin = mb;
+					newMarkEnd = CursorPos;
+				}
+				else
+				{
+					newMarkBegin = 0;
+					newMarkEnd = 0;
+				}
+
+			}
+			else
+			{
+				return false;
+			}
+			break;
+		case KEY_INSERT:
+			if ( !isEnabled() )
+				break;
+
+			OverwriteMode = !OverwriteMode;
+			break;
+		case KEY_DELETE:
+			if ( !isEnabled() )
+				break;
+
+			if (Text.size() != 0)
+			{
+				core::stringw s;
+
+				if (MarkBegin != MarkEnd)
+				{
+					// delete marked text
+					const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+					const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+
+					s = Text.subString(0, realmbgn);
+					s.append( Text.subString(realmend, Text.size()-realmend) );
+					Text = s;
+
+					CursorPos = realmbgn;
+				}
+				else
+				{
+					// delete text before cursor
+					s = Text.subString(0, CursorPos);
+					s.append( Text.subString(CursorPos+1, Text.size()-CursorPos-1) );
+					Text = s;
+				}
+
+				if (CursorPos > (s32)Text.size())
+					CursorPos = (s32)Text.size();
+
+				BlinkStartTime = os::Timer::getTime();
+				newMarkBegin = 0;
+				newMarkEnd = 0;
+				textChanged = true;
+			}
+			break;
+		default:
 			return false;
 		}
-		break;
-	case KEY_DOWN:
-		if (MultiLine || (WordWrap && BrokenText.size() > 1) )
+	}
+	else
+	{
+		// default keyboard handling
+		switch(event.KeyInput.Key)
 		{
-			s32 lineNo = getLineFromPos(CursorPos);
-			s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin < MarkEnd ? MarkBegin : MarkEnd);
-			if (lineNo < (s32)BrokenText.size()-1)
+		case KEY_RETURN:
+			if (MultiLine)
 			{
-				s32 cp = CursorPos - BrokenTextPositions[lineNo];
-				if ((s32)BrokenText[lineNo+1].size() < cp)
-					CursorPos = BrokenTextPositions[lineNo+1] + core::max_((u32)1, BrokenText[lineNo+1].size())-1;
-				else
-					CursorPos = BrokenTextPositions[lineNo+1] + cp;
-			}
-
-			if (event.KeyInput.Shift)
-			{
-				newMarkBegin = mb;
-				newMarkEnd = CursorPos;
+				inputChar(L'\n');
 			}
 			else
 			{
+				calculateScrollPos();
+				sendGuiEvent( EGET_EDITBOX_ENTER );
+			}
+			return true;
+
+		case KEY_BACK:
+			if ( !isEnabled() )
+				break;
+
+			if (Text.size())
+			{
+				core::stringw s;
+
+				if (MarkBegin != MarkEnd)
+				{
+					// delete marked text
+					const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+					const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+
+					s = Text.subString(0, realmbgn);
+					s.append( Text.subString(realmend, Text.size()-realmend) );
+					Text = s;
+
+					CursorPos = realmbgn;
+				}
+				else
+				{
+					// delete text behind cursor
+					if (CursorPos>0)
+						s = Text.subString(0, CursorPos-1);
+					else
+						s = L"";
+					s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
+					Text = s;
+					--CursorPos;
+				}
+
+				if (CursorPos < 0)
+					CursorPos = 0;
+				BlinkStartTime = os::Timer::getTime();
 				newMarkBegin = 0;
 				newMarkEnd = 0;
+				textChanged = true;
 			}
+			break;
 
-		}
-		else
-		{
+		case KEY_ESCAPE:
+		case KEY_TAB:
+		case KEY_SHIFT:
+		case KEY_F1:
+		case KEY_F2:
+		case KEY_F3:
+		case KEY_F4:
+		case KEY_F5:
+		case KEY_F6:
+		case KEY_F7:
+		case KEY_F8:
+		case KEY_F9:
+		case KEY_F10:
+		case KEY_F11:
+		case KEY_F12:
+		case KEY_F13:
+		case KEY_F14:
+		case KEY_F15:
+		case KEY_F16:
+		case KEY_F17:
+		case KEY_F18:
+		case KEY_F19:
+		case KEY_F20:
+		case KEY_F21:
+		case KEY_F22:
+		case KEY_F23:
+		case KEY_F24:
+			// ignore these keys
 			return false;
+
+		default:
+			inputChar(event.KeyInput.Char);
+			return true;
 		}
-		break;
-
-	case KEY_BACK:
-		if ( !isEnabled() )
-			break;
-
-		if (Text.size())
-		{
-			core::stringw s;
-
-			if (MarkBegin != MarkEnd)
-			{
-				// delete marked text
-				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
-
-				s = Text.subString(0, realmbgn);
-				s.append( Text.subString(realmend, Text.size()-realmend) );
-				Text = s;
-
-				CursorPos = realmbgn;
-			}
-			else
-			{
-				// delete text behind cursor
-				if (CursorPos>0)
-					s = Text.subString(0, CursorPos-1);
-				else
-					s = L"";
-				s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
-				Text = s;
-				--CursorPos;
-			}
-
-			if (CursorPos < 0)
-				CursorPos = 0;
-			BlinkStartTime = os::Timer::getTime();
-			newMarkBegin = 0;
-			newMarkEnd = 0;
-			textChanged = true;
-		}
-		break;
-	case KEY_INSERT:
-		if ( !isEnabled() )
-			break;
-
-		OverwriteMode = !OverwriteMode;
-		break;
-	case KEY_DELETE:
-		if ( !isEnabled() )
-			break;
-
-		if (Text.size() != 0)
-		{
-			core::stringw s;
-
-			if (MarkBegin != MarkEnd)
-			{
-				// delete marked text
-				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
-
-				s = Text.subString(0, realmbgn);
-				s.append( Text.subString(realmend, Text.size()-realmend) );
-				Text = s;
-
-				CursorPos = realmbgn;
-			}
-			else
-			{
-				// delete text before cursor
-				s = Text.subString(0, CursorPos);
-				s.append( Text.subString(CursorPos+1, Text.size()-CursorPos-1) );
-				Text = s;
-			}
-
-			if (CursorPos > (s32)Text.size())
-				CursorPos = (s32)Text.size();
-
-			BlinkStartTime = os::Timer::getTime();
-			newMarkBegin = 0;
-			newMarkEnd = 0;
-			textChanged = true;
-		}
-		break;
-
-	case KEY_ESCAPE:
-	case KEY_TAB:
-	case KEY_SHIFT:
-	case KEY_F1:
-	case KEY_F2:
-	case KEY_F3:
-	case KEY_F4:
-	case KEY_F5:
-	case KEY_F6:
-	case KEY_F7:
-	case KEY_F8:
-	case KEY_F9:
-	case KEY_F10:
-	case KEY_F11:
-	case KEY_F12:
-	case KEY_F13:
-	case KEY_F14:
-	case KEY_F15:
-	case KEY_F16:
-	case KEY_F17:
-	case KEY_F18:
-	case KEY_F19:
-	case KEY_F20:
-	case KEY_F21:
-	case KEY_F22:
-	case KEY_F23:
-	case KEY_F24:
-		// ignore these keys
-		return false;
-
-	default:
-		inputChar(event.KeyInput.Char);
-		return true;
 	}
 
 	// Set new text markers

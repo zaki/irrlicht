@@ -7,6 +7,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- EditBox works now with numpad on X11
 - Added helper functions for converting between wchar and utf-8. Patch provided by Hendu.
 - Added sphere frustum culling support. Patch provided by Hendu.
 - Fixed issues with setViewPort method under OpenGL. (reported by anontypist)
