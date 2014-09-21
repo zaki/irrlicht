@@ -281,7 +281,12 @@ ISceneNode* CBillboardSceneNode::clone(ISceneNode* newParent, ISceneManager* new
 
 	nb->cloneMembers(this, newManager);
 	nb->Material = Material;
+	nb->Size = Size;
 	nb->TopEdgeWidth = this->TopEdgeWidth;
+
+	video::SColor topColor,bottomColor;
+	getColor(topColor,bottomColor);
+	nb->setColor(topColor,bottomColor);
 
 	if ( newParent )
 		nb->drop();
