@@ -467,8 +467,6 @@ namespace video
 
 		E_VERTEX_TYPE LastVertexType;
 
-		SColorf AmbientLight;
-
 		core::stringc VendorName;
 		u16 VendorID;
 

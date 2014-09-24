@@ -183,12 +183,6 @@ namespace video
 		//! returns the maximal amount of dynamic lights the device can handle
 		virtual u32 getMaximalDynamicLightAmount() const;
 
-		//! Sets the dynamic ambient light color.
-		virtual void setAmbientLight(const SColorf& color);
-
-		//! return the dynamic ambient light color.
-		const SColorf& getAmbientLight() const;
-
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const;
 
@@ -505,7 +499,6 @@ namespace video
 		};
 
 		core::array<RequestedLight> RequestedLights;
-		SColorf AmbientLight;
 
 		COGLES2Renderer2D* MaterialRenderer2D;
 

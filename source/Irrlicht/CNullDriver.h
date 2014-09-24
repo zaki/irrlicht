@@ -101,10 +101,10 @@ namespace video
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) _IRR_OVERRIDE_;
 
 		//! Creates a texture from a loaded IImage.
-		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) _IRR_OVERRIDE_;		
+		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) _IRR_OVERRIDE_;
 
 		//! Creates a cube texture from loaded IImages.
-		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! sets a render target
@@ -283,6 +283,9 @@ namespace video
 		//! (0,0,0,0) which means it is dark.
 		//! \param color: New color of the ambient light.
 		virtual void setAmbientLight(const SColorf& color) _IRR_OVERRIDE_;
+
+		//! Get the global ambient light currently used by the driver
+		virtual const SColorf& getAmbientLight() const _IRR_OVERRIDE_;
 
 		//! Adds an external image loader to the engine.
 		virtual void addExternalImageLoader(IImageLoader* loader) _IRR_OVERRIDE_;
@@ -690,7 +693,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! checks triangle count and print warning if wrong
@@ -861,6 +864,8 @@ namespace video
 		bool AllowZWriteOnTransparent;
 
 		bool FeatureEnabled[video::EVDF_COUNT];
+
+		SColorf AmbientLight;
 	};
 
 } // end namespace video

@@ -2101,19 +2101,6 @@ bool COGLES2Driver::endScene()
 		return 8;
 	}
 
-
-	//! Sets the dynamic ambient light color.
-	void COGLES2Driver::setAmbientLight(const SColorf& color)
-	{
-		AmbientLight = color;
-	}
-
-	//! returns the dynamic ambient light color.
-	const SColorf& COGLES2Driver::getAmbientLight() const
-	{
-		return AmbientLight;
-	}
-
 	// this code was sent in by Oliver Klems, thank you
 	void COGLES2Driver::setViewPort(const core::rect<s32>& area)
 	{

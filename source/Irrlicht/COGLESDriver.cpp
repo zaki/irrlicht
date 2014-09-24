@@ -2420,6 +2420,7 @@ u32 COGLES1Driver::getMaximalDynamicLightAmount() const
 //! Sets the dynamic ambient light color.
 void COGLES1Driver::setAmbientLight(const SColorf& color)
 {
+	CNullDriver::setAmbientLight(color);
 	GLfloat data[4] = {color.r, color.g, color.b, color.a};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, data);
 }

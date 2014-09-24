@@ -1906,6 +1906,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 //! \param color: New color of the ambient light.
 void CBurningVideoDriver::setAmbientLight(const SColorf& color)
 {
+	CNullDriver::setAmbientLight(color);
 	LightSpace.Global_AmbientLight.setColorf ( color );
 }
 

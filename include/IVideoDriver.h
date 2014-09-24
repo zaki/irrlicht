@@ -428,7 +428,7 @@ namespace video
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) = 0;
-		
+
 		//! Creates a cube texture from loaded IImages.
 		/** \param name A name for the texture. Later calls of
 		getTexture() with this name will return this texture
@@ -441,7 +441,7 @@ namespace video
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage) = 0;
 
 		//! Adds a new render target texture to the texture cache.
@@ -1456,6 +1456,9 @@ namespace video
 		scene::ISceneManager::setAmbientLight().
 		\param color New color of the ambient light. */
 		virtual void setAmbientLight(const SColorf& color) =0;
+
+		//! Get the global ambient light currently used by the driver
+		virtual const SColorf& getAmbientLight() const = 0;
 
 		//! Only used by the engine internally.
 		/** Passes the global material flag AllowZWriteOnTransparent.

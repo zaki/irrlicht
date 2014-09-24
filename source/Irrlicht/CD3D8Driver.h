@@ -342,8 +342,6 @@ namespace video
 		bool DeviceLost;
 		bool DriverWasReset;
 
-		SColorf AmbientLight;
-
 		SIrrlichtCreationParameters Params;
 	};
 

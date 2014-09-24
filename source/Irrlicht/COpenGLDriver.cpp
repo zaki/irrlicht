@@ -3359,6 +3359,7 @@ u32 COpenGLDriver::getMaximalDynamicLightAmount() const
 //! \param color: New color of the ambient light.
 void COpenGLDriver::setAmbientLight(const SColorf& color)
 {
+	CNullDriver::setAmbientLight(color);
 	GLfloat data[4] = {color.r, color.g, color.b, color.a};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, data);
 }
@@ -3374,7 +3375,7 @@ void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 
 	if (vp.getHeight() > 0 && vp.getWidth() > 0)
 		BridgeCalls->setViewport(vp.UpperLeftCorner.X, getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(), vp.getWidth(), vp.getHeight());
-	
+
 	ViewPort = vp;
 }
 
@@ -4692,11 +4693,11 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	
+
 	const core::dimension2d<u32> ScreenSize = Driver->getScreenSize();
 	ViewportWidth = ScreenSize.Width;
 	ViewportHeight = ScreenSize.Height;
-	glViewport(ViewportX, ViewportY, ViewportWidth, ViewportHeight);	
+	glViewport(ViewportX, ViewportY, ViewportWidth, ViewportHeight);
 }
 
 COpenGLCallBridge::~COpenGLCallBridge()

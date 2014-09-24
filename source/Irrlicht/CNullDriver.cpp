@@ -616,7 +616,7 @@ ITexture* CNullDriver::addTexture(const io::path& name, IImage* image, void* mip
 
 
 //! Creates a cube texture from loaded IImages.
-ITexture* CNullDriver::addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+ITexture* CNullDriver::addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
 {
 	if ( 0 == name.size() || !posXImage || !negXImage || !posYImage || !negYImage || !posZImage || !negZImage)
@@ -641,7 +641,7 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CNullDriver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
+ITexture* CNullDriver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
 {
 	return new SDummyTexture(name);
@@ -943,9 +943,13 @@ u32 CNullDriver::getPrimitiveCountDrawn( u32 param ) const
 //! \param color: New color of the ambient light.
 void CNullDriver::setAmbientLight(const SColorf& color)
 {
+	AmbientLight = color;
 }
 
-
+const SColorf& CNullDriver::getAmbientLight() const
+{
+	return AmbientLight;
+}
 
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 //! driver, it would return "Direct3D8".

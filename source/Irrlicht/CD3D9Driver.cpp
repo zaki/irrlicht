@@ -2808,10 +2808,11 @@ u32 CD3D9Driver::getMaximalDynamicLightAmount() const
 //! \param color: New color of the ambient light.
 void CD3D9Driver::setAmbientLight(const SColorf& color)
 {
+	CNullDriver::setAmbientLight(color);
+
 	if (!pID3DDevice)
 		return;
 
-	AmbientLight = color;
 	D3DCOLOR col = color.toSColor().color;
 	pID3DDevice->SetRenderState(D3DRS_AMBIENT, col);
 }
@@ -3082,7 +3083,7 @@ bool CD3D9Driver::reset()
 	setVertexShader(EVT_STANDARD);
 	setRenderStates3DMode();
 	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
-	setAmbientLight(AmbientLight);
+	setAmbientLight(getAmbientLight());
 
 	return true;
 }
