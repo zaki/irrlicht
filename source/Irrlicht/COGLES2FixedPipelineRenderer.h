@@ -32,6 +32,7 @@ protected:
 	s32 WVMatrixID;
 	s32 NMatrixID;
 
+	s32 GlobalAmbientID;
 	s32 MaterialAmbientID;
 	s32 MaterialDiffuseID;
 	s32 MaterialSpecularID;
@@ -56,6 +57,7 @@ protected:
 	s32 ThicknessID;
 
 	bool LightEnable;
+	SColorf GlobalAmbient;
 	SColorf MaterialAmbient;
 	SColorf MaterialDiffuse;
 	SColorf MaterialSpecular;

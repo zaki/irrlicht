@@ -18,7 +18,7 @@ namespace video
 // Base callback
 
 COGLES2MaterialBaseCB::COGLES2MaterialBaseCB() :
-	FirstUpdateBase(true), WVPMatrixID(-1), WVMatrixID(-1), NMatrixID(-1), MaterialAmbientID(-1), MaterialDiffuseID(-1), MaterialSpecularID(-1), MaterialShininessID(-1), LightCountID(-1), LightTypeID(-1),
+	FirstUpdateBase(true), WVPMatrixID(-1), WVMatrixID(-1), NMatrixID(-1), GlobalAmbientID(-1), MaterialAmbientID(-1), MaterialDiffuseID(-1), MaterialSpecularID(-1), MaterialShininessID(-1), LightCountID(-1), LightTypeID(-1),
 	LightPositionID(-1), LightDirectionID(-1), LightAttenuationID(-1), LightAmbientID(-1), LightDiffuseID(-1), LightSpecularID(-1), FogEnableID(-1), FogTypeID(-1), FogColorID(-1), FogStartID(-1),
 	FogEndID(-1), FogDensityID(-1), ThicknessID(-1), LightEnable(false), MaterialAmbient(SColorf(0.f, 0.f, 0.f)), MaterialDiffuse(SColorf(0.f, 0.f, 0.f)), MaterialSpecular(SColorf(0.f, 0.f, 0.f)),
 	MaterialShininess(0.f), FogEnable(0), FogType(1), FogColor(SColorf(0.f, 0.f, 0.f, 1.f)), FogStart(0.f), FogEnd(0.f), FogDensity(0.f), Thickness(1.f)
@@ -57,6 +57,7 @@ void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, 
 		WVPMatrixID = services->getVertexShaderConstantID("uWVPMatrix");
 		WVMatrixID = services->getVertexShaderConstantID("uWVMatrix");
 		NMatrixID = services->getVertexShaderConstantID("uNMatrix");
+		GlobalAmbientID = services->getVertexShaderConstantID("uGlobalAmbient");
 		MaterialAmbientID = services->getVertexShaderConstantID("uMaterialAmbient");
 		MaterialDiffuseID = services->getVertexShaderConstantID("uMaterialDiffuse");
 		MaterialSpecularID = services->getVertexShaderConstantID("uMaterialSpecular");
@@ -98,6 +99,10 @@ void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, 
 
 	if (LightCount > 0)
 	{
+		video::SColorf globalAmbient(driver->getAmbientLight());
+		services->setVertexShaderConstant(GlobalAmbientID, reinterpret_cast<f32*>(&globalAmbient), 4);
+
+		// TODO: this are all vertex shader constants, why are they all set as pixel shader constants? (it currently works so I'm scared to change it...)
 		services->setPixelShaderConstant(MaterialAmbientID, reinterpret_cast<f32*>(&MaterialAmbient), 4);
 		services->setPixelShaderConstant(MaterialDiffuseID, reinterpret_cast<f32*>(&MaterialDiffuse), 4);
 		services->setPixelShaderConstant(MaterialSpecularID, reinterpret_cast<f32*>(&MaterialSpecular), 4);

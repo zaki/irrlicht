@@ -16,6 +16,7 @@ uniform mat4 uNMatrix;
 uniform mat4 uTMatrix0;
 uniform mat4 uTMatrix1;
 
+uniform vec4 uGlobalAmbient;
 uniform vec4 uMaterialAmbient;
 uniform vec4 uMaterialDiffuse;
 uniform vec4 uMaterialSpecular;
@@ -108,7 +109,7 @@ void main()
 	{
 		vec3 Normal = normalize((uNMatrix * vec4(inVertexNormal, 0.0)).xyz);
 
-		vec4 Ambient = vec4(0.0, 0.0, 0.0, 0.0);
+		vec4 Ambient = uGlobalAmbient;
 		vec4 Diffuse = vec4(0.0, 0.0, 0.0, 0.0);
 		vec4 Specular = vec4(0.0, 0.0, 0.0, 0.0);
 
