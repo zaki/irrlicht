@@ -112,7 +112,7 @@ void main()
 	{
 		vec3 Normal = normalize((uNMatrix * vec4(inVertexNormal, 0.0)).xyz);
 
-		vec4 Ambient = uGlobalAmbient;
+		vec4 Ambient = vec4(0.0, 0.0, 0.0, 0.0);
 		vec4 Diffuse = vec4(0.0, 0.0, 0.0, 0.0);
 		vec4 Specular = vec4(0.0, 0.0, 0.0, 0.0);
 
@@ -140,6 +140,7 @@ void main()
 
 		vVertexColor *= LightColor;
 		vVertexColor += uMaterialEmissive;
+		vVertexColor += uGlobalAmbient;
 		vVertexColor = clamp(vVertexColor, 0.0, 1.0);
 	}
 
