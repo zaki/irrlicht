@@ -18,9 +18,9 @@ namespace video
 // Base callback
 
 COGLES2MaterialBaseCB::COGLES2MaterialBaseCB() :
-	FirstUpdateBase(true), WVPMatrixID(-1), WVMatrixID(-1), NMatrixID(-1), GlobalAmbientID(-1), MaterialAmbientID(-1), MaterialDiffuseID(-1), MaterialSpecularID(-1), MaterialShininessID(-1), LightCountID(-1), LightTypeID(-1),
+	FirstUpdateBase(true), WVPMatrixID(-1), WVMatrixID(-1), NMatrixID(-1), GlobalAmbientID(-1), MaterialAmbientID(-1), MaterialDiffuseID(-1), MaterialEmissiveID(-1), MaterialSpecularID(-1), MaterialShininessID(-1), LightCountID(-1), LightTypeID(-1),
 	LightPositionID(-1), LightDirectionID(-1), LightAttenuationID(-1), LightAmbientID(-1), LightDiffuseID(-1), LightSpecularID(-1), FogEnableID(-1), FogTypeID(-1), FogColorID(-1), FogStartID(-1),
-	FogEndID(-1), FogDensityID(-1), ThicknessID(-1), LightEnable(false), MaterialAmbient(SColorf(0.f, 0.f, 0.f)), MaterialDiffuse(SColorf(0.f, 0.f, 0.f)), MaterialSpecular(SColorf(0.f, 0.f, 0.f)),
+	FogEndID(-1), FogDensityID(-1), ThicknessID(-1), LightEnable(false), MaterialAmbient(SColorf(0.f, 0.f, 0.f)), MaterialDiffuse(SColorf(0.f, 0.f, 0.f)), MaterialEmissive(SColorf(0.f, 0.f, 0.f)), MaterialSpecular(SColorf(0.f, 0.f, 0.f)),
 	MaterialShininess(0.f), FogEnable(0), FogType(1), FogColor(SColorf(0.f, 0.f, 0.f, 1.f)), FogStart(0.f), FogEnd(0.f), FogDensity(0.f), Thickness(1.f)
 {
 	for (u32 i = 0; i < 8; ++i)
@@ -40,6 +40,7 @@ void COGLES2MaterialBaseCB::OnSetMaterial(const SMaterial& material)
 	LightEnable = material.Lighting;
 	MaterialAmbient = SColorf(material.AmbientColor);
 	MaterialDiffuse = SColorf(material.DiffuseColor);
+	MaterialEmissive = SColorf(material.EmissiveColor);
 	MaterialSpecular = SColorf(material.SpecularColor);
 	MaterialShininess = material.Shininess;
 
@@ -60,6 +61,7 @@ void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, 
 		GlobalAmbientID = services->getVertexShaderConstantID("uGlobalAmbient");
 		MaterialAmbientID = services->getVertexShaderConstantID("uMaterialAmbient");
 		MaterialDiffuseID = services->getVertexShaderConstantID("uMaterialDiffuse");
+		MaterialEmissiveID = services->getVertexShaderConstantID("uMaterialEmissive");
 		MaterialSpecularID = services->getVertexShaderConstantID("uMaterialSpecular");
 		MaterialShininessID = services->getVertexShaderConstantID("uMaterialShininess");
 		LightCountID = services->getVertexShaderConstantID("uLightCount");
@@ -105,6 +107,7 @@ void COGLES2MaterialBaseCB::OnSetConstants(IMaterialRendererServices* services, 
 		// TODO: this are all vertex shader constants, why are they all set as pixel shader constants? (it currently works so I'm scared to change it...)
 		services->setPixelShaderConstant(MaterialAmbientID, reinterpret_cast<f32*>(&MaterialAmbient), 4);
 		services->setPixelShaderConstant(MaterialDiffuseID, reinterpret_cast<f32*>(&MaterialDiffuse), 4);
+		services->setPixelShaderConstant(MaterialEmissiveID, reinterpret_cast<f32*>(&MaterialEmissive), 4);
 		services->setPixelShaderConstant(MaterialSpecularID, reinterpret_cast<f32*>(&MaterialSpecular), 4);
 		services->setPixelShaderConstant(MaterialShininessID, &MaterialShininess, 1);
 

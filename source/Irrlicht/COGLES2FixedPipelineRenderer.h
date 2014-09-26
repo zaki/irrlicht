@@ -35,6 +35,7 @@ protected:
 	s32 GlobalAmbientID;
 	s32 MaterialAmbientID;
 	s32 MaterialDiffuseID;
+	s32 MaterialEmissiveID;
 	s32 MaterialSpecularID;
 	s32 MaterialShininessID;
 
@@ -60,6 +61,7 @@ protected:
 	SColorf GlobalAmbient;
 	SColorf MaterialAmbient;
 	SColorf MaterialDiffuse;
+	SColorf MaterialEmissive;
 	SColorf MaterialSpecular;
 	f32 MaterialShininess;
 

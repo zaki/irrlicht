@@ -17,6 +17,7 @@ uniform mat4 uNMatrix;
 uniform vec4 uGlobalAmbient;
 uniform vec4 uMaterialAmbient;
 uniform vec4 uMaterialDiffuse;
+uniform vec4 uMaterialEmissive;
 uniform vec4 uMaterialSpecular;
 uniform float uMaterialShininess;
 
@@ -133,6 +134,8 @@ void main()
 		LightColor.w = 1.0;
 
 		vVertexColor *= LightColor;
+		vVertexColor += uMaterialEmissive;
+		vVertexColor = clamp(vVertexColor, 0.0, 1.0);
 	}
 
 	vFogCoord = length(Position);
