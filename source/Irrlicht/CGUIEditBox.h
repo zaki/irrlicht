@@ -162,6 +162,8 @@ namespace gui
 		void sendGuiEvent(EGUI_EVENT_TYPE type);
 		//! set text markers
 		void setTextMarkers(s32 begin, s32 end);
+		//! delete current selection or next char
+		bool keyDelete();
 
 		bool processKey(const SEvent& event);
 		bool processMouse(const SEvent& event);
