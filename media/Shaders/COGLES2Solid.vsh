@@ -6,7 +6,6 @@ attribute vec3 inVertexPosition;
 attribute vec3 inVertexNormal;
 attribute vec4 inVertexColor;
 attribute vec2 inTexCoord0;
-attribute vec2 inTexCoord1;
 
 /* Uniforms */
 
