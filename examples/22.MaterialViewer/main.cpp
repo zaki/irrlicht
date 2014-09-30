@@ -21,17 +21,6 @@ using namespace irr;
 */
 namespace
 {
-	const wchar_t* const DriverTypeNames[] =
-	{
-		L"NULL",
-		L"SOFTWARE",
-		L"BURNINGSVIDEO",
-		L"DIRECT3D8",
-		L"DIRECT3D9",
-		L"OPENGL",
-		0,
-	};
-
 	// For the gui id's
 	enum EGUI_IDS
 	{
@@ -805,7 +794,7 @@ protected:
 		Device = createDevice(Config.DriverType, Config.ScreenSize);
 		if (!Device)
 			return false;
-		Device->setWindowCaption( DriverTypeNames[Config.DriverType] );
+		Device->setWindowCaption( core::stringw(video::DRIVER_TYPE_NAMES[Config.DriverType]).c_str() );
 		Device->setEventReceiver(this);
 
 		scene::ISceneManager* smgr = Device->getSceneManager();
