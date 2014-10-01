@@ -189,7 +189,7 @@ gui::IGUIEditBox* CColorControl::addEditForNumbers(gui::IGUIEnvironment* guiEnv,
 }
 
 // Get the color value from the editfields
-video::SColor CColorControl::getColorFromEdits()
+video::SColor CColorControl::getColorFromEdits() const
 {
 	video::SColor col;
 
@@ -281,7 +281,7 @@ void CTypicalColorsControl::setColorsToMaterialColors(const video::SMaterial & m
 }
 
 // Update all changed colors in the material
-void CTypicalColorsControl::updateMaterialColors(video::SMaterial & material)
+void CTypicalColorsControl::updateMaterialColors(video::SMaterial & material) const
 {
 	if ( ControlAmbientColor->isDirty() )
 		material.AmbientColor = ControlAmbientColor->getColor();

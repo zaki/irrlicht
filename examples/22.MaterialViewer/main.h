@@ -39,7 +39,7 @@ protected:
 	irr::gui::IGUIEditBox* addEditForNumbers(irr::gui::IGUIEnvironment* guiEnv, const irr::core::position2d<irr::s32> & pos, const wchar_t *text, irr::s32 id, irr::gui::IGUIElement * parent);
 
 	// Get the color value from the editfields
-	irr::video::SColor getColorFromEdits();
+	irr::video::SColor getColorFromEdits() const;
 
 	// Fill the editfields with the value for the given color
 	void setEditsFromColor(irr::video::SColor col);
@@ -72,7 +72,7 @@ public:
 	void setColorsToMaterialColors(const irr::video::SMaterial & material);
 
 	// Update all changed colors in the material
-	void updateMaterialColors(irr::video::SMaterial & material);
+	void updateMaterialColors(irr::video::SMaterial & material) const;
 
 	// Set the color values to those from the light data
 	void setColorsToLightDataColors(const irr::video::SLight & lightData);
@@ -266,9 +266,6 @@ protected:
 
 	// Update one frame
 	bool update();
-
-	// Run the application. Our main loop.
-	void run();
 
 	// Close down the application
 	void quit();
