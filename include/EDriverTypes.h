@@ -5,6 +5,8 @@
 #ifndef __E_DRIVER_TYPES_H_INCLUDED__
 #define __E_DRIVER_TYPES_H_INCLUDED__
 
+#include "irrTypes.h"
+
 namespace irr
 {
 namespace video
@@ -62,10 +64,23 @@ namespace video
 		//! No driver, just for counting the elements
 		EDT_COUNT
 	};
+	
+	const c8* const DRIVER_TYPE_NAMES[] = 
+	{
+		"NullDriver",
+		"Software Renderer",
+		"Burning's Video",
+		"Direct3D 8.1",
+		"Direct3D 9.0c",
+		"OpenGL 1.x/2.x/3.x",
+		"OpenGL ES1",
+		"OpenGL ES2",
+		0 
+	};
+	
 
 } // end namespace video
 } // end namespace irr
 
 
 #endif
-

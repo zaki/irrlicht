@@ -594,33 +594,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if ( !isEnabled() )
 				break;
 
-			if (Text.size() != 0)
+			if (keyDelete())
 			{
-				core::stringw s;
-
-				if (MarkBegin != MarkEnd)
-				{
-					// delete marked text
-					const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-					const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
-
-					s = Text.subString(0, realmbgn);
-					s.append( Text.subString(realmend, Text.size()-realmend) );
-					Text = s;
-
-					CursorPos = realmbgn;
-				}
-				else
-				{
-					// delete text before cursor
-					s = Text.subString(0, CursorPos);
-					s.append( Text.subString(CursorPos+1, Text.size()-CursorPos-1) );
-					Text = s;
-				}
-
-				if (CursorPos > (s32)Text.size())
-					CursorPos = (s32)Text.size();
-
 				BlinkStartTime = os::Timer::getTime();
 				newMarkBegin = 0;
 				newMarkEnd = 0;
@@ -689,6 +664,31 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			}
 			break;
 
+		case KEY_DELETE:
+
+			// At least on X11 we get a char with 127 when the delete key is pressed.
+			// We get no char when the delete key on numkeys is pressed with numlock off (handled in the other case calling keyDelete as Char is then 0).
+			// We get a keykode != 127 when delete key on numlock is pressed with numlock on.
+			if (event.KeyInput.Char == 127)
+			{
+				if ( !isEnabled() )
+					break;
+
+				if (keyDelete())
+				{
+					BlinkStartTime = os::Timer::getTime();
+					newMarkBegin = 0;
+					newMarkEnd = 0;
+					textChanged = true;
+				}
+				break;
+			}
+			else
+			{
+				inputChar(event.KeyInput.Char);
+				return true;
+			}
+
 		case KEY_ESCAPE:
 		case KEY_TAB:
 		case KEY_SHIFT:
@@ -743,6 +743,40 @@ bool CGUIEditBox::processKey(const SEvent& event)
 	return true;
 }
 
+bool CGUIEditBox::keyDelete()
+{
+	if (Text.size() != 0)
+	{
+		core::stringw s;
+
+		if (MarkBegin != MarkEnd)
+		{
+			// delete marked text
+			const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+			const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+
+			s = Text.subString(0, realmbgn);
+			s.append( Text.subString(realmend, Text.size()-realmend) );
+			Text = s;
+
+			CursorPos = realmbgn;
+		}
+		else
+		{
+			// delete text before cursor
+			s = Text.subString(0, CursorPos);
+			s.append( Text.subString(CursorPos+1, Text.size()-CursorPos-1) );
+			Text = s;
+		}
+
+		if (CursorPos > (s32)Text.size())
+			CursorPos = (s32)Text.size();
+
+		return true;
+	}
+
+	return false;
+}
 
 //! draws the element and its children
 void CGUIEditBox::draw()
