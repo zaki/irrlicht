@@ -3,7 +3,8 @@
 This example can be used to play around with material settings and watch the results.
 Only the default non-shader materials are used in here.
 
-You have a node witha mesh, one dynamic light and global ambient light to play around with.
+You have a node with a mesh, one dynamic light and global ambient light to play around with.
+You can move the light with cursor-keys and +/-.
 */
 
 // TODO: Should be possible to set all material values by the GUI.
