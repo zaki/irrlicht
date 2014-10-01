@@ -6,6 +6,10 @@ Only the default non-shader materials are used in here.
 You have a node witha mesh, one dynamic light and global ambient light to play around with.
 */
 
+// TODO: Should be possible to set all material values by the GUI.
+//		 For now just change the defaultMaterial in CApp::init for the rest.
+// TODO: Allow users to switch between a sphere and a box meshĵ
+
 #include <irrlicht.h>
 #include "driverChoice.h"
 #include "main.h"
@@ -532,6 +536,11 @@ void SMaterialControl::selectTextures(const irr::core::stringw& name)
 		TextureControls[i]->selectTextureByName(name);
 }
 
+bool SMaterialControl::isLightingEnabled() const
+{
+	return ButtonLighting && ButtonLighting->isPressed();
+}
+
 void SMaterialControl::updateMaterial(video::SMaterial & material)
 {
 	TypicalColorsControl->updateMaterialColors(material);
@@ -615,6 +624,10 @@ bool CApp::OnEvent(const SEvent &event)
 			break;
 		}
 	}
+	else if (event.EventType == EET_KEY_INPUT_EVENT)
+	{
+		KeysPressed[event.KeyInput.Key] = event.KeyInput.PressedDown;
+	}
 
 	return false;
 }
@@ -672,11 +685,16 @@ bool CApp::init(int argc, char *argv[])
 										core::vector3df(0, 10, 0),
 										-1);
 
+	// default material
+	video::SMaterial defaultMaterial;
+	defaultMaterial.Shininess = 20.f;
+
 	// add the nodes which are used to show the materials
 	SceneNode = smgr->addCubeSceneNode (30.0f, 0, -1,
 									   core::vector3df(0, 0, 0),
 									   core::vector3df(0.f, 45.f, 0.f),
 									   core::vector3df(1.0f, 1.0f, 1.0f));
+	SceneNode->getMaterial(0) = defaultMaterial;
 	MeshMaterialControl.init( SceneNode, Device, core::position2d<s32>(10,controlsTop), L"Material" );
 	MeshMaterialControl.selectTextures(core::stringw("CARO_A8R8G8B8"));	// set a useful default texture
 
@@ -692,9 +710,9 @@ bool CApp::init(int argc, char *argv[])
 
 
 	// add one light
-	NodeLight = smgr->addLightSceneNode(0, Camera->getPosition(),
-													video::SColorf(1.0f, 1.0f, 1.0f),
-													35.0f);
+	NodeLight = smgr->addLightSceneNode(0, core::vector3df(0, 0, -40),
+											video::SColorf(1.0f, 1.0f, 1.0f),
+											35.0f);
 	LightControl.init(NodeLight, guiEnv, core::position2d<s32>(550,controlsTop), L"Dynamic light" );
 
 	// one large cube around everything. That's mainly to make the light more obvious.
@@ -732,6 +750,12 @@ bool CApp::update()
 	if ( !Device->run() )
 		return false;
 
+	// Figure out delta time since last frame
+	ITimer * timer = Device->getTimer();
+	u32 newTick = timer->getRealTime();
+	f32 deltaTime = RealTimeTick > 0 ? f32(newTick-RealTimeTick)/1000.0 : 0.f;	// in seconds
+	RealTimeTick = newTick;
+
 	if ( Device->isWindowActive() || Config.RenderInBackground )
 	{
 		gui::IGUIEnvironment* guiEnv = Device->getGUIEnvironment();
@@ -758,12 +782,39 @@ bool CApp::update()
 			GlobalAmbient->resetDirty();
 		}
 
+		// Let the user move the light around
+		const float zoomSpeed = 10.f * deltaTime;
+		const float rotationSpeed = 100.f * deltaTime;
+		if ( KeysPressed[KEY_PLUS] || KeysPressed[KEY_ADD])
+			ZoomOut(NodeLight, zoomSpeed);
+		if ( KeysPressed[KEY_MINUS] || KeysPressed[KEY_SUBTRACT])
+			ZoomOut(NodeLight, -zoomSpeed);
+		if ( KeysPressed[KEY_RIGHT])
+			RotateHorizontal(NodeLight, rotationSpeed);
+		if ( KeysPressed[KEY_LEFT])
+			RotateHorizontal(NodeLight, -rotationSpeed);
+		UpdateRotationAxis(NodeLight, LightRotationAxis);
+		if ( KeysPressed[KEY_UP])
+			RotateAroundAxis(NodeLight, rotationSpeed, LightRotationAxis);
+		if ( KeysPressed[KEY_DOWN])
+			RotateAroundAxis(NodeLight, -rotationSpeed, LightRotationAxis);
+
 		// draw everything
 		video::SColor bkColor( skin->getColor(gui::EGDC_APP_WORKSPACE) );
 		videoDriver->beginScene(true, true, bkColor);
 
 		smgr->drawAll();
 		guiEnv->drawAll();
+
+		if ( MeshMaterialControl.isLightingEnabled() )
+		{
+			// draw a line from the light to the target
+			video::SMaterial lineMaterial;
+			lineMaterial.Lighting = false;
+			videoDriver->setMaterial(lineMaterial);
+			videoDriver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+			videoDriver->draw3DLine(NodeLight->getAbsolutePosition(), SceneNode->getAbsolutePosition());
+		}
 
 		videoDriver->endScene();
 	}
@@ -869,6 +920,55 @@ void CApp::loadTexture(const io::path &name)
 {
 	Device->getVideoDriver()->getTexture(name);
 	MeshMaterialControl.updateTextures();
+}
+
+void CApp::RotateHorizontal(irr::scene::ISceneNode* node, irr::f32 angle)
+{
+	if ( node )
+	{
+		core::vector3df pos(node->getPosition());
+		core::vector2df dir(pos.X, pos.Z);
+		dir.rotateBy(angle);
+		pos.X = dir.X;
+		pos.Z = dir.Y;
+		node->setPosition(pos);
+	}
+}
+
+void CApp::RotateAroundAxis(irr::scene::ISceneNode* node, irr::f32 angle, const irr::core::vector3df& axis)
+{
+	if ( node )
+	{
+		// TOOD: yeah, doesn't rotate around top/bottom yet. Fixes welcome.
+		core::vector3df pos(node->getPosition());
+		core::matrix4 mat;
+		mat.setRotationAxisRadians (core::degToRad(angle), axis);
+		mat.rotateVect(pos);
+		node->setPosition(pos);
+	}
+}
+
+void CApp::ZoomOut(irr::scene::ISceneNode* node, irr::f32 units)
+{
+	if ( node )
+	{
+		core::vector3df pos(node->getPosition());
+		irr::f32 len = pos.getLength() + units;
+		pos.setLength(len);
+		node->setPosition(pos);
+	}
+}
+
+void CApp::UpdateRotationAxis(irr::scene::ISceneNode* node, irr::core::vector3df& axis)
+{
+	// Find a perpendicular axis to the x,z vector. If none found (vector straight up/down) continue to use the existing one.
+	core::vector3df pos(node->getPosition());
+	if ( !core::equals(pos.X, 0.f) || !core::equals(pos.Z, 0.f) )
+	{
+		axis.X = -pos.Z;
+		axis.Z = pos.X;
+		axis.normalize();
+	}
 }
 
 /*

@@ -164,6 +164,8 @@ struct SMaterialControl
 
 	void selectTextures(const irr::core::stringw& name);
 
+	bool isLightingEnabled() const;
+
 protected:
 
 	void updateMaterial(irr::video::SMaterial & material);
@@ -229,13 +231,16 @@ public:
 	// constructor
 	CApp()
 	: IsRunning(false)
+	, RealTimeTick(0)
 	, Device(0)
 	, MeshManipulator(0)
 	, Camera(0)
 	, SceneNode(0), SceneNode2T(0), SceneNodeTangents(0), NodeLight(0)
+	, LightRotationAxis(irr::core::vector3df(1,0,0))
 	, ControlVertexColors(0)
 	, GlobalAmbient(0)
 	{
+		memset(KeysPressed, 0, sizeof KeysPressed);
 	}
 
 	// destructor
@@ -276,9 +281,17 @@ protected:
 	// Load a texture and make sure nodes know it when more textures are available.
 	void loadTexture(const irr::io::path &name);
 
+	// Rotate a node around the origin (0,0,0)
+	void RotateHorizontal(irr::scene::ISceneNode* node, irr::f32 angle);
+	void RotateAroundAxis(irr::scene::ISceneNode* node, irr::f32 angle, const irr::core::vector3df& axis);
+	void ZoomOut(irr::scene::ISceneNode* node, irr::f32 units);
+	void UpdateRotationAxis(irr::scene::ISceneNode* node, irr::core::vector3df& axis);
+
+
 private:
 	SConfig	Config;
 	bool	IsRunning;
+	irr::u32 RealTimeTick;
 	irr::IrrlichtDevice * 			Device;
 	irr::scene::IMeshManipulator* 	MeshManipulator;
 	irr::scene::ICameraSceneNode *	Camera;
@@ -286,10 +299,12 @@ private:
 	irr::scene::IMeshSceneNode* 	SceneNode2T;
 	irr::scene::IMeshSceneNode* 	SceneNodeTangents;
 	irr::scene::ILightSceneNode* 	NodeLight;
+	irr::core::vector3df LightRotationAxis;
 	SMaterialControl	MeshMaterialControl;
 	SLightNodeControl	LightControl;
 	CColorControl*	ControlVertexColors;
 	CColorControl*	GlobalAmbient;
+	bool KeysPressed[irr::KEY_KEY_CODES_COUNT];
 };
 
 #endif
