@@ -5,6 +5,7 @@ Only the default non-shader materials are used in here.
 
 You have a node with a mesh, one dynamic light and global ambient light to play around with.
 You can move the light with cursor-keys and +/-.
+You can move the camera while left-mouse button is clicked.
 */
 
 // TODO: Should be possible to set all material values by the GUI.
@@ -629,6 +630,23 @@ bool CApp::OnEvent(const SEvent &event)
 	{
 		KeysPressed[event.KeyInput.Key] = event.KeyInput.PressedDown;
 	}
+	else if (event.EventType == EET_MOUSE_INPUT_EVENT)
+	{
+		if (!MousePressed && event.MouseInput.isLeftPressed())
+		{
+			gui::IGUIEnvironment* guiEnv = Device->getGUIEnvironment();
+			if ( guiEnv->getHovered() == guiEnv->getRootGUIElement() )	// Click on background
+			{
+				MousePressed  = true;
+				MouseStart.X = event.MouseInput.X;
+				MouseStart.Y = event.MouseInput.Y;
+			}
+		}
+		else if (MousePressed && !event.MouseInput.isLeftPressed())
+		{
+			MousePressed = false;
+		}
+	}
 
 	return false;
 }
@@ -799,6 +817,16 @@ bool CApp::update()
 			RotateAroundAxis(NodeLight, rotationSpeed, LightRotationAxis);
 		if ( KeysPressed[KEY_DOWN])
 			RotateAroundAxis(NodeLight, -rotationSpeed, LightRotationAxis);
+
+		// Let the user move the camera around
+		if (MousePressed)
+		{
+			gui::ICursorControl* cursorControl = Device->getCursorControl();
+			const core::position2d<s32>& mousePos = cursorControl->getPosition ();
+			RotateHorizontal(Camera, rotationSpeed * (MouseStart.X - mousePos.X));
+			RotateAroundAxis(Camera, rotationSpeed * (mousePos.Y - MouseStart.Y), CameraRotationAxis);
+			MouseStart = mousePos;
+		}
 
 		// draw everything
 		video::SColor bkColor( skin->getColor(gui::EGDC_APP_WORKSPACE) );
