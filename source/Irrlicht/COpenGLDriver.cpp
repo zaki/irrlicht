@@ -2208,7 +2208,10 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 	OverrideMaterial.apply(Material);
 
 	for (u32 i = 0; i < MaxTextureUnits; ++i)
+	{
 		setActiveTexture(i, material.getTexture(i));
+		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+	}
 }
 
 
@@ -2869,33 +2872,20 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
 		GLenum tmpTextureType = (tmpTexture) ? tmpTexture->getOpenGLTextureType() : GL_TEXTURE_2D;
 
+		bool fixedPipeline = false;
+
 		if(FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
 		{
 			if (i>0 && !MultiTextureExtension)
 				break;
 
-			if (!CurrentTexture[i])
-			{
-				BridgeCalls->setTexture(i, tmpTextureType, true);
-
-				continue;
-			}
-			else
-			{
-				BridgeCalls->setTexture(i, tmpTextureType, true);
-
-				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
-			}
+			fixedPipeline = true;
 		}
-		else
-		{
-			if (CurrentTexture[i])
-			{
-				BridgeCalls->setTexture(i, tmpTextureType, false);
-			}
-			else
-				continue;
-		}
+
+		BridgeCalls->setTexture(i, tmpTextureType, fixedPipeline);
+
+		if (!CurrentTexture[i])
+			continue;
 
 		if(resetAllRenderstates)
 			tmpTexture->getStatesCache().IsCached = false;
@@ -5017,7 +5007,7 @@ void COpenGLCallBridge::setTexture(GLuint stage, GLenum type, bool fixedPipeline
 		{
 			setActiveTexture(GL_TEXTURE0_ARB + stage);
 
-			if(Driver->CurrentTexture[stage])
+			if (Driver->CurrentTexture[stage])
 			{
 				if(fixedPipeline)
 				{
@@ -5026,17 +5016,18 @@ void COpenGLCallBridge::setTexture(GLuint stage, GLenum type, bool fixedPipeline
 				}
 
 				glBindTexture(type, static_cast<const COpenGLTexture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
+
+				TextureType[stage] = type;
 			}
 			else
 			{
-				glBindTexture(type, 0);
+				glBindTexture(TextureType[stage], 0);
 
-				if(fixedPipeline)
+				if (fixedPipeline)
 					glDisable(TextureType[stage]);
 			}
 
 			TextureFixedPipeline[stage] = fixedPipeline;
-			TextureType[stage] = type;
 			Texture[stage] = Driver->CurrentTexture[stage];
 		}
 	}

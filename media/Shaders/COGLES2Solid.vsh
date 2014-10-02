@@ -93,7 +93,7 @@ void main()
 	gl_Position = uWVPMatrix * vec4(inVertexPosition, 1.0);
 	gl_PointSize = uThickness;
 
-	vec4 TextureCoord0 = vec4(inTexCoord0.x, inTexCoord0.y, 0.0, 0.0);
+	vec4 TextureCoord0 = vec4(inTexCoord0.x, inTexCoord0.y, 0.0, 1.0);
 	vTextureCoord0 = vec4(uTMatrix0 * TextureCoord0).xy;
 
 	vVertexColor = inVertexColor.bgra;

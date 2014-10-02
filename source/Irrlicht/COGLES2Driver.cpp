@@ -1636,7 +1636,10 @@ bool COGLES2Driver::endScene()
 		OverrideMaterial.apply(Material);
 
 		for (u32 i = 0; i < MaxTextureUnits; ++i)
+		{
 			setActiveTexture(i, material.getTexture(i));
+			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		}
 	}
 
 	//! prints error if an error happened.
@@ -1912,9 +1915,9 @@ bool COGLES2Driver::endScene()
 			const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(CurrentTexture[i]);
 			GLenum tmpTextureType = (tmpTexture) ? tmpTexture->getOpenGLTextureType() : GL_TEXTURE_2D;
 
-			if (CurrentTexture[i])
-				BridgeCalls->setTexture(i, tmpTextureType);
-			else
+			BridgeCalls->setTexture(i, tmpTextureType);
+
+			if (!CurrentTexture[i])
 				continue;
 
 			if (resetAllRenderstates)
@@ -2959,11 +2962,16 @@ bool COGLES2Driver::endScene()
 				setActiveTexture(GL_TEXTURE0 + stage);
 
 				if (Driver->CurrentTexture[stage])
+				{
 					glBindTexture(type, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
-				else
-					glBindTexture(type, 0);
 
-				TextureType[stage] = type;
+					TextureType[stage] = type;
+				}
+				else
+				{
+					glBindTexture(TextureType[stage], 0);
+				}
+
 				Texture[stage] = Driver->CurrentTexture[stage];
 			}
 		}
