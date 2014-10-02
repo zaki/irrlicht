@@ -140,7 +140,7 @@ void main()
 
 		vVertexColor *= LightColor;
 		vVertexColor += uMaterialEmissive;
-		vVertexColor += uGlobalAmbient;
+		vVertexColor += uGlobalAmbient * uMaterialAmbient;
 		vVertexColor = clamp(vVertexColor, 0.0, 1.0);
 	}
 
