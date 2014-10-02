@@ -236,9 +236,11 @@ public:
 	, MeshManipulator(0)
 	, Camera(0)
 	, SceneNode(0), SceneNode2T(0), SceneNodeTangents(0), NodeLight(0)
+	, CameraRotationAxis(irr::core::vector3df(1,0,0))
 	, LightRotationAxis(irr::core::vector3df(1,0,0))
 	, ControlVertexColors(0)
 	, GlobalAmbient(0)
+	, MousePressed(false)
 	{
 		memset(KeysPressed, 0, sizeof KeysPressed);
 	}
@@ -299,12 +301,15 @@ private:
 	irr::scene::IMeshSceneNode* 	SceneNode2T;
 	irr::scene::IMeshSceneNode* 	SceneNodeTangents;
 	irr::scene::ILightSceneNode* 	NodeLight;
+	irr::core::vector3df CameraRotationAxis;
 	irr::core::vector3df LightRotationAxis;
 	SMaterialControl	MeshMaterialControl;
 	SLightNodeControl	LightControl;
 	CColorControl*	ControlVertexColors;
 	CColorControl*	GlobalAmbient;
 	bool KeysPressed[irr::KEY_KEY_CODES_COUNT];
+	bool MousePressed;
+	irr::core::position2d<irr::s32> MouseStart;
 };
 
 #endif
