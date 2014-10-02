@@ -302,8 +302,8 @@ void CTypicalColorsControl::updateMaterialColors(video::SMaterial & material) co
 void CTypicalColorsControl::setColorsToLightDataColors(const video::SLight & lightData)
 {
 	ControlAmbientColor->setColor(lightData.AmbientColor.toSColor());
-	ControlAmbientColor->setColor(lightData.DiffuseColor.toSColor());
-	ControlAmbientColor->setColor(lightData.SpecularColor.toSColor());
+	ControlDiffuseColor->setColor(lightData.DiffuseColor.toSColor());
+	ControlSpecularColor->setColor(lightData.SpecularColor.toSColor());
 }
 
 // Update all changed colors in the light data
