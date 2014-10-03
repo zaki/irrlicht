@@ -38,6 +38,7 @@ uniform float uThickness;
 varying vec2 vTextureCoord0;
 varying vec2 vTextureCoord1;
 varying vec4 vVertexColor;
+varying vec4 vSpecularColor;
 varying float vFogCoord;
 
 void dirLight(in int index, in vec3 position, in vec3 normal, inout vec4 ambient, inout vec4 diffuse, inout vec4 specular)
@@ -52,7 +53,8 @@ void dirLight(in int index, in vec3 position, in vec3 normal, inout vec4 ambient
 	{
 		diffuse += uLightDiffuse[index] * NdotL;
 
-		vec3 HalfVector = normalize(L + vec3(0.0, 0.0, 1.0));
+		vec3 E = normalize(-position); 
+		vec3 HalfVector = normalize(L + E);
 		float NdotH = max(0.0, dot(normal, HalfVector));
 
 		float SpecularFactor = pow(NdotH, uMaterialShininess);
@@ -77,7 +79,8 @@ void pointLight(in int index, in vec3 position, in vec3 normal, inout vec4 ambie
 	{
 		diffuse += uLightDiffuse[index] * NdotL * Attenuation;
 
-		vec3 HalfVector = normalize(L + vec3(0.0, 0.0, 1.0));
+		vec3 E = normalize(-position); 
+		vec3 HalfVector = normalize(L + E);
 		float NdotH = max(0.0, dot(normal, HalfVector));
 
 		float SpecularFactor = pow(NdotH, uMaterialShininess);
@@ -107,6 +110,7 @@ void main()
 	vTextureCoord1 = vec2(R.x/V + 0.5, R.y/V + 0.5);
 
 	vVertexColor = inVertexColor.bgra;
+	vSpecularColor = vec4(0.0, 0.0, 0.0, 0.0);
 
 	if (uLightCount > 0)
 	{
@@ -114,27 +118,26 @@ void main()
 
 		vec4 Ambient = vec4(0.0, 0.0, 0.0, 0.0);
 		vec4 Diffuse = vec4(0.0, 0.0, 0.0, 0.0);
-		vec4 Specular = vec4(0.0, 0.0, 0.0, 0.0);
 
 		for (int i = 0; i < int(uLightCount); i++)
 		{
 			if (uLightType[i] == 0)
-				pointLight(i, Position, Normal, Ambient, Diffuse, Specular);
+				pointLight(i, Position, Normal, Ambient, Diffuse, vSpecularColor);
 		}
 
 		for (int i = 0; i < int(uLightCount); i++)
 		{
 			if (uLightType[i] == 1)
-				spotLight(i, Position, Normal, Ambient, Diffuse, Specular);
+				spotLight(i, Position, Normal, Ambient, Diffuse, vSpecularColor);
 		}
 
 		for (int i = 0; i < int(uLightCount); i++)
 		{
 			if (uLightType[i] == 2)
-				dirLight(i, Position, Normal, Ambient, Diffuse, Specular);
+				dirLight(i, Position, Normal, Ambient, Diffuse, vSpecularColor);
 		}
 
-		vec4 LightColor = Ambient * uMaterialAmbient + Diffuse * uMaterialDiffuse + Specular * uMaterialSpecular;
+		vec4 LightColor = Ambient * uMaterialAmbient + Diffuse * uMaterialDiffuse;
 		LightColor = clamp(LightColor, 0.0, 1.0);
 		LightColor.w = 1.0;
 
@@ -142,6 +145,8 @@ void main()
 		vVertexColor += uMaterialEmissive;
 		vVertexColor += uGlobalAmbient * uMaterialAmbient;
 		vVertexColor = clamp(vVertexColor, 0.0, 1.0);
+		
+		vSpecularColor *= uMaterialSpecular;
 	}
 
 	vFogCoord = length(Position);

@@ -16,6 +16,7 @@ uniform float uFogDensity;
 
 varying vec2 vTextureCoord0;
 varying vec4 vVertexColor;
+varying vec4 vSpecularColor;
 varying float vFogCoord;
 
 float computeFog()
@@ -51,6 +52,8 @@ void main()
 
 	if (Color.a < uAlphaRef)
 		discard;
+		
+	Color += vSpecularColor;
 
 	if (bool(uFogEnable))
 	{
