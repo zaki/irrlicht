@@ -1772,7 +1772,7 @@ bool COGLES2Driver::endScene()
 		// ZBuffer
 		switch (material.ZBuffer)
 		{
-			case ECFN_NEVER: // it will be ECFN_DISABLED after merge
+			case ECFN_DISABLED:
 				BridgeCalls->setDepthTest(false);
 				break;
 			case ECFN_LESSEQUAL:
@@ -1803,10 +1803,10 @@ bool COGLES2Driver::endScene()
 				BridgeCalls->setDepthTest(true);
 				BridgeCalls->setDepthFunc(GL_ALWAYS);
 				break;
-			/*case ECFN_NEVER:
+			case ECFN_NEVER:
 				BridgeCalls->setDepthTest(true);
 				BridgeCalls->setDepthFunc(GL_NEVER);
-				break;*/
+				break;
 			default:
 				break;
 		}
