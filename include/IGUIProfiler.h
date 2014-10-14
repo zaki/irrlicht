@@ -53,6 +53,13 @@ namespace gui
 		/** Currently this is the override font when one is set and the
 		font of the active skin otherwise */
 		virtual IGUIFont* getActiveFont() const = 0;
+
+		//! Sets whether to draw the background. By default disabled,
+		virtual void setDrawBackground(bool draw) = 0;
+
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
 	};
 
 } // end namespace gui

@@ -340,6 +340,7 @@ int main()
 		IGUIProfiler is can be used to show active profiling data at runtime.
 	*/
 	receiver.GuiProfiler = env->addProfilerDisplay(core::recti(40, 140, 600, 470));
+	receiver.GuiProfiler->setDrawBackground(true);
 
 	/*
 		Get a monospaced font - it's nicer when working with rows of numbers.

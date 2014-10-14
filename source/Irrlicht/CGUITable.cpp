@@ -1117,6 +1117,19 @@ IGUIScrollBar* CGUITable::getHorizontalScrollBar() const
 	return HorizontalScrollBar;
 }
 
+//! Sets whether to draw the background.
+void CGUITable::setDrawBackground(bool draw)
+{
+	DrawBack = draw;
+}
+
+//! Checks if background drawing is enabled
+/** \return true if background drawing is enabled, false otherwise */
+bool CGUITable::isDrawBackgroundEnabled() const
+{
+	return DrawBack;
+}
+
 //! Writes attributes of the element.
 void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {

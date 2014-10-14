@@ -52,6 +52,13 @@ namespace gui
 		//! Get the font which is used right now for drawing
 		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
 
+		//! Sets whether to draw the background. By default disabled,
+		virtual void setDrawBackground(bool draw) _IRR_OVERRIDE_;
+
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const _IRR_OVERRIDE_;
+
 		virtual IGUIElement* getElementFromPoint(const core::position2d<s32>& point) _IRR_OVERRIDE_
 		{
 			// This element should never get focus from mouse-clicks
@@ -72,6 +79,7 @@ namespace gui
 		irr::s32 CurrentGroupPage;
 		irr::s32 NumGroupPages;
 		bool IgnoreUncalled;
+		bool DrawBackground;
 	};
 
 } // end namespace gui

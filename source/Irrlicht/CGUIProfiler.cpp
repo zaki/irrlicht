@@ -19,6 +19,7 @@ namespace gui
 CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 	: IGUIProfiler(environment, parent, id, rectangle)
 	, DisplayTable(0), CurrentGroupIdx(0), CurrentGroupPage(0), NumGroupPages(1), IgnoreUncalled(false)
+	, DrawBackground(false)
 {
 	Profiler = &getProfiler();
 
@@ -26,7 +27,7 @@ CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s3
 
 	// Really just too lazy to code a complete new element for this.
     // If anyone can do this nicer he's welcome.
-	DisplayTable = Environment->addTable(r, this, -1, true);
+	DisplayTable = Environment->addTable(r, this, -1, DrawBackground);
 	DisplayTable->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	DisplayTable->setSubElement(true);
 	rebuildColumns();
@@ -255,6 +256,20 @@ IGUIFont* CGUIProfiler::getActiveFont() const
 	if ( DisplayTable )
 		return DisplayTable->getActiveFont();
 	return 0;
+}
+
+//! Sets whether to draw the background. By default disabled,
+void CGUIProfiler::setDrawBackground(bool draw)
+{
+	DrawBackground = draw;
+	if ( DisplayTable )
+		DisplayTable->setDrawBackground(draw);
+}
+
+//! Checks if background drawing is enabled
+bool CGUIProfiler::isDrawBackgroundEnabled() const
+{
+	return DrawBackground;
 }
 
 
