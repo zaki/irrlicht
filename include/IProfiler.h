@@ -16,16 +16,6 @@ namespace irr
 
 class ITimer;
 
-//! For internal engine use:
-//! Code inside IRR_PROFILE is only executed when _IRR_COMPILE_WITH_PROFILING_ is set
-//! This allows disabling all profiler code completely by changing that define.
-//! It's generally useful to wrap profiler-calls in application code with a similar macro.
-#ifdef _IRR_COMPILE_WITH_PROFILING_
-	#define IRR_PROFILE(X) X
-#else
-	#define IRR_PROFILE(X)
-#endif // IRR_PROFILE
-
 //! Used to store the profile data (and also used for profile group data).
 struct SProfileData
 {
@@ -57,13 +47,13 @@ struct SProfileData
 		return Name;
 	}
 
-	//! Each call to Profiler::stop for this data increases the counter by 1.
+	//! Each time profiling for this data is stopped it increases the counter by 1.
 	u32 getCallsCounter() const
 	{
 		return CountCalls;
 	}
 
-	//! Longest time any call from start/stop ever took for this id.
+	//! Longest time a profile call for this id took from start until it was stopped again.
 	u32 getLongestTime() const
 	{
 		return LongestTime;
@@ -86,12 +76,14 @@ private:
 		LongestTime = 0;
 		TimeSum = 0;
 		LastTimeStarted = 0;
+		StartStopCounter = 0;
 	}
 
 	s32 Id;
     u32 GroupIndex;
 	core::stringw Name;
 
+	s32 StartStopCounter; // 0 means stopped > 0 means it runs.
     u32 CountCalls;
     u32 LongestTime;
     u32 TimeSum;
@@ -105,7 +97,7 @@ private:
 // This is why the class works without a virtual functions interface contrary to the usual Irrlicht design.
 // And also why it works with id's instead of strings in the start/stop functions even if it makes using
 // the class slightly harder.
-// The class comes without reference-counting because the profiler-instance is never released (TBD).
+// The class comes without reference-counting because the profiler instance is never released (TBD).
 class IProfiler
 {
 public:
@@ -177,11 +169,16 @@ public:
 
 
 	//! Start profile-timing for the given id
-	/** NOTE: you have to add the id first with one of the ::add functions */
+	/** This increases an internal run-counter for the given id. It will profile as long as that counter is > 0.
+	NOTE: you have to add the id first with one of the ::add functions
+	*/
 	inline void start(s32 id);
 
 	//! Stop profile-timing for the given id
-	/** NOTE: timer must have been started first with the ::start function */
+	/** This increases an internal run-counter for the given id. If it reaches 0 the time since start is recorded.
+		You should have the same amount of start and stop calls. If stop is called more often than start
+		then the additional stop calls will be ignored (counter never goes below 0)
+	*/
     inline void stop(s32 id);
 
 	//! Reset profile data for the given id
@@ -214,7 +211,7 @@ protected:
 
 	// I would prefer using os::Timer, but os.h is not in the public interface so far.
 	// Timer must be initialized by the implementation.
-    ITimer * Timer;	
+    ITimer * Timer;
 	core::array<SProfileData> ProfileDatas;
     core::array<SProfileData> ProfileGroups;
 
@@ -286,7 +283,9 @@ void IProfiler::start(s32 id)
 	s32 idx = ProfileDatas.binary_search(SProfileData(id));
 	if ( idx >= 0 && Timer )
 	{
-		ProfileDatas[idx].LastTimeStarted = Timer->getRealTime();
+		++ProfileDatas[idx].StartStopCounter;
+		if (ProfileDatas[idx].StartStopCounter == 1 )
+			ProfileDatas[idx].LastTimeStarted = Timer->getRealTime();
 	}
 }
 
@@ -299,7 +298,8 @@ void IProfiler::stop(s32 id)
 		if ( idx >= 0 )
 		{
 			SProfileData &data = ProfileDatas[idx];
-			if ( data.LastTimeStarted != 0 )
+			--ProfileDatas[idx].StartStopCounter;
+			if ( data.LastTimeStarted != 0 && ProfileDatas[idx].StartStopCounter == 0)
 			{
 				// update data for this id
 				++data.CountCalls;
@@ -316,6 +316,11 @@ void IProfiler::stop(s32 id)
 				if ( diffTime > group.LongestTime )
 					group.LongestTime = diffTime;
 				group.LastTimeStarted = 0;
+			}
+			else if ( ProfileDatas[idx].StartStopCounter < 0 )
+			{
+				// ignore additional stop calls
+				ProfileDatas[idx].StartStopCounter = 0;
 			}
 		}
 	}
@@ -459,6 +464,16 @@ void IProfiler::resetAll()
 		ProfileGroups[i].reset();
     }
 }
+
+//! For internal engine use:
+//! Code inside IRR_PROFILE is only executed when _IRR_COMPILE_WITH_PROFILING_ is set
+//! This allows disabling all profiler code completely by changing that define.
+//! It's generally useful to wrap profiler-calls in application code with a similar macro.
+#ifdef _IRR_COMPILE_WITH_PROFILING_
+	#define IRR_PROFILE(X) X
+#else
+	#define IRR_PROFILE(X)
+#endif // IRR_PROFILE
 
 } // namespace irr
 

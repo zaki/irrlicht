@@ -1,12 +1,12 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
-// Written by Michael Zeilfelder
+// Copyright by Michael Zeilfelder
 
 /** Example 030 Profiling
 
 Profiling is used to get runtime information about code code.
 
-There exist several indepent profiling tools.
+There exist several independent profiling tools.
 Examples for free profilers are "gprof" for the GNU toolchain and "very sleepy"
 from codersnotes for Windows. Proprietary tools are for example "VTune" from
 Intel or "AMD APP Profiler". Those tools work by sampling the running
@@ -30,7 +30,7 @@ has a low overhead and affects only the areas which you want to time. So you
 can profile applications with nearly original speed.
 
 Irrlicht itself has such profiling information, which is useful to figure out
-where the runtime inside the engine is spend. To get that profilng data you
+where the runtime inside the engine is spend. To get that profiling data you
 need to recompile Irrlicht with _IRR_COMPILE_WITH_PROFILING_ enabled as
 collecting profiling information is disabled by default for speed reasons.
 */
@@ -42,7 +42,7 @@ collecting profiling information is disabled by default for speed reasons.
 	the software by removing a single define.Or sometimes you might want to
 	have several such defines for different areas of your application code.
 */
-#define ENABLE_MY_PROFILE	// outcomment to remove the profiling code
+#define ENABLE_MY_PROFILE	// comment out to remove the profiling code
 #ifdef ENABLE_MY_PROFILE
 	// calls code X
 	#define MY_PROFILE(X) X
@@ -67,7 +67,7 @@ using namespace io;
 using namespace gui;
 
 /*
-	We have the choice between working with fixed and with automatic profling id's.
+	We have the choice between working with fixed and with automatic profiling id's.
 	Here are some fixed ID's we will be using.
 */
 enum EProfiles
@@ -138,7 +138,7 @@ public:
 					case KEY_F9:
 					{
 						u32 index = 0;
-						if ( getProfiler().findGroupIndex(index, L"group a") )
+						if ( getProfiler().findGroupIndex(index, L"grp runtime") )
 						{
 							getProfiler().resetGroup(index);
 						}
@@ -182,7 +182,7 @@ public:
 				/*
 					Simple scene with cube and light.
 				*/
-				MY_PROFILE(CProfileScope p(L"cube", L"scenes");)
+				MY_PROFILE(CProfileScope p(L"cube", L"grp switch scene");)
 
 				SceneManager->addCameraSceneNode (0, core::vector3df(0, 0, 0),
 											core::vector3df(0, 0, 100),
@@ -203,7 +203,7 @@ public:
 				/*
 					Our typical Irrlicht example quake map.
 				*/
-				MY_PROFILE(CProfileScope p(L"quake map", L"scenes");)
+				MY_PROFILE(CProfileScope p(L"quake map", L"grp switch scene");)
 
 				scene::IAnimatedMesh* mesh = SceneManager->getMesh("20kdm2.bsp");
 				scene::ISceneNode* node = 0;
@@ -220,7 +220,7 @@ public:
 				/*
 					Stress-test Irrlicht a little bit by creating many objects.
 				*/
-				MY_PROFILE(CProfileScope p(L"dwarfes", L"scenes");)
+				MY_PROFILE(CProfileScope p(L"dwarfes", L"grp switch scene");)
 
 				scene::IAnimatedMesh* aniMesh = SceneManager->getMesh( "../../media/dwarf.x" );
 				if (aniMesh)
@@ -279,6 +279,20 @@ public:
 	scene::ISceneManager* SceneManager;
 };
 
+void recursive(int recursion)
+{
+	/*
+		As the profiler uses internally counters for start stop and only
+		takes profile data when that counter is zero we count all recursions
+		as a single call.
+		If you want to profile each call on it's own you have to use explicit start/stop calls and
+		stop the profile id right before the recursive call.
+	*/
+	MY_PROFILE(CProfileScope p3(L"recursive", L"grp runtime");)
+	if (recursion > 0 )
+		recursive(recursion-1);
+}
+
 int main()
 {
 	/*
@@ -291,7 +305,7 @@ int main()
 	/*
 		Profiler is independent of the device - so we can time the device setup
 	*/
-	MY_PROFILE(s32 pDev = getProfiler().add(L"createDevice", L"group a");)
+	MY_PROFILE(s32 pDev = getProfiler().add(L"createDevice", L"grp runtime");)
 	MY_PROFILE(getProfiler().start(pDev);)
 
 	IrrlichtDevice * device = createDevice(driverType, core::dimension2d<u32>(640, 480));
@@ -330,7 +344,7 @@ int main()
 			L"F5 to flip between including the group overview\n"
 			L"F6 to flip between ignoring and showing uncalled data\n"
 			L"F8 to change our scene\n"
-			L"F9 to reset the \"group a\" data\n"
+			L"F9 to reset the \"grp runtime\" data\n"
 			L"F10 to reset the scope 3 data\n"
 			L"F11 to reset all data\n"
 			, recti(10,10, 250, 120), true, true, 0, -1, true);
@@ -358,14 +372,14 @@ int main()
 		Groups exist to sort the display data in a nicer way.
 	*/
 	MY_PROFILE(
-		getProfiler().add(EP_APP_TIME_ONCE, L"full time", L"group a");
-		getProfiler().add(EP_APP_TIME_UPDATED, L"full time updated", L"group a");
-		getProfiler().add(EP_SCOPE1, L"scope 1", L"group a");
-		getProfiler().add(EP_DRAW_SCENE, L"draw scene", L"group a");
+		getProfiler().add(EP_APP_TIME_ONCE, L"full time", L"grp runtime");
+		getProfiler().add(EP_APP_TIME_UPDATED, L"full time updated", L"grp runtime");
+		getProfiler().add(EP_SCOPE1, L"scope 1", L"grp runtime");
+		getProfiler().add(EP_DRAW_SCENE, L"draw scene", L"grp runtime");
 	)
 
     /*
-		Two timers which run the whole time. One will be continuosly updated the other won't.
+		Two timers which run the whole time. One will be continuously updated the other won't.
     */
 	MY_PROFILE(getProfiler().start(EP_APP_TIME_ONCE);)
 	MY_PROFILE(getProfiler().start(EP_APP_TIME_UPDATED);)
@@ -407,20 +421,25 @@ int main()
 				just need to run a quick check without the hassle of setting
 				up id's.
 			*/
-			MY_PROFILE(CProfileScope p3(L"scope 3", L"group a");)
+			MY_PROFILE(CProfileScope p3(L"scope 3", L"grp runtime");)
 
 			/*
 				Second CProfileScope solution will create a data block on first
 				call. So it's a little bit slower on the first run. But usually
-				that's hardly noticable.
+				that's hardly noticeable.
 			*/
-			MY_PROFILE(CProfileScope p2(EP_SCOPE2, L"scope 2", L"group a");)
+			MY_PROFILE(CProfileScope p2(EP_SCOPE2, L"scope 2", L"grp runtime");)
 
 			/*
 				Last CProfileScope solution is the fastest one. But you must add
 				the id before you can use it like that.
 			*/
 			MY_PROFILE(CProfileScope p1(EP_SCOPE1));
+
+			/*
+				Call a recursive function to show how profiler only counts it once.
+			*/
+			recursive(5);
 
 			driver->beginScene(true, true, SColor(0,200,200,200));
 
@@ -436,7 +455,7 @@ int main()
 				If it doesn't matter if the profiler takes some time you can also
 				be lazy and create id's automatically on the spot:
 			*/
-			MY_PROFILE(s32 pEnv = getProfiler().add(L"draw env", L"group a");)
+			MY_PROFILE(s32 pEnv = getProfiler().add(L"draw env", L"grp runtime");)
 			MY_PROFILE(getProfiler().start(pEnv);)
 			env->drawAll();
 			MY_PROFILE(getProfiler().stop(pEnv);)

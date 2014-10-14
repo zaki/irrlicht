@@ -9,6 +9,8 @@
 
 namespace irr
 {
+class IProfiler;
+
 namespace gui
 {
 	class IGUIFont;
@@ -18,7 +20,8 @@ namespace gui
 	{
 	public:
 		//! constructor
-		IGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
+		/** \param profiler You can pass a custom profiler, but typically you can pass 0 in which cases it takes the global profiler from Irrlicht */
+		IGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, IProfiler* profiler = NULL)
 			: IGUIElement(EGUIET_PROFILER, environment, parent, id, rectangle)
 		{}
 

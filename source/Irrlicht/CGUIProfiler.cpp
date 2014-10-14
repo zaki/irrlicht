@@ -16,12 +16,14 @@ namespace gui
 {
 
 //! constructor
-CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
-	: IGUIProfiler(environment, parent, id, rectangle)
+CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, IProfiler* profiler)
+	: IGUIProfiler(environment, parent, id, rectangle, profiler)
+	, Profiler(profiler)
 	, DisplayTable(0), CurrentGroupIdx(0), CurrentGroupPage(0), NumGroupPages(1), IgnoreUncalled(false)
 	, DrawBackground(false)
 {
-	Profiler = &getProfiler();
+	if ( !Profiler )
+		Profiler = &getProfiler();
 
 	core::recti r(0, 0, rectangle.getWidth(), rectangle.getHeight());
 

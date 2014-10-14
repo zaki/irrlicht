@@ -25,7 +25,7 @@ namespace gui
 	{
 	public:
 		//! constructor
-		CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
+		CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, IProfiler* profiler = NULL);
 
 		//! Show first page of profile data
 		virtual void firstPage(bool includeOverview) _IRR_OVERRIDE_;
