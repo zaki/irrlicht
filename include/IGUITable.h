@@ -218,6 +218,13 @@ namespace gui
 
 		//! Access the horizontal scrollbar
 		virtual IGUIScrollBar* getHorizontalScrollBar() const = 0;
+
+		//! Sets whether to draw the background.
+		virtual void setDrawBackground(bool draw) = 0;
+
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
 	};
 
 

@@ -497,7 +497,7 @@ void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 	// get texture type
 
 	GLenum tmpTextureType = GL_TEXTURE_2D;
-	
+
 	if (TextureType == GL_TEXTURE_CUBE_MAP)
 	{
 		switch(imageNumber)
@@ -622,7 +622,7 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	// store info about which image is locked
 	IImage* image = 0;
-	
+
 	if (mipmapLevel==0)
 	{
 		if (Image.size() > 0)
@@ -685,7 +685,7 @@ void COGLES2Texture::unlock()
 
 	// test if miplevel or main texture was locked
 	IImage* image = 0;
-	
+
 	if (!MipImage)
 	{
 		if (Image.size() > 0)
@@ -825,7 +825,7 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 	GLint tmpTextureName = (tmpTexture) ? tmpTexture->getOpenGLTextureName() : 0;
 	Driver->getBridgeCalls()->getTexture(0, tmpTextureType);
 	glBindTexture(TextureType, TextureName);
- 
+
  	// Manually create mipmaps or use prepared version
 	u32 compressedImageSize = 0;
 	u32 width=Image[0]->getDimension().Width;
@@ -972,18 +972,18 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
-    
+
     Driver->setActiveTexture(0, this);
 	Driver->getBridgeCalls()->setTexture(0, TextureType);
-    
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-	StatesCache.BilinearFilter = true;        
+
+	StatesCache.BilinearFilter = true;
     StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
     StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
-            
+
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
 
 #ifdef _DEBUG

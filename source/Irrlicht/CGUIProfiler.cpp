@@ -16,17 +16,20 @@ namespace gui
 {
 
 //! constructor
-CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
-	: IGUIProfiler(environment, parent, id, rectangle)
+CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, IProfiler* profiler)
+	: IGUIProfiler(environment, parent, id, rectangle, profiler)
+	, Profiler(profiler)
 	, DisplayTable(0), CurrentGroupIdx(0), CurrentGroupPage(0), NumGroupPages(1), IgnoreUncalled(false)
+	, DrawBackground(false), Frozen(false), UnfreezeOnce(false), ShowGroupsTogether(false)
 {
-	Profiler = &getProfiler();
+	if ( !Profiler )
+		Profiler = &getProfiler();
 
 	core::recti r(0, 0, rectangle.getWidth(), rectangle.getHeight());
 
 	// Really just too lazy to code a complete new element for this.
     // If anyone can do this nicer he's welcome.
-	DisplayTable = Environment->addTable(r, this, -1, true);
+	DisplayTable = Environment->addTable(r, this, -1, DrawBackground);
 	DisplayTable->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	DisplayTable->setSubElement(true);
 	rebuildColumns();
@@ -77,7 +80,7 @@ void CGUIProfiler::updateDisplay()
 			bool overview = CurrentGroupIdx == 0;
 			u32 rowIndex = 0;
 			const SProfileData& groupData = Profiler->getGroupData(CurrentGroupIdx);
-			if ( overview || !IgnoreUncalled || groupData.getCallsCounter() > 0 )
+			if ( !ShowGroupsTogether && (overview || !IgnoreUncalled || groupData.getCallsCounter() > 0) )
 			{
 				rowIndex = DisplayTable->addRow(rowIndex);
 				fillRow(rowIndex, groupData, overview, true);
@@ -101,7 +104,6 @@ void CGUIProfiler::updateDisplay()
 			// show data for all elements in current group
 			else
 			{
-
 				for ( u32 i=0; i < Profiler->getProfileDataCount(); ++i )
 				{
 					const SProfileData& data = Profiler->getProfileDataByIndex(i);
@@ -111,6 +113,24 @@ void CGUIProfiler::updateDisplay()
 						rowIndex = DisplayTable->addRow(rowIndex);
 						fillRow(rowIndex, data, false, false);
 						++rowIndex;
+					}
+				}
+			}
+			// Show the rest of the groups
+			if (ShowGroupsTogether)
+			{
+				for ( u32 groupIdx = CurrentGroupIdx+1; groupIdx < Profiler->getGroupCount(); ++groupIdx)
+				{
+					for ( u32 i=0; i < Profiler->getProfileDataCount(); ++i )
+					{
+						const SProfileData& data = Profiler->getProfileDataByIndex(i);
+						if ( data.getGroupIndex() == groupIdx
+							&& (!IgnoreUncalled || data.getCallsCounter() > 0) )
+						{
+							rowIndex = DisplayTable->addRow(rowIndex);
+							fillRow(rowIndex, data, false, false);
+							++rowIndex;
+						}
 					}
 				}
 			}
@@ -165,7 +185,11 @@ void CGUIProfiler::draw()
 {
 	if ( isVisible() )
 	{
-		updateDisplay();
+		if (!Frozen || UnfreezeOnce)
+		{
+			UnfreezeOnce = false;
+			updateDisplay();
+		}
 	}
 
 	IGUIElement::draw();
@@ -173,6 +197,7 @@ void CGUIProfiler::draw()
 
 void CGUIProfiler::nextPage(bool includeOverview)
 {
+	UnfreezeOnce = true;
 	if ( CurrentGroupPage < NumGroupPages-1 )
 		++CurrentGroupPage;
 	else
@@ -190,6 +215,7 @@ void CGUIProfiler::nextPage(bool includeOverview)
 
 void CGUIProfiler::previousPage(bool includeOverview)
 {
+	UnfreezeOnce = true;
 	if ( CurrentGroupPage > 0 )
 	{
 		--CurrentGroupPage;
@@ -211,8 +237,19 @@ void CGUIProfiler::previousPage(bool includeOverview)
 	}
 }
 
+void CGUIProfiler::setShowGroupsTogether(bool groupsTogether)
+{
+	ShowGroupsTogether = groupsTogether;
+}
+
+bool CGUIProfiler::getShowGroupsTogether() const
+{
+	return ShowGroupsTogether;
+}
+
 void CGUIProfiler::firstPage(bool includeOverview)
 {
+	UnfreezeOnce = true;
 	if ( includeOverview )
 		CurrentGroupIdx = 0;
     else
@@ -255,6 +292,32 @@ IGUIFont* CGUIProfiler::getActiveFont() const
 	if ( DisplayTable )
 		return DisplayTable->getActiveFont();
 	return 0;
+}
+
+//! Sets whether to draw the background. By default disabled,
+void CGUIProfiler::setDrawBackground(bool draw)
+{
+	DrawBackground = draw;
+	if ( DisplayTable )
+		DisplayTable->setDrawBackground(draw);
+}
+
+//! Checks if background drawing is enabled
+bool CGUIProfiler::isDrawBackgroundEnabled() const
+{
+	return DrawBackground;
+}
+
+//! Allows to freeze updates which makes it easier to read the numbers
+void CGUIProfiler::setFrozen(bool freeze)
+{
+	Frozen = freeze;
+}
+
+//! Are updates currently frozen
+bool CGUIProfiler::getFrozen() const
+{
+	return Frozen;
 }
 
 

@@ -2054,7 +2054,7 @@ public:
 			case 4:
 			{
 				unsigned int tmp; // not using an irrlicht type - sscanf with %x needs always unsigned int
-				sscanf(text, "0x%x", &tmp);
+				sscanf(text, "%x", &tmp);
 				val = (size_t)tmp;
 			}
 			break;

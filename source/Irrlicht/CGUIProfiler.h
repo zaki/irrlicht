@@ -25,7 +25,7 @@ namespace gui
 	{
 	public:
 		//! constructor
-		CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
+		CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle, IProfiler* profiler = NULL);
 
 		//! Show first page of profile data
 		virtual void firstPage(bool includeOverview) _IRR_OVERRIDE_;
@@ -35,6 +35,13 @@ namespace gui
 
 		//! Show previous page of profile data
 		virtual void previousPage(bool includeOverview) _IRR_OVERRIDE_;
+
+		//! Try to show as many group-pages together as possible instead of showing at most one group per page.
+		/** \param groupsTogether When true show several groups on one page, when false show max. one group per page. Default is false. */
+		virtual void setShowGroupsTogether(bool groupsTogether) _IRR_OVERRIDE_;
+
+		//! Can several groups be displayed per page?
+		virtual bool getShowGroupsTogether() const _IRR_OVERRIDE_;
 
 		//! Don't display stats for data which never got called
 		/** Default is false */
@@ -51,6 +58,20 @@ namespace gui
 
 		//! Get the font which is used right now for drawing
 		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
+
+		//! Sets whether to draw the background. By default disabled,
+		virtual void setDrawBackground(bool draw) _IRR_OVERRIDE_;
+
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const _IRR_OVERRIDE_;
+
+		//! Allows to freeze updates which makes it easier to read the numbers
+		virtual void setFrozen(bool freeze) _IRR_OVERRIDE_;
+
+		//! Are updates currently frozen
+		virtual bool getFrozen() const _IRR_OVERRIDE_;
+
 
 		virtual IGUIElement* getElementFromPoint(const core::position2d<s32>& point) _IRR_OVERRIDE_
 		{
@@ -72,6 +93,10 @@ namespace gui
 		irr::s32 CurrentGroupPage;
 		irr::s32 NumGroupPages;
 		bool IgnoreUncalled;
+		bool DrawBackground;
+		bool Frozen;
+		bool UnfreezeOnce;
+		bool ShowGroupsTogether;
 	};
 
 } // end namespace gui

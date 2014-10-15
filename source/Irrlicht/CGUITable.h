@@ -34,7 +34,7 @@ namespace gui
 		~CGUITable();
 
 		//! Adds a column
-		//! If columnIndex is outside the current range, do push new colum at the end
+		//! If columnIndex is outside the current range, do push new column at the end
 		virtual void addColumn(const wchar_t* caption, s32 columnIndex=-1) _IRR_OVERRIDE_;
 
 		//! remove a column from the table
@@ -63,7 +63,7 @@ namespace gui
 		//! columns can be resized by drag 'n drop
 		virtual void setResizableColumns(bool resizable) _IRR_OVERRIDE_;
 
-		//! can columns be resized by dran 'n drop?
+		//! can columns be resized by drag 'n drop?
 		virtual bool hasResizableColumns() const _IRR_OVERRIDE_;
 
 		//! This tells the table control which ordering mode should be used when
@@ -76,10 +76,10 @@ namespace gui
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const _IRR_OVERRIDE_;
 
-		//! set wich row is currently selected
+		//! set currently selected row
 		virtual void setSelected( s32 index ) _IRR_OVERRIDE_;
 
-		//! Returns amount of rows in the tabcontrol
+		//! Returns amount of rows in the tab control
 		virtual s32 getRowCount() const _IRR_OVERRIDE_;
 
 		//! adds a row to the table
@@ -160,6 +160,13 @@ namespace gui
 
 		//! Access the horizontal scrollbar
 		virtual IGUIScrollBar* getHorizontalScrollBar() const _IRR_OVERRIDE_;
+
+		//! Sets whether to draw the background.
+		virtual void setDrawBackground(bool draw) _IRR_OVERRIDE_;
+
+		//! Checks if background drawing is enabled
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const _IRR_OVERRIDE_;
 
 		//! Writes attributes of the object.
 		//! Implement this to expose the attributes of your scene node animator for

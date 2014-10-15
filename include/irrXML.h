@@ -383,7 +383,10 @@ namespace io
 		xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
 #else
 		explicit xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
+
+#if !defined(_MSC_VER) || defined(_NATIVE_WCHAR_T_DEFINED)	// VS compiling without native wchar_t can't have it
 		explicit xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
+#endif
 		explicit xmlChar<T>(unsigned int in) : c(static_cast<T>(in)) {}
 		explicit xmlChar<T>(unsigned long in) : c(static_cast<T>(in)) {}
 #endif
