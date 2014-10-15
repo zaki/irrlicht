@@ -101,7 +101,7 @@ class MyEventReceiver : public IEventReceiver
 {
 public:
 	// constructor
-	MyEventReceiver(ISceneManager * smgr) : GuiProfiler(0), IncludeOverview(true), ActiveScene(ES_NONE), SceneManager(smgr) {}
+	MyEventReceiver(ISceneManager * smgr) : GuiProfiler(0), IncludeOverview(true), IgnoreUncalled(false), ActiveScene(ES_NONE), SceneManager(smgr) {}
 
 	virtual bool OnEvent(const SEvent& event)
 	{
@@ -131,7 +131,11 @@ public:
 						GuiProfiler->firstPage(IncludeOverview);	// not strictly needed, but otherwise the update won't update
 					break;
 					case KEY_F6:
-						GuiProfiler->setIgnoreUncalled( !GuiProfiler->getIgnoreUncalled() );
+						/*
+							You can set more filters. This one filters out profile data which was never called.
+						*/
+						IgnoreUncalled = !IgnoreUncalled;
+						GuiProfiler->setFilters(IgnoreUncalled ? 1 : 0, 0, 0.f, 0);
 					break;
 					case KEY_F7:
 						GuiProfiler->setShowGroupsTogether( !GuiProfiler->getShowGroupsTogether() );
@@ -282,6 +286,7 @@ public:
 
 	IGUIProfiler * GuiProfiler;
 	bool IncludeOverview;
+	bool IgnoreUncalled;
 	u32 ActiveScene;
 	scene::ISceneManager* SceneManager;
 };

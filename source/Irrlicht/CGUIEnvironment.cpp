@@ -1131,7 +1131,7 @@ IGUITable* CGUIEnvironment::addTable(const core::rect<s32>& rectangle, IGUIEleme
 	//! Adds an element to display the information from the Irrlicht profiler
 IGUIProfiler* CGUIEnvironment::addProfilerDisplay(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id)
 {
-	CGUIProfiler* p = new CGUIProfiler(this, parent ? parent : this, id, rectangle);
+	CGUIProfiler* p = new CGUIProfiler(this, parent ? parent : this, id, rectangle, NULL);
 	p->drop();
 	return p;
 }

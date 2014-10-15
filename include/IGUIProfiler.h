@@ -44,12 +44,6 @@ namespace gui
 		//! Can several groups be displayed per page?
 		virtual bool getShowGroupsTogether() const = 0;
 
-		//! Don't display stats for data which never got called
-		virtual void setIgnoreUncalled(bool ignore) = 0;
-
-		//! Check if we display stats for data which never got called
-		virtual bool getIgnoreUncalled() const = 0;
-
 		//! Sets another skin independent font.
 		/** If this is set to zero, the button uses the font of the skin.
 		\param font: New font to set. */
@@ -77,6 +71,9 @@ namespace gui
 
 		//! Are updates currently frozen
 		virtual bool getFrozen() const = 0;
+
+		//! Filters prevents data that doesn't achieve the conditions from being displayed
+		virtual void setFilters(irr::u32 minCalls = 0, irr::u32 minTimeSum = 0, irr::f32 minTimeAverage = 0.f, irr::u32 minTimeMax = 0) = 0;
 	};
 
 } // end namespace gui
