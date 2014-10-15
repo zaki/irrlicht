@@ -59,6 +59,13 @@ namespace gui
 		/** \return true if background drawing is enabled, false otherwise */
 		virtual bool isDrawBackgroundEnabled() const _IRR_OVERRIDE_;
 
+		//! Allows to freeze updates which makes it easier to read the numbers
+		virtual void setFrozen(bool freeze) _IRR_OVERRIDE_;
+
+		//! Are updates currently frozen
+		virtual bool getFrozen() const _IRR_OVERRIDE_;
+
+
 		virtual IGUIElement* getElementFromPoint(const core::position2d<s32>& point) _IRR_OVERRIDE_
 		{
 			// This element should never get focus from mouse-clicks
@@ -80,6 +87,8 @@ namespace gui
 		irr::s32 NumGroupPages;
 		bool IgnoreUncalled;
 		bool DrawBackground;
+		bool Frozen;
+		bool UnfreezeOnce;
 	};
 
 } // end namespace gui

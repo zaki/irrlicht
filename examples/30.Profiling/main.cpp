@@ -156,6 +156,9 @@ public:
 					case KEY_F11:
 						getProfiler().resetAll();
 					break;
+					case KEY_KEY_F:
+						GuiProfiler->setFrozen(!GuiProfiler->getFrozen());
+					break;
 					default:
 					break;
 				}
@@ -337,16 +340,17 @@ int main()
 		Show some info about the controls used in this example
 	*/
 	IGUIStaticText * staticText = env->addStaticText(
-			L"F1 to show/hide the profiling display\n"
-			L"F2 to show the next page\n"
-			L"F3 to show the previous page\n"
-			L"F4 to show the first page\n"
-			L"F5 to flip between including the group overview\n"
-			L"F6 to flip between ignoring and showing uncalled data\n"
-			L"F8 to change our scene\n"
-			L"F9 to reset the \"grp runtime\" data\n"
-			L"F10 to reset the scope 3 data\n"
-			L"F11 to reset all data\n"
+			L"<F1>  to show/hide the profiling display\n"
+			L"<F2>  to show the next page\n"
+			L"<F3>  to show the previous page\n"
+			L"<F4>  to show the first page\n"
+			L"<F5>  to flip between including the group overview\n"
+			L"<F6>  to flip between ignoring and showing uncalled data\n"
+			L"<F8>  to change our scene\n"
+			L"<F9>  to reset the \"grp runtime\" data\n"
+			L"<F10> to reset the scope 3 data\n"
+			L"<F11> to reset all data\n"
+			L"<f>   to freeze/unfreeze the display\n"
 			, recti(10,10, 250, 120), true, true, 0, -1, true);
 	staticText->setWordWrap(false);
 

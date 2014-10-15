@@ -63,6 +63,13 @@ namespace gui
 		//! Checks if background drawing is enabled
 		/** \return true if background drawing is enabled, false otherwise */
 		virtual bool isDrawBackgroundEnabled() const = 0;
+
+		//! Allows to freeze updates which makes it easier to read the numbers
+		/** Numbers are updated once when you switch pages. */
+		virtual void setFrozen(bool freeze) = 0;
+
+		//! Are updates currently frozen
+		virtual bool getFrozen() const = 0;
 	};
 
 } // end namespace gui

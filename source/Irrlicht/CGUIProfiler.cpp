@@ -20,7 +20,7 @@ CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s3
 	: IGUIProfiler(environment, parent, id, rectangle, profiler)
 	, Profiler(profiler)
 	, DisplayTable(0), CurrentGroupIdx(0), CurrentGroupPage(0), NumGroupPages(1), IgnoreUncalled(false)
-	, DrawBackground(false)
+	, DrawBackground(false), Frozen(false), UnfreezeOnce(false)
 {
 	if ( !Profiler )
 		Profiler = &getProfiler();
@@ -168,7 +168,11 @@ void CGUIProfiler::draw()
 {
 	if ( isVisible() )
 	{
-		updateDisplay();
+		if (!Frozen || UnfreezeOnce)
+		{
+			UnfreezeOnce = false;
+			updateDisplay();
+		}
 	}
 
 	IGUIElement::draw();
@@ -176,6 +180,7 @@ void CGUIProfiler::draw()
 
 void CGUIProfiler::nextPage(bool includeOverview)
 {
+	UnfreezeOnce = true;
 	if ( CurrentGroupPage < NumGroupPages-1 )
 		++CurrentGroupPage;
 	else
@@ -193,6 +198,7 @@ void CGUIProfiler::nextPage(bool includeOverview)
 
 void CGUIProfiler::previousPage(bool includeOverview)
 {
+	UnfreezeOnce = true;
 	if ( CurrentGroupPage > 0 )
 	{
 		--CurrentGroupPage;
@@ -216,6 +222,7 @@ void CGUIProfiler::previousPage(bool includeOverview)
 
 void CGUIProfiler::firstPage(bool includeOverview)
 {
+	UnfreezeOnce = true;
 	if ( includeOverview )
 		CurrentGroupIdx = 0;
     else
@@ -272,6 +279,18 @@ void CGUIProfiler::setDrawBackground(bool draw)
 bool CGUIProfiler::isDrawBackgroundEnabled() const
 {
 	return DrawBackground;
+}
+
+//! Allows to freeze updates which makes it easier to read the numbers
+void CGUIProfiler::setFrozen(bool freeze)
+{
+	Frozen = freeze;
+}
+
+//! Are updates currently frozen
+bool CGUIProfiler::getFrozen() const
+{
+	return Frozen;
 }
 
 
