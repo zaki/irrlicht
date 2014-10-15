@@ -16,6 +16,8 @@
 #include "COGLES2Renderer2D.h"
 #include "CImage.h"
 #include "os.h"
+#include "EProfileIDs.h"
+#include "IProfiler.h"
 
 #if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 #include <OpenGLES/ES2/gl.h>
@@ -54,6 +56,29 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 #ifdef _DEBUG
 	setDebugName("COGLES2Driver");
 #endif
+
+	IRR_PROFILE(
+		static bool initProfile = false;
+		if (!initProfile )
+		{
+			initProfile = true;
+			getProfiler().add(EPID_ES2_END_SCENE, L"endScene", L"ES2");
+			getProfiler().add(EPID_ES2_BEGIN_SCENE, L"beginScene", L"ES2");
+			getProfiler().add(EPID_ES2_UPDATE_VERTEX_HW_BUF, L"upVertBuf", L"ES2");
+			getProfiler().add(EPID_ES2_UPDATE_INDEX_HW_BUF, L"upIdxBuf", L"ES2");
+			getProfiler().add(EPID_ES2_DRAW_PRIMITIVES, L"drawPrim", L"ES2");
+			getProfiler().add(EPID_ES2_DRAW_2DIMAGE, L"draw2dImg", L"ES2");
+			getProfiler().add(EPID_ES2_DRAW_2DIMAGE_BATCH, L"draw2dImgB", L"ES2");
+			getProfiler().add(EPID_ES2_DRAW_2DRECTANGLE, L"draw2dRect", L"ES2");
+			getProfiler().add(EPID_ES2_DRAW_2DLINE, L"draw2dLine", L"ES2");
+			getProfiler().add(EPID_ES2_DRAW_3DLINE, L"draw3dLine", L"ES2");
+			getProfiler().add(EPID_ES2_SET_RENDERSTATE_2D, L"rstate2d", L"ES2");
+			getProfiler().add(EPID_ES2_SET_RENDERSTATE_3D, L"rstate3d", L"ES2");
+			getProfiler().add(EPID_ES2_SET_RENDERSTATE_BASIC, L"rstateBasic", L"ES2");
+			getProfiler().add(EPID_ES2_SET_RENDERSTATE_TEXTURE, L"rstateTex", L"ES2");
+			getProfiler().add(EPID_ES2_DRAW_SHADOW, L"shadows", L"ES2");
+		}
+ 	)
 
     core::dimension2d<u32> WindowSize(0, 0);
 
@@ -452,6 +477,8 @@ COGLES2Driver::~COGLES2Driver()
 //! presents the rendered scene on the screen, returns false if failed
 bool COGLES2Driver::endScene()
 {
+	IRR_PROFILE(CProfileScope p1(EPID_ES2_END_SCENE);)
+
 	CNullDriver::endScene();
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
@@ -471,6 +498,8 @@ bool COGLES2Driver::endScene()
 	bool COGLES2Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 			const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_BEGIN_SCENE);)
+
 		CNullDriver::beginScene(backBuffer, zBuffer, color);
 
 		GLbitfield mask = 0;
@@ -517,6 +546,8 @@ bool COGLES2Driver::endScene()
 	{
 		if (!HWBuffer)
 			return false;
+
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_UPDATE_VERTEX_HW_BUF);)
 
 		const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 		const void* vertices = mb->getVertices();
@@ -566,6 +597,8 @@ bool COGLES2Driver::endScene()
 	{
 		if (!HWBuffer)
 			return false;
+
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_UPDATE_INDEX_HW_BUF);)
 
 		const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
@@ -773,6 +806,8 @@ bool COGLES2Driver::endScene()
 		if (!checkPrimitiveCount(primitiveCount))
 			return;
 
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_PRIMITIVES);)
+
 		CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 		setRenderStates3DMode();
@@ -931,6 +966,8 @@ bool COGLES2Driver::endScene()
 		if (!sourceRect.isValid())
 			return;
 
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DIMAGE);)
+
 		core::position2d<s32> targetPos(pos);
 		core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner);
 		core::dimension2d<s32> sourceSize(sourceRect.getSize());
@@ -1063,6 +1100,8 @@ bool COGLES2Driver::endScene()
 	{
 		if (!texture)
 			return;
+
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DIMAGE_BATCH);)
 
 		if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
 			return;
@@ -1220,6 +1259,8 @@ bool COGLES2Driver::endScene()
 		if (!texture)
 			return;
 
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DIMAGE);)
+
 		// texcoords need to be flipped horizontally for RTTs
 		const bool isRTT = texture->isRenderTarget();
 		const core::dimension2du& ss = texture->getOriginalSize();
@@ -1299,6 +1340,8 @@ bool COGLES2Driver::endScene()
 	{
 		if (!texture)
 			return;
+
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DIMAGE_BATCH);)
 
 		disableTextures(1);
 		if (!setActiveTexture(0, texture))
@@ -1389,6 +1432,8 @@ bool COGLES2Driver::endScene()
 			const core::rect<s32>& position,
 			const core::rect<s32>* clip)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DRECTANGLE);)
+
 		disableTextures();
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
@@ -1430,6 +1475,8 @@ bool COGLES2Driver::endScene()
 			SColor colorLeftDown, SColor colorRightDown,
 			const core::rect<s32>* clip)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DRECTANGLE);)
+
 		core::rect<s32> pos = position;
 
 		if (clip)
@@ -1473,6 +1520,8 @@ bool COGLES2Driver::endScene()
 	void COGLES2Driver::draw2DLine(const core::position2d<s32>& start,
 			const core::position2d<s32>& end, SColor color)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DLINE);)
+
 		if (start==end)
 			drawPixel(start.X, start.Y, color);
 		else
@@ -1731,6 +1780,8 @@ bool COGLES2Driver::endScene()
 
 	void COGLES2Driver::setRenderStates3DMode()
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_SET_RENDERSTATE_3D);)
+
 		if (CurrentRenderMode != ERM_3D)
 		{
 			// Reset Texture Stages
@@ -1769,6 +1820,8 @@ bool COGLES2Driver::endScene()
 	//! Can be called by an IMaterialRenderer to make its work easier.
 	void COGLES2Driver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial, bool resetAllRenderStates)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_SET_RENDERSTATE_BASIC);)
+
 		// ZBuffer
 		switch (material.ZBuffer)
 		{
@@ -1908,6 +1961,8 @@ bool COGLES2Driver::endScene()
 	//! Compare in SMaterial doesn't check texture parameters, so we should call this on each OnRender call.
 	void COGLES2Driver::setTextureRenderStates(const SMaterial& material, bool resetAllRenderstates)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_SET_RENDERSTATE_TEXTURE);)
+
 		// Set textures to TU/TIU and apply filters to them
 
 		for (s32 i = MaxTextureUnits-1; i>= 0; --i)
@@ -2010,6 +2065,8 @@ bool COGLES2Driver::endScene()
 	//! sets the needed renderstates
 	void COGLES2Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_SET_RENDERSTATE_2D);)
+
 		if (CurrentRenderMode != ERM_2D)
 		{
 			// unset last 3d material
@@ -2122,6 +2179,8 @@ bool COGLES2Driver::endScene()
 	//! Draws a shadow volume into the stencil buffer.
 	void COGLES2Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_SHADOW);)
+
 		const u32 count=triangles.size();
 		if (!StencilBuffer || !count)
 			return;
@@ -2200,6 +2259,8 @@ bool COGLES2Driver::endScene()
 			video::SColor leftUpEdge, video::SColor rightUpEdge,
 			video::SColor leftDownEdge, video::SColor rightDownEdge)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_SHADOW);)
+
 		if (!StencilBuffer)
 			return;
 
@@ -2243,6 +2304,8 @@ bool COGLES2Driver::endScene()
 	void COGLES2Driver::draw3DLine(const core::vector3df& start,
 			const core::vector3df& end, SColor color)
 	{
+		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_3DLINE);)
+
 		setRenderStates3DMode();
 
 		u16 indices[] = {0, 1};

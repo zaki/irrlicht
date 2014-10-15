@@ -160,7 +160,7 @@
 /** NOTE: The profiler itself always exists and can be used by applications.
 This define is about the engine creating profile data
 while it runs and enabling it will slow down the engine. */
-#define _IRR_COMPILE_WITH_PROFILING_
+//#define _IRR_COMPILE_WITH_PROFILING_
 #ifdef NO_IRR_COMPILE_WITH_PROFILING_
 #undef _IRR_COMPILE_WITH_PROFILING_
 #endif
