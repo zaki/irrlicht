@@ -60,7 +60,7 @@ struct SProfileData
 	}
 
 	//! Time spend between start/stop
-	s32 getTimeSum() const
+	u32 getTimeSum() const
 	{
 		return TimeSum;
 	}
