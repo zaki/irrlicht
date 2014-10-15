@@ -37,6 +37,13 @@ namespace gui
 		/** \param includeOverview Include the group-overview page  */
 		virtual void previousPage(bool includeOverview=true) = 0;
 
+		//! Try to show as many group-pages together as possible instead of showing at most one group per page.
+		/** \param groupsTogether When true show several groups on one page, when false show max. one group per page. Default is false. */
+		virtual void setShowGroupsTogether(bool groupsTogether) = 0;
+
+		//! Can several groups be displayed per page?
+		virtual bool getShowGroupsTogether() const = 0;
+
 		//! Don't display stats for data which never got called
 		virtual void setIgnoreUncalled(bool ignore) = 0;
 

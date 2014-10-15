@@ -36,6 +36,13 @@ namespace gui
 		//! Show previous page of profile data
 		virtual void previousPage(bool includeOverview) _IRR_OVERRIDE_;
 
+		//! Try to show as many group-pages together as possible instead of showing at most one group per page.
+		/** \param groupsTogether When true show several groups on one page, when false show max. one group per page. Default is false. */
+		virtual void setShowGroupsTogether(bool groupsTogether) _IRR_OVERRIDE_;
+
+		//! Can several groups be displayed per page?
+		virtual bool getShowGroupsTogether() const _IRR_OVERRIDE_;
+
 		//! Don't display stats for data which never got called
 		/** Default is false */
 		virtual void setIgnoreUncalled(bool ignore) _IRR_OVERRIDE_;
@@ -89,6 +96,7 @@ namespace gui
 		bool DrawBackground;
 		bool Frozen;
 		bool UnfreezeOnce;
+		bool ShowGroupsTogether;
 	};
 
 } // end namespace gui

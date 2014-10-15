@@ -20,7 +20,7 @@ CGUIProfiler::CGUIProfiler(IGUIEnvironment* environment, IGUIElement* parent, s3
 	: IGUIProfiler(environment, parent, id, rectangle, profiler)
 	, Profiler(profiler)
 	, DisplayTable(0), CurrentGroupIdx(0), CurrentGroupPage(0), NumGroupPages(1), IgnoreUncalled(false)
-	, DrawBackground(false), Frozen(false), UnfreezeOnce(false)
+	, DrawBackground(false), Frozen(false), UnfreezeOnce(false), ShowGroupsTogether(false)
 {
 	if ( !Profiler )
 		Profiler = &getProfiler();
@@ -80,7 +80,7 @@ void CGUIProfiler::updateDisplay()
 			bool overview = CurrentGroupIdx == 0;
 			u32 rowIndex = 0;
 			const SProfileData& groupData = Profiler->getGroupData(CurrentGroupIdx);
-			if ( overview || !IgnoreUncalled || groupData.getCallsCounter() > 0 )
+			if ( !ShowGroupsTogether && (overview || !IgnoreUncalled || groupData.getCallsCounter() > 0) )
 			{
 				rowIndex = DisplayTable->addRow(rowIndex);
 				fillRow(rowIndex, groupData, overview, true);
@@ -104,7 +104,6 @@ void CGUIProfiler::updateDisplay()
 			// show data for all elements in current group
 			else
 			{
-
 				for ( u32 i=0; i < Profiler->getProfileDataCount(); ++i )
 				{
 					const SProfileData& data = Profiler->getProfileDataByIndex(i);
@@ -114,6 +113,24 @@ void CGUIProfiler::updateDisplay()
 						rowIndex = DisplayTable->addRow(rowIndex);
 						fillRow(rowIndex, data, false, false);
 						++rowIndex;
+					}
+				}
+			}
+			// Show the rest of the groups
+			if (ShowGroupsTogether)
+			{
+				for ( u32 groupIdx = CurrentGroupIdx+1; groupIdx < Profiler->getGroupCount(); ++groupIdx)
+				{
+					for ( u32 i=0; i < Profiler->getProfileDataCount(); ++i )
+					{
+						const SProfileData& data = Profiler->getProfileDataByIndex(i);
+						if ( data.getGroupIndex() == groupIdx
+							&& (!IgnoreUncalled || data.getCallsCounter() > 0) )
+						{
+							rowIndex = DisplayTable->addRow(rowIndex);
+							fillRow(rowIndex, data, false, false);
+							++rowIndex;
+						}
 					}
 				}
 			}
@@ -218,6 +235,16 @@ void CGUIProfiler::previousPage(bool includeOverview)
 				CurrentGroupIdx = 1;	// invalid to avoid showing the overview
 		}
 	}
+}
+
+void CGUIProfiler::setShowGroupsTogether(bool groupsTogether)
+{
+	ShowGroupsTogether = groupsTogether;
+}
+
+bool CGUIProfiler::getShowGroupsTogether() const
+{
+	return ShowGroupsTogether;
 }
 
 void CGUIProfiler::firstPage(bool includeOverview)

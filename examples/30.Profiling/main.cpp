@@ -128,9 +128,13 @@ public:
 					break;
 					case KEY_F5:
 						IncludeOverview = !IncludeOverview;
+						GuiProfiler->firstPage(IncludeOverview);	// not strictly needed, but otherwise the update won't update
 					break;
 					case KEY_F6:
 						GuiProfiler->setIgnoreUncalled( !GuiProfiler->getIgnoreUncalled() );
+					break;
+					case KEY_F7:
+						GuiProfiler->setShowGroupsTogether( !GuiProfiler->getShowGroupsTogether() );
 					break;
 					case KEY_F8:
 						NextScene();
@@ -346,12 +350,13 @@ int main()
 			L"<F4>  to show the first page\n"
 			L"<F5>  to flip between including the group overview\n"
 			L"<F6>  to flip between ignoring and showing uncalled data\n"
+			L"<F7>  to flip between showing 1 group per page or all together\n"
 			L"<F8>  to change our scene\n"
 			L"<F9>  to reset the \"grp runtime\" data\n"
 			L"<F10> to reset the scope 3 data\n"
 			L"<F11> to reset all data\n"
 			L"<f>   to freeze/unfreeze the display\n"
-			, recti(10,10, 250, 120), true, true, 0, -1, true);
+			, recti(10,10, 250, 140), true, true, 0, -1, true);
 	staticText->setWordWrap(false);
 
 	/*
