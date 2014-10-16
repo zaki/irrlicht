@@ -949,12 +949,10 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 		PixelFormat = GL_RGB;
 		PixelType = GL_UNSIGNED_BYTE;
 		break;
-		break;
 	case ECF_A1R5G5B5:
 		InternalFormat = GL_RGBA;
 		PixelFormat = GL_RGBA;
 		PixelType = GL_UNSIGNED_SHORT_5_5_5_1;
-		break;
 		break;
 	case ECF_R5G6B5:
 		InternalFormat = GL_RGB;

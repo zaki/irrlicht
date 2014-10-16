@@ -731,12 +731,10 @@ COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<u32>& size,
 		PixelFormat = GL_RGB;
 		PixelType = GL_UNSIGNED_BYTE;
 		break;
-		break;
 	case ECF_A1R5G5B5:
 		InternalFormat = GL_RGBA;
 		PixelFormat = GL_RGBA;
 		PixelType = GL_UNSIGNED_SHORT_5_5_5_1;
-		break;
 		break;
 	case ECF_R5G6B5:
 		InternalFormat = GL_RGB;
@@ -758,7 +756,7 @@ COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<u32>& size,
     glBindTexture(GL_TEXTURE_2D, TextureName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);           
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
 
 #ifdef _DEBUG

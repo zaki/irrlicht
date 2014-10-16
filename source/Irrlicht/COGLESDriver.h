@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-20014 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -266,7 +266,7 @@ namespace video
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER);
 
-		//! checks if an OpenGL error has happend and prints it
+		//! checks if an OpenGL error has happened and prints it
 		bool testGLError();
 
 		//! Set/unset a clipping plane.
@@ -276,7 +276,7 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;};
+		virtual core::stringc getVendorInfo() {return VendorName;};
 
 		//! Get the maximal texture size for this driver
 		core::dimension2du getMaxTextureSize() const;
@@ -399,7 +399,7 @@ namespace video
 		core::matrix4 Matrices[ETS_COUNT];
 		core::array<u8> ColorBuffer;
 
-		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
+		//! enumeration for rendering modes such as 2d and 3d for minimizing the switching of renderStates.
 		enum E_RENDER_MODE
 		{
 			ERM_NONE = 0,	// no render state has been set yet.
@@ -422,7 +422,7 @@ namespace video
 
 		core::dimension2d<u32> CurrentRendertargetSize;
 
-		core::stringc vendorName;
+		core::stringc VendorName;
 
 		core::matrix4 TextureFlipMatrix;
 
@@ -454,7 +454,7 @@ namespace video
 #endif
 	};
 
-	//! This bridge between Irlicht pseudo OpenGL ES1.x calls
+	//! This bridge between Irrlicht pseudo OpenGL ES1.x calls
 	//! and true OpenGL ES1.x calls.
 
 	class COGLES1CallBridge

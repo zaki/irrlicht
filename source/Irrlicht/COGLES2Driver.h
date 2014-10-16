@@ -76,7 +76,10 @@ namespace video
 
 		struct SHWBufferLink_opengl : public SHWBufferLink
 		{
-			SHWBufferLink_opengl(const scene::IMeshBuffer *meshBuffer): SHWBufferLink(meshBuffer), vbo_verticesID(0), vbo_indicesID(0) {}
+			SHWBufferLink_opengl(const scene::IMeshBuffer *meshBuffer)
+			: SHWBufferLink(meshBuffer), vbo_verticesID(0), vbo_indicesID(0)
+			, vbo_verticesSize(0), vbo_indicesSize(0)
+			{}
 
 			u32 vbo_verticesID; //tmp
 			u32 vbo_indicesID; //tmp
@@ -302,10 +305,10 @@ namespace video
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER);
 
-		//! checks if an OpenGL error has happend and prints it
+		//! checks if an OpenGL error has happened and prints it
 		bool testGLError();
 
-		//! checks if an OGLES1 error has happend and prints it
+		//! checks if an OGLES1 error has happened and prints it
 		bool testEGLError();
 
 		//! Set/unset a clipping plane.
@@ -323,7 +326,7 @@ namespace video
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo()
 		{
-			return vendorName;
+			return VendorName;
 		};
 
 		ITexture* createDepthTexture(ITexture* texture, bool shared = true);
@@ -450,7 +453,7 @@ namespace video
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
 
-		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
+		//! enumeration for rendering modes such as 2d and 3d for minimizing the switching of renderStates.
 		enum E_RENDER_MODE
 		{
 			ERM_NONE = 0, // no render state has been set yet.
@@ -480,7 +483,7 @@ namespace video
 
 		core::dimension2d<u32> CurrentRendertargetSize;
 
-		core::stringc vendorName;
+		core::stringc VendorName;
 
 		core::matrix4 TextureFlipMatrix;
 
@@ -514,7 +517,7 @@ namespace video
 #endif
 	};
 
-	//! This bridge between Irlicht pseudo OpenGL calls
+	//! This bridge between Irrlicht pseudo OpenGL calls
 	//! and true OpenGL calls.
 
 	class COGLES2CallBridge

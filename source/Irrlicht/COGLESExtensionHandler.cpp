@@ -124,24 +124,25 @@ namespace video
 	};
 
 
-COGLES1ExtensionHandler::COGLES1ExtensionHandler() : 
-#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-		pGlDrawTexiOES(0), pGlDrawTexfOES(0),
-		pGlDrawTexivOES(0), pGlDrawTexfvOES(0),
-		pGlBlendEquationOES(0), pGlBlendFuncSeparateOES(0),
-		pGlBindRenderbufferOES(0), pGlDeleteRenderbuffersOES(0),
-		pGlGenRenderbuffersOES(0), pGlRenderbufferStorageOES(0),
-		pGlBindFramebufferOES(0), pGlDeleteFramebuffersOES(0),
-		pGlGenFramebuffersOES(0), pGlCheckFramebufferStatusOES(0),
-		pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
-		pGlGenerateMipMapOES(0),
-#endif
+COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 	Version(0), MaxTextureUnits(0), MaxLights(0),
 	MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
 	MaxMultipleRenderTargets(1), MaxIndices(65535), MaxTextureSize(1),
 	MaxTextureLODBias(0.f), CommonProfile(false),
 	MultiTextureExtension(false), MultiSamplingExtension(false),
 	StencilBuffer(false)
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
+	,pGlDrawTexiOES(0), pGlDrawTexfOES(0),
+	pGlDrawTexivOES(0), pGlDrawTexfvOES(0),
+	pGlBlendEquationOES(0), pGlBlendFuncSeparateOES(0),
+	pGlBindRenderbufferOES(0), pGlDeleteRenderbuffersOES(0),
+	pGlGenRenderbuffersOES(0), pGlRenderbufferStorageOES(0),
+	pGlBindFramebufferOES(0), pGlDeleteFramebuffersOES(0),
+	pGlGenFramebuffersOES(0), pGlCheckFramebufferStatusOES(0),
+	pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
+	pGlGenerateMipMapOES(0)
+#endif
+
 {
 	for (u32 i=0; i<IRR_OGLES_Feature_Count; ++i)
 		FeatureAvailable[i]=false;

@@ -80,7 +80,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 		}
  	)
 
-    core::dimension2d<u32> WindowSize(0, 0);
+    core::dimension2d<u32> windowSize(0, 0);
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
 	if (!ContextManager)
@@ -92,7 +92,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData);
 
-	WindowSize = params.WindowSize;
+	windowSize = params.WindowSize;
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	glGenFramebuffers(1, &ViewFramebuffer);
 	glGenRenderbuffers(1, &ViewRenderbuffer);
@@ -120,12 +120,12 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ViewRenderbuffer);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ViewDepthRenderbuffer);
 
-	WindowSize = core::dimension2d<u32>(backingWidth, backingHeight);
-	CNullDriver::ScreenSize = WindowSize;
-	CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(WindowSize));
+	windowSize = core::dimension2d<u32>(backingWidth, backingHeight);
+	CNullDriver::ScreenSize = windowSize;
+	CNullDriver::ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(windowSize));
 #endif
 
-	genericDriverInit(WindowSize, params.Stencilbuffer);
+	genericDriverInit(windowSize, params.Stencilbuffer);
 }
 
 COGLES2Driver::~COGLES2Driver()
@@ -174,8 +174,8 @@ COGLES2Driver::~COGLES2Driver()
 		printVersion();
 
 		// print renderer information
-		vendorName = glGetString(GL_VENDOR);
-		os::Printer::log(vendorName.c_str(), ELL_INFORMATION);
+		VendorName = glGetString(GL_VENDOR);
+		os::Printer::log(VendorName.c_str(), ELL_INFORMATION);
 
 		CurrentTexture.clear();
 
@@ -667,12 +667,12 @@ bool COGLES2Driver::endScene()
 		if (HWBuffer->Mapped_Vertex != scene::EHM_NEVER)
 		{
 			if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex()
-				|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
+				|| !static_cast<SHWBufferLink_opengl*>(HWBuffer)->vbo_verticesID)
 			{
 
 				HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
 
-				if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
+				if (!updateVertexHardwareBuffer(static_cast<SHWBufferLink_opengl*>(HWBuffer)))
 					return false;
 			}
 		}
@@ -680,7 +680,7 @@ bool COGLES2Driver::endScene()
 		if (HWBuffer->Mapped_Index != scene::EHM_NEVER)
 		{
 			if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
-				|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID)
+				|| !static_cast<SHWBufferLink_opengl*>(HWBuffer)->vbo_indicesID)
 			{
 
 				HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
@@ -730,7 +730,7 @@ bool COGLES2Driver::endScene()
 		if (!_HWBuffer)
 			return;
 
-		SHWBufferLink_opengl *HWBuffer = (SHWBufferLink_opengl*)_HWBuffer;
+		SHWBufferLink_opengl *HWBuffer = static_cast<SHWBufferLink_opengl*>(_HWBuffer);
 		if (HWBuffer->vbo_verticesID)
 		{
 			glDeleteBuffers(1, &HWBuffer->vbo_verticesID);
@@ -752,7 +752,7 @@ bool COGLES2Driver::endScene()
 		if (!_HWBuffer)
 			return;
 
-		SHWBufferLink_opengl *HWBuffer = (SHWBufferLink_opengl*)_HWBuffer;
+		SHWBufferLink_opengl *HWBuffer = static_cast<SHWBufferLink_opengl*>(_HWBuffer);
 
 		updateHardwareBuffer(HWBuffer); //check if update is needed
 
