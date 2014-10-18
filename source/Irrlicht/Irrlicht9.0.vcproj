@@ -2735,6 +2735,7 @@
 				<File
 					RelativePath="os.cpp"
 					>
+				</File>
 				<File
 					RelativePath="utf8.cpp"
 					>
