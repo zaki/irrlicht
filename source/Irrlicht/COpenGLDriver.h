@@ -675,6 +675,12 @@ namespace video
 
 		void setClientState(bool vertex, bool normal, bool color, bool texCoord0);
 
+		// Color Mask.
+
+		void setColorMask(bool red, bool green, bool blue, bool alpha);
+
+		void setColorMaskIndexed(GLuint index, bool red, bool green, bool blue, bool alpha);
+
 		// Cull face calls.
 
 		void setCullFaceFunc(GLenum mode);
@@ -710,6 +716,8 @@ namespace video
 	private:
 		COpenGLDriver* Driver;
 
+		GLuint FrameBufferCount;
+
 		GLenum AlphaMode;
 		GLclampf AlphaRef;
 		bool AlphaTest;
@@ -720,12 +728,13 @@ namespace video
 		GLenum* BlendSourceAlpha;
 		GLenum* BlendDestinationAlpha;
 		bool* Blend;
-		GLuint BlendIndexCount;
 
 		bool ClientStateVertex;
 		bool ClientStateNormal;
 		bool ClientStateColor;
 		bool ClientStateTexCoord0;
+
+		bool (*ColorMask)[4];
 
 		GLenum CullFaceMode;
 		bool CullFace;

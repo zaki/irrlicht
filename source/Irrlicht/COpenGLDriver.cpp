@@ -893,8 +893,7 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 	GLbitfield mask = 0;
 	if (backBuffer)
 	{
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		Material.ColorMask = ECP_ALL;
+		BridgeCalls->setColorMask(true, true, true, true);
 
 		const f32 inv = 1.0f / 255.0f;
 		glClearColor(color.getRed() * inv, color.getGreen() * inv,
@@ -906,8 +905,6 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 	if (zBuffer)
 	{
 		BridgeCalls->setDepthMask(true);
-		Material.ZWriteEnable = true;
-
  		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
@@ -3004,94 +3001,86 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
 		glPolygonMode(GL_FRONT_AND_BACK, material.Wireframe ? GL_LINE : material.PointCloud? GL_POINT : GL_FILL);
 
-	// zbuffer
-	if (resetAllRenderStates || lastmaterial.ZBuffer != material.ZBuffer)
+	// ZBuffer
+	switch (material.ZBuffer)
 	{
-		switch (material.ZBuffer)
-		{
-			case ECFN_DISABLED:
-				BridgeCalls->setDepthTest(false);
-				break;
-			case ECFN_LESSEQUAL:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_LEQUAL);
-				break;
-			case ECFN_EQUAL:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_EQUAL);
-				break;
-			case ECFN_LESS:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_LESS);
-				break;
-			case ECFN_NOTEQUAL:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_NOTEQUAL);
-				break;
-			case ECFN_GREATEREQUAL:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_GEQUAL);
-				break;
-			case ECFN_GREATER:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_GREATER);
-				break;
-			case ECFN_ALWAYS:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_ALWAYS);
-				break;
-			case ECFN_NEVER:
-				BridgeCalls->setDepthTest(true);
-				BridgeCalls->setDepthFunc(GL_NEVER);
-				break;
-		}
+	case ECFN_DISABLED:
+		BridgeCalls->setDepthTest(false);
+		break;
+	case ECFN_LESSEQUAL:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_LEQUAL);
+		break;
+	case ECFN_EQUAL:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_EQUAL);
+		break;
+	case ECFN_LESS:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_LESS);
+		break;
+	case ECFN_NOTEQUAL:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_NOTEQUAL);
+		break;
+	case ECFN_GREATEREQUAL:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_GEQUAL);
+		break;
+	case ECFN_GREATER:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_GREATER);
+		break;
+	case ECFN_ALWAYS:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_ALWAYS);
+		break;
+	case ECFN_NEVER:
+		BridgeCalls->setDepthTest(true);
+		BridgeCalls->setDepthFunc(GL_NEVER);
+		break;
+	default:
+		break;
 	}
 
-	// zwrite
-//	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
+	// ZWrite
+	if (material.ZWriteEnable && (AllowZWriteOnTransparent || (material.BlendOperation == EBO_NONE &&
+		!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
 	{
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (!material.isTransparent() &&
-			!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
-		{
-			BridgeCalls->setDepthMask(true);
-		}
-		else
-			BridgeCalls->setDepthMask(false);
+		BridgeCalls->setDepthMask(true);
+	}
+	else
+	{
+		BridgeCalls->setDepthMask(false);
 	}
 
-	// back face culling
-	if (resetAllRenderStates || (lastmaterial.FrontfaceCulling != material.FrontfaceCulling) || (lastmaterial.BackfaceCulling != material.BackfaceCulling))
+	// Back face culling
+	if ((material.FrontfaceCulling) && (material.BackfaceCulling))
 	{
-		if ((material.FrontfaceCulling) && (material.BackfaceCulling))
-		{
-			BridgeCalls->setCullFaceFunc(GL_FRONT_AND_BACK);
-			BridgeCalls->setCullFace(true);
-		}
-		else
-		if (material.BackfaceCulling)
-		{
-			BridgeCalls->setCullFaceFunc(GL_BACK);
-			BridgeCalls->setCullFace(true);
-		}
-		else
-		if (material.FrontfaceCulling)
-		{
-			BridgeCalls->setCullFaceFunc(GL_FRONT);
-			BridgeCalls->setCullFace(true);
-		}
-		else
-			BridgeCalls->setCullFace(false);
+		BridgeCalls->setCullFaceFunc(GL_FRONT_AND_BACK);
+		BridgeCalls->setCullFace(true);
+	}
+	else if (material.BackfaceCulling)
+	{
+		BridgeCalls->setCullFaceFunc(GL_BACK);
+		BridgeCalls->setCullFace(true);
+	}
+	else if (material.FrontfaceCulling)
+	{
+		BridgeCalls->setCullFaceFunc(GL_FRONT);
+		BridgeCalls->setCullFace(true);
+	}
+	else
+	{
+		BridgeCalls->setCullFace(false);
 	}
 
 	// Color Mask
-	if (resetAllRenderStates || lastmaterial.ColorMask != material.ColorMask)
-	{
-		glColorMask(
-			(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
-			(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
-			(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
-			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
-	}
+	BridgeCalls->setColorMask(
+		(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+		(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+		(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+		(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
 
 	// Blend Equation
     if (material.BlendOperation == EBO_NONE)
@@ -3291,6 +3280,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 	}
 
+	// Texture parameters
 	setTextureRenderStates(material, resetAllRenderStates);
 
 	// set current fixed pipeline state
@@ -4023,7 +4013,8 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, Quad2DIndices);
 
-	clearBuffers(false, false, clearStencilBuffer, 0x0);
+	if (clearStencilBuffer)
+		glClear(GL_STENCIL_BUFFER_BIT);
 
 	// restore settings
 	glPopMatrix();
@@ -4564,11 +4555,12 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 		{
 			if (FeatureAvailable[IRR_EXT_draw_buffers2])
 			{
-				extGlColorMaskIndexed(i,
+				BridgeCalls->setColorMaskIndexed(i,
 					(targets[i].ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
 					(targets[i].ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+
 				if (targets[i].BlendOp==EBO_NONE)
 					BridgeCalls->setBlendIndexed(i, false);
 				else
@@ -5055,16 +5047,18 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), MatrixMode(GL_MODELVIEW),
 	ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB), ViewportX(0), ViewportY(0)
 {
-	BlendIndexCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->MaxMultipleRenderTargets));
+	FrameBufferCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->MaxMultipleRenderTargets));
 
-	BlendEquation = new GLenum[BlendIndexCount];
-	BlendSourceRGB = new GLenum[BlendIndexCount];
-	BlendDestinationRGB = new GLenum[BlendIndexCount];
-	BlendSourceAlpha = new GLenum[BlendIndexCount];
-	BlendDestinationAlpha = new GLenum[BlendIndexCount];
-	Blend = new bool[BlendIndexCount];
+	BlendEquation = new GLenum[FrameBufferCount];
+	BlendSourceRGB = new GLenum[FrameBufferCount];
+	BlendDestinationRGB = new GLenum[FrameBufferCount];
+	BlendSourceAlpha = new GLenum[FrameBufferCount];
+	BlendDestinationAlpha = new GLenum[FrameBufferCount];
+	Blend = new bool[FrameBufferCount];
 
-	for (u32 i = 0; i < BlendIndexCount; ++i)
+	ColorMask = new bool[FrameBufferCount][4];
+
+	for (u32 i = 0; i < FrameBufferCount; ++i)
 	{
 #if defined(GL_VERSION_1_4)
 		BlendEquation[i] = GL_FUNC_ADD;
@@ -5078,6 +5072,9 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 		BlendDestinationAlpha[i] = GL_ZERO;
 
 		Blend[i] = false;
+
+		for (u32 j = 0; j < 4; ++j)
+			ColorMask[i][j] = true;
 	}
 
 	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
@@ -5102,6 +5099,8 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glDisable(GL_BLEND);
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	glCullFace(GL_BACK);
 	glDisable(GL_CULL_FACE);
@@ -5138,6 +5137,8 @@ COpenGLCallBridge::~COpenGLCallBridge()
     delete[] BlendSourceAlpha;
 	delete[] BlendDestinationAlpha;
 	delete[] Blend;
+
+	delete[] ColorMask;
 }
 
 void COpenGLCallBridge::setAlphaFunc(GLenum mode, GLclampf ref)
@@ -5169,14 +5170,14 @@ void COpenGLCallBridge::setBlendEquation(GLenum mode)
 	{
 		Driver->extGlBlendEquation(mode);
 
-		for (GLuint i = 0; i < BlendIndexCount; ++i)
+		for (GLuint i = 0; i < FrameBufferCount; ++i)
 			BlendEquation[i] = mode;
 	}
 }
 
 void COpenGLCallBridge::setBlendEquationIndexed(GLuint index, GLenum mode)
 {
-	if (index < BlendIndexCount && BlendEquation[index] != mode)
+	if (index < FrameBufferCount && BlendEquation[index] != mode)
 	{
 		Driver->extGlBlendEquationIndexed(index, mode);
 
@@ -5191,7 +5192,7 @@ void COpenGLCallBridge::setBlendFunc(GLenum source, GLenum destination)
 	{
 		glBlendFunc(source, destination);
 
-		for (GLuint i = 0; i < BlendIndexCount; ++i)
+		for (GLuint i = 0; i < FrameBufferCount; ++i)
 		{
 			BlendSourceRGB[i] = source;
 			BlendDestinationRGB[i] = destination;
@@ -5210,7 +5211,7 @@ void COpenGLCallBridge::setBlendFuncSeparate(GLenum sourceRGB, GLenum destinatio
         {
             Driver->extGlBlendFuncSeparate(sourceRGB, destinationRGB, sourceAlpha, destinationAlpha);
 
-            for (GLuint i = 0; i < BlendIndexCount; ++i)
+            for (GLuint i = 0; i < FrameBufferCount; ++i)
             {
                 BlendSourceRGB[i] = sourceRGB;
                 BlendDestinationRGB[i] = destinationRGB;
@@ -5227,7 +5228,7 @@ void COpenGLCallBridge::setBlendFuncSeparate(GLenum sourceRGB, GLenum destinatio
 
 void COpenGLCallBridge::setBlendFuncIndexed(GLuint index, GLenum source, GLenum destination)
 {
-	if (index < BlendIndexCount && (BlendSourceRGB[index] != source || BlendDestinationRGB[index] != destination ||
+	if (index < FrameBufferCount && (BlendSourceRGB[index] != source || BlendDestinationRGB[index] != destination ||
         BlendSourceAlpha[index] != source || BlendDestinationAlpha[index] != destination))
 	{
 		Driver->extGlBlendFuncIndexed(index, source, destination);
@@ -5243,7 +5244,7 @@ void COpenGLCallBridge::setBlendFuncSeparateIndexed(GLuint index, GLenum sourceR
 {
     if (sourceRGB != sourceAlpha || destinationRGB != destinationAlpha)
     {
-        if (index < BlendIndexCount && (BlendSourceRGB[index] != sourceRGB || BlendDestinationRGB[index] != destinationRGB ||
+        if (index < FrameBufferCount && (BlendSourceRGB[index] != sourceRGB || BlendDestinationRGB[index] != destinationRGB ||
             BlendSourceAlpha[index] != sourceAlpha || BlendDestinationAlpha[index] != destinationAlpha))
         {
             Driver->extGlBlendFuncSeparateIndexed(index, sourceRGB, destinationRGB, sourceAlpha, destinationAlpha);
@@ -5269,14 +5270,14 @@ void COpenGLCallBridge::setBlend(bool enable)
 		else
 			glDisable(GL_BLEND);
 
-		for (GLuint i = 0; i < BlendIndexCount; ++i)
+		for (GLuint i = 0; i < FrameBufferCount; ++i)
 			Blend[i] = enable;
 	}
 }
 
 void COpenGLCallBridge::setBlendIndexed(GLuint index, bool enable)
 {
-	if (index < BlendIndexCount && Blend[index] != enable)
+	if (index < FrameBufferCount && Blend[index] != enable)
 	{
 		if (enable)
 			Driver->extGlEnableIndexed(GL_BLEND, index);
@@ -5284,6 +5285,35 @@ void COpenGLCallBridge::setBlendIndexed(GLuint index, bool enable)
 			Driver->extGlDisableIndexed(GL_BLEND, index);
 
 		Blend[index] = enable;
+	}
+}
+
+void COpenGLCallBridge::setColorMask(bool red, bool green, bool blue, bool alpha)
+{
+	if (ColorMask[0][0] != red || ColorMask[0][1] != green || ColorMask[0][2] != blue || ColorMask[0][3] != alpha)
+	{
+		glColorMask(red, green, blue, alpha);
+
+		for (GLuint i = 0; i < FrameBufferCount; ++i)
+		{
+			ColorMask[i][0] = red;
+			ColorMask[i][1] = green;
+			ColorMask[i][2] = blue;
+			ColorMask[i][3] = alpha;
+		}
+	}
+}
+
+void COpenGLCallBridge::setColorMaskIndexed(GLuint index, bool red, bool green, bool blue, bool alpha)
+{
+	if (index < FrameBufferCount && (ColorMask[index][0] != red || ColorMask[index][1] != green || ColorMask[index][2] != blue || ColorMask[index][3] != alpha))
+	{
+		Driver->extGlColorMaskIndexed(index, red, green, blue, alpha);
+
+		ColorMask[index][0] = red;
+		ColorMask[index][1] = green;
+		ColorMask[index][2] = blue;
+		ColorMask[index][3] = alpha;
 	}
 }
 
