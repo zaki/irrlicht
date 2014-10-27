@@ -33,19 +33,25 @@ COGLES2MaterialRenderer::COGLES2MaterialRenderer(COGLES2Driver* driver,
 	setDebugName("COGLES2MaterialRenderer");
 #endif
 
-	if (baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL ||
-		baseMaterial == EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA ||
-		baseMaterial == EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA)
+	switch (baseMaterial)
 	{
+	case EMT_TRANSPARENT_VERTEX_ALPHA:
+	case EMT_TRANSPARENT_ALPHA_CHANNEL:
+	case EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA:
+	case EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA:
 		Alpha = true;
-	}
-	else if (baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR ||
-		baseMaterial == EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR)
-	{
+		break;
+	case EMT_TRANSPARENT_ADD_COLOR:
+	case EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR:
+	case EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR:
 		FixedBlending = true;
-	}
-	else if (baseMaterial == EMT_ONETEXTURE_BLEND)
+		break;
+	case EMT_ONETEXTURE_BLEND:
 		Blending = true;
+		break;
+	default:
+		break;
+	}
 
 	if (CallBack)
 		CallBack->grab();
@@ -59,19 +65,25 @@ COGLES2MaterialRenderer::COGLES2MaterialRenderer(COGLES2Driver* driver,
 					E_MATERIAL_TYPE baseMaterial, s32 userData)
 : Driver(driver), CallBack(callback), Alpha(false), Blending(false), FixedBlending(false), Program(0), UserData(userData)
 {
-	if (baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL ||
-		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF || baseMaterial == EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA ||
-		baseMaterial == EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA)
+	switch (baseMaterial)
 	{
+	case EMT_TRANSPARENT_VERTEX_ALPHA:
+	case EMT_TRANSPARENT_ALPHA_CHANNEL:
+	case EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA:
+	case EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA:
 		Alpha = true;
-	}
-	else if (baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR ||
-		baseMaterial == EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR)
-	{
+		break;
+	case EMT_TRANSPARENT_ADD_COLOR:
+	case EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR:
+	case EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR:
 		FixedBlending = true;
-	}
-	else if (baseMaterial == EMT_ONETEXTURE_BLEND)
+		break;
+	case EMT_ONETEXTURE_BLEND:
 		Blending = true;
+		break;
+	default:
+		break;
+	}
 
 	if (CallBack)
 		CallBack->grab();
@@ -137,8 +149,6 @@ void COGLES2MaterialRenderer::init(s32& outMaterialTypeNr,
 
 bool COGLES2MaterialRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 {
-    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
-
 	if (CallBack && Program)
 		CallBack->OnSetConstants(this, UserData);
 
