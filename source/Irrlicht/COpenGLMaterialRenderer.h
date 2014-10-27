@@ -16,45 +16,12 @@ namespace irr
 namespace video
 {
 
-//! Base class for all internal OpenGL material renderers
-class COpenGLMaterialRenderer : public IMaterialRenderer
-{
-public:
-
-	//! Constructor
-	COpenGLMaterialRenderer(video::COpenGLDriver* driver) : Driver(driver)
-	{
-	}
-
-	//! On set material method for shader based materials
-	virtual void OnSetBaseMaterial(const SMaterial& material)
-	{
-	}
-
-	//! On unset material method for shader based materials
-	virtual void OnUnsetBaseMaterial()
-	{
-	}
-
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_
-	{
-		Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
-		return true;
-	}
-
-protected:
-
-	video::COpenGLDriver* Driver;
-};
-
-
 //! Solid material renderer
-class COpenGLMaterialRenderer_SOLID : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_SOLID : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_SOLID(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_SOLID(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -74,16 +41,19 @@ public:
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! Generic Texture Blend
-class COpenGLMaterialRenderer_ONETEXTURE_BLEND : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_ONETEXTURE_BLEND : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_ONETEXTURE_BLEND(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_ONETEXTURE_BLEND(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -170,26 +140,6 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
-	{
-		E_BLEND_FACTOR srcRGBFact,dstRGBFact,srcAlphaFact,dstAlphaFact;
-        E_MODULATE_FUNC modulate;
-        u32 alphaSource;
-        unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulate, alphaSource, material.MaterialTypeParam);
-
-        Driver->getBridgeCalls()->setBlend(true);
-
-        if (Driver->queryFeature(EVDF_BLEND_SEPARATE))
-        {
-            Driver->getBridgeCalls()->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
-                Driver->getGLBlend(srcAlphaFact), Driver->getGLBlend(dstAlphaFact));
-        }
-        else
-        {
-            Driver->getBridgeCalls()->setBlendFunc(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact));
-        }
-	}
-
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -206,27 +156,25 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setBlend(false);
-	}
-
 	//! Returns if the material is transparent.
 	/** Is not always transparent, but mostly. */
 	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! Solid 2 layer material renderer
-class COpenGLMaterialRenderer_SOLID_2_LAYER : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_SOLID_2_LAYER : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_SOLID_2_LAYER(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_SOLID_2_LAYER(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -281,16 +229,19 @@ public:
 			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
 		}
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! Transparent add color material renderer
-class COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -310,18 +261,7 @@ public:
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		Driver->getBridgeCalls()->setBlend(true);
-	}
-
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setBlend(false);
-	}
-
-	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setBlend(false);
 	}
@@ -331,16 +271,19 @@ public:
 	{
 		return true;
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! Transparent vertex alpha material renderer
-class COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -376,12 +319,6 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		Driver->getBridgeCalls()->setBlend(true);
-	}
-
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		// default values
@@ -396,26 +333,24 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setBlend(false);
-	}
-
 	//! Returns if the material is transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! Transparent alpha channel material renderer
-class COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -454,14 +389,6 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		Driver->getBridgeCalls()->setBlend(true);
-		Driver->getBridgeCalls()->setAlphaTest(true);
-		Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, material.MaterialTypeParam);
-	}
-
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -474,27 +401,24 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setBlend(false);
-		Driver->getBridgeCalls()->setAlphaTest(false);
-	}
-
 	//! Returns if the material is transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
 		return true;
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! Transparent alpha channel material renderer
-class COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -515,18 +439,7 @@ public:
 		}
 	}
 
-	virtual void OnSetBaseMaterial(const SMaterial& material) _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setAlphaTest(true);
-		Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, 0.5f);
-	}
-
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
-	{
-		Driver->getBridgeCalls()->setAlphaTest(false);
-	}
-
-	virtual void OnUnsetBaseMaterial() _IRR_OVERRIDE_
 	{
 		Driver->getBridgeCalls()->setAlphaTest(false);
 	}
@@ -536,16 +449,19 @@ public:
 	{
 		return false;  // this material is not really transparent because it does no blending.
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! material renderer for all kinds of lightmaps
-class COpenGLMaterialRenderer_LIGHTMAP : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_LIGHTMAP : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_LIGHTMAP(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_LIGHTMAP(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -656,17 +572,20 @@ public:
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 
 //! detail map  material renderer
-class COpenGLMaterialRenderer_DETAIL_MAP : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_DETAIL_MAP : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_DETAIL_MAP(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_DETAIL_MAP(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -711,16 +630,19 @@ public:
 			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
 		}
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! sphere map material renderer
-class COpenGLMaterialRenderer_SPHERE_MAP : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_SPHERE_MAP : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_SPHERE_MAP(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_SPHERE_MAP(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -752,16 +674,19 @@ public:
 		glDisable(GL_TEXTURE_GEN_S);
 		glDisable(GL_TEXTURE_GEN_T);
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! reflection 2 layer material renderer
-class COpenGLMaterialRenderer_REFLECTION_2_LAYER : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_REFLECTION_2_LAYER : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_REFLECTION_2_LAYER(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_REFLECTION_2_LAYER(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -812,16 +737,19 @@ public:
 			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
 		}
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 
 //! reflection 2 layer material renderer
-class COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER : public COpenGLMaterialRenderer
+class COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER : public IMaterialRenderer
 {
 public:
 
-	COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(video::COpenGLDriver* d)
-		: COpenGLMaterialRenderer(d) {}
+	COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(video::COpenGLDriver* d) : Driver(d) {}
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_
@@ -901,6 +829,10 @@ public:
 	{
 		return true;
 	}
+
+protected:
+
+	video::COpenGLDriver* Driver;
 };
 
 } // end namespace video
