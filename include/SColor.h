@@ -48,24 +48,40 @@ namespace video
 		//! DXT5 color format.
 		ECF_DXT5,
 
-		/** Floating Point formats. The following formats may only be used for render target textures. */
+		/** The following formats may only be used for render target textures. */
 
-		//! 16 bit floating point format using 16 bits for the red channel.
+		/** Unsigned normalized integer formats. */
+
+		//! 8 bit format using 8 bits for the red channel.
+		ECF_R8,
+
+		//! 16 bit format using 8 bits for the red and green channels.
+		ECF_R8G8,
+
+		//! 16 bit format using 16 bits for the red channel.
+		ECF_R16,
+
+		//! 32 bit format using 16 bits for the red and green channels.
+		ECF_R16G16,
+
+		/** Floating point formats. */
+
+		//! 16 bit format using 16 bits for the red channel.
 		ECF_R16F,
 
-		//! 32 bit floating point format using 16 bits for the red channel and 16 bits for the green channel.
+		//! 32 bit format using 16 bits for the red and green channels.
 		ECF_G16R16F,
 
-		//! 64 bit floating point format 16 bits are used for the red, green, blue and alpha channels.
+		//! 64 bit format using 16 bits for the red, green, blue and alpha channels.
 		ECF_A16B16G16R16F,
 
-		//! 32 bit floating point format using 32 bits for the red channel.
+		//! 32 bit format using 32 bits for the red channel.
 		ECF_R32F,
 
-		//! 64 bit floating point format using 32 bits for the red channel and 32 bits for the green channel.
+		//! 64 bit format using 32 bits for the red and green channels.
 		ECF_G32R32F,
 
-		//! 128 bit floating point format. 32 bits are used for the red, green, blue and alpha channels.
+		//! 128 bit format using 32 bits for the red, green, blue and alpha channels.
 		ECF_A32B32G32R32F,
 
 		//! Unknown color format:

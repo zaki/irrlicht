@@ -198,95 +198,130 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			type = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			break;
+		case ECF_R8:
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				colorformat = GL_RED;
+				type = GL_UNSIGNED_BYTE;
+				internalformat = GL_R8;
+			}
+			else
+				os::Printer::log("ECF_R8 color format is unsupported", ELL_ERROR);
+			break;
+		case ECF_R8G8:
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				colorformat = GL_RG;
+				type = GL_UNSIGNED_BYTE;
+				internalformat = GL_RG8;
+			}
+			else
+				os::Printer::log("ECF_R8G8 color format is unsupported", ELL_ERROR);
+			break;
+		case ECF_R16:
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				colorformat = GL_RED;
+				type = GL_UNSIGNED_SHORT;
+				internalformat = GL_R16;
+			}
+			else
+				os::Printer::log("ECF_R16 color format is unsupported", ELL_ERROR);
+			break;
+		case ECF_R16G16:
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				colorformat = GL_RG;
+				type = GL_UNSIGNED_SHORT;
+				internalformat = GL_RG16;
+			}
+			else
+				os::Printer::log("ECF_R16G16 color format is unsupported", ELL_ERROR);
+			break;
 		case ECF_R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RED;
-			type = GL_FLOAT;
-
-			internalformat =  GL_R16F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				filtering = GL_NEAREST;
+				colorformat = GL_RED;
+				internalformat =  GL_R16F;
+#ifdef GL_ARB_half_float_pixel
+				if (Driver->FeatureAvailable[Driver->IRR_ARB_half_float_pixel])
+					type = GL_HALF_FLOAT_ARB;
+				else
 #endif
-		}
+					type = GL_FLOAT;
+			}
+			else
+				os::Printer::log("ECF_R16F color format is unsupported", ELL_ERROR);
 			break;
 		case ECF_G16R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RG;
-			type = GL_FLOAT;
-
-			internalformat =  GL_RG16F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				filtering = GL_NEAREST;
+				colorformat = GL_RG;
+				internalformat =  GL_RG16F;
+#ifdef GL_ARB_half_float_pixel
+				if (Driver->FeatureAvailable[Driver->IRR_ARB_half_float_pixel])
+					type = GL_HALF_FLOAT_ARB;
+				else
 #endif
-		}
+					type = GL_FLOAT;
+			}
+			else
+				os::Printer::log("ECF_G16R16F color format is unsupported", ELL_ERROR);
 			break;
 		case ECF_A16B16G16R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RGBA;
-			type = GL_FLOAT;
-
-			internalformat =  GL_RGBA16F_ARB;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGBA8;
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_float])
+			{
+				filtering = GL_NEAREST;
+				colorformat = GL_RGBA;
+				internalformat =  GL_RGBA16F_ARB;
+#ifdef GL_ARB_half_float_pixel
+				if (Driver->FeatureAvailable[Driver->IRR_ARB_half_float_pixel])
+					type = GL_HALF_FLOAT_ARB;
+				else
 #endif
-		}
+					type = GL_FLOAT;
+			}
+			else
+				os::Printer::log("ECF_A16B16G16R16F color format is unsupported", ELL_ERROR);
 			break;
 		case ECF_R32F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RED;
-			type = GL_FLOAT;
-
-			internalformat =  GL_R32F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
-#endif
-		}
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				filtering = GL_NEAREST;
+				colorformat = GL_RED;
+				internalformat =  GL_R32F;
+				type = GL_FLOAT;
+			}
+			else
+				os::Printer::log("ECF_R32F color format is unsupported", ELL_ERROR);
 			break;
 		case ECF_G32R32F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RG;
-			type = GL_FLOAT;
-
-			internalformat =  GL_RG32F;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGB8;
-#endif
-		}
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			{
+				filtering = GL_NEAREST;
+				colorformat = GL_RG;
+				internalformat =  GL_RG32F;
+				type = GL_FLOAT;
+			}
+			else
+				os::Printer::log("ECF_G32R32F color format is unsupported", ELL_ERROR);
 			break;
 		case ECF_A32B32G32R32F:
-		{
-#ifdef GL_ARB_texture_float
-			filtering = GL_NEAREST;
-			colorformat = GL_RGBA;
-			type = GL_FLOAT;
-
-			internalformat =  GL_RGBA32F_ARB;
-#else
-			ColorFormat = ECF_A8R8G8B8;
-			internalformat =  GL_RGBA8;
-#endif
-		}
+			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_float])
+			{
+				filtering = GL_NEAREST;
+				colorformat = GL_RGBA;
+				internalformat =  GL_RGBA32F_ARB;
+				type = GL_FLOAT;
+			}
+			else
+				os::Printer::log("ECF_A32B32G32R32F color format is unsupported", ELL_ERROR);
 			break;
 		default:
-		{
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
-			internalformat =  GL_RGBA8;
-		}
+			break;
 	}
 #if defined(GL_ARB_framebuffer_sRGB) || defined(GL_EXT_framebuffer_sRGB)
 	if (Driver->Params.HandleSRGB)
