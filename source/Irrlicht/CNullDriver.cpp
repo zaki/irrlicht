@@ -613,20 +613,9 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 }
 
 
-//! set or reset special render targets
-bool CNullDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
-			bool clearZBuffer, SColor color)
-{
-	if (ERT_FRAME_BUFFER==target)
-		return setRenderTarget(0,clearTarget, clearZBuffer, color);
-	else
-		return false;
-}
-
-
 //! sets a render target
 bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-					bool clearZBuffer, SColor color)
+					bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	return false;
 }
@@ -634,9 +623,20 @@ bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 
 //! Sets multiple render targets
 bool CNullDriver::setRenderTarget(const core::array<video::IRenderTarget>& texture,
-				bool clearBackBuffer, bool clearZBuffer, SColor color)
+				bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	return false;
+}
+
+
+//! set or reset special render targets
+bool CNullDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
+			bool clearZBuffer, SColor color)
+{
+	if (ERT_FRAME_BUFFER==target)
+		return setRenderTarget(0,clearTarget, clearZBuffer, color, 0);
+	else
+		return false;
 }
 
 

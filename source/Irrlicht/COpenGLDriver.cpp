@@ -4286,27 +4286,8 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 	{
 		rtt = new COpenGLFBOTexture(size, name, this, format);
-		if (rtt)
-		{
-			bool success = false;
-			addTexture(rtt);
-			ITexture* tex = createDepthTexture(rtt);
-			if (tex)
-			{
-				success = static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
-				if ( !success )
-				{
-					removeDepthTexture(tex);
-				}
-				tex->drop();
-			}
-			rtt->drop();
-			if (!success)
-			{
-				removeTexture(rtt);
-				rtt=0;
-			}
-		}
+		addTexture(rtt);
+		rtt->drop();
 	}
 	else
 #endif
@@ -4339,60 +4320,8 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 
 
 //! set or reset render target
-bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
-					bool clearZBuffer, SColor color)
-{
-	if (target != CurrentTarget)
-		setRenderTarget(0, false, false, 0x0);
-
-	if (ERT_RENDER_TEXTURE == target)
-	{
-		os::Printer::log("For render textures call setRenderTarget with the actual texture as first parameter.", ELL_ERROR);
-		return false;
-	}
-	if (ERT_MULTI_RENDER_TEXTURES == target)
-	{
-		os::Printer::log("For multiple render textures call setRenderTarget with the texture array as first parameter.", ELL_ERROR);
-		return false;
-	}
-
-	if (Params.Stereobuffer && (ERT_STEREO_RIGHT_BUFFER == target))
-	{
-		if (Params.Doublebuffer)
-			glDrawBuffer(GL_BACK_RIGHT);
-		else
-			glDrawBuffer(GL_FRONT_RIGHT);
-	}
-	else if (Params.Stereobuffer && ERT_STEREO_BOTH_BUFFERS == target)
-	{
-		if (Params.Doublebuffer)
-			glDrawBuffer(GL_BACK);
-		else
-			glDrawBuffer(GL_FRONT);
-	}
-	else if ((target >= ERT_AUX_BUFFER0) && (target-ERT_AUX_BUFFER0 < MaxAuxBuffers))
-	{
-			glDrawBuffer(GL_AUX0+target-ERT_AUX_BUFFER0);
-	}
-	else
-	{
-		if (Params.Doublebuffer)
-			glDrawBuffer(GL_BACK_LEFT);
-		else
-			glDrawBuffer(GL_FRONT_LEFT);
-		// exit with false, but also with working color buffer
-		if (target != ERT_FRAME_BUFFER)
-			return false;
-	}
-	CurrentTarget=target;
-	clearBuffers(clearTarget, clearZBuffer, false, color);
-	return true;
-}
-
-
-//! set or reset render target
 bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-					bool clearZBuffer, SColor color)
+					bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	// check for right driver type
 
@@ -4434,6 +4363,21 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 			// we want to set a new target. so do this.
 			BridgeCalls->setViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
 			RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
+
+			if (RenderTargetTexture->isFrameBufferObject())
+			{
+				if (depthStencil)
+				{
+					static_cast<COpenGLFBOTexture*>(RenderTargetTexture)->setDepthTexture(depthStencil);
+				}
+				else
+				{
+					ITexture* renderBuffer = createDepthTexture(RenderTargetTexture, true);
+					static_cast<COpenGLFBOTexture*>(RenderTargetTexture)->setDepthTexture(renderBuffer);
+					renderBuffer->drop();
+				}
+			}
+
 			// calls glDrawBuffer as well
 			RenderTargetTexture->bindRTT();
 			CurrentRendertargetSize = texture->getSize();
@@ -4459,14 +4403,14 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 //! Sets multiple render targets
 bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
-				bool clearBackBuffer, bool clearZBuffer, SColor color)
+				bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	// if simply disabling the MRT via array call
 	if (targets.size()==0)
-		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color, depthStencil);
 	// if disabling old MRT, but enabling new one as well
 	if ((MRTargets.size()!=0) && (targets != MRTargets))
-		setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+		setRenderTarget(0, clearBackBuffer, clearZBuffer, color, depthStencil);
 	// if no change, simply clear buffers
 	else if (targets == MRTargets)
 	{
@@ -4537,13 +4481,13 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 	{
 		if (targets[i].TargetType==ERT_RENDER_TEXTURE)
 		{
-			setRenderTarget(targets[i].RenderTexture, false, false, 0x0);
+			setRenderTarget(targets[i].RenderTexture, false, false, 0x0, depthStencil);
 			break; // bind only first RTT
 		}
 	}
 	// init other main buffer, if necessary
 	if (targets[0].TargetType!=ERT_RENDER_TEXTURE)
-		setRenderTarget(targets[0].TargetType, false, false, 0x0);
+		setRenderTarget(targets[0].TargetType, false, false, 0x0, depthStencil);
 
 	// attach other textures and store buffers into array
 	if (maxMultipleRTTs > 1)
@@ -4648,6 +4592,58 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 	}
 
 	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
+	return true;
+}
+
+
+//! set or reset render target
+bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
+					bool clearZBuffer, SColor color)
+{
+	if (target != CurrentTarget)
+		setRenderTarget(0, false, false, 0x0, 0);
+
+	if (ERT_RENDER_TEXTURE == target)
+	{
+		os::Printer::log("For render textures call setRenderTarget with the actual texture as first parameter.", ELL_ERROR);
+		return false;
+	}
+	if (ERT_MULTI_RENDER_TEXTURES == target)
+	{
+		os::Printer::log("For multiple render textures call setRenderTarget with the texture array as first parameter.", ELL_ERROR);
+		return false;
+	}
+
+	if (Params.Stereobuffer && (ERT_STEREO_RIGHT_BUFFER == target))
+	{
+		if (Params.Doublebuffer)
+			glDrawBuffer(GL_BACK_RIGHT);
+		else
+			glDrawBuffer(GL_FRONT_RIGHT);
+	}
+	else if (Params.Stereobuffer && ERT_STEREO_BOTH_BUFFERS == target)
+	{
+		if (Params.Doublebuffer)
+			glDrawBuffer(GL_BACK);
+		else
+			glDrawBuffer(GL_FRONT);
+	}
+	else if ((target >= ERT_AUX_BUFFER0) && (target-ERT_AUX_BUFFER0 < MaxAuxBuffers))
+	{
+			glDrawBuffer(GL_AUX0+target-ERT_AUX_BUFFER0);
+	}
+	else
+	{
+		if (Params.Doublebuffer)
+			glDrawBuffer(GL_BACK_LEFT);
+		else
+			glDrawBuffer(GL_FRONT_LEFT);
+		// exit with false, but also with working color buffer
+		if (target != ERT_FRAME_BUFFER)
+			return false;
+	}
+	CurrentTarget=target;
+	clearBuffers(clearTarget, clearZBuffer, false, color);
 	return true;
 }
 
@@ -4807,10 +4803,10 @@ ITexture* COpenGLDriver::createDepthTexture(ITexture* texture, bool shared)
 				return DepthTextures[i];
 			}
 		}
-		DepthTextures.push_back(new COpenGLFBODepthTexture(texture->getSize(), "depth1", this));
+		DepthTextures.push_back(new COpenGLRenderBuffer(texture->getSize(), "depth1", this));
 		return DepthTextures.getLast();
 	}
-	return (new COpenGLFBODepthTexture(texture->getSize(), "depth1", this));
+	return (new COpenGLRenderBuffer(texture->getSize(), "depth1", this));
 }
 
 

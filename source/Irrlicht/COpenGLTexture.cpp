@@ -25,7 +25,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true)
+	ReadOnlyLock(false), KeepImage(true), IsDepthTexture(false), IsRenderBuffer(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -82,7 +82,8 @@ COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	MipmapLegacyMode(true), IsRenderTarget(false), IsCompressed(false),
-	AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true)
+	AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true),
+	IsDepthTexture(false), IsRenderBuffer(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -198,96 +199,118 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 			type = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			break;
+		case ECF_D16:
+			colorformat = GL_DEPTH_COMPONENT;
+			type = GL_UNSIGNED_BYTE;
+			internalformat = GL_DEPTH_COMPONENT16;
+			break;
+		case ECF_D32:
+			colorformat = GL_DEPTH_COMPONENT;
+			type = GL_UNSIGNED_BYTE;
+			internalformat = GL_DEPTH_COMPONENT32;
+			break;
+		case ECF_D24S8:
+#ifdef GL_EXT_packed_depth_stencil
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_EXT_packed_depth_stencil))
+			{
+				colorformat = GL_DEPTH_STENCIL_EXT;
+				type = GL_UNSIGNED_INT_24_8_EXT;
+				internalformat = GL_DEPTH_STENCIL_EXT;
+			}
+			else
+#endif
+				os::Printer::log("ECF_D24S8 color format is not supported", ELL_ERROR);
+			break;
 		case ECF_R8:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				colorformat = GL_RED;
 				type = GL_UNSIGNED_BYTE;
 				internalformat = GL_R8;
 			}
 			else
-				os::Printer::log("ECF_R8 color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_R8 color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R8G8:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				colorformat = GL_RG;
 				type = GL_UNSIGNED_BYTE;
 				internalformat = GL_RG8;
 			}
 			else
-				os::Printer::log("ECF_R8G8 color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_R8G8 color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R16:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				colorformat = GL_RED;
 				type = GL_UNSIGNED_SHORT;
 				internalformat = GL_R16;
 			}
 			else
-				os::Printer::log("ECF_R16 color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_R16 color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R16G16:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				colorformat = GL_RG;
 				type = GL_UNSIGNED_SHORT;
 				internalformat = GL_RG16;
 			}
 			else
-				os::Printer::log("ECF_R16G16 color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_R16G16 color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R16F:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				filtering = GL_NEAREST;
 				colorformat = GL_RED;
 				internalformat =  GL_R16F;
 #ifdef GL_ARB_half_float_pixel
-				if (Driver->FeatureAvailable[Driver->IRR_ARB_half_float_pixel])
+				if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_half_float_pixel))
 					type = GL_HALF_FLOAT_ARB;
 				else
 #endif
 					type = GL_FLOAT;
 			}
 			else
-				os::Printer::log("ECF_R16F color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_R16F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_G16R16F:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				filtering = GL_NEAREST;
 				colorformat = GL_RG;
 				internalformat =  GL_RG16F;
 #ifdef GL_ARB_half_float_pixel
-				if (Driver->FeatureAvailable[Driver->IRR_ARB_half_float_pixel])
+				if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_half_float_pixel))
 					type = GL_HALF_FLOAT_ARB;
 				else
 #endif
 					type = GL_FLOAT;
 			}
 			else
-				os::Printer::log("ECF_G16R16F color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_G16R16F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_A16B16G16R16F:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_float])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
 			{
 				filtering = GL_NEAREST;
 				colorformat = GL_RGBA;
 				internalformat =  GL_RGBA16F_ARB;
 #ifdef GL_ARB_half_float_pixel
-				if (Driver->FeatureAvailable[Driver->IRR_ARB_half_float_pixel])
+				if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_half_float_pixel))
 					type = GL_HALF_FLOAT_ARB;
 				else
 #endif
 					type = GL_FLOAT;
 			}
 			else
-				os::Printer::log("ECF_A16B16G16R16F color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_A16B16G16R16F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R32F:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				filtering = GL_NEAREST;
 				colorformat = GL_RED;
@@ -295,10 +318,10 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 				type = GL_FLOAT;
 			}
 			else
-				os::Printer::log("ECF_R32F color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_R32F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_G32R32F:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_rg])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 			{
 				filtering = GL_NEAREST;
 				colorformat = GL_RG;
@@ -306,10 +329,10 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 				type = GL_FLOAT;
 			}
 			else
-				os::Printer::log("ECF_G32R32F color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_G32R32F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_A32B32G32R32F:
-			if (Driver->FeatureAvailable[Driver->IRR_ARB_texture_float])
+			if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
 			{
 				filtering = GL_NEAREST;
 				colorformat = GL_RGBA;
@@ -317,7 +340,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 				type = GL_FLOAT;
 			}
 			else
-				os::Printer::log("ECF_A32B32G32R32F color format is unsupported", ELL_ERROR);
+				os::Printer::log("ECF_A32B32G32R32F color format is not supported", ELL_ERROR);
 			break;
 		default:
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
@@ -809,6 +832,18 @@ bool COpenGLTexture::isFrameBufferObject() const
 }
 
 
+bool COpenGLTexture::isDepthTexture() const
+{
+	return IsDepthTexture;
+}
+
+
+bool COpenGLTexture::isRenderBuffer() const
+{
+	return IsRenderBuffer;
+}
+
+
 //! Bind Render Target Texture
 void COpenGLTexture::bindRTT()
 {
@@ -838,36 +873,33 @@ COpenGLTexture::SStatesCache& COpenGLTexture::getStatesCache() const
 // helper function for render to texture
 static bool checkFBOStatus(COpenGLDriver* Driver);
 
-//! RTT ColorFrameBuffer constructor
+//! RTT FBO constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 					const io::path& name, COpenGLDriver* driver,
 					ECOLOR_FORMAT format)
-	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
+	: COpenGLTexture(name, driver), BufferID(0), DepthTexture(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture_FBO");
 	#endif
 
-	ImageSize = size;
-	TextureSize = size;
-
 	if (ECF_UNKNOWN == format)
 		format = getBestColorFormat(driver->getColorFormat());
 
+	IsDepthTexture = IImage::isDepthFormat(format);
+
+	ImageSize = size;
+	TextureSize = size;
 	ColorFormat = format;
 
-	GLint FilteringType;
+	GLint FilteringType = 0;
 	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
 
 	HasMipMaps = false;
 	IsRenderTarget = true;
 
-#ifdef GL_EXT_framebuffer_object
-	// generate frame buffer
-	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
-	bindRTT();
-
 	// generate color texture
+
 	glGenTextures(1, &TextureName);
 
     Driver->setActiveTexture(0, this);
@@ -877,7 +909,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    if(FilteringType == GL_NEAREST)
+    if (FilteringType == GL_NEAREST)
         StatesCache.BilinearFilter = false;
     else
         StatesCache.BilinearFilter = true;
@@ -885,24 +917,25 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
     StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
     StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
 
-	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
-		ImageSize.Height, 0, PixelFormat, PixelType, 0);
-#ifdef _DEBUG
-	driver->testGLError();
-#endif
+	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
 
-	// attach color texture to frame buffer
-	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_COLOR_ATTACHMENT0_EXT,
-						GL_TEXTURE_2D,
-						TextureName,
-						0);
-#ifdef _DEBUG
-	checkFBOStatus(Driver);
-#endif
+	Driver->setActiveTexture(0, 0);
+	Driver->getBridgeCalls()->setTexture(0, true);
 
+#ifdef GL_EXT_framebuffer_object
+	// generate FBO
+
+	Driver->extGlGenFramebuffers(1, &BufferID);
+
+	if (BufferID != 0 && !IsDepthTexture)
+	{
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, BufferID);
+	
+		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, TextureName, 0);
+
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+	}
 #endif
-	unbindRTT();
 }
 
 
@@ -910,10 +943,15 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 COpenGLFBOTexture::~COpenGLFBOTexture()
 {
 	if (DepthTexture)
-		if (DepthTexture->drop())
+	{
+		bool remove = DepthTexture->isRenderBuffer();
+
+		if (DepthTexture->drop() && remove)
 			Driver->removeDepthTexture(DepthTexture);
-	if (ColorFrameBuffer)
-		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
+	}
+
+	if (BufferID)
+		Driver->extGlDeleteFramebuffers(1, &BufferID);
 }
 
 
@@ -927,8 +965,9 @@ bool COpenGLFBOTexture::isFrameBufferObject() const
 void COpenGLFBOTexture::bindRTT()
 {
 #ifdef GL_EXT_framebuffer_object
-	if (ColorFrameBuffer != 0)
-		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+	if (BufferID != 0)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, BufferID);
+
 	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
 #endif
 }
@@ -938,26 +977,102 @@ void COpenGLFBOTexture::bindRTT()
 void COpenGLFBOTexture::unbindRTT()
 {
 #ifdef GL_EXT_framebuffer_object
-	if (ColorFrameBuffer != 0)
+	if (BufferID != 0)
 		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 #endif
 }
 
 
-/* FBO Depth Textures */
+//! Get depth texture.
+ITexture* COpenGLFBOTexture::getDepthTexture() const
+{
+	return DepthTexture;
+}
 
-//! RTT DepthBuffer constructor
-COpenGLFBODepthTexture::COpenGLFBODepthTexture(
+
+//! Set depth texture.
+bool COpenGLFBOTexture::setDepthTexture(ITexture* depthTexture)
+{
+	if (DepthTexture == depthTexture || BufferID == 0)
+		return false;
+
+#ifdef GL_EXT_framebuffer_object
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, BufferID);
+#endif
+
+	if (DepthTexture)
+	{
+		if (DepthTexture->isRenderBuffer())
+		{
+			Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
+		}
+		else
+		{
+			Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, 0, 0);
+
+			if (DepthTexture->getColorFormat() == ECF_D24S8)
+				Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, 0, 0);
+		}
+		
+		if (DepthTexture->drop())
+			Driver->removeDepthTexture(DepthTexture);
+	}
+
+	COpenGLTexture* tex = static_cast<COpenGLTexture*>(depthTexture);
+
+	DepthTexture = (tex && tex->isDepthTexture()) ? tex : 0;
+
+	if (DepthTexture)
+	{
+		DepthTexture->grab();
+
+		if (DepthTexture->isRenderBuffer())
+		{
+			COpenGLRenderBuffer* renderBuffer = static_cast<COpenGLRenderBuffer*>(DepthTexture);
+
+			Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, renderBuffer->getBufferID());
+		}
+		else
+		{
+			COpenGLFBOTexture* fboDepthTexture = static_cast<COpenGLFBOTexture*>(DepthTexture);
+
+			Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, fboDepthTexture->getOpenGLTextureName(), 0);
+
+			if (DepthTexture->getColorFormat() == ECF_D24S8)
+				Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, fboDepthTexture->getOpenGLTextureName(), 0);
+		}
+	}
+
+#ifdef GL_EXT_framebuffer_object
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+#endif
+
+	if (!checkFBOStatus(Driver))
+	{
+		os::Printer::log("FBO incomplete");
+		return false;
+	}
+
+	return true;
+}
+
+
+/* Render Buffer */
+
+//! constructor
+COpenGLRenderBuffer::COpenGLRenderBuffer(
 		const core::dimension2d<u32>& size,
 		const io::path& name,
 		COpenGLDriver* driver,
 		bool useStencil)
-	: COpenGLTexture(name, driver), DepthRenderBuffer(0),
-	StencilRenderBuffer(0), UseStencil(useStencil)
+	: COpenGLTexture(name, driver), BufferID(0)
 {
 #ifdef _DEBUG
 	setDebugName("COpenGLTextureFBO_Depth");
 #endif
+
+	IsDepthTexture = true;
+	IsRenderBuffer = true;
 
 	ImageSize = size;
 	TextureSize = size;
@@ -966,119 +1081,40 @@ COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 	PixelType = GL_UNSIGNED_BYTE;
 	HasMipMaps = false;
 
-	if (useStencil)
-	{
-		glGenTextures(1, &DepthRenderBuffer);
-		glBindTexture(GL_TEXTURE_2D, DepthRenderBuffer);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#ifdef GL_EXT_packed_depth_stencil
-		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_EXT_packed_depth_stencil))
-		{
-			// generate packed depth stencil texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL_EXT, ImageSize.Width,
-				ImageSize.Height, 0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, 0);
-			StencilRenderBuffer = DepthRenderBuffer; // stencil is packed with depth
-		}
-		else // generate separate stencil and depth textures
-#endif
-		{
-			// generate depth texture
-			glTexImage2D(GL_TEXTURE_2D, 0, Driver->getZBufferBits(), ImageSize.Width,
-				ImageSize.Height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
-
-			// generate stencil texture
-			glGenTextures(1, &StencilRenderBuffer);
-			glBindTexture(GL_TEXTURE_2D, StencilRenderBuffer);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX, ImageSize.Width,
-				ImageSize.Height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 0);
-		}
-	}
 #ifdef GL_EXT_framebuffer_object
-	else
-	{
-		// generate depth buffer
-		Driver->extGlGenRenderbuffers(1, &DepthRenderBuffer);
-		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_EXT, DepthRenderBuffer);
-		Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_EXT,
-				Driver->getZBufferBits(), ImageSize.Width,
-				ImageSize.Height);
-	}
+	// generate depth buffer
+	Driver->extGlGenRenderbuffers(1, &BufferID);
+	Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_EXT, BufferID);
+	Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_EXT, Driver->getZBufferBits(), ImageSize.Width, ImageSize.Height);
+	Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_EXT, 0);
 #endif
 }
 
 
 //! destructor
-COpenGLFBODepthTexture::~COpenGLFBODepthTexture()
+COpenGLRenderBuffer::~COpenGLRenderBuffer()
 {
-	if (DepthRenderBuffer && UseStencil)
-		glDeleteTextures(1, &DepthRenderBuffer);
-	else
-		Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
-	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
-		glDeleteTextures(1, &StencilRenderBuffer);
-}
-
-
-//combine depth texture and rtt
-bool COpenGLFBODepthTexture::attach(ITexture* renderTex)
-{
-	if (!renderTex)
-		return false;
-	video::COpenGLFBOTexture* rtt = static_cast<video::COpenGLFBOTexture*>(renderTex);
-	rtt->bindRTT();
-#ifdef GL_EXT_framebuffer_object
-	if (UseStencil)
-	{
-		// attach stencil texture to stencil buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_STENCIL_ATTACHMENT_EXT,
-						GL_TEXTURE_2D,
-						StencilRenderBuffer,
-						0);
-
-		// attach depth texture to depth buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_DEPTH_ATTACHMENT_EXT,
-						GL_TEXTURE_2D,
-						DepthRenderBuffer,
-						0);
-	}
-	else
-	{
-		// attach depth renderbuffer to depth buffer
-		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT,
-						GL_DEPTH_ATTACHMENT_EXT,
-						GL_RENDERBUFFER_EXT,
-						DepthRenderBuffer);
-	}
-#endif
-	// check the status
-	if (!checkFBOStatus(Driver))
-	{
-		os::Printer::log("FBO incomplete");
-		return false;
-	}
-	rtt->DepthTexture=this;
-	grab(); // grab the depth buffer, not the RTT
-	rtt->unbindRTT();
-	return true;
+	if (BufferID)
+		Driver->extGlDeleteRenderbuffers(1, &BufferID);
 }
 
 
 //! Bind Render Target Texture
-void COpenGLFBODepthTexture::bindRTT()
+void COpenGLRenderBuffer::bindRTT()
 {
 }
 
 
 //! Unbind Render Target Texture
-void COpenGLFBODepthTexture::unbindRTT()
+void COpenGLRenderBuffer::unbindRTT()
 {
+}
+
+
+
+bool COpenGLRenderBuffer::getBufferID() const
+{
+	return BufferID;
 }
 
 

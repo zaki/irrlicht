@@ -50,6 +50,17 @@ namespace video
 
 		/** The following formats may only be used for render target textures. */
 
+		/** Depth and stencil formats. */
+
+		//! 16 bit format using 16 bits for depth.
+		ECF_D16,
+
+		//! 32 bit format using 32 bits for depth.
+		ECF_D32,
+
+		//! 32 bit format using 24 bits for depth and 8 bits for stencil.
+		ECF_D24S8,
+
 		/** Unsigned normalized integer formats. */
 
 		//! 8 bit format using 8 bits for the red channel.

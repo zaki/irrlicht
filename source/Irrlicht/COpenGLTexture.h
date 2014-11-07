@@ -116,6 +116,12 @@ public:
 	//! Is it a FrameBufferObject?
 	virtual bool isFrameBufferObject() const;
 
+	//! Is it a depth texture?
+	bool isDepthTexture() const _IRR_OVERRIDE_;
+
+	//! Is it a renderbuffer?
+	bool isRenderBuffer() const _IRR_OVERRIDE_;
+
 	//! Bind RenderTargetTexture
 	virtual void bindRTT();
 
@@ -170,6 +176,9 @@ protected:
 	bool ReadOnlyLock;
 	bool KeepImage;
 
+	bool IsDepthTexture;
+	bool IsRenderBuffer;
+
 	mutable SStatesCache StatesCache;
 };
 
@@ -194,21 +203,28 @@ public:
 	//! Unbind RenderTargetTexture
 	virtual void unbindRTT() _IRR_OVERRIDE_;
 
-	ITexture* DepthTexture;
+	//! Return depth texture.
+	ITexture* getDepthTexture() const;
+
+	//! Set depth texture.
+	bool setDepthTexture(ITexture* depthTexture);
+
 protected:
-	GLuint ColorFrameBuffer;
+	GLuint BufferID;
+
+	COpenGLTexture* DepthTexture;
 };
 
 
-//! OpenGL FBO depth texture.
-class COpenGLFBODepthTexture : public COpenGLTexture
+//! OpenGL Render Buffer.
+class COpenGLRenderBuffer : public COpenGLTexture
 {
 public:
 	//! FrameBufferObject depth constructor
-	COpenGLFBODepthTexture(const core::dimension2d<u32>& size, const io::path& name, COpenGLDriver* driver=0, bool useStencil=false);
+	COpenGLRenderBuffer(const core::dimension2d<u32>& size, const io::path& name, COpenGLDriver* driver=0, bool useStencil=false);
 
 	//! destructor
-	virtual ~COpenGLFBODepthTexture();
+	virtual ~COpenGLRenderBuffer();
 
 	//! Bind RenderTargetTexture
 	virtual void bindRTT() _IRR_OVERRIDE_;
@@ -216,12 +232,10 @@ public:
 	//! Unbind RenderTargetTexture
 	virtual void unbindRTT() _IRR_OVERRIDE_;
 
-	bool attach(ITexture*);
+	bool getBufferID() const;
 
 protected:
-	GLuint DepthRenderBuffer;
-	GLuint StencilRenderBuffer;
-	bool UseStencil;
+	GLuint BufferID;
 };
 
 

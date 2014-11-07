@@ -102,15 +102,15 @@ namespace video
 
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-						bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
+						bool clearZBuffer, SColor color, video::ITexture* depthStencil) _IRR_OVERRIDE_;
+
+		//! Sets multiple render targets
+		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
+					bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil) _IRR_OVERRIDE_;
 
 		//! set or reset special render targets
 		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
 					bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
-
-		//! Sets multiple render targets
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
-					bool clearBackBuffer=true, bool clearZBuffer=true, SColor color=SColor(0,0,0,0)) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;

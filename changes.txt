@@ -1,6 +1,8 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Added ability to set custom depth/stencil texture for render targets.
+- Added new color formats: ECF_R8, ECF_R8G8, ECF_D16, ECF_D32, ECF_D24S8.
 - Can now enable/disable backround drawing for IGUITable.
 - Bugfix: Cloning CBillboardSceneNode now copies colors and sizes.
 - EditBox works now with numpad on X11

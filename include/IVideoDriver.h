@@ -552,7 +552,7 @@ namespace video
 		information is multiplied.*/
 		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const =0;
 
-		//! Sets a new render target.
+		//! Sets a new render target. (this prototype will be removed in future)
 		/** This will only work if the driver supports the
 		EVDF_RENDER_TO_TARGET feature, which can be queried with
 		queryFeature(). Usually, rendering to textures is done in this
@@ -586,7 +586,32 @@ namespace video
 		\return True if sucessful and false if not. */
 		virtual bool setRenderTarget(video::ITexture* texture,
 			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0)) =0;
+			SColor color=video::SColor(0,0,0,0),
+			video::ITexture* depthStencil = 0) =0;
+
+		//! Sets a new render target.
+		virtual bool setRenderTarget(video::ITexture* texture,
+			video::ITexture* depthStencil,
+			bool clearBackBuffer=true, bool clearZBuffer=true,
+			SColor color=video::SColor(0,0,0,0))
+		{
+			return setRenderTarget(texture, clearBackBuffer, clearZBuffer, color, depthStencil);
+		}
+
+		//! Sets new multiple render targets. (this prototype will be removed in future)
+		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
+			bool clearBackBuffer=true, bool clearZBuffer=true,
+			SColor color=video::SColor(0,0,0,0),
+			video::ITexture* depthStencil = 0) =0;
+
+		//! Sets new multiple render targets.
+		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
+			video::ITexture* depthStencil,
+			bool clearBackBuffer=true, bool clearZBuffer=true,
+			SColor color=video::SColor(0,0,0,0))
+		{
+			return setRenderTarget(texture, clearBackBuffer, clearZBuffer, color, depthStencil);
+		}
 
 		//! set or reset special render targets
 		/** This method enables access to special color buffers such as
@@ -603,11 +628,6 @@ namespace video
 		virtual bool setRenderTarget(E_RENDER_TARGET target, bool clearTarget=true,
 					bool clearZBuffer=true,
 					SColor color=video::SColor(0,0,0,0)) =0;
-
-		//! Sets new multiple render targets.
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
-			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0)) =0;
 
 		//! Sets a new viewport.
 		/** Every rendering operation is done into this new area.
