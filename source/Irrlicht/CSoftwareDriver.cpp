@@ -255,7 +255,7 @@ ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const i
 
 //! sets a render target
 bool CSoftwareDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-								bool clearZBuffer, SColor color)
+	bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	if (texture && texture->getDriverType() != EDT_SOFTWARE)
 	{

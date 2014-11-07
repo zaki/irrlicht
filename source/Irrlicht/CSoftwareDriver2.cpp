@@ -714,7 +714,7 @@ bool CBurningVideoDriver::endScene()
 
 //! sets a render target
 bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-								 bool clearZBuffer, SColor color)
+	bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	if (texture && texture->getDriverType() != EDT_BURNINGSVIDEO)
 	{

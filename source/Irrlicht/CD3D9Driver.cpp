@@ -800,8 +800,8 @@ void CD3D9Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
 
 
 //! sets a render target
-bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
-		bool clearBackBuffer, bool clearZBuffer, SColor color)
+bool CD3D9Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
+	bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	// check for right driver type
 
@@ -898,11 +898,11 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 
 
 //! Sets multiple render targets
-bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
-				bool clearBackBuffer, bool clearZBuffer, SColor color)
+bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& texture,
+	bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	if (targets.size()==0)
-		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color, depthStencil);
 
 	u32 maxMultipleRTTs = core::min_(MaxMRTs, targets.size());
 

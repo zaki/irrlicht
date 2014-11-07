@@ -34,7 +34,7 @@ namespace video
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-						bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
+				bool clearZBuffer, SColor color, video::ITexture* depthStencil) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
