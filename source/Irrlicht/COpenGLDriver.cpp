@@ -2643,7 +2643,10 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 	OverrideMaterial.apply(Material);
 
 	for (u32 i = 0; i < MaxTextureUnits; ++i)
+	{
 		setActiveTexture(i, material.getTexture(i));
+		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+	}
 }
 
 
@@ -3296,33 +3299,20 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 	{
 		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
 
+		bool fixedPipeline = false;
+
 		if(FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
 		{
 			if (i>0 && !MultiTextureExtension)
 				break;
 
-			if (!CurrentTexture[i])
-			{
-				BridgeCalls->setTexture(i, true);
-
-				continue;
-			}
-			else
-			{
-				BridgeCalls->setTexture(i, true);
-
-				setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
-			}
+			fixedPipeline = true;
 		}
-		else
-		{
-			if (CurrentTexture[i])
-			{
-				BridgeCalls->setTexture(i, false);
-			}
-			else
-				continue;
-		}
+
+		BridgeCalls->setTexture(i, fixedPipeline);
+
+		if (!CurrentTexture[i])
+			continue;
 
 		if(resetAllRenderstates)
 			tmpTexture->getStatesCache().IsCached = false;
