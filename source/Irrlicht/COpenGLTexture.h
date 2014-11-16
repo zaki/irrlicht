@@ -117,10 +117,10 @@ public:
 	virtual bool isFrameBufferObject() const;
 
 	//! Is it a depth texture?
-	bool isDepthTexture() const _IRR_OVERRIDE_;
+	bool isDepthTexture() const;
 
 	//! Is it a renderbuffer?
-	bool isRenderBuffer() const _IRR_OVERRIDE_;
+	bool isRenderBuffer() const;
 
 	//! Bind RenderTargetTexture
 	virtual void bindRTT();

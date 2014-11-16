@@ -898,7 +898,7 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 
 
 //! Sets multiple render targets
-bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& texture,
+bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
 	bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil)
 {
 	if (targets.size()==0)
