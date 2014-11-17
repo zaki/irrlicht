@@ -232,7 +232,7 @@ public:
 	//! Unbind RenderTargetTexture
 	virtual void unbindRTT() _IRR_OVERRIDE_;
 
-	bool getBufferID() const;
+	GLuint getBufferID() const;
 
 protected:
 	GLuint BufferID;

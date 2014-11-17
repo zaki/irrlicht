@@ -879,9 +879,9 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 					ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), BufferID(0), DepthTexture(0)
 {
-	#ifdef _DEBUG
-	setDebugName("COpenGLTexture_FBO");
-	#endif
+#ifdef _DEBUG
+	setDebugName("COpenGLFBOTexture");
+#endif
 
 	if (ECF_UNKNOWN == format)
 		format = getBestColorFormat(driver->getColorFormat());
@@ -950,8 +950,10 @@ COpenGLFBOTexture::~COpenGLFBOTexture()
 			Driver->removeDepthTexture(DepthTexture);
 	}
 
+#ifdef GL_EXT_framebuffer_object
 	if (BufferID)
 		Driver->extGlDeleteFramebuffers(1, &BufferID);
+#endif
 }
 
 
@@ -998,7 +1000,6 @@ bool COpenGLFBOTexture::setDepthTexture(ITexture* depthTexture)
 
 #ifdef GL_EXT_framebuffer_object
 	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, BufferID);
-#endif
 
 	if (DepthTexture)
 	{
@@ -1043,7 +1044,6 @@ bool COpenGLFBOTexture::setDepthTexture(ITexture* depthTexture)
 		}
 	}
 
-#ifdef GL_EXT_framebuffer_object
 	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 #endif
 
@@ -1068,7 +1068,7 @@ COpenGLRenderBuffer::COpenGLRenderBuffer(
 	: COpenGLTexture(name, driver), BufferID(0)
 {
 #ifdef _DEBUG
-	setDebugName("COpenGLTextureFBO_Depth");
+	setDebugName("COpenGLRenderBuffer");
 #endif
 
 	IsDepthTexture = true;
@@ -1094,8 +1094,10 @@ COpenGLRenderBuffer::COpenGLRenderBuffer(
 //! destructor
 COpenGLRenderBuffer::~COpenGLRenderBuffer()
 {
+#ifdef GL_EXT_framebuffer_object
 	if (BufferID)
 		Driver->extGlDeleteRenderbuffers(1, &BufferID);
+#endif
 }
 
 
@@ -1112,7 +1114,7 @@ void COpenGLRenderBuffer::unbindRTT()
 
 
 
-bool COpenGLRenderBuffer::getBufferID() const
+GLuint COpenGLRenderBuffer::getBufferID() const
 {
 	return BufferID;
 }
