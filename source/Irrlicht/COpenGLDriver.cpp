@@ -992,32 +992,8 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			glLoadMatrixf(mat.pointer());
 		}
 		break;
-	case ETS_COUNT:
-		return;
 	default:
-		{
-			const u32 i = state - ETS_TEXTURE_0;
-			if (i >= MATERIAL_MAX_TEXTURES)
-				break;
-
-			const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
-
-			BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB + i);
-
-			BridgeCalls->setMatrixMode(GL_TEXTURE);
-			if (!isRTT && mat.isIdentity() )
-				glLoadIdentity();
-			else
-			{
-				GLfloat glmat[16];
-				if (isRTT)
-					getGLTextureMatrix(glmat, mat * TextureFlipMatrix);
-				else
-					getGLTextureMatrix(glmat, mat);
-				glLoadMatrixf(glmat);
-			}
-			break;
-		}
+		break;
 	}
 }
 
@@ -3314,6 +3290,25 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		if (!CurrentTexture[i])
 			continue;
 
+		if (fixedPipeline)
+		{
+			const bool isRTT = CurrentTexture[i]->isRenderTarget();
+
+			BridgeCalls->setMatrixMode(GL_TEXTURE);
+
+			if (!isRTT && Matrices[ETS_TEXTURE_0 + i].isIdentity())
+				glLoadIdentity();
+			else
+			{
+				GLfloat glmat[16];
+				if (isRTT)
+					getGLTextureMatrix(glmat, Matrices[ETS_TEXTURE_0 + i] * TextureFlipMatrix);
+				else
+					getGLTextureMatrix(glmat, Matrices[ETS_TEXTURE_0 + i]);
+				glLoadMatrixf(glmat);
+			}
+		}
+
 		if(resetAllRenderstates)
 			tmpTexture->getStatesCache().IsCached = false;
 
@@ -5374,10 +5369,10 @@ void COpenGLCallBridge::resetTexture(const ITexture* texture)
 {
 	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 	{
+		setActiveTexture(GL_TEXTURE0_ARB + i);
+
 		if (Texture[i] == texture)
 		{
-			setActiveTexture(GL_TEXTURE0_ARB + i);
-
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			if (TextureFixedPipeline[i])
@@ -5392,10 +5387,10 @@ void COpenGLCallBridge::setTexture(GLuint stage, bool fixedPipeline)
 {
 	if (stage < MATERIAL_MAX_TEXTURES)
 	{
+		setActiveTexture(GL_TEXTURE0_ARB + stage);
+
 		if((fixedPipeline && TextureFixedPipeline[stage] != fixedPipeline) || Texture[stage] != Driver->CurrentTexture[stage])
 		{
-			setActiveTexture(GL_TEXTURE0_ARB + stage);
-
 			if(Driver->CurrentTexture[stage])
 			{
 				if(fixedPipeline)
@@ -5403,8 +5398,13 @@ void COpenGLCallBridge::setTexture(GLuint stage, bool fixedPipeline)
 
 				glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
 			}
-			else if(fixedPipeline)
-				glDisable(GL_TEXTURE_2D);
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				if(TextureFixedPipeline[stage])
+					glDisable(GL_TEXTURE_2D);
+			}
 
 			TextureFixedPipeline[stage] = fixedPipeline;
 			Texture[stage] = Driver->CurrentTexture[stage];
