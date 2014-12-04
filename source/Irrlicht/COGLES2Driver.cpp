@@ -2574,6 +2574,12 @@ bool COGLES2Driver::endScene()
 	}
 
 
+	ITexture* COGLES2Driver::getRenderTargetTexture() const
+	{
+		return RenderTargetTexture;
+	}
+
+
 	//! Clears the ZBuffer.
 	void COGLES2Driver::clearZBuffer()
 	{
@@ -3038,6 +3044,11 @@ bool COGLES2Driver::endScene()
 				Texture[stage] = Driver->CurrentTexture[stage];
 			}
 		}
+	}
+
+	const core::rect<s32>& COGLES2CallBridge::getViewport() const
+	{
+		return Viewport;
 	}
 
 	void COGLES2CallBridge::setViewport(const core::rect<s32>& viewport)

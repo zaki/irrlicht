@@ -36,11 +36,11 @@ namespace video
 
 //! constructor for usual textures
 COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mipmapData, COGLES2Driver* driver)
-	: ITexture(name, ETT_2D), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+	: ITexture(name, ETT_2D), Pitch(0), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true)
+	ReadOnlyLock(false), LockImage(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES2Texture");
@@ -63,7 +63,6 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 	{
 		Image.push_back(origImage);
 		Image[0]->grab();
-		KeepImage = false;
 	}
 	else if (ImageSize==TextureSize)
 	{
@@ -76,25 +75,23 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 		origImage->copyToScaling(Image[0]);
 	}
 
+	Pitch = Image[0]->getPitch();
+
 	glGenTextures(1, &TextureName);
 	uploadTexture(true, 0, true, mipmapData);
 
-	if (!KeepImage)
-	{
-		Image[0]->drop();
-
-		Image.clear();
-	}
+	Image[0]->drop();
+	Image.clear();
 }
 
 
 //! constructor for cube textures
 COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* negXImage, IImage* posYImage,
 	IImage* negYImage, IImage* posZImage, IImage* negZImage, COGLES2Driver* driver)
-		: ITexture(name, ETT_CUBE), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+		: ITexture(name, ETT_CUBE), Pitch(0), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 		TextureName(0), TextureType(GL_TEXTURE_CUBE_MAP), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 		PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), IsRenderTarget(false), IsCompressed(false),
-		AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true)
+		AutomaticMipmapUpdate(false), ReadOnlyLock(false), LockImage(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -124,8 +121,6 @@ COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* 
 
 		for (u32 i = 0; i < 6; ++i)
 			Image[i]->grab();
-
-		KeepImage = false;
 	}
 	else if (ImageSize==TextureSize)
 	{
@@ -152,6 +147,8 @@ COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* 
 		negZImage->copyToScaling(Image[5]);
 	}
 
+	Pitch = Image[0]->getPitch();
+
 	glGenTextures(1, &TextureName);
 
 	for (u32 i = 0; i < 5; ++i)
@@ -159,23 +156,20 @@ COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* 
 
 	uploadTexture(true, 5, true);
 
-	if (!KeepImage)
-	{
-		for (u32 i = 0; i < Image.size(); ++i)
-			Image[i]->drop();
+	for (u32 i = 0; i < Image.size(); ++i)
+		Image[i]->drop();
 
-		Image.clear();
-	}
+	Image.clear();
 }
 
 
 //! constructor for basic setup (only for derived classes)
 COGLES2Texture::COGLES2Texture(const io::path& name, COGLES2Driver* driver)
-	: ITexture(name, ETT_2D), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+	: ITexture(name, ETT_2D), Pitch(0), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), KeepImage(true)
+	ReadOnlyLock(false), LockImage(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES2Texture");
@@ -188,8 +182,9 @@ COGLES2Texture::~COGLES2Texture()
 {
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
-	for (u32 i = 0; i < Image.size(); ++i)
-		Image[i]->drop();
+
+	if (LockImage)
+		LockImage->drop();
 
 	Driver->getBridgeCalls()->resetTexture(this);
 }
@@ -442,7 +437,8 @@ void COGLES2Texture::getImageValues(IImage* image)
 void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMipmap, void* mipmapData, u32 level)
 {
 	// check which image needs to be uploaded
-	IImage* image = level?MipImage:Image[imageNumber];
+	IImage* image = LockImage?LockImage:level?MipImage:Image[imageNumber];
+
 	if (!image)
 	{
 		os::Printer::log("No image for OpenGL ES2 texture to upload", ELL_ERROR);
@@ -620,106 +616,111 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	if (IsCompressed || Type != ETT_2D) // TO-DO
 		return 0;
 
-	// store info about which image is locked
-	IImage* image = 0;
-
-	if (mipmapLevel==0)
-	{
-		if (Image.size() > 0)
-			image = Image[0];
-	}
-	else
-	{
-		image = MipImage;
-	}
+	if (LockImage)
+		return LockImage;
 
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
 
-	if (Image.size() == 0)
-		Image.push_back(new CImage(ECF_A8R8G8B8, ImageSize));
-	if (IsRenderTarget)
+	if (mipmapLevel)
 	{
-		u8* pPixels = static_cast<u8*>(Image[0]->lock());
-		if (!pPixels)
+		u32 i=0;
+		u32 width = TextureSize.Width;
+		u32 height = TextureSize.Height;
+
+		do
 		{
-			return 0;
+			if (width>1)
+				width>>=1;
+			if (height>1)
+				height>>=1;
+
+			++i;
 		}
-		// we need to keep the correct texture bound...
-		const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
-		GLuint tmpTextureType = GL_TEXTURE_2D;
-		GLint tmpTextureName = (tmpTexture) ? tmpTexture->getOpenGLTextureName() : 0;
-		Driver->getBridgeCalls()->getTexture(0, tmpTextureType);
-		glBindTexture(TextureType, TextureName);
+		while (i != mipmapLevel);
 
-	// TODO ogl-es
-	//	glGetTexImage(TextureType, 0, GL_BGRA, GL_UNSIGNED_BYTE, pPixels);
-
-		// opengl images are horizontally flipped, so we have to fix that here.
-		const u32 pitch=Image[0]->getPitch();
-		u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
-		u8* tmpBuffer = new u8[pitch];
-		for (u32 i=0; i < ImageSize.Height; i += 2)
-		{
-			memcpy(tmpBuffer, pPixels, pitch);
-			memcpy(pPixels, p2, pitch);
-			memcpy(p2, tmpBuffer, pitch);
-			pPixels += pitch;
-			p2 -= pitch;
-		}
-		delete [] tmpBuffer;
-		Image[0]->unlock();
-
-		//reset old bound texture
-		glBindTexture(tmpTextureType, tmpTextureName);
+		LockImage = Driver->createImage(ColorFormat, core::dimension2du(width,height));
 	}
-	return Image[0]->lock();
+	else
+	{
+		LockImage = Driver->createImage(ColorFormat, ImageSize);
+	}
+
+	if (!LockImage)
+		return 0;
+
+	u8* pPixels = static_cast<u8*>(LockImage->lock());
+
+	if (!pPixels)
+		return 0;
+
+	const core::dimension2d<u32> screenSize = Driver->getScreenSize();
+
+	COGLES2Texture* origTexture = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
+	core::rect<s32> origViewport = Driver->getBridgeCalls()->getViewport();
+
+	GLuint tmpFBO = 0;
+	GLuint tmpTexture = 0;
+
+	glGenFramebuffers(1, &tmpFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, tmpFBO);
+	glGenTextures(1, &tmpTexture);
+	glBindTexture(GL_TEXTURE_2D, tmpTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, PixelFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture, 0);
+
+	Driver->getBridgeCalls()->setViewport(core::rect<s32>(0, 0, ImageSize.Width, ImageSize.Height));
+
+	Driver->draw2DImage(this, core::rect<s32>(0, 0, screenSize.Width, screenSize.Height), core::rect<s32>(0, 0, TextureSize.Width, TextureSize.Height));
+
+	glReadPixels(0, 0, screenSize.Width, screenSize.Height, InternalFormat, PixelType, pPixels);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDeleteTextures(1, &tmpTexture);
+	glDeleteFramebuffers(1, &tmpFBO);
+
+	Driver->getBridgeCalls()->setViewport(origViewport);
+
+	if (origTexture)
+		origTexture->bindRTT();
+
+	// opengl images are horizontally flipped, so we have to fix that here.
+	const u32 pitch=LockImage->getPitch();
+	u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
+	u8* tmpBuffer = new u8[pitch];
+	for (u32 i=0; i < ImageSize.Height; i += 2)
+	{
+		memcpy(tmpBuffer, pPixels, pitch);
+		memcpy(pPixels, p2, pitch);
+		memcpy(p2, tmpBuffer, pitch);
+		pPixels += pitch;
+		p2 -= pitch;
+	}
+	delete [] tmpBuffer;
+	LockImage->unlock();
+
+	return LockImage->lock();
 }
 
 
 //! unlock function
 void COGLES2Texture::unlock()
 {
-	if (IsCompressed || Type != ETT_2D) // TO-DO
+	if (!LockImage || IsCompressed || Type != ETT_2D) // TO-DO
 		return;
 
-	// test if miplevel or main texture was locked
-	IImage* image = 0;
+	LockImage->unlock();
 
-	if (!MipImage)
-	{
-		if (Image.size() > 0)
-			image = Image[0];
-	}
-	else
-	{
-		image = MipImage;
-	}
-
-	if (!image)
-		return;
-	// unlock image to see changes
-	image->unlock();
-	// copy texture data to GPU
 	if (!ReadOnlyLock)
 		uploadTexture(false, 0, true, 0, MipLevelStored);
+
 	ReadOnlyLock = false;
-	// cleanup local image
-	if (MipImage)
-	{
-		MipImage->drop();
-		MipImage=0;
-	}
-	else if (!KeepImage)
-	{
-		Image[0]->drop();
-		Image.clear();
-	}
-	// update information
-	if (Image.size() > 0)
-		ColorFormat=Image[0]->getColorFormat();
-	else
-		ColorFormat=ECF_A8R8G8B8;
+
+	LockImage->drop();
+	LockImage = 0;
 }
 
 
@@ -754,10 +755,7 @@ ECOLOR_FORMAT COGLES2Texture::getColorFormat() const
 //! returns pitch of texture (in bytes)
 u32 COGLES2Texture::getPitch() const
 {
-	if (Image.size() > 0)
-		return Image[0]->getPitch();
-	else
-		return 0;
+	return Pitch;
 }
 
 

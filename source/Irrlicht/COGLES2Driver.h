@@ -340,6 +340,8 @@ namespace video
 		// returns the current size of the screen or rendertarget
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
+		ITexture* getRenderTargetTexture() const;
+
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
@@ -568,6 +570,8 @@ namespace video
 		void setTexture(u32 stage, GLenum type);
 
 		// Viewport calls.
+
+		const core::rect<s32>& getViewport() const;
 
 		void setViewport(const core::rect<s32>& viewport);
 

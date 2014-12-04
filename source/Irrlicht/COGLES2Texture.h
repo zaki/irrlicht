@@ -139,6 +139,7 @@ protected:
 
 	core::dimension2d<u32> ImageSize;
 	core::dimension2d<u32> TextureSize;
+	u32 Pitch;
 	ECOLOR_FORMAT ColorFormat;
 	COGLES2Driver* Driver;
 	core::array<IImage*> Image;
@@ -156,7 +157,7 @@ protected:
 	bool IsCompressed;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
-	bool KeepImage;
+	IImage* LockImage;
 
 	mutable SStatesCache StatesCache;
 };
