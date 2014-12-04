@@ -50,6 +50,26 @@ namespace video
 
 		/** The following formats may only be used for render target textures. */
 
+		/** Floating point formats. */
+
+		//! 16 bit format using 16 bits for the red channel.
+		ECF_R16F,
+
+		//! 32 bit format using 16 bits for the red and green channels.
+		ECF_G16R16F,
+
+		//! 64 bit format using 16 bits for the red, green, blue and alpha channels.
+		ECF_A16B16G16R16F,
+
+		//! 32 bit format using 32 bits for the red channel.
+		ECF_R32F,
+
+		//! 64 bit format using 32 bits for the red and green channels.
+		ECF_G32R32F,
+
+		//! 128 bit format using 32 bits for the red, green, blue and alpha channels.
+		ECF_A32B32G32R32F,
+
 		/** Depth and stencil formats. */
 
 		//! 16 bit format using 16 bits for depth.
@@ -74,26 +94,6 @@ namespace video
 
 		//! 32 bit format using 16 bits for the red and green channels.
 		ECF_R16G16,
-
-		/** Floating point formats. */
-
-		//! 16 bit format using 16 bits for the red channel.
-		ECF_R16F,
-
-		//! 32 bit format using 16 bits for the red and green channels.
-		ECF_G16R16F,
-
-		//! 64 bit format using 16 bits for the red, green, blue and alpha channels.
-		ECF_A16B16G16R16F,
-
-		//! 32 bit format using 32 bits for the red channel.
-		ECF_R32F,
-
-		//! 64 bit format using 32 bits for the red and green channels.
-		ECF_G32R32F,
-
-		//! 128 bit format using 32 bits for the red, green, blue and alpha channels.
-		ECF_A32B32G32R32F,
 
 		//! Unknown color format:
 		ECF_UNKNOWN

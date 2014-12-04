@@ -4653,13 +4653,13 @@ void COpenGLDriver::clearZBuffer()
 //! Returns an image created from the last rendered frame.
 IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RENDER_TARGET target)
 {
-	if (target==video::ERT_MULTI_RENDER_TEXTURES || target==video::ERT_RENDER_TEXTURE || target==video::ERT_STEREO_BOTH_BUFFERS)
+	if (target != video::ERT_FRAME_BUFFER)
 		return 0;
 
 	if (format==video::ECF_UNKNOWN)
 		format=getColorFormat();
 
-	if (IImage::isRenderTargetOnlyFormat(format))
+	if (IImage::isRenderTargetOnlyFormat(format) || IImage::isCompressedFormat(format) || IImage::isDepthFormat(format))
 		return 0;
 
 	// allows to read pixels in top-to-bottom order
