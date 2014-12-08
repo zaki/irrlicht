@@ -656,7 +656,12 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	const core::dimension2d<u32> screenSize = Driver->getScreenSize();
 
-	COGLES2Texture* origTexture = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
+	const COGLES2Texture* origTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
+	GLuint origTextureType = GL_TEXTURE_2D;
+	GLint origTextureName = (origTexture) ? origTexture->getOpenGLTextureName() : 0;
+	Driver->getBridgeCalls()->getTexture(0, origTextureType);
+
+	COGLES2Texture* origRT = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
 	core::rect<s32> origViewport = Driver->getBridgeCalls()->getViewport();
 
 	GLuint tmpFBO = 0;
@@ -665,6 +670,7 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	glGenFramebuffers(1, &tmpFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, tmpFBO);
 	glGenTextures(1, &tmpTexture);
+	Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tmpTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -672,9 +678,11 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	glTexImage2D(GL_TEXTURE_2D, 0, PixelFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture, 0);
 
+	glBindTexture(origTextureType, origTextureName);
+
 	Driver->getBridgeCalls()->setViewport(core::rect<s32>(0, 0, ImageSize.Width, ImageSize.Height));
 
-	Driver->draw2DImage(this, core::rect<s32>(0, 0, screenSize.Width, screenSize.Height), core::rect<s32>(0, 0, TextureSize.Width, TextureSize.Height));
+	Driver->draw2DImage(this, core::rect<s32>(0, 0, screenSize.Width, screenSize.Height), core::rect<s32>(0, 0, TextureSize.Width, TextureSize.Height), 0, 0, true);
 
 	glReadPixels(0, 0, screenSize.Width, screenSize.Height, InternalFormat, PixelType, pPixels);
 
@@ -684,8 +692,8 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	Driver->getBridgeCalls()->setViewport(origViewport);
 
-	if (origTexture)
-		origTexture->bindRTT();
+	if (origRT)
+		origRT->bindRTT();
 
 	// opengl images are horizontally flipped, so we have to fix that here.
 	const u32 pitch=LockImage->getPitch();

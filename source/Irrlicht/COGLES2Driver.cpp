@@ -3026,10 +3026,10 @@ bool COGLES2Driver::endScene()
 	{
 		if (stage < MATERIAL_MAX_TEXTURES)
 		{
+			setActiveTexture(GL_TEXTURE0 + stage);
+
 			if (Texture[stage] != Driver->CurrentTexture[stage])
 			{
-				setActiveTexture(GL_TEXTURE0 + stage);
-
 				if (Driver->CurrentTexture[stage])
 				{
 					glBindTexture(type, static_cast<const COGLES2Texture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
