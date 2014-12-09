@@ -658,30 +658,28 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	const core::dimension2d<u32> screenSize = Driver->getScreenSize();
 
+	COGLES2Texture* origRT = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
+	core::rect<s32> origViewport = Driver->getBridgeCalls()->getViewport();
+
 	GLenum origTextureType = GL_TEXTURE_2D;
 	GLuint origTextureName = 0;
 
 	Driver->getBridgeCalls()->setActiveTexture(0);
 	Driver->getBridgeCalls()->getTexture(origTextureType, origTextureName);
 
-	COGLES2Texture* origRT = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
-	core::rect<s32> origViewport = Driver->getBridgeCalls()->getViewport();
-
-	GLuint tmpFBO = 0;
 	GLuint tmpTexture = 0;
-
-	glGenFramebuffers(1, &tmpFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, tmpFBO);
 	glGenTextures(1, &tmpTexture);
-	Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tmpTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, PixelFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture, 0);
-
 	glBindTexture(origTextureType, origTextureName);
+
+	GLuint tmpFBO = 0;
+	glGenFramebuffers(1, &tmpFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, tmpFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture, 0);
 
 	Driver->getBridgeCalls()->setViewport(core::rect<s32>(0, 0, ImageSize.Width, ImageSize.Height));
 
@@ -690,8 +688,8 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	glReadPixels(0, 0, screenSize.Width, screenSize.Height, InternalFormat, PixelType, pPixels);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDeleteTextures(1, &tmpTexture);
 	glDeleteFramebuffers(1, &tmpFBO);
+	glDeleteTextures(1, &tmpTexture);
 
 	Driver->getBridgeCalls()->setViewport(origViewport);
 
