@@ -185,8 +185,6 @@ COGLES2Texture::~COGLES2Texture()
 
 	if (LockImage)
 		LockImage->drop();
-
-	Driver->getBridgeCalls()->resetTexture(this);
 }
 
 
@@ -455,8 +453,13 @@ void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 	if (!newTexture)
 		InternalFormat = oldInternalFormat;
 
-    Driver->setActiveTexture(0, this);
-	Driver->getBridgeCalls()->setTexture(0, TextureType);
+	GLenum origTextureType = GL_TEXTURE_2D;
+	GLuint origTextureName = 0;
+
+	Driver->getBridgeCalls()->setActiveTexture(0);
+	Driver->getBridgeCalls()->getTexture(origTextureType, origTextureName);
+
+	glBindTexture(TextureType, TextureName);
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
@@ -605,8 +608,7 @@ void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
 
-	Driver->setActiveTexture(0, 0);
-	Driver->getBridgeCalls()->setTexture(0, TextureType);
+	glBindTexture(origTextureType, origTextureName);
 }
 
 
@@ -656,10 +658,11 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	const core::dimension2d<u32> screenSize = Driver->getScreenSize();
 
-	const COGLES2Texture* origTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
-	GLuint origTextureType = GL_TEXTURE_2D;
-	GLint origTextureName = (origTexture) ? origTexture->getOpenGLTextureName() : 0;
-	Driver->getBridgeCalls()->getTexture(0, origTextureType);
+	GLenum origTextureType = GL_TEXTURE_2D;
+	GLuint origTextureName = 0;
+
+	Driver->getBridgeCalls()->setActiveTexture(0);
+	Driver->getBridgeCalls()->getTexture(origTextureType, origTextureName);
 
 	COGLES2Texture* origRT = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
 	core::rect<s32> origViewport = Driver->getBridgeCalls()->getViewport();
@@ -811,13 +814,16 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 	// hardware moethods for generate mipmaps.
 	if (!mipmapData && AutomaticMipmapUpdate)
 	{
-		const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
-		GLuint tmpTextureType = GL_TEXTURE_2D;
-		GLint tmpTextureName = (tmpTexture) ? tmpTexture->getOpenGLTextureName() : 0;
-		Driver->getBridgeCalls()->getTexture(0, tmpTextureType);
+		GLenum origTextureType = GL_TEXTURE_2D;
+		GLuint origTextureName = 0;
+
+		Driver->getBridgeCalls()->setActiveTexture(0);
+		Driver->getBridgeCalls()->getTexture(origTextureType, origTextureName);
+
 		glBindTexture(TextureType, TextureName);
 		glGenerateMipmap(TextureType);
-		glBindTexture(tmpTextureType, tmpTextureName);
+
+		glBindTexture(origTextureType, origTextureName);
 
 		return;
 	}
@@ -826,10 +832,12 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 	if (Type != ETT_2D)
 		return;
 
-	const COGLES2Texture* tmpTexture = static_cast<const COGLES2Texture*>(Driver->CurrentTexture[0]);
-	GLuint tmpTextureType = GL_TEXTURE_2D;
-	GLint tmpTextureName = (tmpTexture) ? tmpTexture->getOpenGLTextureName() : 0;
-	Driver->getBridgeCalls()->getTexture(0, tmpTextureType);
+	GLenum origTextureType = GL_TEXTURE_2D;
+	GLuint origTextureName = 0;
+
+	Driver->getBridgeCalls()->setActiveTexture(0);
+	Driver->getBridgeCalls()->getTexture(origTextureType, origTextureName);
+
 	glBindTexture(TextureType, TextureName);
 
  	// Manually create mipmaps or use prepared version
@@ -881,7 +889,7 @@ void COGLES2Texture::regenerateMipMapLevels(void* mipmapData)
 	if (!mipmapData)
 		delete [] target;
 
-	glBindTexture(tmpTextureType, tmpTextureName);
+	glBindTexture(origTextureType, origTextureName);
 }
 
 
@@ -977,8 +985,13 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 	// generate color texture
 	glGenTextures(1, &TextureName);
 
-    Driver->setActiveTexture(0, this);
-	Driver->getBridgeCalls()->setTexture(0, TextureType);
+    GLenum origTextureType = GL_TEXTURE_2D;
+	GLuint origTextureName = 0;
+
+	Driver->getBridgeCalls()->setActiveTexture(0);
+	Driver->getBridgeCalls()->getTexture(origTextureType, origTextureName);
+
+	glBindTexture(TextureType, TextureName);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -1000,8 +1013,7 @@ COGLES2FBOTexture::COGLES2FBOTexture(const core::dimension2d<u32>& size,
 	checkOGLES2FBOStatus(Driver);
 #endif
 
-	Driver->setActiveTexture(0, 0);
-	Driver->getBridgeCalls()->setTexture(0, TextureType);
+	glBindTexture(origTextureType, origTextureName);
 
 	unbindRTT();
 }

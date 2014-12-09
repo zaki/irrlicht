@@ -27,13 +27,9 @@ public:
 
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
-	void setTexture(const ITexture* texture);
-
 protected:
 	s32 ThicknessID;
 	s32 TextureUsageID;
-
-	const ITexture* Texture;
 };
 
 

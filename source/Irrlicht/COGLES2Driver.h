@@ -244,15 +244,6 @@ namespace video
 		//! Int interface for the above.
 		virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count);
 
-		//! sets the current Texture
-		bool setActiveTexture(u32 stage, const video::ITexture* texture);
-
-		//! check if active texture is not equal null.
-		bool isActiveTexture(u32 stage);
-
-		//! disables all textures beginning with fromStage.
-		bool disableTextures(u32 fromStage = 0);
-
 		//! Adds a new material renderer to the VideoDriver
 		virtual s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 				IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);
@@ -355,75 +346,6 @@ namespace video
 		COGLES2CallBridge* getBridgeCalls() const;
 
 	private:
-
-		class STextureStageCache
-		{
-		public:
-			STextureStageCache()
-			{
-				for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-					CurrentTexture[i] = 0;
-			}
-
-			~STextureStageCache()
-			{
-				clear();
-			}
-
-			void set(u32 stage, const ITexture* tex)
-			{
-				if (stage < MATERIAL_MAX_TEXTURES)
-				{
-					const ITexture* oldTexture = CurrentTexture[stage];
-
-					if (tex)
-						tex->grab();
-
-					CurrentTexture[stage] = tex;
-
-					if (oldTexture)
-						oldTexture->drop();
-				}
-			}
-
-			const ITexture* operator[](int stage) const
-			{
-				if ((u32)stage < MATERIAL_MAX_TEXTURES)
-					return CurrentTexture[stage];
-				else
-					return 0;
-			}
-
-			void remove(ITexture* tex)
-			{
-				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
-				{
-					if (CurrentTexture[i] == tex)
-					{
-						tex->drop();
-						CurrentTexture[i] = 0;
-					}
-				}
-			}
-
-			void clear()
-			{
-				for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-				{
-					if (CurrentTexture[i])
-					{
-						CurrentTexture[i]->drop();
-						CurrentTexture[i] = 0;
-					}
-				}
-			}
-
-		private:
-			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
-		};
-
-		void uploadClipPlane(u32 index);
-
 		//! inits the opengl-es driver
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 
@@ -434,11 +356,6 @@ namespace video
 		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
 			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
-		//! creates a transposed matrix in supplied GLfloat array to pass to OGLES1
-		inline void createGLMatrix(float gl_matrix[16], const core::matrix4& m);
-
-		inline void createGLTextureMatrix(float gl_matrix[16], const core::matrix4& m);
-
 		//! Map Irrlicht wrap mode to OpenGL enum
 		GLint getTextureWrapMode(u8 clamp) const;
 
@@ -447,6 +364,8 @@ namespace video
 
 		//! sets the needed renderstates
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
+
+		void chooseMaterial2D();
 
 		void createMaterialRenderers();
 
@@ -472,7 +391,6 @@ namespace video
 
 		SMaterial Material, LastMaterial;
 		COGLES2Texture* RenderTargetTexture;
-		STextureStageCache CurrentTexture;
 		core::array<ITexture*> DepthTextures;
 
 		struct SUserClipPlane
@@ -527,6 +445,10 @@ namespace video
 	public:
 		COGLES2CallBridge(COGLES2Driver* driver);
 
+		// Reset to default state.
+
+		void reset();
+
 		// Blending calls.
 
 		void setBlendEquation(GLenum mode);
@@ -561,13 +483,15 @@ namespace video
 
 		// Texture calls.
 
-		void resetTexture(const ITexture* texture);
+		GLuint getActiveTexture() const;
 
-		void setActiveTexture(GLenum texture);
+		void setActiveTexture(GLuint id);
 
-		void getTexture(u32 stage, GLenum& type);
+		void getTexture(GLenum& type, GLuint& name) const;
 
-		void setTexture(u32 stage, GLenum type);
+		COGLES2Texture* getTexture() const;
+
+		void setTexture(COGLES2Texture* texture);
 
 		// Viewport calls.
 
@@ -596,10 +520,8 @@ namespace video
 
 		GLuint Program;
 
-		GLenum ActiveTexture;
-
-		const ITexture* Texture[MATERIAL_MAX_TEXTURES];
-		GLenum TextureType[MATERIAL_MAX_TEXTURES];
+		GLuint ActiveTextureID;
+		COGLES2Texture* Texture[MATERIAL_MAX_TEXTURES];
 
 		core::rect<s32> Viewport;
 	};
