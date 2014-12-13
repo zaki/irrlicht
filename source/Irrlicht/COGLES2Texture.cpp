@@ -265,7 +265,6 @@ void COGLES2Texture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGB;
 			type = GL_UNSIGNED_BYTE;
-			convert = CColorConverter::convert_R8G8B8toB8G8R8;
 			break;
 		case ECF_A8R8G8B8:
 			filtering = GL_LINEAR;
@@ -461,8 +460,10 @@ void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 
 	glBindTexture(TextureType, TextureName);
 
+#ifdef _DEBUG
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
+#endif
 
 	// mipmap handling for main texture
 	if (!level && newTexture)
@@ -605,8 +606,10 @@ void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 		}
 	}
 
+#ifdef _DEBUG
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
+#endif
 
 	glBindTexture(origTextureType, origTextureName);
 }
@@ -615,7 +618,7 @@ void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 //! lock function
 void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
-	if (IsCompressed || Type != ETT_2D) // TO-DO
+	if (IsCompressed || IsRenderTarget || Type != ETT_2D) // TO-DO
 		return 0;
 
 	if (LockImage)
@@ -623,6 +626,8 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
+
+	IImage* tmpImage = 0;
 
 	if (mipmapLevel)
 	{
@@ -651,7 +656,9 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	if (!LockImage)
 		return 0;
 
-	u8* pPixels = static_cast<u8*>(LockImage->lock());
+	tmpImage = Driver->createImage(ECF_A8R8G8B8, LockImage->getDimension());
+
+	u8* pPixels = static_cast<u8*>(tmpImage->lock());
 
 	if (!pPixels)
 		return 0;
@@ -685,7 +692,12 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	Driver->draw2DImage(this, core::rect<s32>(0, 0, screenSize.Width, screenSize.Height), core::rect<s32>(0, 0, TextureSize.Width, TextureSize.Height), 0, 0, true);
 
-	glReadPixels(0, 0, screenSize.Width, screenSize.Height, InternalFormat, PixelType, pPixels);
+	glReadPixels(0, 0, screenSize.Width, screenSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, pPixels);
+
+#ifdef _DEBUG
+	if (Driver->testGLError())
+		os::Printer::log("Could not read pixels", ELL_ERROR);
+#endif
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &tmpFBO);
@@ -697,7 +709,7 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 		origRT->bindRTT();
 
 	// opengl images are horizontally flipped, so we have to fix that here.
-	const u32 pitch=LockImage->getPitch();
+	const u32 pitch=tmpImage->getPitch();
 	u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
 	u8* tmpBuffer = new u8[pitch];
 	for (u32 i=0; i < ImageSize.Height; i += 2)
@@ -708,17 +720,56 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 		pPixels += pitch;
 		p2 -= pitch;
 	}
-	delete [] tmpBuffer;
-	LockImage->unlock();
 
-	return LockImage->lock();
+	delete [] tmpBuffer;
+
+	tmpImage->unlock();
+
+	// convert from RGBA8.
+
+	void* src = tmpImage->lock();
+	void* dest = LockImage->lock();
+
+	bool passed = true;
+
+	switch(ColorFormat)
+	{
+		case ECF_A1R5G5B5:
+			CColorConverter::convert_A8R8G8B8toA1B5G5R5(src, tmpImage->getDimension().getArea(), dest);
+			break;
+		case ECF_R5G6B5:
+			CColorConverter::convert_A8R8G8B8toR5G6B5(src, tmpImage->getDimension().getArea(), dest);
+			break;
+		case ECF_R8G8B8:
+			CColorConverter::convert_A8R8G8B8toB8G8R8(src, tmpImage->getDimension().getArea(), dest);
+			break;
+		case ECF_A8R8G8B8:
+			CColorConverter::convert_A8R8G8B8toA8B8G8R8(src, tmpImage->getDimension().getArea(), dest);
+			break;
+		default:
+			passed = false;
+			break;
+	}
+
+	LockImage->unlock();
+	tmpImage->unlock();
+
+	tmpImage->drop();
+
+	if (!passed)
+	{
+		LockImage->drop();
+		LockImage = 0;
+	}
+
+	return LockImage ? LockImage->lock() : 0;
 }
 
 
 //! unlock function
 void COGLES2Texture::unlock()
 {
-	if (!LockImage || IsCompressed || Type != ETT_2D) // TO-DO
+	if (!LockImage)
 		return;
 
 	LockImage->unlock();

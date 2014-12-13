@@ -184,7 +184,6 @@ void COGLES1Texture::getFormatParameters(ECOLOR_FORMAT format, GLint& internalFo
 			filtering = GL_LINEAR;
 			pixelFormat = GL_RGB;
 			type = GL_UNSIGNED_BYTE;
-			convert = CColorConverter::convert_R8G8B8toB8G8R8;
 			break;
 		case ECF_A8R8G8B8:
 			filtering = GL_LINEAR;
