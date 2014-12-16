@@ -664,6 +664,7 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 		return 0;
 
 	const core::dimension2d<u32> screenSize = Driver->getScreenSize();
+	const core::dimension2d<u32> imageSize = LockImage->getDimension();
 
 	COGLES2Texture* origRT = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
 	core::rect<s32> origViewport = Driver->getBridgeCalls()->getViewport();
@@ -688,11 +689,11 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	glBindFramebuffer(GL_FRAMEBUFFER, tmpFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture, 0);
 
-	Driver->getBridgeCalls()->setViewport(core::rect<s32>(0, 0, ImageSize.Width, ImageSize.Height));
+	Driver->getBridgeCalls()->setViewport(core::rect<s32>(0, 0, imageSize.Width, imageSize.Height));
 
 	Driver->draw2DImage(this, core::rect<s32>(0, 0, screenSize.Width, screenSize.Height), core::rect<s32>(0, 0, TextureSize.Width, TextureSize.Height), 0, 0, true);
 
-	glReadPixels(0, 0, screenSize.Width, screenSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, pPixels);
+	glReadPixels(0, 0, imageSize.Width, imageSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, pPixels);
 
 #ifdef _DEBUG
 	if (Driver->testGLError())
