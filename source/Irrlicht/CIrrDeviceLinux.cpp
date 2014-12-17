@@ -33,7 +33,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#ifdef __FREE_BSD_
+#ifdef __FreeBSD__
 #include <sys/joystick.h>
 #else
 
@@ -1898,7 +1898,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		if (-1 == info.fd)
 			continue;
 
-#ifdef __FREE_BSD_
+#ifdef __FreeBSD__
 		info.axes=2;
 		info.buttons=2;
 #else
@@ -1922,7 +1922,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		returnInfo.Axes = info.axes;
 		returnInfo.Buttons = info.buttons;
 
-#ifndef __FREE_BSD_
+#ifndef __FreeBSD__
 		char name[80];
 		ioctl( info.fd, JSIOCGNAME(80), name);
 		returnInfo.Name = name;
@@ -1957,7 +1957,7 @@ void CIrrDeviceLinux::pollJoysticks()
 	{
 		JoystickInfo & info =  ActiveJoysticks[j];
 
-#ifdef __FREE_BSD_
+#ifdef __FreeBSD__
 		struct joystick js;
 		if (read(info.fd, &js, JS_RETURN) == JS_RETURN)
 		{

@@ -82,6 +82,7 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.2
 
+ - Fix compiling on Free BSD (thanks to leper for reporting and patch)
  - Fix bug with multiple SetPixelFormat calls. (reported and fixed by anontypist)
  - Fix bug related to memory release in PNG image loader. Thanks elephoenix for it.
  - Fix crash in CGUIListBox when users pressed end key folled by any other key in an empty, focused list box (thanks at porcus for report and patch).
