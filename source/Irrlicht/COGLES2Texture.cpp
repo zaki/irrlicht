@@ -689,6 +689,10 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	glBindFramebuffer(GL_FRAMEBUFFER, tmpFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture, 0);
 
+	Driver->getBridgeCalls()->setColorMask(true, true, true, true);
+	glClearColor(0.f, 0.f, 0.f, 0.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	Driver->getBridgeCalls()->setViewport(core::rect<s32>(0, 0, imageSize.Width, imageSize.Height));
 
 	Driver->draw2DImage(this, core::rect<s32>(0, 0, screenSize.Width, screenSize.Height), core::rect<s32>(0, 0, TextureSize.Width, TextureSize.Height), 0, 0, true);
