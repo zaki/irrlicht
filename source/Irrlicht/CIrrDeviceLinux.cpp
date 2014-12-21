@@ -1959,11 +1959,12 @@ void CIrrDeviceLinux::pollJoysticks()
 
 #ifdef __FreeBSD__
 		struct joystick js;
-		if (read(info.fd, &js, JS_RETURN) == JS_RETURN)
+		if (read(info.fd, &js, sizeof(js)) == sizeof(js))
 		{
-			info.persistentData.JoystickEvent.ButtonStates = js.buttons; /* should be a two-bit field */
+			info.persistentData.JoystickEvent.ButtonStates = js.b1 | (js.b2 << 1); /* should be a two-bit field */
 			info.persistentData.JoystickEvent.Axis[0] = js.x; /* X axis */
 			info.persistentData.JoystickEvent.Axis[1] = js.y; /* Y axis */
+		}
 #else
 		struct js_event event;
 		while (sizeof(event) == read(info.fd, &event, sizeof(event)))
