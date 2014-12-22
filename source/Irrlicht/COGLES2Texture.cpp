@@ -12,8 +12,8 @@
 #include "os.h"
 #include "CImage.h"
 #include "CColorConverter.h"
-
 #include "irrString.h"
+#include "EVertexAttributes.h"
 
 #if !defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 #include <GLES2/gl2.h>
@@ -663,7 +663,8 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	if (!pPixels)
 		return 0;
 
-	const core::dimension2d<u32> screenSize = Driver->getScreenSize();
+	// Prepare FBO and texture.
+
 	const core::dimension2d<u32> imageSize = LockImage->getDimension();
 
 	COGLES2Texture* origRT = static_cast<COGLES2Texture*>(Driver->getRenderTargetTexture());
@@ -689,13 +690,40 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	glBindFramebuffer(GL_FRAMEBUFFER, tmpFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture, 0);
 
-	Driver->getBridgeCalls()->setColorMask(true, true, true, true);
-	glClearColor(0.f, 0.f, 0.f, 0.f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	Driver->getBridgeCalls()->setViewport(core::rect<s32>(0, 0, imageSize.Width, imageSize.Height));
 
-	Driver->draw2DImage(this, core::rect<s32>(0, 0, screenSize.Width, screenSize.Height), core::rect<s32>(0, 0, TextureSize.Width, TextureSize.Height), 0, 0, true);
+	// Draw 2D image.
+
+	Driver->chooseMaterial2D();
+	Driver->Material.TextureLayer[0].Texture = this;
+	Driver->Material.TextureLayer[0].TextureWrapU = ETC_CLAMP_TO_EDGE;
+	Driver->Material.TextureLayer[0].TextureWrapV = ETC_CLAMP_TO_EDGE;
+
+	Driver->setRenderStates2DMode(false, true, false);
+
+	const core::vector3df normal(0.f, 0.f, 1.f);
+	const SColor color(255, 255, 255, 255);
+
+	u16 indices[] = {0, 1, 2, 3};
+	S3DVertex vertices[4];
+
+	vertices[0] = S3DVertex(-1.f, 1.f, 0.f, normal.X, normal.Y, normal.Z, color, 0.f, 1.f);
+	vertices[1] = S3DVertex(1.f, 1.f, 0.f, normal.X, normal.Y, normal.Z, color, 1.f, 1.f);
+	vertices[2] = S3DVertex(1.f, -1.f, 0.f, normal.X, normal.Y, normal.Z, color, 1.f, 0.f);
+	vertices[3] = S3DVertex(-1.f, -1.f, 0.f, normal.X, normal.Y, normal.Z, color, 0.f, 0.f);
+
+	glEnableVertexAttribArray(EVA_POSITION);
+	glEnableVertexAttribArray(EVA_COLOR);
+	glEnableVertexAttribArray(EVA_TCOORD0);
+	glVertexAttribPointer(EVA_POSITION, 3, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+	glVertexAttribPointer(EVA_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Color);
+	glVertexAttribPointer(EVA_TCOORD0, 2, GL_FLOAT, false, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, indices);
+	glDisableVertexAttribArray(EVA_TCOORD0);
+	glDisableVertexAttribArray(EVA_COLOR);
+	glDisableVertexAttribArray(EVA_POSITION);
+
+	// Download data from FBO.
 
 	glReadPixels(0, 0, imageSize.Width, imageSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, pPixels);
 
@@ -703,6 +731,8 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	if (Driver->testGLError())
 		os::Printer::log("Could not read pixels", ELL_ERROR);
 #endif
+
+	// Clean resources.
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &tmpFBO);
@@ -712,21 +742,6 @@ void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	if (origRT)
 		origRT->bindRTT();
-
-	// opengl images are horizontally flipped, so we have to fix that here.
-	const u32 pitch=tmpImage->getPitch();
-	u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
-	u8* tmpBuffer = new u8[pitch];
-	for (u32 i=0; i < ImageSize.Height; i += 2)
-	{
-		memcpy(tmpBuffer, pPixels, pitch);
-		memcpy(pPixels, p2, pitch);
-		memcpy(p2, tmpBuffer, pitch);
-		pPixels += pitch;
-		p2 -= pitch;
-	}
-
-	delete [] tmpBuffer;
 
 	tmpImage->unlock();
 
