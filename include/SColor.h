@@ -448,7 +448,7 @@ namespace video
 		/** \param data: target to write the color. Must contain sufficiently large memory to receive the number of bytes neede for format
 			\param format: tells the format used to write the color into data
 		*/
-		void getData(void *data, ECOLOR_FORMAT format)
+		void getData(void *data, ECOLOR_FORMAT format) const
 		{
 			switch(format)
 			{
