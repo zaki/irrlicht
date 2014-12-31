@@ -55,31 +55,7 @@ namespace irr
 
 namespace irr
 {
-struct SJoystickWin32Control
-{
-	CIrrDeviceWin32* Device;
-
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
-	IDirectInput8* DirectInputDevice;
-#endif
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-	struct JoystickInfo
-	{
-		u32 Index;
-#ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
-		core::stringc Name;
-		GUID guid;
-		LPDIRECTINPUTDEVICE8 lpdijoy;
-		DIDEVCAPS devcaps;
-		u8 axisValid[8];
-#else
-		JOYCAPS Caps;
-#endif
-	};
-	core::array<JoystickInfo> ActiveJoysticks;
-#endif
-
-	SJoystickWin32Control(CIrrDeviceWin32* dev) : Device(dev)
+	SJoystickWin32Control::SJoystickWin32Control(CIrrDeviceWin32* dev) : Device(dev)
 	{
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
 		DirectInputDevice=0;
@@ -90,7 +66,8 @@ struct SJoystickWin32Control
 		}
 #endif
 	}
-	~SJoystickWin32Control()
+
+	SJoystickWin32Control::~SJoystickWin32Control()
 	{
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
 		for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
@@ -109,13 +86,13 @@ struct SJoystickWin32Control
 	}
 
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
-	static BOOL CALLBACK EnumJoysticks(LPCDIDEVICEINSTANCE lpddi, LPVOID cp)
+	BOOL CALLBACK SJoystickWin32Control::EnumJoysticks(LPCDIDEVICEINSTANCE lpddi, LPVOID cp)
 	{
 		SJoystickWin32Control* p=(SJoystickWin32Control*)cp;
 		p->directInputAddJoystick(lpddi);
 		return DIENUM_CONTINUE;
 	}
-	void directInputAddJoystick(LPCDIDEVICEINSTANCE lpddi)
+	void SJoystickWin32Control::directInputAddJoystick(LPCDIDEVICEINSTANCE lpddi)
 	{
 		//Get the GUID of the joystuck
 		const GUID guid = lpddi->guidInstance;
@@ -187,7 +164,7 @@ struct SJoystickWin32Control
 	}
 #endif
 
-void pollJoysticks()
+void SJoystickWin32Control::pollJoysticks()
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
@@ -359,7 +336,7 @@ void pollJoysticks()
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 }
 
-bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
+bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
@@ -434,7 +411,6 @@ bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 	return false;
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 }
-};
 } // end namespace irr
 
 // Get the codepage from the locale language id
