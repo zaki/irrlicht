@@ -455,6 +455,7 @@ namespace irr
 
         void pollJoysticks();
         bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+        irr::core::stringc findJoystickName(int index, const JOYCAPS &caps) const;
     };
 
 
