@@ -421,44 +421,6 @@ namespace irr
 		SJoystickWin32Control* JoyControl;
 	};
 
-    struct SJoystickWin32Control
-    {
-        CIrrDeviceWin32* Device;
-
-    #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
-        IDirectInput8* DirectInputDevice;
-    #endif
-    #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-        struct JoystickInfo
-        {
-            u32 Index;
-    #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
-            core::stringc Name;
-            GUID guid;
-            LPDIRECTINPUTDEVICE8 lpdijoy;
-            DIDEVCAPS devcaps;
-            u8 axisValid[8];
-    #else
-            JOYCAPS Caps;
-    #endif
-        };
-        core::array<JoystickInfo> ActiveJoysticks;
-    #endif
-
-        SJoystickWin32Control(CIrrDeviceWin32* dev);
-        ~SJoystickWin32Control();
-
-    #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_) && defined(_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_)
-        static BOOL CALLBACK EnumJoysticks(LPCDIDEVICEINSTANCE lpddi, LPVOID cp);
-        void directInputAddJoystick(LPCDIDEVICEINSTANCE lpddi)
-    #endif
-
-        void pollJoysticks();
-        bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
-        irr::core::stringc findJoystickName(int index, const JOYCAPS &caps) const;
-    };
-
-
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
