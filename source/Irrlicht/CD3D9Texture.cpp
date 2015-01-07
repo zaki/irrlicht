@@ -33,8 +33,7 @@ namespace video
 CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size,
 						   const io::path& name, const ECOLOR_FORMAT format)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
-	TextureSize(size), ImageSize(size), Pitch(0), ColorFormat(ECF_UNKNOWN),
-	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true), IsCompressed(false)
+	HardwareMipMaps(false), IsCompressed(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Texture");
@@ -43,6 +42,11 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 	Device=driver->getExposedVideoData().D3D9.D3DDev9;
 	if (Device)
 		Device->AddRef();
+
+	DriverType = EDT_DIRECT3D9;
+	OriginalSize = size;
+	Size = size;
+	IsRenderTarget = true;
 
 	createRenderTarget(format);
 }
@@ -52,13 +56,13 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 			   u32 flags, const io::path& name, void* mipmapData)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
-	TextureSize(0,0), ImageSize(0,0), Pitch(0), ColorFormat(ECF_UNKNOWN),
-	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false), IsCompressed(false)
+	HardwareMipMaps(false), IsCompressed(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Texture");
 	#endif
 
+	DriverType = EDT_DIRECT3D9;
 	HasMipMaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
 	Device=driver->getExposedVideoData().D3D9.D3DDev9;
@@ -67,7 +71,7 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 
 	if (image)
 	{
-		if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+		if (IImage::isCompressedFormat(image->getColorFormat()))
 		{
 			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
 			{
@@ -132,10 +136,11 @@ void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 	// are texture size restrictions there ?
 	if(!Driver->queryFeature(EVDF_TEXTURE_NPOT))
 	{
-		if (TextureSize != ImageSize)
+		if (Size != OriginalSize)
 			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
 	}
-	TextureSize = TextureSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+
+	Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT d3dformat = Driver->getD3DColorFormat();
 
@@ -159,12 +164,24 @@ void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 		d3dformat = Driver->getD3DFormatFromColorFormat(ColorFormat);
 	}
 
+	switch (ColorFormat)
+	{
+	case ECF_A8R8G8B8:
+	case ECF_A1R5G5B5:
+	case ECF_A16B16G16R16F:
+	case ECF_A32B32G32R32F:
+		HasAlpha = true;
+		break;
+	default:
+		break;
+	}
+
 	// create texture
 	HRESULT hr;
 
 	hr = Device->CreateTexture(
-		TextureSize.Width,
-		TextureSize.Height,
+		Size.Width,
+		Size.Height,
 		1, // mip map level count, we don't want mipmaps here
 		D3DUSAGE_RENDERTARGET,
 		d3dformat,
@@ -290,9 +307,9 @@ bool CD3D9Texture::createMipMaps(u32 level)
 //! creates the hardware texture
 bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 {
-	ImageSize = image->getDimension();
+	OriginalSize = image->getDimension();
 
-	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	core::dimension2d<u32> optSize = OriginalSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT format = D3DFMT_A1R5G5B5;
 
@@ -329,7 +346,7 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 			format = D3DFMT_R5G6B5;
 	}
 
-	if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+	if (IImage::isCompressedFormat(image->getColorFormat()))
 	{
 		ColorFormat = image->getColorFormat();
 
@@ -402,6 +419,23 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 	if (!IsCompressed)
 		ColorFormat = Driver->getColorFormatFromD3DFormat(format);
 
+	switch (ColorFormat)
+	{
+	case ECF_A8R8G8B8:
+	case ECF_A1R5G5B5:
+	case ECF_DXT1:
+	case ECF_DXT2:
+	case ECF_DXT3:
+	case ECF_DXT4:
+	case ECF_DXT5:
+	case ECF_A16B16G16R16F:
+	case ECF_A32B32G32R32F:
+		HasAlpha = true;
+		break;
+	default:
+		break;
+	}
+
 	setPitch(format);
 
 	return (SUCCEEDED(hr));
@@ -416,8 +450,8 @@ bool CD3D9Texture::copyTexture(IImage * image)
 		D3DSURFACE_DESC desc;
 		Texture->GetLevelDesc(0, &desc);
 
-		TextureSize.Width = desc.Width;
-		TextureSize.Height = desc.Height;
+		Size.Width = desc.Width;
+		Size.Height = desc.Height;
 
 		D3DLOCKED_RECT rect;
 		HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
@@ -432,16 +466,16 @@ bool CD3D9Texture::copyTexture(IImage * image)
 			u32 compressedDataSize = 0;
 
 			if(ColorFormat == ECF_DXT1)
-				compressedDataSize = ((TextureSize.Width + 3) / 4) * ((TextureSize.Height + 3) / 4) * 8;
+				compressedDataSize = ((Size.Width + 3) / 4) * ((Size.Height + 3) / 4) * 8;
 			else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-				compressedDataSize = ((TextureSize.Width + 3) / 4) * ((TextureSize.Height + 3) / 4) * 16;
+				compressedDataSize = ((Size.Width + 3) / 4) * ((Size.Height + 3) / 4) * 16;
 
 			memcpy(rect.pBits, image->lock(), compressedDataSize);
 		}
 		else
 		{
 			Pitch = rect.Pitch;
-			image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+			image->copyToScaling(rect.pBits, Size.Width, Size.Height, ColorFormat, Pitch);
 		}
 
 		hr = Texture->UnlockRect(0);
@@ -533,52 +567,10 @@ void CD3D9Texture::unlock()
 }
 
 
-//! Returns original size of the texture.
-const core::dimension2d<u32>& CD3D9Texture::getOriginalSize() const
-{
-	return ImageSize;
-}
-
-
-//! Returns (=size) of the texture.
-const core::dimension2d<u32>& CD3D9Texture::getSize() const
-{
-	return TextureSize;
-}
-
-
-//! returns driver type of texture (=the driver, who created the texture)
-E_DRIVER_TYPE CD3D9Texture::getDriverType() const
-{
-	return EDT_DIRECT3D9;
-}
-
-
-//! returns color format of texture
-ECOLOR_FORMAT CD3D9Texture::getColorFormat() const
-{
-	return ColorFormat;
-}
-
-
-//! returns pitch of texture (in bytes)
-u32 CD3D9Texture::getPitch() const
-{
-	return Pitch;
-}
-
-
 //! returns the DIRECT3D9 Texture
 IDirect3DBaseTexture9* CD3D9Texture::getDX9Texture() const
 {
 	return Texture;
-}
-
-
-//! returns if texture has mipmap levels
-bool CD3D9Texture::hasMipMaps() const
-{
-	return HasMipMaps;
 }
 
 
@@ -687,7 +679,7 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 	if (mipmapData)
 	{
 		u32 compressedDataSize = 0;
-		core::dimension2du size = TextureSize;
+		core::dimension2du size = Size;
 		u32 level=0;
 		do
 		{
@@ -728,8 +720,8 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 			}
 			else
 			{
-				memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/TextureSize.Width);
-				mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/TextureSize.Width;
+				memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch() / Size.Width);
+				mipmapData = (u8*)mipmapData + size.getArea()*getPitch() / Size.Width;
 			}
 
 			// unlock
@@ -750,13 +742,6 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 #endif
 		createMipMaps();
 	}
-}
-
-
-//! returns if it is a render target
-bool CD3D9Texture::isRenderTarget() const
-{
-	return IsRenderTarget;
 }
 
 
@@ -783,27 +768,27 @@ void CD3D9Texture::setPitch(D3DFORMAT d3dformat)
 	{
 	case D3DFMT_X1R5G5B5:
 	case D3DFMT_A1R5G5B5:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 	break;
 	case D3DFMT_A8B8G8R8:
 	case D3DFMT_A8R8G8B8:
 	case D3DFMT_X8R8G8B8:
-		Pitch = TextureSize.Width * 4;
+		Pitch = Size.Width * 4;
 	break;
 	case D3DFMT_R5G6B5:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 	break;
 	case D3DFMT_R8G8B8:
-		Pitch = TextureSize.Width * 3;
+		Pitch = Size.Width * 3;
 	break;
 	case D3DFMT_DXT1:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 	break;
 	case D3DFMT_DXT2:
 	case D3DFMT_DXT3:
 	case D3DFMT_DXT4:
 	case D3DFMT_DXT5:
-		Pitch = TextureSize.Width * 4;
+		Pitch = Size.Width * 4;
 	default:
 		Pitch = 0;
 	};

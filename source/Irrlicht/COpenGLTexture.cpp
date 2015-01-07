@@ -21,28 +21,49 @@ namespace video
 
 //! constructor for usual textures
 COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mipmapData, COpenGLDriver* driver)
-	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+	: ITexture(name), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
-	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
+	IsCompressed(false), AutomaticMipmapUpdate(false),
 	ReadOnlyLock(false), KeepImage(true), IsDepthTexture(false), IsRenderBuffer(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
 	#endif
 
+	DriverType = EDT_OPENGL;
+	ColorFormat = ECF_A8R8G8B8;
 	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	IsRenderTarget = false;
+
 	getImageValues(origImage);
 
-	if (ColorFormat == ECF_DXT1 || ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
+	switch (ColorFormat)
 	{
-		if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+	case ECF_A8R8G8B8:
+	case ECF_A1R5G5B5:
+	case ECF_DXT1:
+	case ECF_DXT2:
+	case ECF_DXT3:
+	case ECF_DXT4:
+	case ECF_DXT5:
+	case ECF_A16B16G16R16F:
+	case ECF_A32B32G32R32F:
+		HasAlpha = true;
+		break;
+	default:
+		break;
+	}
+
+	if (IImage::isCompressedFormat(ColorFormat))
+	{
+		if (!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
 		{
 			os::Printer::log("DXT texture compression not available.", ELL_ERROR);
 			return;
 		}
 
-		if(ImageSize != TextureSize)
+		if (OriginalSize != Size)
 		{
 			os::Printer::log("Invalid size of image for compressed texture, size of image must be POT.", ELL_ERROR);
 			return;
@@ -55,17 +76,20 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 			KeepImage = false;
 		}
 	}
-	else if (ImageSize==TextureSize)
+	else if (OriginalSize == Size)
 	{
-		Image = Driver->createImage(ColorFormat, ImageSize);
+		Image = Driver->createImage(ColorFormat, OriginalSize);
 		origImage->copyTo(Image);
 	}
 	else
 	{
-		Image = Driver->createImage(ColorFormat, TextureSize);
+		Image = Driver->createImage(ColorFormat, Size);
 		// scale texture
 		origImage->copyToScaling(Image);
 	}
+
+	Pitch = Image->getPitch();
+
 	glGenTextures(1, &TextureName);
 	uploadTexture(true, mipmapData);
 	if (!KeepImage)
@@ -78,16 +102,21 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 //! constructor for basic setup (only for derived classes)
 COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
-	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
+	: ITexture(name), Driver(driver), Image(0), MipImage(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
-	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
-	MipmapLegacyMode(true), IsRenderTarget(false), IsCompressed(false),
+	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
+	MipmapLegacyMode(true), IsCompressed(false),
 	AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true),
 	IsDepthTexture(false), IsRenderBuffer(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
 	#endif
+
+	DriverType = EDT_OPENGL;
+	ColorFormat = ECF_A8R8G8B8;
+	HasMipMaps = true;
+	HasAlpha = true;
 }
 
 
@@ -368,28 +397,30 @@ void COpenGLTexture::getImageValues(IImage* image)
 		return;
 	}
 
-	ImageSize = image->getDimension();
+	OriginalSize = image->getDimension();
 
-	if ( !ImageSize.Width || !ImageSize.Height)
+	if (!OriginalSize.Width || !OriginalSize.Height)
 	{
 		os::Printer::log("Invalid size of image for OpenGL Texture.", ELL_ERROR);
 		return;
 	}
 
-	const f32 ratio = (f32)ImageSize.Width/(f32)ImageSize.Height;
-	if ((ImageSize.Width>Driver->MaxTextureSize) && (ratio >= 1.0f))
-	{
-		ImageSize.Width = Driver->MaxTextureSize;
-		ImageSize.Height = (u32)(Driver->MaxTextureSize/ratio);
-	}
-	else if (ImageSize.Height>Driver->MaxTextureSize)
-	{
-		ImageSize.Height = Driver->MaxTextureSize;
-		ImageSize.Width = (u32)(Driver->MaxTextureSize*ratio);
-	}
-	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+	const f32 ratio = (f32)OriginalSize.Width / (f32)OriginalSize.Height;
 
-	if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+	if ((OriginalSize.Width>Driver->MaxTextureSize) && (ratio >= 1.0f))
+	{
+		OriginalSize.Width = Driver->MaxTextureSize;
+		OriginalSize.Height = (u32)(Driver->MaxTextureSize / ratio);
+	}
+	else if (OriginalSize.Height>Driver->MaxTextureSize)
+	{
+		OriginalSize.Height = Driver->MaxTextureSize;
+		OriginalSize.Width = (u32)(Driver->MaxTextureSize*ratio);
+	}
+
+	Size = OriginalSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+
+	if (IImage::isCompressedFormat(image->getColorFormat()))
 		ColorFormat = image->getColorFormat();
 	else
 		ColorFormat = getBestColorFormat(image->getColorFormat());
@@ -563,8 +594,8 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 			if (mipmapLevel)
 			{
 				u32 i=0;
-				u32 width = TextureSize.Width;
-				u32 height = TextureSize.Height;
+				u32 width = Size.Width;
+				u32 height = Size.Height;
 				do
 				{
 					if (width>1)
@@ -577,7 +608,7 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 				MipImage = image = Driver->createImage(ECF_A8R8G8B8, core::dimension2du(width,height));
 			}
 			else
-				Image = image = Driver->createImage(ECF_A8R8G8B8, ImageSize);
+				Image = image = Driver->createImage(ECF_A8R8G8B8, OriginalSize);
 			ColorFormat = ECF_A8R8G8B8;
 		}
 		if (!image)
@@ -675,55 +706,10 @@ void COpenGLTexture::unlock()
 }
 
 
-//! Returns size of the original image.
-const core::dimension2d<u32>& COpenGLTexture::getOriginalSize() const
-{
-	return ImageSize;
-}
-
-
-//! Returns size of the texture.
-const core::dimension2d<u32>& COpenGLTexture::getSize() const
-{
-	return TextureSize;
-}
-
-
-//! returns driver type of texture, i.e. the driver, which created the texture
-E_DRIVER_TYPE COpenGLTexture::getDriverType() const
-{
-	return EDT_OPENGL;
-}
-
-
-//! returns color format of texture
-ECOLOR_FORMAT COpenGLTexture::getColorFormat() const
-{
-	return ColorFormat;
-}
-
-
-//! returns pitch of texture (in bytes)
-u32 COpenGLTexture::getPitch() const
-{
-	if (Image)
-		return Image->getPitch();
-	else
-		return 0;
-}
-
-
 //! return open gl texture name
 GLuint COpenGLTexture::getOpenGLTextureName() const
 {
 	return TextureName;
-}
-
-
-//! Returns whether this texture has mipmaps
-bool COpenGLTexture::hasMipMaps() const
-{
-	return HasMipMaps;
 }
 
 
@@ -814,12 +800,6 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 }
 
 
-bool COpenGLTexture::isRenderTarget() const
-{
-	return IsRenderTarget;
-}
-
-
 void COpenGLTexture::setIsRenderTarget(bool isTarget)
 {
 	IsRenderTarget = isTarget;
@@ -883,14 +863,28 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 	setDebugName("COpenGLFBOTexture");
 #endif
 
+	DriverType = EDT_OPENGL;
+
 	if (ECF_UNKNOWN == format)
 		format = getBestColorFormat(driver->getColorFormat());
 
 	IsDepthTexture = IImage::isDepthFormat(format);
 
-	ImageSize = size;
-	TextureSize = size;
+	OriginalSize = size;
+	Size = size;
 	ColorFormat = format;
+
+	switch (ColorFormat)
+	{
+	case ECF_A8R8G8B8:
+	case ECF_A1R5G5B5:
+	case ECF_A16B16G16R16F:
+	case ECF_A32B32G32R32F:
+		HasAlpha = true;
+		break;
+	default:
+		break;
+	}
 
 	GLint FilteringType = 0;
 	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
@@ -917,7 +911,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
     StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
     StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
 
-	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width, ImageSize.Height, 0, PixelFormat, PixelType, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, OriginalSize.Width, OriginalSize.Height, 0, PixelFormat, PixelType, 0);
 
 	Driver->setActiveTexture(0, 0);
 	Driver->getBridgeCalls()->setTexture(0, true);
@@ -1071,11 +1065,13 @@ COpenGLRenderBuffer::COpenGLRenderBuffer(
 	setDebugName("COpenGLRenderBuffer");
 #endif
 
+	DriverType = EDT_OPENGL;
+
 	IsDepthTexture = true;
 	IsRenderBuffer = true;
 
-	ImageSize = size;
-	TextureSize = size;
+	OriginalSize = size;
+	Size = size;
 	InternalFormat = GL_RGBA;
 	PixelFormat = GL_RGBA;
 	PixelType = GL_UNSIGNED_BYTE;
@@ -1085,7 +1081,7 @@ COpenGLRenderBuffer::COpenGLRenderBuffer(
 	// generate depth buffer
 	Driver->extGlGenRenderbuffers(1, &BufferID);
 	Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_EXT, BufferID);
-	Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_EXT, Driver->getZBufferBits(), ImageSize.Width, ImageSize.Height);
+	Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_EXT, Driver->getZBufferBits(), OriginalSize.Width, OriginalSize.Height);
 	Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_EXT, 0);
 #endif
 }

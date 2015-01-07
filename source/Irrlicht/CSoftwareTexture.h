@@ -33,39 +33,19 @@ public:
 	//! unlock function
 	virtual void unlock() _IRR_OVERRIDE_;
 
-	//! Returns original size of the texture.
-	virtual const core::dimension2d<u32>& getOriginalSize() const _IRR_OVERRIDE_;
-
-	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<u32>& getSize() const _IRR_OVERRIDE_;
-
 	//! returns unoptimized surface
 	virtual CImage* getImage();
 
 	//! returns texture surface
 	virtual CImage* getTexture();
 
-	//! returns driver type of texture (=the driver, who created the texture)
-	virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
-
-	//! returns color format of texture
-	virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
-
-	//! returns pitch of texture (in bytes)
-	virtual u32 getPitch() const _IRR_OVERRIDE_;
-
 	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
 	virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_;
 
-	//! is it a render target?
-	virtual bool isRenderTarget() const _IRR_OVERRIDE_;
-
 private:
 	CImage* Image;
 	CImage* Texture;
-	core::dimension2d<u32> OrigSize;
-	bool IsRenderTarget;
 };
 
 
