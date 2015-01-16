@@ -353,6 +353,8 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 
 	f32 bumpiness = 6.0f;
 	bool clamp = false;
+	core::vector3df tscale(1.f);  //For  map_Kd texture scaling
+	core::vector3df tpos(0.f);    //For  map_Kd texture translation
 	// handle options
 	while (textureNameBuf[0]=='-')
 	{
@@ -391,25 +393,35 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 		if (!strncmp(bufPtr,"-o",2)) // texture coord translation
 		{
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1])))
+				tpos.X = core::fast_atof(textureNameBuf);
+
 			// next parameters are optional, so skip rest of loop if no number is found
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			if (!core::isdigit(textureNameBuf[0]))
+			if (!(core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1]))))
 				continue;
+			tpos.Y = core::fast_atof(textureNameBuf);
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			if (!core::isdigit(textureNameBuf[0]))
+			if (!(core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1]))))
 				continue;
+			tpos.Z = core::fast_atof(textureNameBuf);
 		}
 		else
 		if (!strncmp(bufPtr,"-s",2)) // texture coord scale
 		{
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1])))
+				tscale.X = core::fast_atof(textureNameBuf);
+
 			// next parameters are optional, so skip rest of loop if no number is found
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			if (!core::isdigit(textureNameBuf[0]))
+			if (!(core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1]))))
 				continue;
+			tscale.Y = core::fast_atof(textureNameBuf);
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			if (!core::isdigit(textureNameBuf[0]))
+			if (!(core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1]))))
 				continue;
+			tscale.Z = core::fast_atof(textureNameBuf);
 		}
 		else
 		if (!strncmp(bufPtr,"-t",2))
@@ -417,10 +429,10 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 			// next parameters are optional, so skip rest of loop if no number is found
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			if (!core::isdigit(textureNameBuf[0]))
+			if (!(core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1]))))
 				continue;
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			if (!core::isdigit(textureNameBuf[0]))
+			if (!(core::isdigit(textureNameBuf[0]) || (textureNameBuf[0] == '-' && core::isdigit(textureNameBuf[1]))))
 				continue;
 		}
 		// get next word
@@ -442,7 +454,15 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 		if ( texture )
 		{
 			if (type==0)
+			{
 				currMaterial->Meshbuffer->Material.setTexture(0, texture);
+				bool needsTextureMatrix = tscale != core::vector3df(1.f) || tpos != core::vector3df(0.f);
+				if (needsTextureMatrix)
+				{
+					currMaterial->Meshbuffer->Material.getTextureMatrix(0).setTextureScale(tscale.X, tscale.Y);
+					currMaterial->Meshbuffer->Material.getTextureMatrix(0).setTextureTranslate(tpos.X, tpos.Y);
+				}
+			}
 			else if (type==1)
 			{
 				if ( texture->getSource() == video::ETS_FROM_FILE)
