@@ -30,8 +30,8 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_BOUNCE | SPECIAL_SFX_ROTATE_1
 },
 {	"item_health_large",
-	{"models/powerups/health/large_cross.md3", 
-	"models/powerups/health/large_sphere.md3"},
+	"models/powerups/health/large_cross.md3",
+	"models/powerups/health/large_sphere.md3",
 	"sound/items/l_health.wav",
 	"icons/iconh_red",
 	"50 Health",
@@ -42,8 +42,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"item_health_mega",
-	{"models/powerups/health/mega_cross.md3", 
-	"models/powerups/health/mega_sphere.md3"},
+	"models/powerups/health/mega_cross.md3",
+	"models/powerups/health/mega_sphere.md3",
 	"sound/items/m_health.wav",
 	"icons/iconh_mega",
 	"Mega Health",
@@ -54,8 +54,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"item_health_small",
-	{"models/powerups/health/small_cross.md3", 
-	"models/powerups/health/small_sphere.md3"},
+	"models/powerups/health/small_cross.md3",
+	"models/powerups/health/small_sphere.md3",
 	"sound/items/s_health.wav",
 	"icons/iconh_green",
 	"5 Health",
@@ -65,8 +65,8 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_BOUNCE | SPECIAL_SFX_ROTATE_1
 },
 {	"ammo_bullets",
-	{"models/powerups/ammo/machinegunam.md3", 
-	""},
+	"models/powerups/ammo/machinegunam.md3",
+	"",
 	"sound/misc/am_pkup.wav",
 	"icons/icona_machinegun",
 	"Bullets",
@@ -77,8 +77,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"ammo_cells",
-	{"models/powerups/ammo/plasmaam.md3",
-	""},
+	"models/powerups/ammo/plasmaam.md3",
+	"",
 	"sound/misc/am_pkup.wav",
 	"icons/icona_plasma",
 	"Cells",
@@ -88,8 +88,8 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_BOUNCE
 },
 {	"ammo_rockets",
-	{"models/powerups/ammo/rocketam.md3",
-	""},
+	"models/powerups/ammo/rocketam.md3",
+	"",
 	"",
 	"icons/icona_rocket",
 	"Rockets",
@@ -100,8 +100,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"ammo_shells",
-	{"models/powerups/ammo/shotgunam.md3", 
-	""},
+	"models/powerups/ammo/shotgunam.md3",
+	"",
 	"sound/misc/am_pkup.wav",
 	"icons/icona_shotgun",
 	"Shells",
@@ -112,8 +112,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"ammo_slugs",
-	{"models/powerups/ammo/railgunam.md3", 
-	""},
+	"models/powerups/ammo/railgunam.md3",
+	"",
 	"sound/misc/am_pkup.wav",
 	"icons/icona_railgun",
 	"Slugs",
@@ -124,8 +124,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"item_armor_body",
-	{"models/powerups/armor/armor_red.md3",
-	""},
+	"models/powerups/armor/armor_red.md3",
+	"",
 	"sound/misc/ar2_pkup.wav",
 	"icons/iconr_red",
 	"Heavy Armor",
@@ -136,8 +136,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"item_armor_combat",
-	{"models/powerups/armor/armor_yel.md3",
-	""},
+	"models/powerups/armor/armor_yel.md3",
+	"",
 	"sound/misc/ar2_pkup.wav",
 	"icons/iconr_yellow",
 	"Armor",
@@ -148,8 +148,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"item_armor_shard",
-	{"models/powerups/armor/shard.md3",
-	""},
+	"models/powerups/armor/shard.md3",
+	"",
 	"sound/misc/ar1_pkup.wav",
 	"icons/iconr_shard",
 	"Armor Shared",
@@ -160,8 +160,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"weapon_gauntlet",
-	{"models/weapons2/gauntlet/gauntlet.md3",
-	""},
+	"models/weapons2/gauntlet/gauntlet.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_gauntlet",
 	"Gauntlet",
@@ -172,8 +172,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"weapon_shotgun",
-	{"models/weapons2/shotgun/shotgun.md3",
-	""},
+	"models/weapons2/shotgun/shotgun.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_shotgun",
 	"Shotgun",
@@ -183,9 +183,9 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"weapon_machinegun", 
-	{"models/weapons2/machinegun/machinegun.md3", 
-	""},
+	"weapon_machinegun",
+	"models/weapons2/machinegun/machinegun.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_machinegun",
 	"Machinegun",
@@ -196,8 +196,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"weapon_grenadelauncher",
-	{"models/weapons2/grenadel/grenadel.md3", 
-	""},
+	"models/weapons2/grenadel/grenadel.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_grenade",
 	"Grenade Launcher",
@@ -208,8 +208,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"weapon_rocketlauncher",
-	{"models/weapons2/rocketl/rocketl.md3", 
-	""},
+	"models/weapons2/rocketl/rocketl.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_rocket",
 	"Rocket Launcher",
@@ -219,9 +219,9 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"weapon_lightning", 
-	{"models/weapons2/lightning/lightning.md3", 
-	""},
+	"weapon_lightning",
+	"models/weapons2/lightning/lightning.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_lightning",
 	"Lightning Gun",
@@ -231,9 +231,9 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"weapon_railgun", 
-	{"models/weapons2/railgun/railgun.md3", 
-	""},
+	"weapon_railgun",
+	"models/weapons2/railgun/railgun.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_railgun",
 	"Railgun",
@@ -243,9 +243,9 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"weapon_plasmagun", 
-	{"models/weapons2/plasma/plasma.md3", 
-	""},
+	"weapon_plasmagun",
+	"models/weapons2/plasma/plasma.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_plasma",
 	"Plasma Gun",
@@ -256,8 +256,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"weapon_bfg",
-	{"models/weapons2/bfg/bfg.md3", 
-	""},
+	"models/weapons2/bfg/bfg.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_bfg",
 	"BFG10K",
@@ -268,8 +268,8 @@ static const SItemElement Quake3ItemElement [] = {
 },
 {
 	"weapon_grapplinghook",
-	{"models/weapons2/grapple/grapple.md3", 
-	""},
+	"models/weapons2/grapple/grapple.md3",
+	"",
 	"sound/misc/w_pkup.wav",
 	"icons/iconw_grapple",
 	"Grappling Hook",
@@ -279,7 +279,7 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	"",{"",""},"","","",0
+	0
 }
 
 };
