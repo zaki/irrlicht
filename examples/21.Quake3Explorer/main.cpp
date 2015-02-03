@@ -81,7 +81,7 @@ void GameData::setDefault ()
 #if defined ( _IRR_WINDOWS_ )
 	deviceParam.DriverType = EDT_DIRECT3D9;
 #else
-	deviceParam.DriverType = EDT_OPENGL;
+	deviceParam.DriverType = EDT_OGLES2;	// TODO: have to figure out what to use when we merge ogl-es with trunk.
 #endif
 	deviceParam.WindowSize.Width = 800;
 	deviceParam.WindowSize.Height = 600;
@@ -382,7 +382,7 @@ void Q3Player::respawn ()
 			StartPositionCurrent, cam()->getEllipsoidTranslation()))
 		StartPositionCurrent = 0;
 	else
-		++StartPositionCurrent;	
+		++StartPositionCurrent;
 }
 
 /*
@@ -2024,7 +2024,7 @@ void CQuake3EventHandler::Animate()
 		wchar_t msg[128];
 		IVideoDriver * driver = Game->Device->getVideoDriver();
 
-#ifdef _IRR_SCENEMANAGER_DEBUG					
+#ifdef _IRR_SCENEMANAGER_DEBUG
 		IAttributes * attr = Game->Device->getSceneManager()->getParameters();
 		swprintf ( msg, 128,
 			L"Q3 %s [%ls], FPS:%03d Tri:%.03fm Cull %d/%d nodes (%d,%d,%d)",
@@ -2045,8 +2045,8 @@ swprintf ( msg, 128,
 			driver->getName(),
 			driver->getFPS (),
 			(f32) driver->getPrimitiveCountDrawn( 0 ) * ( 1.f / 1000000.f )
-			);		
-#endif		
+			);
+#endif
 		Game->Device->setWindowCaption( msg );
 
 		swprintf ( msg, 128,
