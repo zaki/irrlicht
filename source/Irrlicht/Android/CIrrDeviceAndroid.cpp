@@ -33,7 +33,7 @@ namespace irr
 {
 
 CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
-	: CIrrDeviceStub(param), Focused(false), Initialized(false), Paused(true), JNIEnvAttachedToVM(0)
+	: CIrrDeviceStub(param), Accelerometer(0), Gyroscope(0), Focused(false), Initialized(false), Paused(true), JNIEnvAttachedToVM(0)
 {
 #ifdef _DEBUG
 	setDebugName("CIrrDeviceAndroid");
@@ -48,7 +48,7 @@ CIrrDeviceAndroid::CIrrDeviceAndroid(const SIrrlichtCreationParameters& param)
 	// Set the default command handler. This is a callback function that the Android
 	// OS invokes to send the native activity messages.
 	Android->onAppCmd = handleAndroidCommand;
-	
+
 	createKeyMap();
 
 	// Create a sensor manager to receive touch screen events from the java activity.
@@ -104,13 +104,47 @@ bool CIrrDeviceAndroid::run()
 
 	os::Timer::tick();
 
+	s32 id;
 	s32 Events = 0;
 	android_poll_source* Source = 0;
 
-	while ((ALooper_pollAll(((Focused && !Paused) || !Initialized) ? 0 : -1, 0, &Events, (void**)&Source)) >= 0)
+	while ((id = ALooper_pollAll(((Focused && !Paused) || !Initialized) ? 0 : -1, 0, &Events, (void**)&Source)) >= 0)
 	{
 		if(Source)
 			Source->process(Android, Source);
+
+		// if a sensor has data, we'll process it now.
+        if (id == LOOPER_ID_USER)
+		{
+			ASensorEvent sensorEvent;
+			while (ASensorEventQueue_getEvents(SensorEventQueue, &sensorEvent, 1) > 0)
+			{
+				switch (sensorEvent.type)
+				{
+					case ASENSOR_TYPE_ACCELEROMETER:
+						SEvent accEvent;
+						accEvent.EventType = EET_ACCELEROMETER_EVENT;
+						accEvent.AccelerometerEvent.X = sensorEvent.acceleration.x;
+						accEvent.AccelerometerEvent.Y = sensorEvent.acceleration.y;
+						accEvent.AccelerometerEvent.Z = sensorEvent.acceleration.z;
+
+						postEventFromUser(accEvent);
+					break;
+
+					case ASENSOR_TYPE_GYROSCOPE:
+						SEvent gyroEvent;
+						gyroEvent.EventType = EET_GYROSCOPE_EVENT;
+						gyroEvent.GyroscopeEvent.X = sensorEvent.vector.x;
+						gyroEvent.GyroscopeEvent.Y = sensorEvent.vector.y;
+						gyroEvent.GyroscopeEvent.Z = sensorEvent.vector.z;
+
+						postEventFromUser(gyroEvent);
+					break;
+					default:
+					break;
+				}
+			}
+		}
 
 		if(!Initialized)
 			break;
@@ -200,7 +234,7 @@ E_DEVICE_TYPE CIrrDeviceAndroid::getType() const
 void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 {
 	CIrrDeviceAndroid* device = (CIrrDeviceAndroid*)app->userData;
-	
+
 	SEvent event;
 	event.EventType = EET_SYSTEM_EVENT;
 	event.SystemEvent.EventType = ESET_ANDROID_CMD;
@@ -391,16 +425,16 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 				event.KeyInput.Shift = false;
 			event.KeyInput.Control = false;
 
-			// Having memory allocations + going through JNI for each key-press is pretty bad (slow). 
+			// Having memory allocations + going through JNI for each key-press is pretty bad (slow).
 			// So we do it only for those keys which are likely text-characters and avoid it for all other keys.
-			// So it's fast for keys like game controller input and special keys. And text keys are typically 
+			// So it's fast for keys like game controller input and special keys. And text keys are typically
 			// only used or entering text and not for gaming on Android, so speed likely doesn't matter there too much.
 			if ( event.KeyInput.Key > 0 )
 			{
 				// TODO:
-				// Not sure why we have to attach a JNIEnv here, but it won't work when doing that in the constructor or 
+				// Not sure why we have to attach a JNIEnv here, but it won't work when doing that in the constructor or
 				// trying to use the activity->env. My best guess is that the event-handling happens in an own thread.
-				// It means JNIEnvAttachedToVM will never get detached as I don't know a safe way where to do that 
+				// It means JNIEnvAttachedToVM will never get detached as I don't know a safe way where to do that
 				// (we could attach & detach each time, but that would probably be slow)
 				// Also - it has to be each time as it get's invalid when the application mode changes.
 				if ( device->Initialized && device->Android && device->Android->activity && device->Android->activity->vm )
@@ -418,7 +452,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 						os::Printer::log("AttachCurrentThread for the JNI environment failed.", ELL_WARNING);
 						device->JNIEnvAttachedToVM = 0;
 					}
-				
+
 					if ( device->JNIEnvAttachedToVM )
 					{
 						jni::CKeyEventWrapper * keyEventWrapper = new jni::CKeyEventWrapper(device->JNIEnvAttachedToVM, keyAction, keyCode);
@@ -432,7 +466,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 				// os::Printer::log("keyCode: ", core::stringc(keyCode).c_str(), ELL_DEBUG);
 				event.KeyInput.Char = 0;
 			}
-		
+
 			device->postEventFromUser(event);
 		}
 		break;
@@ -714,7 +748,82 @@ void CIrrDeviceAndroid::createKeyMap()
     KeyMap[222] = KEY_UNKNOWN; // AKEYCODE_MEDIA_AUDIO_TRACK
 }
 
+bool CIrrDeviceAndroid::activateAccelerometer(float updateInterval)
+{
+	if (!isAccelerometerAvailable())
+		return false;
+
+	ASensorEventQueue_enableSensor(SensorEventQueue, Accelerometer);
+	ASensorEventQueue_setEventRate(SensorEventQueue, Accelerometer, (int32_t)(updateInterval*1000.f*1000.f)); // in microseconds
+
+	os::Printer::log("Activated accelerometer", ELL_DEBUG);
+	return true;
+}
+
+bool CIrrDeviceAndroid::deactivateAccelerometer()
+{
+	if (Accelerometer)
+	{
+		ASensorEventQueue_disableSensor(SensorEventQueue, Accelerometer);
+		Accelerometer = 0;
+		os::Printer::log("Deactivated accelerometer", ELL_DEBUG);
+		return true;
+	}
+
+	return false;
+}
+
+bool CIrrDeviceAndroid::isAccelerometerActive()
+{
+	return (Accelerometer != 0);
+}
+
+bool CIrrDeviceAndroid::isAccelerometerAvailable()
+{
+	if (!Accelerometer)
+		Accelerometer = ASensorManager_getDefaultSensor(SensorManager, ASENSOR_TYPE_ACCELEROMETER);
+
+	return (Accelerometer != 0);
+}
+
+bool CIrrDeviceAndroid::activateGyroscope(float updateInterval)
+{
+	if (!isGyroscopeAvailable())
+		return false;
+
+	ASensorEventQueue_enableSensor(SensorEventQueue, Gyroscope);
+	ASensorEventQueue_setEventRate(SensorEventQueue, Gyroscope, (int32_t)(updateInterval*1000.f*1000.f)); // in microseconds
+
+	os::Printer::log("Activated gyroscope", ELL_DEBUG);
+	return true;
+}
+
+bool CIrrDeviceAndroid::deactivateGyroscope()
+{
+	if (Gyroscope)
+	{
+		ASensorEventQueue_disableSensor(SensorEventQueue, Gyroscope);
+		Gyroscope = 0;
+		os::Printer::log("Deactivated gyroscope", ELL_DEBUG);
+		return true;
+	}
+
+	return false;
+}
+
+bool CIrrDeviceAndroid::isGyroscopeActive()
+{
+	return (Gyroscope != 0);
+}
+
+bool CIrrDeviceAndroid::isGyroscopeAvailable()
+{
+	if (!Gyroscope)
+		Gyroscope = ASensorManager_getDefaultSensor(SensorManager, ASENSOR_TYPE_GYROSCOPE);
+
+	return (Gyroscope != 0);
+}
+
 } // end namespace irr
 
 #endif
-
