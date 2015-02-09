@@ -43,6 +43,11 @@ namespace core
 		rect(const position2d<T>& pos, const dimension2d<U>& size)
 			: UpperLeftCorner(pos), LowerRightCorner(pos.X + size.Width, pos.Y + size.Height) {}
 
+		//! Constructor with upper left at 0,0 and lower right using dimension
+		template <class U>
+		explicit rect(const dimension2d<U>& size)
+			: UpperLeftCorner(0,0), LowerRightCorner(size.Width, size.Height) {}
+
 		//! move right by given numbers
 		rect<T> operator+(const position2d<T>& pos) const
 		{

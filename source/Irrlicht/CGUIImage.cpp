@@ -81,7 +81,7 @@ void CGUIImage::draw()
 		core::rect<s32> sourceRect(SourceRect);
 		if (sourceRect.getWidth() == 0 || sourceRect.getHeight() == 0)
 		{
-			sourceRect = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(Texture->getOriginalSize()));
+			sourceRect = core::rect<s32>(core::dimension2di(Texture->getOriginalSize()));
 		}
 
 		if (ScaleImage)
