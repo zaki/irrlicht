@@ -157,6 +157,7 @@ protected:
 	bool IsCompressed;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
+	bool KeepImage;
 	IImage* LockImage;
 
 	mutable SStatesCache StatesCache;

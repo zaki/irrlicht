@@ -40,7 +40,7 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), LockImage(0)
+	ReadOnlyLock(false), KeepImage(true), LockImage(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES2Texture");
@@ -63,6 +63,7 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 	{
 		Image.push_back(origImage);
 		Image[0]->grab();
+		KeepImage = false;
 	}
 	else if (ImageSize==TextureSize)
 	{
@@ -80,6 +81,16 @@ COGLES2Texture::COGLES2Texture(IImage* origImage, const io::path& name, void* mi
 	glGenTextures(1, &TextureName);
 	uploadTexture(true, 0, true, mipmapData);
 
+	if ( KeepImage )
+	{
+		KeepImage = Driver->getTextureCreationFlag(ETCF_ALLOW_MEMORY_COPY);
+		if ( KeepImage  )
+		{
+			LockImage = Image[0];
+			LockImage->grab();
+		}
+	}
+
 	Image[0]->drop();
 	Image.clear();
 }
@@ -91,7 +102,7 @@ COGLES2Texture::COGLES2Texture(const io::path& name, IImage* posXImage, IImage* 
 		: ITexture(name, ETT_CUBE), Pitch(0), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0), MipImage(0),
 		TextureName(0), TextureType(GL_TEXTURE_CUBE_MAP), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 		PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), IsRenderTarget(false), IsCompressed(false),
-		AutomaticMipmapUpdate(false), ReadOnlyLock(false), LockImage(0)
+		AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(false), LockImage(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -169,7 +180,7 @@ COGLES2Texture::COGLES2Texture(const io::path& name, COGLES2Driver* driver)
 	TextureName(0), TextureType(GL_TEXTURE_2D), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), HasMipMaps(true),
 	IsRenderTarget(false), IsCompressed(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false), LockImage(0)
+	ReadOnlyLock(false), KeepImage(false), LockImage(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COGLES2Texture");
@@ -618,14 +629,14 @@ void COGLES2Texture::uploadTexture(bool newTexture, u32 imageNumber, bool regMip
 //! lock function
 void* COGLES2Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
-	if (IsCompressed || IsRenderTarget || Type != ETT_2D) // TO-DO
+	if (IsCompressed || IsRenderTarget || Type != ETT_2D || mipmapLevel > 0) // TO-DO
 		return 0;
-
-	if (LockImage)
-		return LockImage;
 
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
 	MipLevelStored = mipmapLevel;
+
+	if (LockImage)
+		return LockImage->lock();
 
 	IImage* tmpImage = 0;
 
@@ -799,8 +810,11 @@ void COGLES2Texture::unlock()
 
 	ReadOnlyLock = false;
 
-	LockImage->drop();
-	LockImage = 0;
+	if ( !KeepImage )
+	{
+		LockImage->drop();
+		LockImage = 0;
+	}
 }
 
 

@@ -477,6 +477,9 @@ void COGLES1Texture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 //! lock function
 void* COGLES1Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
+	if ( mipmapLevel > 0 )	// TODO: this does not yet seem to be supported for ES1, so quit.
+		return 0;
+
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
 
@@ -525,9 +528,12 @@ void* COGLES1Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 //! unlock function
 void COGLES1Texture::unlock()
 {
-	Image->unlock();
-	if (!ReadOnlyLock)
-		uploadTexture(false);
+	if ( Image )
+	{
+		Image->unlock();
+		if (!ReadOnlyLock)
+			uploadTexture(false);
+	}
 	ReadOnlyLock = false;
 }
 
