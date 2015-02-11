@@ -22,7 +22,7 @@ namespace irr
 {
 namespace video
 {
-
+#if 0
 namespace glsl
 {
 
@@ -103,11 +103,14 @@ inline vec4 refract (const vec4 &I, const vec4 &N, float eta) {
 }
 
 
-inline float length ( const vec3 &v ) { return sqrtf ( v.x * v.x + v.y * v.y + v.z * v.z ); }
-vec3 normalize ( const vec3 &v ) { 	float l = 1.f / length ( v ); return vec3 ( v.x * l, v.y * l, v.z * l ); }
-float max ( float a, float b ) { return a > b ? a : b; }
-float min ( float a, float b ) { return a < b ? a : b; }
-vec4 clamp ( const vec4 &a, f32 low, f32 high ) { return vec4 ( min (max(a.x,low), high), min (max(a.y,low), high), min (max(a.z,low), high), min (max(a.w,low), high) ); }
+static __inline float length ( const vec3 &v ) { return sqrtf ( v.x * v.x + v.y * v.y + v.z * v.z ); }
+static __inline vec3 normalize ( const vec3 &v ) { 	float l = 1.f / length ( v ); return vec3 ( v.x * l, v.y * l, v.z * l ); }
+static __inline float maximum ( float a, float b ) { return a > b ? a : b; }
+static __inline float minimum ( float a, float b ) { return a < b ? a : b; }
+static __inline vec4 clamp ( const vec4 &a, f32 low, f32 high )
+{
+	return vec4 ( minimum (maximum(a.x,low), high), minimum (maximum(a.y,low), high), minimum (maximum(a.z,low), high), minimum (maximum(a.w,low), high) );
+}
 
 
 
@@ -239,8 +242,8 @@ struct program1
 
 	   halfVector = normalize(VP + eye);
 
-	   nDotVP = max(0.0, dot(normal, VP));
-	   nDotHV = max(0.0, dot(normal, halfVector));
+	   nDotVP = maximum(0.0, dot(normal, VP));
+	   nDotHV = maximum(0.0, dot(normal, halfVector));
 
 	   if (nDotVP == 0.0)
 	   {
@@ -331,13 +334,15 @@ struct program1
 
 }
 
+#endif
+
 //! constructor
 CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, video::IImagePresenter* presenter)
 : CNullDriver(io, params.WindowSize), BackBuffer(0), Presenter(presenter),
 	WindowId(0), SceneSourceRect(0),
 	RenderTargetTexture(0), RenderTargetSurface(0), CurrentShader(0),
 	 DepthBuffer(0), StencilBuffer ( 0 ),
-	 CurrentOut ( 12 * 2, 128 ), Temp ( 12 * 2, 128 )
+	 CurrentOut ( 16 * 2, 256 ), Temp ( 16 * 2, 256 )
 {
 	#ifdef _DEBUG
 	setDebugName("CBurningVideoDriver");
@@ -360,10 +365,10 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 
 	DriverAttributes->setAttribute("MaxTextures", 2);
 	DriverAttributes->setAttribute("MaxIndices", 1<<16);
-	DriverAttributes->setAttribute("MaxTextureSize", 1024);
-	DriverAttributes->setAttribute("MaxLights", glsl::gl_MaxLights);
+	DriverAttributes->setAttribute("MaxTextureSize", SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE);
+	DriverAttributes->setAttribute("MaxLights", 1024 ); //glsl::gl_MaxLights);
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
-	DriverAttributes->setAttribute("Version", 47);
+	DriverAttributes->setAttribute("Version", 48);
 
 	// create triangle renderers
 
@@ -874,6 +879,16 @@ REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) c
 {
 	u32 flag = 0;
 
+	flag |= v->Pos.z <= v->Pos.w ? 1 : 0;
+	flag |= -v->Pos.z <= v->Pos.w ? 2 : 0;
+
+	flag |= v->Pos.x <= v->Pos.w ? 4 : 0;
+	flag |= -v->Pos.x <= v->Pos.w ? 8 : 0;
+
+	flag |= v->Pos.y <= v->Pos.w ? 16 : 0;
+	flag |= -v->Pos.y <= v->Pos.w ? 32 : 0;
+
+/*
 	if ( v->Pos.z <= v->Pos.w ) flag |= 1;
 	if (-v->Pos.z <= v->Pos.w ) flag |= 2;
 
@@ -882,7 +897,7 @@ REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) c
 
 	if ( v->Pos.y <= v->Pos.w ) flag |= 16;
 	if (-v->Pos.y <= v->Pos.w ) flag |= 32;
-
+*/
 /*
 	for ( u32 i = 0; i!= 6; ++i )
 	{
@@ -908,6 +923,7 @@ u32 CBurningVideoDriver::clipToHyperPlane ( s4DVertex * dest, const s4DVertex * 
 
 	for( u32 i = 1; i < inCount + 1; ++i)
 	{
+		// i really have problem
 		const s32 condition = i - inCount;
 		const s32 index = (( ( condition >> 31 ) & ( i ^ condition ) ) ^ condition ) << 1;
 
@@ -1748,7 +1764,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 	// The vertex cache needs to be rewritten for these primitives.
 	if (pType==scene::EPT_POINTS || pType==scene::EPT_LINE_STRIP ||
 		pType==scene::EPT_LINE_LOOP || pType==scene::EPT_LINES ||
-		pType==scene::EPT_TRIANGLE_FAN || pType==scene::EPT_POLYGON ||
+		pType==scene::EPT_POLYGON ||
 		pType==scene::EPT_POINT_SPRITES)
 		return;
 
@@ -2502,20 +2518,20 @@ void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 const wchar_t* CBurningVideoDriver::getName() const
 {
 #ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	return L"Burning's Video 0.47 beautiful";
+	return L"Burning's Video 0.48 beautiful";
 #elif defined ( BURNINGVIDEO_RENDERER_ULTRA_FAST )
-	return L"Burning's Video 0.47 ultra fast";
+	return L"Burning's Video 0.48 ultra fast";
 #elif defined ( BURNINGVIDEO_RENDERER_FAST )
-	return L"Burning's Video 0.47 fast";
+	return L"Burning's Video 0.48 fast";
 #else
-	return L"Burning's Video 0.47";
+	return L"Burning's Video 0.48";
 #endif
 }
 
 //! Returns the graphics card vendor name.
 core::stringc CBurningVideoDriver::getVendorInfo()
 {
-	return "Burning's Video: Ing. Thomas Alten (c) 2006-2012";
+	return "Burning's Video: Ing. Thomas Alten (c) 2006-2013";
 }
 
 
@@ -2703,6 +2719,38 @@ core::dimension2du CBurningVideoDriver::getMaxTextureSize() const
 
 #endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
+
+#ifdef _IRR_WINDOWS_
+	#include <windows.h>
+
+struct dreadglobal
+{
+	DWORD dreadid;
+	HANDLE dread;
+	irr::video::CBurningVideoDriver *driver;
+	HANDLE sync;
+
+	const irr::SIrrlichtCreationParameters* params;
+	irr::io::IFileSystem* io;
+	irr::video::IImagePresenter* presenter;
+};
+dreadglobal b;
+
+DWORD WINAPI dreadFun( void *p)
+{
+    printf("Hi This is burning dread\n");
+	b.driver = new irr::video::CBurningVideoDriver(*b.params, b.io, b.presenter);
+
+	SetEvent ( b.sync );
+	while ( 1 )
+	{
+		Sleep ( 1000 );
+	}
+	return 0;
+}
+
+#endif
+
 namespace irr
 {
 namespace video
@@ -2712,7 +2760,17 @@ namespace video
 IVideoDriver* createBurningVideoDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, video::IImagePresenter* presenter)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-	return new CBurningVideoDriver(params, io, presenter);
+
+	b.sync = CreateEvent ( 0, 0, 0, "burnevent0" );
+	b.params = &params;
+	b.io = io;
+	b.presenter = presenter;
+	b.dread = CreateThread ( 0, 0, dreadFun, 0, 0, &b.dreadid );
+	WaitForSingleObject ( b.sync, INFINITE );
+	return b.driver;
+	//return new CBurningVideoDriver(params, io, presenter);
+
+
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
