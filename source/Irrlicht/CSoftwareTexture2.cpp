@@ -56,8 +56,8 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 
 		core::dimension2d<u32> optSize(
 				OriginalSize.getOptimalSize(0 != (Flags & NP2_SIZE),
-				false, false,
-				( Flags & NP2_SIZE ) ? SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE : 0)
+				false, true,
+				SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE)
 			);
 
 		if (OriginalSize == optSize)
