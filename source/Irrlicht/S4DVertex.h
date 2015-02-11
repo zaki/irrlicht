@@ -644,9 +644,9 @@ inline void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 							const sVec4 &v
 							)
 {
-	r = tofix ( v.y );
-	g = tofix ( v.z );
-	b = tofix ( v.w );
+	r = tofix(v.y, FIX_POINT_F32_MUL);
+	g = tofix(v.z, FIX_POINT_F32_MUL);
+	b = tofix(v.w, FIX_POINT_F32_MUL);
 }
 
 /*
@@ -656,7 +656,7 @@ inline void getSample_color (	tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoin
 							const sVec4 &v
 							)
 {
-	a = tofix ( v.x );
+	a = tofix(v.x, FIX_POINT_F32_MUL);
 	r = tofix ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
 	g = tofix ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
 	b = tofix ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);

@@ -195,9 +195,7 @@ void CTRTextureGouraudNoZ2::scanline_bilinear ( )
 #endif
 
 
-#ifdef INVERSE_W
-	f32 inversew;
-#endif
+	f32 inversew = FIX_POINT_F32_MUL;
 
 	tFixPoint tx0;
 	tFixPoint ty0;
@@ -215,13 +213,9 @@ void CTRTextureGouraudNoZ2::scanline_bilinear ( )
 		{
 #ifdef INVERSE_W
 			inversew = fix_inverse32 ( line.w[0] );
-
+#endif
 			tx0 = tofix ( line.t[0][0].x,inversew);
 			ty0 = tofix ( line.t[0][0].y,inversew);
-#else
-			tx0 = tofix ( line.t[0][0].x );
-			ty0 = tofix ( line.t[0][0].y );
-#endif
 			dst[i] = getTexel_plain ( &IT[0], tx0, ty0 );
 
 /*

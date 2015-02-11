@@ -461,10 +461,7 @@ inline u32 fixPointu_to_u32 (const tFixPointu x)
 
 
 // 1/x * FIX_POINT
-REALINLINE f32 fix_inverse32 ( const f32 x )
-{
-	return FIX_POINT_F32_MUL / x;
-}
+#define fix_inverse32(x) (FIX_POINT_F32_MUL / (x))
 
 
 /*
@@ -483,11 +480,11 @@ static inline int f_round2(f32 f)
 	convert f32 to Fix Point.
 	multiply is needed anyway, so scale mulby
 */
-REALINLINE tFixPoint tofix (const f32 x, const f32 mulby = FIX_POINT_F32_MUL )
+REALINLINE tFixPoint tofix0 (const f32 x, const f32 mulby = FIX_POINT_F32_MUL )
 {
 	return (tFixPoint) (x * mulby);
 }
-
+#define tofix(x,y) (tFixPoint)(x * y)
 
 /*
 	Fix Point , Fix Point Multiply
@@ -820,7 +817,7 @@ inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 	(tFixPointu &) b =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
 }
 
-inline void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b,
+inline void getSample_texture ( tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b,
 						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {

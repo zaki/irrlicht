@@ -336,8 +336,8 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 
 		getSample_texture ( a0,r0,g0,b0,
 							&IT[0],
-							tofix ( line.t[0][0].x,iw),
-							tofix ( line.t[0][0].y,iw)
+							tofix(line.t[0][0].x, iw),
+							tofix(line.t[0][0].y, iw)
 						);
 
 		color_to_fix ( r1, g1, b1, dst[i] );
