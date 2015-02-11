@@ -380,6 +380,8 @@ void SJoystickWin32Control::pollJoysticks()
   * Copyright (C) 1997-2014 Sam Lantinga <slouken@libsdl.org> */
 irr::core::stringc SJoystickWin32Control::findJoystickName(int index, const JOYCAPS &caps) const
 {
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
     // As a default use the name given in the joystick structure.
     // It is always the same name, independent of joystick.
     irr::core::stringc result(caps.szPname);
@@ -432,6 +434,8 @@ irr::core::stringc SJoystickWin32Control::findJoystickName(int index, const JOYC
     RegCloseKey(hKey);
 
     return result;
+#endif
+	return "";
 }
 
 bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
