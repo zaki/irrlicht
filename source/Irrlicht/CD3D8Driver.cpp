@@ -924,14 +924,18 @@ void CD3D8Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 	D3DFORMAT indexType=D3DFMT_UNKNOWN;
 	switch (iType)
 	{
-		case (EIT_16BIT):
+		case EIT_16BIT:
 		{
 			indexType=D3DFMT_INDEX16;
 			break;
 		}
-		case (EIT_32BIT):
+		case EIT_32BIT:
 		{
+#if defined (_XBOX)
+			indexType=D3DFMT_INDEX16;
+#else
 			indexType=D3DFMT_INDEX32;
+#endif
 			break;
 		}
 	}
@@ -1417,6 +1421,14 @@ D3DTEXTUREADDRESS CD3D8Driver::getTextureWrapMode(const u8 clamp)
 				return D3DTADDRESS_BORDER;
 			else
 				return D3DTADDRESS_CLAMP;
+#if defined(_XBOX )
+		case ETC_MIRROR_CLAMP:
+			return D3DTADDRESS_CLAMP;
+		case ETC_MIRROR_CLAMP_TO_EDGE:
+			return D3DTADDRESS_CLAMPTOEDGE;
+		case ETC_MIRROR_CLAMP_TO_BORDER:
+			return D3DTADDRESS_BORDER;
+#else
 		case ETC_MIRROR_CLAMP:
 		case ETC_MIRROR_CLAMP_TO_EDGE:
 		case ETC_MIRROR_CLAMP_TO_BORDER:
@@ -1424,6 +1436,8 @@ D3DTEXTUREADDRESS CD3D8Driver::getTextureWrapMode(const u8 clamp)
 				return D3DTADDRESS_MIRRORONCE;
 			else
 				return D3DTADDRESS_CLAMP;
+
+#endif
 		default:
 			return D3DTADDRESS_WRAP;
 	}
