@@ -1,6 +1,11 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+-TA burningvideo:
+ enabled triangle fan again so that skybox works.[need more testmeshes if other trianglefan than skybox doesn't work]
+ correct vc2013 project files for x64,static lib
+ correct alphablend vs add [was broken]
+
 - Add a new core::rect constructor which takes a dimension parameter and set's left-top to 0.
 - mtl (obj) format reader and write now regards texture scaling and translation. (thx @thanhle for noticing and patch proposal).
 - Added Visual Studio 2013 project files.
@@ -82,6 +87,10 @@ Changes in 1.9 (not yet released)
 - Add IColladaMeshWriter::findGeometryNameForNode
 - Add getters IGUIButton::isDrawBorderEnabled and IGUIButton::isDrawBackgroundEnabled
 
+-  changed CSkyBoxSceneNode to drawIndexedTriangleList instead of drawIndexedTriangleFan (because software renderers don't have fans.. and i needed the demo functionable)
+- added x64 to vs2008 project ( buildAllExamples_v9 ) [paths: obj64, win64-visualstudio]
+- burningvideo: getMaxTextureSize adjusted [ changed meaning of SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE
+- burningvideo: mipmaplevel adjusted ( not that bad bokeh...(sometimes) )
 --------------------------
 Changes in 1.8.2
 
