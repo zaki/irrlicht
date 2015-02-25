@@ -32,9 +32,7 @@ namespace video
 
 //! rendertarget constructor
 CD3D8Texture::CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& size, const io::path& name)
-: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
-	TextureSize(size), ImageSize(size), Pitch(0),
-	HasMipMaps(false), IsRenderTarget(true)
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D8Texture");
@@ -44,6 +42,11 @@ CD3D8Texture::CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& si
 	if (Device)
 		Device->AddRef();
 
+	DriverType = EDT_DIRECT3D8;
+	OriginalSize = size;
+	Size = size;
+	IsRenderTarget = true;
+
 	createRenderTarget();
 }
 
@@ -51,14 +54,13 @@ CD3D8Texture::CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& si
 //! constructor
 CD3D8Texture::CD3D8Texture(IImage* image, CD3D8Driver* driver,
 			u32 flags, const io::path& name, void* mipmapData)
-: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
-TextureSize(0,0), ImageSize(0,0), Pitch(0),
-HasMipMaps(false), IsRenderTarget(false)
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D8Texture");
 	#endif
 
+	DriverType = EDT_DIRECT3D8;
 	HasMipMaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
 	Device=driver->getExposedVideoData().D3D8.D3DDev8;
@@ -106,9 +108,9 @@ CD3D8Texture::~CD3D8Texture()
 //! creates the hardware texture
 bool CD3D8Texture::createTexture(u32 flags, video::IImage* image)
 {
-	ImageSize = image->getDimension();
+	OriginalSize = image->getDimension();
 
-	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	core::dimension2d<u32> optSize = OriginalSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT format = D3DFMT_A1R5G5B5;
 	switch(getTextureFormatFromFlags(flags))
@@ -187,8 +189,8 @@ bool CD3D8Texture::copyTexture(video::IImage* image)
 		D3DSURFACE_DESC desc;
 		Texture->GetLevelDesc(0, &desc);
 
-		TextureSize.Width = desc.Width;
-		TextureSize.Height = desc.Height;
+		Size.Width = desc.Width;
+		Size.Height = desc.Height;
 
 		D3DLOCKED_RECT rect;
 		HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
@@ -199,7 +201,7 @@ bool CD3D8Texture::copyTexture(video::IImage* image)
 		}
 
 		Pitch = rect.Pitch;
-		image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+		image->copyToScaling(rect.pBits, Size.Width, Size.Height, ColorFormat, Pitch);
 
 		hr = Texture->UnlockRect(0);
 		if (FAILED(hr))
@@ -282,42 +284,6 @@ void CD3D8Texture::unlock()
 	else if (RTTSurface)
 		RTTSurface->UnlockRect();
 }
-
-
-//! Returns original size of the texture.
-const core::dimension2d<u32>& CD3D8Texture::getOriginalSize() const
-{
-	return ImageSize;
-}
-
-
-//! Returns (=size) of the texture.
-const core::dimension2d<u32>& CD3D8Texture::getSize() const
-{
-	return TextureSize;
-}
-
-
-//! returns driver type of texture (=the driver, who created the texture)
-E_DRIVER_TYPE CD3D8Texture::getDriverType() const
-{
-	return EDT_DIRECT3D8;
-}
-
-
-//! returns color format of texture
-ECOLOR_FORMAT CD3D8Texture::getColorFormat() const
-{
-	return ColorFormat;
-}
-
-
-//! returns pitch of texture (in bytes)
-u32 CD3D8Texture::getPitch() const
-{
-	return Pitch;
-}
-
 
 //! returns the DIRECT3D8 Texture
 IDirect3DTexture8* CD3D8Texture::getDX8Texture() const
@@ -434,16 +400,16 @@ ECOLOR_FORMAT CD3D8Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
 	{
 	case D3DFMT_X1R5G5B5:
 	case D3DFMT_A1R5G5B5:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 		return ECF_A1R5G5B5;
 		break;
 	case D3DFMT_A8R8G8B8:
 	case D3DFMT_X8R8G8B8:
-		Pitch = TextureSize.Width * 4;
+		Pitch = Size.Width * 4;
 		return ECF_A8R8G8B8;
 		break;
 	case D3DFMT_R5G6B5:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 		return ECF_R5G6B5;
 		break;
 	default:
@@ -547,7 +513,7 @@ void CD3D8Texture::copy32BitMipMap(char* src, char* tgt,
 
 void CD3D8Texture::createRenderTarget()
 {
-	TextureSize = TextureSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	// get backbuffer format to create the render target in the
 	// same format
@@ -577,8 +543,8 @@ void CD3D8Texture::createRenderTarget()
 	HRESULT hr;
 
 	hr = Device->CreateTexture(
-		TextureSize.Width,
-		TextureSize.Height,
+		Size.Width,
+		Size.Height,
 		1, // mip map level count, we don't want mipmaps here
 		D3DUSAGE_RENDERTARGET,
 		d3DFormat,
@@ -599,7 +565,7 @@ void CD3D8Texture::regenerateMipMapLevels(void* mipmapData)
 {
 	if (mipmapData)
 	{
-		core::dimension2du size = TextureSize;
+		core::dimension2du size = Size;
 		u32 level=0;
 		do
 		{
@@ -627,8 +593,8 @@ void CD3D8Texture::regenerateMipMapLevels(void* mipmapData)
 				return;
 			}
 
-			memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/TextureSize.Width);
-			mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/TextureSize.Width;
+			memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/Size.Width);
+			mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/Size.Width;
 			// unlock
 			mipSurface->UnlockRect();
 			// release
@@ -649,14 +615,6 @@ void CD3D8Texture::regenerateMipMapLevels(void* mipmapData)
 		createMipMaps();
 	}
 }
-
-
-//! returns if it is a render target
-bool CD3D8Texture::isRenderTarget() const
-{
-	return IsRenderTarget;
-}
-
 
 //! Returns pointer to the render target surface
 IDirect3DSurface8* CD3D8Texture::getRenderTargetSurface()
