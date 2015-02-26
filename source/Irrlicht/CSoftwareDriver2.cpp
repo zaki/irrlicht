@@ -2429,7 +2429,7 @@ IVideoDriver* createBurningVideoDriver(const irr::SIrrlichtCreationParameters& p
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
-	b.sync = CreateEvent ( 0, 0, 0, "burnevent0" );
+	b.sync = CreateEventA ( 0, 0, 0, "burnevent0" );
 	b.params = &params;
 	b.io = io;
 	b.presenter = presenter;

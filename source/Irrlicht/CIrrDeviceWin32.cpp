@@ -415,7 +415,7 @@ irr::core::stringc SJoystickWin32Control::findJoystickName(int index, const JOYC
 
     /* find the size for the OEM name text */
     regsize = sizeof(regvalue);
-    regresult = RegQueryValueExA(hKey, REGSTR_VAL_JOYOEMNAME, 0, 0,
+    regresult = RegQueryValueEx(hKey, REGSTR_VAL_JOYOEMNAME, 0, 0,
                                  NULL, &regsize);
     if (regresult == ERROR_SUCCESS)
     {
@@ -425,7 +425,7 @@ irr::core::stringc SJoystickWin32Control::findJoystickName(int index, const JOYC
         if (name)
         {
             /* ... and read it from the registry */
-            regresult = RegQueryValueExA(hKey, REGSTR_VAL_JOYOEMNAME, 0, 0,
+            regresult = RegQueryValueEx(hKey, REGSTR_VAL_JOYOEMNAME, 0, 0,
                                          (LPBYTE)name, &regsize );
             result = name;
         }
