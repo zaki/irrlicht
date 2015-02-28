@@ -22,11 +22,6 @@
 #endif
 #include <d3d9.h>
 
-#ifdef _IRR_COMPILE_WITH_CG_
-#include "Cg/cg.h"
-#include "Cg/cgD3D9.h"
-#endif
-
 namespace irr
 {
 namespace video
@@ -342,11 +337,6 @@ namespace video
 		//! Get bridge calls.
 		CD3D9CallBridge* getBridgeCalls() const;
 
-		//! Get Cg context
-		#ifdef _IRR_COMPILE_WITH_CG_
-		const CGcontext& getCgContext();
-		#endif
-
 	private:
 
 		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -492,10 +482,6 @@ namespace video
 		bool DriverWasReset;
 		bool OcclusionQuerySupport;
 		bool AlphaToCoverageSupport;
-
-		#ifdef _IRR_COMPILE_WITH_CG_
-		CGcontext CgContext;
-		#endif
 	};
 
 	//! This bridge between Irlicht pseudo D3D8 calls

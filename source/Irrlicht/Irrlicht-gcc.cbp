@@ -625,8 +625,6 @@
 		<Unit filename="CCSMLoader.h" />
 		<Unit filename="CCameraSceneNode.cpp" />
 		<Unit filename="CCameraSceneNode.h" />
-		<Unit filename="CCgMaterialRenderer.cpp" />
-		<Unit filename="CCgMaterialRenderer.h" />
 		<Unit filename="CColladaFileLoader.cpp" />
 		<Unit filename="CColladaFileLoader.h" />
 		<Unit filename="CColladaMeshWriter.cpp" />
@@ -646,8 +644,6 @@
 		<Unit filename="CD3D8ShaderMaterialRenderer.h" />
 		<Unit filename="CD3D8Texture.cpp" />
 		<Unit filename="CD3D8Texture.h" />
-		<Unit filename="CD3D9CgMaterialRenderer.cpp" />
-		<Unit filename="CD3D9CgMaterialRenderer.h" />
 		<Unit filename="CD3D9Driver.cpp" />
 		<Unit filename="CD3D9Driver.h" />
 		<Unit filename="CD3D9HLSLMaterialRenderer.cpp" />
@@ -842,8 +838,6 @@
 		<Unit filename="COctreeTriangleSelector.h" />
 		<Unit filename="COgreMeshFileLoader.cpp" />
 		<Unit filename="COgreMeshFileLoader.h" />
-		<Unit filename="COpenGLCgMaterialRenderer.cpp" />
-		<Unit filename="COpenGLCgMaterialRenderer.h" />
 		<Unit filename="COpenGLDriver.cpp" />
 		<Unit filename="COpenGLDriver.h" />
 		<Unit filename="COpenGLExtensionHandler.cpp" />

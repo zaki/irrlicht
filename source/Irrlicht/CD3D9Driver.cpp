@@ -15,7 +15,6 @@
 #include "CD3D9NormalMapRenderer.h"
 #include "CD3D9ParallaxMapRenderer.h"
 #include "CD3D9HLSLMaterialRenderer.h"
-#include "CD3D9CgMaterialRenderer.h"
 #include "SIrrCreationParameters.h"
 
 namespace irr
@@ -67,10 +66,6 @@ CD3D9Driver::CD3D9Driver(const SIrrlichtCreationParameters& params, io::IFileSys
 	core::matrix4 mat;
 	UnitMatrixD3D9 = *(D3DMATRIX*)((void*)mat.pointer());
 
-	#ifdef _IRR_COMPILE_WITH_CG_
-	CgContext = 0;
-	#endif
-
 	// init direct 3d is done in the factory function
 }
 
@@ -97,15 +92,6 @@ CD3D9Driver::~CD3D9Driver()
 
 	if (pID3D)
 		pID3D->Release();
-
-	#ifdef _IRR_COMPILE_WITH_CG_
-	cgD3D9SetDevice(0);
-
-	if(CgContext)
-	{
-		cgDestroyContext(CgContext);
-	}
-	#endif
 }
 
 
@@ -502,11 +488,6 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 		bb->Release();
 	}
 	ColorFormat = getColorFormatFromD3DFormat(D3DColorFormat);
-
-	#ifdef _IRR_COMPILE_WITH_CG_
-	CgContext = cgCreateContext();
-	cgD3D9SetDevice(pID3DDevice);
-	#endif
 
 	// so far so good.
 	return true;
@@ -3234,23 +3215,7 @@ s32 CD3D9Driver::addHighLevelShaderMaterial(
 {
 	s32 nr = -1;
 
-	#ifdef _IRR_COMPILE_WITH_CG_
-	if(shadingLang == EGSL_CG)
-	{
-		CD3D9CgMaterialRenderer* r = new CD3D9CgMaterialRenderer(
-			this, nr,
-			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
-			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
-			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
-			inType, outType, verticesOut,
-			callback,getMaterialRenderer(baseMaterial), userData);
-
-		r->drop();
-	}
-	else
-	#endif
-	{
-		CD3D9HLSLMaterialRenderer* r = new CD3D9HLSLMaterialRenderer(
+	CD3D9HLSLMaterialRenderer* r = new CD3D9HLSLMaterialRenderer(
 			pID3DDevice, this, nr,
 			vertexShaderProgram,
 			vertexShaderEntryPointName,
@@ -3262,8 +3227,7 @@ s32 CD3D9Driver::addHighLevelShaderMaterial(
 			getMaterialRenderer(baseMaterial),
 			userData);
 
-		r->drop();
-	}
+	r->drop();
 
 	return nr;
 }
@@ -3662,14 +3626,6 @@ CD3D9CallBridge* CD3D9Driver::getBridgeCalls() const
 {
 	return BridgeCalls;
 }
-
-#ifdef _IRR_COMPILE_WITH_CG_
-const CGcontext& CD3D9Driver::getCgContext()
-{
-	return CgContext;
-}
-#endif
-
 
 CD3D9CallBridge::CD3D9CallBridge(IDirect3DDevice9* p, CD3D9Driver* driver) : pID3DDevice(p),
     BlendOperation(D3DBLENDOP_ADD), BlendSourceRGB(D3DBLEND_ONE), BlendDestinationRGB(D3DBLEND_ZERO),

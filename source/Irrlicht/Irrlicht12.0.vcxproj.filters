@@ -1324,15 +1324,6 @@
     <ClInclude Include="..\..\include\EMaterialFlags.h">
       <Filter>include\video</Filter>
     </ClInclude>
-    <ClInclude Include="CD3D9CgMaterialRenderer.h">
-      <Filter>Irrlicht\video\Direct3D9</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLCgMaterialRenderer.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="CCgMaterialRenderer.h">
-      <Filter>Irrlicht\video</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2272,15 +2263,6 @@
     </ClCompile>
     <ClCompile Include="CSMFMeshFileLoader.cpp">
       <Filter>Irrlicht\scene\loaders</Filter>
-    </ClCompile>
-    <ClCompile Include="CD3D9CgMaterialRenderer.cpp">
-      <Filter>Irrlicht\video\Direct3D9</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLCgMaterialRenderer.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="CCgMaterialRenderer.cpp">
-      <Filter>Irrlicht\video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

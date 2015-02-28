@@ -12,7 +12,6 @@
 #include "COpenGLMaterialRenderer.h"
 #include "COpenGLShaderMaterialRenderer.h"
 #include "COpenGLSLMaterialRenderer.h"
-#include "COpenGLCgMaterialRenderer.h"
 #include "COpenGLNormalMapRenderer.h"
 #include "COpenGLParallaxMapRenderer.h"
 #include "os.h"
@@ -59,10 +58,6 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
-	#endif
-
-	#ifdef _IRR_COMPILE_WITH_CG_
-	CgContext = 0;
 	#endif
 }
 
@@ -498,10 +493,6 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	setDebugName("COpenGLDriver");
 	#endif
 
-	#ifdef _IRR_COMPILE_WITH_CG_
-	CgContext = 0;
-	#endif
-
 	genericDriverInit();
 }
 
@@ -524,10 +515,6 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
-	#endif
-
-	#ifdef _IRR_COMPILE_WITH_CG_
-	CgContext = 0;
 	#endif
 }
 
@@ -620,10 +607,6 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	setDebugName("COpenGLDriver");
 	#endif
 
-	#ifdef _IRR_COMPILE_WITH_CG_
-	CgContext = 0;
-	#endif
-
 	genericDriverInit();
 }
 
@@ -633,11 +616,6 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 //! destructor
 COpenGLDriver::~COpenGLDriver()
 {
-	#ifdef _IRR_COMPILE_WITH_CG_
-	if (CgContext)
-		cgDestroyContext(CgContext);
-	#endif
-
 	RequestedLights.clear();
 
 	deleteMaterialRenders();
@@ -785,10 +763,6 @@ bool COpenGLDriver::genericDriverInit()
 	// We need to reset once more at the beginning of the first rendering.
 	// This fixes problems with intermediate changes to the material during texture load.
 	ResetRenderStates = true;
-
-	#ifdef _IRR_COMPILE_WITH_CG_
-	CgContext = cgCreateContext();
-	#endif
 
 	return true;
 }
@@ -4218,10 +4192,7 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 {
 	s32 nr = -1;
 
-	#ifdef _IRR_COMPILE_WITH_CG_
-	if (shadingLang == EGSL_CG)
-	{
-		COpenGLCgMaterialRenderer* r = new COpenGLCgMaterialRenderer(
+	COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
 			this, nr,
 			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
 			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
@@ -4229,21 +4200,7 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 			inType, outType, verticesOut,
 			callback,baseMaterial, userData);
 
-		r->drop();
-	}
-	else
-	#endif
-	{
-		COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
-			this, nr,
-			vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
-			pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
-			geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
-			inType, outType, verticesOut,
-			callback,baseMaterial, userData);
-
-		r->drop();
-	}
+	r->drop();
 
 	return nr;
 }
@@ -4954,13 +4911,6 @@ COpenGLCallBridge* COpenGLDriver::getBridgeCalls() const
 {
 	return BridgeCalls;
 }
-
-#ifdef _IRR_COMPILE_WITH_CG_
-const CGcontext& COpenGLDriver::getCgContext()
-{
-	return CgContext;
-}
-#endif
 
 COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	AlphaMode(GL_ALWAYS), AlphaRef(0.0f), AlphaTest(false),
