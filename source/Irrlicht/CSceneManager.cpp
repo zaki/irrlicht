@@ -1183,7 +1183,6 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 	const ICameraSceneNode* cam = getActiveCamera();
 	if (!cam)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 	bool result = false;
@@ -1251,7 +1250,6 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 		}
 	}
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return result;
 }
 
@@ -2027,7 +2025,6 @@ bool CSceneManager::postEventFromUser(const SEvent& event)
 	if (cam)
 		ret = cam->OnEvent(event);
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -2166,7 +2163,6 @@ bool CSceneManager::saveScene(const io::path& filename, ISceneUserDataSerializer
 	else
 		os::Printer::log("Unable to open file", filename, ELL_ERROR);
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 

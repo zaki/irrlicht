@@ -197,7 +197,6 @@ void CGUICheckBox::setChecked(bool checked)
 //! returns if box is checked
 bool CGUICheckBox::isChecked() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Checked;
 }
 

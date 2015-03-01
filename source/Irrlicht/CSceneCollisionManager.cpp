@@ -354,7 +354,6 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 {
 	if (!selector)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -413,7 +412,6 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 		}
 	}
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return found;
 }
 

@@ -108,7 +108,6 @@ video::SColor CGUITab::getTextColor() const
 //! returns true if the tab is drawing its background, false if not
 bool CGUITab::isDrawingBackground() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return DrawBackground;
 }
 

@@ -315,7 +315,6 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 		os::Printer::log("Could not create archive for", filename, ELL_ERROR);
 	}
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -433,7 +432,6 @@ bool CFileSystem::addFileArchive(IFileArchive* archive)
 	{
 		if (archive == FileArchives[i])
 		{
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return false;
 		}
 	}
@@ -452,7 +450,6 @@ bool CFileSystem::removeFileArchive(u32 index)
 		FileArchives.erase(index);
 		ret = true;
 	}
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -466,7 +463,6 @@ bool CFileSystem::removeFileArchive(const io::path& filename)
 		if (absPath == FileArchives[i]->getFileList()->getPath())
 			return removeFileArchive(i);
 	}
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return false;
 }
 
@@ -478,11 +474,9 @@ bool CFileSystem::removeFileArchive(const IFileArchive* archive)
 	{
 		if (archive == FileArchives[i])
 		{
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return removeFileArchive(i);
 		}
 	}
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return false;
 }
 
@@ -953,7 +947,6 @@ bool CFileSystem::existFile(const io::path& filename) const
 		if (FileArchives[i]->getFileList()->findFile(filename)!=-1)
 			return true;
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 #if defined(_MSC_VER)
 	#if defined(_IRR_WCHAR_FILESYSTEM)
 		return (_waccess(filename.c_str(), 0) != -1);

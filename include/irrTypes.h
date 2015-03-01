@@ -209,19 +209,6 @@ virtual void somefunc() _IRR_OVERRIDE_;
 #define _IRR_OVERRIDE_
 #endif
 
-//! Defines a small statement to work around a microsoft compiler bug.
-/** The microsoft compiler 7.0 - 7.1 has a bug:
-When you call unmanaged code that returns a bool type value of false from managed code,
-the return value may appear as true. See
-http://support.microsoft.com/default.aspx?kbid=823071 for details.
-Compiler version defines: VC6.0 : 1200, VC7.0 : 1300, VC7.1 : 1310, VC8.0 : 1400*/
-#if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && (_MSC_VER > 1299) && (_MSC_VER < 1400)
-#define _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX __asm mov eax,100
-#else
-#define _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX
-#endif // _IRR_MANAGED_MARSHALLING_BUGFIX
-
-
 // memory debugging
 #if defined(_DEBUG) && defined(IRRLICHT_EXPORTS) && defined(_MSC_VER) && \
 	(_MSC_VER > 1299) && !defined(_IRR_DONT_DO_MEMORY_DEBUGGING_HERE) && !defined(_WIN32_WCE)

@@ -177,7 +177,6 @@ namespace irr
 			//! Returns if the cursor is currently visible.
 			virtual bool isVisible() const _IRR_OVERRIDE_
 			{
-				_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 				return IsVisible;
 			}
 

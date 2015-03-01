@@ -88,7 +88,6 @@ namespace irr
 		virtual bool isStopped() const _IRR_OVERRIDE_
 		{
 			bool ret = os::Timer::isStopped();
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return ret;
 		}
 

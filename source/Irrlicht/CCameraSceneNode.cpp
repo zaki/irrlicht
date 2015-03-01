@@ -50,7 +50,6 @@ void CCameraSceneNode::setInputReceiverEnabled(bool enabled)
 //! Returns if the input receiver of the camera is currently enabled.
 bool CCameraSceneNode::isInputReceiverEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return InputReceiverEnabled;
 }
 

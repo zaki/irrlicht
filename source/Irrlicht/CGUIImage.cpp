@@ -133,14 +133,12 @@ void CGUIImage::setScaleImage(bool scale)
 //! Returns true if the image is scaled to fit, false if not
 bool CGUIImage::isImageScaled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ScaleImage;
 }
 
 //! Returns true if the image is using the alpha channel, false if not
 bool CGUIImage::isAlphaChannelUsed() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return UseAlphaChannel;
 }
 

@@ -1260,7 +1260,6 @@ bool CIrrDeviceWin32::run()
 	if(!Close && JoyControl)
 		JoyControl->pollJoysticks();
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return !Close;
 }
 
@@ -1396,7 +1395,6 @@ void CIrrDeviceWin32::closeDevice()
 //! returns if window is active. if not, nothing needs to be drawn
 bool CIrrDeviceWin32::isWindowActive() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return (GetActiveWindow() == HWnd);
 }
 
@@ -1405,7 +1403,6 @@ bool CIrrDeviceWin32::isWindowActive() const
 bool CIrrDeviceWin32::isWindowFocused() const
 {
 	bool ret = (GetFocus() == HWnd);
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -1418,7 +1415,6 @@ bool CIrrDeviceWin32::isWindowMinimized() const
 	bool ret=false;
 	if (GetWindowPlacement(HWnd,&plc))
 		ret=(plc.showCmd & SW_SHOWMINIMIZED)!=0;
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -1484,7 +1480,6 @@ bool CIrrDeviceWin32::switchToFullScreen(bool reset)
 		os::Printer::log("An unknown error occured while changing to fullscreen.", ELL_ERROR);
 		break;
 	}
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 

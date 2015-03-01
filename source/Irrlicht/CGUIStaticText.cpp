@@ -211,7 +211,6 @@ video::SColor CGUIStaticText::getBackgroundColor() const
 //! Checks if background drawing is enabled
 bool CGUIStaticText::isDrawBackgroundEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Background;
 }
 
@@ -226,7 +225,6 @@ void CGUIStaticText::setDrawBorder(bool draw)
 //! Checks if border drawing is enabled
 bool CGUIStaticText::isDrawBorderEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Border;
 }
 
@@ -266,7 +264,6 @@ void CGUIStaticText::enableOverrideColor(bool enable)
 
 bool CGUIStaticText::isOverrideColorEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return OverrideColorEnabled;
 }
 
@@ -282,7 +279,6 @@ void CGUIStaticText::setWordWrap(bool enable)
 
 bool CGUIStaticText::isWordWrapEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return WordWrap;
 }
 

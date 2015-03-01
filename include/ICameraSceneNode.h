@@ -150,7 +150,6 @@ namespace scene
 		//! Checks if a camera is orthogonal.
 		virtual bool isOrthogonal() const
 		{
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsOrthogonal;
 		}
 

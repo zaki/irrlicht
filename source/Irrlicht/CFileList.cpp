@@ -107,7 +107,6 @@ bool CFileList::isDirectory(u32 index) const
 	if (index < Files.size())
 		ret = Files[index].IsDirectory;
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 

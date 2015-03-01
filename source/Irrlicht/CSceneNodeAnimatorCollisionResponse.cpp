@@ -54,7 +54,6 @@ CSceneNodeAnimatorCollisionResponse::~CSceneNodeAnimatorCollisionResponse()
 //! the gravity.
 bool CSceneNodeAnimatorCollisionResponse::isFalling() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Falling;
 }
 

@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX removed. This was a bugfix for VS2003 (in combination with .NET) which we haven't supported in a while.
 - VS 2005 support removed in svn revision 5048. 
 - WinCE 6 supported removed in svn revision 5046. 
 - NVidia CG support removed in svn revision 5045 due to lack of maintenance. NVidia has also stopped supporting this.
