@@ -17,7 +17,6 @@
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
 //! The defines for different operating system are:
-//! _IRR_XBOX_PLATFORM_ for XBox
 //! _IRR_WINDOWS_ for all irrlicht supported Windows versions
 //! _IRR_WINDOWS_API_ for Windows or XBox
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
@@ -67,10 +66,10 @@
 #  error "Only Microsoft Visual Studio 9.0 and later are supported."
 #endif
 
-// XBox only suppots the native Window stuff
+// XBox is deprecated (as DX8 is removed). Use Irrlicht 1.8 if you still want to work on this.
 #if defined(_XBOX)
 	#undef _IRR_WINDOWS_
-	#define _IRR_XBOX_PLATFORM_
+	#define _IRR_XBOX_PLATFORM_	// deprecated
 	#define _IRR_WINDOWS_API_
 	//#define _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 	#undef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
@@ -717,12 +716,6 @@ precision will be lower but speed higher. currently X86 only
 #define IRRCALLCONV
 
 #endif // _IRR_WINDOWS_API_
-
-// XBox does not have OpenGL or DirectX9
-#if defined(_IRR_XBOX_PLATFORM_)
-	#undef _IRR_COMPILE_WITH_OPENGL_
-	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
-#endif
 
 #ifndef _IRR_WINDOWS_API_
 	#undef _IRR_WCHAR_FILESYSTEM
