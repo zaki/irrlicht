@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Replace the swprintf and snprintf defines by swprintf_irr and snprintf_irr to avoid conflicts with the standard libraries (and other libraries).
 - XBox support removed as it would need DX8 (this was about the original XBox).
 - Support for Direct3D 8 removed after svn revision 5052 due to lack of maintenance.
 - _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX removed. This was a bugfix for VS2003 (in combination with .NET) which we haven't supported in a while.

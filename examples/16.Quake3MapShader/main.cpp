@@ -75,7 +75,7 @@ public:
 				if (image)
 				{
 					c8 buf[256];
-					snprintf(buf, 256, "%s_shot%04d.jpg",
+					snprintf_irr(buf, 256, "%s_shot%04d.jpg",
 							FilenameTemplate.c_str(),
 							++Number);
 					Device->getVideoDriver()->writeImageToFile(image, buf, 85 );

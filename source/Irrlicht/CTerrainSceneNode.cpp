@@ -227,7 +227,7 @@ namespace scene
 		const u32 endTime = os::Timer::getRealTime();
 
 		c8 tmp[255];
-		snprintf(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
+		snprintf_irr(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
 			TerrainData.Size, TerrainData.Size, (endTime - startTime) / 1000.0f );
 		os::Printer::log(tmp);
 
@@ -463,7 +463,7 @@ namespace scene
 		const u32 endTime = os::Timer::getTime();
 
 		c8 tmp[255];
-		snprintf(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
+		snprintf_irr(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
 			TerrainData.Size, TerrainData.Size, (endTime - startTime) / 1000.0f);
 		os::Printer::log(tmp);
 
@@ -776,7 +776,7 @@ namespace scene
 			if (now - lastTime > 1000)
 			{
 				char buf[64];
-				snprintf(buf, 64, "Count: %d, Visible: %d", count, visible);
+				snprintf_irr(buf, 64, "Count: %d, Visible: %d", count, visible);
 				os::Printer::log(buf);
 
 				lastTime = now;

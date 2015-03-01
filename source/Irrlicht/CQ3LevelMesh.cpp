@@ -1041,7 +1041,7 @@ void CQ3LevelMesh::constructMesh()
 
 		if ( LoadParam.verbose > 1 )
 		{
-			snprintf( buf, sizeof ( buf ),
+			snprintf_irr( buf, sizeof ( buf ),
 				"quake3::constructMesh start to create %d faces, %d vertices,%d mesh vertices",
 				NumFaces,
 				NumVertices,
@@ -1082,7 +1082,7 @@ void CQ3LevelMesh::constructMesh()
 	{
 		LoadParam.endTime = os::Timer::getRealTime();
 
-		snprintf( buf, sizeof ( buf ),
+		snprintf_irr( buf, sizeof ( buf ),
 			"quake3::constructMesh needed %04d ms to create %d faces, %d vertices,%d mesh vertices",
 			LoadParam.endTime - LoadParam.startTime,
 			NumFaces,
@@ -1418,7 +1418,7 @@ void CQ3LevelMesh::createCurvedSurface_bezier(SMeshBufferLightMap* meshBuffer,
 	{
 		LoadParam.endTime = os::Timer::getRealTime();
 
-		snprintf( buf, sizeof ( buf ),
+		snprintf_irr( buf, sizeof ( buf ),
 			"quake3::createCurvedSurface_bezier needed %04d ms to create bezier patch.(%dx%d)",
 			LoadParam.endTime - LoadParam.startTime,
 			biquadWidth,
@@ -1803,7 +1803,7 @@ void CQ3LevelMesh::cleanMesh(SMesh *m, const bool texture0important)
 		LoadParam.startTime = os::Timer::getRealTime();
 		if ( LoadParam.verbose > 1 )
 		{
-			snprintf( buf, sizeof ( buf ),
+			snprintf_irr( buf, sizeof ( buf ),
 				"quake3::cleanMeshes start for %d meshes",
 				m->MeshBuffers.size()
 				);
@@ -1846,7 +1846,7 @@ void CQ3LevelMesh::cleanMesh(SMesh *m, const bool texture0important)
 			{
 				if ( LoadParam.verbose > 1 )
 				{
-					snprintf( buf, sizeof ( buf ),
+					snprintf_irr( buf, sizeof ( buf ),
 						"quake3::cleanMeshes cleaning mesh %d %d size",
 						blockstart,
 						blockcount
@@ -1862,7 +1862,7 @@ void CQ3LevelMesh::cleanMesh(SMesh *m, const bool texture0important)
 	if ( LoadParam.verbose > 0 )
 	{
 		LoadParam.endTime = os::Timer::getRealTime();
-		snprintf( buf, sizeof ( buf ),
+		snprintf_irr( buf, sizeof ( buf ),
 			"quake3::cleanMeshes needed %04d ms to clean %d of %d meshes",
 			LoadParam.endTime - LoadParam.startTime,
 			remove,
@@ -1882,7 +1882,7 @@ void CQ3LevelMesh::calcBoundingBoxes()
 
 		if ( LoadParam.verbose > 1 )
 		{
-			snprintf( buf, sizeof ( buf ),
+			snprintf_irr( buf, sizeof ( buf ),
 				"quake3::calcBoundingBoxes start create %d textures and %d lightmaps",
 				NumTextures,
 				NumLightMaps
@@ -1922,7 +1922,7 @@ void CQ3LevelMesh::calcBoundingBoxes()
 	{
 		LoadParam.endTime = os::Timer::getRealTime();
 
-		snprintf( buf, sizeof ( buf ),
+		snprintf_irr( buf, sizeof ( buf ),
 			"quake3::calcBoundingBoxes needed %04d ms to create %d textures and %d lightmaps",
 			LoadParam.endTime - LoadParam.startTime,
 			NumTextures,
@@ -1945,7 +1945,7 @@ void CQ3LevelMesh::loadTextures()
 
 		if ( LoadParam.verbose > 1 )
 		{
-			snprintf( buf, sizeof ( buf ),
+			snprintf_irr( buf, sizeof ( buf ),
 				"quake3::loadTextures start create %d textures and %d lightmaps",
 				NumTextures,
 				NumLightMaps
@@ -2046,7 +2046,7 @@ void CQ3LevelMesh::loadTextures()
 	{
 		LoadParam.endTime = os::Timer::getRealTime();
 
-		snprintf( buf, sizeof ( buf ),
+		snprintf_irr( buf, sizeof ( buf ),
 			"quake3::loadTextures needed %04d ms to create %d textures and %d lightmaps",
 			LoadParam.endTime - LoadParam.startTime,
 			NumTextures,

@@ -1166,7 +1166,7 @@ bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
 		c8 seq[8];
 		for (u32 i = 1; i < Header->numseqgroups; i++)
 		{
-			snprintf( seq, 8, "%02d.mdl", i );
+			snprintf_irr( seq, 8, "%02d.mdl", i );
 			submodel = path + texname + seq;
 
 			AnimationHeader[i] = loadModel(0, submodel);

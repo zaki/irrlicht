@@ -120,7 +120,7 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 //			video::SColor &col = ( (video::S3DVertex*)buf )->Color;
 
 			// x y z nx ny nz red green blue alpha u v [u1 v1 | tx ty tz]\n
-			snprintf(outLine, 1024,
+			snprintf_irr(outLine, 1024,
 				"%f %f %f %f %f %f\n",// %u %u %u %u %f %f\n",
 				pos.X, pos.Z, pos.Y, // Y and Z are flipped
 				n.X, n.Z, n.Y);
@@ -161,7 +161,7 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			}
 
 			// count a b c\n
-			snprintf(outLine, 1024, "3 %u %u %u\n", a, b, c);
+			snprintf_irr(outLine, 1024, "3 %u %u %u\n", a, b, c);
 			// write the line
 			file->write(outLine, strlen(outLine));
 		}

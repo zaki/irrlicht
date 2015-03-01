@@ -113,16 +113,16 @@ typedef double				f64;
 
 #include <wchar.h>
 #ifdef _IRR_WINDOWS_API_
-//! Defines for s{w,n}printf because these methods do not match the ISO C
-//! standard on Windows platforms, but it does on all others.
-//! These should be int snprintf(char *str, size_t size, const char *format, ...);
-//! and int swprintf(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
+//! Defines for s{w,n}printf_irr because s{w,n}printf methods do not match the ISO C
+//! standard on Windows platforms.
+//! We want int snprintf_irr(char *str, size_t size, const char *format, ...);
+//! and int swprintf_irr(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
 #if defined(_MSC_VER) && _MSC_VER > 1310 && !defined (_WIN32_WCE)
-#define swprintf swprintf_s
-#define snprintf sprintf_s
+#define swprintf_irr swprintf_s
+#define snprintf_irr sprintf_s
 #elif !defined(__CYGWIN__)
-#define swprintf _snwprintf
-#define snprintf _snprintf
+#define swprintf_irr _snwprintf
+#define snprintf_irr _snprintf
 #endif
 
 // define the wchar_t type if not already built in.

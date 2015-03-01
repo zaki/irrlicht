@@ -682,7 +682,7 @@ bool COpenGLDriver::genericDriverInit()
 	{
 		char buf[32];
 		const u32 maj = ShaderLanguageVersion/100;
-		snprintf(buf, 32, "%u.%u", maj, ShaderLanguageVersion-maj*100);
+		snprintf_irr(buf, 32, "%u.%u", maj, ShaderLanguageVersion-maj*100);
 		os::Printer::log("GLSL version", buf, ELL_INFORMATION);
 	}
 	else

@@ -63,7 +63,7 @@ int main()
 		{
 			const core::dimension2d<u32>& screenSize = driver->getScreenSize();
 			wchar_t caption[512];
-			swprintf(caption, 512, L"screen (%4u/%4u)", screenSize.Width, screenSize.Height);
+			swprintf_irr(caption, 512, L"screen (%4u/%4u)", screenSize.Width, screenSize.Height);
 			device->setWindowCaption(caption);
 			driver->beginScene(true, true, video::SColor(0,200,200,200));
 			smgr->drawAll();

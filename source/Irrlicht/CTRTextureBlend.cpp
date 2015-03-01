@@ -212,7 +212,7 @@ void CTRTextureBlend::setParam ( u32 index, f32 value)
 	if ( showname && ( lsrcFact != srcFact || ldstFact != dstFact ) )
 	{
 		char buf[128];
-		snprintf ( buf, 128, "missing shader: %s %s",n[srcFact], n[dstFact] );
+		snprintf_irr ( buf, 128, "missing shader: %s %s",n[srcFact], n[dstFact] );
 		os::Printer::log( buf, ELL_INFORMATION );
 
 		lsrcFact = srcFact;

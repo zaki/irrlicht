@@ -331,7 +331,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 		loadParam.startTime = device->getTimer()->getRealTime();
 		if ( loadParam.verbose > 1 )
 		{
-			snprintf(buf, 128, "q3shaderfactory start" );
+			snprintf_irr(buf, 128, "q3shaderfactory start" );
 			device->getLogger()->log( buf, ELL_INFORMATION);
 		}
 	}
@@ -485,7 +485,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 	if ( loadParam.verbose > 0 )
 	{
 		loadParam.endTime = device->getTimer()->getRealTime ();
-		snprintf(buf, 128, "q3shaderfactory needed %04d ms to create %d shader nodes",
+		snprintf_irr(buf, 128, "q3shaderfactory needed %04d ms to create %d shader nodes",
 			loadParam.endTime - loadParam.startTime,
 			sceneNodeID
 			);
@@ -594,7 +594,7 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 
 				if ( 0 == node )
 				{
-					snprintf ( buf, 128, "q3ModelFactory shader %s failed", meshBuffer->Shader.c_str() );
+					snprintf_irr ( buf, 128, "q3ModelFactory shader %s failed", meshBuffer->Shader.c_str() );
 					device->getLogger()->log ( buf );
 					continue;
 				}

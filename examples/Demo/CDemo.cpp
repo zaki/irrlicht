@@ -111,7 +111,7 @@ void CDemo::run()
 			// write statistics
 			const s32 nowfps = driver->getFPS();
 
-			swprintf(tmp, 255, L"%ls fps:%3d triangles:%0.3f mio/s",
+			swprintf_irr(tmp, 255, L"%ls fps:%3d triangles:%0.3f mio/s",
 						driver->getName(), driver->getFPS(),
 						driver->getPrimitiveCountDrawn(1) * (1.f / 1000000.f));
 
