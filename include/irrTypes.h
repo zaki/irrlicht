@@ -221,12 +221,6 @@ virtual void somefunc() _IRR_OVERRIDE_;
 	#define new DEBUG_CLIENTBLOCK
 #endif
 
-// disable truncated debug information warning in visual studio 6 by default
-#if defined(_MSC_VER) && (_MSC_VER < 1300 )
-#pragma warning( disable: 4786)
-#endif // _MSC
-
-
 //! ignore VC8 warning deprecated
 /** The microsoft compiler */
 #if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && (_MSC_VER >= 1400)

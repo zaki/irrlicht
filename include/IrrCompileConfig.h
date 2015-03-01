@@ -63,8 +63,8 @@
 #define _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #endif
 
-#if defined(_MSC_VER) && (_MSC_VER < 1300)
-#  error "Only Microsoft Visual Studio 7.0 and later are supported."
+#if defined(_MSC_VER) && (_MSC_VER < 1500)
+#  error "Only Microsoft Visual Studio 9.0 and later are supported."
 #endif
 
 // XBox only suppots the native Window stuff
@@ -728,17 +728,6 @@ precision will be lower but speed higher. currently X86 only
 #define IRRCALLCONV
 
 #endif // _IRR_WINDOWS_API_
-
-// We need to disable DIRECT3D9 support for Visual Studio 6.0 because
-// those $%&$!! disabled support for it since Dec. 2004 and users are complaining
-// about linker errors. Comment this out only if you are knowing what you are
-// doing. (Which means you have an old DX9 SDK and VisualStudio6).
-#ifdef _MSC_VER
-#if (_MSC_VER < 1300 && !defined(__GNUC__))
-#undef _IRR_COMPILE_WITH_DIRECT3D_9_
-#pragma message("Compiling Irrlicht with Visual Studio 6.0, support for DX9 is disabled.")
-#endif
-#endif
 
 // XBox does not have OpenGL or DirectX9
 #if defined(_IRR_XBOX_PLATFORM_)
