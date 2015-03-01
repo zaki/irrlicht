@@ -997,12 +997,6 @@
 				RelativePath=".\CIrrDeviceWin32.h">
 			</File>
 			<File
-				RelativePath=".\CIrrDeviceWinCE.cpp">
-			</File>
-			<File
-				RelativePath=".\CIrrDeviceWinCE.h">
-			</File>
-			<File
 				RelativePath=".\CIrrMeshFileLoader.cpp">
 			</File>
 			<File

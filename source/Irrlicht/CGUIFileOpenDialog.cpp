@@ -375,9 +375,7 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-#if !defined(_IRR_WINDOWS_CE_PLATFORM_)
 	setlocale(LC_ALL,"");
-#endif
 
 	if (FileList)
 	{

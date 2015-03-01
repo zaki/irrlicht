@@ -19,7 +19,6 @@
 //! The defines for different operating system are:
 //! _IRR_XBOX_PLATFORM_ for XBox
 //! _IRR_WINDOWS_ for all irrlicht supported Windows versions
-//! _IRR_WINDOWS_CE_PLATFORM_ for Windows CE
 //! _IRR_WINDOWS_API_ for Windows or XBox
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
@@ -30,7 +29,6 @@
 //! DEVICE is the windowing system used, several PLATFORMs support more than one DEVICE
 //! Irrlicht can be compiled with more than one device
 //! _IRR_COMPILE_WITH_WINDOWS_DEVICE_ for Windows API based device
-//! _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_ for Windows CE API based device
 //! _IRR_COMPILE_WITH_OSX_DEVICE_ for Cocoa native windowing on OSX
 //! _IRR_COMPILE_WITH_X11_DEVICE_ for Linux X11 based device
 //! _IRR_COMPILE_WITH_SDL_DEVICE_ for platform independent SDL framework
@@ -63,14 +61,6 @@
 #define _IRR_WINDOWS_
 #define _IRR_WINDOWS_API_
 #define _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-#endif
-
-//! WINCE is a very restricted environment for mobile devices
-#if defined(_WIN32_WCE)
-#define _IRR_WINDOWS_
-#define _IRR_WINDOWS_API_
-#define _IRR_WINDOWS_CE_PLATFORM_
-#define _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER < 1300)
@@ -754,58 +744,6 @@ precision will be lower but speed higher. currently X86 only
 #if defined(_IRR_XBOX_PLATFORM_)
 	#undef _IRR_COMPILE_WITH_OPENGL_
 	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
-#endif
-
-//! WinCE does not have OpenGL or DirectX9. use minimal loaders
-#if defined(_WIN32_WCE)
-	#undef _IRR_COMPILE_WITH_OPENGL_
-	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
-	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
-
-	#undef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	#undef BURNINGVIDEO_RENDERER_FAST
-	#undef BURNINGVIDEO_RENDERER_ULTRA_FAST
-	#define BURNINGVIDEO_RENDERER_CE
-
-	#undef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-	#define _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
-	//#define _IRR_WCHAR_FILESYSTEM
-
-	#undef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
-	//#undef _IRR_COMPILE_WITH_MD2_LOADER_
-	#undef _IRR_COMPILE_WITH_MD3_LOADER_
-	#undef _IRR_COMPILE_WITH_3DS_LOADER_
-	#undef _IRR_COMPILE_WITH_COLLADA_LOADER_
-	#undef _IRR_COMPILE_WITH_CSM_LOADER_
-	#undef _IRR_COMPILE_WITH_BSP_LOADER_
-	#undef _IRR_COMPILE_WITH_DMF_LOADER_
-	#undef _IRR_COMPILE_WITH_LMTS_LOADER_
-	#undef _IRR_COMPILE_WITH_MY3D_LOADER_
-	#undef _IRR_COMPILE_WITH_OBJ_LOADER_
-	#undef _IRR_COMPILE_WITH_OCT_LOADER_
-	#undef _IRR_COMPILE_WITH_OGRE_LOADER_
-	#undef _IRR_COMPILE_WITH_LWO_LOADER_
-	#undef _IRR_COMPILE_WITH_STL_LOADER_
-	#undef _IRR_COMPILE_WITH_IRR_WRITER_
-	#undef _IRR_COMPILE_WITH_COLLADA_WRITER_
-	#undef _IRR_COMPILE_WITH_STL_WRITER_
-	#undef _IRR_COMPILE_WITH_OBJ_WRITER_
-	//#undef _IRR_COMPILE_WITH_BMP_LOADER_
-	//#undef _IRR_COMPILE_WITH_JPG_LOADER_
-	#undef _IRR_COMPILE_WITH_PCX_LOADER_
-	//#undef _IRR_COMPILE_WITH_PNG_LOADER_
-	#undef _IRR_COMPILE_WITH_PPM_LOADER_
-	#undef _IRR_COMPILE_WITH_PSD_LOADER_
-	//#undef _IRR_COMPILE_WITH_TGA_LOADER_
-	#undef _IRR_COMPILE_WITH_WAL_LOADER_
-	#undef _IRR_COMPILE_WITH_BMP_WRITER_
-	#undef _IRR_COMPILE_WITH_JPG_WRITER_
-	#undef _IRR_COMPILE_WITH_PCX_WRITER_
-	#undef _IRR_COMPILE_WITH_PNG_WRITER_
-	#undef _IRR_COMPILE_WITH_PPM_WRITER_
-	#undef _IRR_COMPILE_WITH_PSD_WRITER_
-	#undef _IRR_COMPILE_WITH_TGA_WRITER_
-
 #endif
 
 #ifndef _IRR_WINDOWS_API_

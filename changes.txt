@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- WinCE 6 supported removed in svn revision 5046. Just too outdated.
 - NVidia CG support removed in svn revision 5045 due to lack of maintenance. NVidia has also stopped supporting this.
 - TA burningvideo:
  enabled triangle fan again so that skybox works.[need more testmeshes if other trianglefan than skybox doesn't work]

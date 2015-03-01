@@ -3291,14 +3291,6 @@
 						RelativePath="CIrrDeviceWin32.h"
 						>
 					</File>
-					<File
-						RelativePath=".\CIrrDeviceWinCE.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\CIrrDeviceWinCE.h"
-						>
-					</File>
 				</Filter>
 			</Filter>
 			<Filter

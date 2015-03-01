@@ -1196,7 +1196,6 @@
     <ClInclude Include="CIrrDeviceSDL.h" />
     <ClInclude Include="CIrrDeviceStub.h" />
     <ClInclude Include="CIrrDeviceWin32.h" />
-    <ClInclude Include="CIrrDeviceWinCE.h" />
     <ClInclude Include="CAttributeImpl.h" />
     <ClInclude Include="CAttributes.h" />
     <ClInclude Include="CFileList.h" />
@@ -1515,7 +1514,6 @@
     <ClCompile Include="CIrrDeviceSDL.cpp" />
     <ClCompile Include="CIrrDeviceStub.cpp" />
     <ClCompile Include="CIrrDeviceWin32.cpp" />
-    <ClCompile Include="CIrrDeviceWinCE.cpp" />
     <ClCompile Include="CAttributes.cpp" />
     <ClCompile Include="CFileList.cpp" />
     <ClCompile Include="CFileSystem.cpp" />

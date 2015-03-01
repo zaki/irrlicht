@@ -511,9 +511,7 @@ const io::path& CFileSystem::getWorkingDirectory()
 	}
 	else
 	{
-		#if defined(_IRR_WINDOWS_CE_PLATFORM_)
-		// does not need this
-		#elif defined(_IRR_WINDOWS_API_)
+		#if defined(_IRR_WINDOWS_API_)
 			fschar_t tmp[_MAX_PATH];
 			#if defined(_IRR_WCHAR_FILESYSTEM )
 				_wgetcwd(tmp, _MAX_PATH);
@@ -586,9 +584,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 	{
 		WorkingDirectory[FILESYSTEM_NATIVE] = newDirectory;
 
-#if defined(_IRR_WINDOWS_CE_PLATFORM_)
-		success = true;
-#elif defined(_MSC_VER)
+#if defined(_MSC_VER)
 	#if defined(_IRR_WCHAR_FILESYSTEM)
 		success = (_wchdir(newDirectory.c_str()) == 0);
 	#else
@@ -609,9 +605,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 
 io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 {
-#if defined(_IRR_WINDOWS_CE_PLATFORM_)
-	return filename;
-#elif defined(_IRR_WINDOWS_API_)
+#if defined(_IRR_WINDOWS_API_)
 	fschar_t *p=0;
 	fschar_t fpath[_MAX_PATH];
 	#if defined(_IRR_WCHAR_FILESYSTEM )
@@ -959,20 +953,6 @@ bool CFileSystem::existFile(const io::path& filename) const
 		if (FileArchives[i]->getFileList()->findFile(filename)!=-1)
 			return true;
 
-#if defined(_IRR_WINDOWS_CE_PLATFORM_)
-#if defined(_IRR_WCHAR_FILESYSTEM)
-	HANDLE hFile = CreateFileW(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-#else
-	HANDLE hFile = CreateFileW(core::stringw(filename).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-#endif
-	if (hFile == INVALID_HANDLE_VALUE)
-		return false;
-	else
-	{
-		CloseHandle(hFile);
-		return true;
-	}
-#else
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 #if defined(_MSC_VER)
 	#if defined(_IRR_WCHAR_FILESYSTEM)
@@ -988,7 +968,6 @@ bool CFileSystem::existFile(const io::path& filename) const
 	#endif
 #else
 	return (access(filename.c_str(), 0) != -1);
-#endif
 #endif
 }
 
