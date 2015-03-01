@@ -633,17 +633,6 @@
 		<Unit filename="CColorConverter.h" />
 		<Unit filename="CCubeSceneNode.cpp" />
 		<Unit filename="CCubeSceneNode.h" />
-		<Unit filename="CD3D8Driver.cpp" />
-		<Unit filename="CD3D8Driver.h" />
-		<Unit filename="CD3D8MaterialRenderer.h" />
-		<Unit filename="CD3D8NormalMapRenderer.cpp" />
-		<Unit filename="CD3D8NormalMapRenderer.h" />
-		<Unit filename="CD3D8ParallaxMapRenderer.cpp" />
-		<Unit filename="CD3D8ParallaxMapRenderer.h" />
-		<Unit filename="CD3D8ShaderMaterialRenderer.cpp" />
-		<Unit filename="CD3D8ShaderMaterialRenderer.h" />
-		<Unit filename="CD3D8Texture.cpp" />
-		<Unit filename="CD3D8Texture.h" />
 		<Unit filename="CD3D9Driver.cpp" />
 		<Unit filename="CD3D9Driver.h" />
 		<Unit filename="CD3D9HLSLMaterialRenderer.cpp" />

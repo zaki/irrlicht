@@ -133,7 +133,6 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 		#endif
 		break;
 
-	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
 	case video::EDT_OPENGL:
 		os::Printer::log("The console device cannot use hardware drivers yet.", ELL_ERROR);
@@ -142,6 +141,7 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 		break;
 	default:
+		os::Printer::log("Unsupported device.", ELL_ERROR);
 		break;
 	}
 

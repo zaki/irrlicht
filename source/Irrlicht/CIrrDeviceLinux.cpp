@@ -860,7 +860,7 @@ void CIrrDeviceLinux::createDriver()
 		#endif
 		break;
 
-	case video::EDT_DIRECT3D8:
+	case video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
 	case video::EDT_DIRECT3D9:
 		os::Printer::log("This driver is not available in Linux. Try OpenGL or Software renderer.",
 			ELL_ERROR);

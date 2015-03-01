@@ -678,7 +678,6 @@ void CQuake3EventHandler::CreateGUI()
 	env->addStaticText ( L"VideoDriver:", rect<s32>( dim.Width - 400, 24, dim.Width - 310, 40 ),false, false, gui.Window, -1, false );
 	gui.VideoDriver = env->addComboBox(rect<s32>( dim.Width - 300, 24, dim.Width - 10, 40 ),gui.Window);
 	gui.VideoDriver->addItem(L"Direct3D 9.0c", EDT_DIRECT3D9 );
-	gui.VideoDriver->addItem(L"Direct3D 8.1", EDT_DIRECT3D8 );
 	gui.VideoDriver->addItem(L"OpenGL 1.5", EDT_OPENGL);
 	gui.VideoDriver->addItem(L"Software Renderer", EDT_SOFTWARE);
 	gui.VideoDriver->addItem(L"Burning's Video (TM) Thomas Alten", EDT_BURNINGSVIDEO);
@@ -1518,11 +1517,8 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 					rot = cam->getRotation ();
 				}
 
-				static const c8 *dName[] = { "null", "software", "burning",
-					"d3d8", "d3d9", "opengl" };
-
 				snprintf(buf, 256, "%s_%ls_%.0f_%.0f_%.0f_%.0f_%.0f_%.0f.jpg",
-						dName[Game->Device->getVideoDriver()->getDriverType()],
+						DRIVER_TYPE_NAMES_SHORT[Game->Device->getVideoDriver()->getDriverType()],
 						Game->CurrentMapName.c_str(),
 						pos.X, pos.Y, pos.Z,
 						rot.X, rot.Y, rot.Z

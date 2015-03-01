@@ -1,6 +1,6 @@
 /** Example 010 Shaders
 
-This tutorial shows how to use shaders for D3D8, D3D9, and OpenGL with the
+This tutorial shows how to use shaders for D3D9, and OpenGL with the
 engine and how to create new material types with them. It also shows how to
 disable the generation of mipmaps at texture loading, and how to use text scene
 nodes.
@@ -187,12 +187,12 @@ int main()
 	Now for the more interesting parts. If we are using Direct3D, we want
 	to load vertex and pixel shader programs, if we have OpenGL, we want to
 	use ARB fragment and vertex programs. I wrote the corresponding
-	programs down into the files d3d8.ps, d3d8.vs, d3d9.ps, d3d9.vs,
-	opengl.ps and opengl.vs. We only need the right filenames now. This is
-	done in the following switch. Note, that it is not necessary to write
-	the shaders into text files, like in this example. You can even write
-	the shaders directly as strings into the cpp source file, and use later
-	addShaderMaterial() instead of addShaderMaterialFromFiles().
+	programs down into the files d3d9.ps, d3d9.vs, opengl.ps and opengl.vs. 
+	We only need the right filenames now. This is done in the following switch. 
+	Note, that it is not necessary to write the shaders into text files, 
+	like in this example. You can even write the shaders directly as strings 
+	into the cpp source file, and use later addShaderMaterial() instead of 
+	addShaderMaterialFromFiles().
 	*/
 
 	io::path vsFileName; // filename for the vertex shader
@@ -200,10 +200,6 @@ int main()
 
 	switch(driverType)
 	{
-	case video::EDT_DIRECT3D8:
-		psFileName = "../../media/d3d8.psh";
-		vsFileName = "../../media/d3d8.vsh";
-		break;
 	case video::EDT_DIRECT3D9:
 		if (UseHighLevelShaders)
 		{

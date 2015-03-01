@@ -484,8 +484,8 @@ namespace video
 		bool AlphaToCoverageSupport;
 	};
 
-	//! This bridge between Irlicht pseudo D3D8 calls
-	//! and true D3D8 calls.
+	//! This bridge between Irlicht pseudo D3D9 calls
+	//! and true D3D9 calls.
 
 	class CD3D9CallBridge
 	{

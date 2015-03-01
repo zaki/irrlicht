@@ -12,18 +12,6 @@
 
 #include <d3dx9tex.h>
 
-#ifndef _IRR_COMPILE_WITH_DIRECT3D_8_
-// The D3DXFilterTexture function seems to get linked wrong when
-// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-// So mipmapgeneration is replaced with my own bad generation in d3d 8 when
-// compiling with both D3D 8 and 9.
-// #define _IRR_USE_D3DXFilterTexture_
-#endif // _IRR_COMPILE_WITH_DIRECT3D_8_
-
-#ifdef _IRR_USE_D3DXFilterTexture_
-#pragma comment(lib, "d3dx9.lib")
-#endif
-
 namespace irr
 {
 namespace video
@@ -732,14 +720,6 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 	}
 	else if (HasMipMaps)
 	{
-		// create mip maps.
-#ifdef _IRR_USE_D3DXFilterTexture_
-		// The D3DXFilterTexture function seems to get linked wrong when
-		// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-		// So mipmapgeneration is replaced with my own bad generation
-		HRESULT hr  = D3DXFilterTexture(Texture, NULL, D3DX_DEFAULT, D3DX_DEFAULT);
-		if (FAILED(hr))
-#endif
 		createMipMaps();
 	}
 }

@@ -2245,54 +2245,6 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="Direct3D8"
-					>
-					<File
-						RelativePath="CD3D8Driver.cpp"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8Driver.h"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8MaterialRenderer.h"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8NormalMapRenderer.cpp"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8NormalMapRenderer.h"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8ParallaxMapRenderer.cpp"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8ParallaxMapRenderer.h"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8ShaderMaterialRenderer.cpp"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8ShaderMaterialRenderer.h"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8Texture.cpp"
-						>
-					</File>
-					<File
-						RelativePath="CD3D8Texture.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="Null"
 					>
 					<File

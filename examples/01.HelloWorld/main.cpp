@@ -95,10 +95,9 @@ int main()
 	parameters:
 
 	- deviceType: Type of the device. This can currently be the Null-device,
-	   one of the two software renderers, D3D8, D3D9, or OpenGL. In this
+	   one of the two software renderers, D3D9, or OpenGL. In this
 	   example we use EDT_SOFTWARE, but to try out, you might want to
-	   change it to EDT_BURNINGSVIDEO, EDT_NULL, EDT_DIRECT3D8,
-	   EDT_DIRECT3D9, or EDT_OPENGL.
+	   change it to EDT_BURNINGSVIDEO, EDT_NULL, EDT_DIRECT3D9, or EDT_OPENGL.
 
 	- windowSize: Size of the Window or screen in FullScreenMode to be
 	   created. In this example we use 640x480.
