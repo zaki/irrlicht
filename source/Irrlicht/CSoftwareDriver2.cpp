@@ -2429,6 +2429,7 @@ IVideoDriver* createBurningVideoDriver(const irr::SIrrlichtCreationParameters& p
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
+	#ifdef _IRR_WINDOWS_
 	b.sync = CreateEventA ( 0, 0, 0, "burnevent0" );
 	b.params = &params;
 	b.io = io;
@@ -2436,8 +2437,9 @@ IVideoDriver* createBurningVideoDriver(const irr::SIrrlichtCreationParameters& p
 	b.dread = CreateThread ( 0, 0, dreadFun, 0, 0, &b.dreadid );
 	WaitForSingleObject ( b.sync, INFINITE );
 	return b.driver;
-	//return new CBurningVideoDriver(params, io, presenter);
-
+	#else
+	return new CBurningVideoDriver(params, io, presenter);
+	#endif
 
 	#else
 	return 0;
