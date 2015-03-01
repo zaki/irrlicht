@@ -55,9 +55,6 @@
     <Filter Include="Irrlicht\video\OpenGL">
       <UniqueIdentifier>{834213c7-9515-49de-aa27-8d3ed9c0c87a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Irrlicht\video\Direct3D8">
-      <UniqueIdentifier>{19838bc4-396f-4d23-ad1b-3bb652e33e6d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Irrlicht\video\Null">
       <UniqueIdentifier>{a9ca9d4d-7678-4687-b78b-15236c0dcf53}</UniqueIdentifier>
     </Filter>
@@ -888,24 +885,6 @@
     <ClInclude Include="wglext.h">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="CD3D8Driver.h">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClInclude>
-    <ClInclude Include="CD3D8MaterialRenderer.h">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClInclude>
-    <ClInclude Include="CD3D8NormalMapRenderer.h">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClInclude>
-    <ClInclude Include="CD3D8ParallaxMapRenderer.h">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClInclude>
-    <ClInclude Include="CD3D8ShaderMaterialRenderer.h">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClInclude>
-    <ClInclude Include="CD3D8Texture.h">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClInclude>
     <ClInclude Include="CColorConverter.h">
       <Filter>Irrlicht\video\Null</Filter>
     </ClInclude>
@@ -1155,9 +1134,6 @@
     <ClInclude Include="CIrrDeviceWin32.h">
       <Filter>Irrlicht\irr\device</Filter>
     </ClInclude>
-    <ClInclude Include="CIrrDeviceWinCE.h">
-      <Filter>Irrlicht\irr\device</Filter>
-    </ClInclude>
     <ClInclude Include="CAttributeImpl.h">
       <Filter>Irrlicht\io</Filter>
     </ClInclude>
@@ -1323,12 +1299,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\EMaterialFlags.h">
       <Filter>include\video</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLCgMaterialRenderer.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="CCgMaterialRenderer.h">
-      <Filter>Irrlicht\video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1651,21 +1621,6 @@
     </ClCompile>
     <ClCompile Include="COpenGLTexture.cpp">
       <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="CD3D8Driver.cpp">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClCompile>
-    <ClCompile Include="CD3D8NormalMapRenderer.cpp">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClCompile>
-    <ClCompile Include="CD3D8ParallaxMapRenderer.cpp">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClCompile>
-    <ClCompile Include="CD3D8ShaderMaterialRenderer.cpp">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
-    </ClCompile>
-    <ClCompile Include="CD3D8Texture.cpp">
-      <Filter>Irrlicht\video\Direct3D8</Filter>
     </ClCompile>
     <ClCompile Include="CColorConverter.cpp">
       <Filter>Irrlicht\video\Null</Filter>
@@ -2126,9 +2081,6 @@
     <ClCompile Include="CIrrDeviceWin32.cpp">
       <Filter>Irrlicht\irr\device</Filter>
     </ClCompile>
-    <ClCompile Include="CIrrDeviceWinCE.cpp">
-      <Filter>Irrlicht\irr\device</Filter>
-    </ClCompile>
     <ClCompile Include="CAttributes.cpp">
       <Filter>Irrlicht\io</Filter>
     </ClCompile>
@@ -2269,12 +2221,6 @@
     </ClCompile>
     <ClCompile Include="CSMFMeshFileLoader.cpp">
       <Filter>Irrlicht\scene\loaders</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLCgMaterialRenderer.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="CCgMaterialRenderer.cpp">
-      <Filter>Irrlicht\video</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
