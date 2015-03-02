@@ -402,7 +402,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 		// show Debug Shader Name
 		if ( showShaderName && node )
 		{
-			swprintf ( (wchar_t*) buf, 64, L"%hs:%d", node->getName(),node->getID() );
+			swprintf_irr ( (wchar_t*) buf, 64, L"%hs:%d", node->getName(),node->getID() );
 			smgr->addBillboardTextSceneNode(
 					font,
 					(wchar_t*) buf,
@@ -635,7 +635,7 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 		// show name
 		if ( showShaderName )
 		{
-			swprintf ( (wchar_t*) buf, sizeof(buf) / 2, L"%hs", itemElement->key );
+			swprintf_irr ( (wchar_t*) buf, sizeof(buf) / 2, L"%hs", itemElement->key );
 			smgr->addBillboardTextSceneNode(
 					font,
 					(wchar_t*) buf,
