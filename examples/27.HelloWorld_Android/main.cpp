@@ -129,21 +129,29 @@ public:
 			*/
 			switch(event.GUIEvent.EventType)
 			{
+				case EGET_EDITBOX_ENTER:
+					if ( event.GUIEvent.Caller->getType() == EGUIET_EDIT_BOX )
+					{
+						if( Device->getGUIEnvironment() )
+							Device->getGUIEnvironment()->setFocus(NULL);
+						android::setSoftInputVisibility(AndroidApp, false);
+					}
+				break;					
                 case EGET_ELEMENT_FOCUS_LOST:
 					if ( event.GUIEvent.Caller->getType() == EGUIET_EDIT_BOX )
 					{
+						/* 	Unfortunatly this only works on some android devices. 
+							On other devices Android passes through touch-input events when the virtual keyboard is clicked while blocking those events in areas where the keyboard isn't.
+							Very likely an Android bug as it only happens in certain cases (like Android Lollipop with landscape mode on MotoG, but also some reports from other devices).
+							Or maybe Irrlicht still does something wrong. 
+							Can't figure it out so far - so be warned - with landscape mode you might be better off writing your own keyboard.
+						*/
 						android::setSoftInputVisibility(AndroidApp, false);
 					}
                 break;					
                 case EGET_ELEMENT_FOCUSED:					
 					if ( event.GUIEvent.Caller->getType() == EGUIET_EDIT_BOX )
 					{
-						// TODO: couldn't figure out yet how to send existing text to Android.
-						// Wouldn't matter much - except that Android does for some unknown reason
-						// absorb all delete-key events when it thinks there is no text.
-						// So it's not possible to remove text which is already in the editbox.
-						static_cast<gui::IGUIEditBox*>(event.GUIEvent.Caller)->setText(L"");
-
 						android::setSoftInputVisibility(AndroidApp, true);
 					}
                 break;
@@ -288,6 +296,11 @@ void android_main(android_app* app)
 	sprintf(strDisplay, "Window size:(%d/%d)\nDisplay size:(%d/%d)", windowWidth, windowHeight, displayMetrics.widthPixels, displayMetrics.heightPixels);
 	logger->log(strDisplay);
 	
+	core::dimension2d<s32> dim(driver->getScreenSize());
+	sprintf(strDisplay, "getScreenSize:(%d/%d)", dim.Width, dim.Height);
+	logger->log(strDisplay);
+
+	
 	/* Your media must be somewhere inside the assets folder. The assets folder is the root for the file system.
 	   This example copies the media in the Android.mk makefile. */
    	stringc mediaPath = "media/";
@@ -318,12 +331,12 @@ void android_main(android_app* app)
 
 	// A field to show some text. Comment out stat->setText in run() if you want to see the dpi instead of the fps.
 	IGUIStaticText *text = guienv->addStaticText(stringw(displayMetrics.xdpi).c_str(),
-		rect<s32>(5,5,635,30), false, false, 0, GUI_INFO_FPS );
-	guienv->addEditBox( L"", rect<s32>(5,40,475,65));
+		rect<s32>(5,5,635,35), false, false, 0, GUI_INFO_FPS );
+	guienv->addEditBox( L"", rect<s32>(5,40,475,80));
 	
 	// add irrlicht logo
 	IGUIImage * logo = guienv->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
-					core::position2d<s32>(5,70), true, 0, GUI_IRR_LOGO);
+					core::position2d<s32>(5,85), true, 0, GUI_IRR_LOGO);
 	s32 minLogoWidth = windowWidth/3;
 	if ( logo && logo->getRelativePosition().getWidth() < minLogoWidth )
 	{
