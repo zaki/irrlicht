@@ -328,6 +328,17 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 			s32 eventAction = AMotionEvent_getAction(androidEvent);
 			s32 eventType =  eventAction & AMOTION_EVENT_ACTION_MASK;
 
+#if 0
+			// Useful for debugging. We might have to pass some of those infos on at some point.
+			// but preferably device independent (so iphone can use same irrlicht flags).
+			int32_t flags = AMotionEvent_getFlags(androidEvent);
+			os::Printer::log("flags: ", core::stringc(flags).c_str(), ELL_DEBUG);
+			int32_t metaState = AMotionEvent_getMetaState(androidEvent);
+			os::Printer::log("metaState: ", core::stringc(metaState).c_str(), ELL_DEBUG);
+			int32_t edgeFlags = AMotionEvent_getEdgeFlags(androidEvent);
+			os::Printer::log("edgeFlags: ", core::stringc(flags).c_str(), ELL_DEBUG);			
+#endif
+
 			bool touchReceived = true;
 
 			switch (eventType)
@@ -386,6 +397,8 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 			event.EventType = EET_KEY_INPUT_EVENT;
 
 			int32_t keyCode = AKeyEvent_getKeyCode(androidEvent);
+			// os::Printer::log("keyCode: ", core::stringc(keyCode).c_str(), ELL_DEBUG);
+			
 			int32_t keyAction = AKeyEvent_getAction(androidEvent);
 			int32_t keyMetaState = AKeyEvent_getMetaState(androidEvent);
 
@@ -460,6 +473,12 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 						delete keyEventWrapper;
 					}
 				}
+				if ( event.KeyInput.Key == KEY_BACK )
+				{
+					event.KeyInput.Char =  0x08;	// same key-code as on other operating systems. Otherwise we have to handle too much system specific stuff in the editbox.
+				}
+				//os::Printer::log("char-code: ", core::stringc((int)event.KeyInput.Char).c_str(), ELL_DEBUG);
+				
 			}
 			else
 			{
