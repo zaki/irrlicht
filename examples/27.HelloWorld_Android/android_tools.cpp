@@ -137,7 +137,8 @@ void setSoftInputVisibility(android_app* app, bool visible)
 	{
 		// Get all the methods we want to access from the JVM classes (could be cached)
 		jmethodID mid_getSystemService = jni->GetMethodID(classNativeActivity, "getSystemService","(Ljava/lang/String;)Ljava/lang/Object;");
-		jmethodID mid_showSoftInput = jni->GetMethodID(classInputMethodManager, "showSoftInput", "(Landroid/view/View;I)Z");						
+		jmethodID mid_showSoftInput = jni->GetMethodID(classInputMethodManager, "showSoftInput", "(Landroid/view/View;I)Z");
+		
 		jmethodID mid_hideSoftInput = jni->GetMethodID(classInputMethodManager, "hideSoftInputFromWindow", "(Landroid/os/IBinder;I)Z");
 		jmethodID mid_getWindow = jni->GetMethodID(classNativeActivity, "getWindow", "()Landroid/view/Window;");
 		jmethodID mid_getWindowToken = jni->GetMethodID(classView, "getWindowToken", "()Landroid/os/IBinder;");
@@ -157,7 +158,7 @@ void setSoftInputVisibility(android_app* app, bool visible)
 				if ( objDecorView )
 				{
 					int showFlags = 0;
-					jni->CallObjectMethod(objInputMethodManager, mid_showSoftInput, objDecorView, showFlags);
+					jni->CallBooleanMethod(objInputMethodManager, mid_showSoftInput, objDecorView, showFlags);
 				}
 			}
 			else if ( !visible && objInputMethodManager && objWindow )

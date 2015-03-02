@@ -25,7 +25,12 @@ CKeyEventWrapper::CKeyEventWrapper(JNIEnv* jniEnv, int action, int code)
 		{
 			// Find java classes & functions on first call
 			os::Printer::log("CKeyEventWrapper first initialize", ELL_DEBUG);
-			Class_KeyEvent = JniEnv->FindClass("android/view/KeyEvent");
+			jclass localClass = JniEnv->FindClass("android/view/KeyEvent");
+			if (localClass)
+			{
+				Class_KeyEvent = reinterpret_cast<jclass>(JniEnv->NewGlobalRef(localClass));
+			}
+			
 			Method_constructor = JniEnv->GetMethodID(Class_KeyEvent, "<init>", "(II)V");		
 			Method_getUnicodeChar = JniEnv->GetMethodID(Class_KeyEvent, "getUnicodeChar", "(I)I");
 		}
