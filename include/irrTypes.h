@@ -140,6 +140,9 @@ typedef unsigned short wchar_t;
 #define _WCHAR_T_DEFINED
 #endif // wchar is not defined
 #endif // microsoft compiler
+#else
+#define swprintf_irr swprintf
+#define snprintf_irr snprintf
 #endif // _IRR_WINDOWS_API_
 
 namespace irr
