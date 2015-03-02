@@ -21,7 +21,7 @@ using namespace irr;
 	#include <irrKlang.h>	// problem here? go to http://www.ambiera.com/irrklang and download
 							// the irrKlang library or undefine USE_IRRKLANG at the beginning
 							// of this file.
-	#ifdef _IRR_WINDOWS_
+	#ifdef _MSC_VER
 	#pragma comment (lib, "irrKlang.lib")
 	#endif
 #endif

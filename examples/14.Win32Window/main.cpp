@@ -19,7 +19,9 @@ windows book for details.
 
 using namespace irr;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "irrlicht.lib")
+#endif
 
 HWND hOKButton;
 HWND hWnd;

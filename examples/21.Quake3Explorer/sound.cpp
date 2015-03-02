@@ -12,7 +12,7 @@
 #ifdef USE_IRRKLANG
 
 #include <irrKlang.h>
-#ifdef _IRR_WINDOWS_
+#ifdef _MSC_VER
 	#pragma comment (lib, "irrKlang.lib")
 #endif
 
@@ -22,7 +22,7 @@ struct soundfile: public IFileReader
 {
 	soundfile ( io::IReadFile* f ): file (f ) {}
 	virtual ~soundfile () { file->drop (); }
-	
+
 	virtual ik_s32 read(void* buffer, ik_u32 sizeToRead) { return file->read ( buffer, sizeToRead ); }
 	virtual bool seek(ik_s32 finalPos, bool relativeMovement = false) { return file->seek ( finalPos, relativeMovement ); }
 	virtual ik_s32 getSize(){ return file->getSize (); }
@@ -46,7 +46,7 @@ struct klangFactory : public irrklang::IFileFactory
 
 	IrrlichtDevice *Device;
 };
- 
+
 ISoundEngine *engine = 0;
 ISound *backMusic = 0;
 

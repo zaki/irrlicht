@@ -77,7 +77,7 @@ of the console window, which pops up when starting a program with main(). This
 is done by the second pragma. We could also use the WinMain method, though
 losing platform independence then.
 */
-#ifdef _IRR_WINDOWS_
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif

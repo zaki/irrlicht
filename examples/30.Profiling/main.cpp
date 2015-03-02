@@ -54,7 +54,7 @@ collecting profiling information is disabled by default for speed reasons.
 #include <irrlicht.h>
 #include "driverChoice.h"
 
-#ifdef _IRR_WINDOWS_
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
