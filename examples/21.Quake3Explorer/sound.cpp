@@ -27,7 +27,7 @@ struct soundfile: public IFileReader
 	virtual bool seek(ik_s32 finalPos, bool relativeMovement = false) { return file->seek ( finalPos, relativeMovement ); }
 	virtual ik_s32 getSize(){ return file->getSize (); }
 	virtual ik_s32 getPos()	{return file->getPos (); }
-	virtual const ik_c8* getFileName() { return file->getFileName (); }
+	virtual const ik_c8* getFileName() { return file->getFileName().c_str(); }
 	io::IReadFile* file;
 };
 
