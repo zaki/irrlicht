@@ -70,7 +70,6 @@ bool stencilShadow(void)
 //	passed &= shadows(video::EDT_SOFTWARE);
 //	passed &= shadows(video::EDT_BURNINGSVIDEO);
 	passed &= shadows(video::EDT_DIRECT3D9);
-	passed &= shadows(video::EDT_DIRECT3D8);
 
 	return passed;
 }

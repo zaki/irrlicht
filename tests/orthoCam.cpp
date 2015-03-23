@@ -96,7 +96,6 @@ bool orthoCam(void)
 //	passed &= testOrthoCam(video::EDT_SOFTWARE);
 	passed &= testOrthoCam(video::EDT_BURNINGSVIDEO);
 	passed &= testOrthoCam(video::EDT_DIRECT3D9);
-	passed &= testOrthoCam(video::EDT_DIRECT3D8);
 
 	passed &= testOrthoStencil(video::EDT_OPENGL);
 	passed &= testOrthoStencil(video::EDT_DIRECT3D9);

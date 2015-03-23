@@ -11,7 +11,7 @@
 	result &= X(video::E_DRIVER_TYPE(i))
 #define TestWithAllHWDrivers(X) \
 	logTestString("Running test " #X "\n"); \
-	for (u32 i=video::EDT_DIRECT3D8; i<video::EDT_COUNT; ++i) \
+	for (u32 i=video::EDT_DIRECT3D9; i<video::EDT_COUNT; ++i) \
 	result &= X(video::E_DRIVER_TYPE(i))
 
 // replacement for assert which does log the lines instead
