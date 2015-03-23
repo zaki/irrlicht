@@ -6,6 +6,7 @@
 #ifdef _IRR_COMPILE_WITH_SOFTWARE_
 
 #include "CSoftwareTexture.h"
+#include "CSoftwareDriver.h"
 #include "os.h"
 
 namespace irr
@@ -116,6 +117,54 @@ CImage* CSoftwareTexture::getTexture()
 void CSoftwareTexture::regenerateMipMapLevels(void* mipmapData)
 {
 	// our software textures don't have mip maps
+}
+
+
+/* Software Render Target */
+
+CSoftwareRenderTarget::CSoftwareRenderTarget(CSoftwareDriver* driver) : Driver(driver)
+{
+	DriverType = EDT_SOFTWARE;
+
+	Texture.set_used(1);
+	Texture[0] = 0;
+}
+
+CSoftwareRenderTarget::~CSoftwareRenderTarget()
+{
+	if (Texture[0])
+		Texture[0]->drop();
+}
+
+void CSoftwareRenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil)
+{
+	if (Texture != texture)
+	{
+		if (Texture[0])
+			Texture[0]->drop();
+
+		bool textureDetected = false;
+
+		for (u32 i = 0; i < texture.size(); ++i)
+		{
+			if (texture[i] && texture[i]->getDriverType() == EDT_SOFTWARE)
+			{
+				Texture[0] = texture[i];
+				Texture[0]->grab();
+				textureDetected = true;
+
+				break;
+			}
+		}
+
+		if (!textureDetected)
+			Texture[0] = 0;
+	}
+}
+
+ITexture* CSoftwareRenderTarget::getTexture() const
+{
+	return Texture[0];
 }
 
 

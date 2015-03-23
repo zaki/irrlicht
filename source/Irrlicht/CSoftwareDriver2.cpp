@@ -335,6 +335,17 @@ bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 
 
 
+//! Create render target.
+IRenderTarget* CBurningVideoDriver::addRenderTarget()
+{
+	CSoftwareRenderTarget2* renderTarget = new CSoftwareRenderTarget2(this);
+	RenderTargets.push_back(renderTarget);
+
+	return renderTarget;
+}
+
+
+
 //! sets transformation
 void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
@@ -390,11 +401,7 @@ bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer,
 	WindowId = videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
-	if (backBuffer && BackBuffer)
-		BackBuffer->fill(color);
-
-	if (zBuffer && DepthBuffer)
-		DepthBuffer->clear();
+	clearBuffers(backBuffer, zBuffer, false, color);
 
 	memset ( TransformationFlag, 0, sizeof ( TransformationFlag ) );
 	return true;
@@ -410,20 +417,21 @@ bool CBurningVideoDriver::endScene()
 }
 
 
-//! sets a render target
-bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-	bool clearZBuffer, SColor color, video::ITexture* depthStencil)
+//! set a render target
+bool CBurningVideoDriver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
-	if (texture && texture->getDriverType() != EDT_BURNINGSVIDEO)
+	if (target && target->getDriverType() != EDT_BURNINGSVIDEO)
 	{
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+		os::Printer::log("Fatal Error: Tried to set a render target not owned by this driver.", ELL_ERROR);
 		return false;
 	}
 
 	if (RenderTargetTexture)
 		RenderTargetTexture->drop();
 
-	RenderTargetTexture = texture;
+	CSoftwareRenderTarget2* renderTarget = static_cast<CSoftwareRenderTarget2*>(target);
+	RenderTargetTexture = (renderTarget) ? renderTarget->getTexture() : 0;
 
 	if (RenderTargetTexture)
 	{
@@ -435,14 +443,7 @@ bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBa
 		setRenderTarget(BackBuffer);
 	}
 
-	if (RenderTargetSurface && (clearBackBuffer || clearZBuffer))
-	{
-		if (clearZBuffer)
-			DepthBuffer->clear();
-
-		if (clearBackBuffer)
-			RenderTargetSurface->fill( color );
-	}
+	clearBuffers(clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
 
 	return true;
 }
@@ -2234,6 +2235,20 @@ ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u3
 	addTexture(tex);
 	tex->drop();
 	return tex;
+}
+
+
+//! Clear the color, depth and/or stencil buffers.
+void CBurningVideoDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+{
+	if (backBuffer && RenderTargetSurface)
+		RenderTargetSurface->fill(color);
+
+	if (depthBuffer && DepthBuffer)
+		DepthBuffer->clear();
+
+	if (stencilBuffer && StencilBuffer)
+		StencilBuffer->clear();
 }
 
 

@@ -15,6 +15,7 @@
 #include "CMeshManipulator.h"
 #include "CColorConverter.h"
 #include "IAttributeExchangingObject.h"
+#include "IRenderTarget.h"
 
 
 namespace irr
@@ -82,9 +83,9 @@ IImageWriter* createImageWriterPPM();
 
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
-: FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
-	PrimitivesDrawn(0), MinVertexCountForVBO(500), TextureCreationFlags(0),
-	OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
+	: CurrentRenderTarget(0), CurrentRenderTargetSize(0, 0), FileSystem(io), MeshManipulator(0),
+	ViewPort(0, 0, 0, 0), ScreenSize(screenSize), PrimitivesDrawn(0), MinVertexCountForVBO(500),
+	TextureCreationFlags(0), OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");
@@ -211,6 +212,9 @@ CNullDriver::~CNullDriver()
 
 	if (MeshManipulator)
 		MeshManipulator->drop();
+
+	removeAllRenderTargets();
+
 	deleteAllTextures();
 
 	u32 i;
@@ -613,30 +617,18 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 }
 
 
-//! sets a render target
-bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-					bool clearZBuffer, SColor color, video::ITexture* depthStencil)
+//! set a render target
+bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color)
 {
 	return false;
 }
 
 
-//! Sets multiple render targets
-bool CNullDriver::setRenderTarget(const core::array<video::IRenderTarget>& texture,
-				bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil)
+//! set a render target
+bool CNullDriver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
 	return false;
-}
-
-
-//! set or reset special render targets
-bool CNullDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
-			bool clearZBuffer, SColor color)
-{
-	if (ERT_FRAME_BUFFER==target)
-		return setRenderTarget(0,clearTarget, clearZBuffer, color, 0);
-	else
-		return false;
 }
 
 
@@ -876,6 +868,13 @@ ECOLOR_FORMAT CNullDriver::getColorFormat() const
 const core::dimension2d<u32>& CNullDriver::getScreenSize() const
 {
 	return ScreenSize;
+}
+
+
+//! get current render target
+IRenderTarget* CNullDriver::getCurrentRenderTarget() const
+{
+	return CurrentRenderTarget;
 }
 
 
@@ -1760,6 +1759,42 @@ u32 CNullDriver::getOcclusionQueryResult(scene::ISceneNode* node) const
 }
 
 
+//! Create render target.
+IRenderTarget* CNullDriver::addRenderTarget()
+{
+	return 0;
+}
+
+
+//! Remove render target.
+void CNullDriver::removeRenderTarget(IRenderTarget* renderTarget)
+{
+	if (!renderTarget)
+		return;
+
+	for (u32 i = 0; i < RenderTargets.size(); ++i)
+	{
+		if (RenderTargets[i] == renderTarget)
+		{
+			RenderTargets[i]->drop();
+			RenderTargets.erase(i);
+
+			return;
+		}
+	}
+}
+
+
+//! Remove all render targets.
+void CNullDriver::removeAllRenderTargets()
+{
+	for (u32 i = 0; i < RenderTargets.size(); ++i)
+		RenderTargets[i]->drop();
+
+	RenderTargets.clear();
+}
+
+
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
 void CNullDriver::OnResize(const core::dimension2d<u32>& size)
@@ -2328,6 +2363,12 @@ ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size
 		const io::path&name, const ECOLOR_FORMAT format)
 {
 	return 0;
+}
+
+
+//! Clear the color, depth and/or stencil buffers.
+void CNullDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+{
 }
 
 

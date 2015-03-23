@@ -8,6 +8,7 @@
 #include "SoftwareDriver2_compile_config.h"
 #include "SoftwareDriver2_helper.h"
 #include "CSoftwareTexture2.h"
+#include "CSoftwareDriver2.h"
 #include "os.h"
 
 namespace irr
@@ -169,6 +170,54 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* mipmapData)
 			MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0, false );
 		}
 	}
+}
+
+
+/* Software Render Target 2 */
+
+CSoftwareRenderTarget2::CSoftwareRenderTarget2(CBurningVideoDriver* driver) : Driver(driver)
+{
+	DriverType = EDT_BURNINGSVIDEO;
+
+	Texture.set_used(1);
+	Texture[0] = 0;
+}
+
+CSoftwareRenderTarget2::~CSoftwareRenderTarget2()
+{
+	if (Texture[0])
+		Texture[0]->drop();
+}
+
+void CSoftwareRenderTarget2::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil)
+{
+	if (Texture != texture)
+	{
+		if (Texture[0])
+			Texture[0]->drop();
+
+		bool textureDetected = false;
+
+		for (u32 i = 0; i < texture.size(); ++i)
+		{
+			if (texture[i] && texture[i]->getDriverType() == EDT_BURNINGSVIDEO)
+			{
+				Texture[0] = texture[i];
+				Texture[0]->grab();
+				textureDetected = true;
+
+				break;
+			}
+		}
+
+		if (!textureDetected)
+			Texture[0] = 0;
+	}
+}
+
+ITexture* CSoftwareRenderTarget2::getTexture() const
+{
+	return Texture[0];
 }
 
 

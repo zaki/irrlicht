@@ -72,8 +72,11 @@ public:
 		bool IsCached;
 	};
 
-	//! constructor
-	COpenGLTexture(IImage* surface, const io::path& name, void* mipmapData=0, COpenGLDriver* driver=0);
+	//! constructor for a standard textures
+	COpenGLTexture(IImage* surface, const io::path& name, void* mipmapData, COpenGLDriver* driver);
+
+	//! constructor for a render target textures
+	COpenGLTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, COpenGLDriver* driver);
 
 	//! destructor
 	virtual ~COpenGLTexture();
@@ -91,24 +94,6 @@ public:
 
 	//! return open gl texture name
 	GLuint getOpenGLTextureName() const;
-
-	//! Is it a FrameBufferObject?
-	virtual bool isFrameBufferObject() const;
-
-	//! Is it a depth texture?
-	bool isDepthTexture() const;
-
-	//! Is it a renderbuffer?
-	bool isRenderBuffer() const;
-
-	//! Bind RenderTargetTexture
-	virtual void bindRTT();
-
-	//! Unbind RenderTargetTexture
-	virtual void unbindRTT();
-
-	//! sets whether this texture is intended to be used as a render target.
-	void setIsRenderTarget(bool isTarget);
 
 	//! Get an access to texture states cache.
 	SStatesCache& getStatesCache() const;
@@ -150,66 +135,7 @@ protected:
 	bool ReadOnlyLock;
 	bool KeepImage;
 
-	bool IsDepthTexture;
-	bool IsRenderBuffer;
-
 	mutable SStatesCache StatesCache;
-};
-
-//! OpenGL FBO texture.
-class COpenGLFBOTexture : public COpenGLTexture
-{
-public:
-
-	//! FrameBufferObject constructor
-	COpenGLFBOTexture(const core::dimension2d<u32>& size, const io::path& name,
-		COpenGLDriver* driver = 0, ECOLOR_FORMAT format = ECF_UNKNOWN);
-
-	//! destructor
-	virtual ~COpenGLFBOTexture();
-
-	//! Is it a FrameBufferObject?
-	virtual bool isFrameBufferObject() const _IRR_OVERRIDE_;
-
-	//! Bind RenderTargetTexture
-	virtual void bindRTT() _IRR_OVERRIDE_;
-
-	//! Unbind RenderTargetTexture
-	virtual void unbindRTT() _IRR_OVERRIDE_;
-
-	//! Return depth texture.
-	ITexture* getDepthTexture() const;
-
-	//! Set depth texture.
-	bool setDepthTexture(ITexture* depthTexture);
-
-protected:
-	GLuint BufferID;
-
-	COpenGLTexture* DepthTexture;
-};
-
-
-//! OpenGL Render Buffer.
-class COpenGLRenderBuffer : public COpenGLTexture
-{
-public:
-	//! FrameBufferObject depth constructor
-	COpenGLRenderBuffer(const core::dimension2d<u32>& size, const io::path& name, COpenGLDriver* driver=0, bool useStencil=false);
-
-	//! destructor
-	virtual ~COpenGLRenderBuffer();
-
-	//! Bind RenderTargetTexture
-	virtual void bindRTT() _IRR_OVERRIDE_;
-
-	//! Unbind RenderTargetTexture
-	virtual void unbindRTT() _IRR_OVERRIDE_;
-
-	GLuint getBufferID() const;
-
-protected:
-	GLuint BufferID;
 };
 
 

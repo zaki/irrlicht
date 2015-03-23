@@ -1092,6 +1092,8 @@ class COpenGLExtensionHandler
 	u8 MaxAuxBuffers;
 	//! Number of rendertargets available as MRTs
 	u8 MaxMultipleRenderTargets;
+	//! Number of color attachments available in FBO
+	u8 MaxColorAttachments;
 	//! Optimal number of indices per meshbuffer
 	u32 MaxIndices;
 	//! Maximal texture dimension

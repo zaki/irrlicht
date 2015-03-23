@@ -9,6 +9,7 @@
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "COpenGLTexture.h"
+#include "COpenGLRenderTarget.h"
 #include "COpenGLMaterialRenderer.h"
 #include "COpenGLShaderMaterialRenderer.h"
 #include "COpenGLSLMaterialRenderer.h"
@@ -45,15 +46,11 @@ const u16 COpenGLDriver::Quad2DIndices[4] = { 0, 1, 2, 3 };
 // -----------------------------------------------------------------------
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 //! Windows constructor and init code
-COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, CIrrDeviceWin32* device)
-: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), BridgeCalls(0),
+COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device)
+	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), BridgeCalls(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
-	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	FixedPipelineState(EOFPS_ENABLE),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
+	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
+	Params(params), HDc(0), Window(static_cast<HWND>(params.WindowId)), Win32Device(device),
 	DeviceType(EIDT_WIN32)
 {
 	#ifdef _DEBUG
@@ -479,15 +476,11 @@ bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 // -----------------------------------------------------------------------
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 //! Windows constructor and init code
-COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, CIrrDeviceMacOSX *device)
-: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
+COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device)
+	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), BridgeCalls(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
-	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
-	FixedPipelineState(EOFPS_ENABLE),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params), BridgeCalls(0),
-	OSXDevice(device), DeviceType(EIDT_OSX)
+	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
+	Params(params), OSXDevice(device), DeviceType(EIDT_OSX)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -503,15 +496,11 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 // -----------------------------------------------------------------------
 #ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 //! Linux constructor and init code
-COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, CIrrDeviceLinux* device)
-: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
-	BridgeCalls(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
-	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0,0),
-	ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	X11Device(device), DeviceType(EIDT_X11)
+COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceLinux* device)
+	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), BridgeCalls(0),
+	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
+	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
+	Params(params), X11Device(device), DeviceType(EIDT_X11)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -593,15 +582,11 @@ bool COpenGLDriver::initDriver(CIrrDeviceLinux* device)
 // -----------------------------------------------------------------------
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 //! SDL constructor and init code
-COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, CIrrDeviceSDL* device)
-: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
-	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0,0),
-	ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
-	CurrentTarget(ERT_FRAME_BUFFER), Params(params),
-	BridgeCalls(0), SDLDevice(device), DeviceType(EIDT_SDL)
+COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceSDL* device)
+	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), BridgeCalls(0),
+	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
+	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
+	Params(params), SDLDevice(device), DeviceType(EIDT_SDL)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -623,6 +608,7 @@ COpenGLDriver::~COpenGLDriver()
 	CurrentTexture.clear();
 	// I get a blue screen on my laptop, when I do not delete the
 	// textures manually before releasing the dc. Oh how I love this.
+	removeAllRenderTargets();
 	deleteAllTextures();
 	removeAllOcclusionQueries();
 	removeAllHardwareBuffers();
@@ -858,35 +844,6 @@ bool COpenGLDriver::endScene()
 	// todo: console device present
 
 	return false;
-}
-
-
-//! clears the zbuffer and color buffer
-void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color)
-{
-	GLbitfield mask = 0;
-	if (backBuffer)
-	{
-		BridgeCalls->setColorMask(true, true, true, true);
-
-		const f32 inv = 1.0f / 255.0f;
-		glClearColor(color.getRed() * inv, color.getGreen() * inv,
-				color.getBlue() * inv, color.getAlpha() * inv);
-
-		mask |= GL_COLOR_BUFFER_BIT;
-	}
-
-	if (zBuffer)
-	{
-		BridgeCalls->setDepthMask(true);
- 		mask |= GL_DEPTH_BUFFER_BIT;
-	}
-
-	if (stencilBuffer)
-		mask |= GL_STENCIL_BUFFER_BIT;
-
-	if (mask)
-		glClear(mask);
 }
 
 
@@ -1395,6 +1352,16 @@ u32 COpenGLDriver::getOcclusionQueryResult(scene::ISceneNode* node) const
 		return OcclusionQueries[index].Result;
 	else
 		return ~0;
+}
+
+
+//! Create render target.
+IRenderTarget* COpenGLDriver::addRenderTarget()
+{
+	COpenGLRenderTarget* renderTarget = new COpenGLRenderTarget(this);
+	RenderTargets.push_back(renderTarget);
+
+	return renderTarget;
 }
 
 
@@ -4215,40 +4182,34 @@ IVideoDriver* COpenGLDriver::getVideoDriver()
 
 
 ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-					const io::path& name,
-					const ECOLOR_FORMAT format)
+	const io::path& name, const ECOLOR_FORMAT format)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
-	video::ITexture* rtt = 0;
-#if defined(GL_EXT_framebuffer_object)
-	// if driver supports FrameBufferObjects, use them
-	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
-	{
-		rtt = new COpenGLFBOTexture(size, name, this, format);
-		addTexture(rtt);
-		rtt->drop();
-	}
-	else
+	bool supportForFBO = false;
+
+#if defined(GL_VERSION_3_0) || defined(GL_ARB_framebuffer_object) || defined(GL_EXT_framebuffer_object)
+	supportForFBO = FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
 #endif
+
+	core::dimension2du destSize(size);
+
+	if (!supportForFBO)
 	{
-		// the simple texture is only possible for size <= screensize
-		// we try to find an optimal size with the original constraints
-		core::dimension2du destSize(core::min_(size.Width,ScreenSize.Width), core::min_(size.Height,ScreenSize.Height));
-		destSize = destSize.getOptimalSize((size==size.getOptimalSize()), false, false);
-		rtt = addTexture(destSize, name, ECF_A8R8G8B8);
-		if (rtt)
-		{
-			static_cast<video::COpenGLTexture*>(rtt)->setIsRenderTarget(true);
-		}
+		destSize = core::dimension2d<u32>(core::min_(size.Width, ScreenSize.Width), core::min_(size.Height, ScreenSize.Height));
+		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
+
+	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, size, format, this);
+	addTexture(renderTargetTexture);
+	renderTargetTexture->drop();
 
 	//restore mip-mapping
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, generateMipLevels);
 
-	return rtt;
+	return renderTargetTexture;
 }
 
 
@@ -4261,331 +4222,79 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 }
 
 
-//! set or reset render target
-bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-					bool clearZBuffer, SColor color, video::ITexture* depthStencil)
+//! set a render target
+bool COpenGLDriver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
-	// check for right driver type
-
-	if (texture && texture->getDriverType() != EDT_OPENGL)
+	if (target && target->getDriverType() != EDT_OPENGL)
 	{
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+		os::Printer::log("Fatal Error: Tried to set a render target not owned by this driver.", ELL_ERROR);
 		return false;
 	}
 
-#if defined(GL_EXT_framebuffer_object)
-	if (CurrentTarget==ERT_MULTI_RENDER_TEXTURES)
-	{
-		for (u32 i=0; i<MRTargets.size(); ++i)
-		{
-			if (MRTargets[i].TargetType==ERT_RENDER_TEXTURE)
-			{
-				for (++i; i<MRTargets.size(); ++i)
-					if (MRTargets[i].TargetType==ERT_RENDER_TEXTURE)
-						extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT+i, GL_TEXTURE_2D, 0, 0);
-			}
-		}
-		MRTargets.clear();
-	}
+	bool supportForFBO = false;
+
+#if defined(GL_VERSION_3_0) || defined(GL_ARB_framebuffer_object) || defined(GL_EXT_framebuffer_object)
+	supportForFBO = FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
 #endif
 
-	// check if we should set the previous RT back
-	if ((RenderTargetTexture != texture) ||
-		(CurrentTarget==ERT_MULTI_RENDER_TEXTURES))
+	core::dimension2d<u32> destRenderTargetSize(0, 0);
+
+	if (target)
 	{
-		BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB);
-		ResetRenderStates=true;
-		if (RenderTargetTexture!=0)
+		COpenGLRenderTarget* renderTarget = static_cast<COpenGLRenderTarget*>(target);
+
+		if (supportForFBO)
 		{
-			RenderTargetTexture->unbindRTT();
+			BridgeCalls->setFBO(renderTarget->getBufferID());
+			renderTarget->update(activeTextureID);
 		}
 
-		if (texture)
-		{
-			// we want to set a new target. so do this.
-			BridgeCalls->setViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
-			RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
+		destRenderTargetSize = renderTarget->getSize();
 
-			if (RenderTargetTexture->isFrameBufferObject())
-			{
-				if (depthStencil)
-				{
-					static_cast<COpenGLFBOTexture*>(RenderTargetTexture)->setDepthTexture(depthStencil);
-				}
-				else
-				{
-					ITexture* renderBuffer = createDepthTexture(RenderTargetTexture, true);
-					static_cast<COpenGLFBOTexture*>(RenderTargetTexture)->setDepthTexture(renderBuffer);
-					renderBuffer->drop();
-				}
-			}
-
-			// calls glDrawBuffer as well
-			RenderTargetTexture->bindRTT();
-			CurrentRendertargetSize = texture->getSize();
-			CurrentTarget=ERT_RENDER_TEXTURE;
-		}
-		else
-		{
-			BridgeCalls->setViewport(0, 0, ScreenSize.Width, ScreenSize.Height);
-			RenderTargetTexture = 0;
-			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
-			CurrentTarget=ERT_FRAME_BUFFER;
-			glDrawBuffer(Params.Doublebuffer?GL_BACK_LEFT:GL_FRONT_LEFT);
-		}
-		// we need to update the matrices due to the rendersize change.
-		Transformation3DChanged=true;
-	}
-
-	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
-
-	return true;
-}
-
-
-//! Sets multiple render targets
-bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
-				bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil)
-{
-	// if simply disabling the MRT via array call
-	if (targets.size()==0)
-		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color, depthStencil);
-	// if disabling old MRT, but enabling new one as well
-	if ((MRTargets.size()!=0) && (targets != MRTargets))
-		setRenderTarget(0, clearBackBuffer, clearZBuffer, color, depthStencil);
-	// if no change, simply clear buffers
-	else if (targets == MRTargets)
-	{
-		clearBuffers(clearBackBuffer, clearZBuffer, false, color);
-		return true;
-	}
-
-	// copy to storage for correct disabling
-	MRTargets=targets;
-
-	u32 maxMultipleRTTs = core::min_(static_cast<u32>(MaxMultipleRenderTargets), targets.size());
-
-	// determine common size
-	core::dimension2du rttSize = CurrentRendertargetSize;
-	if (targets[0].TargetType==ERT_RENDER_TEXTURE)
-	{
-		if (!targets[0].RenderTexture)
-		{
-			os::Printer::log("Missing render texture for MRT.", ELL_ERROR);
-			return false;
-		}
-		rttSize=targets[0].RenderTexture->getSize();
-	}
-
-	for (u32 i = 0; i < maxMultipleRTTs; ++i)
-	{
-		// check for right driver type
-		if (targets[i].TargetType==ERT_RENDER_TEXTURE)
-		{
-			if (!targets[i].RenderTexture)
-			{
-				maxMultipleRTTs=i;
-				os::Printer::log("Missing render texture for MRT.", ELL_WARNING);
-				break;
-			}
-			if (targets[i].RenderTexture->getDriverType() != EDT_OPENGL)
-			{
-				maxMultipleRTTs=i;
-				os::Printer::log("Tried to set a texture not owned by this driver.", ELL_WARNING);
-				break;
-			}
-
-			// check for valid render target
-			if (!targets[i].RenderTexture->isRenderTarget() || !static_cast<COpenGLTexture*>(targets[i].RenderTexture)->isFrameBufferObject())
-			{
-				maxMultipleRTTs=i;
-				os::Printer::log("Tried to set a non FBO-RTT as render target.", ELL_WARNING);
-				break;
-			}
-
-			// check for valid size
-			if (rttSize != targets[i].RenderTexture->getSize())
-			{
-				maxMultipleRTTs=i;
-				os::Printer::log("Render target texture has wrong size.", ELL_WARNING);
-				break;
-			}
-		}
-	}
-	if (maxMultipleRTTs==0)
-	{
-		os::Printer::log("No valid MRTs.", ELL_ERROR);
-		return false;
-	}
-
-	// init FBO, if any
-	for (u32 i=0; i<maxMultipleRTTs; ++i)
-	{
-		if (targets[i].TargetType==ERT_RENDER_TEXTURE)
-		{
-			setRenderTarget(targets[i].RenderTexture, false, false, 0x0, depthStencil);
-			break; // bind only first RTT
-		}
-	}
-	// init other main buffer, if necessary
-	if (targets[0].TargetType!=ERT_RENDER_TEXTURE)
-		setRenderTarget(targets[0].TargetType, false, false, 0x0, depthStencil);
-
-	// attach other textures and store buffers into array
-	if (maxMultipleRTTs > 1)
-	{
-		CurrentTarget=ERT_MULTI_RENDER_TEXTURES;
-		core::array<GLenum> MRTs;
-		MRTs.set_used(maxMultipleRTTs);
-		for(u32 i = 0; i < maxMultipleRTTs; i++)
-		{
-			if (FeatureAvailable[IRR_EXT_draw_buffers2])
-			{
-				BridgeCalls->setColorMaskIndexed(i,
-					(targets[i].ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
-					(targets[i].ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
-					(targets[i].ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
-					(targets[i].ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
-
-				if (targets[i].BlendOp==EBO_NONE)
-					BridgeCalls->setBlendIndexed(i, false);
-				else
-					BridgeCalls->setBlendIndexed(i, true);
-			}
-#if defined(GL_AMD_draw_buffers_blend) || defined(GL_ARB_draw_buffers_blend)
-			if (FeatureAvailable[IRR_AMD_draw_buffers_blend] || FeatureAvailable[IRR_ARB_draw_buffers_blend])
-			{
-				BridgeCalls->setBlendFuncIndexed(i, getGLBlend(targets[i].BlendFuncSrc), getGLBlend(targets[i].BlendFuncDst));
-				switch(targets[i].BlendOp)
-				{
-				case EBO_SUBTRACT:
-					BridgeCalls->setBlendEquationIndexed(i, GL_FUNC_SUBTRACT);
-					break;
-				case EBO_REVSUBTRACT:
-					BridgeCalls->setBlendEquationIndexed(i, GL_FUNC_REVERSE_SUBTRACT);
-					break;
-				case EBO_MIN:
-					BridgeCalls->setBlendEquationIndexed(i, GL_MIN);
-					break;
-				case EBO_MAX:
-					BridgeCalls->setBlendEquationIndexed(i, GL_MAX);
-					break;
-				case EBO_MIN_FACTOR:
-				case EBO_MIN_ALPHA:
-#if defined(GL_AMD_blend_minmax_factor)
-					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-						BridgeCalls->setBlendEquationIndexed(i, GL_FACTOR_MIN_AMD);
-					// fallback in case of missing extension
-					else
-#endif
-						BridgeCalls->setBlendEquationIndexed(i, GL_MIN);
-					break;
-				case EBO_MAX_FACTOR:
-				case EBO_MAX_ALPHA:
-#if defined(GL_AMD_blend_minmax_factor)
-					if (FeatureAvailable[IRR_AMD_blend_minmax_factor])
-						BridgeCalls->setBlendEquationIndexed(i, GL_FACTOR_MAX_AMD);
-					// fallback in case of missing extension
-					else
-#endif
-						BridgeCalls->setBlendEquationIndexed(i, GL_MAX);
-				break;
-				default:
-					BridgeCalls->setBlendEquationIndexed(i, GL_FUNC_ADD);
-					break;
-				}
-			}
-#endif
-			if (targets[i].TargetType==ERT_RENDER_TEXTURE)
-			{
-				GLenum attachment = GL_NONE;
-#ifdef GL_EXT_framebuffer_object
-				// attach texture to FrameBuffer Object on Color [i]
-				attachment = GL_COLOR_ATTACHMENT0_EXT+i;
-				if ((i != 0) && (targets[i].RenderTexture != RenderTargetTexture))
-					extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, attachment, GL_TEXTURE_2D, static_cast<COpenGLTexture*>(targets[i].RenderTexture)->getOpenGLTextureName(), 0);
-#endif
-				MRTs[i]=attachment;
-			}
-			else
-			{
-				switch(targets[i].TargetType)
-				{
-					case ERT_FRAME_BUFFER:
-						MRTs[i]=GL_BACK_LEFT;
-						break;
-					case ERT_STEREO_BOTH_BUFFERS:
-						MRTs[i]=GL_BACK;
-						break;
-					case ERT_STEREO_RIGHT_BUFFER:
-						MRTs[i]=GL_BACK_RIGHT;
-						break;
-					case ERT_STEREO_LEFT_BUFFER:
-						MRTs[i]=GL_BACK_LEFT;
-						break;
-					default:
-						MRTs[i]=GL_AUX0+(targets[i].TargetType-ERT_AUX_BUFFER0);
-						break;
-				}
-			}
-		}
-
-		extGlDrawBuffers(maxMultipleRTTs, MRTs.const_pointer());
-	}
-
-	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
-	return true;
-}
-
-
-//! set or reset render target
-bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
-					bool clearZBuffer, SColor color)
-{
-	if (target != CurrentTarget)
-		setRenderTarget(0, false, false, 0x0, 0);
-
-	if (ERT_RENDER_TEXTURE == target)
-	{
-		os::Printer::log("For render textures call setRenderTarget with the actual texture as first parameter.", ELL_ERROR);
-		return false;
-	}
-	if (ERT_MULTI_RENDER_TEXTURES == target)
-	{
-		os::Printer::log("For multiple render textures call setRenderTarget with the texture array as first parameter.", ELL_ERROR);
-		return false;
-	}
-
-	if (Params.Stereobuffer && (ERT_STEREO_RIGHT_BUFFER == target))
-	{
-		if (Params.Doublebuffer)
-			glDrawBuffer(GL_BACK_RIGHT);
-		else
-			glDrawBuffer(GL_FRONT_RIGHT);
-	}
-	else if (Params.Stereobuffer && ERT_STEREO_BOTH_BUFFERS == target)
-	{
-		if (Params.Doublebuffer)
-			glDrawBuffer(GL_BACK);
-		else
-			glDrawBuffer(GL_FRONT);
-	}
-	else if ((target >= ERT_AUX_BUFFER0) && (target-ERT_AUX_BUFFER0 < MaxAuxBuffers))
-	{
-			glDrawBuffer(GL_AUX0+target-ERT_AUX_BUFFER0);
+		BridgeCalls->setViewport(0, 0, destRenderTargetSize.Width, destRenderTargetSize.Height);
 	}
 	else
 	{
-		if (Params.Doublebuffer)
-			glDrawBuffer(GL_BACK_LEFT);
+		if (supportForFBO)
+			BridgeCalls->setFBO(0);
 		else
-			glDrawBuffer(GL_FRONT_LEFT);
-		// exit with false, but also with working color buffer
-		if (target != ERT_FRAME_BUFFER)
-			return false;
+		{
+			COpenGLRenderTarget* prevRenderTarget = static_cast<COpenGLRenderTarget*>(CurrentRenderTarget);
+			COpenGLTexture* renderTargetTexture = static_cast<COpenGLTexture*>(prevRenderTarget->getTexture());
+
+			if (renderTargetTexture)
+			{
+				setActiveTexture(0, renderTargetTexture);
+				BridgeCalls->setTexture(0, true);
+
+				const core::dimension2d<u32> size = renderTargetTexture->getSize();
+				glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, size.Width, size.Height);
+			}
+		}
+
+		destRenderTargetSize = core::dimension2d<u32>(0, 0);
+
+		BridgeCalls->setViewport(0, 0, ScreenSize.Width, ScreenSize.Height);
 	}
-	CurrentTarget=target;
-	clearBuffers(clearTarget, clearZBuffer, false, color);
+
+	if (CurrentRenderTargetSize != destRenderTargetSize)
+	{
+		CurrentRenderTargetSize = destRenderTargetSize;
+
+		Transformation3DChanged = true;
+	}
+
+	CurrentRenderTarget = target;
+
+	if (!supportForFBO)
+	{
+		clearBackBuffer = true;
+		clearDepthBuffer = true;
+	}
+
+	clearBuffers(clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
+
 	return true;
 }
 
@@ -4593,10 +4302,40 @@ bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTar
 // returns the current size of the screen or rendertarget
 const core::dimension2d<u32>& COpenGLDriver::getCurrentRenderTargetSize() const
 {
-	if (CurrentRendertargetSize.Width == 0)
+	if (CurrentRenderTargetSize.Width == 0)
 		return ScreenSize;
 	else
-		return CurrentRendertargetSize;
+		return CurrentRenderTargetSize;
+}
+
+
+//! Clear the color, depth and/or stencil buffers.
+void COpenGLDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+{
+	GLbitfield mask = 0;
+
+	if (backBuffer)
+	{
+		BridgeCalls->setColorMask(true, true, true, true);
+
+		const f32 inv = 1.0f / 255.0f;
+		glClearColor(color.getRed() * inv, color.getGreen() * inv,
+			color.getBlue() * inv, color.getAlpha() * inv);
+
+		mask |= GL_COLOR_BUFFER_BIT;
+	}
+
+	if (depthBuffer)
+	{
+		BridgeCalls->setDepthMask(true);
+		mask |= GL_DEPTH_BUFFER_BIT;
+	}
+
+	if (stencilBuffer)
+		mask |= GL_STENCIL_BUFFER_BIT;
+
+	if (mask)
+		glClear(mask);
 }
 
 
@@ -4728,7 +4467,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 //! get depth texture for the given render target texture
 ITexture* COpenGLDriver::createDepthTexture(ITexture* texture, bool shared)
 {
-	if ((texture->getDriverType() != EDT_OPENGL) || (!texture->isRenderTarget()))
+	/*if ((texture->getDriverType() != EDT_OPENGL) || (!texture->isRenderTarget()))
 		return 0;
 	COpenGLTexture* tex = static_cast<COpenGLTexture*>(texture);
 
@@ -4748,20 +4487,21 @@ ITexture* COpenGLDriver::createDepthTexture(ITexture* texture, bool shared)
 		DepthTextures.push_back(new COpenGLRenderBuffer(texture->getSize(), "depth1", this));
 		return DepthTextures.getLast();
 	}
-	return (new COpenGLRenderBuffer(texture->getSize(), "depth1", this));
+	return (new COpenGLRenderBuffer(texture->getSize(), "depth1", this));*/
+	return 0;
 }
 
 
 void COpenGLDriver::removeDepthTexture(ITexture* texture)
 {
-	for (u32 i=0; i<DepthTextures.size(); ++i)
+	/*for (u32 i=0; i<DepthTextures.size(); ++i)
 	{
 		if (texture==DepthTextures[i])
 		{
 			DepthTextures.erase(i);
 			return;
 		}
-	}
+	}*/
 }
 
 
@@ -4916,7 +4656,7 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 	AlphaMode(GL_ALWAYS), AlphaRef(0.0f), AlphaTest(false),
 	ClientStateVertex(false), ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false),
 	CullFaceMode(GL_BACK), CullFace(false),
-	DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), MatrixMode(GL_MODELVIEW),
+	DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), FrameBufferID(0), MatrixMode(GL_MODELVIEW),
 	ActiveTexture(GL_TEXTURE0_ARB), ClientActiveTexture(GL_TEXTURE0_ARB), ViewportX(0), ViewportY(0)
 {
 	FrameBufferCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->MaxMultipleRenderTargets));
@@ -5285,6 +5025,22 @@ void COpenGLCallBridge::setDepthTest(bool enable)
 		else
 			glDisable(GL_DEPTH_TEST);
 		DepthTest = enable;
+	}
+}
+
+void COpenGLCallBridge::getFBO(GLuint& id) const
+{
+	id = FrameBufferID;
+}
+
+void COpenGLCallBridge::setFBO(GLuint id)
+{
+	if (FrameBufferID != id)
+	{
+#if defined(GL_EXT_framebuffer_object)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, id);
+#endif
+		FrameBufferID = id;
 	}
 }
 

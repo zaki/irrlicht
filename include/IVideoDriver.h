@@ -47,6 +47,7 @@ namespace video
 	class IImageWriter;
 	class IMaterialRenderer;
 	class IGPUProgrammingServices;
+	class IRenderTarget;
 
 	//! enumeration for geometry transformation states
 	enum E_TRANSFORMATION_STATE
@@ -207,43 +208,6 @@ namespace video
 			}
 		}
 
-	};
-
-	struct IRenderTarget
-	{
-		IRenderTarget(ITexture* texture,
-				E_COLOR_PLANE colorMask=ECP_ALL,
-				E_BLEND_FACTOR blendFuncSrc=EBF_ONE,
-				E_BLEND_FACTOR blendFuncDst=EBF_ONE_MINUS_SRC_ALPHA,
-				E_BLEND_OPERATION blendOp=EBO_NONE) :
-			RenderTexture(texture),
-			TargetType(ERT_RENDER_TEXTURE), ColorMask(colorMask),
-			BlendFuncSrc(blendFuncSrc), BlendFuncDst(blendFuncDst),
-			BlendOp(blendOp) {}
-		IRenderTarget(E_RENDER_TARGET target,
-				E_COLOR_PLANE colorMask=ECP_ALL,
-				E_BLEND_FACTOR blendFuncSrc=EBF_ONE,
-				E_BLEND_FACTOR blendFuncDst=EBF_ONE_MINUS_SRC_ALPHA,
-				E_BLEND_OPERATION blendOp=EBO_NONE) :
-			RenderTexture(0),
-			TargetType(target), ColorMask(colorMask),
-			BlendFuncSrc(blendFuncSrc), BlendFuncDst(blendFuncDst),
-			BlendOp(blendOp) {}
-		bool operator!=(const IRenderTarget& other) const
-		{
-			return ((RenderTexture != other.RenderTexture) ||
-				(TargetType != other.TargetType) ||
-				(ColorMask != other.ColorMask) ||
-				(BlendFuncSrc != other.BlendFuncSrc) ||
-				(BlendFuncDst != other.BlendFuncDst) ||
-				(BlendOp != other.BlendOp));
-		}
-		ITexture* RenderTexture;
-		E_RENDER_TARGET TargetType:8;
-		E_COLOR_PLANE ColorMask:8;
-		E_BLEND_FACTOR BlendFuncSrc:4;
-		E_BLEND_FACTOR BlendFuncDst:4;
-		E_BLEND_OPERATION BlendOp:4;
 	};
 
 	//! Interface to driver which is able to perform 2d and 3d graphics functions.
@@ -503,6 +467,15 @@ namespace video
 		The value is a safe approximation, i.e. can be larger than the
 		actual value of pixels. */
 		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const =0;
+		
+		//! Create render target.
+		virtual IRenderTarget* addRenderTarget() = 0;
+
+		//! Remove render target.
+		virtual void removeRenderTarget(IRenderTarget* renderTarget) = 0;
+
+		//! Remove all render targets.
+		virtual void removeAllRenderTargets() = 0;
 
 		//! Sets a boolean alpha channel on the texture based on a color key.
 		/** This makes the texture fully transparent at the texels where
@@ -552,7 +525,7 @@ namespace video
 		information is multiplied.*/
 		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const =0;
 
-		//! Sets a new render target. (this prototype will be removed in future)
+		//! Set a new render target.
 		/** This will only work if the driver supports the
 		EVDF_RENDER_TO_TARGET feature, which can be queried with
 		queryFeature(). Usually, rendering to textures is done in this
@@ -586,48 +559,38 @@ namespace video
 		\return True if sucessful and false if not. */
 		virtual bool setRenderTarget(video::ITexture* texture,
 			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0),
-			video::ITexture* depthStencil = 0) =0;
+			SColor color=video::SColor(0,0,0,0)) =0;
 
-		//! Sets a new render target.
-		virtual bool setRenderTarget(video::ITexture* texture,
-			video::ITexture* depthStencil,
-			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0))
-		{
-			return setRenderTarget(texture, clearBackBuffer, clearZBuffer, color, depthStencil);
-		}
-
-		//! Sets new multiple render targets. (this prototype will be removed in future)
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
-			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0),
-			video::ITexture* depthStencil = 0) =0;
-
-		//! Sets new multiple render targets.
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
-			video::ITexture* depthStencil,
-			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0))
-		{
-			return setRenderTarget(texture, clearBackBuffer, clearZBuffer, color, depthStencil);
-		}
-
-		//! set or reset special render targets
-		/** This method enables access to special color buffers such as
-		stereoscopic buffers or auxiliary buffers.
-		\param target Enum value for the render target
-		\param clearTarget Clears the target buffer with the color
-		parameter
-		\param clearZBuffer Clears the zBuffer of the rendertarget.
-		Note that because the main frame buffer may share the zbuffer with
-		the rendertarget, its zbuffer might be partially cleared too
-		by this.
-		\param color The background color for the render target.
+		//! Set a render target.
+		/** This will only work if the driver supports the
+		EVDF_RENDER_TO_TARGET feature, which can be queried with
+		queryFeature(). Please note that you cannot render 3D or 2D
+		geometry with a render target as texture on it when you are rendering
+		the scene into this render target at the same time. It is usually only
+		possible to render into a texture between the
+		IVideoDriver::beginScene() and endScene() method calls.
+		\param target Render target object.
+		\param activeTextureID Array of texture indices which should be active during
+		RTT process. If more than one ID will be apply, this render target will work
+		as a Multiple Render Target.
+		\param clearBackBuffer Clears the back buffer of the render
+		target with the clearColor parameter.
+		\param clearDepthBuffer Clears the depth buffer of the rendertarget.
+		\param clearStencilBuffer Clears the stencil buffer of the rendertarget.
+		\param clearColor The clear color for the render target.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(E_RENDER_TARGET target, bool clearTarget=true,
-					bool clearZBuffer=true,
-					SColor color=video::SColor(0,0,0,0)) =0;
+		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) = 0;
+
+		//! Set a render target.
+		bool setRenderTarget(IRenderTarget* target, u32 activeTextureID, bool clearBackBuffer, bool clearDepthBuffer,
+			bool clearStencilBuffer, SColor clearColor)
+		{
+			core::array<u32> idArray(1);
+			idArray.push_back(activeTextureID);
+
+			return setRenderTarget(target, idArray, clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
+		}
 
 		//! Sets a new viewport.
 		/** Every rendering operation is done into this new area.
@@ -1381,6 +1344,9 @@ namespace video
 		//! Returns a pointer to the mesh manipulator.
 		virtual scene::IMeshManipulator* getMeshManipulator() =0;
 
+		//! Clear the color, depth and/or stencil buffers.
+		virtual void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color) = 0;
+
 		//! Clears the ZBuffer.
 		/** Note that you usually need not to call this method, as it
 		is automatically done in IVideoDriver::beginScene() or
@@ -1388,7 +1354,7 @@ namespace video
 		you have to render some special things, you can clear the
 		zbuffer during the rendering process with this method any time.
 		*/
-		virtual void clearZBuffer() =0;
+		_IRR_DEPRECATED_ virtual void clearZBuffer() = 0;
 
 		//! Make a screenshot of the last rendered frame.
 		/** \return An image created from the last rendered frame. */

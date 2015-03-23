@@ -8,12 +8,15 @@
 #include "SoftwareDriver2_compile_config.h"
 
 #include "ITexture.h"
+#include "IRenderTarget.h"
 #include "CImage.h"
 
 namespace irr
 {
 namespace video
 {
+
+class CBurningVideoDriver;
 
 /*!
 	interface for a Video Driver dependent Texture.
@@ -85,6 +88,23 @@ private:
 	u32 MipMapLOD;
 	u32 Flags;
 	ECOLOR_FORMAT OriginalFormat;
+};
+
+/*!
+interface for a Video Driver dependent render target.
+*/
+class CSoftwareRenderTarget2 : public IRenderTarget
+{
+public:
+	CSoftwareRenderTarget2(CBurningVideoDriver* driver);
+	virtual ~CSoftwareRenderTarget2();
+
+	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) _IRR_OVERRIDE_;
+
+	ITexture* getTexture() const;
+
+protected:
+	CBurningVideoDriver* Driver;
 };
 
 

@@ -519,6 +519,7 @@
 		<Unit filename="..\..\include\IQ3Shader.h" />
 		<Unit filename="..\..\include\IReadFile.h" />
 		<Unit filename="..\..\include\IReferenceCounted.h" />
+		<Unit filename="..\..\include\IRenderTarget.h" />
 		<Unit filename="..\..\include\ISceneCollisionManager.h" />
 		<Unit filename="..\..\include\ISceneLoader.h" />
 		<Unit filename="..\..\include\ISceneManager.h" />
@@ -642,6 +643,8 @@
 		<Unit filename="CD3D9NormalMapRenderer.h" />
 		<Unit filename="CD3D9ParallaxMapRenderer.cpp" />
 		<Unit filename="CD3D9ParallaxMapRenderer.h" />
+		<Unit filename="CD3D9RenderTarget.cpp" />
+		<Unit filename="CD3D9RenderTarget.h" />
 		<Unit filename="CD3D9ShaderMaterialRenderer.cpp" />
 		<Unit filename="CD3D9ShaderMaterialRenderer.h" />
 		<Unit filename="CD3D9Texture.cpp" />
@@ -834,6 +837,8 @@
 		<Unit filename="COpenGLNormalMapRenderer.h" />
 		<Unit filename="COpenGLParallaxMapRenderer.cpp" />
 		<Unit filename="COpenGLParallaxMapRenderer.h" />
+		<Unit filename="COpenGLRenderTarget.cpp" />
+		<Unit filename="COpenGLRenderTarget.h" />
 		<Unit filename="COpenGLSLMaterialRenderer.cpp" />
 		<Unit filename="COpenGLSLMaterialRenderer.h" />
 		<Unit filename="COpenGLShaderMaterialRenderer.cpp" />

@@ -27,30 +27,15 @@ namespace irr
 namespace video
 {
 	class CD3D9CallBridge;
-
-	struct SDepthSurface : public IReferenceCounted
-	{
-		SDepthSurface() : Surface(0)
-		{
-			#ifdef _DEBUG
-			setDebugName("SDepthSurface");
-			#endif
-		}
-		virtual ~SDepthSurface()
-		{
-			if (Surface)
-				Surface->Release();
-		}
-
-		IDirect3DSurface9* Surface;
-		core::dimension2du Size;
-	};
+	class CD3D9RenderTarget;
+	class CD3D9Texture;
 
 	class CD3D9Driver : public CNullDriver, IMaterialRendererServices
 	{
 	public:
 
 		friend class CD3D9CallBridge;
+		friend class CD3D9RenderTarget;
 		friend class CD3D9Texture;
 
 		//! constructor
@@ -77,13 +62,9 @@ namespace video
 		//! sets a material
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
-		//! sets a render target
-		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-				bool clearZBuffer, SColor color, video::ITexture* depthStencil) _IRR_OVERRIDE_;
-
-		//! Sets multiple render targets
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& targets,
-				bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil) _IRR_OVERRIDE_;
+		//! set a render target
+		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
@@ -143,6 +124,9 @@ namespace video
 		The value is a safe approximation, i.e. can be larger then the
 		actual value of pixels. */
 		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const _IRR_OVERRIDE_;
+
+		//! Create render target.
+		virtual IRenderTarget* addRenderTarget() _IRR_OVERRIDE_;
 
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
@@ -287,6 +271,9 @@ namespace video
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
+		//! Clear the color, depth and/or stencil buffers.
+		virtual void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color) _IRR_OVERRIDE_;
+
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer() _IRR_OVERRIDE_;
 
@@ -307,9 +294,6 @@ namespace video
 
 		//! Check if the driver was recently reset.
 		virtual bool checkDriverReset() _IRR_OVERRIDE_ {return DriverWasReset;}
-
-		// removes the depth struct from the DepthSurface array
-		void removeDepthSurface(SDepthSurface* depth);
 
 		//! Get the current color format of the color buffer
 		/** \return Color format of the color buffer. */
@@ -378,9 +362,6 @@ namespace video
 		//! returns the current size of the screen or rendertarget
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
 
-		//! Check if a proper depth buffer for the RTT is available, otherwise create it.
-		void checkDepthBuffer(ITexture* tex);
-
 		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
 		s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
@@ -443,8 +424,12 @@ namespace video
 		IDirect3D9* pID3D;
 		IDirect3DDevice9* pID3DDevice;
 
-		IDirect3DSurface9* PrevRenderTarget;
+		IDirect3DSurface9* BackBufferSurface;
+		IDirect3DSurface9* DepthStencilSurface;
+
 		core::dimension2d<u32> CurrentRendertargetSize;
+		core::array<s32> RenderTargetChannel;
+		core::array<u32> RenderTargetActiveID;
 
 		HWND WindowId;
 		core::rect<s32>* SceneSourceRect;
@@ -460,12 +445,8 @@ namespace video
 		core::stringc VendorName;
 		u16 VendorID;
 
-		core::array<SDepthSurface*> DepthBuffers;
-
 		u32 MaxTextureUnits;
 		u32 MaxUserClipPlanes;
-		u32 MaxMRTs;
-		u32 NumSetMRTs;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
 

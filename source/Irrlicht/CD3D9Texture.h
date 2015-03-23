@@ -52,10 +52,7 @@ public:
 	virtual void regenerateMipMapLevels(void* mipmapData = 0) _IRR_OVERRIDE_;
 
 	//! returns the DIRECT3D9 Texture
-	IDirect3DBaseTexture9* getDX9Texture() const;
-
-	//! Returns pointer to the render target surface
-	IDirect3DSurface9* getRenderTargetSurface();
+	IDirect3DTexture9* getDX9Texture() const;
 
 private:
 	friend class CD3D9Driver;
@@ -90,7 +87,6 @@ private:
 	IDirect3DTexture9* Texture;
 	IDirect3DSurface9* RTTSurface;
 	CD3D9Driver* Driver;
-	SDepthSurface* DepthSurface;
 	u32 MipLevelLocked;
 
 	bool HardwareMipMaps;

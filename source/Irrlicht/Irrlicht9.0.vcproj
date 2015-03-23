@@ -773,6 +773,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IRenderTarget.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\IShaderConstantSetCallBack.h"
 					>
 				</File>
@@ -2212,6 +2216,14 @@
 						>
 					</File>
 					<File
+						RelativePath="COpenGLRenderTarget.cpp"
+						>
+					</File>
+					<File
+						RelativePath="COpenGLRenderTarget.h"
+						>
+					</File>
+					<File
 						RelativePath="COpenGLShaderMaterialRenderer.cpp"
 						>
 					</File>
@@ -2469,6 +2481,14 @@
 					</File>
 					<File
 						RelativePath="CD3D9ParallaxMapRenderer.h"
+						>
+					</File>
+					<File
+						RelativePath="CD3D9RenderTarget.cpp"
+						>
+					</File>
+					<File
+						RelativePath="CD3D9RenderTarget.h"
 						>
 					</File>
 					<File

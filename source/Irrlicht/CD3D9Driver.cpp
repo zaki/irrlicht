@@ -10,6 +10,7 @@
 #include "os.h"
 #include "S3DVertex.h"
 #include "CD3D9Texture.h"
+#include "CD3D9RenderTarget.h"
 #include "CD3D9MaterialRenderer.h"
 #include "CD3D9ShaderMaterialRenderer.h"
 #include "CD3D9NormalMapRenderer.h"
@@ -31,10 +32,10 @@ namespace
 CD3D9Driver::CD3D9Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io)
 	: CNullDriver(io, params.WindowSize), BridgeCalls(0), CurrentRenderMode(ERM_NONE),
 	ResetRenderStates(true), Transformation3DChanged(false),
-	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
-	WindowId(0), SceneSourceRect(0),
+	D3DLibrary(0), pID3D(0), pID3DDevice(0), BackBufferSurface(0),
+	DepthStencilSurface(0), WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), VendorID(0),
-	MaxTextureUnits(0), MaxUserClipPlanes(0), MaxMRTs(1), NumSetMRTs(1),
+	MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(0.f), LastSetLight(-1),
 	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
 	DriverWasReset(true), OcclusionQuerySupport(false),
@@ -77,11 +78,8 @@ CD3D9Driver::~CD3D9Driver()
 	deleteAllTextures();
 	removeAllOcclusionQueries();
 	removeAllHardwareBuffers();
-	for (u32 i=0; i<DepthBuffers.size(); ++i)
-	{
-		DepthBuffers[i]->drop();
-	}
-	DepthBuffers.clear();
+
+	DepthStencilSurface->Release();
 
     delete BridgeCalls;
 
@@ -429,7 +427,6 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
-	MaxMRTs = (s32)Caps.NumSimultaneousRTs;
 	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
 
 	if (VendorID==0x10DE)//NVidia
@@ -460,13 +457,10 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	// set the renderstates
 	setRenderStates3DMode();
 
-	// store the screen's depth buffer
-	DepthBuffers.push_back(new SDepthSurface());
-	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface))))
+	// store the screen's depth buffer descriptor
+	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
 	{
-		D3DSURFACE_DESC desc;
-		DepthBuffers[0]->Surface->GetDesc(&desc);
-		DepthBuffers[0]->Size.set(desc.Width, desc.Height);
+		DepthStencilSurface->Release();
 	}
 	else
 	{
@@ -475,7 +469,7 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	}
 
 	D3DColorFormat = D3DFMT_A8R8G8B8;
-	IDirect3DSurface9* bb=0;
+	IDirect3DSurface9* bb = 0;
 	if (SUCCEEDED(pID3DDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &bb)))
 	{
 		D3DSURFACE_DESC desc;
@@ -488,6 +482,11 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 		bb->Release();
 	}
 	ColorFormat = getColorFormatFromD3DFormat(D3DColorFormat);
+
+	RenderTargetChannel.set_used((u32)Caps.NumSimultaneousRTs);
+
+	for (u32 i = 0; i < RenderTargetChannel.size(); ++i)
+		RenderTargetChannel[i] = -1;
 
 	// so far so good.
 	return true;
@@ -523,23 +522,7 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		}
 	}
 
-	DWORD flags = 0;
-
-	if (backBuffer)
-		flags |= D3DCLEAR_TARGET;
-
-	if (zBuffer)
-		flags |= D3DCLEAR_ZBUFFER;
-
-	if (Params.Stencilbuffer)
-		flags |= D3DCLEAR_STENCIL;
-
-	if (flags)
-	{
-		hr = pID3DDevice->Clear( 0, NULL, flags, color.color, 1.0, 0);
-		if (FAILED(hr))
-			os::Printer::log("DIRECT3D9 clear failed.", ELL_WARNING);
-	}
+	clearBuffers(backBuffer, zBuffer, false, color);
 
 	hr = pID3DDevice->BeginScene();
 	if (FAILED(hr))
@@ -780,221 +763,127 @@ void CD3D9Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
 }
 
 
-//! sets a render target
-bool CD3D9Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-	bool clearZBuffer, SColor color, video::ITexture* depthStencil)
+//! set a render target
+bool CD3D9Driver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
-	// check for right driver type
-
-	if (texture && texture->getDriverType() != EDT_DIRECT3D9)
+	if (target && target->getDriverType() != EDT_DIRECT3D9)
 	{
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+		os::Printer::log("Fatal Error: Tried to set a render target not owned by this driver.", ELL_ERROR);
 		return false;
 	}
 
-	// check for valid render target
-
-	if (texture && !texture->isRenderTarget())
+	if (target)
 	{
-		os::Printer::log("Fatal Error: Tried to set a non render target texture as render target.", ELL_ERROR);
-		return false;
-	}
+		RenderTargetActiveID = activeTextureID;
 
-	CD3D9Texture* tex = static_cast<CD3D9Texture*>(texture);
+		// store main render target
 
-	// check if we should set the previous RT back
-
-	bool ret = true;
-
-	for(u32 i = 1; i < NumSetMRTs; i++)
-	{
-		// First texture handled elsewhere
-		pID3DDevice->SetRenderTarget(i, NULL);
-	}
-	if (tex == 0)
-	{
-		if (PrevRenderTarget)
+		if (!BackBufferSurface)
 		{
-			if (FAILED(pID3DDevice->SetRenderTarget(0, PrevRenderTarget)))
+			if (FAILED(pID3DDevice->GetRenderTarget(0, &BackBufferSurface)))
 			{
-				os::Printer::log("Error: Could not set back to previous render target.", ELL_ERROR);
-				ret = false;
-			}
-			if (FAILED(pID3DDevice->SetDepthStencilSurface(DepthBuffers[0]->Surface)))
-			{
-				os::Printer::log("Error: Could not set main depth buffer.", ELL_ERROR);
-			}
-
-			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
-			PrevRenderTarget->Release();
-			PrevRenderTarget = 0;
-		}
-	}
-	else
-	{
-		// we want to set a new target. so do this.
-
-		// store previous target
-
-		if (!PrevRenderTarget)
-		{
-			if (FAILED(pID3DDevice->GetRenderTarget(0, &PrevRenderTarget)))
-			{
-				os::Printer::log("Could not get previous render target.", ELL_ERROR);
+				os::Printer::log("Could not get main render target.", ELL_ERROR);
 				return false;
 			}
 		}
 
-		// set new render target
+		// set new color textures
 
-		if (FAILED(pID3DDevice->SetRenderTarget(0, tex->getRenderTargetSurface())))
-		{
-			os::Printer::log("Error: Could not set render target.", ELL_ERROR);
-			return false;
-		}
-		CurrentRendertargetSize = tex->getSize();
+		CD3D9RenderTarget* renderTarget = static_cast<CD3D9RenderTarget*>(target);
 
-		if (FAILED(pID3DDevice->SetDepthStencilSurface(tex->DepthSurface->Surface)))
+		const u32 surfaceSize = core::min_(renderTarget->getSurfaceCount(), RenderTargetChannel.size());
+
+		for (u32 i = 0; i < activeTextureID.size(); ++i)
 		{
-			os::Printer::log("Error: Could not set new depth buffer.", ELL_ERROR);
+			const u32 id = activeTextureID[i];
+
+			if (id < surfaceSize)
+			{
+				RenderTargetChannel[id] = 0;
+
+				if (FAILED(pID3DDevice->SetRenderTarget(id, renderTarget->getSurface(id))))
+				{
+					os::Printer::log("Error: Could not set render target.", ELL_ERROR);
+					RenderTargetChannel[id] = -1;
+				}
+			}
 		}
+
+		// reset other render target channels
+
+		for (u32 i = 0; i < RenderTargetChannel.size(); ++i)
+		{
+			if (RenderTargetChannel[i] == 1)
+			{
+				pID3DDevice->SetRenderTarget(i, 0);
+				RenderTargetChannel[i] = -1;
+			}
+			else if (RenderTargetChannel[i] == 0)
+			{
+				RenderTargetChannel[i] = 1;
+			}
+		}
+
+		// set depth stencil buffer
+
+		IDirect3DSurface9* depthStencilSurface = renderTarget->getDepthStencilSurface();
+
+		if (depthStencilSurface && FAILED(pID3DDevice->SetDepthStencilSurface(depthStencilSurface)))
+		{
+			os::Printer::log("Error: Could not set depth-stencil buffer.", ELL_ERROR);
+		}
+
+		// set other settings
+
+		CurrentRendertargetSize = renderTarget->getSize();
+		Transformation3DChanged = true;
 	}
-	Transformation3DChanged=true;
-
-	if (clearBackBuffer || clearZBuffer)
+	else if (CurrentRenderTarget != target)
 	{
-		DWORD flags = 0;
+		// set main render target
 
-		if (clearBackBuffer)
-			flags |= D3DCLEAR_TARGET;
-
-		if (clearZBuffer)
-			flags |= D3DCLEAR_ZBUFFER;
-
-		pID3DDevice->Clear(0, NULL, flags, color.color, 1.0f, 0);
-	}
-
-	return ret;
-}
-
-
-//! Sets multiple render targets
-bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
-	bool clearBackBuffer, bool clearZBuffer, SColor color, video::ITexture* depthStencil)
-{
-	if (targets.size()==0)
-		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color, depthStencil);
-
-	u32 maxMultipleRTTs = core::min_(MaxMRTs, targets.size());
-
-	for (u32 i = 0; i < maxMultipleRTTs; ++i)
-	{
-		if (targets[i].TargetType != ERT_RENDER_TEXTURE || !targets[i].RenderTexture)
+		if (BackBufferSurface)
 		{
-			maxMultipleRTTs = i;
-			os::Printer::log("Missing texture for MRT.", ELL_WARNING);
-			break;
+			if (FAILED(pID3DDevice->SetRenderTarget(0, BackBufferSurface)))
+			{
+				os::Printer::log("Error: Could not set main render target.", ELL_ERROR);
+				return false;
+			}
+
+			BackBufferSurface->Release();
+			BackBufferSurface = 0;
 		}
 
-		// check for right driver type
+		// reset other render target channels
 
-		if (targets[i].RenderTexture->getDriverType() != EDT_DIRECT3D9)
+		for (u32 i = 1; i < RenderTargetChannel.size(); ++i)
 		{
-			maxMultipleRTTs = i;
-			os::Printer::log("Tried to set a texture not owned by this driver.", ELL_WARNING);
-			break;
+			if (RenderTargetChannel[i] == 1)
+			{
+				pID3DDevice->SetRenderTarget(i, 0);
+				RenderTargetChannel[i] = -1;
+			}
 		}
 
-		// check for valid render target
+		// set main depth-stencil stencil buffer
 
-		if (!targets[i].RenderTexture->isRenderTarget())
+		if (FAILED(pID3DDevice->SetDepthStencilSurface(DepthStencilSurface)))
 		{
-			maxMultipleRTTs = i;
-			os::Printer::log("Tried to set a non render target texture as render target.", ELL_WARNING);
-			break;
+			os::Printer::log("Error: Could not set main depth-stencil buffer.", ELL_ERROR);
 		}
 
-		// check for valid size
+		// set other settings
 
-		if (targets[0].RenderTexture->getSize() != targets[i].RenderTexture->getSize())
-		{
-			maxMultipleRTTs = i;
-			os::Printer::log("Render target texture has wrong size.", ELL_WARNING);
-			break;
-		}
-	}
-	if (maxMultipleRTTs==0)
-	{
-		os::Printer::log("Fatal Error: No valid MRT found.", ELL_ERROR);
-		return false;
+		CurrentRendertargetSize = core::dimension2d<u32>(0, 0);
+		Transformation3DChanged = true;
 	}
 
-	CD3D9Texture* tex = static_cast<CD3D9Texture*>(targets[0].RenderTexture);
+	CurrentRenderTarget = target;
 
-	// check if we should set the previous RT back
+	clearBuffers(clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
 
-	bool ret = true;
-
-	// we want to set a new target. so do this.
-	// store previous target
-
-	if (!PrevRenderTarget)
-	{
-		if (FAILED(pID3DDevice->GetRenderTarget(0, &PrevRenderTarget)))
-		{
-			os::Printer::log("Could not get previous render target.", ELL_ERROR);
-			return false;
-		}
-	}
-
-	// set new render target
-
-	// In d3d9 we have at most 4 MRTs, so the following is enough
-	D3DRENDERSTATETYPE colorWrite[4]={D3DRS_COLORWRITEENABLE, D3DRS_COLORWRITEENABLE1, D3DRS_COLORWRITEENABLE2, D3DRS_COLORWRITEENABLE3};
-	for (u32 i = 0; i < maxMultipleRTTs; ++i)
-	{
-		if (FAILED(pID3DDevice->SetRenderTarget(i, static_cast<CD3D9Texture*>(targets[i].RenderTexture)->getRenderTargetSurface())))
-		{
-			os::Printer::log("Error: Could not set render target.", ELL_ERROR);
-			return false;
-		}
-		if (i<4 && (i==0 || queryFeature(EVDF_MRT_COLOR_MASK)))
-		{
-			const DWORD flag =
-				((targets[i].ColorMask & ECP_RED)?D3DCOLORWRITEENABLE_RED:0) |
-				((targets[i].ColorMask & ECP_GREEN)?D3DCOLORWRITEENABLE_GREEN:0) |
-				((targets[i].ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
-				((targets[i].ColorMask & ECP_ALPHA)?D3DCOLORWRITEENABLE_ALPHA:0);
-			pID3DDevice->SetRenderState(colorWrite[i], flag);
-		}
-	}
-	for(u32 i = maxMultipleRTTs; i < NumSetMRTs; i++)
-	{
-		pID3DDevice->SetRenderTarget(i, NULL);
-	}
-	NumSetMRTs=maxMultipleRTTs;
-
-	CurrentRendertargetSize = tex->getSize();
-
-	if (FAILED(pID3DDevice->SetDepthStencilSurface(tex->DepthSurface->Surface)))
-	{
-		os::Printer::log("Error: Could not set new depth buffer.", ELL_ERROR);
-	}
-
-	if (clearBackBuffer || clearZBuffer)
-	{
-		DWORD flags = 0;
-
-		if (clearBackBuffer)
-			flags |= D3DCLEAR_TARGET;
-
-		if (clearZBuffer)
-			flags |= D3DCLEAR_ZBUFFER;
-
-		pID3DDevice->Clear(0, NULL, flags, color.color, 1.0f, 0);
-	}
-
-	return ret;
+	return true;
 }
 
 
@@ -1380,6 +1269,16 @@ u32 CD3D9Driver::getOcclusionQueryResult(scene::ISceneNode* node) const
 		return OcclusionQueries[index].Result;
 	else
 		return ~0;
+}
+
+
+//! Create render target.
+IRenderTarget* CD3D9Driver::addRenderTarget()
+{
+	CD3D9RenderTarget* renderTarget = new CD3D9RenderTarget(this);
+	RenderTargets.push_back(renderTarget);
+
+	return renderTarget;
 }
 
 
@@ -2939,15 +2838,10 @@ bool CD3D9Driver::reset()
 	{
 		if (Textures[i].Surface->isRenderTarget())
 		{
-			IDirect3DBaseTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
+			IDirect3DTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
 			if (tex)
 				tex->Release();
 		}
-	}
-	for (i=0; i<DepthBuffers.size(); ++i)
-	{
-		if (DepthBuffers[i]->Surface)
-			DepthBuffers[i]->Surface->Release();
 	}
 	for (i=0; i<OcclusionQueries.size(); ++i)
 	{
@@ -2961,9 +2855,19 @@ bool CD3D9Driver::reset()
 	// automatically in the next render cycle.
 	removeAllHardwareBuffers();
 
+	// reset render target usage informations.
+	for (u32 i = 0; i < RenderTargetChannel.size(); ++i)
+		RenderTargetChannel[i] = -1;
+
+	DepthStencilSurface->Release();
+
 	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
+
+	// restore screen depthbuffer descriptor
+	pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface);
+	DepthStencilSurface->Release();
 
 	// restore RTTs
 	for (i=0; i<Textures.size(); ++i)
@@ -2972,36 +2876,7 @@ bool CD3D9Driver::reset()
 			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
 	}
 
-	// restore screen depthbuffer
-	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
-	D3DSURFACE_DESC desc;
-	// restore other depth buffers
-	// depth format is taken from main depth buffer
-	DepthBuffers[0]->Surface->GetDesc(&desc);
-	// multisampling is taken from rendertarget
-	D3DSURFACE_DESC desc2;
-	for (i=1; i<DepthBuffers.size(); ++i)
-	{
-		for (u32 j=0; j<Textures.size(); ++j)
-		{
-			// all textures sharing this depth buffer must have the same setting
-			// so take first one
-			if (((CD3D9Texture*)(Textures[j].Surface))->DepthSurface==DepthBuffers[i])
-			{
-				((CD3D9Texture*)(Textures[j].Surface))->Texture->GetLevelDesc(0,&desc2);
-				break;
-			}
-		}
-
-		pID3DDevice->CreateDepthStencilSurface(DepthBuffers[i]->Size.Width,
-				DepthBuffers[i]->Size.Height,
-				desc.Format,
-				desc2.MultiSampleType,
-				desc2.MultiSampleQuality,
-				TRUE,
-				&(DepthBuffers[i]->Surface),
-				NULL);
-	}
+	// restore occlusion queries
 	for (i=0; i<OcclusionQueries.size(); ++i)
 	{
 		pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, reinterpret_cast<IDirect3DQuery9**>(&OcclusionQueries[i].PID));
@@ -3254,11 +3129,35 @@ ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size
 			tex->drop();
 			return 0;
 		}
-		checkDepthBuffer(tex);
+
 		addTexture(tex);
 		tex->drop();
 	}
 	return tex;
+}
+
+
+//! Clear the color, depth and/or stencil buffers.
+void CD3D9Driver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+{
+	DWORD flags = 0;
+
+	if (backBuffer)
+		flags |= D3DCLEAR_TARGET;
+
+	if (depthBuffer)
+		flags |= D3DCLEAR_ZBUFFER;
+
+	if (stencilBuffer)
+		flags |= D3DCLEAR_STENCIL;
+
+	if (flags)
+	{
+		HRESULT hr = pID3DDevice->Clear(0, NULL, flags, color.color, 1.0, 0);
+
+		if (FAILED(hr))
+			os::Printer::log("DIRECT3D9 clear failed.", ELL_WARNING);
+	}
 }
 
 
@@ -3449,8 +3348,6 @@ D3DFORMAT CD3D9Driver::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
 			return D3DFMT_R8G8B8;
 		case ECF_A8R8G8B8:
 			return D3DFMT_A8R8G8B8;
-
-		// Floating Point formats. Thanks to Patryk "Nadro" Nadrowski.
 		case ECF_R16F:
 			return D3DFMT_R16F;
 		case ECF_G16R16F:
@@ -3463,6 +3360,12 @@ D3DFORMAT CD3D9Driver::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
 			return D3DFMT_G32R32F;
 		case ECF_A32B32G32R32F:
 			return D3DFMT_A32B32G32R32F;
+		case ECF_D16:
+			return D3DFMT_D16;
+		case ECF_D24S8:
+			return D3DFMT_D24S8;
+		case ECF_D32:
+			return D3DFMT_D32;
 	}
 	return D3DFMT_UNKNOWN;
 }
@@ -3500,85 +3403,6 @@ ECOLOR_FORMAT CD3D9Driver::getColorFormatFromD3DFormat(D3DFORMAT format) const
 		default:
 			return (ECOLOR_FORMAT)0;
 	};
-}
-
-
-void CD3D9Driver::checkDepthBuffer(ITexture* tex)
-{
-	if (!tex)
-		return;
-	const core::dimension2du optSize = tex->getSize().getOptimalSize(
-			!queryFeature(EVDF_TEXTURE_NPOT),
-			!queryFeature(EVDF_TEXTURE_NSQUARE), true);
-	SDepthSurface* depth=0;
-	core::dimension2du destSize(0x7fffffff, 0x7fffffff);
-	for (u32 i=0; i<DepthBuffers.size(); ++i)
-	{
-		if ((DepthBuffers[i]->Size.Width>=optSize.Width) &&
-			(DepthBuffers[i]->Size.Height>=optSize.Height))
-		{
-			if ((DepthBuffers[i]->Size.Width<destSize.Width) &&
-				(DepthBuffers[i]->Size.Height<destSize.Height))
-			{
-				depth = DepthBuffers[i];
-				destSize=DepthBuffers[i]->Size;
-			}
-		}
-	}
-	if (!depth)
-	{
-		D3DSURFACE_DESC desc;
-		DepthBuffers[0]->Surface->GetDesc(&desc);
-		// the multisampling needs to match the RTT
-		D3DSURFACE_DESC desc2;
-		((CD3D9Texture*)tex)->Texture->GetLevelDesc(0,&desc2);
-		DepthBuffers.push_back(new SDepthSurface());
-		HRESULT hr=pID3DDevice->CreateDepthStencilSurface(optSize.Width,
-				optSize.Height,
-				desc.Format,
-				desc2.MultiSampleType,
-				desc2.MultiSampleQuality,
-				TRUE,
-				&(DepthBuffers.getLast()->Surface),
-				NULL);
-		if (SUCCEEDED(hr))
-		{
-			depth=DepthBuffers.getLast();
-			depth->Surface->GetDesc(&desc);
-			depth->Size.set(desc.Width, desc.Height);
-		}
-		else
-		{
-			if (hr == D3DERR_OUTOFVIDEOMEMORY)
-				os::Printer::log("Could not create DepthBuffer","out of video memory",ELL_ERROR);
-			else if( hr == E_OUTOFMEMORY )
-				os::Printer::log("Could not create DepthBuffer","out of memory",ELL_ERROR);
-			else
-			{
-				char buffer[128];
-				sprintf(buffer,"Could not create DepthBuffer of %ix%i",optSize.Width,optSize.Height);
-				os::Printer::log(buffer,ELL_ERROR);
-			}
-			DepthBuffers.erase(DepthBuffers.size()-1);
-		}
-	}
-	else
-		depth->grab();
-
-	static_cast<CD3D9Texture*>(tex)->DepthSurface=depth;
-}
-
-
-void CD3D9Driver::removeDepthSurface(SDepthSurface* depth)
-{
-	for (u32 i=0; i<DepthBuffers.size(); ++i)
-	{
-		if (DepthBuffers[i]==depth)
-		{
-			DepthBuffers.erase(i);
-			return;
-		}
-	}
 }
 
 

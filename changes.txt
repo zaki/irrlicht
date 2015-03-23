@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Added new IRenderTarget interface.
 - Replace the swprintf and snprintf defines by swprintf_irr and snprintf_irr to avoid conflicts with the standard libraries (and other libraries).
 - XBox support removed as it would need DX8 (this was about the original XBox).
 - Support for Direct3D 8 removed after svn revision 5052 due to lack of maintenance.
@@ -15,7 +16,6 @@ Changes in 1.9 (not yet released)
 - Add a new core::rect constructor which takes a dimension parameter and set's left-top to 0.
 - mtl (obj) format reader and write now regards texture scaling and translation. (thx @thanhle for noticing and patch proposal).
 - Added Visual Studio 2013 project files.
-- Added ability to set custom depth/stencil texture for render targets.
 - Added new color formats: ECF_R8, ECF_R8G8, ECF_D16, ECF_D32, ECF_D24S8.
 - Can now enable/disable backround drawing for IGUITable.
 - Bugfix: Cloning CBillboardSceneNode now copies colors and sizes.

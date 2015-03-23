@@ -21,7 +21,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		TextureCompressionExtension(false),
 		MaxSupportedTextures(1), MaxTextureUnits(1), MaxLights(1),
 		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
-		MaxMultipleRenderTargets(1), MaxIndices(65535),
+		MaxMultipleRenderTargets(1), MaxColorAttachments(1), MaxIndices(65535),
 		MaxTextureSize(1), MaxGeometryVerticesOut(0),
 		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0),
 		OcclusionQuerySupport(false)
@@ -653,6 +653,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	{
 		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &num);
 		MaxMultipleRenderTargets = static_cast<u8>(num);
+	}
+#endif
+#if defined(GL_EXT_framebuffer_object)
+	if (FeatureAvailable[IRR_EXT_framebuffer_object])
+	{
+		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &num);
+		MaxColorAttachments = static_cast<u8>(num);
 	}
 #endif
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);

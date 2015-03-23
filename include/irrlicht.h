@@ -124,6 +124,7 @@
 #include "IReferenceCounted.h"
 #include "irrArray.h"
 #include "IRandomizer.h"
+#include "IRenderTarget.h"
 #include "IrrlichtDevice.h"
 #include "irrList.h"
 #include "irrMap.h"

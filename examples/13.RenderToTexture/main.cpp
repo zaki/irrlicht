@@ -109,14 +109,20 @@ int main()
 	*/
 
 	// create render target
-	video::ITexture* rt = 0;
+	video::IRenderTarget* renderTarget = 0;
+	video::ITexture* renderTargetTex = 0;
 	scene::ICameraSceneNode* fixedCam = 0;
 	
 
 	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
 	{
-		rt = driver->addRenderTargetTexture(core::dimension2d<u32>(256,256), "RTT1");
-		test->setMaterialTexture(0, rt); // set material of cube to render target
+		renderTargetTex = driver->addRenderTargetTexture(core::dimension2d<u32>(256, 256), "RTT1", video::ECF_A8R8G8B8);
+		video::ITexture* renderTargetDepth = driver->addRenderTargetTexture(core::dimension2d<u32>(256, 256), "DepthStencil", video::ECF_D16);
+
+		renderTarget = driver->addRenderTarget();
+		renderTarget->setTexture(renderTargetTex, renderTargetDepth);
+
+		test->setMaterialTexture(0, renderTargetTex); // set material of cube to render target
 
 		// add fixed camera
 		fixedCam = smgr->addCameraSceneNode(0, core::vector3df(10,10,-80),
@@ -161,12 +167,12 @@ int main()
 	{
 		driver->beginScene(true, true, 0);
 
-		if (rt)
+		if (renderTarget)
 		{
 			// draw scene into render target
 			
 			// set render target texture
-			driver->setRenderTarget(rt, true, true, video::SColor(0,0,0,255));
+			driver->setRenderTarget(renderTarget, 0, true, true, false, video::SColor(0, 0, 0, 255));
 
 			// make cube invisible and set fixed camera as active camera
 			test->setVisible(false);
@@ -177,7 +183,7 @@ int main()
 
 			// set back old render target
 			// The buffer might have been distorted, so clear it
-			driver->setRenderTarget(0, true, true, 0);
+			driver->setRenderTarget(0, 0, false, false, false, 0);
 
 			// make the cube visible and set the user controlled camera as active one
 			test->setVisible(true);

@@ -174,6 +174,16 @@ bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 
+//! Create render target.
+IRenderTarget* CSoftwareDriver::addRenderTarget()
+{
+	CSoftwareRenderTarget* renderTarget = new CSoftwareRenderTarget(this);
+	RenderTargets.push_back(renderTarget);
+
+	return renderTarget;
+}
+
+
 //! sets transformation
 void CSoftwareDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
@@ -226,11 +236,7 @@ bool CSoftwareDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	WindowId=videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
-	if (backBuffer && BackBuffer)
-		BackBuffer->fill(color);
-
-	if (ZBuffer && zBuffer)
-		ZBuffer->clear();
+	clearBuffers(backBuffer, zBuffer, false, color);
 
 	return true;
 }
@@ -253,20 +259,21 @@ ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const i
 }
 
 
-//! sets a render target
-bool CSoftwareDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-	bool clearZBuffer, SColor color, video::ITexture* depthStencil)
+//! set a render target
+bool CSoftwareDriver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
-	if (texture && texture->getDriverType() != EDT_SOFTWARE)
+	if (target && target->getDriverType() != EDT_SOFTWARE)
 	{
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+		os::Printer::log("Fatal Error: Tried to set a render target not owned by this driver.", ELL_ERROR);
 		return false;
 	}
 
 	if (RenderTargetTexture)
 		RenderTargetTexture->drop();
 
-	RenderTargetTexture = texture;
+	CSoftwareRenderTarget* renderTarget = static_cast<CSoftwareRenderTarget*>(target);
+	RenderTargetTexture = (renderTarget) ? renderTarget->getTexture() : 0;
 
 	if (RenderTargetTexture)
 	{
@@ -278,14 +285,7 @@ bool CSoftwareDriver::setRenderTarget(video::ITexture* texture, bool clearBackBu
 		setRenderTarget(BackBuffer);
 	}
 
-	if (RenderTargetSurface && (clearBackBuffer || clearZBuffer))
-	{
-		if (clearZBuffer)
-			ZBuffer->clear();
-
-		if (clearBackBuffer)
-			RenderTargetSurface->fill(color);
-	}
+	clearBuffers(clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
 
 	return true;
 }
@@ -910,6 +910,17 @@ ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& 
 	addTexture(tex);
 	tex->drop();
 	return tex;
+}
+
+
+//! Clear the color, depth and/or stencil buffers.
+void CSoftwareDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+{
+	if (backBuffer && RenderTargetSurface)
+		RenderTargetSurface->fill(color);
+
+	if (depthBuffer && ZBuffer)
+		ZBuffer->clear();
 }
 
 

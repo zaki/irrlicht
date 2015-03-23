@@ -6,12 +6,15 @@
 #define __C_SOFTWARE_TEXTURE_H_INCLUDED__
 
 #include "ITexture.h"
+#include "IRenderTarget.h"
 #include "CImage.h"
 
 namespace irr
 {
 namespace video
 {
+
+class CSoftwareDriver;
 
 /*!
 	interface for a Video Driver dependent Texture.
@@ -46,6 +49,23 @@ public:
 private:
 	CImage* Image;
 	CImage* Texture;
+};
+
+/*!
+	interface for a Video Driver dependent render target.
+*/
+class CSoftwareRenderTarget : public IRenderTarget
+{
+public:
+	CSoftwareRenderTarget(CSoftwareDriver* driver);
+	virtual ~CSoftwareRenderTarget();
+
+	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) _IRR_OVERRIDE_;
+
+	ITexture* getTexture() const;
+
+protected:
+	CSoftwareDriver* Driver;
 };
 
 

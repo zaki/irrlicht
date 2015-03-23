@@ -1300,6 +1300,15 @@
     <ClInclude Include="CProfiler.h">
       <Filter>Irrlicht\irr</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IRenderTarget.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
+    <ClInclude Include="CD3D9RenderTarget.h">
+      <Filter>Irrlicht\video\Direct3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLRenderTarget.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2221,6 +2230,12 @@
     </ClCompile>
     <ClCompile Include="leakHunter.cpp">
       <Filter>Irrlicht\irr</Filter>
+    </ClCompile>
+    <ClCompile Include="CD3D9RenderTarget.cpp">
+      <Filter>Irrlicht\video\Direct3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLRenderTarget.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
