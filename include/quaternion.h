@@ -67,6 +67,7 @@ class quaternion
 		quaternion operator+(const quaternion& other) const;
 
 		//! Multiplication operator
+		//! Be careful, unfortunately the operator order here is opposite of that in CMatrix4::operator*
 		quaternion operator*(const quaternion& other) const;
 
 		//! Multiplication operator with scalar
