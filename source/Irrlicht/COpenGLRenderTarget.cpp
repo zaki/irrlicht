@@ -147,7 +147,7 @@ void COpenGLRenderTarget::setTexture(const core::array<ITexture*>& texture, ITex
 
 		for (u32 i = 0; i < Texture.size(); ++i)
 		{
-			GLuint textureID = (texture[i] && texture[i]->getDriverType() == EDT_OPENGL) ? static_cast<COpenGLTexture*>(depthStencil)->getOpenGLTextureName() : 0;
+			GLuint textureID = (texture[i] && texture[i]->getDriverType() == EDT_OPENGL) ? static_cast<COpenGLTexture*>(texture[i])->getOpenGLTextureName() : 0;
 
 			if (textureID != 0)
 			{
@@ -296,7 +296,7 @@ void COpenGLRenderTarget::update(const core::array<u32>& id)
 			const u32 mrtSize = core::min_(size, static_cast<u32>(Driver->MaxMultipleRenderTargets));
 
 			for (u32 i = 0; i < mrtSize; ++i)
-				target[i + id[i]] = GL_COLOR_ATTACHMENT0 + id[i];
+				target[id[i]] = GL_COLOR_ATTACHMENT0 + id[i];
 
 			Driver->extGlDrawBuffers(mrtSize, target);
 

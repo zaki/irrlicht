@@ -618,13 +618,6 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 
 
 //! set a render target
-bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color)
-{
-	return false;
-}
-
-
-//! set a render target
 bool CNullDriver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
 	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {

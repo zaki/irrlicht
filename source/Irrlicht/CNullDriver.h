@@ -101,9 +101,6 @@ namespace video
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) _IRR_OVERRIDE_;
 
 		//! set a render target
-		virtual bool setRenderTarget(ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
-
-		//! set a render target
 		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
 			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) _IRR_OVERRIDE_;
 

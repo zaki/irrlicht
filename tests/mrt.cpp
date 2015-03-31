@@ -25,20 +25,31 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 	const char* const ps2="void main(void)\n {\n gl_FragData[0] = vec4(1.0,1.0,1.0,1.0);\n gl_FragData[1] = vec4(0.0,1.0,0.0,1.0);\n gl_FragData[2] = vec4(0.0,0.0,1.0,1.0);\n }";
 
 	// variable
-	video::ITexture* gbuffer[3];
-	core::array<video::IRenderTarget> gbufferlist;
+	video::IRenderTarget* renderTarget = 0;
+	core::array<video::ITexture*> renderTargetTex;
+	video::ITexture* renderTargetDepth = 0;
+	core::array<u32> renderTargetID;
+
 	const core::dimension2du texsize(64,64);
 	bool result=true;
 	s32 newMaterialType = -1;
 
 	if (device->getVideoDriver()->getDriverAttributes().getAttributeAsInt("MaxMultipleRenderTargets") > 2)
 	{
-		// allocate buffer
-		gbuffer[0] = driver->addRenderTargetTexture(texsize, "rta", video::ECF_A8R8G8B8);
-		gbuffer[1] = driver->addRenderTargetTexture(texsize, "rtb", video::ECF_A8R8G8B8);
-		gbuffer[2] = driver->addRenderTargetTexture(texsize, "rtc", video::ECF_A8R8G8B8);
-		for( u32 i = 0; i < 3; ++i )
-		   gbufferlist.push_back( video::IRenderTarget(gbuffer[i]) );
+		renderTargetTex.set_used(3);
+		renderTargetTex[0] = driver->addRenderTargetTexture(texsize, "rta", video::ECF_A8R8G8B8);
+		renderTargetTex[1] = driver->addRenderTargetTexture(texsize, "rtb", video::ECF_A8R8G8B8);
+		renderTargetTex[2] = driver->addRenderTargetTexture(texsize, "rtc", video::ECF_A8R8G8B8);
+
+		renderTargetDepth = driver->addRenderTargetTexture(texsize, "rtd", video::ECF_D16);
+
+		renderTargetID.set_used(3);
+		renderTargetID[0] = 0;
+		renderTargetID[1] = 1;
+		renderTargetID[2] = 2;
+
+		renderTarget = driver->addRenderTarget();
+		renderTarget->setTexture(renderTargetTex, renderTargetDepth);
 
 		video::IGPUProgrammingServices* gpu = driver->getGPUProgrammingServices();
 
@@ -57,32 +68,32 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 		node->setMaterialType((video::E_MATERIAL_TYPE)newMaterialType);
 		device->getSceneManager()->addCameraSceneNode(0, core::vector3df(0,0,-10));
 
-		driver->beginScene (true, true, video::SColor (255, 200, 200, 200));
+		driver->beginScene(true, false, video::SColor(255, 0, 0, 0));
 		// render
-		driver->setRenderTarget( gbufferlist );
+		driver->setRenderTarget(renderTarget, renderTargetID, true, true, false, video::SColor(255, 0, 0, 0));
 		device->getSceneManager()->drawAll();
-		driver->setRenderTarget(0);
+		driver->setRenderTarget(0, renderTargetID, false, false, false, video::SColor(255, 0, 0, 0));
 
 		// draw debug rt
-		driver->draw2DImage(gbuffer[0], core::position2d<s32>(0,0));
-		driver->draw2DImage(gbuffer[1], core::position2d<s32>(64,0));
-		driver->draw2DImage(gbuffer[2], core::position2d<s32>(128,0)); 
+		driver->draw2DImage(renderTargetTex[0], core::position2d<s32>(0,0));
+		driver->draw2DImage(renderTargetTex[1], core::position2d<s32>(64,0));
+		driver->draw2DImage(renderTargetTex[2], core::position2d<s32>(128,0)); 
 
 		driver->endScene();
 
 		result = takeScreenshotAndCompareAgainstReference(driver, "-mrt.png");
 
-		driver->beginScene (true, true, video::SColor (255, 200, 200, 200));
+		driver->beginScene(true, false, video::SColor(255, 0, 0, 0));
 		// render
 		device->getSceneManager()->getActiveCamera()->setPosition(core::vector3df(0,0,-15));
-		driver->setRenderTarget( gbufferlist );
+		driver->setRenderTarget(renderTarget, renderTargetID, true, true, false, video::SColor(255, 0, 0, 0));
 		device->getSceneManager()->drawAll();
-		driver->setRenderTarget(0);
+		driver->setRenderTarget(0, renderTargetID, false, false, false, video::SColor(255, 0, 0, 0));
 
 		// draw debug rt
-		driver->draw2DImage(gbuffer[0], core::position2d<s32>(0,0));
-		driver->draw2DImage(gbuffer[1], core::position2d<s32>(64,0));
-		driver->draw2DImage(gbuffer[2], core::position2d<s32>(128,0)); 
+		driver->draw2DImage(renderTargetTex[0], core::position2d<s32>(0,0));
+		driver->draw2DImage(renderTargetTex[1], core::position2d<s32>(64,0));
+		driver->draw2DImage(renderTargetTex[2], core::position2d<s32>(128,0)); 
 
 		driver->endScene();
 

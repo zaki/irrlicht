@@ -525,42 +525,6 @@ namespace video
 		information is multiplied.*/
 		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const =0;
 
-		//! Set a new render target.
-		/** This will only work if the driver supports the
-		EVDF_RENDER_TO_TARGET feature, which can be queried with
-		queryFeature(). Usually, rendering to textures is done in this
-		way:
-		\code
-		// create render target
-		ITexture* target = driver->addRenderTargetTexture(core::dimension2d<u32>(128,128), "rtt1");
-
-		// ...
-
-		driver->setRenderTarget(target); // set render target
-		// .. draw stuff here
-		driver->setRenderTarget(0); // set previous render target
-		\endcode
-		Please note that you cannot render 3D or 2D geometry with a
-		render target as texture on it when you are rendering the scene
-		into this render target at the same time. It is usually only
-		possible to render into a texture between the
-		IVideoDriver::beginScene() and endScene() method calls.
-		\param texture New render target. Must be a texture created with
-		IVideoDriver::addRenderTargetTexture(). If set to 0, it sets
-		the previous render target which was set before the last
-		setRenderTarget() call.
-		\param clearBackBuffer Clears the backbuffer of the render
-		target with the color parameter
-		\param clearZBuffer Clears the zBuffer of the rendertarget.
-		Note that because the frame buffer may share the zbuffer with
-		the rendertarget, its zbuffer might be partially cleared too
-		by this.
-		\param color The background color for the render target.
-		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(video::ITexture* texture,
-			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0)) =0;
-
 		//! Set a render target.
 		/** This will only work if the driver supports the
 		EVDF_RENDER_TO_TARGET feature, which can be queried with
@@ -580,11 +544,11 @@ namespace video
 		\param clearColor The clear color for the render target.
 		\return True if sucessful and false if not. */
 		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
-			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) = 0;
+			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor = video::SColor(255,0,0,0)) = 0;
 
 		//! Set a render target.
 		bool setRenderTarget(IRenderTarget* target, u32 activeTextureID, bool clearBackBuffer, bool clearDepthBuffer,
-			bool clearStencilBuffer, SColor clearColor)
+			bool clearStencilBuffer, SColor clearColor = video::SColor(255,0,0,0))
 		{
 			core::array<u32> idArray(1);
 			idArray.push_back(activeTextureID);
