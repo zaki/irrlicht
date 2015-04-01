@@ -2133,7 +2133,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 //	if (resetAllRenderstates || (lastmaterial.ZWriteEnable != material.ZWriteEnable))
 	{
 		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (!material.isTransparent() &&
-			!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
+ 			!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
 		{
 			pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
 		}

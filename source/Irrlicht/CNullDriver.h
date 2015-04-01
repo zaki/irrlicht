@@ -104,6 +104,11 @@ namespace video
 		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
 			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) _IRR_OVERRIDE_;
 
+		//! set a render target
+		virtual bool setRenderTarget(video::ITexture* texture,
+			bool clearBackBuffer = true, bool clearZBuffer = true,
+			SColor color = video::SColor(0, 0, 0, 0)) _IRR_OVERRIDE_;
+
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
 
@@ -804,6 +809,7 @@ namespace video
 		core::array<SOccQuery> OcclusionQueries;
 
 		core::array<IRenderTarget*> RenderTargets;
+		IRenderTarget* TextureRenderTarget;	// A default rendertarget for rendering to single textures.
 
 		IRenderTarget* CurrentRenderTarget;
 		core::dimension2d<u32> CurrentRenderTargetSize;

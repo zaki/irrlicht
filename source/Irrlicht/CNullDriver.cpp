@@ -83,7 +83,7 @@ IImageWriter* createImageWriterPPM();
 
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
-	: CurrentRenderTarget(0), CurrentRenderTargetSize(0, 0), FileSystem(io), MeshManipulator(0),
+	: TextureRenderTarget(0), CurrentRenderTarget(0), CurrentRenderTargetSize(0, 0), FileSystem(io), MeshManipulator(0),
 	ViewPort(0, 0, 0, 0), ScreenSize(screenSize), PrimitivesDrawn(0), MinVertexCountForVBO(500),
 	TextureCreationFlags(0), OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
@@ -212,6 +212,9 @@ CNullDriver::~CNullDriver()
 
 	if (MeshManipulator)
 		MeshManipulator->drop();
+
+	if (TextureRenderTarget)
+		TextureRenderTarget->drop();
 
 	removeAllRenderTargets();
 
@@ -624,6 +627,25 @@ bool CNullDriver::setRenderTarget(IRenderTarget* target, core::array<u32> active
 	return false;
 }
 
+bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color)
+{
+	if (texture)
+	{
+		if (!TextureRenderTarget)
+		{
+			// (there's no createRenderTarget)
+			TextureRenderTarget = addRenderTarget();
+			TextureRenderTarget->grab();
+			removeRenderTarget(TextureRenderTarget);
+		}
+
+		return setRenderTarget(TextureRenderTarget, 0, clearBackBuffer, clearZBuffer, clearZBuffer, color);
+	}
+	else
+	{
+		return setRenderTarget(NULL, 0, clearBackBuffer, clearZBuffer, clearZBuffer, color);
+	}
+}
 
 //! sets a viewport
 void CNullDriver::setViewPort(const core::rect<s32>& area)
