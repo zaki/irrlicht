@@ -40,7 +40,7 @@ namespace video
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
 		//! set a render target
-		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
 			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) _IRR_OVERRIDE_;
 
 		//! sets a viewport

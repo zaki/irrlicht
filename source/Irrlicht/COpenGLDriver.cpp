@@ -4223,7 +4223,7 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 
 
 //! set a render target
-bool COpenGLDriver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+bool COpenGLDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
 	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
 	if (target && target->getDriverType() != EDT_OPENGL)

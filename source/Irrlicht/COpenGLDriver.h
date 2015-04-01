@@ -360,7 +360,7 @@ namespace video
 				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
 		//! set a render target
-		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
 			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) _IRR_OVERRIDE_;
 
 		//! Clear the color, depth and/or stencil buffers.

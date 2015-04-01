@@ -543,7 +543,7 @@ namespace video
 		\param clearStencilBuffer Clears the stencil buffer of the rendertarget.
 		\param clearColor The clear color for the render target.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
 			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor = video::SColor(255,0,0,0)) = 0;
 
 		//! Set a render target.

@@ -33,7 +33,7 @@ public:
 
 	//! Constructs an array and allocates an initial chunk of memory.
 	/** \param start_count Amount of elements to pre-allocate. */
-	array(u32 start_count) : data(0), allocated(0), used(0),
+	explicit array(u32 start_count) : data(0), allocated(0), used(0),
 			strategy(ALLOC_STRATEGY_DOUBLE),
 			free_when_destroyed(true), is_sorted(true)
 	{

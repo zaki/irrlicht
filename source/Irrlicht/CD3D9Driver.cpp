@@ -764,7 +764,7 @@ void CD3D9Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
 
 
 //! set a render target
-bool CD3D9Driver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
 	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
 	if (target && target->getDriverType() != EDT_DIRECT3D9)

@@ -83,7 +83,7 @@ IImageWriter* createImageWriterPPM();
 
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
-	: TextureRenderTarget(0), CurrentRenderTarget(0), CurrentRenderTargetSize(0, 0), FileSystem(io), MeshManipulator(0),
+	: SharedRenderTarget(0), CurrentRenderTarget(0), CurrentRenderTargetSize(0, 0), FileSystem(io), MeshManipulator(0),
 	ViewPort(0, 0, 0, 0), ScreenSize(screenSize), PrimitivesDrawn(0), MinVertexCountForVBO(500),
 	TextureCreationFlags(0), OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
@@ -213,9 +213,6 @@ CNullDriver::~CNullDriver()
 	if (MeshManipulator)
 		MeshManipulator->drop();
 
-	if (TextureRenderTarget)
-		TextureRenderTarget->drop();
-
 	removeAllRenderTargets();
 
 	deleteAllTextures();
@@ -296,10 +293,19 @@ void CNullDriver::deleteAllTextures()
 	// last set material member. Could be optimized to reduce state changes.
 	setMaterial(SMaterial());
 
+	// reset render targets.
+
+	for (u32 i=0; i<RenderTargets.size(); ++i)
+		RenderTargets[i]->setTexture(0, 0);
+
+	// remove textures.
+
 	for (u32 i=0; i<Textures.size(); ++i)
 		Textures[i].Surface->drop();
 
 	Textures.clear();
+
+	SharedDepthTextures.clear();
 }
 
 
@@ -621,7 +627,7 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 
 
 //! set a render target
-bool CNullDriver::setRenderTarget(IRenderTarget* target, core::array<u32> activeTextureID, bool clearBackBuffer,
+bool CNullDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
 	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
 {
 	return false;
@@ -631,19 +637,37 @@ bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 {
 	if (texture)
 	{
-		if (!TextureRenderTarget)
+		// create render target if require.
+		if (!SharedRenderTarget)
+			SharedRenderTarget = addRenderTarget();
+
+		ITexture* depthTexture = 0;
+
+		// try to find available depth texture with require size.
+		for (u32 i = 0; i < SharedDepthTextures.size(); ++i)
 		{
-			// (there's no createRenderTarget)
-			TextureRenderTarget = addRenderTarget();
-			TextureRenderTarget->grab();
-			removeRenderTarget(TextureRenderTarget);
+			if (SharedDepthTextures[i]->getSize() == texture->getSize())
+			{
+				depthTexture = SharedDepthTextures[i];
+
+				break;
+			}
 		}
 
-		return setRenderTarget(TextureRenderTarget, 0, clearBackBuffer, clearZBuffer, clearZBuffer, color);
+		// create depth texture if require.
+		if (!depthTexture)
+		{
+			depthTexture = addRenderTargetTexture(texture->getSize(), "IRR_DEPTH_STENCIL", video::ECF_D24S8);
+			SharedDepthTextures.push_back(depthTexture);
+		}
+
+		SharedRenderTarget->setTexture(texture, depthTexture);
+
+		return IVideoDriver::setRenderTarget(SharedRenderTarget, 0, clearBackBuffer, clearZBuffer, clearZBuffer, color);
 	}
 	else
 	{
-		return setRenderTarget(NULL, 0, clearBackBuffer, clearZBuffer, clearZBuffer, color);
+		return IVideoDriver::setRenderTarget(NULL, 0, clearBackBuffer, clearZBuffer, false, color);
 	}
 }
 
@@ -1807,6 +1831,8 @@ void CNullDriver::removeAllRenderTargets()
 		RenderTargets[i]->drop();
 
 	RenderTargets.clear();
+
+	SharedRenderTarget = 0;
 }
 
 
