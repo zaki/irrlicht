@@ -2130,15 +2130,13 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	}
 
 	// zwrite
-//	if (resetAllRenderstates || (lastmaterial.ZWriteEnable != material.ZWriteEnable))
+	if (getWriteZBuffer(material))
 	{
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (!material.isTransparent() &&
- 			!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
-		{
-			pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
-		}
-		else
-			pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE);
+		pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
+	}
+	else
+	{
+		pID3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	}
 
 	// back face culling

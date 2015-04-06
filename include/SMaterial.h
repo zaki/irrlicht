@@ -246,6 +246,16 @@ namespace video
 		0
 	};
 
+	//! Fine-tuning for SMaterial.ZWriteFineControl 
+	enum E_ZWRITE_FINE_CONTROL
+	{
+		//! Default. Only write zbuffer when When SMaterial::ZBuffer is true and SMaterial::isTransparent() returns false.
+		EZI_ONLY_NON_TRANSPARENT,
+		//! Writing will just be based on SMaterial::ZBuffer value, transparency is ignored.
+		//! Needed mostly for certain shader materials as SMaterial::isTransparent will always return false for those.
+		EZI_ZBUFFER_FLAG
+	};
+
 
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;
@@ -264,7 +274,8 @@ namespace video
 			PolygonOffsetFactor(0), PolygonOffsetDirection(EPO_FRONT),
 			Wireframe(false), PointCloud(false), GouraudShading(true),
 			Lighting(true), ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), UseMipMaps(true)
+			FogEnable(false), NormalizeNormals(false), UseMipMaps(true), 
+			ZWriteFineControl(EZI_ONLY_NON_TRANSPARENT)
 		{ }
 
 		//! Copy constructor
@@ -318,6 +329,7 @@ namespace video
 			PolygonOffsetFactor = other.PolygonOffsetFactor;
 			PolygonOffsetDirection = other.PolygonOffsetDirection;
 			UseMipMaps = other.UseMipMaps;
+			ZWriteFineControl = other.ZWriteFineControl;
 
 			return *this;
 		}
@@ -474,6 +486,11 @@ namespace video
 		//! Shall mipmaps be used if available
 		/** Sometimes, disabling mipmap usage can be useful. Default: true */
 		bool UseMipMaps:1;
+
+		//! Give more control how the ZWriteEnable flag is interpreted
+		/** Note that there is also the global flag AllowZWriteOnTransparent
+		which when set acts like all materials have set EZI_ALLOW_ON_TRANSPARENT. */
+		E_ZWRITE_FINE_CONTROL ZWriteFineControl;
 
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES.
@@ -695,7 +712,9 @@ namespace video
 				BlendFactor != b.BlendFactor ||
 				PolygonOffsetFactor != b.PolygonOffsetFactor ||
 				PolygonOffsetDirection != b.PolygonOffsetDirection ||
-				UseMipMaps != b.UseMipMaps;
+				UseMipMaps != b.UseMipMaps ||
+				ZWriteFineControl != b.ZWriteFineControl;
+				;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
 			{
 				different |= (TextureLayer[i] != b.TextureLayer[i]);

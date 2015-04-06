@@ -725,6 +725,26 @@ namespace video
 			return (f32) getAverage ( p[(y * pitch) + x] );
 		}
 
+		inline bool getWriteZBuffer(const SMaterial&material) const
+		{
+			if (material.ZWriteEnable)
+			{
+				if (!AllowZWriteOnTransparent)
+				{
+					switch (material.ZWriteFineControl)
+					{
+					case EZI_ONLY_NON_TRANSPARENT:
+						return !material.isTransparent();
+					case EZI_ZBUFFER_FLAG:
+						return true;
+					}
+				}
+				else
+					return true;
+			}
+			return false;
+		}
+
 		struct SSurface
 		{
 			video::ITexture* Surface;
