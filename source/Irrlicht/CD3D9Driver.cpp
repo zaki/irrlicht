@@ -79,7 +79,8 @@ CD3D9Driver::~CD3D9Driver()
 	removeAllOcclusionQueries();
 	removeAllHardwareBuffers();
 
-	DepthStencilSurface->Release();
+	if (DepthStencilSurface)
+		DepthStencilSurface->Release();
 
     delete BridgeCalls;
 
@@ -2857,15 +2858,16 @@ bool CD3D9Driver::reset()
 	for (u32 i = 0; i < RenderTargetChannel.size(); ++i)
 		RenderTargetChannel[i] = -1;
 
-	DepthStencilSurface->Release();
+	if (DepthStencilSurface)
+		DepthStencilSurface->Release();
 
 	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 
 	// restore screen depthbuffer descriptor
-	pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface);
-	DepthStencilSurface->Release();
+	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
+		DepthStencilSurface->Release();
 
 	// restore RTTs
 	for (i=0; i<Textures.size(); ++i)
