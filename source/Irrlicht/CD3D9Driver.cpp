@@ -2876,6 +2876,10 @@ bool CD3D9Driver::reset()
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 
+	// reset bridge calls.
+	if (BridgeCalls)
+		BridgeCalls->reset();
+
 	// restore screen depthbuffer descriptor
 	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
 		DepthStencilSurface->Release();
@@ -3469,20 +3473,36 @@ CD3D9CallBridge* CD3D9Driver::getBridgeCalls() const
 
 CD3D9CallBridge::CD3D9CallBridge(IDirect3DDevice9* p, CD3D9Driver* driver) : pID3DDevice(p),
     BlendOperation(D3DBLENDOP_ADD), BlendSourceRGB(D3DBLEND_ONE), BlendDestinationRGB(D3DBLEND_ZERO),
-    BlendSourceAlpha(D3DBLEND_ONE), BlendDestinationAlpha(D3DBLEND_ZERO), Blend(false), BlendSeparate(false)
+    BlendSourceAlpha(D3DBLEND_ONE), BlendDestinationAlpha(D3DBLEND_ZERO), Blend(false), BlendSeparate(false),
+	FeatureBlendSeparate(false)
 {
-    FeatureBlendSeparate = driver->queryFeature(EVDF_BLEND_SEPARATE);
+	FeatureBlendSeparate = driver->queryFeature(EVDF_BLEND_SEPARATE);
 
-    pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-    pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-    pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+	reset();
+}
+
+void CD3D9CallBridge::reset()
+{
+	BlendOperation = D3DBLENDOP_ADD;
+
+	BlendSourceRGB = D3DBLEND_ONE;
+	BlendDestinationRGB = D3DBLEND_ZERO;
+	BlendSourceAlpha = D3DBLEND_ONE;
+	BlendDestinationAlpha = D3DBLEND_ZERO;
+
+	Blend = false;
+	BlendSeparate = false;
+
+	pID3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 	pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
 	if (FeatureBlendSeparate)
 	{
-        pID3DDevice->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_ONE);
-        pID3DDevice->SetRenderState(D3DRS_DESTBLENDALPHA, D3DBLEND_ZERO);
-        pID3DDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, FALSE);
+		pID3DDevice->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_ONE);
+		pID3DDevice->SetRenderState(D3DRS_DESTBLENDALPHA, D3DBLEND_ZERO);
+		pID3DDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, FALSE);
 	}
 }
 

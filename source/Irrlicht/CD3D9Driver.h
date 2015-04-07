@@ -473,6 +473,10 @@ namespace video
 	public:
 		CD3D9CallBridge(IDirect3DDevice9* p, CD3D9Driver* driver);
 
+		// Reset to default state.
+
+		void reset();
+
 		// Blending calls.
 
 		void setBlendOperation(DWORD mode);
