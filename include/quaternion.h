@@ -553,7 +553,7 @@ inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time, f32
 		const f32 invscale = sinf(theta * time) * invsintheta;
 		return (*this = (q1*scale) + (q2*invscale));
 	}
-	else // linear interploation
+	else // linear interpolation
 		return lerp(q1,q2,time);
 }
 
