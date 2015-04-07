@@ -39,6 +39,10 @@ namespace irr
 
 			IDirect3DSurface9* getDepthStencilSurface() const;
 
+			void releaseSurfaces();
+
+			void generateSurfaces();
+
 		protected:
 			core::dimension2d<u32> Size;
 

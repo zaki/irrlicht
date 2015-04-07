@@ -107,7 +107,6 @@ namespace irr
 					if (DepthStencilSurface)
 					{
 						DepthStencilSurface->Release();
-
 						DepthStencilSurface = 0;
 					}
 
@@ -179,6 +178,50 @@ namespace irr
 		IDirect3DSurface9* CD3D9RenderTarget::getDepthStencilSurface() const
 		{
 			return DepthStencilSurface;
+		}
+
+		void CD3D9RenderTarget::releaseSurfaces()
+		{
+			for (u32 i = 0; i < Surface.size(); ++i)
+			{
+				if (Surface[i])
+				{
+					Surface[i]->Release();
+					Surface[i] = 0;
+				}
+			}
+
+			if (DepthStencilSurface)
+			{
+				DepthStencilSurface->Release();
+				DepthStencilSurface = 0;
+			}
+		}
+
+		void CD3D9RenderTarget::generateSurfaces()
+		{
+			for (u32 i = 0; i < Surface.size(); ++i)
+			{
+				if (!Surface[i] && Texture[i])
+				{
+					IDirect3DTexture9* currentTexture = static_cast<CD3D9Texture*>(Texture[i])->getDX9Texture();
+
+					IDirect3DSurface9* currentSurface = 0;
+					currentTexture->GetSurfaceLevel(0, &currentSurface);
+
+					Surface[i] = currentSurface;
+				}
+			}
+
+			if (!DepthStencilSurface && DepthStencil)
+			{
+				IDirect3DTexture9* currentTexture = static_cast<CD3D9Texture*>(DepthStencil)->getDX9Texture();
+
+				IDirect3DSurface9* currentSurface = 0;
+				currentTexture->GetSurfaceLevel(0, &currentSurface);
+
+				DepthStencilSurface = currentSurface;
+			}
 		}
 	}
 }

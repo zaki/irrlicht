@@ -2833,6 +2833,11 @@ bool CD3D9Driver::reset()
 	u32 i;
 	os::Printer::log("Resetting D3D9 device.", ELL_INFORMATION);
 
+	for (i = 0; i<RenderTargets.size(); ++i)
+	{
+		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
+			static_cast<CD3D9RenderTarget*>(RenderTargets[i])->releaseSurfaces();
+	}
 	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
@@ -2861,6 +2866,12 @@ bool CD3D9Driver::reset()
 	if (DepthStencilSurface)
 		DepthStencilSurface->Release();
 
+	if (BackBufferSurface)
+	{
+		BackBufferSurface->Release();
+		BackBufferSurface = 0;
+	}
+
 	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
@@ -2874,6 +2885,11 @@ bool CD3D9Driver::reset()
 	{
 		if (Textures[i].Surface->isRenderTarget())
 			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
+	}
+	for (i = 0; i<RenderTargets.size(); ++i)
+	{
+		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
+			static_cast<CD3D9RenderTarget*>(RenderTargets[i])->generateSurfaces();
 	}
 
 	// restore occlusion queries
