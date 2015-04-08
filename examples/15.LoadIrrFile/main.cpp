@@ -51,6 +51,13 @@ int main(int argc, char** argv)
 	*/
 
 	// load the scene
+	/* You might have to work around some minor problems in current .irr loader:
+	- It can't load meshes relative to the .irr file, but only relative to the working directory. 
+	  So you might have to change your working directory to the path where the .irr file is in.
+	- When passing a custom parent node to loadScene then irr_scene attributes will be passed to that.
+	  Usually not a problem, but for example AmbientLight will not change that way unless you create a custom 
+	  SceneNode type which can interpret those attributes.
+	*/
 	if (argc>1)
 		smgr->loadScene(argv[1]);
 	else
