@@ -731,7 +731,7 @@ namespace scene
 
 			setPosition(in->getAttributeAsVector3d("Position", RelativeTranslation));
 			setRotation(in->getAttributeAsVector3d("Rotation", RelativeRotation));
-			setScale(in->getAttributeAsVector3d("Scale", RelativeRotation));
+			setScale(in->getAttributeAsVector3d("Scale", RelativeScale));
 
 			IsVisible = in->getAttributeAsBool("Visible", IsVisible);
 			if (in->existsAttribute("AutomaticCulling"))
