@@ -730,7 +730,11 @@ namespace video
 
 		bool isTransparent() const
 		{
-			bool status = false;
+			if ( MaterialType==EMT_TRANSPARENT_ADD_COLOR ||
+				MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL ||
+				MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA ||
+				MaterialType==EMT_TRANSPARENT_REFLECTION_2_LAYER )
+				return true;
 
 			if (BlendOperation != EBO_NONE && BlendFactor != 0.f)
 			{
@@ -746,12 +750,13 @@ namespace video
 				if (textureBlendFunc_hasAlpha(srcRGBFact) || textureBlendFunc_hasAlpha(dstRGBFact) ||
 					textureBlendFunc_hasAlpha(srcAlphaFact) || textureBlendFunc_hasAlpha(dstAlphaFact))
 				{
-					status = true;
+					return true;
 				} 
 			}
 
-			return status;
+			return false;
 		}
+
 	};
 
 	//! global const identity Material
