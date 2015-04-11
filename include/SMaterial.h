@@ -192,6 +192,7 @@ namespace video
 		//! High-quality anti-aliasing, not always supported, automatically enables SIMPLE mode
 		EAAM_QUALITY=3,
 		//! Line smoothing
+		//! Careful, enabling this can lead to software emulation under OpenGL
 		EAAM_LINE_SMOOTH=4,
 		//! point smoothing, often in software and slow, only with OpenGL
 		EAAM_POINT_SMOOTH=8,
@@ -410,8 +411,7 @@ namespace video
 
 		//! Sets the antialiasing mode
 		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is
-		EAAM_SIMPLE|EAAM_LINE_SMOOTH, i.e. simple multi-sample
-		anti-aliasing and lime smoothing is enabled. */
+		EAAM_SIMPLE, i.e. simple multi-sample anti-aliasing. */
 		u8 AntiAliasing;
 
 		//! Defines the enabled color planes
