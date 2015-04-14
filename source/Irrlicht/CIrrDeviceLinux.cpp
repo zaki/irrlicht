@@ -1475,7 +1475,6 @@ void CIrrDeviceLinux::setResizable(bool resize)
 	if (CreationParams.DriverType == video::EDT_NULL || CreationParams.Fullscreen )
 		return;
 
-	XUnmapWindow(XDisplay, XWindow);
 	if ( !resize )
 	{
 		// Must be heap memory because data size depends on X Server
@@ -1490,7 +1489,6 @@ void CIrrDeviceLinux::setResizable(bool resize)
 	{
 		XSetWMNormalHints(XDisplay, XWindow, StdHints);
 	}
-	XMapWindow(XDisplay, XWindow);
 	XFlush(XDisplay);
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 }
