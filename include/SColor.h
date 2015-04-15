@@ -70,17 +70,6 @@ namespace video
 		//! 128 bit format using 32 bits for the red, green, blue and alpha channels.
 		ECF_A32B32G32R32F,
 
-		/** Depth and stencil formats. */
-
-		//! 16 bit format using 16 bits for depth.
-		ECF_D16,
-
-		//! 32 bit format using 32 bits for depth.
-		ECF_D32,
-
-		//! 32 bit format using 24 bits for depth and 8 bits for stencil.
-		ECF_D24S8,
-
 		/** Unsigned normalized integer formats. */
 
 		//! 8 bit format using 8 bits for the red channel.
@@ -94,6 +83,17 @@ namespace video
 
 		//! 32 bit format using 16 bits for the red and green channels.
 		ECF_R16G16,
+
+		/** Depth and stencil formats. */
+
+		//! 16 bit format using 16 bits for depth.
+		ECF_D16,
+
+		//! 32 bit format using 32 bits for depth.
+		ECF_D32,
+
+		//! 32 bit format using 24 bits for depth and 8 bits for stencil.
+		ECF_D24S8,
 
 		//! Unknown color format:
 		ECF_UNKNOWN

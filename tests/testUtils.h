@@ -7,8 +7,9 @@
 
 #define TestWithAllDrivers(X) \
 	logTestString("Running test " #X "\n"); \
-	for (u32 i=1; i<video::EDT_COUNT; ++i) \
-	result &= X(video::E_DRIVER_TYPE(i))
+	for (u32 i=1; i<video::EDT_COUNT; ++i)  \
+		if ( video::E_DRIVER_TYPE(i) != video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS ) \
+			result &= X(video::E_DRIVER_TYPE(i))
 #define TestWithAllHWDrivers(X) \
 	logTestString("Running test " #X "\n"); \
 	for (u32 i=video::EDT_DIRECT3D9; i<video::EDT_COUNT; ++i) \
