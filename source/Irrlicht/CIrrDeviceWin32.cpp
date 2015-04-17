@@ -871,7 +871,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Using ToUnicode instead would be shorter, but would to my knowledge not run on 95 and 98.
 			WORD keyChars[2];
 			UINT scanCode = HIWORD(lParam);
-			int conversionResult = ToAsciiEx(wParam,scanCode,allKeys,keyChars,0,KEYBOARD_INPUT_HKL);
+			int conversionResult = ToAsciiEx(static_cast<UINT>(wParam),scanCode,allKeys,keyChars,0,KEYBOARD_INPUT_HKL);
 			if (conversionResult == 1)
 			{
 				WORD unicodeChar;
@@ -1734,8 +1734,8 @@ void CIrrDeviceWin32::setWindowSize(const irr::core::dimension2d<u32>& size)
 		return;
 
 	// get size of the window for the give size of the client area
-	LONG_PTR style = GetWindowLongPtr(HWnd, GWL_STYLE);
-	LONG_PTR exStyle = GetWindowLongPtr(HWnd, GWL_EXSTYLE);
+	DWORD style = static_cast<DWORD>(GetWindowLongPtr(HWnd, GWL_STYLE));
+	DWORD exStyle = static_cast<DWORD>(GetWindowLongPtr(HWnd, GWL_EXSTYLE));
 	RECT clientSize;
 	clientSize.top = 0;
 	clientSize.left = 0;
@@ -1771,7 +1771,7 @@ void CIrrDeviceWin32::setResizable(bool resize)
 	clientSize.right = getVideoDriver()->getScreenSize().Width;
 	clientSize.bottom = getVideoDriver()->getScreenSize().Height;
 
-	AdjustWindowRect(&clientSize, style, FALSE);
+	AdjustWindowRect(&clientSize, static_cast<DWORD>(style), FALSE);
 
 	const s32 realWidth = clientSize.right - clientSize.left;
 	const s32 realHeight = clientSize.bottom - clientSize.top;
