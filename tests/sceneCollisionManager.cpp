@@ -204,29 +204,15 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 	}
 
 
-	// Make cubeNode3 invisible and check that the camera node is hit (since it has a valid bounding box).
-	cubeNode3->setVisible(false);
-	hitNode = collMgr->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(80, 60));
-	if(hitNode != camera)
-	{
-		logTestString("Unexpected node hit. Expected the camera node.\n");
-		result = false;
-	}
-
 	// Now verify bitmasking
-	camera->setID(0xAAAAAAAA); // == 101010101010101010101010101010
-	hitNode = collMgr->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(80, 60), 0x02);
-	if(hitNode != camera)
-	{
-		logTestString("Unexpected node hit. Expected the camera node.\n");
-		result = false;
-	}
 
 	// Test the 01010101010101010101010101010101 bitmask (0x55555555)
+	cubeNode1->setVisible(true);
+	cubeNode1->setID(0xAAAAAAAA);
 	hitNode = collMgr->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(80, 60), 0x55555555);
-	if(hitNode != 0)
+	if(hitNode != cubeNode2)
 	{
-		logTestString("A node was hit when none was expected.\n");
+		logTestString("Unexpected node hit. Expected cubeNode2.\n");
 		result = false;
 	}
 	assert_log(result);

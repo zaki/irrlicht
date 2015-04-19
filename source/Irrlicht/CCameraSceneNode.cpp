@@ -17,6 +17,7 @@ namespace scene
 CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 	const core::vector3df& position, const core::vector3df& lookat)
 	: ICameraSceneNode(parent, mgr, id, position),
+	BoundingBox(core::vector3df(0, 0, 0)),	// Camera has no size. Still not sure if FLT_MAX might be the better variant
 	Target(lookat), UpVector(0.0f, 1.0f, 0.0f), ZNear(1.0f), ZFar(3000.0f),
 	InputReceiverEnabled(true), TargetAndRotationAreBound(false)
 {
@@ -283,11 +284,14 @@ void CCameraSceneNode::updateMatrices()
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CCameraSceneNode::getBoundingBox() const
 {
-	return ViewArea.getBoundingBox();
+	// NOTE: We deliberately don't return the boundingbox of the ViewArea. People can access that already.
+	// We want to prevent cameras from having their bounding box colliding in the SceneCollisionManager.
+	// If another boundingbox is ever necessary then please move BoundingBox to ICameraSceneNode and make it accessible (via a setter or an enum with options).
+	return BoundingBox;
 }
 
 
-//! returns the view frustum. needed sometimes by bsp or lod render nodes.
+//! returns the view frustum.
 const SViewFrustum* CCameraSceneNode::getViewFrustum() const
 {
 	return &ViewArea;

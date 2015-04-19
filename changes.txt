@@ -1,6 +1,10 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Node-collision functions of SceneCollisionManager like getSceneNodeFromScreenCoordinatesBB will now ignore collisions against empty boundingboxes.
+- Cameras return again an empty boundingbox (at 0,0,0) instead of returning the frustum boundingbox (was changed in very old Irrlicht version). 
+  You can access the frustum boundingbox through the frustum itself.
+  This means cameras no longer show up in the node-collision of the SceneCollisionManager (showing up there because of their frustum bounding-box was too confusing).
 - Fix problem in IrrlichtDevice::setResizable on X11 that caused window titlebars to hide occasionally under the taskbar in some systems (Ubuntu, Mint).
 - Added new IRenderTarget interface.
 - Replace the swprintf and snprintf defines by swprintf_irr and snprintf_irr to avoid conflicts with the standard libraries (and other libraries).
