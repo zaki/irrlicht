@@ -614,6 +614,8 @@
 		<Unit filename="CAttributes.h" />
 		<Unit filename="CB3DMeshFileLoader.cpp" />
 		<Unit filename="CB3DMeshFileLoader.h" />
+		<Unit filename="CB3DMeshWriter.cpp" />
+		<Unit filename="CB3DMeshWriter.h" />
 		<Unit filename="CBSPMeshFileLoader.cpp" />
 		<Unit filename="CBSPMeshFileLoader.h" />
 		<Unit filename="CBillboardSceneNode.cpp" />
@@ -1013,6 +1015,7 @@
 		<Unit filename="Octree.h" />
 		<Unit filename="S2DVertex.h" />
 		<Unit filename="S4DVertex.h" />
+		<Unit filename="SB3DStructs.h" />
 		<Unit filename="SoftwareDriver2_compile_config.h" />
 		<Unit filename="SoftwareDriver2_helper.h" />
 		<Unit filename="aesGladman\aes.h" />

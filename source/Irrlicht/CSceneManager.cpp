@@ -134,6 +134,10 @@
 #include "CPLYMeshWriter.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_B3D_WRITER_
+#include "CB3DMeshWriter.h"
+#endif
+
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
@@ -2545,6 +2549,13 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 #else
 		return 0;
 #endif
+	
+	case EMWT_B3D:
+#ifdef _IRR_COMPILE_WITH_B3D_WRITER_
+		return new CB3DMeshWriter(FileSystem);
+#else
+		return 0;
+#endif	
 	}
 
 	return 0;

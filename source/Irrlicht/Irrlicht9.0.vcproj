@@ -2079,6 +2079,14 @@
 						RelativePath="CSTLMeshWriter.h"
 						>
 					</File>
+					<File
+						RelativePath="CB3DMeshWriter.cpp"
+						>
+					</File>
+					<File
+						RelativePath="CB3DMeshWriter.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

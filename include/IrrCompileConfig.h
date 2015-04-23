@@ -482,6 +482,11 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_PLY_WRITER_
 #undef _IRR_COMPILE_WITH_PLY_WRITER_
 #endif
+//! Define _IRR_COMPILE_WITH_B3D_WRITER_ if you want to write .b3d files
+#define _IRR_COMPILE_WITH_B3D_WRITER_
+#ifdef NO_IRR_COMPILE_WITH_B3D_WRITER_
+#undef _IRR_COMPILE_WITH_B3D_WRITER_
+#endif
 
 //! Define _IRR_COMPILE_WITH_BMP_LOADER_ if you want to load .bmp files
 //! Disabling this loader will also disable the built-in font

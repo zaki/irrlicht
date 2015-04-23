@@ -1,6 +1,8 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Interface getMeshType moved from IAnimatedMesh up to IMesh.
+- Add b3d mesh-writer. Static writer written by Hendu, support for animated meshes added by JLouisB, testing and bugfixes by CuteAlien.
 - Node-collision functions of SceneCollisionManager like getSceneNodeFromScreenCoordinatesBB will now ignore collisions against empty boundingboxes.
 - Cameras return again an empty boundingbox (at 0,0,0) instead of returning the frustum boundingbox (was changed in very old Irrlicht version). 
   You can access the frustum boundingbox through the frustum itself.

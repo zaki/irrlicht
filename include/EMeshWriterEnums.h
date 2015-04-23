@@ -31,7 +31,10 @@ namespace scene
 		EMWT_OBJ          = MAKE_IRR_ID('o','b','j',0),
 
 		//! PLY mesh writer for .ply files
-		EMWT_PLY          = MAKE_IRR_ID('p','l','y',0)
+		EMWT_PLY          = MAKE_IRR_ID('p','l','y',0),
+		
+		//! B3D mesh writer, for static .b3d files
+		EMWT_B3D          = MAKE_IRR_ID('b', '3', 'd', 0)
 	};
 
 
