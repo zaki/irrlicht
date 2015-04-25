@@ -2402,7 +2402,7 @@ core::dimension2du CBurningVideoDriver::getMaxTextureSize() const
 #endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
 
-#ifdef _IRR_WINDOWS_
+#if defined(_IRR_WINDOWS_) && defined(_IRR_COMPILE_WITH_BURNINGSVIDEO_)
 	#include <windows.h>
 
 struct dreadglobal
