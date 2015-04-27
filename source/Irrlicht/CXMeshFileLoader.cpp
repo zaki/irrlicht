@@ -520,6 +520,11 @@ bool CXMeshFileLoader::parseDataObject()
 		return parseDataObjectAnimationSet();
 	}
 	else
+	if (objectName == "AnimTicksPerSecond")
+	{
+		return parseDataObjectAnimationTicksPerSecond();
+	}
+	else
 	if (objectName == "Material")
 	{
 		// template materials now available thanks to joeWright
@@ -1607,6 +1612,39 @@ bool CXMeshFileLoader::parseDataObjectAnimationSet()
 	return true;
 }
 
+bool CXMeshFileLoader::parseDataObjectAnimationTicksPerSecond()
+{
+#ifdef _XREADER_DEBUG
+	os::Printer::log("CXFileReader: reading AnimationTicksPerSecond", ELL_DEBUG);
+#endif
+
+	if (!readHeadOfDataObject())
+	{
+		os::Printer::log("No opening brace in Animation found in x file", ELL_WARNING);
+		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
+		return false;
+	}
+
+	const u32 ticks = readInt();
+
+	if (!checkForOneFollowingSemicolons())
+	{
+		os::Printer::log("No closing semicolon in AnimationTicksPerSecond in x file", ELL_WARNING);
+		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
+		return false;
+	}
+
+	if (!checkForClosingBrace())
+	{
+		os::Printer::log("No closing brace in AnimationTicksPerSecond in x file", ELL_WARNING);
+		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
+		return false;
+	}
+
+	AnimatedMesh->setAnimationSpeed(ticks);
+
+	return true;
+}
 
 bool CXMeshFileLoader::parseDataObjectAnimation()
 {

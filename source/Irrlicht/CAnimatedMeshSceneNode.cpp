@@ -849,7 +849,7 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 	}
 
 	// get start and begin time
-//	setAnimationSpeed(Mesh->getAnimationSpeed());
+	setAnimationSpeed(Mesh->getAnimationSpeed());	// NOTE: This had been commented out (but not removed!) in r3526. Which caused meshloader-values for speed to be ignored unless users specified explicitly. Missing a test-case where this could go wrong so I put the code back in.
 	setFrameLoop(0, Mesh->getFrameCount());
 }
 

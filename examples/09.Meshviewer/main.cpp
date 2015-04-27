@@ -239,7 +239,6 @@ void loadModel(const c8* fn)
 	else
 	{
 		scene::IAnimatedMeshSceneNode* animModel = Device->getSceneManager()->addAnimatedMeshSceneNode(m);
-		animModel->setAnimationSpeed(30);
 		Model = animModel;
 	}
 	Model->setMaterialFlag(video::EMF_LIGHTING, UseLight);
