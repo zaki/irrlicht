@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add override font to IGUITreeView
 - CGUIComboBox now updates selection-list when font changes while it's open (thx @ rubixcuber for bugreport)
 - CAnimatedMeshSceneNode::setMesh does now set the animation speed again to that of the mesh (had been changed in 1.7, but not for obvious reasons)
 - .x meshloader regards now AnimTicksPerSecond (thx @qian for a test-model and bugreport)
