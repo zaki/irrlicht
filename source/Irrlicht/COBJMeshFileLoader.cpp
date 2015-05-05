@@ -478,8 +478,8 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 			}
 			else if (type==3)
 			{
-	//						currMaterial->Meshbuffer->Material.Textures[1] = texture;
-	//						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
+	//			currMaterial->Meshbuffer->Material.Textures[1] = texture;
+	//			currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
 			}
 			// Set diffuse material color to white so as not to affect texture color
 			// Because Maya set diffuse color Kd to black when you use a diffuse color map
