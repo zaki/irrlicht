@@ -116,7 +116,6 @@ u32 CFileList::getFileSize(u32 index) const
 	return index < Files.size() ? Files[index].Size : 0;
 }
 
-//! Returns the size of a file
 u32 CFileList::getFileOffset(u32 index) const
 {
 	return index < Files.size() ? Files[index].Offset : 0;
