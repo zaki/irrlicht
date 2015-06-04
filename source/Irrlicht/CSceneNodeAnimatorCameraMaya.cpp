@@ -17,6 +17,7 @@ namespace scene
 CSceneNodeAnimatorCameraMaya::CSceneNodeAnimatorCameraMaya(gui::ICursorControl* cursor,
 	f32 rotateSpeed, f32 zoomSpeed, f32 translateSpeed, f32 distance)
 	: CursorControl(cursor), OldCamera(0), MousePos(0.5f, 0.5f),
+	TargetMinDistance(0.f),
 	ZoomSpeed(zoomSpeed), RotateSpeed(rotateSpeed), TranslateSpeed(translateSpeed),
 	CurrentZoom(distance), RotX(0.0f), RotY(0.0f),
 	Zooming(false), Rotating(false), Moving(false), Translating(false)
@@ -138,11 +139,10 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 		}
 		else
 		{
-			const f32 targetMinDistance = 0.1f;
 			nZoom += (ZoomStart.X - MousePos.X) * ZoomSpeed;
 
-			if (nZoom < targetMinDistance) // jox: fixed bug: bounce back when zooming to close
-				nZoom = targetMinDistance;
+			if (nZoom < TargetMinDistance+0.1f) // jox: fixed bug: bounce back when zooming too close
+				nZoom = TargetMinDistance+0.1f;
 		}
 	}
 	else if (Zooming)
@@ -151,7 +151,7 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 		CurrentZoom = CurrentZoom + (ZoomStart.X - MousePos.X ) * ZoomSpeed;
 		nZoom = CurrentZoom;
 
-		if (nZoom < 0)
+		if (nZoom < TargetMinDistance)
 			nZoom = CurrentZoom = old;
 		Zooming = false;
 	}
@@ -307,6 +307,18 @@ f32 CSceneNodeAnimatorCameraMaya::getZoomSpeed() const
 f32 CSceneNodeAnimatorCameraMaya::getDistance() const
 {
 	return CurrentZoom;
+}
+
+void CSceneNodeAnimatorCameraMaya::setTargetMinDistance(f32 minDistance)
+{
+	TargetMinDistance = minDistance;
+	if ( CurrentZoom < TargetMinDistance )
+		CurrentZoom = TargetMinDistance;
+}
+
+f32 CSceneNodeAnimatorCameraMaya::getTargetMinDistance() const
+{
+	return TargetMinDistance;
 }
 
 

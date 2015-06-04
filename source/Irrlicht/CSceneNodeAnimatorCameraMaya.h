@@ -64,6 +64,12 @@ namespace scene
 		//! Set the distance
 		virtual void setDistance(f32 distance) _IRR_OVERRIDE_;
 
+		//! Set the minimal distance to the camera target for zoom
+		virtual void setTargetMinDistance(f32 minDistance) _IRR_OVERRIDE_;
+
+		//! Returns the minimal distance to the camera target for zoom
+		virtual f32 getTargetMinDistance() const _IRR_OVERRIDE_;
+
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const _IRR_OVERRIDE_
 		{
@@ -98,6 +104,7 @@ namespace scene
 		core::position2df ZoomStart;
 		core::position2df TranslateStart;
 		core::position2df MousePos;
+		f32 TargetMinDistance;
 		f32 ZoomSpeed;
 		f32 RotateSpeed;
 		f32 TranslateSpeed;

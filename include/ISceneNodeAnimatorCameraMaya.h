@@ -49,6 +49,13 @@ namespace scene
 
 		//! Set the distance
 		virtual void setDistance(f32 distance) = 0;
+
+		//! Set the minimal distance to the camera target for zoom
+		virtual void setTargetMinDistance(f32 minDistance) = 0;
+
+		//! Returns the minimal distance to the camera target for zoom
+		virtual f32 getTargetMinDistance() const = 0;
+
 	};
 
 } // end namespace scene
