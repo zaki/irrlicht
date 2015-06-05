@@ -763,11 +763,15 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	}
 	else
 	{
-		irr::core::vector3df rot(node->getRotation());
 		writeTranslateElement( node->getPosition() );
-		writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X );
-		writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y );
-		writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z );
+
+		irr::core::vector3df rot(node->getRotation());
+		core::quaternion quat(rot*core::DEGTORAD);
+		f32 angle;
+		core::vector3df axis;
+		quat.toAngleAxis(angle, axis);
+		writeRotateElement( axis, angle*core::RADTODEG );
+
 		writeScaleElement( node->getScale() );
 	}
 

@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix collada export for objects with rotations around more than 1 axis.
 - Add ISceneNodeAnimatorCameraMaya::setTargetMinDistance and getTargetMinDistance.
 - Add override font to IGUITreeView
 - CGUIComboBox now updates selection-list when font changes while it's open (thx @ rubixcuber for bugreport)
