@@ -1083,7 +1083,7 @@ void CQ3LevelMesh::constructMesh()
 		LoadParam.endTime = os::Timer::getRealTime();
 
 		snprintf_irr( buf, sizeof ( buf ),
-			"quake3::constructMesh needed %04d ms to create %d faces, %d vertices,%d mesh vertices",
+			"quake3::constructMesh needed %04u ms to create %d faces, %d vertices,%d mesh vertices",
 			LoadParam.endTime - LoadParam.startTime,
 			NumFaces,
 			NumVertices,
@@ -1419,7 +1419,7 @@ void CQ3LevelMesh::createCurvedSurface_bezier(SMeshBufferLightMap* meshBuffer,
 		LoadParam.endTime = os::Timer::getRealTime();
 
 		snprintf_irr( buf, sizeof ( buf ),
-			"quake3::createCurvedSurface_bezier needed %04d ms to create bezier patch.(%dx%d)",
+			"quake3::createCurvedSurface_bezier needed %04u ms to create bezier patch.(%ux%u)",
 			LoadParam.endTime - LoadParam.startTime,
 			biquadWidth,
 			biquadHeight
@@ -1804,7 +1804,7 @@ void CQ3LevelMesh::cleanMesh(SMesh *m, const bool texture0important)
 		if ( LoadParam.verbose > 1 )
 		{
 			snprintf_irr( buf, sizeof ( buf ),
-				"quake3::cleanMeshes start for %d meshes",
+				"quake3::cleanMeshes start for %u meshes",
 				m->MeshBuffers.size()
 				);
 			os::Printer::log(buf, ELL_INFORMATION);
@@ -1863,7 +1863,7 @@ void CQ3LevelMesh::cleanMesh(SMesh *m, const bool texture0important)
 	{
 		LoadParam.endTime = os::Timer::getRealTime();
 		snprintf_irr( buf, sizeof ( buf ),
-			"quake3::cleanMeshes needed %04d ms to clean %d of %d meshes",
+			"quake3::cleanMeshes needed %04u ms to clean %u of %u meshes",
 			LoadParam.endTime - LoadParam.startTime,
 			remove,
 			run
@@ -1923,7 +1923,7 @@ void CQ3LevelMesh::calcBoundingBoxes()
 		LoadParam.endTime = os::Timer::getRealTime();
 
 		snprintf_irr( buf, sizeof ( buf ),
-			"quake3::calcBoundingBoxes needed %04d ms to create %d textures and %d lightmaps",
+			"quake3::calcBoundingBoxes needed %04u ms to create %d textures and %d lightmaps",
 			LoadParam.endTime - LoadParam.startTime,
 			NumTextures,
 			NumLightMaps
@@ -2047,7 +2047,7 @@ void CQ3LevelMesh::loadTextures()
 		LoadParam.endTime = os::Timer::getRealTime();
 
 		snprintf_irr( buf, sizeof ( buf ),
-			"quake3::loadTextures needed %04d ms to create %d textures and %d lightmaps",
+			"quake3::loadTextures needed %04u ms to create %d textures and %d lightmaps",
 			LoadParam.endTime - LoadParam.startTime,
 			NumTextures,
 			NumLightMaps

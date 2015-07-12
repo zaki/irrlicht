@@ -1166,7 +1166,7 @@ bool CAnimatedMeshHalfLife::postLoadModel( const io::path &filename )
 		c8 seq[8];
 		for (u32 i = 1; i < Header->numseqgroups; i++)
 		{
-			snprintf_irr( seq, 8, "%02d.mdl", i );
+			snprintf_irr( seq, 8, "%02u.mdl", i );
 			submodel = path + texname + seq;
 
 			AnimationHeader[i] = loadModel(0, submodel);
@@ -1190,11 +1190,11 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 	if (level == 0)
 	{
 		printf (
-			"Bones: %d\n"
-			"Bone Controllers: %d\n"
-			"Hit Boxes: %d\n"
-			"Sequences: %d\n"
-			"Sequence Groups: %d\n",
+			"Bones: %u\n"
+			"Bone Controllers: %u\n"
+			"Hit Boxes: %u\n"
+			"Sequences: %u\n"
+			"Sequence Groups: %u\n",
 			hdr->numbones,
 			hdr->numbonecontrollers,
 			hdr->numhitboxes,
@@ -1202,10 +1202,10 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 			hdr->numseqgroups
 			);
 		printf (
-			"Textures: %d\n"
-			"Skin Families: %d\n"
-			"Bodyparts: %d\n"
-			"Attachments: %d\n"
+			"Textures: %u\n"
+			"Skin Families: %u\n"
+			"Bodyparts: %u\n"
+			"Attachments: %u\n"
 			"Transitions: %d\n",
 			hdr->numtextures,
 			hdr->numskinfamilies,
@@ -1228,91 +1228,91 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 
 	printf("flags: %d\n\n", hdr->flags);
 
-	printf("numbones: %d\n", hdr->numbones);
+	printf("numbones: %u\n", hdr->numbones);
 	for (i = 0; i < hdr->numbones; i++)
 	{
 		const SHalflifeBone *bone = (const SHalflifeBone *) (phdr + hdr->boneindex);
-		printf("bone %d.name: \"%s\"\n", i + 1, bone[i].name);
-		printf("bone %d.parent: %d\n", i + 1, bone[i].parent);
-		printf("bone %d.flags: %d\n", i + 1, bone[i].flags);
-		printf("bone %d.bonecontroller: %d %d %d %d %d %d\n", i + 1, bone[i].bonecontroller[0], bone[i].bonecontroller[1], bone[i].bonecontroller[2], bone[i].bonecontroller[3], bone[i].bonecontroller[4], bone[i].bonecontroller[5]);
-		printf("bone %d.value: %f %f %f %f %f %f\n", i + 1, bone[i].value[0], bone[i].value[1], bone[i].value[2], bone[i].value[3], bone[i].value[4], bone[i].value[5]);
-		printf("bone %d.scale: %f %f %f %f %f %f\n", i + 1, bone[i].scale[0], bone[i].scale[1], bone[i].scale[2], bone[i].scale[3], bone[i].scale[4], bone[i].scale[5]);
+		printf("bone %u.name: \"%s\"\n", i + 1, bone[i].name);
+		printf("bone %u.parent: %d\n", i + 1, bone[i].parent);
+		printf("bone %u.flags: %d\n", i + 1, bone[i].flags);
+		printf("bone %u.bonecontroller: %d %d %d %d %d %d\n", i + 1, bone[i].bonecontroller[0], bone[i].bonecontroller[1], bone[i].bonecontroller[2], bone[i].bonecontroller[3], bone[i].bonecontroller[4], bone[i].bonecontroller[5]);
+		printf("bone %u.value: %f %f %f %f %f %f\n", i + 1, bone[i].value[0], bone[i].value[1], bone[i].value[2], bone[i].value[3], bone[i].value[4], bone[i].value[5]);
+		printf("bone %u.scale: %f %f %f %f %f %f\n", i + 1, bone[i].scale[0], bone[i].scale[1], bone[i].scale[2], bone[i].scale[3], bone[i].scale[4], bone[i].scale[5]);
 	}
 
-	printf("\nnumbonecontrollers: %d\n", hdr->numbonecontrollers);
+	printf("\nnumbonecontrollers: %u\n", hdr->numbonecontrollers);
 	const SHalflifeBoneController *bonecontrollers = (const SHalflifeBoneController *) (phdr + hdr->bonecontrollerindex);
 	for (i = 0; i < hdr->numbonecontrollers; i++)
 	{
-		printf("bonecontroller %d.bone: %d\n", i + 1, bonecontrollers[i].bone);
-		printf("bonecontroller %d.type: %d\n", i + 1, bonecontrollers[i].type);
-		printf("bonecontroller %d.start: %f\n", i + 1, bonecontrollers[i].start);
-		printf("bonecontroller %d.end: %f\n", i + 1, bonecontrollers[i].end);
-		printf("bonecontroller %d.rest: %d\n", i + 1, bonecontrollers[i].rest);
-		printf("bonecontroller %d.index: %d\n", i + 1, bonecontrollers[i].index);
+		printf("bonecontroller %u.bone: %d\n", i + 1, bonecontrollers[i].bone);
+		printf("bonecontroller %u.type: %d\n", i + 1, bonecontrollers[i].type);
+		printf("bonecontroller %u.start: %f\n", i + 1, bonecontrollers[i].start);
+		printf("bonecontroller %u.end: %f\n", i + 1, bonecontrollers[i].end);
+		printf("bonecontroller %u.rest: %d\n", i + 1, bonecontrollers[i].rest);
+		printf("bonecontroller %u.index: %d\n", i + 1, bonecontrollers[i].index);
 	}
 
-	printf("\nnumhitboxes: %d\n", hdr->numhitboxes);
+	printf("\nnumhitboxes: %u\n", hdr->numhitboxes);
 	const SHalflifeBBox *box = (const SHalflifeBBox *) (phdr + hdr->hitboxindex);
 	for (i = 0; i < hdr->numhitboxes; i++)
 	{
-		printf("hitbox %d.bone: %d\n", i + 1, box[i].bone);
-		printf("hitbox %d.group: %d\n", i + 1, box[i].group);
-		printf("hitbox %d.bbmin: %f %f %f\n", i + 1, box[i].bbmin[0], box[i].bbmin[1], box[i].bbmin[2]);
-		printf("hitbox %d.bbmax: %f %f %f\n", i + 1, box[i].bbmax[0], box[i].bbmax[1], box[i].bbmax[2]);
+		printf("hitbox %u.bone: %d\n", i + 1, box[i].bone);
+		printf("hitbox %u.group: %d\n", i + 1, box[i].group);
+		printf("hitbox %u.bbmin: %f %f %f\n", i + 1, box[i].bbmin[0], box[i].bbmin[1], box[i].bbmin[2]);
+		printf("hitbox %u.bbmax: %f %f %f\n", i + 1, box[i].bbmax[0], box[i].bbmax[1], box[i].bbmax[2]);
 	}
 
-	printf("\nnumseq: %d\n", hdr->numseq);
+	printf("\nnumseq: %u\n", hdr->numseq);
 	const SHalflifeSequence *seq = (const SHalflifeSequence *) (phdr + hdr->seqindex);
 	for (i = 0; i < hdr->numseq; i++)
 	{
-		printf("seqdesc %d.label: \"%s\"\n", i + 1, seq[i].label);
-		printf("seqdesc %d.fps: %f\n", i + 1, seq[i].fps);
-		printf("seqdesc %d.flags: %d\n", i + 1, seq[i].flags);
+		printf("seqdesc %u.label: \"%s\"\n", i + 1, seq[i].label);
+		printf("seqdesc %u.fps: %f\n", i + 1, seq[i].fps);
+		printf("seqdesc %u.flags: %d\n", i + 1, seq[i].flags);
 		printf("<...>\n");
 	}
 
-	printf("\nnumseqgroups: %d\n", hdr->numseqgroups);
+	printf("\nnumseqgroups: %u\n", hdr->numseqgroups);
 	for (i = 0; i < hdr->numseqgroups; i++)
 	{
 		const SHalflifeSequenceGroup *group = (const SHalflifeSequenceGroup *) (phdr + hdr->seqgroupindex);
-		printf("\nseqgroup %d.label: \"%s\"\n", i + 1, group[i].label);
-		printf("\nseqgroup %d.namel: \"%s\"\n", i + 1, group[i].name);
-		printf("\nseqgroup %d.data: %d\n", i + 1, group[i].data);
+		printf("\nseqgroup %u.label: \"%s\"\n", i + 1, group[i].label);
+		printf("\nseqgroup %u.namel: \"%s\"\n", i + 1, group[i].name);
+		printf("\nseqgroup %u.data: %d\n", i + 1, group[i].data);
 	}
 
-	printf("\nnumskinref: %d\n", hdr->numskinref);
-	printf("numskinfamilies: %d\n", hdr->numskinfamilies);
+	printf("\nnumskinref: %u\n", hdr->numskinref);
+	printf("numskinfamilies: %u\n", hdr->numskinfamilies);
 
-	printf("\nnumbodyparts: %d\n", hdr->numbodyparts);
+	printf("\nnumbodyparts: %u\n", hdr->numbodyparts);
 	const SHalflifeBody *pbodyparts = (const SHalflifeBody*) ((const u8*) hdr + hdr->bodypartindex);
 	for (i = 0; i < hdr->numbodyparts; i++)
 	{
-		printf("bodypart %d.name: \"%s\"\n", i + 1, pbodyparts[i].name);
-		printf("bodypart %d.nummodels: %d\n", i + 1, pbodyparts[i].nummodels);
-		printf("bodypart %d.base: %d\n", i + 1, pbodyparts[i].base);
-		printf("bodypart %d.modelindex: %d\n", i + 1, pbodyparts[i].modelindex);
+		printf("bodypart %u.name: \"%s\"\n", i + 1, pbodyparts[i].name);
+		printf("bodypart %u.nummodels: %u\n", i + 1, pbodyparts[i].nummodels);
+		printf("bodypart %u.base: %u\n", i + 1, pbodyparts[i].base);
+		printf("bodypart %d.modelindex: %u\n", i + 1, pbodyparts[i].modelindex);
 	}
 
-	printf("\nnumattachments: %d\n", hdr->numattachments);
+	printf("\nnumattachments: %u\n", hdr->numattachments);
 	for (i = 0; i < hdr->numattachments; i++)
 	{
 		const SHalflifeAttachment *attach = (const SHalflifeAttachment *) ((const u8*) hdr + hdr->attachmentindex);
-		printf("attachment %d.name: \"%s\"\n", i + 1, attach[i].name);
+		printf("attachment %u.name: \"%s\"\n", i + 1, attach[i].name);
 	}
 
 	hdr = TextureHeader;
-	printf("\nnumtextures: %d\n", hdr->numtextures);
-	printf("textureindex: %d\n", hdr->textureindex);
-	printf("texturedataindex: %d\n", hdr->texturedataindex);
+	printf("\nnumtextures: %u\n", hdr->numtextures);
+	printf("textureindex: %u\n", hdr->textureindex);
+	printf("texturedataindex: %u\n", hdr->texturedataindex);
 	const SHalflifeTexture *ptextures = (const SHalflifeTexture *) ((const u8*) hdr + hdr->textureindex);
 	for (i = 0; i < hdr->numtextures; i++)
 	{
-		printf("texture %d.name: \"%s\"\n", i + 1, ptextures[i].name);
-		printf("texture %d.flags: %d\n", i + 1, ptextures[i].flags);
-		printf("texture %d.width: %d\n", i + 1, ptextures[i].width);
-		printf("texture %d.height: %d\n", i + 1, ptextures[i].height);
-		printf("texture %d.index: %d\n", i + 1, ptextures[i].index);
+		printf("texture %u.name: \"%s\"\n", i + 1, ptextures[i].name);
+		printf("texture %u.flags: %d\n", i + 1, ptextures[i].flags);
+		printf("texture %u.width: %d\n", i + 1, ptextures[i].width);
+		printf("texture %u.height: %d\n", i + 1, ptextures[i].height);
+		printf("texture %u.index: %d\n", i + 1, ptextures[i].index);
 	}
 }
 

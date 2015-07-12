@@ -54,7 +54,7 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 	if (file->write(cache, size) != size)
 		return false;
 
-	size = snprintf_irr(cache, 70, "%d %d\n", imageSize.Width, imageSize.Height);
+	size = snprintf_irr(cache, 70, "%u %u\n", imageSize.Width, imageSize.Height);
 	if (file->write(cache, size) != size)
 		return false;
 

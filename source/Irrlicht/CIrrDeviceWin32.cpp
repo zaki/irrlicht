@@ -1679,7 +1679,7 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 
 		if (osvi.dwMajorVersion <= 4 )
 		{
-			sprintf(tmp, "version %ld.%ld %s (Build %ld)",
+			sprintf(tmp, "version %lu.%lu %s (Build %lu)",
 					osvi.dwMajorVersion,
 					osvi.dwMinorVersion,
 					irr::core::stringc(osvi.szCSDVersion).c_str(),
@@ -1687,7 +1687,7 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 		}
 		else
 		{
-			sprintf(tmp, "%s (Build %ld)", irr::core::stringc(osvi.szCSDVersion).c_str(),
+			sprintf(tmp, "%s (Build %lu)", irr::core::stringc(osvi.szCSDVersion).c_str(),
 			osvi.dwBuildNumber & 0xFFFF);
 		}
 

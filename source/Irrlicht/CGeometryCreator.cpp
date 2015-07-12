@@ -372,7 +372,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 				if (buffer->Material.getTexture(0))
 				{
 					c8 tmp[255];
-					sprintf(tmp, "Generated terrain texture (%dx%d): %s",
+					sprintf(tmp, "Generated terrain texture (%ux%u): %s",
 						buffer->Material.getTexture(0)->getSize().Width,
 						buffer->Material.getTexture(0)->getSize().Height,
 						textureName);
