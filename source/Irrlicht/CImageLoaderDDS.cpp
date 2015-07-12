@@ -825,7 +825,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 
 						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 8;
 					}
-					while (curWidth != 1 || curWidth != 1);
+					while (curWidth != 1 || curHeight != 1);
 
 					format = ECF_DXT1;
 					break;
@@ -848,7 +848,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 
 						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
 					}
-					while (curWidth != 1 || curWidth != 1);
+					while (curWidth != 1 || curHeight != 1);
 
 					format = ECF_DXT3;
 					break;
@@ -871,7 +871,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 
 						dataSize += ((curWidth + 3) / 4) * ((curHeight + 3) / 4) * 16;
 					}
-					while (curWidth != 1 || curWidth != 1);
+					while (curWidth != 1 || curHeight != 1);
 
 					format = ECF_DXT5;
 					break;
