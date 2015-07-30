@@ -2689,7 +2689,11 @@ bool COGLES2Driver::endScene()
 		if (index < UserClipPlane.size())
 			return UserClipPlane[index].Plane;
 		else
-			return *((core::plane3df*)0);
+		{
+			_IRR_DEBUG_BREAK_IF(true)	// invalid index
+			static const core::plane3df dummy;
+			return dummy;
+		}
 	}
 
 	core::dimension2du COGLES2Driver::getMaxTextureSize() const
