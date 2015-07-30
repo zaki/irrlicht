@@ -1026,7 +1026,11 @@ const SLight& CNullDriver::getDynamicLight(u32 idx) const
 	if ( idx < Lights.size() )
 		return Lights[idx];
 	else
-		return *((SLight*)0);
+	{
+		_IRR_DEBUG_BREAK_IF(true)
+		static const SLight dummy;
+		return dummy;
+	}
 }
 
 

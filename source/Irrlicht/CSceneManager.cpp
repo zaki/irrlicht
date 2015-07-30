@@ -1174,10 +1174,10 @@ void CSceneManager::render()
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CSceneManager::getBoundingBox() const
 {
-	_IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager wanted.
+	_IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager should never be used.
 
-	// should never be used.
-	return *((core::aabbox3d<f32>*)0);
+	static const core::aabbox3d<f32> dummy;
+	return dummy;
 }
 
 
@@ -2549,13 +2549,13 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 #else
 		return 0;
 #endif
-	
+
 	case EMWT_B3D:
 #ifdef _IRR_COMPILE_WITH_B3D_WRITER_
 		return new CB3DMeshWriter(FileSystem);
 #else
 		return 0;
-#endif	
+#endif
 	}
 
 	return 0;
