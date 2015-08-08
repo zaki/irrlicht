@@ -105,7 +105,14 @@ const io::path& CWriteFile::getFileName() const
 	return Filename;
 }
 
+//! Flush the content of the buffer in the file
+bool CWriteFile::flush()
+{
+	if (!isOpen())
+		return false;
 
+	return !(bool) fflush(File);
+}
 
 IWriteFile* CWriteFile::createWriteFile(const io::path& fileName, bool append)
 {

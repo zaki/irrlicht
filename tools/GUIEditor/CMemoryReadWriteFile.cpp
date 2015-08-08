@@ -93,3 +93,7 @@ s32 CMemoryReadWriteFile::read(void* buffer, u32 sizeToRead)
 	return sizeToRead;
 }
 
+bool CMemoryReadWriteFile::flush()
+{
+	return true;	// no buffering, nothing to do
+}

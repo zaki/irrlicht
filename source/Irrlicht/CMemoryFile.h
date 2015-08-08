@@ -77,6 +77,8 @@ namespace io
 		//! returns name of file
 		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
 
+		virtual bool flush() _IRR_OVERRIDE_;
+
 	private:
 
 		void *Buffer;

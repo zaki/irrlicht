@@ -55,6 +55,9 @@ namespace io
 		//! \return Returns the file name as zero terminated character string.
 		virtual const io::path& getFileName() const;
 
+		//! Flush the content of the buffer in the file
+		virtual bool flush() _IRR_OVERRIDE_;
+
 		//! Returns file data as an array
 		core::array<c8>& getData();
 
