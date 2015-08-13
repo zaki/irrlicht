@@ -194,7 +194,7 @@ private:
 
 		core::aabbox3d<f32> BoundingBox;
 
-		f32 AnimationFrames;
+		f32 EndFrame;
 		f32 FramesPerSecond;
 
 		f32 LastAnimatedFrame;

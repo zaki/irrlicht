@@ -72,7 +72,11 @@ namespace scene
 		virtual void setCurrentFrame(f32 frame) = 0;
 
 		//! Sets the frame numbers between the animation is looped.
-		/** The default is 0 - MaximalFrameCount of the mesh.
+		/** The default is 0 to getFrameCount()-1 of the mesh.
+		Number of played frames is end-start.
+		It interpolates toward the last frame but stops when it is reached.
+		It does not interpolate back to start even when looping.
+		Looping animations should ensure last and first frame-key are identical.
 		\param begin: Start frame number of the loop.
 		\param end: End frame number of the loop.
 		\return True if successful, false if not. */

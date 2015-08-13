@@ -22,8 +22,9 @@ namespace scene
 	public:
 
 		//! Gets the frame count of the animated mesh.
-		/** \return The amount of frames. If the amount is 1,
-		it is a static, non animated mesh. */
+		/** Note that the play-time is usually getFrameCount()-1 as it stops as soon as the last frame-key is reached.
+		\return The amount of frames. If the amount is 1,
+		it is a static, non animated mesh. 	*/
 		virtual u32 getFrameCount() const = 0;
 
 		//! Gets the animation speed of the animated mesh.

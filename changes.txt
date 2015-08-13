@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix skinned meshes not playing their last frame. Also clarified animation documentation to describe current behavior more exactly.
 - Add IWriteFile::flush interface (thx @ JLouisB for the patch).
 - CLightSceneNode::updateAbsolutePosition does now light recalculations. This is to fix using animators with lights.
 - Fix collada export for objects with rotations around more than 1 axis.
