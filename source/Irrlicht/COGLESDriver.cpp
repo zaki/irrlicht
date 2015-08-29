@@ -1184,10 +1184,10 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 
 
 //! draws a set of 2d images, using a color and the alpha channel
-void COGLES1Driver::draw2DImage(const video::ITexture* texture,
+void COGLES1Driver::draw2DImageBatch(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
-				const core::array<s32>& indices,
+				const core::array<s32>& indices, s32 kerningWidth,
 				const core::rect<s32>* clipRect, SColor color,
 				bool useAlphaChannelOfTexture)
 {
@@ -2770,9 +2770,16 @@ s32 COGLES1Driver::addHighLevelShaderMaterial(
 	const c8* pixelShaderProgram,
 	const c8* pixelShaderEntryPointName,
 	E_PIXEL_SHADER_TYPE psCompileTarget,
+	const c8* geometryShaderProgram,
+	const c8* geometryShaderEntryPointName,
+	E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+	scene::E_PRIMITIVE_TYPE inType,
+	scene::E_PRIMITIVE_TYPE outType,
+	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
-	s32 userData)
+	s32 userData,
+	E_GPU_SHADING_LANGUAGE shadingLang)
 {
 	os::Printer::log("No shader support.");
 	return -1;
