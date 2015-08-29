@@ -16,8 +16,10 @@ namespace irr
 namespace video
 {
 
+#ifdef _IRR_COMPILE_WITH_LIBJPEG_
 // Static members
 io::path CImageLoaderJPG::Filename;
+#endif
 
 //! constructor
 CImageLoaderJPG::CImageLoaderJPG()

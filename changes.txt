@@ -116,7 +116,8 @@ Changes in 1.9 (not yet released)
 --------------------------
 Changes in 1.8.2
 
- - Fix compiling on GCC5 on MinGW (thannks to Slipxy for finding the bug and to osense for reporting it).
+ - Fix compiling with -DNO_IRR_COMPILE_WITH_LIBJPEG_  (thx to anontypist for report and patch).
+ - Fix compiling on GCC5 on MinGW (thanks to Slipxy for finding the bug and to osense for reporting it).
  - Fix loading of .X and .B3D models with non-normalized quaternion rotations (thanks to JLouisB for a test-model).
  - Fix compiling on Free BSD (thanks to leper for reporting and patch)
  - Fix bug with multiple SetPixelFormat calls. (reported and fixed by anontypist)
