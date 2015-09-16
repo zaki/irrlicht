@@ -32,7 +32,7 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 	DriverType = EDT_BURNINGSVIDEO;
 	ColorFormat = BURNINGSHADER_COLOR_FORMAT;
 	IsRenderTarget = (Flags & IS_RENDERTARGET) != 0;
-
+	
 	memset32 ( MipMap, 0, sizeof ( MipMap ) );
 
 	if (image)
@@ -76,7 +76,6 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 							BURNINGSHADER_COLOR_FORMAT
 						);
 
-			OriginalSize = optSize;
 			os::Printer::log ( buf, ELL_WARNING );
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
 
@@ -125,7 +124,7 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* mipmapData)
 	}
 
 	core::dimension2d<u32> newSize;
-	core::dimension2d<u32> origSize = OriginalSize;
+	core::dimension2d<u32> origSize = Size;
 
 	for (i=1; i < SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i)
 	{
