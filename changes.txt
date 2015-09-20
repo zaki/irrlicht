@@ -115,9 +115,15 @@ Changes in 1.9 (not yet released)
 - added x64 to vs2008 project ( buildAllExamples_v9 ) [paths: obj64, win64-visualstudio]
 - burningvideo: getMaxTextureSize adjusted [ changed meaning of SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE
 - burningvideo: mipmaplevel adjusted ( not that bad bokeh...(sometimes) )
---------------------------
-Changes in 1.8.2
 
+--------------------------
+Changes in 1.8.3 (13.9.2015)
+ - Fix the fix for compiling on GCC5 (thanks to est31 for report and patch)
+
+--------------------------
+Changes in 1.8.2 (30.8.2015)
+
+ - Add VS2013 project files
  - Fix compiling with IRR_LINUX_XCURSOR_
  - Fix compiling with NO_IRR_COMPILE_WITH_LIBJPEG_  (thx to anontypist for report and patch).
  - Fix compiling on GCC5 on MinGW (thanks to Slipxy for finding the bug and to osense for reporting it).

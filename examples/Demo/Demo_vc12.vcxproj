@@ -148,7 +148,7 @@
       <Culture>0x0c07</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>..\..\bin\Win32-VisualStudio\Demo.exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\Win64-visualstudio;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention>
