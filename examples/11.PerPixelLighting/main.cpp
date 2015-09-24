@@ -10,6 +10,7 @@ nearly all other tutorials.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -38,7 +39,7 @@ public:
 
 		// set a nicer font
 		gui::IGUISkin* skin = env->getSkin();
-		gui::IGUIFont* font = env->getFont("../../media/fonthaettenschweiler.bmp");
+		gui::IGUIFont* font = env->getFont(getExampleMediaPath() + "fonthaettenschweiler.bmp");
 		if (font)
 			skin->setFont(font);
 
@@ -198,8 +199,10 @@ int main()
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	// add irrlicht logo
-	env->addImage(driver->getTexture("../../media/irrlichtlogo3.png"),
+	env->addImage(driver->getTexture(mediaPath + "irrlichtlogo3.png"),
 		core::position2d<s32>(10,10));
 
 	// add camera
@@ -228,7 +231,7 @@ int main()
 	IMeshManipulator::makePlanarTextureMapping() method.
 	*/
 
-	scene::IAnimatedMesh* roomMesh = smgr->getMesh("../../media/room.3ds");
+	scene::IAnimatedMesh* roomMesh = smgr->getMesh(mediaPath + "room.3ds");
 	scene::ISceneNode* room = 0;
 	scene::ISceneNode* earth = 0;
 
@@ -256,14 +259,14 @@ int main()
 		*/
 
 		video::ITexture* normalMap =
-			driver->getTexture("../../media/rockwall_height.bmp");
+			driver->getTexture(mediaPath + "rockwall_height.bmp");
 
 		if (normalMap)
 			driver->makeNormalMapTexture(normalMap, 9.0f);
 /*
 		// The Normal Map and the displacement map/height map in the alpha channel
 		video::ITexture* normalMap =
-			driver->getTexture("../../media/rockwall_NRM.tga");
+			driver->getTexture(mediaPath + "rockwall_NRM.tga");
 */
 		/*
 		But just setting color and normal map is not everything. The
@@ -283,7 +286,7 @@ int main()
 
 		room = smgr->addMeshSceneNode(tangentMesh);
 		room->setMaterialTexture(0,
-				driver->getTexture("../../media/rockwall.jpg"));
+				driver->getTexture(mediaPath + "rockwall.jpg"));
 		room->setMaterialTexture(1, normalMap);
 
 		// Stones don't glitter..
@@ -311,7 +314,7 @@ int main()
 
 	// add earth sphere
 
-	scene::IAnimatedMesh* earthMesh = smgr->getMesh("../../media/earth.x");
+	scene::IAnimatedMesh* earthMesh = smgr->getMesh(mediaPath + "earth.x");
 	if (earthMesh)
 	{
 		//perform various task with the mesh manipulator
@@ -334,7 +337,7 @@ int main()
 		earth->setPosition(core::vector3df(-70,130,45));
 
 		// load heightmap, create normal map from it and set it
-		video::ITexture* earthNormalMap = driver->getTexture("../../media/earthbump.jpg");
+		video::ITexture* earthNormalMap = driver->getTexture(mediaPath + "earthbump.jpg");
 		if (earthNormalMap)
 		{
 			driver->makeNormalMapTexture(earthNormalMap, 20.0f);
@@ -381,7 +384,7 @@ int main()
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	bill->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-	bill->setMaterialTexture(0, driver->getTexture("../../media/particlegreen.jpg"));
+	bill->setMaterialTexture(0, driver->getTexture(mediaPath + "particlegreen.jpg"));
 
 	/*
 	Now the same again, with the second light. The difference is that we
@@ -412,7 +415,7 @@ int main()
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	bill->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-	bill->setMaterialTexture(0, driver->getTexture("../../media/particlered.bmp"));
+	bill->setMaterialTexture(0, driver->getTexture(mediaPath + "particlered.bmp"));
 
 	// add particle system
 	scene::IParticleSystemSceneNode* ps =
@@ -439,7 +442,7 @@ int main()
 	// adjust some material settings
 	ps->setMaterialFlag(video::EMF_LIGHTING, false);
 	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-	ps->setMaterialTexture(0, driver->getTexture("../../media/fireball.bmp"));
+	ps->setMaterialTexture(0, driver->getTexture(mediaPath + "fireball.bmp"));
 	ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 
 	MyEventReceiver receiver(room, earth, env, driver);

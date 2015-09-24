@@ -12,6 +12,7 @@ following code starts up the engine and loads the level, as per tutorial 2.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -53,7 +54,9 @@ int main()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
-	device->getFileSystem()->addFileArchive("../../media/map-20kdm2.pk3");
+	const io::path mediaPath = getExampleMediaPath();
+
+	device->getFileSystem()->addFileArchive(mediaPath + "map-20kdm2.pk3");
 
 	scene::IAnimatedMesh* q3levelmesh = smgr->getMesh("20kdm2.bsp");
 	scene::IMeshSceneNode* q3node = 0;
@@ -153,7 +156,7 @@ int main()
 	// Add the billboard.
 	scene::IBillboardSceneNode * bill = smgr->addBillboardSceneNode();
 	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
-	bill->setMaterialTexture(0, driver->getTexture("../../media/particle.bmp"));
+	bill->setMaterialTexture(0, driver->getTexture(mediaPath + "particle.bmp"));
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	bill->setMaterialFlag(video::EMF_ZBUFFER, false);
 	bill->setSize(core::dimension2d<f32>(20.0f, 20.0f));
@@ -167,13 +170,13 @@ int main()
 	video::SMaterial material;
 
 	// Add an MD2 node, which uses vertex-based animation.
-	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/faerie.md2"),
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh(mediaPath + "faerie.md2"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
 	node->setPosition(core::vector3df(-90,-15,-140)); // Put its feet on the floor.
 	node->setScale(core::vector3df(1.6f)); // Make it appear realistically scaled
 	node->setMD2Animation(scene::EMAT_POINT);
 	node->setAnimationSpeed(20.f);
-	material.setTexture(0, driver->getTexture("../../media/faerie2.bmp"));
+	material.setTexture(0, driver->getTexture(mediaPath + "faerie2.bmp"));
 	material.Lighting = true;
 	material.NormalizeNormals = true;
 	node->getMaterial(0) = material;
@@ -185,7 +188,7 @@ int main()
 	selector->drop(); // We're done with this selector, so drop it now.
 
 	// And this B3D file uses skinned skeletal animation.
-	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"),
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh(mediaPath + "ninja.b3d"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
 	node->setScale(core::vector3df(10));
 	node->setPosition(core::vector3df(-75,-66,-80));
@@ -199,7 +202,7 @@ int main()
 	selector->drop();
 
 	// This X files uses skeletal animation, but without skinning.
-	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/dwarf.x"),
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh(mediaPath + "dwarf.x"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
 	node->setPosition(core::vector3df(-70,-66,-30)); // Put its feet on the floor.
 	node->setRotation(core::vector3df(0,-90,0)); // And turn it towards the camera.
@@ -211,7 +214,7 @@ int main()
 
 
 	// And this mdl file uses skinned skeletal animation.
-	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/yodan.mdl"),
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh(mediaPath + "yodan.mdl"),
 						0, IDFlag_IsPickable | IDFlag_IsHighlightable);
 	node->setPosition(core::vector3df(-90,-25,20));
 	node->setScale(core::vector3df(0.8f));

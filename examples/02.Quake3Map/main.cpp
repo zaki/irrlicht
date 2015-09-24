@@ -13,7 +13,8 @@ and an additional file to be able to ask the user for a driver type using the
 console.
 */
 #include <irrlicht.h>
-#include <iostream>
+#include "driverChoice.h"
+#include "exampleHelper.h"
 
 /*
 As already written in the HelloWorld example, in the Irrlicht Engine everything
@@ -47,32 +48,12 @@ int main()
 	which video driver to use. The Software device might be
 	too slow to draw a huge Quake 3 map, but just for the fun of it, we make
 	this decision possible, too.
-	Instead of copying this whole code into your app, you can simply include
-	driverChoice.h from Irrlicht's include directory. The function
-	driverChoiceConsole does exactly the same.
 	*/
 
 	// ask user for driver
-
-	video::E_DRIVER_TYPE driverType;
-
-	printf("Please select the driver you want for this example:\n"\
-		" (a) OpenGL 1.5\n (b) Direct3D 9.0c\n"\
-		" (c) Burning's Software Renderer\n (d) Software Renderer\n"\
-		" (e) NullDevice\n (otherKey) exit\n\n");
-
-	char i;
-	std::cin >> i;
-
-	switch(i)
-	{
-		case 'a': driverType = video::EDT_OPENGL;   break;
-		case 'b': driverType = video::EDT_DIRECT3D9;break;
-		case 'c': driverType = video::EDT_BURNINGSVIDEO;break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
-		case 'e': driverType = video::EDT_NULL;     break;
-		default: return 1;
-	}
+	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
+	if (driverType==video::EDT_COUNT)
+		return 1;
 
 	// create device and exit if creation failed
 
@@ -97,7 +78,7 @@ int main()
 	we are able to read from the files in that archive as if they are
 	directly stored on the disk.
 	*/
-	device->getFileSystem()->addFileArchive("../../media/map-20kdm2.pk3");
+	device->getFileSystem()->addFileArchive(getExampleMediaPath() + "map-20kdm2.pk3");
 
 	/*
 	Now we can load the mesh by calling

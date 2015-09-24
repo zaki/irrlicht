@@ -10,6 +10,7 @@ for the rendering driver, create the Irrlicht Device:
 
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -36,6 +37,8 @@ int main()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment* env = device->getGUIEnvironment();
+
+	const io::path mediaPath = getExampleMediaPath();
 	
 	/*
 	Now, we load an animated mesh to be displayed. As in most examples,
@@ -48,12 +51,12 @@ int main()
 	// load and display animated fairy mesh
 
 	scene::IAnimatedMeshSceneNode* fairy = smgr->addAnimatedMeshSceneNode(
-		smgr->getMesh("../../media/faerie.md2"));
+		smgr->getMesh(mediaPath + "faerie.md2"));
 
 	if (fairy)
 	{
 		fairy->setMaterialTexture(0,
-				driver->getTexture("../../media/faerie2.bmp")); // set diffuse texture
+				driver->getTexture(mediaPath + "faerie2.bmp")); // set diffuse texture
 		fairy->setMaterialFlag(video::EMF_LIGHTING, true); // enable dynamic lighting
 		fairy->getMaterial(0).Shininess = 20.0f; // set size of specular highlights
 		fairy->setPosition(core::vector3df(-10,0,-100));
@@ -132,7 +135,7 @@ int main()
 	{
 		// create problem text
 		gui::IGUISkin* skin = env->getSkin();
-		gui::IGUIFont* font = env->getFont("../../media/fonthaettenschweiler.bmp");
+		gui::IGUIFont* font = env->getFont(mediaPath + "fonthaettenschweiler.bmp");
 		if (font)
 			skin->setFont(font);
 

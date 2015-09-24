@@ -15,6 +15,7 @@ nearly all other tutorials:
 #include <irrlicht.h>
 #include <iostream>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -183,6 +184,8 @@ int main()
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	/*
 	Now for the more interesting parts. If we are using Direct3D, we want
 	to load vertex and pixel shader programs, if we have OpenGL, we want to
@@ -203,26 +206,26 @@ int main()
 	case video::EDT_DIRECT3D9:
 		if (UseHighLevelShaders)
 		{
-			psFileName = "../../media/d3d9.hlsl";
+			psFileName = mediaPath + "d3d9.hlsl";
 			vsFileName = psFileName; // both shaders are in the same file
 		}
 		else
 		{
-			psFileName = "../../media/d3d9.psh";
-			vsFileName = "../../media/d3d9.vsh";
+			psFileName = mediaPath + "d3d9.psh";
+			vsFileName = mediaPath + "d3d9.vsh";
 		}
 		break;
 
 	case video::EDT_OPENGL:
 		if (UseHighLevelShaders)
 		{
-			psFileName = "../../media/opengl.frag";
-			vsFileName = "../../media/opengl.vert";
+			psFileName = mediaPath + "opengl.frag";
+			vsFileName = mediaPath + "opengl.vert";
 		}
 		else
 		{
-			psFileName = "../../media/opengl.psh";
-			vsFileName = "../../media/opengl.vsh";
+			psFileName = mediaPath + "opengl.psh";
+			vsFileName = mediaPath + "opengl.vsh";
 		}
 		break;
 	}
@@ -335,7 +338,7 @@ int main()
 
 	scene::ISceneNode* node = smgr->addCubeSceneNode(50);
 	node->setPosition(core::vector3df(0,0,0));
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialType((video::E_MATERIAL_TYPE)newMaterialType1);
 
@@ -356,7 +359,7 @@ int main()
 
 	node = smgr->addCubeSceneNode(50);
 	node->setPosition(core::vector3df(0,-10,50));
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 	node->setMaterialType((video::E_MATERIAL_TYPE)newMaterialType2);
@@ -378,7 +381,7 @@ int main()
 
 	node = smgr->addCubeSceneNode(50);
 	node->setPosition(core::vector3df(0,50,25));
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	smgr->addTextSceneNode(gui->getBuiltInFont(), L"NO SHADER",
 		video::SColor(255,255,255,255), node);
@@ -394,12 +397,12 @@ int main()
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 	smgr->addSkyBoxSceneNode(
-		driver->getTexture("../../media/irrlicht2_up.jpg"),
-		driver->getTexture("../../media/irrlicht2_dn.jpg"),
-		driver->getTexture("../../media/irrlicht2_lf.jpg"),
-		driver->getTexture("../../media/irrlicht2_rt.jpg"),
-		driver->getTexture("../../media/irrlicht2_ft.jpg"),
-		driver->getTexture("../../media/irrlicht2_bk.jpg"));
+		driver->getTexture(mediaPath + "irrlicht2_up.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_dn.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_lf.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_rt.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_ft.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_bk.jpg"));
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 

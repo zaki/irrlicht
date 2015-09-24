@@ -6,6 +6,7 @@ It can also be used for experiments with the mouse in general.
 
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 using namespace core;
@@ -472,13 +473,15 @@ int main()
 	SpriteBankIcons = env->addEmptySpriteBank(io::path("cursor_icons"));
 	context.SpriteBox->setSpriteBank(SpriteBankIcons);
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	// create one animated icon from several files
 	array< io::path > files;
-	files.push_back( io::path("../../media/icon_crosshairs16x16bw1.png") );
-	files.push_back( io::path("../../media/icon_crosshairs16x16bw2.png") );
-	files.push_back( io::path("../../media/icon_crosshairs16x16bw3.png") );
-	files.push_back( io::path("../../media/icon_crosshairs16x16bw3.png") );
-	files.push_back( io::path("../../media/icon_crosshairs16x16bw2.png") );
+	files.push_back( io::path(mediaPath + "icon_crosshairs16x16bw1.png") );
+	files.push_back( io::path(mediaPath + "icon_crosshairs16x16bw2.png") );
+	files.push_back( io::path(mediaPath + "icon_crosshairs16x16bw3.png") );
+	files.push_back( io::path(mediaPath + "icon_crosshairs16x16bw3.png") );
+	files.push_back( io::path(mediaPath + "icon_crosshairs16x16bw2.png") );
 	SCursorSprite spriteBw;	// the sprite + some additional information needed for cursors
 	spriteBw.SpriteId = AddAnimatedIconToSpriteBank( SpriteBankIcons, driver, files, 200 );
 	spriteBw.SpriteBank = SpriteBankIcons;
@@ -493,7 +496,7 @@ int main()
 	iconRects.push_back( rect<s32>(0,16, 16, 32) );
 	iconRects.push_back( rect<s32>(16,0, 32, 16) );
 	SCursorSprite spriteCol;	// the sprite + some additional information needed for cursors
-	spriteCol.SpriteId = AddAnimatedIconToSpriteBank( SpriteBankIcons, driver, io::path("../../media/icon_crosshairs16x16col.png"), iconRects, 200 );
+	spriteCol.SpriteId = AddAnimatedIconToSpriteBank( SpriteBankIcons, driver, io::path(mediaPath + "icon_crosshairs16x16col.png"), iconRects, 200 );
 	spriteCol.HotSpot = position2d<s32>(7,7);
 	spriteCol.SpriteBank = SpriteBankIcons;
 	context.addIcon(L"crosshair_colored", spriteCol);
@@ -503,15 +506,15 @@ int main()
 	SCursorSprite spriteNonAnimated(SpriteBankIcons, 0, position2d<s32>(7,7));
 
 	rectIcon = rect<s32>(0,0, 16, 16);
-	spriteNonAnimated.SpriteId = AddIconToSpriteBank( SpriteBankIcons, driver, io::path("../../media/icon_crosshairs16x16col.png"), rectIcon );
+	spriteNonAnimated.SpriteId = AddIconToSpriteBank( SpriteBankIcons, driver, io::path(mediaPath + "icon_crosshairs16x16col.png"), rectIcon );
 	context.addIcon(L"crosshair_col1", spriteNonAnimated, false);
 
 	rectIcon = rect<s32>(16,0, 32, 16);
-	spriteNonAnimated.SpriteId = AddIconToSpriteBank( SpriteBankIcons, driver, io::path("../../media/icon_crosshairs16x16col.png"), rectIcon );
+	spriteNonAnimated.SpriteId = AddIconToSpriteBank( SpriteBankIcons, driver, io::path(mediaPath + "icon_crosshairs16x16col.png"), rectIcon );
 	context.addIcon(L"crosshair_col2", spriteNonAnimated, false);
 
 	rectIcon = rect<s32>(0,16, 16, 32);
-	spriteNonAnimated.SpriteId = AddIconToSpriteBank( SpriteBankIcons, driver, io::path("../../media/icon_crosshairs16x16col.png"), rectIcon );
+	spriteNonAnimated.SpriteId = AddIconToSpriteBank( SpriteBankIcons, driver, io::path(mediaPath + "icon_crosshairs16x16col.png"), rectIcon );
 	context.addIcon(L"crosshair_col3", spriteNonAnimated, false);
 
 

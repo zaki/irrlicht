@@ -53,6 +53,7 @@ collecting profiling information is disabled by default for speed reasons.
 
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
@@ -233,7 +234,7 @@ public:
 				*/
 				MY_PROFILE(CProfileScope p(L"dwarfes", L"grp switch scene");)
 
-				scene::IAnimatedMesh* aniMesh = SceneManager->getMesh( "../../media/dwarf.x" );
+				scene::IAnimatedMesh* aniMesh = SceneManager->getMesh( getExampleMediaPath() + "dwarf.x" );
 				if (aniMesh)
 				{
 					scene::IMesh * mesh = aniMesh->getMesh (0);
@@ -336,10 +337,12 @@ int main()
 	IGUIEnvironment* env = device->getGUIEnvironment();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	/*
 		A map we use for one of our test-scenes.
 	*/
-	device->getFileSystem()->addFileArchive("../../media/map-20kdm2.pk3");
+	device->getFileSystem()->addFileArchive(mediaPath + "map-20kdm2.pk3");
 
 	MyEventReceiver receiver(smgr);
 	device->setEventReceiver(&receiver);
@@ -373,7 +376,7 @@ int main()
 	/*
 		Get a monospaced font - it's nicer when working with rows of numbers.
 	 */
-	IGUIFont* font = env->getFont("../../media/fontcourier.bmp");
+	IGUIFont* font = env->getFont(mediaPath + "fontcourier.bmp");
 	if (font)
 		receiver.GuiProfiler->setOverrideFont(font);
 

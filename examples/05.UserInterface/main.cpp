@@ -12,6 +12,7 @@ and a pointer to a listbox.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -209,6 +210,8 @@ int main()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	IGUIEnvironment* env = device->getGUIEnvironment();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	/*
 	To make the font a little bit nicer, we load an external font
 	and set it as the new default font in the skin.
@@ -217,7 +220,7 @@ int main()
 	*/
 
 	IGUISkin* skin = env->getSkin();
-	IGUIFont* font = env->getFont("../../media/fonthaettenschweiler.bmp");
+	IGUIFont* font = env->getFont(mediaPath + "fonthaettenschweiler.bmp");
 	if (font)
 		skin->setFont(font);
 
@@ -275,7 +278,7 @@ int main()
 	/*
 	And at last, we create a nice Irrlicht Engine logo in the top left corner.
 	*/
-	env->addImage(driver->getTexture("../../media/irrlichtlogo2.png"),
+	env->addImage(driver->getTexture(mediaPath + "irrlichtlogo2.png"),
 			position2d<int>(10,10));
 
 

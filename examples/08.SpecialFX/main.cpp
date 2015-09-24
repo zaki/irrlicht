@@ -15,6 +15,7 @@ runs slow on your hardware.
 #include <irrlicht.h>
 #include <iostream>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -53,6 +54,8 @@ int main()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	/*
 	For our environment, we load a .3ds file. It is a small room I modelled
 	with Anim8or and exported into the 3ds format because the Irrlicht
@@ -67,14 +70,14 @@ int main()
 	off too with this code.
 	*/
 
-	scene::IAnimatedMesh* mesh = smgr->getMesh("../../media/room.3ds");
+	scene::IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "room.3ds");
 
 	smgr->getMeshManipulator()->makePlanarTextureMapping(mesh->getMesh(0), 0.004f);
 
 	scene::ISceneNode* node = 0;
 
 	node = smgr->addAnimatedMeshSceneNode(mesh);
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.jpg"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.jpg"));
 	node->getMaterial(0).SpecularColor.set(0,0,0,0);
 
 	/*
@@ -97,8 +100,8 @@ int main()
 	node = smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
 	node->setPosition(core::vector3df(0,7,0));
 
-	node->setMaterialTexture(0, driver->getTexture("../../media/stones.jpg"));
-	node->setMaterialTexture(1, driver->getTexture("../../media/water.jpg"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "stones.jpg"));
+	node->setMaterialTexture(1, driver->getTexture(mediaPath + "water.jpg"));
 
 	node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
 
@@ -123,7 +126,7 @@ int main()
 	node = smgr->addBillboardSceneNode(node, core::dimension2d<f32>(50, 50));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-	node->setMaterialTexture(0, driver->getTexture("../../media/particlewhite.bmp"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "particlewhite.bmp"));
 
 	/*
 	The next special effect is a lot more interesting: A particle system.
@@ -189,7 +192,7 @@ int main()
 		ps->setScale(core::vector3df(2,2,2));
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
 		ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-		ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
+		ps->setMaterialTexture(0, driver->getTexture(mediaPath + "fire.bmp"));
 		ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 	}
 
@@ -214,8 +217,8 @@ int main()
 		core::array<video::ITexture*> textures;
 		for (s32 g=7; g > 0; --g)
 		{
-			core::stringc tmp;
-			tmp = "../../media/portal";
+			core::stringc tmp(mediaPath);
+			tmp += "portal";
 			tmp += g;
 			tmp += ".bmp";
 			video::ITexture* t = driver->getTexture( tmp.c_str() );
@@ -250,7 +253,7 @@ int main()
 
 	// add animated character
 
-	mesh = smgr->getMesh("../../media/dwarf.x");
+	mesh = smgr->getMesh(mediaPath + "dwarf.x");
 	scene::IAnimatedMeshSceneNode* anode = 0;
 
 	anode = smgr->addAnimatedMeshSceneNode(mesh);

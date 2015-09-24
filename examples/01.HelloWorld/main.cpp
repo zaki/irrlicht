@@ -43,6 +43,7 @@ After we have set up the IDE, the compiler will know where to find the Irrlicht
 Engine header files so we can include it now in our code.
 */
 #include <irrlicht.h>
+#include "exampleHelper.h"
 
 /*
 In the Irrlicht Engine, everything can be found in the namespace 'irr'. So if
@@ -153,6 +154,11 @@ int main()
 		rect<s32>(10,10,260,22), true);
 
 	/*
+	Get a media path dedicated for your platform.
+	*/
+	const io::path mediaPath = getExampleMediaPath();
+
+	/*
 	To show something interesting, we load a Quake 2 model and display it.
 	We only have to get the Mesh from the Scene Manager with getMesh() and add
 	a SceneNode to display the mesh with addAnimatedMeshSceneNode(). We
@@ -164,7 +170,7 @@ int main()
 	other supported file format. By the way, that cool Quake 2 model
 	called sydney was modelled by Brian Collins.
 	*/
-	IAnimatedMesh* mesh = smgr->getMesh("../../media/sydney.md2");
+	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "sydney.md2");
 	if (!mesh)
 	{
 		device->drop();
@@ -184,7 +190,7 @@ int main()
 	{
 		node->setMaterialFlag(EMF_LIGHTING, false);
 		node->setMD2Animation(scene::EMAT_STAND);
-		node->setMaterialTexture( 0, driver->getTexture("../../media/sydney.bmp") );
+		node->setMaterialTexture( 0, driver->getTexture(mediaPath + "sydney.bmp") );
 	}
 
 	/*

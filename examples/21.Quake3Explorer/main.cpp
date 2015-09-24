@@ -19,8 +19,9 @@ ftp://ftp.idsoftware.com/idstuff/quake3/win32/q3ademo.exe
 Copyright 2006-2011 Burningwater, Thomas Alten
 */
 
-#include "driverChoice.h"
 #include <irrlicht.h>
+#include "driverChoice.h"
+#include "exampleHelper.h"
 #include "q3factory.h"
 #include "sound.h"
 
@@ -107,14 +108,16 @@ void GameData::setDefault ()
 	CurrentMapName = "";
 	CurrentArchiveList.clear ();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	// Explorer Media directory
-	CurrentArchiveList.push_back ( StartupDir + "../../media/" );
+	CurrentArchiveList.push_back ( StartupDir + mediaPath );
 
 	// Add the original quake3 files before you load your custom map
 	// Most mods are using the original shaders, models&items&weapons
 	CurrentArchiveList.push_back("/q/baseq3/");
 
-	CurrentArchiveList.push_back(StartupDir + "../../media/map-20kdm2.pk3");
+	CurrentArchiveList.push_back(StartupDir + mediaPath + "map-20kdm2.pk3");
 }
 
 /*

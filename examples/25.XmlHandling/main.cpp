@@ -10,6 +10,7 @@ can easily be integrated into own apps.
 */
 
 #include <irrlicht.h>
+#include "exampleHelper.h"
 
 using namespace irr;
 using namespace core;
@@ -429,7 +430,7 @@ int main()
 	// Try to load config.
 	// I leave it as an exercise of the reader to store the configuration in the local application data folder,
 	// the only logical place to store config data for games. For all other operating systems I redirect to your manuals
-	app.Settings = new SettingManager("../../media/settings.xml");
+	app.Settings = new SettingManager(getExampleMediaPath() + "settings.xml");
 	if ( !app.Settings->load() )
 	{
 		// ...

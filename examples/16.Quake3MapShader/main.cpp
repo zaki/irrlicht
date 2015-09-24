@@ -10,6 +10,7 @@ to ask the user for a driver type using the console.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 /*
 	define which Quake3 Level should be loaded
@@ -32,7 +33,7 @@ to ask the user for a driver type using the console.
 
 #ifdef IRRLICHT_QUAKE3_ARENA
 	#define QUAKE3_STORAGE_FORMAT	addFileArchive
-	#define QUAKE3_STORAGE_1	"../../media/map-20kdm2.pk3"
+	#define QUAKE3_STORAGE_1	getExampleMediaPath() + "map-20kdm2.pk3"
 	#define QUAKE3_MAP_NAME			"maps/20kdm2.bsp"
 #endif
 
@@ -144,8 +145,10 @@ int IRRCALLCONV main(int argc, char* argv[])
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	//! add our private media directory to the file system
-	device->getFileSystem()->addFileArchive("../../media/");
+	device->getFileSystem()->addFileArchive(mediaPath);
 
 	/*
 	To display the Quake 3 map, we first need to load it. Quake 3 maps
@@ -211,7 +214,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 		const scene::IMesh * const additional_mesh = mesh->getMesh(quake3::E_Q3_MESH_ITEMS);
 
 #ifdef SHOW_SHADER_NAME
-		gui::IGUIFont *font = device->getGUIEnvironment()->getFont("../../media/fontlucida.png");
+		gui::IGUIFont *font = device->getGUIEnvironment()->getFont(mediaPath + "fontlucida.png");
 		u32 count = 0;
 #endif
 
