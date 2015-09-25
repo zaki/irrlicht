@@ -770,7 +770,7 @@ void CDemo::startIrrKlang()
 
 	// play music
 
-	irrklang::ISound* snd = irrKlang->play2D(mediaPath + "IrrlichtTheme.ogg", true, false, true);
+	irrklang::ISound* snd = irrKlang->play2D((mediaPath + "IrrlichtTheme.ogg").c_str(), true, false, true);
 	if ( !snd )
 		snd = irrKlang->play2D("IrrlichtTheme.ogg", true, false, true);
 
@@ -802,7 +802,7 @@ void CDemo::startSound()
 
 	const io::path mediaPath = getExampleMediaPath();
 
-	stream = Mix_LoadMUS(mediaPath + "IrrlichtTheme.ogg");
+	stream = Mix_LoadMUS((mediaPath + "IrrlichtTheme.ogg").c_str());
 	if (stream)
 		Mix_PlayMusic(stream, -1);
 
