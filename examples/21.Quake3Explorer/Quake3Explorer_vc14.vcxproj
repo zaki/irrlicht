@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,53 +19,62 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>tests</ProjectName>
-    <ProjectGuid>{2A1DE18B-F678-4A94-A996-E848E20B2983}</ProjectGuid>
-    <RootNamespace>tests</RootNamespace>
+    <ProjectName>21.Quake3Explorer</ProjectName>
+    <ProjectGuid>{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}</ProjectGuid>
+    <RootNamespace>21.Quake3Explorer</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\bin\Win32-VisualStudio\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\bin\Win64-VisualStudio\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\bin\Win32-VisualStudio\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\bin\Win64-VisualStudio\</OutDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\bin\Win32-VisualStudio\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\bin\Win64-VisualStudio\</OutDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -78,21 +87,26 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\bin\Win32-VisualStudio\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\bin\Win64-VisualStudio\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\lib\Win32-visualstudio\Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\bin\Win32-VisualStudio\21.Quake3Explorer.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\lib\Win32-visualstudio;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)Quake3MapShader.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
     </Link>
@@ -100,30 +114,45 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\lib\Win64-visualstudio\Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\bin\Win64-VisualStudio\21.Quake3Explorer.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\lib\Win64-visualstudio;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)Quake3MapShader.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\lib\Win32-visualstudio\Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\bin\Win32-VisualStudio\21.Quake3Explorer.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\lib\Win32-visualstudio;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention>
@@ -132,16 +161,24 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\lib\Win64-visualstudio\Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\bin\Win64-VisualStudio\21.Quake3Explorer.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\lib\Win64-visualstudio;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention>
@@ -149,88 +186,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="2dmaterial.cpp" />
-    <ClCompile Include="anti-aliasing.cpp" />
-    <ClCompile Include="archiveReader.cpp" />
-    <ClCompile Include="b3dAnimation.cpp" />
-    <ClCompile Include="billboards.cpp" />
-    <ClCompile Include="burningsVideo.cpp" />
-    <ClCompile Include="collisionResponseAnimator.cpp" />
-    <ClCompile Include="color.cpp" />
-    <ClCompile Include="coreutil.cpp" />
-    <ClCompile Include="createImage.cpp" />
-    <ClCompile Include="cursorSetVisible.cpp" />
-    <ClCompile Include="disambiguateTextures.cpp" />
-    <ClCompile Include="draw2DImage.cpp" />
-    <ClCompile Include="drawPixel.cpp" />
-    <ClCompile Include="drawRectOutline.cpp" />
-    <ClCompile Include="drawVertexPrimitive.cpp" />
-    <ClCompile Include="enumerateImageManipulators.cpp" />
-    <ClCompile Include="exports.cpp" />
-    <ClCompile Include="fast_atof.cpp" />
-    <ClCompile Include="filesystem.cpp" />
-    <ClCompile Include="flyCircleAnimator.cpp" />
-    <ClCompile Include="guiDisabledMenu.cpp" />
-    <ClCompile Include="ioScene.cpp" />
-    <ClCompile Include="irrArray.cpp" />
-    <ClCompile Include="irrCoreEquals.cpp" />
-    <ClCompile Include="irrList.cpp" />
-    <ClCompile Include="irrMap.cpp" />
-    <ClCompile Include="irrString.cpp" />
-    <ClCompile Include="lightMaps.cpp" />
-    <ClCompile Include="lights.cpp" />
-    <ClCompile Include="loadTextures.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="makeColorKeyTexture.cpp" />
-    <ClCompile Include="material.cpp" />
-    <ClCompile Include="matrixOps.cpp" />
-    <ClCompile Include="md2Animation.cpp" />
-    <ClCompile Include="meshLoaders.cpp" />
-    <ClCompile Include="meshTransform.cpp" />
-    <ClCompile Include="mrt.cpp" />
-    <ClCompile Include="orthoCam.cpp" />
-    <ClCompile Include="planeMatrix.cpp" />
-    <ClCompile Include="projectionMatrix.cpp" />
-    <ClCompile Include="removeCustomAnimator.cpp" />
-    <ClCompile Include="renderTargetTexture.cpp" />
-    <ClCompile Include="sceneCollisionManager.cpp" />
-    <ClCompile Include="sceneNodeAnimator.cpp" />
-    <ClCompile Include="screenshot.cpp" />
-    <ClCompile Include="serializeAttributes.cpp" />
-    <ClCompile Include="skinnedMesh.cpp" />
-    <ClCompile Include="softwareDevice.cpp" />
-    <ClCompile Include="stencilshadow.cpp" />
-    <ClCompile Include="terrainSceneNode.cpp" />
-    <ClCompile Include="testaabbox.cpp" />
-    <ClCompile Include="testDimension2d.cpp" />
-    <ClCompile Include="testGeometryCreator.cpp" />
-    <ClCompile Include="testLine2d.cpp" />
-    <ClCompile Include="testQuaternion.cpp" />
-    <ClCompile Include="testS3DVertex.cpp" />
-    <ClCompile Include="testUtils.cpp" />
-    <ClCompile Include="testVector2d.cpp" />
-    <ClCompile Include="testVector3d.cpp" />
-    <ClCompile Include="testXML.cpp" />
-    <ClCompile Include="textureFeatures.cpp" />
-    <ClCompile Include="textureRenderStates.cpp" />
-    <ClCompile Include="timer.cpp" />
-    <ClCompile Include="transparentMaterials.cpp" />
-    <ClCompile Include="triangle3d.cpp" />
-    <ClCompile Include="triangleSelector.cpp" />
-    <ClCompile Include="userClipPlane.cpp" />
-    <ClCompile Include="vectorPositionDimension2d.cpp" />
-    <ClCompile Include="videoDriver.cpp" />
-    <ClCompile Include="viewPort.cpp" />
-    <ClCompile Include="writeImageToFile.cpp" />
+    <ClCompile Include="q3factory.cpp" />
+    <ClCompile Include="sound.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="testUtils.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\source\Irrlicht\Irrlicht11.0.vcxproj">
-      <Project>{e08e042a-6c45-411b-92be-3cc31331019f}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <ClInclude Include="q3factory.h" />
+    <ClInclude Include="sound.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
