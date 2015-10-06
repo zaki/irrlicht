@@ -117,6 +117,10 @@ Changes in 1.9 (not yet released)
 - burningvideo: mipmaplevel adjusted ( not that bad bokeh...(sometimes) )
 
 --------------------------
+Changes in 1.8.4
+ - Tests give now a warning when stabilizing screenshots failed. Aslo trying more often now (a hack as taking screenshots otherwise fails often in windowed mode on some systems).
+
+--------------------------
 Changes in 1.8.3 (13.9.2015)
  - Fix the fix for compiling on GCC5 (thanks to est31 for report and patch)
 

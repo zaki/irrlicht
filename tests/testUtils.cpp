@@ -336,7 +336,7 @@ float fuzzyCompareImages(irr::video::IVideoDriver * driver,
 void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 		irr::video::SColor color)
 {
-	for(int i = 0; i < 100; ++i) // 100 - max checks
+	for(int i = 0; i < 10000; ++i) 
 	{
 		driver->beginScene(true, true, color);
 		driver->endScene();
@@ -382,6 +382,8 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 		}
 		screenshot->drop();
 	}
+	
+	logTestString("stabilizeScreenBackground failed\n");
 }
 
 irr::core::stringc shortDriverName(irr::video::IVideoDriver * driver)
