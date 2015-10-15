@@ -308,19 +308,13 @@ void CNullDriver::deleteAllTextures()
 	SharedDepthTextures.clear();
 }
 
-
-
-//! applications must call this method before performing any rendering. returns false if failed.
-bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
+bool CNullDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
 	core::clearFPUException();
 	PrimitivesDrawn = 0;
 	return true;
 }
 
-
-//! applications must call this method after performing any rendering. returns false if failed.
 bool CNullDriver::endScene()
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
@@ -625,15 +619,12 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 	return new SDummyTexture(name);
 }
 
-
-//! set a render target
-bool CNullDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
-	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
+bool CNullDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	return false;
 }
 
-bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color)
+bool CNullDriver::setRenderTarget(ITexture* texture, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (texture)
 	{
@@ -663,11 +654,11 @@ bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 
 		SharedRenderTarget->setTexture(texture, depthTexture);
 
-		return IVideoDriver::setRenderTarget(SharedRenderTarget, 0, clearBackBuffer, clearZBuffer, clearZBuffer, color);
+		return IVideoDriver::setRenderTarget(SharedRenderTarget, 0, clearFlag, clearColor, clearDepth, clearStencil);
 	}
 	else
 	{
-		return IVideoDriver::setRenderTarget(NULL, 0, clearBackBuffer, clearZBuffer, false, color);
+		return IVideoDriver::setRenderTarget(NULL, 0, clearFlag, clearColor, clearDepth, clearStencil);
 	}
 }
 
@@ -2410,15 +2401,7 @@ ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size
 	return 0;
 }
 
-
-//! Clear the color, depth and/or stencil buffers.
-void CNullDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
-{
-}
-
-
-//! Clears the ZBuffer.
-void CNullDriver::clearZBuffer()
+void CNullDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
 }
 

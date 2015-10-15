@@ -804,8 +804,40 @@ void COpenGLDriver::createMaterialRenderers()
 	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_ONETEXTURE_BLEND(this));
 }
 
+bool COpenGLDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
+{
+	CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 
-//! presents the rendered scene on the screen, returns false if failed
+	switch (DeviceType)
+	{
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	case EIDT_WIN32:
+		changeRenderContext(videoData, Win32Device);
+		break;
+#endif
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+	case EIDT_X11:
+		changeRenderContext(videoData, X11Device);
+		break;
+#endif
+	default:
+		changeRenderContext(videoData, (void*)0);
+		break;
+	}
+
+#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+	if (DeviceType == EIDT_SDL)
+	{
+		// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
+		// it would be better if this was fixed elsewhere.
+		glFrontFace(GL_CW);
+	}
+#endif
+
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
+	return true;
+}
+
 bool COpenGLDriver::endScene()
 {
 	CNullDriver::endScene();
@@ -844,43 +876,6 @@ bool COpenGLDriver::endScene()
 	// todo: console device present
 
 	return false;
-}
-
-
-//! init call for rendering start
-bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
-{
-	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
-
-	switch (DeviceType)
-	{
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-	case EIDT_WIN32:
-		changeRenderContext(videoData, Win32Device);
-		break;
-#endif
-#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
-	case EIDT_X11:
-		changeRenderContext(videoData, X11Device);
-		break;
-#endif
-	default:
-		changeRenderContext(videoData, (void*)0);
-		break;
-	}
-
-#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-	if (DeviceType == EIDT_SDL)
-	{
-		// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
-		// it would be better if this was fixed elsewhere.
-		glFrontFace(GL_CW);
-	}
-#endif
-
-	clearBuffers(backBuffer, zBuffer, false, color);
-	return true;
 }
 
 
@@ -4220,10 +4215,7 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 	return 0x7fffffff;
 }
 
-
-//! set a render target
-bool COpenGLDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
-	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
+bool COpenGLDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_OPENGL)
 	{
@@ -4288,11 +4280,11 @@ bool COpenGLDriver::setRenderTarget(IRenderTarget* target, const core::array<u32
 
 	if (!supportForFBO)
 	{
-		clearBackBuffer = true;
-		clearDepthBuffer = true;
+		clearFlag |= ECBF_COLOR;
+		clearFlag |= ECBF_DEPTH;
 	}
 
-	clearBuffers(clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 	return true;
 }
@@ -4307,13 +4299,11 @@ const core::dimension2d<u32>& COpenGLDriver::getCurrentRenderTargetSize() const
 		return CurrentRenderTargetSize;
 }
 
-
-//! Clear the color, depth and/or stencil buffers.
-void COpenGLDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+void COpenGLDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
 	GLbitfield mask = 0;
 
-	if (backBuffer)
+	if (flag & ECBF_COLOR)
 	{
 		BridgeCalls->setColorMask(true, true, true, true);
 
@@ -4324,24 +4314,21 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencil
 		mask |= GL_COLOR_BUFFER_BIT;
 	}
 
-	if (depthBuffer)
+	if (flag & ECBF_DEPTH)
 	{
 		BridgeCalls->setDepthMask(true);
+		glClearDepth(depth);
 		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
-	if (stencilBuffer)
+	if (flag & ECBF_STENCIL)
+	{
+		glClearStencil(stencil);
 		mask |= GL_STENCIL_BUFFER_BIT;
+	}
 
 	if (mask)
 		glClear(mask);
-}
-
-
-//! Clears the ZBuffer.
-void COpenGLDriver::clearZBuffer()
-{
-	clearBuffers(false, true, false, 0x0);
 }
 
 

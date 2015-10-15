@@ -231,7 +231,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	{
 		if (MenuDevice->isWindowActive())
 		{
-			driver->beginScene(false, true, video::SColor(0,0,0,0));
+			driver->beginScene(video::ECBF_DEPTH, video::SColor(0,0,0,0));
 
 			if (irrlichtBack)
 				driver->draw2DImage(irrlichtBack,

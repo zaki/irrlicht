@@ -458,7 +458,7 @@ int main()
 			*/
 			recursive(5);
 
-			driver->beginScene(true, true, SColor(0,200,200,200));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(0,200,200,200));
 
 			/*
 				If you want to profile only some lines and not a complete scope

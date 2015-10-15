@@ -227,7 +227,7 @@ int main()
 
 		node->setPosition(nodePosition);
 
-		driver->beginScene(true, true, video::SColor(255,113,113,133));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 
 		smgr->drawAll(); // draw the 3d scene
 		device->getGUIEnvironment()->drawAll(); // draw the gui environment (the logo)

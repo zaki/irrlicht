@@ -46,7 +46,7 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 	plane->getMaterial(0).PolygonOffsetDirection=video::EPO_BACK;
 	plane->getMaterial(0).PolygonOffsetFactor=7;
 
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-polygonBack.png");
@@ -56,7 +56,7 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 	// test front plane to front
 	plane2->getMaterial(0).PolygonOffsetDirection=video::EPO_FRONT;
 	plane2->getMaterial(0).PolygonOffsetFactor=7;
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
 	result &= takeScreenshotAndCompareAgainstReference(driver, "-polygonFront.png");

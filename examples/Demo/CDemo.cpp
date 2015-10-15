@@ -105,7 +105,12 @@ void CDemo::run()
 
 			createParticleImpacts();
 
-			driver->beginScene(timeForThisScene != -1, true, backColor);
+			u16 clearFlag = video::ECBF_DEPTH;
+
+			if (timeForThisScene != -1)
+				clearFlag |= video::ECBF_COLOR;
+
+			driver->beginScene(clearFlag, backColor);
 
 			smgr->drawAll();
 			guienv->drawAll();

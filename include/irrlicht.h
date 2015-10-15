@@ -256,7 +256,7 @@
  *	// draw everything
  *	while(device->run() && driver)
  *	{
- *		driver->beginScene(true, true, video::SColor(255,0,0,255));
+ *		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,255));
  *		scenemgr->drawAll();
  *		driver->endScene();
  *	}

@@ -222,7 +222,7 @@ namespace irr
 		\code
 		while (device->run())
 		{
-			driver->beginScene(true, true, 0);
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, 0);
 			smgr->drawAll();
 			driver->endScene();
 		}
@@ -254,7 +254,7 @@ namespace irr
 			device->getTimer()->tick();
 
 			// draw engine picture
-			driver->beginScene(true, true, 0);
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, 0);
 			smgr->drawAll();
 			driver->endScene();
 		}

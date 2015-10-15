@@ -490,7 +490,7 @@ int main()
 	{
 		if (app.Device->isWindowActive())
 		{
-			app.Driver->beginScene(true, true, SColor(0,200,200,200));
+			app.Driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(0,200,200,200));
 			app.Gui->drawAll();
 			app.Driver->endScene();
 		}

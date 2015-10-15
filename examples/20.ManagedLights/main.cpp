@@ -362,7 +362,7 @@ Add several "zones".  You could use this technique to light individual rooms, fo
 
 	while(device->run())
 	{
-		driver->beginScene(true, true, video::SColor(255,100,101,140));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 		smgr->drawAll();
 		guienv->drawAll();
 		driver->endScene();

@@ -43,7 +43,7 @@ static bool testWith2DImage(video::E_DRIVER_TYPE driverType)
 
 	video::SColor colors[4]={0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff};
 	//draw the image :
-	driver->beginScene (true, true, video::SColor (255, 200, 200, 200));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor (255, 200, 200, 200));
 	driver->draw2DImage (image,
 		       core::rect < s32 >
 		       (64 - image->getSize ().Width / 2,
@@ -62,7 +62,7 @@ static bool testWith2DImage(video::E_DRIVER_TYPE driverType)
 	scene::ISceneNode *modelNode = smgr->addMeshSceneNode(modelMesh);
 	modelNode->setMaterialTexture (0, RTT_texture);
 
-	driver->beginScene (true, true, video::SColor (255, 200, 200, 200));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor (255, 200, 200, 200));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -72,7 +72,7 @@ static bool testWith2DImage(video::E_DRIVER_TYPE driverType)
 	//it's now fliped...
 	for (u32 i=0; i<10; ++i)
 	{
-		driver->beginScene (true, true, video::SColor (255, 200, 200, 200));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor (255, 200, 200, 200));
 
 		//draw img
 		driver->draw2DImage (image,
@@ -189,10 +189,10 @@ bool rttAndZBuffer(video::E_DRIVER_TYPE driverType)
 	mesh->drop();
 
 	{
-		vd->beginScene(true, true, video::SColor(255, 0, 0, 0));
-		vd->setRenderTarget(renderTarget, 0, true, true, false);
+		vd->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 0, 0, 0));
+		vd->setRenderTarget(renderTarget, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
 		sm->drawAll();
-		vd->setRenderTarget(0, 0, false, false, false);
+		vd->setRenderTarget((video::IRenderTarget*)0, 0, 0);
 		vd->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		vd->setTransform(video::ETS_VIEW, core::IdentityMatrix);
 		vd->setTransform(video::ETS_PROJECTION, core::IdentityMatrix);
@@ -241,11 +241,11 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 
 	stabilizeScreenBackground(driver);
 
-	driver->beginScene(true, true, video::SColor(255,255, 255, 255));
-	driver->setRenderTarget(renderTarget, 0, true, true, false, video::SColor(255,255,0,255));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255, 255, 255));
+	driver->setRenderTarget(renderTarget, 0, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));
 	driver->draw2DImage(driver->getTexture("../media/fireball.bmp"), core::recti(0, 0, renderTargetTex->getSize().Width, renderTargetTex->getSize().Height), core::recti(0, 0, 64, 64));
 	guienv->getBuiltInFont()->draw(L"OMGGG =!", core::rect<s32>(120, 100, 256, 256), video::SColor(255, 0, 0, 255));
-	driver->setRenderTarget(0, 0, false, false, false);
+	driver->setRenderTarget((video::IRenderTarget*)0, 0, 0);
 	driver->endScene();
 
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -259,7 +259,7 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 	// create a long text to produce much difference in failing result pictures
 	gui::IGUIStaticText* text = guienv->addStaticText(L"asdddddddoamgmoasmgom\nfoaomsodommogdd\nddddddddd", core::rect<s32>(10, 20, 100, 160));
 
-	driver->beginScene(true, true, video::SColor(255,255, 255, 255));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255, 255, 255));
 	cube->setVisible(false);
 	smgr->drawAll();
 	guienv->drawAll();
@@ -286,7 +286,7 @@ static void Render(IrrlichtDevice* device, video::IRenderTarget* rt, core::vecto
 				   core::vector3df& pos2, scene::IAnimatedMesh* sphereMesh, core::vector3df& pos3, core::vector3df& pos4)
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
-	driver->setRenderTarget(rt, 0, true, true, false);
+	driver->setRenderTarget(rt, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
 	device->getSceneManager()->drawAll();
 
 	video::SMaterial mat;
@@ -390,7 +390,7 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 	renderTarget4->setTexture(renderTargetTex4, renderTargetDepth);
 
 	device->getSceneManager()->setActiveCamera(cam);
-	device->getVideoDriver()->beginScene();
+	device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
 #if 1
 	st->setText(L"Texture Rendering");
 	Render(device, renderTarget1, pos1, pos2, sphereMesh, pos3, pos4);
@@ -398,7 +398,7 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 	Render(device, renderTarget3, pos1, pos2, sphereMesh, pos3, pos4);
 	Render(device, renderTarget4, pos1, pos2, sphereMesh, pos3, pos4);
 
-	device->getVideoDriver()->setRenderTarget(0, 0, false, false, false);
+	device->getVideoDriver()->setRenderTarget((video::IRenderTarget*)0, 0, 0);
 	device->getVideoDriver()->draw2DImage(renderTargetTex1, core::position2di(0, 0));
 	device->getVideoDriver()->draw2DImage(renderTargetTex2, core::position2di(80, 0));
 	device->getVideoDriver()->draw2DImage(renderTargetTex3, core::position2di(0, 60));

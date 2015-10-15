@@ -44,7 +44,7 @@ bool flyCircleAnimator(void)
 	bool result = false;
 
 	// Don't do device->run() since I need the time to remain at 0.
-	if (driver->beginScene(true, true, video::SColor(0, 80, 80, 80)))
+	if (driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0, 80, 80, 80)))
 	{
 		smgr->drawAll();
 		driver->endScene();

@@ -1928,7 +1928,7 @@ void CQuake3EventHandler::Render()
 	if (anaglyph)
 	{
 		scene::ICameraSceneNode* cameraOld = Game->Device->getSceneManager()->getActiveCamera();
-		driver->beginScene(true, true, SColor(0,0,0,0));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(0,0,0,0));
 		driver->getOverrideMaterial().Material.ColorMask = ECP_NONE;
 		driver->getOverrideMaterial().EnableFlags  = EMF_COLOR_MASK;
         driver->getOverrideMaterial().EnablePasses = ESNRP_SKY_BOX +
@@ -1937,7 +1937,7 @@ void CQuake3EventHandler::Render()
                                                      ESNRP_TRANSPARENT_EFFECT +
                                                      ESNRP_SHADOW;
 		Game->Device->getSceneManager()->drawAll();
-		driver->clearZBuffer();
+		driver->clearBuffers(video::ECBF_DEPTH, video::SColor(255,0,0,0));
 
 		const vector3df oldPosition = cameraOld->getPosition();
 		const vector3df oldTarget   = cameraOld->getTarget();
@@ -1965,7 +1965,7 @@ void CQuake3EventHandler::Render()
 		camera->setTarget(focusPoint);
 
 		Game->Device->getSceneManager()->drawAll();
-		driver->clearZBuffer();
+		driver->clearBuffers(video::ECBF_DEPTH, video::SColor(255, 0, 0, 0));
 
 		//Right eye...
 		move.setTranslation( vector3df(1.5f,0.0f,0.0f) );
@@ -1999,7 +1999,7 @@ void CQuake3EventHandler::Render()
 	}
 	else
 	{
-		driver->beginScene(true, true, SColor(0,0,0,0));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(0,0,0,0));
 		Game->Device->getSceneManager()->drawAll();
 	}
 	Game->Device->getGUIEnvironment()->drawAll();

@@ -214,12 +214,12 @@ int main()
 
 	while (device->run())
 	{
-		driver->beginScene(true, true, 0, videodata);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0), 1.f, 0, videodata);
 		smgr->drawAll();
 		driver->endScene();
 		if (key=='b')
 		{
-			driver->beginScene(true, true, 0xbbbbbbbb);
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0xbbbbbbbb));
 			device->getGUIEnvironment()->drawAll();
 			driver->endScene();
 		}

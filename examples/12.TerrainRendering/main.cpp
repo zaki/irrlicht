@@ -252,7 +252,7 @@ int main()
 	while(device->run())
 	if (device->isWindowActive())
 	{
-		driver->beginScene(true, true, 0 );
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0));
 
 		smgr->drawAll();
 		env->drawAll();

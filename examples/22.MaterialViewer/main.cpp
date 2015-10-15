@@ -831,7 +831,7 @@ bool CApp::update()
 
 		// draw everything
 		video::SColor bkColor( skin->getColor(gui::EGDC_APP_WORKSPACE) );
-		videoDriver->beginScene(true, true, bkColor);
+		videoDriver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, bkColor);
 
 		smgr->drawAll();
 		guiEnv->drawAll();

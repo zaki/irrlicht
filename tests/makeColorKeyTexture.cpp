@@ -37,7 +37,7 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 												  zeroTexels);
 	(void)smgr->addCameraSceneNode();
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,101,140));
 	smgr->drawAll();
 
 	driver->draw2DImage(Texture,

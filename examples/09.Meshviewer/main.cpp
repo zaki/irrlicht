@@ -997,7 +997,7 @@ int main(int argc, char* argv[])
 
 		if (Device->isWindowActive())
 		{
-			driver->beginScene(true, true, video::SColor(150,50,50,50));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(150,50,50,50));
 
 			smgr->drawAll();
 			env->drawAll();

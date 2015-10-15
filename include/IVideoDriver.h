@@ -130,6 +130,15 @@ namespace video
 		ERT_AUX_BUFFER4
 	};
 
+	//! Enum for the flags of clear buffer
+	enum E_CLEAR_BUFFER_FLAG
+	{
+		ECBF_NONE = 0,
+		ECBF_COLOR = 1,
+		ECBF_DEPTH = 2,
+		ECBF_STENCIL = 4
+	};
+
 	//! Enum for the types of fog distributions to choose from
 	enum E_FOG_TYPE
 	{
@@ -224,14 +233,10 @@ namespace video
 
 		//! Applications must call this method before performing any rendering.
 		/** This method can clear the back- and the z-buffer.
-		\param backBuffer Specifies if the back buffer should be
-		cleared, which means that the screen is filled with the color
-		specified. If this parameter is false, the back buffer will
-		not be cleared and the color parameter is ignored.
-		\param zBuffer Specifies if the depth buffer (z buffer) should
-		be cleared. It is not nesesarry to do so if only 2d drawing is
-		used.
-		\param color The color used for back buffer clearing
+		\param clearFlag The clear flags.
+		\param clearColor The clear color for the color buffer.
+		\param clearDepth The clear value for the depth buffer.
+		\param clearStencil The clear value for the stencil buffer.
 		\param videoData Handle of another window, if you want the
 		bitmap to be displayed on another window. If this is an empty
 		element, everything will be displayed in the default window.
@@ -240,16 +245,28 @@ namespace video
 		rectangle of the area to be presented. Set to null to present
 		everything. Note: not implemented in all devices.
 		\return False if failed. */
-		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0),
-				const SExposedVideoData& videoData=SExposedVideoData(),
-				core::rect<s32>* sourceRect=0) =0;
+		virtual bool beginScene(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
+			const SExposedVideoData& videoData=SExposedVideoData(), core::rect<s32>* sourceRect = 0) = 0;
+
+		_IRR_DEPRECATED_ bool beginScene(bool backBuffer = true, bool zBuffer = true, SColor color = SColor(255,0,0,0),
+			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0)
+		{
+			u16 flag = 0;
+
+			if (backBuffer)
+				flag |= ECBF_COLOR;
+
+			if (zBuffer)
+				flag |= ECBF_DEPTH;
+
+			return beginScene(flag, color, 1.f, 0, videoData, sourceRect);
+		}
 
 		//! Presents the rendered image to the screen.
 		/** Applications must call this method after performing any
 		rendering.
 		\return False if failed and true if succeeded. */
-		virtual bool endScene() =0;
+		virtual bool endScene() = 0;
 
 		//! Queries the features of the driver.
 		/** Returns true if a feature is available
@@ -537,23 +554,22 @@ namespace video
 		\param activeTextureID Array of texture indices which should be active during
 		RTT process. If more than one ID will be apply, this render target will work
 		as a Multiple Render Target.
-		\param clearBackBuffer Clears the back buffer of the render
-		target with the clearColor parameter.
-		\param clearDepthBuffer Clears the depth buffer of the rendertarget.
-		\param clearStencilBuffer Clears the stencil buffer of the rendertarget.
-		\param clearColor The clear color for the render target.
+		\param clearFlag The clear flags.
+		\param clearColor The clear color for the color buffer.
+		\param clearDepth The clear value for the depth buffer.
+		\param clearStencil The clear value for the stencil buffer.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
-			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor = video::SColor(255,0,0,0)) = 0;
+		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag,
+			SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
 		//! Set a render target.
-		bool setRenderTarget(IRenderTarget* target, u32 activeTextureID, bool clearBackBuffer, bool clearDepthBuffer,
-			bool clearStencilBuffer, SColor clearColor = video::SColor(255,0,0,0))
+		bool setRenderTarget(IRenderTarget* target, u32 activeTextureID, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0)
 		{
 			core::array<u32> idArray(1);
 			idArray.push_back(activeTextureID);
 
-			return setRenderTarget(target, idArray, clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
+			return setRenderTarget(target, idArray, clearFlag, clearColor);
 		}
 
 		//! Sets a new render target.
@@ -580,17 +596,27 @@ namespace video
 		IVideoDriver::addRenderTargetTexture(). If set to 0, it sets
 		the previous render target which was set before the last
 		setRenderTarget() call.
-		\param clearBackBuffer Clears the backbuffer of the render
-		target with the color parameter
-		\param clearZBuffer Clears the zBuffer of the rendertarget.
-		Note that because the frame buffer may share the zbuffer with
-		the rendertarget, its zbuffer might be partially cleared too
-		by this.
-		\param color The background color for the render target.
+		\param clearFlag The clear flags.
+		\param clearColor The clear color for the color buffer.
+		\param clearDepth The clear value for the depth buffer.
+		\param clearStencil The clear value for the stencil buffer.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(video::ITexture* texture,
-			bool clearBackBuffer = true, bool clearZBuffer = true,
-			SColor color = video::SColor(0, 0, 0, 0)) = 0;
+		virtual bool setRenderTarget(ITexture* texture, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
+
+		_IRR_DEPRECATED_ bool setRenderTarget(ITexture* texture, bool clearBackBuffer = true,
+			bool clearZBuffer = true, SColor color = SColor(255,0,0,0))
+		{
+			u16 flag = 0;
+
+			if (clearBackBuffer)
+				flag |= ECBF_COLOR;
+
+			if (clearZBuffer)
+				flag |= ECBF_DEPTH;
+
+			return setRenderTarget(texture, flag, color);
+		}
 
 		//! Sets a new viewport.
 		/** Every rendering operation is done into this new area.
@@ -1345,7 +1371,24 @@ namespace video
 		virtual scene::IMeshManipulator* getMeshManipulator() =0;
 
 		//! Clear the color, depth and/or stencil buffers.
-		virtual void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color) = 0;
+		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) = 0;
+
+		//! Clear the color, depth and/or stencil buffers.
+		_IRR_DEPRECATED_ void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+		{
+			u16 flag = 0;
+
+			if (backBuffer)
+				flag |= ECBF_COLOR;
+
+			if (depthBuffer)
+				flag |= ECBF_DEPTH;
+
+			if (stencilBuffer)
+				flag |= ECBF_STENCIL;
+
+			clearBuffers(flag, color);
+		}
 
 		//! Clears the ZBuffer.
 		/** Note that you usually need not to call this method, as it
@@ -1354,7 +1397,10 @@ namespace video
 		you have to render some special things, you can clear the
 		zbuffer during the rendering process with this method any time.
 		*/
-		_IRR_DEPRECATED_ virtual void clearZBuffer() = 0;
+		_IRR_DEPRECATED_ void clearZBuffer()
+		{
+			clearBuffers(ECBF_DEPTH, SColor(255,0,0,0), 1.f, 0);
+		}
 
 		//! Make a screenshot of the last rendered frame.
 		/** \return An image created from the last rendered frame. */

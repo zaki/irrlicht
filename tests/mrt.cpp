@@ -68,11 +68,11 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 		node->setMaterialType((video::E_MATERIAL_TYPE)newMaterialType);
 		device->getSceneManager()->addCameraSceneNode(0, core::vector3df(0,0,-10));
 
-		driver->beginScene(true, false, video::SColor(255, 0, 0, 0));
+		driver->beginScene(video::ECBF_COLOR, video::SColor(255, 0, 0, 0));
 		// render
-		driver->setRenderTarget(renderTarget, renderTargetID, true, true, false, video::SColor(255, 0, 0, 0));
+		driver->setRenderTarget(renderTarget, renderTargetID, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
 		device->getSceneManager()->drawAll();
-		driver->setRenderTarget(0, renderTargetID, false, false, false, video::SColor(255, 0, 0, 0));
+		driver->setRenderTarget(0, renderTargetID, 0, video::SColor(255, 0, 0, 0));
 
 		// draw debug rt
 		driver->draw2DImage(renderTargetTex[0], core::position2d<s32>(0,0));
@@ -83,12 +83,12 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 		result = takeScreenshotAndCompareAgainstReference(driver, "-mrt.png");
 
-		driver->beginScene(true, false, video::SColor(255, 0, 0, 0));
+		driver->beginScene(video::ECBF_COLOR, video::SColor(255, 0, 0, 0));
 		// render
 		device->getSceneManager()->getActiveCamera()->setPosition(core::vector3df(0,0,-15));
-		driver->setRenderTarget(renderTarget, renderTargetID, true, true, false, video::SColor(255, 0, 0, 0));
+		driver->setRenderTarget(renderTarget, renderTargetID, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
 		device->getSceneManager()->drawAll();
-		driver->setRenderTarget(0, renderTargetID, false, false, false, video::SColor(255, 0, 0, 0));
+		driver->setRenderTarget(0, renderTargetID, 0, video::SColor(255,0,0,0));
 
 		// draw debug rt
 		driver->draw2DImage(renderTargetTex[0], core::position2d<s32>(0,0));

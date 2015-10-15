@@ -338,7 +338,7 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 {
 	for(int i = 0; i < 10000; ++i) 
 	{
-		driver->beginScene(true, true, color);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, color);
 		driver->endScene();
 
 		irr::video::IImage * screenshot = driver->createScreenShot();

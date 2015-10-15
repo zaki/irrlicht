@@ -52,7 +52,7 @@ bool b3dAnimation(void)
 
 	// Just jump to the last frame since that's all we're interested in.
 	device->run();
-	driver->beginScene(true, true, video::SColor(255, 60, 60, 60));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 60, 60, 60));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -73,7 +73,7 @@ bool b3dAnimation(void)
 
 	// Simple render call
 	device->run();
-	driver->beginScene(true, true, video::SColor(255, 60, 60, 60));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 60, 60, 60));
 	smgr->drawAll();
 	driver->endScene();
 

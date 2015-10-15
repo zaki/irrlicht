@@ -42,7 +42,7 @@ bool testImageCreation()
 		}
 	}
 
-	driver->beginScene(true, true, video::SColor(255,255,0,255));//Backbuffer background is pink
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));//Backbuffer background is pink
 
 	driver->draw2DImage(tex, core::position2d<s32>(0,0), core::recti(0,0,32,32));
 	driver->draw2DImage(tex1, core::position2d<s32>(32,0));
@@ -69,7 +69,7 @@ bool testImageFormats()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	video::ITexture* tex=driver->getTexture("../media/water.jpg");
 	video::ITexture* tex1=driver->getTexture("media/grey.tga");
-	driver->beginScene(true, true);
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
 
 	driver->draw2DImage(tex, core::position2d<s32>(0,0), core::recti(0,0,64,64));
 	driver->draw2DImage(tex1, core::position2d<s32>(0,64), core::recti(0,0,64,64));

@@ -289,7 +289,7 @@ int main()
 	while(device->run() && driver)
 	if (device->isWindowActive())
 	{
-		driver->beginScene(true, true, SColor(0,200,200,200));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(0,200,200,200));
 
 		env->drawAll();
 

@@ -93,7 +93,7 @@ int main()
 		{
 			u32 time = device->getTimer()->getTime();
 
-			driver->beginScene(true, true, video::SColor(255,120,102,136));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,120,102,136));
 
 			/*
 			First, we draw 3 sprites, using the alpha channel we

@@ -36,14 +36,14 @@ bool testWithRenderTarget(video::E_DRIVER_TYPE driverType)
 
 	video::ITexture* tex=driver->getTexture("../media/water.jpg");
 
-	driver->beginScene(true, true, video::SColor(255,255,0,255));//Backbuffer background is pink
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));//Backbuffer background is pink
 
 	//draw the 256x256 water image on the rendertarget:
 
 
-	driver->setRenderTarget(renderTarget,0,true,true,false,video::SColor(255,0,0,255));//Rendertarget background is blue
+	driver->setRenderTarget(renderTarget,0,video::ECBF_COLOR|video::ECBF_DEPTH,video::SColor(255,0,0,255));//Rendertarget background is blue
 	driver->draw2DImage(tex, core::position2d<s32>(0,0), core::recti(0,0,32,32));
-	driver->setRenderTarget(0, 0, false, false, false);
+	driver->setRenderTarget((video::IRenderTarget*)0, 0, 0);
 
 	//draw the rendertarget on screen:
 	//this should normally draw a 64x64 image containing a 32x32 image in the top left corner
@@ -76,7 +76,7 @@ bool testRectangles(video::E_DRIVER_TYPE driverType)
 
 	video::ITexture *tex=driver->getTexture("../media/fireball.bmp");
 
-	driver->beginScene(true, true, video::SColor(255,255,0,255));//Backbuffer background is pink
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));//Backbuffer background is pink
 
 	// draw normal, will be overdrwan in error case
 	driver->draw2DImage(tex, core::recti(68,32,132,96), core::recti(0,0,64,64));
@@ -119,7 +119,7 @@ bool testWithPNG(video::E_DRIVER_TYPE driverType)
 
 	video::ITexture *tex=driver->getTexture("media/RedbrushAlpha-0.25.png");
 
-	driver->beginScene(true, true, video::SColor(255,40,40,255));//Backbuffer background is blue
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,40,40,255));//Backbuffer background is blue
 	driver->draw2DImage(tex, core::recti(0,0,160,120), core::recti(0,0,256,256), 0, 0, true);
 	driver->endScene();
 
@@ -164,10 +164,10 @@ bool testExactPlacement(video::E_DRIVER_TYPE driverType)
 
 	video::ITexture* tex=driver->getTexture("../media/fireball.bmp");
 
-	driver->beginScene(true, true, video::SColor(255,40,40,255));//Backbuffer background is blue
-	driver->setRenderTarget(renderTarget, 0, true, true, true);
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,40,40,255));//Backbuffer background is blue
+	driver->setRenderTarget(renderTarget, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
 	driver->draw2DImage(tex, core::recti(0,0,32,32), core::recti(0,0,64,64));
-	driver->setRenderTarget(0, 0, false, false, false);
+	driver->setRenderTarget((video::IRenderTarget*)0, 0, 0);
 	driver->endScene();
 
 	video::IImage* img = driver->createImage(renderTargetTex, core::vector2di(), renderTargetTex->getSize());

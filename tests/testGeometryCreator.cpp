@@ -73,7 +73,7 @@ bool testGeometryCreator(void)
 
 	bool result = false;
 	device->run();
-	if (driver->beginScene(true, true, video::SColor(0, 80, 80, 80)))
+	if (driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0, 80, 80, 80)))
 	{
 		smgr->drawAll();
 		driver->endScene();
@@ -110,7 +110,7 @@ bool testGeometryCreator(void)
 		anode->setPosition(core::vector3df(-5000,0,-5000));
 	}
 
-	driver->beginScene();
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0));
 	smgr->drawAll();
 	driver->endScene();
 

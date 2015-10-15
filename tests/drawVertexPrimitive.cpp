@@ -52,7 +52,7 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 	bool result = true;
 	for (u32 Type=scene::EPT_POINTS; Type <= scene::EPT_POINT_SPRITES; ++Type)
 	{
-		driver->beginScene(true, true, video::SColor(255,100,101,140));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 		smgr->drawAll();
 		u32 primCount = 0;
 		switch (Type)

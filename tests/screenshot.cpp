@@ -42,7 +42,7 @@ bool testShots(video::E_DRIVER_TYPE type)
 	node->setAnimationSpeed(0);
 
 	device->run();
-	driver->beginScene(true, true, video::SColor(255, 255, 255, 0));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 255, 255, 0));
 	smgr->drawAll();
 	driver->endScene();
 

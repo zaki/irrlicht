@@ -172,7 +172,7 @@ Sounds a little complicated, but you'll see it isn't:
 	{
 		//Set the viewpoint to the whole screen and begin scene
 		driver->setViewPort(rect<s32>(0,0,ResX,ResY));
-		driver->beginScene(true,true,SColor(255,100,100,100));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,100,100));
 		//If SplitScreen is used
 		if (SplitScreen)
 		{

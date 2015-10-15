@@ -25,7 +25,7 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 	bool result = true;
 
-	driver->beginScene(true, false, SColor(255,0,0,0));
+	driver->beginScene(video::ECBF_COLOR, SColor(255,0,0,0));
 	                
 	SMaterial mat;
 	mat.MaterialType = EMT_SOLID;

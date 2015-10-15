@@ -215,7 +215,7 @@ int main()
 		the GUI Environment draw their content. With the endScene()
 		call everything is presented on the screen.
 		*/
-		driver->beginScene(true, true, SColor(255,100,101,140));
+		driver->beginScene(ECBF_COLOR | ECBF_DEPTH, SColor(255,100,101,140));
 
 		smgr->drawAll();
 		guienv->drawAll();

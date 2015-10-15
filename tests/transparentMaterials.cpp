@@ -47,7 +47,7 @@ bool testTransparentAlphaChannelRef(video::E_DRIVER_TYPE driverType)
 
 	(void)smgr->addCameraSceneNode(0, vector3df(0, 0, -15));
 
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -99,7 +99,7 @@ bool testTransparentAlphaChannel(video::E_DRIVER_TYPE driverType)
 
 	(void)smgr->addCameraSceneNode(0, vector3df(0, 0, -15));
 
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -158,7 +158,7 @@ bool testTransparentVertexAlpha(video::E_DRIVER_TYPE driverType)
 
 	(void)smgr->addCameraSceneNode(0, vector3df(0, 0, -15));
 
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -220,7 +220,7 @@ bool testTransparentReflection2Layer(video::E_DRIVER_TYPE driverType)
 
 	(void)smgr->addCameraSceneNode(0, vector3df(0, 0, -15));
 
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -272,7 +272,7 @@ bool testTransparentAddColor(video::E_DRIVER_TYPE driverType)
 
 	(void)smgr->addCameraSceneNode(0, vector3df(0, 0, -15));
 
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -335,7 +335,7 @@ bool testTransparentVertexAlphaMore(E_DRIVER_TYPE driverType)
 
 	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 
-	driver->beginScene(true, true, SColor(0,200,200,200));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(0,200,200,200));
 	smgr->drawAll();
 	driver->endScene();
 

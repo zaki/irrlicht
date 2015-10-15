@@ -48,7 +48,7 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 
 			(void)smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(40,100,30));
 
-			driver->beginScene(true, true, video::SColor(255,255,255,0));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,255,0));
 			smgr->drawAll();
 			driver->endScene();
 

@@ -349,7 +349,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	while(device->run())
 	if (device->isWindowActive())
 	{
-		driver->beginScene(true, true, video::SColor(255,20,20,40));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,20,20,40));
 		smgr->drawAll();
 		gui->drawAll();
 		driver->endScene();

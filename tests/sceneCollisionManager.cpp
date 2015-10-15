@@ -300,7 +300,7 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 	bool result=true;
 	for (u32 round=0; round<2; ++round)
 	{
-		driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(100, 50, 50, 100));
 		smgr->drawAll();
 		driver->endScene();
 
@@ -364,7 +364,7 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 	u32 count=0;
 	for (u32 i=0; i<30; ++i)
 	{
-		driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(100, 50, 50, 100));
 		smgr->drawAll();
 		driver->endScene();
 
@@ -402,7 +402,7 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 	// add a cube to pick
 	scene::ISceneNode* cube = smgr->addCubeSceneNode(15);
 
-	driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(100, 50, 50, 100));
 	smgr->drawAll();
 	driver->endScene();
 

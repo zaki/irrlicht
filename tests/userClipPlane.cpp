@@ -36,7 +36,7 @@ static bool withSphere(video::E_DRIVER_TYPE type)
 	device->run();
 //	while(device->run())
 	{
-	driver->beginScene(true, true, video::SColor(255,113,113,133));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	driver->setClipPlane(3, core::plane3df(core::vector3df(-8,0,0), core::vector3df(1,0,0)), true);
 	driver->setClipPlane(4, core::plane3df(core::vector3df(0,0,8), core::vector3df(0,0,-1)));
 	driver->setClipPlane(5, core::plane3df(core::vector3df(0,0,-8), core::vector3df(0,0,1)));

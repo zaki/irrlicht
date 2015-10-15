@@ -493,12 +493,9 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	return true;
 }
 
-
-//! applications must call this method before performing any rendering. returns false if failed.
-bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
+bool CD3D9Driver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 	WindowId = (HWND)videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
@@ -523,7 +520,7 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		}
 	}
 
-	clearBuffers(backBuffer, zBuffer, false, color);
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 	hr = pID3DDevice->BeginScene();
 	if (FAILED(hr))
@@ -535,8 +532,6 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	return true;
 }
 
-
-//! applications must call this method after performing any rendering. returns false if failed.
 bool CD3D9Driver::endScene()
 {
 	CNullDriver::endScene();
@@ -763,10 +758,7 @@ void CD3D9Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
 	CNullDriver::setTextureCreationFlag(flag, enabled);
 }
 
-
-//! set a render target
-bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
-	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
+bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_DIRECT3D9)
 	{
@@ -882,7 +874,7 @@ bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>&
 
 	CurrentRenderTarget = target;
 
-	clearBuffers(clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 	return true;
 }
@@ -3156,38 +3148,26 @@ ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size
 	return tex;
 }
 
-
-//! Clear the color, depth and/or stencil buffers.
-void CD3D9Driver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+void CD3D9Driver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
-	DWORD flags = 0;
+	DWORD internalFlag = 0;
 
-	if (backBuffer)
-		flags |= D3DCLEAR_TARGET;
+	if (flag & ECBF_COLOR)
+		internalFlag |= D3DCLEAR_TARGET;
 
-	if (depthBuffer)
-		flags |= D3DCLEAR_ZBUFFER;
+	if (flag & ECBF_DEPTH)
+		internalFlag |= D3DCLEAR_ZBUFFER;
 
-	if (stencilBuffer)
-		flags |= D3DCLEAR_STENCIL;
+	if (flag & ECBF_STENCIL)
+		internalFlag |= D3DCLEAR_STENCIL;
 
-	if (flags)
+	if (internalFlag)
 	{
-		HRESULT hr = pID3DDevice->Clear(0, NULL, flags, color.color, 1.0, 0);
+		HRESULT hr = pID3DDevice->Clear(0, NULL, internalFlag, color.color, depth, stencil);
 
 		if (FAILED(hr))
 			os::Printer::log("DIRECT3D9 clear failed.", ELL_WARNING);
 	}
-}
-
-
-//! Clears the ZBuffer.
-void CD3D9Driver::clearZBuffer()
-{
-	HRESULT hr = pID3DDevice->Clear( 0, NULL, D3DCLEAR_ZBUFFER, 0, 1.0, 0);
-
-	if (FAILED(hr))
-		os::Printer::log("CD3D9Driver clearZBuffer() failed.", ELL_WARNING);
 }
 
 

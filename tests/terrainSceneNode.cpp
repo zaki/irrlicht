@@ -45,7 +45,7 @@ bool terrainRecalc(void)
 	// This shouldn't cause a recalc
 	camera->setUpVector(vector3df(1.f, 0.f, .01f).normalize());
 	device->run();
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -59,7 +59,7 @@ bool terrainRecalc(void)
 	// This is big enough to cause a recalc
 	camera->setUpVector(vector3df(1.f, 0.f, .1f).normalize());
 	device->run();
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -105,7 +105,7 @@ bool terrainGaps()
 		terrain->setMaterialFlag(video::EMF_WIREFRAME, !terrain->getMaterial(0).Wireframe);
 	}
    
-	irrVideo->beginScene(true, true, video::SColor(0,150,150,150));
+	irrVideo->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,150,150,150));
 	irrScene->drawAll();
 	irrVideo->endScene();
 

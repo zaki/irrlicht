@@ -390,24 +390,18 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 	}
 }
 
-
-//! clears the zbuffer
-bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer,
-		SColor color, const SExposedVideoData& videoData,
-		core::rect<s32>* sourceRect)
+bool CBurningVideoDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 	WindowId = videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
-	clearBuffers(backBuffer, zBuffer, false, color);
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 	memset ( TransformationFlag, 0, sizeof ( TransformationFlag ) );
 	return true;
 }
 
-
-//! presents the rendered scene on the screen, returns false if failed
 bool CBurningVideoDriver::endScene()
 {
 	CNullDriver::endScene();
@@ -415,10 +409,7 @@ bool CBurningVideoDriver::endScene()
 	return Presenter->present(BackBuffer, WindowId, SceneSourceRect);
 }
 
-
-//! set a render target
-bool CBurningVideoDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
-	bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor)
+bool CBurningVideoDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_BURNINGSVIDEO)
 	{
@@ -442,7 +433,7 @@ bool CBurningVideoDriver::setRenderTarget(IRenderTarget* target, const core::arr
 		setRenderTarget(BackBuffer);
 	}
 
-	clearBuffers(clearBackBuffer, clearDepthBuffer, clearStencilBuffer, clearColor);
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 	return true;
 }
@@ -2236,26 +2227,16 @@ ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u3
 	return tex;
 }
 
-
-//! Clear the color, depth and/or stencil buffers.
-void CBurningVideoDriver::clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+void CBurningVideoDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
-	if (backBuffer && RenderTargetSurface)
+	if ((flag & ECBF_COLOR) && RenderTargetSurface)
 		RenderTargetSurface->fill(color);
 
-	if (depthBuffer && DepthBuffer)
+	if ((flag & ECBF_DEPTH) && DepthBuffer)
 		DepthBuffer->clear();
 
-	if (stencilBuffer && StencilBuffer)
+	if ((flag & ECBF_STENCIL) && StencilBuffer)
 		StencilBuffer->clear();
-}
-
-
-//! Clears the DepthBuffer.
-void CBurningVideoDriver::clearZBuffer()
-{
-	if (DepthBuffer)
-		DepthBuffer->clear();
 }
 
 

@@ -157,7 +157,7 @@ int main()
 	{
 		plane->setVisible(!receiver.IsKeyDown(irr::KEY_SPACE));
 
-		driver->beginScene(true, true, video::SColor(255,113,113,133));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 		/*
 		First, we draw the scene, possibly without the occluded element. This is necessary
 		because we need the occluder to be drawn first. You can also use several scene

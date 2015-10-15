@@ -39,20 +39,15 @@ namespace video
 		//! sets a material
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
-		//! set a render target
-		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, bool clearBackBuffer,
-			bool clearDepthBuffer, bool clearStencilBuffer, SColor clearColor) _IRR_OVERRIDE_;
+		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag,
+			SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
 
-		//! clears the zbuffer
-		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0),
-				const SExposedVideoData& videoData=SExposedVideoData(),
-				core::rect<s32>* sourceRect=0) _IRR_OVERRIDE_;
+		virtual bool beginScene(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
+			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0) _IRR_OVERRIDE_;
 
-		//! presents the rendered scene on the screen, returns false if failed
 		virtual bool endScene() _IRR_OVERRIDE_;
 
 		//! Only used by the internal engine. Used to notify the driver that
@@ -136,11 +131,7 @@ namespace video
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
-		//! Clear the color, depth and/or stencil buffers.
-		virtual void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color) _IRR_OVERRIDE_;
-
-		//! Clears the DepthBuffer.
-		virtual void clearZBuffer() _IRR_OVERRIDE_;
+		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
