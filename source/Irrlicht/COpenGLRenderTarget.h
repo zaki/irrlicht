@@ -30,7 +30,7 @@ public:
 
 	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) _IRR_OVERRIDE_;
 
-	void update(const core::array<u32>& id);
+	void update();
 
 	GLuint getBufferID() const;
 
@@ -39,13 +39,12 @@ public:
 	ITexture* getTexture() const;
 
 protected:
-	core::array<u32> AssignedActiveTextureID;
-	u32 AssignedTextureCount;
+	core::array<GLenum> AssignedTexture;
 	bool AssignedDepth;
 	bool AssignedStencil;
 
-	bool TextureUpdate;
-	bool DepthStencilUpdate;
+	bool RequestTextureUpdate;
+	bool RequestDepthStencilUpdate;
 
 	GLuint BufferID;
 

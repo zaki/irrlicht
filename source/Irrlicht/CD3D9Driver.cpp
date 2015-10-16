@@ -484,10 +484,10 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	}
 	ColorFormat = getColorFormatFromD3DFormat(D3DColorFormat);
 
-	RenderTargetChannel.set_used((u32)Caps.NumSimultaneousRTs);
+	ActiveRenderTarget.set_used((u32)Caps.NumSimultaneousRTs);
 
-	for (u32 i = 0; i < RenderTargetChannel.size(); ++i)
-		RenderTargetChannel[i] = -1;
+	for (u32 i = 0; i < ActiveRenderTarget.size(); ++i)
+		ActiveRenderTarget[i] = false;
 
 	// so far so good.
 	return true;
@@ -758,7 +758,7 @@ void CD3D9Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
 	CNullDriver::setTextureCreationFlag(flag, enabled);
 }
 
-bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+bool CD3D9Driver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_DIRECT3D9)
 	{
@@ -768,9 +768,7 @@ bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>&
 
 	if (target)
 	{
-		RenderTargetActiveID = activeTextureID;
-
-		// store main render target
+		// Store main render target.
 
 		if (!BackBufferSurface)
 		{
@@ -781,44 +779,36 @@ bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>&
 			}
 		}
 
-		// set new color textures
+		// Set new color textures.
 
 		CD3D9RenderTarget* renderTarget = static_cast<CD3D9RenderTarget*>(target);
 
-		const u32 surfaceSize = core::min_(renderTarget->getSurfaceCount(), RenderTargetChannel.size());
+		const u32 surfaceSize = core::min_(renderTarget->getSurfaceCount(), ActiveRenderTarget.size());
 
-		for (u32 i = 0; i < activeTextureID.size(); ++i)
+		for (u32 i = 0; i < surfaceSize; ++i)
 		{
-			const u32 id = activeTextureID[i];
+			ActiveRenderTarget[i] = true;
 
-			if (id < surfaceSize)
+			if (FAILED(pID3DDevice->SetRenderTarget(i, renderTarget->getSurface(i))))
 			{
-				RenderTargetChannel[id] = 0;
+				ActiveRenderTarget[i] = false;
 
-				if (FAILED(pID3DDevice->SetRenderTarget(id, renderTarget->getSurface(id))))
-				{
-					os::Printer::log("Error: Could not set render target.", ELL_ERROR);
-					RenderTargetChannel[id] = -1;
-				}
+				os::Printer::log("Error: Could not set render target.", ELL_ERROR);
 			}
 		}
 
-		// reset other render target channels
+		// Reset other render target channels.
 
-		for (u32 i = 0; i < RenderTargetChannel.size(); ++i)
+		for (u32 i = surfaceSize; i < ActiveRenderTarget.size(); ++i)
 		{
-			if (RenderTargetChannel[i] == 1)
+			if (ActiveRenderTarget[i])
 			{
 				pID3DDevice->SetRenderTarget(i, 0);
-				RenderTargetChannel[i] = -1;
-			}
-			else if (RenderTargetChannel[i] == 0)
-			{
-				RenderTargetChannel[i] = 1;
+				ActiveRenderTarget[i] = false;
 			}
 		}
 
-		// set depth stencil buffer
+		// Set depth stencil buffer.
 
 		IDirect3DSurface9* depthStencilSurface = renderTarget->getDepthStencilSurface();
 
@@ -827,20 +817,24 @@ bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>&
 			os::Printer::log("Error: Could not set depth-stencil buffer.", ELL_ERROR);
 		}
 
-		// set other settings
+		// Set other settings.
 
 		CurrentRendertargetSize = renderTarget->getSize();
 		Transformation3DChanged = true;
 	}
 	else if (CurrentRenderTarget != target)
 	{
-		// set main render target
+		// Set main render target.
 
 		if (BackBufferSurface)
 		{
+			ActiveRenderTarget[0] = true;
+
 			if (FAILED(pID3DDevice->SetRenderTarget(0, BackBufferSurface)))
 			{
 				os::Printer::log("Error: Could not set main render target.", ELL_ERROR);
+				ActiveRenderTarget[0] = false;
+
 				return false;
 			}
 
@@ -848,25 +842,25 @@ bool CD3D9Driver::setRenderTarget(IRenderTarget* target, const core::array<u32>&
 			BackBufferSurface = 0;
 		}
 
-		// reset other render target channels
+		// Reset other render target channels.
 
-		for (u32 i = 1; i < RenderTargetChannel.size(); ++i)
+		for (u32 i = 1; i < ActiveRenderTarget.size(); ++i)
 		{
-			if (RenderTargetChannel[i] == 1)
+			if (ActiveRenderTarget[i])
 			{
 				pID3DDevice->SetRenderTarget(i, 0);
-				RenderTargetChannel[i] = -1;
+				ActiveRenderTarget[i] = false;
 			}
 		}
 
-		// set main depth-stencil stencil buffer
+		// Set main depth-stencil stencil buffer.
 
 		if (FAILED(pID3DDevice->SetDepthStencilSurface(DepthStencilSurface)))
 		{
 			os::Printer::log("Error: Could not set main depth-stencil buffer.", ELL_ERROR);
 		}
 
-		// set other settings
+		// Set other settings.
 
 		CurrentRendertargetSize = core::dimension2d<u32>(0, 0);
 		Transformation3DChanged = true;
@@ -2852,8 +2846,8 @@ bool CD3D9Driver::reset()
 	removeAllHardwareBuffers();
 
 	// reset render target usage informations.
-	for (u32 i = 0; i < RenderTargetChannel.size(); ++i)
-		RenderTargetChannel[i] = -1;
+	for (u32 i = 0; i < ActiveRenderTarget.size(); ++i)
+		ActiveRenderTarget[i] = false;
 
 	if (DepthStencilSurface)
 		DepthStencilSurface->Release();

@@ -41,9 +41,9 @@ bool testWithRenderTarget(video::E_DRIVER_TYPE driverType)
 	//draw the 256x256 water image on the rendertarget:
 
 
-	driver->setRenderTarget(renderTarget,0,video::ECBF_COLOR|video::ECBF_DEPTH,video::SColor(255,0,0,255));//Rendertarget background is blue
+	driver->setRenderTarget(renderTarget,video::ECBF_COLOR|video::ECBF_DEPTH,video::SColor(255,0,0,255));//Rendertarget background is blue
 	driver->draw2DImage(tex, core::position2d<s32>(0,0), core::recti(0,0,32,32));
-	driver->setRenderTarget((video::IRenderTarget*)0, 0, 0);
+	driver->setRenderTarget((video::IRenderTarget*)0, 0);
 
 	//draw the rendertarget on screen:
 	//this should normally draw a 64x64 image containing a 32x32 image in the top left corner

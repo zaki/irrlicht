@@ -551,26 +551,13 @@ namespace video
 		possible to render into a texture between the
 		IVideoDriver::beginScene() and endScene() method calls.
 		\param target Render target object.
-		\param activeTextureID Array of texture indices which should be active during
-		RTT process. If more than one ID will be apply, this render target will work
-		as a Multiple Render Target.
 		\param clearFlag The clear flags.
 		\param clearColor The clear color for the color buffer.
 		\param clearDepth The clear value for the depth buffer.
 		\param clearStencil The clear value for the stencil buffer.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag,
-			SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
-
-		//! Set a render target.
-		bool setRenderTarget(IRenderTarget* target, u32 activeTextureID, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
-			f32 clearDepth = 1.f, u8 clearStencil = 0)
-		{
-			core::array<u32> idArray(1);
-			idArray.push_back(activeTextureID);
-
-			return setRenderTarget(target, idArray, clearFlag, clearColor);
-		}
+		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
 		//! Sets a new render target.
 		/** This will only work if the driver supports the

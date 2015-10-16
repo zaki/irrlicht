@@ -619,7 +619,7 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 	return new SDummyTexture(name);
 }
 
-bool CNullDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+bool CNullDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	return false;
 }
@@ -654,11 +654,11 @@ bool CNullDriver::setRenderTarget(ITexture* texture, u16 clearFlag, SColor clear
 
 		SharedRenderTarget->setTexture(texture, depthTexture);
 
-		return IVideoDriver::setRenderTarget(SharedRenderTarget, 0, clearFlag, clearColor, clearDepth, clearStencil);
+		return setRenderTarget(SharedRenderTarget, clearFlag, clearColor, clearDepth, clearStencil);
 	}
 	else
 	{
-		return IVideoDriver::setRenderTarget(NULL, 0, clearFlag, clearColor, clearDepth, clearStencil);
+		return setRenderTarget((IRenderTarget*)0, clearFlag, clearColor, clearDepth, clearStencil);
 	}
 }
 

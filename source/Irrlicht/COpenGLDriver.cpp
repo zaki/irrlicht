@@ -4215,7 +4215,7 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 	return 0x7fffffff;
 }
 
-bool COpenGLDriver::setRenderTarget(IRenderTarget* target, const core::array<u32>& activeTextureID, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+bool COpenGLDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_OPENGL)
 	{
@@ -4238,7 +4238,7 @@ bool COpenGLDriver::setRenderTarget(IRenderTarget* target, const core::array<u32
 		if (supportForFBO)
 		{
 			BridgeCalls->setFBO(renderTarget->getBufferID());
-			renderTarget->update(activeTextureID);
+			renderTarget->update();
 		}
 
 		destRenderTargetSize = renderTarget->getSize();

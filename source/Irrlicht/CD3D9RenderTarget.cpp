@@ -8,6 +8,7 @@
 
 #include "IImage.h"
 #include "irrMath.h"
+#include "irrString.h"
 
 #include "CD3D9Driver.h"
 #include "CD3D9Texture.h"
@@ -50,16 +51,25 @@ namespace irr
 
 		void CD3D9RenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil)
 		{
-			bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
 			bool textureUpdate = (Texture != texture) ? true : false;
+			bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
 
-			if (depthStencilUpdate || textureUpdate)
+			if (textureUpdate || depthStencilUpdate)
 			{
 				// Set color attachments.
 
 				if (textureUpdate)
 				{
-					const u32 size = core::min_(texture.size(), static_cast<u32>(Driver->RenderTargetChannel.size()));
+					if (texture.size() > Driver->ActiveRenderTarget.size())
+					{
+						core::stringc message = "This GPU supports up to ";
+						message += Driver->ActiveRenderTarget.size();
+						message += " textures per render target.";
+
+						os::Printer::log(message.c_str(), ELL_WARNING);
+					}
+
+					const u32 size = core::min_(texture.size(), static_cast<u32>(Driver->ActiveRenderTarget.size()));
 
 					for (u32 i = 0; i < Surface.size(); ++i)
 					{

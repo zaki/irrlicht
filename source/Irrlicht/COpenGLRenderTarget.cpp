@@ -8,6 +8,7 @@
 
 #include "IImage.h"
 #include "irrMath.h"
+#include "irrString.h"
 
 #include "COpenGLDriver.h"
 #include "COpenGLTexture.h"
@@ -90,17 +91,14 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 	return false;
 }
 
-COpenGLRenderTarget::COpenGLRenderTarget(COpenGLDriver* driver) : AssignedTextureCount(0), AssignedDepth(false), AssignedStencil(false),
-	TextureUpdate(false), DepthStencilUpdate(false), BufferID(0), SupportForFBO(false), SupportForMRT(false), BridgeCalls(0), Driver(driver)
+COpenGLRenderTarget::COpenGLRenderTarget(COpenGLDriver* driver) : AssignedDepth(false), AssignedStencil(false), RequestTextureUpdate(false), RequestDepthStencilUpdate(false),
+	BufferID(0), SupportForFBO(false), SupportForMRT(false), BridgeCalls(0), Driver(driver)
 {
 #ifdef _DEBUG
 	setDebugName("COpenGLRenderTarget");
 #endif
 
 	DriverType = EDT_OPENGL;
-
-	AssignedActiveTextureID.set_used(1);
-	AssignedActiveTextureID[0] = 0;
 
 	Size = Driver->getScreenSize();
 	BridgeCalls = Driver->getBridgeCalls();
@@ -114,6 +112,11 @@ COpenGLRenderTarget::COpenGLRenderTarget(COpenGLDriver* driver) : AssignedTextur
 
 	if (SupportForFBO)
 		Driver->extGlGenFramebuffers(1, &BufferID);
+
+	AssignedTexture.set_used(static_cast<u32>(Driver->MaxColorAttachments));
+
+	for (u32 i = 0; i < AssignedTexture.size(); ++i)
+		AssignedTexture[i] = GL_NONE;
 }
 
 COpenGLRenderTarget::~COpenGLRenderTarget()
@@ -133,92 +136,136 @@ COpenGLRenderTarget::~COpenGLRenderTarget()
 
 void COpenGLRenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil)
 {
-	TextureUpdate = TextureUpdate || Texture != texture;
+	bool textureUpdate = (Texture != texture) ? true : false;
+	bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
 
-	if (Texture != texture)
-	{
-		for (u32 i = 0; i < Texture.size(); ++i)
-		{
-			if (Texture[i])
-				Texture[i]->drop();
-		}
-
-		Texture.set_used(core::min_(texture.size(), static_cast<u32>(Driver->MaxColorAttachments)));
-
-		for (u32 i = 0; i < Texture.size(); ++i)
-		{
-			GLuint textureID = (texture[i] && texture[i]->getDriverType() == EDT_OPENGL) ? static_cast<COpenGLTexture*>(texture[i])->getOpenGLTextureName() : 0;
-
-			if (textureID != 0)
-			{
-				Texture[i] = texture[i];
-				Texture[i]->grab();
-			}
-			else
-			{
-				Texture[i] = 0;
-			}
-		}
-	}
-
-	DepthStencilUpdate = DepthStencilUpdate || DepthStencil != depthStencil;
-
-	if (DepthStencil != depthStencil)
-	{
-		GLuint textureID = (depthStencil && depthStencil->getDriverType() == EDT_OPENGL) ? static_cast<COpenGLTexture*>(depthStencil)->getOpenGLTextureName() : 0;
-		const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
-
-		if (IImage::isDepthFormat(textureFormat))
-		{
-			DepthStencil = depthStencil;
-			DepthStencil->grab();
-		}
-		else
-		{
-			if (DepthStencil)
-				DepthStencil->drop();
-
-			DepthStencil = 0;
-		}
-	}
-}
-
-void COpenGLRenderTarget::update(const core::array<u32>& id)
-{
-	if (TextureUpdate || DepthStencilUpdate)
+	if (textureUpdate || depthStencilUpdate)
 	{
 		// Set color attachments.
 
-		if (TextureUpdate)
+		if (textureUpdate)
 		{
-			const u32 textureSize = Texture.size();
-			const u32 stepCount = core::max_(textureSize, AssignedTextureCount);
-
-			for (u32 i = 0; i < stepCount; ++i)
+			for (u32 i = 0; i < Texture.size(); ++i)
 			{
-				GLuint textureID = 0;
+				if (Texture[i])
+					Texture[i]->drop();
+			}
 
-				if (i < textureSize && Texture[i])
-					textureID = static_cast<COpenGLTexture*>(Texture[i])->getOpenGLTextureName();
+			if (texture.size() > static_cast<u32>(Driver->MaxColorAttachments))
+			{
+				core::stringc message = "This GPU supports up to ";
+				message += static_cast<u32>(Driver->MaxColorAttachments);
+				message += " textures per render target.";
+
+				os::Printer::log(message.c_str(), ELL_WARNING);
+			}
+
+			Texture.set_used(core::min_(texture.size(), static_cast<u32>(Driver->MaxColorAttachments)));
+
+			for (u32 i = 0; i < Texture.size(); ++i)
+			{
+				GLuint textureID = (texture[i] && texture[i]->getDriverType() == EDT_OPENGL) ? static_cast<COpenGLTexture*>(texture[i])->getOpenGLTextureName() : 0;
 
 				if (textureID != 0)
 				{
-					Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureID, 0);
+					Texture[i] = texture[i];
+					Texture[i]->grab();
 				}
-				else if (i < AssignedTextureCount)
+				else
 				{
-					Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, 0, 0);
+					Texture[i] = 0;
 				}
 			}
 
-			AssignedTextureCount = textureSize;
-
-			TextureUpdate = false;
+			RequestTextureUpdate = true;
 		}
 
 		// Set depth and stencil attachments.
 
-		if (DepthStencilUpdate)
+		if (depthStencilUpdate)
+		{
+			GLuint textureID = (depthStencil && depthStencil->getDriverType() == EDT_OPENGL) ? static_cast<COpenGLTexture*>(depthStencil)->getOpenGLTextureName() : 0;
+			const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
+
+			if (IImage::isDepthFormat(textureFormat))
+			{
+				DepthStencil = depthStencil;
+				DepthStencil->grab();
+			}
+			else
+			{
+				if (DepthStencil)
+					DepthStencil->drop();
+
+				DepthStencil = 0;
+			}
+
+			RequestDepthStencilUpdate = true;
+		}
+
+		// Set size required for a viewport.
+
+		ITexture* firstTexture = getTexture();
+
+		if (firstTexture)
+			Size = firstTexture->getSize();
+		else
+		{
+			if (DepthStencil)
+				Size = DepthStencil->getSize();
+			else
+				Size = Driver->getScreenSize();
+		}
+	}
+}
+
+void COpenGLRenderTarget::update()
+{
+	if (RequestTextureUpdate || RequestDepthStencilUpdate)
+	{
+		// Set color attachments.
+
+		if (RequestTextureUpdate)
+		{
+			// Set new color textures.
+
+			const u32 textureSize = core::min_(Texture.size(), AssignedTexture.size());
+
+			for (u32 i = 0; i < textureSize; ++i)
+			{
+				GLuint textureID = (Texture[i]) ? static_cast<COpenGLTexture*>(Texture[i])->getOpenGLTextureName() : 0;
+
+				if (textureID != 0)
+				{
+					AssignedTexture[i] = GL_COLOR_ATTACHMENT0 + i;
+					Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTexture[i], GL_TEXTURE_2D, textureID, 0);
+				}
+				else if (AssignedTexture[i] != GL_NONE)
+				{
+					AssignedTexture[i] = GL_NONE;
+					Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTexture[i], GL_TEXTURE_2D, 0, 0);
+
+					os::Printer::log("Error: Could not set render target.", ELL_ERROR);
+				}
+			}
+
+			// Reset other render target channels.
+
+			for (u32 i = textureSize; i < AssignedTexture.size(); ++i)
+			{
+				if (AssignedTexture[i] != GL_NONE)
+				{
+					Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTexture[i], GL_TEXTURE_2D, 0, 0);
+					AssignedTexture[i] = GL_NONE;
+				}
+			}
+
+			RequestTextureUpdate = false;
+		}
+
+		// Set depth and stencil attachments.
+
+		if (RequestDepthStencilUpdate)
 		{
 			const ECOLOR_FORMAT textureFormat = (DepthStencil) ? DepthStencil->getColorFormat() : ECF_UNKNOWN;
 
@@ -256,54 +303,28 @@ void COpenGLRenderTarget::update(const core::array<u32>& id)
 				AssignedStencil = false;
 			}
 
-			DepthStencilUpdate = false;
+			RequestDepthStencilUpdate = false;
 		}
 
-		// Set size required for a viewport.
+		// Configure drawing operation.
 
-		ITexture* firstTexture = getTexture();
-
-		if (firstTexture)
-			Size = firstTexture->getSize();
-		else
+		if (SupportForFBO && BufferID != 0)
 		{
-			if (DepthStencil)
-				Size = DepthStencil->getSize();
+			const u32 textureSize = Texture.size();
+
+			if (textureSize == 0)
+				glDrawBuffer(GL_NONE);
+			else if (textureSize == 1 || !SupportForMRT)
+				glDrawBuffer(GL_COLOR_ATTACHMENT0);
 			else
-				Size = Driver->getScreenSize();
+			{
+				Driver->extGlDrawBuffers(core::min_(textureSize, AssignedTexture.size()), AssignedTexture.pointer());
+			}
 		}
 
 #ifdef _DEBUG
 		checkFBOStatus(Driver);
 #endif
-	}
-
-	if ((AssignedActiveTextureID != id) && SupportForFBO && BufferID != 0)
-	{
-		const u32 size = id.size();
-
-		if (size == 0)
-			glDrawBuffer(GL_NONE);
-		else if (size == 1 || !SupportForMRT)
-			glDrawBuffer(GL_COLOR_ATTACHMENT0 + id[0]);
-		else
-		{
-			GLenum* target = new GLenum[Driver->MaxMultipleRenderTargets];
-
-			for (u32 i = 0; i < Driver->MaxMultipleRenderTargets; ++i)
-				target[i] = GL_NONE;
-
-			const u32 mrtSize = core::min_(size, static_cast<u32>(Driver->MaxMultipleRenderTargets));
-
-			for (u32 i = 0; i < mrtSize; ++i)
-				target[id[i]] = GL_COLOR_ATTACHMENT0 + id[i];
-
-			Driver->extGlDrawBuffers(mrtSize, target);
-
-			delete[] target;
-		}
-
-		AssignedActiveTextureID = id;
 	}
 }
 

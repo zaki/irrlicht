@@ -242,7 +242,7 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 	stabilizeScreenBackground(driver);
 
 	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255, 255, 255));
-	driver->setRenderTarget(renderTarget, 0, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));
+	driver->setRenderTarget(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));
 	driver->draw2DImage(driver->getTexture("../media/fireball.bmp"), core::recti(0, 0, renderTargetTex->getSize().Width, renderTargetTex->getSize().Height), core::recti(0, 0, 64, 64));
 	guienv->getBuiltInFont()->draw(L"OMGGG =!", core::rect<s32>(120, 100, 256, 256), video::SColor(255, 0, 0, 255));
 	driver->setRenderTarget((video::IRenderTarget*)0, 0, 0);
