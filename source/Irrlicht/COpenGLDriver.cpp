@@ -605,7 +605,7 @@ COpenGLDriver::~COpenGLDriver()
 
 	deleteMaterialRenders();
 
-	CurrentTexture.clear();
+	BridgeCalls->TextureCache.clear();
 	// I get a blue screen on my laptop, when I do not delete the
 	// textures manually before releasing the dc. Oh how I love this.
 	removeAllRenderTargets();
@@ -657,12 +657,12 @@ bool COpenGLDriver::genericDriverInit()
 	}
 
 	u32 i;
-	CurrentTexture.clear();
+
 	// load extensions
 	initExtensions(Params.Stencilbuffer);
 
-	if (!BridgeCalls)
-		BridgeCalls = new COpenGLCallBridge(this);
+	delete BridgeCalls;
+	BridgeCalls = new COpenGLCallBridge(this);
 
 	if (queryFeature(EVDF_ARB_GLSL))
 	{
@@ -1440,7 +1440,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), 0);
 			}
 
-			if (MultiTextureExtension && CurrentTexture[1])
+			if (MultiTextureExtension && BridgeCalls->TextureCache[1])
 			{
 				BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1519,7 +1519,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			BridgeCalls->setClientActiveTexture(GL_TEXTURE2_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
+		if ((vType!=EVT_STANDARD) || BridgeCalls->TextureCache[1])
 		{
 			BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1695,7 +1695,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		getColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
-	this->setActiveTexture(0, Material.getTexture(0));
+	BridgeCalls->TextureCache.set(0, Material.getTexture(0));
 	if (Material.MaterialType==EMT_ONETEXTURE_BLEND)
 	{
 		E_BLEND_FACTOR srcFact;
@@ -1760,7 +1760,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), 0);
 			}
 
-			if (MultiTextureExtension && CurrentTexture[1])
+			if (MultiTextureExtension && BridgeCalls->TextureCache[1])
 			{
 				BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1813,7 +1813,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 	if (MultiTextureExtension)
 	{
-		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
+		if ((vType!=EVT_STANDARD) || BridgeCalls->TextureCache[1])
 		{
 			BridgeCalls->setClientActiveTexture(GL_TEXTURE1_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1843,7 +1843,7 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
 	disableTextures(1);
-	if (!setActiveTexture(0, texture))
+	if (!BridgeCalls->TextureCache.set(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -2090,7 +2090,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
-	if (!setActiveTexture(0, texture))
+	if (!BridgeCalls->TextureCache.set(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -2162,7 +2162,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	disableTextures(1);
-	if (!setActiveTexture(0, texture))
+	if (!BridgeCalls->TextureCache.set(0, texture))
 		return;
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
@@ -2239,7 +2239,7 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 		return;
 
 	disableTextures(1);
-	if (!setActiveTexture(0, texture))
+	if (!BridgeCalls->TextureCache.set(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -2472,29 +2472,6 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 	glDrawArrays(GL_POINTS, 0, 1);
 }
 
-bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
-{
-	if (stage >= MaxSupportedTextures)
-		return false;
-
-	if (CurrentTexture[stage]==texture)
-		return true;
-
-	CurrentTexture.set(stage,texture);
-
-	if (!texture)
-		return true;
-	else if (texture->getDriverType() != EDT_OPENGL)
-	{
-		CurrentTexture.set(stage, 0);
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
-		return false;
-	}
-
-	return true;
-}
-
-
 //! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 //! Returns whether disabling was successful or not.
 bool COpenGLDriver::disableTextures(u32 fromStage)
@@ -2502,8 +2479,7 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 	bool result=true;
 	for (u32 i=fromStage; i<MaxSupportedTextures; ++i)
 	{
-		result &= setActiveTexture(i, 0);
-		BridgeCalls->setTexture(i, true);
+		result &= BridgeCalls->TextureCache.set(i, 0);
 	}
 	return result;
 }
@@ -2556,7 +2532,7 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < MaxTextureUnits; ++i)
 	{
-		setActiveTexture(i, material.getTexture(i));
+		BridgeCalls->TextureCache.set(i, material.getTexture(i));
 		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 	}
 }
@@ -3208,26 +3184,26 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 
 	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
 	{
-		const COpenGLTexture* tmpTexture = static_cast<const COpenGLTexture*>(CurrentTexture[i]);
-
 		bool fixedPipeline = false;
 
-		if(FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
+		if (FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
 		{
-			if (i>0 && !MultiTextureExtension)
+			if (i > 0 && !MultiTextureExtension)
 				break;
 
 			fixedPipeline = true;
 		}
 
-		BridgeCalls->setTexture(i, fixedPipeline);
+		const COpenGLTexture* tmpTexture = BridgeCalls->TextureCache[i];
 
-		if (!CurrentTexture[i])
+		if (!tmpTexture)
 			continue;
+
+		BridgeCalls->setActiveTexture(GL_TEXTURE0_ARB + i);
 
 		if (fixedPipeline)
 		{
-			const bool isRTT = CurrentTexture[i]->isRenderTarget();
+			const bool isRTT = tmpTexture->isRenderTarget();
 
 			BridgeCalls->setMatrixMode(GL_TEXTURE);
 
@@ -3296,7 +3272,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 			tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
 		}
 
-		if (material.UseMipMaps && CurrentTexture[i]->hasMipMaps())
+		if (material.UseMipMaps && tmpTexture->hasMipMaps())
 		{
 			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
 				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
@@ -3442,7 +3418,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		else
 			setTextureRenderStates(InitMaterial2D, false);
 
-		Material.setTexture(0, const_cast<video::ITexture*>(CurrentTexture[0]));
+		Material.setTexture(0, const_cast<COpenGLTexture*>(BridgeCalls->TextureCache[0]));
 		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 		// Due to the transformation change, the previous line would call a reset each frame
 		// but we can safely reset the variable as it was false before
@@ -4028,8 +4004,6 @@ void COpenGLDriver::removeTexture(ITexture* texture)
 		return;
 
 	CNullDriver::removeTexture(texture);
-	// Remove this texture from CurrentTexture as well
-	CurrentTexture.remove(texture);
 }
 
 
@@ -4256,11 +4230,14 @@ bool COpenGLDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor
 
 			if (renderTargetTexture)
 			{
-				setActiveTexture(0, renderTargetTexture);
-				BridgeCalls->setTexture(0, true);
+				const COpenGLTexture* prevTexture = BridgeCalls->TextureCache[0];
+
+				BridgeCalls->TextureCache.set(0, renderTargetTexture);
 
 				const core::dimension2d<u32> size = renderTargetTexture->getSize();
 				glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, size.Width, size.Height);
+
+				BridgeCalls->TextureCache.set(0, prevTexture);
 			}
 		}
 
@@ -4638,7 +4615,120 @@ COpenGLCallBridge* COpenGLDriver::getBridgeCalls() const
 	return BridgeCalls;
 }
 
-COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
+/* COpenGLCallBridge::STextureCache */
+
+COpenGLCallBridge::STextureCache::STextureCache(COpenGLCallBridge* cacheHandler, u32 textureCount) :
+	CacheHandler(cacheHandler), TextureCount(textureCount)
+{
+	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+	{
+		Texture[i] = 0;
+	}
+}
+
+COpenGLCallBridge::STextureCache::~STextureCache()
+{
+	clear();
+}
+
+const COpenGLTexture* COpenGLCallBridge::STextureCache::operator[](int index) const
+{
+	if (static_cast<u32>(index) < MATERIAL_MAX_TEXTURES)
+		return Texture[static_cast<u32>(index)];
+
+	return 0;
+}
+
+bool COpenGLCallBridge::STextureCache::set(u32 index, const ITexture* texture)
+{
+	bool status = false;
+	
+	E_DRIVER_TYPE type = EDT_OPENGL;
+
+	if (index < MATERIAL_MAX_TEXTURES && index < TextureCount)
+	{
+		CacheHandler->setActiveTexture(GL_TEXTURE0_ARB + index);
+
+		const COpenGLTexture* prevTexture = Texture[index];
+
+		if (texture != prevTexture)
+		{
+			if (texture)
+			{
+				type = texture->getDriverType();
+
+				if (type == EDT_OPENGL)
+				{
+					texture->grab();
+
+					if (!prevTexture)
+						glEnable(GL_TEXTURE_2D);
+
+					glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(texture)->getOpenGLTextureName());
+				}
+				else
+				{
+					texture = 0;
+
+					os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+				}
+			}
+			
+			if (!texture)
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				if (prevTexture)
+					glDisable(GL_TEXTURE_2D);
+			}
+
+			Texture[index] = static_cast<const COpenGLTexture*>(texture);
+
+			if (prevTexture)
+				prevTexture->drop();
+		}
+
+		status = true;
+	}
+
+	return (status && type == EDT_OPENGL);
+}
+
+void COpenGLCallBridge::STextureCache::remove(ITexture* texture)
+{
+	if (!texture)
+		return;
+
+	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+	{
+		if (Texture[i] == texture)
+		{
+			Texture[i] = 0;
+
+			texture->drop();
+		}
+	}
+}
+
+void COpenGLCallBridge::STextureCache::clear()
+{
+	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
+	{
+		if (Texture[i])
+		{
+			const COpenGLTexture* prevTexture = Texture[i];
+
+			Texture[i] = 0;
+
+			prevTexture->drop();
+		}
+	}
+}
+
+/* COpenGLCallBridge */
+
+COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : 
+	TextureCache(STextureCache(this, driver->MaxSupportedTextures)), Driver(driver),
 	AlphaMode(GL_ALWAYS), AlphaRef(0.0f), AlphaTest(false),
 	ClientStateVertex(false), ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false),
 	CullFaceMode(GL_BACK), CullFace(false),
@@ -4673,12 +4763,6 @@ COpenGLCallBridge::COpenGLCallBridge(COpenGLDriver* driver) : Driver(driver),
 
 		for (u32 j = 0; j < 4; ++j)
 			ColorMask[i][j] = true;
-	}
-
-	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-	{
-		Texture[i] = 0;
-		TextureFixedPipeline[i] = true;
 	}
 
 	// Initial OpenGL values from specification.
@@ -5054,53 +5138,6 @@ void COpenGLCallBridge::setClientActiveTexture(GLenum texture)
 	{
 		Driver->extGlClientActiveTexture(texture);
 		ClientActiveTexture = texture;
-	}
-}
-
-void COpenGLCallBridge::resetTexture(const ITexture* texture)
-{
-	for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
-	{
-		setActiveTexture(GL_TEXTURE0_ARB + i);
-
-		if (Texture[i] == texture)
-		{
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-			if (TextureFixedPipeline[i])
-				glDisable(GL_TEXTURE_2D);
-
-			Texture[i] = 0;
-		}
-	}
-}
-
-void COpenGLCallBridge::setTexture(GLuint stage, bool fixedPipeline)
-{
-	if (stage < MATERIAL_MAX_TEXTURES)
-	{
-		setActiveTexture(GL_TEXTURE0_ARB + stage);
-
-		if((fixedPipeline && TextureFixedPipeline[stage] != fixedPipeline) || Texture[stage] != Driver->CurrentTexture[stage])
-		{
-			if(Driver->CurrentTexture[stage])
-			{
-				if(fixedPipeline)
-					glEnable(GL_TEXTURE_2D);
-
-				glBindTexture(GL_TEXTURE_2D, static_cast<const COpenGLTexture*>(Driver->CurrentTexture[stage])->getOpenGLTextureName());
-			}
-			else
-			{
-				glBindTexture(GL_TEXTURE_2D, 0);
-
-				if(TextureFixedPipeline[stage])
-					glDisable(GL_TEXTURE_2D);
-			}
-
-			TextureFixedPipeline[stage] = fixedPipeline;
-			Texture[stage] = Driver->CurrentTexture[stage];
-		}
 	}
 }
 

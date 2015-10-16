@@ -108,6 +108,9 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 	setDebugName("COpenGLTexture");
 #endif
 
+	COpenGLCallBridge* bridgeCalls = Driver->getBridgeCalls();
+	const COpenGLTexture* prevTexture = bridgeCalls->TextureCache[0];
+
 	DriverType = EDT_OPENGL;
 
 	if (ECF_UNKNOWN == format)
@@ -137,8 +140,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 
 	glGenTextures(1, &TextureName);
 
-	Driver->setActiveTexture(0, this);
-	Driver->getBridgeCalls()->setTexture(0, true);
+	bridgeCalls->TextureCache.set(0, this);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -154,20 +156,19 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, OriginalSize.Width, OriginalSize.Height, 0, PixelFormat, PixelType, 0);
 
-	Driver->setActiveTexture(0, 0);
-	Driver->getBridgeCalls()->setTexture(0, true);
+	bridgeCalls->TextureCache.set(0, prevTexture);
 }
 
 
 //! destructor
 COpenGLTexture::~COpenGLTexture()
 {
+	Driver->getBridgeCalls()->TextureCache.remove(this);
+
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
 	if (Image)
 		Image->drop();
-
-	Driver->getBridgeCalls()->resetTexture(this);
 }
 
 
@@ -477,6 +478,9 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		return;
 	}
 
+	COpenGLCallBridge* bridgeCalls = Driver->getBridgeCalls();
+	const COpenGLTexture* prevTexture = bridgeCalls->TextureCache[0];
+
 	// get correct opengl color data values
 	GLenum oldInternalFormat = InternalFormat;
 	GLint filtering;
@@ -485,8 +489,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!newTexture)
 		InternalFormat=oldInternalFormat;
 
-    Driver->setActiveTexture(0, this);
-	Driver->getBridgeCalls()->setTexture(0, true);
+	bridgeCalls->TextureCache.set(0, this);
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
@@ -599,6 +602,8 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
+
+	bridgeCalls->TextureCache.set(0, prevTexture);
 }
 
 

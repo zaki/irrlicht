@@ -310,10 +310,6 @@ namespace video
 		//! Int interface for the above.
 		virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count) _IRR_OVERRIDE_;
 
-		//! sets the current Texture
-		//! Returns whether setting was a success or not.
-		bool setActiveTexture(u32 stage, const video::ITexture* texture);
-
 		//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 		//! Returns whether disabling was successful or not.
 		bool disableTextures(u32 fromStage=0);
@@ -481,71 +477,6 @@ namespace video
 
 		SMaterial Material, LastMaterial;
 
-		class STextureStageCache
-		{
-			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
-		public:
-			STextureStageCache()
-			{
-				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				{
-					CurrentTexture[i] = 0;
-				}
-			}
-
-			~STextureStageCache()
-			{
-				clear();
-			}
-
-			void set(u32 stage, const ITexture* tex)
-			{
-				if (stage<MATERIAL_MAX_TEXTURES)
-				{
-					const ITexture* oldTexture=CurrentTexture[stage];
-					if (tex)
-						tex->grab();
-					CurrentTexture[stage]=tex;
-					if (oldTexture)
-						oldTexture->drop();
-				}
-			}
-
-			const ITexture* operator[](int stage) const
-			{
-				if ((u32)stage<MATERIAL_MAX_TEXTURES)
-					return CurrentTexture[stage];
-				else
-					return 0;
-			}
-
-			void remove(ITexture* tex)
-			{
-				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
-				{
-					if (CurrentTexture[i] == tex)
-					{
-						tex->drop();
-						CurrentTexture[i] = 0;
-					}
-				}
-			}
-
-			void clear()
-			{
-				// Drop all the CurrentTexture handles
-				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				{
-					if (CurrentTexture[i])
-					{
-						CurrentTexture[i]->drop();
-						CurrentTexture[i] = 0;
-					}
-				}
-			}
-		};
-		STextureStageCache CurrentTexture;
-
 		struct SUserClipPlane
 		{
 			SUserClipPlane() : Enabled(false) {}
@@ -604,11 +535,30 @@ namespace video
 		E_DEVICE_TYPE DeviceType;
 	};
 
-	//! This bridge between Irlicht pseudo OpenGL calls
-	//! and true OpenGL calls.
+	//! This is a bridge between Irlicht pseudo OpenGL calls and real OpenGL calls.
 
 	class COpenGLCallBridge
 	{
+		class STextureCache
+		{
+		public:
+			STextureCache(COpenGLCallBridge* cacheHandler, u32 textureCount);
+			~STextureCache();
+
+			const COpenGLTexture* operator[](int index) const;
+
+			bool set(u32 index, const ITexture* texture);
+
+			void remove(ITexture* texture);
+			void clear();
+
+		private:
+			COpenGLCallBridge* CacheHandler;
+
+			const COpenGLTexture* Texture[MATERIAL_MAX_TEXTURES];
+			u32 TextureCount;
+		};
+
 	public:
 		COpenGLCallBridge(COpenGLDriver* driver);
 		~COpenGLCallBridge();
@@ -673,17 +623,17 @@ namespace video
 
 		// Texture calls.
 
-		void resetTexture(const ITexture* texture);
-
 		void setActiveTexture(GLenum texture);
 
 		void setClientActiveTexture(GLenum texture);
 
-		void setTexture(GLuint stage, bool fixedPipeline);
-
 		// Viewport calls.
 
 		void setViewport(GLint viewportX, GLint viewportY, GLsizei viewportWidth, GLsizei viewportHeight);
+
+		// Texture cache.
+
+		STextureCache TextureCache;
 
 	private:
 		COpenGLDriver* Driver;
@@ -721,9 +671,6 @@ namespace video
 
 		GLenum ActiveTexture;
 		GLenum ClientActiveTexture;
-
-		const ITexture* Texture[MATERIAL_MAX_TEXTURES];
-		bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
 
 		GLint ViewportX;
 		GLint ViewportY;
