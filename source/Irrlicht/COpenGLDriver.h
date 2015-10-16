@@ -679,8 +679,6 @@ namespace video
 
 		void setClientActiveTexture(GLenum texture);
 
-		void getTexture(GLenum& type, GLuint& name) const;
-
 		void setTexture(GLuint stage, bool fixedPipeline);
 
 		// Viewport calls.
