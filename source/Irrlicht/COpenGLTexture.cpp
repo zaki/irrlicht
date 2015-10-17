@@ -614,6 +614,11 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 	if (IsCompressed) // TO-DO
 		return 0;
 
+	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
+	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
+
+	cacheHandler->TextureCache.set(0, this);
+
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
 	ReadOnlyLock |= (mode==ETLM_READ_ONLY);
@@ -657,18 +662,21 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 			ColorFormat = ECF_A8R8G8B8;
 		}
 		if (!image)
+		{
+			cacheHandler->TextureCache.set(0, prevTexture);
+
 			return 0;
+		}
 
 		if (mode != ETLM_WRITE_ONLY)
 		{
 			u8* pixels = static_cast<u8*>(image->lock());
 			if (!pixels)
-				return 0;
+			{
+				cacheHandler->TextureCache.set(0, prevTexture);
 
-			// we need to keep the correct texture bound later on
-			GLint tmpTexture;
-			glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
-			glBindTexture(GL_TEXTURE_2D, TextureName);
+				return 0;
+			}
 
 			// we need to flip textures vertical
 			// however, it seems that this does not hold for mipmap
@@ -707,11 +715,11 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 				}
 			}
 			image->unlock();
-
-			//reset old bound texture
-			glBindTexture(GL_TEXTURE_2D, tmpTexture);
 		}
 	}
+
+	cacheHandler->TextureCache.set(0, prevTexture);
+
 	return image->lock();
 }
 
@@ -782,11 +790,18 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 			return;
 	}
 
+	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
+	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
+
+	cacheHandler->TextureCache.set(0, this);
+
 	// hardware moethods for generate mipmaps.
 	if (!mipmapData && AutomaticMipmapUpdate && !MipmapLegacyMode)
 	{
 		glEnable(GL_TEXTURE_2D);
 		Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
+
+		cacheHandler->TextureCache.set(0, prevTexture);
 
 		return;
 	}
@@ -842,25 +857,14 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 	// cleanup
 	if (!mipmapData)
 		delete [] target;
+
+	cacheHandler->TextureCache.set(0, prevTexture);
 }
 
-
-//! Get an access to texture states cache.
 COpenGLTexture::SStatesCache& COpenGLTexture::getStatesCache() const
 {
 	return StatesCache;
 }
-
-
-/* FBO Textures */
-
-// helper function for render to texture
-static bool checkFBOStatus(COpenGLDriver* Driver);
-
-
-
-
-
 
 } // end namespace video
 } // end namespace irr
