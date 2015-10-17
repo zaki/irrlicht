@@ -2188,6 +2188,14 @@
 					Name="OpenGL"
 					>
 					<File
+						RelativePath="COpenGLCacheHandler.cpp"
+						>
+					</File>
+					<File
+						RelativePath="COpenGLCacheHandler.h"
+						>
+					</File>
+					<File
 						RelativePath="COpenGLDriver.cpp"
 						>
 					</File>

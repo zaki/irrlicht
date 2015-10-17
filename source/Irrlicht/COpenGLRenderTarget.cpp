@@ -92,7 +92,7 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 }
 
 COpenGLRenderTarget::COpenGLRenderTarget(COpenGLDriver* driver) : AssignedDepth(false), AssignedStencil(false), RequestTextureUpdate(false), RequestDepthStencilUpdate(false),
-	BufferID(0), SupportForFBO(false), SupportForMRT(false), BridgeCalls(0), Driver(driver)
+	BufferID(0), SupportForFBO(false), SupportForMRT(false), Driver(driver)
 {
 #ifdef _DEBUG
 	setDebugName("COpenGLRenderTarget");
@@ -101,7 +101,6 @@ COpenGLRenderTarget::COpenGLRenderTarget(COpenGLDriver* driver) : AssignedDepth(
 	DriverType = EDT_OPENGL;
 
 	Size = Driver->getScreenSize();
-	BridgeCalls = Driver->getBridgeCalls();
 
 #if defined(GL_VERSION_3_0) || defined(GL_ARB_framebuffer_object) || defined(GL_EXT_framebuffer_object)
 	SupportForFBO = Driver->FeatureAvailable[COpenGLDriver::IRR_EXT_framebuffer_object] || Driver->FeatureAvailable[COpenGLDriver::IRR_ARB_framebuffer_object];

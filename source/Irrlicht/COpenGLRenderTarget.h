@@ -20,7 +20,7 @@ namespace video
 {
 
 class COpenGLDriver;
-class COpenGLCallBridge;
+class COpenGLCacheHandler;
 
 class COpenGLRenderTarget : public IRenderTarget
 {
@@ -52,8 +52,6 @@ protected:
 
 	bool SupportForFBO;
 	bool SupportForMRT;
-
-	COpenGLCallBridge* BridgeCalls;
 
 	COpenGLDriver* Driver;
 };

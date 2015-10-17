@@ -849,6 +849,9 @@
     <ClInclude Include="S2DVertex.h">
       <Filter>Irrlicht\video\Software</Filter>
     </ClInclude>
+    <ClInclude Include="COpenGLCacheHandler.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="COpenGLDriver.h">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClInclude>
@@ -1615,6 +1618,9 @@
     </ClCompile>
     <ClCompile Include="CZBuffer.cpp">
       <Filter>Irrlicht\video\Software</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLCacheHandler.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="COpenGLDriver.cpp">
       <Filter>Irrlicht\video\OpenGL</Filter>

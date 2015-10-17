@@ -830,6 +830,8 @@
 		<Unit filename="COctreeTriangleSelector.h" />
 		<Unit filename="COgreMeshFileLoader.cpp" />
 		<Unit filename="COgreMeshFileLoader.h" />
+		<Unit filename="COpenGLCacheHandler.cpp" />
+		<Unit filename="COpenGLCacheHandler.h" />
 		<Unit filename="COpenGLDriver.cpp" />
 		<Unit filename="COpenGLDriver.h" />
 		<Unit filename="COpenGLExtensionHandler.cpp" />

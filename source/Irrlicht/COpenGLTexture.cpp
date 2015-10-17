@@ -9,6 +9,7 @@
 #include "irrTypes.h"
 #include "COpenGLTexture.h"
 #include "COpenGLDriver.h"
+#include "COpenGLCacheHandler.h"
 #include "os.h"
 #include "CColorConverter.h"
 
@@ -108,8 +109,8 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 	setDebugName("COpenGLTexture");
 #endif
 
-	COpenGLCallBridge* bridgeCalls = Driver->getBridgeCalls();
-	const COpenGLTexture* prevTexture = bridgeCalls->TextureCache[0];
+	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
+	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
 
 	DriverType = EDT_OPENGL;
 
@@ -140,7 +141,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 
 	glGenTextures(1, &TextureName);
 
-	bridgeCalls->TextureCache.set(0, this);
+	cacheHandler->TextureCache.set(0, this);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -156,14 +157,14 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, OriginalSize.Width, OriginalSize.Height, 0, PixelFormat, PixelType, 0);
 
-	bridgeCalls->TextureCache.set(0, prevTexture);
+	cacheHandler->TextureCache.set(0, prevTexture);
 }
 
 
 //! destructor
 COpenGLTexture::~COpenGLTexture()
 {
-	Driver->getBridgeCalls()->TextureCache.remove(this);
+	Driver->getCacheHandler()->TextureCache.remove(this);
 
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
@@ -478,8 +479,8 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 		return;
 	}
 
-	COpenGLCallBridge* bridgeCalls = Driver->getBridgeCalls();
-	const COpenGLTexture* prevTexture = bridgeCalls->TextureCache[0];
+	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
+	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
 
 	// get correct opengl color data values
 	GLenum oldInternalFormat = InternalFormat;
@@ -489,7 +490,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!newTexture)
 		InternalFormat=oldInternalFormat;
 
-	bridgeCalls->TextureCache.set(0, this);
+	cacheHandler->TextureCache.set(0, this);
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
@@ -603,7 +604,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
 
-	bridgeCalls->TextureCache.set(0, prevTexture);
+	cacheHandler->TextureCache.set(0, prevTexture);
 }
 
 

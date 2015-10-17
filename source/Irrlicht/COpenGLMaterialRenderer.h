@@ -9,6 +9,7 @@
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "COpenGLDriver.h"
+#include "COpenGLCacheHandler.h"
 #include "IMaterialRenderer.h"
 
 namespace irr
@@ -75,16 +76,16 @@ public:
 			u32 alphaSource;
 			unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulate, alphaSource, material.MaterialTypeParam);
 
-            Driver->getBridgeCalls()->setBlend(true);
+            Driver->getCacheHandler()->setBlend(true);
 
             if (Driver->queryFeature(EVDF_BLEND_SEPARATE))
             {
-                Driver->getBridgeCalls()->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
+                Driver->getCacheHandler()->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
                     Driver->getGLBlend(srcAlphaFact), Driver->getGLBlend(dstAlphaFact));
             }
             else
             {
-                Driver->getBridgeCalls()->setBlendFunc(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact));
+                Driver->getCacheHandler()->setBlendFunc(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact));
             }
 
 #ifdef GL_ARB_texture_env_combine
@@ -153,7 +154,7 @@ public:
 		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PREVIOUS_EXT);
 #endif
 
-		Driver->getBridgeCalls()->setBlend(false);
+		Driver->getCacheHandler()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent.
@@ -191,7 +192,7 @@ public:
 		{
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))
 			{
-				Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+				Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 #ifdef GL_ARB_texture_env_combine
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_REPLACE);
@@ -219,14 +220,14 @@ public:
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #ifdef GL_ARB_texture_env_combine
 			glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB_ARB, GL_SRC_COLOR);
 #else
 			glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB_EXT, GL_SRC_COLOR);
 #endif
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE0_ARB);
 		}
 	}
 
@@ -254,8 +255,8 @@ public:
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		Driver->getBridgeCalls()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		Driver->getBridgeCalls()->setBlend(true);
+		Driver->getCacheHandler()->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		Driver->getCacheHandler()->setBlend(true);
 
 		if ((material.MaterialType != lastMaterial.MaterialType) || resetAllRenderstates)
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -263,7 +264,7 @@ public:
 
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
-		Driver->getBridgeCalls()->setBlend(false);
+		Driver->getCacheHandler()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent.
@@ -296,8 +297,8 @@ public:
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        Driver->getBridgeCalls()->setBlend(true);
+		Driver->getCacheHandler()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        Driver->getCacheHandler()->setBlend(true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -330,7 +331,7 @@ public:
 		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_MODULATE );
 		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE );
 #endif
-		Driver->getBridgeCalls()->setBlend(false);
+		Driver->getCacheHandler()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent.
@@ -363,10 +364,10 @@ public:
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-        Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        Driver->getBridgeCalls()->setBlend(true);
-        Driver->getBridgeCalls()->setAlphaTest(true);
-        Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, material.MaterialTypeParam);
+        Driver->getCacheHandler()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        Driver->getCacheHandler()->setBlend(true);
+        Driver->getCacheHandler()->setAlphaTest(true);
+        Driver->getCacheHandler()->setAlphaFunc(GL_GREATER, material.MaterialTypeParam);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates
 			|| material.MaterialTypeParam != lastMaterial.MaterialTypeParam )
@@ -397,8 +398,8 @@ public:
 #else
 		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_MODULATE );
 #endif
-		Driver->getBridgeCalls()->setAlphaTest(false);
-		Driver->getBridgeCalls()->setBlend(false);
+		Driver->getCacheHandler()->setAlphaTest(false);
+		Driver->getCacheHandler()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent.
@@ -433,15 +434,15 @@ public:
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
-			Driver->getBridgeCalls()->setAlphaTest(true);
-			Driver->getBridgeCalls()->setAlphaFunc(GL_GREATER, 0.5f);
+			Driver->getCacheHandler()->setAlphaTest(true);
+			Driver->getCacheHandler()->setAlphaFunc(GL_GREATER, 0.5f);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 	}
 
 	virtual void OnUnsetMaterial() _IRR_OVERRIDE_
 	{
-		Driver->getBridgeCalls()->setAlphaTest(false);
+		Driver->getCacheHandler()->setAlphaTest(false);
 	}
 
 	//! Returns if the material is transparent.
@@ -498,7 +499,7 @@ public:
 			{
 				// lightmap
 
-				Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+				Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 #ifdef GL_ARB_texture_env_combine
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
 
@@ -552,7 +553,7 @@ public:
 						glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 #endif
 				}
-				Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
+				Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE0_ARB);
 			}
 		}
 	}
@@ -561,14 +562,14 @@ public:
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 #ifdef GL_ARB_texture_env_combine
 			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1.f );
 #else
 			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.f );
 #endif
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE0_ARB);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 	}
@@ -605,7 +606,7 @@ public:
 			// detail map on second layer
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))
 			{
-				Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+				Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 #ifdef GL_ARB_texture_env_combine
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_ADD_SIGNED_ARB);
@@ -625,9 +626,9 @@ public:
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE0_ARB);
 		}
 	}
 
@@ -703,7 +704,7 @@ public:
 		{
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))
 			{
-				Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+				Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 #ifdef GL_ARB_texture_env_combine
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
@@ -727,14 +728,14 @@ public:
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 		glDisable(GL_TEXTURE_GEN_S);
 		glDisable(GL_TEXTURE_GEN_T);
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE0_ARB);
 		}
 	}
 
@@ -762,8 +763,8 @@ public:
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		Driver->getBridgeCalls()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        Driver->getBridgeCalls()->setBlend(true);
+		Driver->getCacheHandler()->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        Driver->getCacheHandler()->setBlend(true);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -784,7 +785,7 @@ public:
 #endif
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))
 			{
-				Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+				Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 #ifdef GL_ARB_texture_env_combine
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
@@ -812,16 +813,16 @@ public:
 	{
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE1_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE1_ARB);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 		glDisable(GL_TEXTURE_GEN_S);
 		glDisable(GL_TEXTURE_GEN_T);
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
-			Driver->getBridgeCalls()->setActiveTexture(GL_TEXTURE0_ARB);
+			Driver->getCacheHandler()->setActiveTexture(GL_TEXTURE0_ARB);
 		}
-		Driver->getBridgeCalls()->setBlend(false);
+		Driver->getCacheHandler()->setBlend(false);
 	}
 
 	//! Returns if the material is transparent.

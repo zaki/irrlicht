@@ -20,6 +20,7 @@
 #include "IVideoDriver.h"
 #include "os.h"
 #include "COpenGLDriver.h"
+#include "COpenGLCacheHandler.h"
 #include "COpenGLMaterialRenderer.h"
 
 namespace irr
@@ -231,7 +232,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 	else
 		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
 
-	COpenGLCallBridge* bridgeCalls = Driver->getBridgeCalls();
+	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
 
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
@@ -245,13 +246,13 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 
 	if (Alpha)
 	{
-		bridgeCalls->setBlend(true);
-		bridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		cacheHandler->setBlend(true);
+		cacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	else if (FixedBlending)
 	{
-		bridgeCalls->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		bridgeCalls->setBlend(true);
+		cacheHandler->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		cacheHandler->setBlend(true);
 	}
 	else if (Blending)
 	{
@@ -262,20 +263,20 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 
 		if (Driver->queryFeature(EVDF_BLEND_SEPARATE))
         {
-            bridgeCalls->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
+			cacheHandler->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
                 Driver->getGLBlend(srcAlphaFact), Driver->getGLBlend(dstAlphaFact));
         }
         else
         {
-            bridgeCalls->setBlendFunc(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact));
+			cacheHandler->setBlendFunc(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact));
         }
 
-		bridgeCalls->setBlend(true);
+		cacheHandler->setBlend(true);
 	}
 	else if (AlphaTest)
 	{
-		bridgeCalls->setAlphaTest(true);
-		bridgeCalls->setAlphaFunc(GL_GREATER, 0.5f);
+		cacheHandler->setAlphaTest(true);
+		cacheHandler->setAlphaFunc(GL_GREATER, 0.5f);
 	}
 
 	if (CallBack)
