@@ -46,8 +46,6 @@ namespace video
 		COpenGLCacheHandler(COpenGLDriver* driver);
 		~COpenGLCacheHandler();
 
-		void reset();
-
 		// Alpha calls.
 
 		void setAlphaFunc(GLenum mode, GLclampf ref);
