@@ -47,7 +47,7 @@ const u16 COpenGLDriver::Quad2DIndices[4] = { 0, 1, 2, 3 };
 // -----------------------------------------------------------------------
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 //! Windows constructor and init code
-COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device)
+COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device)
 	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
@@ -476,7 +476,7 @@ bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
 // MacOSX CONSTRUCTOR
 // -----------------------------------------------------------------------
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-//! Windows constructor and init code
+//! OSX constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device)
 	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
