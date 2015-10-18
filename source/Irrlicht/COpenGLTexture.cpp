@@ -798,7 +798,7 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 	// hardware moethods for generate mipmaps.
 	if (!mipmapData && AutomaticMipmapUpdate && !MipmapLegacyMode)
 	{
-		Driver->extGlGenerateMipmap(GL_TEXTURE_2D);
+		Driver->irrGlGenerateMipmap(GL_TEXTURE_2D);
 
 		cacheHandler->TextureCache.set(0, prevTexture);
 

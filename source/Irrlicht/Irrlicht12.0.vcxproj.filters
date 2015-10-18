@@ -100,6 +100,9 @@
     <Filter Include="Irrlicht\gui">
       <UniqueIdentifier>{da421793-4674-481c-be46-f7a44e78aee5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Irrlicht\video\OpenGL Core">
+      <UniqueIdentifier>{d6b83fe4-204d-4a95-aeb7-5b8ebdec7e5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IEventReceiver.h">
@@ -855,39 +858,6 @@
     <ClInclude Include="S2DVertex.h">
       <Filter>Irrlicht\video\Software</Filter>
     </ClInclude>
-    <ClInclude Include="COpenGLCacheHandler.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLDriver.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLExtensionHandler.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLMaterialRenderer.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLNormalMapRenderer.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLParallaxMapRenderer.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLShaderMaterialRenderer.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLSLMaterialRenderer.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="COpenGLTexture.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="glext.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="wglext.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="CColorConverter.h">
       <Filter>Irrlicht\video\Null</Filter>
     </ClInclude>
@@ -1309,14 +1279,44 @@
     <ClInclude Include="CD3D9RenderTarget.h">
       <Filter>Irrlicht\video\Direct3D9</Filter>
     </ClInclude>
-    <ClInclude Include="COpenGLRenderTarget.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
-	<ClInclude Include="CB3DMeshWriter.h">
+    <ClInclude Include="CB3DMeshWriter.h">
       <Filter>Irrlicht\scene\writers</Filter>
     </ClInclude>
     <ClInclude Include="SB3DStructs.h">
       <Filter>Irrlicht\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLCacheHandler.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLDriver.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLExtensionHandler.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLMaterialRenderer.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLNormalMapRenderer.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLParallaxMapRenderer.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLShaderMaterialRenderer.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLSLMaterialRenderer.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGLTexture.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="COGLCoreFeature.h">
+      <Filter>Irrlicht\video\OpenGL Core</Filter>
+    </ClInclude>
+    <ClInclude Include="COGLCoreRenderTarget.h">
+      <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1618,30 +1618,6 @@
     </ClCompile>
     <ClCompile Include="CZBuffer.cpp">
       <Filter>Irrlicht\video\Software</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLCacheHandler.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLDriver.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLExtensionHandler.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLNormalMapRenderer.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLParallaxMapRenderer.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLShaderMaterialRenderer.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLSLMaterialRenderer.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLTexture.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="CColorConverter.cpp">
       <Filter>Irrlicht\video\Null</Filter>
@@ -2246,11 +2222,32 @@
     <ClCompile Include="CD3D9RenderTarget.cpp">
       <Filter>Irrlicht\video\Direct3D9</Filter>
     </ClCompile>
-    <ClCompile Include="COpenGLRenderTarget.cpp">
+    <ClCompile Include="CB3DMeshWriter.cpp">
+      <Filter>Irrlicht\scene\writers</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLCacheHandler.cpp">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
-	<ClCompile Include="CB3DMeshWriter.cpp">
-      <Filter>Irrlicht\scene\writers</Filter>
+    <ClCompile Include="COpenGLDriver.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLExtensionHandler.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLNormalMapRenderer.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLParallaxMapRenderer.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLShaderMaterialRenderer.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLSLMaterialRenderer.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGLTexture.cpp">
+      <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

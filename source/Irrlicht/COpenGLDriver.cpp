@@ -8,9 +8,10 @@
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
+#include "COGLCoreRenderTarget.h"
+
 #include "COpenGLCacheHandler.h"
 #include "COpenGLTexture.h"
-#include "COpenGLRenderTarget.h"
 #include "COpenGLMaterialRenderer.h"
 #include "COpenGLShaderMaterialRenderer.h"
 #include "COpenGLSLMaterialRenderer.h"
@@ -681,7 +682,7 @@ bool COpenGLDriver::genericDriverInit()
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
 	DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
-	DriverAttributes->setAttribute("MaxMultipleRenderTargets", MaxMultipleRenderTargets);
+	DriverAttributes->setAttribute("MaxMultipleRenderTargets", Feature.MultipleRenderTarget);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
 	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
 	DriverAttributes->setAttribute("MaxGeometryVerticesOut", (s32)MaxGeometryVerticesOut);
@@ -4199,11 +4200,7 @@ bool COpenGLDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor
 		return false;
 	}
 
-	bool supportForFBO = false;
-
-#if defined(GL_VERSION_3_0) || defined(GL_ARB_framebuffer_object) || defined(GL_EXT_framebuffer_object)
-	supportForFBO = FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
-#endif
+	bool supportForFBO = (getFeature().ColorAttachment > 0);
 
 	core::dimension2d<u32> destRenderTargetSize(0, 0);
 

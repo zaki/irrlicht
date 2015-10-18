@@ -134,7 +134,7 @@ COpenGLCacheHandler::COpenGLCacheHandler(COpenGLDriver* driver) :
 	ClientActiveTexture(GL_TEXTURE0_ARB), ClientStateVertex(false), ClientStateNormal(false),ClientStateColor(false),
 	ClientStateTexCoord0(false), ViewportX(0), ViewportY(0)
 {
-	FrameBufferCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->MaxMultipleRenderTargets));
+	FrameBufferCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(Driver->getFeature().MultipleRenderTarget));
 
 	BlendEquation = new GLenum[FrameBufferCount];
 	BlendSourceRGB = new GLenum[FrameBufferCount];
@@ -507,9 +507,8 @@ void COpenGLCacheHandler::setFBO(GLuint id)
 {
 	if (FrameBufferID != id)
 	{
-#if defined(GL_EXT_framebuffer_object)
-		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, id);
-#endif
+		Driver->irrGlBindFramebuffer(GL_FRAMEBUFFER, id);
+
 		FrameBufferID = id;
 	}
 }

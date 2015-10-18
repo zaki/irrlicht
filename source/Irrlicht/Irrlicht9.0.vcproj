@@ -2232,14 +2232,6 @@
 						>
 					</File>
 					<File
-						RelativePath="COpenGLRenderTarget.cpp"
-						>
-					</File>
-					<File
-						RelativePath="COpenGLRenderTarget.h"
-						>
-					</File>
-					<File
 						RelativePath="COpenGLShaderMaterialRenderer.cpp"
 						>
 					</File>
@@ -2269,6 +2261,18 @@
 					</File>
 					<File
 						RelativePath=".\wglext.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="OpenGL Core"
+					>
+					<File
+						RelativePath="COGLCoreFeature.h"
+						>
+					</File>
+					<File
+						RelativePath="COGLCoreRenderTarget.h"
 						>
 					</File>
 				</Filter>

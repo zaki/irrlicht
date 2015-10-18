@@ -77,6 +77,45 @@ typedef unsigned int GLhandleARB;
 typedef char GLchar;
 #endif
 
+// FBO definitions.
+
+#if !defined(GL_VERSION_3_0) && !defined(GL_ARB_framebuffer_object)
+#ifdef GL_EXT_framebuffer_object
+#define GL_FRAMEBUFFER GL_FRAMEBUFFER_EXT
+#define GL_COLOR_ATTACHMENT0 GL_COLOR_ATTACHMENT0_EXT
+#define GL_DEPTH_ATTACHMENT GL_DEPTH_ATTACHMENT_EXT
+#define GL_STENCIL_ATTACHMENT GL_STENCIL_ATTACHMENT_EXT
+#define GL_FRAMEBUFFER_COMPLETE GL_FRAMEBUFFER_COMPLETE_EXT
+#define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT
+#define GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT
+#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT
+#define GL_FRAMEBUFFER_UNSUPPORTED GL_FRAMEBUFFER_UNSUPPORTED_EXT
+#else
+#define GL_FRAMEBUFFER 0
+#define GL_COLOR_ATTACHMENT0 0
+#define GL_DEPTH_ATTACHMENT 0
+#define GL_STENCIL_ATTACHMENT 0
+#define GL_FRAMEBUFFER_COMPLETE 0
+#define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER 1
+#define GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER 2
+#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT 3
+#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT 4
+#define GL_FRAMEBUFFER_UNSUPPORTED 5
+#endif
+#endif
+
+#ifdef GL_EXT_framebuffer_object
+#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT
+#else
+#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS 6
+#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS 7
+#endif
+
+#include "COGLCoreFeature.h"
 
 namespace irr
 {
@@ -1058,6 +1097,8 @@ class COpenGLExtensionHandler
 	// deferred initialization
 	void initExtensions(bool stencilBuffer);
 
+	const COGLCoreFeature& getFeature() const;
+
 	//! queries the features of the driver, returns true if feature is available
 	bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
@@ -1090,10 +1131,6 @@ class COpenGLExtensionHandler
 	u8 MaxUserClipPlanes;
 	//! Number of auxiliary buffers
 	u8 MaxAuxBuffers;
-	//! Number of rendertargets available as MRTs
-	u8 MaxMultipleRenderTargets;
-	//! Number of color attachments available in FBO
-	u8 MaxColorAttachments;
 	//! Optimal number of indices per meshbuffer
 	u32 MaxIndices;
 	//! Maximal texture dimension
@@ -1195,19 +1232,19 @@ class COpenGLExtensionHandler
 	void extGlGetActiveUniform(GLuint program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLchar *name);
 
 	// framebuffer objects
-	void extGlBindFramebuffer(GLenum target, GLuint framebuffer);
-	void extGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers);
-	void extGlGenFramebuffers(GLsizei n, GLuint *framebuffers);
-	GLenum extGlCheckFramebufferStatus(GLenum target);
-	void extGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-	void extGlBindRenderbuffer(GLenum target, GLuint renderbuffer);
-	void extGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers);
-	void extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers);
-	void extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-	void extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-	void extGlGenerateMipmap(GLenum target);
-	void extGlActiveStencilFace(GLenum face);
-	void extGlDrawBuffers(GLsizei n, const GLenum *bufs);
+	void irrGlBindFramebuffer(GLenum target, GLuint framebuffer);
+	void irrGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers);
+	void irrGlGenFramebuffers(GLsizei n, GLuint *framebuffers);
+	GLenum irrGlCheckFramebufferStatus(GLenum target);
+	void irrGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	void irrGlBindRenderbuffer(GLenum target, GLuint renderbuffer);
+	void irrGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers);
+	void irrGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers);
+	void irrGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+	void irrGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+	void irrGlGenerateMipmap(GLenum target);
+	void irrGlActiveStencilFace(GLenum face);
+	void irrGlDrawBuffers(GLsizei n, const GLenum *bufs);
 
 	// vertex buffer object
 	void extGlGenBuffers(GLsizei n, GLuint *buffers);
@@ -1254,6 +1291,8 @@ class COpenGLExtensionHandler
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
 
 	protected:
+		COGLCoreFeature Feature;
+
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		PFNGLACTIVETEXTUREARBPROC pGlActiveTextureARB;
 		PFNGLCLIENTACTIVETEXTUREARBPROC	pGlClientActiveTextureARB;
@@ -2103,7 +2142,7 @@ inline void COpenGLExtensionHandler::extGlCompressedTexSubImage2D(GLenum target,
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint framebuffer)
+inline void COpenGLExtensionHandler::irrGlBindFramebuffer(GLenum target, GLuint framebuffer)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBindFramebuffer)
@@ -2119,7 +2158,7 @@ inline void COpenGLExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint 
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
+inline void COpenGLExtensionHandler::irrGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlDeleteFramebuffers)
@@ -2135,7 +2174,7 @@ inline void COpenGLExtensionHandler::extGlDeleteFramebuffers(GLsizei n, const GL
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
+inline void COpenGLExtensionHandler::irrGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
 {
 	if (framebuffers)
 		memset(framebuffers,0,n*sizeof(GLuint));
@@ -2153,7 +2192,7 @@ inline void COpenGLExtensionHandler::extGlGenFramebuffers(GLsizei n, GLuint *fra
 #endif
 }
 
-inline GLenum COpenGLExtensionHandler::extGlCheckFramebufferStatus(GLenum target)
+inline GLenum COpenGLExtensionHandler::irrGlCheckFramebufferStatus(GLenum target)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlCheckFramebufferStatus)
@@ -2172,7 +2211,7 @@ inline GLenum COpenGLExtensionHandler::extGlCheckFramebufferStatus(GLenum target
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+inline void COpenGLExtensionHandler::irrGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlFramebufferTexture2D)
@@ -2188,7 +2227,7 @@ inline void COpenGLExtensionHandler::extGlFramebufferTexture2D(GLenum target, GL
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
+inline void COpenGLExtensionHandler::irrGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBindRenderbuffer)
@@ -2204,7 +2243,7 @@ inline void COpenGLExtensionHandler::extGlBindRenderbuffer(GLenum target, GLuint
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
+inline void COpenGLExtensionHandler::irrGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlDeleteRenderbuffers)
@@ -2220,7 +2259,7 @@ inline void COpenGLExtensionHandler::extGlDeleteRenderbuffers(GLsizei n, const G
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
+inline void COpenGLExtensionHandler::irrGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
 {
 	if (renderbuffers)
 		memset(renderbuffers,0,n*sizeof(GLuint));
@@ -2238,7 +2277,7 @@ inline void COpenGLExtensionHandler::extGlGenRenderbuffers(GLsizei n, GLuint *re
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
+inline void COpenGLExtensionHandler::irrGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlRenderbufferStorage)
@@ -2254,7 +2293,7 @@ inline void COpenGLExtensionHandler::extGlRenderbufferStorage(GLenum target, GLe
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+inline void COpenGLExtensionHandler::irrGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlFramebufferRenderbuffer)
@@ -2270,7 +2309,7 @@ inline void COpenGLExtensionHandler::extGlFramebufferRenderbuffer(GLenum target,
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlGenerateMipmap(GLenum target)
+inline void COpenGLExtensionHandler::irrGlGenerateMipmap(GLenum target)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGenerateMipmap)
@@ -2286,7 +2325,7 @@ inline void COpenGLExtensionHandler::extGlGenerateMipmap(GLenum target)
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlActiveStencilFace(GLenum face)
+inline void COpenGLExtensionHandler::irrGlActiveStencilFace(GLenum face)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlActiveStencilFaceEXT)
@@ -2298,7 +2337,7 @@ inline void COpenGLExtensionHandler::extGlActiveStencilFace(GLenum face)
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlDrawBuffers(GLsizei n, const GLenum *bufs)
+inline void COpenGLExtensionHandler::irrGlDrawBuffers(GLsizei n, const GLenum *bufs)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlDrawBuffersARB)

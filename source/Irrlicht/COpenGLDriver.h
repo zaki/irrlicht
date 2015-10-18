@@ -29,8 +29,14 @@ namespace irr
 
 namespace video
 {
+	template <class TOGLDriver, class TOGLTexture>
+	class COGLCoreRenderTarget;
+
 	class COpenGLCacheHandler;
 	class COpenGLTexture;
+	class COpenGLDriver;
+
+	typedef COGLCoreRenderTarget<COpenGLDriver, COpenGLTexture> COpenGLRenderTarget;
 
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{

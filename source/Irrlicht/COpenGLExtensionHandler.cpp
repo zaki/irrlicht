@@ -20,8 +20,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false), MultiTextureExtension(false),
 		TextureCompressionExtension(false),
 		MaxSupportedTextures(1), MaxTextureUnits(1), MaxLights(1),
-		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
-		MaxMultipleRenderTargets(1), MaxColorAttachments(1), MaxIndices(65535),
+		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0), MaxIndices(65535),
 		MaxTextureSize(1), MaxGeometryVerticesOut(0),
 		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0),
 		OcclusionQuerySupport(false)
@@ -642,7 +641,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	if (FeatureAvailable[IRR_ARB_draw_buffers])
 	{
 		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &num);
-		MaxMultipleRenderTargets = static_cast<u8>(num);
+		Feature.MultipleRenderTarget = static_cast<u8>(num);
 	}
 #endif
 #if defined(GL_ATI_draw_buffers)
@@ -652,16 +651,27 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	if (FeatureAvailable[IRR_ATI_draw_buffers])
 	{
 		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &num);
-		MaxMultipleRenderTargets = static_cast<u8>(num);
+		Feature.MultipleRenderTarget = static_cast<u8>(num);
+	}
+#endif
+#ifdef GL_ARB_framebuffer_object
+	if (FeatureAvailable[IRR_ARB_framebuffer_object])
+	{
+		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &num);
+		Feature.ColorAttachment = static_cast<u8>(num);
 	}
 #endif
 #if defined(GL_EXT_framebuffer_object)
-	if (FeatureAvailable[IRR_EXT_framebuffer_object])
-	{
-		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &num);
-		MaxColorAttachments = static_cast<u8>(num);
-	}
+#ifdef GL_ARB_framebuffer_object
+	else
 #endif
+		if (FeatureAvailable[IRR_EXT_framebuffer_object])
+		{
+			glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &num);
+			Feature.ColorAttachment = static_cast<u8>(num);
+		}
+#endif
+
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
 	glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
 	glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, DimSmoothedLine);
@@ -744,6 +754,11 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 #endif
 #endif
+}
+
+const COGLCoreFeature& COpenGLExtensionHandler::getFeature() const
+{
+	return Feature;
 }
 
 bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const

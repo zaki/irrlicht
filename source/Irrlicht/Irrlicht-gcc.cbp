@@ -841,8 +841,6 @@
 		<Unit filename="COpenGLNormalMapRenderer.h" />
 		<Unit filename="COpenGLParallaxMapRenderer.cpp" />
 		<Unit filename="COpenGLParallaxMapRenderer.h" />
-		<Unit filename="COpenGLRenderTarget.cpp" />
-		<Unit filename="COpenGLRenderTarget.h" />
 		<Unit filename="COpenGLSLMaterialRenderer.cpp" />
 		<Unit filename="COpenGLSLMaterialRenderer.h" />
 		<Unit filename="COpenGLShaderMaterialRenderer.cpp" />
