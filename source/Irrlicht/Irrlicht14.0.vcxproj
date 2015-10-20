@@ -1018,6 +1018,7 @@
     <ClInclude Include="CGeometryCreator.h" />
     <ClInclude Include="CMeshCache.h" />
     <ClInclude Include="CMeshManipulator.h" />
+    <ClInclude Include="COGLCoreCacheHandler.h" />
     <ClInclude Include="COGLCoreFeature.h" />
     <ClInclude Include="COGLCoreRenderTarget.h" />
     <ClInclude Include="COpenGLCacheHandler.h" />

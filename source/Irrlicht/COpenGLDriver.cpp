@@ -607,7 +607,7 @@ COpenGLDriver::~COpenGLDriver()
 
 	deleteMaterialRenders();
 
-	CacheHandler->TextureCache.clear();
+	CacheHandler->getTextureCache().clear();
 	// I get a blue screen on my laptop, when I do not delete the
 	// textures manually before releasing the dc. Oh how I love this.
 	removeAllRenderTargets();
@@ -676,13 +676,13 @@ bool COpenGLDriver::genericDriverInit()
 	}
 	else
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
-	DriverAttributes->setAttribute("MaxTextures", MaxTextureUnits);
-	DriverAttributes->setAttribute("MaxSupportedTextures", MaxSupportedTextures);
+	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.TextureUnit);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.TextureUnit);
 	DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
 	DriverAttributes->setAttribute("MaxAuxBuffers", MaxAuxBuffers);
-	DriverAttributes->setAttribute("MaxMultipleRenderTargets", Feature.MultipleRenderTarget);
+	DriverAttributes->setAttribute("MaxMultipleRenderTargets", (s32)Feature.MultipleRenderTarget);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
 	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
 	DriverAttributes->setAttribute("MaxGeometryVerticesOut", (s32)MaxGeometryVerticesOut);
@@ -1443,9 +1443,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), 0);
 			}
 
-			if (MultiTextureExtension && CacheHandler->TextureCache[1])
+			if (Feature.TextureUnit > 0 && CacheHandler->getTextureCache()[1])
 			{
-				CacheHandler->setClientActiveTexture(GL_TEXTURE1_ARB);
+				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
@@ -1469,9 +1469,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			}
 
 
-			if (MultiTextureExtension)
+			if (Feature.TextureUnit > 0)
 			{
-				CacheHandler->setClientActiveTexture(GL_TEXTURE1_ARB);
+				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
@@ -1494,16 +1494,16 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(0));
 			}
 
-			if (MultiTextureExtension)
+			if (Feature.TextureUnit > 0)
 			{
-				CacheHandler->setClientActiveTexture(GL_TEXTURE1_ARB);
+				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
 				else
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(36));
 
-				CacheHandler->setClientActiveTexture(GL_TEXTURE2_ARB);
+				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 2);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
@@ -1515,19 +1515,19 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	renderArray(indexList, primitiveCount, pType, iType);
 
-	if (MultiTextureExtension)
+	if (Feature.TextureUnit > 0)
 	{
 		if (vType==EVT_TANGENTS)
 		{
-			CacheHandler->setClientActiveTexture(GL_TEXTURE2_ARB);
+			CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 2);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		if ((vType!=EVT_STANDARD) || CacheHandler->TextureCache[1])
+		if ((vType!=EVT_STANDARD) || CacheHandler->getTextureCache()[1])
 		{
-			CacheHandler->setClientActiveTexture(GL_TEXTURE1_ARB);
+			CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		CacheHandler->setClientActiveTexture(GL_TEXTURE0_ARB);
+		CacheHandler->setClientActiveTexture(GL_TEXTURE0);
 	}
 }
 
@@ -1698,7 +1698,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		getColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
-	CacheHandler->TextureCache.set(0, Material.getTexture(0));
+	CacheHandler->getTextureCache().set(0, Material.getTexture(0));
 	if (Material.MaterialType==EMT_ONETEXTURE_BLEND)
 	{
 		E_BLEND_FACTOR srcFact;
@@ -1763,9 +1763,9 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), 0);
 			}
 
-			if (MultiTextureExtension && CacheHandler->TextureCache[1])
+			if (Feature.TextureUnit > 0 && CacheHandler->getTextureCache()[1])
 			{
-				CacheHandler->setClientActiveTexture(GL_TEXTURE1_ARB);
+				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
@@ -1786,9 +1786,9 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(0));
 			}
 
-			if (MultiTextureExtension)
+			if (Feature.TextureUnit > 0)
 			{
-				CacheHandler->setClientActiveTexture(GL_TEXTURE1_ARB);
+				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
@@ -1814,14 +1814,14 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 	renderArray(indexList, primitiveCount, pType, iType);
 
-	if (MultiTextureExtension)
+	if (Feature.TextureUnit > 0)
 	{
-		if ((vType!=EVT_STANDARD) || CacheHandler->TextureCache[1])
+		if ((vType!=EVT_STANDARD) || CacheHandler->getTextureCache()[1])
 		{
-			CacheHandler->setClientActiveTexture(GL_TEXTURE1_ARB);
+			CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		CacheHandler->setClientActiveTexture(GL_TEXTURE0_ARB);
+		CacheHandler->setClientActiveTexture(GL_TEXTURE0);
 	}
 }
 
@@ -1846,7 +1846,7 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
 	disableTextures(1);
-	if (!CacheHandler->TextureCache.set(0, texture))
+	if (!CacheHandler->getTextureCache().set(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -2093,7 +2093,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
-	if (!CacheHandler->TextureCache.set(0, texture))
+	if (!CacheHandler->getTextureCache().set(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -2165,7 +2165,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	disableTextures(1);
-	if (!CacheHandler->TextureCache.set(0, texture))
+	if (!CacheHandler->getTextureCache().set(0, texture))
 		return;
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
@@ -2242,7 +2242,7 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 		return;
 
 	disableTextures(1);
-	if (!CacheHandler->TextureCache.set(0, texture))
+	if (!CacheHandler->getTextureCache().set(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -2480,9 +2480,9 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 bool COpenGLDriver::disableTextures(u32 fromStage)
 {
 	bool result=true;
-	for (u32 i=fromStage; i<MaxSupportedTextures; ++i)
+	for (u32 i=fromStage; i<Feature.TextureUnit; ++i)
 	{
-		result &= CacheHandler->TextureCache.set(i, 0);
+		result &= CacheHandler->getTextureCache().set(i, 0);
 	}
 	return result;
 }
@@ -2533,9 +2533,9 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 	Material = material;
 	OverrideMaterial.apply(Material);
 
-	for (u32 i = 0; i < MaxTextureUnits; ++i)
+	for (u32 i = 0; i < Feature.TextureUnit; ++i)
 	{
-		CacheHandler->TextureCache.set(i, material.getTexture(i));
+		CacheHandler->getTextureCache().set(i, material.getTexture(i));
 		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 	}
 }
@@ -3185,24 +3185,19 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 {
 	// Set textures to TU/TIU and apply filters to them
 
-	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
+	for (s32 i = Feature.TextureUnit - 1; i>= 0; --i)
 	{
 		bool fixedPipeline = false;
 
 		if (FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
-		{
-			if (i > 0 && !MultiTextureExtension)
-				break;
-
 			fixedPipeline = true;
-		}
 
-		const COpenGLTexture* tmpTexture = CacheHandler->TextureCache[i];
+		const COpenGLTexture* tmpTexture = CacheHandler->getTextureCache()[i];
 
 		if (!tmpTexture)
 			continue;
 
-		CacheHandler->setActiveTexture(GL_TEXTURE0_ARB + i);
+		CacheHandler->setActiveTexture(GL_TEXTURE0 + i);
 
 		if (fixedPipeline)
 		{
@@ -3331,7 +3326,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 	}
 
 	// be sure to leave in texture stage 0
-	CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
+	CacheHandler->setActiveTexture(GL_TEXTURE0);
 }
 
 
@@ -3376,7 +3371,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			glTranslatef(0.375f, 0.375f, 0.0f);
 
 			// Make sure we set first texture matrix
-			CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
+			CacheHandler->setActiveTexture(GL_TEXTURE0);
 
 			Transformation3DChanged = false;
 		}
@@ -3421,7 +3416,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		else
 			setTextureRenderStates(InitMaterial2D, false);
 
-		Material.setTexture(0, const_cast<COpenGLTexture*>(CacheHandler->TextureCache[0]));
+		Material.setTexture(0, const_cast<COpenGLTexture*>(CacheHandler->getTextureCache()[0]));
 		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 		// Due to the transformation change, the previous line would call a reset each frame
 		// but we can safely reset the variable as it was false before
@@ -4200,7 +4195,7 @@ bool COpenGLDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor
 		return false;
 	}
 
-	bool supportForFBO = (getFeature().ColorAttachment > 0);
+	bool supportForFBO = (Feature.ColorAttachment > 0);
 
 	core::dimension2d<u32> destRenderTargetSize(0, 0);
 
@@ -4229,14 +4224,14 @@ bool COpenGLDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor
 
 			if (renderTargetTexture)
 			{
-				const COpenGLTexture* prevTexture = CacheHandler->TextureCache[0];
+				const COpenGLTexture* prevTexture = CacheHandler->getTextureCache()[0];
 
-				CacheHandler->TextureCache.set(0, renderTargetTexture);
+				CacheHandler->getTextureCache().set(0, renderTargetTexture);
 
 				const core::dimension2d<u32> size = renderTargetTexture->getSize();
 				glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, size.Width, size.Height);
 
-				CacheHandler->TextureCache.set(0, prevTexture);
+				CacheHandler->getTextureCache().set(0, prevTexture);
 			}
 		}
 

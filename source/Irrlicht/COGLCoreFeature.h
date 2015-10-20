@@ -19,16 +19,19 @@ namespace video
 class COGLCoreFeature
 {
 public:
-	COGLCoreFeature() : ColorAttachment(0), MultipleRenderTarget(0)
+	COGLCoreFeature() : BlendOperation(false), ColorAttachment(0), MultipleRenderTarget(0), TextureUnit(1)
 	{
 	}
 
 	virtual ~COGLCoreFeature()
 	{
 	}
+
+	bool BlendOperation;
 	
 	u8 ColorAttachment;
 	u8 MultipleRenderTarget;
+	u8 TextureUnit;
 };
 
 }

@@ -110,7 +110,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 #endif
 
 	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
-	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
+	const COpenGLTexture* prevTexture = cacheHandler->getTextureCache()[0];
 
 	DriverType = EDT_OPENGL;
 
@@ -141,7 +141,7 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 
 	glGenTextures(1, &TextureName);
 
-	cacheHandler->TextureCache.set(0, this);
+	cacheHandler->getTextureCache().set(0, this);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -157,14 +157,14 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, OriginalSize.Width, OriginalSize.Height, 0, PixelFormat, PixelType, 0);
 
-	cacheHandler->TextureCache.set(0, prevTexture);
+	cacheHandler->getTextureCache().set(0, prevTexture);
 }
 
 
 //! destructor
 COpenGLTexture::~COpenGLTexture()
 {
-	Driver->getCacheHandler()->TextureCache.remove(this);
+	Driver->getCacheHandler()->getTextureCache().remove(this);
 
 	if (TextureName)
 		glDeleteTextures(1, &TextureName);
@@ -480,7 +480,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	}
 
 	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
-	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
+	const COpenGLTexture* prevTexture = cacheHandler->getTextureCache()[0];
 
 	// get correct opengl color data values
 	GLenum oldInternalFormat = InternalFormat;
@@ -490,7 +490,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!newTexture)
 		InternalFormat=oldInternalFormat;
 
-	cacheHandler->TextureCache.set(0, this);
+	cacheHandler->getTextureCache().set(0, this);
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
@@ -604,7 +604,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
 
-	cacheHandler->TextureCache.set(0, prevTexture);
+	cacheHandler->getTextureCache().set(0, prevTexture);
 }
 
 
@@ -615,9 +615,9 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 		return 0;
 
 	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
-	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
+	const COpenGLTexture* prevTexture = cacheHandler->getTextureCache()[0];
 
-	cacheHandler->TextureCache.set(0, this);
+	cacheHandler->getTextureCache().set(0, this);
 
 	// store info about which image is locked
 	IImage* image = (mipmapLevel==0)?Image:MipImage;
@@ -663,7 +663,7 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 		}
 		if (!image)
 		{
-			cacheHandler->TextureCache.set(0, prevTexture);
+			cacheHandler->getTextureCache().set(0, prevTexture);
 
 			return 0;
 		}
@@ -673,7 +673,7 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 			u8* pixels = static_cast<u8*>(image->lock());
 			if (!pixels)
 			{
-				cacheHandler->TextureCache.set(0, prevTexture);
+				cacheHandler->getTextureCache().set(0, prevTexture);
 
 				return 0;
 			}
@@ -718,7 +718,7 @@ void* COpenGLTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 		}
 	}
 
-	cacheHandler->TextureCache.set(0, prevTexture);
+	cacheHandler->getTextureCache().set(0, prevTexture);
 
 	return image->lock();
 }
@@ -791,16 +791,16 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 	}
 
 	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
-	const COpenGLTexture* prevTexture = cacheHandler->TextureCache[0];
+	const COpenGLTexture* prevTexture = cacheHandler->getTextureCache()[0];
 
-	cacheHandler->TextureCache.set(0, this);
+	cacheHandler->getTextureCache().set(0, this);
 
 	// hardware moethods for generate mipmaps.
 	if (!mipmapData && AutomaticMipmapUpdate && !MipmapLegacyMode)
 	{
 		Driver->irrGlGenerateMipmap(GL_TEXTURE_2D);
 
-		cacheHandler->TextureCache.set(0, prevTexture);
+		cacheHandler->getTextureCache().set(0, prevTexture);
 
 		return;
 	}
@@ -857,7 +857,7 @@ void COpenGLTexture::regenerateMipMapLevels(void* mipmapData)
 	if (!mipmapData)
 		delete [] target;
 
-	cacheHandler->TextureCache.set(0, prevTexture);
+	cacheHandler->getTextureCache().set(0, prevTexture);
 }
 
 COpenGLTexture::SStatesCache& COpenGLTexture::getStatesCache() const

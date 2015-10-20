@@ -77,6 +77,16 @@ typedef unsigned int GLhandleARB;
 typedef char GLchar;
 #endif
 
+// Blending definitions.
+
+#if !defined(GL_VERSION_1_4)
+#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
+#define GL_FUNC_ADD GL_FUNC_ADD_EXT
+#else
+#define GL_FUNC_ADD 0
+#endif
+#endif
+
 // FBO definitions.
 
 #if !defined(GL_VERSION_3_0) && !defined(GL_ARB_framebuffer_object)
@@ -114,6 +124,20 @@ typedef char GLchar;
 #define GL_FRAMEBUFFER_INCOMPLETE_FORMATS 6
 #define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS 7
 #endif
+
+// Texture definitions.
+
+#if !defined(GL_VERSION_1_3)
+#ifdef GL_ARB_multitexture
+#define GL_TEXTURE0 GL_TEXTURE0_ARB
+#else
+#define GL_TEXTURE0 0
+#endif
+#endif
+
+// Irrlicht's OpenGL version.
+
+#define IRR_OPENGL_VERSION 14
 
 #include "COGLCoreFeature.h"
 
@@ -1115,14 +1139,9 @@ class COpenGLExtensionHandler
 
 	// Some variables for properties
 	bool StencilBuffer;
-	bool MultiTextureExtension;
 	bool TextureCompressionExtension;
 
 	// Some non-boolean properties
-	//! Maxmimum texture layers supported by the fixed pipeline
-	u8 MaxSupportedTextures;
-	//! Maxmimum texture layers supported by the engine
-	u8 MaxTextureUnits;
 	//! Maximum hardware lights supported
 	u8 MaxLights;
 	//! Maximal Anisotropy
@@ -1157,8 +1176,8 @@ class COpenGLExtensionHandler
 
 	// public access to the (loaded) extensions.
 	// general functions
-	void extGlActiveTexture(GLenum texture);
-	void extGlClientActiveTexture(GLenum texture);
+	void irrGlActiveTexture(GLenum texture);
+	void irrGlClientActiveTexture(GLenum texture);
 	void extGlPointParameterf(GLint loc, GLfloat f);
 	void extGlPointParameterfv(GLint loc, const GLfloat *v);
 	void extGlStencilFuncSeparate (GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask);
@@ -1272,17 +1291,17 @@ class COpenGLExtensionHandler
 	void extGlGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params);
 
 	// blend
-	void extGlBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
-	void extGlBlendEquation(GLenum mode);
+	void irrGlBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
+	void irrGlBlendEquation(GLenum mode);
 
 	// indexed
-	void extGlEnableIndexed(GLenum target, GLuint index);
-	void extGlDisableIndexed(GLenum target, GLuint index);
-	void extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
-	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
-	void extGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
-	void extGlBlendEquationIndexed(GLuint buf, GLenum mode);
-	void extGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+	void irrGlEnableIndexed(GLenum target, GLuint index);
+	void irrGlDisableIndexed(GLenum target, GLuint index);
+	void irrGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+	void irrGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
+	void irrGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+	void irrGlBlendEquationIndexed(GLuint buf, GLenum mode);
+	void irrGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha);
 
 	// generic vsync setting method for several extensions
 	void extGlSwapInterval(int interval);
@@ -1444,13 +1463,12 @@ class COpenGLExtensionHandler
 	#endif
 };
 
-inline void COpenGLExtensionHandler::extGlActiveTexture(GLenum texture)
+inline void COpenGLExtensionHandler::irrGlActiveTexture(GLenum texture)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (MultiTextureExtension && pGlActiveTextureARB)
+	if (pGlActiveTextureARB)
 		pGlActiveTextureARB(texture);
 #else
-	if (MultiTextureExtension)
 #ifdef GL_ARB_multitexture
 		glActiveTextureARB(texture);
 #else
@@ -1459,14 +1477,13 @@ inline void COpenGLExtensionHandler::extGlActiveTexture(GLenum texture)
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlClientActiveTexture(GLenum texture)
+inline void COpenGLExtensionHandler::irrGlClientActiveTexture(GLenum texture)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (MultiTextureExtension && pGlClientActiveTextureARB)
+	if (pGlClientActiveTextureARB)
 		pGlClientActiveTextureARB(texture);
 #else
-	if (MultiTextureExtension)
-		glClientActiveTextureARB(texture);
+	glClientActiveTextureARB(texture);
 #endif
 }
 
@@ -2657,7 +2674,7 @@ inline void COpenGLExtensionHandler::extGlGetQueryObjectuiv(GLuint id, GLenum pn
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha)
+inline void COpenGLExtensionHandler::irrGlBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBlendFuncSeparate)
@@ -2673,7 +2690,7 @@ inline void COpenGLExtensionHandler::extGlBlendFuncSeparate(GLenum sfactorRGB, G
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBlendEquation(GLenum mode)
+inline void COpenGLExtensionHandler::irrGlBlendEquation(GLenum mode)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBlendEquation)
@@ -2689,7 +2706,7 @@ inline void COpenGLExtensionHandler::extGlBlendEquation(GLenum mode)
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlEnableIndexed(GLenum target, GLuint index)
+inline void COpenGLExtensionHandler::irrGlEnableIndexed(GLenum target, GLuint index)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlEnableIndexedEXT)
@@ -2701,7 +2718,7 @@ inline void COpenGLExtensionHandler::extGlEnableIndexed(GLenum target, GLuint in
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint index)
+inline void COpenGLExtensionHandler::irrGlDisableIndexed(GLenum target, GLuint index)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlDisableIndexedEXT)
@@ -2713,7 +2730,7 @@ inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint i
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
+inline void COpenGLExtensionHandler::irrGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlColorMaskIndexedEXT)
@@ -2725,7 +2742,7 @@ inline void COpenGLExtensionHandler::extGlColorMaskIndexed(GLuint buf, GLboolean
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
+inline void COpenGLExtensionHandler::irrGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendFunciARB)
@@ -2741,7 +2758,7 @@ inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum sr
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+inline void COpenGLExtensionHandler::irrGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendFuncSeparateiARB)
@@ -2757,7 +2774,7 @@ inline void COpenGLExtensionHandler::extGlBlendFuncSeparateIndexed(GLuint buf, G
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenum mode)
+inline void COpenGLExtensionHandler::irrGlBlendEquationIndexed(GLuint buf, GLenum mode)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendEquationiARB)
@@ -2773,7 +2790,7 @@ inline void COpenGLExtensionHandler::extGlBlendEquationIndexed(GLuint buf, GLenu
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha)
+inline void COpenGLExtensionHandler::irrGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendEquationSeparateiARB)

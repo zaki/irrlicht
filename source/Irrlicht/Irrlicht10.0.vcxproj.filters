@@ -1312,6 +1312,9 @@
     <ClInclude Include="COpenGLTexture.h">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="COGLCoreCacheHandler.h">
+      <Filter>Irrlicht\video\OpenGL Core</Filter>
+    </ClInclude>
     <ClInclude Include="COGLCoreFeature.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
