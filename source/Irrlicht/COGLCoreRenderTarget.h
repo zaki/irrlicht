@@ -11,8 +11,6 @@
 
 #include "IRenderTarget.h"
 
-#include "dimension2d.h"
-
 namespace irr
 {
 namespace video

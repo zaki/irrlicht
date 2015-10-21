@@ -1218,7 +1218,7 @@ class COpenGLExtensionHandler
 	// that handleARB and uint are the same type
 	void extGlLinkProgram(GLuint program);
 	void extGlUseProgramObject(GLhandleARB prog);
-	void extGlUseProgram(GLuint prog);
+	void irrGlUseProgram(GLuint prog);
 	void extGlDeleteObject(GLhandleARB object);
 	void extGlDeleteProgram(GLuint object);
 	void extGlDeleteShader(GLuint shader);
@@ -1733,7 +1733,7 @@ inline void COpenGLExtensionHandler::extGlUseProgramObject(GLhandleARB prog)
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlUseProgram(GLuint prog)
+inline void COpenGLExtensionHandler::irrGlUseProgram(GLuint prog)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlUseProgram)

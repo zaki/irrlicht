@@ -238,7 +238,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (Program2)
-			Driver->extGlUseProgram(Program2);
+			Driver->irrGlUseProgram(Program2);
 		else if (Program)
 			Driver->extGlUseProgramObject(Program);
 	}
@@ -290,7 +290,7 @@ void COpenGLSLMaterialRenderer::OnUnsetMaterial()
 	if (Program)
 		Driver->extGlUseProgramObject(0);
 	if (Program2)
-		Driver->extGlUseProgram(0);
+		Driver->irrGlUseProgram(0);
 }
 
 

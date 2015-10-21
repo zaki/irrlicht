@@ -18,7 +18,7 @@ namespace video
 
 COpenGLCacheHandler::COpenGLCacheHandler(COpenGLDriver* driver) :
 	COGLCoreCacheHandler<COpenGLDriver, COpenGLTexture>(driver), AlphaMode(GL_ALWAYS), AlphaRef(0.f), AlphaTest(false),
-	DepthTest(false), MatrixMode(GL_MODELVIEW), ClientActiveTexture(GL_TEXTURE0_ARB), ClientStateVertex(false),
+	DepthTest(false), MatrixMode(GL_MODELVIEW), ClientActiveTexture(GL_TEXTURE0), ClientStateVertex(false),
 	ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false)
 {
 	// Initial OpenGL values from specification.

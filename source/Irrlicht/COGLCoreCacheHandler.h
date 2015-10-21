@@ -9,8 +9,8 @@
 
 #if defined(_IRR_COMPILE_WITH_OPENGL_) || defined(_IRR_COMPILE_WITH_OGLES1_) || defined(_IRR_COMPILE_WITH_OGLES2_)
 
-#include "EDriverTypes.h"
 #include "SMaterial.h"
+#include "ITexture.h"
 
 namespace irr
 {
@@ -454,7 +454,6 @@ public:
 		if (FrameBufferID != frameBufferID)
 		{
 			Driver->irrGlBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
-
 			FrameBufferID = frameBufferID;
 		}
 	}
@@ -465,7 +464,7 @@ public:
 	{
 		if (ProgramID != programID)
 		{
-			glUseProgram(programID);
+			Driver->irrGlUseProgram(programID);
 			ProgramID = programID;
 		}
 	}
