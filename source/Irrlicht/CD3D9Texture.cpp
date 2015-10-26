@@ -139,18 +139,6 @@ void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 		d3dformat = Driver->getD3DFormatFromColorFormat(ColorFormat);
 	}
 
-	switch (ColorFormat)
-	{
-	case ECF_A8R8G8B8:
-	case ECF_A1R5G5B5:
-	case ECF_A16B16G16R16F:
-	case ECF_A32B32G32R32F:
-		HasAlpha = true;
-		break;
-	default:
-		break;
-	}
-
 	// create texture
 	DWORD usage = (IImage::isDepthFormat(ColorFormat)) ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
 
@@ -385,23 +373,6 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 
 	if (!IsCompressed)
 		ColorFormat = Driver->getColorFormatFromD3DFormat(format);
-
-	switch (ColorFormat)
-	{
-	case ECF_A8R8G8B8:
-	case ECF_A1R5G5B5:
-	case ECF_DXT1:
-	case ECF_DXT2:
-	case ECF_DXT3:
-	case ECF_DXT4:
-	case ECF_DXT5:
-	case ECF_A16B16G16R16F:
-	case ECF_A32B32G32R32F:
-		HasAlpha = true;
-		break;
-	default:
-		break;
-	}
 
 	setPitch(format);
 

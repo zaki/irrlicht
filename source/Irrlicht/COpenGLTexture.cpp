@@ -37,23 +37,6 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 
 	getImageValues(origImage);
 
-	switch (ColorFormat)
-	{
-	case ECF_A8R8G8B8:
-	case ECF_A1R5G5B5:
-	case ECF_DXT1:
-	case ECF_DXT2:
-	case ECF_DXT3:
-	case ECF_DXT4:
-	case ECF_DXT5:
-	case ECF_A16B16G16R16F:
-	case ECF_A32B32G32R32F:
-		HasAlpha = true;
-		break;
-	default:
-		break;
-	}
-
 	if (IImage::isCompressedFormat(ColorFormat))
 	{
 		if (!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
@@ -120,18 +103,6 @@ COpenGLTexture::COpenGLTexture(const io::path& name, const core::dimension2d<u32
 	OriginalSize = size;
 	Size = size;
 	ColorFormat = format;
-
-	switch (ColorFormat)
-	{
-	case ECF_A8R8G8B8:
-	case ECF_A1R5G5B5:
-	case ECF_A16B16G16R16F:
-	case ECF_A32B32G32R32F:
-		HasAlpha = true;
-		break;
-	default:
-		break;
-	}
 
 	GLint FilteringType = 0;
 	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);

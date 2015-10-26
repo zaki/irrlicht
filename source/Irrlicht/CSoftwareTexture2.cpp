@@ -48,11 +48,6 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 		OriginalSize = image->getDimension();
 		OriginalFormat = image->getColorFormat();
 
-		core::setbit_cond(Flags,
-				image->getColorFormat () == video::ECF_A8R8G8B8 ||
-				image->getColorFormat () == video::ECF_A1R5G5B5,
-				HAS_ALPHA);
-
 		core::dimension2d<u32> optSize(
 				OriginalSize.getOptimalSize(0 != (Flags & NP2_SIZE),
 				false, true,
@@ -90,7 +85,6 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 	}
 
 	HasMipMaps = (Flags & GEN_MIPMAP) != 0;
-	HasAlpha = (Flags & HAS_ALPHA) != 0;
 
 	regenerateMipMapLevels(mipmapData);
 }

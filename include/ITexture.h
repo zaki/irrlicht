@@ -114,7 +114,7 @@ public:
 
 	//! constructor
 	ITexture(const io::path& name) : NamedPath(name), DriverType(EDT_NULL), ColorFormat(ECF_UNKNOWN),
-		Pitch(0), HasMipMaps(false), HasAlpha(false), IsRenderTarget(false), Source(ETS_UNKNOWN)
+		Pitch(0), HasMipMaps(false), IsRenderTarget(false), Source(ETS_UNKNOWN)
 	{
 	}
 
@@ -189,9 +189,6 @@ public:
 	/** \return True if texture has MipMaps, else false. */
 	bool hasMipMaps() const { return HasMipMaps; }
 
-	//! Returns if the texture has an alpha channel
-	bool hasAlpha() const { return HasAlpha; }
-
 	//! Check whether the texture is a render target
 	/** Render targets can be set as such in the video driver, in order to
 	render a scene into the texture. Once unbound as render target, they can
@@ -207,6 +204,31 @@ public:
 
 	//! Used internally by the engine to update Source status on IVideoDriver::getTexture calls.
 	void updateSource(E_TEXTURE_SOURCE source) { Source = source; }
+
+	//! Returns if the texture has an alpha channel
+	bool hasAlpha() const
+	{
+		bool status = false;
+
+		switch (ColorFormat)
+		{
+		case ECF_A8R8G8B8:
+		case ECF_A1R5G5B5:
+		case ECF_DXT1:
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
+		case ECF_A16B16G16R16F:
+		case ECF_A32B32G32R32F:
+			status = true;
+			break;
+		default:
+			break;
+		}
+
+		return status;
+	}
 
 protected:
 
@@ -233,7 +255,6 @@ protected:
 	ECOLOR_FORMAT ColorFormat;
 	u32 Pitch;
 	bool HasMipMaps;
-	bool HasAlpha;
 	bool IsRenderTarget;
 	E_TEXTURE_SOURCE Source;
 };

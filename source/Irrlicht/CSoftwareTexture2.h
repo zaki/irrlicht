@@ -31,7 +31,6 @@ public:
 		GEN_MIPMAP	= 1,
 		IS_RENDERTARGET	= 2,
 		NP2_SIZE	= 4,
-		HAS_ALPHA	= 8
 	};
 	CSoftwareTexture2(IImage* surface, const io::path& name, u32 flags, void* mipmapData=0);
 
