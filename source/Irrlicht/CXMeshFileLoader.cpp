@@ -883,6 +883,12 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		else
 		if (objectName == "DeclData")
 		{
+			if (!readHeadOfDataObject())
+			{
+				os::Printer::log("No starting brace in DeclData found.", ELL_WARNING);
+				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
+				return false;
+			}
 			// arbitrary vertex attributes
 			// first comes the number of element definitions
 			// then the vertex element type definitions
