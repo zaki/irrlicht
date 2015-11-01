@@ -1321,7 +1321,7 @@ bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 	{
 		RECT rect;
 		GetClientRect(hwnd, &rect);
-		const void* memory = (const void *)image->lock();
+		const void* memory = (const void *)image->getData();
 
 		BITMAPV4HEADER bi;
 		ZeroMemory (&bi, sizeof(bi));
@@ -1349,8 +1349,6 @@ bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 					0, 0, image->getDimension().Width, image->getDimension().Height,
 					memory, (const BITMAPINFO*)(&bi), DIB_RGB_COLORS, SRCCOPY);
 		}
-
-		image->unlock();
 
 		ReleaseDC(hwnd, dc);
 	}

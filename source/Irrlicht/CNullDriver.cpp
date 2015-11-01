@@ -571,12 +571,12 @@ video::ITexture* CNullDriver::findTexture(const io::path& filename)
 
 
 //! Creates a texture from a loaded IImage.
-ITexture* CNullDriver::addTexture(const io::path& name, IImage* image, void* mipmapData)
+ITexture* CNullDriver::addTexture(const io::path& name, IImage* image)
 {
 	if ( 0 == name.size() || !image)
 		return 0;
 
-	ITexture* t = createDeviceDependentTexture(image, name, mipmapData);
+	ITexture* t = createDeviceDependentTexture(image, name);
 	if (t)
 	{
 		addTexture(t);
@@ -614,7 +614,7 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
+ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new SDummyTexture(name);
 }
@@ -1431,9 +1431,8 @@ bool CNullDriver::writeImageToFile(IImage* image, io::IWriteFile * file, u32 par
 
 //! Creates a software image from a byte array.
 IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
-					const core::dimension2d<u32>& size,
-					void *data, bool ownForeignMemory,
-					bool deleteMemory)
+	const core::dimension2d<u32>& size, void *data, bool ownForeignMemory,
+	bool deleteMemory)
 {
 	if(IImage::isRenderTargetOnlyFormat(format))
 	{
@@ -1489,7 +1488,7 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 {
 	if ((pos==core::position2di(0,0)) && (size == texture->getSize()))
 	{
-		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(ETLM_READ_ONLY), false);
+		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(ETLM_READ_ONLY), false, false);
 		texture->unlock();
 		return image;
 	}

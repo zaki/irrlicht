@@ -32,7 +32,7 @@ public:
 		IS_RENDERTARGET	= 2,
 		NP2_SIZE	= 4,
 	};
-	CSoftwareTexture2(IImage* surface, const io::path& name, u32 flags, void* mipmapData=0);
+	CSoftwareTexture2(IImage* surface, const io::path& name, u32 flags);
 
 	//! destructor
 	virtual ~CSoftwareTexture2();
@@ -47,13 +47,12 @@ public:
 			Pitch = MipMap[MipMapLOD]->getPitch();
 		}
 
-		return MipMap[MipMapLOD]->lock();
+		return MipMap[MipMapLOD]->getData();
 	}
 
 	//! unlock function
 	virtual void unlock() _IRR_OVERRIDE_
 	{
-		MipMap[MipMapLOD]->unlock();
 	}
 
 	//! Returns the size of the largest mipmap.

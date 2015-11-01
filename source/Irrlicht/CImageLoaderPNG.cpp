@@ -245,7 +245,7 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	}
 
 	// Fill array of pointers to rows in image data
-	unsigned char* data = (unsigned char*)image->lock();
+	unsigned char* data = (unsigned char*)image->getData();
 	for (u32 i=0; i<Height; ++i)
 	{
 		RowPointers[i]=data;
@@ -257,7 +257,6 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		delete [] RowPointers;
-		image->unlock();
 		delete image;
 		return 0;
 	}
@@ -267,7 +266,6 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 
 	png_read_end(png_ptr, NULL);
 	delete [] RowPointers;
-	image->unlock();
 	png_destroy_read_struct(&png_ptr,&info_ptr, 0); // Clean up memory
 
 	return image;

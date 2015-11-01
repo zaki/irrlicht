@@ -401,14 +401,27 @@ namespace video
 		/** \param name A name for the texture. Later calls of
 		getTexture() with this name will return this texture
 		\param image Image the texture is created from.
-		\param mipmapData Optional pointer to a set of images which
-		build up the whole mipmap set. Must be images of the same color
-		type as image. If this parameter is not given, the mipmaps are
-		derived from image.
+		\param mipmapData Optional pointer to a mipmaps data.
+		If this parameter is not given, the mipmaps are derived from image.
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) = 0;
+		_IRR_DEPRECATED_ ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData)
+		{
+			if (image)
+				image->setMipMapsData(mipmapData, false, true);
+
+			addTexture(name, image);
+		}
+
+		//! Creates a texture from an IImage.
+		/** \param name A name for the texture. Later calls of
+		getTexture() with this name will return this texture
+		\param image Image the texture is created from.
+		\return Pointer to the newly created texture. This pointer
+		should not be dropped. See IReferenceCounted::drop() for more
+		information. */
+		virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
@@ -1211,9 +1224,8 @@ namespace video
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImageFromData(ECOLOR_FORMAT format,
-			const core::dimension2d<u32>& size, void *data,
-			bool ownForeignMemory=false,
-			bool deleteMemory = true) =0;
+			const core::dimension2d<u32>& size, void *data, bool ownForeignMemory = false,
+			bool deleteMemory = true) = 0;
 
 		//! Creates an empty software image.
 		/**

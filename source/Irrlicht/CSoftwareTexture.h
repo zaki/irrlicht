@@ -24,8 +24,7 @@ class CSoftwareTexture : public ITexture
 public:
 
 	//! constructor
-	CSoftwareTexture(IImage* surface, const io::path& name,
-			bool renderTarget=false, void* mipmapData=0);
+	CSoftwareTexture(IImage* surface, const io::path& name, bool renderTarget=false);
 
 	//! destructor
 	virtual ~CSoftwareTexture();

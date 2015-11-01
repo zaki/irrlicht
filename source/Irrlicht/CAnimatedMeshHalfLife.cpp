@@ -1034,8 +1034,7 @@ SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io:
 
 			IImage* image = SceneManager->getVideoDriver()->createImage(ECF_R8G8B8, core::dimension2d<u32>(tex[i].width, tex[i].height));
 
-			CColorConverter::convert8BitTo24Bit(src, (u8*)image->lock(), tex[i].width, tex[i].height, (u8*) palette, 0, false);
-			image->unlock();
+			CColorConverter::convert8BitTo24Bit(src, (u8*)image->getData(), tex[i].width, tex[i].height, (u8*) palette, 0, false);
 
 #ifdef HL_TEXTURE_ATLAS
 			TextureAtlas.addSource ( tex[i].name, image );

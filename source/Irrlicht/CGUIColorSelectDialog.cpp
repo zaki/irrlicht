@@ -267,8 +267,6 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, 
 		}
 	}
 
-	RawTexture->unlock ();
-
 	if ( supersample > 1 )
 	{
 		video::IImage * filter = driver->createImage(video::ECF_A8R8G8B8, dim );

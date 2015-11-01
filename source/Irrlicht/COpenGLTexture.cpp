@@ -21,7 +21,7 @@ namespace video
 {
 
 //! constructor for a standard textures
-COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mipmapData, COpenGLDriver* driver)
+COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, COpenGLDriver* driver)
 	: ITexture(name), Driver(driver), Image(0), MipImage(0), TextureName(0), InternalFormat(GL_RGBA),
 	PixelFormat(GL_BGRA_EXT), PixelType(GL_UNSIGNED_BYTE), MipLevelStored(0), MipmapLegacyMode(true),
 	IsCompressed(false), AutomaticMipmapUpdate(false), ReadOnlyLock(false), KeepImage(true)
@@ -73,7 +73,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, void* mi
 	Pitch = Image->getPitch();
 
 	glGenTextures(1, &TextureName);
-	uploadTexture(true, mipmapData);
+	uploadTexture(true, origImage->getMipMapsData());
 	if (!KeepImage)
 	{
 		Image->drop();
@@ -551,12 +551,7 @@ void COpenGLTexture::uploadTexture(bool newTexture, void* mipmapData, u32 level)
 	if (!level && newTexture)
 	{
 		if (IsCompressed && !mipmapData)
-		{
-			if (image->hasMipMaps())
-				mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
-			else
-				HasMipMaps = false;
-		}
+			HasMipMaps = false;
 
 		regenerateMipMapLevels(mipmapData);
 

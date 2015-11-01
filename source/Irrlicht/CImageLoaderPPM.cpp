@@ -101,7 +101,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 		}
 		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(width, height));
 		if (image)
-			CColorConverter::convert1BitTo16Bit(data, (s16*)image->lock(), width, height);
+			CColorConverter::convert1BitTo16Bit(data, (s16*)image->getData(), width, height);
 	}
 	else
 	{
@@ -123,7 +123,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
-					u8* ptr = (u8*)image->lock();
+					u8* ptr = (u8*)image->getData();
 					for (u32 i=0; i<size; ++i)
 					{
 						*ptr++ = data[i];
@@ -140,7 +140,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
-					u8* ptr = (u8*)image->lock();
+					u8* ptr = (u8*)image->getData();
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
@@ -165,7 +165,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
-					u8* ptr = (u8*)image->lock();
+					u8* ptr = (u8*)image->getData();
 					for (u32 i=0; i<size; ++i)
 					{
 						*ptr++ = data[3*i];
@@ -182,7 +182,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 				if (image)
 				{
-					u8* ptr = (u8*)image->lock();
+					u8* ptr = (u8*)image->getData();
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
@@ -197,9 +197,6 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 			}
 		}
 	}
-
-	if (image)
-		image->unlock();
 
 	delete [] data;
 

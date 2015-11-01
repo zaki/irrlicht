@@ -2521,9 +2521,9 @@ inline void COpenGLDriver::getGLTextureMatrix(GLfloat *o, const core::matrix4& m
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
+video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
-	return new COpenGLTexture(surface, name, mipmapData, this);
+	return new COpenGLTexture(surface, name, this);
 }
 
 

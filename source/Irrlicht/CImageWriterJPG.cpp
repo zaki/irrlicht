@@ -160,7 +160,7 @@ static bool writeJPEGFile(io::IWriteFile* file, IImage* image, u32 quality)
 		JSAMPROW row_pointer[1];      /* pointer to JSAMPLE row[s] */
 		row_pointer[0] = dest;
 
-		u8* src = (u8*)image->lock();
+		u8* src = (u8*)image->getData();
 
 		while (cinfo.next_scanline < cinfo.image_height)
 		{
@@ -169,7 +169,6 @@ static bool writeJPEGFile(io::IWriteFile* file, IImage* image, u32 quality)
 			src += pitch;
 			jpeg_write_scanlines(&cinfo, row_pointer, 1);
 		}
-		image->unlock();
 
 		delete [] dest;
 

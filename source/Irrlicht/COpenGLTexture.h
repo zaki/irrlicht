@@ -73,7 +73,7 @@ public:
 	};
 
 	//! constructor for a standard textures
-	COpenGLTexture(IImage* surface, const io::path& name, void* mipmapData, COpenGLDriver* driver);
+	COpenGLTexture(IImage* surface, const io::path& name, COpenGLDriver* driver);
 
 	//! constructor for a render target textures
 	COpenGLTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, COpenGLDriver* driver);

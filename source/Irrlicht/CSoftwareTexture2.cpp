@@ -17,9 +17,8 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
-		u32 flags, void* mipmapData)
-		: ITexture(name), MipMapLOD(0), Flags ( flags ), OriginalFormat(video::ECF_UNKNOWN)
+CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 flags)
+	: ITexture(name), MipMapLOD(0), Flags ( flags ), OriginalFormat(video::ECF_UNKNOWN)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture2");
@@ -82,11 +81,11 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
 		Pitch = MipMap[MipMapLOD]->getPitch();
 
 		OrigImageDataSizeInPixels = (f32) 0.3f * MipMap[0]->getImageDataSizeInPixels();
+
+		HasMipMaps = (Flags & GEN_MIPMAP) != 0;
+
+		regenerateMipMapLevels(image->getMipMapsData());
 	}
-
-	HasMipMaps = (Flags & GEN_MIPMAP) != 0;
-
-	regenerateMipMapLevels(mipmapData);
 }
 
 
@@ -105,7 +104,7 @@ CSoftwareTexture2::~CSoftwareTexture2()
 //! modifying the texture
 void CSoftwareTexture2::regenerateMipMapLevels(void* mipmapData)
 {
-	if ( !hasMipMaps () )
+	if (!hasMipMaps())
 		return;
 
 	s32 i;

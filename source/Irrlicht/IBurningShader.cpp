@@ -78,7 +78,6 @@ namespace video
 		{
 			RenderTarget->grab();
 
-			//(tVideoSample*)RenderTarget->lock() = (tVideoSample*)RenderTarget->lock();
 			//(fp24*) DepthBuffer->lock() = DepthBuffer->lock();
 		}
 	}

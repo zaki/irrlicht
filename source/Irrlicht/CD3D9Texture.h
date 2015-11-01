@@ -32,7 +32,7 @@ public:
 
 	//! constructor
 	CD3D9Texture(IImage* image, CD3D9Driver* driver,
-			u32 flags, const io::path& name, void* mipmapData=0);
+			u32 flags, const io::path& name);
 
 	//! rendertarget constructor
 	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name,

@@ -15,9 +15,8 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name,
-		bool renderTarget, void* mipmapData)
-: ITexture(name), Texture(0)
+CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name, bool renderTarget)
+	: ITexture(name), Texture(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture");

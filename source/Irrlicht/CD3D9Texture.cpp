@@ -39,7 +39,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 
 
 //! constructor
-CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver, u32 flags, const io::path& name, void* mipmapData)
+CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver, u32 flags, const io::path& name)
 	: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), HardwareMipMaps(false), IsCompressed(false)
 {
 #ifdef _DEBUG
@@ -68,22 +68,10 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver, u32 flags, const 
 		{
 			if (copyTexture(image))
 			{
-				if (IsCompressed && !mipmapData)
-					if (HasMipMaps && image->hasMipMaps())
-					{
-						u32 compressedDataSize = 0;
+				if (IsCompressed && !image->getMipMapsData())
+					HasMipMaps = false;
 
-						if(ColorFormat == ECF_DXT1)
-							compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
-						else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-							compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
-
-						mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
-					}
-					else
-						HasMipMaps = false;
-
-				regenerateMipMapLevels(mipmapData);
+				regenerateMipMapLevels(image->getMipMapsData());
 			}
 		}
 		else

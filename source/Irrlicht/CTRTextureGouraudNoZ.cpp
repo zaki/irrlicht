@@ -51,8 +51,8 @@ public:
 		s32 spanTx, spanTy, spanTxStep, spanTyStep; // values of Texturecoords when drawing a span
 		core::rect<s32> TriangleRect;
 
-		lockedSurface = (u16*)RenderTarget->lock();
-		lockedTexture = (u16*)Texture->lock();
+		lockedSurface = (u16*)RenderTarget->getData();
+		lockedTexture = (u16*)Texture->getData();
 
 		for (s32 i=0; i<triangleCount; ++i)
 		{
@@ -334,9 +334,6 @@ public:
 			}
 
 		}
-
-		RenderTarget->unlock();
-		Texture->unlock();
 	}
 
 };
