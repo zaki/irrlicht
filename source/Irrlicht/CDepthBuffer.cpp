@@ -61,8 +61,7 @@ void CDepthBuffer::setSize(const core::dimension2d<u32>& size)
 
 	Size = size;
 
-	if (Buffer)
-		delete [] Buffer;
+	delete [] Buffer;
 
 	Pitch = size.Width * sizeof ( fp24 );
 	TotalSize = Pitch * size.Height;
@@ -96,8 +95,7 @@ CStencilBuffer::CStencilBuffer(const core::dimension2d<u32>& size)
 //! destructor
 CStencilBuffer::~CStencilBuffer()
 {
-	if (Buffer)
-		delete [] Buffer;
+	delete [] Buffer;
 }
 
 
@@ -118,8 +116,7 @@ void CStencilBuffer::setSize(const core::dimension2d<u32>& size)
 
 	Size = size;
 
-	if (Buffer)
-		delete [] Buffer;
+	delete [] Buffer;
 
 	Pitch = size.Width * sizeof ( u32 );
 	TotalSize = Pitch * size.Height;
