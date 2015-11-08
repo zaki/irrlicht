@@ -30,8 +30,7 @@ CDepthBuffer::CDepthBuffer(const core::dimension2d<u32>& size)
 //! destructor
 CDepthBuffer::~CDepthBuffer()
 {
-	if (Buffer)
-		delete [] Buffer;
+	delete [] Buffer;
 }
 
 

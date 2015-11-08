@@ -133,8 +133,7 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		if (RowPointers)
-			delete [] RowPointers;
+		delete [] RowPointers;
 		return 0;
 	}
 

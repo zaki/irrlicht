@@ -177,9 +177,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 		jpeg_destroy_decompress(&cinfo);
 
 		delete [] input;
-		// if the row pointer was created, we delete it.
-		if (rowPtr)
-			delete [] rowPtr;
+		delete [] rowPtr;
 
 		// return null pointer
 		return 0;

@@ -161,8 +161,7 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 	mesh->FrameTransforms.set_used(header.numFrames);
 
 	// create vertex arrays for each keyframe
-	if (mesh->FrameList)
-		delete [] mesh->FrameList;
+	delete [] mesh->FrameList;
 	mesh->FrameList = new core::array<CAnimatedMeshMD2::SMD2Vert>[header.numFrames];
 
 	// allocate space in vertex arrays
