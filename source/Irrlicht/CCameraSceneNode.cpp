@@ -35,9 +35,9 @@ CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 i
 	else
 		Aspect = 4.0f / 3.0f;	// Aspect ratio.
 
+	ViewArea.setFarNearDistance(ZFar - ZNear);
 	recalculateProjectionMatrix();
 	recalculateViewArea();
-	ViewArea.setFarNearDistance(ZFar - ZNear);
 }
 
 
