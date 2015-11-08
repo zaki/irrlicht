@@ -690,6 +690,8 @@ namespace video
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
 
+		bool checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) const;
+
 		// adds a material renderer and drops it afterwards. To be used for internal creation
 		s32 addAndDropMaterialRenderer(IMaterialRenderer* m);
 

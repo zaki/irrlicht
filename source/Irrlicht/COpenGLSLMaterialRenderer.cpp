@@ -20,7 +20,6 @@
 #include "IVideoDriver.h"
 #include "os.h"
 #include "COpenGLDriver.h"
-#include "COpenGLTexture.h"
 #include "COpenGLCacheHandler.h"
 #include "COpenGLMaterialRenderer.h"
 

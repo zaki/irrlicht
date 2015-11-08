@@ -1288,6 +1288,9 @@
     <ClInclude Include="COpenGLCacheHandler.h">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="COpenGLCommon.h">
+      <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="COpenGLDriver.h">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClInclude>
@@ -1309,9 +1312,6 @@
     <ClInclude Include="COpenGLSLMaterialRenderer.h">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="COpenGLTexture.h">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="COGLCoreCacheHandler.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
@@ -1319,6 +1319,9 @@
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
     <ClInclude Include="COGLCoreRenderTarget.h">
+      <Filter>Irrlicht\video\OpenGL Core</Filter>
+    </ClInclude>
+    <ClInclude Include="COGLCoreTexture.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2247,9 +2250,6 @@
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="COpenGLSLMaterialRenderer.cpp">
-      <Filter>Irrlicht\video\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="COpenGLTexture.cpp">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>

@@ -8,10 +8,10 @@
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
+#include "COGLCoreTexture.h"
 #include "COGLCoreRenderTarget.h"
 
 #include "COpenGLCacheHandler.h"
-#include "COpenGLTexture.h"
 #include "COpenGLMaterialRenderer.h"
 #include "COpenGLShaderMaterialRenderer.h"
 #include "COpenGLSLMaterialRenderer.h"
@@ -2523,7 +2523,17 @@ inline void COpenGLDriver::getGLTextureMatrix(GLfloat *o, const core::matrix4& m
 //! returns a device dependent texture from a software surface (IImage)
 video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
-	return new COpenGLTexture(surface, name, this);
+	COpenGLTexture* texture = 0;
+
+	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
+	{
+		core::array<IImage*> imageArray(1);
+		imageArray.push_back(surface);
+
+		texture = new COpenGLTexture(name, imageArray, this);
+	}
+
+	return texture;
 }
 
 
@@ -3192,7 +3202,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		if (FixedPipelineState == EOFPS_ENABLE || FixedPipelineState == EOFPS_DISABLE_TO_ENABLE)
 			fixedPipeline = true;
 
-		const COpenGLTexture* tmpTexture = CacheHandler->getTextureCache()[i];
+		const COpenGLTexture* tmpTexture = CacheHandler->getTextureCache().get(i);
 
 		if (!tmpTexture)
 			continue;
@@ -3218,13 +3228,15 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 			}
 		}
 
-		if(resetAllRenderstates)
-			tmpTexture->getStatesCache().IsCached = false;
+		COpenGLTexture::SStatesCache& statesCache = tmpTexture->getStatesCache();
+
+		if (resetAllRenderstates)
+			statesCache.IsCached = false;
 
 #ifdef GL_VERSION_2_1
 		if (Version>=210)
 		{
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].LODBias != tmpTexture->getStatesCache().LODBias)
+			if(!statesCache.IsCached || material.TextureLayer[i].LODBias != statesCache.LODBias)
 			{
 				if (material.TextureLayer[i].LODBias)
 				{
@@ -3234,7 +3246,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 				else
 					glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.f);
 
-				tmpTexture->getStatesCache().LODBias = material.TextureLayer[i].LODBias;
+				statesCache.LODBias = material.TextureLayer[i].LODBias;
 			}
 		}
 		else if (FeatureAvailable[IRR_EXT_texture_lod_bias])
@@ -3260,69 +3272,69 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 		}
 #endif
 
-		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
-			material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter)
+		if(!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
+			material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter)
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
-			tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
-			tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+			statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
+			statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
 		}
 
 		if (material.UseMipMaps && tmpTexture->hasMipMaps())
 		{
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
-				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || !tmpTexture->getStatesCache().MipMapStatus)
+			if(!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
+				material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter || !statesCache.MipMapStatus)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 					material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
 					material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
 					GL_NEAREST_MIPMAP_NEAREST);
 
-				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
-				tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-				tmpTexture->getStatesCache().MipMapStatus = true;
+				statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
+				statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+				statesCache.MipMapStatus = true;
 			}
 		}
 		else
 		{
-			if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].BilinearFilter != tmpTexture->getStatesCache().BilinearFilter ||
-				material.TextureLayer[i].TrilinearFilter != tmpTexture->getStatesCache().TrilinearFilter || tmpTexture->getStatesCache().MipMapStatus)
+			if(!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
+				material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter || statesCache.MipMapStatus)
 			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 					(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
-				tmpTexture->getStatesCache().BilinearFilter = material.TextureLayer[i].BilinearFilter;
-				tmpTexture->getStatesCache().TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-				tmpTexture->getStatesCache().MipMapStatus = false;
+				statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
+				statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+				statesCache.MipMapStatus = false;
 			}
 		}
 
 #ifdef GL_EXT_texture_filter_anisotropic
 		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
-			(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
+			(!statesCache.IsCached || material.TextureLayer[i].AnisotropicFilter != statesCache.AnisotropicFilter))
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
 				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
 
-			tmpTexture->getStatesCache().AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
+			statesCache.AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
 		}
 #endif
 
-		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapU != tmpTexture->getStatesCache().WrapU)
+		if(!statesCache.IsCached || material.TextureLayer[i].TextureWrapU != statesCache.WrapU)
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
-			tmpTexture->getStatesCache().WrapU = material.TextureLayer[i].TextureWrapU;
+			statesCache.WrapU = material.TextureLayer[i].TextureWrapU;
 		}
 
-		if(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].TextureWrapV != tmpTexture->getStatesCache().WrapV)
+		if(!statesCache.IsCached || material.TextureLayer[i].TextureWrapV != statesCache.WrapV)
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
-			tmpTexture->getStatesCache().WrapV = material.TextureLayer[i].TextureWrapV;
+			statesCache.WrapV = material.TextureLayer[i].TextureWrapV;
 		}
 
-		tmpTexture->getStatesCache().IsCached = true;
+		statesCache.IsCached = true;
 	}
 
 	// be sure to leave in texture stage 0
@@ -3368,7 +3380,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 			CacheHandler->setMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			glTranslatef(0.375f, 0.375f, 0.0f);
 
 			// Make sure we set first texture matrix
 			CacheHandler->setActiveTexture(GL_TEXTURE0);
@@ -4587,6 +4598,206 @@ GLenum COpenGLDriver::getZBufferBits() const
 		break;
 	}
 	return bits;
+}
+
+void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+	GLenum& pixelType, void(**converter)(const void*, s32, void*))
+{
+	internalFormat = GL_RGBA;
+	pixelFormat = GL_RGBA;
+	pixelType = GL_UNSIGNED_BYTE;
+
+	switch (format)
+	{
+	case ECF_A1R5G5B5:
+		internalFormat = GL_RGBA;
+		pixelFormat = GL_BGRA_EXT;
+		pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+		break;
+	case ECF_R5G6B5:
+		internalFormat = GL_RGB;
+		pixelFormat = GL_RGB;
+		pixelType = GL_UNSIGNED_SHORT_5_6_5;
+		break;
+	case ECF_R8G8B8:
+		internalFormat = GL_RGB;
+		pixelFormat = GL_BGR;
+		pixelType = GL_UNSIGNED_BYTE;
+		break;
+	case ECF_A8R8G8B8:
+		internalFormat = GL_RGBA;
+		pixelFormat = GL_BGRA_EXT;
+		if (Version > 101)
+			pixelType = GL_UNSIGNED_INT_8_8_8_8_REV;
+		break;
+	case ECF_DXT1:
+		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		pixelFormat = GL_BGRA_EXT;
+		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		break;
+	case ECF_DXT2:
+	case ECF_DXT3:
+		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		pixelFormat = GL_BGRA_EXT;
+		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		break;
+	case ECF_DXT4:
+	case ECF_DXT5:
+		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		pixelFormat = GL_BGRA_EXT;
+		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		break;
+	case ECF_D16:
+		internalFormat = GL_DEPTH_COMPONENT16;
+		pixelFormat = GL_DEPTH_COMPONENT;
+		pixelType = GL_UNSIGNED_BYTE;
+		break;
+	case ECF_D32:
+		internalFormat = GL_DEPTH_COMPONENT32;
+		pixelFormat = GL_DEPTH_COMPONENT;
+		pixelType = GL_UNSIGNED_BYTE;
+		break;
+	case ECF_D24S8:
+#ifdef GL_EXT_packed_depth_stencil
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_EXT_packed_depth_stencil))
+		{
+			internalFormat = GL_DEPTH_STENCIL_EXT;
+			pixelFormat = GL_DEPTH_STENCIL_EXT;
+			pixelType = GL_UNSIGNED_INT_24_8_EXT;
+		}
+		else
+#endif
+			os::Printer::log("ECF_D24S8 color format is not supported", ELL_ERROR);
+		break;
+	case ECF_R8:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_R8;
+			pixelFormat = GL_RED;
+			pixelType = GL_UNSIGNED_BYTE;
+		}
+		else
+			os::Printer::log("ECF_R8 color format is not supported", ELL_ERROR);
+		break;
+	case ECF_R8G8:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_RG8;
+			pixelFormat = GL_RG;
+			pixelType = GL_UNSIGNED_BYTE;
+		}
+		else
+			os::Printer::log("ECF_R8G8 color format is not supported", ELL_ERROR);
+		break;
+	case ECF_R16:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_R16;
+			pixelFormat = GL_RED;
+			pixelType = GL_UNSIGNED_SHORT;
+		}
+		else
+			os::Printer::log("ECF_R16 color format is not supported", ELL_ERROR);
+		break;
+	case ECF_R16G16:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_RG16;
+			pixelFormat = GL_RG;
+			pixelType = GL_UNSIGNED_SHORT;
+		}
+		else
+			os::Printer::log("ECF_R16G16 color format is not supported", ELL_ERROR);
+		break;
+	case ECF_R16F:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_R16F;
+			pixelFormat = GL_RED;
+#ifdef GL_ARB_half_float_pixel
+			if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_half_float_pixel))
+				pixelType = GL_HALF_FLOAT_ARB;
+			else
+#endif
+				pixelType = GL_FLOAT;
+		}
+		else
+			os::Printer::log("ECF_R16F color format is not supported", ELL_ERROR);
+		break;
+	case ECF_G16R16F:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_RG16F;
+			pixelFormat = GL_RG;
+#ifdef GL_ARB_half_float_pixel
+			if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_half_float_pixel))
+				pixelType = GL_HALF_FLOAT_ARB;
+			else
+#endif
+				pixelType = GL_FLOAT;
+		}
+		else
+			os::Printer::log("ECF_G16R16F color format is not supported", ELL_ERROR);
+		break;
+	case ECF_A16B16G16R16F:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
+		{
+			internalFormat = GL_RGBA16F_ARB;
+			pixelFormat = GL_RGBA;
+#ifdef GL_ARB_half_float_pixel
+			if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_half_float_pixel))
+				pixelType = GL_HALF_FLOAT_ARB;
+			else
+#endif
+				pixelType = GL_FLOAT;
+		}
+		else
+			os::Printer::log("ECF_A16B16G16R16F color format is not supported", ELL_ERROR);
+		break;
+	case ECF_R32F:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_R32F;
+			pixelFormat = GL_RED;
+			pixelType = GL_FLOAT;
+		}
+		else
+			os::Printer::log("ECF_R32F color format is not supported", ELL_ERROR);
+		break;
+	case ECF_G32R32F:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
+		{
+			internalFormat = GL_RG32F;			
+			pixelFormat = GL_RG;
+			pixelType = GL_FLOAT;
+		}
+		else
+			os::Printer::log("ECF_G32R32F color format is not supported", ELL_ERROR);
+		break;
+	case ECF_A32B32G32R32F:
+		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
+		{
+			internalFormat = GL_RGBA32F_ARB;			
+			pixelFormat = GL_RGBA;
+			pixelType = GL_FLOAT;
+		}
+		else
+			os::Printer::log("ECF_A32B32G32R32F color format is not supported", ELL_ERROR);
+		break;
+	default:
+		os::Printer::log("Unsupported texture format", ELL_ERROR);
+		break;
+	}
+
+#if defined(GL_ARB_framebuffer_sRGB) || defined(GL_EXT_framebuffer_sRGB)
+	if (Params.HandleSRGB)
+	{
+		if (internalFormat == GL_RGBA)
+			internalFormat = GL_SRGB_ALPHA_EXT;
+		else if (internalFormat == GL_RGB)
+			internalFormat = GL_SRGB_EXT;
+	}
+#endif
 }
 
 COpenGLDriver::E_OPENGL_FIXED_PIPELINE_STATE COpenGLDriver::getFixedPipelineState() const

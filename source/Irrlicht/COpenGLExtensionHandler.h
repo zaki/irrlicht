@@ -6,139 +6,13 @@
 #define __C_OPEN_GL_FEATURE_MAP_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "EDriverFeatures.h"
 #include "irrTypes.h"
 #include "os.h"
-
-#if defined(_IRR_WINDOWS_API_)
-	// include windows headers for HWND
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#define GL_GLEXT_LEGACY 1
-	#endif
-	#include <GL/gl.h>
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#include "glext.h"
-	#endif
-	#include "wglext.h"
-
-	#ifdef _MSC_VER
-		#pragma comment(lib, "OpenGL32.lib")
-	#endif
-
-#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#define GL_GLEXT_LEGACY 1
-	#endif
-	#include <OpenGL/gl.h>
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#include "glext.h"
-	#endif
-#elif defined(_IRR_COMPILE_WITH_SDL_DEVICE_) && !defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#define GL_GLEXT_LEGACY 1
-		#define GLX_GLXEXT_LEGACY 1
-	#else
-		#define GL_GLEXT_PROTOTYPES 1
-		#define GLX_GLXEXT_PROTOTYPES 1
-	#endif
-	#define NO_SDL_GLEXT
-	#include <SDL/SDL_video.h>
-	#include <SDL/SDL_opengl.h>
-	#include "glext.h"
-#else
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#define GL_GLEXT_LEGACY 1
-		#define GLX_GLXEXT_LEGACY 1
-	#else
-		#define GL_GLEXT_PROTOTYPES 1
-		#define GLX_GLXEXT_PROTOTYPES 1
-	#endif
-	#include <GL/gl.h>
-	#include <GL/glx.h>
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-	#include "glext.h"
-	#undef GLX_ARB_get_proc_address // avoid problems with local glxext.h
-	#include "glxext.h"
-	#endif
-#endif
-
-#ifndef GL_ARB_shader_objects
-/* GL types for program/shader text and shader object handles */
-typedef char GLcharARB;
-typedef unsigned int GLhandleARB;
-#endif
-
-#ifndef GL_VERSION_2_0
-/* GL type for program/shader text */
-typedef char GLchar;
-#endif
-
-// Blending definitions.
-
-#if !defined(GL_VERSION_1_4)
-#if defined(GL_EXT_blend_subtract) || defined(GL_EXT_blend_minmax) || defined(GL_EXT_blend_logic_op)
-#define GL_FUNC_ADD GL_FUNC_ADD_EXT
-#else
-#define GL_FUNC_ADD 0
-#endif
-#endif
-
-// FBO definitions.
-
-#if !defined(GL_VERSION_3_0) && !defined(GL_ARB_framebuffer_object)
-#ifdef GL_EXT_framebuffer_object
-#define GL_FRAMEBUFFER GL_FRAMEBUFFER_EXT
-#define GL_COLOR_ATTACHMENT0 GL_COLOR_ATTACHMENT0_EXT
-#define GL_DEPTH_ATTACHMENT GL_DEPTH_ATTACHMENT_EXT
-#define GL_STENCIL_ATTACHMENT GL_STENCIL_ATTACHMENT_EXT
-#define GL_FRAMEBUFFER_COMPLETE GL_FRAMEBUFFER_COMPLETE_EXT
-#define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT
-#define GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT
-#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT
-#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT
-#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT
-#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT
-#define GL_FRAMEBUFFER_UNSUPPORTED GL_FRAMEBUFFER_UNSUPPORTED_EXT
-#else
-#define GL_FRAMEBUFFER 0
-#define GL_COLOR_ATTACHMENT0 0
-#define GL_DEPTH_ATTACHMENT 0
-#define GL_STENCIL_ATTACHMENT 0
-#define GL_FRAMEBUFFER_COMPLETE 0
-#define GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER 1
-#define GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER 2
-#define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT 3
-#define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT 4
-#define GL_FRAMEBUFFER_UNSUPPORTED 5
-#endif
-#endif
-
-#ifdef GL_EXT_framebuffer_object
-#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT
-#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT
-#else
-#define GL_FRAMEBUFFER_INCOMPLETE_FORMATS 6
-#define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS 7
-#endif
-
-// Texture definitions.
-
-#if !defined(GL_VERSION_1_3)
-#ifdef GL_ARB_multitexture
-#define GL_TEXTURE0 GL_TEXTURE0_ARB
-#else
-#define GL_TEXTURE0 0
-#endif
-#endif
-
-// Irrlicht's OpenGL version.
-
-#define IRR_OPENGL_VERSION 14
-
+#include "COpenGLCommon.h"
 #include "COGLCoreFeature.h"
 
 namespace irr
@@ -1182,10 +1056,10 @@ class COpenGLExtensionHandler
 	void extGlPointParameterfv(GLint loc, const GLfloat *v);
 	void extGlStencilFuncSeparate (GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask);
 	void extGlStencilOpSeparate (GLenum face, GLenum fail, GLenum zfail, GLenum zpass);
-	void extGlCompressedTexImage2D(GLenum target, GLint level,
+	void irrGlCompressedTexImage2D(GLenum target, GLint level,
 		GLenum internalformat, GLsizei width, GLsizei height,
 		GLint border, GLsizei imageSize, const void* data);
-	void extGlCompressedTexSubImage2D(GLenum target, GLint level,
+	void irrGlCompressedTexSubImage2D(GLenum target, GLint level,
 		GLint xoffset, GLint yoffset, GLsizei width, GLsizei height,
 		GLenum format, GLsizei imageSize, const void* data);
 
@@ -2133,7 +2007,7 @@ inline void COpenGLExtensionHandler::extGlStencilOpSeparate (GLenum face, GLenum
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlCompressedTexImage2D (GLenum target, GLint level, GLenum internalformat, GLsizei width,
+inline void COpenGLExtensionHandler::irrGlCompressedTexImage2D (GLenum target, GLint level, GLenum internalformat, GLsizei width,
 		GLsizei height, GLint border, GLsizei imageSize, const void* data)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -2146,7 +2020,7 @@ inline void COpenGLExtensionHandler::extGlCompressedTexImage2D (GLenum target, G
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
+inline void COpenGLExtensionHandler::irrGlCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
 		GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void* data)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_

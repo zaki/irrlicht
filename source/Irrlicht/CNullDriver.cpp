@@ -1309,6 +1309,39 @@ bool CNullDriver::checkPrimitiveCount(u32 prmCount) const
 	return true;
 }
 
+bool CNullDriver::checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) const
+{
+	bool status = true;
+
+	switch (format)
+	{
+	case ECF_DXT1:
+	case ECF_DXT2:
+	case ECF_DXT3:
+	case ECF_DXT4:
+	case ECF_DXT5:
+		{
+			core::dimension2d<u32> sizePOT = size.getOptimalSize(true, false);
+
+			if (!queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+			{
+				os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+				status = false;
+			}
+			else if (sizePOT != size)
+			{
+				os::Printer::log("Invalid size of image for DXT texture, size of image must be power of two.", ELL_ERROR);
+				status = false;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	return status;
+}
+
 //! Enables or disables a texture creation flag.
 void CNullDriver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled)
 {

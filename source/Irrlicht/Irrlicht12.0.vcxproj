@@ -1011,7 +1011,9 @@
     <ClInclude Include="COGLCoreCacheHandler.h" />
     <ClInclude Include="COGLCoreFeature.h" />
     <ClInclude Include="COGLCoreRenderTarget.h" />
+    <ClInclude Include="COGLCoreTexture.h" />
     <ClInclude Include="COpenGLCacheHandler.h" />
+    <ClInclude Include="COpenGLCommon.h" />
     <ClInclude Include="COpenGLDriver.h" />
     <ClInclude Include="COpenGLExtensionHandler.h" />
     <ClInclude Include="COpenGLMaterialRenderer.h" />
@@ -1019,7 +1021,6 @@
     <ClInclude Include="COpenGLParallaxMapRenderer.h" />
     <ClInclude Include="COpenGLShaderMaterialRenderer.h" />
     <ClInclude Include="COpenGLSLMaterialRenderer.h" />
-    <ClInclude Include="COpenGLTexture.h" />
     <ClInclude Include="CSceneManager.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="CSMFMeshFileLoader.h" />
@@ -1264,7 +1265,6 @@
     <ClCompile Include="COpenGLParallaxMapRenderer.cpp" />
     <ClCompile Include="COpenGLShaderMaterialRenderer.cpp" />
     <ClCompile Include="COpenGLSLMaterialRenderer.cpp" />
-    <ClCompile Include="COpenGLTexture.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
     <ClCompile Include="C3DSMeshFileLoader.cpp" />
     <ClCompile Include="CSMFMeshFileLoader.cpp" />

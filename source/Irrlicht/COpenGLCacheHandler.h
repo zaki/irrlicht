@@ -9,15 +9,14 @@
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "COpenGLExtensionHandler.h"
+#include "COpenGLCommon.h"
+#include "COGLCoreTexture.h"
 #include "COGLCoreCacheHandler.h"
 
 namespace irr
 {
 namespace video
 {
-	class COpenGLTexture;
-	class COpenGLDriver;
 
 	class COpenGLCacheHandler : public COGLCoreCacheHandler<COpenGLDriver, COpenGLTexture>
 	{

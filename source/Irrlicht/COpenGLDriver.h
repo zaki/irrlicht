@@ -21,7 +21,7 @@ namespace irr
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
-// also includes the OpenGL stuff
+#include "COpenGLCommon.h"
 #include "COpenGLExtensionHandler.h"
 
 namespace irr
@@ -29,19 +29,10 @@ namespace irr
 
 namespace video
 {
-	template <class TOGLDriver, class TOGLTexture>
-	class COGLCoreRenderTarget;
-
-	class COpenGLCacheHandler;
-	class COpenGLTexture;
-	class COpenGLDriver;
-
-	typedef COGLCoreRenderTarget<COpenGLDriver, COpenGLTexture> COpenGLRenderTarget;
-
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
-		friend class COpenGLCacheHandler;
-		friend class COpenGLTexture;
+		friend COpenGLCacheHandler;
+		friend COpenGLTexture;
 	public:
 		// Information about state of fixed pipeline activity.
 		enum E_OPENGL_FIXED_PIPELINE_STATE
@@ -405,6 +396,9 @@ namespace video
 
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
+
+		void getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+			GLenum& pixelType, void(**converter)(const void*, s32, void*));
 
 		//! Return info about fixed pipeline state.
 		E_OPENGL_FIXED_PIPELINE_STATE getFixedPipelineState() const;

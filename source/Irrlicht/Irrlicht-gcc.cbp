@@ -845,8 +845,6 @@
 		<Unit filename="COpenGLSLMaterialRenderer.h" />
 		<Unit filename="COpenGLShaderMaterialRenderer.cpp" />
 		<Unit filename="COpenGLShaderMaterialRenderer.h" />
-		<Unit filename="COpenGLTexture.cpp" />
-		<Unit filename="COpenGLTexture.h" />
 		<Unit filename="CPLYMeshFileLoader.cpp" />
 		<Unit filename="CPLYMeshFileLoader.h" />
 		<Unit filename="CPLYMeshWriter.cpp" />

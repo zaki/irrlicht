@@ -7,7 +7,6 @@
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "COpenGLDriver.h"
-#include "COpenGLTexture.h"
 
 namespace irr
 {

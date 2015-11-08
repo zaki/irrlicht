@@ -113,8 +113,8 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const io::path& name) : NamedPath(name), DriverType(EDT_NULL), ColorFormat(ECF_UNKNOWN),
-		Pitch(0), HasMipMaps(false), IsRenderTarget(false), Source(ETS_UNKNOWN)
+	ITexture(const io::path& name) : NamedPath(name), DriverType(EDT_NULL), OriginalColorFormat(ECF_UNKNOWN),
+		ColorFormat(ECF_UNKNOWN), Pitch(0), HasMipMaps(false), IsRenderTarget(false), Source(ETS_UNKNOWN)
 	{
 	}
 
@@ -252,6 +252,7 @@ protected:
 	core::dimension2d<u32> OriginalSize;
 	core::dimension2d<u32> Size;
 	E_DRIVER_TYPE DriverType;
+	ECOLOR_FORMAT OriginalColorFormat;
 	ECOLOR_FORMAT ColorFormat;
 	u32 Pitch;
 	bool HasMipMaps;
