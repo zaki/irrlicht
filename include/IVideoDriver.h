@@ -411,7 +411,7 @@ namespace video
 			if (image)
 				image->setMipMapsData(mipmapData, false, true);
 
-			addTexture(name, image);
+			return addTexture(name, image);
 		}
 
 		//! Creates a texture from an IImage.
@@ -497,7 +497,7 @@ namespace video
 		The value is a safe approximation, i.e. can be larger than the
 		actual value of pixels. */
 		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const =0;
-		
+
 		//! Create render target.
 		virtual IRenderTarget* addRenderTarget() = 0;
 

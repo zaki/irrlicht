@@ -9,6 +9,7 @@
 #include "position2d.h"
 #include "rect.h"
 #include "SColor.h"
+#include <string.h>
 
 namespace irr
 {
