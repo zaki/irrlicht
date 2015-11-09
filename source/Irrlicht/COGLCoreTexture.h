@@ -12,6 +12,8 @@
 #include "irrArray.h"
 #include "SMaterialLayer.h"
 #include "ITexture.h"
+#include "EDriverFeatures.h"
+#include "os.h"
 
 namespace irr
 {
