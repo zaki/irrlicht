@@ -17,7 +17,7 @@ namespace video
 
 COpenGLCacheHandler::COpenGLCacheHandler(COpenGLDriver* driver) :
 	COGLCoreCacheHandler<COpenGLDriver, COpenGLTexture>(driver), AlphaMode(GL_ALWAYS), AlphaRef(0.f), AlphaTest(false),
-	DepthTest(false), MatrixMode(GL_MODELVIEW), ClientActiveTexture(GL_TEXTURE0), ClientStateVertex(false),
+	MatrixMode(GL_MODELVIEW), ClientActiveTexture(GL_TEXTURE0), ClientStateVertex(false),
 	ClientStateNormal(false), ClientStateColor(false), ClientStateTexCoord0(false)
 {
 	// Initial OpenGL values from specification.
@@ -25,7 +25,7 @@ COpenGLCacheHandler::COpenGLCacheHandler(COpenGLDriver* driver) :
 	glAlphaFunc(AlphaMode, AlphaRef);
 	glDisable(GL_ALPHA_TEST);
 
-	glDisable(GL_DEPTH_TEST);
+	
 
 	glMatrixMode(MatrixMode);
 
@@ -106,18 +106,6 @@ void COpenGLCacheHandler::setClientState(bool vertex, bool normal, bool color, b
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		ClientStateTexCoord0 = texCoord0;
-	}
-}
-
-void COpenGLCacheHandler::setDepthTest(bool enable)
-{
-	if (DepthTest != enable)
-	{
-		if (enable)
-			glEnable(GL_DEPTH_TEST);
-		else
-			glDisable(GL_DEPTH_TEST);
-		DepthTest = enable;
 	}
 }
 

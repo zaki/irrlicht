@@ -157,7 +157,7 @@ public:
 		Driver(driver), TextureCache(STextureCache(this, Driver->getFeature().TextureUnit)), FrameBufferCount(0),
 		BlendEquation(0), BlendSourceRGB(0), BlendDestinationRGB(0), BlendSourceAlpha(0), BlendDestinationAlpha(0),
 		Blend(0), ColorMask(0), CullFaceMode(GL_BACK), CullFace(false), DepthFunc(GL_LESS), DepthMask(true),
-		FrameBufferID(0), ProgramID(0), ActiveTexture(GL_TEXTURE0), ViewportX(0), ViewportY(0)
+		DepthTest(false), FrameBufferID(0), ProgramID(0), ActiveTexture(GL_TEXTURE0), ViewportX(0), ViewportY(0)
 	{
 		const COGLCoreFeature& feature = Driver->getFeature();
 
@@ -204,6 +204,7 @@ public:
 
 		glDepthFunc(DepthFunc);
 		glDepthMask(GL_TRUE);
+		glDisable(GL_DEPTH_TEST);
 
 		Driver->irrGlActiveTexture(ActiveTexture);
 
@@ -442,6 +443,18 @@ public:
 		}
 	}
 
+	void setDepthTest(bool enable)
+	{
+		if (DepthTest != enable)
+		{
+			if (enable)
+				glEnable(GL_DEPTH_TEST);
+			else
+				glDisable(GL_DEPTH_TEST);
+			DepthTest = enable;
+		}
+	}
+
 	// FBO calls.
 
 	void getFBO(GLuint& frameBufferID) const
@@ -533,6 +546,7 @@ protected:
 
 	GLenum DepthFunc;
 	bool DepthMask;
+	bool DepthTest;
 
 	GLuint FrameBufferID;
 

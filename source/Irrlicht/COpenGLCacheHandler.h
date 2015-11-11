@@ -35,10 +35,6 @@ namespace video
 
 		void setClientState(bool vertex, bool normal, bool color, bool texCoord0);
 
-		// Depth calls.
-
-		void setDepthTest(bool enable);
-
 		// Matrix calls.
 
 		void setMatrixMode(GLenum mode);
@@ -51,8 +47,6 @@ namespace video
 		GLenum AlphaMode;
 		GLclampf AlphaRef;
 		bool AlphaTest;
-
-		bool DepthTest;
 
 		GLenum MatrixMode;
 
