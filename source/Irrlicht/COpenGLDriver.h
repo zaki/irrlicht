@@ -151,6 +151,16 @@ namespace video
 		//! \param material: Material to be used from now on.
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
+			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+			SColor color = SColor(255, 255, 255, 255), bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
+
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+			const video::SColor* const colors = 0, bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
+
+		virtual void draw2DImage(const video::ITexture* texture, bool flip);
+
 		//! draws a set of 2d images, using a color and the alpha channel of the
 		//! texture if desired.
 		void draw2DImageBatch(const video::ITexture* texture,
@@ -159,11 +169,6 @@ namespace video
 				const core::rect<s32>* clipRect,
 				SColor color,
 				bool useAlphaChannelOfTexture) _IRR_OVERRIDE_;
-
-		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
-			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
 
 		//! draws a set of 2d images, using a color and the alpha
 		/** channel of the texture if desired. The images are drawn
@@ -189,11 +194,6 @@ namespace video
 				const core::rect<s32>* clipRect=0,
 				SColor color=SColor(255,255,255,255),
 				bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
-
-		//! Draws a part of the texture into the rectangle.
-		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
-			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
 
 		//! draw an 2d rectangle
 		virtual void draw2DRectangle(SColor color, const core::rect<s32>& pos,

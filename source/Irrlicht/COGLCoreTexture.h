@@ -14,6 +14,7 @@
 #include "ITexture.h"
 #include "EDriverFeatures.h"
 #include "os.h"
+#include "CColorConverter.h"
 
 namespace irr
 {
@@ -44,7 +45,7 @@ public:
 	};
 
 	COGLCoreTexture(const io::path& name, const core::array<IImage*>& image, TOGLDriver* driver) : ITexture(name), Driver(driver), TextureType(GL_TEXTURE_2D),
-		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(true),
+		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(false),
 		AutoGenerateMipMaps(false)
 	{
 		_IRR_DEBUG_BREAK_IF(image.size() == 0)
@@ -158,11 +159,11 @@ public:
 		if (TextureName)
 			glDeleteTextures(1, &TextureName);
 
-		for (u32 i = 0; i < Image.size(); ++i)
-			Image[i]->drop();
-
 		if (LockImage)
 			LockImage->drop();
+		
+		for (u32 i = 0; i < Image.size(); ++i)
+			Image[i]->drop();
 	}
 
 	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel = 0) _IRR_OVERRIDE_
@@ -175,9 +176,86 @@ public:
 		LockReadOnly |= (mode == ETLM_READ_ONLY);
 		LockLevel = mipmapLevel;
 
-		LockImage = Image[0];
+		if (LockImage)
+			return LockImage->getData();
 
-		return LockImage->getData();
+		if (KeepImage && mipmapLevel == 0)
+		{
+			LockImage = Image[0];
+			LockImage->grab();
+		}
+		else
+		{
+			const core::dimension2d<u32> lockImageSize(Size.Width >> mipmapLevel, Size.Height >> mipmapLevel);
+			LockImage = Driver->createImage(ColorFormat, lockImageSize);
+
+			if (LockImage && mode != ETLM_WRITE_ONLY)
+			{
+				COGLCoreTexture* tmpTexture = new COGLCoreTexture("OGL_CORE_LOCK_TEXTURE", lockImageSize, ColorFormat, Driver);
+
+				GLuint tmpFBO = 0;
+				Driver->irrGlGenFramebuffers(1, &tmpFBO);
+
+				GLint prevViewportX = 0;
+				GLint prevViewportY = 0;
+				GLsizei prevViewportWidth = 0;
+				GLsizei prevViewportHeight = 0;
+				Driver->getCacheHandler()->getViewport(prevViewportX, prevViewportY, prevViewportWidth, prevViewportHeight);
+				Driver->getCacheHandler()->setViewport(0, 0, lockImageSize.Width, lockImageSize.Height);
+
+				GLuint prevFBO = 0;
+				Driver->getCacheHandler()->getFBO(prevFBO);
+				Driver->getCacheHandler()->setFBO(tmpFBO);
+
+				Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName(), 0);
+
+				Driver->draw2DImage(this, true);
+
+				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, lockImageSize);
+
+				glReadPixels(0, 0, lockImageSize.Width, lockImageSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
+
+				Driver->getCacheHandler()->setFBO(prevFBO);
+				Driver->getCacheHandler()->setViewport(prevViewportX, prevViewportY, prevViewportWidth, prevViewportHeight);
+
+				Driver->irrGlDeleteFramebuffers(1, &tmpFBO);
+				delete tmpTexture;
+
+				void* src = tmpImage->getData();
+				void* dest = LockImage->getData();
+
+				bool passed = true;
+
+				switch (ColorFormat)
+				{
+				case ECF_A1R5G5B5:
+					CColorConverter::convert_A8R8G8B8toA1B5G5R5(src, tmpImage->getDimension().getArea(), dest);
+					break;
+				case ECF_R5G6B5:
+					CColorConverter::convert_A8R8G8B8toR5G6B5(src, tmpImage->getDimension().getArea(), dest);
+					break;
+				case ECF_R8G8B8:
+					CColorConverter::convert_A8R8G8B8toB8G8R8(src, tmpImage->getDimension().getArea(), dest);
+					break;
+				case ECF_A8R8G8B8:
+					CColorConverter::convert_A8R8G8B8toA8B8G8R8(src, tmpImage->getDimension().getArea(), dest);
+					break;
+				default:
+					passed = false;
+					break;
+				}
+
+				tmpImage->drop();
+
+				if (!passed)
+				{
+					LockImage->drop();
+					LockImage = 0;
+				}
+			}
+		}
+
+		return (LockImage) ? LockImage->getData() : 0;
 	}
 
 	virtual void unlock() _IRR_OVERRIDE_
@@ -198,8 +276,7 @@ public:
 				regenerateMipMapLevels(LockImage->getMipMapsData());
 		}
 
-		if (!KeepImage || LockLevel != 0)
-			LockImage->drop();
+		LockImage->drop();
 
 		LockReadOnly = false;
 		LockImage = 0;

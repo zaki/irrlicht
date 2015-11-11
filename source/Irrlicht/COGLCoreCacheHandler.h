@@ -458,7 +458,12 @@ public:
 		}
 	}
 
-	// Shaders
+	// Shaders calls.
+
+	void getProgram(GLuint& programID) const
+	{
+		programID = ProgramID;
+	}
 
 	void setProgram(GLuint programID)
 	{
@@ -471,6 +476,11 @@ public:
 
 	// Texture calls.
 
+	void getActiveTexture(GLenum& texture) const
+	{
+		texture = ActiveTexture;
+	}
+
 	void setActiveTexture(GLenum texture)
 	{
 		if (ActiveTexture != texture)
@@ -481,6 +491,14 @@ public:
 	}
 
 	// Viewport calls.
+
+	void getViewport(GLint& viewportX, GLint& viewportY, GLsizei& viewportWidth, GLsizei& viewportHeight) const
+	{
+		viewportX = ViewportX;
+		viewportY = ViewportY;
+		viewportWidth = ViewportWidth;
+		viewportHeight = ViewportHeight;
+	}
 
 	void setViewport(GLint viewportX, GLint viewportY, GLsizei viewportWidth, GLsizei viewportHeight)
 	{
