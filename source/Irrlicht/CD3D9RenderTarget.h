@@ -12,7 +12,7 @@
 #include "IRenderTarget.h"
 
 #include "dimension2d.h"
-#include "COpenGLExtensionHandler.h"
+#include "os.h"
 
 #include <d3d9.h>
 

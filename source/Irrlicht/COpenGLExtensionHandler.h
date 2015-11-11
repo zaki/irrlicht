@@ -1137,6 +1137,7 @@ class COpenGLExtensionHandler
 	void irrGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 	void irrGlGenerateMipmap(GLenum target);
 	void irrGlActiveStencilFace(GLenum face);
+	void irrGlDrawBuffer(GLenum mode);
 	void irrGlDrawBuffers(GLsizei n, const GLenum *bufs);
 
 	// vertex buffer object
@@ -2226,6 +2227,11 @@ inline void COpenGLExtensionHandler::irrGlActiveStencilFace(GLenum face)
 #else
 	os::Printer::log("glActiveStencilFace not supported", ELL_ERROR);
 #endif
+}
+
+inline void COpenGLExtensionHandler::irrGlDrawBuffer(GLenum mode)
+{
+	glDrawBuffer(mode);
 }
 
 inline void COpenGLExtensionHandler::irrGlDrawBuffers(GLsizei n, const GLenum *bufs)

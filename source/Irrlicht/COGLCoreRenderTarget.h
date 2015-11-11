@@ -237,9 +237,9 @@ public:
 				const u32 textureSize = Texture.size();
 
 				if (textureSize == 0)
-					glDrawBuffer(GL_NONE);
+					Driver->irrGlDrawBuffer(GL_NONE);
 				else if (textureSize == 1 || MultipleRenderTarget == 0)
-					glDrawBuffer(GL_COLOR_ATTACHMENT0);
+					Driver->irrGlDrawBuffer(GL_COLOR_ATTACHMENT0);
 				else
 				{
 					const u32 bufferCount = core::min_(MultipleRenderTarget, core::min_(textureSize, AssignedTexture.size()));
