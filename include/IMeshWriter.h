@@ -43,7 +43,7 @@ namespace scene
 							s32 flags=EMWF_NONE) = 0;
 
 		// Writes an animated mesh
-		// for future use, no writer is able to write animated meshes currently
+		// for future use, only b3d writer is able to write animated meshes currently and that was implemented using the writeMesh above.
 		/* \return Returns true if sucessful */
 		//virtual bool writeAnimatedMesh(io::IWriteFile* file,
 		// scene::IAnimatedMesh* mesh,

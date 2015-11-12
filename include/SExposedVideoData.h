@@ -40,19 +40,6 @@ struct SExposedVideoData
 		void* HWnd;
 	};
 
-	struct SD3D8
-	{
-		//! Pointer to the IDirect3D8 interface
-		IDirect3D8* D3D8;
-
-		//! Pointer to the IDirect3DDevice8 interface
-		IDirect3DDevice8* D3DDev8;
-
-		//! Window handle.
-		/** Get with for example with: HWND h = reinterpret_cast<HWND>(exposedData.D3D8.HWnd) */
-		void* HWnd;
-	};
-
 	struct SOpenGLWin32
 	{
 		//! Private GDI Device Context.
@@ -79,7 +66,6 @@ struct SExposedVideoData
 	union
 	{
 		SD3D9 D3D9;
-		SD3D8 D3D8;
 		SOpenGLWin32 OpenGLWin32;
 		SOpenGLLinux OpenGLLinux;
 

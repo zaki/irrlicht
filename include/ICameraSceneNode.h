@@ -14,9 +14,9 @@ namespace scene
 {
 	struct SViewFrustum;
 
-	//! Scene Node which is a (controlable) camera.
+	//! Scene Node which is a (controllable) camera.
 	/** The whole scene will be rendered from the cameras point of view.
-	Because the ICameraScenNode is a SceneNode, it can be attached to any
+	Because the ICameraSceneNode is a SceneNode, it can be attached to any
 	other scene node, and will follow its parents movement, rotation and so
 	on.
 	*/
@@ -135,8 +135,7 @@ namespace scene
 		virtual void setFOV(f32 fovy) =0;
 
 		//! Get the view frustum.
-		/** Needed sometimes by bspTree or LOD render nodes.
-		\return The current view frustum. */
+		/** \return The current view frustum. */
 		virtual const SViewFrustum* getViewFrustum() const =0;
 
 		//! Disables or enables the camera to get key or mouse inputs.
@@ -150,7 +149,6 @@ namespace scene
 		//! Checks if a camera is orthogonal.
 		virtual bool isOrthogonal() const
 		{
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsOrthogonal;
 		}
 
@@ -161,7 +159,7 @@ namespace scene
 		point at the target point. FPS camera use this binding by
 		default; other cameras do not.
 		\param bound True to bind the camera's scene node rotation
-		and targetting, false to unbind them.
+		and targeting, false to unbind them.
 		@see getTargetAndRotationBinding() */
 		virtual void bindTargetAndRotation(bool bound) =0;
 

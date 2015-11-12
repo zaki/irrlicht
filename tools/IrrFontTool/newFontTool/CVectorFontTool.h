@@ -347,7 +347,7 @@ public:
 			//while(Device->getTimer()->getTime() < endt )
 			//{
 				Device->run();
-				Device->getVideoDriver()->beginScene(true,true,video::SColor(0,0,0,0));
+				Device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 				for (u32 v=0;v<ll.size(); ++v)
 				for (u32 h=0;h<ll[v].lines.size(); ++h)
 				{
@@ -696,7 +696,7 @@ public:
 			const f32 phase = f32((device->getTimer()->getTime()-stt) % 500) / 500.0f;
 
 			device->run();
-			device->getVideoDriver()->beginScene(true,true,video::SColor(0,0,0,0));
+			device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 			for (u32 g=0;g<groups.size(); ++g)
 			for (u32 v=0;v<groups[g].edges.size(); ++v)
 			for (u32 p=1;p<groups[g].edges[v].positions.size(); ++p)
@@ -722,7 +722,7 @@ public:
 			const f32 phase = f32((device->getTimer()->getTime()-stt) % 500) / 500.0f;
 
 			device->run();
-			device->getVideoDriver()->beginScene(true,true,video::SColor(0,0,0,0));
+			device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 			for (u32 g=0;g<groups.size(); ++g)
 			for (u32 v=0;v<groups[g].triangles.indexes.size()*phase; v+=3)
 			{
@@ -748,7 +748,7 @@ public:
 		while(device->getTimer()->getTime() < endt )
 		{
 			device->run();
-			device->getVideoDriver()->beginScene(true,true,video::SColor(0,0,0,0));
+			device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 			for (u32 g=0;g<groups.size(); ++g)
 			for (u32 v=0;v<groups[g].ll.size()-1; ++v)
 			for (u32 h=0;h<groups[g].ll[v].lines.size(); ++h)

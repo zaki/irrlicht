@@ -67,6 +67,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -77,6 +78,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -88,6 +90,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -98,6 +101,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -108,6 +112,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -119,6 +124,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -129,6 +135,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -271,39 +278,38 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" />
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\Include;C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\Include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">obj\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">obj\$(Configuration)64\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_PCEMULATION_2.07.27.0484\Builds\OGLES2\WindowsPC\Lib;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|x64'">$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|x64'">$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|x64'">$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'">$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|x64'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|x64'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|Win32'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|x64'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|Win32'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(OGLES_SDK)include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OGLES_SDK)lib\x86;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(OGLES_SDK)lib\x86;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OGLES_SDK)lib\x86;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'">$(OGLES_SDK)lib\x86;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|Win32'">$(OGLES_SDK)lib\x86;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|Win32'">$(OGLES_SDK)lib\x86;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(OGLES_SDK)lib\x86;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OGLES_SDK)lib\x64;$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|x64'">$(OGLES_SDK)lib\x64;$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OGLES_SDK)lib\x64;$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|x64'">$(OGLES_SDK)lib\x64;$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|x64'">$(OGLES_SDK)lib\x64;$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'">$(OGLES_SDK)lib\x64;$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(OGLES_SDK)lib\x64;$(DXSDK_DIR)Lib\x64;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -335,7 +341,7 @@
     </ProjectReference>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\bin\Win32-visualstudio\Irrlicht.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -413,7 +419,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\bin\Win32-visualstudio\Irrlicht.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -832,17 +838,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\driverChoice.h" />
     <ClInclude Include="..\..\include\EDriverFeatures.h" />
     <ClInclude Include="..\..\include\EMaterialFlags.h" />
     <ClInclude Include="..\..\include\IAnimatedMeshMD3.h" />
-    <ClInclude Include="..\..\include\IContextManager.h" />
     <ClInclude Include="..\..\include\IEventReceiver.h" />
     <ClInclude Include="..\..\include\ILogger.h" />
     <ClInclude Include="..\..\include\IOSOperator.h" />
     <ClInclude Include="..\..\include\IProfiler.h" />
     <ClInclude Include="..\..\include\IRandomizer.h" />
     <ClInclude Include="..\..\include\IReferenceCounted.h" />
+    <ClInclude Include="..\..\include\IRenderTarget.h" />
     <ClInclude Include="..\..\include\IrrCompileConfig.h" />
     <ClInclude Include="..\..\include\irrlicht.h" />
     <ClInclude Include="..\..\include\IrrlichtDevice.h" />
@@ -996,27 +1001,39 @@
     <ClInclude Include="..\..\include\IGUIToolbar.h" />
     <ClInclude Include="..\..\include\IGUITreeView.h" />
     <ClInclude Include="..\..\include\IGUIWindow.h" />
-    <ClInclude Include="CCgMaterialRenderer.h" />
-    <ClInclude Include="CD3D9CgMaterialRenderer.h" />
+    <ClInclude Include="CB3DMeshWriter.h" />
+    <ClInclude Include="CD3D9RenderTarget.h" />
     <ClInclude Include="CDefaultSceneNodeAnimatorFactory.h" />
     <ClInclude Include="CDefaultSceneNodeFactory.h" />
     <ClInclude Include="CEGLManager.h" />
     <ClInclude Include="CGeometryCreator.h" />
-    <ClInclude Include="CImageLoaderPVR.h" />
     <ClInclude Include="CMeshCache.h" />
     <ClInclude Include="CMeshManipulator.h" />
-    <ClInclude Include="COpenGLCgMaterialRenderer.h" />
+    <ClInclude Include="COGLCoreCacheHandler.h" />
+    <ClInclude Include="COGLCoreFeature.h" />
+    <ClInclude Include="COGLCoreRenderTarget.h" />
+    <ClInclude Include="COGLCoreTexture.h" />
+    <ClInclude Include="COGLES2Common.h" />
     <ClInclude Include="COGLES2Driver.h" />
     <ClInclude Include="COGLES2ExtensionHandler.h" />
     <ClInclude Include="COGLES2FixedPipelineRenderer.h" />
+    <ClInclude Include="COGLES2MaterialRenderer.h" />
     <ClInclude Include="COGLES2NormalMapRenderer.h" />
     <ClInclude Include="COGLES2ParallaxMapRenderer.h" />
     <ClInclude Include="COGLES2Renderer2D.h" />
-    <ClInclude Include="COGLES2Texture.h" />
+    <ClInclude Include="COGLESCommon.h" />
     <ClInclude Include="COGLESDriver.h" />
     <ClInclude Include="COGLESExtensionHandler.h" />
     <ClInclude Include="COGLESMaterialRenderer.h" />
-    <ClInclude Include="COGLESTexture.h" />
+    <ClInclude Include="COpenGLCacheHandler.h" />
+    <ClInclude Include="COpenGLCommon.h" />
+    <ClInclude Include="COpenGLDriver.h" />
+    <ClInclude Include="COpenGLExtensionHandler.h" />
+    <ClInclude Include="COpenGLMaterialRenderer.h" />
+    <ClInclude Include="COpenGLNormalMapRenderer.h" />
+    <ClInclude Include="COpenGLParallaxMapRenderer.h" />
+    <ClInclude Include="COpenGLShaderMaterialRenderer.h" />
+    <ClInclude Include="COpenGLSLMaterialRenderer.h" />
     <ClInclude Include="CProfiler.h" />
     <ClInclude Include="CSceneManager.h" />
     <ClInclude Include="CWGLManager.h" />
@@ -1111,22 +1128,7 @@
     <ClInclude Include="IZBuffer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="S2DVertex.h" />
-    <ClInclude Include="COpenGLDriver.h" />
-    <ClInclude Include="COpenGLExtensionHandler.h" />
-    <ClInclude Include="COpenGLMaterialRenderer.h" />
-    <ClInclude Include="COpenGLNormalMapRenderer.h" />
-    <ClInclude Include="COpenGLParallaxMapRenderer.h" />
-    <ClInclude Include="COpenGLShaderMaterialRenderer.h" />
-    <ClInclude Include="COpenGLSLMaterialRenderer.h" />
-    <ClInclude Include="COpenGLTexture.h" />
-    <ClInclude Include="glext.h" />
-    <ClInclude Include="wglext.h" />
-    <ClInclude Include="CD3D8Driver.h" />
-    <ClInclude Include="CD3D8MaterialRenderer.h" />
-    <ClInclude Include="CD3D8NormalMapRenderer.h" />
-    <ClInclude Include="CD3D8ParallaxMapRenderer.h" />
-    <ClInclude Include="CD3D8ShaderMaterialRenderer.h" />
-    <ClInclude Include="CD3D8Texture.h" />
+    <ClInclude Include="SB3DStructs.h" />
     <ClInclude Include="CColorConverter.h" />
     <ClInclude Include="CFPSCounter.h" />
     <ClInclude Include="CImage.h" />
@@ -1146,6 +1148,7 @@
     <ClInclude Include="CImageLoaderPNG.h" />
     <ClInclude Include="CImageLoaderPPM.h" />
     <ClInclude Include="CImageLoaderPSD.h" />
+    <ClInclude Include="CImageLoaderPVR.h" />
     <ClInclude Include="CImageLoaderRGB.h" />
     <ClInclude Include="CImageLoaderTGA.h" />
     <ClInclude Include="CImageLoaderWAL.h" />
@@ -1209,7 +1212,6 @@
     <ClInclude Include="CIrrDeviceSDL.h" />
     <ClInclude Include="CIrrDeviceStub.h" />
     <ClInclude Include="CIrrDeviceWin32.h" />
-    <ClInclude Include="CIrrDeviceWinCE.h" />
     <ClInclude Include="CAttributeImpl.h" />
     <ClInclude Include="CAttributes.h" />
     <ClInclude Include="CFileList.h" />
@@ -1264,27 +1266,30 @@
     <None Include="..\..\readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CCgMaterialRenderer.cpp" />
-    <ClCompile Include="CD3D9CgMaterialRenderer.cpp" />
+    <ClCompile Include="CB3DMeshWriter.cpp" />
+    <ClCompile Include="CD3D9RenderTarget.cpp" />
     <ClCompile Include="CDefaultSceneNodeAnimatorFactory.cpp" />
     <ClCompile Include="CDefaultSceneNodeFactory.cpp" />
     <ClCompile Include="CEGLManager.cpp" />
     <ClCompile Include="CGeometryCreator.cpp" />
-    <ClCompile Include="CImageLoaderPVR.cpp" />
     <ClCompile Include="CMeshCache.cpp" />
     <ClCompile Include="CMeshManipulator.cpp" />
-    <ClCompile Include="COpenGLCgMaterialRenderer.cpp" />
     <ClCompile Include="COGLES2Driver.cpp" />
     <ClCompile Include="COGLES2ExtensionHandler.cpp" />
     <ClCompile Include="COGLES2FixedPipelineRenderer.cpp" />
+    <ClCompile Include="COGLES2MaterialRenderer.cpp" />
     <ClCompile Include="COGLES2NormalMapRenderer.cpp" />
     <ClCompile Include="COGLES2ParallaxMapRenderer.cpp" />
     <ClCompile Include="COGLES2Renderer2D.cpp" />
-    <ClCompile Include="COGLES2MaterialRenderer.cpp" />
-    <ClCompile Include="COGLES2Texture.cpp" />
     <ClCompile Include="COGLESDriver.cpp" />
     <ClCompile Include="COGLESExtensionHandler.cpp" />
-    <ClCompile Include="COGLESTexture.cpp" />
+    <ClCompile Include="COpenGLCacheHandler.cpp" />
+    <ClCompile Include="COpenGLDriver.cpp" />
+    <ClCompile Include="COpenGLExtensionHandler.cpp" />
+    <ClCompile Include="COpenGLNormalMapRenderer.cpp" />
+    <ClCompile Include="COpenGLParallaxMapRenderer.cpp" />
+    <ClCompile Include="COpenGLShaderMaterialRenderer.cpp" />
+    <ClCompile Include="COpenGLSLMaterialRenderer.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
     <ClCompile Include="C3DSMeshFileLoader.cpp" />
     <ClCompile Include="CSMFMeshFileLoader.cpp" />
@@ -1380,18 +1385,6 @@
     <ClCompile Include="CTRTextureGouraudNoZ.cpp" />
     <ClCompile Include="CTRTextureGouraudWire.cpp" />
     <ClCompile Include="CZBuffer.cpp" />
-    <ClCompile Include="COpenGLDriver.cpp" />
-    <ClCompile Include="COpenGLExtensionHandler.cpp" />
-    <ClCompile Include="COpenGLNormalMapRenderer.cpp" />
-    <ClCompile Include="COpenGLParallaxMapRenderer.cpp" />
-    <ClCompile Include="COpenGLShaderMaterialRenderer.cpp" />
-    <ClCompile Include="COpenGLSLMaterialRenderer.cpp" />
-    <ClCompile Include="COpenGLTexture.cpp" />
-    <ClCompile Include="CD3D8Driver.cpp" />
-    <ClCompile Include="CD3D8NormalMapRenderer.cpp" />
-    <ClCompile Include="CD3D8ParallaxMapRenderer.cpp" />
-    <ClCompile Include="CD3D8ShaderMaterialRenderer.cpp" />
-    <ClCompile Include="CD3D8Texture.cpp" />
     <ClCompile Include="CColorConverter.cpp" />
     <ClCompile Include="CFPSCounter.cpp" />
     <ClCompile Include="CImage.cpp" />
@@ -1410,6 +1403,7 @@
     <ClCompile Include="CImageLoaderPNG.cpp" />
     <ClCompile Include="CImageLoaderPPM.cpp" />
     <ClCompile Include="CImageLoaderPSD.cpp" />
+    <ClCompile Include="CImageLoaderPVR.cpp" />
     <ClCompile Include="CImageLoaderRGB.cpp" />
     <ClCompile Include="CImageLoaderTGA.cpp" />
     <ClCompile Include="CImageLoaderWAL.cpp" />
@@ -1449,7 +1443,7 @@
     <ClCompile Include="Irrlicht.cpp" />
     <ClCompile Include="leakHunter.cpp" />
     <ClCompile Include="os.cpp" />
-	<ClCompile Include="utf8.cpp" />
+    <ClCompile Include="utf8.cpp" />
     <ClCompile Include="CProfiler.cpp" />
     <ClCompile Include="lzma\LzmaDec.c" />
     <ClCompile Include="zlib\adler32.c" />
@@ -1545,7 +1539,6 @@
     <ClCompile Include="CIrrDeviceSDL.cpp" />
     <ClCompile Include="CIrrDeviceStub.cpp" />
     <ClCompile Include="CIrrDeviceWin32.cpp" />
-    <ClCompile Include="CIrrDeviceWinCE.cpp" />
     <ClCompile Include="CAttributes.cpp" />
     <ClCompile Include="CFileList.cpp" />
     <ClCompile Include="CFileSystem.cpp" />

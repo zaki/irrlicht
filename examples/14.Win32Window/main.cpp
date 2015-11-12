@@ -16,10 +16,13 @@ windows book for details.
 #include <windows.h> // this example only runs with windows
 #include <iostream>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "irrlicht.lib")
+#endif
 
 HWND hOKButton;
 HWND hWnd;
@@ -76,7 +79,7 @@ int main()
 	HINSTANCE hInstance = 0;
 	// create dialog
 
-	const char* Win32ClassName = "CIrrlichtWindowsTestDialog";
+	const fschar_t* Win32ClassName = __TEXT("CIrrlichtWindowsTestDialog");
 
 	WNDCLASSEX wcex;
 	wcex.cbSize			= sizeof(WNDCLASSEX);
@@ -100,7 +103,7 @@ int main()
 	int windowWidth = 440;
 	int windowHeight = 380;
 
-	hWnd = CreateWindow( Win32ClassName, "Irrlicht Win32 window example",
+	hWnd = CreateWindow( Win32ClassName, __TEXT("Irrlicht Win32 window example"),
 		style, 100, 100, windowWidth, windowHeight,
 		NULL, NULL, hInstance, NULL);
 
@@ -111,18 +114,18 @@ int main()
 
 	// create ok button
 
-	hOKButton = CreateWindow("BUTTON", "OK - Close", WS_CHILD | WS_VISIBLE | BS_TEXT,
+	hOKButton = CreateWindow(__TEXT("BUTTON"), __TEXT("OK - Close"), WS_CHILD | WS_VISIBLE | BS_TEXT,
 		windowWidth - 160, windowHeight - 40, 150, 30, hWnd, NULL, hInstance, NULL);
 
 	// create some text
 
-	CreateWindow("STATIC", "This is Irrlicht running inside a standard Win32 window.\n"\
-		"Also mixing with MFC and .NET Windows.Forms is possible.",
+	CreateWindow(__TEXT("STATIC"), __TEXT("This is Irrlicht running inside a standard Win32 window.\n")\
+		__TEXT("Also mixing with MFC and .NET Windows.Forms is possible."),
 		WS_CHILD | WS_VISIBLE, 20, 20, 400, 40, hWnd, NULL, hInstance, NULL);
 
 	// create window to put irrlicht in
 
-	HWND hIrrlichtWindow = CreateWindow("BUTTON", "",
+	HWND hIrrlichtWindow = CreateWindow(__TEXT("BUTTON"), __TEXT(""),
 			WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 			50, 80, 320, 220, hWnd, NULL, hInstance, NULL);
 	video::SExposedVideoData videodata((key=='b')?hIrrlichtWindow:0);
@@ -172,18 +175,20 @@ int main()
 
 	scene::ISceneNode* cube = smgr->addCubeSceneNode(20);
 
-	cube->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
-	cube->setMaterialTexture(1, driver->getTexture("../../media/water.jpg"));
+	const io::path mediaPath = getExampleMediaPath();
+
+	cube->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
+	cube->setMaterialTexture(1, driver->getTexture(mediaPath + "water.jpg"));
 	cube->setMaterialFlag( video::EMF_LIGHTING, false );
 	cube->setMaterialType( video::EMT_REFLECTION_2_LAYER );
 
 	smgr->addSkyBoxSceneNode(
-	driver->getTexture("../../media/irrlicht2_up.jpg"),
-	driver->getTexture("../../media/irrlicht2_dn.jpg"),
-	driver->getTexture("../../media/irrlicht2_lf.jpg"),
-	driver->getTexture("../../media/irrlicht2_rt.jpg"),
-	driver->getTexture("../../media/irrlicht2_ft.jpg"),
-	driver->getTexture("../../media/irrlicht2_bk.jpg"));
+	driver->getTexture(mediaPath + "irrlicht2_up.jpg"),
+	driver->getTexture(mediaPath + "irrlicht2_dn.jpg"),
+	driver->getTexture(mediaPath + "irrlicht2_lf.jpg"),
+	driver->getTexture(mediaPath + "irrlicht2_rt.jpg"),
+	driver->getTexture(mediaPath + "irrlicht2_ft.jpg"),
+	driver->getTexture(mediaPath + "irrlicht2_bk.jpg"));
 
 	// This shows that we can render to multiple windows within one application
 	device->getGUIEnvironment()->addStaticText(core::stringw("Second screen render").c_str(),core::recti(0,0,200,200));
@@ -209,12 +214,12 @@ int main()
 
 	while (device->run())
 	{
-		driver->beginScene(true, true, 0, videodata);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0), 1.f, 0, videodata);
 		smgr->drawAll();
 		driver->endScene();
 		if (key=='b')
 		{
-			driver->beginScene(true, true, 0xbbbbbbbb);
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0xbbbbbbbb));
 			device->getGUIEnvironment()->drawAll();
 			driver->endScene();
 		}

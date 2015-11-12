@@ -55,6 +55,7 @@ IImage* CImageLoaderPVR::loadImage(io::IReadFile* file) const
 	IImage* image = 0;
 	ECOLOR_FORMAT format = ECF_UNKNOWN;
 	u32 dataSize = 0;
+	u32 mipMapsDataSize = 0;
 
 	file->seek(0);
 	file->read(&header, sizeof(SPVRHeader));
@@ -139,33 +140,38 @@ IImage* CImageLoaderPVR::loadImage(io::IReadFile* file) const
 
 		if (format != ECF_UNKNOWN)
 		{
-			// Calculate image data size.
-			u32 curWidth = header.Width;
-			u32 curHeight = header.Height;
-
-			dataSize = IImage::getCompressedImageSize(format, curWidth, curHeight);
-
-			do
-			{
-				if (curWidth > 1)
-					curWidth >>= 1;
-
-				if (curHeight > 1)
-					curHeight >>= 1;
-
-				dataSize += IImage::getCompressedImageSize(format, curWidth, curHeight);
-			}
-			while (curWidth != 1 || curWidth != 1);
-
 			// 3D textures, texture arrays, cube maps textures aren't currently supported
 			if (header.Depth < 2 && header.NumSurfaces < 2 && header.NumFaces < 2)
 			{
+				dataSize = IImage::getDataSizeFromFormat(format, header.Width, header.Height);
+
 				u8* data = new u8[dataSize];
 				file->read(data, dataSize);
 
-				bool hasMipMap = (header.MipMapCount > 0) ? true : false;
+				image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true);
 
-				image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true, true, hasMipMap);
+				if (header.MipMapCount > 0)
+				{
+					u32 tmpWidth = header.Width;
+					u32 tmpHeight = header.Height;
+
+					do
+					{
+						if (tmpWidth > 1)
+							tmpWidth >>= 1;
+
+						if (tmpHeight > 1)
+							tmpHeight >>= 1;
+
+						mipMapsDataSize = IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
+					}
+					while (tmpWidth != 1 || tmpHeight != 1);
+
+					u8* mipMapsData = new u8[mipMapsDataSize];
+					file->read(mipMapsData, mipMapsDataSize);
+
+					image->setMipMapsData(mipMapsData, true, true);
+				}
 			}
 		}
 	}

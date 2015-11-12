@@ -48,10 +48,8 @@ namespace video
 		//! destructor
 		virtual ~CNullDriver();
 
-		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0),
-				const SExposedVideoData& videoData=SExposedVideoData(),
-				core::rect<s32>* sourceRect=0) _IRR_OVERRIDE_;
+		virtual bool beginScene(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
+			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0) _IRR_OVERRIDE_;
 
 		virtual bool endScene() _IRR_OVERRIDE_;
 
@@ -100,24 +98,11 @@ namespace video
 		//! creates a Texture
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) _IRR_OVERRIDE_;
 
-		//! Creates a texture from a loaded IImage.
-		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) _IRR_OVERRIDE_;
+		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
-		//! Creates a cube texture from loaded IImages.
-		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
-			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
-
-		//! sets a render target
-		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-						bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
-
-		//! set or reset special render targets
-		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
-					bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
-
-		//! Sets multiple render targets
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
-					bool clearBackBuffer=true, bool clearZBuffer=true, SColor color=SColor(0,0,0,0)) _IRR_OVERRIDE_;
+		virtual bool setRenderTarget(ITexture* texture, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
@@ -249,6 +234,9 @@ namespace video
 		//! get screen size
 		virtual const core::dimension2d<u32>& getScreenSize() const _IRR_OVERRIDE_;
 
+		//! get current render target
+		IRenderTarget* getCurrentRenderTarget() const;
+
 		//! get render target size
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
 
@@ -363,8 +351,8 @@ namespace video
 		directly and own it from now on, which means it will also try to delete [] the
 		data when the image will be destructed. If false, the memory will by copied. */
 		virtual IImage* createImageFromData(ECOLOR_FORMAT format,
-			const core::dimension2d<u32>& size, void *data,
-			bool ownForeignMemory=true, bool deleteForeignMemory = true) _IRR_OVERRIDE_;
+			const core::dimension2d<u32>& size, void *data, bool ownForeignMemory = false,
+			bool deleteMemory = true) _IRR_OVERRIDE_;
 
 		//! Creates an empty software image.
 		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) _IRR_OVERRIDE_;
@@ -481,6 +469,15 @@ namespace video
 		actual value of pixels. */
 		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const _IRR_OVERRIDE_;
 
+		//! Create render target.
+		virtual IRenderTarget* addRenderTarget() _IRR_OVERRIDE_;
+
+		//! Remove render target.
+		virtual void removeRenderTarget(IRenderTarget* renderTarget) _IRR_OVERRIDE_;
+
+		//! Remove all render targets.
+		virtual void removeAllRenderTargets() _IRR_OVERRIDE_;
+
 		//! Only used by the engine internally.
 		/** Used to notify the driver that the window was resized. */
 		virtual void OnResize(const core::dimension2d<u32>& size) _IRR_OVERRIDE_;
@@ -594,8 +591,7 @@ namespace video
 		//! Returns a pointer to the mesh manipulator.
 		virtual scene::IMeshManipulator* getMeshManipulator() _IRR_OVERRIDE_;
 
-		//! Clears the ZBuffer.
-		virtual void clearZBuffer() _IRR_OVERRIDE_;
+		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
@@ -686,10 +682,17 @@ namespace video
 
 		//! adds a surface, not loaded or created by the Irrlicht Engine
 		void addTexture(ITexture* surface);
+		
+		//! Creates a texture from a loaded IImage.
+		virtual ITexture* addTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
+		
+		//! Creates a cube texture from loaded IImages.
+		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
+			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
@@ -699,6 +702,8 @@ namespace video
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
 
+		bool checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) const;
+
 		// adds a material renderer and drops it afterwards. To be used for internal creation
 		s32 addAndDropMaterialRenderer(IMaterialRenderer* m);
 
@@ -707,9 +712,6 @@ namespace video
 
 		// prints renderer version
 		void printVersion();
-
-		// Check support for compression texture format.
-		bool checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& textureSize) const;
 
 		// Check support for compression texture format.
 		bool checkTextureCube(IImage* posXImage, IImage* negXImage, IImage* posYImage, IImage* negYImage,
@@ -732,6 +734,26 @@ namespace video
 			return (f32) getAverage ( p[(y * pitch) + x] );
 		}
 
+		inline bool getWriteZBuffer(const SMaterial&material) const
+		{
+			if (material.ZWriteEnable)
+			{
+				if (!AllowZWriteOnTransparent)
+				{
+					switch (material.ZWriteFineControl)
+					{
+					case EZI_ONLY_NON_TRANSPARENT:
+						return !material.isTransparent();
+					case EZI_ZBUFFER_FLAG:
+						return true;
+					}
+				}
+				else
+					return true;
+			}
+			return false;
+		}
+
 		struct SSurface
 		{
 			video::ITexture* Surface;
@@ -750,17 +772,11 @@ namespace video
 
 		struct SDummyTexture : public ITexture
 		{
-			SDummyTexture(const io::path& name) : ITexture(name), size(0,0) {};
+			SDummyTexture(const io::path& name) : ITexture(name) {};
 
 			virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_ { return 0; }
 			virtual void unlock()_IRR_OVERRIDE_ {}
-			virtual const core::dimension2d<u32>& getOriginalSize() const _IRR_OVERRIDE_ { return size; }
-			virtual const core::dimension2d<u32>& getSize() const _IRR_OVERRIDE_ { return size; }
-			virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_ { return video::EDT_NULL; }
-			virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_ { return video::ECF_A1R5G5B5; }
-			virtual u32 getPitch() const _IRR_OVERRIDE_ { return 0; }
 			virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_ {}
-			core::dimension2d<u32> size;
 		};
 		core::array<SSurface> Textures;
 
@@ -820,6 +836,15 @@ namespace video
 			u32 Run;
 		};
 		core::array<SOccQuery> OcclusionQueries;
+
+		core::array<IRenderTarget*> RenderTargets;
+
+		// Shared objects used with simplified IVideoDriver::setRenderTarget method with ITexture* param.
+		IRenderTarget* SharedRenderTarget;
+		core::array<ITexture*> SharedDepthTextures;
+
+		IRenderTarget* CurrentRenderTarget;
+		core::dimension2d<u32> CurrentRenderTargetSize;
 
 		core::array<video::IImageLoader*> SurfaceLoader;
 		core::array<video::IImageWriter*> SurfaceWriter;

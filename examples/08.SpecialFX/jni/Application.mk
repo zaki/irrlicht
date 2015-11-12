@@ -1,2 +1,0 @@
-APP_MODULES := SFX
-APP_PLATFORM :=android-9

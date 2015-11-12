@@ -39,10 +39,8 @@ namespace video
 		contribution. */
 		EDT_BURNINGSVIDEO,
 
-		//! Direct3D8 device, only available on Win32 platforms.
-		/** Performs hardware accelerated rendering of 3D and 2D
-		primitives. */
-		EDT_DIRECT3D8,
+		//! Direct3D8 device is longer supported in Irrlicht. You have to go back to Irrlicht 1.8 if you still need that.
+		DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS, // keep enum to avoid breaking enumeration order (might be used in ini-files, serialization, etc)
 
 		//! Direct3D 9 device, only available on Win32 platforms.
 		/** Performs hardware accelerated rendering of 3D and 2D
@@ -77,7 +75,17 @@ namespace video
 		"OpenGL ES2",
 		0 
 	};
-	
+
+	const c8* const DRIVER_TYPE_NAMES_SHORT[] = 
+	{
+		"null",
+		"software",
+		"burning",
+		"d3d8",
+		"d3d9",
+		"opengl",
+		0 
+	};
 
 } // end namespace video
 } // end namespace irr

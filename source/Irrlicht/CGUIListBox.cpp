@@ -649,7 +649,6 @@ void CGUIListBox::setAutoScrollEnabled(bool scroll)
 
 bool CGUIListBox::isAutoScrollEnabled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return AutoScroll;
 }
 

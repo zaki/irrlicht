@@ -13,7 +13,10 @@ namespace irr
 namespace video
 {
 	//! An enum for the color format of textures used by the Irrlicht Engine.
-	/** A color format specifies how color information is stored. */
+	/** A color format specifies how color information is stored. 
+	    NOTE: Byte order in memory is usually flipped (it's probably correct in bitmap files, but flipped on reading).
+	    So for example ECF_A8R8G8B8 is BGRA in memory same as in DX9's D3DFMT_A8R8G8B8 format.
+	*/
 	enum ECOLOR_FORMAT
 	{
 		//! 16 bit color format used by the software driver.
@@ -75,25 +78,52 @@ namespace video
 		//! ETC2 ARGB.
 		ECF_ETC2_ARGB,
 
-		/** Floating Point formats. The following formats may only be used for render target textures. */
+		/** The following formats may only be used for render target textures. */
 
-		//! 16 bit floating point format using 16 bits for the red channel.
+		/** Floating point formats. */
+
+		//! 16 bit format using 16 bits for the red channel.
 		ECF_R16F,
 
-		//! 32 bit floating point format using 16 bits for the red channel and 16 bits for the green channel.
+		//! 32 bit format using 16 bits for the red and green channels.
 		ECF_G16R16F,
 
-		//! 64 bit floating point format 16 bits are used for the red, green, blue and alpha channels.
+		//! 64 bit format using 16 bits for the red, green, blue and alpha channels.
 		ECF_A16B16G16R16F,
 
-		//! 32 bit floating point format using 32 bits for the red channel.
+		//! 32 bit format using 32 bits for the red channel.
 		ECF_R32F,
 
-		//! 64 bit floating point format using 32 bits for the red channel and 32 bits for the green channel.
+		//! 64 bit format using 32 bits for the red and green channels.
 		ECF_G32R32F,
 
-		//! 128 bit floating point format. 32 bits are used for the red, green, blue and alpha channels.
+		//! 128 bit format using 32 bits for the red, green, blue and alpha channels.
 		ECF_A32B32G32R32F,
+
+		/** Unsigned normalized integer formats. */
+
+		//! 8 bit format using 8 bits for the red channel.
+		ECF_R8,
+
+		//! 16 bit format using 8 bits for the red and green channels.
+		ECF_R8G8,
+
+		//! 16 bit format using 16 bits for the red channel.
+		ECF_R16,
+
+		//! 32 bit format using 16 bits for the red and green channels.
+		ECF_R16G16,
+
+		/** Depth and stencil formats. */
+
+		//! 16 bit format using 16 bits for depth.
+		ECF_D16,
+
+		//! 32 bit format using 32 bits for depth.
+		ECF_D32,
+
+		//! 32 bit format using 24 bits for depth and 8 bits for stencil.
+		ECF_D24S8,
 
 		//! Unknown color format:
 		ECF_UNKNOWN
@@ -448,7 +478,7 @@ namespace video
 		/** \param data: target to write the color. Must contain sufficiently large memory to receive the number of bytes neede for format
 			\param format: tells the format used to write the color into data
 		*/
-		void getData(void *data, ECOLOR_FORMAT format)
+		void getData(void *data, ECOLOR_FORMAT format) const
 		{
 			switch(format)
 			{

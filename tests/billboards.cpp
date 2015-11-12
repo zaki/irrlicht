@@ -96,7 +96,7 @@ bool billboardSize(void)
 	bool result = false;
 
 	device->run();
-	driver->beginScene(true, true, video::SColor(255, 60, 60, 60));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 60, 60, 60));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -132,7 +132,7 @@ bool billboardOrientation(void)
 	bool result = false;
 
 	device->run();
-	driver->beginScene(true, true, video::SColor(255, 60, 60, 60));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 60, 60, 60));
 	smgr->drawAll();
 	driver->endScene();
 

@@ -41,7 +41,7 @@ bool testLastFrame()
 			node->setCurrentFrame((f32)(node->getEndFrame()));
 			node->setAnimationSpeed(0);
 			device->run();
-			driver->beginScene(true, true, video::SColor(255, 255, 255, 0));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 255, 255, 0));
 			smgr->drawAll();
 			driver->endScene();
 			if (mesh->getBoundingBox() != mesh->getMesh(node->getEndFrame())->getBoundingBox())
@@ -103,7 +103,7 @@ bool testNormals()
 			node->setMD2Animation(scene::EMAT_STAND);
 			node->setAnimationSpeed(0);
 			device->run();
-			driver->beginScene(true, true, video::SColor(255, 255, 255, 0));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 255, 255, 0));
 			smgr->drawAll();
 			driver->endScene();
 		}

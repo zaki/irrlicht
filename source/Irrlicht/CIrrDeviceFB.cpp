@@ -150,7 +150,7 @@ bool CIrrDeviceFB::createWindow(const core::dimension2d<u32>& windowSize, u32 bi
 	// make format settings
 	ioctl(Framebuffer, FBIOGET_FSCREENINFO, &fbfixscreeninfo);
 	ioctl(Framebuffer, FBIOGET_VSCREENINFO, &oldscreeninfo);
-snprintf(buf, 256, "Original resolution: %d x %d\nARGB%d%d%d%d\n",oldscreeninfo.xres,oldscreeninfo.yres,
+	snprintf_irr(buf, 256, "Original resolution: %d x %d\nARGB%d%d%d%d\n",oldscreeninfo.xres,oldscreeninfo.yres,
 		oldscreeninfo.transp.length,oldscreeninfo.red.length,oldscreeninfo.green.length,oldscreeninfo.blue.length);
 		os::Printer::log(buf);
 	memcpy(&fbscreeninfo, &oldscreeninfo, sizeof(struct fb_var_screeninfo));
@@ -170,7 +170,7 @@ snprintf(buf, 256, "Original resolution: %d x %d\nARGB%d%d%d%d\n",oldscreeninfo.
 		ioctl(Framebuffer, FBIOPUT_VSCREENINFO, &fbscreeninfo);
 		ioctl(Framebuffer, FBIOGET_VSCREENINFO, &fbscreeninfo);
 
-snprintf(buf, 256, "New resolution: %d x %d (%d x %d)\nARGB%d%d%d%d\n",fbscreeninfo.xres,fbscreeninfo.yres,fbscreeninfo.xres_virtual,fbscreeninfo.yres_virtual,
+		snprintf_irr(buf, 256, "New resolution: %d x %d (%d x %d)\nARGB%d%d%d%d\n",fbscreeninfo.xres,fbscreeninfo.yres,fbscreeninfo.xres_virtual,fbscreeninfo.yres_virtual,
 		fbscreeninfo.transp.length,fbscreeninfo.red.length,fbscreeninfo.green.length,fbscreeninfo.blue.length);
 		os::Printer::log(buf);
 
@@ -259,8 +259,8 @@ void CIrrDeviceFB::createDriver()
 		#endif
 		break;
 
+	case DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
 	case video::EDT_OPENGL:
-	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
 		os::Printer::log("This driver is not available in FB. Try Software renderer.",
 			ELL_WARNING);

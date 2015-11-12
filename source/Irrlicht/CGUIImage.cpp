@@ -81,7 +81,7 @@ void CGUIImage::draw()
 		core::rect<s32> sourceRect(SourceRect);
 		if (sourceRect.getWidth() == 0 || sourceRect.getHeight() == 0)
 		{
-			sourceRect = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(Texture->getOriginalSize()));
+			sourceRect = core::rect<s32>(core::dimension2di(Texture->getSize()));
 		}
 
 		if (ScaleImage)
@@ -133,14 +133,12 @@ void CGUIImage::setScaleImage(bool scale)
 //! Returns true if the image is scaled to fit, false if not
 bool CGUIImage::isImageScaled() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ScaleImage;
 }
 
 //! Returns true if the image is using the alpha channel, false if not
 bool CGUIImage::isAlphaChannelUsed() const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return UseAlphaChannel;
 }
 

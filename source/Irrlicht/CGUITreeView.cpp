@@ -433,6 +433,7 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 	TotalItemHeight( 0 ),
 	TotalItemWidth ( 0 ),
 	Font( 0 ),
+	OverrideFont( 0 ),
 	IconFont( 0 ),
 	ScrollBarH( 0 ),
 	ScrollBarV( 0 ),
@@ -522,19 +523,50 @@ CGUITreeView::~CGUITreeView()
 	}
 }
 
+//! Sets another skin independent font.
+void CGUITreeView::setOverrideFont(IGUIFont* font)
+{
+	if (OverrideFont == font)
+		return;
+
+	if (OverrideFont)
+		OverrideFont->drop();
+
+	OverrideFont = font;
+
+	if (OverrideFont)
+		OverrideFont->grab();
+
+	recalculateItemHeight();
+}
+
+//! Gets the override font (if any)
+IGUIFont * CGUITreeView::getOverrideFont() const
+{
+	return OverrideFont;
+}
+
+//! Get the font which is used right now for drawing
+IGUIFont* CGUITreeView::getActiveFont() const
+{
+	if ( OverrideFont )
+		return OverrideFont;
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		return skin->getFont();
+	return 0;
+}
+
 void CGUITreeView::recalculateItemHeight()
 {
-	IGUISkin*		skin = Environment->getSkin();
-	IGUITreeViewNode*	node;
-
-	if( Font != skin->getFont() )
+	if( Font != getActiveFont() )
 	{
 		if( Font )
 		{
 			Font->drop();
 		}
 
-		Font = skin->getFont();
+		Font = getActiveFont();
 		ItemHeight = 0;
 
 		if( Font )
@@ -579,7 +611,7 @@ void CGUITreeView::recalculateItemHeight()
 
 	TotalItemHeight = 0;
 	TotalItemWidth = AbsoluteRect.getWidth() * 2;
-	node = Root->getFirstChild();
+	IGUITreeViewNode* node = Root->getFirstChild();
 	while( node )
 	{
 		TotalItemHeight += ItemHeight;

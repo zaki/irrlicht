@@ -146,7 +146,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 		return false;
 	}
 
-	u8* data = (u8*)image->lock();
+	u8* data = (u8*)image->getData();
 	switch(image->getColorFormat())
 	{
 	case ECF_R8G8B8:
@@ -165,7 +165,6 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 	default:
 		break;
 	}
-	image->unlock();
 
 	// Create array of pointers to rows in image data
 

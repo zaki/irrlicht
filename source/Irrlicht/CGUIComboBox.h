@@ -105,6 +105,7 @@ namespace gui
 		EGUI_ALIGNMENT HAlign, VAlign;
 		u32 MaxSelectionRows;
 		bool HasFocus;
+		IGUIFont* ActiveFont;
 	};
 
 

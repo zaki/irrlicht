@@ -31,7 +31,7 @@ static bool shadows(video::E_DRIVER_TYPE driverType)
 	light->setRadius(500.f);
 	light->getLightData().DiffuseColor.set(0,1,1);
 
-	device->getVideoDriver()->beginScene (true, true, 0);
+	device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 
@@ -48,7 +48,7 @@ static bool shadows(video::E_DRIVER_TYPE driverType)
 	cam->setPosition(core::vector3df(0,55,-30));
 	cam->setTarget(core::vector3df(60,45,150));
 
-	device->getVideoDriver()->beginScene (true, true, 0);
+	device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 
@@ -70,7 +70,6 @@ bool stencilShadow(void)
 //	passed &= shadows(video::EDT_SOFTWARE);
 //	passed &= shadows(video::EDT_BURNINGSVIDEO);
 	passed &= shadows(video::EDT_DIRECT3D9);
-	passed &= shadows(video::EDT_DIRECT3D8);
 
 	return passed;
 }

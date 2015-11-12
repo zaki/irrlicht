@@ -694,6 +694,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 	eDDSPixelFormat pixelFormat;
 	ECOLOR_FORMAT format = ECF_UNKNOWN;
 	u32 dataSize = 0;
+	u32 mipMapsDataSize = 0;
 	bool is3D = false;
 	bool useAlpha = false;
 	u32 mipMapCount = 0;
@@ -796,7 +797,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 			{
 				if (!is3D) // Currently 3D textures are unsupported.
 				{
-					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height ), data, true, true, false);
+					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true);
 				}
 			}
 			else
@@ -809,47 +810,57 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 			switch(pixelFormat)
 			{
 				case DDS_PF_DXT1:
+				{
 					format = ECF_DXT1;
 					break;
+				}
 				case DDS_PF_DXT2:
 				case DDS_PF_DXT3:
+				{
 					format = ECF_DXT3;
 					break;
+				}
 				case DDS_PF_DXT4:
 				case DDS_PF_DXT5:
+				{
 					format = ECF_DXT5;
 					break;
+				}
 			}
 
-			if (format != ECF_UNKNOWN)
+			if( format != ECF_UNKNOWN )
 			{
-				// Calculate image data size.
-				u32 curWidth = header.Width;
-				u32 curHeight = header.Height;
-
-				dataSize = IImage::getCompressedImageSize(format, curWidth, curHeight);
-
-				do
+				if (!is3D) // Currently 3D textures are unsupported.
 				{
-					if (curWidth > 1)
-						curWidth >>= 1;
+					dataSize = IImage::getDataSizeFromFormat(format, header.Width, header.Height);
 
-					if (curHeight > 1)
-						curHeight >>= 1;
-
-					dataSize += IImage::getCompressedImageSize(format, curWidth, curHeight);
-				}
-				while (curWidth != 1 || curWidth != 1);
-
-				// Currently 3D textures are unsupported.
-				if (!is3D)
-				{
 					u8* data = new u8[dataSize];
 					file->read(data, dataSize);
 
-					bool hasMipMap = (mipMapCount > 0) ? true : false;
+					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true);
 
-					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true, true, hasMipMap);
+					if (mipMapCount > 0)
+					{
+						u32 tmpWidth = header.Width;
+						u32 tmpHeight = header.Height;
+
+						do
+						{
+							if (tmpWidth > 1)
+								tmpWidth >>= 1;
+
+							if (tmpHeight > 1)
+								tmpHeight >>= 1;
+
+							mipMapsDataSize = IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
+						}
+						while (tmpWidth != 1 || tmpHeight != 1);
+
+						u8* mipMapsData = new u8[mipMapsDataSize];
+						file->read(mipMapsData, mipMapsDataSize);
+
+						image->setMipMapsData(mipMapsData, true, true);
+					}
 				}
 			}
 		}

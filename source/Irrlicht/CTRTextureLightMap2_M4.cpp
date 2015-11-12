@@ -131,7 +131,7 @@ REALINLINE void CTRTextureLightMap2_M4::scanline_bilinear2_mag ()
 	// search z-buffer for first not occulled pixel
 	i = ( line.y * RenderTarget->getDimension().Width ) + xStart;
 	z = (fp24*) DepthBuffer->lock() + i;
-	dst = (tVideoSample*)RenderTarget->lock() + i;
+	dst = (tVideoSample*)RenderTarget->getData() + i;
 
 	// subTexel
 	const f32 subPixel = ( (f32) xStart ) - line.x[0];
@@ -315,7 +315,7 @@ REALINLINE void CTRTextureLightMap2_M4::scanline_bilinear2_min ()
 	line.z[0] = a;
 	line.z[1] = b;
 #endif
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 	a = (f32) i + subPixel;
 

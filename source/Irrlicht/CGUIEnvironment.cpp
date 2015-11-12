@@ -57,7 +57,7 @@ const io::path CGUIEnvironment::DefaultFontName = "#DefaultFont";
 
 //! constructor
 CGUIEnvironment::CGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* driver, IOSOperator* op)
-: IGUIElement(EGUIET_ROOT, 0, 0, 0, core::rect<s32>(core::position2d<s32>(0,0), driver ? core::dimension2d<s32>(driver->getScreenSize()) : core::dimension2d<s32>(0,0))),
+: IGUIElement(EGUIET_ROOT, 0, 0, 0, core::rect<s32>(driver ? core::dimension2d<s32>(driver->getScreenSize()) : core::dimension2d<s32>(0,0))),
 	Driver(driver), Hovered(0), HoveredNoSubelement(0), Focus(0), LastHoveredMousePos(0,0), CurrentSkin(0),
 	FileSystem(fs), UserReceiver(0), Operator(op), FocusFlags(EFF_SET_ON_LMOUSE_DOWN|EFF_SET_ON_TAB)
 {
@@ -221,7 +221,6 @@ bool CGUIEnvironment::setFocus(IGUIElement* element)
 {
 	if (Focus == element)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -249,7 +248,6 @@ bool CGUIEnvironment::setFocus(IGUIElement* element)
 			if (element)
 				element->drop();
 			currentFocus->drop();
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return false;
 		}
 		currentFocus->drop();
@@ -274,7 +272,6 @@ bool CGUIEnvironment::setFocus(IGUIElement* element)
 				element->drop();
 			if (currentFocus)
 				currentFocus->drop();
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return false;
 		}
 	}
@@ -317,7 +314,6 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 		e.GUIEvent.EventType = EGET_ELEMENT_FOCUS_LOST;
 		if (Focus->OnEvent(e))
 		{
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return false;
 		}
 	}
@@ -334,7 +330,6 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 //! Returns whether the element has focus
 bool CGUIEnvironment::hasFocus(const IGUIElement* element, bool checkSubElements) const
 {
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	if (element == Focus)
 		return true;
 
@@ -414,7 +409,6 @@ bool CGUIEnvironment::OnEvent(const SEvent& event)
 		ret = UserReceiver->OnEvent(event);
 	}
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -608,7 +602,6 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 		// focus could have died in last call
 		if (!Focus && Hovered)
 		{
-			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return Hovered->OnEvent(event);
 		}
 
@@ -638,7 +631,6 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 		break;
 	} // end switch
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return false;
 }
 
@@ -751,13 +743,11 @@ bool CGUIEnvironment::saveGUI(const io::path& filename, IGUIElement* start)
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
 	if (!file)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
 	bool ret = saveGUI(file, start);
 	file->drop();
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -767,14 +757,12 @@ bool CGUIEnvironment::saveGUI(io::IWriteFile* file, IGUIElement* start)
 {
 	if (!file)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
 	io::IXMLWriter* writer = FileSystem->createXMLWriter(file);
 	if (!writer)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -794,14 +782,12 @@ bool CGUIEnvironment::loadGUI(const io::path& filename, IGUIElement* parent)
 	if (!read)
 	{
 		os::Printer::log("Unable to open gui file", filename, ELL_ERROR);
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
 	bool ret = loadGUI(read, parent);
 	read->drop();
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -812,7 +798,6 @@ bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 	if (!file)
 	{
 		os::Printer::log("Unable to open GUI file", ELL_ERROR);
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -820,7 +805,6 @@ bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 	if (!reader)
 	{
 		os::Printer::log("GUI is not a valid XML file", file->getFileName(), ELL_ERROR);
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -1016,8 +1000,7 @@ void CGUIEnvironment::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	}
 
 	RelativeRect = AbsoluteRect =
-			core::rect<s32>(core::position2d<s32>(0,0),
-			Driver ? core::dimension2di(Driver->getScreenSize()) : core::dimension2d<s32>(0,0));
+			core::rect<s32>(Driver ? core::dimension2di(Driver->getScreenSize()) : core::dimension2d<s32>(0,0));
 }
 
 
@@ -1399,7 +1382,7 @@ IGUIInOutFader* CGUIEnvironment::addInOutFader(const core::rect<s32>* rectangle,
 	if (rectangle)
 		rect = *rectangle;
 	else if (Driver)
-		rect = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(Driver->getScreenSize()));
+		rect = core::rect<s32>(core::dimension2di(Driver->getScreenSize()));
 
 	if (!parent)
 		parent = this;

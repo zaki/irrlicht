@@ -27,10 +27,10 @@ namespace irr
 			DriverType(video::EDT_BURNINGSVIDEO),
 			WindowSize(core::dimension2d<u32>(800, 600)),
 			WindowPosition(core::position2di(-1,-1)),
-			Bits(16),
-			ZBufferBits(16),
+			Bits(32),
+			ZBufferBits(24),
 			Fullscreen(false),
-			Stencilbuffer(false),
+			Stencilbuffer(true),
 			Vsync(false),
 			AntiAlias(0),
 			HandleSRGB(false),
@@ -109,9 +109,8 @@ namespace irr
 
 		//! Type of video driver used to render graphics.
 		/** This can currently be video::EDT_NULL, video::EDT_SOFTWARE,
-		video::EDT_BURNINGSVIDEO, video::EDT_DIRECT3D8,
-		video::EDT_DIRECT3D9, and video::EDT_OPENGL.
-		Default: Software. */
+		video::EDT_BURNINGSVIDEO, video::EDT_DIRECT3D9, and video::EDT_OPENGL.
+		Default: EDT_BURNINGSVIDEO. */
 		video::E_DRIVER_TYPE DriverType;
 
 		//! Size of the window or the video mode in fullscreen mode. Default: 800x600
@@ -120,10 +119,10 @@ namespace irr
 		//! Position of the window on-screen. Default: (-1, -1) or centered.
 		core::position2di WindowPosition;
 
-		//! Minimum Bits per pixel of the color buffer in fullscreen mode. Ignored if windowed mode. Default: 16.
+		//! Minimum Bits per pixel of the color buffer in fullscreen mode. Ignored if windowed mode. Default: 32.
 		u8 Bits;
 
-		//! Minimum Bits per pixel of the depth buffer. Default: 16.
+		//! Minimum Bits per pixel of the depth buffer. Default: 24.
 		u8 ZBufferBits;
 
 		//! Should be set to true if the device should run in fullscreen.
@@ -135,7 +134,7 @@ namespace irr
 		stencil buffer shadows. Note that not all drivers are able to
 		use the stencil buffer, hence it can be ignored during device
 		creation. Without the stencil buffer no shadows will be drawn.
-		Default: false. */
+		Default: true. */
 		bool Stencilbuffer;
 
 		//! Specifies vertical syncronisation.
@@ -235,7 +234,7 @@ namespace irr
 		\code
 		while (device->run())
 		{
-			driver->beginScene(true, true, 0);
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, 0);
 			smgr->drawAll();
 			driver->endScene();
 		}
@@ -267,7 +266,7 @@ namespace irr
 			device->getTimer()->tick();
 
 			// draw engine picture
-			driver->beginScene(true, true, 0);
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, 0);
 			smgr->drawAll();
 			driver->endScene();
 		}

@@ -204,29 +204,15 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 	}
 
 
-	// Make cubeNode3 invisible and check that the camera node is hit (since it has a valid bounding box).
-	cubeNode3->setVisible(false);
-	hitNode = collMgr->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(80, 60));
-	if(hitNode != camera)
-	{
-		logTestString("Unexpected node hit. Expected the camera node.\n");
-		result = false;
-	}
-
 	// Now verify bitmasking
-	camera->setID(0xAAAAAAAA); // == 101010101010101010101010101010
-	hitNode = collMgr->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(80, 60), 0x02);
-	if(hitNode != camera)
-	{
-		logTestString("Unexpected node hit. Expected the camera node.\n");
-		result = false;
-	}
 
 	// Test the 01010101010101010101010101010101 bitmask (0x55555555)
+	cubeNode1->setVisible(true);
+	cubeNode1->setID(0xAAAAAAAA);
 	hitNode = collMgr->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(80, 60), 0x55555555);
-	if(hitNode != 0)
+	if(hitNode != cubeNode2)
 	{
-		logTestString("A node was hit when none was expected.\n");
+		logTestString("Unexpected node hit. Expected cubeNode2.\n");
 		result = false;
 	}
 	assert_log(result);
@@ -314,7 +300,7 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 	bool result=true;
 	for (u32 round=0; round<2; ++round)
 	{
-		driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(100, 50, 50, 100));
 		smgr->drawAll();
 		driver->endScene();
 
@@ -378,7 +364,7 @@ static bool checkBBoxIntersection(IrrlichtDevice * device,
 	u32 count=0;
 	for (u32 i=0; i<30; ++i)
 	{
-		driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(100, 50, 50, 100));
 		smgr->drawAll();
 		driver->endScene();
 
@@ -416,7 +402,7 @@ static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice 
 	// add a cube to pick
 	scene::ISceneNode* cube = smgr->addCubeSceneNode(15);
 
-	driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(100, 50, 50, 100));
 	smgr->drawAll();
 	driver->endScene();
 

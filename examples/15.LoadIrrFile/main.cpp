@@ -12,6 +12,7 @@ Lets start: Create an Irrlicht device and setup the window.
 
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -51,10 +52,17 @@ int main(int argc, char** argv)
 	*/
 
 	// load the scene
+	/* You might have to work around some minor problems in current .irr loader:
+	- It can't load meshes relative to the .irr file, but only relative to the working directory. 
+	  So you might have to change your working directory to the path where the .irr file is in.
+	- When passing a custom parent node to loadScene then irr_scene attributes will be passed to that.
+	  Usually not a problem, but for example AmbientLight will not change that way unless you create a custom 
+	  SceneNode type which can interpret those attributes.
+	*/
 	if (argc>1)
 		smgr->loadScene(argv[1]);
 	else
-		smgr->loadScene("../../media/example.irr");
+		smgr->loadScene(getExampleMediaPath() + "example.irr");
 
 	/*
 	Now we'll create a camera, and give it a collision response animator
@@ -145,7 +153,7 @@ int main(int argc, char** argv)
 	while(device->run())
 	if (device->isWindowActive())
 	{
-		driver->beginScene(true, true, video::SColor(0,200,200,200));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,200,200,200));
 		smgr->drawAll();
 		driver->endScene();
 

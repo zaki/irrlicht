@@ -691,7 +691,7 @@ static bool draw2DImage4c(video::E_DRIVER_TYPE type)
 	driver->getMaterial2D().TextureLayer[0].BilinearFilter = true;
 
 	{
-		driver->beginScene(true, true, video::SColor(255,120,102,136));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,120,102,136));
 
 		driver->enableMaterial2D();
 
@@ -822,7 +822,7 @@ static bool addBlend2d(video::E_DRIVER_TYPE type)
 	}
 	material2D.AntiAliasing=video::EAAM_FULL_BASIC;
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->enableMaterial2D();
 	env->drawAll();
@@ -871,7 +871,7 @@ static bool moreFilterTests(video::E_DRIVER_TYPE type)
 	driver->getMaterial2D().TextureLayer[0].TrilinearFilter=true;
 
 	{
-		driver->beginScene(true, true, irr::video::SColor(255,255,255,255));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, irr::video::SColor(255,255,255,255));
 
 		// all three logos should be with filtering
 		driver->enableMaterial2D();

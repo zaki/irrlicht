@@ -9,7 +9,7 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-#ifdef _IRR_WINDOWS_
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	IMeshWriter* mw = device->getSceneManager()->createMeshWriter(type);
 	IWriteFile* file = device->getFileSystem()->createAndWriteFile(argv[destmesh]);
 	mw->writeMesh(file, mesh);
-	
+
 	file->drop();
 	mw->drop();
 	device->drop();

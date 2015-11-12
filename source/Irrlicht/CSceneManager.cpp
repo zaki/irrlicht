@@ -134,6 +134,10 @@
 #include "CPLYMeshWriter.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_B3D_WRITER_
+#include "CB3DMeshWriter.h"
+#endif
+
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
@@ -1170,10 +1174,10 @@ void CSceneManager::render()
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CSceneManager::getBoundingBox() const
 {
-	_IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager wanted.
+	_IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager should never be used.
 
-	// should never be used.
-	return *((core::aabbox3d<f32>*)0);
+	static const core::aabbox3d<f32> dummy;
+	return dummy;
 }
 
 
@@ -1183,7 +1187,6 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 	const ICameraSceneNode* cam = getActiveCamera();
 	if (!cam)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 	bool result = false;
@@ -1251,7 +1254,6 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 		}
 	}
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return result;
 }
 
@@ -2027,7 +2029,6 @@ bool CSceneManager::postEventFromUser(const SEvent& event)
 	if (cam)
 		ret = cam->OnEvent(event);
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -2166,7 +2167,6 @@ bool CSceneManager::saveScene(const io::path& filename, ISceneUserDataSerializer
 	else
 		os::Printer::log("Unable to open file", filename, ELL_ERROR);
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -2546,6 +2546,13 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 	case EMWT_PLY:
 #ifdef _IRR_COMPILE_WITH_PLY_WRITER_
 		return new CPLYMeshWriter();
+#else
+		return 0;
+#endif
+
+	case EMWT_B3D:
+#ifdef _IRR_COMPILE_WITH_B3D_WRITER_
+		return new CB3DMeshWriter(FileSystem);
 #else
 		return 0;
 #endif

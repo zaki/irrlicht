@@ -411,7 +411,7 @@ int main(int argc, char* argv[])
 			mesh.init(hm, 50.f, yellow, driver);
 		}
 
-		driver->beginScene(true, true, SColor(0xff000000));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(0xff000000));
 		smgr->drawAll();
 		driver->endScene();
 	}

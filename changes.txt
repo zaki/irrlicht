@@ -8,6 +8,44 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix first calculation of the camerascenenode boundingsphere.
+- Fix bug with ignored opening brace in .X files with DeclData section. Thx @Alin for bugreport and patch.
+- Fix problem with OpenGL textures cache.
+- Add clear buffer flags and marked some methods used for clear buffers as deprecated.
+- Fix: CGUIImage no longer scales wrong when working with textures which don't have the original image size.
+- Fix CSoftwareTexture2 calculation for OriginalSize of ITexture. It was returning the changed texture size instead of the original one before.
+- Fix skinned meshes not playing their last frame. Also clarified animation documentation to describe current behavior more exactly.
+- Add IWriteFile::flush interface (thx @ JLouisB for the patch).
+- CLightSceneNode::updateAbsolutePosition does now light recalculations. This is to fix using animators with lights.
+- Fix collada export for objects with rotations around more than 1 axis.
+- Add ISceneNodeAnimatorCameraMaya::setTargetMinDistance and getTargetMinDistance.
+- Add override font to IGUITreeView
+- CGUIComboBox now updates selection-list when font changes while it's open (thx @ rubixcuber for bugreport)
+- CAnimatedMeshSceneNode::setMesh does now set the animation speed again to that of the mesh (had been changed in 1.7, but not for obvious reasons)
+- .x meshloader regards now AnimTicksPerSecond (thx @qian for a test-model and bugreport)
+- Interface getMeshType moved from IAnimatedMesh up to IMesh.
+- Add b3d mesh-writer. Static writer written by Hendu, support for animated meshes added by JLouisB, testing and bugfixes by CuteAlien.
+- Node-collision functions of SceneCollisionManager like getSceneNodeFromScreenCoordinatesBB will now ignore collisions against empty boundingboxes.
+- Cameras return again an empty boundingbox (at 0,0,0) instead of returning the frustum boundingbox (was changed in very old Irrlicht version). 
+  You can access the frustum boundingbox through the frustum itself.
+  This means cameras no longer show up in the node-collision of the SceneCollisionManager (showing up there because of their frustum bounding-box was too confusing).
+- Fix problem in IrrlichtDevice::setResizable on X11 that caused window titlebars to hide occasionally under the taskbar in some systems (Ubuntu, Mint).
+- Added new IRenderTarget interface.
+- Replace the swprintf and snprintf defines by swprintf_irr and snprintf_irr to avoid conflicts with the standard libraries (and other libraries).
+- XBox support removed as it would need DX8 (this was about the original XBox).
+- Support for Direct3D 8 removed after svn revision 5052 due to lack of maintenance.
+- _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX removed. This was a bugfix for VS2003 (in combination with .NET) which we haven't supported in a while.
+- VS 2005 support removed after svn revision 5048. 
+- WinCE 6 supported removed after svn revision 5046. 
+- NVidia CG support removed after svn revision 5045 due to lack of maintenance. NVidia has also stopped supporting this.
+- TA burningvideo:
+ enabled triangle fan again so that skybox works.[need more testmeshes if other trianglefan than skybox doesn't work]
+ correct vc2013 project files for x64,static lib
+ correct alphablend vs add [was broken]
+- Add a new core::rect constructor which takes a dimension parameter and set's left-top to 0.
+- mtl (obj) format reader and write now regards texture scaling and translation. (thx @thanhle for noticing and patch proposal).
+- Added Visual Studio 2013 project files.
+- Added new color formats: ECF_R8, ECF_R8G8, ECF_D16, ECF_D32, ECF_D24S8.
 - Can now enable/disable backround drawing for IGUITable.
 - Bugfix: Cloning CBillboardSceneNode now copies colors and sizes.
 - EditBox works now with numpad on X11
@@ -84,9 +122,28 @@ Changes in 1.9 (not yet released)
 - Add IColladaMeshWriter::findGeometryNameForNode
 - Add getters IGUIButton::isDrawBorderEnabled and IGUIButton::isDrawBackgroundEnabled
 
---------------------------
-Changes in 1.8.2
+-  changed CSkyBoxSceneNode to drawIndexedTriangleList instead of drawIndexedTriangleFan (because software renderers don't have fans.. and i needed the demo functionable)
+- added x64 to vs2008 project ( buildAllExamples_v9 ) [paths: obj64, win64-visualstudio]
+- burningvideo: getMaxTextureSize adjusted [ changed meaning of SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE
+- burningvideo: mipmaplevel adjusted ( not that bad bokeh...(sometimes) )
 
+--------------------------
+Changes in 1.8.4
+ - Tests give now a warning when stabilizing screenshots failed. Aslo trying more often now (a hack as taking screenshots otherwise fails often in windowed mode on some systems).
+
+--------------------------
+Changes in 1.8.3 (13.9.2015)
+ - Fix the fix for compiling on GCC5 (thanks to est31 for report and patch)
+
+--------------------------
+Changes in 1.8.2 (30.8.2015)
+
+ - Add VS2013 project files
+ - Fix compiling with IRR_LINUX_XCURSOR_
+ - Fix compiling with NO_IRR_COMPILE_WITH_LIBJPEG_  (thx to anontypist for report and patch).
+ - Fix compiling on GCC5 on MinGW (thanks to Slipxy for finding the bug and to osense for reporting it).
+ - Fix loading of .X and .B3D models with non-normalized quaternion rotations (thanks to JLouisB for a test-model).
+ - Fix compiling on Free BSD (thanks to leper for reporting and patch)
  - Fix bug with multiple SetPixelFormat calls. (reported and fixed by anontypist)
  - Fix bug related to memory release in PNG image loader. Thanks elephoenix for it.
  - Fix crash in CGUIListBox when users pressed end key folled by any other key in an empty, focused list box (thanks at porcus for report and patch).

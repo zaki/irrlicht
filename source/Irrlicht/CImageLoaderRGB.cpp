@@ -236,14 +236,14 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 
 				image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(rgb.Header.Xsize, rgb.Header.Ysize));
 				if (image)
-					CColorConverter::convert8BitTo16Bit(rgb.rgbData, (s16*)image->lock(), rgb.Header.Xsize, rgb.Header.Ysize, paletteData, 0, true);
+					CColorConverter::convert8BitTo16Bit(rgb.rgbData, (s16*)image->getData(), rgb.Header.Xsize, rgb.Header.Ysize, paletteData, 0, true);
 				break;
 			case 3:
 				// RGB image
 				// one byte per COLOR VALUE, eg, 24bpp
 				image = new CImage(ECF_R8G8B8, core::dimension2d<u32>(rgb.Header.Xsize, rgb.Header.Ysize));
 				if (image)
-					CColorConverter::convert24BitTo24Bit(rgb.rgbData, (u8*)image->lock(), rgb.Header.Xsize, rgb.Header.Ysize, 0, true, false);
+					CColorConverter::convert24BitTo24Bit(rgb.rgbData, (u8*)image->getData(), rgb.Header.Xsize, rgb.Header.Ysize, 0, true, false);
 				break;
 			case 4:
 				// RGBa image with one alpha channel (32bpp)
@@ -253,16 +253,13 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 
 				image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(rgb.Header.Xsize, rgb.Header.Ysize));
 				if (image)
-					CColorConverter::convert32BitTo32Bit((s32*)rgb.rgbData, (s32*)image->lock(), rgb.Header.Xsize, rgb.Header.Ysize, 0, true);
+					CColorConverter::convert32BitTo32Bit((s32*)rgb.rgbData, (s32*)image->getData(), rgb.Header.Xsize, rgb.Header.Ysize, 0, true);
 
 				break;
 			default:
 				// Format unknown
 				os::Printer::log("Unsupported pixel format in RGB file", file->getFileName(), ELL_ERROR);
 			}
-
-			if (image)
-				image->unlock();
 		}
 	}
 

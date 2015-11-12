@@ -37,7 +37,7 @@ bool softwareDevice(void)
 
 	(void)smgr->addCameraSceneNode(0, core::vector3df(0,0,-40), core::vector3df(0,0,0));
 
-	driver->beginScene(true, true, video::SColor(255,255,255,0));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,255,0));
 	smgr->drawAll();
 
 	driver->setMaterial(material);

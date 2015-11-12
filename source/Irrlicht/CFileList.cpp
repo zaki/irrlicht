@@ -107,7 +107,6 @@ bool CFileList::isDirectory(u32 index) const
 	if (index < Files.size())
 		ret = Files[index].IsDirectory;
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -117,7 +116,6 @@ u32 CFileList::getFileSize(u32 index) const
 	return index < Files.size() ? Files[index].Size : 0;
 }
 
-//! Returns the size of a file
 u32 CFileList::getFileOffset(u32 index) const
 {
 	return index < Files.size() ? Files[index].Offset : 0;

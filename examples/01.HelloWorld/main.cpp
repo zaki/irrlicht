@@ -43,6 +43,7 @@ After we have set up the IDE, the compiler will know where to find the Irrlicht
 Engine header files so we can include it now in our code.
 */
 #include <irrlicht.h>
+#include "exampleHelper.h"
 
 /*
 In the Irrlicht Engine, everything can be found in the namespace 'irr'. So if
@@ -77,7 +78,7 @@ of the console window, which pops up when starting a program with main(). This
 is done by the second pragma. We could also use the WinMain method, though
 losing platform independence then.
 */
-#ifdef _IRR_WINDOWS_
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
@@ -95,10 +96,9 @@ int main()
 	parameters:
 
 	- deviceType: Type of the device. This can currently be the Null-device,
-	   one of the two software renderers, D3D8, D3D9, or OpenGL. In this
+	   one of the two software renderers, D3D9, or OpenGL. In this
 	   example we use EDT_SOFTWARE, but to try out, you might want to
-	   change it to EDT_BURNINGSVIDEO, EDT_NULL, EDT_DIRECT3D8,
-	   EDT_DIRECT3D9, or EDT_OPENGL.
+	   change it to EDT_BURNINGSVIDEO, EDT_NULL, EDT_DIRECT3D9, or EDT_OPENGL.
 
 	- windowSize: Size of the Window or screen in FullScreenMode to be
 	   created. In this example we use 640x480.
@@ -154,6 +154,11 @@ int main()
 		rect<s32>(10,10,260,22), true);
 
 	/*
+	Get a media path dedicated for your platform.
+	*/
+	const io::path mediaPath = getExampleMediaPath();
+
+	/*
 	To show something interesting, we load a Quake 2 model and display it.
 	We only have to get the Mesh from the Scene Manager with getMesh() and add
 	a SceneNode to display the mesh with addAnimatedMeshSceneNode(). We
@@ -165,7 +170,7 @@ int main()
 	other supported file format. By the way, that cool Quake 2 model
 	called sydney was modelled by Brian Collins.
 	*/
-	IAnimatedMesh* mesh = smgr->getMesh("../../media/sydney.md2");
+	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "sydney.md2");
 	if (!mesh)
 	{
 		device->drop();
@@ -185,7 +190,7 @@ int main()
 	{
 		node->setMaterialFlag(EMF_LIGHTING, false);
 		node->setMD2Animation(scene::EMAT_STAND);
-		node->setMaterialTexture( 0, driver->getTexture("../../media/sydney.bmp") );
+		node->setMaterialTexture( 0, driver->getTexture(mediaPath + "sydney.bmp") );
 	}
 
 	/*
@@ -210,7 +215,7 @@ int main()
 		the GUI Environment draw their content. With the endScene()
 		call everything is presented on the screen.
 		*/
-		driver->beginScene(true, true, SColor(255,100,101,140));
+		driver->beginScene(ECBF_COLOR | ECBF_DEPTH, SColor(255,100,101,140));
 
 		smgr->drawAll();
 		guienv->drawAll();

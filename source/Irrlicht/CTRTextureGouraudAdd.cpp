@@ -67,9 +67,9 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 	s32 spanZValue, spanZStep; // ZValues when drawing a span
 	TZBufferType* zTarget, *spanZTarget; // target of ZBuffer;
 
-	lockedSurface = (u16*)RenderTarget->lock();
+	lockedSurface = (u16*)RenderTarget->getData();
 	lockedZBuffer = ZBuffer->lock();
-	lockedTexture = (u16*)Texture->lock();
+	lockedTexture = (u16*)Texture->getData();
 
 	for (s32 i=0; i<triangleCount; ++i)
 	{
@@ -388,9 +388,7 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 
 	}
 
-	RenderTarget->unlock();
 	ZBuffer->unlock();
-	Texture->unlock();
 }
 
 } // end namespace video

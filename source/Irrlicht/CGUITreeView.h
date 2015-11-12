@@ -277,6 +277,19 @@ namespace gui
 		//! Irrlicht engine as icon font, the icon strings defined in GUIIcons.h can be used.
 		virtual void setIconFont( IGUIFont* font ) _IRR_OVERRIDE_;
 
+		//! Sets a skin independent font.
+		/** \param font: New font to set or 0 to use the skin-font. */
+		virtual void setOverrideFont(IGUIFont* font=0) _IRR_OVERRIDE_;
+
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont(void) const _IRR_OVERRIDE_;
+
+		//! Get the font which is used for drawing
+		/** This is the override font when one is set and the
+		font of the skin otherwise. */
+		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
+
 		//! Sets the image list which should be used for the image and selected image of every node.
 		//! The default is 0 (no images).
 		virtual void setImageList( IGUIImageList* imageList ) _IRR_OVERRIDE_;
@@ -317,6 +330,7 @@ namespace gui
 		s32			TotalItemHeight;
 		s32			TotalItemWidth;
 		IGUIFont*		Font;
+		gui::IGUIFont*	OverrideFont;
 		IGUIFont*		IconFont;
 		IGUIScrollBar*		ScrollBarH;
 		IGUIScrollBar*		ScrollBarV;

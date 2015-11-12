@@ -2041,7 +2041,7 @@ public:
 	virtual core::stringw getStringW() _IRR_OVERRIDE_
 	{
 		wchar_t buf[32];
-		swprintf(buf, 32, L"%p", Value);
+		swprintf_irr(buf, 32, L"%p", Value);
 
 		return core::stringw(buf);
 	}

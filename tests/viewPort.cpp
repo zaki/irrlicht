@@ -43,7 +43,7 @@ static bool viewPortText(E_DRIVER_TYPE driverType)
 	smgr->addCubeSceneNode();
 	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,101,140));
 	smgr->drawAll();
 	env->drawAll();
 	driver->setViewPort(rect<s32>(0,0,160/2,120/2));

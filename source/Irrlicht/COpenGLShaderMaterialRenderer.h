@@ -35,7 +35,6 @@ namespace video
 {
 
 class COpenGLDriver;
-class COpenGLMaterialRenderer;
 class IShaderConstantSetCallBack;
 
 //! Class for using vertex and pixel shaders with OpenGL
@@ -79,7 +78,11 @@ protected:
 
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
-	COpenGLMaterialRenderer* BaseMaterial;
+
+	bool Alpha;
+	bool Blending;
+	bool FixedBlending;
+	bool AlphaTest;
 
 	GLuint VertexShader;
 	// We have 4 values here, [0] is the non-fog version, the other three are

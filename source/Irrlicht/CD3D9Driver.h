@@ -22,40 +22,20 @@
 #endif
 #include <d3d9.h>
 
-#ifdef _IRR_COMPILE_WITH_CG_
-#include "Cg/cg.h"
-#include "Cg/cgD3D9.h"
-#endif
-
 namespace irr
 {
 namespace video
 {
 	class CD3D9CallBridge;
-
-	struct SDepthSurface : public IReferenceCounted
-	{
-		SDepthSurface() : Surface(0)
-		{
-			#ifdef _DEBUG
-			setDebugName("SDepthSurface");
-			#endif
-		}
-		virtual ~SDepthSurface()
-		{
-			if (Surface)
-				Surface->Release();
-		}
-
-		IDirect3DSurface9* Surface;
-		core::dimension2du Size;
-	};
+	class CD3D9RenderTarget;
+	class CD3D9Texture;
 
 	class CD3D9Driver : public CNullDriver, IMaterialRendererServices
 	{
 	public:
 
 		friend class CD3D9CallBridge;
+		friend class CD3D9RenderTarget;
 		friend class CD3D9Texture;
 
 		//! constructor
@@ -64,13 +44,9 @@ namespace video
 		//! destructor
 		virtual ~CD3D9Driver();
 
-		//! applications must call this method before performing any rendering. returns false if failed.
-		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0),
-				const SExposedVideoData& videoData=SExposedVideoData(),
-				core::rect<s32>* sourceRect=0) _IRR_OVERRIDE_;
+		virtual bool beginScene(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
+			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0) _IRR_OVERRIDE_;
 
-		//! applications must call this method after performing any rendering. returns false if failed.
 		virtual bool endScene() _IRR_OVERRIDE_;
 
 		//! queries the features of the driver, returns true if feature is available
@@ -82,15 +58,8 @@ namespace video
 		//! sets a material
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
-		//! sets a render target
-		virtual bool setRenderTarget(video::ITexture* texture,
-			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
-
-		//! Sets multiple render targets
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
-			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
+		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
@@ -150,6 +119,9 @@ namespace video
 		The value is a safe approximation, i.e. can be larger then the
 		actual value of pixels. */
 		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const _IRR_OVERRIDE_;
+
+		//! Create render target.
+		virtual IRenderTarget* addRenderTarget() _IRR_OVERRIDE_;
 
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
@@ -294,8 +266,7 @@ namespace video
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
-		//! Clears the ZBuffer.
-		virtual void clearZBuffer() _IRR_OVERRIDE_;
+		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
@@ -314,9 +285,6 @@ namespace video
 
 		//! Check if the driver was recently reset.
 		virtual bool checkDriverReset() _IRR_OVERRIDE_ {return DriverWasReset;}
-
-		// removes the depth struct from the DepthSurface array
-		void removeDepthSurface(SDepthSurface* depth);
 
 		//! Get the current color format of the color buffer
 		/** \return Color format of the color buffer. */
@@ -343,11 +311,6 @@ namespace video
 
 		//! Get bridge calls.
 		CD3D9CallBridge* getBridgeCalls() const;
-
-		//! Get Cg context
-		#ifdef _IRR_COMPILE_WITH_CG_
-		const CGcontext& getCgContext();
-		#endif
 
 	private:
 
@@ -385,13 +348,10 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0) _IRR_OVERRIDE_;
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name) _IRR_OVERRIDE_;
 
 		//! returns the current size of the screen or rendertarget
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
-
-		//! Check if a proper depth buffer for the RTT is available, otherwise create it.
-		void checkDepthBuffer(ITexture* tex);
 
 		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
@@ -455,8 +415,11 @@ namespace video
 		IDirect3D9* pID3D;
 		IDirect3DDevice9* pID3DDevice;
 
-		IDirect3DSurface9* PrevRenderTarget;
+		IDirect3DSurface9* BackBufferSurface;
+		IDirect3DSurface9* DepthStencilSurface;
+
 		core::dimension2d<u32> CurrentRendertargetSize;
+		core::array<bool> ActiveRenderTarget;
 
 		HWND WindowId;
 		core::rect<s32>* SceneSourceRect;
@@ -470,12 +433,8 @@ namespace video
 		core::stringc VendorName;
 		u16 VendorID;
 
-		core::array<SDepthSurface*> DepthBuffers;
-
 		u32 MaxTextureUnits;
 		u32 MaxUserClipPlanes;
-		u32 MaxMRTs;
-		u32 NumSetMRTs;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
 
@@ -492,19 +451,19 @@ namespace video
 		bool DriverWasReset;
 		bool OcclusionQuerySupport;
 		bool AlphaToCoverageSupport;
-
-		#ifdef _IRR_COMPILE_WITH_CG_
-		CGcontext CgContext;
-		#endif
 	};
 
-	//! This bridge between Irlicht pseudo D3D8 calls
-	//! and true D3D8 calls.
+	//! This bridge between Irlicht pseudo D3D9 calls
+	//! and true D3D9 calls.
 
 	class CD3D9CallBridge
 	{
 	public:
 		CD3D9CallBridge(IDirect3DDevice9* p, CD3D9Driver* driver);
+
+		// Reset to default state.
+
+		void reset();
 
 		// Blending calls.
 

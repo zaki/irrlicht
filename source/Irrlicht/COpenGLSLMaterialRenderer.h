@@ -43,7 +43,6 @@ namespace video
 {
 
 class COpenGLDriver;
-class COpenGLMaterialRenderer;
 class IShaderConstantSetCallBack;
 
 //! Class for using GLSL shaders with OpenGL
@@ -120,7 +119,11 @@ protected:
 
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
-	COpenGLMaterialRenderer* BaseMaterial;
+
+	bool Alpha;
+	bool Blending;
+	bool FixedBlending;
+	bool AlphaTest;
 
 	struct SUniformInfo
 	{

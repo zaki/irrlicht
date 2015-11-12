@@ -13,18 +13,10 @@ namespace irr
 namespace video
 {
 
-//! Constructor of empty image
-CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
-:Data(0), Size(size), Format(format), IsCompressed(false), HasMipMaps(false), DeleteMemory(true)
-{
-	initData();
-}
-
-
 //! Constructor from raw data
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
-			bool ownForeignMemory, bool deleteForeignMemory, bool compressed, bool mipMaps)
-: Data(0), Size(size), Format(format), IsCompressed(compressed), HasMipMaps(mipMaps), DeleteMemory(deleteForeignMemory)
+	bool ownForeignMemory, bool deleteMemory)
+		: IImage(format, size, deleteMemory)
 {
 	if (ownForeignMemory)
 	{
@@ -36,8 +28,16 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 	{
 		Data = 0;
 		initData();
-		memcpy(Data, data, Size.Height * Pitch);
+		memcpy(Data, data, getDataSizeFromFormat(Format, Size.Width, Size.Height));
 	}
+}
+
+
+//! Constructor of empty image
+CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
+	: IImage(format, size, true)
+{
+	initData();
 }
 
 
@@ -47,134 +47,11 @@ void CImage::initData()
 #ifdef _DEBUG
 	setDebugName("CImage");
 #endif
-	BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
-
-	// Pitch should be aligned...
-	Pitch = BytesPerPixel * Size.Width;
 
 	if (!Data)
 	{
-		DeleteMemory=true;
-		Data = new u8[Size.Height * Pitch];
-	}
-}
-
-
-//! destructor
-CImage::~CImage()
-{
-	if ( DeleteMemory )
-		delete [] Data;
-}
-
-
-//! Returns width and height of image data.
-const core::dimension2d<u32>& CImage::getDimension() const
-{
-	return Size;
-}
-
-
-//! Returns bits per pixel.
-u32 CImage::getBitsPerPixel() const
-{
-	return getBitsPerPixelFromFormat(Format);
-}
-
-
-//! Returns bytes per pixel
-u32 CImage::getBytesPerPixel() const
-{
-	return BytesPerPixel;
-}
-
-
-//! Returns image data size in bytes
-u32 CImage::getImageDataSizeInBytes() const
-{
-	return Pitch * Size.Height;
-}
-
-
-//! Returns image data size in pixels
-u32 CImage::getImageDataSizeInPixels() const
-{
-	return Size.Width * Size.Height;
-}
-
-
-//! returns mask for red value of a pixel
-u32 CImage::getRedMask() const
-{
-	switch(Format)
-	{
-	case ECF_A1R5G5B5:
-		return 0x1F<<10;
-	case ECF_R5G6B5:
-		return 0x1F<<11;
-	case ECF_R8G8B8:
-		return 0x00FF0000;
-	case ECF_A8R8G8B8:
-		return 0x00FF0000;
-	default:
-		return 0x0;
-	}
-}
-
-
-//! returns mask for green value of a pixel
-u32 CImage::getGreenMask() const
-{
-	switch(Format)
-	{
-	case ECF_A1R5G5B5:
-		return 0x1F<<5;
-	case ECF_R5G6B5:
-		return 0x3F<<5;
-	case ECF_R8G8B8:
-		return 0x0000FF00;
-	case ECF_A8R8G8B8:
-		return 0x0000FF00;
-	default:
-		return 0x0;
-	}
-}
-
-
-//! returns mask for blue value of a pixel
-u32 CImage::getBlueMask() const
-{
-	switch(Format)
-	{
-	case ECF_A1R5G5B5:
-		return 0x1F;
-	case ECF_R5G6B5:
-		return 0x1F;
-	case ECF_R8G8B8:
-		return 0x000000FF;
-	case ECF_A8R8G8B8:
-		return 0x000000FF;
-	default:
-		return 0x0;
-	}
-}
-
-
-//! returns mask for alpha value of a pixel
-u32 CImage::getAlphaMask() const
-{
-	switch(Format)
-	{
-	case ECF_A1R5G5B5:
-		return 0x1<<15;
-	case ECF_R5G6B5:
-		return 0x0;
-	case ECF_R8G8B8:
-		return 0x0;
-	case ECF_A8R8G8B8:
-		return 0xFF000000;
-	default:
-		return 0x0;
+		DeleteMemory = true;
+		Data = new u8[getDataSizeFromFormat(Format, Size.Width, Size.Height)];
 	}
 }
 
@@ -182,7 +59,7 @@ u32 CImage::getAlphaMask() const
 //! sets a pixel
 void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::setPixel method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -227,7 +104,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend)
 //! returns a pixel
 SColor CImage::getPixel(u32 x, u32 y) const
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::getPixel method doesn't work with compressed images.", ELL_WARNING);
 		return SColor(0);
@@ -257,17 +134,10 @@ SColor CImage::getPixel(u32 x, u32 y) const
 }
 
 
-//! returns the color format
-ECOLOR_FORMAT CImage::getColorFormat() const
-{
-	return Format;
-}
-
-
 //! copies this surface into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::copyTo method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -280,7 +150,7 @@ void CImage::copyTo(IImage* target, const core::position2d<s32>& pos)
 //! copies this surface partially into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::copyTo method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -293,7 +163,7 @@ void CImage::copyTo(IImage* target, const core::position2d<s32>& pos, const core
 //! copies this surface into another, using the alpha mask, a cliprect and a color to add with
 void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const SColor &color, const core::rect<s32>* clipRect)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::copyToWithAlpha method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -309,7 +179,7 @@ void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, c
 // note: this is very very slow.
 void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::copyToScaling method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -371,7 +241,7 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 // note: this is very very slow.
 void CImage::copyToScaling(IImage* target)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::copyToScaling method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -388,15 +258,14 @@ void CImage::copyToScaling(IImage* target)
 		return;
 	}
 
-	copyToScaling(target->lock(), targetSize.Width, targetSize.Height, target->getColorFormat());
-	target->unlock();
+	copyToScaling(target->getData(), targetSize.Width, targetSize.Height, target->getColorFormat());
 }
 
 
 //! copies this surface into another, scaling it to fit it.
 void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::copyToScalingBoxFilter method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -407,7 +276,7 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 	const f32 sourceXStep = (f32) Size.Width / (f32) destSize.Width;
 	const f32 sourceYStep = (f32) Size.Height / (f32) destSize.Height;
 
-	target->lock();
+	target->getData();
 
 	s32 fx = core::ceil32( sourceXStep );
 	s32 fy = core::ceil32( sourceYStep );
@@ -426,15 +295,13 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 		}
 		sy += sourceYStep;
 	}
-
-	target->unlock();
 }
 
 
 //! fills the surface with given color
 void CImage::fill(const SColor &color)
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::fill method doesn't work with compressed images.", ELL_WARNING);
 		return;
@@ -475,24 +342,10 @@ void CImage::fill(const SColor &color)
 }
 
 
-//! Inform whether the image is compressed
-bool CImage::isCompressed() const
-{
-	return IsCompressed;
-}
-
-
-//! Check whether the image has MipMaps
-bool CImage::hasMipMaps() const
-{
-	return HasMipMaps;
-}
-
-
 //! get a filtered pixel
 inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) const
 {
-	if (IsCompressed)
+	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::getPixelBox method doesn't work with compressed images.", ELL_WARNING);
 		return SColor(0);

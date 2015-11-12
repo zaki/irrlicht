@@ -182,16 +182,14 @@ void CTRTextureVertexAlpha2::scanline_bilinear (  )
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
-#ifdef INVERSE_W
-	f32 inversew;
-#endif
+	f32 inversew = FIX_POINT_F32_MUL;
 
 //#define __TEST_THIS
 
@@ -236,23 +234,12 @@ void CTRTextureVertexAlpha2::scanline_bilinear (  )
 
 #ifdef INVERSE_W
 			inversew = fix_inverse32 ( line.w[0] );
-
+#endif
 			tx0 = tofix ( line.t[0][0].x,inversew);
 			ty0 = tofix ( line.t[0][0].y,inversew);
 
 #ifdef IPOL_C0
 			a3 = tofix ( line.c[0][0].y,inversew );
-#endif
-
-#else
-			tx0 = tofix ( line.t[0][0].x );
-			ty0 = tofix ( line.t[0][0].y );
-
-#ifdef IPOL_C0
-			a3 = tofix ( line.c[0][0].y );
-#endif
-
-
 #endif
 
 			getSample_texture ( r0, g0, b0, &IT[0], tx0, ty0 );

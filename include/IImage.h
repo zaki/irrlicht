@@ -9,6 +9,7 @@
 #include "position2d.h"
 #include "rect.h"
 #include "SColor.h"
+#include <string.h>
 
 namespace irr
 {
@@ -23,57 +24,221 @@ class IImage : public virtual IReferenceCounted
 {
 public:
 
+	//! constructor
+	IImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, bool deleteMemory) :
+		Format(format), Size(size), Data(0), MipMapsData(0), BytesPerPixel(0), Pitch(0),
+		DeleteMemory(deleteMemory), DeleteMipMapsMemory(false)
+	{
+		BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
+		Pitch = BytesPerPixel * Size.Width;
+	}
+
+	//! destructor
+	virtual ~IImage()
+	{
+		if (DeleteMemory)
+			delete[] Data;
+
+		if (DeleteMipMapsMemory)
+			delete[] MipMapsData;
+	}
+
+	//! Returns the color format
+	ECOLOR_FORMAT getColorFormat() const
+	{
+		return Format;
+	}
+
+	//! Returns width and height of image data.
+	const core::dimension2d<u32>& getDimension() const
+	{
+		return Size;
+	}
+
+	//! Returns bits per pixel.
+	u32 getBitsPerPixel() const
+	{
+
+		return getBitsPerPixelFromFormat(Format);
+	}
+
+	//! Returns bytes per pixel
+	u32 getBytesPerPixel() const
+	{
+		return BytesPerPixel;
+	}
+
+	//! Returns image data size in bytes
+	u32 getImageDataSizeInBytes() const
+	{
+		return getDataSizeFromFormat(Format, Size.Width, Size.Height);
+	}
+
+	//! Returns image data size in pixels
+	u32 getImageDataSizeInPixels() const
+	{
+		return Size.Width * Size.Height;
+	}
+
+	//! Returns pitch of image
+	u32 getPitch() const
+	{
+		return Pitch;
+	}
+
+	//! Returns mask for red value of a pixel
+	u32 getRedMask() const
+	{
+		switch (Format)
+		{
+		case ECF_A1R5G5B5:
+			return 0x1F << 10;
+		case ECF_R5G6B5:
+			return 0x1F << 11;
+		case ECF_R8G8B8:
+			return 0x00FF0000;
+		case ECF_A8R8G8B8:
+			return 0x00FF0000;
+		default:
+			return 0x0;
+		}
+	}
+
+	//! Returns mask for green value of a pixel
+	u32 getGreenMask() const
+	{
+		switch (Format)
+		{
+		case ECF_A1R5G5B5:
+			return 0x1F << 5;
+		case ECF_R5G6B5:
+			return 0x3F << 5;
+		case ECF_R8G8B8:
+			return 0x0000FF00;
+		case ECF_A8R8G8B8:
+			return 0x0000FF00;
+		default:
+			return 0x0;
+		}
+	}
+
+	//! Returns mask for blue value of a pixel
+	u32 getBlueMask() const
+	{
+		switch (Format)
+		{
+		case ECF_A1R5G5B5:
+			return 0x1F;
+		case ECF_R5G6B5:
+			return 0x1F;
+		case ECF_R8G8B8:
+			return 0x000000FF;
+		case ECF_A8R8G8B8:
+			return 0x000000FF;
+		default:
+			return 0x0;
+		}
+	}
+
+	//! Returns mask for alpha value of a pixel
+	u32 getAlphaMask() const
+	{
+		switch (Format)
+		{
+		case ECF_A1R5G5B5:
+			return 0x1 << 15;
+		case ECF_R5G6B5:
+			return 0x0;
+		case ECF_R8G8B8:
+			return 0x0;
+		case ECF_A8R8G8B8:
+			return 0xFF000000;
+		default:
+			return 0x0;
+		}
+	}
+
+	//! Use this to get a pointer to the image data.
+	void* getData() const
+	{
+		return Data;
+	}
+
 	//! Lock function. Use this to get a pointer to the image data.
 	/** After you don't need the pointer anymore, you must call unlock().
 	\return Pointer to the image data. What type of data is pointed to
 	depends on the color format of the image. For example if the color
 	format is ECF_A8R8G8B8, it is of u32. Be sure to call unlock() after
 	you don't need the pointer any more. */
-	virtual void* lock() = 0;
+	_IRR_DEPRECATED_ void* lock()
+	{
+		return getData();
+	}
 
 	//! Unlock function.
 	/** Should be called after the pointer received by lock() is not
 	needed anymore. */
-	virtual void unlock() = 0;
+	_IRR_DEPRECATED_ void unlock()
+	{
+	}
 
-	//! Returns width and height of image data.
-	virtual const core::dimension2d<u32>& getDimension() const = 0;
+	//! Get mipmaps data.
+	void* getMipMapsData() const
+	{
+		return MipMapsData;
+	}
 
-	//! Returns bits per pixel.
-	virtual u32 getBitsPerPixel() const = 0;
+	//! Set mipmaps data.
+	/** This method allows you to put custom mipmaps data for
+	image.
+	\param data A byte array with pixel color information
+	\param ownForeignMemory If true, the image will use the data
+	pointer directly and own it afterwards. If false, the memory
+	will by copied internally.
+	\param deleteMemory Whether the memory is deallocated upon
+	destruction. */
+	void setMipMapsData(void* data, bool ownForeignMemory, bool deleteMemory)
+	{
+		if (DeleteMipMapsMemory && data != MipMapsData)
+			delete[] MipMapsData;
 
-	//! Returns bytes per pixel
-	virtual u32 getBytesPerPixel() const = 0;
+		if (data)
+		{
+			if (ownForeignMemory)
+			{
+				DeleteMipMapsMemory = deleteMemory;
+				MipMapsData = static_cast<u8*>(data);
+			}
+			else
+			{
+				u32 dataSize = 0;
+				u32 width = Size.Width;
+				u32 height = Size.Height;
 
-	//! Returns image data size in bytes
-	virtual u32 getImageDataSizeInBytes() const = 0;
+				do
+				{
+					if (width > 1)
+						width >>= 1;
 
-	//! Returns image data size in pixels
-	virtual u32 getImageDataSizeInPixels() const = 0;
+					if (height > 1)
+						height >>= 1;
+
+					dataSize += getDataSizeFromFormat(Format, width, height);
+				}
+				while (width != 1 || height != 1);
+
+				DeleteMipMapsMemory = true;
+				MipMapsData = new u8[dataSize];
+				memcpy(MipMapsData, data, dataSize);
+			}
+		}
+	}
 
 	//! Returns a pixel
 	virtual SColor getPixel(u32 x, u32 y) const = 0;
 
 	//! Sets a pixel
 	virtual void setPixel(u32 x, u32 y, const SColor &color, bool blend = false ) = 0;
-
-	//! Returns the color format
-	virtual ECOLOR_FORMAT getColorFormat() const = 0;
-
-	//! Returns mask for red value of a pixel
-	virtual u32 getRedMask() const = 0;
-
-	//! Returns mask for green value of a pixel
-	virtual u32 getGreenMask() const = 0;
-
-	//! Returns mask for blue value of a pixel
-	virtual u32 getBlueMask() const = 0;
-
-	//! Returns mask for alpha value of a pixel
-	virtual u32 getAlphaMask() const = 0;
-
-	//! Returns pitch of image
-	virtual u32 getPitch() const =0;
 
 	//! Copies the image into the target, scaling the image to fit
 	virtual void copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format=ECF_A8R8G8B8, u32 pitch=0) =0;
@@ -99,11 +264,17 @@ public:
 	virtual void fill(const SColor &color) =0;
 
 	//! Inform whether the image is compressed
-	virtual bool isCompressed() const = 0;
+	_IRR_DEPRECATED_ bool isCompressed() const
+	{
+		return IImage::isCompressedFormat(Format);
+	}
 
 	//! Check whether the image has MipMaps
 	/** \return True if image has MipMaps, else false. */
-	virtual bool hasMipMaps() const = 0;
+	_IRR_DEPRECATED_ bool hasMipMaps() const
+	{
+		return (getMipMapsData() != 0);
+	}
 
 	//! get the amount of Bits per Pixel of the given color format
 	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)
@@ -152,57 +323,70 @@ public:
 			return 64;
 		case ECF_A32B32G32R32F:
 			return 128;
+		case ECF_R8:
+			return 8;
+		case ECF_R8G8:
+			return 16;
+		case ECF_R16:
+			return 16;
+		case ECF_R16G16:
+			return 32;
+		case ECF_D16:
+			return 16;
+		case ECF_D32:
+			return 32;
+		case ECF_D24S8:
+			return 32;
 		default:
 			return 0;
 		}
 	}
 
-	//! calculate compressed image size for selected width and height.
-	static u32 getCompressedImageSize(ECOLOR_FORMAT format, u32 width, u32 height)
+	//! calculate image data size in bytes for selected format, width and height.
+	static u32 getDataSizeFromFormat(ECOLOR_FORMAT format, u32 width, u32 height)
 	{
-		if (!isCompressedFormat(format))
-			return 0;
-
-		u32 compressedImageSize = 0;
+		u32 imageSize = 0;
 
 		switch (format)
 		{
-			case ECF_DXT1:
-				compressedImageSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
-				break;
-			case ECF_DXT2:
-			case ECF_DXT3:
-			case ECF_DXT4:
-			case ECF_DXT5:
-				compressedImageSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
-				break;
-			case ECF_PVRTC_RGB2:
-			case ECF_PVRTC_ARGB2:
-				compressedImageSize = (core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
-				break;
-			case ECF_PVRTC_RGB4:
-			case ECF_PVRTC_ARGB4:
-				compressedImageSize = (core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
-				break;
-			case ECF_PVRTC2_ARGB2:
-				compressedImageSize = core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
-				break;
-			case ECF_PVRTC2_ARGB4:
-			case ECF_ETC1:
-			case ECF_ETC2_RGB:
-				compressedImageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
-				break;
-			case ECF_ETC2_ARGB:
-				compressedImageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
-				break;
-			default:
-				break;
+		case ECF_DXT1:
+			imageSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
+			break;
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
+			imageSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
+			break;
+		case ECF_PVRTC_RGB2:
+		case ECF_PVRTC_ARGB2:
+			imageSize = (core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
+			break;
+		case ECF_PVRTC_RGB4:
+		case ECF_PVRTC_ARGB4:
+			imageSize = (core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
+			break;
+		case ECF_PVRTC2_ARGB2:
+			imageSize = core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
+			break;
+		case ECF_PVRTC2_ARGB4:
+		case ECF_ETC1:
+		case ECF_ETC2_RGB:
+			imageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
+			break;
+		case ECF_ETC2_ARGB:
+			imageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
+			break;
+		default: // uncompressed formats
+			imageSize = getBitsPerPixelFromFormat(format) / 8 * width;
+			imageSize *= height;
+			break;
 		}
 
-		return compressedImageSize;
+		return imageSize;
 	}
 
-	//! test if this is compressed color format
+	//! check if this is compressed color format
 	static bool isCompressedFormat(const ECOLOR_FORMAT format)
 	{
 		switch(format)
@@ -227,7 +411,21 @@ public:
 		}
 	}
 
-	//! test if the color format is only viable for RenderTarget textures
+	//! check if the color format is only viable for depth/stencil textures
+	static bool isDepthFormat(const ECOLOR_FORMAT format)
+	{
+		switch(format)
+		{
+			case ECF_D16:
+			case ECF_D32:
+			case ECF_D24S8:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	//! check if the color format is only viable for RenderTarget textures
 	/** Since we don't have support for e.g. floating point IImage formats
 	one should test if the color format can be used for arbitrary usage, or
 	if it is restricted to RTTs. */
@@ -242,12 +440,29 @@ public:
 			case ECF_R5G6B5:
 			case ECF_R8G8B8:
 			case ECF_A8R8G8B8:
+			case ECF_DXT1:
+			case ECF_DXT2:
+			case ECF_DXT3:
+			case ECF_DXT4:
+			case ECF_DXT5:
 				return false;
 			default:
 				return true;
 		}
 	}
 
+protected:
+	ECOLOR_FORMAT Format;
+	core::dimension2d<u32> Size;
+
+	u8* Data;
+	u8* MipMapsData;
+
+	u32 BytesPerPixel;
+	u32 Pitch;
+
+	bool DeleteMemory;
+	bool DeleteMipMapsMemory;
 };
 
 } // end namespace video

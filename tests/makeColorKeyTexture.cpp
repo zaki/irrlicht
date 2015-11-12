@@ -37,7 +37,7 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 												  zeroTexels);
 	(void)smgr->addCameraSceneNode();
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,101,140));
 	smgr->drawAll();
 
 	driver->draw2DImage(Texture,
@@ -49,7 +49,7 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 	driver->endScene();
 
 	char screenshotName[256];
-	(void)snprintf(screenshotName, 256, "-makeColorKeyTexture-%s.png",
+	(void)snprintf_irr(screenshotName, 256, "-makeColorKeyTexture-%s.png",
 		zeroTexels? "old" : "new");
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, screenshotName);

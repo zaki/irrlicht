@@ -372,6 +372,11 @@ namespace core
 			\return Altered matrix */
 			CMatrix4<T>& setTextureTranslate( f32 x, f32 y );
 
+			//! Get texture transformation translation
+			/** \param x returns offset on x axis
+			\param y returns offset on y axis */
+			void getTextureTranslate( f32& x, f32& y ) const;
+
 			//! Set texture transformation translation, using a transposed representation
 			/** Doesn't clear other elements than those affected.
 			\param x Offset on x axis
@@ -385,6 +390,11 @@ namespace core
 			\param sy Scale factor on y axis
 			\return Altered matrix. */
 			CMatrix4<T>& setTextureScale( f32 sx, f32 sy );
+
+			//! Get texture transformation scale
+			/** \param sx Returns x axis scale factor
+			\param sy Returns y axis scale factor */
+			void getTextureScale( f32& sx, f32& sy ) const;
 
 			//! Set texture transformation scale, and recenter at (0.5,0.5)
 			/** Doesn't clear other elements than those affected.
@@ -862,8 +872,8 @@ namespace core
 	//! Returns a rotation that is equivalent to that set by setRotationDegrees().
 	/** This code was sent in by Chev.  Note that it does not necessarily return
 	the *same* Euler angles as those set by setRotationDegrees(), but the rotation will
-	be equivalent, i.e. will have the same result when used to rotate a vector or node. 
-	This code was orginally written by by Chev. 
+	be equivalent, i.e. will have the same result when used to rotate a vector or node.
+	This code was orginally written by by Chev.
 	*/
 	template <class T>
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees(const vector3d<T>& scale_) const
@@ -923,7 +933,7 @@ namespace core
 	//! Returns a rotation that is equivalent to that set by setRotationDegrees().
 	/** This code was sent in by Chev.  Note that it does not necessarily return
 	the *same* Euler angles as those set by setRotationDegrees(), but the rotation will
-	be equivalent, i.e. will have the same result when used to rotate a vector or node. 
+	be equivalent, i.e. will have the same result when used to rotate a vector or node.
 	This code was orginally written by by Chev. */
 	template <class T>
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
@@ -2150,6 +2160,12 @@ namespace core
 		return *this;
 	}
 
+	template <class T>
+	inline void CMatrix4<T>::getTextureTranslate(f32& x, f32& y) const
+	{
+		x = (f32)M[8];
+		y = (f32)M[9];
+	}
 
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::setTextureTranslateTransposed ( f32 x, f32 y )
@@ -2174,6 +2190,12 @@ namespace core
 		return *this;
 	}
 
+	template <class T>
+	inline void CMatrix4<T>::getTextureScale ( f32& sx, f32& sy ) const
+	{
+		sx = (f32)M[0];
+		sy = (f32)M[5];
+	}
 
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::setTextureScaleCenter( f32 sx, f32 sy )

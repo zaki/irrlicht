@@ -262,7 +262,6 @@ E_SCENE_NODE_RENDER_PASS CQuake3ShaderSceneNode::getRenderStage() const
 	else
 	if (	strstr ( Shader->name.c_str(), "flame" ) ||
 			group->isDefined( "surfaceparm", "water" ) ||
-			group->isDefined( "sort", "underwater" ) ||
 			group->isDefined( "sort", "underwater" )
 		)
 	{
@@ -735,7 +734,7 @@ void CQuake3ShaderSceneNode::deformvertexes_bulge( f32 dt, SModifierFunction &fu
 	function.count = 1;
 }
 
-						
+
 /*!
 	deformVertexes autosprite
 
@@ -859,7 +858,7 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, SModifierFunction &
 				MeshBuffer->Vertices[i].Color.set(0xFF7F7F7F);
 			break;
 
-		case EXACTVERTEX:		
+		case EXACTVERTEX:
 			// alphagen exactvertex TODO lighting
 		case VERTEX:
 			// rgbgen vertex
@@ -905,7 +904,7 @@ void CQuake3ShaderSceneNode::vertextransform_alphagen( f32 dt, SModifierFunction
 				MeshBuffer->Vertices[i].Color.setAlpha ( 0xFF );
 			break;
 
-		case EXACTVERTEX:	
+		case EXACTVERTEX:
 			// alphagen exactvertex TODO lighting
 		case VERTEX:
 			// alphagen vertex
@@ -1283,7 +1282,7 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 					default:
 						break;
 				}
-				
+
 			} break;
 			case TEXTURE:
 			case LIGHTMAP:
@@ -1366,7 +1365,7 @@ video::SMaterial& CQuake3ShaderSceneNode::getMaterial(u32 i)
 	if ( Q3Texture [ i ].TextureIndex )
 		m.setTexture(0, Q3Texture [ i ].Texture [ Q3Texture [ i ].TextureIndex ]);
 	return m;
-}	
+}
 
 
 } // end namespace scene

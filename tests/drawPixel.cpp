@@ -34,7 +34,7 @@ static bool lineRender(E_DRIVER_TYPE driverType)
 	cube->setMaterialFlag(video::EMF_LIGHTING, false);
 	(void)smgr->addCameraSceneNode();
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,101,140));
 	smgr->drawAll();
 
 	// Test for benign handling of offscreen pixel values as well as onscreen ones.
@@ -74,7 +74,7 @@ static bool pixelAccuracy(E_DRIVER_TYPE driverType)
 
 	device->getSceneManager()->addCameraSceneNode();
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,101,140));
 	u32 start=0;
 	for (u32 count=1; count<10; ++count)
 	{
@@ -136,7 +136,7 @@ static bool drawLine(E_DRIVER_TYPE driverType)
 
 	device->getSceneManager()->addCameraSceneNode();
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,101,140));
 	// horizontal lines
 	for (u32 i=0; i<20; ++i)
 	{

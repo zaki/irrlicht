@@ -212,7 +212,7 @@ void CTRTextureBlend::setParam ( u32 index, f32 value)
 	if ( showname && ( lsrcFact != srcFact || ldstFact != dstFact ) )
 	{
 		char buf[128];
-		snprintf ( buf, 128, "missing shader: %s %s",n[srcFact], n[dstFact] );
+		snprintf_irr ( buf, 128, "missing shader: %s %s",n[srcFact], n[dstFact] );
 		os::Printer::log( buf, ELL_INFORMATION );
 
 		lsrcFact = srcFact;
@@ -301,7 +301,7 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -336,8 +336,8 @@ void CTRTextureBlend::fragment_dst_color_src_alpha ()
 
 		getSample_texture ( a0,r0,g0,b0,
 							&IT[0],
-							tofix ( line.t[0][0].x,iw),
-							tofix ( line.t[0][0].y,iw)
+							tofix(line.t[0][0].x, iw),
+							tofix(line.t[0][0].y, iw)
 						);
 
 		color_to_fix ( r1, g1, b1, dst[i] );
@@ -485,7 +485,7 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -665,7 +665,7 @@ void CTRTextureBlend::fragment_one_one_minus_src_alpha()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -862,7 +862,7 @@ void CTRTextureBlend::fragment_one_minus_dst_alpha_one ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -1058,7 +1058,7 @@ void CTRTextureBlend::fragment_src_alpha_one ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -1285,7 +1285,7 @@ void CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -1481,7 +1481,7 @@ void CTRTextureBlend::fragment_dst_color_zero ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -1675,7 +1675,7 @@ void CTRTextureBlend::fragment_dst_color_one ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
@@ -1872,7 +1872,7 @@ void CTRTextureBlend::fragment_zero_one_minus_scr_color ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;

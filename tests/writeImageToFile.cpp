@@ -30,7 +30,7 @@ bool writeImageToFile(void)
 	cube->setMaterialFlag(video::EMF_LIGHTING, false);
 	(void)smgr->addCameraSceneNode();
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, SColor(255,100,101,140));
 	smgr->drawAll();
 
 	// Test for benign handling of offscreen pixel values as well as onscreen ones.

@@ -11,6 +11,7 @@ and tell the linker to link with the .lib file.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -41,6 +42,8 @@ int main()
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	/*
 	All 2d graphics in this example are put together into one texture,
 	2ddemo.png. Because we want to draw colorkey based sprites, we need to
@@ -54,7 +57,7 @@ int main()
 	e.g. all black pixels transparent. Please note that
 	makeColorKeyTexture just creates an alpha channel based on the color.
 	*/
-	video::ITexture* images = driver->getTexture("../../media/2ddemo.png");
+	video::ITexture* images = driver->getTexture(mediaPath + "2ddemo.png");
 	driver->makeColorKeyTexture(images, core::position2d<s32>(0,0));
 
 	/*
@@ -66,7 +69,7 @@ int main()
 	*/
 	gui::IGUIFont* font = device->getGUIEnvironment()->getBuiltInFont();
 	gui::IGUIFont* font2 =
-		device->getGUIEnvironment()->getFont("../../media/fonthaettenschweiler.bmp");
+		device->getGUIEnvironment()->getFont(mediaPath + "fonthaettenschweiler.bmp");
 
 	core::rect<s32> imp1(349,15,385,78);
 	core::rect<s32> imp2(387,15,423,78);
@@ -90,7 +93,7 @@ int main()
 		{
 			u32 time = device->getTimer()->getTime();
 
-			driver->beginScene(true, true, video::SColor(255,120,102,136));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,120,102,136));
 
 			/*
 			First, we draw 3 sprites, using the alpha channel we

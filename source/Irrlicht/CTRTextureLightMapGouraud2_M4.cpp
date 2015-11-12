@@ -183,16 +183,14 @@ void CTRGTextureLightMap2_M4::scanline_bilinear ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
-#ifdef INVERSE_W
-	f32 inversew;
-#endif
+	f32 inversew = FIX_POINT_F32_MUL;
 
 	tFixPoint tx0, tx1;
 	tFixPoint ty0, ty1;
@@ -216,7 +214,7 @@ void CTRGTextureLightMap2_M4::scanline_bilinear ()
 		{
 #ifdef INVERSE_W
 			inversew = fix_inverse32 ( line.w[0] );
-
+#endif
 			tx0 = tofix ( line.t[0][0].x,inversew);
 			ty0 = tofix ( line.t[0][0].y,inversew);
 			tx1 = tofix ( line.t[1][0].x,inversew);
@@ -228,19 +226,6 @@ void CTRGTextureLightMap2_M4::scanline_bilinear ()
 			b3 = tofix ( line.c[0][0].w ,inversew );
 #endif
 
-#else
-			tx0 = tofix ( line.t[0][0].x );
-			ty0 = tofix ( line.t[0][0].y );
-			tx1 = tofix ( line.t[1][0].x );
-			ty1 = tofix ( line.t[1][0].y );
-
-#ifdef IPOL_C0
-			r3 = tofix ( line.c[0][0].y );
-			g3 = tofix ( line.c[0][0].z );
-			b3 = tofix ( line.c[0][0].w );
-#endif
-
-#endif
 			getSample_texture ( r0, g0, b0, &IT[0], tx0, ty0 );
 			getSample_texture ( r1, g1, b1, &IT[1], tx1, ty1 );
 

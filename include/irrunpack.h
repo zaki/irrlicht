@@ -11,7 +11,7 @@
 #elif defined (__DMC__)
 #	pragma pack( pop )
 #elif defined( __GNUC__ )
-#   if (__GNUC__ >= 4 ) && (__GNUC_MINOR__ >= 7)
+#   if (__GNUC__ > 4 ) || ((__GNUC__ == 4 ) && (__GNUC_MINOR__ >= 7))
 #	    pragma pack( pop, packing )
 #   endif
 #endif

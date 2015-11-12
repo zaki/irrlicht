@@ -44,7 +44,7 @@ bool guiDisabledMenu(void)
 	(void)menu->OnEvent(event);
 
 	device->run();
-	driver->beginScene(true, true, video::SColor(150,50,50,50));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(150,50,50,50));
 	env->drawAll();
 	driver->endScene();
 

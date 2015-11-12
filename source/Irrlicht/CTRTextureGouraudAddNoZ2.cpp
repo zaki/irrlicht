@@ -183,16 +183,14 @@ void CTRTextureGouraudAddNoZ2::scanline_bilinear ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
-#ifdef IPOL_W
-	f32 inversew;
-#endif
+	f32 inversew = FIX_POINT_F32_MUL;
 
 	tFixPoint tx0;
 	tFixPoint ty0;
@@ -211,13 +209,9 @@ void CTRTextureGouraudAddNoZ2::scanline_bilinear ()
 		{
 #ifdef IPOL_W
 			inversew = fix_inverse32 ( line.w[0] );
-
+#endif
 			tx0 = tofix ( line.t[0][0].x,inversew);
 			ty0 = tofix ( line.t[0][0].y,inversew);
-#else
-			tx0 = tofix ( line.t[0][0].x );
-			ty0 = tofix ( line.t[0][0].y );
-#endif
 
 			getSample_texture ( r0, g0, b0, &IT[0], tx0,ty0 );
 

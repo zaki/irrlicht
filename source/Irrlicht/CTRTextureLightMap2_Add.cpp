@@ -183,13 +183,14 @@ REALINLINE void CTRTextureLightMap2_Add::scanline_bilinear ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
+	f32 inversew = FIX_POINT_F32_MUL;
 
 
 #ifdef BURNINGVIDEO_RENDERER_FAST
@@ -223,9 +224,8 @@ REALINLINE void CTRTextureLightMap2_Add::scanline_bilinear ()
 #ifdef BURNINGVIDEO_RENDERER_FAST
 
 #ifdef INVERSE_W
-
-			const f32 inversew = fix_inverse32 ( line.w[0] );
-
+			inversew = fix_inverse32 ( line.w[0] );
+#endif
 			const tFixPointu d = dithermask [ dIndex | ( i ) & 3 ];
 
 			dst[i] = PixelAdd32 (
@@ -234,17 +234,6 @@ REALINLINE void CTRTextureLightMap2_Add::scanline_bilinear ()
 					getTexel_plain ( &IT[1],	d + tofix ( line.t[1][0].x,inversew),
 												d + tofix ( line.t[1][0].y,inversew) )
 							);
-#else
-			const tFixPointu d = dithermask [ dIndex | ( i ) & 3 ];
-
-			dst[i] = PixelAdd32 (
-					getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x),
-												d + tofix ( line.t[0][0].y) ),
-					getTexel_plain ( &IT[1],	d + tofix ( line.t[1][0].x),
-												d + tofix ( line.t[1][0].y) )
-							);
-
-#endif
 
 #else
 			const f32 inversew = fix_inverse32 ( line.w[0] );

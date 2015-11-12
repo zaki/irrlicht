@@ -49,7 +49,7 @@ public:
 		s32 leftZStep, rightZStep;
 		TZBufferType* zTarget; // target of ZBuffer;
 
-		lockedSurface = (u16*)RenderTarget->lock();
+		lockedSurface = (u16*)RenderTarget->getData();
 		lockedZBuffer = ZBuffer->lock();
 
 		for (s32 i=0; i<triangleCount; ++i)
@@ -293,7 +293,6 @@ public:
 
 		}
 
-		RenderTarget->unlock();
 		ZBuffer->unlock();
 	}
 

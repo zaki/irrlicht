@@ -1,6 +1,5 @@
+// Copyright (C) 2015 Patryk Nadrowski
 // Copyright (C) 2009-2010 Amundis
-// Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -160,8 +159,7 @@ namespace video
 
 
 	COGLES2ExtensionHandler::COGLES2ExtensionHandler() :
-			Version(0), MaxTextureUnits(0), MaxSupportedTextures(0),
-			MaxAnisotropy(1), MaxIndices(0xffff),
+			Version(0), MaxAnisotropy(1), MaxIndices(0xffff),
 			MaxTextureSize(1), MaxTextureLODBias(0.f),
 			StencilBuffer(false)
 	{
@@ -177,7 +175,7 @@ namespace video
 	}
 
 
-	void COGLES2ExtensionHandler::initExtensions(COGLES2Driver* driver, bool withStencil)
+	void COGLES2ExtensionHandler::initExtensions()
 	{
 		const core::stringc stringVer(glGetString(GL_VERSION));
 		const f32 ogl_ver = core::fast_atof(stringVer.c_str() + 10);
@@ -220,7 +218,7 @@ namespace video
 
 		GLint val=0;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &val);
-		MaxSupportedTextures = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
+		Feature.TextureUnit = static_cast<u8>(val);
 
 	#ifdef GL_EXT_texture_filter_anisotropic
 		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
@@ -242,7 +240,13 @@ namespace video
 		glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
 		glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
 
-		MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+		Feature.TextureUnit = core::min_(Feature.TextureUnit, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+		Feature.ColorAttachment = 1;
+	}
+
+	const COGLCoreFeature& COGLES2ExtensionHandler::getFeature() const
+	{
+		return Feature;
 	}
 
 } // end namespace video

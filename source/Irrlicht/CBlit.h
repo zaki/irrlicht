@@ -237,7 +237,7 @@ static void RenderLine32_Decal(video::IImage *t,
 	}
 
 	u32 *dst;
-	dst = (u32*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 2 ) );
+	dst = (u32*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X << 2 ) );
 
 	if ( dy > dx )
 	{
@@ -267,8 +267,6 @@ static void RenderLine32_Decal(video::IImage *t,
 		}
 		run -= 1;
 	} while (run>=0);
-
-	t->unlock();
 }
 
 
@@ -303,7 +301,7 @@ static void RenderLine32_Blend(video::IImage *t,
 	}
 
 	u32 *dst;
-	dst = (u32*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 2 ) );
+	dst = (u32*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X << 2 ) );
 
 	if ( dy > dx )
 	{
@@ -334,8 +332,6 @@ static void RenderLine32_Blend(video::IImage *t,
 		}
 		run -= 1;
 	} while (run>=0);
-
-	t->unlock();
 }
 
 /*
@@ -369,7 +365,7 @@ static void RenderLine16_Decal(video::IImage *t,
 	}
 
 	u16 *dst;
-	dst = (u16*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 1 ) );
+	dst = (u16*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X << 1 ) );
 
 	if ( dy > dx )
 	{
@@ -399,8 +395,6 @@ static void RenderLine16_Decal(video::IImage *t,
 		}
 		run -= 1;
 	} while (run>=0);
-
-	t->unlock();
 }
 
 /*
@@ -435,7 +429,7 @@ static void RenderLine16_Blend(video::IImage *t,
 	}
 
 	u16 *dst;
-	dst = (u16*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 1 ) );
+	dst = (u16*) ( (u8*) t->getData() + ( p0.Y * t->getPitch() ) + ( p0.X << 1 ) );
 
 	if ( dy > dx )
 	{
@@ -466,8 +460,6 @@ static void RenderLine16_Blend(video::IImage *t,
 		}
 		run -= 1;
 	} while (run>=0);
-
-	t->unlock();
 }
 
 
@@ -1139,7 +1131,7 @@ static s32 Blit(eBlitter operation,
 	{
 		job.srcPitch = source->getPitch();
 		job.srcPixelMul = source->getBytesPerPixel();
-		job.src = (void*) ( (u8*) source->lock() + ( job.Source.y0 * job.srcPitch ) + ( job.Source.x0 * job.srcPixelMul ) );
+		job.src = (void*) ( (u8*) source->getData() + ( job.Source.y0 * job.srcPitch ) + ( job.Source.x0 * job.srcPixelMul ) );
 	}
 	else
 	{
@@ -1149,15 +1141,9 @@ static s32 Blit(eBlitter operation,
 
 	job.dstPitch = dest->getPitch();
 	job.dstPixelMul = dest->getBytesPerPixel();
-	job.dst = (void*) ( (u8*) dest->lock() + ( job.Dest.y0 * job.dstPitch ) + ( job.Dest.x0 * job.dstPixelMul ) );
+	job.dst = (void*) ( (u8*) dest->getData() + ( job.Dest.y0 * job.dstPitch ) + ( job.Dest.x0 * job.dstPixelMul ) );
 
 	blitter( &job );
-
-	if ( source )
-		source->unlock();
-
-	if ( dest )
-		dest->unlock();
 
 	return 1;
 }
@@ -1193,7 +1179,7 @@ static s32 StretchBlit(eBlitter operation,
 	{
 		job.srcPitch = source->getPitch();
 		job.srcPixelMul = source->getBytesPerPixel();
-		job.src = (void*) ( (u8*) source->lock() + ( job.Source.y0 * job.srcPitch ) + ( job.Source.x0 * job.srcPixelMul ) );
+		job.src = (void*) ( (u8*) source->getData() + ( job.Source.y0 * job.srcPitch ) + ( job.Source.x0 * job.srcPixelMul ) );
 	}
 	else
 	{
@@ -1203,15 +1189,9 @@ static s32 StretchBlit(eBlitter operation,
 
 	job.dstPitch = dest->getPitch();
 	job.dstPixelMul = dest->getBytesPerPixel();
-	job.dst = (void*) ( (u8*) dest->lock() + ( job.Dest.y0 * job.dstPitch ) + ( job.Dest.x0 * job.dstPixelMul ) );
+	job.dst = (void*) ( (u8*) dest->getData() + ( job.Dest.y0 * job.dstPitch ) + ( job.Dest.x0 * job.dstPixelMul ) );
 
 	blitter( &job );
-
-	if ( source )
-		source->unlock();
-
-	if ( dest )
-		dest->unlock();
 
 	return 1;
 }

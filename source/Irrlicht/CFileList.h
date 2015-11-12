@@ -105,7 +105,7 @@ public:
 	//! Returns the size of a file
 	virtual u32 getFileSize(u32 index) const _IRR_OVERRIDE_;
 
-	//! Returns the offest of a file
+	//! Returns the offset of a file
 	virtual u32 getFileOffset(u32 index) const _IRR_OVERRIDE_;
 
 	//! Searches for a file or folder within the list, returns the index

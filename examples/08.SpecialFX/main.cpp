@@ -13,14 +13,9 @@ runs slow on your hardware.
 */
 
 #include <irrlicht.h>
-#ifndef _IRR_ANDROID_PLATFORM_
-#  include <iostream>
-#  include "driverChoice.h"
-#else
-#  include "CAndroidAssetFileArchive.h"
-#  include <android/log.h>
-#  include <android_native_app_glue.h>
-#endif
+#include <iostream>
+#include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -28,17 +23,8 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-#ifndef _IRR_ANDROID_PLATFORM_
 int main()
-#else
-void android_main(struct android_app* app)
-#endif
 {
-#ifdef _IRR_ANDROID_PLATFORM_
-    app_dummy();
-        const bool shadows = false;
-	video::E_DRIVER_TYPE driverType=video::EDT_OGLES1;
-#else
 	// ask if user would like shadows
 	char i;
 	printf("Please press 'y' if you want to use realtime shadows.\n");
@@ -50,46 +36,25 @@ void android_main(struct android_app* app)
 	// ask user for driver
 	video::E_DRIVER_TYPE driverType=driverChoiceConsole();
 	if (driverType==video::EDT_COUNT)
-    {
-#ifdef _IRR_ANDROID_PLATFORM_
-        return;
-#else
 		return 1;
-#endif
-    }
 
-#endif
+
 	/*
 	Create device and exit if creation failed. We make the stencil flag
 	optional to avoid slow screen modes for runs without shadows.
 	*/
-#ifdef _IRR_ANDROID_PLATFORM_
-        struct irr::SIrrlichtCreationParameters p;
-        p.DriverType = driverType;
-        // The android app object is needed by the irrlicht device.
-        p.PrivateData = app;
-	p.WindowSize = core::dimension2d<u32>(1280,800);
 
-	IrrlichtDevice *device = createDeviceEx(p);
-#else
 	IrrlichtDevice *device =
 		createDevice(driverType, core::dimension2d<u32>(640, 480),
-	16, false, shadows);
-#endif
-
+		16, false, shadows);
 
 	if (device == 0)
-        {
-#ifdef _IRR_ANDROID_PLATFORM_
-	    return;
-#else
-	    return 1; // could not create selected driver.
-#endif
-	}
+		return 1; // could not create selected driver.
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
-	scene::ISceneNode* node = 0;
+
+	const io::path mediaPath = getExampleMediaPath();
 
 	/*
 	For our environment, we load a .3ds file. It is a small room I modelled
@@ -105,29 +70,15 @@ void android_main(struct android_app* app)
 	off too with this code.
 	*/
 
-#ifdef _IRR_ANDROID_PLATFORM_
-	scene::IAnimatedMesh* mesh = smgr->getMesh("media/room.3ds");
-#else
-	scene::IAnimatedMesh* mesh = smgr->getMesh("../../media/room.3ds");
-#endif
+	scene::IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "room.3ds");
 
-	if (mesh)
-	{
-		smgr->getMeshManipulator()->makePlanarTextureMapping(mesh->getMesh(0), 0.004f);
+	smgr->getMeshManipulator()->makePlanarTextureMapping(mesh->getMesh(0), 0.004f);
 
-		node = smgr->addAnimatedMeshSceneNode(mesh);
-		if (node)
-		{
-			((scene::IAnimatedMeshSceneNode*)node)->addShadowVolumeSceneNode();
+	scene::ISceneNode* node = 0;
 
-#ifdef _IRR_ANDROID_PLATFORM_
-			node->setMaterialTexture(0, driver->getTexture("media/wall.jpg"));
-#else
-			node->setMaterialTexture(0, driver->getTexture("../../media/wall.jpg"));
-#endif
-			node->getMaterial(0).SpecularColor.set(0,0,0,0);
-		}
-	}
+	node = smgr->addAnimatedMeshSceneNode(mesh);
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.jpg"));
+	node->getMaterial(0).SpecularColor.set(0,0,0,0);
 
 	/*
 	Now, for the first special effect: Animated water. It works like this:
@@ -140,30 +91,19 @@ void android_main(struct android_app* app)
 	want to.
 	*/
 
-	mesh = 0;//smgr->addHillPlaneMesh( "myHill",
-//		core::dimension2d<f32>(20,20),
-//		core::dimension2d<u32>(40,40), 0, 0,
-//		core::dimension2d<f32>(0,0),
-//		core::dimension2d<f32>(10,10));
+	mesh = smgr->addHillPlaneMesh( "myHill",
+		core::dimension2d<f32>(20,20),
+		core::dimension2d<u32>(40,40), 0, 0,
+		core::dimension2d<f32>(0,0),
+		core::dimension2d<f32>(10,10));
 
-	if (mesh)
-	{
-		node = smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
-		if (node)
-		{
-			node->setPosition(core::vector3df(0,7,0));
+	node = smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
+	node->setPosition(core::vector3df(0,7,0));
 
-#ifdef _IRR_ANDROID_PLATFORM_
-			node->setMaterialTexture(0, driver->getTexture("media/stones.jpg"));
-			node->setMaterialTexture(1, driver->getTexture("media/water.jpg"));
-#else
-			node->setMaterialTexture(0, driver->getTexture("../../media/stones.jpg"));
-			node->setMaterialTexture(1, driver->getTexture("../../media/water.jpg"));
-#endif
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "stones.jpg"));
+	node->setMaterialTexture(1, driver->getTexture(mediaPath + "water.jpg"));
 
-			node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
-		}
-	}
+	node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
 
 	/*
 	The second special effect is very basic, I bet you saw it already in
@@ -176,70 +116,17 @@ void android_main(struct android_app* app)
 
 	node = smgr->addLightSceneNode(0, core::vector3df(0,0,0),
 		video::SColorf(1.0f, 0.6f, 0.7f, 1.0f), 800.0f);
-	if (node)
-	{
-		scene::ISceneNodeAnimator* anim = 0;
-		anim = smgr->createFlyCircleAnimator (core::vector3df(0,150,0),250.0f);
-		node->addAnimator(anim);
-		anim->drop();
-	}
+	scene::ISceneNodeAnimator* anim = 0;
+	anim = smgr->createFlyCircleAnimator (core::vector3df(0,150,0),250.0f);
+	node->addAnimator(anim);
+	anim->drop();
 
 	// attach billboard to light
 
 	node = smgr->addBillboardSceneNode(node, core::dimension2d<f32>(50, 50));
-	if (node)
-	{
-		node->setMaterialFlag(video::EMF_LIGHTING, false);
-		node->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-#ifdef _IRR_ANDROID_PLATFORM_
-		node->setMaterialTexture(0, driver->getTexture("media/particlewhite.bmp"));
-#else
-		node->setMaterialTexture(0, driver->getTexture("../../media/particlewhite.bmp"));
-#endif
-	}
-
-	/*
-	Next we add a volumetric light node, which adds a glowing fake area light to
-	the scene. Like with the billboards and particle systems we also assign a
-	texture for the desired effect, though this time we'll use a texture animator
-	to create the illusion of a magical glowing area effect.
-	*/
-	scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(0, -1,
-				32,                              // Subdivisions on U axis
-				32,                              // Subdivisions on V axis
-				video::SColor(0, 255, 255, 255), // foot color
-				video::SColor(0, 0, 0, 0));      // tail color
-
-	if (n)
-	{
-		n->setScale(core::vector3df(56.0f, 56.0f, 56.0f));
-		n->setPosition(core::vector3df(-120,50,40));
-
-		// load textures for animation
-		core::array<video::ITexture*> textures;
-		for (s32 g=7; g > 0; --g)
-		{
-			core::stringc tmp;
-#ifdef _IRR_ANDROID_PLATFORM_
-			tmp = "media/portal";
-#else
-			tmp = "../../media/portal";
-#endif
-			tmp += g;
-			tmp += ".bmp";
-			video::ITexture* t = driver->getTexture( tmp.c_str() );
-			textures.push_back(t);
-		}
-
-		// create texture animator
-		scene::ISceneNodeAnimator* glow = smgr->createTextureAnimator(textures, 150);
-
-		// add the animator
-		n->addAnimator(glow);
-
-		// drop the animator because it was created with a create() function
-		glow->drop();
-	}
+	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	node->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "particlewhite.bmp"));
 
 	/*
 	The next special effect is a lot more interesting: A particle system.
@@ -278,7 +165,7 @@ void android_main(struct android_app* app)
 
 	// create a particle system
 
-	scene::IParticleSystemSceneNode* ps = 
+	scene::IParticleSystemSceneNode* ps =
 		smgr->addParticleSystemSceneNode(false);
 
 	if (ps)
@@ -305,8 +192,47 @@ void android_main(struct android_app* app)
 		ps->setScale(core::vector3df(2,2,2));
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
 		ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-		ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
+		ps->setMaterialTexture(0, driver->getTexture(mediaPath + "fire.bmp"));
 		ps->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+	}
+
+	/*
+	Next we add a volumetric light node, which adds a glowing fake area light to
+	the scene. Like with the billboards and particle systems we also assign a
+	texture for the desired effect, though this time we'll use a texture animator
+	to create the illusion of a magical glowing area effect.
+	*/
+	scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(0, -1,
+				32,                              // Subdivisions on U axis
+				32,                              // Subdivisions on V axis
+				video::SColor(0, 255, 255, 255), // foot color
+				video::SColor(0, 0, 0, 0));      // tail color
+
+	if (n)
+	{
+		n->setScale(core::vector3df(56.0f, 56.0f, 56.0f));
+		n->setPosition(core::vector3df(-120,50,40));
+
+		// load textures for animation
+		core::array<video::ITexture*> textures;
+		for (s32 g=7; g > 0; --g)
+		{
+			core::stringc tmp(mediaPath);
+			tmp += "portal";
+			tmp += g;
+			tmp += ".bmp";
+			video::ITexture* t = driver->getTexture( tmp.c_str() );
+			textures.push_back(t);
+		}
+
+		// create texture animator
+		scene::ISceneNodeAnimator* glow = smgr->createTextureAnimator(textures, 150);
+
+		// add the animator
+		n->addAnimator(glow);
+
+		// drop the animator because it was created with a create() function
+		glow->drop();
 	}
 
 	/*
@@ -327,11 +253,7 @@ void android_main(struct android_app* app)
 
 	// add animated character
 
-#ifdef _IRR_ANDROID_PLATFORM_
-	mesh = smgr->getMesh("media/dwarf.x");
-#else
-	mesh = smgr->getMesh("../../media/dwarf.x");
-#endif
+	mesh = smgr->getMesh(mediaPath + "dwarf.x");
 	scene::IAnimatedMeshSceneNode* anode = 0;
 
 	anode = smgr->addAnimatedMeshSceneNode(mesh);
@@ -363,7 +285,7 @@ void android_main(struct android_app* app)
 	while(device->run())
 	if (device->isWindowActive())
 	{
-		driver->beginScene(true, true, 0);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0));
 
 		smgr->drawAll();
 
@@ -385,12 +307,7 @@ void android_main(struct android_app* app)
 
 	device->drop();
 
-#ifdef _IRR_ANDROID_PLATFORM_
-    return;
-#else
-    return 0;
-#endif
-
+	return 0;
 }
 
 /*

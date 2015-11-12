@@ -645,7 +645,6 @@ bool CAttributes::getAttributeAsBool(s32 index)
 	if ((u32)index < Attributes.size())
 		ret = Attributes[index]->getBool();
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 

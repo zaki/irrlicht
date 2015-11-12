@@ -18,7 +18,7 @@ bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 
 	core::recti r;
 	r.UpperLeftCorner = core::position2di(1,1);

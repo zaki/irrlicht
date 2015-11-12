@@ -15,6 +15,7 @@ tutorial, we use a lot stuff from the gui namespace.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 using namespace gui;
@@ -239,7 +240,6 @@ void loadModel(const c8* fn)
 	else
 	{
 		scene::IAnimatedMeshSceneNode* animModel = Device->getSceneManager()->addAnimatedMeshSceneNode(m);
-		animModel->setAnimationSpeed(30);
 		Model = animModel;
 	}
 	Model->setMaterialFlag(video::EMF_LIGHTING, UseLight);
@@ -756,7 +756,7 @@ int main(int argc, char* argv[])
 		video::SColorf(1.0f,1.0f,1.0f),2000);
 	smgr->setAmbientLight(video::SColorf(0.3f,0.3f,0.3f));
 	// add our media directory as "search path"
-	Device->getFileSystem()->addFileArchive("../../media/");
+	Device->getFileSystem()->addFileArchive(getExampleMediaPath());
 
 	/*
 	The next step is to read the configuration file. It is stored in the xml
@@ -997,7 +997,7 @@ int main(int argc, char* argv[])
 
 		if (Device->isWindowActive())
 		{
-			driver->beginScene(true, true, video::SColor(150,50,50,50));
+			driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(150,50,50,50));
 
 			smgr->drawAll();
 			env->drawAll();

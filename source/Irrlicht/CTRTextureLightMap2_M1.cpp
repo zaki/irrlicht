@@ -170,7 +170,7 @@ REALINLINE void CTRTextureLightMap2_M1::scanline_bilinear2 ()
 	line.z[0] = a;
 	line.z[1] = b;
 #endif
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 	a = (f32) i + subPixel;
 

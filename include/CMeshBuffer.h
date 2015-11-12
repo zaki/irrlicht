@@ -21,7 +21,7 @@ namespace scene
 		CMeshBuffer():ChangedID_Vertex(1),ChangedID_Index(1),MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER)
 		{
 			#ifdef _DEBUG
-			setDebugName("SMeshBuffer");
+			setDebugName("CMeshBuffer");
 			#endif
 		}
 

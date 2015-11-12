@@ -121,7 +121,7 @@ public:
 	: array(0), allocated(0), used(0)
 	{
 		c8 tmpbuf[255];
-		snprintf(tmpbuf, 255, "%0.6f", number);
+		snprintf_irr(tmpbuf, 255, "%0.6f", number);
 		*this = tmpbuf;
 	}
 

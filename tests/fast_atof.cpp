@@ -91,7 +91,7 @@ static bool testCalculation_atof(const char * valueString)
 		valueString, newFastValue, oldFastValue, atofValue);
 
 	const f32 diffNew = fabs(newFastValue - atofValue) ;
-	const f32 diffOld = fabs(newFastValue - atofValue) ;
+	const f32 diffOld = fabs(oldFastValue - atofValue) ;
 	bool accurate = diffNew <= diffOld || equalsByUlp(diffNew, diffOld, 1);
 
 	if(!accurate)

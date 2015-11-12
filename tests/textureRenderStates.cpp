@@ -47,7 +47,7 @@ static bool manyTextures(video::E_DRIVER_TYPE driverType)
 
 	mesh->setDirty();
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	// set camera
 	smgr->drawAll();
 	// draw meshbuffer
@@ -86,13 +86,13 @@ static bool renderAndLoad(video::E_DRIVER_TYPE driverType)
 
 	(void)smgr->addCameraSceneNode();
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	driver->draw2DImage(tex1, position2di(0,0));
 	driver->endScene();
 
 	driver->getTexture("../media/tools.png");
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	driver->draw2DImage(tex1, position2di(0,0));
 	driver->endScene();
 
@@ -121,7 +121,7 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
-	driver->beginScene (true, true, video::SColor(255, 0, 255, 0));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 0, 255, 0));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -130,14 +130,14 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 	scene::ISceneNode * img = smgr->addCubeSceneNode();
 	img->setMaterialTexture(0, texture);
 
-	driver->beginScene (true, true, video::SColor (255, 0, 255, 0));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor (255, 0, 255, 0));
 	smgr->drawAll();
 	driver->endScene();
 
 	smgr->clear();	// Remove anything that used the texture
 	driver->removeTexture(texture);
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -146,7 +146,7 @@ static bool renderAndRemove(video::E_DRIVER_TYPE driverType)
 	img = smgr->addCubeSceneNode();
 	img->setMaterialTexture(0, texture);
 
-	driver->beginScene (true, true, irr::video::SColor (255, 0, 255, 0));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, irr::video::SColor (255, 0, 255, 0));
 	smgr->drawAll();
 	driver->endScene();
 
@@ -201,7 +201,7 @@ static bool testTextureMatrixInMixedScenes(video::E_DRIVER_TYPE driverType)
 	scene::IAnimatedMesh* pmesh = sceneManager->addHillPlaneMesh("testMesh",dimension2d<f32>(50,50),dimension2d<u32>(6,6),&mat);
 	sceneManager->addAnimatedMeshSceneNode(pmesh);
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	sceneManager->drawAll();
 	gui->drawAll();
 	driver->endScene();
@@ -261,7 +261,7 @@ static bool textureMatrix(video::E_DRIVER_TYPE driverType)
 	trans.X += 0.0005f;
 	textureMatrix.buildTextureTransform(0.f, rcenter, trans, scale);
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	sceneManager->drawAll();
 	driver->endScene();
 
@@ -270,7 +270,7 @@ static bool textureMatrix(video::E_DRIVER_TYPE driverType)
 	trans.X += 0.45f;
 	textureMatrix.buildTextureTransform(0.f, rcenter, trans, scale);
 
-	driver->beginScene(true, true, video::SColor(255,100,101,140));
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	sceneManager->drawAll();
 	driver->endScene();
 
@@ -325,7 +325,7 @@ bool danglingTexturePointer()
 
 	device->run();
 	{
-		driver->beginScene(true, true, irr::video::SColor(255,100,101,140));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, irr::video::SColor(255,100,101,140));
 
 		// This is required to trigger the white appearance (this unbinds the
 		// texture, forcing draw2DImage to rebind the logo3 texture (#2)).

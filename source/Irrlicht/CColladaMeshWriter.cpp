@@ -211,7 +211,7 @@ irr::core::stringw CColladaMeshWriterNames::nameForMaterial(const video::SMateri
 irr::core::stringw CColladaMeshWriterNames::nameForPtr(const void* ptr) const
 {
 	wchar_t buf[32];
-	swprintf(buf, 32, L"%p", ptr);
+	swprintf_irr(buf, 32, L"%p", ptr);
 	return irr::core::stringw(buf);
 }
 
@@ -763,11 +763,15 @@ void CColladaMeshWriter::writeSceneNode(irr::scene::ISceneNode * node )
 	}
 	else
 	{
-		irr::core::vector3df rot(node->getRotation());
 		writeTranslateElement( node->getPosition() );
-		writeRotateElement( irr::core::vector3df(1.f, 0.f, 0.f), rot.X );
-		writeRotateElement( irr::core::vector3df(0.f, 1.f, 0.f), rot.Y );
-		writeRotateElement( irr::core::vector3df(0.f, 0.f, 1.f), rot.Z );
+
+		irr::core::vector3df rot(node->getRotation());
+		core::quaternion quat(rot*core::DEGTORAD);
+		f32 angle;
+		core::vector3df axis;
+		quat.toAngleAxis(angle, axis);
+		writeRotateElement( axis, angle*core::RADTODEG );
+
 		writeScaleElement( node->getScale() );
 	}
 
@@ -980,7 +984,7 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) 
 void CColladaMeshWriter::writeVector(const irr::core::vector3df& vec)
 {
 	wchar_t tmpbuf[255];
-	swprintf(tmpbuf, 255, L"%f %f %f", vec.X, vec.Y, vec.Z);
+	swprintf_irr(tmpbuf, 255, L"%f %f %f", vec.X, vec.Y, vec.Z);
 
 	Writer->writeText(tmpbuf);
 }
@@ -989,7 +993,7 @@ void CColladaMeshWriter::writeUv(const irr::core::vector2df& vec)
 {
 	// change handedness
 	wchar_t tmpbuf[255];
-	swprintf(tmpbuf, 255, L"%f %f", vec.X, 1.f-vec.Y);
+	swprintf_irr(tmpbuf, 255, L"%f %f", vec.X, 1.f-vec.Y);
 
 	Writer->writeText(tmpbuf);
 }
@@ -997,7 +1001,7 @@ void CColladaMeshWriter::writeUv(const irr::core::vector2df& vec)
 void CColladaMeshWriter::writeVector(const irr::core::vector2df& vec)
 {
 	wchar_t tmpbuf[255];
-	swprintf(tmpbuf, 255, L"%f %f", vec.X, vec.Y);
+	swprintf_irr(tmpbuf, 255, L"%f %f", vec.X, vec.Y);
 
 	Writer->writeText(tmpbuf);
 }
@@ -1006,9 +1010,9 @@ void CColladaMeshWriter::writeColor(const irr::video::SColorf& colorf, bool writ
 {
 	wchar_t tmpbuf[255];
 	if ( writeAlpha )
-		swprintf(tmpbuf, 255, L"%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
+		swprintf_irr(tmpbuf, 255, L"%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
 	else
-		swprintf(tmpbuf, 255, L"%f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue());
+		swprintf_irr(tmpbuf, 255, L"%f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue());
 
 	Writer->writeText(tmpbuf);
 }
@@ -1117,7 +1121,7 @@ irr::core::stringw CColladaMeshWriter::nameForMaterial(const video::SMaterial & 
 irr::core::stringw CColladaMeshWriter::nameForMaterialSymbol(const scene::IMesh* mesh, int materialId) const
 {
 	wchar_t buf[100];
-	swprintf(buf, 100, L"mat_symb_%p_%d", mesh, materialId);
+	swprintf_irr(buf, 100, L"mat_symb_%p_%d", mesh, materialId);
 	return irr::core::stringw(buf);
 }
 
@@ -2248,7 +2252,7 @@ void CColladaMeshWriter::writeLookAtElement(const irr::core::vector3df& eyePos, 
 	Writer->writeElement(L"lookat", false);
 
 	wchar_t tmpbuf[255];
-	swprintf(tmpbuf, 255, L"%f %f %f %f %f %f %f %f %f", eyePos.X, eyePos.Y, eyePos.Z, targetPos.X, targetPos.Y, targetPos.Z, upVector.X, upVector.Y, upVector.Z);
+	swprintf_irr(tmpbuf, 255, L"%f %f %f %f %f %f %f %f %f", eyePos.X, eyePos.Y, eyePos.Z, targetPos.X, targetPos.Y, targetPos.Z, upVector.X, upVector.Y, upVector.Z);
 	Writer->writeText(tmpbuf);
 
 	Writer->writeClosingTag(L"lookat");

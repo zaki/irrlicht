@@ -105,7 +105,7 @@ void CGUISpinBox::setValue(f32 val)
 {
 	wchar_t str[100];
 
-	swprintf(str, 99, FormatString.c_str(), val);
+	swprintf_irr(str, 99, FormatString.c_str(), val);
 	EditBox->setText(str);
 	verifyValueRange();
 }
@@ -130,9 +130,9 @@ void CGUISpinBox::setRange(f32 min, f32 max)
 
 	// we have to round the range - otherwise we can get into an infinte setValue/verifyValueRange cycle.
 	wchar_t str[100];
-	swprintf(str, 99, FormatString.c_str(), RangeMin);
+	swprintf_irr(str, 99, FormatString.c_str(), RangeMin);
 	RangeMin = core::fast_atof(core::stringc(str).c_str());
-	swprintf(str, 99, FormatString.c_str(), RangeMax);
+	swprintf_irr(str, 99, FormatString.c_str(), RangeMax);
 	RangeMax = core::fast_atof(core::stringc(str).c_str());
 
 	verifyValueRange();

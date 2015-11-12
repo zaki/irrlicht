@@ -1,12 +1,12 @@
 /** Example 010 Shaders
 
-This tutorial shows how to use shaders for D3D8, D3D9, OpenGL, and Cg with the
+This tutorial shows how to use shaders for D3D9, and OpenGL with the
 engine and how to create new material types with them. It also shows how to
 disable the generation of mipmaps at texture loading, and how to use text scene
 nodes.
 
 This tutorial does not explain how shaders work. I would recommend to read the
-D3D, OpenGL, or Cg documentation, to search a tutorial, or to read a book about
+D3D or OpenGL, documentation, to search a tutorial, or to read a book about
 this.
 
 At first, we need to include all headers and do the stuff we always do, like in
@@ -15,6 +15,7 @@ nearly all other tutorials:
 #include <irrlicht.h>
 #include <iostream>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -42,7 +43,6 @@ the variable name as parameter instead of the register index.
 
 IrrlichtDevice* device = 0;
 bool UseHighLevelShaders = false;
-bool UseCgShaders = false;
 
 class MyShaderCallBack : public video::IShaderConstantSetCallBack
 {
@@ -169,10 +169,6 @@ int main()
 		if (i == 'y')
 		{
 			UseHighLevelShaders = true;
-			printf("Please press 'y' if you want to use Cg shaders.\n");
-			std::cin >> i;
-			if (i == 'y')
-				UseCgShaders = true;
 		}
 	}
 
@@ -188,16 +184,18 @@ int main()
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	/*
 	Now for the more interesting parts. If we are using Direct3D, we want
 	to load vertex and pixel shader programs, if we have OpenGL, we want to
 	use ARB fragment and vertex programs. I wrote the corresponding
-	programs down into the files d3d8.ps, d3d8.vs, d3d9.ps, d3d9.vs,
-	opengl.ps and opengl.vs. We only need the right filenames now. This is
-	done in the following switch. Note, that it is not necessary to write
-	the shaders into text files, like in this example. You can even write
-	the shaders directly as strings into the cpp source file, and use later
-	addShaderMaterial() instead of addShaderMaterialFromFiles().
+	programs down into the files d3d9.ps, d3d9.vs, opengl.ps and opengl.vs. 
+	We only need the right filenames now. This is done in the following switch. 
+	Note, that it is not necessary to write the shaders into text files, 
+	like in this example. You can even write the shaders directly as strings 
+	into the cpp source file, and use later addShaderMaterial() instead of 
+	addShaderMaterialFromFiles().
 	*/
 
 	io::path vsFileName; // filename for the vertex shader
@@ -205,21 +203,16 @@ int main()
 
 	switch(driverType)
 	{
-	case video::EDT_DIRECT3D8:
-		psFileName = "../../media/d3d8.psh";
-		vsFileName = "../../media/d3d8.vsh";
-		break;
 	case video::EDT_DIRECT3D9:
 		if (UseHighLevelShaders)
 		{
-			// Cg can also handle this syntax
-			psFileName = "../../media/d3d9.hlsl";
+			psFileName = mediaPath + "d3d9.hlsl";
 			vsFileName = psFileName; // both shaders are in the same file
 		}
 		else
 		{
-			psFileName = "../../media/d3d9.psh";
-			vsFileName = "../../media/d3d9.vsh";
+			psFileName = mediaPath + "d3d9.psh";
+			vsFileName = mediaPath + "d3d9.vsh";
 		}
 		break;
 
@@ -234,22 +227,13 @@ int main()
 	case video::EDT_OPENGL:
 		if (UseHighLevelShaders)
 		{
-			if (!UseCgShaders)
-			{
-				psFileName = "../../media/opengl.frag";
-				vsFileName = "../../media/opengl.vert";
-			}
-			else
-			{
-				// Use HLSL syntax for Cg
-				psFileName = "../../media/d3d9.hlsl";
-				vsFileName = psFileName; // both shaders are in the same file
-			}
+			psFileName = mediaPath + "opengl.frag";
+			vsFileName = mediaPath + "opengl.vert";
 		}
 		else
 		{
-			psFileName = "../../media/opengl.psh";
-			vsFileName = "../../media/opengl.vsh";
+			psFileName = mediaPath + "opengl.psh";
+			vsFileName = mediaPath + "opengl.vsh";
 		}
 		break;
 	}
@@ -322,12 +306,10 @@ int main()
 		if (UseHighLevelShaders)
 		{
 			// Choose the desired shader type. Default is the native
-			// shader type for the driver, for Cg pass the special
-			// enum value EGSL_CG
-			const video::E_GPU_SHADING_LANGUAGE shadingLanguage =
-				UseCgShaders ? video::EGSL_CG:video::EGSL_DEFAULT;
+			// shader type for the driver
+			const video::E_GPU_SHADING_LANGUAGE shadingLanguage = video::EGSL_DEFAULT;
 
-			// create material from high level shaders (hlsl, glsl or cg)
+			// create material from high level shaders (hlsl, glsl)
 
 			newMaterialType1 = gpu->addHighLevelShaderMaterialFromFiles(
 				vsFileName, "vertexMain", video::EVST_VS_1_1,
@@ -364,7 +346,7 @@ int main()
 
 	scene::ISceneNode* node = smgr->addCubeSceneNode(50);
 	node->setPosition(core::vector3df(0,0,0));
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialType((video::E_MATERIAL_TYPE)newMaterialType1);
 
@@ -385,7 +367,7 @@ int main()
 
 	node = smgr->addCubeSceneNode(50);
 	node->setPosition(core::vector3df(0,-10,50));
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 	node->setMaterialType((video::E_MATERIAL_TYPE)newMaterialType2);
@@ -407,7 +389,7 @@ int main()
 
 	node = smgr->addCubeSceneNode(50);
 	node->setPosition(core::vector3df(0,50,25));
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+	node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
 	node->setMaterialFlag(video::EMF_LIGHTING, false);
 	smgr->addTextSceneNode(gui->getBuiltInFont(), L"NO SHADER",
 		video::SColor(255,255,255,255), node);
@@ -423,12 +405,12 @@ int main()
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 	smgr->addSkyBoxSceneNode(
-		driver->getTexture("../../media/irrlicht2_up.jpg"),
-		driver->getTexture("../../media/irrlicht2_dn.jpg"),
-		driver->getTexture("../../media/irrlicht2_lf.jpg"),
-		driver->getTexture("../../media/irrlicht2_rt.jpg"),
-		driver->getTexture("../../media/irrlicht2_ft.jpg"),
-		driver->getTexture("../../media/irrlicht2_bk.jpg"));
+		driver->getTexture(mediaPath + "irrlicht2_up.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_dn.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_lf.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_rt.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_ft.jpg"),
+		driver->getTexture(mediaPath + "irrlicht2_bk.jpg"));
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
@@ -448,7 +430,7 @@ int main()
 	while(device->run())
 		if (device->isWindowActive())
 	{
-		driver->beginScene(true, true, video::SColor(255,0,0,0));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
 		smgr->drawAll();
 		driver->endScene();
 

@@ -90,7 +90,7 @@ bool octree()
 	bool result = true;
 	{
 		camera->setPosition(core::vector3df(-620,-20,550));
-		driver->beginScene(true, true, 0);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0));
 		smgr->drawAll();
 
 		core::aabbox3df box(boxPosition.X - BOX_SIZE1, boxPosition.Y - BOX_SIZE1, boxPosition.Z - BOX_SIZE1,
@@ -114,7 +114,7 @@ bool octree()
 	}
 	{
 		camera->setPosition(core::vector3df(120,40,50));
-		driver->beginScene(true, true, 0);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0));
 		smgr->drawAll();
 
 		core::aabbox3df box(boxPosition.X - BOX_SIZE2, boxPosition.Y - BOX_SIZE2, boxPosition.Z - BOX_SIZE2,
@@ -203,7 +203,7 @@ bool triangle()
 
 	bool result = true;
 	{
-		driver->beginScene(true, true, 0xff00ffff);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0xff00ffff));
 		smgr->drawAll();
 
 		core::aabbox3df box(boxPosition.X - BOX_SIZE, boxPosition.Y - BOX_SIZE, boxPosition.Z - BOX_SIZE,
@@ -227,7 +227,7 @@ bool triangle()
 	}
 	{
 		boxPosition.Z -= 10.f;
-		driver->beginScene(true, true, 0xff00ffff);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0xff00ffff));
 		smgr->drawAll();
 
 		core::aabbox3df box(boxPosition.X - BOX_SIZE, boxPosition.Y - BOX_SIZE, boxPosition.Z - BOX_SIZE,
@@ -251,7 +251,7 @@ bool triangle()
 	}
 	{
 		boxPosition.Z -= 20.f;
-		driver->beginScene(true, true, 0xff00ffff);
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0xff00ffff));
 		smgr->drawAll();
 
 		core::aabbox3df box(boxPosition.X - BOX_SIZE, boxPosition.Y - BOX_SIZE, boxPosition.Z - BOX_SIZE,

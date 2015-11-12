@@ -193,6 +193,39 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			if (mat[i]->getTexture(0))
 			{
 				file->write("map_Kd ", 7);
+
+				f32 tposX, tposY, tscaleX, tscaleY;
+				const core::matrix4& textureMatrix =  mat[i]->getTextureMatrix(0);
+				textureMatrix.getTextureTranslate(tposX, tposY);
+				textureMatrix.getTextureScale(tscaleX, tscaleY);
+
+			   //Write texture translation values
+				if ( !core::equals(tposX, 0.f) || !core::equals(tposY, 0.f) )
+				{
+					file->write("-o ", 3);
+			   		core::stringc tx(tposX);
+			   		core::stringc ty(tposY);
+
+					file->write(tx.c_str(), tx.size());
+					file->write(" ", 1);
+					file->write(ty.c_str(), ty.size());
+					file->write(" ", 1);
+				}
+
+				//Write texture scaling values
+				if ( !core::equals(tscaleX, 1.f) || !core::equals(tscaleY, 1.f) )
+				{
+					file->write("-s ", 3);
+
+					core::stringc sx(tscaleX);
+					core::stringc sy(tscaleY);
+
+					file->write(sx.c_str(), sx.size());
+					file->write(" ", 1);
+					file->write(sy.c_str(), sy.size());
+					file->write(" ", 1);
+				}
+
 				io::path tname = FileSystem->getRelativeFilename(mat[i]->getTexture(0)->getName(),
 						FileSystem->getFileDir(file->getFileName()));
 				// avoid blanks as .obj cannot handle strings with spaces

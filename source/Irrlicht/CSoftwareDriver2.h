@@ -30,25 +30,24 @@ namespace video
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const _IRR_OVERRIDE_;
 
+		//! Create render target.
+		virtual IRenderTarget* addRenderTarget() _IRR_OVERRIDE_;
+
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat) _IRR_OVERRIDE_;
 
 		//! sets a material
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
-		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-						bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
+		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area) _IRR_OVERRIDE_;
 
-		//! clears the zbuffer
-		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0),
-				const SExposedVideoData& videoData=SExposedVideoData(),
-				core::rect<s32>* sourceRect=0) _IRR_OVERRIDE_;
+		virtual bool beginScene(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
+			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0) _IRR_OVERRIDE_;
 
-		//! presents the rendered scene on the screen, returns false if failed
 		virtual bool endScene() _IRR_OVERRIDE_;
 
 		//! Only used by the internal engine. Used to notify the driver that
@@ -132,8 +131,7 @@ namespace video
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
-		//! Clears the DepthBuffer.
-		virtual void clearZBuffer() _IRR_OVERRIDE_;
+		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
@@ -176,7 +174,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0) _IRR_OVERRIDE_;
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name) _IRR_OVERRIDE_;
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;

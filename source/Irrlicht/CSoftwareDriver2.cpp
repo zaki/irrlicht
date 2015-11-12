@@ -23,321 +23,13 @@ namespace irr
 namespace video
 {
 
-namespace glsl
-{
-
-typedef sVec4 vec4;
-typedef sVec3 vec3;
-typedef sVec2 vec2;
-
-#define in
-#define uniform
-#define attribute
-#define varying
-
-#ifdef _MSC_VER
-#pragma warning(disable:4244)
-#endif
-
-struct mat4{
-   float m[4][4];
-
-   vec4 operator* ( const vec4 &in ) const
-   {
-	   vec4 out;
-	   return out;
-   }
-
-};
-
-struct mat3{
-   float m[3][3];
-
-   vec3 operator* ( const vec3 &in ) const
-   {
-	   vec3 out;
-	   return out;
-   }
-};
-
-const int gl_MaxLights = 8;
-
-
-inline float dot (float x, float y) { return x * y; }
-inline float dot ( const vec2 &x, const vec2 &y) { return x.x * y.x + x.y * y.y; }
-inline float dot ( const vec3 &x, const vec3 &y) { return x.x * y.x + x.y * y.y + x.z * y.z; }
-inline float dot ( const vec4 &x, const vec4 &y) { return x.x * y.x + x.y * y.y + x.z * y.z + x.w * y.w; }
-
-inline float reflect (float I, float N)				{ return I - 2.0 * dot (N, I) * N; }
-inline vec2 reflect (const vec2 &I, const vec2 &N)	{ return I - N * 2.0 * dot (N, I); }
-inline vec3 reflect (const vec3 &I, const vec3 &N)	{ return I - N * 2.0 * dot (N, I); }
-inline vec4 reflect (const vec4 &I, const vec4 &N)	{ return I - N * 2.0 * dot (N, I); }
-
-
-inline float refract (float I, float N, float eta){
-    const float k = 1.0 - eta * eta * (1.0 - dot (N, I) * dot (N, I));
-    if (k < 0.0)
-        return 0.0;
-    return eta * I - (eta * dot (N, I) + sqrt (k)) * N;
-}
-
-inline vec2 refract (const vec2 &I, const vec2 &N, float eta){
-    const float k = 1.0 - eta * eta * (1.0 - dot (N, I) * dot (N, I));
-    if (k < 0.0)
-        return vec2 (0.0);
-    return I * eta - N * (eta * dot (N, I) + sqrt (k));
-}
-
-inline vec3 refract (const vec3 &I, const vec3 &N, float eta) {
-    const float k = 1.0 - eta * eta * (1.0 - dot (N, I) * dot (N, I));
-    if (k < 0.0)
-        return vec3 (0.0);
-    return I * eta - N * (eta * dot (N, I) + sqrt (k));
-}
-
-inline vec4 refract (const vec4 &I, const vec4 &N, float eta) {
-    const float k = 1.0 - eta * eta * (1.0 - dot (N, I) * dot (N, I));
-    if (k < 0.0)
-        return vec4 (0.0);
-    return I * eta - N * (eta * dot (N, I) + sqrt (k));
-}
-
-
-inline float length ( const vec3 &v ) { return sqrtf ( v.x * v.x + v.y * v.y + v.z * v.z ); }
-vec3 normalize ( const vec3 &v ) { 	float l = 1.f / length ( v ); return vec3 ( v.x * l, v.y * l, v.z * l ); }
-float max ( float a, float b ) { return a > b ? a : b; }
-float min ( float a, float b ) { return a < b ? a : b; }
-vec4 clamp ( const vec4 &a, f32 low, f32 high ) { return vec4 ( min (max(a.x,low), high), min (max(a.y,low), high), min (max(a.z,low), high), min (max(a.w,low), high) ); }
-
-
-
-typedef int sampler2D;
-sampler2D texUnit0;
-
-vec4 texture2D (sampler2D sampler, const vec2 &coord) { return vec4 (0.0); }
-
-struct gl_LightSourceParameters {
-	vec4 ambient;              // Acli
-	vec4 diffuse;              // Dcli
-	vec4 specular;             // Scli
-	vec4 position;             // Ppli
-	vec4 halfVector;           // Derived: Hi
-	vec3 spotDirection;        // Sdli
-	float spotExponent;        // Srli
-	float spotCutoff;          // Crli
-							// (range: [0.0,90.0], 180.0)
-	float spotCosCutoff;       // Derived: cos(Crli)
-							// (range: [1.0,0.0],-1.0)
-	float constantAttenuation; // K0
-	float linearAttenuation;   // K1
-	float quadraticAttenuation;// K2
-};
-
-uniform gl_LightSourceParameters gl_LightSource[gl_MaxLights];
-
-struct gl_LightModelParameters {
-    vec4 ambient;
-};
-uniform gl_LightModelParameters gl_LightModel;
-
-struct gl_LightModelProducts {
-    vec4 sceneColor;
-};
-
-uniform gl_LightModelProducts gl_FrontLightModelProduct;
-uniform gl_LightModelProducts gl_BackLightModelProduct;
-
-struct gl_LightProducts {
-    vec4 ambient;
-    vec4 diffuse;
-    vec4 specular;
-};
-
-uniform gl_LightProducts gl_FrontLightProduct[gl_MaxLights];
-uniform gl_LightProducts gl_BackLightProduct[gl_MaxLights];
-
-struct gl_MaterialParameters
-{
-	vec4 emission;    // Ecm
-	vec4 ambient;     // Acm
-	vec4 diffuse;     // Dcm
-	vec4 specular;    // Scm
-	float shininess;  // Srm
-};
-uniform gl_MaterialParameters gl_FrontMaterial;
-uniform gl_MaterialParameters gl_BackMaterial;
-
-// GLSL has some built-in attributes in a vertex shader:
-attribute vec4 gl_Vertex;			// 4D vector representing the vertex position
-attribute vec3 gl_Normal;			// 3D vector representing the vertex normal
-attribute vec4 gl_Color;			// 4D vector representing the vertex color
-attribute vec4 gl_MultiTexCoord0;	// 4D vector representing the texture coordinate of texture unit X
-attribute vec4 gl_MultiTexCoord1;	// 4D vector representing the texture coordinate of texture unit X
-
-uniform mat4 gl_ModelViewMatrix;			//4x4 Matrix representing the model-view matrix.
-uniform mat4 gl_ModelViewProjectionMatrix;	//4x4 Matrix representing the model-view-projection matrix.
-uniform mat3 gl_NormalMatrix;				//3x3 Matrix representing the inverse transpose model-view matrix. This matrix is used for normal transformation.
-
-
-varying vec4 gl_FrontColor;				// 4D vector representing the primitives front color
-varying vec4 gl_FrontSecondaryColor;	// 4D vector representing the primitives second front color
-varying vec4 gl_BackColor;				// 4D vector representing the primitives back color
-varying vec4 gl_TexCoord[4];			// 4D vector representing the Xth texture coordinate
-
-// shader output
-varying vec4 gl_Position;				// 4D vector representing the final processed vertex position. Only  available in vertex shader.
-varying vec4 gl_FragColor;				// 4D vector representing the final color which is written in the frame buffer. Only available in fragment shader.
-varying float gl_FragDepth;				// float representing the depth which is written in the depth buffer. Only available in fragment shader.
-
-varying vec4 gl_SecondaryColor;
-varying float gl_FogFragCoord;
-
-
-vec4 ftransform(void)
-{
-	return gl_ModelViewProjectionMatrix * gl_Vertex;
-}
-
-vec3 fnormal(void)
-{
-    //Compute the normal
-    vec3 normal = gl_NormalMatrix * gl_Normal;
-    normal = normalize(normal);
-    return normal;
-}
-
-
-struct program1
-{
-	vec4 Ambient;
-	vec4 Diffuse;
-	vec4 Specular;
-
-	void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
-	{
-	   float nDotVP;       // normal . light direction
-	   float nDotHV;       // normal . light half vector
-	   float pf;           // power factor
-	   float attenuation;  // computed attenuation factor
-	   float d;            // distance from surface to light source
-	   vec3  VP;           // direction from surface to light position
-	   vec3  halfVector;   // direction of maximum highlights
-
-	   // Compute vector from surface to light position
-	   VP = vec3 (gl_LightSource[i].position) - ecPosition3;
-
-	   // Compute distance between surface and light position
-	   d = length(VP);
-
-	   // Normalize the vector from surface to light position
-	   VP = normalize(VP);
-
-	   // Compute attenuation
-	   attenuation = 1.0 / (gl_LightSource[i].constantAttenuation +
-		   gl_LightSource[i].linearAttenuation * d +
-		   gl_LightSource[i].quadraticAttenuation * d * d);
-
-	   halfVector = normalize(VP + eye);
-
-	   nDotVP = max(0.0, dot(normal, VP));
-	   nDotHV = max(0.0, dot(normal, halfVector));
-
-	   if (nDotVP == 0.0)
-	   {
-		   pf = 0.0;
-	   }
-	   else
-	   {
-		   pf = pow(nDotHV, gl_FrontMaterial.shininess);
-
-	   }
-	   Ambient  += gl_LightSource[i].ambient * attenuation;
-	   Diffuse  += gl_LightSource[i].diffuse * nDotVP * attenuation;
-	   Specular += gl_LightSource[i].specular * pf * attenuation;
-	}
-
-	vec3 fnormal(void)
-	{
-		//Compute the normal
-		vec3 normal = gl_NormalMatrix * gl_Normal;
-		normal = normalize(normal);
-		return normal;
-	}
-
-	void ftexgen(in vec3 normal, in vec4 ecPosition)
-	{
-
-		gl_TexCoord[0] = gl_MultiTexCoord0;
-	}
-
-	void flight(in vec3 normal, in vec4 ecPosition, float alphaFade)
-	{
-		vec4 color;
-		vec3 ecPosition3;
-		vec3 eye;
-
-		ecPosition3 = (vec3 (ecPosition)) / ecPosition.w;
-		eye = vec3 (0.0, 0.0, 1.0);
-
-		// Clear the light intensity accumulators
-		Ambient  = vec4 (0.0);
-		Diffuse  = vec4 (0.0);
-		Specular = vec4 (0.0);
-
-		pointLight(0, normal, eye, ecPosition3);
-
-		pointLight(1, normal, eye, ecPosition3);
-
-		color = gl_FrontLightModelProduct.sceneColor +
-		  Ambient  * gl_FrontMaterial.ambient +
-		  Diffuse  * gl_FrontMaterial.diffuse;
-		gl_FrontSecondaryColor = Specular * gl_FrontMaterial.specular;
-		color = clamp( color, 0.0, 1.0 );
-		gl_FrontColor = color;
-
-		gl_FrontColor.a *= alphaFade;
-	}
-
-
-	void vertexshader_main (void)
-	{
-		vec3  transformedNormal;
-		float alphaFade = 1.0;
-
-		// Eye-coordinate position of vertex, needed in various calculations
-		vec4 ecPosition = gl_ModelViewMatrix * gl_Vertex;
-
-		// Do fixed functionality vertex transform
-		gl_Position = ftransform();
-		transformedNormal = fnormal();
-		flight(transformedNormal, ecPosition, alphaFade);
-		ftexgen(transformedNormal, ecPosition);
-	}
-
-	void fragmentshader_main (void)
-	{
-		vec4 color;
-
-		color = gl_Color;
-
-		color *= texture2D(texUnit0, vec2(gl_TexCoord[0].x, gl_TexCoord[0].y) );
-
-		color += gl_SecondaryColor;
-		color = clamp(color, 0.0, 1.0);
-
-		gl_FragColor = color;
-	}
-};
-
-}
-
 //! constructor
 CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, video::IImagePresenter* presenter)
 : CNullDriver(io, params.WindowSize), BackBuffer(0), Presenter(presenter),
 	WindowId(0), SceneSourceRect(0),
 	RenderTargetTexture(0), RenderTargetSurface(0), CurrentShader(0),
 	 DepthBuffer(0), StencilBuffer ( 0 ),
-	 CurrentOut ( 12 * 2, 128 ), Temp ( 12 * 2, 128 )
+	 CurrentOut ( 16 * 2, 256 ), Temp ( 16 * 2, 256 )
 {
 	#ifdef _DEBUG
 	setDebugName("CBurningVideoDriver");
@@ -360,10 +52,10 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 
 	DriverAttributes->setAttribute("MaxTextures", 2);
 	DriverAttributes->setAttribute("MaxIndices", 1<<16);
-	DriverAttributes->setAttribute("MaxTextureSize", 1024);
-	DriverAttributes->setAttribute("MaxLights", glsl::gl_MaxLights);
+	DriverAttributes->setAttribute("MaxTextureSize", SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE);
+	DriverAttributes->setAttribute("MaxLights", 1024 ); //glsl::gl_MaxLights);
 	DriverAttributes->setAttribute("MaxTextureLODBias", 16.f);
-	DriverAttributes->setAttribute("Version", 47);
+	DriverAttributes->setAttribute("Version", 49);
 
 	// create triangle renderers
 
@@ -484,10 +176,9 @@ void CBurningVideoDriver::setCurrentShader()
 	ITexture *texture0 = Material.org.getTexture(0);
 	ITexture *texture1 = Material.org.getTexture(1);
 
-	bool zMaterialTest =	Material.org.ZBuffer != ECFN_DISABLED &&
-							Material.org.ZWriteEnable &&
-							( AllowZWriteOnTransparent || (!Material.org.isTransparent() &&
-							!MaterialRenderers[Material.org.MaterialType].Renderer->isTransparent()) );
+	bool zMaterialTest = Material.org.ZBuffer != ECFN_DISABLED &&
+						Material.org.ZWriteEnable &&
+						getWriteZBuffer(Material.org);
 
 	EBurningFFShader shader = zMaterialTest ? ETR_TEXTURE_GOURAUD : ETR_TEXTURE_GOURAUD_NOZ;
 
@@ -509,7 +200,11 @@ void CBurningVideoDriver::setCurrentShader()
 				shader = zMaterialTest ? ETR_TEXTURE_GOURAUD_ALPHA : ETR_TEXTURE_GOURAUD_ALPHA_NOZ;
 				break;
 			}
-			// fall through
+			else
+			{
+				shader = ETR_TEXTURE_GOURAUD_VERTEX_ALPHA;
+			}
+			break;
 
 		case EMT_TRANSPARENT_ADD_COLOR:
 			shader = zMaterialTest ? ETR_TEXTURE_GOURAUD_ADD : ETR_TEXTURE_GOURAUD_ADD_NO_Z;
@@ -624,6 +319,8 @@ bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return true;
 #endif
 	case EVDF_STENCIL_BUFFER:
+		return StencilBuffer != 0;
+
 	case EVDF_RENDER_TO_TARGET:
 	case EVDF_MULTITEXTURE:
 	case EVDF_HARDWARE_TL:
@@ -633,6 +330,17 @@ bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	default:
 		return false;
 	}
+}
+
+
+
+//! Create render target.
+IRenderTarget* CBurningVideoDriver::addRenderTarget()
+{
+	CSoftwareRenderTarget2* renderTarget = new CSoftwareRenderTarget2(this);
+	RenderTargets.push_back(renderTarget);
+
+	return renderTarget;
 }
 
 
@@ -682,28 +390,18 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 	}
 }
 
-
-//! clears the zbuffer
-bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer,
-		SColor color, const SExposedVideoData& videoData,
-		core::rect<s32>* sourceRect)
+bool CBurningVideoDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 	WindowId = videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
-	if (backBuffer && BackBuffer)
-		BackBuffer->fill(color);
-
-	if (zBuffer && DepthBuffer)
-		DepthBuffer->clear();
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 	memset ( TransformationFlag, 0, sizeof ( TransformationFlag ) );
 	return true;
 }
 
-
-//! presents the rendered scene on the screen, returns false if failed
 bool CBurningVideoDriver::endScene()
 {
 	CNullDriver::endScene();
@@ -711,21 +409,19 @@ bool CBurningVideoDriver::endScene()
 	return Presenter->present(BackBuffer, WindowId, SceneSourceRect);
 }
 
-
-//! sets a render target
-bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-								 bool clearZBuffer, SColor color)
+bool CBurningVideoDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
-	if (texture && texture->getDriverType() != EDT_BURNINGSVIDEO)
+	if (target && target->getDriverType() != EDT_BURNINGSVIDEO)
 	{
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+		os::Printer::log("Fatal Error: Tried to set a render target not owned by this driver.", ELL_ERROR);
 		return false;
 	}
 
 	if (RenderTargetTexture)
 		RenderTargetTexture->drop();
 
-	RenderTargetTexture = texture;
+	CSoftwareRenderTarget2* renderTarget = static_cast<CSoftwareRenderTarget2*>(target);
+	RenderTargetTexture = (renderTarget) ? renderTarget->getTexture() : 0;
 
 	if (RenderTargetTexture)
 	{
@@ -737,14 +433,7 @@ bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBa
 		setRenderTarget(BackBuffer);
 	}
 
-	if (RenderTargetSurface && (clearBackBuffer || clearZBuffer))
-	{
-		if (clearZBuffer)
-			DepthBuffer->clear();
-
-		if (clearBackBuffer)
-			RenderTargetSurface->fill( color );
-	}
+	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 	return true;
 }
@@ -874,6 +563,16 @@ REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) c
 {
 	u32 flag = 0;
 
+	flag |= v->Pos.z <= v->Pos.w ? 1 : 0;
+	flag |= -v->Pos.z <= v->Pos.w ? 2 : 0;
+
+	flag |= v->Pos.x <= v->Pos.w ? 4 : 0;
+	flag |= -v->Pos.x <= v->Pos.w ? 8 : 0;
+
+	flag |= v->Pos.y <= v->Pos.w ? 16 : 0;
+	flag |= -v->Pos.y <= v->Pos.w ? 32 : 0;
+
+/*
 	if ( v->Pos.z <= v->Pos.w ) flag |= 1;
 	if (-v->Pos.z <= v->Pos.w ) flag |= 2;
 
@@ -882,7 +581,7 @@ REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) c
 
 	if ( v->Pos.y <= v->Pos.w ) flag |= 16;
 	if (-v->Pos.y <= v->Pos.w ) flag |= 32;
-
+*/
 /*
 	for ( u32 i = 0; i!= 6; ++i )
 	{
@@ -908,6 +607,7 @@ u32 CBurningVideoDriver::clipToHyperPlane ( s4DVertex * dest, const s4DVertex * 
 
 	for( u32 i = 1; i < inCount + 1; ++i)
 	{
+		// i really have problem
 		const s32 condition = i - inCount;
 		const s32 index = (( ( condition >> 31 ) & ( i ^ condition ) ) ^ condition ) << 1;
 
@@ -1748,7 +1448,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 	// The vertex cache needs to be rewritten for these primitives.
 	if (pType==scene::EPT_POINTS || pType==scene::EPT_LINE_STRIP ||
 		pType==scene::EPT_LINE_LOOP || pType==scene::EPT_LINES ||
-		pType==scene::EPT_TRIANGLE_FAN || pType==scene::EPT_POLYGON ||
+		pType==scene::EPT_POLYGON ||
 		pType==scene::EPT_POINT_SPRITES)
 		return;
 
@@ -1828,31 +1528,6 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 
 		// to DC Space, project homogenous vertex
 		ndc_2_dc_and_project ( CurrentOut.data + 1, CurrentOut.data, vOut );
-
-/*
-		// TODO: don't stick on 32 Bit Pointer
-		#define PointerAsValue(x) ( (u32) (u32*) (x) )
-
-		// if not complete inside clipping necessary
-		if ( ( test & VERTEX4D_INSIDE ) != VERTEX4D_INSIDE )
-		{
-			u32 v[2] = { PointerAsValue ( Temp ) , PointerAsValue ( CurrentOut ) };
-			for ( g = 0; g != 6; ++g )
-			{
-				vOut = clipToHyperPlane ( (s4DVertex*) v[0], (s4DVertex*) v[1], vOut, NDCPlane[g] );
-				if ( vOut < 3 )
-					break;
-
-				v[0] ^= v[1];
-				v[1] ^= v[0];
-				v[0] ^= v[1];
-			}
-
-			if ( vOut < 3 )
-				continue;
-
-		}
-*/
 
 		// check 2d backface culling on first
 		dc_area = screenarea ( CurrentOut.data );
@@ -2503,20 +2178,20 @@ void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 const wchar_t* CBurningVideoDriver::getName() const
 {
 #ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	return L"Burning's Video 0.47 beautiful";
+	return L"Burning's Video 0.49 beautiful";
 #elif defined ( BURNINGVIDEO_RENDERER_ULTRA_FAST )
-	return L"Burning's Video 0.47 ultra fast";
+	return L"Burning's Video 0.49 ultra fast";
 #elif defined ( BURNINGVIDEO_RENDERER_FAST )
-	return L"Burning's Video 0.47 fast";
+	return L"Burning's Video 0.49 fast";
 #else
-	return L"Burning's Video 0.47";
+	return L"Burning's Video 0.49";
 #endif
 }
 
 //! Returns the graphics card vendor name.
 core::stringc CBurningVideoDriver::getVendorInfo()
 {
-	return "Burning's Video: Ing. Thomas Alten (c) 2006-2012";
+	return "Burning's Video: Ing. Thomas Alten (c) 2006-2015";
 }
 
 
@@ -2553,12 +2228,16 @@ ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u3
 	return tex;
 }
 
-
-//! Clears the DepthBuffer.
-void CBurningVideoDriver::clearZBuffer()
+void CBurningVideoDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
-	if (DepthBuffer)
+	if ((flag & ECBF_COLOR) && RenderTargetSurface)
+		RenderTargetSurface->fill(color);
+
+	if ((flag & ECBF_DEPTH) && DepthBuffer)
 		DepthBuffer->clear();
+
+	if ((flag & ECBF_STENCIL) && StencilBuffer)
+		StencilBuffer->clear();
 }
 
 
@@ -2581,14 +2260,14 @@ IImage* CBurningVideoDriver::createScreenShot(video::ECOLOR_FORMAT format, video
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
+ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	CSoftwareTexture2* texture = 0;
 
 	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
 	{
 		texture = new CSoftwareTexture2( surface, name, (getTextureCreationFlag(ETCF_CREATE_MIP_MAPS) ? CSoftwareTexture2::GEN_MIPMAP : 0 ) |
-			(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE ), mipmapData);
+			(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE ));
 	}
 
 	return texture;
@@ -2708,6 +2387,38 @@ core::dimension2du CBurningVideoDriver::getMaxTextureSize() const
 
 #endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
+
+#if defined(_IRR_WINDOWS_) && defined(_IRR_COMPILE_WITH_BURNINGSVIDEO_)
+	#include <windows.h>
+
+struct dreadglobal
+{
+	DWORD dreadid;
+	HANDLE dread;
+	irr::video::CBurningVideoDriver *driver;
+	HANDLE sync;
+
+	const irr::SIrrlichtCreationParameters* params;
+	irr::io::IFileSystem* io;
+	irr::video::IImagePresenter* presenter;
+};
+dreadglobal b;
+
+DWORD WINAPI dreadFun( void *p)
+{
+    printf("Hi This is burning dread\n");
+	b.driver = new irr::video::CBurningVideoDriver(*b.params, b.io, b.presenter);
+
+	SetEvent ( b.sync );
+	while ( 1 )
+	{
+		Sleep ( 1000 );
+	}
+	return 0;
+}
+
+#endif
+
 namespace irr
 {
 namespace video
@@ -2717,7 +2428,19 @@ namespace video
 IVideoDriver* createBurningVideoDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, video::IImagePresenter* presenter)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+
+	#ifdef _IRR_WINDOWS_
+	b.sync = CreateEventA ( 0, 0, 0, "burnevent0" );
+	b.params = &params;
+	b.io = io;
+	b.presenter = presenter;
+	b.dread = CreateThread ( 0, 0, dreadFun, 0, 0, &b.dreadid );
+	WaitForSingleObject ( b.sync, INFINITE );
+	return b.driver;
+	#else
 	return new CBurningVideoDriver(params, io, presenter);
+	#endif
+
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

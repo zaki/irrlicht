@@ -38,6 +38,9 @@ namespace io
 		//! Returns name of file.
 		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
 
+		//! Flush the content of the buffer in the file
+		virtual bool flush() _IRR_OVERRIDE_;
+
 		//! returns if file is open
 		bool isOpen() const;
 

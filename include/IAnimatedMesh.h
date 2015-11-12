@@ -12,48 +12,6 @@ namespace irr
 {
 namespace scene
 {
-	//! Possible types of (animated) meshes.
-	enum E_ANIMATED_MESH_TYPE
-	{
-		//! Unknown animated mesh type.
-		EAMT_UNKNOWN = 0,
-
-		//! Quake 2 MD2 model file
-		EAMT_MD2,
-
-		//! Quake 3 MD3 model file
-		EAMT_MD3,
-
-		//! Maya .obj static model
-		EAMT_OBJ,
-
-		//! Quake 3 .bsp static Map
-		EAMT_BSP,
-
-		//! 3D Studio .3ds file
-		EAMT_3DS,
-
-		//! My3D Mesh, the file format by Zhuck Dimitry
-		EAMT_MY3D,
-
-		//! Pulsar LMTools .lmts file. This Irrlicht loader was written by Jonas Petersen
-		EAMT_LMTS,
-
-		//! Cartography Shop .csm file. This loader was created by Saurav Mohapatra.
-		EAMT_CSM,
-
-		//! .oct file for Paul Nette's FSRad or from Murphy McCauley's Blender .oct exporter.
-		/** The oct file format contains 3D geometry and lightmaps and
-		can be loaded directly by Irrlicht */
-		EAMT_OCT,
-
-		//! Halflife MDL model file
-		EAMT_MDL_HALFLIFE,
-
-		//! generic skinned mesh
-		EAMT_SKINNED
-	};
-
 	//! Interface for an animated mesh.
 	/** There are already simple implementations of this interface available so
 	you don't have to implement this interface on your own if you need to:
@@ -64,8 +22,9 @@ namespace scene
 	public:
 
 		//! Gets the frame count of the animated mesh.
-		/** \return The amount of frames. If the amount is 1,
-		it is a static, non animated mesh. */
+		/** Note that the play-time is usually getFrameCount()-1 as it stops as soon as the last frame-key is reached.
+		\return The amount of frames. If the amount is 1,
+		it is a static, non animated mesh. 	*/
 		virtual u32 getFrameCount() const = 0;
 
 		//! Gets the animation speed of the animated mesh.

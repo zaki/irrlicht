@@ -171,12 +171,12 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 		case 1:
 			image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(width, height));
 			if (image)
-				CColorConverter::convert8BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
+				CColorConverter::convert8BitTo16Bit(PCXData, (s16*)image->getData(), width, height, paletteData, pad);
 			break;
 		case 3:
 			image = new CImage(ECF_R8G8B8, core::dimension2d<u32>(width, height));
 			if (image)
-				CColorConverter::convert24BitTo24Bit(PCXData, (u8*)image->lock(), width, height, pad);
+				CColorConverter::convert24BitTo24Bit(PCXData, (u8*)image->getData(), width, height, pad);
 			break;
 		}
 	}
@@ -186,7 +186,7 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 		{
 			image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(width, height));
 			if (image)
-				CColorConverter::convert4BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
+				CColorConverter::convert4BitTo16Bit(PCXData, (s16*)image->getData(), width, height, paletteData, pad);
 		}
 	}
 	else if (header.BitsPerPixel==1)
@@ -195,17 +195,15 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 		{
 			image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(width, height));
 			if (image)
-				CColorConverter::convert4BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
+				CColorConverter::convert4BitTo16Bit(PCXData, (s16*)image->getData(), width, height, paletteData, pad);
 		}
 		else if (header.Planes==1)
 		{
 			image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(width, height));
 			if (image)
-				CColorConverter::convert1BitTo16Bit(PCXData, (s16*)image->lock(), width, height, pad);
+				CColorConverter::convert1BitTo16Bit(PCXData, (s16*)image->getData(), width, height, pad);
 		}
 	}
-	if (image)
-		image->unlock();
 
 	// clean up
 

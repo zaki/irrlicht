@@ -14,6 +14,7 @@ You can move the camera while left-mouse button is clicked.
 
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 #include "main.h"
 
 using namespace irr;
@@ -674,7 +675,7 @@ bool CApp::init(int argc, char *argv[])
 
 	// set a nicer font
 	gui::IGUISkin* skin = guiEnv->getSkin();
-	gui::IGUIFont* font = guiEnv->getFont("../../media/fonthaettenschweiler.bmp");
+	gui::IGUIFont* font = guiEnv->getFont(getExampleMediaPath() + "fonthaettenschweiler.bmp");
 	if (font)
 		skin->setFont(font);
 
@@ -830,7 +831,7 @@ bool CApp::update()
 
 		// draw everything
 		video::SColor bkColor( skin->getColor(gui::EGDC_APP_WORKSPACE) );
-		videoDriver->beginScene(true, true, bkColor);
+		videoDriver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, bkColor);
 
 		smgr->drawAll();
 		guiEnv->drawAll();

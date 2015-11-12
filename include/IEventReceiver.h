@@ -455,7 +455,7 @@ struct SEvent
 			AXIS_R,		// e.g. rudder, or analog 2 stick 2 top to bottom
 			AXIS_U,
 			AXIS_V,
-			NUMBER_OF_AXES
+			NUMBER_OF_AXES=18	// (please tell Irrlicht maintainers if you absolutely need more axes)
 		};
 
 		/** A bitmap of button states.  You can use IsButtonPressed() to

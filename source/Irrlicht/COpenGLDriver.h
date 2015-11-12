@@ -21,26 +21,19 @@ namespace irr
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
-// also includes the OpenGL stuff
+#include "COpenGLCommon.h"
 #include "COpenGLExtensionHandler.h"
 #include "IContextManager.h"
-
-#ifdef _IRR_COMPILE_WITH_CG_
-#include "Cg/cg.h"
-#endif
 
 namespace irr
 {
 
 namespace video
 {
-	class COpenGLCallBridge;
-	class COpenGLTexture;
-
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
-		friend class COpenGLCallBridge;
-		friend class COpenGLTexture;
+		friend COpenGLCacheHandler;
+		friend COpenGLTexture;
 	public:
 		// Information about state of fixed pipeline activity.
 		enum E_OPENGL_FIXED_PIPELINE_STATE
@@ -75,13 +68,9 @@ namespace video
 		//! destructor
 		virtual ~COpenGLDriver();
 
-		//! clears the zbuffer
-		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0),
-				const SExposedVideoData& videoData=SExposedVideoData(),
-				core::rect<s32>* sourceRect=0) _IRR_OVERRIDE_;
+		virtual bool beginScene(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
+			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0) _IRR_OVERRIDE_;
 
-		//! presents the rendered scene on the screen, returns false if failed
 		virtual bool endScene() _IRR_OVERRIDE_;
 
 		//! sets transformation
@@ -135,6 +124,9 @@ namespace video
 		actual value of pixels. */
 		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const _IRR_OVERRIDE_;
 
+		//! Create render target.
+		virtual IRenderTarget* addRenderTarget() _IRR_OVERRIDE_;
+
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
@@ -156,6 +148,16 @@ namespace video
 		//! \param material: Material to be used from now on.
 		virtual void setMaterial(const SMaterial& material) _IRR_OVERRIDE_;
 
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
+			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+			SColor color = SColor(255, 255, 255, 255), bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
+
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+			const video::SColor* const colors = 0, bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
+
+		virtual void draw2DImage(const video::ITexture* texture, bool flip);
+
 		//! draws a set of 2d images, using a color and the alpha channel of the
 		//! texture if desired.
 		void draw2DImageBatch(const video::ITexture* texture,
@@ -164,11 +166,6 @@ namespace video
 				const core::rect<s32>* clipRect,
 				SColor color,
 				bool useAlphaChannelOfTexture) _IRR_OVERRIDE_;
-
-		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
-			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
 
 		//! draws a set of 2d images, using a color and the alpha
 		/** channel of the texture if desired. The images are drawn
@@ -194,11 +191,6 @@ namespace video
 				const core::rect<s32>* clipRect=0,
 				SColor color=SColor(255,255,255,255),
 				bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
-
-		//! Draws a part of the texture into the rectangle.
-		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
-			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false) _IRR_OVERRIDE_;
 
 		//! draw an 2d rectangle
 		virtual void draw2DRectangle(SColor color, const core::rect<s32>& pos,
@@ -312,10 +304,6 @@ namespace video
 		//! Int interface for the above.
 		virtual bool setPixelShaderConstant(s32 index, const s32* ints, int count) _IRR_OVERRIDE_;
 
-		//! sets the current Texture
-		//! Returns whether setting was a success or not.
-		bool setActiveTexture(u32 stage, const video::ITexture* texture);
-
 		//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 		//! Returns whether disabling was successful or not.
 		bool disableTextures(u32 fromStage=0);
@@ -357,20 +345,10 @@ namespace video
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
-		//! set or reset render target
-		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
-					bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
+		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
-		//! set or reset render target texture
-		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-					bool clearZBuffer, SColor color) _IRR_OVERRIDE_;
-
-		//! Sets multiple render targets
-		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
-			bool clearBackBuffer=true, bool clearZBuffer=true, SColor color=SColor(0,0,0,0)) _IRR_OVERRIDE_;
-
-		//! Clears the ZBuffer.
-		virtual void clearZBuffer() _IRR_OVERRIDE_;
+		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
@@ -416,6 +394,9 @@ namespace video
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
 
+		void getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+			GLenum& pixelType, void(**converter)(const void*, s32, void*));
+
 		//! Return info about fixed pipeline state.
 		E_OPENGL_FIXED_PIPELINE_STATE getFixedPipelineState() const;
 
@@ -425,18 +406,9 @@ namespace video
 		//! Get current material.
 		const SMaterial& getCurrentMaterial() const;
 
-		//! Get bridge calls.
-		COpenGLCallBridge* getBridgeCalls() const;
-
-		//! Get Cg context
-		#ifdef _IRR_COMPILE_WITH_CG_
-		const CGcontext& getCgContext();
-		#endif
+		COpenGLCacheHandler* getCacheHandler() const;
 
 	private:
-
-		//! clears the zbuffer and color buffer
-		void clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color);
 
 		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 		bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
@@ -447,7 +419,7 @@ namespace video
 		bool genericDriverInit();
 
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData) _IRR_OVERRIDE_;
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name) _IRR_OVERRIDE_;
 
 		//! returns a device dependent texture from a software surface (IImage)
 		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
@@ -483,8 +455,7 @@ namespace video
 		void renderArray(const void* indexList, u32 primitiveCount,
 				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
-		// Bridge calls.
-		COpenGLCallBridge* BridgeCalls;
+		COpenGLCacheHandler* CacheHandler;
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -505,75 +476,7 @@ namespace video
 		u8 AntiAlias;
 
 		SMaterial Material, LastMaterial;
-		COpenGLTexture* RenderTargetTexture;
-		core::array<video::IRenderTarget> MRTargets;
 
-		class STextureStageCache
-		{
-			const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
-		public:
-			STextureStageCache()
-			{
-				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				{
-					CurrentTexture[i] = 0;
-				}
-			}
-
-			~STextureStageCache()
-			{
-				clear();
-			}
-
-			void set(u32 stage, const ITexture* tex)
-			{
-				if (stage<MATERIAL_MAX_TEXTURES)
-				{
-					const ITexture* oldTexture=CurrentTexture[stage];
-					if (tex)
-						tex->grab();
-					CurrentTexture[stage]=tex;
-					if (oldTexture)
-						oldTexture->drop();
-				}
-			}
-
-			const ITexture* operator[](int stage) const
-			{
-				if ((u32)stage<MATERIAL_MAX_TEXTURES)
-					return CurrentTexture[stage];
-				else
-					return 0;
-			}
-
-			void remove(ITexture* tex)
-			{
-				for (s32 i = MATERIAL_MAX_TEXTURES-1; i>= 0; --i)
-				{
-					if (CurrentTexture[i] == tex)
-					{
-						tex->drop();
-						CurrentTexture[i] = 0;
-					}
-				}
-			}
-
-			void clear()
-			{
-				// Drop all the CurrentTexture handles
-				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				{
-					if (CurrentTexture[i])
-					{
-						CurrentTexture[i]->drop();
-						CurrentTexture[i] = 0;
-					}
-				}
-			}
-		};
-		STextureStageCache CurrentTexture;
-
-		core::array<ITexture*> DepthTextures;
 		struct SUserClipPlane
 		{
 			SUserClipPlane() : Enabled(false) {}
@@ -581,8 +484,6 @@ namespace video
 			bool Enabled;
 		};
 		core::array<SUserClipPlane> UserClipPlanes;
-
-		core::dimension2d<u32> CurrentRendertargetSize;
 
 		core::stringc VendorName;
 
@@ -592,9 +493,6 @@ namespace video
 		ECOLOR_FORMAT ColorFormat;
 
 		E_OPENGL_FIXED_PIPELINE_STATE FixedPipelineState;
-
-		//! Render target type for render operations
-		E_RENDER_TARGET CurrentTarget;
 
 		SIrrlichtCreationParameters Params;
 
@@ -618,125 +516,9 @@ namespace video
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 			CIrrDeviceSDL *SDLDevice;
 		#endif
-		#ifdef _IRR_COMPILE_WITH_CG_
-		CGcontext CgContext;
-		#endif
 		IContextManager* ContextManager;
 
 		E_DEVICE_TYPE DeviceType;
-	};
-
-	//! This bridge between Irlicht pseudo OpenGL calls
-	//! and true OpenGL calls.
-
-	class COpenGLCallBridge
-	{
-	public:
-		COpenGLCallBridge(COpenGLDriver* driver);
-		~COpenGLCallBridge();
-
-		// Alpha calls.
-
-		void setAlphaFunc(GLenum mode, GLclampf ref);
-
-		void setAlphaTest(bool enable);
-
-		// Blending calls.
-
-		void setBlendEquation(GLenum mode);
-
-		void setBlendEquationIndexed(GLuint index, GLenum mode);
-
-		void setBlendFunc(GLenum source, GLenum destination);
-
-		void setBlendFuncSeparate(GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha);
-
-		void setBlendFuncIndexed(GLuint index, GLenum source, GLenum destination);
-
-		void setBlendFuncSeparateIndexed(GLuint index, GLenum sourceRGB, GLenum destinationRGB, GLenum sourceAlpha, GLenum destinationAlpha);
-
-		void setBlend(bool enable);
-
-		void setBlendIndexed(GLuint index, bool enable);
-
-		// Client state calls.
-
-		void setClientState(bool vertex, bool normal, bool color, bool texCoord0);
-
-		// Cull face calls.
-
-		void setCullFaceFunc(GLenum mode);
-
-		void setCullFace(bool enable);
-
-		// Depth calls.
-
-		void setDepthFunc(GLenum mode);
-
-		void setDepthMask(bool enable);
-
-		void setDepthTest(bool enable);
-
-		// Matrix calls.
-
-		void setMatrixMode(GLenum mode);
-
-		// Texture calls.
-
-		void resetTexture(const ITexture* texture);
-
-		void setActiveTexture(GLenum texture);
-
-		void setClientActiveTexture(GLenum texture);
-
-		void getTexture(GLuint stage, GLenum& type, bool& fixedPipeline);
-
-		void setTexture(GLuint stage, GLenum type, bool fixedPipeline);
-		
-		// Viewport calls.
-		
-		void setViewport(GLint viewportX, GLint viewportY, GLsizei viewportWidth, GLsizei viewportHeight);		
-
-	private:
-		COpenGLDriver* Driver;
-
-		GLenum AlphaMode;
-		GLclampf AlphaRef;
-		bool AlphaTest;
-
-		GLenum* BlendEquation;
-		GLenum* BlendSourceRGB;
-		GLenum* BlendDestinationRGB;
-		GLenum* BlendSourceAlpha;
-		GLenum* BlendDestinationAlpha;
-		bool* Blend;
-		GLuint BlendIndexCount;
-
-		bool ClientStateVertex;
-		bool ClientStateNormal;
-		bool ClientStateColor;
-		bool ClientStateTexCoord0;
-
-		GLenum CullFaceMode;
-		bool CullFace;
-
-		GLenum DepthFunc;
-		bool DepthMask;
-		bool DepthTest;
-
-		GLenum MatrixMode;
-
-		GLenum ActiveTexture;
-		GLenum ClientActiveTexture;
-
-		const ITexture* Texture[MATERIAL_MAX_TEXTURES];
-		GLenum TextureType[MATERIAL_MAX_TEXTURES];
-		bool TextureFixedPipeline[MATERIAL_MAX_TEXTURES];
-		
-		GLint ViewportX;
-		GLint ViewportY;
-		GLsizei ViewportWidth;
-		GLsizei ViewportHeight;		
 	};
 
 } // end namespace video

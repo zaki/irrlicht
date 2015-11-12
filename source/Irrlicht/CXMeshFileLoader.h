@@ -118,6 +118,8 @@ private:
 
 	bool parseDataObjectAnimationSet();
 
+	bool parseDataObjectAnimationTicksPerSecond();
+
 	bool parseDataObjectAnimation();
 
 	bool parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint);

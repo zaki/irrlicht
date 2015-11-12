@@ -119,7 +119,7 @@ namespace scene
 		//! Returns the axis aligned bounding box of this node
 		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
 
-		//! Returns the view area. Sometimes needed by bsp or lod render nodes.
+		//! Returns the view area.
 		virtual const SViewFrustum* getViewFrustum() const _IRR_OVERRIDE_;
 
 		//! Disables or enables the camera to get key or mouse inputs.
@@ -152,6 +152,8 @@ namespace scene
 
 		void recalculateProjectionMatrix();
 		void recalculateViewArea();
+
+		core::aabbox3d<f32> BoundingBox;
 
 		core::vector3df Target;
 		core::vector3df UpVector;

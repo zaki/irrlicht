@@ -200,16 +200,14 @@ void CTRTextureGouraudAlphaNoZ::scanline_bilinear ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
-#ifdef INVERSE_W
-	f32 inversew;
-#endif
+	f32 inversew = FIX_POINT_F32_MUL;
 
 #ifdef BURNINGVIDEO_RENDERER_FAST
 	u32 dIndex = ( line.y & 3 ) << 2;
@@ -240,20 +238,11 @@ void CTRTextureGouraudAlphaNoZ::scanline_bilinear ()
 		const tFixPointu d = dithermask [ dIndex | ( i ) & 3 ];
 
 #ifdef INVERSE_W
-
 		inversew = fix_inverse32 ( line.w[0] );
-
+#endif
 		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x,inversew),
 											d + tofix ( line.t[0][0].y,inversew)
 											);
-
-#else
-
-		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x),
-											d + tofix ( line.t[0][0].y)
-											);
-
-#endif
 
 		const u32 alpha = ( argb >> 24 );
 		if ( alpha > AlphaRef )

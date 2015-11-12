@@ -88,6 +88,10 @@ public:
 	//! Check whether this light casts shadows.
 	/** \return True if light would cast shadows, else false. */
 	virtual bool getCastShadow() const _IRR_OVERRIDE_;
+
+	//! Updates the absolute position based on the relative and the parents position
+	virtual void updateAbsolutePosition() _IRR_OVERRIDE_;
+
 private:
 
 	video::SLight LightData;

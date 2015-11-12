@@ -48,7 +48,7 @@ static bool testLightTypes(video::E_DRIVER_TYPE driverType)
 	light3->setLightType(video::ELT_DIRECTIONAL);
 	light1->getLightData().DiffuseColor.set(0,1,0);
 
-	driver->beginScene (true, true, 0);
+	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0));
 	smgr->drawAll();
 	driver->endScene();
 

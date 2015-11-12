@@ -87,6 +87,11 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 			if((noDebugObjects ? !current->isDebugObject() : true) &&
 				(bits==0 || (bits != 0 && (current->getID() & bits))))
 			{
+				// Assume that single-point bounding-boxes are not meant for collision
+				const core::aabbox3df & objectBox = current->getBoundingBox();
+				if ( objectBox.isEmpty() )
+					continue;
+
 				// get world to object space transform
 				core::matrix4 worldToObject;
 				if (!current->getAbsoluteTransformation().getInverse(worldToObject))
@@ -96,8 +101,6 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 				core::line3df objectRay(ray);
 				worldToObject.transformVect(objectRay.start);
 				worldToObject.transformVect(objectRay.end);
-
-				const core::aabbox3df & objectBox = current->getBoundingBox();
 
 				// Do the initial intersection test in object space, since the
 				// object space box test is more accurate.
@@ -354,7 +357,6 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 {
 	if (!selector)
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -413,7 +415,6 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 		}
 	}
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return found;
 }
 

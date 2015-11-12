@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="gui">
+      <UniqueIdentifier>{f6ad9df9-ebaa-4c0f-997b-c8101c1fc669}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\GUIAttributes">
+      <UniqueIdentifier>{7fd14cb1-d2e7-4fd0-85c1-68fc9d1249f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\Useful GUI Elements">
+      <UniqueIdentifier>{ab2c3f3a-1d99-4619-b5df-47fdd9449f3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\Element Editors">
+      <UniqueIdentifier>{740a4255-37cc-4ac4-94e9-f2f0970491a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{a28a0b21-3336-432f-9759-ff2dc064874a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CGUIEditFactory.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIEditWindow.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIEditWorkspace.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUITextureCacheBrowser.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIAttributeEditor.cpp">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CGUIPanel.cpp">
+      <Filter>gui\Useful GUI Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="CMemoryReadWriteFile.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CGUIEditFactory.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIEditWindow.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIEditWorkspace.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUITextureCacheBrowser.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIAttribute.h">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIAttributeEditor.h">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIBoolAttribute.h">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIColorAttribute.h">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIEnumAttribute.h">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIStringAttribute.h">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUITextureAttribute.h">
+      <Filter>gui\GUIAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIPanel.h">
+      <Filter>gui\Useful GUI Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="CGUIDummyEditorStub.h">
+      <Filter>gui\Element Editors</Filter>
+    </ClInclude>
+    <ClInclude Include="CMemoryReadWriteFile.h">
+      <Filter>io</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

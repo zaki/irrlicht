@@ -1,6 +1,5 @@
+// Copyright (C) 2015 Patryk Nadrowski
 // Copyright (C) 2009-2010 Amundis
-// Heavily based on the OpenGL driver implemented by Nikolaus Gebhardt
-// and OpenGL ES driver implemented by Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -11,34 +10,17 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-#include "CEGLManager.h"
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include "iOS/CIrrDeviceiOS.h"
-#endif
-
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#else
-#include <GLES2/gl2.h>
-typedef char GLchar;
-#if defined(_IRR_OGLES2_USE_EXTPOINTER_)
-#include "gles2-ext.h"
-#endif
-#endif
-
-#include "os.h"
 #include "EDriverFeatures.h"
+#include "irrTypes.h"
+#include "os.h"
+#include "COGLES2Common.h"
+#include "COGLCoreFeature.h"
 
 namespace irr
 {
 namespace video
 {
-	class COGLES2Driver;
+
 	class COGLES2ExtensionHandler
 	{
 	public:
@@ -184,15 +166,11 @@ namespace video
 			IRR_OGLES2_Feature_Count
 		};
 
-		//! queries the features of the driver, returns true if feature is available
-		bool queryOpenGLFeature(EOGLES2Features feature) const
-		{
-			return FeatureAvailable[feature];
-		}
-
-
-	protected:
 		COGLES2ExtensionHandler();
+
+		void initExtensions();
+
+		const COGLCoreFeature& getFeature() const;
 
 		bool queryFeature(video::E_VIDEO_DRIVER_FEATURE feature) const
 		{
@@ -248,14 +226,144 @@ namespace video
 			};
 		}
 
+		bool queryOpenGLFeature(EOGLES2Features feature) const
+		{
+			return FeatureAvailable[feature];
+		}
+
 		void dump() const;
 
-        void initExtensions(COGLES2Driver* driver, bool withStencil);
+		inline void irrGlActiveTexture(GLenum texture)
+		{
+			glActiveTexture(texture);
+		}
+
+		inline void irrGlCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border,
+			GLsizei imageSize, const void* data)
+		{
+			glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
+		}
+
+		inline void irrGlCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height,
+			GLenum format, GLsizei imageSize, const void* data)
+		{
+			glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+		}
+
+		inline void irrGlUseProgram(GLuint prog)
+		{
+			glUseProgram(prog);
+		}
+
+		inline void irrGlBindFramebuffer(GLenum target, GLuint framebuffer)
+		{
+			glBindFramebuffer(target, framebuffer);
+		}
+
+		inline void irrGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
+		{
+			glDeleteFramebuffers(n, framebuffers);
+		}
+
+		inline void irrGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
+		{
+			glGenFramebuffers(n, framebuffers);
+		}
+
+		inline GLenum irrGlCheckFramebufferStatus(GLenum target)
+		{
+			return glCheckFramebufferStatus(target);
+		}
+
+		inline void irrGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+		{
+			glFramebufferTexture2D(target, attachment, textarget, texture, level);
+		}
+
+		inline void irrGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
+		{
+			glBindRenderbuffer(target, renderbuffer);
+		}
+
+		inline void irrGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
+		{
+			glDeleteRenderbuffers(n, renderbuffers);
+		}
+
+		inline void irrGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
+		{
+			glGenRenderbuffers(n, renderbuffers);
+		}
+
+		inline void irrGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
+		{
+			glRenderbufferStorage(target, internalformat, width, height);
+		}
+
+		inline void irrGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+		{
+			glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+		}
+
+		inline void irrGlGenerateMipmap(GLenum target)
+		{
+			glGenerateMipmap(target);
+		}
+
+		inline void irrGlActiveStencilFace(GLenum face)
+		{
+		}
+
+		inline void irrGlDrawBuffer(GLenum mode)
+		{
+		}
+
+		inline void irrGlDrawBuffers(GLsizei n, const GLenum *bufs)
+		{
+		}
+
+		inline void irrGlBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha)
+		{
+			glBlendFuncSeparate(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+		}
+
+		inline void irrGlBlendEquation(GLenum mode)
+		{
+			glBlendEquation(mode);
+		}
+
+		inline void irrGlEnableIndexed(GLenum target, GLuint index)
+		{
+		}
+
+		inline void irrGlDisableIndexed(GLenum target, GLuint index)
+		{
+		}
+
+		inline void irrGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
+		{
+		}
+
+		inline void irrGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
+		{
+		}
+
+		inline void irrGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+		{
+		}
+
+		inline void irrGlBlendEquationIndexed(GLuint buf, GLenum mode)
+		{
+		}
+
+		inline void irrGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha)
+		{
+		}
 
 	protected:
+		COGLCoreFeature Feature;
+
 		u16 Version;
-		u8 MaxTextureUnits;
-		u8 MaxSupportedTextures;
 		u8 MaxAnisotropy;
 		u32 MaxIndices;
 		u32 MaxTextureSize;
@@ -268,10 +376,8 @@ namespace video
 		bool FeatureAvailable[IRR_OGLES2_Feature_Count];
 	};
 
-} // end namespace video
-} // end namespace irr
+}
+}
 
-
-#endif // _IRR_COMPILE_WITH_OGLES2_
 #endif
-
+#endif

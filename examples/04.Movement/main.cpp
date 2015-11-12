@@ -19,6 +19,7 @@ and tell the linker to link with the .lib file.
 
 #include <irrlicht.h>
 #include "driverChoice.h"
+#include "exampleHelper.h"
 
 using namespace irr;
 
@@ -87,6 +88,8 @@ int main()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
+	const io::path mediaPath = getExampleMediaPath();
+
 	/*
 	Create the node which will be moved with the WSAD keys. We create a
 	sphere node, which is a built-in geometry primitive. We place the node
@@ -98,7 +101,7 @@ int main()
 	if (node)
 	{
 		node->setPosition(core::vector3df(0,0,30));
-		node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+		node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
 		node->setMaterialFlag(video::EMF_LIGHTING, false);
 	}
 
@@ -115,7 +118,7 @@ int main()
 
 	if (n)
 	{
-		n->setMaterialTexture(0, driver->getTexture("../../media/t351sml.jpg"));
+		n->setMaterialTexture(0, driver->getTexture(mediaPath + "t351sml.jpg"));
 		n->setMaterialFlag(video::EMF_LIGHTING, false);
 		scene::ISceneNodeAnimator* anim =
 			smgr->createFlyCircleAnimator(core::vector3df(0,0,30), 20.0f);
@@ -131,7 +134,7 @@ int main()
 	a b3d model, which uses a 'fly straight' animator to run between to points.
 	*/
 	scene::IAnimatedMeshSceneNode* anms =
-		smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"));
+		smgr->addAnimatedMeshSceneNode(smgr->getMesh(mediaPath + "ninja.b3d"));
 
 	if (anms)
 	{
@@ -164,7 +167,7 @@ int main()
 
 		anms->setScale(core::vector3df(2.f,2.f,2.f));
 		anms->setRotation(core::vector3df(0,-90,0));
-//		anms->setMaterialTexture(0, driver->getTexture("../../media/sydney.bmp"));
+//		anms->setMaterialTexture(0, driver->getTexture(mediaPath + "sydney.bmp"));
 
 	}
 
@@ -180,7 +183,7 @@ int main()
 	Add a colorful irrlicht logo
 	*/
 	device->getGUIEnvironment()->addImage(
-		driver->getTexture("../../media/irrlichtlogoalpha2.tga"),
+		driver->getTexture(mediaPath + "irrlichtlogoalpha2.tga"),
 		core::position2d<s32>(10,20));
 
 	gui::IGUIStaticText* diagnostics = device->getGUIEnvironment()->addStaticText(
@@ -224,7 +227,7 @@ int main()
 
 		node->setPosition(nodePosition);
 
-		driver->beginScene(true, true, video::SColor(255,113,113,133));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 
 		smgr->drawAll(); // draw the 3d scene
 		device->getGUIEnvironment()->drawAll(); // draw the gui environment (the logo)

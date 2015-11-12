@@ -51,9 +51,9 @@ public:
 		s32 leftZStep, rightZStep;
 		TZBufferType* zTarget;//, *spanZTarget; // target of ZBuffer;
 
-		lockedSurface = (u16*)RenderTarget->lock();
+		lockedSurface = (u16*)RenderTarget->getData();
 		lockedZBuffer = ZBuffer->lock();
-		lockedTexture = (u16*)Texture->lock();
+		lockedTexture = (u16*)Texture->getData();
 
 		for (s32 i=0; i<triangleCount; ++i)
 		{
@@ -332,9 +332,7 @@ public:
 
 		}
 
-		RenderTarget->unlock();
 		ZBuffer->unlock();
-		Texture->unlock();
 	}
 };
 

@@ -47,6 +47,7 @@ namespace scene
 
 		//! sets the frames between the animation is looped.
 		//! the default is 0 - MaximalFrameCount of the mesh.
+		//! NOTE: setMesh will also change this value and set it to the full range of animations of the mesh
 		virtual bool setFrameLoop(s32 begin, s32 end) _IRR_OVERRIDE_;
 
 		//! Sets looping mode which is on by default. If set to false,
@@ -61,6 +62,7 @@ namespace scene
 		virtual void setAnimationEndCallback(IAnimationEndCallBack* callback=0) _IRR_OVERRIDE_;
 
 		//! sets the speed with which the animation is played
+		//! NOTE: setMesh will also change this value and set it to the default speed of the mesh
 		virtual void setAnimationSpeed(f32 framesPerSecond) _IRR_OVERRIDE_;
 
 		//! gets the speed with which the animation is played

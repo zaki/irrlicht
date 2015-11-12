@@ -342,7 +342,6 @@ public:
 	//! Returns true if element is visible.
 	virtual bool isVisible() const
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsVisible;
 	}
 
@@ -351,7 +350,6 @@ public:
 	false if this or any parent element is invisible. */
 	virtual bool isTrulyVisible() const
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		if(!IsVisible)
 			return false;
 
@@ -371,7 +369,6 @@ public:
 	//! Returns true if this element was created as part of its parent control
 	virtual bool isSubElement() const
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsSubElement;
 	}
 
@@ -397,7 +394,6 @@ public:
 	//! Returns true if this element can be focused by navigating with the tab key
 	bool isTabStop() const
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsTabStop;
 	}
 
@@ -451,7 +447,6 @@ public:
 	//! Returns true if this element is a tab group.
 	bool isTabGroup() const
 	{
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsTabGroup;
 	}
 
@@ -478,7 +473,6 @@ public:
 		if ( isSubElement() && IsEnabled && getParent() )
 			return getParent()->isEnabled();
 
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsEnabled;
 	}
 
@@ -554,7 +548,6 @@ public:
 			}
 		}
 
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -576,7 +569,6 @@ public:
 			}
 		}
 
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -628,7 +620,7 @@ public:
 
 		} while (child->Parent && child != this);
 
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+
 		return child == this;
 	}
 
@@ -711,13 +703,11 @@ public:
 				// search within children
 				if ((*it)->getNextElement(startOrder, reverse, group, first, closest))
 				{
-					_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 					return true;
 				}
 			}
 			++it;
 		}
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 

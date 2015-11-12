@@ -183,16 +183,14 @@ void CTRTextureGouraud2::scanline_bilinear ()
 #endif
 #endif
 
-	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->getData() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
 	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
-#ifdef INVERSE_W
-	f32 inversew;
-#endif
+	f32 inversew = FIX_POINT_F32_MUL;
 
 	tFixPoint tx0;
 	tFixPoint ty0;
@@ -236,8 +234,8 @@ void CTRTextureGouraud2::scanline_bilinear ()
 #endif
 
 #else
-			tx0 = tofix ( line.t[0][0].x );
-			ty0 = tofix ( line.t[0][0].y );
+			tx0 = tofix(line.t[0][0].x, inversew);
+			ty0 = tofix(line.t[0][0].y, inversew);
 #ifdef IPOL_C0
 			getTexel_plain2 ( r1, g1, b1, line.c[0][0] );
 #endif

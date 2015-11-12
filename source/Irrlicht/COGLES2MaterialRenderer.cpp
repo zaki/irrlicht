@@ -3,7 +3,13 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
+
 #ifdef _IRR_COMPILE_WITH_OGLES2_
+
+#include "COGLES2Common.h"
+
+#include "COGLCoreTexture.h"
+#include "COGLCoreCacheHandler.h"
 
 #include "COGLES2MaterialRenderer.h"
 #include "IGPUProgrammingServices.h"
@@ -161,21 +167,21 @@ void COGLES2MaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
 {
-	COGLES2CallBridge* bridgeCalls = Driver->getBridgeCalls();
+	COGLES2CacheHandler* cacheHandler = Driver->getCacheHandler();
 
-	bridgeCalls->setProgram(Program);
+	cacheHandler->setProgram(Program);
 
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 	if (Alpha)
 	{
-		bridgeCalls->setBlend(true);
-		bridgeCalls->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		cacheHandler->setBlend(true);
+		cacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	else if (FixedBlending)
 	{
-		bridgeCalls->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		bridgeCalls->setBlend(true);
+		cacheHandler->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		cacheHandler->setBlend(true);
 	}
 	else if (Blending)
 	{
@@ -184,10 +190,10 @@ void COGLES2MaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 		u32 alphaSource;
 		unpack_textureBlendFuncSeparate(srcRGBFact, dstRGBFact, srcAlphaFact, dstAlphaFact, modulate, alphaSource, material.MaterialTypeParam);
 
-		bridgeCalls->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
+		cacheHandler->setBlendFuncSeparate(Driver->getGLBlend(srcRGBFact), Driver->getGLBlend(dstRGBFact),
 			Driver->getGLBlend(srcAlphaFact), Driver->getGLBlend(dstAlphaFact));
 
-		bridgeCalls->setBlend(true);
+		cacheHandler->setBlend(true);
 	}
 
 	if (CallBack)

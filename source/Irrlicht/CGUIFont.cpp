@@ -98,7 +98,6 @@ bool CGUIFont::load(io::IXMLReader* xml, const io::path& directory)
 				if (!SpriteBank->getTexture(i))
 				{
 					os::Printer::log("Unable to load all textures in the font, aborting", ELL_ERROR);
-					_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 					return false;
 				}
 				else

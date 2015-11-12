@@ -163,6 +163,10 @@ const io::path& CMemoryWriteFile::getFileName() const
 	return Filename;
 }
 
+bool CMemoryWriteFile::flush()
+{
+	return true; // no buffering, so nothing to do
+}
 
 IReadFile* createMemoryReadFile(const void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped)
 {

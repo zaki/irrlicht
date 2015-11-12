@@ -375,9 +375,7 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-#if !defined(_IRR_WINDOWS_CE_PLATFORM_)
 	setlocale(LC_ALL,"");
-#endif
 
 	if (FileList)
 	{
@@ -385,8 +383,9 @@ void CGUIFileOpenDialog::fillListBox()
 		{
 			#ifndef _IRR_WCHAR_FILESYSTEM
 			const c8 *cs = (const c8 *)FileList->getFileName(i).c_str();
-			wchar_t *ws = new wchar_t[strlen(cs) + 1];
-			int len = mbstowcs(ws,cs,strlen(cs));
+			size_t lencs = strlen(cs);
+			wchar_t *ws = new wchar_t[lencs + 1];
+			size_t len = mbstowcs(ws, cs, lencs);
 			ws[len] = 0;
 			s = ws;
 			delete [] ws;
@@ -401,8 +400,9 @@ void CGUIFileOpenDialog::fillListBox()
 	{
 		#ifndef _IRR_WCHAR_FILESYSTEM
 		const c8 *cs = (const c8 *)FileSystem->getWorkingDirectory().c_str();
-		wchar_t *ws = new wchar_t[strlen(cs) + 1];
-		int len = mbstowcs(ws,cs,strlen(cs));
+		size_t lencs = strlen(cs);
+		wchar_t *ws = new wchar_t[lencs + 1];
+		size_t len = mbstowcs(ws, cs, lencs);
 		ws[len] = 0;
 		s = ws;
 		delete [] ws;

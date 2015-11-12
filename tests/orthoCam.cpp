@@ -36,7 +36,7 @@ static bool testOrthoCam(video::E_DRIVER_TYPE driverType)
 	light->setRadius(500.f);
 	light->getLightData().DiffuseColor.set(0,1,1);
 
-	device->getVideoDriver()->beginScene (true, true, 0);
+	device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 
@@ -74,7 +74,7 @@ static bool testOrthoStencil(video::E_DRIVER_TYPE driverType)
 	light->setRadius(500.f);
 	light->getLightData().DiffuseColor.set(0,1,1);
 
-	device->getVideoDriver()->beginScene (true, true, 0);
+	device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 
@@ -96,7 +96,6 @@ bool orthoCam(void)
 //	passed &= testOrthoCam(video::EDT_SOFTWARE);
 	passed &= testOrthoCam(video::EDT_BURNINGSVIDEO);
 	passed &= testOrthoCam(video::EDT_DIRECT3D9);
-	passed &= testOrthoCam(video::EDT_DIRECT3D8);
 
 	passed &= testOrthoStencil(video::EDT_OPENGL);
 	passed &= testOrthoStencil(video::EDT_DIRECT3D9);

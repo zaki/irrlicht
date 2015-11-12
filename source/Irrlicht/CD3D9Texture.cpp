@@ -12,85 +12,71 @@
 
 #include <d3dx9tex.h>
 
-#ifndef _IRR_COMPILE_WITH_DIRECT3D_8_
-// The D3DXFilterTexture function seems to get linked wrong when
-// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-// So mipmapgeneration is replaced with my own bad generation in d3d 8 when
-// compiling with both D3D 8 and 9.
-// #define _IRR_USE_D3DXFilterTexture_
-#endif // _IRR_COMPILE_WITH_DIRECT3D_8_
-
-#ifdef _IRR_USE_D3DXFilterTexture_
-#pragma comment(lib, "d3dx9.lib")
-#endif
-
 namespace irr
 {
 namespace video
 {
 
 //! rendertarget constructor
-CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size,
-						   const io::path& name, const ECOLOR_FORMAT format)
-: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
-	TextureSize(size), ImageSize(size), Pitch(0), ColorFormat(ECF_UNKNOWN),
-	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true), IsCompressed(false)
+CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, const ECOLOR_FORMAT format)
+	: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), HardwareMipMaps(false), IsCompressed(false)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("CD3D9Texture");
-	#endif
+#endif
 
 	Device=driver->getExposedVideoData().D3D9.D3DDev9;
 	if (Device)
 		Device->AddRef();
+
+	DriverType = EDT_DIRECT3D9;
+	OriginalSize = size;
+	Size = size;
+	IsRenderTarget = true;
 
 	createRenderTarget(format);
 }
 
 
 //! constructor
-CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
-			   u32 flags, const io::path& name, void* mipmapData)
-: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
-	TextureSize(0,0), ImageSize(0,0), Pitch(0), ColorFormat(ECF_UNKNOWN),
-	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false), IsCompressed(false)
+CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver, u32 flags, const io::path& name)
+	: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), HardwareMipMaps(false), IsCompressed(false)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("CD3D9Texture");
-	#endif
+#endif
 
+	DriverType = EDT_DIRECT3D9;
 	HasMipMaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
 	Device=driver->getExposedVideoData().D3D9.D3DDev9;
 	if (Device)
 		Device->AddRef();
 
-	IsCompressed = IImage::isCompressedFormat(image->getColorFormat());
-
-	if (createTexture(flags, image))
+	if (image)
 	{
-		if (copyTexture(image))
+		if (IImage::isCompressedFormat(image->getColorFormat()))
 		{
-			if (IsCompressed && !mipmapData)
-				if (HasMipMaps && image->hasMipMaps())
-				{
-					u32 compressedDataSize = 0;
+			if(!Driver->queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+			{
+				os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+				return;
+			}
+		}
 
-					if(ColorFormat == ECF_DXT1)
-						compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
-					else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-						compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
-
-					mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
-				}
-				else
+		if (createTexture(flags, image))
+		{
+			if (copyTexture(image))
+			{
+				if (IsCompressed && !image->getMipMapsData())
 					HasMipMaps = false;
 
-			regenerateMipMapLevels(mipmapData);
+				regenerateMipMapLevels(image->getMipMapsData());
+			}
 		}
+		else
+			os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 	}
-	else
-		os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 }
 
 
@@ -103,15 +89,6 @@ CD3D9Texture::~CD3D9Texture()
 	if (RTTSurface)
 		RTTSurface->Release();
 
-	// if this texture was the last one using the depth buffer
-	// we can release the surface. We only use the value of the pointer
-	// hence it is safe to use the dropped pointer...
-	if (DepthSurface)
-	{
-		if (DepthSurface->drop())
-			Driver->removeDepthSurface(DepthSurface);
-	}
-
 	if (Device)
 		Device->Release();
 }
@@ -122,10 +99,11 @@ void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 	// are texture size restrictions there ?
 	if(!Driver->queryFeature(EVDF_TEXTURE_NPOT))
 	{
-		if (TextureSize != ImageSize)
+		if (Size != OriginalSize)
 			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
 	}
-	TextureSize = TextureSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+
+	Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT d3dformat = Driver->getD3DColorFormat();
 
@@ -150,17 +128,9 @@ void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 	}
 
 	// create texture
-	HRESULT hr;
+	DWORD usage = (IImage::isDepthFormat(ColorFormat)) ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
 
-	hr = Device->CreateTexture(
-		TextureSize.Width,
-		TextureSize.Height,
-		1, // mip map level count, we don't want mipmaps here
-		D3DUSAGE_RENDERTARGET,
-		d3dformat,
-		D3DPOOL_DEFAULT,
-		&Texture,
-		NULL);
+	HRESULT hr = Device->CreateTexture(Size.Width, Size.Height, 1, usage, d3dformat, D3DPOOL_DEFAULT, &Texture, NULL);
 
 	if (FAILED(hr))
 	{
@@ -280,9 +250,9 @@ bool CD3D9Texture::createMipMaps(u32 level)
 //! creates the hardware texture
 bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 {
-	ImageSize = image->getDimension();
+	OriginalSize = image->getDimension();
 
-	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	core::dimension2d<u32> optSize = OriginalSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT format = D3DFMT_A1R5G5B5;
 
@@ -319,7 +289,7 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 			format = D3DFMT_R5G6B5;
 	}
 
-	if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
+	if (IImage::isCompressedFormat(image->getColorFormat()))
 	{
 		ColorFormat = image->getColorFormat();
 
@@ -406,8 +376,8 @@ bool CD3D9Texture::copyTexture(IImage * image)
 		D3DSURFACE_DESC desc;
 		Texture->GetLevelDesc(0, &desc);
 
-		TextureSize.Width = desc.Width;
-		TextureSize.Height = desc.Height;
+		Size.Width = desc.Width;
+		Size.Height = desc.Height;
 
 		D3DLOCKED_RECT rect;
 		HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
@@ -419,13 +389,13 @@ bool CD3D9Texture::copyTexture(IImage * image)
 
 		if (IsCompressed)
 		{
-			u32 compressedDataSize = IImage::getCompressedImageSize(ColorFormat, TextureSize.Width, TextureSize.Height);
+			u32 compressedDataSize = IImage::getDataSizeFromFormat(ColorFormat, Size.Width, Size.Height);
 			memcpy(rect.pBits, image->lock(), compressedDataSize);
 		}
 		else
 		{
 			Pitch = rect.Pitch;
-			image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+			image->copyToScaling(rect.pBits, Size.Width, Size.Height, ColorFormat, Pitch);
 		}
 
 		hr = Texture->UnlockRect(0);
@@ -517,52 +487,10 @@ void CD3D9Texture::unlock()
 }
 
 
-//! Returns original size of the texture.
-const core::dimension2d<u32>& CD3D9Texture::getOriginalSize() const
-{
-	return ImageSize;
-}
-
-
-//! Returns (=size) of the texture.
-const core::dimension2d<u32>& CD3D9Texture::getSize() const
-{
-	return TextureSize;
-}
-
-
-//! returns driver type of texture (=the driver, who created the texture)
-E_DRIVER_TYPE CD3D9Texture::getDriverType() const
-{
-	return EDT_DIRECT3D9;
-}
-
-
-//! returns color format of texture
-ECOLOR_FORMAT CD3D9Texture::getColorFormat() const
-{
-	return ColorFormat;
-}
-
-
-//! returns pitch of texture (in bytes)
-u32 CD3D9Texture::getPitch() const
-{
-	return Pitch;
-}
-
-
 //! returns the DIRECT3D9 Texture
-IDirect3DBaseTexture9* CD3D9Texture::getDX9Texture() const
+IDirect3DTexture9* CD3D9Texture::getDX9Texture() const
 {
 	return Texture;
-}
-
-
-//! returns if texture has mipmap levels
-bool CD3D9Texture::hasMipMaps() const
-{
-	return HasMipMaps;
 }
 
 
@@ -671,7 +599,7 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 	if (mipmapData)
 	{
 		u32 compressedDataSize = 0;
-		core::dimension2du size = TextureSize;
+		core::dimension2du size = Size;
 		u32 level=0;
 		do
 		{
@@ -712,8 +640,8 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 			}
 			else
 			{
-				memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/TextureSize.Width);
-				mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/TextureSize.Width;
+				memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch() / Size.Width);
+				mipmapData = (u8*)mipmapData + size.getArea()*getPitch() / Size.Width;
 			}
 
 			// unlock
@@ -724,40 +652,8 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 	}
 	else if (HasMipMaps)
 	{
-		// create mip maps.
-#ifdef _IRR_USE_D3DXFilterTexture_
-		// The D3DXFilterTexture function seems to get linked wrong when
-		// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-		// So mipmapgeneration is replaced with my own bad generation
-		HRESULT hr  = D3DXFilterTexture(Texture, NULL, D3DX_DEFAULT, D3DX_DEFAULT);
-		if (FAILED(hr))
-#endif
 		createMipMaps();
 	}
-}
-
-
-//! returns if it is a render target
-bool CD3D9Texture::isRenderTarget() const
-{
-	return IsRenderTarget;
-}
-
-
-//! Returns pointer to the render target surface
-IDirect3DSurface9* CD3D9Texture::getRenderTargetSurface()
-{
-	if (!IsRenderTarget)
-		return 0;
-
-	IDirect3DSurface9 *pRTTSurface = 0;
-	if (Texture)
-		Texture->GetSurfaceLevel(0, &pRTTSurface);
-
-	if (pRTTSurface)
-		pRTTSurface->Release();
-
-	return pRTTSurface;
 }
 
 
@@ -767,27 +663,27 @@ void CD3D9Texture::setPitch(D3DFORMAT d3dformat)
 	{
 	case D3DFMT_X1R5G5B5:
 	case D3DFMT_A1R5G5B5:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 	break;
 	case D3DFMT_A8B8G8R8:
 	case D3DFMT_A8R8G8B8:
 	case D3DFMT_X8R8G8B8:
-		Pitch = TextureSize.Width * 4;
+		Pitch = Size.Width * 4;
 	break;
 	case D3DFMT_R5G6B5:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 	break;
 	case D3DFMT_R8G8B8:
-		Pitch = TextureSize.Width * 3;
+		Pitch = Size.Width * 3;
 	break;
 	case D3DFMT_DXT1:
-		Pitch = TextureSize.Width * 2;
+		Pitch = Size.Width * 2;
 	break;
 	case D3DFMT_DXT2:
 	case D3DFMT_DXT3:
 	case D3DFMT_DXT4:
 	case D3DFMT_DXT5:
-		Pitch = TextureSize.Width * 4;
+		Pitch = Size.Width * 4;
 	default:
 		Pitch = 0;
 	};

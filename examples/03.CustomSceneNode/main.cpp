@@ -244,7 +244,7 @@ int main()
 	u32 frames=0;
 	while(device->run())
 	{
-		driver->beginScene(true, true, video::SColor(0,100,100,100));
+		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,100,100,100));
 
 		smgr->drawAll();
 

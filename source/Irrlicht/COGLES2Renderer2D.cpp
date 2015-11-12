@@ -6,6 +6,11 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
+#include "COGLES2Common.h"
+
+#include "COGLCoreTexture.h"
+#include "COGLCoreCacheHandler.h"
+
 #include "COGLES2Renderer2D.h"
 #include "IGPUProgrammingServices.h"
 #include "os.h"
@@ -27,7 +32,9 @@ COGLES2Renderer2D::COGLES2Renderer2D(const c8* vertexShaderProgram, const c8* pi
 
 	init(Temp, vertexShaderProgram, pixelShaderProgram, false);
 
-	Driver->getBridgeCalls()->setProgram(Program);
+	COGLES2CacheHandler* cacheHandler = Driver->getCacheHandler();
+
+	cacheHandler->setProgram(Program);
 
 	// These states don't change later.
 
@@ -38,7 +45,7 @@ COGLES2Renderer2D::COGLES2Renderer2D(const c8* vertexShaderProgram, const c8* pi
 	s32 TextureUnit = 0;
 	setPixelShaderConstant(TextureUnitID, &TextureUnit, 1);
 
-	Driver->getBridgeCalls()->setProgram(0);
+	cacheHandler->setProgram(0);
 }
 
 COGLES2Renderer2D::~COGLES2Renderer2D()
@@ -50,7 +57,7 @@ void COGLES2Renderer2D::OnSetMaterial(const video::SMaterial& material,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
 {
-	Driver->getBridgeCalls()->setProgram(Program);
+	Driver->getCacheHandler()->setProgram(Program);
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 	f32 Thickness = (material.Thickness > 0.f) ? material.Thickness : 1.f;
