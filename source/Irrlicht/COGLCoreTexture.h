@@ -14,6 +14,7 @@
 #include "ITexture.h"
 #include "EDriverFeatures.h"
 #include "os.h"
+#include "CImage.h"
 #include "CColorConverter.h"
 
 namespace irr
@@ -45,8 +46,8 @@ public:
 	};
 
 	COGLCoreTexture(const io::path& name, const core::array<IImage*>& image, TOGLDriver* driver) : ITexture(name), Driver(driver), TextureType(GL_TEXTURE_2D),
-		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(false),
-		AutoGenerateMipMaps(false)
+		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0),
+		KeepImage(false), AutoGenerateMipMaps(false)
 	{
 		_IRR_DEBUG_BREAK_IF(image.size() == 0)
 
@@ -83,6 +84,9 @@ public:
 		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		if (HasMipMaps && AutoGenerateMipMaps)
 		{
 			if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
@@ -114,7 +118,7 @@ public:
 	}
 
 	COGLCoreTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, TOGLDriver* driver) : ITexture(name), Driver(driver), TextureType(GL_TEXTURE_2D),
-		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(false),
+		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(false),
 		AutoGenerateMipMaps(false)
 	{
 		DriverType = Driver->getDriverType();
@@ -131,9 +135,7 @@ public:
 		OriginalSize = size;
 		Size = OriginalSize;
 
-		void(*converter)(const void*, s32, void*) = 0;
-
-		Driver->getColorFormatParameters(ColorFormat, InternalFormat, PixelFormat, PixelType, &converter);
+		Driver->getColorFormatParameters(ColorFormat, InternalFormat, PixelFormat, PixelType, &Converter);
 
 		glGenTextures(1, &TextureName);
 
@@ -311,10 +313,7 @@ public:
 				dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
 				++level;
 
-				if (!IImage::isCompressedFormat(ColorFormat))
-					glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, width, height, 0, PixelFormat, PixelType, data);
-				else
-					Driver->irrGlCompressedTexImage2D(GL_TEXTURE_2D, level, InternalFormat, width, height, 0, dataSize, data);
+				uploadTexture(true, level, data);
 
 				data += dataSize;
 			}
@@ -395,9 +394,7 @@ protected:
 		OriginalColorFormat = image->getColorFormat();
 		ColorFormat = getBestColorFormat(OriginalColorFormat);
 
-		void(*converter)(const void*, s32, void*) = 0;
-
-		Driver->getColorFormatParameters(ColorFormat, InternalFormat, PixelFormat, PixelType, &converter);
+		Driver->getColorFormatParameters(ColorFormat, InternalFormat, PixelFormat, PixelType, &Converter);
 
 		if (IImage::isCompressedFormat(image->getColorFormat()))
 		{
@@ -430,43 +427,44 @@ protected:
 		Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 	}
 
-	void uploadTexture(bool initTexture, u32 level, const void* data)
+	void uploadTexture(bool initTexture, u32 level, void* data)
 	{
 		if (!data)
 			return;
-
-		if (initTexture)
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		}
 
 		u32 width = Size.Width >> level;
 		u32 height = Size.Height >> level;
 
 		if (!IImage::isCompressedFormat(ColorFormat))
 		{
+			CImage* tmpImage = 0;
+			void* tmpData = data;
+
+			if (Converter)
+			{
+				const core::dimension2d<u32> tmpImageSize(width, height);
+
+				tmpImage = new CImage(ColorFormat, tmpImageSize);
+				tmpData = tmpImage->getData();
+
+				Converter(data, tmpImageSize.getArea(), tmpData);
+			}
+
 			if (initTexture)
-			{
-				glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, width, height, 0, PixelFormat, PixelType, data);
-			}
+				glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, width, height, 0, PixelFormat, PixelType, tmpData);
 			else
-			{
-				glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, width, height, PixelFormat, PixelType, data);
-			}
+				glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, width, height, PixelFormat, PixelType, tmpData);
+
+			delete tmpImage;
 		}
 		else
 		{
 			u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, Size.Width, height);
 
 			if (initTexture)
-			{
 				Driver->irrGlCompressedTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, width, height, 0, dataSize, data);
-			}
 			else
-			{
 				Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, width, height, PixelFormat, dataSize, data);
-			}
 		}
 	}
 
@@ -477,6 +475,7 @@ protected:
 	GLint InternalFormat;
 	GLenum PixelFormat;
 	GLenum PixelType;
+	void (*Converter)(const void*, s32, void*);
 
 	bool LockReadOnly;
 	IImage* LockImage;
