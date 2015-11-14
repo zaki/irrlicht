@@ -65,6 +65,12 @@ enum E_TEXTURE_CREATION_FLAG
 	/** BurningVideo can handle Non-Power-2 Textures in 2D (GUI), but not in 3D. */
 	ETCF_ALLOW_NON_POWER_2 = 0x00000040,
 
+	//! Allow the driver to keep a copy of the texture in memory
+	/** This makes calls to ITexture::lock a lot faster, but costs main memory.
+	Default is off, except for font-texture which always enable this flag.
+	Currently only used in combination with OpenGL drivers.	*/
+	ETCF_ALLOW_MEMORY_COPY = 0x00000080,
+
 	/** This flag is never used, it only forces the compiler to compile
 	these enumeration values to 32 bit. */
 	ETCF_FORCE_32_BIT_DO_NOT_USE = 0x7fffffff

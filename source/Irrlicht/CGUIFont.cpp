@@ -85,16 +85,14 @@ bool CGUIFont::load(io::IXMLReader* xml, const io::path& directory)
 				while (i+1 > SpriteBank->getTextureCount())
 					SpriteBank->addTexture(0);
 
-				// disable mipmaps+filtering
-				bool mipmap = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
-				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+				bool flags[3];
+				pushTextureCreationFlags(flags);
 
 				// load texture
 				io::path textureFullName = core::mergeFilename(directory, fn);
 				SpriteBank->setTexture(i, Driver->getTexture(textureFullName));
 
-				// set previous mip-map+filter state
-				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, mipmap);
+				popTextureCreationFlags(flags);
 
 				// couldn't load texture, abort.
 				if (!SpriteBank->getTexture(i))
@@ -218,6 +216,23 @@ void CGUIFont::setMaxHeight()
 
 }
 
+void CGUIFont::pushTextureCreationFlags(bool(&flags)[3])
+{
+	flags[0] = Driver->getTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2);
+	flags[1] = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
+	flags[2] = Driver->getTextureCreationFlag(video::ETCF_ALLOW_MEMORY_COPY);
+
+	Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, true);
+	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+	Driver->setTextureCreationFlag(video::ETCF_ALLOW_MEMORY_COPY, true);
+}
+
+void CGUIFont::popTextureCreationFlags(bool(&flags)[3])
+{
+	Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, flags[0]);
+	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, flags[1]);
+	Driver->setTextureCreationFlag(video::ETCF_ALLOW_MEMORY_COPY, flags[2]);
+}
 
 //! loads a font file, native file needed, for texture parsing
 bool CGUIFont::load(io::IReadFile* file)
@@ -285,17 +300,12 @@ bool CGUIFont::loadTexture(video::IImage* image, const io::path& name)
 
 	if ( ret )
 	{
-		bool flag[2];
-		flag[0] = Driver->getTextureCreationFlag ( video::ETCF_ALLOW_NON_POWER_2 );
-		flag[1] = Driver->getTextureCreationFlag ( video::ETCF_CREATE_MIP_MAPS );
-
-		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, true);
-		Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false );
+		bool flags[3];
+		pushTextureCreationFlags(flags);
 
 		SpriteBank->addTexture(Driver->addTexture(name, tmpImage));
 
-		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, flag[0] );
-		Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, flag[1] );
+		popTextureCreationFlags(flags);
 	}
 	if (deleteTmpImage)
 		tmpImage->drop();

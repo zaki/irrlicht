@@ -98,6 +98,9 @@ private:
 	s32 getAreaFromCharacter (const wchar_t c) const;
 	void setMaxHeight();
 
+	void pushTextureCreationFlags(bool(&flags)[3]);
+	void popTextureCreationFlags(bool(&flags)[3]);
+
 	core::array<SFontArea>		Areas;
 	core::map<wchar_t, s32>		CharacterMap;
 	video::IVideoDriver*		Driver;
