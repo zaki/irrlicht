@@ -157,18 +157,16 @@ LOCAL_SRC_FILES := \
 					COGLES2NormalMapRenderer.cpp \
 					COGLES2ParallaxMapRenderer.cpp \
 					COGLES2Renderer2D.cpp \
-					COGLES2Texture.cpp \
 					COGLESDriver.cpp \
 					COGLESExtensionHandler.cpp \
-					COGLESTexture.cpp \
 					COgreMeshFileLoader.cpp \
+					COpenGLCacheHandler.cpp \
 					COpenGLDriver.cpp \
 					COpenGLExtensionHandler.cpp \
 					COpenGLNormalMapRenderer.cpp \
 					COpenGLParallaxMapRenderer.cpp \
 					COpenGLShaderMaterialRenderer.cpp \
 					COpenGLSLMaterialRenderer.cpp \
-					COpenGLTexture.cpp \
 					COSOperator.cpp \
 					CPakReader.cpp \
 					CParticleAnimatedMeshSceneNodeEmitter.cpp \

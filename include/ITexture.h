@@ -68,7 +68,7 @@ enum E_TEXTURE_CREATION_FLAG
 	//! Allow the driver to keep a copy of the texture in memory
 	/** This makes calls to ITexture::lock a lot faster, but costs main memory.
 	Default is off, except for font-texture which always enable this flag.
-	Currently only used in combination with OpenGL-ES2.	*/
+	Currently only used in combination with OpenGL drivers.	*/
 	ETCF_ALLOW_MEMORY_COPY = 0x00000080,
 
 	/** This flag is never used, it only forces the compiler to compile
