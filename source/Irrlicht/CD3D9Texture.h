@@ -47,9 +47,7 @@ public:
 	//! unlock function
 	virtual void unlock() _IRR_OVERRIDE_;
 
-	//! Regenerates the mip map levels of the texture. Useful after locking and
-	//! modifying the texture
-	virtual void regenerateMipMapLevels(void* mipmapData = 0) _IRR_OVERRIDE_;
+	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_;
 
 	//! returns the DIRECT3D9 Texture
 	IDirect3DTexture9* getDX9Texture() const;

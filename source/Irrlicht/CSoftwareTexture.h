@@ -41,9 +41,7 @@ public:
 	//! returns texture surface
 	virtual CImage* getTexture();
 
-	//! Regenerates the mip map levels of the texture. Useful after locking and
-	//! modifying the texture
-	virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_;
+	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_;
 
 private:
 	CImage* Image;

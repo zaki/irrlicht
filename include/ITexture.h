@@ -153,12 +153,14 @@ public:
 
 	//! Regenerates the mip map levels of the texture.
 	/** Required after modifying the texture, usually after calling unlock().
-	\param mipmapData Optional parameter to pass in image data which will be
+	\param data Optional parameter to pass in image data which will be
 	used instead of the previously stored or automatically generated mipmap
 	data. The data has to be a continuous pixel data for all mipmaps until
 	1x1 pixel. Each mipmap has to be half the width and height of the previous
-	level. At least one pixel will be always kept.*/
-	virtual void regenerateMipMapLevels(void* mipmapData = 0) = 0;
+	level. At least one pixel will be always kept.
+	\param layer It informs a texture about layer which needs
+	mipmaps regeneration. */
+	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) = 0;
 
 	//! Get original size of the texture.
 	/** The texture is usually scaled, if it was created with an unoptimal

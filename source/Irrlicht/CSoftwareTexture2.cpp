@@ -102,7 +102,7 @@ CSoftwareTexture2::~CSoftwareTexture2()
 
 //! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
-void CSoftwareTexture2::regenerateMipMapLevels(void* mipmapData)
+void CSoftwareTexture2::regenerateMipMapLevels(void* data, u32 layer)
 {
 	if (!hasMipMaps())
 		return;
@@ -127,11 +127,11 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* mipmapData)
 		origSize.Width = core::s32_max(1, origSize.Width >> 1);
 		origSize.Height = core::s32_max(1, origSize.Height >> 1);
 
-		if (mipmapData)
+		if (data)
 		{
 			if (OriginalFormat != BURNINGSHADER_COLOR_FORMAT)
 			{
-				IImage* tmpImage = new CImage(OriginalFormat, origSize, mipmapData, true, false);
+				IImage* tmpImage = new CImage(OriginalFormat, origSize, data, true, false);
 				MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
 				if (origSize==newSize)
 					tmpImage->copyTo(MipMap[i]);
@@ -142,16 +142,16 @@ void CSoftwareTexture2::regenerateMipMapLevels(void* mipmapData)
 			else
 			{
 				if (origSize==newSize)
-					MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize, mipmapData, false);
+					MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize, data, false);
 				else
 				{
 					MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
-					IImage* tmpImage = new CImage(BURNINGSHADER_COLOR_FORMAT, origSize, mipmapData, true, false);
+					IImage* tmpImage = new CImage(BURNINGSHADER_COLOR_FORMAT, origSize, data, true, false);
 					tmpImage->copyToScalingBoxFilter(MipMap[i]);
 					tmpImage->drop();
 				}
 			}
-			mipmapData = (u8*)mipmapData+origSize.getArea()*IImage::getBitsPerPixelFromFormat(OriginalFormat)/8;
+			data = (u8*)data +origSize.getArea()*IImage::getBitsPerPixelFromFormat(OriginalFormat)/8;
 		}
 		else
 		{

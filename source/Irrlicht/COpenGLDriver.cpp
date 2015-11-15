@@ -2579,6 +2579,8 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 		CacheHandler->getTextureCache().set(i, material.getTexture(i));
 		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 	}
+
+	CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
 }
 
 

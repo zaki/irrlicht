@@ -760,7 +760,7 @@ namespace video
 
 			virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_ { return 0; }
 			virtual void unlock()_IRR_OVERRIDE_ {}
-			virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_ {}
+			virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_ {}
 		};
 		core::array<SSurface> Textures;
 

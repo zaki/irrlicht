@@ -75,12 +75,25 @@ class COGLCoreCacheHandler
 						{
 							texture->grab();
 
+							const TOGLTexture* curTexture = static_cast<const TOGLTexture*>(texture);
+							const GLenum curTextureType = curTexture->getOpenGLTextureType();
+							const GLenum prevTextureType = (prevTexture) ? prevTexture->getOpenGLTextureType() : curTextureType;
+
+							if (curTextureType != prevTextureType)
+							{
+								glBindTexture(prevTextureType, 0);
+
 #if defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION < 20
-							if (!prevTexture)
-								glEnable(GL_TEXTURE_2D);
+								glDisable(prevTextureType);
+								glEnable(curTextureType);
+#endif
+							}
+#if defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION < 20
+							else if (!prevTexture)
+								glEnable(curTextureType);
 #endif
 
-							glBindTexture(GL_TEXTURE_2D, static_cast<const TOGLTexture*>(texture)->getOpenGLTextureName());
+							glBindTexture(curTextureType, static_cast<const TOGLTexture*>(texture)->getOpenGLTextureName());
 						}
 						else
 						{
@@ -90,13 +103,14 @@ class COGLCoreCacheHandler
 						}
 					}
 
-					if (!texture)
+					if (!texture && prevTexture)
 					{
-						glBindTexture(GL_TEXTURE_2D, 0);
+						const GLenum prevTextureType = prevTexture->getOpenGLTextureType();
+
+						glBindTexture(prevTextureType, 0);
 
 #if defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION < 20
-						if (prevTexture)
-							glDisable(GL_TEXTURE_2D);
+						glDisable(prevTextureType);
 #endif
 					}
 

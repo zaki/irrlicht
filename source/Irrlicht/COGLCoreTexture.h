@@ -84,8 +84,8 @@ public:
 		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(TextureType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(TextureType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		if (HasMipMaps && AutoGenerateMipMaps)
 		{
@@ -99,14 +99,16 @@ public:
 
 #if defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION < 20
 		if (HasMipMaps)
-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, (AutoGenerateMipMaps) ? GL_TRUE : GL_FALSE);
+			glTexParameteri(TextureType, GL_GENERATE_MIPMAP, (AutoGenerateMipMaps) ? GL_TRUE : GL_FALSE);
 #endif
 
-		uploadTexture(true, 0, (*tmpImage)[0]->getData());
+		for (u32 i = 0; i < (*tmpImage).size(); ++i)
+			uploadTexture(true, i, 0, (*tmpImage)[i]->getData());
 
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
-		regenerateMipMapLevels((*tmpImage)[0]->getMipMapsData());
+		for (u32 i = 0; i < (*tmpImage).size(); ++i)
+			regenerateMipMapLevels((*tmpImage)[i]->getMipMapsData(), i);
 
 		if (!KeepImage)
 		{
@@ -271,7 +273,7 @@ public:
 			const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 			Driver->getCacheHandler()->getTextureCache().set(0, this);
 
-			uploadTexture(false, LockLevel, LockImage->getData());
+			uploadTexture(false, 0, LockLevel, LockImage->getData());
 
 			Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
@@ -286,19 +288,19 @@ public:
 		LockLevel = 0;
 	}
 
-	virtual void regenerateMipMapLevels(void* mipMapsData = 0) _IRR_OVERRIDE_
+	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_
 	{
-		if (!HasMipMaps || (!mipMapsData && !AutoGenerateMipMaps) || (Size.Width <= 1 && Size.Height <= 1))
+		if (!HasMipMaps || (!data && !AutoGenerateMipMaps) || (Size.Width <= 1 && Size.Height <= 1))
 			return;
 
 		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
-		if (mipMapsData)
+		if (data)
 		{
-			u32 width = Size.Width;
-			u32 height = Size.Height;
-			u8* data = static_cast<u8*>(mipMapsData);
+			u32 width = Size.Width >> layer;
+			u32 height = Size.Height >> layer;
+			u8* tmpData = static_cast<u8*>(data);
 			u32 dataSize = 0;
 			u32 level = 0;
 
@@ -313,16 +315,16 @@ public:
 				dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
 				++level;
 
-				uploadTexture(true, level, data);
+				uploadTexture(true, layer, level, tmpData);
 
-				data += dataSize;
+				tmpData += dataSize;
 			}
 			while (width != 1 || height != 1);
 		}
 		else
 		{
 #if defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION >= 20
-			Driver->irrGlGenerateMipmap(GL_TEXTURE_2D);
+			Driver->irrGlGenerateMipmap(TextureType);
 #endif
 		}
 
@@ -427,13 +429,22 @@ protected:
 		Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 	}
 
-	void uploadTexture(bool initTexture, u32 level, void* data)
+	void uploadTexture(bool initTexture, u32 layer, u32 level, void* data)
 	{
 		if (!data)
 			return;
 
 		u32 width = Size.Width >> level;
 		u32 height = Size.Height >> level;
+
+		const GLenum cubeTextureType[6] =
+		{
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+			GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+			GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+		};
+
+		GLenum tmpTextureType = (TextureType == GL_TEXTURE_CUBE_MAP) ? cubeTextureType[(layer  < 6) ? layer : 0] : TextureType;
 
 		if (!IImage::isCompressedFormat(ColorFormat))
 		{
@@ -450,10 +461,19 @@ protected:
 				Converter(data, tmpImageSize.getArea(), tmpData);
 			}
 
-			if (initTexture)
-				glTexImage2D(GL_TEXTURE_2D, level, InternalFormat, width, height, 0, PixelFormat, PixelType, tmpData);
-			else
-				glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, width, height, PixelFormat, PixelType, tmpData);
+			switch (TextureType)
+			{
+			case GL_TEXTURE_2D:
+			case GL_TEXTURE_CUBE_MAP:
+				if (initTexture)
+					glTexImage2D(tmpTextureType, level, InternalFormat, width, height, 0, PixelFormat, PixelType, tmpData);
+				else
+					glTexSubImage2D(tmpTextureType, level, 0, 0, width, height, PixelFormat, PixelType, tmpData);
+
+				break;
+			default:
+				break;
+			}
 
 			delete tmpImage;
 		}
@@ -461,10 +481,19 @@ protected:
 		{
 			u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, Size.Width, height);
 
-			if (initTexture)
-				Driver->irrGlCompressedTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, width, height, 0, dataSize, data);
-			else
-				Driver->irrGlCompressedTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, width, height, PixelFormat, dataSize, data);
+			switch (TextureType)
+			{
+			case GL_TEXTURE_2D:
+			case GL_TEXTURE_CUBE_MAP:
+				if (initTexture)
+					Driver->irrGlCompressedTexImage2D(tmpTextureType, level, InternalFormat, width, height, 0, dataSize, data);
+				else
+					Driver->irrGlCompressedTexSubImage2D(tmpTextureType, level, 0, 0, width, height, PixelFormat, dataSize, data);
+
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
