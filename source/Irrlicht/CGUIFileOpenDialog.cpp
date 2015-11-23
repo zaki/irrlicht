@@ -375,7 +375,10 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-	setlocale(LC_ALL,"");
+#ifndef _IRR_WCHAR_FILESYSTEM
+	char* oldLocale = setlocale(LC_ALL, NULL);
+	setlocale(LC_ALL,"");	// mbstowcs is affected by LC_CTYPE. Filenames seem to need the system-locale.
+#endif
 
 	if (FileList)
 	{
@@ -413,6 +416,10 @@ void CGUIFileOpenDialog::fillListBox()
 		FileDirectory = s;
 		FileNameText->setText(s.c_str());
 	}
+
+#ifndef _IRR_WCHAR_FILESYSTEM
+	setlocale(LC_ALL, oldLocale);
+#endif
 }
 
 
