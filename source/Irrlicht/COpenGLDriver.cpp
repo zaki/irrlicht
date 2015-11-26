@@ -2550,23 +2550,22 @@ inline void COpenGLDriver::getGLTextureMatrix(GLfloat *o, const core::matrix4& m
 	o[15] = 1.f;
 }
 
-
-//! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+ITexture* COpenGLDriver::createDeviceDependentTexture(const io::path& name, IImage* image)
 {
-	COpenGLTexture* texture = 0;
+	core::array<IImage*> imageArray(1);
+	imageArray.push_back(image);
 
-	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-	{
-		core::array<IImage*> imageArray(1);
-		imageArray.push_back(surface);
-
-		texture = new COpenGLTexture(name, imageArray, this);
-	}
+	COpenGLTexture* texture = new COpenGLTexture(name, imageArray, ETT_2D, this);
 
 	return texture;
 }
 
+ITexture* COpenGLDriver::createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image)
+{
+	COpenGLTexture* texture = new COpenGLTexture(name, image, ETT_CUBEMAP, this);
+
+	return texture;
+}
 
 //! Sets a material. All 3d drawing functions draw geometry now using this material.
 void COpenGLDriver::setMaterial(const SMaterial& material)
@@ -4463,48 +4462,6 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 	}
 	return newImage;
 }
-
-
-//! get depth texture for the given render target texture
-ITexture* COpenGLDriver::createDepthTexture(ITexture* texture, bool shared)
-{
-	/*if ((texture->getDriverType() != EDT_OPENGL) || (!texture->isRenderTarget()))
-		return 0;
-	COpenGLTexture* tex = static_cast<COpenGLTexture*>(texture);
-
-	if (!tex->isFrameBufferObject())
-		return 0;
-
-	if (shared)
-	{
-		for (u32 i=0; i<DepthTextures.size(); ++i)
-		{
-			if (DepthTextures[i]->getSize()==texture->getSize())
-			{
-				DepthTextures[i]->grab();
-				return DepthTextures[i];
-			}
-		}
-		DepthTextures.push_back(new COpenGLRenderBuffer(texture->getSize(), "depth1", this));
-		return DepthTextures.getLast();
-	}
-	return (new COpenGLRenderBuffer(texture->getSize(), "depth1", this));*/
-	return 0;
-}
-
-
-void COpenGLDriver::removeDepthTexture(ITexture* texture)
-{
-	/*for (u32 i=0; i<DepthTextures.size(); ++i)
-	{
-		if (texture==DepthTextures[i])
-		{
-			DepthTextures.erase(i);
-			return;
-		}
-	}*/
-}
-
 
 //! Set/unset a clipping plane.
 bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)

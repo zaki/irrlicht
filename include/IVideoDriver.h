@@ -423,6 +423,18 @@ namespace video
 		information. */
 		virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
 
+		//! Creates a cubemap texture from loaded IImages.
+		/** \param name A name for the texture. Later calls of getTexture() with this name will return this texture.
+		\param imagePosX Image (positive X) the texture is created from.
+		\param imageNegX Image (negative X) the texture is created from.
+		\param imagePosY Image (positive Y) the texture is created from.
+		\param imageNegY Image (negative Y) the texture is created from.
+		\param imagePosZ Image (positive Z) the texture is created from.
+		\param imageNegZ Image (negative Z) the texture is created from.
+		\return Pointer to the newly created texture. This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		virtual ITexture* addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
+			IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ) = 0;
+
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
 		height should be a power of two (e.g. 64, 128, 256, 512, ...)

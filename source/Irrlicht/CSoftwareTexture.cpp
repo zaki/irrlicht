@@ -16,7 +16,7 @@ namespace video
 
 //! constructor
 CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name, bool renderTarget)
-	: ITexture(name), Texture(0)
+	: ITexture(name, ETT_2D), Texture(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture");

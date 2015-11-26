@@ -421,6 +421,93 @@ void CNullDriver::renameTexture(ITexture* texture, const io::path& newName)
 	Textures.sort();
 }
 
+ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size, const io::path& name, ECOLOR_FORMAT format)
+{
+	if (IImage::isRenderTargetOnlyFormat(format))
+	{
+		os::Printer::log("Could not create ITexture, format only supported for render target textures.", ELL_WARNING);
+		return 0;
+	}
+
+	if (0 == name.size())
+		return 0;
+
+	IImage* image = new CImage(format, size);
+	ITexture* t = 0;
+
+	core::array<IImage*> imageArray(1);
+	imageArray.push_back(image);
+
+	if (checkImage(imageArray))
+	{
+		t = createDeviceDependentTexture(name, image);
+	}
+
+	image->drop();
+
+	if (t)
+	{
+		addTexture(t);
+		t->drop();
+	}
+
+	return t;
+}
+
+ITexture* CNullDriver::addTexture(const io::path& name, IImage* image)
+{
+	if (0 == name.size() || !image)
+		return 0;
+
+	ITexture* t = 0;
+
+	core::array<IImage*> imageArray(1);
+	imageArray.push_back(image);
+
+	if (checkImage(imageArray))
+	{
+		t = createDeviceDependentTexture(name, image);
+	}
+
+	if (t)
+	{
+		addTexture(t);
+		t->drop();
+	}
+
+	return t;
+}
+
+ITexture* CNullDriver::addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
+	IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ)
+{
+	if (0 == name.size() || !imagePosX || !imageNegX || !imagePosY || !imageNegY || !imagePosZ || !imageNegZ)
+		return 0;
+
+	ITexture* t = 0;
+
+	core::array<IImage*> imageArray(1);
+	imageArray.push_back(imagePosX);
+	imageArray.push_back(imageNegX);
+	imageArray.push_back(imagePosY);
+	imageArray.push_back(imageNegY);
+	imageArray.push_back(imagePosZ);
+	imageArray.push_back(imageNegZ);
+
+	if (checkImage(imageArray))
+	{
+		t = createDeviceDependentTextureCubemap(name, imageArray);
+	}
+
+	if (t)
+	{
+		addTexture(t);
+		t->drop();
+	}
+
+	return t;
+}
+
 
 //! loads a Texture
 ITexture* CNullDriver::getTexture(const io::path& filename)
@@ -524,8 +611,14 @@ video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io:
 
 	if (image)
 	{
-		// create texture from surface
-		texture = createDeviceDependentTexture(image, hashName.size() ? hashName : file->getFileName() );
+		core::array<IImage*> imageArray(1);
+		imageArray.push_back(image);
+
+		if (checkImage(imageArray))
+		{
+			texture = createDeviceDependentTexture(hashName.size() ? hashName : file->getFileName(), image);
+		}
+		
 		os::Printer::log("Loaded texture", file->getFileName());
 		image->drop();
 	}
@@ -559,7 +652,7 @@ void CNullDriver::addTexture(video::ITexture* texture)
 video::ITexture* CNullDriver::findTexture(const io::path& filename)
 {
 	SSurface s;
-	SDummyTexture dummy(filename);
+	SDummyTexture dummy(filename, ETT_2D);
 	s.Surface = &dummy;
 
 	s32 index = Textures.binary_search(s);
@@ -569,54 +662,14 @@ video::ITexture* CNullDriver::findTexture(const io::path& filename)
 	return 0;
 }
 
-
-//! Creates a texture from a loaded IImage.
-ITexture* CNullDriver::addTexture(const io::path& name, IImage* image)
+ITexture* CNullDriver::createDeviceDependentTexture(const io::path& name, IImage* image)
 {
-	if ( 0 == name.size() || !image)
-		return 0;
-
-	ITexture* t = createDeviceDependentTexture(image, name);
-	if (t)
-	{
-		addTexture(t);
-		t->drop();
-	}
-	return t;
+	return new SDummyTexture(name, ETT_2D);
 }
 
-
-//! creates a Texture
-ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
-				  const io::path& name, ECOLOR_FORMAT format)
+ITexture* CNullDriver::createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image)
 {
-	if(IImage::isRenderTargetOnlyFormat(format))
-	{
-		os::Printer::log("Could not create ITexture, format only supported for render target textures.", ELL_WARNING);
-		return 0;
-	}
-
-	if ( 0 == name.size () )
-		return 0;
-
-	IImage* image = new CImage(format, size);
-	ITexture* t = createDeviceDependentTexture(image, name);
-	image->drop();
-	addTexture(t);
-
-	if (t)
-		t->drop();
-
-	return t;
-}
-
-
-
-//! returns a device dependent texture from a software surface (IImage)
-//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
-{
-	return new SDummyTexture(name);
+	return new SDummyTexture(name, ETT_CUBEMAP);
 }
 
 bool CNullDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
@@ -1309,34 +1362,87 @@ bool CNullDriver::checkPrimitiveCount(u32 prmCount) const
 	return true;
 }
 
-bool CNullDriver::checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) const
+bool CNullDriver::checkImage(const core::array<IImage*>& image) const
 {
 	bool status = true;
 
-	switch (format)
+	if (image.size() > 0)
 	{
-	case ECF_DXT1:
-	case ECF_DXT2:
-	case ECF_DXT3:
-	case ECF_DXT4:
-	case ECF_DXT5:
-		{
-			core::dimension2d<u32> sizePOT = size.getOptimalSize(true, false);
+		ECOLOR_FORMAT lastFormat = image[0]->getColorFormat();
+		core::dimension2d<u32> lastSize = image[0]->getDimension();
 
-			if (!queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+		for (u32 i = 0; i < image.size() && status; ++i)
+		{
+			ECOLOR_FORMAT format = image[i]->getColorFormat();
+			core::dimension2d<u32> size = image[i]->getDimension();
+
+			switch (format)
 			{
-				os::Printer::log("DXT texture compression not available.", ELL_ERROR);
-				status = false;
+			case ECF_DXT1:
+			case ECF_DXT2:
+			case ECF_DXT3:
+			case ECF_DXT4:
+			case ECF_DXT5:
+				if (!queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
+				{
+					os::Printer::log("DXT texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if (size.getOptimalSize(true, false) != size)
+				{
+					os::Printer::log("Invalid size of image for DXT texture, size of image must be power of two.", ELL_ERROR);
+					status = false;
+				}
+				break;
+			/*case ECF_PVRTC_RGB2:
+			case ECF_PVRTC_ARGB2:
+			case ECF_PVRTC_RGB4:
+			case ECF_PVRTC_ARGB4:
+				if (!queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
+				{
+					os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				else if (size.getOptimalSize(true, false) != size)
+				{
+					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be power of two and squared.", ELL_ERROR);
+					status = false;
+				}
+				break;
+			case ECF_PVRTC2_ARGB2:
+			case ECF_PVRTC2_ARGB4:
+				if (!queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
+				{
+					os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				break;
+			case ECF_ETC1:
+				if (!queryFeature(EVDF_TEXTURE_COMPRESSED_ETC1))
+				{
+					os::Printer::log("ETC1 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				break;
+			case ECF_ETC2_RGB:
+			case ECF_ETC2_ARGB:
+				if (!queryFeature(EVDF_TEXTURE_COMPRESSED_ETC2))
+				{
+					os::Printer::log("ETC2 texture compression not available.", ELL_ERROR);
+					status = false;
+				}
+				break;*/
+			default:
+				break;
 			}
-			else if (sizePOT != size)
-			{
-				os::Printer::log("Invalid size of image for DXT texture, size of image must be power of two.", ELL_ERROR);
+
+			if (format != lastFormat || size != lastSize)
 				status = false;
-			}
 		}
-		break;
-	default:
-		break;
+	}
+	else
+	{
+		status = false;
 	}
 
 	return status;

@@ -92,6 +92,16 @@ enum E_TEXTURE_LOCK_MODE
 	ETLM_WRITE_ONLY
 };
 
+//! Enumeration describing the type of ITexture.
+enum E_TEXTURE_TYPE
+{
+	//! 2D texture.
+	ETT_2D,
+
+	//! Cubemap texture.
+	ETT_CUBEMAP
+};
+
 //! Where did the last IVideoDriver::getTexture call find this texture
 enum E_TEXTURE_SOURCE
 {
@@ -119,8 +129,8 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const io::path& name) : NamedPath(name), DriverType(EDT_NULL), OriginalColorFormat(ECF_UNKNOWN),
-		ColorFormat(ECF_UNKNOWN), Pitch(0), HasMipMaps(false), IsRenderTarget(false), Source(ETS_UNKNOWN)
+	ITexture(const io::path& name, E_TEXTURE_TYPE type) : NamedPath(name), DriverType(EDT_NULL), OriginalColorFormat(ECF_UNKNOWN),
+		ColorFormat(ECF_UNKNOWN), Pitch(0), HasMipMaps(false), IsRenderTarget(false), Source(ETS_UNKNOWN), Type(type)
 	{
 	}
 
@@ -238,6 +248,9 @@ public:
 		return status;
 	}
 
+	//! Returns the type of texture
+	E_TEXTURE_TYPE getType() const { return Type; }
+
 protected:
 
 	//! Helper function, helps to get the desired texture creation format from the flags.
@@ -266,6 +279,7 @@ protected:
 	bool HasMipMaps;
 	bool IsRenderTarget;
 	E_TEXTURE_SOURCE Source;
+	E_TEXTURE_TYPE Type;
 };
 
 

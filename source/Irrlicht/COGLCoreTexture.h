@@ -45,13 +45,19 @@ public:
 		bool IsCached;
 	};
 
-	COGLCoreTexture(const io::path& name, const core::array<IImage*>& image, TOGLDriver* driver) : ITexture(name), Driver(driver), TextureType(GL_TEXTURE_2D),
+	COGLCoreTexture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, TOGLDriver* driver) : ITexture(name, type), Driver(driver), TextureType(GL_TEXTURE_2D),
 		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0),
 		KeepImage(false), AutoGenerateMipMaps(false)
 	{
 		_IRR_DEBUG_BREAK_IF(image.size() == 0)
 
+		const GLenum textureType[2] =
+		{
+			GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP
+		};
+
 		DriverType = Driver->getDriverType();
+		TextureType = textureType[static_cast<int>(Type)];
 		HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 		AutoGenerateMipMaps = Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE);
 		KeepImage = Driver->getTextureCreationFlag(ETCF_ALLOW_MEMORY_COPY);
@@ -119,7 +125,7 @@ public:
 		}
 	}
 
-	COGLCoreTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, TOGLDriver* driver) : ITexture(name), Driver(driver), TextureType(GL_TEXTURE_2D),
+	COGLCoreTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, TOGLDriver* driver) : ITexture(name, ETT_2D), Driver(driver), TextureType(GL_TEXTURE_2D),
 		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(false),
 		AutoGenerateMipMaps(false)
 	{
