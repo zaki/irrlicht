@@ -332,12 +332,9 @@ namespace video
 		//! inits the opengl-es driver
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 
-		//! returns a device dependent texture from a software surface (IImage)
-		virtual ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name) _IRR_OVERRIDE_;
+		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
 
-		//! returns a device dependent texture from a software surface (IImage)
-		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
-			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage) _IRR_OVERRIDE_;
+		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image) _IRR_OVERRIDE_;
 
 		//! Map Irrlicht wrap mode to OpenGL enum
 		GLint getTextureWrapMode(u8 clamp) const;

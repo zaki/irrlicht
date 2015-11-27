@@ -98,30 +98,8 @@ enum E_TEXTURE_TYPE
 	//! 2D texture.
 	ETT_2D,
 
-	//! Cube texture.
-	ETT_CUBE
-};
-
-//! Enumeration describing the type of cube texture surfaces.
-enum E_TEXTURE_CUBE_SURFACE
-{
-	//! Positive x-face of the cubemap
-	ETCS_POSX = 0,
-
-	//! Negative x-face of the cubemap
-	ETCS_NEGX = 1,
-
-	//! Positive y-face of the cubemap
-	ETCS_POSY = 2,
-
-	//! Negative y-face of the cubemap
-	ETCS_NEGY = 3,
-
-	//! Positive z-face of the cubemap
-	ETCS_POSZ = 4,
-
-	//! Negative z-face of the cubemap
-	ETCS_NEGZ = 5
+	//! Cubemap texture.
+	ETT_CUBEMAP
 };
 
 //! Where did the last IVideoDriver::getTexture call find this texture
@@ -151,7 +129,7 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const io::path& name, E_TEXTURE_TYPE type = ETT_2D) : NamedPath(name), DriverType(EDT_NULL), OriginalColorFormat(ECF_UNKNOWN),
+	ITexture(const io::path& name, E_TEXTURE_TYPE type) : NamedPath(name), DriverType(EDT_NULL), OriginalColorFormat(ECF_UNKNOWN),
 		ColorFormat(ECF_UNKNOWN), Pitch(0), HasMipMaps(false), IsRenderTarget(false), Source(ETS_UNKNOWN), Type(type)
 	{
 	}
@@ -185,12 +163,14 @@ public:
 
 	//! Regenerates the mip map levels of the texture.
 	/** Required after modifying the texture, usually after calling unlock().
-	\param mipmapData Optional parameter to pass in image data which will be
+	\param data Optional parameter to pass in image data which will be
 	used instead of the previously stored or automatically generated mipmap
 	data. The data has to be a continuous pixel data for all mipmaps until
 	1x1 pixel. Each mipmap has to be half the width and height of the previous
-	level. At least one pixel will be always kept.*/
-	virtual void regenerateMipMapLevels(void* mipmapData = 0) = 0;
+	level. At least one pixel will be always kept.
+	\param layer It informs a texture about layer which needs
+	mipmaps regeneration. */
+	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) = 0;
 
 	//! Get original size of the texture.
 	/** The texture is usually scaled, if it was created with an unoptimal
@@ -237,9 +217,6 @@ public:
 	//! Get name of texture (in most cases this is the filename)
 	const io::SNamedPath& getName() const { return NamedPath; }
 
-	//! Returns the type of texture
-	E_TEXTURE_TYPE getType() const { return Type; }
-
 	//! Check where the last IVideoDriver::getTexture found this texture
 	E_TEXTURE_SOURCE getSource() const { return Source; }
 
@@ -270,6 +247,9 @@ public:
 
 		return status;
 	}
+
+	//! Returns the type of texture
+	E_TEXTURE_TYPE getType() const { return Type; }
 
 protected:
 

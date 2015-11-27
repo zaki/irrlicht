@@ -172,9 +172,7 @@ namespace video
 		//! sets the current Texture
 		//bool setTexture(u32 stage, video::ITexture* texture);
 
-		//! returns a device dependent texture from a software surface (IImage)
-		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name) _IRR_OVERRIDE_;
+		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;

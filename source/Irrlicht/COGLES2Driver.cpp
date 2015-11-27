@@ -1635,41 +1635,22 @@ COGLES2Driver::~COGLES2Driver()
 		glDisableVertexAttribArray(EVA_POSITION);
 	}
 
-
-	//! returns a device dependent texture from a software surface (IImage)
-	ITexture* COGLES2Driver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+	ITexture* COGLES2Driver::createDeviceDependentTexture(const io::path& name, IImage* image)
 	{
-		COGLES2Texture* texture = 0;
+		core::array<IImage*> imageArray(1);
+		imageArray.push_back(image);
 
-		if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-		{
-			core::array<IImage*> imageArray(1);
-			imageArray.push_back(surface);
-
-			texture = new COGLES2Texture(name, imageArray, this);
-		}
+		COGLES2Texture* texture = new COGLES2Texture(name, imageArray, ETT_2D, this);
 
 		return texture;
 	}
 
-
-	//! returns a device dependent texture from a software surface (IImage)
-	ITexture* COGLES2Driver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
-		IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
+	ITexture* COGLES2Driver::createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image)
 	{
-		COGLES2Texture* texture = 0;
+		COGLES2Texture* texture = new COGLES2Texture(name, image, ETT_CUBEMAP, this);
 
-		if (posXImage && negXImage && posYImage && negYImage && posZImage && negZImage &&
-			checkTextureCube(posXImage, negXImage, posYImage, negYImage, posZImage, negZImage) &&
-			checkColorFormat(posXImage->getColorFormat(), posXImage->getDimension()))
-		{
-			// TO-DO
-			// texture = new COGLES2Texture(name, posXImage, negXImage, posYImage, negYImage, posZImage, negZImage, this);
-		}
-
- 		return texture;
+		return texture;
 	}
-
 
 	//! Sets a material.
 	void COGLES2Driver::setMaterial(const SMaterial& material)

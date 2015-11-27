@@ -245,15 +245,9 @@ bool CSoftwareDriver::endScene()
 	return Presenter->present(BackBuffer, WindowId, SceneSourceRect);
 }
 
-
-//! returns a device dependent texture from a software surface (IImage)
-//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+ITexture* CSoftwareDriver::createDeviceDependentTexture(const io::path& name, IImage* image)
 {
-	CSoftwareTexture* texture = 0;
-
-	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-		texture = new CSoftwareTexture(surface, name, false);
+	CSoftwareTexture2* texture = new CSoftwareTexture2(image, name, false);
 
 	return texture;
 }

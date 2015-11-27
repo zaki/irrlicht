@@ -16,7 +16,7 @@ namespace video
 
 //! constructor
 CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name, bool renderTarget)
-	: ITexture(name), Texture(0)
+	: ITexture(name, ETT_2D), Texture(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture");
@@ -109,10 +109,7 @@ CImage* CSoftwareTexture::getTexture()
 	return Texture;
 }
 
-
-//! Regenerates the mip map levels of the texture. Useful after locking and
-//! modifying the texture
-void CSoftwareTexture::regenerateMipMapLevels(void* mipmapData)
+void CSoftwareTexture::regenerateMipMapLevels(void* data, u32 layer)
 {
 	// our software textures don't have mip maps
 }

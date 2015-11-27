@@ -74,9 +74,7 @@ public:
 		return MipMap[MipMapLOD];
 	}
 
-	//! Regenerates the mip map levels of the texture. Useful after locking and
-	//! modifying the texture
-	virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_;
+	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_;
 
 private:
 	f32 OrigImageDataSizeInPixels;

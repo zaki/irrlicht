@@ -422,21 +422,18 @@ namespace video
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
-		
-		//! Creates a cube texture from loaded IImages.
-		/** \param name A name for the texture. Later calls of
-		getTexture() with this name will return this texture
-		\param posXImage Image (positive X) the texture is created from.
-		\param negXImage Image (negative X) the texture is created from.
-		\param posYImage Image (positive Y) the texture is created from.
-		\param negYImage Image (negative Y) the texture is created from.
-		\param posZImage Image (positive Z) the texture is created from.
-		\param negZImage Image (negative Z) the texture is created from.
-		\return Pointer to the newly created texture. This pointer
-		should not be dropped. See IReferenceCounted::drop() for more
-		information. */
-		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
-			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage) = 0;
+
+		//! Creates a cubemap texture from loaded IImages.
+		/** \param name A name for the texture. Later calls of getTexture() with this name will return this texture.
+		\param imagePosX Image (positive X) the texture is created from.
+		\param imageNegX Image (negative X) the texture is created from.
+		\param imagePosY Image (positive Y) the texture is created from.
+		\param imageNegY Image (negative Y) the texture is created from.
+		\param imagePosZ Image (positive Z) the texture is created from.
+		\param imageNegZ Image (negative Z) the texture is created from.
+		\return Pointer to the newly created texture. This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		virtual ITexture* addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
+			IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and

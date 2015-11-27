@@ -95,8 +95,12 @@ namespace video
 		//! Renames a texture
 		virtual void renameTexture(ITexture* texture, const io::path& newName) _IRR_OVERRIDE_;
 
-		//! creates a Texture
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) _IRR_OVERRIDE_;
+
+		virtual ITexture* addTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
+
+		virtual ITexture* addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
+			IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ) _IRR_OVERRIDE_;
 
 		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
@@ -683,26 +687,14 @@ namespace video
 		//! adds a surface, not loaded or created by the Irrlicht Engine
 		void addTexture(ITexture* surface);
 		
-		//! Creates a texture from a loaded IImage.
-		virtual ITexture* addTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
-		
-		//! Creates a cube texture from loaded IImages.
-		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
-			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
+		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image);
 
-		//! returns a device dependent texture from a software surface (IImage)
-		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
-
-		//! returns a device dependent texture from a software surface (IImage)
-		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
-			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
+		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image);
 
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
 
-		bool checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) const;
+		bool checkImage(const core::array<IImage*>& image) const;
 
 		// adds a material renderer and drops it afterwards. To be used for internal creation
 		s32 addAndDropMaterialRenderer(IMaterialRenderer* m);
@@ -712,10 +704,6 @@ namespace video
 
 		// prints renderer version
 		void printVersion();
-
-		// Check support for compression texture format.
-		bool checkTextureCube(IImage* posXImage, IImage* negXImage, IImage* posYImage, IImage* negYImage,
-			IImage* posZImage, IImage* negZImage) const;
 
 		//! normal map lookup 32 bit version
 		inline f32 nml32(int x, int y, int pitch, int height, s32 *p) const
@@ -772,11 +760,11 @@ namespace video
 
 		struct SDummyTexture : public ITexture
 		{
-			SDummyTexture(const io::path& name) : ITexture(name) {};
+			SDummyTexture(const io::path& name, E_TEXTURE_TYPE type) : ITexture(name, type) {};
 
 			virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_ { return 0; }
 			virtual void unlock()_IRR_OVERRIDE_ {}
-			virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_ {}
+			virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_ {}
 		};
 		core::array<SSurface> Textures;
 

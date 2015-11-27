@@ -745,18 +745,17 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 	}
 }
 
-
-//! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
+ITexture* CD3D9Driver::createDeviceDependentTexture(const io::path& name, IImage* image)
 {
-	CD3D9Texture* texture = 0;
-
-	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-		texture = new CD3D9Texture(surface, this, TextureCreationFlags, name);
+	CD3D9Texture* texture = new CD3D9Texture(image, this, TextureCreationFlags, name);
 
 	return texture;
 }
 
+/*ITexture* CD3D9Driver::createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image)
+{
+
+}*/
 
 //! Enables or disables a texture creation flag.
 void CD3D9Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,

@@ -19,7 +19,7 @@ namespace video
 
 //! rendertarget constructor
 CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, const ECOLOR_FORMAT format)
-	: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), HardwareMipMaps(false), IsCompressed(false)
+	: ITexture(name, ETT_2D), Texture(0), RTTSurface(0), Driver(driver), HardwareMipMaps(false), IsCompressed(false)
 {
 #ifdef _DEBUG
 	setDebugName("CD3D9Texture");
@@ -40,7 +40,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 
 //! constructor
 CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver, u32 flags, const io::path& name)
-	: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), HardwareMipMaps(false), IsCompressed(false)
+	: ITexture(name, ETT_2D), Texture(0), RTTSurface(0), Driver(driver), HardwareMipMaps(false), IsCompressed(false)
 {
 #ifdef _DEBUG
 	setDebugName("CD3D9Texture");
@@ -585,18 +585,15 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 	}
 }
 
-
-//! Regenerates the mip map levels of the texture. Useful after locking and
-//! modifying the texture
-void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
+void CD3D9Texture::regenerateMipMapLevels(void* data, u32 layer)
 {
 	if (!HasMipMaps)
 		return;
 
-	if (IsCompressed && !mipmapData)
+	if (IsCompressed && !data)
 		return;
 
-	if (mipmapData)
+	if (data)
 	{
 		u32 compressedDataSize = 0;
 		core::dimension2du size = Size;
@@ -635,13 +632,13 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 				else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
 					compressedDataSize = ((size.Width + 3) / 4) * ((size.Height + 3) / 4) * 16;
 
-				memcpy(miplr.pBits, mipmapData, compressedDataSize);
-				mipmapData = static_cast<u8*>(mipmapData)+compressedDataSize;
+				memcpy(miplr.pBits, data, compressedDataSize);
+				data = static_cast<u8*>(data)+compressedDataSize;
 			}
 			else
 			{
-				memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch() / Size.Width);
-				mipmapData = (u8*)mipmapData + size.getArea()*getPitch() / Size.Width;
+				memcpy(miplr.pBits, data, size.getArea()*getPitch() / Size.Width);
+				data = (u8*)data + size.getArea()*getPitch() / Size.Width;
 			}
 
 			// unlock

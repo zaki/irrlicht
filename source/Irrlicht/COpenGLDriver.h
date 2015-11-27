@@ -379,9 +379,6 @@ namespace video
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
 
-		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
-		void removeDepthTexture(ITexture* texture);
-
 		//! Removes a texture from the texture cache and deletes it, freeing lot of memory.
 		void removeTexture(ITexture* texture);
 
@@ -418,13 +415,10 @@ namespace video
 		//! inits the parts of the open gl driver used on all platforms
 		bool genericDriverInit();
 
-		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name) _IRR_OVERRIDE_;
+		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
 
-		//! returns a device dependent texture from a software surface (IImage)
-		virtual ITexture* createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage,
-			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage);
-
+		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image) _IRR_OVERRIDE_;
+		
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void getGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 		inline void getGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);

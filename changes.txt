@@ -8,6 +8,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix: File-open dialog now restores the original locale after modifying it internally
 - Fix first calculation of the camerascenenode boundingsphere.
 - Fix bug with ignored opening brace in .X files with DeclData section. Thx @Alin for bugreport and patch.
 - Fix problem with OpenGL textures cache.
@@ -129,6 +130,7 @@ Changes in 1.9 (not yet released)
 
 --------------------------
 Changes in 1.8.4
+ - Fix pasting text from X11 applications to Irrlicht. Thanks @est31 for the patch.
  - Tests give now a warning when stabilizing screenshots failed. Aslo trying more often now (a hack as taking screenshots otherwise fails often in windowed mode on some systems).
 
 --------------------------

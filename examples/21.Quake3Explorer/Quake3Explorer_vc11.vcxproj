@@ -146,7 +146,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>
       </DebugInformationFormat>
-      <CallingConvention>FastCall</CallingConvention>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <OutputFile>..\..\bin\Win32-VisualStudio\21.Quake3Explorer.exe</OutputFile>

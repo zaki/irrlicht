@@ -286,9 +286,6 @@ namespace video
 		//! Get the maximal texture size for this driver
 		core::dimension2du getMaxTextureSize() const;
 
-		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
-		void removeDepthTexture(ITexture* texture);
-
 		void removeTexture(ITexture* texture);
 
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
@@ -370,8 +367,9 @@ namespace video
 		//! inits the opengl-es driver
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 
-		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0) _IRR_OVERRIDE_;
+		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
+
+		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image) _IRR_OVERRIDE_;
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OGLES1
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
