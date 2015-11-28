@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix: Add missing serialization to CSceneNodeAnimatorCameraFPS and CSceneNodeAnimatorCameraMaya
 - Fix: File-open dialog now restores the original locale after modifying it internally
 - Fix first calculation of the camerascenenode boundingsphere.
 - Fix bug with ignored opening brace in .X files with DeclData section. Thx @Alin for bugreport and patch.

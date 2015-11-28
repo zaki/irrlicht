@@ -330,6 +330,28 @@ ISceneNodeAnimator* CSceneNodeAnimatorCameraMaya::createClone(ISceneNode* node, 
 	return newAnimator;
 }
 
+void CSceneNodeAnimatorCameraMaya::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
+{
+	ISceneNodeAnimator::serializeAttributes(out, options);
+
+	out->addFloat("TargetMinDistance", TargetMinDistance);
+	out->addFloat("ZoomSpeed", ZoomSpeed);
+	out->addFloat("RotateSpeed", RotateSpeed);
+	out->addFloat("TranslateSpeed", TranslateSpeed);
+	out->addFloat("CurrentZoom", CurrentZoom);
+}
+
+void CSceneNodeAnimatorCameraMaya::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
+{
+	ISceneNodeAnimator::deserializeAttributes(in, options);
+
+	TargetMinDistance = in->getAttributeAsFloat("TargetMinDistance", TargetMinDistance);
+	ZoomSpeed = in->getAttributeAsFloat("ZoomSpeed", ZoomSpeed);
+	RotateSpeed = in->getAttributeAsFloat("RotateSpeed", RotateSpeed);
+	TranslateSpeed = in->getAttributeAsFloat("TranslateSpeed", TranslateSpeed);
+	CurrentZoom = in->getAttributeAsFloat("CurrentZoom", CurrentZoom);
+}
+
 } // end namespace
 } // end namespace
 
