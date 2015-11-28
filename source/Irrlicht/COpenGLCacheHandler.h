@@ -10,6 +10,7 @@
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "COpenGLCommon.h"
+
 #include "COGLCoreFeature.h"
 #include "COGLCoreTexture.h"
 #include "COGLCoreCacheHandler.h"

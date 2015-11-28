@@ -19,9 +19,9 @@ namespace irr
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
-#include "COpenGLCommon.h"
+#include "CNullDriver.h"
+
 #include "COpenGLExtensionHandler.h"
 
 namespace irr

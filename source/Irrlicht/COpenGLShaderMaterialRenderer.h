@@ -6,28 +6,12 @@
 #define __C_OPENGL_SHADER_MATERIAL_RENDERER_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-	#define GL_GLEXT_LEGACY 1
-#else
-	#define GL_GLEXT_PROTOTYPES 1
-#endif
-#ifdef _IRR_WINDOWS_API_
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#include <GL/gl.h>
-#elif defined(_IRR_OSX_PLATFORM_)
-	#include <OpenGL/gl.h>
-#elif defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-	#define NO_SDL_GLEXT
-	#include <SDL/SDL_video.h>
-	#include <SDL/SDL_opengl.h>
-#else
-	#include <GL/gl.h>
-#endif
-
 #include "IMaterialRenderer.h"
+
+#include "COpenGLCommon.h"
 
 namespace irr
 {

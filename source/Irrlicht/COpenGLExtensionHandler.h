@@ -12,7 +12,9 @@
 #include "EDriverFeatures.h"
 #include "irrTypes.h"
 #include "os.h"
+
 #include "COpenGLCommon.h"
+
 #include "COGLCoreFeature.h"
 
 namespace irr

@@ -3,13 +3,11 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "COpenGLDriver.h"
-// needed here also because of the create methods' parameters
 #include "CNullDriver.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "COGLCoreTexture.h"
-#include "COGLCoreRenderTarget.h"
+#include "os.h"
 
 #include "COpenGLCacheHandler.h"
 #include "COpenGLMaterialRenderer.h"
@@ -17,7 +15,9 @@
 #include "COpenGLSLMaterialRenderer.h"
 #include "COpenGLNormalMapRenderer.h"
 #include "COpenGLParallaxMapRenderer.h"
-#include "os.h"
+
+#include "COGLCoreTexture.h"
+#include "COGLCoreRenderTarget.h"
 
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 #include "MacOSX/CIrrDeviceMacOSX.h"
@@ -4397,7 +4397,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 
 	u8* pixels = 0;
 	if (newImage)
-		pixels = static_cast<u8*>(newImage->lock());
+		pixels = static_cast<u8*>(newImage->getData());
 	if (pixels)
 	{
 		GLenum tgt=GL_FRONT;
@@ -4453,7 +4453,6 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 
 	if (newImage)
 	{
-		newImage->unlock();
 		if (testGLError() || !pixels)
 		{
 			newImage->drop();
