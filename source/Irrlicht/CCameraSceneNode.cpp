@@ -337,7 +337,7 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	ZFar = in->getAttributeAsFloat("ZFar");
 	TargetAndRotationAreBound = in->getAttributeAsBool("Binding");
 	if ( in->findAttribute("ReceiveInput") )
-		InputReceiverEnabled = in->getAttributeAsBool("InputReceiverEnabled");
+		InputReceiverEnabled = in->getAttributeAsBool("ReceiveInput");
 
 	recalculateProjectionMatrix();
 	recalculateViewArea();
