@@ -1,4 +1,4 @@
-// Copyright (C) 2013 Patryk Nadrowski
+// Copyright (C) 2013-2015 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -150,7 +150,7 @@ IImage* CImageLoaderPVR::loadImage(io::IReadFile* file) const
 
 				image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true);
 
-				if (header.MipMapCount > 0)
+				if (header.MipMapCount > 1)
 				{
 					u32 tmpWidth = header.Width;
 					u32 tmpHeight = header.Height;
@@ -163,7 +163,7 @@ IImage* CImageLoaderPVR::loadImage(io::IReadFile* file) const
 						if (tmpHeight > 1)
 							tmpHeight >>= 1;
 
-						mipMapsDataSize = IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
+						mipMapsDataSize += IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
 					}
 					while (tmpWidth != 1 || tmpHeight != 1);
 

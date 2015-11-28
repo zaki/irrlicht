@@ -311,6 +311,20 @@ public:
 			return 24;
 		case ECF_ETC2_ARGB:
 			return 32;
+		case ECF_D16:
+			return 16;
+		case ECF_D32:
+			return 32;
+		case ECF_D24S8:
+			return 32;
+		case ECF_R8:
+			return 8;
+		case ECF_R8G8:
+			return 16;
+		case ECF_R16:
+			return 16;
+		case ECF_R16G16:
+			return 32;
 		case ECF_R16F:
 			return 16;
 		case ECF_G16R16F:
@@ -323,20 +337,6 @@ public:
 			return 64;
 		case ECF_A32B32G32R32F:
 			return 128;
-		case ECF_R8:
-			return 8;
-		case ECF_R8G8:
-			return 16;
-		case ECF_R16:
-			return 16;
-		case ECF_R16G16:
-			return 32;
-		case ECF_D16:
-			return 16;
-		case ECF_D32:
-			return 32;
-		case ECF_D24S8:
-			return 32;
 		default:
 			return 0;
 		}
@@ -445,6 +445,15 @@ public:
 			case ECF_DXT3:
 			case ECF_DXT4:
 			case ECF_DXT5:
+			case ECF_PVRTC_RGB2:
+			case ECF_PVRTC_ARGB2:
+			case ECF_PVRTC2_ARGB2:
+			case ECF_PVRTC_RGB4:
+			case ECF_PVRTC_ARGB4:
+			case ECF_PVRTC2_ARGB4:
+			case ECF_ETC1:
+			case ECF_ETC2_RGB:
+			case ECF_ETC2_ARGB:
 				return false;
 			default:
 				return true;

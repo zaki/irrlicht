@@ -137,7 +137,7 @@ namespace video
 		EVDF_TEXTURE_COMPRESSED_ETC2,
 
 		//! Support for cube map textures.
-		EVDF_TEXTURE_CUBE_MAP,
+		EVDF_TEXTURE_CUBEMAP,
 
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT

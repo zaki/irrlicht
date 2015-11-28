@@ -823,6 +823,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return true;
 	case EVDF_TEXTURE_COMPRESSED_DXT:
 		return FeatureAvailable[IRR_EXT_texture_compression_s3tc];
+	case EVDF_TEXTURE_CUBEMAP:
+		return (Version >= 130) || FeatureAvailable[IRR_ARB_texture_cube_map] || FeatureAvailable[IRR_EXT_texture_cube_map];
 	default:
 		return false;
 	};

@@ -68,7 +68,7 @@ namespace video
 
 		//! PVRTC2 ARGB 4bpp.
 		ECF_PVRTC2_ARGB4,
-		
+
 		//! ETC1 RGB.
 		ECF_ETC1,
 

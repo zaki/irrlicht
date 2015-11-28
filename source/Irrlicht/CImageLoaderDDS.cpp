@@ -852,7 +852,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 							if (tmpHeight > 1)
 								tmpHeight >>= 1;
 
-							mipMapsDataSize = IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
+							mipMapsDataSize += IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
 						}
 						while (tmpWidth != 1 || tmpHeight != 1);
 
