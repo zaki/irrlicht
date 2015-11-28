@@ -2,11 +2,10 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#include "IrrCompileConfig.h"
+#include "COGLES2FixedPipelineRenderer.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#include "COGLES2FixedPipelineRenderer.h"
 #include "IVideoDriver.h"
 #include "SLight.h"
 

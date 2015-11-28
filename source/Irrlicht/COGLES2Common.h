@@ -15,8 +15,10 @@
 #elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#include <EGL/eglplatform.h>
 #else
 #include <GLES2/gl2.h>
+#include <EGL/eglplatform.h>
 typedef char GLchar;
 #if defined(_IRR_OGLES2_USE_EXTPOINTER_)
 #include "gles2-ext.h"

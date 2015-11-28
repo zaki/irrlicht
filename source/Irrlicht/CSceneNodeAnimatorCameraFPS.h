@@ -91,12 +91,20 @@ namespace scene
 		done with it. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
+		//! Writes attributes of the scene node animator.
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
+
+		//! Reads attributes of the scene node animator.
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
+
+
 	private:
 		void allKeysUp();
 
 		gui::ICursorControl *CursorControl;
 
 		f32 MaxVerticalAngle;
+		bool NoVerticalMovement;
 
 		f32 MoveSpeed;
 		f32 RotateSpeed;
@@ -113,7 +121,6 @@ namespace scene
 
 		bool firstUpdate;
 		bool firstInput;
-		bool NoVerticalMovement;
 	};
 
 } // end namespace scene

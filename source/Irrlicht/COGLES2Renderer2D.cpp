@@ -2,19 +2,18 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#include "IrrCompileConfig.h"
+#include "COGLES2Renderer2D.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#include "COGLES2Common.h"
-
-#include "COGLCoreTexture.h"
-#include "COGLCoreCacheHandler.h"
-
-#include "COGLES2Renderer2D.h"
 #include "IGPUProgrammingServices.h"
 #include "os.h"
+
 #include "COGLES2Driver.h"
+
+#include "COGLCoreFeature.h"
+#include "COGLCoreTexture.h"
+#include "COGLCoreCacheHandler.h"
 
 namespace irr
 {

@@ -13,7 +13,9 @@
 #include "EDriverFeatures.h"
 #include "irrTypes.h"
 #include "os.h"
+
 #include "COGLES2Common.h"
+
 #include "COGLCoreFeature.h"
 
 namespace irr

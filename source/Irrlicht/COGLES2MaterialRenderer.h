@@ -9,22 +9,14 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#else
-#include <GLES2/gl2.h>
-#include <EGL/eglplatform.h>
-#endif
-
 #include "EMaterialTypes.h"
-#include "EVertexAttributes.h"
 #include "IMaterialRenderer.h"
 #include "IMaterialRendererServices.h"
 #include "IGPUProgrammingServices.h"
-#include "IShaderConstantSetCallBack.h"
 #include "irrArray.h"
 #include "irrString.h"
+
+#include "COGLES2Common.h"
 
 namespace irr
 {

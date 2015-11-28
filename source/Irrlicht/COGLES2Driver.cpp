@@ -18,6 +18,8 @@
 #include "COGLES2NormalMapRenderer.h"
 #include "COGLES2ParallaxMapRenderer.h"
 #include "COGLES2Renderer2D.h"
+
+#include "EVertexAttributes.h"
 #include "CImage.h"
 #include "os.h"
 #include "EProfileIDs.h"
@@ -2580,10 +2582,9 @@ COGLES2Driver::~COGLES2Driver()
 		if (!newImage)
 			return 0;
 
-		u8* pixels = static_cast<u8*>(newImage->lock());
+		u8* pixels = static_cast<u8*>(newImage->getData());
 		if (!pixels)
 		{
-			newImage->unlock();
 			newImage->drop();
 			return 0;
 		}
@@ -2604,8 +2605,6 @@ COGLES2Driver::~COGLES2Driver()
 			p2 -= pitch;
 		}
 		delete [] tmpBuffer;
-
-		newImage->unlock();
 
 		if (testGLError())
 		{

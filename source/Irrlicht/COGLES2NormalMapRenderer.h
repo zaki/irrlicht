@@ -9,10 +9,10 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#include "vector3d.h"
-#include "SColor.h"
+#include "IMaterialRenderer.h"
 #include "IShaderConstantSetCallBack.h"
-#include "IMaterialRendererServices.h"
+
+#include "COGLES2Common.h"
 
 namespace irr
 {

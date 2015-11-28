@@ -3,14 +3,12 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "COpenGLDriver.h"
-// needed here also because of the create methods' parameters
-#include "CNullDriver.h"
 #include "IContextManager.h"
+#include "CNullDriver.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "COGLCoreTexture.h"
-#include "COGLCoreRenderTarget.h"
+#include "os.h"
 
 #include "COpenGLCacheHandler.h"
 #include "COpenGLMaterialRenderer.h"
@@ -18,11 +16,24 @@
 #include "COpenGLSLMaterialRenderer.h"
 #include "COpenGLNormalMapRenderer.h"
 #include "COpenGLParallaxMapRenderer.h"
-#include "os.h"
-#include "IrrlichtDevice.h"
+
+#include "COGLCoreTexture.h"
+#include "COGLCoreRenderTarget.h"
+
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+#include "MacOSX/CIrrDeviceMacOSX.h"
+#endif
 
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 #include <SDL/SDL.h>
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+// If You use MacOSX SDK which support MacOSX 10.6 "__MAC_10_6" and
+// custom XCode project for build Irrlicht make sure that
+// COpenGLDriver.cpp is signed as "Objective-C++ Source"
+// in "Identity and Type" section in XCode.
+#include "MacOSX/CIrrDeviceMacOSX.h"
 #endif
 
 namespace irr
@@ -3942,7 +3953,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 
 	u8* pixels = 0;
 	if (newImage)
-		pixels = static_cast<u8*>(newImage->lock());
+		pixels = static_cast<u8*>(newImage->getData());
 	if (pixels)
 	{
 		GLenum tgt=GL_FRONT;
@@ -4001,7 +4012,6 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 
 	if (newImage)
 	{
-		newImage->unlock();
 		if (testGLError() || !pixels)
 		{
 			os::Printer::log("createScreenShot failed", ELL_ERROR);

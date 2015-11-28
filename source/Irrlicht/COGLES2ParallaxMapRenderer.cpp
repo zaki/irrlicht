@@ -2,14 +2,16 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h"
+#include "COGLES2ParallaxMapRenderer.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#include "COGLES2ParallaxMapRenderer.h"
+#include "IMaterialRendererServices.h"
+#include "IGPUProgrammingServices.h"
+#include "IShaderConstantSetCallBack.h"
 #include "IVideoDriver.h"
 #include "SLight.h"
-#include "irrMath.h"
+#include "os.h"
 
 namespace irr
 {

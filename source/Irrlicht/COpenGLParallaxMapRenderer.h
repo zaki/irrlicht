@@ -6,10 +6,12 @@
 #define __C_OPENGL_PARALLAX_MAP_RENDERER_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "COpenGLShaderMaterialRenderer.h"
 #include "IShaderConstantSetCallBack.h"
+
+#include "COpenGLShaderMaterialRenderer.h"
 
 namespace irr
 {

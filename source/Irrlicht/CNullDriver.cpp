@@ -1660,7 +1660,7 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 		if (!src)
 			return 0;
 		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
-		u8* dst = static_cast<u8*>(image->lock());
+		u8* dst = static_cast<u8*>(image->getData());
 		src += clamped.UpperLeftCorner.Y * texture->getPitch() + image->getBytesPerPixel() * clamped.UpperLeftCorner.X;
 		for (u32 i=0; i<clamped.getHeight(); ++i)
 		{
@@ -1668,7 +1668,6 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 			src += texture->getPitch();
 			dst += image->getPitch();
 		}
-		image->unlock();
 		texture->unlock();
 		return image;
 	}

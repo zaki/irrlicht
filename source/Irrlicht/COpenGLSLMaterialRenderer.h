@@ -6,29 +6,8 @@
 #define __C_OPENGL_SHADER_LANGUAGE_MATERIAL_RENDERER_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-
-#ifdef _IRR_WINDOWS_API_
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#include <GL/gl.h>
-	#include "glext.h"
-#else
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-	#define GL_GLEXT_LEGACY 1
-#else
-	#define GL_GLEXT_PROTOTYPES 1
-#endif
-#if defined(_IRR_OSX_PLATFORM_)
-	#include <OpenGL/gl.h>
-#else
-	#include <GL/gl.h>
-#endif
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-	#include "glext.h"
-#endif
-#endif
-
 
 #include "EMaterialTypes.h"
 #include "IMaterialRenderer.h"
@@ -36,6 +15,8 @@
 #include "IGPUProgrammingServices.h"
 #include "irrArray.h"
 #include "irrString.h"
+
+#include "COpenGLCommon.h"
 
 namespace irr
 {

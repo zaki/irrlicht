@@ -169,8 +169,6 @@ typedef char GLchar;
 #endif
 #endif
 
-
-
 // Irrlicht's OpenGL version.
 
 #define IRR_OPENGL_VERSION 14

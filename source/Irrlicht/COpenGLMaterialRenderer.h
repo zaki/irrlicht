@@ -8,9 +8,10 @@
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
+#include "IMaterialRenderer.h"
+
 #include "COpenGLDriver.h"
 #include "COpenGLCacheHandler.h"
-#include "IMaterialRenderer.h"
 
 namespace irr
 {

@@ -2,13 +2,12 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h"
+#include "COpenGLExtensionHandler.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "COpenGLExtensionHandler.h"
 #include "irrString.h"
-#include "SMaterial.h" // for MATERIAL_MAX_TEXTURES
+#include "SMaterial.h"
 #include "fast_atof.h"
 
 namespace irr

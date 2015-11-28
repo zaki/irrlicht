@@ -3,14 +3,13 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#include "IrrCompileConfig.h"
+#include "COGLES2ExtensionHandler.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
-#include "COGLES2ExtensionHandler.h"
-#include "COGLES2Driver.h"
-#include "fast_atof.h"
 #include "irrString.h"
+#include "SMaterial.h"
+#include "fast_atof.h"
 
 namespace irr
 {
