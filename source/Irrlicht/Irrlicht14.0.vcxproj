@@ -1143,6 +1143,7 @@
     <ClInclude Include="CImageLoaderPNG.h" />
     <ClInclude Include="CImageLoaderPPM.h" />
     <ClInclude Include="CImageLoaderPSD.h" />
+    <ClInclude Include="CImageLoaderPVR.h" />
     <ClInclude Include="CImageLoaderRGB.h" />
     <ClInclude Include="CImageLoaderTGA.h" />
     <ClInclude Include="CImageLoaderWAL.h" />
@@ -1387,6 +1388,7 @@
     <ClCompile Include="CImageLoaderPNG.cpp" />
     <ClCompile Include="CImageLoaderPPM.cpp" />
     <ClCompile Include="CImageLoaderPSD.cpp" />
+    <ClCompile Include="CImageLoaderPVR.cpp" />
     <ClCompile Include="CImageLoaderRGB.cpp" />
     <ClCompile Include="CImageLoaderTGA.cpp" />
     <ClCompile Include="CImageLoaderWAL.cpp" />

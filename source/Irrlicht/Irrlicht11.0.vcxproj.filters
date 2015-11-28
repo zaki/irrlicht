@@ -915,6 +915,9 @@
     <ClInclude Include="CImageLoaderPSD.h">
       <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClInclude>
+    <ClInclude Include="CImageLoaderPVR.h">
+      <Filter>Irrlicht\video\Null\Loader</Filter>
+    </ClInclude>
     <ClInclude Include="CImageLoaderRGB.h">
       <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClInclude>
@@ -1677,6 +1680,9 @@
       <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClCompile>
     <ClCompile Include="CImageLoaderPSD.cpp">
+      <Filter>Irrlicht\video\Null\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="CImageLoaderPVR.cpp">
       <Filter>Irrlicht\video\Null\Loader</Filter>
     </ClCompile>
     <ClCompile Include="CImageLoaderRGB.cpp">

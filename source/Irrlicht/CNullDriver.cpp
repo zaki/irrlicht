@@ -35,6 +35,9 @@ IImageLoader* createImageLoaderTGA();
 //! creates a loader which is able to load psd images
 IImageLoader* createImageLoaderPSD();
 
+//! creates a loader which is able to load psd images
+IImageLoader* createImageLoaderPVR();
+
 //! creates a loader which is able to load dds images
 IImageLoader* createImageLoaderDDS();
 
@@ -137,6 +140,9 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #endif
 #ifdef _IRR_COMPILE_WITH_PSD_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
+#endif
+#ifdef _IRR_COMPILE_WITH_PVR_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderPVR());
 #endif
 #if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_DECODER_LOADER_)
 	SurfaceLoader.push_back(video::createImageLoaderDDS());
@@ -1394,7 +1400,7 @@ bool CNullDriver::checkImage(const core::array<IImage*>& image) const
 					status = false;
 				}
 				break;
-			/*case ECF_PVRTC_RGB2:
+			case ECF_PVRTC_RGB2:
 			case ECF_PVRTC_ARGB2:
 			case ECF_PVRTC_RGB4:
 			case ECF_PVRTC_ARGB4:
@@ -1431,7 +1437,7 @@ bool CNullDriver::checkImage(const core::array<IImage*>& image) const
 					os::Printer::log("ETC2 texture compression not available.", ELL_ERROR);
 					status = false;
 				}
-				break;*/
+				break;
 			default:
 				break;
 			}

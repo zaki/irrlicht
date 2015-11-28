@@ -519,6 +519,11 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_PSD_LOADER_
 #undef _IRR_COMPILE_WITH_PSD_LOADER_
 #endif
+//! Define _IRR_COMPILE_WITH_PVR_LOADER_ if you want to load .pvr files
+#define _IRR_COMPILE_WITH_PVR_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_PVR_LOADER_
+#undef _IRR_COMPILE_WITH_PVR_LOADER_
+#endif
 //! Define _IRR_COMPILE_WITH_DDS_LOADER_ if you want to load compressed .dds files
 // Patent problem isn't related to this loader.
 #define _IRR_COMPILE_WITH_DDS_LOADER_
