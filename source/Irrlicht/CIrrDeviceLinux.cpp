@@ -23,10 +23,16 @@
 #include "SIrrCreationParameters.h"
 #include "SExposedVideoData.h"
 #include "IGUISpriteBank.h"
-#include "CEGLManager.h"
-#include "CGLXManager.h"
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
+
+#if defined(_IRR_COMPILE_WITH_OGLES1_) || defined(_IRR_COMPILE_WITH_OGLES2_)
+#include "CEGLManager.h"
+#endif
+
+#if defined(_IRR_COMPILE_WITH_OPENGL_)
+#include "CGLXManager.h"
+#endif
 
 #ifdef _IRR_LINUX_XCURSOR_
 #include <X11/Xcursor/Xcursor.h>
@@ -56,30 +62,17 @@ namespace irr
 {
 	namespace video
 	{
-	#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-				io::IFileSystem* io, IContextManager* contextManager);
-	#endif
-
-	#ifdef _IRR_COMPILE_WITH_OGLES1_
-        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 #endif
-	);
-        #endif
 
-	#ifdef _IRR_COMPILE_WITH_OGLES2_
-	IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+        IVideoDriver* createOGLES1Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 #endif
-	);
-	#endif
+
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+        IVideoDriver* createOGLES2Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+#endif
 	}
 } // end namespace irr
 
@@ -410,15 +403,17 @@ bool CIrrDeviceLinux::createWindow()
 
 	switchToFullscreen();
 
+#if defined(_IRR_COMPILE_WITH_OPENGL_)
 	// don't use the XVisual with OpenGL, because it ignores all requested
 	// properties of the CreationParams
-	if (CreationParams.DriverType==video::EDT_OPENGL)
+	if (CreationParams.DriverType == video::EDT_OPENGL)
 	{
 		video::SExposedVideoData data;
 		data.OpenGLLinux.X11Display = XDisplay;
-		ContextManager = new video::CGLXManager(CreationParams,data, Screennr);
+		ContextManager = new video::CGLXManager(CreationParams, data, Screennr);
 		VisualInfo = ((video::CGLXManager*)ContextManager)->getVisual();
 	}
+#endif
 
 	if (!VisualInfo)
 	{
@@ -576,77 +571,75 @@ void CIrrDeviceLinux::createDriver()
 	switch(CreationParams.DriverType)
 	{
 #ifdef _IRR_COMPILE_WITH_X11_
-
 	case video::EDT_SOFTWARE:
-		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
+#ifdef _IRR_COMPILE_WITH_SOFTWARE_
 		VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
-		#else
+#else
 		os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_BURNINGSVIDEO:
-		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		VideoDriver = video::createBurningVideoDriver(CreationParams, FileSystem, this);
-		#else
+#else
 		os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_OPENGL:
-		#ifdef _IRR_COMPILE_WITH_OPENGL_
+#ifdef _IRR_COMPILE_WITH_OPENGL_
 		{
 			video::SExposedVideoData data;
 			data.OpenGLLinux.X11Window = XWindow;
 			data.OpenGLLinux.X11Display = XDisplay;
+
 			ContextManager->initialize(CreationParams, data);
+
 			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
 		}
-		#else
+#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_OGLES1:
-		#ifdef _IRR_COMPILE_WITH_OGLES1_
+#ifdef _IRR_COMPILE_WITH_OGLES1_
 		{
 			video::SExposedVideoData data;
 			data.OpenGLLinux.X11Window = XWindow;
 			data.OpenGLLinux.X11Display = XDisplay;
+
 			ContextManager = new video::CEGLManager();
 			ContextManager->initialize(CreationParams, data);
+
 			VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
 		}
-		#else
+#else
 		os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_OGLES2:
-		#ifdef _IRR_COMPILE_WITH_OGLES2_
+#ifdef _IRR_COMPILE_WITH_OGLES2_
 		{
 			video::SExposedVideoData data;
 			data.OpenGLLinux.X11Window = XWindow;
 			data.OpenGLLinux.X11Display = XDisplay;
+
 			ContextManager = new video::CEGLManager();
 			ContextManager->initialize(CreationParams, data);
+
 			VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
 		}
-		#else
+#else
 		os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
 	case video::EDT_DIRECT3D9:
 		os::Printer::log("This driver is not available in Linux. Try OpenGL or Software renderer.",
 			ELL_ERROR);
 		break;
-
 	case video::EDT_NULL:
 		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 		break;
-
 	default:
 		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;
@@ -1181,7 +1174,7 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 			return false;
 	}
 
-	u8* srcdata = reinterpret_cast<u8*>(image->lock());
+	u8* srcdata = reinterpret_cast<u8*>(image->getData());
 	u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
 
 	const u32 destheight = SoftwareImage->height;
@@ -1193,7 +1186,6 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 		srcdata+=srcPitch;
 		destData+=destPitch;
 	}
-	image->unlock();
 
 	GC gc = DefaultGC(XDisplay, DefaultScreen(XDisplay));
 	Window myWindow=XWindow;

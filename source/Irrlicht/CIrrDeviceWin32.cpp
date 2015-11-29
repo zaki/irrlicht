@@ -34,10 +34,12 @@
 #endif
 #endif
 #endif
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
+
+#if defined(_IRR_COMPILE_WITH_OGLES1_) || defined(_IRR_COMPILE_WITH_OGLES2_)
 #include "CEGLManager.h"
 #endif
-#if defined(_IRR_WINDOWS_API_)
+
+#if defined(_IRR_COMPILE_WITH_OPENGL_)
 #include "CWGLManager.h"
 #endif
 
@@ -45,35 +47,21 @@ namespace irr
 {
 	namespace video
 	{
-		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
-		IVideoDriver* createDirectX9Driver(const irr::SIrrlichtCreationParameters& params,
-			io::IFileSystem* io, HWND window);
-		#endif
-
-		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-			io::IFileSystem* io, IContextManager* contextManager);
-		#endif
-
-        #ifdef _IRR_COMPILE_WITH_OGLES1_
-        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
+#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
+		IVideoDriver* createDirectX9Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, HWND window);
 #endif
-		);
-        #endif
 
-        #ifdef _IRR_COMPILE_WITH_OGLES2_
-        IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 #endif
-		);
-        #endif
+
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+        IVideoDriver* createOGLES1Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+        IVideoDriver* createOGLES2Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+#endif
 	}
 } // end namespace irr
 
@@ -1194,104 +1182,83 @@ void CIrrDeviceWin32::createDriver()
 	{
 	case video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
 		os::Printer::log("DIRECT3D8 Driver is no longer supported in Irrlicht. Try another one.", ELL_ERROR);
-		break;
-
+		break;	
 	case video::EDT_DIRECT3D9:
-		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
-
+#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 		VideoDriver = video::createDirectX9Driver(CreationParams, FileSystem, HWnd);
 
 		if (!VideoDriver)
-		{
 			os::Printer::log("Could not create DIRECT3D9 Driver.", ELL_ERROR);
-		}
-		#else
+#else
 		os::Printer::log("DIRECT3D9 Driver was not compiled into this dll. Try another one.", ELL_ERROR);
-		#endif // _IRR_COMPILE_WITH_DIRECT3D_9_
-
+#endif
 		break;
-
 	case video::EDT_OPENGL:
-		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		{
-			switchToFullScreen();
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+		switchToFullScreen();
 
-			ContextManager = new video::CWGLManager();
-			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
-			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
-			if (!VideoDriver)
-			{
-				os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
-			}
-		}
-		#else
+		ContextManager = new video::CWGLManager();
+		ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
+
+		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
+
+		if (!VideoDriver)
+			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
+#else
 		os::Printer::log("OpenGL driver was not compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_OGLES1:
-		#ifdef _IRR_COMPILE_WITH_OGLES1_
-		{
-			switchToFullScreen();
-			ContextManager = new video::CEGLManager();
-			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+		switchToFullScreen();
 
-			VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
-			if (!VideoDriver)
-			{
-				os::Printer::log("Could not create OpenGL-ES1 driver.", ELL_ERROR);
-			}
-		}
-		#else
+		ContextManager = new video::CEGLManager();
+		ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
+
+		VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
+
+		if (!VideoDriver)
+			os::Printer::log("Could not create OpenGL-ES1 driver.", ELL_ERROR);
+#else
 		os::Printer::log("OpenGL-ES1 driver was not compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_OGLES2:
-		#ifdef _IRR_COMPILE_WITH_OGLES2_
-		{
-			switchToFullScreen();
-			ContextManager = new video::CEGLManager();
-			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+		switchToFullScreen();
 
-			VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
-			if (!VideoDriver)
-			{
-				os::Printer::log("Could not create OpenGL-ES2 driver.", ELL_ERROR);
-			}
-		}
-		#else
+		ContextManager = new video::CEGLManager();
+		ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
+
+		VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
+
+		if (!VideoDriver)
+			os::Printer::log("Could not create OpenGL-ES2 driver.", ELL_ERROR);
+#else
 		os::Printer::log("OpenGL-ES2 driver was not compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_SOFTWARE:
-
-		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
+#ifdef _IRR_COMPILE_WITH_SOFTWARE_
 		switchToFullScreen();
 
 		VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
-		#else
+#else
 		os::Printer::log("Software driver was not compiled in.", ELL_ERROR);
-		#endif
-
+#endif
 		break;
-
 	case video::EDT_BURNINGSVIDEO:
-		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		switchToFullScreen();
 
 		VideoDriver = video::createBurningVideoDriver(CreationParams, FileSystem, this);
-		#else
+#else
 		os::Printer::log("Burning's Video driver was not compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_NULL:
-		// create null driver
 		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 		break;
-
 	default:
 		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;

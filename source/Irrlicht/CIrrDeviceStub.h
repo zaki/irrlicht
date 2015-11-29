@@ -78,7 +78,7 @@ namespace irr
 		virtual video::IVideoModeList* getVideoModeList() _IRR_OVERRIDE_;
 
 		//! return the context manager
-		virtual video::IContextManager* getContextManager();
+		virtual video::IContextManager* getContextManager() _IRR_OVERRIDE_;
 
 		//! Returns a pointer to the ITimer object. With it the current Time can be received.
 		virtual ITimer* getTimer() _IRR_OVERRIDE_;

@@ -119,6 +119,9 @@ namespace irr
 		by the gfx adapter. */
 		virtual video::IVideoModeList* getVideoModeList() = 0;
 
+		//! Get context manager
+		virtual video::IContextManager* getContextManager() = 0;
+
 		//! Provides access to the operation system operator object.
 		/** The OS operator provides methods for
 		getting system specific informations and doing system
@@ -300,9 +303,6 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
 					f32 &brightness, f32 &contrast) =0;
-
-		//! Get context manager
-		virtual video::IContextManager* getContextManager() =0;
 
 		//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behavior.
 		/** When set to 0 no double- and tripleclicks will be generated.

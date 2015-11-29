@@ -78,7 +78,7 @@ CSoftwareTexture::~CSoftwareTexture()
 //! lock function
 void* CSoftwareTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
-	return Image->lock();
+	return Image->getData();
 }
 
 
@@ -91,8 +91,6 @@ void CSoftwareTexture::unlock()
 		os::Printer::log("Performance warning, slow unlock of non power of 2 texture.", ELL_WARNING);
 		Image->copyToScaling(Texture);
 	}
-
-	Image->unlock();
 }
 
 

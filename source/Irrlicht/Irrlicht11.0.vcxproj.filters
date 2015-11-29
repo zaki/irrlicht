@@ -109,6 +109,9 @@
     <Filter Include="Irrlicht\video\OpenGL ES2.x">
       <UniqueIdentifier>{9386255e-8324-4ce1-864a-225390cee09e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Irrlicht\video\OpenGL Context">
+      <UniqueIdentifier>{d16493e0-554f-49e0-b228-0e4047839dba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IEventReceiver.h">
@@ -154,6 +157,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\EDriverTypes.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IContextManager.h">
       <Filter>include\video</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IGeometryCreator.h">
@@ -1333,12 +1339,6 @@
     <ClInclude Include="COGLCoreTexture.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
-    <ClInclude Include="CEGLManager.h">
-      <Filter>Irrlicht\video</Filter>
-    </ClInclude>
-    <ClInclude Include="CWGLManager.h">
-      <Filter>Irrlicht\video</Filter>
-    </ClInclude>
     <ClInclude Include="COGLES2Common.h">
       <Filter>Irrlicht\video\OpenGL ES2.x</Filter>
     </ClInclude>
@@ -1374,6 +1374,15 @@
     </ClInclude>
     <ClInclude Include="COGLESMaterialRenderer.h">
       <Filter>Irrlicht\video\OpenGL ES1.x</Filter>
+    </ClInclude>
+    <ClInclude Include="CEGLManager.h">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
+    </ClInclude>
+    <ClInclude Include="CGLXManager.h">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
+    </ClInclude>
+    <ClInclude Include="CWGLManager.h">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2306,12 +2315,6 @@
     <ClCompile Include="COpenGLSLMaterialRenderer.cpp">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="CEGLManager.cpp">
-      <Filter>Irrlicht\video</Filter>
-    </ClCompile>
-    <ClCompile Include="CWGLManager.cpp">
-      <Filter>Irrlicht\video</Filter>
-    </ClCompile>
     <ClCompile Include="COGLES2Driver.cpp">
       <Filter>Irrlicht\video\OpenGL ES2.x</Filter>
     </ClCompile>
@@ -2338,6 +2341,15 @@
     </ClCompile>
     <ClCompile Include="COGLESExtensionHandler.cpp">
       <Filter>Irrlicht\video\OpenGL ES1.x</Filter>
+    </ClCompile>
+    <ClCompile Include="CEGLManager.cpp">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
+    </ClCompile>
+    <ClCompile Include="CGLXManager.cpp">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
+    </ClCompile>
+    <ClCompile Include="CWGLManager.cpp">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

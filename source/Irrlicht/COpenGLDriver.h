@@ -30,6 +30,8 @@ namespace irr
 
 namespace video
 {
+	class IContextManager;
+
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
 		friend COpenGLCacheHandler;
@@ -44,26 +46,15 @@ namespace video
 			EOFPS_DISABLE_TO_ENABLE // switch from programmable to fixed pipeline.
 		};
 
-		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
-		//! inits the windows specific parts of the open gl driver
-		bool initDriver(CIrrDeviceWin32* device);
-		#endif
+#endif
 
-		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
-		//! inits the GLX specific parts of the open gl driver
-		bool initDriver(CIrrDeviceLinux* device);
-		#endif
-
-		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceSDL* device);
-		#endif
+#endif
 
-		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
-        bool initDriver();
-		#endif
+		bool initDriver();
 
 		//! destructor
 		virtual ~COpenGLDriver();
@@ -510,6 +501,7 @@ namespace video
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 			CIrrDeviceSDL *SDLDevice;
 		#endif
+
 		IContextManager* ContextManager;
 
 		E_DEVICE_TYPE DeviceType;

@@ -247,7 +247,7 @@ bool CSoftwareDriver::endScene()
 
 ITexture* CSoftwareDriver::createDeviceDependentTexture(const io::path& name, IImage* image)
 {
-	CSoftwareTexture2* texture = new CSoftwareTexture2(image, name, false);
+	CSoftwareTexture* texture = new CSoftwareTexture(image, name, false);
 
 	return texture;
 }

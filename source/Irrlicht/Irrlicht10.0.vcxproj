@@ -857,6 +857,7 @@
     <ClInclude Include="..\..\include\SIrrCreationParameters.h" />
     <ClInclude Include="..\..\include\SKeyMap.h" />
     <ClInclude Include="..\..\include\EDriverTypes.h" />
+    <ClInclude Include="..\..\include\IContextManager.h" />
     <ClInclude Include="..\..\include\IGeometryCreator.h" />
     <ClInclude Include="..\..\include\IGPUProgrammingServices.h" />
     <ClInclude Include="..\..\include\IImage.h" />
@@ -1007,6 +1008,7 @@
     <ClInclude Include="CDefaultSceneNodeFactory.h" />
     <ClInclude Include="CEGLManager.h" />
     <ClInclude Include="CGeometryCreator.h" />
+    <ClInclude Include="CGLXManager.h" />
     <ClInclude Include="CMeshCache.h" />
     <ClInclude Include="CMeshManipulator.h" />
     <ClInclude Include="COGLCoreCacheHandler.h" />
@@ -1272,6 +1274,7 @@
     <ClCompile Include="CDefaultSceneNodeFactory.cpp" />
     <ClCompile Include="CEGLManager.cpp" />
     <ClCompile Include="CGeometryCreator.cpp" />
+    <ClCompile Include="CGLXManager.cpp" />
     <ClCompile Include="CMeshCache.cpp" />
     <ClCompile Include="CMeshManipulator.cpp" />
     <ClCompile Include="COGLES2Driver.cpp" />

@@ -3,8 +3,8 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "COpenGLDriver.h"
-#include "IContextManager.h"
 #include "CNullDriver.h"
+#include "IContextManager.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -44,126 +44,56 @@ namespace video
 // Statics variables
 const u16 COpenGLDriver::Quad2DIndices[4] = { 0, 1, 2, 3 };
 
-// -----------------------------------------------------------------------
-// WINDOWS CONSTRUCTOR
-// -----------------------------------------------------------------------
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-#include "CWGLManager.h"
-
-//! Windows constructor and init code
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager)
-	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
-	Params(params), ContextManager(contextManager), DeviceType(EIDT_WIN32)
+	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
+	Transformation3DChanged(true), AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE), Params(params),
+	ContextManager(contextManager),
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+	DeviceType(EIDT_WIN32)
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
+	DeviceType(EIDT_X11)
+#else
+	DeviceType(EIDT_OSX)
+#endif
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
-	#endif
+#endif
 }
+#endif
 
-
-//! inits the open gl driver
-bool COpenGLDriver::initDriver(CIrrDeviceWin32* device)
-{
-	ContextManager->generateSurface();
-	ContextManager->generateContext();
-	ExposedData=ContextManager->getContext();
-	ContextManager->activateContext(ExposedData);
-
-	genericDriverInit();
-
-	extGlSwapInterval(Params.Vsync ? 1 : 0);
-	return true;
-}
-
-#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-
-// -----------------------------------------------------------------------
-// MacOSX CONSTRUCTOR
-// -----------------------------------------------------------------------
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-//! OSX constructor and init code
-COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager)
-	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
-	Params(params), ContextManager(contextManager), DeviceType(EIDT_OSX)
-{
-	#ifdef _DEBUG
-	setDebugName("COpenGLDriver");
-	#endif
-}
-
-//! inits the open gl driver
-bool COpenGLDriver::initDriver()
-{
-    ContextManager->generateSurface();
-    ContextManager->generateContext();
-    ExposedData=ContextManager->getContext();
-    ContextManager->activateContext(ExposedData);
-
-    genericDriverInit();
-
-    return true;
-}
-
-#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
-
-// -----------------------------------------------------------------------
-// LINUX CONSTRUCTOR
-// -----------------------------------------------------------------------
-#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
-//! Linux constructor and init code
-COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager)
-	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
-	Params(params), ContextManager(contextManager), DeviceType(EIDT_X11)
-{
-	#ifdef _DEBUG
-	setDebugName("COpenGLDriver");
-	#endif
-}
-
-
-//! inits the open gl driver
-bool COpenGLDriver::initDriver(CIrrDeviceLinux* device)
-{
-	ContextManager->generateSurface();
-	ContextManager->generateContext();
-	ExposedData=ContextManager->getContext();
-	ContextManager->activateContext(ExposedData);
-
-	genericDriverInit();
-
-	extGlSwapInterval(Params.Vsync ? 1 : 0);
-	return true;
-}
-
-#endif // _IRR_COMPILE_WITH_X11_DEVICE_
-
-
-// -----------------------------------------------------------------------
-// SDL CONSTRUCTOR
-// -----------------------------------------------------------------------
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
-//! SDL constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceSDL* device)
 	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
 	Params(params), SDLDevice(device), DeviceType(EIDT_SDL)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
-	#endif
+#endif
 
 	genericDriverInit();
 }
 
-#endif // _IRR_COMPILE_WITH_SDL_DEVICE_
+#endif
 
+bool COpenGLDriver::initDriver()
+{
+	ContextManager->generateSurface();
+	ContextManager->generateContext();
+	ExposedData = ContextManager->getContext();
+	ContextManager->activateContext(ExposedData);
+
+	genericDriverInit();
+
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_X11_DEVICE_)
+	extGlSwapInterval(Params.Vsync ? 1 : 0);
+#endif
+
+	return true;
+}
 
 //! destructor
 COpenGLDriver::~COpenGLDriver()
@@ -199,6 +129,7 @@ bool COpenGLDriver::genericDriverInit()
 {
 	if (ContextManager)
 		ContextManager->grab();
+
 	Name=L"OpenGL ";
 	Name.append(glGetString(GL_VERSION));
 	s32 pos=Name.findNext(L' ', 7);
@@ -368,18 +299,15 @@ bool COpenGLDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth,
 {
 	CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 
-	ContextManager->activateContext(videoData);
+	if (ContextManager)
+		ContextManager->activateContext(videoData);
 
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-	if (DeviceType == EIDT_SDL)
-	{
-		// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
-		// it would be better if this was fixed elsewhere.
-		glFrontFace(GL_CW);
-	}
+	glFrontFace(GL_CW);
 #endif
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
+
 	return true;
 }
 
@@ -389,38 +317,19 @@ bool COpenGLDriver::endScene()
 
 	glFlush();
 
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-	if (DeviceType == EIDT_WIN32)
-	{
-		return ContextManager->swapBuffers();
-	}
-#endif
+	bool status = false;
 
-#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
-	if (DeviceType == EIDT_X11)
-	{
-		return ContextManager->swapBuffers();
-	}
-#endif
-
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-	if (DeviceType == EIDT_OSX)
-	{
-		return ContextManager->swapBuffers();
-	}
-#endif
+	if (ContextManager)
+		status = ContextManager->swapBuffers();
 
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
-	if (DeviceType == EIDT_SDL)
-	{
-		SDL_GL_SwapBuffers();
-		return true;
-	}
+	SDL_GL_SwapBuffers();
+	status = true;
 #endif
 
 	// todo: console device present
 
-	return false;
+	return status;
 }
 
 
@@ -4380,70 +4289,24 @@ namespace irr
 namespace video
 {
 
-
-// -----------------------------------
-// WINDOWS VERSION
-// -----------------------------------
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-	io::IFileSystem* io, IContextManager* contextManager)
-{
-#ifdef _IRR_COMPILE_WITH_OPENGL_
-	COpenGLDriver* ogl =  new COpenGLDriver(params, io, contextManager);
-	if (!ogl->initDriver((CIrrDeviceWin32*)0))
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
+	IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager)
 	{
-		ogl->drop();
-		ogl = 0;
-	}
-	return ogl;
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_OPENGL_
-}
-#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-
-// -----------------------------------
-// MACOSX VERSION
-// -----------------------------------
-#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, IContextManager* contextManager)
-{
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	COpenGLDriver* ogl =  new COpenGLDriver(params, io, contextManager);
-	if (!ogl->initDriver())
-	{
-		ogl->drop();
-		ogl = 0;
-	}
-	return ogl;
-#else
-	return 0;
-#endif // _IRR_COMPILE_WITH_OPENGL_
-}
-#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
+		COpenGLDriver* ogl = new COpenGLDriver(params, io, contextManager);
 
-// -----------------------------------
-// X11 VERSION
-// -----------------------------------
-#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
-IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, IContextManager* contextManager)
-{
-#ifdef _IRR_COMPILE_WITH_OPENGL_
-	COpenGLDriver* ogl =  new COpenGLDriver(params, io, contextManager);
-	if (!ogl->initDriver((CIrrDeviceLinux*)0))
-	{
-		ogl->drop();
-		ogl = 0;
-	}
-	return ogl;
-#else
-	return 0;
-#endif //  _IRR_COMPILE_WITH_OPENGL_
-}
-#endif // _IRR_COMPILE_WITH_X11_DEVICE_
+		if (!ogl->initDriver())
+		{
+			ogl->drop();
+			ogl = 0;
+		}
 
+		return ogl;
+#else
+		return 0;
+#endif
+	}
+#endif
 
 // -----------------------------------
 // SDL VERSION

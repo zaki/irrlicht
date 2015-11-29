@@ -451,6 +451,7 @@
 		<Unit filename="..\..\include\IBoneSceneNode.h" />
 		<Unit filename="..\..\include\ICameraSceneNode.h" />
 		<Unit filename="..\..\include\IColladaMeshWriter.h" />
+		<Unit filename="..\..\include\IContextManager.h" />
 		<Unit filename="..\..\include\ICursorControl.h" />
 		<Unit filename="..\..\include\IDummyTransformationSceneNode.h" />
 		<Unit filename="..\..\include\IDynamicMeshBuffer.h" />
@@ -1045,8 +1046,6 @@
 		<Unit filename="ITriangleRenderer.h" />
 		<Unit filename="IZBuffer.h" />
 		<Unit filename="Irrlicht.cpp" />
-		<Unit filename="MacOSX/CIrrDeviceMacOSX.h" />
-		<Unit filename="MacOSX/CIrrDeviceMacOSX.mm" />
 		<Unit filename="Octree.h" />
 		<Unit filename="S2DVertex.h" />
 		<Unit filename="S4DVertex.h" />

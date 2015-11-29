@@ -2352,7 +2352,7 @@ void CBurningVideoDriver::drawStencilShadow(bool clearStencilBuffer, video::SCol
 
 	for ( u32 y = 0; y < h; ++y )
 	{
-		dst = (tVideoSample*)RenderTargetSurface->lock() + ( y * w );
+		dst = (tVideoSample*)RenderTargetSurface->getData() + ( y * w );
 		stencil =  stencilBase + ( y * w );
 
 		for ( u32 x = 0; x < w; ++x )
