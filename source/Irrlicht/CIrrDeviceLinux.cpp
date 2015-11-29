@@ -25,6 +25,10 @@
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
 
+#if defined(_IRR_COMPILE_WITH_OPENGL_)
+#include "CGLXManager.h"
+#endif
+
 #ifdef _IRR_LINUX_XCURSOR_
 #include <X11/Xcursor/Xcursor.h>
 #endif
@@ -53,8 +57,9 @@ namespace irr
 {
 	namespace video
 	{
-		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io, CIrrDeviceLinux* device);
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+#endif
 	}
 } // end namespace irr
 
@@ -402,235 +407,21 @@ bool CIrrDeviceLinux::createWindow()
 
 	switchToFullscreen();
 
-#ifdef _IRR_COMPILE_WITH_OPENGL_
-
-	GLXFBConfig glxFBConfig;
-	int major, minor;
-	bool isAvailableGLX=false;
-	if (CreationParams.DriverType==video::EDT_OPENGL)
-	{
-		isAvailableGLX=glXQueryExtension(XDisplay,&major,&minor);
-		if (isAvailableGLX && glXQueryVersion(XDisplay, &major, &minor))
-		{
-#ifdef GLX_VERSION_1_3
-			typedef GLXFBConfig * ( * PFNGLXCHOOSEFBCONFIGPROC) (Display *dpy, int screen, const int *attrib_list, int *nelements);
-
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXChooseFBConfig"));
-#else
-			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig=glXChooseFBConfig;
-#endif
-			if (major==1 && minor>2 && glxChooseFBConfig)
-			{
-				// attribute array for the draw buffer
-				int visualAttrBuffer[] =
-				{
-					GLX_RENDER_TYPE, GLX_RGBA_BIT,
-					GLX_RED_SIZE, 4,
-					GLX_GREEN_SIZE, 4,
-					GLX_BLUE_SIZE, 4,
-					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
-					GLX_DEPTH_SIZE, CreationParams.ZBufferBits, //10,11
-					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
-					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
-#if defined(GLX_VERSION_1_4) && defined(GLX_SAMPLE_BUFFERS) // we need to check the extension string!
-					GLX_SAMPLE_BUFFERS, 1,
-					GLX_SAMPLES, CreationParams.AntiAlias, // 18,19
-#elif defined(GLX_ARB_multisample)
-					GLX_SAMPLE_BUFFERS_ARB, 1,
-					GLX_SAMPLES_ARB, CreationParams.AntiAlias, // 18,19
-#elif defined(GLX_SGIS_multisample)
-					GLX_SAMPLE_BUFFERS_SGIS, 1,
-					GLX_SAMPLES_SGIS, CreationParams.AntiAlias, // 18,19
-#endif
-//#ifdef GL_ARB_framebuffer_sRGB
-//					GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB, CreationParams.HandleSRGB,
-//#elif defined(GL_EXT_framebuffer_sRGB)
-//					GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT, CreationParams.HandleSRGB,
-//#endif
-					GLX_STEREO, CreationParams.Stereobuffer?True:False,
-					None
-				};
-
-				GLXFBConfig *configList=0;
-				int nitems=0;
-				if (CreationParams.AntiAlias<2)
-				{
-					visualAttrBuffer[17] = 0;
-					visualAttrBuffer[19] = 0;
-				}
-				// first round with unchanged values
-				{
-					configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-					if (!configList && CreationParams.AntiAlias)
-					{
-						while (!configList && (visualAttrBuffer[19]>1))
-						{
-							visualAttrBuffer[19] -= 1;
-							configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-						}
-						if (!configList)
-						{
-							visualAttrBuffer[17] = 0;
-							visualAttrBuffer[19] = 0;
-							configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-							if (configList)
-							{
-								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=0;
-							}
-							else
-							{
-								//reenable multisampling
-								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = CreationParams.AntiAlias;
-							}
-						}
-					}
-				}
-				// Next try with flipped stencil buffer value
-				// If the first round was with stencil flag it's now without
-				// Other way round also makes sense because some configs
-				// only have depth buffer combined with stencil buffer
-				if (!configList)
-				{
-					if (CreationParams.Stencilbuffer)
-						os::Printer::log("No stencilbuffer available, disabling stencil shadows.", ELL_WARNING);
-					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
-					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
-
-					configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-					if (!configList && CreationParams.AntiAlias)
-					{
-						while (!configList && (visualAttrBuffer[19]>1))
-						{
-							visualAttrBuffer[19] -= 1;
-							configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-						}
-						if (!configList)
-						{
-							visualAttrBuffer[17] = 0;
-							visualAttrBuffer[19] = 0;
-							configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-							if (configList)
-							{
-								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=0;
-							}
-							else
-							{
-								//reenable multisampling
-								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = CreationParams.AntiAlias;
-							}
-						}
-					}
-				}
-				// Next try without double buffer
-				if (!configList && CreationParams.Doublebuffer)
-				{
-					os::Printer::log("No doublebuffering available.", ELL_WARNING);
-					CreationParams.Doublebuffer=false;
-					visualAttrBuffer[13] = GLX_DONT_CARE;
-					CreationParams.Stencilbuffer = false;
-					visualAttrBuffer[15]=0;
-					configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-					if (!configList && CreationParams.AntiAlias)
-					{
-						while (!configList && (visualAttrBuffer[19]>1))
-						{
-							visualAttrBuffer[19] -= 1;
-							configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-						}
-						if (!configList)
-						{
-							visualAttrBuffer[17] = 0;
-							visualAttrBuffer[19] = 0;
-							configList=glxChooseFBConfig(XDisplay, Screennr, visualAttrBuffer,&nitems);
-							if (configList)
-							{
-								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=0;
-							}
-							else
-							{
-								//reenable multisampling
-								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = CreationParams.AntiAlias;
-							}
-						}
-					}
-				}
-				if (configList)
-				{
-					glxFBConfig=configList[0];
-					XFree(configList);
-					UseGLXWindow=true;
-#ifdef _IRR_OPENGL_USE_EXTPOINTER_
-					typedef XVisualInfo * ( * PFNGLXGETVISUALFROMFBCONFIGPROC) (Display *dpy, GLXFBConfig config);
-					PFNGLXGETVISUALFROMFBCONFIGPROC glxGetVisualFromFBConfig= (PFNGLXGETVISUALFROMFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXGetVisualFromFBConfig"));
-					if (glxGetVisualFromFBConfig)
-						VisualInfo = glxGetVisualFromFBConfig(XDisplay,glxFBConfig);
-#else
-						VisualInfo = glXGetVisualFromFBConfig(XDisplay,glxFBConfig);
-#endif
-				}
-			}
-			else
-#endif
-			{
-				// attribute array for the draw buffer
-				int visualAttrBuffer[] =
-				{
-					GLX_RGBA, GLX_USE_GL,
-					GLX_RED_SIZE, 4,
-					GLX_GREEN_SIZE, 4,
-					GLX_BLUE_SIZE, 4,
-					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
-					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0, // 12,13
-					// The following attributes have no flags, but are
-					// either present or not. As a no-op we use
-					// GLX_USE_GL, which is silently ignored by glXChooseVisual
-					CreationParams.Doublebuffer?GLX_DOUBLEBUFFER:GLX_USE_GL, // 14
-					CreationParams.Stereobuffer?GLX_STEREO:GLX_USE_GL, // 15
-//#ifdef GL_ARB_framebuffer_sRGB
-//					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB:GLX_USE_GL,
-//#elif defined(GL_EXT_framebuffer_sRGB)
-//					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT:GLX_USE_GL,
-//#endif
-					None
-				};
-
-				VisualInfo=glXChooseVisual(XDisplay, Screennr, visualAttrBuffer);
-				if (!VisualInfo)
-				{
-					if (CreationParams.Stencilbuffer)
-						os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
-					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
-					visualAttrBuffer[13]=CreationParams.Stencilbuffer?1:0;
-
-					VisualInfo=glXChooseVisual(XDisplay, Screennr, visualAttrBuffer);
-					if (!VisualInfo && CreationParams.Doublebuffer)
-					{
-						os::Printer::log("No doublebuffering available.", ELL_WARNING);
-						CreationParams.Doublebuffer=false;
-						visualAttrBuffer[14] = GLX_USE_GL;
-						VisualInfo=glXChooseVisual(XDisplay, Screennr, visualAttrBuffer);
-					}
-				}
-			}
-		}
-		else
-			os::Printer::log("No GLX support available. OpenGL driver will not work.", ELL_WARNING);
-	}
+#if defined(_IRR_COMPILE_WITH_OPENGL_)
 	// don't use the XVisual with OpenGL, because it ignores all requested
 	// properties of the CreationParams
-	else if (!VisualInfo)
-#endif // _IRR_COMPILE_WITH_OPENGL_
-
-	// create visual with standard X methods
+	if (CreationParams.DriverType == video::EDT_OPENGL)
 	{
+		video::SExposedVideoData data;
+		data.OpenGLLinux.X11Display = XDisplay;
+		ContextManager = new video::CGLXManager(CreationParams, data, Screennr);
+		VisualInfo = ((video::CGLXManager*)ContextManager)->getVisual();
+	}
+#endif
+
+	if (!VisualInfo)
+	{
+		// create visual with standard X methods
 		os::Printer::log("Using plain X visual");
 		XVisualInfo visTempl; //Template to hold requested values
 		int visNumber; // Return value of available visuals
@@ -737,56 +528,6 @@ bool CIrrDeviceLinux::createWindow()
 	// Currently broken in X, see Bug ID 2795321
 	// XkbSetDetectableAutoRepeat(XDisplay, True, &AutorepeatSupport);
 
-#ifdef _IRR_COMPILE_WITH_OPENGL_
-
-	// connect glx context to window
-	Context=0;
-	if (isAvailableGLX && CreationParams.DriverType==video::EDT_OPENGL)
-	{
-	if (UseGLXWindow)
-	{
-		GlxWin=glXCreateWindow(XDisplay,glxFBConfig,XWindow,NULL);
-		if (GlxWin)
-		{
-			// create glx context
-			Context = glXCreateNewContext(XDisplay, glxFBConfig, GLX_RGBA_TYPE, NULL, True);
-			if (Context)
-			{
-				if (!glXMakeContextCurrent(XDisplay, GlxWin, GlxWin, Context))
-				{
-					os::Printer::log("Could not make context current.", ELL_WARNING);
-					glXDestroyContext(XDisplay, Context);
-				}
-			}
-			else
-			{
-				os::Printer::log("Could not create GLX rendering context.", ELL_WARNING);
-			}
-		}
-		else
-		{
-			os::Printer::log("Could not create GLX window.", ELL_WARNING);
-		}
-	}
-	else
-	{
-		Context = glXCreateContext(XDisplay, VisualInfo, NULL, True);
-		if (Context)
-		{
-			if (!glXMakeCurrent(XDisplay, XWindow, Context))
-			{
-				os::Printer::log("Could not make context current.", ELL_WARNING);
-				glXDestroyContext(XDisplay, Context);
-			}
-		}
-		else
-		{
-			os::Printer::log("Could not create GLX rendering context.", ELL_WARNING);
-		}
-	}
-	}
-#endif // _IRR_COMPILE_WITH_OPENGL_
-
 	Window tmp;
 	u32 borderWidth;
 	int x,y;
@@ -834,42 +575,43 @@ void CIrrDeviceLinux::createDriver()
 	switch(CreationParams.DriverType)
 	{
 #ifdef _IRR_COMPILE_WITH_X11_
-
 	case video::EDT_SOFTWARE:
-		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
+#ifdef _IRR_COMPILE_WITH_SOFTWARE_
 		VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
-		#else
+#else
 		os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_BURNINGSVIDEO:
-		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
+#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		VideoDriver = video::createBurningVideoDriver(CreationParams, FileSystem, this);
-		#else
+#else
 		os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
-		#endif
+#endif
 		break;
-
 	case video::EDT_OPENGL:
-		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		if (Context)
-			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
-		#else
-		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
-		#endif
-		break;
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+		{
+			video::SExposedVideoData data;
+			data.OpenGLLinux.X11Window = XWindow;
+			data.OpenGLLinux.X11Display = XDisplay;
 
+			ContextManager->initialize(CreationParams, data);
+
+			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
+		}
+#else
+		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
+#endif
+		break;
 	case video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
 	case video::EDT_DIRECT3D9:
 		os::Printer::log("This driver is not available in Linux. Try OpenGL or Software renderer.",
 			ELL_ERROR);
 		break;
-
 	case video::EDT_NULL:
 		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 		break;
-
 	default:
 		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;
@@ -1404,7 +1146,7 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 			return false;
 	}
 
-	u8* srcdata = reinterpret_cast<u8*>(image->lock());
+	u8* srcdata = reinterpret_cast<u8*>(image->getData());
 	u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
 
 	const u32 destheight = SoftwareImage->height;
@@ -1416,7 +1158,6 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 		srcdata+=srcPitch;
 		destData+=destPitch;
 	}
-	image->unlock();
 
 	GC gc = DefaultGC(XDisplay, DefaultScreen(XDisplay));
 	Window myWindow=XWindow;

@@ -34,6 +34,10 @@ namespace irr
 		class ISceneManager;
 	} // end namespace scene
 
+	namespace video {
+		class IContextManager;
+	} // end namespace video
+
 	//! The Irrlicht device. You can create it with createDevice() or createDeviceEx().
 	/** This is the most important class of the Irrlicht Engine. You can
 	access everything in the engine if you have a pointer to an instance of
@@ -114,6 +118,9 @@ namespace irr
 		\return Pointer to a list with all video modes supported
 		by the gfx adapter. */
 		virtual video::IVideoModeList* getVideoModeList() = 0;
+
+		//! Get context manager
+		virtual video::IContextManager* getContextManager() = 0;
 
 		//! Provides access to the operation system operator object.
 		/** The OS operator provides methods for

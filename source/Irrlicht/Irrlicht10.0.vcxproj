@@ -857,6 +857,7 @@
     <ClInclude Include="..\..\include\SIrrCreationParameters.h" />
     <ClInclude Include="..\..\include\SKeyMap.h" />
     <ClInclude Include="..\..\include\EDriverTypes.h" />
+    <ClInclude Include="..\..\include\IContextManager.h" />
     <ClInclude Include="..\..\include\IGeometryCreator.h" />
     <ClInclude Include="..\..\include\IGPUProgrammingServices.h" />
     <ClInclude Include="..\..\include\IImage.h" />
@@ -1006,6 +1007,7 @@
     <ClInclude Include="CDefaultSceneNodeAnimatorFactory.h" />
     <ClInclude Include="CDefaultSceneNodeFactory.h" />
     <ClInclude Include="CGeometryCreator.h" />
+    <ClInclude Include="CGLXManager.h" />
     <ClInclude Include="CMeshCache.h" />
     <ClInclude Include="CMeshManipulator.h" />
     <ClInclude Include="COGLCoreCacheHandler.h" />
@@ -1023,6 +1025,7 @@
     <ClInclude Include="COpenGLSLMaterialRenderer.h" />
     <ClInclude Include="CProfiler.h" />
     <ClInclude Include="CSceneManager.h" />
+    <ClInclude Include="CWGLManager.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="CSMFMeshFileLoader.h" />
     <ClInclude Include="C3DSMeshFileLoader.h" />
@@ -1257,6 +1260,7 @@
     <ClCompile Include="CDefaultSceneNodeAnimatorFactory.cpp" />
     <ClCompile Include="CDefaultSceneNodeFactory.cpp" />
     <ClCompile Include="CGeometryCreator.cpp" />
+    <ClCompile Include="CGLXManager.cpp" />
     <ClCompile Include="CMeshCache.cpp" />
     <ClCompile Include="CMeshManipulator.cpp" />
     <ClCompile Include="COpenGLCacheHandler.cpp" />
@@ -1292,6 +1296,7 @@
     <ClCompile Include="CQ3LevelMesh.cpp" />
     <ClCompile Include="CSkinnedMesh.cpp" />
     <ClCompile Include="CSTLMeshFileLoader.cpp" />
+    <ClCompile Include="CWGLManager.cpp" />
     <ClCompile Include="CXMeshFileLoader.cpp" />
     <ClCompile Include="CAnimatedMeshSceneNode.cpp" />
     <ClCompile Include="CBillboardSceneNode.cpp" />

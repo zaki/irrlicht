@@ -103,6 +103,9 @@
     <Filter Include="Irrlicht\video\OpenGL Core">
       <UniqueIdentifier>{2c9c6ef7-5662-4f11-83cd-921c717d3ab0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Irrlicht\video\OpenGL Context">
+      <UniqueIdentifier>{397439c6-ad86-45a8-b692-f3606794a075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IEventReceiver.h">
@@ -142,6 +145,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\EDriverTypes.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IContextManager.h">
       <Filter>include\video</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IGeometryCreator.h">
@@ -1327,6 +1333,12 @@
     <ClInclude Include="COGLCoreTexture.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
+    <ClInclude Include="CGLXManager.h">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
+    </ClInclude>
+    <ClInclude Include="CWGLManager.h">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\changes.txt">
@@ -2257,6 +2269,12 @@
     </ClCompile>
     <ClCompile Include="COpenGLSLMaterialRenderer.cpp">
       <Filter>Irrlicht\video\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="CGLXManager.cpp">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
+    </ClCompile>
+    <ClCompile Include="CWGLManager.cpp">
+      <Filter>Irrlicht\video\OpenGL Context</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

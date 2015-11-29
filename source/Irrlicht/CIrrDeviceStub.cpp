@@ -163,6 +163,11 @@ video::IVideoModeList* CIrrDeviceStub::getVideoModeList()
 	return VideoModeList;
 }
 
+//! return the context manager
+video::IContextManager* CIrrDeviceStub::getContextManager()
+{
+	return ContextManager;
+}
 
 //! checks version of sdk and prints warning if there might be a problem
 bool CIrrDeviceStub::checkVersion(const char* version)

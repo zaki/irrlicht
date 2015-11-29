@@ -29,6 +29,8 @@ namespace irr
 
 namespace video
 {
+	class IContextManager;
+
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
 		friend COpenGLCacheHandler;
@@ -43,30 +45,15 @@ namespace video
 			EOFPS_DISABLE_TO_ENABLE // switch from programmable to fixed pipeline.
 		};
 
-		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device);
-		//! inits the windows specific parts of the open gl driver
-		bool initDriver(CIrrDeviceWin32* device);
-		bool changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceWin32* device);
-		#endif
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+#endif
 
-		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceLinux* device);
-		//! inits the GLX specific parts of the open gl driver
-		bool initDriver(CIrrDeviceLinux* device);
-		bool changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceLinux* device);
-		#endif
-
-		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceSDL* device);
-		#endif
+#endif
 
-		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device);
-		#endif
-
-		//! generic version which overloads the unimplemented versions
-		bool changeRenderContext(const SExposedVideoData& videoData, void* device) {return false;}
+		bool initDriver();
 
 		//! destructor
 		virtual ~COpenGLDriver();
@@ -510,24 +497,11 @@ namespace video
 		S3DVertex Quad2DVertices[4];
 		static const u16 Quad2DIndices[4];
 
-		#ifdef _IRR_WINDOWS_API_
-			HDC HDc; // Private GDI Device Context
-			HWND Window;
-		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-			CIrrDeviceWin32 *Win32Device;
-		#endif
-		#endif
-		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
-			GLXDrawable Drawable;
-			Display* X11Display;
-			CIrrDeviceLinux *X11Device;
-		#endif
-		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-			CIrrDeviceMacOSX *OSXDevice;
-		#endif
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 			CIrrDeviceSDL *SDLDevice;
 		#endif
+
+		IContextManager* ContextManager;
 
 		E_DEVICE_TYPE DeviceType;
 	};
