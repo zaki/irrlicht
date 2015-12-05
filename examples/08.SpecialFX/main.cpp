@@ -26,7 +26,7 @@ using namespace irr;
 int main()
 {
 	// ask if user would like shadows
-	char i;
+	char i = 'y';
 	printf("Please press 'y' if you want to use realtime shadows.\n");
 
 	std::cin >> i;

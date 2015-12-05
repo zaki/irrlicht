@@ -20,20 +20,8 @@
 #include "COGLCoreTexture.h"
 #include "COGLCoreRenderTarget.h"
 
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-#include "MacOSX/CIrrDeviceMacOSX.h"
-#endif
-
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 #include <SDL/SDL.h>
-#endif
-
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-// If You use MacOSX SDK which support MacOSX 10.6 "__MAC_10_6" and
-// custom XCode project for build Irrlicht make sure that
-// COpenGLDriver.cpp is signed as "Objective-C++ Source"
-// in "Identity and Type" section in XCode.
-#include "MacOSX/CIrrDeviceMacOSX.h"
 #endif
 
 namespace irr

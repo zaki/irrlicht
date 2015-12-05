@@ -49,10 +49,10 @@ public:
 	virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const _IRR_OVERRIDE_;
 
 	//! Creates a planar texture mapping on the meshbuffer
-	void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const;
+	void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const _IRR_OVERRIDE_;
 
 	//! Creates a planar texture mapping on the mesh
-	void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const;
+	void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const _IRR_OVERRIDE_;
 
 	//! Recalculates tangents, requires a tangent mesh buffer
 	virtual void recalculateTangents(IMeshBuffer* buffer, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const _IRR_OVERRIDE_;

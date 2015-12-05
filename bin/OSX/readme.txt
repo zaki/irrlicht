@@ -1,0 +1,1 @@
+If you want to compile only the Irrlicht Engine you should use XCode project available at source/Irrlicht/ directory. You can also use examples/BuildAllExamples.xcworkspace file to build the Irrlicht Engine + all examples.

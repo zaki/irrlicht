@@ -104,7 +104,7 @@ void COctreeSceneNode::render()
 	IRR_PROFILE(CProfileScope psRender(EPID_OC_RENDER);)
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
-	if (VertexType == -1 || !driver)
+	if (!driver)
 		return;
 
 	ICameraSceneNode* camera = SceneManager->getActiveCamera();

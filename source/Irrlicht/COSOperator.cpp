@@ -22,9 +22,10 @@
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 #include "CIrrDeviceLinux.h"
 #endif
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-#include "MacOSX/OSXClipboard.h"
+#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
+#import <Cocoa/Cocoa.h>
 #endif
+
 #include "fast_atof.h"
 
 namespace irr
@@ -80,11 +81,18 @@ void COSOperator::copyToClipboard(const c8* text) const
 	SetClipboardData(CF_TEXT, clipbuffer);
 	CloseClipboard();
 
-// MacOSX version
 #elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-
-	OSXCopyToClipboard(text);
-
+    NSString *str = nil;
+    NSPasteboard *board = nil;
+    
+    if ((text != NULL) && (strlen(text) > 0))
+    {
+        str = [NSString stringWithCString:text encoding:NSWindowsCP1252StringEncoding];
+        board = [NSPasteboard generalPasteboard];
+        [board declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:NSApp];
+        [board setString:str forType:NSStringPboardType];
+    }
+    
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     if ( IrrDeviceLinux )
         IrrDeviceLinux->copyToClipboard(text);
@@ -113,7 +121,17 @@ const c8* COSOperator::getTextFromClipboard() const
 	return buffer;
 
 #elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-	return (OSXCopyFromClipboard());
+    NSString* str = nil;
+    NSPasteboard* board = nil;
+    char* result = 0;
+
+    board = [NSPasteboard generalPasteboard];
+    str = [board stringForType:NSStringPboardType];
+    
+    if (str != nil)
+        result = (char*)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
+    
+    return (result);
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     if ( IrrDeviceLinux )

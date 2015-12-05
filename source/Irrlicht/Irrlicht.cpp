@@ -18,32 +18,32 @@ static const char* const copyright = "Irrlicht Engine (c) 2002-2012 Nikolaus Geb
 #include "CIrrDeviceWin32.h"
 #endif
 
-#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-#include "MacOSX/CIrrDeviceMacOSX.h"
-#endif
-
 #ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 #include "CIrrDeviceLinux.h"
 #endif
 
-#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
-#include "iOS/CIrrDeviceiOS.h"
-#endif
-
-#ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_
-#include "Android/CIrrDeviceAndroid.h"
-#endif
-
-#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
-#include "CIrrDeviceSDL.h"
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+#include "CIrrDeviceOSX.h"
 #endif
 
 #ifdef _IRR_COMPILE_WITH_FB_DEVICE_
 #include "CIrrDeviceFB.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+#include "CIrrDeviceSDL.h"
+#endif
+
 #ifdef _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 #include "CIrrDeviceConsole.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_IOS_DEVICE_
+#include "CIrrDeviceiOS.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_
+#include "Android/CIrrDeviceAndroid.h"
 #endif
 
 namespace irr
@@ -86,9 +86,9 @@ namespace irr
 			dev = new CIrrDeviceLinux(params);
 #endif
         
-#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
-		if (params.DeviceType == EIDT_IPHONE || (!dev && params.DeviceType == EIDT_BEST))
-			dev = new CIrrDeviceIPhone(params);
+#ifdef _IRR_COMPILE_WITH_IOS_DEVICE_
+		if (params.DeviceType == EIDT_IOS || (!dev && params.DeviceType == EIDT_BEST))
+			dev = new CIrrDeviceiOS(params);
 #endif
 
 #ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_

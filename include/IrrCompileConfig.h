@@ -93,9 +93,9 @@
 #define _IRR_COMPILE_WITH_EAGL_MANAGER_
 #else
 #define _IRR_COMPILE_WITH_OSX_DEVICE_
-#define _IRR_COMPILE_WITH_NSOGL_MANAGER_
+#define NO_IRR_COMPILE_WITH_OGLES1_
+#define NO_IRR_COMPILE_WITH_OGLES2_
 #endif
-#define NO_IRR_COMPILE_WITH_EGL_MANAGER_
 #endif
 
 #if defined(_IRR_ANDROID_PLATFORM_)
@@ -103,7 +103,6 @@
 //#define _IRR_COMPILE_WITH_OGLES1_
 #define _IRR_COMPILE_WITH_OGLES2_
 #define _IRR_COMPILE_ANDROID_ASSET_READER_
-#define _IRR_COMPILE_WITH_EGL_MANAGER_
 #endif
 
 #if defined(__SVR4) && defined(__sun)
@@ -194,41 +193,44 @@ define out. */
 #ifdef NO_IRR_COMPILE_WITH_OPENGL_
 #undef _IRR_COMPILE_WITH_OPENGL_
 #endif
-#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_WGL_MANAGER_)
-#define _IRR_COMPILE_WITH_WGL_MANAGER_
-#endif
-#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_X11_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_GLX_MANAGER_)
-#define _IRR_COMPILE_WITH_GLX_MANAGER_
-#endif
 
 //! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
 /** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment
- this define out.
- You should only use this define if you really need the OpenGL-ES driver, and
- it should be usually the only HW accelerated one. OpenGL is currently disabled
- if using this driver, to avoid problems with the ogl-es emulators.
- */
+ this define out. */
 // #define _IRR_COMPILE_WITH_OGLES1_
 #ifdef NO_IRR_COMPILE_WITH_OGLES1_
 #undef _IRR_COMPILE_WITH_OGLES1_
 #endif
-#if defined(_IRR_COMPILE_WITH_OGLES1_) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
-#define _IRR_COMPILE_WITH_EGL_MANAGER_
-#endif
 
 //! Define _IRR_COMPILE_WITH_OGLES2_ to compile the Irrlicht engine with OpenGL-ES 2.x.
 /** If you do not wish the engine to be compiled with OpenGL-ES 2.x, comment
- this define out.
- You should only use this define if you really need the OpenGL-ES driver, and
- it should be usually the only HW accelerated one. OpenGL is currently disabled
- if using this driver, to avoid problems with the ogl-es emulators.
- */
+ this define out. */
 #define _IRR_COMPILE_WITH_OGLES2_
 #ifdef NO_IRR_COMPILE_WITH_OGLES2_
 #undef _IRR_COMPILE_WITH_OGLES2_
 #endif
-#if defined(_IRR_COMPILE_WITH_OGLES2_) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
+
+//! Define required context managers for OpenGL drivers.
+#if defined(_IRR_COMPILE_WITH_OPENGL_)
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_WGL_MANAGER_)
+#define _IRR_COMPILE_WITH_WGL_MANAGER_
+#endif
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_GLX_MANAGER_)
+#define _IRR_COMPILE_WITH_GLX_MANAGER_
+#endif
+#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_NSOGL_MANAGER_)
+#define _IRR_COMPILE_WITH_NSOGL_MANAGER_
+#endif
+#endif
+
+//! Define required context managers for OpenGL ES drivers.
+#if defined(_IRR_COMPILE_WITH_OGLES1_) || defined(_IRR_COMPILE_WITH_OGLES2_)
+#if (defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
 #define _IRR_COMPILE_WITH_EGL_MANAGER_
+#endif
+#if defined(_IRR_COMPILE_WITH_IOS_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_EAGL_MANAGER_)
+#define _IRR_COMPILE_WITH_EAGL_MANAGER_
+#endif
 #endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
