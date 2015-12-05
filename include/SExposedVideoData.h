@@ -62,12 +62,22 @@ struct SExposedVideoData
 		void* X11Context;
 		unsigned long X11Window;
 	};
+    
+    struct SOpenGLOSX
+    {
+        //! The NSOpenGLContext object.
+        void* Context;
+        
+        //! The NSWindow object.
+        void* Window;
+    };
 
 	union
 	{
 		SD3D9 D3D9;
 		SOpenGLWin32 OpenGLWin32;
 		SOpenGLLinux OpenGLLinux;
+        SOpenGLOSX OpenGLOSX;
 	};
 };
 

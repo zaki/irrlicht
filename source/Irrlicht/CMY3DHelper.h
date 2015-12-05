@@ -18,7 +18,7 @@
 #ifndef __C_MY3D_HELPER_H_INCLUDED__
 #define __C_MY3D_HELPER_H_INCLUDED__
 
-#include <irrTypes.h>
+#include "irrTypes.h"
 
 namespace irr
 {

@@ -1208,9 +1208,9 @@ REALINLINE void CBurningVideoDriver::VertexCache_get(const s4DVertex ** face)
 
 		// get the next unique vertices cache line
 		u32 fillIndex = 0;
-		u32 dIndex;
-		u32 i;
-		u32 sourceIndex;
+		u32 dIndex = 0;
+		u32 i = 0;
+		u32 sourceIndex = 0;
 
 		while ( VertexCache.indicesIndex < VertexCache.indexCount &&
 				fillIndex < VERTEXCACHE_ELEMENT

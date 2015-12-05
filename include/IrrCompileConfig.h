@@ -178,6 +178,9 @@ define out. */
 #if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_X11_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_GLX_MANAGER_)
 #define _IRR_COMPILE_WITH_GLX_MANAGER_
 #endif
+#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_OSX_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_NSOGL_MANAGER_)
+#define _IRR_COMPILE_WITH_NSOGL_MANAGER_
+#endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
 /** If you do not need the software driver, or want to use Burning's Video instead,

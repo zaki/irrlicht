@@ -163,7 +163,7 @@ int main()
 	if (driverType == video::EDT_DIRECT3D9 ||
 		 driverType == video::EDT_OPENGL)
 	{
-		char i;
+		char i = 'y';
 		printf("Please press 'y' if you want to use high level shaders.\n");
 		std::cin >> i;
 		if (i == 'y')
