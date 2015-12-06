@@ -25,15 +25,8 @@
 #include "EProfileIDs.h"
 #include "IProfiler.h"
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#else
-#include <EGL/egl.h>
-#include <GLES2/gl2.h>
 #ifdef _IRR_COMPILE_WITH_ANDROID_DEVICE_
 #include "android_native_app_glue.h"
-#endif
 #endif
 
 namespace irr
@@ -41,14 +34,13 @@ namespace irr
 namespace video
 {
 
-COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params,
-			io::IFileSystem* io
+COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
             , IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
             , CIrrDeviceIPhone* device
 #endif
-            ) : CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
+		) : CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
 	CacheHandler(0), MaterialRenderer2D(0), CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias), OGLES2ShaderPath(params.OGLES2ShaderPath),
 	CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8), Params(params)
@@ -141,8 +133,7 @@ COGLES2Driver::~COGLES2Driver()
 	deleteMaterialRenders();
 
 	CacheHandler->getTextureCache().clear();
-	// I get a blue screen on my laptop, when I do not delete the
-	// textures manually before releasing the dc. Oh how I love this.
+
 	removeAllRenderTargets();
 	deleteAllTextures();
 	removeAllOcclusionQueries();
@@ -216,13 +207,13 @@ COGLES2Driver::~COGLES2Driver()
 
 		UserClipPlane.reallocate(0);
 
+		for (s32 i = 0; i < ETS_COUNT; ++i)
+			setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
+
 		setAmbientLight(SColorf(0.0f, 0.0f, 0.0f, 0.0f));
 		glClearDepthf(1.0f);
 
-		//TODO : OpenGL ES 2.0 Port : GL_PERSPECTIVE_CORRECTION_HINT
-		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-		glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
-		glDepthFunc(GL_LEQUAL);
+		glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 		glFrontFace(GL_CW);
 
 		// create material renderers
@@ -2044,17 +2035,17 @@ COGLES2Driver::~COGLES2Driver()
 	{
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_SET_RENDERSTATE_2D);)
 
-		if (CurrentRenderMode != ERM_2D)
-		{
-			// unset last 3d material
-			if (CurrentRenderMode == ERM_3D)
+			if (CurrentRenderMode != ERM_2D)
 			{
-				if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
-					MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-			}
+				// unset last 3d material
+				if (CurrentRenderMode == ERM_3D)
+				{
+					if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
+						MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
+				}
 
-			CurrentRenderMode = ERM_2D;
-		}
+				CurrentRenderMode = ERM_2D;
+			}
 
 		MaterialRenderer2D->OnSetMaterial(Material, LastMaterial, true, 0);
 		LastMaterial = Material;
@@ -2069,6 +2060,17 @@ COGLES2Driver::~COGLES2Driver()
 		}
 		else
 			CacheHandler->setBlend(false);
+
+		Material.setTexture(0, const_cast<COGLES2Texture*>(CacheHandler->getTextureCache().get(0)));
+		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
+
+		if (texture)
+		{
+			if (OverrideMaterial2DEnabled)
+				setTextureRenderStates(OverrideMaterial2D, false);
+			else
+				setTextureRenderStates(InitMaterial2D, false);
+		}
 
 		MaterialRenderer2D->OnRender(this, video::EVT_STANDARD);
 	}
@@ -2665,32 +2667,30 @@ COGLES2Driver::~COGLES2Driver()
 
 	GLenum COGLES2Driver::getGLBlend(E_BLEND_FACTOR factor) const
 	{
-		GLenum r = 0;
-		switch (factor)
+		static GLenum const blendTable[] =
 		{
-			case EBF_ZERO:			r = GL_ZERO; break;
-			case EBF_ONE:			r = GL_ONE; break;
-			case EBF_DST_COLOR:		r = GL_DST_COLOR; break;
-			case EBF_ONE_MINUS_DST_COLOR:	r = GL_ONE_MINUS_DST_COLOR; break;
-			case EBF_SRC_COLOR:		r = GL_SRC_COLOR; break;
-			case EBF_ONE_MINUS_SRC_COLOR:	r = GL_ONE_MINUS_SRC_COLOR; break;
-			case EBF_SRC_ALPHA:		r = GL_SRC_ALPHA; break;
-			case EBF_ONE_MINUS_SRC_ALPHA:	r = GL_ONE_MINUS_SRC_ALPHA; break;
-			case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
-			case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
-			case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
-		}
-		return r;
+			GL_ZERO,
+			GL_ONE,
+			GL_DST_COLOR,
+			GL_ONE_MINUS_DST_COLOR,
+			GL_SRC_COLOR,
+			GL_ONE_MINUS_SRC_COLOR,
+			GL_SRC_ALPHA,
+			GL_ONE_MINUS_SRC_ALPHA,
+			GL_DST_ALPHA,
+			GL_ONE_MINUS_DST_ALPHA,
+			GL_SRC_ALPHA_SATURATE
+		};
+
+		return blendTable[factor];
 	}
 
 	GLenum COGLES2Driver::getZBufferBits() const
 	{
 		GLenum bits = 0;
+
 		switch (Params.ZBufferBits)
 		{
-		case 16:
-			bits = GL_DEPTH_COMPONENT16;
-			break;
 		case 24:
 #if defined(GL_OES_depth24)
 			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth24))
@@ -2708,9 +2708,10 @@ COGLES2Driver::~COGLES2Driver()
 				bits = GL_DEPTH_COMPONENT16;
 			break;
 		default:
-			bits = GL_DEPTH_COMPONENT;
+			bits = GL_DEPTH_COMPONENT16;
 			break;
 		}
+
 		return bits;
 	}
 

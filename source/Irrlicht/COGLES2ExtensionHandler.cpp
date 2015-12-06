@@ -162,23 +162,28 @@ namespace video
 			MaxTextureSize(1), MaxTextureLODBias(0.f),
 			StencilBuffer(false)
 	{
-		for (u32 i=0; i<IRR_OGLES2_Feature_Count; ++i)
+		for (u32 i = 0; i < IRR_OGLES2_Feature_Count; ++i)
 			FeatureAvailable[i] = false;
+
+		DimAliasedLine[0] = 1.f;
+		DimAliasedLine[1] = 1.f;
+		DimAliasedPoint[0] = 1.f;
+		DimAliasedPoint[1] = 1.f;
 	}
 
 
 	void COGLES2ExtensionHandler::dump() const
 	{
-		for (u32 i=0; i<IRR_OGLES2_Feature_Count; ++i)
+		for (u32 i = 0; i < IRR_OGLES2_Feature_Count; ++i)
 			os::Printer::log(OGLES2FeatureStrings[i], FeatureAvailable[i] ? " true" : " false");
 	}
 
 
 	void COGLES2ExtensionHandler::initExtensions()
 	{
-		const core::stringc stringVer(glGetString(GL_VERSION));
-		const f32 ogl_ver = core::fast_atof(stringVer.c_str() + 10);
-		Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver) * 10.0f));
+		const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
+		Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver)*10.0f));
+
 		core::stringc extensions = glGetString(GL_EXTENSIONS);
 		os::Printer::log(extensions.c_str());
 
@@ -253,4 +258,3 @@ namespace video
 
 
 #endif // _IRR_COMPILE_WITH_OGLES2_
-

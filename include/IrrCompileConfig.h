@@ -197,7 +197,7 @@ define out. */
 //! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
 /** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment
  this define out. */
-// #define _IRR_COMPILE_WITH_OGLES1_
+#define _IRR_COMPILE_WITH_OGLES1_
 #ifdef NO_IRR_COMPILE_WITH_OGLES1_
 #undef _IRR_COMPILE_WITH_OGLES1_
 #endif

@@ -3,21 +3,28 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#include "IrrCompileConfig.h"
+#include "COGLESExtensionHandler.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
-#include "COGLESExtensionHandler.h"
-#include "COGLESDriver.h"
-#include "fast_atof.h"
 #include "irrString.h"
+#include "SMaterial.h"
+#include "fast_atof.h"
+
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
+#if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+#include <EGL/egl.h>
+#else
+#include <GLES/egl.h>
+#endif
+#endif
 
 namespace irr
 {
-namespace video
-{
+	namespace video
+	{
 
-	static const char* const OGLESFeatureStrings[] =
+	static const char* const OGLES1FeatureStrings[COGLES1ExtensionHandler::IRR_OGLES1_Feature_Count] =
 	{
 		"GL_AMD_compressed_3DC_texture",
 		"GL_AMD_compressed_ATC_texture",
@@ -123,161 +130,134 @@ namespace video
 		"GL_VIV_shader_binary"
 	};
 
-
-COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
-	Version(0), MaxTextureUnits(0), MaxLights(0),
-	MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
-	MaxMultipleRenderTargets(1), MaxIndices(65535), MaxTextureSize(1),
-	MaxTextureLODBias(0.f), CommonProfile(false),
-	MultiTextureExtension(false), MultiSamplingExtension(false),
-	StencilBuffer(false)
+	COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
+		Version(0), MaxUserClipPlanes(0), MaxLights(0), MaxAnisotropy(1), MaxIndices(0xffff),
+		MaxTextureSize(1), MaxTextureLODBias(0.f), StencilBuffer(false)
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-	,pGlDrawTexiOES(0), pGlDrawTexfOES(0),
-	pGlDrawTexivOES(0), pGlDrawTexfvOES(0),
-	pGlBlendEquationOES(0), pGlBlendFuncSeparateOES(0),
-	pGlBindRenderbufferOES(0), pGlDeleteRenderbuffersOES(0),
-	pGlGenRenderbuffersOES(0), pGlRenderbufferStorageOES(0),
-	pGlBindFramebufferOES(0), pGlDeleteFramebuffersOES(0),
-	pGlGenFramebuffersOES(0), pGlCheckFramebufferStatusOES(0),
-	pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
-	pGlGenerateMipMapOES(0)
+		, pGlBlendEquationOES(0), pGlBlendFuncSeparateOES(0),
+		pGlBindFramebufferOES(0), pGlDeleteFramebuffersOES(0),
+		pGlGenFramebuffersOES(0), pGlCheckFramebufferStatusOES(0),
+		pGlFramebufferTexture2DOES(0), pGlGenerateMipmapOES(0)
 #endif
+	{
+		for (u32 i = 0; i < IRR_OGLES1_Feature_Count; ++i)
+			FeatureAvailable[i] = false;
 
-{
-	for (u32 i=0; i<IRR_OGLES_Feature_Count; ++i)
-		FeatureAvailable[i]=false;
-	DimAliasedLine[0]=1.f;
-	DimAliasedLine[1]=1.f;
-	DimAliasedPoint[0]=1.f;
-	DimAliasedPoint[1]=1.f;
-	DimSmoothedLine[0]=1.f;
-	DimSmoothedLine[1]=1.f;
-	DimSmoothedPoint[0]=1.f;
-	DimSmoothedPoint[1]=1.f;
-}
+		DimAliasedLine[0] = 1.f;
+		DimAliasedLine[1] = 1.f;
+		DimAliasedPoint[0] = 1.f;
+		DimAliasedPoint[1] = 1.f;
+	}
 
 
-void COGLES1ExtensionHandler::dump() const
-{
-	for (u32 i=0; i<IRR_OGLES_Feature_Count; ++i)
-		os::Printer::log(OGLESFeatureStrings[i], FeatureAvailable[i]?" true":" false");
-}
+	void COGLES1ExtensionHandler::dump() const
+	{
+		for (u32 i = 0; i < IRR_OGLES1_Feature_Count; ++i)
+			os::Printer::log(OGLES1FeatureStrings[i], FeatureAvailable[i] ? " true" : " false");
+	}
 
 
-void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver, bool withStencil)
-{
-	const core::stringc stringVer(glGetString(GL_VERSION));
-	CommonProfile = (stringVer[11]=='M');
-	const f32 ogl_ver = core::fast_atof(stringVer.c_str()+13);
-	Version = static_cast<u16>(core::floor32(ogl_ver)*100+core::round32(core::fract(ogl_ver)*10.0f));
-	core::stringc extensions = glGetString(GL_EXTENSIONS);
-	os::Printer::log(extensions.c_str());
+	void COGLES1ExtensionHandler::initExtensions()
+	{
+		const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
+		Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver)*10.0f));
+		if (Version >= 100)
+			os::Printer::log("OpenGL ES driver version is 1.1.", ELL_INFORMATION);
+		else
+			os::Printer::log("OpenGL ES driver version is 1.0.", ELL_WARNING);
 
-	// typo in the simulator (note the postfixed s)
-	if (extensions.find("GL_IMG_user_clip_planes"))
+		core::stringc extensions = glGetString(GL_EXTENSIONS);
+		os::Printer::log(extensions.c_str());
+
+		// typo in the simulator (note the postfixed s)
+		if (extensions.find("GL_IMG_user_clip_planes"))
 			FeatureAvailable[IRR_IMG_user_clip_plane] = true;
 
-	{
-		const u32 size = extensions.size()+1;
-		c8* str = new c8[size];
-		strncpy(str, extensions.c_str(), extensions.size());
-		str[extensions.size()]=' ';
-		c8* p = str;
-
-		for (u32 i=0; i<size; ++i)
 		{
-			if (str[i] == ' ')
-			{
-				str[i] = 0;
-				if (*p)
-				for (u32 j=0; j<IRR_OGLES_Feature_Count; ++j)
-				{
-					if (!strcmp(OGLESFeatureStrings[j], p))
-					{
-						FeatureAvailable[j] = true;
-						break;
-					}
-				}
+			const u32 size = extensions.size() + 1;
+			c8* str = new c8[size];
+			strncpy(str, extensions.c_str(), extensions.size());
+			str[extensions.size()] = ' ';
+			c8* p = str;
 
-				p = p + strlen(p) + 1;
+			for (u32 i = 0; i<size; ++i)
+			{
+				if (str[i] == ' ')
+				{
+					str[i] = 0;
+					if (*p)
+						for (u32 j = 0; j<IRR_OGLES1_Feature_Count; ++j)
+						{
+							if (!strcmp(OGLES1FeatureStrings[j], p))
+							{
+								FeatureAvailable[j] = true;
+								break;
+							}
+						}
+
+					p = p + strlen(p) + 1;
+				}
 			}
+
+			delete[] str;
 		}
 
-		delete [] str;
-	}
+		GLint val = 0;
 
-	GLint val=0;
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &val);
-	MaxSupportedTextures = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
-	MultiTextureExtension = true;
-	glGetIntegerv(GL_MAX_LIGHTS, &val);
-	MaxLights = static_cast<u8>(val);
+		if (Version > 100 || FeatureAvailable[IRR_IMG_user_clip_plane])
+		{
+			glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
+			MaxUserClipPlanes = static_cast<u8>(val);
+		}
+
+		glGetIntegerv(GL_MAX_LIGHTS, &val);
+		MaxLights = static_cast<u8>(val);
+
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &val);
+		Feature.TextureUnit = static_cast<u8>(val);
+
 #ifdef GL_EXT_texture_filter_anisotropic
-	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
-	{
-		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
-		MaxAnisotropy = static_cast<u8>(val);
-	}
+		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
+		{
+			glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
+			MaxAnisotropy = static_cast<u8>(val);
+		}
 #endif
 #ifdef GL_MAX_ELEMENTS_INDICES
-	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &val);
-	MaxIndices=val;
+		glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &val);
+		MaxIndices = val;
 #endif
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
-	MaxTextureSize=static_cast<u32>(val);
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
+		MaxTextureSize = static_cast<u32>(val);
 #ifdef GL_EXT_texture_lod_bias
-	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
-		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
+		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+			glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
 #endif
-	if ((Version>100) || FeatureAvailable[IRR_IMG_user_clip_plane])
-	{
-		glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
-		MaxUserClipPlanes = static_cast<u8>(val);
-	}
-	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
-	glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
-	glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, DimSmoothedLine);
-	glGetFloatv(GL_SMOOTH_POINT_SIZE_RANGE, DimSmoothedPoint);
+		glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
+		glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
 
-	MaxTextureUnits = core::min_(MaxSupportedTextures, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+		Feature.TextureUnit = core::min_(Feature.TextureUnit, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+		Feature.ColorAttachment = 1;
 
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-	if (FeatureAvailable[IRR_OES_draw_texture])
-	{
-		pGlDrawTexiOES = (PFNGLDRAWTEXIOES) eglGetProcAddress("glDrawTexiOES");
-		pGlDrawTexfOES = (PFNGLDRAWTEXFOES) eglGetProcAddress("glDrawTexfOES");
-		pGlDrawTexivOES = (PFNGLDRAWTEXIVOES) eglGetProcAddress("glDrawTexivOES");
-		pGlDrawTexfvOES = (PFNGLDRAWTEXFVOES) eglGetProcAddress("glDrawTexfvOES");
-	}
-	if (FeatureAvailable[IRR_OES_blend_subtract])
-	{
-		pGlBlendEquationOES = (PFNGLBLENDEQUATIONOESPROC) eglGetProcAddress("glBlendEquationOES");
-	}
-	if (FeatureAvailable[IRR_OES_blend_func_separate])
-	{
-		pGlBlendFuncSeparateOES = (PFNGLBLENDFUNCSEPARATEOESPROC) eglGetProcAddress("glBlendFuncSeparateOES");
-	}
-	if (FeatureAvailable[IRR_OES_framebuffer_object])
-	{
-		pGlBindRenderbufferOES = (PFNGLBINDRENDERBUFFEROES) eglGetProcAddress("glBindRenderbufferOES");
-		pGlDeleteRenderbuffersOES = (PFNGLDELETERENDERBUFFERSOES) eglGetProcAddress("glDeletedRenderbuffersOES");
-		pGlGenRenderbuffersOES = (PFNGLGENRENDERBUFFERSOES) eglGetProcAddress("glGenRenderbuffersOES");
-		pGlRenderbufferStorageOES = (PFNGLRENDERBUFFERSTORAGEOES) eglGetProcAddress("glRenderbufferStorageOES");
-		pGlBindFramebufferOES = (PFNGLBINDFRAMEBUFFEROES) eglGetProcAddress("glBindFramebufferOES");
-		pGlDeleteFramebuffersOES = (PFNGLDELETEFRAMEBUFFERSOES) eglGetProcAddress("glDeleteFramebuffersOES");
-		pGlGenFramebuffersOES = (PFNGLGENFRAMEBUFFERSOES) eglGetProcAddress("glGenFramebuffersOES");
-		pGlCheckFramebufferStatusOES = (PFNGLCHECKFRAMEBUFFERSTATUSOES) eglGetProcAddress("glCheckFramebufferStatusOES");
-		pGlFramebufferRenderbufferOES = (PFNGLFRAMEBUFFERRENDERBUFFEROES) eglGetProcAddress("glFramebufferRenderbufferOES");
-		pGlFramebufferTexture2DOES = (PFNGLFRAMEBUFFERTEXTURE2DOES) eglGetProcAddress("glFramebufferTexture2DOES");
-		pGlGenerateMipMapOES = (PFNGLGENERATEMIPMAPOES) eglGetProcAddress("glGenerateMipMapOES");
-	}
+		pGlBlendEquationOES = (PFNGLBLENDEQUATIONOESPROC)eglGetProcAddress("glBlendEquationOES");
+		pGlBlendFuncSeparateOES = (PFNGLBLENDFUNCSEPARATEOESPROC)eglGetProcAddress("glBlendFuncSeparateOES");
+		pGlBindFramebufferOES = (PFNGLBINDFRAMEBUFFEROESPROC)eglGetProcAddress("glBindFramebufferOES");
+		pGlDeleteFramebuffersOES = (PFNGLDELETEFRAMEBUFFERSOESPROC)eglGetProcAddress("glDeleteFramebuffersOES");
+		pGlGenFramebuffersOES = (PFNGLGENFRAMEBUFFERSOESPROC)eglGetProcAddress("glGenFramebuffersOES");
+		pGlCheckFramebufferStatusOES = (PFNGLCHECKFRAMEBUFFERSTATUSOESPROC)eglGetProcAddress("glCheckFramebufferStatusOES");
+		pGlFramebufferTexture2DOES = (PFNGLFRAMEBUFFERTEXTURE2DOESPROC)eglGetProcAddress("glFramebufferTexture2DOES");
+		pGlGenerateMipmapOES = (PFNGLGENERATEMIPMAPOESPROC)eglGetProcAddress("glGenerateMipmapOES");
 #endif
-#endif
-}
+	}
+
+	const COGLCoreFeature& COGLES1ExtensionHandler::getFeature() const
+	{
+		return Feature;
+	}
 
 } // end namespace video
 } // end namespace irr
 
 
-#endif // _IRR_COMPILE_WITH_OGLES1_
+#endif // _IRR_COMPILE_WITH_OGLES2_

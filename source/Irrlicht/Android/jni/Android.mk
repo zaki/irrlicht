@@ -37,6 +37,7 @@ LOCAL_SRC_FILES := \
 					CAnimatedMeshSceneNode.cpp \
 					CAttributes.cpp \
 					CB3DMeshFileLoader.cpp \
+					CB3DMeshWriter.cpp \
 					CBillboardSceneNode.cpp \
 					CBoneSceneNode.cpp \
 					CBSPMeshFileLoader.cpp \
@@ -47,11 +48,6 @@ LOCAL_SRC_FILES := \
 					CColorConverter.cpp \
 					CCSMLoader.cpp \
 					CCubeSceneNode.cpp \
-					CD3D8Driver.cpp \
-					CD3D8NormalMapRenderer.cpp \
-					CD3D8ParallaxMapRenderer.cpp \
-					CD3D8ShaderMaterialRenderer.cpp \
-					CD3D8Texture.cpp \
 					CD3D9Driver.cpp \
 					CD3D9HLSLMaterialRenderer.cpp \
 					CD3D9NormalMapRenderer.cpp \
@@ -123,7 +119,6 @@ LOCAL_SRC_FILES := \
 					CIrrDeviceSDL.cpp \
 					CIrrDeviceStub.cpp \
 					CIrrDeviceWin32.cpp \
-					CIrrDeviceWinCE.cpp \
 					CIrrMeshFileLoader.cpp \
 					CIrrMeshWriter.cpp \
 					CLightSceneNode.cpp \

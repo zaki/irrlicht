@@ -520,7 +520,7 @@ void CIrrDeviceAndroid::createDriver()
 	case video::EDT_SOFTWARE:
 	case video::EDT_BURNINGSVIDEO:
 	case video::EDT_OPENGL:
-	case video::EDT_DIRECT3D8:
+	case video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
 	case video::EDT_DIRECT3D9:
 		os::Printer::log("This driver is not available in Android. Try OpenGL ES 1.0 or ES 2.0.", ELL_ERROR);
 		break;

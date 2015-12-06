@@ -170,6 +170,8 @@ namespace video
 
 		COGLES2ExtensionHandler();
 
+		void dump() const;
+
 		void initExtensions();
 
 		const COGLCoreFeature& getFeature() const;
@@ -233,8 +235,6 @@ namespace video
 			return FeatureAvailable[feature];
 		}
 
-		void dump() const;
-
 		inline void irrGlActiveTexture(GLenum texture)
 		{
 			glActiveTexture(texture);
@@ -280,31 +280,6 @@ namespace video
 		inline void irrGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 		{
 			glFramebufferTexture2D(target, attachment, textarget, texture, level);
-		}
-
-		inline void irrGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
-		{
-			glBindRenderbuffer(target, renderbuffer);
-		}
-
-		inline void irrGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
-		{
-			glDeleteRenderbuffers(n, renderbuffers);
-		}
-
-		inline void irrGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
-		{
-			glGenRenderbuffers(n, renderbuffers);
-		}
-
-		inline void irrGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
-		{
-			glRenderbufferStorage(target, internalformat, width, height);
-		}
-
-		inline void irrGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
-		{
-			glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
 		}
 
 		inline void irrGlGenerateMipmap(GLenum target)
@@ -370,9 +345,7 @@ namespace video
 		u32 MaxIndices;
 		u32 MaxTextureSize;
 		f32 MaxTextureLODBias;
-		//! Minimal and maximal supported thickness for lines without smoothing
 		GLfloat DimAliasedLine[2];
-		//! Minimal and maximal supported thickness for points without smoothing
 		GLfloat DimAliasedPoint[2];
 		bool StencilBuffer;
 		bool FeatureAvailable[IRR_OGLES2_Feature_Count];

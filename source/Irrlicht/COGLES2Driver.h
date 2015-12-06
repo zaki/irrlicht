@@ -50,8 +50,7 @@ namespace video
 
 	public:
 		//! constructor
-		COGLES2Driver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io
+		COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
 		, IContextManager* contextManager
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)

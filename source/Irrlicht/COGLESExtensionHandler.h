@@ -10,38 +10,23 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-#include "CEGLManager.h"
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include "iOS/CIrrDeviceiOS.h"
-#endif
-
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include <OpenGLES/ES1/gl.h>
-#include <OpenGLES/ES1/glext.h>
-#elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-#include <GLES/gl.h>
-#include <GLES/glext.h>
-#else
-#include <GLES/gl.h>
-typedef char GLchar;
-#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-#include "gles-ext.h"
-#endif
-#endif
-
-#include "os.h"
 #include "EDriverFeatures.h"
+#include "irrTypes.h"
+#include "os.h"
+
+#include "COGLESCommon.h"
+
+#include "COGLCoreFeature.h"
 
 namespace irr
 {
 namespace video
 {
-	class COGLES1Driver;
+
 	class COGLES1ExtensionHandler
 	{
 	public:
-		enum EOGLESFeatures
+		enum EOGLES1Features
 		{
 			IRR_AMD_compressed_3DC_texture = 0, //39
 			IRR_AMD_compressed_ATC_texture, //40
@@ -146,151 +131,115 @@ namespace video
 			IRR_SUN_multi_draw_arrays, // 70
 			IRR_VIV_shader_binary, // 86
 
-			IRR_OGLES_Feature_Count
+			IRR_OGLES1_Feature_Count
 		};
 
-		//! queries the features of the driver, returns true if feature is available
-		bool queryOpenGLFeature(EOGLESFeatures feature) const
-		{
-			return FeatureAvailable[feature];
-		}
-
-		u16 Version;
-		u8 MaxTextureUnits;
-		u8 MaxSupportedTextures;
-		u8 MaxLights;
-		u8 MaxAnisotropy;
-		u8 MaxUserClipPlanes;
-		u8 MaxAuxBuffers;
-		u8 MaxMultipleRenderTargets;
-		u32 MaxIndices;
-		u32 MaxTextureSize;
-		f32 MaxTextureLODBias;
-		//! Minimal and maximal supported thickness for lines without smoothing
-		GLfloat DimAliasedLine[2];
-		//! Minimal and maximal supported thickness for points without smoothing
-		GLfloat DimAliasedPoint[2];
-		//! Minimal and maximal supported thickness for lines with smoothing
-		GLfloat DimSmoothedLine[2];
-		//! Minimal and maximal supported thickness for points with smoothing
-		GLfloat DimSmoothedPoint[2];
-		bool CommonProfile;
-		bool MultiTextureExtension;
-		bool MultiSamplingExtension;
-		bool StencilBuffer;
-
-	protected:
-		bool FeatureAvailable[IRR_OGLES_Feature_Count];
-
 		COGLES1ExtensionHandler();
+
+		void dump() const;
+
+		void initExtensions();
+
+		const COGLCoreFeature& getFeature() const;
 
 		bool queryFeature(video::E_VIDEO_DRIVER_FEATURE feature) const
 		{
 			switch (feature)
 			{
-				case EVDF_RENDER_TO_TARGET:
-				case EVDF_HARDWARE_TL:
-					return true;
-				case EVDF_MULTITEXTURE:
-					return MultiTextureExtension;
-				case EVDF_BILINEAR_FILTER:
-				case EVDF_MIP_MAP:
-					return true;
-				case EVDF_MIP_MAP_AUTO_UPDATE:
-					return Version>100; // Supported in version 1.1
-				case EVDF_STENCIL_BUFFER:
-					return StencilBuffer;
-				case EVDF_BLEND_OPERATIONS:
-					return FeatureAvailable[IRR_OES_blend_subtract];
-				case EVDF_BLEND_SEPARATE:
-					return FeatureAvailable[IRR_OES_blend_func_separate];
-				case EVDF_FRAMEBUFFER_OBJECT:
-					return FeatureAvailable[IRR_OES_framebuffer_object];
-				case EVDF_TEXTURE_NSQUARE:
-					return true; // non-square is always supported
-				case EVDF_TEXTURE_NPOT:
-					return FeatureAvailable[IRR_APPLE_texture_2D_limited_npot];
-                case EVDF_TEXTURE_COMPRESSED_DXT:
-                    return false; // NV Tegra need improvements here
-                case EVDF_TEXTURE_COMPRESSED_PVRTC:
-                    return FeatureAvailable[IRR_IMG_texture_compression_pvrtc];
-                case EVDF_TEXTURE_COMPRESSED_PVRTC2:
-                    return false;
-                case EVDF_TEXTURE_COMPRESSED_ETC1:
-                    return FeatureAvailable[IRR_OES_compressed_ETC1_RGB8_texture];
-                case EVDF_TEXTURE_COMPRESSED_ETC2:
-                    return false;
-				default:
-					return false;
-			}
+			case EVDF_RENDER_TO_TARGET:
+			case EVDF_HARDWARE_TL:
+			case EVDF_MULTITEXTURE:
+			case EVDF_BILINEAR_FILTER:
+			case EVDF_MIP_MAP:
+			case EVDF_TEXTURE_NSQUARE:
+			case EVDF_STENCIL_BUFFER:
+			case EVDF_ALPHA_TO_COVERAGE:
+			case EVDF_COLOR_MASK:
+			case EVDF_POLYGON_OFFSET:
+			case EVDF_TEXTURE_MATRIX:
+				return true;
+			case EVDF_TEXTURE_NPOT:
+				return FeatureAvailable[IRR_APPLE_texture_2D_limited_npot] || FeatureAvailable[IRR_OES_texture_npot];
+			case EVDF_MIP_MAP_AUTO_UPDATE:
+				return Version>100;
+			case EVDF_BLEND_OPERATIONS:
+				return FeatureAvailable[IRR_OES_blend_subtract];
+			case EVDF_BLEND_SEPARATE:
+				return FeatureAvailable[IRR_OES_blend_func_separate];
+			case EVDF_FRAMEBUFFER_OBJECT:
+				return FeatureAvailable[IRR_OES_framebuffer_object];
+			case EVDF_VERTEX_BUFFER_OBJECT:
+				return Version>100;
+			case EVDF_TEXTURE_COMPRESSED_DXT:
+				return false; // NV Tegra need improvements here
+			case EVDF_TEXTURE_COMPRESSED_PVRTC:
+				return FeatureAvailable[IRR_IMG_texture_compression_pvrtc];
+			case EVDF_TEXTURE_COMPRESSED_ETC1:
+				return FeatureAvailable[IRR_OES_compressed_ETC1_RGB8_texture];
+			case EVDF_TEXTURE_CUBEMAP:
+				return FeatureAvailable[IRR_OES_texture_cube_map];
+			default:
+				return true;
+			};
 		}
 
-		void dump() const;
-
-		void initExtensions(COGLES1Driver* driver, bool withStencil);
-
-	public:
-		void extGlBlendEquation(GLenum mode)
+		bool queryOpenGLFeature(EOGLES1Features feature) const
 		{
-#ifdef _IRR_OGLES1_USE_EXTPOINTER_
-			if (pGlBlendEquationOES)
-				pGlBlendEquationOES(mode);
-#elif defined(GL_OES_blend_subtract)
-			glBlendEquationOES(mode);
-#else
-			os::Printer::log("glBlendEquation not supported", ELL_ERROR);
-#endif
+			return FeatureAvailable[feature];
 		}
 
-		void extGlBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+		inline void irrGlActiveTexture(GLenum texture)
 		{
-#ifdef _IRR_OGLES1_USE_EXTPOINTER_
-			if (pGlBlendFuncSeparateOES)
-				pGlBlendFuncSeparateOES(srcRGB, dstRGB, srcAlpha, dstAlpha);
-#elif defined(GL_OES_blend_func_separate)
-			glBlendFuncSeparateOES(srcRGB, dstRGB, srcAlpha, dstAlpha);
-#else
-			os::Printer::log("glBlendFuncSeparate not supported", ELL_ERROR);
-#endif
+			glActiveTexture(texture);
 		}
 
-		void extGlBindFramebuffer(GLenum target, GLuint framebuffer)
+		inline void irrGlCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border,
+			GLsizei imageSize, const void* data)
+		{
+			glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
+		}
+
+		inline void irrGlCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height,
+			GLenum format, GLsizei imageSize, const void* data)
+		{
+			glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+		}
+
+		inline void irrGlUseProgram(GLuint prog)
+		{
+		}
+
+		inline void irrGlBindFramebuffer(GLenum target, GLuint framebuffer)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlBindFramebufferOES)
 				pGlBindFramebufferOES(target, framebuffer);
 #elif defined(GL_OES_framebuffer_object)
 			glBindFramebufferOES(target, framebuffer);
-#else
-			os::Printer::log("glBindFramebuffer not supported", ELL_ERROR);
 #endif
 		}
 
-		void extGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
+		inline void irrGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlDeleteFramebuffersOES)
 				pGlDeleteFramebuffersOES(n, framebuffers);
 #elif defined(GL_OES_framebuffer_object)
 			glDeleteFramebuffersOES(n, framebuffers);
-#else
-			os::Printer::log("glDeleteFramebuffers not supported", ELL_ERROR);
 #endif
 		}
 
-		void extGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
+		inline void irrGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlGenFramebuffersOES)
 				pGlGenFramebuffersOES(n, framebuffers);
 #elif defined(GL_OES_framebuffer_object)
 			glGenFramebuffersOES(n, framebuffers);
-#else
-			os::Printer::log("glGenFramebuffers not supported", ELL_ERROR);
 #endif
 		}
 
-		GLenum extGlCheckFramebufferStatus(GLenum target)
+		inline GLenum irrGlCheckFramebufferStatus(GLenum target)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlCheckFramebufferStatusOES)
@@ -300,217 +249,121 @@ namespace video
 #elif defined(GL_OES_framebuffer_object)
 			return glCheckFramebufferStatusOES(target);
 #else
-			os::Printer::log("glCheckFramebufferStatus not supported", ELL_ERROR);
 			return 0;
 #endif
 		}
 
-		void extGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+		inline void irrGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlFramebufferTexture2DOES)
 				pGlFramebufferTexture2DOES(target, attachment, textarget, texture, level);
 #elif defined(GL_OES_framebuffer_object)
 			glFramebufferTexture2DOES(target, attachment, textarget, texture, level);
-#else
-			os::Printer::log("glFramebufferTexture2D not supported", ELL_ERROR);
 #endif
 		}
 
-		void extGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
+		inline void irrGlGenerateMipmap(GLenum target)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
-			if (pGlBindRenderbufferOES)
-				pGlBindRenderbufferOES(target, renderbuffer);
+			if (pGlGenerateMipmapOES)
+				pGlGenerateMipmapOES(target);
 #elif defined(GL_OES_framebuffer_object)
-			glBindRenderbufferOES(target, renderbuffer);
-#else
-			os::Printer::log("glBindRenderbuffer not supported", ELL_ERROR);
+			glGenerateMipmap(target);
 #endif
 		}
 
-		void extGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
+		inline void irrGlActiveStencilFace(GLenum face)
+		{
+		}
+
+		inline void irrGlDrawBuffer(GLenum mode)
+		{
+		}
+
+		inline void irrGlDrawBuffers(GLsizei n, const GLenum *bufs)
+		{
+		}
+
+		inline void irrGlBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
-			if (pGlDeleteRenderbuffersOES)
-				pGlDeleteRenderbuffersOES(n, renderbuffers);
-#elif defined(GL_OES_framebuffer_object)
-			glDeleteRenderbuffersOES(n, renderbuffers);
-#else
-			os::Printer::log("glDeleteRenderbuffers not supported", ELL_ERROR);
+			if (pGlBlendFuncSeparateOES)
+				pGlBlendFuncSeparateOES(srcRGB, dstRGB, srcAlpha, dstAlpha);
+#elif defined(GL_OES_blend_func_separate)
+			glBlendFuncSeparateOES(srcRGB, dstRGB, srcAlpha, dstAlpha);
 #endif
 		}
 
-		void extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
+		inline void irrGlBlendEquation(GLenum mode)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
-			if (pGlGenRenderbuffersOES)
-				pGlGenRenderbuffersOES(n, renderbuffers);
-#elif defined(GL_OES_framebuffer_object)
-			glGenRenderbuffersOES(n, renderbuffers);
-#else
-			os::Printer::log("glGenRenderbuffers not supported", ELL_ERROR);
+			if (pGlBlendEquationOES)
+				pGlBlendEquationOES(mode);
+#elif defined(GL_OES_blend_subtract)
+			glBlendEquationOES(mode);
 #endif
 		}
 
-		void extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
+		inline void irrGlEnableIndexed(GLenum target, GLuint index)
 		{
-#ifdef _IRR_OGLES1_USE_EXTPOINTER_
-			if (pGlRenderbufferStorageOES)
-				pGlRenderbufferStorageOES(target, internalformat, width, height);
-#elif defined(GL_OES_framebuffer_object)
-			glRenderbufferStorageOES(target, internalformat, width, height);
-#else
-			os::Printer::log("glRenderbufferStorage not supported", ELL_ERROR);
-#endif
 		}
 
-		void extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+		inline void irrGlDisableIndexed(GLenum target, GLuint index)
 		{
-#ifdef _IRR_OGLES1_USE_EXTPOINTER_
-			if (pGlFramebufferRenderbufferOES)
-				pGlFramebufferRenderbufferOES(target, attachment, renderbuffertarget, renderbuffer);
-#elif defined(GL_OES_framebuffer_object)
-			glFramebufferRenderbufferOES(target, attachment, renderbuffertarget, renderbuffer);
-#else
-			os::Printer::log("glFramebufferRenderbuffer not supported", ELL_ERROR);
-#endif
 		}
 
-		void extGlDrawTex(GLfloat X, GLfloat Y, GLfloat Z, GLfloat W, GLfloat H)
+		inline void irrGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
 		{
+		}
+
+		inline void irrGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
+		{
+		}
+
+		inline void irrGlBlendFuncSeparateIndexed(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+		{
+		}
+
+		inline void irrGlBlendEquationIndexed(GLuint buf, GLenum mode)
+		{
+		}
+
+		inline void irrGlBlendEquationSeparateIndexed(GLuint buf, GLenum modeRGB, GLenum modeAlpha)
+		{
+		}
+
+	protected:
+		COGLCoreFeature Feature;
+
+		u16 Version;
+		u8 MaxUserClipPlanes;
+		u8 MaxLights;
+		u8 MaxAnisotropy;
+		u32 MaxIndices;
+		u32 MaxTextureSize;
+		f32 MaxTextureLODBias;
+		//! Minimal and maximal supported thickness for lines without smoothing
+		GLfloat DimAliasedLine[2];
+		//! Minimal and maximal supported thickness for points without smoothing
+		GLfloat DimAliasedPoint[2];
+		bool StencilBuffer;
+		bool FeatureAvailable[IRR_OGLES1_Feature_Count];
+
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-			if (pGlDrawTexfOES)
-				pGlDrawTexfOES(X, Y, Z, W, H);
-#elif defined(GL_OES_draw_texture)
-			glDrawTexfOES(X, Y, Z, W, H);
-#else
-			os::Printer::log("glDrawTexture not supported", ELL_ERROR);
-#endif
-		}
-
-		void extGlDrawTex(GLint X, GLint Y, GLint Z, GLint W, GLint H)
-		{
-#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-			if (pGlDrawTexiOES)
-				pGlDrawTexiOES(X, Y, Z, W, H);
-#elif defined(GL_OES_draw_texture)
-			glDrawTexiOES(X, Y, Z, W, H);
-#else
-			os::Printer::log("glDrawTexture not supported", ELL_ERROR);
-#endif
-		}
-
-		void extGlDrawTex(GLfloat* coords)
-		{
-#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-			if (pGlDrawTexfvOES)
-				pGlDrawTexfvOES(coords);
-#elif defined(GL_OES_draw_texture)
-			glDrawTexfvOES(coords);
-#else
-			os::Printer::log("glDrawTexture not supported", ELL_ERROR);
-#endif
-		}
-
-		void extGlDrawTex(GLint* coords)
-		{
-#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-			if (pGlDrawTexivOES)
-				pGlDrawTexivOES(coords);
-#elif defined(GL_OES_draw_texture)
-			glDrawTexivOES(coords);
-#else
-			os::Printer::log("glDrawTexture not supported", ELL_ERROR);
-#endif
-		}
-
-		// we need to implement some methods which have been extensions in the original OpenGL driver
-		void extGlActiveTexture(GLenum texture)
-		{
-			glActiveTexture(texture);
-		}
-		void extGlClientActiveTexture(GLenum texture)
-		{
-			glClientActiveTexture(texture);
-		}
-		void extGlGenBuffers(GLsizei n, GLuint *buffers)
-		{
-			glGenBuffers(n, buffers);
-		}
-		void extGlBindBuffer(GLenum target, GLuint buffer)
-		{
-			glBindBuffer(target, buffer);
-		}
-		void extGlBufferData(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage)
-		{
-			glBufferData(target, size, data, usage);
-		}
-		void extGlBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data)
-		{
-			glBufferSubData(target, offset, size, data);
-		}
-		void extGlDeleteBuffers(GLsizei n, const GLuint *buffers)
-		{
-			glDeleteBuffers(n, buffers);
-		}
-		void extGlPointParameterf(GLint loc, GLfloat f)
-		{
-			glPointParameterf(loc, f);
-		}
-		void extGlPointParameterfv(GLint loc, const GLfloat *v)
-		{
-			glPointParameterfv(loc, v);
-		}
-
-//	private:
-#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
-		typedef void (GL_APIENTRYP PFNGLDRAWTEXIOES) (GLint x, GLint y, GLint z, GLint width, GLint height);
-		typedef void (GL_APIENTRYP PFNGLDRAWTEXIVOES) (const GLint* coords);
-		typedef void (GL_APIENTRYP PFNGLDRAWTEXFOES) (GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height);
-		typedef void (GL_APIENTRYP PFNGLDRAWTEXFVOES) (const GLfloat* coords);
-		typedef void (GL_APIENTRYP PFNGLBLENDEQUATIONOESPROC) (GLenum mode);
-		typedef void (GL_APIENTRYP PFNGLBLENDFUNCSEPARATEOESPROC) (GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
-		typedef GLboolean (GL_APIENTRYP PFNGLISRENDERBUFFEROES) (GLuint renderbuffer);
-		typedef void (GL_APIENTRYP PFNGLBINDRENDERBUFFEROES) (GLenum target, GLuint renderbuffer);
-		typedef void (GL_APIENTRYP PFNGLDELETERENDERBUFFERSOES) (GLsizei n, const GLuint* renderbuffers);
-		typedef void (GL_APIENTRYP PFNGLGENRENDERBUFFERSOES) (GLsizei n, GLuint* renderbuffers);
-		typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEOES) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-		typedef void (GL_APIENTRYP PFNGLGETRENDERBUFFERPARAMETERIVOES) (GLenum target, GLenum pname, GLint* params);
-		typedef GLboolean (GL_APIENTRYP PFNGLISFRAMEBUFFEROES) (GLuint framebuffer);
-		typedef void (GL_APIENTRYP PFNGLBINDFRAMEBUFFEROES) (GLenum target, GLuint framebuffer);
-		typedef void (GL_APIENTRYP PFNGLDELETEFRAMEBUFFERSOES) (GLsizei n, const GLuint* framebuffers);
-		typedef void (GL_APIENTRYP PFNGLGENFRAMEBUFFERSOES) (GLsizei n, GLuint* framebuffers);
-		typedef GLenum (GL_APIENTRYP PFNGLCHECKFRAMEBUFFERSTATUSOES) (GLenum target);
-		typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERRENDERBUFFEROES) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-		typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DOES) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-		typedef void (GL_APIENTRYP PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVOES) (GLenum target, GLenum attachment, GLenum pname, GLint* params);
-		typedef void (GL_APIENTRYP PFNGLGENERATEMIPMAPOES) (GLenum target);
-
-		PFNGLDRAWTEXIOES pGlDrawTexiOES;
-		PFNGLDRAWTEXFOES pGlDrawTexfOES;
-		PFNGLDRAWTEXIVOES pGlDrawTexivOES;
-		PFNGLDRAWTEXFVOES pGlDrawTexfvOES;
 		PFNGLBLENDEQUATIONOESPROC pGlBlendEquationOES;
 		PFNGLBLENDFUNCSEPARATEOESPROC pGlBlendFuncSeparateOES;
-		PFNGLBINDRENDERBUFFEROES pGlBindRenderbufferOES;
-		PFNGLDELETERENDERBUFFERSOES pGlDeleteRenderbuffersOES;
-		PFNGLGENRENDERBUFFERSOES pGlGenRenderbuffersOES;
-		PFNGLRENDERBUFFERSTORAGEOES pGlRenderbufferStorageOES;
-		PFNGLBINDFRAMEBUFFEROES pGlBindFramebufferOES;
-		PFNGLDELETEFRAMEBUFFERSOES pGlDeleteFramebuffersOES;
-		PFNGLGENFRAMEBUFFERSOES pGlGenFramebuffersOES;
-		PFNGLCHECKFRAMEBUFFERSTATUSOES pGlCheckFramebufferStatusOES;
-		PFNGLFRAMEBUFFERRENDERBUFFEROES pGlFramebufferRenderbufferOES;
-		PFNGLFRAMEBUFFERTEXTURE2DOES pGlFramebufferTexture2DOES;
-		PFNGLGENERATEMIPMAPOES pGlGenerateMipMapOES;
+		PFNGLBINDFRAMEBUFFEROESPROC pGlBindFramebufferOES;
+		PFNGLDELETEFRAMEBUFFERSOESPROC pGlDeleteFramebuffersOES;
+		PFNGLGENFRAMEBUFFERSOESPROC pGlGenFramebuffersOES;
+		PFNGLCHECKFRAMEBUFFERSTATUSOESPROC pGlCheckFramebufferStatusOES;
+		PFNGLFRAMEBUFFERTEXTURE2DOESPROC pGlFramebufferTexture2DOES;
+		PFNGLGENERATEMIPMAPOESPROC pGlGenerateMipmapOES;
 #endif
 	};
 
-} // end namespace video
-} // end namespace irr
+}
+}
 
-
-#endif // _IRR_COMPILE_WITH_OGLES1_
 #endif
-
+#endif
