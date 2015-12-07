@@ -172,14 +172,20 @@ define out. */
 #ifdef NO_IRR_COMPILE_WITH_OPENGL_
 #undef _IRR_COMPILE_WITH_OPENGL_
 #endif
-#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_WGL_MANAGER_)
+
+//! Define required options for OpenGL drivers.
+#if defined(_IRR_COMPILE_WITH_OPENGL_)
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+#define _IRR_OPENGL_USE_EXTPOINTER_
 #define _IRR_COMPILE_WITH_WGL_MANAGER_
-#endif
-#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_X11_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_GLX_MANAGER_)
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
+#define _IRR_OPENGL_USE_EXTPOINTER_
+#define _IRR_COMPILE_WITH_GLX_MANAGER_
+#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
+#define _IRR_COMPILE_WITH_NSOGL_MANAGER_
+#elif defined(_IRR_SOLARIS_PLATFORM_)
 #define _IRR_COMPILE_WITH_GLX_MANAGER_
 #endif
-#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_OSX_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_NSOGL_MANAGER_)
-#define _IRR_COMPILE_WITH_NSOGL_MANAGER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
@@ -204,13 +210,6 @@ define out. */
 #define _IRR_COMPILE_WITH_X11_
 #ifdef NO_IRR_COMPILE_WITH_X11_
 #undef _IRR_COMPILE_WITH_X11_
-#endif
-
-//! Define _IRR_OPENGL_USE_EXTPOINTER_ if the OpenGL renderer should use OpenGL extensions via function pointers.
-/** On some systems there is no support for the dynamic extension of OpenGL
-	via function pointers such that this has to be undef'ed. */
-#if !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_SOLARIS_PLATFORM_)
-#define _IRR_OPENGL_USE_EXTPOINTER_
 #endif
 
 //! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
