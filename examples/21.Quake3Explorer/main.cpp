@@ -598,7 +598,7 @@ void CQuake3EventHandler::createTextures()
 	for ( i = 0; i != 8; ++i )
 	{
 		image = driver->createImage ( video::ECF_A8R8G8B8, dim);
-		data = (u32*) image->lock ();
+		data = (u32*) image->getData ();
 		for ( y = 0; y != dim.Height; ++y )
 		{
 			for ( x = 0; x != dim.Width; ++x )
@@ -607,7 +607,6 @@ void CQuake3EventHandler::createTextures()
 			}
 			data = (u32*) ( (u8*) data + image->getPitch() );
 		}
-		image->unlock();
 		snprintf_irr ( buf, 64, "smoke_%02d", i );
 		driver->addTexture( buf, image );
 		image->drop ();
@@ -617,7 +616,7 @@ void CQuake3EventHandler::createTextures()
 	for ( i = 0; i != 1; ++i )
 	{
 		image = driver->createImage ( video::ECF_A8R8G8B8, dim);
-		data = (u32*) image->lock ();
+		data = (u32*) image->getData ();
 		for ( y = 0; y != dim.Height; ++y )
 		{
 			for ( x = 0; x != dim.Width; ++x )
@@ -626,7 +625,6 @@ void CQuake3EventHandler::createTextures()
 			}
 			data = (u32*) ( (u8*) data + image->getPitch() );
 		}
-		image->unlock();
 		snprintf_irr ( buf, 64, "fog_%02d", i );
 		driver->addTexture( buf, image );
 		image->drop ();
