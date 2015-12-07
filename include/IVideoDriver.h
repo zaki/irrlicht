@@ -136,7 +136,8 @@ namespace video
 		ECBF_NONE = 0,
 		ECBF_COLOR = 1,
 		ECBF_DEPTH = 2,
-		ECBF_STENCIL = 4
+		ECBF_STENCIL = 4,
+		ECBF_ALL = ECBF_COLOR|ECBF_DEPTH|ECBF_STENCIL
 	};
 
 	//! Enum for the types of fog distributions to choose from
@@ -233,7 +234,7 @@ namespace video
 
 		//! Applications must call this method before performing any rendering.
 		/** This method can clear the back- and the z-buffer.
-		\param clearFlag The clear flags.
+		\param clearFlag A combination of the E_CLEAR_BUFFER_FLAG bit-flags.
 		\param clearColor The clear color for the color buffer.
 		\param clearDepth The clear value for the depth buffer.
 		\param clearStencil The clear value for the stencil buffer.
@@ -245,10 +246,11 @@ namespace video
 		rectangle of the area to be presented. Set to null to present
 		everything. Note: not implemented in all devices.
 		\return False if failed. */
-		virtual bool beginScene(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
+		virtual bool beginScene(u16 clearFlag=(u16)(ECBF_COLOR|ECBF_DEPTH), SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
 			const SExposedVideoData& videoData=SExposedVideoData(), core::rect<s32>* sourceRect = 0) = 0;
 
-		_IRR_DEPRECATED_ bool beginScene(bool backBuffer = true, bool zBuffer = true, SColor color = SColor(255,0,0,0),
+		//! Old beginScene implementation for downward compatibility. Can't clearn stencil buffer, but otherwise identical to other beginScene
+		_IRR_DEPRECATED_ bool beginScene(bool backBuffer, bool zBuffer, SColor color = SColor(255,0,0,0),
 			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0)
 		{
 			u16 flag = 0;
@@ -576,7 +578,7 @@ namespace video
 		possible to render into a texture between the
 		IVideoDriver::beginScene() and endScene() method calls.
 		\param target Render target object.
-		\param clearFlag The clear flags.
+		\param clearFlag A combination of the E_CLEAR_BUFFER_FLAG bit-flags.
 		\param clearColor The clear color for the color buffer.
 		\param clearDepth The clear value for the depth buffer.
 		\param clearStencil The clear value for the stencil buffer.
@@ -608,16 +610,18 @@ namespace video
 		IVideoDriver::addRenderTargetTexture(). If set to 0, it sets
 		the previous render target which was set before the last
 		setRenderTarget() call.
-		\param clearFlag The clear flags.
+		\param clearFlag A combination of the E_CLEAR_BUFFER_FLAG bit-flags.
 		\param clearColor The clear color for the color buffer.
 		\param clearDepth The clear value for the depth buffer.
 		\param clearStencil The clear value for the stencil buffer.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(ITexture* texture, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+		virtual bool setRenderTarget(ITexture* texture, u16 clearFlag=ECBF_COLOR|ECBF_DEPTH, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
-		_IRR_DEPRECATED_ bool setRenderTarget(ITexture* texture, bool clearBackBuffer = true,
-			bool clearZBuffer = true, SColor color = SColor(255,0,0,0))
+		//! Sets a new render target. 
+		// Prefer to use the setRenderTarget function taking flags as parameter as this one can't clear the stencil buffer.
+		// It's still offered for backward compatiblity.
+		_IRR_DEPRECATED_ bool setRenderTarget(ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color = SColor(255,0,0,0))
 		{
 			u16 flag = 0;
 

@@ -181,8 +181,26 @@ namespace video
 
 	void COGLES2ExtensionHandler::initExtensions()
 	{
-		const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
-		Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver)*10.0f));
+		Version = 0;
+		s32 multiplier = 100;
+
+		core::stringc version(glGetString(GL_VERSION));
+
+		for (u32 i = 0; i < version.size(); ++i)
+		{
+			if (version[i] >= '0' && version[i] <= '9')
+			{
+				if (multiplier > 1)
+				{
+					Version += static_cast<u16>(core::floor32(core::fast_atof(&(version[i]))) * multiplier);
+					multiplier /= 10;
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
 
 		core::stringc extensions = glGetString(GL_EXTENSIONS);
 		os::Printer::log(extensions.c_str());
