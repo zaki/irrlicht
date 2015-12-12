@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix: addFileArchive now grab()'s the archive when you pass one in by pointer.
 - Fix: Prevent division by 0 in CGUIScrollBar::setPos
 - Fix: Add missing serialization to CSceneNodeAnimatorCameraFPS and CSceneNodeAnimatorCameraMaya
 - Fix: File-open dialog now restores the original locale after modifying it internally
