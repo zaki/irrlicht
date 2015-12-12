@@ -428,15 +428,22 @@ bool CFileSystem::addFileArchive(IReadFile* file, bool ignoreCase,
 //! Adds an archive to the file system.
 bool CFileSystem::addFileArchive(IFileArchive* archive)
 {
-	for (u32 i = 0; i < FileArchives.size(); ++i)
+	if ( archive )
 	{
-		if (archive == FileArchives[i])
+		for (u32 i=0; i < FileArchives.size(); ++i)
 		{
-			return false;
+			if (archive == FileArchives[i])
+			{
+				return false;
+			}
 		}
+		FileArchives.push_back(archive);
+		archive->grab();
+
+		return true;
 	}
-	FileArchives.push_back(archive);
-	return true;
+
+	return false;
 }
 
 
