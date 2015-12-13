@@ -876,15 +876,8 @@ void CGUIEditWorkspace::PasteXMLToSelectedElement()
 {
 	// get clipboard data
 	const char * p = Environment->getOSOperator()->getTextFromClipboard();
-
-	// convert to stringw
-	// TODO: we should have such a function in core::string
-	size_t lenOld = strlen(p);
-	wchar_t *ws = new wchar_t[lenOld + 1];
-	size_t len = mbstowcs(ws,p,lenOld);
-	ws[len] = 0;
-	irr::core::stringw wXMLText(ws);
-	delete[] ws;
+	irr::core::stringw wXMLText;
+	core::multibyteToWString(wXMLText, p);
 
 	io::CMemoryReadWriteFile* memWrite = new io::CMemoryReadWriteFile("#Clipboard#");
 

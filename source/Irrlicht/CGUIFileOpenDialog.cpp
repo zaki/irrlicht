@@ -377,7 +377,7 @@ void CGUIFileOpenDialog::fillListBox()
 
 #ifndef _IRR_WCHAR_FILESYSTEM
 	char* oldLocale = setlocale(LC_ALL, NULL);
-	setlocale(LC_ALL,"");	// mbstowcs is affected by LC_CTYPE. Filenames seem to need the system-locale.
+	setlocale(LC_ALL,"");	// multibyteToWString is affected by LC_CTYPE. Filenames seem to need the system-locale.
 #endif
 
 	if (FileList)
@@ -385,13 +385,7 @@ void CGUIFileOpenDialog::fillListBox()
 		for (u32 i=0; i < FileList->getFileCount(); ++i)
 		{
 			#ifndef _IRR_WCHAR_FILESYSTEM
-			const c8 *cs = (const c8 *)FileList->getFileName(i).c_str();
-			size_t lencs = strlen(cs);
-			wchar_t *ws = new wchar_t[lencs + 1];
-			size_t len = mbstowcs(ws, cs, lencs);
-			ws[len] = 0;
-			s = ws;
-			delete [] ws;
+			core::multibyteToWString(s, FileList->getFileName(i));
 			#else
 			s = FileList->getFileName(i).c_str();
 			#endif
@@ -402,13 +396,7 @@ void CGUIFileOpenDialog::fillListBox()
 	if (FileNameText)
 	{
 		#ifndef _IRR_WCHAR_FILESYSTEM
-		const c8 *cs = (const c8 *)FileSystem->getWorkingDirectory().c_str();
-		size_t lencs = strlen(cs);
-		wchar_t *ws = new wchar_t[lencs + 1];
-		size_t len = mbstowcs(ws, cs, lencs);
-		ws[len] = 0;
-		s = ws;
-		delete [] ws;
+		core::multibyteToWString(s, FileSystem->getWorkingDirectory());
 		#else
 		s = FileSystem->getWorkingDirectory();
 		#endif

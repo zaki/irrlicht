@@ -32,6 +32,11 @@ Helper functions for converting between UTF-8 and wchar_t are provided
 outside the string class for explicit use.
 */
 
+// forward declarations
+template <typename T, typename TAlloc = irrAllocator<T> >
+class string;
+static size_t multibyteToWString(string<wchar_t>& destination, const char* source, u32 sourceSize);
+
 enum eLocaleID
 {
 	IRR_LOCALE_ANSI = 0,
@@ -84,7 +89,7 @@ IRRLICHT_API void utf8ToWchar(const char *in, wchar_t *out, const u64 len);
 IRRLICHT_API void wcharToUtf8(const wchar_t *in, char *out, const u64 len);
 
 
-template <typename T, typename TAlloc = irrAllocator<T> >
+template <typename T, typename TAlloc>
 class string
 {
 public:
@@ -1340,6 +1345,8 @@ public:
 		return ret.size()-oldSize;
 	}
 
+	friend size_t multibyteToWString(string<wchar_t>& destination, const char* source, u32 sourceSize);
+
 private:
 
 	//! Reallocate the array, make it bigger or smaller
@@ -1374,6 +1381,51 @@ typedef string<c8> stringc;
 
 //! Typedef for wide character strings
 typedef string<wchar_t> stringw;
+
+//! Convert multibyte string to wide-character string
+/** Wrapper around mbstowcs from standard library, but directly using Irrlicht string class.
+What the function does exactly depends on the LC_CTYPE of the current c locale.
+\param destination Wide-character string receiving the converted source
+\param source multibyte string
+\return The number of wide characters written to destination, not including the eventual terminating null character. */
+static inline size_t multibyteToWString(string<wchar_t>& destination, const core::string<c8>& source)
+{
+	return multibyteToWString(destination, source.c_str(), (u32)source.size());
+}
+
+//! Convert multibyte string to wide-character string
+/** Wrapper around mbstowcs from standard library, but directly writing to Irrlicht string class.
+What the function does exactly depends on the LC_CTYPE of the current c locale.
+\param destination Wide-character string receiving the converted source
+\param source multibyte string
+\return The number of wide characters written to destination, not including the eventual terminating null character. */
+static inline size_t multibyteToWString(string<wchar_t>& destination, const char* source)
+{
+	u32 s = source ? (u32)strlen(source) : 0;
+	return multibyteToWString(destination, source, s);
+}
+
+//! Internally used by the other multibyteToWString functions
+static size_t multibyteToWString(string<wchar_t>& destination, const char* source, u32 sourceSize)
+{
+	if ( sourceSize )
+	{
+		destination.reserve(sourceSize+1);
+#if defined(_MSC_VER)
+#pragma warning(suppress: 4996)	// 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead.
+#endif
+		size_t written = mbstowcs(destination.array, source, (size_t)sourceSize);
+		destination.used = (u32)written;
+		destination.array[destination.used] = 0;
+		return written;
+	}
+	else
+	{
+		destination.empty();
+		return 0;
+	}
+}
+
 
 } // end namespace core
 } // end namespace irr
