@@ -269,7 +269,7 @@ namespace video
 			if (pGlGenerateMipmapOES)
 				pGlGenerateMipmapOES(target);
 #elif defined(GL_OES_framebuffer_object)
-			glGenerateMipmap(target);
+			glGenerateMipmapOES(target);
 #endif
 		}
 

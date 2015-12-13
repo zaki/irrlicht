@@ -74,6 +74,9 @@
       location = "group:26.OcclusionQuery/OcclusionQuery.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:28.HelloWorld_iOS/HelloWorld_iOS.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:30.Profiling/Profiling.xcodeproj">
    </FileRef>
    <FileRef

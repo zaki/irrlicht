@@ -86,6 +86,9 @@ struct SExposedVideoData
 		//! The subview UIView object where the drawing happens.
 		void* View;
 		
+		//! The UIViewController object.
+		void* ViewController;
+		
 		//! The UIWindow object.
         void* Window;
 	};

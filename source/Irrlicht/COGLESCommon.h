@@ -9,7 +9,7 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_IOS_DEVICE_)
 #include <OpenGLES/ES1/gl.h>
 #include <OpenGLES/ES1/glext.h>
 #elif defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
@@ -40,7 +40,7 @@ typedef char GLchar;
 // FBO definitions.
 
 #ifdef GL_OES_framebuffer_object
-#define GL_NONE GL_NONE_OES
+#define GL_NONE 0 // iOS has missing definition of GL_NONE_OES
 #define GL_FRAMEBUFFER GL_FRAMEBUFFER_OES
 #define GL_DEPTH_COMPONENT16 GL_DEPTH_COMPONENT16_OES
 #define GL_COLOR_ATTACHMENT0 GL_COLOR_ATTACHMENT0_OES

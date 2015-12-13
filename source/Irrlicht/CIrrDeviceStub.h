@@ -124,40 +124,40 @@ namespace irr
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo) _IRR_OVERRIDE_;
 
         //! Activate accelerometer.
-        virtual bool activateAccelerometer(float updateInterval = 0.016666f);
+        virtual bool activateAccelerometer(float updateInterval = 0.016666f) _IRR_OVERRIDE_;
         
         //! Deactivate accelerometer.
-        virtual bool deactivateAccelerometer();
+        virtual bool deactivateAccelerometer() _IRR_OVERRIDE_;
         
         //! Is accelerometer active.
-        virtual bool isAccelerometerActive();
+        virtual bool isAccelerometerActive() _IRR_OVERRIDE_;
         
         //! Is accelerometer available.
-        virtual bool isAccelerometerAvailable();
+        virtual bool isAccelerometerAvailable() _IRR_OVERRIDE_;
         
         //! Activate gyroscope.
-        virtual bool activateGyroscope(float updateInterval = 0.016666f);
+        virtual bool activateGyroscope(float updateInterval = 0.016666f) _IRR_OVERRIDE_;
         
         //! Deactivate gyroscope.
-        virtual bool deactivateGyroscope();
+        virtual bool deactivateGyroscope() _IRR_OVERRIDE_;
         
         //! Is gyroscope active.
-        virtual bool isGyroscopeActive();
+        virtual bool isGyroscopeActive() _IRR_OVERRIDE_;
         
         //! Is gyroscope available.
-        virtual bool isGyroscopeAvailable();
+        virtual bool isGyroscopeAvailable() _IRR_OVERRIDE_;
         
         //! Activate device motion.
-        virtual bool activateDeviceMotion(float updateInterval = 0.016666f);
+        virtual bool activateDeviceMotion(float updateInterval = 0.016666f) _IRR_OVERRIDE_;
         
         //! Deactivate device motion.
-        virtual bool deactivateDeviceMotion();
+        virtual bool deactivateDeviceMotion() _IRR_OVERRIDE_;
         
         //! Is device motion active.
-        virtual bool isDeviceMotionActive();
+        virtual bool isDeviceMotionActive() _IRR_OVERRIDE_;
         
         //! Is device motion available.
-        virtual bool isDeviceMotionAvailable();
+        virtual bool isDeviceMotionAvailable() _IRR_OVERRIDE_;
 
 		//! Set the current Gamma Value for the Display
 		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast ) _IRR_OVERRIDE_;

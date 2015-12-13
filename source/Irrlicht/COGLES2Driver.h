@@ -25,8 +25,6 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include "iOS/CIrrDeviceiOS.h"
 #endif
 
 #ifdef _MSC_VER
@@ -50,13 +48,7 @@ namespace video
 
 	public:
 		//! constructor
-		COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
-		, IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-		, CIrrDeviceIPhone* device
-#endif
-		);
+		COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 
 		//! destructor
 		virtual ~COGLES2Driver();
@@ -308,7 +300,7 @@ namespace video
 			return VendorName;
 		};
 
-		void removeTexture(ITexture* texture);
+		void removeTexture(ITexture* texture) _IRR_OVERRIDE_;
 
 		// returns the current size of the screen or rendertarget
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
@@ -405,14 +397,7 @@ namespace video
 
 		core::array<RequestedLight> RequestedLights;
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-		CIrrDeviceIPhone* Device;
-		GLuint ViewFramebuffer;
-		GLuint ViewRenderbuffer;
-		GLuint ViewDepthRenderbuffer;
-#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
 		IContextManager* ContextManager;
-#endif
 	};
 
 } // end namespace video

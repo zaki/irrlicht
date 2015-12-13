@@ -24,8 +24,6 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include "iOS/CIrrDeviceiOS.h"
 #endif
 
 #ifdef _MSC_VER
@@ -44,13 +42,7 @@ namespace video
 
 	public:
 		//! constructor
-		COGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
-			, IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-			, CIrrDeviceIPhone* device
-#endif
-			);
+		COGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 
 		//! destructor
 		virtual ~COGLES1Driver();
@@ -258,7 +250,7 @@ namespace video
 		virtual IVideoDriver* getVideoDriver() _IRR_OVERRIDE_;
 
 		//! Returns the maximum amount of primitives
-		virtual u32 getMaximalPrimitiveCount() const;
+		virtual u32 getMaximalPrimitiveCount() const _IRR_OVERRIDE_;
 
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
@@ -287,9 +279,9 @@ namespace video
 		}
 
 		//! Get the maximal texture size for this driver
-		core::dimension2du getMaxTextureSize() const;
+		core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
 
-		void removeTexture(ITexture* texture);
+		void removeTexture(ITexture* texture) _IRR_OVERRIDE_;
 
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
@@ -386,19 +378,12 @@ namespace video
 		};
 		core::array<RequestedLight> RequestedLights;
 
-#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-		CIrrDeviceIPhone* Device;
-		GLuint ViewFramebuffer;
-		GLuint ViewRenderbuffer;
-		GLuint ViewDepthRenderbuffer;
-#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_) || defined(_IRR_COMPILE_WITH_FB_DEVICE_)
 		IContextManager* ContextManager;
-#endif
 	};
 
 } // end namespace video
 } // end namespace irr
 
-#endif // _IRR_COMPILE_WITH_OPENGL_
+#endif // _IRR_COMPILE_WITH_OGLES1_
 
 #endif

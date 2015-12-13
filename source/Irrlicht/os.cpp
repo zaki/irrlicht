@@ -20,7 +20,7 @@
 #if (_MSC_VER >= 1400)
 	#define localtime _localtime_s
 #endif
-#elif defined(_IRR_OSX_PLATFORM_)
+#elif defined(_IRR_OSX_PLATFORM_) || defined(_IRR_IOS_PLATFORM_)
 	#include <libkern/OSByteOrder.h>
 	#define bswap_16(X) OSReadSwapInt16(&X,0)
 	#define bswap_32(X) OSReadSwapInt32(&X,0)
