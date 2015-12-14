@@ -1412,9 +1412,13 @@ static size_t multibyteToWString(string<wchar_t>& destination, const char* sourc
 	{
 		destination.reserve(sourceSize+1);
 #if defined(_MSC_VER)
-#pragma warning(suppress: 4996)	// 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead.
+#pragma warning(push)
+#pragma warning(disable: 4996)	// 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead.
 #endif
 		size_t written = mbstowcs(destination.array, source, (size_t)sourceSize);
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 		destination.used = (u32)written;
 		destination.array[destination.used] = 0;
 		return written;
