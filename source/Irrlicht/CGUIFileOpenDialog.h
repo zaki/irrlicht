@@ -34,8 +34,14 @@ namespace gui
 		//! returns the filename of the selected file. Returns NULL, if no file was selected.
 		virtual const wchar_t* getFileName() const _IRR_OVERRIDE_;
 
+		//! Returns the filename of the selected file. Is empty if no file was selected.
+		virtual const io::path& getFileNameP() const _IRR_OVERRIDE_;
+
 		//! Returns the directory of the selected file. Returns NULL, if no directory was selected.
-		virtual const io::path& getDirectoryName() _IRR_OVERRIDE_;
+		virtual const io::path& getDirectoryName() const _IRR_OVERRIDE_;
+
+		//! Returns the directory of the selected file converted to wide characters. Returns NULL if no directory was selected.
+		virtual const wchar_t* getDirectoryNameW() const _IRR_OVERRIDE_;
 
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
@@ -48,6 +54,12 @@ namespace gui
 
 	protected:
 
+		void setFileName(const irr::io::path& name);
+		void setDirectoryName(const irr::io::path& name);
+
+		//! Ensure filenames are converted correct depending on wide-char settings
+		void pathToStringW(irr::core::stringw& result, const irr::io::path& p);
+
 		//! fills the listbox with files.
 		void fillListBox();
 
@@ -58,8 +70,11 @@ namespace gui
 		void sendCancelEvent();
 
 		core::position2d<s32> DragStart;
-		core::stringw FileName;
+		io::path FileName;
+		core::stringw FileNameW;
 		io::path FileDirectory;
+		io::path FileDirectoryFlat;
+		core::stringw FileDirectoryFlatW;
 		io::path RestoreDirectory;
 		io::path StartDirectory;
 

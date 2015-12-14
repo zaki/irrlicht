@@ -165,7 +165,7 @@ public:
 					IGUIFileOpenDialog* dialog =
 						(IGUIFileOpenDialog*)event.GUIEvent.Caller;
 					Context.listbox->addItem(L"EGET_DIRECTORY_SELECTED");
-					Context.listbox->addItem(core::stringw(dialog->getDirectoryName()).c_str());
+					Context.listbox->addItem(dialog->getDirectoryNameW());
 				}
 				break;
 
