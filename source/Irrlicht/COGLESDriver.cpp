@@ -3044,15 +3044,16 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		pixelType = GL_UNSIGNED_BYTE;
 		break;
 	case ECF_A8R8G8B8:
-		internalFormat = GL_RGBA;
 		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888) ||
 			queryOpenGLFeature(COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888) ||
 			queryOpenGLFeature(COGLES1ExtensionHandler::IRR_APPLE_texture_format_BGRA8888))
 		{
+			internalFormat = GL_BGRA;
 			pixelFormat = GL_BGRA;
 		}
 		else
 		{
+			internalFormat = GL_RGBA;
 			pixelFormat = GL_RGBA;
 			*converter = CColorConverter::convert_A8R8G8B8toA8B8G8R8;
 		}
