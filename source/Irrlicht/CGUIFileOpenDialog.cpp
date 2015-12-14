@@ -388,7 +388,7 @@ void CGUIFileOpenDialog::pathToStringW(irr::core::stringw& result, const irr::io
 	core::multibyteToWString(result, p);
 	setlocale(LC_ALL, oldLocale);
 #else
-	result = path.c_str();
+	result = p.c_str();
 #endif
 }
 
