@@ -147,12 +147,12 @@ CGUIFileOpenDialog::~CGUIFileOpenDialog()
 
 
 //! returns the filename of the selected file. Returns NULL, if no file was selected.
-const const wchar_t* CGUIFileOpenDialog::getFileName() const
+const wchar_t* CGUIFileOpenDialog::getFileName() const
 {
 	return FileNameW.c_str();
 }
 
-const io::path& CGUIFileOpenDialog::getFileNameP() const 
+const io::path& CGUIFileOpenDialog::getFileNameP() const
 {
 	return FileName;
 }
