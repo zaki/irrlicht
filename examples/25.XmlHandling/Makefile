@@ -12,21 +12,12 @@ IrrlichtHome := ../..
 BinPath = ../../bin/$(SYSTEM)
 
 # general compiler settings (might need to be set when compiling the lib, too)
-# preprocessor flags, e.g. defines and include paths
-USERCPPFLAGS = 
-# compiler flags such as optimization flags
-USERCXXFLAGS = -O3 -ffast-math
-#USERCXXFLAGS = -g -Wall
-# linker flags such as additional libraries and link paths
-USERLDFLAGS =
-
-####
-#no changes necessary below this line
-####
-
-CPPFLAGS = -I$(IrrlichtHome)/include -I/usr/X11R6/include $(USERCPPFLAGS)
-CXXFLAGS = $(USERCXXFLAGS)
-LDFLAGS = $(USERLDFLAGS)
+CPPFLAGS += -I$(IrrlichtHome)/include -I/usr/X11R6/include
+ifndef NDEBUG
+CXXFLAGS += -g -Wall
+else
+CXXFLAGS += -O3
+endif
 
 #default target is Linux
 all: all_linux
@@ -63,4 +54,3 @@ endif
 ifeq ($(HOSTTYPE), sun4)
 LDFLAGS += -lrt
 endif
-
