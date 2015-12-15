@@ -149,16 +149,38 @@ CGUIFileOpenDialog::~CGUIFileOpenDialog()
 //! returns the filename of the selected file. Returns NULL, if no file was selected.
 const wchar_t* CGUIFileOpenDialog::getFileName() const
 {
-	return FileName.c_str();
+	return FileNameW.c_str();
+}
+
+const io::path& CGUIFileOpenDialog::getFileNameP() const
+{
+	return FileName;
 }
 
 //! Returns the directory of the selected file. Returns NULL, if no directory was selected.
-const io::path& CGUIFileOpenDialog::getDirectoryName()
+const io::path& CGUIFileOpenDialog::getDirectoryName() const
 {
-	FileSystem->flattenFilename ( FileDirectory );
-	return FileDirectory;
+	return FileDirectoryFlat;
 }
 
+const wchar_t* CGUIFileOpenDialog::getDirectoryNameW() const
+{
+	return FileDirectoryFlatW.c_str();
+}
+
+void CGUIFileOpenDialog::setFileName(const irr::io::path& name)
+{
+	FileName = name;
+	pathToStringW(FileNameW, FileName);
+}
+
+void CGUIFileOpenDialog::setDirectoryName(const irr::io::path& name)
+{
+	FileDirectory = name;
+	FileDirectoryFlat = name;
+	FileSystem->flattenFilename (FileDirectoryFlat );
+	pathToStringW(FileDirectoryFlatW, FileDirectoryFlat);
+}
 
 //! called if an event happened.
 bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
@@ -204,13 +226,13 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 					{
 						if (FileList->isDirectory(selected))
 						{
-							FileName = L"";
-							FileDirectory = FileList->getFullFileName(selected);
+							setFileName("");
+							setDirectoryName(FileList->getFullFileName(selected));
 						}
 						else
 						{
-							FileDirectory = L"";
-							FileName = FileList->getFullFileName(selected);
+							setDirectoryName("");
+							setFileName(FileList->getFullFileName(selected));
 						}
 						return true;
 					}
@@ -224,14 +246,14 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 					{
 						if (FileList->isDirectory(selected))
 						{
-							FileDirectory = FileList->getFullFileName(selected);
-							FileSystem->changeWorkingDirectoryTo(FileList->getFileName(selected));
+							setDirectoryName(FileList->getFullFileName(selected));
+							FileSystem->changeWorkingDirectoryTo(FileDirectory );
 							fillListBox();
-							FileName = "";
+							setFileName("");
 						}
 						else
 						{
-							FileName = FileList->getFullFileName(selected);
+							setFileName(FileList->getFullFileName(selected));
 						}
 						return true;
 					}
@@ -244,7 +266,7 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 					if ( FileSystem->changeWorkingDirectoryTo( dir ) )
 					{
 						fillListBox();
-						FileName = L"";
+						setFileName("");
 					}
 					return true;
 				}
@@ -342,7 +364,7 @@ void CGUIFileOpenDialog::serializeAttributes(io::IAttributes* out, io::SAttribut
 
 
 //! Reads attributes of the element
-/* Note that thiese paths changes will happen at arbitrary places upon
+/* Note that these paths changes will happen at arbitrary places upon
 load of the gui description. This may be undesired. */
 void CGUIFileOpenDialog::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
@@ -358,6 +380,17 @@ void CGUIFileOpenDialog::deserializeAttributes(io::IAttributes* in, io::SAttribu
 	IGUIFileOpenDialog::deserializeAttributes(in,options);
 }
 
+void CGUIFileOpenDialog::pathToStringW(irr::core::stringw& result, const irr::io::path& p)
+{
+#ifndef _IRR_WCHAR_FILESYSTEM
+	char* oldLocale = setlocale(LC_ALL, NULL);
+	setlocale(LC_ALL,"");	// multibyteToWString is affected by LC_CTYPE. Filenames seem to need the system-locale.
+	core::multibyteToWString(result, p);
+	setlocale(LC_ALL, oldLocale);
+#else
+	result = p.c_str();
+#endif
+}
 
 //! fills the listbox with files.
 void CGUIFileOpenDialog::fillListBox()
@@ -375,53 +408,22 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-#ifndef _IRR_WCHAR_FILESYSTEM
-	char* oldLocale = setlocale(LC_ALL, NULL);
-	setlocale(LC_ALL,"");	// mbstowcs is affected by LC_CTYPE. Filenames seem to need the system-locale.
-#endif
-
 	if (FileList)
 	{
 		for (u32 i=0; i < FileList->getFileCount(); ++i)
 		{
-			#ifndef _IRR_WCHAR_FILESYSTEM
-			const c8 *cs = (const c8 *)FileList->getFileName(i).c_str();
-			size_t lencs = strlen(cs);
-			wchar_t *ws = new wchar_t[lencs + 1];
-			size_t len = mbstowcs(ws, cs, lencs);
-			ws[len] = 0;
-			s = ws;
-			delete [] ws;
-			#else
-			s = FileList->getFileName(i).c_str();
-			#endif
+			pathToStringW(s, FileList->getFileName(i));
 			FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
 		}
 	}
 
 	if (FileNameText)
 	{
-		#ifndef _IRR_WCHAR_FILESYSTEM
-		const c8 *cs = (const c8 *)FileSystem->getWorkingDirectory().c_str();
-		size_t lencs = strlen(cs);
-		wchar_t *ws = new wchar_t[lencs + 1];
-		size_t len = mbstowcs(ws, cs, lencs);
-		ws[len] = 0;
-		s = ws;
-		delete [] ws;
-		#else
-		s = FileSystem->getWorkingDirectory();
-		#endif
-
-		FileDirectory = s;
+		setDirectoryName(FileSystem->getWorkingDirectory());
+		pathToStringW(s, FileDirectory);
 		FileNameText->setText(s.c_str());
 	}
-
-#ifndef _IRR_WCHAR_FILESYSTEM
-	setlocale(LC_ALL, oldLocale);
-#endif
 }
-
 
 //! sends the event that the file has been selected.
 void CGUIFileOpenDialog::sendSelectedEvent( EGUI_EVENT_TYPE type)

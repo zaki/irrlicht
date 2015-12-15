@@ -341,13 +341,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 				const c8* p = Operator->getTextFromClipboard();
 				if (p)
 				{
-					// TODO: we should have such a function in core::string
-					size_t lenOld = strlen(p);
-					wchar_t *ws = new wchar_t[lenOld + 1];
-					size_t len = mbstowcs(ws,p,lenOld);
-					ws[len] = 0;
-					irr::core::stringw widep(ws);
-					delete[] ws;
+					irr::core::stringw widep;
+					core::multibyteToWString(widep, p);
 
 					if (MarkBegin == MarkEnd)
 					{

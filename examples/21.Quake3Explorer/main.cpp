@@ -1347,7 +1347,7 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 		else
 		if ( eve.GUIEvent.Caller == gui.ArchiveFileOpen && eve.GUIEvent.EventType == gui::EGET_FILE_SELECTED )
 		{
-			AddArchive ( gui.ArchiveFileOpen->getFileName() );
+			AddArchive ( gui.ArchiveFileOpen->getFileNameP() );
 			gui.ArchiveFileOpen = 0;
 		}
 		else
