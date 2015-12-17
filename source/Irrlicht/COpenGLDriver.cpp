@@ -3650,11 +3650,7 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
-	bool supportForFBO = false;
-
-#if defined(GL_VERSION_3_0) || defined(GL_ARB_framebuffer_object) || defined(GL_EXT_framebuffer_object)
-	supportForFBO = FeatureAvailable[IRR_EXT_framebuffer_object] || FeatureAvailable[IRR_ARB_framebuffer_object];
-#endif
+	bool supportForFBO = (Feature.ColorAttachment > 0);
 
 	core::dimension2du destSize(size);
 
@@ -3664,7 +3660,7 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
 
-	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, size, format, this);
+	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, format, this);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
@@ -3683,7 +3679,7 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 	return 0x7fffffff;
 }
 
-bool COpenGLDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+bool COpenGLDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_OPENGL)
 	{
@@ -4096,14 +4092,23 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_D16:
 		internalFormat = GL_DEPTH_COMPONENT16;
 		pixelFormat = GL_DEPTH_COMPONENT;
-		pixelType = GL_UNSIGNED_BYTE;
+		pixelType = GL_UNSIGNED_SHORT;
 		break;
 	case ECF_D32:
 		internalFormat = GL_DEPTH_COMPONENT32;
 		pixelFormat = GL_DEPTH_COMPONENT;
-		pixelType = GL_UNSIGNED_BYTE;
+		pixelType = GL_UNSIGNED_INT;
 		break;
 	case ECF_D24S8:
+#ifdef GL_VERSION_3_0
+		if (Version >= 300)
+		{
+			internalFormat = GL_DEPTH_STENCIL;
+			pixelFormat = GL_DEPTH_STENCIL;
+			pixelType = GL_UNSIGNED_INT_24_8;
+		}
+		else
+#endif
 #ifdef GL_EXT_packed_depth_stencil
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_EXT_packed_depth_stencil))
 		{

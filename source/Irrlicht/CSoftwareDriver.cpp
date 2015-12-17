@@ -252,7 +252,7 @@ ITexture* CSoftwareDriver::createDeviceDependentTexture(const io::path& name, II
 	return texture;
 }
 
-bool CSoftwareDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+bool CSoftwareDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_SOFTWARE)
 	{

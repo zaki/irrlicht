@@ -2382,7 +2382,7 @@ COGLES2Driver::~COGLES2Driver()
 		return 65535;
 	}
 
-	bool COGLES2Driver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+	bool COGLES2Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 	{
 		if (target && target->getDriverType() != EDT_OGLES2)
 		{

@@ -190,9 +190,9 @@ bool rttAndZBuffer(video::E_DRIVER_TYPE driverType)
 
 	{
 		vd->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 0, 0, 0));
-		vd->setRenderTarget(renderTarget, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
+		vd->setRenderTargetEx(renderTarget, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
 		sm->drawAll();
-		vd->setRenderTarget((video::IRenderTarget*)0, 0, 0);
+		vd->setRenderTargetEx(0, 0, 0);
 		vd->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		vd->setTransform(video::ETS_VIEW, core::IdentityMatrix);
 		vd->setTransform(video::ETS_PROJECTION, core::IdentityMatrix);
@@ -242,10 +242,10 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 	stabilizeScreenBackground(driver);
 
 	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255, 255, 255));
-	driver->setRenderTarget(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));
+	driver->setRenderTargetEx(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));
 	driver->draw2DImage(driver->getTexture("../media/fireball.bmp"), core::recti(0, 0, renderTargetTex->getSize().Width, renderTargetTex->getSize().Height), core::recti(0, 0, 64, 64));
 	guienv->getBuiltInFont()->draw(L"OMGGG =!", core::rect<s32>(120, 100, 256, 256), video::SColor(255, 0, 0, 255));
-	driver->setRenderTarget((video::IRenderTarget*)0, 0, 0);
+	driver->setRenderTargetEx(0, 0, 0);
 	driver->endScene();
 
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -286,7 +286,7 @@ static void Render(IrrlichtDevice* device, video::IRenderTarget* rt, core::vecto
 				   core::vector3df& pos2, scene::IAnimatedMesh* sphereMesh, core::vector3df& pos3, core::vector3df& pos4)
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
-	driver->setRenderTarget(rt, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
+	driver->setRenderTargetEx(rt, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
 	device->getSceneManager()->drawAll();
 
 	video::SMaterial mat;
@@ -398,7 +398,7 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 	Render(device, renderTarget3, pos1, pos2, sphereMesh, pos3, pos4);
 	Render(device, renderTarget4, pos1, pos2, sphereMesh, pos3, pos4);
 
-	device->getVideoDriver()->setRenderTarget((video::IRenderTarget*)0, 0, 0);
+	device->getVideoDriver()->setRenderTargetEx(0, 0, 0);
 	device->getVideoDriver()->draw2DImage(renderTargetTex1, core::position2di(0, 0));
 	device->getVideoDriver()->draw2DImage(renderTargetTex2, core::position2di(80, 0));
 	device->getVideoDriver()->draw2DImage(renderTargetTex3, core::position2di(0, 60));

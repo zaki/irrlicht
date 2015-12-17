@@ -102,7 +102,7 @@ namespace video
 		virtual ITexture* addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
 			IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ) _IRR_OVERRIDE_;
 
-		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+		virtual bool setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
 		virtual bool setRenderTarget(ITexture* texture, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),

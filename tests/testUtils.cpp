@@ -280,8 +280,8 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 		return 0.f;
 	}
 
-	u8 * image1Data = (u8*)image1->lock();
-	u8 * image2Data = (u8*)image2->lock();
+	u8 * image1Data = (u8*)image1->getData();
+	u8 * image2Data = (u8*)image2->getData();
 
 	const u32 pixels = (image1->getPitch() * image1->getDimension().Height) / 4;
 	u32 mismatchedColours = 0;
@@ -303,9 +303,6 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 
 		mismatchedColours += abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2);
 	}
-
-	image1->unlock();
-	image2->unlock();
 
 	const u32 totalColours = pixels * 255*3;
 	return 100.f * (totalColours - mismatchedColours) / totalColours;
@@ -358,7 +355,7 @@ void stabilizeScreenBackground(irr::video::IVideoDriver * driver,
 			screenshot = fixedScreenshot;
 		}
 
-		u8 * image1Data = (u8*)screenshot->lock();
+		u8 * image1Data = (u8*)screenshot->getData();
 
 		const u32 pixels = (screenshot->getPitch() * screenshot->getDimension().Height) / 4;
 		bool status = true;

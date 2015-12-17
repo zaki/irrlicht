@@ -2698,7 +2698,7 @@ ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& si
 		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
 
-	COGLES1Texture* renderTargetTexture = new COGLES1Texture(name, size, format, this);
+	COGLES1Texture* renderTargetTexture = new COGLES1Texture(name, destSize, format, this);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
@@ -2715,7 +2715,7 @@ u32 COGLES1Driver::getMaximalPrimitiveCount() const
 	return 65535;
 }
 
-bool COGLES1Driver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+bool COGLES1Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_OGLES1)
 	{

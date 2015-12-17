@@ -25,6 +25,18 @@ namespace video
 		{
 		}
 
+		//! Returns an array of previously set textures.
+		const core::array<ITexture*>& getTexture() const
+		{
+			return Texture;
+		}
+
+		//! Returns a of previously set depth / depth-stencil texture.
+		ITexture* getDepthStencil() const
+		{
+			return DepthStencil;
+		}
+
 		//! Set multiple textures.
 		/** Set multiple textures for the render target.
 		\param texture Array of texture objects. These textures are used for a color outputs.

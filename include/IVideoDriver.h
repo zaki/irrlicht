@@ -576,14 +576,15 @@ namespace video
 		geometry with a render target as texture on it when you are rendering
 		the scene into this render target at the same time. It is usually only
 		possible to render into a texture between the
-		IVideoDriver::beginScene() and endScene() method calls.
+		IVideoDriver::beginScene() and endScene() method calls. If you need the
+		best performance use this method instead of setRenderTarget.
 		\param target Render target object.
 		\param clearFlag A combination of the E_CLEAR_BUFFER_FLAG bit-flags.
 		\param clearColor The clear color for the color buffer.
 		\param clearDepth The clear value for the depth buffer.
 		\param clearStencil The clear value for the stencil buffer.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
+		virtual bool setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
 		//! Sets a new render target.
