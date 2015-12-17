@@ -3148,19 +3148,20 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_D16:
 		internalFormat = GL_DEPTH_COMPONENT16;
 		pixelFormat = GL_DEPTH_COMPONENT;
-		pixelType = GL_UNSIGNED_BYTE;
+		pixelType = GL_UNSIGNED_SHORT;
 		break;
 	case ECF_D32:
 #if defined(GL_OES_depth32)
 		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_depth32))
+		{
 			internalFormat = GL_DEPTH_COMPONENT32_OES;
+			pixelFormat = GL_DEPTH_COMPONENT;
+			pixelType = GL_UNSIGNED_INT;
+		}
 		else
 #endif
-			internalFormat = GL_DEPTH_COMPONENT16;
-		pixelFormat = GL_DEPTH_COMPONENT;
-		pixelType = GL_UNSIGNED_BYTE;
+			os::Printer::log("ECF_D32 color format is not supported", ELL_ERROR);
 		break;
-	case ECF_D24S8:
 #ifdef GL_OES_packed_depth_stencil
 		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_packed_depth_stencil))
 		{
