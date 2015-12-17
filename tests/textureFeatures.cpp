@@ -53,7 +53,8 @@ bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 			}
 		}
 
-		video::ITexture* tex = driver->addTexture("miptest", image, mipdata);
+		image->setMipMapsData(mipdata, false, true);
+		video::ITexture* tex = driver->addTexture("miptest", image);
 		if (!tex)
 			// is probably an error in the mipdata handling
 			return false;
@@ -131,7 +132,9 @@ bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 			}
 		}
 
-		video::ITexture* tex = driver->addTexture("miptest", image, mipdata);
+		image->setMipMapsData(mipdata, false, true);
+		video::ITexture* tex = driver->addTexture("miptest", image);
+
 		if (!tex)
 			// is probably an error in the mipdata handling
 			return false;

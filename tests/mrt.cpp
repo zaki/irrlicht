@@ -64,9 +64,9 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 
 		driver->beginScene(video::ECBF_COLOR, video::SColor(255, 0, 0, 0));
 		// render
-		driver->setRenderTarget(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
+		driver->setRenderTargetEx(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
 		device->getSceneManager()->drawAll();
-		driver->setRenderTarget((video::IRenderTarget*)0, 0, video::SColor(255, 0, 0, 0));
+		driver->setRenderTargetEx(0, 0, video::SColor(255, 0, 0, 0));
 
 		// draw debug rt
 		driver->draw2DImage(renderTargetTex[0], core::position2d<s32>(0,0));
@@ -80,9 +80,9 @@ static bool testWithDriver(video::E_DRIVER_TYPE driverType)
 		driver->beginScene(video::ECBF_COLOR, video::SColor(255, 0, 0, 0));
 		// render
 		device->getSceneManager()->getActiveCamera()->setPosition(core::vector3df(0,0,-15));
-		driver->setRenderTarget(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
+		driver->setRenderTargetEx(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,0,0,0));
 		device->getSceneManager()->drawAll();
-		driver->setRenderTarget((video::IRenderTarget*)0, 0, video::SColor(255,0,0,0));
+		driver->setRenderTargetEx(0, 0, video::SColor(255,0,0,0));
 
 		// draw debug rt
 		driver->draw2DImage(renderTargetTex[0], core::position2d<s32>(0,0));

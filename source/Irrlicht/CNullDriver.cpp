@@ -678,7 +678,7 @@ ITexture* CNullDriver::createDeviceDependentTextureCubemap(const io::path& name,
 	return new SDummyTexture(name, ETT_CUBEMAP);
 }
 
-bool CNullDriver::setRenderTarget(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
+bool CNullDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	return false;
 }
@@ -713,11 +713,11 @@ bool CNullDriver::setRenderTarget(ITexture* texture, u16 clearFlag, SColor clear
 
 		SharedRenderTarget->setTexture(texture, depthTexture);
 
-		return setRenderTarget(SharedRenderTarget, clearFlag, clearColor, clearDepth, clearStencil);
+		return setRenderTargetEx(SharedRenderTarget, clearFlag, clearColor, clearDepth, clearStencil);
 	}
 	else
 	{
-		return setRenderTarget((IRenderTarget*)0, clearFlag, clearColor, clearDepth, clearStencil);
+		return setRenderTargetEx(0, clearFlag, clearColor, clearDepth, clearStencil);
 	}
 }
 

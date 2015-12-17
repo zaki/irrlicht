@@ -175,7 +175,7 @@ int main()
 			// draw scene into render target
 			
 			// set render target texture
-			driver->setRenderTarget(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,255));
+			driver->setRenderTargetEx(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,255));
 
 			// make cube invisible and set fixed camera as active camera
 			test->setVisible(false);
@@ -186,7 +186,7 @@ int main()
 
 			// set back old render target
 			// The buffer might have been distorted, so clear it
-			driver->setRenderTarget((video::IRenderTarget*)0, 0, video::SColor(0));
+			driver->setRenderTargetEx(0, 0, video::SColor(0));
 
 			// make the cube visible and set the user controlled camera as active one
 			test->setVisible(true);
