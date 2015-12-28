@@ -219,7 +219,8 @@ static const SMD2AnimationType MD2AnimationTypeList[21] =
 
 //! constructor
 CAnimatedMeshMD2::CAnimatedMeshMD2()
-	: InterpolationBuffer(0), FrameList(0), FrameCount(0), FramesPerSecond((f32)(MD2AnimationTypeList[0].fps << MD2_FRAME_SHIFT))
+	: InterpolationBuffer(0), InterpolationFirstFrame(-1), InterpolationSecondFrame(-1), InterpolationFrameDiv(0.f)
+	, FrameList(0), FrameCount(0), FramesPerSecond((f32)(MD2AnimationTypeList[0].fps << MD2_FRAME_SHIFT))
 {
 	#ifdef _DEBUG
 	IAnimatedMesh::setDebugName("CAnimatedMeshMD2 IAnimatedMesh");
@@ -320,38 +321,45 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 		div = frame * MD2_FRAME_SHIFT_RECIPROCAL;
 	}
 
-	video::S3DVertex* target = static_cast<video::S3DVertex*>(InterpolationBuffer->getVertices());
-	SMD2Vert* first = FrameList[firstFrame].pointer();
-	SMD2Vert* second = FrameList[secondFrame].pointer();
-
-	// interpolate both frames
-	const u32 count = FrameList[firstFrame].size();
-	for (u32 i=0; i<count; ++i)
+	if ( firstFrame != InterpolationFirstFrame || secondFrame != InterpolationSecondFrame || div != InterpolationFrameDiv )
 	{
-		const core::vector3df one = core::vector3df(f32(first->Pos.X) * FrameTransforms[firstFrame].scale.X + FrameTransforms[firstFrame].translate.X,
-				f32(first->Pos.Y) * FrameTransforms[firstFrame].scale.Y + FrameTransforms[firstFrame].translate.Y,
-				f32(first->Pos.Z) * FrameTransforms[firstFrame].scale.Z + FrameTransforms[firstFrame].translate.Z);
-		const core::vector3df two = core::vector3df(f32(second->Pos.X) * FrameTransforms[secondFrame].scale.X + FrameTransforms[secondFrame].translate.X,
-				f32(second->Pos.Y) * FrameTransforms[secondFrame].scale.Y + FrameTransforms[secondFrame].translate.Y,
-				f32(second->Pos.Z) * FrameTransforms[secondFrame].scale.Z + FrameTransforms[secondFrame].translate.Z);
-		target->Pos = two.getInterpolated(one, div);
-		const core::vector3df n1(
-				Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][0],
-				Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][2],
-				Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][1]);
-		const core::vector3df n2(
-				Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][0],
-				Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][2],
-				Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][1]);
-		target->Normal = n2.getInterpolated(n1, div);
-		++target;
-		++first;
-		++second;
-	}
+		InterpolationFirstFrame = firstFrame;
+		InterpolationSecondFrame = secondFrame;
+		InterpolationFrameDiv = div;
 
-	//update bounding box
-	InterpolationBuffer->setBoundingBox(BoxList[secondFrame].getInterpolated(BoxList[firstFrame], div));
-	InterpolationBuffer->setDirty();
+		video::S3DVertex* target = static_cast<video::S3DVertex*>(InterpolationBuffer->getVertices());
+		SMD2Vert* first = FrameList[firstFrame].pointer();
+		SMD2Vert* second = FrameList[secondFrame].pointer();
+
+		// interpolate both frames
+		const u32 count = FrameList[firstFrame].size();
+		for (u32 i=0; i<count; ++i)
+		{
+			const core::vector3df one = core::vector3df(f32(first->Pos.X) * FrameTransforms[firstFrame].scale.X + FrameTransforms[firstFrame].translate.X,
+					f32(first->Pos.Y) * FrameTransforms[firstFrame].scale.Y + FrameTransforms[firstFrame].translate.Y,
+					f32(first->Pos.Z) * FrameTransforms[firstFrame].scale.Z + FrameTransforms[firstFrame].translate.Z);
+			const core::vector3df two = core::vector3df(f32(second->Pos.X) * FrameTransforms[secondFrame].scale.X + FrameTransforms[secondFrame].translate.X,
+					f32(second->Pos.Y) * FrameTransforms[secondFrame].scale.Y + FrameTransforms[secondFrame].translate.Y,
+					f32(second->Pos.Z) * FrameTransforms[secondFrame].scale.Z + FrameTransforms[secondFrame].translate.Z);
+			target->Pos = two.getInterpolated(one, div);
+			const core::vector3df n1(
+					Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][0],
+					Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][2],
+					Q2_VERTEX_NORMAL_TABLE[first->NormalIdx][1]);
+			const core::vector3df n2(
+					Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][0],
+					Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][2],
+					Q2_VERTEX_NORMAL_TABLE[second->NormalIdx][1]);
+			target->Normal = n2.getInterpolated(n1, div);
+			++target;
+			++first;
+			++second;
+		}
+
+		//update bounding box
+		InterpolationBuffer->setBoundingBox(BoxList[secondFrame].getInterpolated(BoxList[firstFrame], div));
+		InterpolationBuffer->setDirty();
+	}
 }
 
 

@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Do no longer re-calculate md2 frames when they don't change (thx @npc for reporting)
 - Add multibyteToWString wrapper functions around mbstowcs which work with Irrlicht string class.
 - Fix: addFileArchive now grab()'s the archive when you pass one in by pointer.
 - Fix: Prevent division by 0 in CGUIScrollBar::setPos
