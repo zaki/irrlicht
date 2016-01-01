@@ -78,6 +78,9 @@ namespace irr
 
 		//! Pass on raw events from the OS
 		EET_SYSTEM_EVENT,
+		
+		//! Application state events like a resume, pause etc.
+		EET_APPLICATION_EVENT,
 
 		//! This enum is never used, it only forces the compiler to
 		//! compile these enumeration values to 32 bit.
@@ -176,12 +179,37 @@ namespace irr
 	enum ESYSTEM_EVENT_TYPE
 	{
 		//! From Android command handler for native activity messages
-		ESET_ANDROID_CMD,
+		ESET_ANDROID_CMD = 0,
 
 		// TODO: for example ESET_WINDOWS_MESSAGE for win32 message loop events
 
 		//! No real event, but to get number of event types
 		ESET_COUNT
+	};
+	
+	//! Enumeration for a commonly used application state events (it's useful mainly for mobile devices)
+	enum EAPPLICATION_EVENT_TYPE
+	{
+		//! The application will be resumed.
+		EAET_WILL_RESUME = 0,
+		
+		//! The application has been resumed.
+		EAET_DID_RESUME,
+		
+		//! The application will be paused.
+		EAET_WILL_PAUSE,
+		
+		//! The application has been paused.
+		EAET_DID_PAUSE,
+
+		//! The application will be terminated.
+		EAET_WILL_TERMINATE,
+		
+		//! The application received a memory warning.
+		EAET_MEMORY_WARNING,
+
+		//! No real event, but to get number of event types.
+		EAET_COUNT
 	};
 
 	namespace gui
@@ -526,11 +554,17 @@ struct SEvent
 
 		// TOOD: more structs for iphone, Windows, X11, etc.
 
-		ESYSTEM_EVENT_TYPE  EventType;
+		ESYSTEM_EVENT_TYPE EventType;
 		union
 		{
 			struct SAndroidCmd AndroidCmd;
 		};
+	};
+	
+	// Application state event
+	struct SApplicationEvent
+	{
+		EAPPLICATION_EVENT_TYPE EventType;
 	};
 
 	EEVENT_TYPE EventType;
@@ -547,6 +581,7 @@ struct SEvent
 		struct SLogEvent LogEvent;
 		struct SUserEvent UserEvent;
 		struct SSystemEvent SystemEvent;
+		struct SApplicationEvent ApplicationEvent;
 	};
 
 };
