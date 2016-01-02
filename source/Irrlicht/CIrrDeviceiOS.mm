@@ -52,28 +52,79 @@ namespace irr
 
 - (void)applicationWillTerminate:(UIApplication*)application
 {
+	if (Device != nil)
+	{
+		irr::SEvent ev;
+		ev.EventType = irr::EET_APPLICATION_EVENT;
+		ev.ApplicationEvent.EventType = irr::EAET_WILL_TERMINATE;
+
+		Device->postEventFromUser(ev);
+	}
+	
 	Terminate = true;
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
+	if (Device != nil)
+	{
+		irr::SEvent ev;
+		ev.EventType = irr::EET_APPLICATION_EVENT;
+		ev.ApplicationEvent.EventType = irr::EAET_MEMORY_WARNING;
+		
+		Device->postEventFromUser(ev);
+	}
 }
 
 - (void)applicationWillResignActive:(UIApplication*)application
 {
+	if (Device != nil)
+	{
+		irr::SEvent ev;
+		ev.EventType = irr::EET_APPLICATION_EVENT;
+		ev.ApplicationEvent.EventType = irr::EAET_WILL_PAUSE;
+		
+		Device->postEventFromUser(ev);
+	}
+	
 	Active = false;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
 {
+	if (Device != nil)
+	{
+		irr::SEvent ev;
+		ev.EventType = irr::EET_APPLICATION_EVENT;
+		ev.ApplicationEvent.EventType = irr::EAET_DID_PAUSE;
+		
+		Device->postEventFromUser(ev);
+	}
 }
 
 - (void)applicationWillEnterForeground:(UIApplication*)application
 {
+	if (Device != nil)
+	{
+		irr::SEvent ev;
+		ev.EventType = irr::EET_APPLICATION_EVENT;
+		ev.ApplicationEvent.EventType = irr::EAET_WILL_RESUME;
+		
+		Device->postEventFromUser(ev);
+	}
 }
 
 - (void)applicationDidBecomeActive:(UIApplication*)application
 {
+	if (Device != nil)
+	{
+		irr::SEvent ev;
+		ev.EventType = irr::EET_APPLICATION_EVENT;
+		ev.ApplicationEvent.EventType = irr::EAET_DID_RESUME;
+		
+		Device->postEventFromUser(ev);
+	}
+	
 	Active = true;
 }
 
