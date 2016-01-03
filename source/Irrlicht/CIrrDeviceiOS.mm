@@ -15,6 +15,15 @@
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
 
+/* Important information */
+
+// The application state events and following methods: IrrlichtDevice::isWindowActive, IrrlichtDevice::isWindowFocused
+// and IrrlichtDevice::isWindowMinimized works out of box only if you'll use built-in CIrrDelegateiOS,
+// so _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_ must be enabled in this case. If you need a custom UIApplicationDelegate you must
+// handle all application events yourself.
+
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
+
 namespace irr
 {
 	class CIrrDeviceiOS;
@@ -36,14 +45,14 @@ namespace irr
 {
 	irr::CIrrDeviceiOS* Device;
 	bool Active;
-	bool Terminate;
+	bool Focus;
 }
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)options
 {
 	Device = nil;
 	Active = false;
-	Terminate = false;
+	Focus = false;
 	
 	[self performSelectorOnMainThread:@selector(runIrrlicht) withObject:nil waitUntilDone:NO];
 	
@@ -59,9 +68,9 @@ namespace irr
 		ev.ApplicationEvent.EventType = irr::EAET_WILL_TERMINATE;
 
 		Device->postEventFromUser(ev);
+		
+		Device->closeDevice();
 	}
-	
-	Terminate = true;
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application
@@ -87,7 +96,7 @@ namespace irr
 		Device->postEventFromUser(ev);
 	}
 	
-	Active = false;
+	Focus = false;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
@@ -100,6 +109,8 @@ namespace irr
 		
 		Device->postEventFromUser(ev);
 	}
+	
+	Active = false;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication*)application
@@ -112,6 +123,8 @@ namespace irr
 		
 		Device->postEventFromUser(ev);
 	}
+	
+	Active = true;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication*)application
@@ -125,7 +138,7 @@ namespace irr
 		Device->postEventFromUser(ev);
 	}
 	
-	Active = true;
+	Focus = true;
 }
 
 - (void)runIrrlicht
@@ -143,12 +156,14 @@ namespace irr
 	return Active;
 }
 
-- (bool)isTerminate
+- (bool)hasFocus
 {
-	return Terminate;
+	return Focus;
 }
 
 @end
+
+#endif
 
 /* CIrrViewiOS */
 
@@ -298,14 +313,16 @@ namespace irr
         CMAttitude* ReferenceAttitude;
     };
     
-    CIrrDeviceiOS::CIrrDeviceiOS(const SIrrlichtCreationParameters& params) : CIrrDeviceStub(params), DataStorage(0)
+    CIrrDeviceiOS::CIrrDeviceiOS(const SIrrlichtCreationParameters& params) : CIrrDeviceStub(params), DataStorage(0), Close(false)
     {
 #ifdef _DEBUG
         setDebugName("CIrrDeviceiOS");
 #endif
 		
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
 		CIrrDelegateiOS* delegate = [UIApplication sharedApplication].delegate;
 		[delegate setDevice:this];
+#endif
         
         DataStorage = new SIrrDeviceiOSDataStorage();
 
@@ -336,69 +353,71 @@ namespace irr
 
     bool CIrrDeviceiOS::run()
     {
-		const CFTimeInterval timeInSeconds = 0.000002;
-		
-		s32 result = 0;
-		
-		do
+		if (!Close)
 		{
-			result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, timeInSeconds, TRUE);
-		} while (result == kCFRunLoopRunHandledSource);
-		
-        os::Timer::tick();
-        
-        //! Update events
-        
-        SIrrDeviceiOSDataStorage* dataStorage = static_cast<SIrrDeviceiOSDataStorage*>(DataStorage);
-        CMMotionManager* motionManager = dataStorage->MotionManager;
-        
-        //! Accelerometer
-        if (motionManager.isAccelerometerActive)
-        {
-            irr::SEvent ev;
-            ev.EventType = irr::EET_ACCELEROMETER_EVENT;
-            ev.AccelerometerEvent.X = motionManager.accelerometerData.acceleration.x;
-            ev.AccelerometerEvent.Y = motionManager.accelerometerData.acceleration.y;
-            ev.AccelerometerEvent.Z = motionManager.accelerometerData.acceleration.z;
+			const CFTimeInterval timeInSeconds = 0.000002;
+			
+			s32 result = 0;
+			
+			do
+			{
+				result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, timeInSeconds, TRUE);
+			}
+			while (result == kCFRunLoopRunHandledSource);
+			
+			os::Timer::tick();
+			
+			//! Update events
+			
+			SIrrDeviceiOSDataStorage* dataStorage = static_cast<SIrrDeviceiOSDataStorage*>(DataStorage);
+			CMMotionManager* motionManager = dataStorage->MotionManager;
+			
+			//! Accelerometer
+			if (motionManager.isAccelerometerActive)
+			{
+				irr::SEvent ev;
+				ev.EventType = irr::EET_ACCELEROMETER_EVENT;
+				ev.AccelerometerEvent.X = motionManager.accelerometerData.acceleration.x;
+				ev.AccelerometerEvent.Y = motionManager.accelerometerData.acceleration.y;
+				ev.AccelerometerEvent.Z = motionManager.accelerometerData.acceleration.z;
+				
+				postEventFromUser(ev);
+			}
+			
+			//! Gyroscope
+			if (motionManager.isGyroActive)
+			{
+				irr::SEvent ev;
+				ev.EventType = irr::EET_GYROSCOPE_EVENT;
+				ev.GyroscopeEvent.X = motionManager.gyroData.rotationRate.x;
+				ev.GyroscopeEvent.Y = motionManager.gyroData.rotationRate.y;
+				ev.GyroscopeEvent.Z = motionManager.gyroData.rotationRate.z;
+				
+				postEventFromUser(ev);
+			}
+			
+			//! Device Motion
+			if (motionManager.isDeviceMotionActive)
+			{
+				CMAttitude* currentAttitude = motionManager.deviceMotion.attitude;
+				CMAttitude* referenceAttitude = dataStorage->ReferenceAttitude;
+				
+				if (referenceAttitude != nil)
+					[currentAttitude multiplyByInverseOfAttitude: referenceAttitude];
+				else
+					referenceAttitude = motionManager.deviceMotion.attitude;
+				
+				irr::SEvent ev;
+				ev.EventType = irr::EET_DEVICE_MOTION_EVENT;
+				ev.AccelerometerEvent.X = currentAttitude.roll;
+				ev.AccelerometerEvent.Y = currentAttitude.pitch;
+				ev.AccelerometerEvent.Z = currentAttitude.yaw;
+				
+				postEventFromUser(ev);
+			}
+		}
 
-            postEventFromUser(ev);
-        }
-        
-        //! Gyroscope
-        if (motionManager.isGyroActive)
-        {
-            irr::SEvent ev;
-            ev.EventType = irr::EET_GYROSCOPE_EVENT;
-            ev.GyroscopeEvent.X = motionManager.gyroData.rotationRate.x;
-            ev.GyroscopeEvent.Y = motionManager.gyroData.rotationRate.y;
-            ev.GyroscopeEvent.Z = motionManager.gyroData.rotationRate.z;
-            
-            postEventFromUser(ev);
-        }
-        
-        //! Device Motion
-        if (motionManager.isDeviceMotionActive)
-        {
-            CMAttitude* currentAttitude = motionManager.deviceMotion.attitude;
-            CMAttitude* referenceAttitude = dataStorage->ReferenceAttitude;
-
-            if (referenceAttitude != nil)
-                [currentAttitude multiplyByInverseOfAttitude: referenceAttitude];
-            else
-                referenceAttitude = motionManager.deviceMotion.attitude;
-
-            irr::SEvent ev;
-            ev.EventType = irr::EET_DEVICE_MOTION_EVENT;
-            ev.AccelerometerEvent.X = currentAttitude.roll;
-            ev.AccelerometerEvent.Y = currentAttitude.pitch;
-            ev.AccelerometerEvent.Z = currentAttitude.yaw;
-            
-            postEventFromUser(ev);
-        }
-		
-		CIrrDelegateiOS* delegate = [UIApplication sharedApplication].delegate;
-
-		return ![delegate isTerminate];
+		return !Close;
     }
 
     void CIrrDeviceiOS::yield()
@@ -410,7 +429,7 @@ namespace irr
     void CIrrDeviceiOS::sleep(u32 timeMs, bool pauseTimer=false)
     {
         bool wasStopped = Timer ? Timer->isStopped() : true;
-        
+		
         struct timespec ts;
         ts.tv_sec = (time_t) (timeMs / 1000);
         ts.tv_nsec = (long) (timeMs % 1000) * 1000000;
@@ -430,23 +449,35 @@ namespace irr
     
     bool CIrrDeviceiOS::isWindowActive() const
     {
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
 		CIrrDelegateiOS* delegate = [UIApplication sharedApplication].delegate;
 		
 		return [delegate isActive];
+#else
+		return false;
+#endif
     }
     
     bool CIrrDeviceiOS::isWindowFocused() const
     {
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
 		CIrrDelegateiOS* delegate = [UIApplication sharedApplication].delegate;
 		
-		return [delegate isActive];
+		return [delegate hasFocus];
+#else
+		return false;
+#endif
     }
     
     bool CIrrDeviceiOS::isWindowMinimized() const
     {
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
 		CIrrDelegateiOS* delegate = [UIApplication sharedApplication].delegate;
 		
 		return ![delegate isActive];
+#else
+		return false;
+#endif
     }
 
     bool CIrrDeviceiOS::present(video::IImage* image, void * windowId, core::rect<s32>* src)
@@ -457,6 +488,8 @@ namespace irr
     void CIrrDeviceiOS::closeDevice()
     {
         CFRunLoopStop(CFRunLoopGetMain());
+		
+		Close = true;
     }
 
     void CIrrDeviceiOS::setResizable(bool resize)
@@ -740,11 +773,13 @@ namespace irr
 	}
 }
 
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
 int main(int argc, char** argv)
 {
     int result = UIApplicationMain(argc, argv, 0, NSStringFromClass([CIrrDelegateiOS class]));
     
     return result;
 }
+#endif
 
 #endif

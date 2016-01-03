@@ -66,11 +66,15 @@ namespace irr
         void createViewAndDriver();
         
         void* DataStorage;
+		
+		bool Close;
 	};
 
 }
 
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
 extern void irrlicht_main();
+#endif
 
 #endif
 #endif
