@@ -51,7 +51,7 @@ namespace irr
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)options
 {
 	Device = nil;
-	Active = false;
+	Active = true;
 	Focus = false;
 	
 	[self performSelectorOnMainThread:@selector(runIrrlicht) withObject:nil waitUntilDone:NO];
@@ -326,14 +326,9 @@ namespace irr
         
         DataStorage = new SIrrDeviceiOSDataStorage();
 
-        if (CreationParams.DriverType != video::EDT_NULL)
-        {
-            if (!createWindow())
-                return;
-        }
-
         FileSystem->changeWorkingDirectoryTo([[[NSBundle mainBundle] resourcePath] UTF8String]);
 
+		createWindow();
         createViewAndDriver();
         
         if (!VideoDriver)
@@ -683,17 +678,51 @@ namespace irr
         return EIDT_IOS;
     }
 
-    bool CIrrDeviceiOS::createWindow()
+    void CIrrDeviceiOS::createWindow()
     {
-		SIrrDeviceiOSDataStorage* dataStorage = static_cast<SIrrDeviceiOSDataStorage*>(DataStorage);
-
-		dataStorage->Window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-		dataStorage->ViewController = [[UIViewController alloc] init];
-		dataStorage->Window.rootViewController = dataStorage->ViewController;
-
-		[dataStorage->Window makeKeyAndVisible];
-        
-        return true;
+		if (CreationParams.DriverType != video::EDT_NULL)
+		{
+			SIrrDeviceiOSDataStorage* dataStorage = static_cast<SIrrDeviceiOSDataStorage*>(DataStorage);
+			
+			UIView* externalView = (__bridge UIView*)CreationParams.WindowId;
+			
+			if (externalView == nil)
+			{
+				dataStorage->Window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+				dataStorage->ViewController = [[UIViewController alloc] init];
+				dataStorage->Window.rootViewController = dataStorage->ViewController;
+				
+				[dataStorage->Window makeKeyAndVisible];
+			}
+			else
+			{
+				dataStorage->Window = externalView.window;
+				
+				UIResponder* currentResponder = externalView.nextResponder;
+				
+				do
+				{
+					if ([currentResponder isKindOfClass:[UIViewController class]])
+					{
+						dataStorage->ViewController = (UIViewController*)currentResponder;
+						
+						currentResponder = nil;
+					}
+					else if ([currentResponder isKindOfClass:[UIView class]])
+					{
+						currentResponder = currentResponder.nextResponder;
+					}
+					else
+					{
+						currentResponder = nil;
+						
+						// Could not find view controller.
+						_IRR_DEBUG_BREAK_IF(true);
+					}
+				}
+				while (currentResponder != nil);
+			}
+		}
     }
     
     void CIrrDeviceiOS::createViewAndDriver()
@@ -704,17 +733,19 @@ namespace irr
 		data.OpenGLiOS.Window = (__bridge void*)dataStorage->Window;
 		data.OpenGLiOS.ViewController = (__bridge void*)dataStorage->ViewController;
 		
+		UIView* externalView = (__bridge UIView*)CreationParams.WindowId;
+		
+		CGRect resolution = (externalView == nil) ? [[UIScreen mainScreen] bounds] : externalView.bounds;
+
         switch (CreationParams.DriverType)
         {
             case video::EDT_OGLES1:
 #ifdef _IRR_COMPILE_WITH_OGLES1_
                 {
-					CIrrViewEAGLiOS* view = [[CIrrViewEAGLiOS alloc] initWithFrame:[[UIScreen mainScreen] bounds] forDevice:this];
+					CIrrViewEAGLiOS* view = [[CIrrViewEAGLiOS alloc] initWithFrame:resolution forDevice:this];
 					CreationParams.WindowSize = core::dimension2d<u32>(view.frame.size.width, view.frame.size.height);
 					
 					dataStorage->View = view;
-					dataStorage->ViewController.view = view;
-					
 					data.OpenGLiOS.View = (__bridge void*)view;
 
                     ContextManager = new video::CEAGLManager();
@@ -733,12 +764,10 @@ namespace irr
 			case video::EDT_OGLES2:
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 				{
-					CIrrViewEAGLiOS* view = [[CIrrViewEAGLiOS alloc] initWithFrame:[[UIScreen mainScreen] bounds] forDevice:this];
+					CIrrViewEAGLiOS* view = [[CIrrViewEAGLiOS alloc] initWithFrame:resolution forDevice:this];
 					CreationParams.WindowSize = core::dimension2d<u32>(view.frame.size.width, view.frame.size.height);
 				
 					dataStorage->View = view;
-					dataStorage->ViewController.view = view;
-				
 					data.OpenGLiOS.View = (__bridge void*)view;
 				
 					ContextManager = new video::CEAGLManager();
@@ -770,6 +799,11 @@ namespace irr
                 os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
                 break;
         }
+		
+		if (externalView == nil)
+			dataStorage->ViewController.view = dataStorage->View;
+		else
+			[externalView addSubview:dataStorage->View];
 	}
 }
 

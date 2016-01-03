@@ -62,7 +62,7 @@ namespace irr
         virtual E_DEVICE_TYPE getType() const _IRR_OVERRIDE_;
 
 	private:
-        bool createWindow();
+        void createWindow();
         void createViewAndDriver();
         
         void* DataStorage;
