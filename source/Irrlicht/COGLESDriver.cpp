@@ -3207,6 +3207,11 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		os::Printer::log("Unsupported texture format", ELL_ERROR);
 		break;
 	}
+	
+#ifdef _IRR_IOS_PLATFORM_
+	if (internalFormat == GL_BGRA)
+		internalFormat = GL_RGBA;
+#endif
 }
 
 COGLES1CacheHandler* COGLES1Driver::getCacheHandler() const

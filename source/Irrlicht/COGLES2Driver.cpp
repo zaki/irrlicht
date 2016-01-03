@@ -2832,6 +2832,11 @@ COGLES2Driver::~COGLES2Driver()
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
 			break;
 		}
+		
+#ifdef _IRR_IOS_PLATFORM_
+		if (internalFormat == GL_BGRA)
+			internalFormat = GL_RGBA;
+#endif
 	}
 
 	const SMaterial& COGLES2Driver::getCurrentMaterial() const
