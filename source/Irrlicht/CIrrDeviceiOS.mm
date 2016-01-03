@@ -35,7 +35,7 @@ namespace irr
 
 - (void)setDevice:(irr::CIrrDeviceiOS*)device;
 - (bool)isActive;
-- (bool)isTerminate;
+- (bool)hasFocus;
 
 @property (strong, nonatomic) UIWindow* window;
 
