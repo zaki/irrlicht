@@ -222,10 +222,11 @@ namespace irr
 
 		//! Window Id.
 		/** If this is set to a value other than 0, the Irrlicht Engine
-		will be created in an already existing window. For windows, set
-		this to the HWND of the window you want. The windowSize and
-		FullScreen options will be ignored when using the WindowId
-		parameter. Default this is set to 0.
+		will be created in an already existing window.
+		For Windows, set this to the HWND of the window you want.
+		For iOS, assign UIView to this variable.
+		The windowSize and FullScreen options will be ignored when using
+		the WindowId parameter. Default this is set to 0.
 		To make Irrlicht run inside the custom window, you still will
 		have to draw Irrlicht on your own. You can use this loop, as
 		usual:
