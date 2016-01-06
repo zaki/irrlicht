@@ -345,8 +345,10 @@ namespace irr
         
         delete static_cast<SIrrDeviceiOSDataStorage*>(DataStorage);
 
+#ifdef _IRR_COMPILE_WITH_IOS_BUILTIN_MAIN_
 		CIrrDelegateiOS* delegate = [UIApplication sharedApplication].delegate;
 		[delegate setDevice:nil];
+#endif
     }
 
     bool CIrrDeviceiOS::run()
