@@ -344,6 +344,9 @@ namespace irr
         deactivateAccelerometer();
         
         delete static_cast<SIrrDeviceiOSDataStorage*>(DataStorage);
+
+		CIrrDelegateiOS* delegate = [UIApplication sharedApplication].delegate;
+		[delegate setDevice:nil];
     }
 
     bool CIrrDeviceiOS::run()
