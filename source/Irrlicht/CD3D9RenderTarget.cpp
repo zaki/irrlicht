@@ -131,17 +131,20 @@ namespace irr
 					IDirect3DTexture9* currentTexture = (depthStencil && depthStencil->getDriverType() == EDT_DIRECT3D9) ?
 						static_cast<CD3D9Texture*>(depthStencil)->getDX9Texture() : 0;
 
-					const ECOLOR_FORMAT textureFormat = (depthStencil) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
-
-					if (IImage::isDepthFormat(textureFormat))
+					if (currentTexture)
 					{
-						DepthStencil = depthStencil;
-						DepthStencil->grab();
+						const ECOLOR_FORMAT textureFormat = (depthStencil) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
 
-						IDirect3DSurface9* currentSurface = 0;
-						currentTexture->GetSurfaceLevel(0, &currentSurface);
+						if (IImage::isDepthFormat(textureFormat))
+						{
+							DepthStencil = depthStencil;
+							DepthStencil->grab();
 
-						DepthStencilSurface = currentSurface;
+							IDirect3DSurface9* currentSurface = 0;
+							currentTexture->GetSurfaceLevel(0, &currentSurface);
+
+							DepthStencilSurface = currentSurface;
+						}
 					}
 				}
 

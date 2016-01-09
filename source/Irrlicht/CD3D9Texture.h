@@ -38,7 +38,9 @@ public:
 
 	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_;
 
+	IDirect3DBaseTexture9* getDX9BaseTexture() const;
 	IDirect3DTexture9* getDX9Texture() const;
+	IDirect3DCubeTexture9* getDX9CubeTexture() const;
 
 private:
 	friend class CD3D9Driver;

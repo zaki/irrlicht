@@ -65,7 +65,20 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 			AutoGenerateMipMaps = false;
 	}
 
-	HRESULT hr = Device->CreateTexture(Size.Width, Size.Height, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &Texture, NULL);
+	HRESULT hr = 0;
+	
+	switch (Type)
+	{
+	case ETT_2D:
+		Device->CreateTexture(Size.Width, Size.Height, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &Texture, NULL);
+		break;
+	case ETT_CUBEMAP:
+		Device->CreateCubeTexture(Size.Width, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &CubeTexture, NULL);
+		break;
+	default:
+		_IRR_DEBUG_BREAK_IF(true)
+		break;
+	}
 
 	if (SUCCEEDED(hr))
 	{
@@ -128,6 +141,9 @@ CD3D9Texture::~CD3D9Texture()
 	if (Texture)
 		Texture->Release();
 
+	if (CubeTexture)
+		CubeTexture->Release();
+
 	if (RTTSurface)
 		RTTSurface->Release();
 
@@ -151,7 +167,16 @@ void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 
 	if (!IsRenderTarget)
 	{
-		hr = Texture->LockRect(mipmapLevel, &rect, 0, lockReadOnly ? D3DLOCK_READONLY : 0);
+		if (Texture)
+		{
+			hr = Texture->LockRect(mipmapLevel, &rect, 0, lockReadOnly ? D3DLOCK_READONLY : 0);
+		}
+		else if (CubeTexture)
+		{
+			// TO-DO -> hardcoded D3DCUBEMAP_FACE_POSITIVE_X.
+			hr = CubeTexture->LockRect(D3DCUBEMAP_FACE_POSITIVE_X, mipmapLevel, &rect, 0, lockReadOnly ? D3DLOCK_READONLY : 0);
+		}
+		
 		if (FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
@@ -206,9 +231,21 @@ void CD3D9Texture::unlock()
 		return;
 
 	if (!IsRenderTarget)
-		Texture->UnlockRect(0);
+	{
+		if (Texture)
+		{
+			Texture->UnlockRect(LockLevel);
+		}
+		else if (CubeTexture)
+		{
+			// TO-DO -> hardcoded D3DCUBEMAP_FACE_POSITIVE_X.
+			CubeTexture->UnlockRect(D3DCUBEMAP_FACE_POSITIVE_X, LockLevel);
+		}
+	}
 	else if (RTTSurface)
+	{
 		RTTSurface->UnlockRect();
+	}
 
 	if (LockLevel == 0)
 		regenerateMipMapLevels(0);
@@ -248,13 +285,26 @@ void CD3D9Texture::regenerateMipMapLevels(void* data, u32 layer)
 	}
 	else
 	{
-		Texture->GenerateMipSubLevels();
+		if (Texture)
+			Texture->GenerateMipSubLevels();
+		else if (CubeTexture)
+			CubeTexture->GenerateMipSubLevels();
 	}
+}
+
+IDirect3DBaseTexture9* CD3D9Texture::getDX9BaseTexture() const
+{
+	return (Texture) ? static_cast<IDirect3DBaseTexture9*>(Texture) : static_cast<IDirect3DBaseTexture9*>(CubeTexture);
 }
 
 IDirect3DTexture9* CD3D9Texture::getDX9Texture() const
 {
 	return Texture;
+}
+
+IDirect3DCubeTexture9* CD3D9Texture::getDX9CubeTexture() const
+{
+	return CubeTexture;
 }
 
 void CD3D9Texture::generateRenderTarget()
@@ -367,12 +417,28 @@ void CD3D9Texture::uploadTexture(u32 layer, u32 level, void* data)
 	u32 width = Size.Width >> level;
 	u32 height = Size.Height >> level;
 
+	const D3DCUBEMAP_FACES cubeTextureType[6] =
+	{
+		D3DCUBEMAP_FACE_POSITIVE_X, D3DCUBEMAP_FACE_NEGATIVE_X,
+		D3DCUBEMAP_FACE_POSITIVE_Y, D3DCUBEMAP_FACE_NEGATIVE_Y,
+		D3DCUBEMAP_FACE_POSITIVE_Z, D3DCUBEMAP_FACE_NEGATIVE_Z
+	};
+
 	u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
 
 	HRESULT hr = 0;
 
 	D3DLOCKED_RECT lockRectangle;
-	hr = Texture->LockRect(level, &lockRectangle, 0, 0);
+
+	if (Texture)
+	{
+		hr = Texture->LockRect(level, &lockRectangle, 0, 0);
+	}
+	else if (CubeTexture)
+	{
+		const D3DCUBEMAP_FACES tmpCubeTextureType = cubeTextureType[(layer  < 6) ? layer : 0];
+		hr = CubeTexture->LockRect(tmpCubeTextureType, level, &lockRectangle, 0, 0);
+	}
 
 	if (FAILED(hr))
 	{
@@ -382,7 +448,15 @@ void CD3D9Texture::uploadTexture(u32 layer, u32 level, void* data)
 
 	memcpy(lockRectangle.pBits, data, dataSize);
 
-	hr = Texture->UnlockRect(level);
+	if (Texture)
+	{
+		hr = Texture->UnlockRect(level);
+	}
+	else if (CubeTexture)
+	{
+		const D3DCUBEMAP_FACES tmpCubeTextureType = cubeTextureType[(layer  < 6) ? layer : 0];
+		hr = CubeTexture->UnlockRect(tmpCubeTextureType, level);
+	}
 
 	if (FAILED(hr))
 	{

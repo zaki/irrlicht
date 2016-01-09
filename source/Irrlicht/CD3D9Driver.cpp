@@ -717,10 +717,10 @@ bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	}
 	else
 	{
-		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9Texture());
+		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9BaseTexture());
 
 		if (stage <= 4)
-            pID3DDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + stage, ((const CD3D9Texture*)texture)->getDX9Texture());
+            pID3DDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + stage, ((const CD3D9Texture*)texture)->getDX9BaseTexture());
 	}
 	return true;
 }
@@ -2827,7 +2827,7 @@ bool CD3D9Driver::reset()
 	{
 		if (Textures[i].Surface->isRenderTarget())
 		{
-			IDirect3DTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
+			IDirect3DBaseTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9BaseTexture();
 			if (tex)
 				tex->Release();
 		}
