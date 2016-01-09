@@ -137,15 +137,13 @@ CD3D9Texture::~CD3D9Texture()
 
 void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
+	if (LockData)
+		return LockData;
+
 	if (IImage::isCompressedFormat(ColorFormat) || mipmapLevel > 0) // TO-DO
 		return 0;
 
 	bool lockReadOnly = (mode == ETLM_READ_ONLY);
-	LockLevel = mipmapLevel;
-
-	if (LockData)
-		return LockData;
-
 	LockLevel = mipmapLevel;
 
 	HRESULT hr;

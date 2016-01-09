@@ -181,14 +181,14 @@ public:
 	{
 		// TO-DO - this method will be improved.
 
+		if (LockImage)
+			return LockImage->getData();
+
 		if (IImage::isCompressedFormat(ColorFormat) || IsRenderTarget || mipmapLevel > 0) // TO-DO
 			return 0;
 
 		LockReadOnly |= (mode == ETLM_READ_ONLY);
 		LockLevel = mipmapLevel;
-
-		if (LockImage)
-			return LockImage->getData();
 
 		if (KeepImage && mipmapLevel == 0)
 		{
