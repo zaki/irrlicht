@@ -83,8 +83,6 @@ public:
 			tmpImage = &Image;
 		}
 
-		Pitch = (*tmpImage)[0]->getPitch();
-
 		glGenTextures(1, &TextureName);
 
 		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
@@ -142,6 +140,8 @@ public:
 
 		OriginalSize = size;
 		Size = OriginalSize;
+
+		Pitch = Size.Width * IImage::getBitsPerPixelFromFormat(ColorFormat) / 8;
 
 		Driver->getColorFormatParameters(ColorFormat, InternalFormat, PixelFormat, PixelType, &Converter);
 
@@ -284,7 +284,7 @@ public:
 			Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
 			if (LockLevel == 0)
-				regenerateMipMapLevels(LockImage->getMipMapsData());
+				regenerateMipMapLevels(0);
 		}
 
 		LockImage->drop();
@@ -433,6 +433,8 @@ protected:
 		}
 
 		Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+
+		Pitch = Size.Width * IImage::getBitsPerPixelFromFormat(ColorFormat) / 8;
 	}
 
 	void uploadTexture(bool initTexture, u32 layer, u32 level, void* data)
@@ -485,7 +487,7 @@ protected:
 		}
 		else
 		{
-			u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, Size.Width, height);
+			u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
 
 			switch (TextureType)
 			{
