@@ -138,14 +138,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 
 CD3D9Texture::~CD3D9Texture()
 {
-	if (Texture)
-		Texture->Release();
-
-	if (CubeTexture)
-		CubeTexture->Release();
-
-	if (RTTSurface)
-		RTTSurface->Release();
+	releaseTexture();
 
 	if (Device)
 		Device->Release();
@@ -307,22 +300,46 @@ IDirect3DCubeTexture9* CD3D9Texture::getDX9CubeTexture() const
 	return CubeTexture;
 }
 
+void CD3D9Texture::releaseTexture()
+{
+	if (RTTSurface)
+	{
+		if (RTTSurface->Release() == 0)
+			RTTSurface = 0;
+	}
+
+	if (Texture)
+	{
+		if (Texture->Release() == 0)
+			Texture = 0;
+	}
+
+	if (CubeTexture)
+	{
+		if (CubeTexture->Release() == 0)
+			CubeTexture = 0;
+	}
+}
+
 void CD3D9Texture::generateRenderTarget()
 {
-	DWORD flag = (IImage::isDepthFormat(ColorFormat)) ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
-
-	HRESULT hr = Device->CreateTexture(Size.Width, Size.Height, 1, flag, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
-
-	if (FAILED(hr))
+	if (!Texture)
 	{
-		if (D3DERR_INVALIDCALL == hr)
-			os::Printer::log("Could not create render target texture", "Invalid Call");
-		else if (D3DERR_OUTOFVIDEOMEMORY == hr)
-			os::Printer::log("Could not create render target texture", "Out of Video Memory");
-		else if (E_OUTOFMEMORY == hr)
-			os::Printer::log("Could not create render target texture", "Out of Memory");
-		else
-			os::Printer::log("Could not create render target texture");
+		DWORD flag = (IImage::isDepthFormat(ColorFormat)) ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
+
+		HRESULT hr = Device->CreateTexture(Size.Width, Size.Height, 1, flag, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
+
+		if (FAILED(hr))
+		{
+			if (D3DERR_INVALIDCALL == hr)
+				os::Printer::log("Could not create render target texture", "Invalid Call");
+			else if (D3DERR_OUTOFVIDEOMEMORY == hr)
+				os::Printer::log("Could not create render target texture", "Out of Video Memory");
+			else if (E_OUTOFMEMORY == hr)
+				os::Printer::log("Could not create render target texture", "Out of Memory");
+			else
+				os::Printer::log("Could not create render target texture");
+		}
 	}
 }
 

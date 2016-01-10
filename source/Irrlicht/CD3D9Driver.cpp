@@ -2821,15 +2821,33 @@ bool CD3D9Driver::reset()
 	for (i = 0; i<RenderTargets.size(); ++i)
 	{
 		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
+		{
 			static_cast<CD3D9RenderTarget*>(RenderTargets[i])->releaseSurfaces();
+
+			const core::array<ITexture*> texArray = RenderTargets[i]->getTexture();
+
+			for (u32 j = 0; j < texArray.size(); ++j)
+			{
+				CD3D9Texture* tex = static_cast<CD3D9Texture*>(texArray[j]);
+				
+				if (tex)
+					tex->releaseTexture();
+			}
+
+			CD3D9Texture* tex = static_cast<CD3D9Texture*>(RenderTargets[i]->getDepthStencil());
+
+			if (tex)
+				tex->releaseTexture();
+		}
 	}
 	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 		{
-			IDirect3DBaseTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9BaseTexture();
+			CD3D9Texture* tex = static_cast<CD3D9Texture*>(Textures[i].Surface);
+
 			if (tex)
-				tex->Release();
+				tex->releaseTexture();
 		}
 	}
 	for (i=0; i<OcclusionQueries.size(); ++i)
@@ -2878,7 +2896,24 @@ bool CD3D9Driver::reset()
 	for (i = 0; i<RenderTargets.size(); ++i)
 	{
 		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
+		{
+			const core::array<ITexture*> texArray = RenderTargets[i]->getTexture();
+
+			for (u32 j = 0; j < texArray.size(); ++j)
+			{
+				CD3D9Texture* tex = static_cast<CD3D9Texture*>(texArray[j]);
+
+				if (tex)
+					tex->generateRenderTarget();
+			}
+
+			CD3D9Texture* tex = static_cast<CD3D9Texture*>(RenderTargets[i]->getDepthStencil());
+
+			if (tex)
+				tex->generateRenderTarget();
+
 			static_cast<CD3D9RenderTarget*>(RenderTargets[i])->generateSurfaces();
+		}
 	}
 
 	// restore occlusion queries

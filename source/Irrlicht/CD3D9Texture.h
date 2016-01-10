@@ -45,6 +45,8 @@ public:
 private:
 	friend class CD3D9Driver;
 
+	void releaseTexture();
+
 	void generateRenderTarget();
 
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
