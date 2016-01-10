@@ -595,6 +595,7 @@ namespace video
 					{
 						TextureLayer[i].TextureWrapU = (E_TEXTURE_CLAMP)value;
 						TextureLayer[i].TextureWrapV = (E_TEXTURE_CLAMP)value;
+						TextureLayer[i].TextureWrapW = (E_TEXTURE_CLAMP)value;
 					}
 				}
 				break;
@@ -655,12 +656,7 @@ namespace video
 				case EMF_TEXTURE_WRAP:
 					return !(TextureLayer[0].TextureWrapU ||
 							TextureLayer[0].TextureWrapV ||
-							TextureLayer[1].TextureWrapU ||
-							TextureLayer[1].TextureWrapV ||
-							TextureLayer[2].TextureWrapU ||
-							TextureLayer[2].TextureWrapV ||
-							TextureLayer[3].TextureWrapU ||
-							TextureLayer[3].TextureWrapV);
+							TextureLayer[0].TextureWrapW);
 				case EMF_ANTI_ALIASING:
 					return (AntiAliasing==1);
 				case EMF_COLOR_MASK:

@@ -85,8 +85,18 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 		for (u32 i = 0; i < tmpImage.size(); ++i)
 			uploadTexture(i, 0, tmpImage[i]->getData());
 
+		bool autoGenerateRequired = true;
+
 		for (u32 i = 0; i < tmpImage.size(); ++i)
-			regenerateMipMapLevels(tmpImage[i]->getMipMapsData(), i);
+		{
+			void* mipmapsData = tmpImage[i]->getMipMapsData();
+
+			if (autoGenerateRequired || mipmapsData)
+				regenerateMipMapLevels(mipmapsData, i);
+
+			if (!mipmapsData)
+				autoGenerateRequired = false;
+		}
 	}
 	else
 	{
@@ -123,7 +133,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 
 	if (!Driver->queryFeature(EVDF_TEXTURE_NPOT))
 	{
-		Size = OriginalSize.getOptimalSize(true, !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+		Size = Size.getOptimalSize(true, !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 		if (Size != OriginalSize)
 			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
@@ -421,7 +431,9 @@ void CD3D9Texture::getImageValues(const IImage* image)
 		Size.Width = (u32)(Driver->Caps.MaxTextureHeight * ratio);
 	}
 
-	Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	bool needSquare = (!Driver->queryFeature(EVDF_TEXTURE_NSQUARE) || Type == ETT_CUBEMAP);
+
+	Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), needSquare, true, Driver->Caps.MaxTextureWidth);
 
 	Pitch = Size.Width * IImage::getBitsPerPixelFromFormat(ColorFormat) / 8;
 }

@@ -28,15 +28,15 @@ class COGLCoreTexture : public ITexture
 public:
 	struct SStatesCache
 	{
-		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT),
-			LODBias(0), AnisotropicFilter(0),
-			BilinearFilter(false), TrilinearFilter(false),
+		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT), WrapW(ETC_REPEAT),
+			LODBias(0), AnisotropicFilter(0), BilinearFilter(false), TrilinearFilter(false),
 			MipMapStatus(false), IsCached(false)
 		{
 		}
 
 		u8 WrapU;
 		u8 WrapV;
+		u8 WrapW;
 		s8 LODBias;
 		u8 AnisotropicFilter;
 		bool BilinearFilter;
@@ -111,8 +111,18 @@ public:
 
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
+		bool autoGenerateRequired = true;
+
 		for (u32 i = 0; i < (*tmpImage).size(); ++i)
-			regenerateMipMapLevels((*tmpImage)[i]->getMipMapsData(), i);
+		{
+			void* mipmapsData = (*tmpImage)[i]->getMipMapsData();
+
+			if (autoGenerateRequired || mipmapsData)
+				regenerateMipMapLevels(mipmapsData, i);
+
+			if (!mipmapsData)
+				autoGenerateRequired = false;
+		}
 
 		if (!KeepImage)
 		{
@@ -154,9 +164,11 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 		StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
 		StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
+		StatesCache.WrapW = ETC_CLAMP_TO_EDGE;
 
 		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
 
@@ -432,7 +444,9 @@ protected:
 			Size.Width = (u32)(Driver->MaxTextureSize * ratio);
 		}
 
-		Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+		bool needSquare = (!Driver->queryFeature(EVDF_TEXTURE_NSQUARE) || Type == ETT_CUBEMAP);
+
+		Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), needSquare, true, Driver->MaxTextureSize);
 
 		Pitch = Size.Width * IImage::getBitsPerPixelFromFormat(ColorFormat) / 8;
 	}

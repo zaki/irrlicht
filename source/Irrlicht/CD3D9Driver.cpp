@@ -2303,9 +2303,18 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSU, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
 		// If separate UV not supported reuse U for V
 		if (!(Caps.TextureAddressCaps & D3DPTADDRESSCAPS_INDEPENDENTUV))
+		{
 			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
-		else if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapV != material.TextureLayer[st].TextureWrapV)
-			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapV));
+			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSW, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
+		}
+		else
+		{
+			if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapV != material.TextureLayer[st].TextureWrapV)
+				pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapV));
+
+			if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapW != material.TextureLayer[st].TextureWrapW)
+				pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSW, getTextureWrapMode(material.TextureLayer[st].TextureWrapW));
+		}
 
 		// Bilinear, trilinear, and anisotropic filter
 		if (resetAllRenderstates ||

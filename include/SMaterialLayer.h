@@ -49,16 +49,10 @@ namespace video
 	{
 	public:
 		//! Default constructor
-		SMaterialLayer()
-			: Texture(0),
-				TextureWrapU(ETC_REPEAT),
-				TextureWrapV(ETC_REPEAT),
-				BilinearFilter(true),
-				TrilinearFilter(false),
-				AnisotropicFilter(0),
-				LODBias(0),
-				TextureMatrix(0)
-			{}
+		SMaterialLayer() : Texture(0), TextureWrapU(ETC_REPEAT), TextureWrapV(ETC_REPEAT), TextureWrapW(ETC_REPEAT),
+			BilinearFilter(true), TrilinearFilter(false), AnisotropicFilter(0), LODBias(0), TextureMatrix(0)
+		{
+		}
 
 		//! Copy constructor
 		/** \param other Material layer to copy from. */
@@ -109,6 +103,7 @@ namespace video
 			}
 			TextureWrapU = other.TextureWrapU;
 			TextureWrapV = other.TextureWrapV;
+			TextureWrapW = other.TextureWrapW;
 			BilinearFilter = other.BilinearFilter;
 			TrilinearFilter = other.TrilinearFilter;
 			AnisotropicFilter = other.AnisotropicFilter;
@@ -161,6 +156,7 @@ namespace video
 				Texture != b.Texture ||
 				TextureWrapU != b.TextureWrapU ||
 				TextureWrapV != b.TextureWrapV ||
+				TextureWrapW != b.TextureWrapW ||
 				BilinearFilter != b.BilinearFilter ||
 				TrilinearFilter != b.TrilinearFilter ||
 				AnisotropicFilter != b.AnisotropicFilter ||
@@ -187,6 +183,7 @@ namespace video
 		/** Values are taken from E_TEXTURE_CLAMP. */
 		u8 TextureWrapU:4;
 		u8 TextureWrapV:4;
+		u8 TextureWrapW:4;
 
 		//! Is bilinear filtering enabled? Default: true
 		bool BilinearFilter:1;

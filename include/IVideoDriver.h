@@ -202,6 +202,7 @@ namespace video
 						case EMF_TEXTURE_WRAP:
 							material.TextureLayer[0].TextureWrapU = Material.TextureLayer[0].TextureWrapU;
 							material.TextureLayer[0].TextureWrapV = Material.TextureLayer[0].TextureWrapV;
+							material.TextureLayer[0].TextureWrapW = Material.TextureLayer[0].TextureWrapW;
 							break;
 						case EMF_ANTI_ALIASING: material.AntiAliasing = Material.AntiAliasing; break;
 						case EMF_COLOR_MASK: material.ColorMask = Material.ColorMask; break;

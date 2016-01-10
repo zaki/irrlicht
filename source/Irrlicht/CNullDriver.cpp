@@ -202,6 +202,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 		InitMaterial2D.TextureLayer[i].BilinearFilter=false;
 		InitMaterial2D.TextureLayer[i].TextureWrapU=video::ETC_REPEAT;
 		InitMaterial2D.TextureLayer[i].TextureWrapV=video::ETC_REPEAT;
+		InitMaterial2D.TextureLayer[i].TextureWrapW = video::ETC_REPEAT;
 	}
 	OverrideMaterial2D=InitMaterial2D;
 }
@@ -2096,6 +2097,9 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	prefix="TextureWrapV";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		attr->addEnum((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].TextureWrapV, aTextureClampNames);
+	prefix="TextureWrapW";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		attr->addEnum((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].TextureWrapW, aTextureClampNames);
 	prefix="LODBias";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		attr->addInt((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].LODBias);
@@ -2185,6 +2189,7 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 		{
 			outMaterial.TextureLayer[i].TextureWrapU = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+core::stringc(i+1)).c_str(), aTextureClampNames);
 			outMaterial.TextureLayer[i].TextureWrapV = outMaterial.TextureLayer[i].TextureWrapU;
+			outMaterial.TextureLayer[i].TextureWrapW = outMaterial.TextureLayer[i].TextureWrapW;
 		}
 	}
 	else
@@ -2193,6 +2198,9 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 		{
 			outMaterial.TextureLayer[i].TextureWrapU = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"U"+core::stringc(i+1)).c_str(), aTextureClampNames);
 			outMaterial.TextureLayer[i].TextureWrapV = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"V"+core::stringc(i+1)).c_str(), aTextureClampNames);
+
+			if (attr->existsAttribute((prefix+"W"+core::stringc(i+1)).c_str())) // legacy
+				outMaterial.TextureLayer[i].TextureWrapW = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"W"+core::stringc(i+1)).c_str(), aTextureClampNames);
 		}
 	}
 

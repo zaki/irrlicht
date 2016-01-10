@@ -1065,6 +1065,8 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 				material.Material.TextureLayer[i].TextureWrapU=video::ETC_CLAMP;
 			if (material.Textures[i]->Flags & 0x20) // Clamp V
 				material.Material.TextureLayer[i].TextureWrapV=video::ETC_CLAMP;
+			if (material.Textures[i]->Flags & 0x20) // Clamp R
+				material.Material.TextureLayer[i].TextureWrapW=video::ETC_CLAMP;
 		}
 	}
 
