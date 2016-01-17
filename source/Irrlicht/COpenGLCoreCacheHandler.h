@@ -17,13 +17,13 @@ namespace irr
 namespace video
 {
 
-template <class TOGLDriver, class TOGLTexture>
-class COGLCoreCacheHandler
+template <class TOpenGLDriver, class TOpenGLTexture>
+class COpenGLCoreCacheHandler
 {
 	class STextureCache
 	{
 	public:
-		STextureCache(COGLCoreCacheHandler* cacheHandler, u32 textureCount) :
+		STextureCache(COpenGLCoreCacheHandler* cacheHandler, u32 textureCount) :
 			CacheHandler(cacheHandler), DriverType(cacheHandler->getDriverType()), TextureCount(textureCount)
 		{
 			for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
@@ -37,7 +37,7 @@ class COGLCoreCacheHandler
 			clear();
 		}
 
-		const TOGLTexture* operator[](int index) const
+		const TOpenGLTexture* operator[](int index) const
 		{
 			if (static_cast<u32>(index) < MATERIAL_MAX_TEXTURES)
 				return Texture[static_cast<u32>(index)];
@@ -45,7 +45,7 @@ class COGLCoreCacheHandler
 			return 0;
 		}
 
-		const TOGLTexture* get(u32 index) const
+		const TOpenGLTexture* get(u32 index) const
 		{
 			if (index < MATERIAL_MAX_TEXTURES)
 				return Texture[index];
@@ -63,7 +63,7 @@ class COGLCoreCacheHandler
 			{
 				CacheHandler->setActiveTexture(GL_TEXTURE0 + index);
 
-				const TOGLTexture* prevTexture = Texture[index];
+				const TOpenGLTexture* prevTexture = Texture[index];
 
 				if (texture != prevTexture)
 				{
@@ -75,7 +75,7 @@ class COGLCoreCacheHandler
 						{
 							texture->grab();
 
-							const TOGLTexture* curTexture = static_cast<const TOGLTexture*>(texture);
+							const TOpenGLTexture* curTexture = static_cast<const TOpenGLTexture*>(texture);
 							const GLenum curTextureType = curTexture->getOpenGLTextureType();
 							const GLenum prevTextureType = (prevTexture) ? prevTexture->getOpenGLTextureType() : curTextureType;
 
@@ -93,7 +93,7 @@ class COGLCoreCacheHandler
 								glEnable(curTextureType);
 #endif
 
-							glBindTexture(curTextureType, static_cast<const TOGLTexture*>(texture)->getOpenGLTextureName());
+							glBindTexture(curTextureType, static_cast<const TOpenGLTexture*>(texture)->getOpenGLTextureName());
 						}
 						else
 						{
@@ -114,7 +114,7 @@ class COGLCoreCacheHandler
 #endif
 					}
 
-					Texture[index] = static_cast<const TOGLTexture*>(texture);
+					Texture[index] = static_cast<const TOpenGLTexture*>(texture);
 
 					if (prevTexture)
 						prevTexture->drop();
@@ -148,7 +148,7 @@ class COGLCoreCacheHandler
 			{
 				if (Texture[i])
 				{
-					const TOGLTexture* prevTexture = Texture[i];
+					const TOpenGLTexture* prevTexture = Texture[i];
 
 					Texture[i] = 0;
 
@@ -158,22 +158,22 @@ class COGLCoreCacheHandler
 		}
 
 	private:
-		COGLCoreCacheHandler* CacheHandler;
+		COpenGLCoreCacheHandler* CacheHandler;
 
 		E_DRIVER_TYPE DriverType;
 
-		const TOGLTexture* Texture[MATERIAL_MAX_TEXTURES];
+		const TOpenGLTexture* Texture[MATERIAL_MAX_TEXTURES];
 		u32 TextureCount;
 	};
 
 public:
-	COGLCoreCacheHandler(TOGLDriver* driver) :
+	COpenGLCoreCacheHandler(TOpenGLDriver* driver) :
 		Driver(driver), TextureCache(STextureCache(this, Driver->getFeature().TextureUnit)), FrameBufferCount(0),
 		BlendEquation(0), BlendSourceRGB(0), BlendDestinationRGB(0), BlendSourceAlpha(0), BlendDestinationAlpha(0),
 		Blend(0), ColorMask(0), CullFaceMode(GL_BACK), CullFace(false), DepthFunc(GL_LESS), DepthMask(true),
 		DepthTest(false), FrameBufferID(0), ProgramID(0), ActiveTexture(GL_TEXTURE0), ViewportX(0), ViewportY(0)
 	{
-		const COGLCoreFeature& feature = Driver->getFeature();
+		const COpenGLCoreFeature& feature = Driver->getFeature();
 
 		FrameBufferCount = core::max_(static_cast<GLuint>(1), static_cast<GLuint>(feature.MultipleRenderTarget));
 
@@ -232,7 +232,7 @@ public:
 		glViewport(ViewportX, ViewportY, ViewportWidth, ViewportHeight);
 	}
 
-	virtual ~COGLCoreCacheHandler()
+	virtual ~COpenGLCoreCacheHandler()
 	{
 		delete[] BlendEquation;
 		delete[] BlendSourceRGB;
@@ -540,7 +540,7 @@ public:
 	}
 
 protected:
-	TOGLDriver* Driver;
+	TOpenGLDriver* Driver;
 
 	STextureCache TextureCache;
 

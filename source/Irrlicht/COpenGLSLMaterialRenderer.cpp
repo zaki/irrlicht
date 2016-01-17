@@ -24,7 +24,7 @@
 #include "COpenGLCacheHandler.h"
 #include "COpenGLMaterialRenderer.h"
 
-#include "COGLCoreFeature.h"
+#include "COpenGLCoreFeature.h"
 
 namespace irr
 {

@@ -266,7 +266,7 @@ namespace video
 		Feature.ColorAttachment = 1;
 	}
 
-	const COGLCoreFeature& COGLES2ExtensionHandler::getFeature() const
+	const COpenGLCoreFeature& COGLES2ExtensionHandler::getFeature() const
 	{
 		return Feature;
 	}

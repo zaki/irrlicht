@@ -8,9 +8,9 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
-#include "COGLCoreTexture.h"
-#include "COGLCoreRenderTarget.h"
-#include "COGLCoreCacheHandler.h"
+#include "COpenGLCoreTexture.h"
+#include "COpenGLCoreRenderTarget.h"
+#include "COpenGLCoreCacheHandler.h"
 
 #include "COGLESMaterialRenderer.h"
 

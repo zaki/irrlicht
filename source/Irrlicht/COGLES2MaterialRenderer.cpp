@@ -14,8 +14,8 @@
 
 #include "COGLES2Driver.h"
 
-#include "COGLCoreTexture.h"
-#include "COGLCoreCacheHandler.h"
+#include "COpenGLCoreTexture.h"
+#include "COpenGLCoreCacheHandler.h"
 
 namespace irr
 {

@@ -104,21 +104,21 @@ namespace video
 
 	// Forward declarations.
 
-	class COGLCoreFeature;
+	class COpenGLCoreFeature;
 
-	template <class TOGLDriver>
-	class COGLCoreTexture;
+	template <class TOpenGLDriver>
+	class COpenGLCoreTexture;
 
-	template <class TOGLDriver, class TOGLTexture>
-	class COGLCoreRenderTarget;
+	template <class TOpenGLDriver, class TOpenGLTexture>
+	class COpenGLCoreRenderTarget;
 
-	template <class TOGLDriver, class TOGLTexture>
-	class COGLCoreCacheHandler;
+	template <class TOpenGLDriver, class TOpenGLTexture>
+	class COpenGLCoreCacheHandler;
 
 	class COGLES1Driver;
-	typedef COGLCoreTexture<COGLES1Driver> COGLES1Texture;
-	typedef COGLCoreRenderTarget<COGLES1Driver, COGLES1Texture> COGLES1RenderTarget;
-	typedef COGLCoreCacheHandler<COGLES1Driver, COGLES1Texture> COGLES1CacheHandler;
+	typedef COpenGLCoreTexture<COGLES1Driver> COGLES1Texture;
+	typedef COpenGLCoreRenderTarget<COGLES1Driver, COGLES1Texture> COGLES1RenderTarget;
+	typedef COpenGLCoreCacheHandler<COGLES1Driver, COGLES1Texture> COGLES1CacheHandler;
 
 }
 }

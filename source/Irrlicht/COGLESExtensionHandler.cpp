@@ -270,7 +270,7 @@ namespace irr
 #endif
 	}
 
-	const COGLCoreFeature& COGLES1ExtensionHandler::getFeature() const
+	const COpenGLCoreFeature& COGLES1ExtensionHandler::getFeature() const
 	{
 		return Feature;
 	}

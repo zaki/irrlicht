@@ -750,7 +750,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 }
 
-const COGLCoreFeature& COpenGLExtensionHandler::getFeature() const
+const COpenGLCoreFeature& COpenGLExtensionHandler::getFeature() const
 {
 	return Feature;
 }

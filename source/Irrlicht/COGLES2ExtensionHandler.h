@@ -16,7 +16,7 @@
 
 #include "COGLES2Common.h"
 
-#include "COGLCoreFeature.h"
+#include "COpenGLCoreFeature.h"
 
 namespace irr
 {
@@ -174,7 +174,7 @@ namespace video
 
 		void initExtensions();
 
-		const COGLCoreFeature& getFeature() const;
+		const COpenGLCoreFeature& getFeature() const;
 
 		bool queryFeature(video::E_VIDEO_DRIVER_FEATURE feature) const
 		{
@@ -338,7 +338,7 @@ namespace video
 		}
 
 	protected:
-		COGLCoreFeature Feature;
+		COpenGLCoreFeature Feature;
 
 		u16 Version;
 		u8 MaxAnisotropy;

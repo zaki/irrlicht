@@ -15,7 +15,7 @@
 
 #include "COpenGLCommon.h"
 
-#include "COGLCoreFeature.h"
+#include "COpenGLCoreFeature.h"
 
 namespace irr
 {
@@ -997,7 +997,7 @@ class COpenGLExtensionHandler
 	// deferred initialization
 	void initExtensions(bool stencilBuffer);
 
-	const COGLCoreFeature& getFeature() const;
+	const COpenGLCoreFeature& getFeature() const;
 
 	//! queries the features of the driver, returns true if feature is available
 	bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
@@ -1187,7 +1187,7 @@ class COpenGLExtensionHandler
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
 
 	protected:
-		COGLCoreFeature Feature;
+		COpenGLCoreFeature Feature;
 
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		PFNGLACTIVETEXTUREARBPROC pGlActiveTextureARB;

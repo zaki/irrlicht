@@ -1011,10 +1011,10 @@
     <ClInclude Include="CGLXManager.h" />
     <ClInclude Include="CMeshCache.h" />
     <ClInclude Include="CMeshManipulator.h" />
-    <ClInclude Include="COGLCoreCacheHandler.h" />
-    <ClInclude Include="COGLCoreFeature.h" />
-    <ClInclude Include="COGLCoreRenderTarget.h" />
-    <ClInclude Include="COGLCoreTexture.h" />
+    <ClInclude Include="COpenGLCoreCacheHandler.h" />
+    <ClInclude Include="COpenGLCoreFeature.h" />
+    <ClInclude Include="COpenGLCoreRenderTarget.h" />
+    <ClInclude Include="COpenGLCoreTexture.h" />
     <ClInclude Include="COGLES2Common.h" />
     <ClInclude Include="COGLES2Driver.h" />
     <ClInclude Include="COGLES2ExtensionHandler.h" />
