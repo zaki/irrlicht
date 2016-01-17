@@ -14,6 +14,8 @@
 #define IRRLICHT_VERSION_SVN alpha
 #define IRRLICHT_SDK_VERSION "1.9.0"
 
+#include "../../irrlicht-config/IrrCustomConfig.h"
+
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
 //! The defines for different operating system are:

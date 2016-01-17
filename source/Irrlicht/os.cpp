@@ -143,6 +143,7 @@ namespace os
 // ----------------------------------------------------------------
 
 #include <android/log.h>
+#include <ctime>
 
 namespace irr
 {
