@@ -22,8 +22,8 @@ namespace irr
 namespace video
 {
 
-template <class TOGLDriver>
-class COGLCoreTexture : public ITexture
+template <class TOpenGLDriver>
+class COpenGLCoreTexture : public ITexture
 {
 public:
 	struct SStatesCache
@@ -45,7 +45,7 @@ public:
 		bool IsCached;
 	};
 
-	COGLCoreTexture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, TOGLDriver* driver) : ITexture(name, type), Driver(driver), TextureType(GL_TEXTURE_2D),
+	COpenGLCoreTexture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, TOpenGLDriver* driver) : ITexture(name, type), Driver(driver), TextureType(GL_TEXTURE_2D),
 		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0),
 		KeepImage(false), AutoGenerateMipMaps(false)
 	{
@@ -85,7 +85,7 @@ public:
 
 		glGenTextures(1, &TextureName);
 
-		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
+		const COpenGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
 		glTexParameteri(TextureType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -133,7 +133,7 @@ public:
 		}
 	}
 
-	COGLCoreTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, TOGLDriver* driver) : ITexture(name, ETT_2D), Driver(driver), TextureType(GL_TEXTURE_2D),
+	COpenGLCoreTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, TOpenGLDriver* driver) : ITexture(name, ETT_2D), Driver(driver), TextureType(GL_TEXTURE_2D),
 		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(false),
 		AutoGenerateMipMaps(false)
 	{
@@ -157,7 +157,7 @@ public:
 
 		glGenTextures(1, &TextureName);
 
-		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
+		const COpenGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -175,7 +175,7 @@ public:
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 	}
 
-	virtual ~COGLCoreTexture()
+	virtual ~COpenGLCoreTexture()
 	{
 		Driver->getCacheHandler()->getTextureCache().remove(this);
 
@@ -214,7 +214,7 @@ public:
 
 			if (LockImage && mode != ETLM_WRITE_ONLY)
 			{
-				COGLCoreTexture* tmpTexture = new COGLCoreTexture("OGL_CORE_LOCK_TEXTURE", lockImageSize, ColorFormat, Driver);
+				COpenGLCoreTexture* tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", lockImageSize, ColorFormat, Driver);
 
 				GLuint tmpFBO = 0;
 				Driver->irrGlGenFramebuffers(1, &tmpFBO);
@@ -288,7 +288,7 @@ public:
 
 		if (!LockReadOnly)
 		{
-			const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
+			const COpenGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 			Driver->getCacheHandler()->getTextureCache().set(0, this);
 
 			uploadTexture(false, 0, LockLevel, LockImage->getData());
@@ -311,7 +311,7 @@ public:
 		if (!HasMipMaps || (!data && !AutoGenerateMipMaps) || (Size.Width <= 1 && Size.Height <= 1))
 			return;
 
-		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
+		const COpenGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 		Driver->getCacheHandler()->getTextureCache().set(0, this);
 
 		if (data)
@@ -519,7 +519,7 @@ protected:
 		}
 	}
 
-	TOGLDriver* Driver;
+	TOpenGLDriver* Driver;
 
 	GLenum TextureType;
 	GLuint TextureName;

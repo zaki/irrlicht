@@ -11,16 +11,16 @@
 
 #include "COpenGLCommon.h"
 
-#include "COGLCoreFeature.h"
-#include "COGLCoreTexture.h"
-#include "COGLCoreCacheHandler.h"
+#include "COpenGLCoreFeature.h"
+#include "COpenGLCoreTexture.h"
+#include "COpenGLCoreCacheHandler.h"
 
 namespace irr
 {
 namespace video
 {
 
-	class COpenGLCacheHandler : public COGLCoreCacheHandler<COpenGLDriver, COpenGLTexture>
+	class COpenGLCacheHandler : public COpenGLCoreCacheHandler<COpenGLDriver, COpenGLTexture>
 	{
 	public:
 		COpenGLCacheHandler(COpenGLDriver* driver);

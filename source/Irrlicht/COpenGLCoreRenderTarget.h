@@ -16,15 +16,15 @@ namespace irr
 namespace video
 {
 
-template <class TOGLDriver, class TOGLTexture>
-class COGLCoreRenderTarget : public IRenderTarget
+template <class TOpenGLDriver, class TOpenGLTexture>
+class COpenGLCoreRenderTarget : public IRenderTarget
 {
 public:
-	COGLCoreRenderTarget(TOGLDriver* driver) : AssignedDepth(false), AssignedStencil(false), RequestTextureUpdate(false), RequestDepthStencilUpdate(false),
+	COpenGLCoreRenderTarget(TOpenGLDriver* driver) : AssignedDepth(false), AssignedStencil(false), RequestTextureUpdate(false), RequestDepthStencilUpdate(false),
 		BufferID(0), ColorAttachment(0), MultipleRenderTarget(0), Driver(driver)
 	{
 #ifdef _DEBUG
-		setDebugName("COGLCoreRenderTarget");
+		setDebugName("COpenGLCoreRenderTarget");
 #endif
 
 		DriverType = Driver->getDriverType();
@@ -43,7 +43,7 @@ public:
 			AssignedTexture[i] = GL_NONE;
 	}
 
-	virtual ~COGLCoreRenderTarget()
+	virtual ~COpenGLCoreRenderTarget()
 	{
 		if (ColorAttachment > 0 && BufferID != 0)
 			Driver->irrGlDeleteFramebuffers(1, &BufferID);
@@ -88,7 +88,7 @@ public:
 
 				for (u32 i = 0; i < Texture.size(); ++i)
 				{
-					TOGLTexture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<TOGLTexture*>(texture[i]) : 0;
+					TOpenGLTexture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(texture[i]) : 0;
 
 					GLuint textureID = 0;
 
@@ -118,7 +118,7 @@ public:
 
 			if (depthStencilUpdate)
 			{
-				TOGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOGLTexture*>(depthStencil) : 0;
+				TOpenGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(depthStencil) : 0;
 
 				GLuint textureID = 0;
 
@@ -178,7 +178,7 @@ public:
 
 				for (u32 i = 0; i < textureSize; ++i)
 				{
-					GLuint textureID = (Texture[i]) ? static_cast<TOGLTexture*>(Texture[i])->getOpenGLTextureName() : 0;
+					GLuint textureID = (Texture[i]) ? static_cast<TOpenGLTexture*>(Texture[i])->getOpenGLTextureName() : 0;
 
 					if (textureID != 0)
 					{
@@ -216,7 +216,7 @@ public:
 
 				if (IImage::isDepthFormat(textureFormat))
 				{
-					GLuint textureID = static_cast<TOGLTexture*>(DepthStencil)->getOpenGLTextureName();
+					GLuint textureID = static_cast<TOpenGLTexture*>(DepthStencil)->getOpenGLTextureName();
 
 					Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureID, 0);
 
@@ -297,7 +297,7 @@ public:
 	}
 
 protected:
-	bool checkFBO(TOGLDriver* driver)
+	bool checkFBO(TOpenGLDriver* driver)
 	{
 		if (ColorAttachment == 0)
 			return true;
@@ -351,7 +351,7 @@ protected:
 	u32 ColorAttachment;
 	u32 MultipleRenderTarget;
 
-	TOGLDriver* Driver;
+	TOpenGLDriver* Driver;
 };
 
 }

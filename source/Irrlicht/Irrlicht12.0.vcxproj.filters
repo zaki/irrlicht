@@ -1321,16 +1321,16 @@
     <ClInclude Include="COpenGLSLMaterialRenderer.h">
       <Filter>Irrlicht\video\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="COGLCoreCacheHandler.h">
+    <ClInclude Include="COpenGLCoreCacheHandler.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
-    <ClInclude Include="COGLCoreFeature.h">
+    <ClInclude Include="COpenGLCoreFeature.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
-    <ClInclude Include="COGLCoreRenderTarget.h">
+    <ClInclude Include="COpenGLCoreRenderTarget.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
-    <ClInclude Include="COGLCoreTexture.h">
+    <ClInclude Include="COpenGLCoreTexture.h">
       <Filter>Irrlicht\video\OpenGL Core</Filter>
     </ClInclude>
     <ClInclude Include="CGLXManager.h">

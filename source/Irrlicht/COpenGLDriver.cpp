@@ -17,8 +17,8 @@
 #include "COpenGLNormalMapRenderer.h"
 #include "COpenGLParallaxMapRenderer.h"
 
-#include "COGLCoreTexture.h"
-#include "COGLCoreRenderTarget.h"
+#include "COpenGLCoreTexture.h"
+#include "COpenGLCoreRenderTarget.h"
 
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 #include <SDL/SDL.h>

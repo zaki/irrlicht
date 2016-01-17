@@ -16,14 +16,14 @@ namespace irr
 namespace video
 {
 
-class COGLCoreFeature
+class COpenGLCoreFeature
 {
 public:
-	COGLCoreFeature() : BlendOperation(false), ColorAttachment(0), MultipleRenderTarget(0), TextureUnit(1)
+	COpenGLCoreFeature() : BlendOperation(false), ColorAttachment(0), MultipleRenderTarget(0), TextureUnit(1)
 	{
 	}
 
-	virtual ~COGLCoreFeature()
+	virtual ~COpenGLCoreFeature()
 	{
 	}
 

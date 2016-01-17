@@ -1022,10 +1022,10 @@
 		5E34C9EE1B7F6CCC00F212E8 /* CNSOGLManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CNSOGLManager.mm; sourceTree = "<group>"; };
 		5E34C9F31B7F6E3400F212E8 /* libIrrlicht.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libIrrlicht.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E79088A1C10EC6C00DFE7FE /* IRenderTarget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IRenderTarget.h; path = ../../include/IRenderTarget.h; sourceTree = "<group>"; };
-		5E79088D1C10EE6700DFE7FE /* COGLCoreCacheHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COGLCoreCacheHandler.h; sourceTree = "<group>"; };
-		5E79088E1C10EE6700DFE7FE /* COGLCoreFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COGLCoreFeature.h; sourceTree = "<group>"; };
-		5E79088F1C10EE6700DFE7FE /* COGLCoreRenderTarget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COGLCoreRenderTarget.h; sourceTree = "<group>"; };
-		5E7908901C10EE6700DFE7FE /* COGLCoreTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COGLCoreTexture.h; sourceTree = "<group>"; };
+		5E79088D1C10EE6700DFE7FE /* COpenGLCoreCacheHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COpenGLCoreCacheHandler.h; sourceTree = "<group>"; };
+		5E79088E1C10EE6700DFE7FE /* COpenGLCoreFeature.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COpenGLCoreFeature.h; sourceTree = "<group>"; };
+		5E79088F1C10EE6700DFE7FE /* COpenGLCoreRenderTarget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COpenGLCoreRenderTarget.h; sourceTree = "<group>"; };
+		5E7908901C10EE6700DFE7FE /* COpenGLCoreTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COpenGLCoreTexture.h; sourceTree = "<group>"; };
 		5E7908911C10EEC000DFE7FE /* COpenGLCacheHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLCacheHandler.cpp; sourceTree = "<group>"; };
 		5E7908921C10EEC000DFE7FE /* COpenGLCacheHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COpenGLCacheHandler.h; sourceTree = "<group>"; };
 		5E7908931C10EEC000DFE7FE /* COpenGLCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COpenGLCommon.h; sourceTree = "<group>"; };
@@ -2039,10 +2039,10 @@
 		5E79088B1C10ED5000DFE7FE /* OpenGL Core */ = {
 			isa = PBXGroup;
 			children = (
-				5E79088D1C10EE6700DFE7FE /* COGLCoreCacheHandler.h */,
-				5E79088E1C10EE6700DFE7FE /* COGLCoreFeature.h */,
-				5E79088F1C10EE6700DFE7FE /* COGLCoreRenderTarget.h */,
-				5E7908901C10EE6700DFE7FE /* COGLCoreTexture.h */,
+				5E79088D1C10EE6700DFE7FE /* COpenGLCoreCacheHandler.h */,
+				5E79088E1C10EE6700DFE7FE /* COpenGLCoreFeature.h */,
+				5E79088F1C10EE6700DFE7FE /* COpenGLCoreRenderTarget.h */,
+				5E7908901C10EE6700DFE7FE /* COpenGLCoreTexture.h */,
 			);
 			name = "OpenGL Core";
 			sourceTree = "<group>";
