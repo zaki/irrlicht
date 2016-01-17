@@ -28,15 +28,15 @@ class COGLCoreTexture : public ITexture
 public:
 	struct SStatesCache
 	{
-		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT),
-			LODBias(0), AnisotropicFilter(0),
-			BilinearFilter(false), TrilinearFilter(false),
+		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT), WrapW(ETC_REPEAT),
+			LODBias(0), AnisotropicFilter(0), BilinearFilter(false), TrilinearFilter(false),
 			MipMapStatus(false), IsCached(false)
 		{
 		}
 
 		u8 WrapU;
 		u8 WrapV;
+		u8 WrapW;
 		s8 LODBias;
 		u8 AnisotropicFilter;
 		bool BilinearFilter;
@@ -83,8 +83,6 @@ public:
 			tmpImage = &Image;
 		}
 
-		Pitch = (*tmpImage)[0]->getPitch();
-
 		glGenTextures(1, &TextureName);
 
 		const COGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
@@ -113,8 +111,18 @@ public:
 
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
+		bool autoGenerateRequired = true;
+
 		for (u32 i = 0; i < (*tmpImage).size(); ++i)
-			regenerateMipMapLevels((*tmpImage)[i]->getMipMapsData(), i);
+		{
+			void* mipmapsData = (*tmpImage)[i]->getMipMapsData();
+
+			if (autoGenerateRequired || mipmapsData)
+				regenerateMipMapLevels(mipmapsData, i);
+
+			if (!mipmapsData)
+				autoGenerateRequired = false;
+		}
 
 		if (!KeepImage)
 		{
@@ -143,6 +151,8 @@ public:
 		OriginalSize = size;
 		Size = OriginalSize;
 
+		Pitch = Size.Width * IImage::getBitsPerPixelFromFormat(ColorFormat) / 8;
+
 		Driver->getColorFormatParameters(ColorFormat, InternalFormat, PixelFormat, PixelType, &Converter);
 
 		glGenTextures(1, &TextureName);
@@ -155,8 +165,13 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+#if defined(GL_VERSION_1_2)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+#endif
+
 		StatesCache.WrapU = ETC_CLAMP_TO_EDGE;
 		StatesCache.WrapV = ETC_CLAMP_TO_EDGE;
+		StatesCache.WrapW = ETC_CLAMP_TO_EDGE;
 
 		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
 
@@ -181,14 +196,14 @@ public:
 	{
 		// TO-DO - this method will be improved.
 
+		if (LockImage)
+			return LockImage->getData();
+
 		if (IImage::isCompressedFormat(ColorFormat) || IsRenderTarget || mipmapLevel > 0) // TO-DO
 			return 0;
 
 		LockReadOnly |= (mode == ETLM_READ_ONLY);
 		LockLevel = mipmapLevel;
-
-		if (LockImage)
-			return LockImage->getData();
 
 		if (KeepImage && mipmapLevel == 0)
 		{
@@ -284,7 +299,7 @@ public:
 			Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
 			if (LockLevel == 0)
-				regenerateMipMapLevels(LockImage->getMipMapsData());
+				regenerateMipMapLevels(0);
 		}
 
 		LockImage->drop();
@@ -432,7 +447,11 @@ protected:
 			Size.Width = (u32)(Driver->MaxTextureSize * ratio);
 		}
 
-		Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+		bool needSquare = (!Driver->queryFeature(EVDF_TEXTURE_NSQUARE) || Type == ETT_CUBEMAP);
+
+		Size = Size.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), needSquare, true, Driver->MaxTextureSize);
+
+		Pitch = Size.Width * IImage::getBitsPerPixelFromFormat(ColorFormat) / 8;
 	}
 
 	void uploadTexture(bool initTexture, u32 layer, u32 level, void* data)
@@ -485,7 +504,7 @@ protected:
 		}
 		else
 		{
-			u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, Size.Width, height);
+			u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
 
 			switch (TextureType)
 			{

@@ -102,6 +102,10 @@ namespace scene
 		//! the buffer that contains the most recent animation
 		SMeshBuffer* InterpolationBuffer;
 
+		//! Frames used to calculate InterpolationBuffer
+		u32 InterpolationFirstFrame, InterpolationSecondFrame;
+		f32 InterpolationFrameDiv;
+
 		//! named animations
 		struct SAnimationData
 		{

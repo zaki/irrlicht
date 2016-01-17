@@ -34,8 +34,6 @@ namespace video
 
 	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
-		friend COpenGLCacheHandler;
-		friend COpenGLTexture;
 	public:
 		// Information about state of fixed pipeline activity.
 		enum E_OPENGL_FIXED_PIPELINE_STATE

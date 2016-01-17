@@ -1381,6 +1381,12 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringw& materialf
 					Writer->writeClosingTag(L"wrap_t");
 					Writer->writeLineBreak();
 
+		//			<wrap_r>WRAP</wrap_r>
+					Writer->writeElement(L"wrap_r", false);
+					Writer->writeText(toString((video::E_TEXTURE_CLAMP)layer.TextureWrapW).c_str());
+					Writer->writeClosingTag(L"wrap_r");
+					Writer->writeLineBreak();
+
 		//			<minfilter>LINEAR_MIPMAP_LINEAR</minfilter>
 					Writer->writeElement(L"minfilter", false);
 					Writer->writeText(minTexfilterToString(layer.BilinearFilter, layer.TrilinearFilter).c_str());

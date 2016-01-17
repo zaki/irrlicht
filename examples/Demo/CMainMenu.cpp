@@ -68,7 +68,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 
 	const wchar_t* const names[] =
 		{L"Software Renderer", L"Burning's Video",
-		L"Direct3D 9", L"OpenGL 1.x-4.x",
+		L"Direct3D 8", L"Direct3D 9", L"OpenGL 1.x-4.x",
 		L"OpenGL-ES 1.x", L"OpenGL-ES 2.x"};
 	for (u32 i=1; i<video::EDT_COUNT; ++i)
 	{

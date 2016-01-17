@@ -603,9 +603,7 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_MIP_MAP:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) != 0;
 	case EVDF_MIP_MAP_AUTO_UPDATE:
-		// always return false because a lot of drivers claim they do
-		// this but actually don't do this at all.
-		return false; //(Caps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) != 0;
+		return (Caps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) != 0;
 	case EVDF_STENCIL_BUFFER:
 		return Params.Stencilbuffer && Caps.StencilCaps;
 	case EVDF_VERTEX_SHADER_1_1:
@@ -719,10 +717,10 @@ bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	}
 	else
 	{
-		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9Texture());
+		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9BaseTexture());
 
 		if (stage <= 4)
-            pID3DDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + stage, ((const CD3D9Texture*)texture)->getDX9Texture());
+            pID3DDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + stage, ((const CD3D9Texture*)texture)->getDX9BaseTexture());
 	}
 	return true;
 }
@@ -744,24 +742,19 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 ITexture* CD3D9Driver::createDeviceDependentTexture(const io::path& name, IImage* image)
 {
-	CD3D9Texture* texture = new CD3D9Texture(image, this, TextureCreationFlags, name);
+	core::array<IImage*> imageArray(1);
+	imageArray.push_back(image);
+
+	CD3D9Texture* texture = new CD3D9Texture(name, imageArray, ETT_2D, this);
 
 	return texture;
 }
 
-/*ITexture* CD3D9Driver::createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image)
+ITexture* CD3D9Driver::createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image)
 {
+	CD3D9Texture* texture = new CD3D9Texture(name, image, ETT_CUBEMAP, this);
 
-}*/
-
-//! Enables or disables a texture creation flag.
-void CD3D9Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
-		bool enabled)
-{
-	if (flag == video::ETCF_CREATE_MIP_MAPS && !queryFeature(EVDF_MIP_MAP))
-		enabled = false;
-
-	CNullDriver::setTextureCreationFlag(flag, enabled);
+	return texture;
 }
 
 bool CD3D9Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
@@ -2310,9 +2303,18 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSU, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
 		// If separate UV not supported reuse U for V
 		if (!(Caps.TextureAddressCaps & D3DPTADDRESSCAPS_INDEPENDENTUV))
+		{
 			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
-		else if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapV != material.TextureLayer[st].TextureWrapV)
-			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapV));
+			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSW, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
+		}
+		else
+		{
+			if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapV != material.TextureLayer[st].TextureWrapV)
+				pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapV));
+
+			if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapW != material.TextureLayer[st].TextureWrapW)
+				pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSW, getTextureWrapMode(material.TextureLayer[st].TextureWrapW));
+		}
 
 		// Bilinear, trilinear, and anisotropic filter
 		if (resetAllRenderstates ||
@@ -2829,15 +2831,33 @@ bool CD3D9Driver::reset()
 	for (i = 0; i<RenderTargets.size(); ++i)
 	{
 		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
+		{
 			static_cast<CD3D9RenderTarget*>(RenderTargets[i])->releaseSurfaces();
+
+			const core::array<ITexture*> texArray = RenderTargets[i]->getTexture();
+
+			for (u32 j = 0; j < texArray.size(); ++j)
+			{
+				CD3D9Texture* tex = static_cast<CD3D9Texture*>(texArray[j]);
+				
+				if (tex)
+					tex->releaseTexture();
+			}
+
+			CD3D9Texture* tex = static_cast<CD3D9Texture*>(RenderTargets[i]->getDepthStencil());
+
+			if (tex)
+				tex->releaseTexture();
+		}
 	}
 	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 		{
-			IDirect3DTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
+			CD3D9Texture* tex = static_cast<CD3D9Texture*>(Textures[i].Surface);
+
 			if (tex)
-				tex->Release();
+				tex->releaseTexture();
 		}
 	}
 	for (i=0; i<OcclusionQueries.size(); ++i)
@@ -2881,12 +2901,29 @@ bool CD3D9Driver::reset()
 	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
-			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
+			((CD3D9Texture*)(Textures[i].Surface))->generateRenderTarget();
 	}
 	for (i = 0; i<RenderTargets.size(); ++i)
 	{
 		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
+		{
+			const core::array<ITexture*> texArray = RenderTargets[i]->getTexture();
+
+			for (u32 j = 0; j < texArray.size(); ++j)
+			{
+				CD3D9Texture* tex = static_cast<CD3D9Texture*>(texArray[j]);
+
+				if (tex)
+					tex->generateRenderTarget();
+			}
+
+			CD3D9Texture* tex = static_cast<CD3D9Texture*>(RenderTargets[i]->getDepthStencil());
+
+			if (tex)
+				tex->generateRenderTarget();
+
 			static_cast<CD3D9RenderTarget*>(RenderTargets[i])->generateSurfaces();
+		}
 	}
 
 	// restore occlusion queries

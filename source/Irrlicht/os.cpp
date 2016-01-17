@@ -256,7 +256,7 @@ namespace os
 
 	// our Randomizer is not really os specific, so we
 	// code one for all, which should work on every platform the same,
-	// which is desireable.
+	// which is desirable.
 
 	s32 Randomizer::seed = 0x0f0f0f0f;
 
@@ -265,10 +265,10 @@ namespace os
 	{
 		// (a*seed)%m with Schrage's method
 		seed = a * (seed%q) - r* (seed/q);
-		if (seed<0)
+		if (seed<1)
 			seed += m;
 
-		return seed;
+		return seed-1;	// -1 because we want it to start at 0
 	}
 
 	//! generates a pseudo random number
@@ -285,7 +285,12 @@ namespace os
 	//! resets the randomizer
 	void Randomizer::reset(s32 value)
 	{
-		seed = value;
+		if (value<0)
+			seed = value+m;
+		else if ( value == 0 || value == m)
+			seed = 1;
+		else
+			seed = value;
 	}
 
 

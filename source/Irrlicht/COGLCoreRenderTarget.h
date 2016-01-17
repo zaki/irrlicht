@@ -88,7 +88,17 @@ public:
 
 				for (u32 i = 0; i < Texture.size(); ++i)
 				{
-					GLuint textureID = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<TOGLTexture*>(texture[i])->getOpenGLTextureName() : 0;
+					TOGLTexture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<TOGLTexture*>(texture[i]) : 0;
+
+					GLuint textureID = 0;
+
+					if (currentTexture)
+					{
+						if (currentTexture->getType() == ETT_2D)
+							textureID = currentTexture->getOpenGLTextureName();
+						else
+							os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+					}
 
 					if (textureID != 0)
 					{
@@ -108,7 +118,18 @@ public:
 
 			if (depthStencilUpdate)
 			{
-				GLuint textureID = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOGLTexture*>(depthStencil)->getOpenGLTextureName() : 0;
+				TOGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOGLTexture*>(depthStencil) : 0;
+
+				GLuint textureID = 0;
+
+				if (currentTexture)
+				{
+					if (currentTexture->getType() == ETT_2D)
+						textureID = currentTexture->getOpenGLTextureName();
+					else
+						os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+				}
+
 				const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
 
 				if (IImage::isDepthFormat(textureFormat))

@@ -8,6 +8,7 @@
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 
+#include "irrArray.h"
 #include "ITexture.h"
 #include "IImage.h"
 #if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
@@ -21,82 +22,56 @@ namespace video
 {
 
 class CD3D9Driver;
-// forward declaration for RTT depth buffer handling
-struct SDepthSurface;
-/*!
-	interface for a Video Driver dependent Texture.
-*/
+
 class CD3D9Texture : public ITexture
 {
 public:
+	CD3D9Texture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, CD3D9Driver* driver);
 
-	//! constructor
-	CD3D9Texture(IImage* image, CD3D9Driver* driver,
-			u32 flags, const io::path& name);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
-	//! rendertarget constructor
-	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name,
-		const ECOLOR_FORMAT format = ECF_UNKNOWN);
-
-	//! destructor
 	virtual ~CD3D9Texture();
 
-	//! lock function
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel = 0) _IRR_OVERRIDE_;
 
-	//! unlock function
 	virtual void unlock() _IRR_OVERRIDE_;
 
 	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_;
 
-	//! returns the DIRECT3D9 Texture
+	IDirect3DBaseTexture9* getDX9BaseTexture() const;
 	IDirect3DTexture9* getDX9Texture() const;
+	IDirect3DCubeTexture9* getDX9CubeTexture() const;
 
 private:
 	friend class CD3D9Driver;
 
-	void createRenderTarget(const ECOLOR_FORMAT format = ECF_UNKNOWN);
+	void releaseTexture();
 
-	//! creates the hardware texture
-	bool createTexture(u32 flags, IImage * image);
+	void generateRenderTarget();
 
-	//! copies the image to the texture
-	bool copyTexture(IImage * image);
+	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
 
-	//! Helper function for mipmap generation.
-	bool createMipMaps(u32 level=1);
+	void getImageValues(const IImage* image);
 
-	//! Helper function for mipmap generation.
-	void copy16BitMipMap(char* src, char* tgt,
-			const s32 srcWidth, const s32 srcHeight,
-			const s32 width, const s32 height,
-			const s32 pitchsrc, const s32 pitchtgt) const;
+	void uploadTexture(u32 layer, u32 level, void* data);
 
-	//! Helper function for mipmap generation.
-	void copy32BitMipMap(char* src, char* tgt,
-			const s32 srcWidth, const s32 srcHeight,
-			const s32 width, const s32 height,
-			const s32 pitchsrc, const s32 pitchtgt) const;
+	CD3D9Driver* Driver;
 
-	//! set Pitch based on the d3d format
-	void setPitch(D3DFORMAT d3dformat);
+	D3DFORMAT InternalFormat;
+
+	void* LockData;
+	u32 LockLevel;
+
+	bool AutoGenerateMipMaps;
 
 	IDirect3DDevice9* Device;
 	IDirect3DTexture9* Texture;
+	IDirect3DCubeTexture9* CubeTexture;
 	IDirect3DSurface9* RTTSurface;
-	CD3D9Driver* Driver;
-	u32 MipLevelLocked;
-
-	bool HardwareMipMaps;
-	bool IsCompressed;
 };
 
+}
+}
 
-} // end namespace video
-} // end namespace irr
-
-#endif // _IRR_COMPILE_WITH_DIRECT3D_9_
-
-#endif // __C_DIRECTX9_TEXTURE_H_INCLUDED__
-
-
+#endif
+#endif

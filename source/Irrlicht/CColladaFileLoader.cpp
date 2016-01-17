@@ -108,6 +108,7 @@ namespace
 	const core::stringc dataName =             "data";
 	const core::stringc wrapsName =            "wrap_s";
 	const core::stringc wraptName =            "wrap_t";
+	const core::stringc wraprName =            "wrap_r";
 	const core::stringc minfilterName =        "minfilter";
 	const core::stringc magfilterName =        "magfilter";
 	const core::stringc mipfilterName =        "mipfilter";
@@ -1569,11 +1570,16 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	idx = effect->Parameters->findAttribute(wraptName.c_str());
 	if ( idx >= 0 )
 		twv = (video::E_TEXTURE_CLAMP)(effect->Parameters->getAttributeAsInt(idx));
+	video::E_TEXTURE_CLAMP twr = video::ETC_REPEAT;
+	idx = effect->Parameters->findAttribute(wraprName.c_str());
+	if ( idx >= 0 )
+		twr = (video::E_TEXTURE_CLAMP)(effect->Parameters->getAttributeAsInt(idx));
 
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{
 		effect->Mat.TextureLayer[i].TextureWrapU = twu;
 		effect->Mat.TextureLayer[i].TextureWrapV = twv;
+		effect->Mat.TextureLayer[i].TextureWrapW = twr;
 	}
 
 	effect->Mat.setFlag(video::EMF_BILINEAR_FILTER, effect->Parameters->getAttributeAsBool("bilinear"));

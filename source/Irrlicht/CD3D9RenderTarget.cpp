@@ -89,16 +89,25 @@ namespace irr
 
 					for (u32 i = 0; i < size; ++i)
 					{
-						IDirect3DTexture9* currentTexture = (texture[i] && texture[i]->getDriverType() == EDT_DIRECT3D9) ?
-							static_cast<CD3D9Texture*>(texture[i])->getDX9Texture() : 0;
+						CD3D9Texture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<CD3D9Texture*>(texture[i]) : 0;
+
+						IDirect3DTexture9* textureID = 0;
 
 						if (currentTexture)
+						{
+							if (currentTexture->getType() == ETT_2D)
+								textureID = currentTexture->getDX9Texture();
+							else
+								os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+						}
+
+						if (textureID)
 						{
 							Texture[i] = texture[i];
 							Texture[i]->grab();
 
 							IDirect3DSurface9* currentSurface = 0;
-							currentTexture->GetSurfaceLevel(0, &currentSurface);
+							textureID->GetSurfaceLevel(0, &currentSurface);
 
 							Surface[i] = currentSurface;
 						}
@@ -128,20 +137,32 @@ namespace irr
 						DepthStencilSurface = 0;
 					}
 
-					IDirect3DTexture9* currentTexture = (depthStencil && depthStencil->getDriverType() == EDT_DIRECT3D9) ?
-						static_cast<CD3D9Texture*>(depthStencil)->getDX9Texture() : 0;
+					CD3D9Texture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<CD3D9Texture*>(depthStencil) : 0;
 
-					const ECOLOR_FORMAT textureFormat = (depthStencil) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
+					IDirect3DTexture9* textureID = 0;
 
-					if (IImage::isDepthFormat(textureFormat))
+					if (currentTexture)
 					{
-						DepthStencil = depthStencil;
-						DepthStencil->grab();
+						if (currentTexture->getType() == ETT_2D)
+							textureID = currentTexture->getDX9Texture();
+						else
+							os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+					}
 
-						IDirect3DSurface9* currentSurface = 0;
-						currentTexture->GetSurfaceLevel(0, &currentSurface);
+					if (textureID)
+					{
+						const ECOLOR_FORMAT textureFormat = (depthStencil) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
 
-						DepthStencilSurface = currentSurface;
+						if (IImage::isDepthFormat(textureFormat))
+						{
+							DepthStencil = depthStencil;
+							DepthStencil->grab();
+
+							IDirect3DSurface9* currentSurface = 0;
+							textureID->GetSurfaceLevel(0, &currentSurface);
+
+							DepthStencilSurface = currentSurface;
+						}
 					}
 				}
 

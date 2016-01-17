@@ -8,6 +8,12 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Randomizer now returns range 0..randMax as documented and no longer 1..randMax as it did before. randMax got reduced by 1.
+  Note: You will generally get different numbers than before! If you need the exact old calculations, please check the corresponding sources in Irrlicht 1.8 in os.cpp/.h
+- Resetting Randomizer with 0 or no longer breaks it (will be set to 1). Same for other numbers for which it wasn't defined.
+- Add SMaterialLayer::TextureWrapW for cubemap texture wrap mode at W axis.
+- Add cubemap texture support for D3D9 and OpenGL drivers.
+- Do no longer re-calculate md2 frames when they don't change (thx @npc for reporting)
 - Add multibyteToWString wrapper functions around mbstowcs which work with Irrlicht string class.
 - Fix: addFileArchive now grab()'s the archive when you pass one in by pointer.
 - Fix: Prevent division by 0 in CGUIScrollBar::setPos
