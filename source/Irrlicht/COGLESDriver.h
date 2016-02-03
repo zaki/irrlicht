@@ -37,8 +37,7 @@ namespace video
 
 	class COGLES1Driver : public CNullDriver, public IMaterialRendererServices, public COGLES1ExtensionHandler
 	{
-		friend COGLES1CacheHandler;
-		friend COGLES1Texture;
+		friend class COpenGLCoreTexture<COGLES1Driver>;
 
 	public:
 		//! constructor
