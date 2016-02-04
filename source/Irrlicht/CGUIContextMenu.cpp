@@ -129,8 +129,8 @@ void CGUIContextMenu::setSubMenu(u32 index, CGUIContextMenu* menu)
 	if (index >= Items.size())
 		return;
 
-    if (menu)
-        menu->grab();
+	if (menu)
+		menu->grab();
 	if (Items[index].SubMenu)
 		Items[index].SubMenu->drop();
 

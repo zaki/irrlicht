@@ -5,27 +5,27 @@
 
  LICENSE TERMS
 
- The free distribution and use of this software in both source and binary 
+ The free distribution and use of this software in both source and binary
  form is allowed (with or without changes) provided that:
 
-   1. distributions of this source code include the above copyright 
+   1. distributions of this source code include the above copyright
       notice, this list of conditions and the following disclaimer;
 
    2. distributions in binary form include the above copyright
       notice, this list of conditions and the following disclaimer
       in the documentation and/or other associated materials;
 
-   3. the copyright holder's name is not used to endorse products 
-      built using this software without specific written permission. 
+   3. the copyright holder's name is not used to endorse products
+      built using this software without specific written permission.
 
  ALTERNATIVELY, provided that this notice is retained in full, this product
  may be distributed under the terms of the GNU General Public License (GPL),
  in which case the provisions of the GPL apply INSTEAD OF those given above.
- 
+
  DISCLAIMER
 
  This software is provided 'as is' with no explicit or implied warranties
- in respect of its properties, including, but not limited to, correctness 
+ in respect of its properties, including, but not limited to, correctness
  and/or fitness for purpose.
  ---------------------------------------------------------------------------
  Issue Date: 26/08/2003
@@ -76,7 +76,7 @@
 #else
 #include <stdint.h>
 #endif
-    typedef int64_t sha2_64t;
+    typedef uint64_t sha2_64t;
 #if __WORDSIZE==64
 #define s_u64 ul
 #else
@@ -139,22 +139,22 @@ sha2_void sha512_compile(sha512_ctx ctx[1]);
 sha2_void sha256_begin(sha256_ctx ctx[1]);
 sha2_void sha256_hash(const unsigned char data[], unsigned long len, sha256_ctx ctx[1]);
 sha2_void sha256_end(unsigned char hval[], sha256_ctx ctx[1]);
-sha2_void sha256(unsigned char hval[], const unsigned char data[], unsigned long len); 
+sha2_void sha256(unsigned char hval[], const unsigned char data[], unsigned long len);
 
 sha2_void sha384_begin(sha384_ctx ctx[1]);
 #define sha384_hash sha512_hash
 sha2_void sha384_end(unsigned char hval[], sha384_ctx ctx[1]);
-sha2_void sha384(unsigned char hval[], const unsigned char data[], unsigned long len); 
+sha2_void sha384(unsigned char hval[], const unsigned char data[], unsigned long len);
 
 sha2_void sha512_begin(sha512_ctx ctx[1]);
 sha2_void sha512_hash(const unsigned char data[], unsigned long len, sha512_ctx ctx[1]);
 sha2_void sha512_end(unsigned char hval[], sha512_ctx ctx[1]);
-sha2_void sha512(unsigned char hval[], const unsigned char data[], unsigned long len); 
+sha2_void sha512(unsigned char hval[], const unsigned char data[], unsigned long len);
 
 sha2_int  sha2_begin(unsigned long size, sha2_ctx ctx[1]);
 sha2_void sha2_hash(const unsigned char data[], unsigned long len, sha2_ctx ctx[1]);
 sha2_void sha2_end(unsigned char hval[], sha2_ctx ctx[1]);
-sha2_int  sha2(unsigned char hval[], unsigned long size, const unsigned char data[], unsigned long len); 
+sha2_int  sha2(unsigned char hval[], unsigned long size, const unsigned char data[], unsigned long len);
 
 #endif
 
