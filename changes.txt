@@ -140,6 +140,8 @@ Changes in 1.9 (not yet released)
 
 --------------------------
 Changes in 1.8.4
+ - Fix some compile warnings in aes which got handled as errors by some c++11 compilers.
+ - Get rid of some misleading-indentation warnings in gcc6
  - Fix serialization of the InputReceiverEnabled flag in CCameraSceneNode
  - Fix pasting text from X11 applications to Irrlicht. Thanks @est31 for the patch.
  - Tests give now a warning when stabilizing screenshots failed. Aslo trying more often now (a hack as taking screenshots otherwise fails often in windowed mode on some systems).

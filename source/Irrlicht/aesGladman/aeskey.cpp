@@ -368,8 +368,10 @@ aes_rval aes_decrypt_key192(const void *in_key, aes_decrypt_ctx cx[1])
 #endif
     }
 #else
-    cx->ks[4] = ff(ss[4] = word_in(in_key, 4));
-    cx->ks[5] = ff(ss[5] = word_in(in_key, 5));
+	ss[4] = word_in(in_key, 4);
+    cx->ks[4] = ff(ss[4]);
+    ss[5] = word_in(in_key, 5);
+    cx->ks[5] = ff(ss[5]);
     kdf6(cx->ks, 0); kd6(cx->ks, 1);
     kd6(cx->ks, 2);  kd6(cx->ks, 3);
     kd6(cx->ks, 4);  kd6(cx->ks, 5);
@@ -414,10 +416,14 @@ aes_rval aes_decrypt_key256(const void *in_key, aes_decrypt_ctx cx[1])
 #endif
     }
 #else
-    cx->ks[4] = ff(ss[4] = word_in(in_key, 4));
-    cx->ks[5] = ff(ss[5] = word_in(in_key, 5));
-    cx->ks[6] = ff(ss[6] = word_in(in_key, 6));
-    cx->ks[7] = ff(ss[7] = word_in(in_key, 7));
+	ss[4] = word_in(in_key, 4);
+    cx->ks[4] = ff(ss[4]);
+    ss[5] = word_in(in_key, 5);
+    cx->ks[5] = ff(ss[5]);
+    ss[6] = word_in(in_key, 6);
+    cx->ks[6] = ff(ss[6]);
+    ss[7] = word_in(in_key, 7);
+    cx->ks[7] = ff(ss[7]);
     kdf8(cx->ks, 0); kd8(cx->ks, 1);
     kd8(cx->ks, 2);  kd8(cx->ks, 3);
     kd8(cx->ks, 4);  kd8(cx->ks, 5);
