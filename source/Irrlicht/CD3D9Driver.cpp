@@ -818,7 +818,7 @@ bool CD3D9Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor
 
 		// Set other settings.
 
-		CurrentRendertargetSize = renderTarget->getSize();
+		CurrentRenderTargetSize = renderTarget->getSize();
 		Transformation3DChanged = true;
 	}
 	else if (CurrentRenderTarget != target)
@@ -861,7 +861,7 @@ bool CD3D9Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor
 
 		// Set other settings.
 
-		CurrentRendertargetSize = core::dimension2d<u32>(0, 0);
+		CurrentRenderTargetSize = core::dimension2d<u32>(0, 0);
 		Transformation3DChanged = true;
 	}
 
@@ -1404,7 +1404,7 @@ void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
 				primitiveCount - 1, indexList, indexType, vertices, stride);
 
-				u16 tmpIndices[] = {primitiveCount - 1, 0};
+				u16 tmpIndices[] = {static_cast<u16>(primitiveCount - 1), 0};
 
 				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
 					1, tmpIndices, indexType, vertices, stride);
@@ -3329,16 +3329,6 @@ ECOLOR_FORMAT CD3D9Driver::getColorFormat() const
 D3DFORMAT CD3D9Driver::getD3DColorFormat() const
 {
 	return D3DColorFormat;
-}
-
-
-// returns the current size of the screen or rendertarget
-const core::dimension2d<u32>& CD3D9Driver::getCurrentRenderTargetSize() const
-{
-	if ( CurrentRendertargetSize.Width == 0 )
-		return ScreenSize;
-	else
-		return CurrentRendertargetSize;
 }
 
 
