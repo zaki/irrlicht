@@ -37,7 +37,7 @@ namespace video
 COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager) :
 	CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(), CacheHandler(0), MaterialRenderer2D(0), CurrentRenderMode(ERM_NONE),
 	ResetRenderStates(true), Transformation3DChanged(true), AntiAlias(params.AntiAlias), OGLES2ShaderPath(params.OGLES2ShaderPath),
-	CurrentRendertargetSize(0, 0),ColorFormat(ECF_R8G8B8), Params(params), ContextManager(contextManager)
+	ColorFormat(ECF_R8G8B8), Params(params), ContextManager(contextManager)
 {
 #ifdef _DEBUG
 	setDebugName("COGLES2Driver");
@@ -2424,16 +2424,6 @@ COGLES2Driver::~COGLES2Driver()
 		clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 
 		return true;
-	}
-
-
-	// returns the current size of the screen or rendertarget
-	const core::dimension2d<u32>& COGLES2Driver::getCurrentRenderTargetSize() const
-	{
-		if (CurrentRendertargetSize.Width == 0)
-			return ScreenSize;
-		else
-			return CurrentRendertargetSize;
 	}
 
 	void COGLES2Driver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)

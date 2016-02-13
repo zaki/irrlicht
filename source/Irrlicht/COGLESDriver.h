@@ -319,9 +319,6 @@ namespace video
 		//! sets the needed renderstates
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
 
-		// returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
-
 		void createMaterialRenderers();
 
 		//! Assign a hardware light to the specified requested light, if any
@@ -352,8 +349,6 @@ namespace video
 		SMaterial Material, LastMaterial;
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;
-
-		core::dimension2d<u32> CurrentRendertargetSize;
 
 		core::stringc VendorName;
 
