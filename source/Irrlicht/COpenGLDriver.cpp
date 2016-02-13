@@ -3759,15 +3759,6 @@ bool COpenGLDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SCol
 }
 
 
-// returns the current size of the screen or rendertarget
-const core::dimension2d<u32>& COpenGLDriver::getCurrentRenderTargetSize() const
-{
-	if (CurrentRenderTargetSize.Width == 0)
-		return ScreenSize;
-	else
-		return CurrentRenderTargetSize;
-}
-
 void COpenGLDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
 	GLbitfield mask = 0;

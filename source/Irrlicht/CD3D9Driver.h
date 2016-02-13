@@ -347,9 +347,6 @@ namespace video
 
 		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image) _IRR_OVERRIDE_;
 
-		//! returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const _IRR_OVERRIDE_;
-
 		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
 		s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
@@ -415,7 +412,6 @@ namespace video
 		IDirect3DSurface9* BackBufferSurface;
 		IDirect3DSurface9* DepthStencilSurface;
 
-		core::dimension2d<u32> CurrentRendertargetSize;
 		core::array<bool> ActiveRenderTarget;
 
 		HWND WindowId;

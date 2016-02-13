@@ -972,11 +972,12 @@ IRenderTarget* CNullDriver::getCurrentRenderTarget() const
 }
 
 
-//! returns the current render target size,
-//! or the screen size if render targets are not implemented
 const core::dimension2d<u32>& CNullDriver::getCurrentRenderTargetSize() const
 {
-	return ScreenSize;
+	if (CurrentRenderTargetSize.Width == 0)
+		return ScreenSize;
+	else
+		return CurrentRenderTargetSize;
 }
 
 
