@@ -493,7 +493,7 @@ ITexture* CNullDriver::addTextureCubemap(const io::path& name, IImage* imagePosX
 
 	ITexture* t = 0;
 
-	core::array<IImage*> imageArray(1);
+	core::array<IImage*> imageArray(6);
 	imageArray.push_back(imagePosX);
 	imageArray.push_back(imageNegX);
 	imageArray.push_back(imagePosY);
@@ -614,20 +614,37 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io::path& hashName )
 {
 	ITexture* texture = 0;
-	IImage* image = createImageFromFile(file);
 
-	if (image)
+	E_TEXTURE_TYPE type = ETT_2D;
+
+	core::array<IImage*> imageArray = createImagesFromFile(file, &type);
+
+	if (checkImage(imageArray))
 	{
-		core::array<IImage*> imageArray(1);
-		imageArray.push_back(image);
-
-		if (checkImage(imageArray))
+		switch (type)
 		{
-			texture = createDeviceDependentTexture(hashName.size() ? hashName : file->getFileName(), image);
+		case ETT_2D:
+			texture = createDeviceDependentTexture(hashName.size() ? hashName : file->getFileName(), imageArray[0]);
+			break;
+		case ETT_CUBEMAP:
+			if (imageArray.size() >= 6 && imageArray[0] && imageArray[1] && imageArray[2] && imageArray[3] && imageArray[4] && imageArray[5])
+			{
+				texture = createDeviceDependentTextureCubemap(hashName.size() ? hashName : file->getFileName(), imageArray);
+			}
+			break;
+		default:
+			_IRR_DEBUG_BREAK_IF(true);
+			break;
 		}
-		
-		os::Printer::log("Loaded texture", file->getFileName());
-		image->drop();
+
+		if (texture)
+			os::Printer::log("Loaded texture", file->getFileName());
+	}
+
+	for (u32 i = 0; i < imageArray.size(); ++i)
+	{
+		if (imageArray[i])
+			imageArray[i]->drop();
 	}
 
 	return texture;
@@ -1481,7 +1498,7 @@ bool CNullDriver::getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const
 	return (TextureCreationFlags & flag)!=0;
 }
 
-core::array<IImage*> CNullDriver::createImagesFromFile(const io::path& filename)
+core::array<IImage*> CNullDriver::createImagesFromFile(const io::path& filename, E_TEXTURE_TYPE* type)
 {
 	// TO-DO -> use 'move' feature from C++11 standard.
 
@@ -1493,7 +1510,7 @@ core::array<IImage*> CNullDriver::createImagesFromFile(const io::path& filename)
 
 		if (file)
 		{
-			imageArray = createImagesFromFile(file);
+			imageArray = createImagesFromFile(file, type);
 			file->drop();
 		}
 		else
@@ -1503,7 +1520,7 @@ core::array<IImage*> CNullDriver::createImagesFromFile(const io::path& filename)
 	return imageArray;
 }
 
-core::array<IImage*> CNullDriver::createImagesFromFile(io::IReadFile* file)
+core::array<IImage*> CNullDriver::createImagesFromFile(io::IReadFile* file, E_TEXTURE_TYPE* type)
 {
 	// TO-DO -> use 'move' feature from C++11 standard.
 
@@ -1520,7 +1537,7 @@ core::array<IImage*> CNullDriver::createImagesFromFile(io::IReadFile* file)
 			{
 				// reset file position which might have changed due to previous loadImage calls
 				file->seek(0);
-				imageArray = SurfaceLoader[i]->loadImages(file);
+				imageArray = SurfaceLoader[i]->loadImages(file, type);
 
 				if (imageArray.size() == 0)
 				{
@@ -1544,7 +1561,7 @@ core::array<IImage*> CNullDriver::createImagesFromFile(io::IReadFile* file)
 			if (SurfaceLoader[i]->isALoadableFileFormat(file))
 			{
 				file->seek(0);
-				imageArray = SurfaceLoader[i]->loadImages(file);
+				imageArray = SurfaceLoader[i]->loadImages(file, type);
 
 				if (imageArray.size() == 0)
 				{

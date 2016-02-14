@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2015 Patryk Nadrowski
+// Copyright (C) 2013-2016 Patryk Nadrowski
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -16,10 +16,8 @@ namespace irr
 namespace video
 {
 
-// byte-align structures
 #include "irrpack.h"
 
-/* structures */
 struct SPVRHeader
 {
     u32 Version;
@@ -36,29 +34,22 @@ struct SPVRHeader
     u32 MetDataSize;
 } PACK_STRUCT;
 
-// Default alignment
 #include "irrunpack.h"
 
-/*!
-	Surface Loader for PVR images
-*/
 class CImageLoaderPVR : public IImageLoader
 {
 public:
-
-	//! returns true if the file maybe is able to be loaded by this class
-	//! based on the file extension (e.g. ".tga")
 	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
-	//! returns true if the file maybe is able to be loaded by this class
 	virtual bool isALoadableFileFormat(io::IReadFile* file) const;
 
-	//! creates a surface from the file
 	virtual IImage* loadImage(io::IReadFile* file) const;
+
+	virtual core::array<IImage*> loadImages(io::IReadFile* file, E_TEXTURE_TYPE* type) const;
 };
 
-} // end namespace video
-} // end namespace irr
+}
+}
 
-#endif // compiled with PVR loader
+#endif
 #endif

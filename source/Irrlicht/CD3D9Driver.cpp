@@ -3375,6 +3375,16 @@ D3DFORMAT CD3D9Driver::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
 			return D3DFMT_R8G8B8;
 		case ECF_A8R8G8B8:
 			return D3DFMT_A8R8G8B8;
+		case ECF_DXT1:
+			return D3DFMT_DXT1;
+		case ECF_DXT2:
+			return D3DFMT_DXT2;
+		case ECF_DXT3:
+			return D3DFMT_DXT3;
+		case ECF_DXT4:
+			return D3DFMT_DXT4;
+		case ECF_DXT5:
+			return D3DFMT_DXT5;
 		case ECF_R16F:
 			return D3DFMT_R16F;
 		case ECF_G16R16F:

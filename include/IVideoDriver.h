@@ -1189,20 +1189,22 @@ namespace video
 		method is useful for example if you want to read a heightmap
 		for a terrain renderer.
 		\param filename Name of the file from which the images are created.
+		\param type Pointer to E_TEXTURE_TYPE where a recommended type of the texture will be stored.
 		\return The array of created images.
 		If you no longer need those images, you should call IImage::drop() on each of them.
 		See IReferenceCounted::drop() for more information. */
-		virtual core::array<IImage*> createImagesFromFile(const io::path& filename) = 0;
+		virtual core::array<IImage*> createImagesFromFile(const io::path& filename, E_TEXTURE_TYPE* type = 0) = 0;
 
 		//! Creates a software images from a file.
 		/** No hardware texture will be created for those images. This
 		method is useful for example if you want to read a heightmap
 		for a terrain renderer.
 		\param file File from which the image is created.
+		\param type Pointer to E_TEXTURE_TYPE where a recommended type of the texture will be stored.
 		\return The array of created images.
 		If you no longer need those images, you should call IImage::drop() on each of them.
 		See IReferenceCounted::drop() for more information. */
-		virtual core::array<IImage*> createImagesFromFile(io::IReadFile* file) = 0;
+		virtual core::array<IImage*> createImagesFromFile(io::IReadFile* file, E_TEXTURE_TYPE* type = 0) = 0;
 
 		//! Creates a software image from a file.
 		/** No hardware texture will be created for this image. This

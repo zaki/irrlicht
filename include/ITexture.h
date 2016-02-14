@@ -92,16 +92,6 @@ enum E_TEXTURE_LOCK_MODE
 	ETLM_WRITE_ONLY
 };
 
-//! Enumeration describing the type of ITexture.
-enum E_TEXTURE_TYPE
-{
-	//! 2D texture.
-	ETT_2D,
-
-	//! Cubemap texture.
-	ETT_CUBEMAP
-};
-
 //! Where did the last IVideoDriver::getTexture call find this texture
 enum E_TEXTURE_SOURCE
 {
