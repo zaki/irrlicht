@@ -163,8 +163,6 @@ core::array<IImage*> CImageLoaderPVR::loadImages(io::IReadFile* file, E_TEXTURE_
 			{
 				imageArray.set_used(6);
 				tmpType = ETT_CUBEMAP;
-
-				imageArray.reallocate(6);
 			}
 			else if (header.Depth > 1) // 3d texture
 			{
@@ -192,8 +190,10 @@ core::array<IImage*> CImageLoaderPVR::loadImages(io::IReadFile* file, E_TEXTURE_
 
 			if (header.MipMapCount > 1)
 			{
-				for (u32 j = 0; j < imageArray.size(); ++j)
-					mipMapsDataArray.push_back(new u8[dataSize]);
+				mipMapsDataArray.set_used(imageArray.size());
+
+				for (u32 j = 0; j < mipMapsDataArray.size(); ++j)
+					mipMapsDataArray[j] =new u8[dataSize];
 			}
 
 			// read texture

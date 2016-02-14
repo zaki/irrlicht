@@ -316,8 +316,8 @@ public:
 
 		if (data)
 		{
-			u32 width = Size.Width >> layer;
-			u32 height = Size.Height >> layer;
+			u32 width = Size.Width;
+			u32 height = Size.Height;
 			u8* tmpData = static_cast<u8*>(data);
 			u32 dataSize = 0;
 			u32 level = 0;
