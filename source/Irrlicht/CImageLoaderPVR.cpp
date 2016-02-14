@@ -101,9 +101,25 @@ core::array<IImage*> CImageLoaderPVR::loadImages(io::IReadFile* file, E_TEXTURE_
 		file->seek(helperDataSize, true);
 	}
 
-	if (header.PixelFormat & 0xFFFFFFFF00000000) // Uncompressed texture formats
+	if (header.PixelFormat & 0xFFFFFFFF00000000)
 	{
-		// TO-DO add support for uncompressed images.
+		switch (header.PixelFormat)
+		{
+		case 0x505050162677261:
+			format = ECF_A1R5G5B5;
+			break;
+		case 0x5060500626772:
+			format = ECF_R5G6B5;
+			break;
+		case 0x8080800626772:
+			format = ECF_R8G8B8;
+			break;
+		case 0x808080861726762:
+			format = ECF_A8R8G8B8;
+			break;
+		default:
+			break;
+		}
 	}
 	else // Compressed texture formats
 	{
@@ -151,89 +167,89 @@ core::array<IImage*> CImageLoaderPVR::loadImages(io::IReadFile* file, E_TEXTURE_
 			format = ECF_UNKNOWN;
 			break;
 		}
+	}
 
-		if (format != ECF_UNKNOWN)
+	if (format != ECF_UNKNOWN)
+	{
+		imageArray.set_used(1);
+		E_TEXTURE_TYPE tmpType = ETT_2D;
+
+		// check for texture type
+
+		if (header.NumFaces == 6) // cube map
 		{
-			imageArray.set_used(1);
-			E_TEXTURE_TYPE tmpType = ETT_2D;
+			imageArray.set_used(6);
+			tmpType = ETT_CUBEMAP;
+		}
+		else if (header.Depth > 1) // 3d texture
+		{
+			// TO-DO
+		}
+		else if (header.NumSurfaces > 1) // texture array
+		{
+			// To-DO
+		}
 
-			// check for texture type
+		if (type)
+			*type = tmpType;
 
-			if (header.NumFaces == 6) // cube map
+		// prepare mipmaps data
+
+		dataSize = 0;
+
+		for (u32 i = 1; i < header.MipMapCount; ++i)
+		{
+			u32 tmpWidth = header.Width >> i;
+			u32 tmpHeight = header.Height >> i;
+
+			dataSize += IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
+		}
+
+		if (header.MipMapCount > 1)
+		{
+			mipMapsDataArray.set_used(imageArray.size());
+
+			for (u32 j = 0; j < mipMapsDataArray.size(); ++j)
+				mipMapsDataArray[j] = new u8[dataSize];
+		}
+
+		// read texture
+
+		dataSize = 0;
+		long offset = 0;
+
+		for (u32 i = 0; i < header.MipMapCount; ++i)
+		{
+			if (i == 0)
 			{
-				imageArray.set_used(6);
-				tmpType = ETT_CUBEMAP;
+				for (u32 j = 0; j < imageArray.size(); ++j)
+				{
+					dataSize = IImage::getDataSizeFromFormat(format, header.Width, header.Height);
+
+					u8* data = new u8[dataSize];
+					file->read(data, dataSize);
+
+					imageArray[j] = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true);
+				}
 			}
-			else if (header.Depth > 1) // 3d texture
-			{
-				// TO-DO
-			}
-			else if (header.NumSurfaces > 1) // texture array
-			{
-				// To-DO
-			}
-
-			if (type)
-				*type = tmpType;
-
-			// prepare mipmaps data
-
-			dataSize = 0;
-
-			for (u32 i = 1; i < header.MipMapCount; ++i)
+			else
 			{
 				u32 tmpWidth = header.Width >> i;
 				u32 tmpHeight = header.Height >> i;
 
-				dataSize += IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
+				dataSize = IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
+
+				for (u32 j = 0; j < imageArray.size(); ++j)
+					file->read(mipMapsDataArray[j] + offset, dataSize);
+
+				offset += dataSize;
 			}
-
-			if (header.MipMapCount > 1)
-			{
-				mipMapsDataArray.set_used(imageArray.size());
-
-				for (u32 j = 0; j < mipMapsDataArray.size(); ++j)
-					mipMapsDataArray[j] =new u8[dataSize];
-			}
-
-			// read texture
-
-			dataSize = 0;
-			long offset = 0;
-
-			for (u32 i = 0; i < header.MipMapCount; ++i)
-			{
-				if (i == 0)
-				{
-					for (u32 j = 0; j < imageArray.size(); ++j)
-					{
-						dataSize = IImage::getDataSizeFromFormat(format, header.Width, header.Height);
-
-						u8* data = new u8[dataSize];
-						file->read(data, dataSize);
-
-						imageArray[j] = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true);
-					}
-				}
-				else
-				{
-					u32 tmpWidth = header.Width >> i;
-					u32 tmpHeight = header.Height >> i;
-
-					dataSize = IImage::getDataSizeFromFormat(format, tmpWidth, tmpHeight);
-
-					for (u32 j = 0; j < imageArray.size(); ++j)
-						file->read(mipMapsDataArray[j] + offset, dataSize);
-
-					offset += dataSize;
-				}
-			}
-
-			// assign mipmaps data
-
-			for (u32 i = 0; i < mipMapsDataArray.size(); ++i)
-				imageArray[i]->setMipMapsData(mipMapsDataArray[i], true, true);
 		}
+
+		// assign mipmaps data
+
+		for (u32 i = 0; i < mipMapsDataArray.size(); ++i)
+			imageArray[i]->setMipMapsData(mipMapsDataArray[i], true, true);
 	}
 
 	return imageArray;
