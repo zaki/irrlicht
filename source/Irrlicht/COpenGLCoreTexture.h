@@ -101,7 +101,7 @@ public:
 				glHint(GL_GENERATE_MIPMAP_HINT, GL_DONT_CARE);
 		}
 
-#if defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION < 20
+#if (defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION < 20) || (defined(IRR_OPENGL_ES_VERSION) && IRR_OPENGL_ES_VERSION < 20)
 		if (HasMipMaps)
 			glTexParameteri(TextureType, GL_GENERATE_MIPMAP, (AutoGenerateMipMaps) ? GL_TRUE : GL_FALSE);
 #endif
@@ -191,12 +191,10 @@ public:
 
 	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel = 0) _IRR_OVERRIDE_
 	{
-		// TO-DO - this method will be improved.
-
 		if (LockImage)
 			return LockImage->getData();
 
-		if (IImage::isCompressedFormat(ColorFormat) || IsRenderTarget || mipmapLevel > 0) // TO-DO
+		if (IImage::isCompressedFormat(ColorFormat) || IImage::isRenderTargetOnlyFormat(ColorFormat))
 			return 0;
 
 		LockReadOnly |= (mode == ETLM_READ_ONLY);
@@ -214,6 +212,32 @@ public:
 
 			if (LockImage && mode != ETLM_WRITE_ONLY)
 			{
+				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, lockImageSize);
+
+#if 0 // This method doesn't work properly in some cases
+				glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
+
+				if (IsRenderTarget)
+				{
+					const s32 pitch = tmpImage->getPitch();
+
+					u8* srcA = static_cast<u8*>(tmpImage->getData());
+					u8* srcB = srcA + (tmpImage->getDimension().Height - 1) * pitch;
+
+					u8* tmpBuffer = new u8[pitch];
+
+					for (u32 i = 0; i < tmpImage->getDimension().Height; i += 2)
+					{
+						memcpy(tmpBuffer, srcA, pitch);
+						memcpy(srcA, srcB, pitch);
+						memcpy(srcB, tmpBuffer, pitch);
+						srcA += pitch;
+						srcB -= pitch;
+					}
+
+					delete[] tmpBuffer;
+				}
+#else
 				COpenGLCoreTexture* tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", lockImageSize, ColorFormat, Driver);
 
 				GLuint tmpFBO = 0;
@@ -234,8 +258,6 @@ public:
 
 				Driver->draw2DImage(this, true);
 
-				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, lockImageSize);
-
 				glReadPixels(0, 0, lockImageSize.Width, lockImageSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
 
 				Driver->getCacheHandler()->setFBO(prevFBO);
@@ -243,7 +265,7 @@ public:
 
 				Driver->irrGlDeleteFramebuffers(1, &tmpFBO);
 				delete tmpTexture;
-
+#endif
 				void* src = tmpImage->getData();
 				void* dest = LockImage->getData();
 
@@ -341,7 +363,7 @@ public:
 		}
 		else
 		{
-#if defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION >= 20
+#if (defined(IRR_OPENGL_VERSION) && IRR_OPENGL_VERSION >= 20) || (defined(IRR_OPENGL_ES_VERSION) && IRR_OPENGL_ES_VERSION >= 20)
 			Driver->irrGlGenerateMipmap(TextureType);
 #endif
 		}
