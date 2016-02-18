@@ -49,7 +49,7 @@ public:
 	/** \param file File handle to check.
 	\param type Pointer to E_TEXTURE_TYPE where a recommended type of the texture will be stored.
 	\return Array of pointers to newly created images. */
-	virtual core::array<IImage*> IImageLoader::loadImages(io::IReadFile* file, E_TEXTURE_TYPE* type) const
+	virtual core::array<IImage*> loadImages(io::IReadFile* file, E_TEXTURE_TYPE* type) const
 	{
 		core::array<IImage*> image;
 
