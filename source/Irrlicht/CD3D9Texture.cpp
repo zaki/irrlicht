@@ -38,8 +38,12 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 
 	core::array<IImage*> tmpImage = image;
 
+	bool releaseImageData = false;
+
 	if (OriginalSize != Size || OriginalColorFormat != ColorFormat)
 	{
+		releaseImageData = true;
+
 		for (u32 i = 0; i < image.size(); ++i)
 		{
 			tmpImage[i] = Driver->createImage(ColorFormat, Size);
@@ -103,9 +107,10 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 		os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 	}
 	
-	for (u32 i = 0; i < tmpImage.size(); ++i)
+	if (releaseImageData)
     {
-        tmpImage[i]->drop();
+		for (u32 i = 0; i < tmpImage.size(); ++i)
+			tmpImage[i]->drop();
     }
 }
 
