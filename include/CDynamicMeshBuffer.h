@@ -104,6 +104,8 @@ namespace scene
 		video::SMaterial Material;
 		core::aabbox3d<f32> BoundingBox;
 	private:
+		CDynamicMeshBuffer(const CDynamicMeshBuffer&); // = delete in c++11, prevent copying
+
 		IVertexBuffer *VertexBuffer;
 		IIndexBuffer *IndexBuffer;
 	};
