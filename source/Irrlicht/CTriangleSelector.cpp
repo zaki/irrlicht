@@ -6,6 +6,7 @@
 #include "ISceneNode.h"
 #include "IMeshBuffer.h"
 #include "IAnimatedMeshSceneNode.h"
+#include "SSkinMeshBuffer.h"
 
 namespace irr
 {
@@ -89,6 +90,7 @@ void CTriangleSelector::updateFromMesh(const IMesh* mesh) const
 	if (!mesh)
 		return;
 
+	bool skinnnedMesh = mesh->getMeshType() == EAMT_SKINNED;
 	u32 meshBuffers = mesh->getMeshBufferCount();
 	u32 triangleCount = 0;
 
@@ -99,15 +101,32 @@ void CTriangleSelector::updateFromMesh(const IMesh* mesh) const
 		u32 idxCnt = buf->getIndexCount();
 		const u16* indices = buf->getIndices();
 
-		for (u32 index = 0; index < idxCnt; index += 3)
+		if ( skinnnedMesh )
 		{
-			core::triangle3df& tri = Triangles[triangleCount++];
-			tri.pointA = buf->getPosition(indices[index + 0]);
-			tri.pointB = buf->getPosition(indices[index + 1]);
-			tri.pointC = buf->getPosition(indices[index + 2]);
-			BoundingBox.addInternalPoint(tri.pointA);
-			BoundingBox.addInternalPoint(tri.pointB);
-			BoundingBox.addInternalPoint(tri.pointC);
+			const core::matrix4& bufferTransform = ((scene::SSkinMeshBuffer*)buf)->Transformation;
+			for (u32 index = 0; index < idxCnt; index += 3)
+			{
+				core::triangle3df& tri = Triangles[triangleCount++];
+				bufferTransform.transformVect(tri.pointA, buf->getPosition(indices[index + 0]));
+				bufferTransform.transformVect(tri.pointB, buf->getPosition(indices[index + 1]));
+				bufferTransform.transformVect(tri.pointC, buf->getPosition(indices[index + 2]));
+				BoundingBox.addInternalPoint(tri.pointA);
+				BoundingBox.addInternalPoint(tri.pointB);
+				BoundingBox.addInternalPoint(tri.pointC);
+			}
+		}
+		else
+		{
+			for (u32 index = 0; index < idxCnt; index += 3)
+			{
+				core::triangle3df& tri = Triangles[triangleCount++];
+				tri.pointA = buf->getPosition(indices[index + 0]);
+				tri.pointB = buf->getPosition(indices[index + 1]);
+				tri.pointC = buf->getPosition(indices[index + 2]);
+				BoundingBox.addInternalPoint(tri.pointA);
+				BoundingBox.addInternalPoint(tri.pointB);
+				BoundingBox.addInternalPoint(tri.pointC);
+			}
 		}
 	}
 }
