@@ -9,6 +9,7 @@
 #include "position2d.h"
 #include "rect.h"
 #include "SColor.h"
+#include "irrAllocator.h"
 #include <string.h>
 
 namespace irr
@@ -49,7 +50,7 @@ public:
 			delete[] Data;
 
 		if (DeleteMipMapsMemory)
-			delete[] MipMapsData;
+			Allocator.deallocate(MipMapsData);
 	}
 
 	//! Returns the color format
@@ -216,7 +217,7 @@ public:
 		{
 			if (DeleteMipMapsMemory)
 			{
-				delete[] MipMapsData;
+				Allocator.deallocate(MipMapsData);
 
 				DeleteMipMapsMemory = false;
 			}
@@ -246,7 +247,7 @@ public:
 						dataSize += getDataSizeFromFormat(Format, width, height);
 					} while (width != 1 || height != 1);
 
-					MipMapsData = new u8[dataSize];
+					MipMapsData = Allocator.allocate(dataSize);
 					memcpy(MipMapsData, data, dataSize);
 
 					DeleteMipMapsMemory = true;
@@ -494,6 +495,8 @@ protected:
 
 	bool DeleteMemory;
 	bool DeleteMipMapsMemory;
+
+	core::irrAllocator<u8> Allocator;
 };
 
 } // end namespace video
