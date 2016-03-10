@@ -59,10 +59,6 @@ public:
 	virtual void fill(const SColor &color) _IRR_OVERRIDE_;
 
 private:
-
-	//! assumes format and size has been set and creates the rest
-	void initData();
-
 	inline SColor getPixelBox ( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) const;
 };
 

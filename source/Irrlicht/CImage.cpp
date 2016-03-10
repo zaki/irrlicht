@@ -15,44 +15,28 @@ namespace video
 
 //! Constructor from raw data
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
-	bool ownForeignMemory, bool deleteMemory)
-		: IImage(format, size, deleteMemory)
+	bool ownForeignMemory, bool deleteMemory) : IImage(format, size, deleteMemory)
 {
 	if (ownForeignMemory)
 	{
-		Data = (u8*)0xbadf00d;
-		initData();
 		Data = (u8*)data;
 	}
 	else
 	{
-		Data = 0;
-		initData();
-		memcpy(Data, data, getDataSizeFromFormat(Format, Size.Width, Size.Height));
+		const u32 dataSize = getDataSizeFromFormat(Format, Size.Width, Size.Height);
+
+		Data = new u8[dataSize];
+		memcpy(Data, data, dataSize);
+		DeleteMemory = true;
 	}
 }
 
 
 //! Constructor of empty image
-CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
-	: IImage(format, size, true)
+CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) : IImage(format, size, true)
 {
-	initData();
-}
-
-
-//! assumes format and size has been set and creates the rest
-void CImage::initData()
-{
-#ifdef _DEBUG
-	setDebugName("CImage");
-#endif
-
-	if (!Data)
-	{
-		DeleteMemory = true;
-		Data = new u8[getDataSizeFromFormat(Format, Size.Width, Size.Height)];
-	}
+	Data = new u8[getDataSizeFromFormat(Format, Size.Width, Size.Height)];
+	DeleteMemory = true;
 }
 
 
