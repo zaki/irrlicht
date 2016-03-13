@@ -30,7 +30,7 @@ public:
 	virtual ~CSoftwareTexture();
 
 	//! lock function
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_;
 
 	//! unlock function
 	virtual void unlock() _IRR_OVERRIDE_;

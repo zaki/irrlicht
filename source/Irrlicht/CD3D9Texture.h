@@ -32,7 +32,7 @@ public:
 
 	virtual ~CD3D9Texture();
 
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel = 0) _IRR_OVERRIDE_;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_;
 
 	virtual void unlock() _IRR_OVERRIDE_;
 
@@ -59,8 +59,9 @@ private:
 
 	D3DFORMAT InternalFormat;
 
+	bool LockReadOnly;
 	void* LockData;
-	u32 LockLevel;
+	u32 LockLayer;
 
 	bool AutoGenerateMipMaps;
 

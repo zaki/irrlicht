@@ -768,7 +768,7 @@ namespace video
 		{
 			SDummyTexture(const io::path& name, E_TEXTURE_TYPE type) : ITexture(name, type) {};
 
-			virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_ { return 0; }
+			virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_ { return 0; }
 			virtual void unlock()_IRR_OVERRIDE_ {}
 			virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_ {}
 		};
