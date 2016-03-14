@@ -8,6 +8,7 @@ using namespace core;
 
 namespace
 {
+
 //! check miplevels by visual test
 bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 {
@@ -30,7 +31,7 @@ bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	scene::ISceneNode* n = smgr->addCubeSceneNode();
-	scene::ISceneNode* n2 = smgr->addCubeSceneNode(10, 0, -1, core::vector3df(20,0,30), core::vector3df(0,45,0));
+	scene::ISceneNode* n2 = smgr->addCubeSceneNode(10, 0, -1, vector3df(20,0,30), vector3df(0,45,0));
 
 	// we use a main texture with blue on top and red below
 	// and mipmap with pink on top and cyan below
@@ -40,7 +41,7 @@ bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 		u32 texData[16*16];
 		for (u32 i=0; i<16*16; ++i)
 			texData[i]=(i<8*16?0xff0000ff:0xffff0000);
-		video::IImage* image = driver->createImageFromData(video::ECF_A8R8G8B8, core::dimension2du(16,16), texData, false);
+		video::IImage* image = driver->createImageFromData(video::ECF_A8R8G8B8, dimension2du(16,16), texData, false);
 		u32 mipdata[8*16];
 		u32 index=0;
 		for (u32 j=8; j>0; j/=2)
@@ -68,7 +69,7 @@ bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 		image->drop();
 	}
 
-	(void)smgr->addCameraSceneNode(0, core::vector3df(10,0,-30));
+	(void)smgr->addCameraSceneNode(0, vector3df(10,0,-30));
 
 	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	smgr->drawAll();
@@ -88,9 +89,8 @@ bool renderMipLevels(video::E_DRIVER_TYPE driverType)
 	return result;
 }
 
-
-//! Tests locking miplevels
-bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
+//! Tests locking
+bool lockTexture(video::E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
 	if (!device)
@@ -107,188 +107,97 @@ bool lockAllMipLevels(video::E_DRIVER_TYPE driverType)
 		return true;
 	}
 
+	bool testCubemap = driver->queryFeature(video::EVDF_TEXTURE_CUBEMAP);
+
 	stabilizeScreenBackground(driver);
 
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	scene::ISceneNode* n = smgr->addCubeSceneNode();
+	scene::ISceneNode* n2 = smgr->addCubeSceneNode(10, 0, -1, vector3df(20, 0, 30), vector3df(0, 45, 0));
 
-	if (n)
+	if (n && n2)
 	{
-		// create the texture and miplevels with distinct colors
 		u32 texData[16*16];
+
 		for (u32 i=0; i<16*16; ++i)
 			texData[i]=0xff0000ff-i;
-		video::IImage* image = driver->createImageFromData(video::ECF_A8R8G8B8, core::dimension2du(16,16), texData, false);
-		u32 mipdata[8*16];
-		u32 index=0;
-		for (u32 j=8; j>0; j/=2)
+
+		// texture 2d
+
+		video::IImage* image = driver->createImageFromData(video::ECF_A8R8G8B8, dimension2du(16,16), texData, false);
+
+		video::ITexture* tex = driver->addTexture("tex2d", image);
+
+		if (!tex)
+			return false;
+		else
+			n->setMaterialTexture(0, tex);
+
+		// cubemap
+
+		if (testCubemap)
 		{
-			u32 val=(j==8?0x00ff00ff:(j==4?0x0000ffff:(j==2?0xc2c200ff:0x001212ff)));
-			for (u32 i=0; i<j; ++i)
-			{
-				for (u32 k=0; k<j; ++k)
-					mipdata[index++]=val-i;
-			}
+			video::ITexture* texCube = driver->addTextureCubemap("texcube", image, image, image, image, image, image);
+
+			if (!texCube)
+				testCubemap = false;
+			else
+				n2->setMaterialTexture(0, texCube);
 		}
 
-		image->setMipMapsData(mipdata, false, true);
-		video::ITexture* tex = driver->addTexture("miptest", image);
-
-		if (!tex)
-			// is probably an error in the mipdata handling
-			return false;
-		else
-			n->setMaterialTexture(0, tex);
 		image->drop();
 	}
 
-	(void)smgr->addCameraSceneNode();
+	smgr->addCameraSceneNode(0, vector3df(10, 0, -30));
 
 	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
 	smgr->drawAll();
 	driver->endScene();
 
-	video::ITexture* tex = driver->findTexture("miptest");
-	video::SColor* bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 0);
-	bool result = (bits[0].color==0xff0000ff);
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 1);
-	result &= (bits[0].color==0x00ff00ff);
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 2);
-	result &= (bits[0].color==0x0000ffff);
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
-	result &= (bits[0].color==0xc2c200ff);
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 4);
-	result &= (bits[0].color==0x001212ff);
-	tex->unlock();
+	video::ITexture* tex = driver->findTexture("tex2d");
 
-	if (!result)
-		logTestString("mipmap lock after init with driver %ls failed.\n", driver->getName());
-
-	// test with updating a lower level, and reading upper and lower
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 3);
+	video::SColor* bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE);
 	bits[0]=0xff00ff00;
 	bits[1]=0xff00ff00;
 	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 4);
-	result &= (bits[0].color==0x001212ff);
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
-	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color==0xc2c200fe));
-	tex->unlock();
 
-	if (!result)
-		logTestString("mipmap lock after mipmap write with driver %ls failed.\n", driver->getName());
-
-	// now test locking level 0
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 0);
-	bits[0]=0xff00ff00;
-	bits[1]=0xff00ff00;
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 4);
-	result &= (bits[0].color==0x001212ff);
-	tex->unlock();
 	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 0);
-	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color==0xff0000fd));
+	bool result = ((bits[0].color==0xff00ff00)&&(bits[2].color==0xff0000fd));
 	tex->unlock();
 
 	if (!result)
-		logTestString("mipmap lock at level 0 after mipmap write with driver %ls failed.\n", driver->getName());
+		logTestString("texture 2d lock with driver %ls failed.\n", driver->getName());
 	else
 		logTestString("Passed\n");
 
-	device->closeDevice();
-	device->run();
-	device->drop();
-
-	return result;
-}
-
-
-//! Tests locking miplevels after texture was created with auto mipmap update
-bool lockWithAutoMipmap(video::E_DRIVER_TYPE driverType)
-{
-	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
-	if (!device)
-		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
-
-	video::IVideoDriver* driver = device->getVideoDriver();
-	scene::ISceneManager * smgr = device->getSceneManager();
-
-	if (!driver->queryFeature(video::EVDF_MIP_MAP))
+	if (testCubemap)
 	{
-		device->closeDevice();
-		device->run();
-		device->drop();
-		return true;
-	}
+		tex = driver->findTexture("texcube");
 
-	stabilizeScreenBackground(driver);
+		for (u32 i = 0; i < 6; ++i)
+		{
+			bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, i);
+			bits[0] = 0xff00ff00;
+			bits[1] = 0xff00ff00;
+			tex->unlock();
+		}
 
-	logTestString("Testing driver %ls\n", driver->getName());
+		for (u32 i = 0; i < 6; ++i)
+		{
+			bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, i);
+			u32 b0 = bits[0].color;
+			u32 b2 = bits[2].color;
 
-	scene::ISceneNode* n = smgr->addCubeSceneNode();
+			result &= ((bits[0].color == 0xff00ff00) && (bits[2].color == 0xff0000fd));
+			tex->unlock();
+		}
 
-	if (n)
-	{
-		// create the texture
-		u32 texData[16*16];
-		for (u32 i=0; i<16*16; ++i)
-			texData[i]=0xff0000ff-i;
-		video::IImage* image = driver->createImageFromData(video::ECF_A8R8G8B8, core::dimension2du(16,16), texData, false);
-
-		video::ITexture* tex = driver->addTexture("miptest", image);
-		if (!tex)
-			return false;
+		if (!result)
+			logTestString("texture cubemap lock with driver %ls failed.\n", driver->getName());
 		else
-			n->setMaterialTexture(0, tex);
-		image->drop();
+			logTestString("Passed\n");
 	}
-	(void)smgr->addCameraSceneNode();
-
-	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,100,101,140));
-	smgr->drawAll();
-	driver->endScene();
-
-	video::ITexture* tex = driver->findTexture("miptest");
-	video::SColor* bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 0);
-	bool result = (bits[0].color==0xff0000ff);
-	tex->unlock();
-	if (!result)
-		logTestString("mipmap lock after init with driver %ls failed.\n", driver->getName());
-
-	// test with updating a lower level, and reading upper and lower
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 3);
-	bits[0]=0xff00ff00;
-	bits[1]=0xff00ff00;
-	tex->unlock();
-	// lock another texture just to invalidate caches in the driver
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 4);
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
-	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color!=0xff00ff00));
-	tex->unlock();
-
-	if (!result)
-		logTestString("mipmap lock after mipmap write with driver %ls failed.\n", driver->getName());
-
-	// now test locking level 0
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_WRITE, 0);
-	bits[0]=0x00ff00ff;
-	bits[1]=0x00ff00ff;
-	tex->unlock();
-	bits = (video::SColor*)tex->lock(video::ETLM_READ_ONLY, 3);
-	result &= ((bits[0].color==0xff00ff00)&&(bits[2].color!=0xff00ff00));
-	tex->unlock();
-
-	if (!result)
-		logTestString("mipmap lock at level 0 after mipmap write with driver %ls failed.\n", driver->getName());
-	else
-		logTestString("Passed\n");
 
 	device->closeDevice();
 	device->run();
@@ -296,16 +205,15 @@ bool lockWithAutoMipmap(video::E_DRIVER_TYPE driverType)
 
 	return result;
 }
-}
 
+}
 
 bool textureFeatures(void)
 {
 	bool result = true;
 
 	TestWithAllDrivers(renderMipLevels);
-	TestWithAllDrivers(lockAllMipLevels);
-	TestWithAllDrivers(lockWithAutoMipmap);
+	TestWithAllDrivers(lockTexture);
 
 	return result;
 }
