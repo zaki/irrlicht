@@ -216,7 +216,16 @@ public:
 				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, Size);
 
 #if 0 // This method doesn't work properly in some cases
-				glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
+				GLenum tmpTextureType = TextureType;
+
+				if (tmpTextureType == GL_TEXTURE_CUBE_MAP)
+				{
+					_IRR_DEBUG_BREAK_IF(layer > 5)
+
+					tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer;
+				}
+
+				glGetTexImage(tmpTextureType, 0, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
 
 				if (IsRenderTarget)
 				{
@@ -257,7 +266,9 @@ public:
 
 				Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName(), 0);
 
-				Driver->draw2DImage(this, true);
+				glClear(GL_COLOR_BUFFER_BIT);
+
+				Driver->draw2DImage(this, layer, true);
 
 				glReadPixels(0, 0, Size.Width, Size.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
 
@@ -487,14 +498,7 @@ protected:
 		{
 			_IRR_DEBUG_BREAK_IF(layer > 5)
 
-			const GLenum cubeTextureType[6] =
-			{
-				GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-				GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-				GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-			};
-
-			tmpTextureType = cubeTextureType[layer];
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer;
 		}
 
 		if (!IImage::isCompressedFormat(ColorFormat))
