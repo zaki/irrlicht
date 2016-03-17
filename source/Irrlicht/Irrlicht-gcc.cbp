@@ -8,8 +8,8 @@
 		<Build>
 			<Target title="Win32 - Debug - dll">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\obj\win32-gcc-debug-dll" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/win32-gcc-debug-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -27,7 +27,7 @@
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 				</Compiler>
 				<Linker>
@@ -51,8 +51,8 @@
 			</Target>
 			<Target title="Win32 - Release - accurate math - dll">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\obj\win32-gcc-release-dll" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/win32-gcc-release-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -68,7 +68,7 @@
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 				</Compiler>
 				<Linker>
@@ -93,8 +93,8 @@
 			</Target>
 			<Target title="Win32 - Release - fast math - dll">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\obj\win32-gcc-release-fast-dll" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/win32-gcc-release-fast-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -111,7 +111,7 @@
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 				</Compiler>
 				<Linker>
@@ -135,47 +135,33 @@
 			</Target>
 			<Target title="Win32 - Debug - static">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\obj\win32-gcc-debug-static" />
+				<Option object_output="../obj/win32-gcc-debug-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
+					<Add option="-O3" />
 					<Add option="-Wextra" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-W" />
-					<Add option="-O0" />
-					<Add option="-DWIN32" />
-					<Add option="-D_DEBUG" />
-					<Add option="-D_WINDOWS" />
+					<Add option="-ffast-math" />
 					<Add option="-D_IRR_STATIC_LIB_" />
-					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
-					<Add option="-D__GNUWIN32__" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
+					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="opengl32" />
-					<Add library="winmm" />
+					<Add library="GL" />
+					<Add library="Xxf86vm" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Win32 - Release - accurate math - static">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\obj\win32-gcc-release-static" />
+				<Option object_output="../obj/win32-gcc-release-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -191,7 +177,7 @@
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 				</Compiler>
 				<Linker>
@@ -212,9 +198,9 @@
 			</Target>
 			<Target title="Win32 - Release - fast math - static">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\obj\win32-gcc-release-fast-static" />
+				<Option object_output="../obj/win32-gcc-release-fast-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -231,7 +217,7 @@
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 				</Compiler>
 				<Linker>
@@ -252,8 +238,8 @@
 			</Target>
 			<Target title="Linux - Debug - shared">
 				<Option platforms="Unix;" />
-				<Option output="..\..\lib\Linux\libIrrlicht" prefix_auto="0" extension_auto="1" />
-				<Option object_output="..\obj\linux-gcc-debug-shared" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option object_output="../obj/linux-gcc-debug-shared" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -261,11 +247,11 @@
 				<Compiler>
 					<Add option="-Wextra" />
 					<Add option="-Wall" />
+					<Add option="-fPIC" />
 					<Add option="-g" />
 					<Add option="-O0" />
-					<Add option="-fPIC" />
 					<Add option="-D_DEBUG" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
 					<Add directory="jpeglib" />
@@ -273,14 +259,14 @@
 				<Linker>
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
-					<Add directory="\usr\X11R6\lib" />
-					<Add directory="\usr\local\lib" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Linux - Release - accurate math - shared">
 				<Option platforms="Unix;" />
-				<Option output="..\..\lib\Linux\libIrrlicht" prefix_auto="0" extension_auto="1" />
-				<Option object_output="..\obj\linux-gcc-release-shared" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option object_output="../obj/linux-gcc-release-shared" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -289,7 +275,7 @@
 					<Add option="-O3" />
 					<Add option="-Wextra" />
 					<Add option="-fPIC" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
 					<Add directory="jpeglib" />
@@ -297,14 +283,14 @@
 				<Linker>
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
-					<Add directory="\usr\X11R6\lib" />
-					<Add directory="\usr\local\lib" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Linux - Release - fast math - shared">
 				<Option platforms="Unix;" />
-				<Option output="..\..\lib\Linux\libIrrlicht" prefix_auto="0" extension_auto="1" />
-				<Option object_output="..\obj\linux-gcc-release-fast-shared" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option object_output="../obj/linux-gcc-release-fast-shared" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -314,7 +300,7 @@
 					<Add option="-Wextra" />
 					<Add option="-fPIC" />
 					<Add option="-ffast-math" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
 					<Add directory="jpeglib" />
@@ -322,15 +308,15 @@
 				<Linker>
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
-					<Add directory="\usr\X11R6\lib" />
-					<Add directory="\usr\local\lib" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Linux - Debug - static">
 				<Option platforms="Unix;" />
-				<Option output="..\..\lib\Linux\libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\obj\linux-gcc-debug-static" />
+				<Option object_output="../obj/linux-gcc-debug-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -341,22 +327,22 @@
 					<Add option="-O0" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_DEBUG" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
-					<Add directory="\usr\X11R6\lib" />
-					<Add directory="\usr\local\lib" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Linux - Release - accurate math - static">
 				<Option platforms="Unix;" />
-				<Option output="..\..\lib\Linux\libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\obj\linux-gcc-release-static" />
+				<Option object_output="../obj/linux-gcc-release-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -365,22 +351,22 @@
 					<Add option="-Wextra" />
 					<Add option="-fno-exceptions" />
 					<Add option="-D_IRR_STATIC_LIB_" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
-					<Add directory="\usr\X11R6\lib" />
-					<Add directory="\usr\local\lib" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Linux - Release - fast math - static">
 				<Option platforms="Unix;" />
-				<Option output="..\..\lib\Linux\libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\obj\linux-gcc-release-fast-static" />
+				<Option object_output="../obj/linux-gcc-release-fast-static" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -389,15 +375,15 @@
 					<Add option="-Wextra" />
 					<Add option="-ffast-math" />
 					<Add option="-D_IRR_STATIC_LIB_" />
-					<Add directory="..\..\include" />
+					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
-					<Add directory="\usr\X11R6\lib" />
-					<Add directory="\usr\local\lib" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -409,196 +395,197 @@
 			<Add option="-fno-exceptions" />
 			<Add option="-fno-rtti" />
 			<Add option="-fstrict-aliasing" />
+			<Add option="-U__STRICT_ANSI__" />
 		</Compiler>
-		<Unit filename="..\..\changes.txt" />
-		<Unit filename="..\..\include\CDynamicMeshBuffer.h" />
-		<Unit filename="..\..\include\CIndexBuffer.h" />
-		<Unit filename="..\..\include\CMeshBuffer.h" />
-		<Unit filename="..\..\include\CVertexBuffer.h" />
-		<Unit filename="..\..\include\EAttributes.h" />
-		<Unit filename="..\..\include\ECullingTypes.h" />
-		<Unit filename="..\..\include\EDebugSceneTypes.h" />
-		<Unit filename="..\..\include\EDeviceTypes.h" />
-		<Unit filename="..\..\include\EDriverFeatures.h" />
-		<Unit filename="..\..\include\EDriverTypes.h" />
-		<Unit filename="..\..\include\EFocusFlags.h" />
-		<Unit filename="..\..\include\EGUIAlignment.h" />
-		<Unit filename="..\..\include\EGUIElementTypes.h" />
-		<Unit filename="..\..\include\EHardwareBufferFlags.h" />
-		<Unit filename="..\..\include\EMaterialFlags.h" />
-		<Unit filename="..\..\include\EMaterialTypes.h" />
-		<Unit filename="..\..\include\EMeshWriterEnums.h" />
-		<Unit filename="..\..\include\EMessageBoxFlags.h" />
-		<Unit filename="..\..\include\EPrimitiveTypes.h" />
-		<Unit filename="..\..\include\ESceneNodeAnimatorTypes.h" />
-		<Unit filename="..\..\include\ESceneNodeTypes.h" />
-		<Unit filename="..\..\include\EShaderTypes.h" />
-		<Unit filename="..\..\include\ETerrainElements.h" />
-		<Unit filename="..\..\include\IAnimatedMesh.h" />
-		<Unit filename="..\..\include\IAnimatedMeshMD2.h" />
-		<Unit filename="..\..\include\IAnimatedMeshMD3.h" />
-		<Unit filename="..\..\include\IAnimatedMeshSceneNode.h" />
-		<Unit filename="..\..\include\IAttributeExchangingObject.h" />
-		<Unit filename="..\..\include\IAttributes.h" />
-		<Unit filename="..\..\include\IBillboardSceneNode.h" />
-		<Unit filename="..\..\include\IBillboardTextSceneNode.h" />
-		<Unit filename="..\..\include\IBoneSceneNode.h" />
-		<Unit filename="..\..\include\ICameraSceneNode.h" />
-		<Unit filename="..\..\include\IColladaMeshWriter.h" />
-		<Unit filename="..\..\include\IContextManager.h" />
-		<Unit filename="..\..\include\ICursorControl.h" />
-		<Unit filename="..\..\include\IDummyTransformationSceneNode.h" />
-		<Unit filename="..\..\include\IDynamicMeshBuffer.h" />
-		<Unit filename="..\..\include\IEventReceiver.h" />
-		<Unit filename="..\..\include\IFileArchive.h" />
-		<Unit filename="..\..\include\IFileList.h" />
-		<Unit filename="..\..\include\IFileSystem.h" />
-		<Unit filename="..\..\include\IGPUProgrammingServices.h" />
-		<Unit filename="..\..\include\IGUIButton.h" />
-		<Unit filename="..\..\include\IGUICheckBox.h" />
-		<Unit filename="..\..\include\IGUIColorSelectDialog.h" />
-		<Unit filename="..\..\include\IGUIComboBox.h" />
-		<Unit filename="..\..\include\IGUIContextMenu.h" />
-		<Unit filename="..\..\include\IGUIEditBox.h" />
-		<Unit filename="..\..\include\IGUIElement.h" />
-		<Unit filename="..\..\include\IGUIElementFactory.h" />
-		<Unit filename="..\..\include\IGUIEnvironment.h" />
-		<Unit filename="..\..\include\IGUIFileOpenDialog.h" />
-		<Unit filename="..\..\include\IGUIFont.h" />
-		<Unit filename="..\..\include\IGUIFontBitmap.h" />
-		<Unit filename="..\..\include\IGUIImage.h" />
-		<Unit filename="..\..\include\IGUIImageList.h" />
-		<Unit filename="..\..\include\IGUIInOutFader.h" />
-		<Unit filename="..\..\include\IGUIListBox.h" />
-		<Unit filename="..\..\include\IGUIMeshViewer.h" />
-		<Unit filename="..\..\include\IGUIProfiler.h" />
-		<Unit filename="..\..\include\IGUIScrollBar.h" />
-		<Unit filename="..\..\include\IGUISkin.h" />
-		<Unit filename="..\..\include\IGUISpinBox.h" />
-		<Unit filename="..\..\include\IGUISpriteBank.h" />
-		<Unit filename="..\..\include\IGUIStaticText.h" />
-		<Unit filename="..\..\include\IGUITabControl.h" />
-		<Unit filename="..\..\include\IGUITable.h" />
-		<Unit filename="..\..\include\IGUIToolbar.h" />
-		<Unit filename="..\..\include\IGUITreeView.h" />
-		<Unit filename="..\..\include\IGUIWindow.h" />
-		<Unit filename="..\..\include\IGeometryCreator.h" />
-		<Unit filename="..\..\include\IImage.h" />
-		<Unit filename="..\..\include\IImageLoader.h" />
-		<Unit filename="..\..\include\IImageWriter.h" />
-		<Unit filename="..\..\include\IIndexBuffer.h" />
-		<Unit filename="..\..\include\ILightManager.h" />
-		<Unit filename="..\..\include\ILightSceneNode.h" />
-		<Unit filename="..\..\include\ILogger.h" />
-		<Unit filename="..\..\include\IMaterialRenderer.h" />
-		<Unit filename="..\..\include\IMaterialRendererServices.h" />
-		<Unit filename="..\..\include\IMesh.h" />
-		<Unit filename="..\..\include\IMeshBuffer.h" />
-		<Unit filename="..\..\include\IMeshCache.h" />
-		<Unit filename="..\..\include\IMeshLoader.h" />
-		<Unit filename="..\..\include\IMeshManipulator.h" />
-		<Unit filename="..\..\include\IMeshSceneNode.h" />
-		<Unit filename="..\..\include\IMeshTextureLoader.h" />
-		<Unit filename="..\..\include\IMeshWriter.h" />
-		<Unit filename="..\..\include\IMetaTriangleSelector.h" />
-		<Unit filename="..\..\include\IOSOperator.h" />
-		<Unit filename="..\..\include\IParticleAffector.h" />
-		<Unit filename="..\..\include\IParticleAnimatedMeshSceneNodeEmitter.h" />
-		<Unit filename="..\..\include\IParticleAttractionAffector.h" />
-		<Unit filename="..\..\include\IParticleBoxEmitter.h" />
-		<Unit filename="..\..\include\IParticleCylinderEmitter.h" />
-		<Unit filename="..\..\include\IParticleEmitter.h" />
-		<Unit filename="..\..\include\IParticleFadeOutAffector.h" />
-		<Unit filename="..\..\include\IParticleGravityAffector.h" />
-		<Unit filename="..\..\include\IParticleMeshEmitter.h" />
-		<Unit filename="..\..\include\IParticleRingEmitter.h" />
-		<Unit filename="..\..\include\IParticleRotationAffector.h" />
-		<Unit filename="..\..\include\IParticleSphereEmitter.h" />
-		<Unit filename="..\..\include\IParticleSystemSceneNode.h" />
-		<Unit filename="..\..\include\IProfiler.h" />
-		<Unit filename="..\..\include\IQ3LevelMesh.h" />
-		<Unit filename="..\..\include\IQ3Shader.h" />
-		<Unit filename="..\..\include\IReadFile.h" />
-		<Unit filename="..\..\include\IReferenceCounted.h" />
-		<Unit filename="..\..\include\IRenderTarget.h" />
-		<Unit filename="..\..\include\ISceneCollisionManager.h" />
-		<Unit filename="..\..\include\ISceneLoader.h" />
-		<Unit filename="..\..\include\ISceneManager.h" />
-		<Unit filename="..\..\include\ISceneNode.h" />
-		<Unit filename="..\..\include\ISceneNodeAnimator.h" />
-		<Unit filename="..\..\include\ISceneNodeAnimatorCameraFPS.h" />
-		<Unit filename="..\..\include\ISceneNodeAnimatorCameraMaya.h" />
-		<Unit filename="..\..\include\ISceneNodeAnimatorCollisionResponse.h" />
-		<Unit filename="..\..\include\ISceneNodeAnimatorFactory.h" />
-		<Unit filename="..\..\include\ISceneNodeFactory.h" />
-		<Unit filename="..\..\include\ISceneUserDataSerializer.h" />
-		<Unit filename="..\..\include\IShaderConstantSetCallBack.h" />
-		<Unit filename="..\..\include\IShadowVolumeSceneNode.h" />
-		<Unit filename="..\..\include\ISkinnedMesh.h" />
-		<Unit filename="..\..\include\ITerrainSceneNode.h" />
-		<Unit filename="..\..\include\ITextSceneNode.h" />
-		<Unit filename="..\..\include\ITexture.h" />
-		<Unit filename="..\..\include\ITimer.h" />
-		<Unit filename="..\..\include\ITriangleSelector.h" />
-		<Unit filename="..\..\include\IVertexBuffer.h" />
-		<Unit filename="..\..\include\IVideoDriver.h" />
-		<Unit filename="..\..\include\IVideoModeList.h" />
-		<Unit filename="..\..\include\IVolumeLightSceneNode.h" />
-		<Unit filename="..\..\include\IWriteFile.h" />
-		<Unit filename="..\..\include\IXMLReader.h" />
-		<Unit filename="..\..\include\IXMLWriter.h" />
-		<Unit filename="..\..\include\IrrCompileConfig.h" />
-		<Unit filename="..\..\include\IrrlichtDevice.h" />
-		<Unit filename="..\..\include\Keycodes.h" />
-		<Unit filename="..\..\include\S3DVertex.h" />
-		<Unit filename="..\..\include\SAnimatedMesh.h" />
-		<Unit filename="..\..\include\SColor.h" />
-		<Unit filename="..\..\include\SExposedVideoData.h" />
-		<Unit filename="..\..\include\SIrrCreationParameters.h" />
-		<Unit filename="..\..\include\SKeyMap.h" />
-		<Unit filename="..\..\include\SLight.h" />
-		<Unit filename="..\..\include\SMaterial.h" />
-		<Unit filename="..\..\include\SMaterialLayer.h" />
-		<Unit filename="..\..\include\SMesh.h" />
-		<Unit filename="..\..\include\SMeshBuffer.h" />
-		<Unit filename="..\..\include\SMeshBufferLightMap.h" />
-		<Unit filename="..\..\include\SMeshBufferTangents.h" />
-		<Unit filename="..\..\include\SParticle.h" />
-		<Unit filename="..\..\include\SSharedMeshBuffer.h" />
-		<Unit filename="..\..\include\SSkinMeshBuffer.h" />
-		<Unit filename="..\..\include\SVertexIndex.h" />
-		<Unit filename="..\..\include\SVertexManipulator.h" />
-		<Unit filename="..\..\include\SViewFrustum.h" />
-		<Unit filename="..\..\include\SceneParameters.h" />
-		<Unit filename="..\..\include\aabbox3d.h" />
-		<Unit filename="..\..\include\coreutil.h" />
-		<Unit filename="..\..\include\dimension2d.h" />
-		<Unit filename="..\..\include\fast_atof.h" />
-		<Unit filename="..\..\include\heapsort.h" />
-		<Unit filename="..\..\include\irrAllocator.h" />
-		<Unit filename="..\..\include\irrArray.h" />
-		<Unit filename="..\..\include\irrList.h" />
-		<Unit filename="..\..\include\irrMap.h" />
-		<Unit filename="..\..\include\irrMath.h" />
-		<Unit filename="..\..\include\irrString.h" />
-		<Unit filename="..\..\include\irrTypes.h" />
-		<Unit filename="..\..\include\irrXML.h" />
-		<Unit filename="..\..\include\irrlicht.h" />
-		<Unit filename="..\..\include\irrpack.h" />
-		<Unit filename="..\..\include\irrunpack.h" />
-		<Unit filename="..\..\include\leakHunter.h" />
-		<Unit filename="..\..\include\line2d.h" />
-		<Unit filename="..\..\include\line3d.h" />
-		<Unit filename="..\..\include\matrix4.h" />
-		<Unit filename="..\..\include\path.h" />
-		<Unit filename="..\..\include\plane3d.h" />
-		<Unit filename="..\..\include\position2d.h" />
-		<Unit filename="..\..\include\quaternion.h" />
-		<Unit filename="..\..\include\rect.h" />
-		<Unit filename="..\..\include\triangle3d.h" />
-		<Unit filename="..\..\include\vector2d.h" />
-		<Unit filename="..\..\include\vector3d.h" />
-		<Unit filename="..\..\readme.txt" />
+		<Unit filename="../../changes.txt" />
+		<Unit filename="../../include/CDynamicMeshBuffer.h" />
+		<Unit filename="../../include/CIndexBuffer.h" />
+		<Unit filename="../../include/CMeshBuffer.h" />
+		<Unit filename="../../include/CVertexBuffer.h" />
+		<Unit filename="../../include/EAttributes.h" />
+		<Unit filename="../../include/ECullingTypes.h" />
+		<Unit filename="../../include/EDebugSceneTypes.h" />
+		<Unit filename="../../include/EDeviceTypes.h" />
+		<Unit filename="../../include/EDriverFeatures.h" />
+		<Unit filename="../../include/EDriverTypes.h" />
+		<Unit filename="../../include/EFocusFlags.h" />
+		<Unit filename="../../include/EGUIAlignment.h" />
+		<Unit filename="../../include/EGUIElementTypes.h" />
+		<Unit filename="../../include/EHardwareBufferFlags.h" />
+		<Unit filename="../../include/EMaterialFlags.h" />
+		<Unit filename="../../include/EMaterialTypes.h" />
+		<Unit filename="../../include/EMeshWriterEnums.h" />
+		<Unit filename="../../include/EMessageBoxFlags.h" />
+		<Unit filename="../../include/EPrimitiveTypes.h" />
+		<Unit filename="../../include/ESceneNodeAnimatorTypes.h" />
+		<Unit filename="../../include/ESceneNodeTypes.h" />
+		<Unit filename="../../include/EShaderTypes.h" />
+		<Unit filename="../../include/ETerrainElements.h" />
+		<Unit filename="../../include/IAnimatedMesh.h" />
+		<Unit filename="../../include/IAnimatedMeshMD2.h" />
+		<Unit filename="../../include/IAnimatedMeshMD3.h" />
+		<Unit filename="../../include/IAnimatedMeshSceneNode.h" />
+		<Unit filename="../../include/IAttributeExchangingObject.h" />
+		<Unit filename="../../include/IAttributes.h" />
+		<Unit filename="../../include/IBillboardSceneNode.h" />
+		<Unit filename="../../include/IBillboardTextSceneNode.h" />
+		<Unit filename="../../include/IBoneSceneNode.h" />
+		<Unit filename="../../include/ICameraSceneNode.h" />
+		<Unit filename="../../include/IColladaMeshWriter.h" />
+		<Unit filename="../../include/IContextManager.h" />
+		<Unit filename="../../include/ICursorControl.h" />
+		<Unit filename="../../include/IDummyTransformationSceneNode.h" />
+		<Unit filename="../../include/IDynamicMeshBuffer.h" />
+		<Unit filename="../../include/IEventReceiver.h" />
+		<Unit filename="../../include/IFileArchive.h" />
+		<Unit filename="../../include/IFileList.h" />
+		<Unit filename="../../include/IFileSystem.h" />
+		<Unit filename="../../include/IGPUProgrammingServices.h" />
+		<Unit filename="../../include/IGUIButton.h" />
+		<Unit filename="../../include/IGUICheckBox.h" />
+		<Unit filename="../../include/IGUIColorSelectDialog.h" />
+		<Unit filename="../../include/IGUIComboBox.h" />
+		<Unit filename="../../include/IGUIContextMenu.h" />
+		<Unit filename="../../include/IGUIEditBox.h" />
+		<Unit filename="../../include/IGUIElement.h" />
+		<Unit filename="../../include/IGUIElementFactory.h" />
+		<Unit filename="../../include/IGUIEnvironment.h" />
+		<Unit filename="../../include/IGUIFileOpenDialog.h" />
+		<Unit filename="../../include/IGUIFont.h" />
+		<Unit filename="../../include/IGUIFontBitmap.h" />
+		<Unit filename="../../include/IGUIImage.h" />
+		<Unit filename="../../include/IGUIImageList.h" />
+		<Unit filename="../../include/IGUIInOutFader.h" />
+		<Unit filename="../../include/IGUIListBox.h" />
+		<Unit filename="../../include/IGUIMeshViewer.h" />
+		<Unit filename="../../include/IGUIProfiler.h" />
+		<Unit filename="../../include/IGUIScrollBar.h" />
+		<Unit filename="../../include/IGUISkin.h" />
+		<Unit filename="../../include/IGUISpinBox.h" />
+		<Unit filename="../../include/IGUISpriteBank.h" />
+		<Unit filename="../../include/IGUIStaticText.h" />
+		<Unit filename="../../include/IGUITabControl.h" />
+		<Unit filename="../../include/IGUITable.h" />
+		<Unit filename="../../include/IGUIToolbar.h" />
+		<Unit filename="../../include/IGUITreeView.h" />
+		<Unit filename="../../include/IGUIWindow.h" />
+		<Unit filename="../../include/IGeometryCreator.h" />
+		<Unit filename="../../include/IImage.h" />
+		<Unit filename="../../include/IImageLoader.h" />
+		<Unit filename="../../include/IImageWriter.h" />
+		<Unit filename="../../include/IIndexBuffer.h" />
+		<Unit filename="../../include/ILightManager.h" />
+		<Unit filename="../../include/ILightSceneNode.h" />
+		<Unit filename="../../include/ILogger.h" />
+		<Unit filename="../../include/IMaterialRenderer.h" />
+		<Unit filename="../../include/IMaterialRendererServices.h" />
+		<Unit filename="../../include/IMesh.h" />
+		<Unit filename="../../include/IMeshBuffer.h" />
+		<Unit filename="../../include/IMeshCache.h" />
+		<Unit filename="../../include/IMeshLoader.h" />
+		<Unit filename="../../include/IMeshManipulator.h" />
+		<Unit filename="../../include/IMeshSceneNode.h" />
+		<Unit filename="../../include/IMeshTextureLoader.h" />
+		<Unit filename="../../include/IMeshWriter.h" />
+		<Unit filename="../../include/IMetaTriangleSelector.h" />
+		<Unit filename="../../include/IOSOperator.h" />
+		<Unit filename="../../include/IParticleAffector.h" />
+		<Unit filename="../../include/IParticleAnimatedMeshSceneNodeEmitter.h" />
+		<Unit filename="../../include/IParticleAttractionAffector.h" />
+		<Unit filename="../../include/IParticleBoxEmitter.h" />
+		<Unit filename="../../include/IParticleCylinderEmitter.h" />
+		<Unit filename="../../include/IParticleEmitter.h" />
+		<Unit filename="../../include/IParticleFadeOutAffector.h" />
+		<Unit filename="../../include/IParticleGravityAffector.h" />
+		<Unit filename="../../include/IParticleMeshEmitter.h" />
+		<Unit filename="../../include/IParticleRingEmitter.h" />
+		<Unit filename="../../include/IParticleRotationAffector.h" />
+		<Unit filename="../../include/IParticleSphereEmitter.h" />
+		<Unit filename="../../include/IParticleSystemSceneNode.h" />
+		<Unit filename="../../include/IProfiler.h" />
+		<Unit filename="../../include/IQ3LevelMesh.h" />
+		<Unit filename="../../include/IQ3Shader.h" />
+		<Unit filename="../../include/IReadFile.h" />
+		<Unit filename="../../include/IReferenceCounted.h" />
+		<Unit filename="../../include/IRenderTarget.h" />
+		<Unit filename="../../include/ISceneCollisionManager.h" />
+		<Unit filename="../../include/ISceneLoader.h" />
+		<Unit filename="../../include/ISceneManager.h" />
+		<Unit filename="../../include/ISceneNode.h" />
+		<Unit filename="../../include/ISceneNodeAnimator.h" />
+		<Unit filename="../../include/ISceneNodeAnimatorCameraFPS.h" />
+		<Unit filename="../../include/ISceneNodeAnimatorCameraMaya.h" />
+		<Unit filename="../../include/ISceneNodeAnimatorCollisionResponse.h" />
+		<Unit filename="../../include/ISceneNodeAnimatorFactory.h" />
+		<Unit filename="../../include/ISceneNodeFactory.h" />
+		<Unit filename="../../include/ISceneUserDataSerializer.h" />
+		<Unit filename="../../include/IShaderConstantSetCallBack.h" />
+		<Unit filename="../../include/IShadowVolumeSceneNode.h" />
+		<Unit filename="../../include/ISkinnedMesh.h" />
+		<Unit filename="../../include/ITerrainSceneNode.h" />
+		<Unit filename="../../include/ITextSceneNode.h" />
+		<Unit filename="../../include/ITexture.h" />
+		<Unit filename="../../include/ITimer.h" />
+		<Unit filename="../../include/ITriangleSelector.h" />
+		<Unit filename="../../include/IVertexBuffer.h" />
+		<Unit filename="../../include/IVideoDriver.h" />
+		<Unit filename="../../include/IVideoModeList.h" />
+		<Unit filename="../../include/IVolumeLightSceneNode.h" />
+		<Unit filename="../../include/IWriteFile.h" />
+		<Unit filename="../../include/IXMLReader.h" />
+		<Unit filename="../../include/IXMLWriter.h" />
+		<Unit filename="../../include/IrrCompileConfig.h" />
+		<Unit filename="../../include/IrrlichtDevice.h" />
+		<Unit filename="../../include/Keycodes.h" />
+		<Unit filename="../../include/S3DVertex.h" />
+		<Unit filename="../../include/SAnimatedMesh.h" />
+		<Unit filename="../../include/SColor.h" />
+		<Unit filename="../../include/SExposedVideoData.h" />
+		<Unit filename="../../include/SIrrCreationParameters.h" />
+		<Unit filename="../../include/SKeyMap.h" />
+		<Unit filename="../../include/SLight.h" />
+		<Unit filename="../../include/SMaterial.h" />
+		<Unit filename="../../include/SMaterialLayer.h" />
+		<Unit filename="../../include/SMesh.h" />
+		<Unit filename="../../include/SMeshBuffer.h" />
+		<Unit filename="../../include/SMeshBufferLightMap.h" />
+		<Unit filename="../../include/SMeshBufferTangents.h" />
+		<Unit filename="../../include/SParticle.h" />
+		<Unit filename="../../include/SSharedMeshBuffer.h" />
+		<Unit filename="../../include/SSkinMeshBuffer.h" />
+		<Unit filename="../../include/SVertexIndex.h" />
+		<Unit filename="../../include/SVertexManipulator.h" />
+		<Unit filename="../../include/SViewFrustum.h" />
+		<Unit filename="../../include/SceneParameters.h" />
+		<Unit filename="../../include/aabbox3d.h" />
+		<Unit filename="../../include/coreutil.h" />
+		<Unit filename="../../include/dimension2d.h" />
+		<Unit filename="../../include/fast_atof.h" />
+		<Unit filename="../../include/heapsort.h" />
+		<Unit filename="../../include/irrAllocator.h" />
+		<Unit filename="../../include/irrArray.h" />
+		<Unit filename="../../include/irrList.h" />
+		<Unit filename="../../include/irrMap.h" />
+		<Unit filename="../../include/irrMath.h" />
+		<Unit filename="../../include/irrString.h" />
+		<Unit filename="../../include/irrTypes.h" />
+		<Unit filename="../../include/irrXML.h" />
+		<Unit filename="../../include/irrlicht.h" />
+		<Unit filename="../../include/irrpack.h" />
+		<Unit filename="../../include/irrunpack.h" />
+		<Unit filename="../../include/leakHunter.h" />
+		<Unit filename="../../include/line2d.h" />
+		<Unit filename="../../include/line3d.h" />
+		<Unit filename="../../include/matrix4.h" />
+		<Unit filename="../../include/path.h" />
+		<Unit filename="../../include/plane3d.h" />
+		<Unit filename="../../include/position2d.h" />
+		<Unit filename="../../include/quaternion.h" />
+		<Unit filename="../../include/rect.h" />
+		<Unit filename="../../include/triangle3d.h" />
+		<Unit filename="../../include/vector2d.h" />
+		<Unit filename="../../include/vector3d.h" />
+		<Unit filename="../../readme.txt" />
 		<Unit filename="BuiltInFont.h" />
 		<Unit filename="C3DSMeshFileLoader.cpp" />
 		<Unit filename="C3DSMeshFileLoader.h" />
@@ -989,10 +976,10 @@
 		<Unit filename="CVolumeLightSceneNode.h" />
 		<Unit filename="CWADReader.cpp" />
 		<Unit filename="CWADReader.h" />
-		<Unit filename="CWaterSurfaceSceneNode.cpp" />
-		<Unit filename="CWaterSurfaceSceneNode.h" />
 		<Unit filename="CWGLManager.cpp" />
 		<Unit filename="CWGLManager.h" />
+		<Unit filename="CWaterSurfaceSceneNode.cpp" />
+		<Unit filename="CWaterSurfaceSceneNode.h" />
 		<Unit filename="CWriteFile.cpp" />
 		<Unit filename="CWriteFile.h" />
 		<Unit filename="CXMLReader.cpp" />
@@ -1021,294 +1008,294 @@
 		<Unit filename="SB3DStructs.h" />
 		<Unit filename="SoftwareDriver2_compile_config.h" />
 		<Unit filename="SoftwareDriver2_helper.h" />
-		<Unit filename="aesGladman\aes.h" />
-		<Unit filename="aesGladman\aescrypt.cpp" />
-		<Unit filename="aesGladman\aeskey.cpp" />
-		<Unit filename="aesGladman\aesopt.h" />
-		<Unit filename="aesGladman\aestab.cpp" />
-		<Unit filename="aesGladman\fileenc.cpp" />
-		<Unit filename="aesGladman\fileenc.h" />
-		<Unit filename="aesGladman\hmac.cpp" />
-		<Unit filename="aesGladman\hmac.h" />
-		<Unit filename="aesGladman\prng.cpp" />
-		<Unit filename="aesGladman\prng.h" />
-		<Unit filename="aesGladman\pwd2key.cpp" />
-		<Unit filename="aesGladman\pwd2key.h" />
-		<Unit filename="aesGladman\sha1.cpp" />
-		<Unit filename="aesGladman\sha1.h" />
-		<Unit filename="aesGladman\sha2.cpp" />
-		<Unit filename="aesGladman\sha2.h" />
-		<Unit filename="bzip2\blocksort.c">
+		<Unit filename="aesGladman/aes.h" />
+		<Unit filename="aesGladman/aescrypt.cpp" />
+		<Unit filename="aesGladman/aeskey.cpp" />
+		<Unit filename="aesGladman/aesopt.h" />
+		<Unit filename="aesGladman/aestab.cpp" />
+		<Unit filename="aesGladman/fileenc.cpp" />
+		<Unit filename="aesGladman/fileenc.h" />
+		<Unit filename="aesGladman/hmac.cpp" />
+		<Unit filename="aesGladman/hmac.h" />
+		<Unit filename="aesGladman/prng.cpp" />
+		<Unit filename="aesGladman/prng.h" />
+		<Unit filename="aesGladman/pwd2key.cpp" />
+		<Unit filename="aesGladman/pwd2key.h" />
+		<Unit filename="aesGladman/sha1.cpp" />
+		<Unit filename="aesGladman/sha1.h" />
+		<Unit filename="aesGladman/sha2.cpp" />
+		<Unit filename="aesGladman/sha2.h" />
+		<Unit filename="bzip2/blocksort.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="bzip2\bzcompress.c">
+		<Unit filename="bzip2/bzcompress.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="bzip2\bzlib.c">
+		<Unit filename="bzip2/bzlib.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="bzip2\bzlib.h" />
-		<Unit filename="bzip2\bzlib_private.h" />
-		<Unit filename="bzip2\crctable.c">
+		<Unit filename="bzip2/bzlib.h" />
+		<Unit filename="bzip2/bzlib_private.h" />
+		<Unit filename="bzip2/crctable.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="bzip2\decompress.c">
+		<Unit filename="bzip2/decompress.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="bzip2\huffman.c">
+		<Unit filename="bzip2/huffman.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="bzip2\randtable.c">
+		<Unit filename="bzip2/randtable.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="dmfsupport.h" />
 		<Unit filename="glext.h" />
 		<Unit filename="irrXML.cpp" />
-		<Unit filename="jpeglib\cderror.h" />
-		<Unit filename="jpeglib\jaricom.c">
+		<Unit filename="jpeglib/cderror.h" />
+		<Unit filename="jpeglib/jaricom.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcapimin.c">
+		<Unit filename="jpeglib/jcapimin.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcapistd.c">
+		<Unit filename="jpeglib/jcapistd.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcarith.c">
+		<Unit filename="jpeglib/jcarith.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jccoefct.c">
+		<Unit filename="jpeglib/jccoefct.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jccolor.c">
+		<Unit filename="jpeglib/jccolor.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcdctmgr.c">
+		<Unit filename="jpeglib/jcdctmgr.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jchuff.c">
+		<Unit filename="jpeglib/jchuff.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jchuff.h" />
-		<Unit filename="jpeglib\jcinit.c">
+		<Unit filename="jpeglib/jchuff.h" />
+		<Unit filename="jpeglib/jcinit.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcmainct.c">
+		<Unit filename="jpeglib/jcmainct.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcmarker.c">
+		<Unit filename="jpeglib/jcmarker.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcmaster.c">
+		<Unit filename="jpeglib/jcmaster.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcomapi.c">
+		<Unit filename="jpeglib/jcomapi.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jconfig.h" />
-		<Unit filename="jpeglib\jcparam.c">
+		<Unit filename="jpeglib/jconfig.h" />
+		<Unit filename="jpeglib/jcparam.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcprepct.c">
+		<Unit filename="jpeglib/jcprepct.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jcsample.c">
+		<Unit filename="jpeglib/jcsample.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jctrans.c">
+		<Unit filename="jpeglib/jctrans.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdapimin.c">
+		<Unit filename="jpeglib/jdapimin.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdapistd.c">
+		<Unit filename="jpeglib/jdapistd.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdarith.c">
+		<Unit filename="jpeglib/jdarith.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdatadst.c">
+		<Unit filename="jpeglib/jdatadst.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdatasrc.c">
+		<Unit filename="jpeglib/jdatasrc.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdcoefct.c">
+		<Unit filename="jpeglib/jdcoefct.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdcolor.c">
+		<Unit filename="jpeglib/jdcolor.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdct.h" />
-		<Unit filename="jpeglib\jddctmgr.c">
+		<Unit filename="jpeglib/jdct.h" />
+		<Unit filename="jpeglib/jddctmgr.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdhuff.c">
+		<Unit filename="jpeglib/jdhuff.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdhuff.h" />
-		<Unit filename="jpeglib\jdinput.c">
+		<Unit filename="jpeglib/jdhuff.h" />
+		<Unit filename="jpeglib/jdinput.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdmainct.c">
+		<Unit filename="jpeglib/jdmainct.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdmarker.c">
+		<Unit filename="jpeglib/jdmarker.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdmaster.c">
+		<Unit filename="jpeglib/jdmaster.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdmerge.c">
+		<Unit filename="jpeglib/jdmerge.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdpostct.c">
+		<Unit filename="jpeglib/jdpostct.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdsample.c">
+		<Unit filename="jpeglib/jdsample.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdtrans.c">
+		<Unit filename="jpeglib/jdtrans.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jerror.c">
+		<Unit filename="jpeglib/jerror.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jerror.h" />
-		<Unit filename="jpeglib\jfdctflt.c">
+		<Unit filename="jpeglib/jerror.h" />
+		<Unit filename="jpeglib/jfdctflt.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jfdctfst.c">
+		<Unit filename="jpeglib/jfdctfst.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jfdctint.c">
+		<Unit filename="jpeglib/jfdctint.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jidctflt.c">
+		<Unit filename="jpeglib/jidctflt.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jidctfst.c">
+		<Unit filename="jpeglib/jidctfst.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jidctint.c">
+		<Unit filename="jpeglib/jidctint.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jinclude.h" />
-		<Unit filename="jpeglib\jmemmgr.c">
+		<Unit filename="jpeglib/jinclude.h" />
+		<Unit filename="jpeglib/jmemmgr.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jmemnobs.c">
+		<Unit filename="jpeglib/jmemnobs.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jmemsys.h" />
-		<Unit filename="jpeglib\jmorecfg.h" />
-		<Unit filename="jpeglib\jpegint.h" />
-		<Unit filename="jpeglib\jpeglib.h" />
-		<Unit filename="jpeglib\jquant1.c">
+		<Unit filename="jpeglib/jmemsys.h" />
+		<Unit filename="jpeglib/jmorecfg.h" />
+		<Unit filename="jpeglib/jpegint.h" />
+		<Unit filename="jpeglib/jpeglib.h" />
+		<Unit filename="jpeglib/jquant1.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jquant2.c">
+		<Unit filename="jpeglib/jquant2.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jutils.c">
+		<Unit filename="jpeglib/jutils.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jversion.h" />
+		<Unit filename="jpeglib/jversion.h" />
 		<Unit filename="leakHunter.cpp" />
-		<Unit filename="libpng\png.c">
+		<Unit filename="libpng/png.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\png.h" />
-		<Unit filename="libpng\pngconf.h" />
-		<Unit filename="libpng\pngerror.c">
+		<Unit filename="libpng/png.h" />
+		<Unit filename="libpng/pngconf.h" />
+		<Unit filename="libpng/pngerror.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngget.c">
+		<Unit filename="libpng/pngget.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngmem.c">
+		<Unit filename="libpng/pngmem.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngpread.c">
+		<Unit filename="libpng/pngpread.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngread.c">
+		<Unit filename="libpng/pngread.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngrio.c">
+		<Unit filename="libpng/pngrio.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngrtran.c">
+		<Unit filename="libpng/pngrtran.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngrutil.c">
+		<Unit filename="libpng/pngrutil.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngset.c">
+		<Unit filename="libpng/pngset.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngtrans.c">
+		<Unit filename="libpng/pngtrans.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngwio.c">
+		<Unit filename="libpng/pngwio.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngwrite.c">
+		<Unit filename="libpng/pngwrite.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngwtran.c">
+		<Unit filename="libpng/pngwtran.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\pngwutil.c">
+		<Unit filename="libpng/pngwutil.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lzma\LzmaDec.c">
+		<Unit filename="lzma/LzmaDec.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="lzma\LzmaDec.h" />
-		<Unit filename="lzma\Types.h" />
+		<Unit filename="lzma/LzmaDec.h" />
+		<Unit filename="lzma/Types.h" />
 		<Unit filename="os.cpp" />
 		<Unit filename="os.h" />
 		<Unit filename="utf8.cpp" />
-		<Unit filename="zlib\adler32.c">
+		<Unit filename="zlib/adler32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\compress.c">
+		<Unit filename="zlib/compress.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\crc32.c">
+		<Unit filename="zlib/crc32.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\crc32.h" />
-		<Unit filename="zlib\deflate.c">
+		<Unit filename="zlib/crc32.h" />
+		<Unit filename="zlib/deflate.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\deflate.h" />
-		<Unit filename="zlib\inffast.c">
+		<Unit filename="zlib/deflate.h" />
+		<Unit filename="zlib/inffast.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\inffast.h" />
-		<Unit filename="zlib\inffixed.h" />
-		<Unit filename="zlib\inflate.c">
+		<Unit filename="zlib/inffast.h" />
+		<Unit filename="zlib/inffixed.h" />
+		<Unit filename="zlib/inflate.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\inftrees.c">
+		<Unit filename="zlib/inftrees.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\inftrees.h" />
-		<Unit filename="zlib\trees.c">
+		<Unit filename="zlib/inftrees.h" />
+		<Unit filename="zlib/trees.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\trees.h" />
-		<Unit filename="zlib\uncompr.c">
+		<Unit filename="zlib/trees.h" />
+		<Unit filename="zlib/uncompr.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\zconf.h" />
-		<Unit filename="zlib\zlib.h" />
-		<Unit filename="zlib\zutil.c">
+		<Unit filename="zlib/zconf.h" />
+		<Unit filename="zlib/zlib.h" />
+		<Unit filename="zlib/zutil.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\zutil.h" />
+		<Unit filename="zlib/zutil.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

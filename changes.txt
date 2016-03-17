@@ -134,6 +134,7 @@ Changes in 1.9 (not yet released)
 
 --------------------------
 Changes in 1.8.4
+ - Add -U__STRICT_ANSI__ option to c::b project files to allow compiling with -std=c++11 and add an error when trying to compile with Irrlicht with __STRICT_ANSI__
  - Update libpng to 1.6.21
  - Update zlib to 1.2.8
  - Fix some compile warnings in aes which got handled as errors by some c++11 compilers.
