@@ -1184,6 +1184,28 @@ namespace video
 		\return The current texture creation flag enabled mode. */
 		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const =0;
 
+		//! Creates a software images from a file.
+		/** No hardware texture will be created for those images. This
+		method is useful for example if you want to read a heightmap
+		for a terrain renderer.
+		\param filename Name of the file from which the images are created.
+		\param type Pointer to E_TEXTURE_TYPE where a recommended type of the texture will be stored.
+		\return The array of created images.
+		If you no longer need those images, you should call IImage::drop() on each of them.
+		See IReferenceCounted::drop() for more information. */
+		virtual core::array<IImage*> createImagesFromFile(const io::path& filename, E_TEXTURE_TYPE* type = 0) = 0;
+
+		//! Creates a software images from a file.
+		/** No hardware texture will be created for those images. This
+		method is useful for example if you want to read a heightmap
+		for a terrain renderer.
+		\param file File from which the image is created.
+		\param type Pointer to E_TEXTURE_TYPE where a recommended type of the texture will be stored.
+		\return The array of created images.
+		If you no longer need those images, you should call IImage::drop() on each of them.
+		See IReferenceCounted::drop() for more information. */
+		virtual core::array<IImage*> createImagesFromFile(io::IReadFile* file, E_TEXTURE_TYPE* type = 0) = 0;
+
 		//! Creates a software image from a file.
 		/** No hardware texture will be created for this image. This
 		method is useful for example if you want to read a heightmap
@@ -1193,7 +1215,15 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImageFromFile(const io::path& filename) = 0;
+		IImage* createImageFromFile(const io::path& filename)
+		{
+			core::array<IImage*> imageArray = createImagesFromFile(filename);
+
+			for (u32 i = 1; i < imageArray.size(); ++i)
+				imageArray[i]->drop();
+
+			return (imageArray.size() > 0) ? imageArray[0] : 0;
+		}
 
 		//! Creates a software image from a file.
 		/** No hardware texture will be created for this image. This
@@ -1203,7 +1233,15 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImageFromFile(io::IReadFile* file) =0;
+		IImage* createImageFromFile(io::IReadFile* file)
+		{
+			core::array<IImage*> imageArray = createImagesFromFile(file);
+
+			for (u32 i = 1; i < imageArray.size(); ++i)
+				imageArray[i]->drop();
+
+			return (imageArray.size() > 0) ? imageArray[0] : 0;
+		}
 
 		//! Writes the provided image to a file.
 		/** Requires that there is a suitable image writer registered

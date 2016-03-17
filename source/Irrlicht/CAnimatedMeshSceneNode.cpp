@@ -364,7 +364,13 @@ void CAnimatedMeshSceneNode::render()
 			// draw normals
 			for (u32 g=0; g < count; ++g)
 			{
-				driver->drawMeshBufferNormals(m->getMeshBuffer(g), debugNormalLength, debugNormalColor);
+				scene::IMeshBuffer* mb = m->getMeshBuffer(g);
+				if (RenderFromIdentity)
+					driver->setTransform(video::ETS_WORLD, core::IdentityMatrix );
+				else if (Mesh->getMeshType() == EAMT_SKINNED)
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+
+				driver->drawMeshBufferNormals(mb, debugNormalLength, debugNormalColor);
 			}
 		}
 

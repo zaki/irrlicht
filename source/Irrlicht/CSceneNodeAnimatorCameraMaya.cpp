@@ -80,7 +80,10 @@ bool CSceneNodeAnimatorCameraMaya::OnEvent(const SEvent& event)
 		MouseKeys[2] = event.MouseInput.isRightPressed();
 		MouseKeys[1] = event.MouseInput.isMiddlePressed();
 
-		MousePos = CursorControl->getRelativePosition();
+		if ( CursorControl )
+		{
+			MousePos = CursorControl->getRelativePosition();
+		}
 		break;
 	case EMIE_MOUSE_WHEEL:
 	case EMIE_LMOUSE_DOUBLE_CLICK:

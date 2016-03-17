@@ -494,7 +494,7 @@ ITexture* CNullDriver::addTextureCubemap(const io::path& name, IImage* imagePosX
 
 	ITexture* t = 0;
 
-	core::array<IImage*> imageArray(1);
+	core::array<IImage*> imageArray(6);
 	imageArray.push_back(imagePosX);
 	imageArray.push_back(imageNegX);
 	imageArray.push_back(imagePosY);
@@ -615,23 +615,37 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io::path& hashName )
 {
 	ITexture* texture = 0;
-	IImage* image = createImageFromFile(file);
 
-	if (image)
+	E_TEXTURE_TYPE type = ETT_2D;
+
+	core::array<IImage*> imageArray = createImagesFromFile(file, &type);
+
+	if (checkImage(imageArray))
 	{
-		core::array<IImage*> imageArray(1);
-		imageArray.push_back(image);
-
-		if (checkImage(imageArray))
+		switch (type)
 		{
-			texture = createDeviceDependentTexture(hashName.size() ? hashName : file->getFileName(), image);
+		case ETT_2D:
+			texture = createDeviceDependentTexture(hashName.size() ? hashName : file->getFileName(), imageArray[0]);
+			break;
+		case ETT_CUBEMAP:
+			if (imageArray.size() >= 6 && imageArray[0] && imageArray[1] && imageArray[2] && imageArray[3] && imageArray[4] && imageArray[5])
+			{
+				texture = createDeviceDependentTextureCubemap(hashName.size() ? hashName : file->getFileName(), imageArray);
+			}
+			break;
+		default:
+			_IRR_DEBUG_BREAK_IF(true);
+			break;
 		}
-		
 
 		if (texture)
 			os::Printer::log("Loaded texture", file->getFileName());
+	}
 
-		image->drop();
+	for (u32 i = 0; i < imageArray.size(); ++i)
+	{
+		if (imageArray[i])
+			imageArray[i]->drop();
 	}
 
 	return texture;
@@ -1489,66 +1503,87 @@ bool CNullDriver::getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const
 	return (TextureCreationFlags & flag)!=0;
 }
 
-
-//! Creates a software image from a file.
-IImage* CNullDriver::createImageFromFile(const io::path& filename)
+core::array<IImage*> CNullDriver::createImagesFromFile(const io::path& filename, E_TEXTURE_TYPE* type)
 {
-	if (!filename.size())
-		return 0;
+	// TO-DO -> use 'move' feature from C++11 standard.
 
-	IImage* image = 0;
-	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
+	core::array<IImage*> imageArray;
+
+	if (filename.size() > 0)
+	{
+		io::IReadFile* file = FileSystem->createAndOpenFile(filename);
+
+		if (file)
+		{
+			imageArray = createImagesFromFile(file, type);
+			file->drop();
+		}
+		else
+			os::Printer::log("Could not open file of image", filename, ELL_WARNING);
+	}
+
+	return imageArray;
+}
+
+core::array<IImage*> CNullDriver::createImagesFromFile(io::IReadFile* file, E_TEXTURE_TYPE* type)
+{
+	// TO-DO -> use 'move' feature from C++11 standard.
+
+	core::array<IImage*> imageArray;
 
 	if (file)
 	{
-		image = createImageFromFile(file);
-		file->drop();
-	}
-	else
-		os::Printer::log("Could not open file of image", filename, ELL_WARNING);
+		s32 i;
 
-	return image;
-}
-
-
-//! Creates a software image from a file.
-IImage* CNullDriver::createImageFromFile(io::IReadFile* file)
-{
-	if (!file)
-		return 0;
-
-	IImage* image = 0;
-
-	s32 i;
-
-	// try to load file based on file extension
-	for (i=SurfaceLoader.size()-1; i>=0; --i)
-	{
-		if (SurfaceLoader[i]->isALoadableFileExtension(file->getFileName()))
+		// try to load file based on file extension
+		for (i = SurfaceLoader.size() - 1; i >= 0; --i)
 		{
-			// reset file position which might have changed due to previous loadImage calls
+			if (SurfaceLoader[i]->isALoadableFileExtension(file->getFileName()))
+			{
+				// reset file position which might have changed due to previous loadImage calls
+				file->seek(0);
+				imageArray = SurfaceLoader[i]->loadImages(file, type);
+
+				if (imageArray.size() == 0)
+				{
+					file->seek(0);
+					IImage* image = SurfaceLoader[i]->loadImage(file);
+
+					if (image)
+						imageArray.push_back(image);
+				}
+
+				if (imageArray.size() > 0)
+					return imageArray;
+			}
+		}
+
+		// try to load file based on what is in it
+		for (i = SurfaceLoader.size() - 1; i >= 0; --i)
+		{
+			// dito
 			file->seek(0);
-			image = SurfaceLoader[i]->loadImage(file);
-			if (image)
-				return image;
+			if (SurfaceLoader[i]->isALoadableFileFormat(file))
+			{
+				file->seek(0);
+				imageArray = SurfaceLoader[i]->loadImages(file, type);
+
+				if (imageArray.size() == 0)
+				{
+					file->seek(0);
+					IImage* image = SurfaceLoader[i]->loadImage(file);
+
+					if (image)
+						imageArray.push_back(image);
+				}
+
+				if (imageArray.size() > 0)
+					return imageArray;
+			}
 		}
 	}
 
-	// try to load file based on what is in it
-	for (i=SurfaceLoader.size()-1; i>=0; --i)
-	{
-		// dito
-		file->seek(0);
-		if (SurfaceLoader[i]->isALoadableFileFormat(file))
-		{
-			file->seek(0);
-			image = SurfaceLoader[i]->loadImage(file);
-			if (image)
-				return image;
-		}
-	}
-
-	return 0; // failed to load
+	return imageArray;
 }
 
 

@@ -38,8 +38,12 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 
 	core::array<IImage*> tmpImage = image;
 
+	bool releaseImageData = false;
+
 	if (OriginalSize != Size || OriginalColorFormat != ColorFormat)
 	{
+		releaseImageData = true;
+
 		for (u32 i = 0; i < image.size(); ++i)
 		{
 			tmpImage[i] = Driver->createImage(ColorFormat, Size);
@@ -102,6 +106,12 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 	{
 		os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 	}
+	
+	if (releaseImageData)
+    {
+		for (u32 i = 0; i < tmpImage.size(); ++i)
+			tmpImage[i]->drop();
+    }
 }
 
 CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, const ECOLOR_FORMAT format)
@@ -264,8 +274,8 @@ void CD3D9Texture::regenerateMipMapLevels(void* data, u32 layer)
 
 	if (data)
 	{
-		u32 width = Size.Width >> layer;
-		u32 height = Size.Height >> layer;
+		u32 width = Size.Width;
+		u32 height = Size.Height;
 		u8* tmpData = static_cast<u8*>(data);
 		u32 dataSize = 0;
 		u32 level = 0;

@@ -8,6 +8,7 @@
 #include "IReferenceCounted.h"
 #include "IImage.h"
 #include "path.h"
+#include "irrArray.h"
 
 namespace irr
 {
@@ -43,6 +44,17 @@ public:
 	/** \param file File handle to check.
 	\return Pointer to newly created image, or 0 upon error. */
 	virtual IImage* loadImage(io::IReadFile* file) const = 0;
+
+	//! Creates a multiple surfaces from the file eg. whole cube map.
+	/** \param file File handle to check.
+	\param type Pointer to E_TEXTURE_TYPE where a recommended type of the texture will be stored.
+	\return Array of pointers to newly created images. */
+	virtual core::array<IImage*> loadImages(io::IReadFile* file, E_TEXTURE_TYPE* type) const
+	{
+		core::array<IImage*> image;
+
+		return image;
+	}
 };
 
 
