@@ -38,11 +38,11 @@ public:
 	virtual ~CSoftwareTexture2();
 
 	//! lock function
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_
 	{
 		if (Flags & GEN_MIPMAP)
 		{
-			MipMapLOD = mipmapLevel;
+			MipMapLOD = 0;
 			Size = MipMap[MipMapLOD]->getDimension();
 			Pitch = MipMap[MipMapLOD]->getPitch();
 		}

@@ -139,12 +139,11 @@ public:
 	only mode or read from in write only mode.
 	Support for this feature depends on the driver, so don't rely on the
 	texture being write-protected when locking with read-only, etc.
-	\param mipmapLevel Number of the mipmapLevel to lock. 0 is main texture.
-	Non-existing levels will silently fail and return 0.
+	\param layer It determines which cubemap face or texture array layer should be locked.
 	\return Returns a pointer to the pixel data. The format of the pixel can
 	be determined by using getColorFormat(). 0 is returned, if
 	the texture cannot be locked. */
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) = 0;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) = 0;
 
 	//! Unlock function. Must be called after a lock() to the texture.
 	/** One should avoid to call unlock more than once before another lock.

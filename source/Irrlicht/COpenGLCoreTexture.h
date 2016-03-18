@@ -46,7 +46,7 @@ public:
 	};
 
 	COpenGLCoreTexture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, TOpenGLDriver* driver) : ITexture(name, type), Driver(driver), TextureType(GL_TEXTURE_2D),
-		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0),
+		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLayer(0),
 		KeepImage(false), AutoGenerateMipMaps(false)
 	{
 		_IRR_DEBUG_BREAK_IF(image.size() == 0)
@@ -134,7 +134,7 @@ public:
 	}
 
 	COpenGLCoreTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, TOpenGLDriver* driver) : ITexture(name, ETT_2D), Driver(driver), TextureType(GL_TEXTURE_2D),
-		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLevel(0), KeepImage(false),
+		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLayer(0), KeepImage(false),
 		AutoGenerateMipMaps(false)
 	{
 		DriverType = Driver->getDriverType();
@@ -192,7 +192,7 @@ public:
 			Image[i]->drop();
 	}
 
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel = 0) _IRR_OVERRIDE_
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_
 	{
 		if (LockImage)
 			return LockImage->getData();
@@ -201,24 +201,34 @@ public:
 			return 0;
 
 		LockReadOnly |= (mode == ETLM_READ_ONLY);
-		LockLevel = mipmapLevel;
+		LockLayer = layer;
 
-		if (KeepImage && mipmapLevel == 0)
+		if (KeepImage)
 		{
-			LockImage = Image[0];
+			_IRR_DEBUG_BREAK_IF(LockLayer > Image.size())
+
+			LockImage = Image[LockLayer];
 			LockImage->grab();
 		}
 		else
 		{
-			const core::dimension2d<u32> lockImageSize(Size.Width >> mipmapLevel, Size.Height >> mipmapLevel);
-			LockImage = Driver->createImage(ColorFormat, lockImageSize);
+			LockImage = Driver->createImage(ColorFormat, Size);
 
 			if (LockImage && mode != ETLM_WRITE_ONLY)
 			{
-				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, lockImageSize);
+				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, Size);
 
 #if 0 // This method doesn't work properly in some cases
-				glGetTexImage(GL_TEXTURE_2D, mipmapLevel, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
+				GLenum tmpTextureType = TextureType;
+
+				if (tmpTextureType == GL_TEXTURE_CUBE_MAP)
+				{
+					_IRR_DEBUG_BREAK_IF(layer > 5)
+
+					tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer;
+				}
+
+				glGetTexImage(tmpTextureType, 0, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
 
 				if (IsRenderTarget)
 				{
@@ -241,7 +251,7 @@ public:
 					delete[] tmpBuffer;
 				}
 #else
-				COpenGLCoreTexture* tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", lockImageSize, ColorFormat, Driver);
+				COpenGLCoreTexture* tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", Size, ColorFormat, Driver);
 
 				GLuint tmpFBO = 0;
 				Driver->irrGlGenFramebuffers(1, &tmpFBO);
@@ -251,7 +261,7 @@ public:
 				GLsizei prevViewportWidth = 0;
 				GLsizei prevViewportHeight = 0;
 				Driver->getCacheHandler()->getViewport(prevViewportX, prevViewportY, prevViewportWidth, prevViewportHeight);
-				Driver->getCacheHandler()->setViewport(0, 0, lockImageSize.Width, lockImageSize.Height);
+				Driver->getCacheHandler()->setViewport(0, 0, Size.Width, Size.Height);
 
 				GLuint prevFBO = 0;
 				Driver->getCacheHandler()->getFBO(prevFBO);
@@ -259,9 +269,11 @@ public:
 
 				Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tmpTexture->getOpenGLTextureName(), 0);
 
-				Driver->draw2DImage(this, true);
+				glClear(GL_COLOR_BUFFER_BIT);
 
-				glReadPixels(0, 0, lockImageSize.Width, lockImageSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
+				Driver->draw2DImage(this, layer, true);
+
+				glReadPixels(0, 0, Size.Width, Size.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
 
 				Driver->getCacheHandler()->setFBO(prevFBO);
 				Driver->getCacheHandler()->setViewport(prevViewportX, prevViewportY, prevViewportWidth, prevViewportHeight);
@@ -316,19 +328,18 @@ public:
 			const COpenGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 			Driver->getCacheHandler()->getTextureCache().set(0, this);
 
-			uploadTexture(false, 0, LockLevel, LockImage->getData());
+			uploadTexture(false, LockLayer, 0, LockImage->getData());
 
 			Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
-			if (LockLevel == 0)
-				regenerateMipMapLevels(0);
+			regenerateMipMapLevels(0, LockLayer);
 		}
 
 		LockImage->drop();
 
 		LockReadOnly = false;
 		LockImage = 0;
-		LockLevel = 0;
+		LockLayer = 0;
 	}
 
 	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_
@@ -484,14 +495,14 @@ protected:
 		u32 width = Size.Width >> level;
 		u32 height = Size.Height >> level;
 
-		const GLenum cubeTextureType[6] =
-		{
-			GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-			GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-			GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-		};
+		GLenum tmpTextureType = TextureType;
 
-		GLenum tmpTextureType = (TextureType == GL_TEXTURE_CUBE_MAP) ? cubeTextureType[(layer  < 6) ? layer : 0] : TextureType;
+		if (tmpTextureType == GL_TEXTURE_CUBE_MAP)
+		{
+			_IRR_DEBUG_BREAK_IF(layer > 5)
+
+			tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer;
+		}
 
 		if (!IImage::isCompressedFormat(ColorFormat))
 		{
@@ -555,7 +566,7 @@ protected:
 
 	bool LockReadOnly;
 	IImage* LockImage;
-	u32 LockLevel;
+	u32 LockLayer;
 
 	bool KeepImage;
 	core::array<IImage*> Image;

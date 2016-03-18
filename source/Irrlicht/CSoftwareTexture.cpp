@@ -76,7 +76,7 @@ CSoftwareTexture::~CSoftwareTexture()
 
 
 //! lock function
-void* CSoftwareTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
+void* CSoftwareTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 layer)
 {
 	return Image->getData();
 }

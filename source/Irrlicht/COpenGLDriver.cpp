@@ -1511,7 +1511,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 }
 
 
-void COpenGLDriver::draw2DImage(const video::ITexture* texture, bool flip)
+void COpenGLDriver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 {
 	if (!texture || !CacheHandler->getTextureCache().set(0, texture))
 		return;
@@ -1527,22 +1527,92 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, bool flip)
 
 	Transformation3DChanged = true;
 
-	Quad2DVertices[0].Pos = core::vector3df(-1.f, 1.f, 0.f);
-	Quad2DVertices[1].Pos = core::vector3df(1.f, 1.f, 0.f);
-	Quad2DVertices[2].Pos = core::vector3df(1.f, -1.f, 0.f);
-	Quad2DVertices[3].Pos = core::vector3df(-1.f, -1.f, 0.f);
-
-	f32 modificator = (flip) ? 1.f : 0.f;
-
-	Quad2DVertices[0].TCoords = core::vector2df(0.f, 0.f + modificator);
-	Quad2DVertices[1].TCoords = core::vector2df(1.f, 0.f + modificator);
-	Quad2DVertices[2].TCoords = core::vector2df(1.f, 1.f - modificator);
-	Quad2DVertices[3].TCoords = core::vector2df(0.f, 1.f - modificator);
-
 	CacheHandler->setClientState(true, false, false, true);
 
-	glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].TCoords);
-	glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Pos);
+	const core::vector3df positionData[4] = {
+		core::vector3df(-1.f, 1.f, 0.f),
+		core::vector3df(1.f, 1.f, 0.f),
+		core::vector3df(1.f, -1.f, 0.f),
+		core::vector3df(-1.f, -1.f, 0.f)
+	};
+
+	glVertexPointer(2, GL_FLOAT, sizeof(core::vector3df), positionData);
+
+	if (texture && texture->getType() == ETT_CUBEMAP)
+	{
+		const core::vector3df texcoordCubeData[6][4] = {
+
+			// GL_TEXTURE_CUBE_MAP_POSITIVE_X
+			{
+				core::vector3df(1.f, 1.f, 1.f),
+				core::vector3df(1.f, 1.f, -1.f),
+				core::vector3df(1.f, -1.f, -1.f),
+				core::vector3df(1.f, -1.f, 1.f)
+			},
+
+			// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
+			{
+				core::vector3df(-1.f, 1.f, -1.f),
+				core::vector3df(-1.f, 1.f, 1.f),
+				core::vector3df(-1.f, -1.f, 1.f),
+				core::vector3df(-1.f, -1.f, -1.f)
+			},
+
+			// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
+			{
+				core::vector3df(-1.f, 1.f, -1.f),
+				core::vector3df(1.f, 1.f, -1.f),
+				core::vector3df(1.f, 1.f, 1.f),
+				core::vector3df(-1.f, 1.f, 1.f)
+			},
+
+			// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
+			{
+				core::vector3df(-1.f, -1.f, 1.f),
+				core::vector3df(-1.f, -1.f, -1.f),
+				core::vector3df(1.f, -1.f, -1.f),
+				core::vector3df(1.f, -1.f, 1.f)
+			},
+
+			// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+			{
+				core::vector3df(-1.f, 1.f, 1.f),
+				core::vector3df(-1.f, -1.f, 1.f),
+				core::vector3df(1.f, -1.f, 1.f),
+				core::vector3df(1.f, 1.f, 1.f)
+			},
+
+			// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+			{
+				core::vector3df(1.f, 1.f, -1.f),
+				core::vector3df(-1.f, 1.f, -1.f),
+				core::vector3df(-1.f, -1.f, -1.f),
+				core::vector3df(1.f, -1.f, -1.f)
+			}
+		};
+
+		const core::vector3df texcoordData[4] = {
+			texcoordCubeData[layer][(flip) ? 3 : 0],
+			texcoordCubeData[layer][(flip) ? 2 : 1],
+			texcoordCubeData[layer][(flip) ? 1 : 2],
+			texcoordCubeData[layer][(flip) ? 0 : 3]
+		};
+
+		glTexCoordPointer(3, GL_FLOAT, sizeof(core::vector3df), texcoordData);
+	}
+	else
+	{
+		f32 modificator = (flip) ? 1.f : 0.f;
+
+		core::vector2df texcoordData[4] = {
+			core::vector2df(0.f, 0.f + modificator),
+			core::vector2df(1.f, 0.f + modificator),
+			core::vector2df(1.f, 1.f - modificator),
+			core::vector2df(0.f, 1.f - modificator)
+		};
+
+		glTexCoordPointer(2, GL_FLOAT, sizeof(core::vector2df), texcoordData);
+	}
 
 	glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_SHORT, Quad2DIndices);
 }
@@ -2870,6 +2940,8 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 			CacheHandler->setMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
+
+			glTranslatef(0.375f, 0.375f, 0.0f);
 
 			// Make sure we set first texture matrix
 			CacheHandler->setActiveTexture(GL_TEXTURE0);
