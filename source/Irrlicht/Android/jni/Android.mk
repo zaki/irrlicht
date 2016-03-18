@@ -15,6 +15,7 @@ LOCAL_CFLAGS += -fexpensive-optimizations -O3
 endif
 
 LOCAL_C_INCLUDES := ../../../include
+LOCAL_C_INCLUDES += ../zlib ../jpeglib ../libpng
 
 LOCAL_SRC_FILES := \
 					Android/CIrrDeviceAndroid.cpp \
