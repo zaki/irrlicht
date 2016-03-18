@@ -415,6 +415,7 @@
 			<Add option="-fno-exceptions" />
 			<Add option="-fno-rtti" />
 			<Add option="-fstrict-aliasing" />
+			<Add option="-U__STRICT_ANSI__" />
 		</Compiler>
 		<Unit filename="../../changes.txt" />
 		<Unit filename="../../include/CDynamicMeshBuffer.h" />
