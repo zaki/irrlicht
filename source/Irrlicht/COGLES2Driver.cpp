@@ -33,7 +33,7 @@ namespace irr
 {
 namespace video
 {
-	
+
 COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager) :
 	CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(), CacheHandler(0), MaterialRenderer2D(0), CurrentRenderMode(ERM_NONE),
 	ResetRenderStates(true), Transformation3DChanged(true), AntiAlias(params.AntiAlias), OGLES2ShaderPath(params.OGLES2ShaderPath),
@@ -67,7 +67,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFil
  	)
 
 	core::dimension2d<u32> windowSize(0, 0);
-	
+
 	if (!ContextManager)
 		return;
 
@@ -76,7 +76,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFil
 	ContextManager->generateContext();
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData);
-	
+
 	windowSize = params.WindowSize;
 
 	genericDriverInit(windowSize, params.Stencilbuffer);
@@ -96,7 +96,7 @@ COGLES2Driver::~COGLES2Driver()
 	removeAllHardwareBuffers();
 
 	delete CacheHandler;
-	
+
 	if (ContextManager)
 	{
 		ContextManager->destroyContext();
@@ -1091,7 +1091,7 @@ COGLES2Driver::~COGLES2Driver()
 	}
 
 
-	void COGLES2Driver::draw2DImage(const video::ITexture* texture, bool flip)
+	void COGLES2Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 	{
 		chooseMaterial2D();
 		Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
@@ -2822,7 +2822,7 @@ COGLES2Driver::~COGLES2Driver()
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
 			break;
 		}
-		
+
 #ifdef _IRR_IOS_PLATFORM_
 		if (internalFormat == GL_BGRA)
 			internalFormat = GL_RGBA;

@@ -48,7 +48,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params, io::IFil
 	ContextManager->generateContext();
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData);
-	
+
 	windowSize = params.WindowSize;
 
     genericDriverInit(windowSize, params.Stencilbuffer);
@@ -220,7 +220,7 @@ bool COGLES1Driver::endScene()
 	CNullDriver::endScene();
 
 	glFlush();
-	
+
 	if (ContextManager)
 		return ContextManager->swapBuffers();
 
@@ -1032,7 +1032,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 		glDisable(GL_SCISSOR_TEST);
 }
 
-void COGLES1Driver::draw2DImage(const video::ITexture* texture, bool flip)
+void COGLES1Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 {
 	if (!texture || !CacheHandler->getTextureCache().set(0, texture))
 		return;
@@ -3197,7 +3197,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		os::Printer::log("Unsupported texture format", ELL_ERROR);
 		break;
 	}
-	
+
 #ifdef _IRR_IOS_PLATFORM_
 	if (internalFormat == GL_BGRA)
 		internalFormat = GL_RGBA;
