@@ -253,7 +253,8 @@ namespace os
 		timeinfo = localtime(&rawtime);
 
 		// init with all 0 to indicate error
-		ITimer::RealTimeDate date={0};
+		ITimer::RealTimeDate date;
+		memset(&date, 0, sizeof(date));
 		// at least Windows returns NULL on some illegal dates
 		if (timeinfo)
 		{
