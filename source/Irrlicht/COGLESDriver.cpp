@@ -3152,6 +3152,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 			os::Printer::log("ECF_D32 color format is not supported", ELL_ERROR);
 		break;
+	case ECF_D24S8:
 #ifdef GL_OES_packed_depth_stencil
 		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_packed_depth_stencil))
 		{
