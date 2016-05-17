@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix: Collada writer now uses wrap_p for third texture wrap value instead of invalid wrap_w (thx @Yoran for bugreport)
 - Several getter functions in IAttributes made const (thx @Erik Schultheis for the patch)
 - Fix: CTriangleSelector no longer ignores meshbuffer transformations from skinned meshes (thx @AlexAzazel for report and test-model).
 - Randomizer now returns range 0..randMax as documented and no longer 1..randMax as it did before. randMax got reduced by 1.
