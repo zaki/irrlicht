@@ -142,33 +142,21 @@
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
+					<Add option="-O3" />
 					<Add option="-Wextra" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-W" />
-					<Add option="-O0" />
-					<Add option="-DWIN32" />
-					<Add option="-D_DEBUG" />
-					<Add option="-D_WINDOWS" />
+					<Add option="-ffast-math" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
+					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="opengl32" />
-					<Add library="winmm" />
+					<Add library="GL" />
+					<Add library="Xxf86vm" />
+					<Add directory="/usr/X11R6/lib" />
+					<Add directory="/usr/local/lib" />
 				</Linker>
 			</Target>
 			<Target title="Win32 - Release - accurate math - static">
@@ -261,10 +249,9 @@
 				<Compiler>
 					<Add option="-Wextra" />
 					<Add option="-Wall" />
-					<Add option="-std=c++11" />
+					<Add option="-fPIC" />
 					<Add option="-g" />
 					<Add option="-O0" />
-					<Add option="-fPIC" />
 					<Add option="-D_DEBUG" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />

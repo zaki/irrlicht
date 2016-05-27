@@ -219,7 +219,7 @@ namespace video
 		//! Draws a pixel
 		virtual void drawPixel(u32 x, u32 y, const SColor & color) _IRR_OVERRIDE_;
 
-		//! Draws a non filled concyclic reqular 2d polyon.
+		//! Draws a non filled concyclic reqular 2d polygon.
 		virtual void draw2DPolygon(core::position2d<s32> center,
 			f32 radius, video::SColor Color, s32 vertexCount) _IRR_OVERRIDE_;
 
@@ -705,13 +705,13 @@ namespace video
 		//! normal map lookup 32 bit version
 		inline f32 nml32(int x, int y, int pitch, int height, s32 *p) const
 		{
-			if (x < 0) 
-				x = pitch-1; 
-			if (x >= pitch) 
+			if (x < 0)
+				x = pitch-1;
+			if (x >= pitch)
 				x = 0;
-			if (y < 0) 
-				y = height-1; 
-			if (y >= height) 
+			if (y < 0)
+				y = height-1;
+			if (y >= height)
 				y = 0;
 			return (f32)(((p[(y * pitch) + x])>>16) & 0xff);
 		}
@@ -719,13 +719,13 @@ namespace video
 		//! normal map lookup 16 bit version
 		inline f32 nml16(int x, int y, int pitch, int height, s16 *p) const
 		{
-			if (x < 0) 
-				x = pitch-1; 
-			if (x >= pitch) 
+			if (x < 0)
+				x = pitch-1;
+			if (x >= pitch)
 				x = 0;
-			if (y < 0) 
-				y = height-1; 
-			if (y >= height) 
+			if (y < 0)
+				y = height-1;
+			if (y >= height)
 				y = 0;
 
 			return (f32) getAverage ( p[(y * pitch) + x] );

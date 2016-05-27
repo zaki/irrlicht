@@ -938,7 +938,7 @@ void CNullDriver::drawPixel(u32 x, u32 y, const SColor & color)
 }
 
 
-//! Draws a non filled concyclic regular 2d polyon.
+//! Draws a non filled concyclic regular 2d polygon.
 void CNullDriver::draw2DPolygon(core::position2d<s32> center,
 	f32 radius, video::SColor color, s32 count)
 {

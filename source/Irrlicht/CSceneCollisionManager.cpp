@@ -134,7 +134,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 					// Now transform into world space, since we need to use world space
 					// scales and distances.
 					core::aabbox3df worldBox(objectBox);
-					current->getAbsoluteTransformation().transformBox(worldBox);
+					current->getAbsoluteTransformation().transformBoxEx(worldBox);
 
 					core::vector3df edges[8];
 					worldBox.getEdges(edges);

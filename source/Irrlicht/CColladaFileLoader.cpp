@@ -108,7 +108,8 @@ namespace
 	const core::stringc dataName =             "data";
 	const core::stringc wrapsName =            "wrap_s";
 	const core::stringc wraptName =            "wrap_t";
-	const core::stringc wraprName =            "wrap_r";
+	const core::stringc wraprName =            "wrap_r";	// for downward compatibility to bug in old Irrlicht collada writer. Not standard but we wrote that accidentally up to Irrlicht 1.8, so we should still be able to load those files
+	const core::stringc wrappName =            "wrap_p";
 	const core::stringc minfilterName =        "minfilter";
 	const core::stringc magfilterName =        "magfilter";
 	const core::stringc mipfilterName =        "mipfilter";
@@ -1571,9 +1572,16 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	if ( idx >= 0 )
 		twv = (video::E_TEXTURE_CLAMP)(effect->Parameters->getAttributeAsInt(idx));
 	video::E_TEXTURE_CLAMP twr = video::ETC_REPEAT;
-	idx = effect->Parameters->findAttribute(wraprName.c_str());
+	idx = effect->Parameters->findAttribute(wrappName.c_str());
 	if ( idx >= 0 )
 		twr = (video::E_TEXTURE_CLAMP)(effect->Parameters->getAttributeAsInt(idx));
+	else
+	{
+		// for downward compatibility with older Irrlicht collada writer
+		idx = effect->Parameters->findAttribute(wraprName.c_str());
+		if ( idx >= 0 )
+			twr = (video::E_TEXTURE_CLAMP)(effect->Parameters->getAttributeAsInt(idx));
+	}
 
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{

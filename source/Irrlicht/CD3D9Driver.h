@@ -427,6 +427,7 @@ namespace video
 		u16 VendorID;
 
 		u32 MaxTextureUnits;
+		u32 MaxFixedPipelineTextureUnits;
 		u32 MaxUserClipPlanes;
 		f32 MaxLightDistance;
 		s32 LastSetLight;

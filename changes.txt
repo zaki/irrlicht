@@ -8,6 +8,8 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Fix: Collada writer now uses wrap_p for third texture wrap value instead of invalid wrap_w (thx @Yoran for bugreport)
+- Several getter functions in IAttributes made const (thx @Erik Schultheis for the patch)
 - Fix: CTriangleSelector no longer ignores meshbuffer transformations from skinned meshes (thx @AlexAzazel for report and test-model).
 - Randomizer now returns range 0..randMax as documented and no longer 1..randMax as it did before. randMax got reduced by 1.
   Note: You will generally get different numbers than before! If you need the exact old calculations, please check the corresponding sources in Irrlicht 1.8 in os.cpp/.h
@@ -141,6 +143,9 @@ Changes in 1.9 (not yet released)
 
 --------------------------
 Changes in 1.8.4
+ - Update lights and renderTargetTexture tests to work with Windows 10 (can't have so tiny Windows anymore).
+ - Deprecate CMatrix4::transformBox as the result is no longer a boundingbox. Use CMatrix4::transformBoxEx instead (which has been available for a long time).
+ - Fix CSceneCollisionManager::getPickedNodeBB which could sometimes miss collisions.
  - Add -U__STRICT_ANSI__ option to c::b project files to allow compiling with -std=c++11 and add an error when trying to compile with Irrlicht with __STRICT_ANSI__
  - Update libpng to 1.6.21
  - Update zlib to 1.2.8
