@@ -982,7 +982,7 @@ namespace video
 		\param color Color of the pixel to draw. */
 		virtual void drawPixel(u32 x, u32 y, const SColor& color) =0;
 
-		//! Draws a non filled concyclic regular 2d polyon.
+		//! Draws a non filled concyclic regular 2d polygon.
 		/** This method can be used to draw circles, but also
 		triangles, tetragons, pentagons, hexagons, heptagons, octagons,
 		enneagons, decagons, hendecagons, dodecagon, triskaidecagons,

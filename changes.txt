@@ -136,6 +136,9 @@ Changes in 1.9 (not yet released)
 
 --------------------------
 Changes in 1.8.4
+ - Update lights and renderTargetTexture tests to work with Windows 10 (can't have so tiny Windows anymore).
+ - Deprecate CMatrix4::transformBox as the result is no longer a boundingbox. Use CMatrix4::transformBoxEx instead (which has been available for a long time).
+ - Fix CSceneCollisionManager::getPickedNodeBB which could sometimes miss collisions.
  - Add -U__STRICT_ANSI__ option to c::b project files to allow compiling with -std=c++11 and add an error when trying to compile with Irrlicht with __STRICT_ANSI__
  - Update libpng to 1.6.21
  - Update zlib to 1.2.8

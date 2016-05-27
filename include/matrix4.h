@@ -1228,9 +1228,11 @@ namespace core
 		transformPlane( out );
 	}
 
-	//! Transforms a axis aligned bounding box
+	//! Transforms the edge-points of a bounding box
+	//! Deprecated as it's usually not what people need (regards only 2 corners, but other corners might be outside the box after transformation)
+	//! Use transformBoxEx instead.
 	template <class T>
-	inline void CMatrix4<T>::transformBox(core::aabbox3d<f32>& box) const
+	_IRR_DEPRECATED_ inline void CMatrix4<T>::transformBox(core::aabbox3d<f32>& box) const
 	{
 #if defined ( USE_MATRIX_TEST )
 		if (isIdentity())

@@ -7,7 +7,7 @@ using namespace irr;
 
 static bool testLightTypes(video::E_DRIVER_TYPE driverType)
 {
-	IrrlichtDevice *device = createDevice (driverType, core::dimension2d<u32>(128,128));
+	IrrlichtDevice *device = createDevice (driverType, core::dimension2d<u32>(256,128));
 	if (!device)
 		return true; // No error if device does not exist
 

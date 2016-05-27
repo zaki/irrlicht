@@ -9,7 +9,7 @@ using namespace irr;
 /** This test is very special in its setup, problematic situation was found by stefbuet. */
 static bool testWith2DImage(video::E_DRIVER_TYPE driverType)
 {
-	IrrlichtDevice *device = createDevice(driverType, core::dimension2d<u32> (128, 128));
+	IrrlichtDevice *device = createDevice(driverType, core::dimension2d<u32> (256, 128));
 	if (!device)
 		return true; // No error if device does not exist
 
@@ -29,7 +29,7 @@ static bool testWith2DImage(video::E_DRIVER_TYPE driverType)
 	logTestString("Testing driver %ls\n", driver->getName());
 
 	video::ITexture *image = driver->getTexture ("../media/irrlichtlogo2.png");
-	video::ITexture *RTT_texture = driver->addRenderTargetTexture (core::dimension2d < u32 > (128, 128));
+	video::ITexture *RTT_texture = driver->addRenderTargetTexture (core::dimension2d < u32 > (256, 128));
 
 	smgr->addCameraSceneNode (0, core::vector3df (100, 100, 100),
 			      core::vector3df (0, 0, 0));
