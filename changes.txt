@@ -1,6 +1,9 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Speedup CTriangleSelector (mainly for animated meshes)
+- CTriangleSelector now supports 32-bit meshbuffers. Thanks @Wol101 for reporting and patch-proposal.
+- Fix: CTriangleSelector no longer resets it's boundingbox to 0,0,0 (was wrong when a meshbuffer was not around 0)
 - Fix: Collada writer now uses wrap_p for third texture wrap value instead of invalid wrap_w (thx @Yoran for bugreport)
 - Several getter functions in IAttributes made const (thx @Erik Schultheis for the patch)
 - Fix: CTriangleSelector no longer ignores meshbuffer transformations from skinned meshes (thx @AlexAzazel for report and test-model).
