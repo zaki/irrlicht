@@ -328,14 +328,14 @@ void CDemo::switchToNextScene()
 			keyMap[8].Action = EKA_JUMP_UP;
 			keyMap[8].KeyCode = KEY_KEY_J;
 
-			camera = sm->addCameraSceneNodeFPS(0, 100.0f, .4f, -1, keyMap, 9, false, 3.f);
+			camera = sm->addCameraSceneNodeFPS(0, 100.0f, .4f, -1, keyMap, 9, false, 300.f);
 			camera->setPosition(core::vector3df(108,140,-140));
 			camera->setFarValue(5000.0f);
 
 			scene::ISceneNodeAnimatorCollisionResponse* collider =
 				sm->createCollisionResponseAnimator(
 				metaSelector, camera, core::vector3df(25,50,25),
-				core::vector3df(0, quakeLevelMesh ? -10.f : 0.0f,0),
+				core::vector3df(0, quakeLevelMesh ? -1000.f : 0.0f,0),
 					core::vector3df(0,45,0), 0.005f);
 
 			camera->addAnimator(collider);

@@ -119,7 +119,7 @@ int main()
 	values, the camera will be able to move closer to walls after this. The
 	next parameter is the direction and speed of gravity.  We'll set it to
 	(0, -10, 0), which approximates to realistic gravity, assuming that our
-	units are metres. You could set it to (0,0,0) to disable gravity. And the
+	units are meters. You could set it to (0,0,0) to disable gravity. And the
 	last value is just a translation: Without this, the ellipsoid with which
 	collision detection is done would be around the camera, and the camera would
 	be in the middle of the ellipsoid. But as human beings, we are used to have our
@@ -132,7 +132,7 @@ int main()
 	// Set a jump speed of 3 units per second, which gives a fairly realistic jump
 	// when used with the gravity of (0, -10, 0) in the collision response animator.
 	scene::ICameraSceneNode* camera =
-		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, ID_IsNotPickable, 0, 0, true, 3.f);
+		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, ID_IsNotPickable, 0, 0, true, 300.f);
 	camera->setPosition(core::vector3df(50,50,-60));
 	camera->setTarget(core::vector3df(-70,30,-60));
 
@@ -140,7 +140,7 @@ int main()
 	{
 		scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
 			selector, camera, core::vector3df(30,50,30),
-			core::vector3df(0,-10,0), core::vector3df(0,30,0));
+			core::vector3df(0,-1000,0), core::vector3df(0,30,0));
 		selector->drop(); // As soon as we're done with the selector, drop it.
 		camera->addAnimator(anim);
 		anim->drop();  // And likewise, drop the animator when we're done referring to it.

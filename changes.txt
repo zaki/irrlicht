@@ -1,6 +1,15 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Several fixes for SceneNodeAnimatorCollisionResponse, based on http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=33098&p=290746 
+  Thanks to all people who reported and to JLouisB and kinkreet for the patches:
+  - Gravity is now fps independent
+  - Values of gravity now like documented (wasn't 1 unit = 1m before, had been 1m = current frames per second, so maybe 100 units = 1m). 
+    Note that jump-values for fps-camera must also change when adapting gravity!
+    Several examples got adapted for new ranges.
+  - Pausing timer now pauses animator. Also doesn't reset values anymore with pauses.
+  - Clones no longer have 1000 times the gravity of original animator.
+should now be fps independentn
 - Speedup CTriangleSelector (mainly for animated meshes)
 - CTriangleSelector now supports 32-bit meshbuffers. Thanks @Wol101 for reporting and patch-proposal.
 - Fix: CTriangleSelector no longer resets it's boundingbox to 0,0,0 (was wrong when a meshbuffer was not around 0)

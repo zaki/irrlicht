@@ -316,7 +316,7 @@ void Q3Player::create ( IrrlichtDevice *device, IQ3LevelMesh* mesh, ISceneNode *
 	keyMap[9].Action = EKA_CROUCH;
 	keyMap[9].KeyCode = KEY_KEY_C;
 
-	camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 0.6f, -1, keyMap, 10, false, 0.6f);
+	camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 0.6f, -1, keyMap, 10, false, 600.f);
 	camera->setName ( "First Person Camera" );
 	//camera->setFOV ( 100.f * core::DEGTORAD );
 	camera->setFarValue( 20000.f );
@@ -385,7 +385,7 @@ void Q3Player::respawn ()
 			StartPositionCurrent, cam()->getEllipsoidTranslation()))
 		StartPositionCurrent = 0;
 	else
-		++StartPositionCurrent;	
+		++StartPositionCurrent;
 }
 
 /*
@@ -2021,7 +2021,7 @@ void CQuake3EventHandler::Animate()
 		wchar_t msg[128];
 		IVideoDriver * driver = Game->Device->getVideoDriver();
 
-#ifdef _IRR_SCENEMANAGER_DEBUG					
+#ifdef _IRR_SCENEMANAGER_DEBUG
 		IAttributes * attr = Game->Device->getSceneManager()->getParameters();
 		swprintf_irr ( msg, 128,
 			L"Q3 %s [%ls], FPS:%03d Tri:%.03fm Cull %d/%d nodes (%d,%d,%d)",
@@ -2042,8 +2042,8 @@ swprintf_irr ( msg, 128,
 			driver->getName(),
 			driver->getFPS (),
 			(f32) driver->getPrimitiveCountDrawn( 0 ) * ( 1.f / 1000000.f )
-			);		
-#endif		
+			);
+#endif
 		Game->Device->setWindowCaption( msg );
 
 		swprintf_irr ( msg, 128,
