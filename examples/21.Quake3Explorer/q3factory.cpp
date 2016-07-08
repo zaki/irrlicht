@@ -735,10 +735,10 @@ s32 Q3StartPosition (	IQ3LevelMesh* mesh,
 */
 vector3df getGravity ( const c8 * surface )
 {
-	if ( 0 == strcmp ( surface, "earth" ) ) return vector3df ( 0.f, -90.f, 0.f );
-	if ( 0 == strcmp ( surface, "moon" ) ) return vector3df ( 0.f, -6.f / 100.f, 0.f );
-	if ( 0 == strcmp ( surface, "water" ) ) return vector3df ( 0.1f / 100.f, -2.f / 100.f, 0.f );
-	if ( 0 == strcmp ( surface, "ice" ) ) return vector3df ( 0.2f / 100.f, -9.f / 100.f, 0.3f / 100.f );
+	if ( 0 == strcmp ( surface, "earth" ) ) return vector3df ( 0.f, -900.f, 0.f );
+	if ( 0 == strcmp ( surface, "moon" ) ) return vector3df ( 0.f, -6.f , 0.f );
+	if ( 0 == strcmp ( surface, "water" ) ) return vector3df ( 0.1f, -2.f, 0.f );
+	if ( 0 == strcmp ( surface, "ice" ) ) return vector3df ( 0.2f, -9.f, 0.3f );
 
 	return vector3df ( 0.f, 0.f, 0.f );
 }

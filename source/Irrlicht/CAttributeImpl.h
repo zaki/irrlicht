@@ -1576,7 +1576,7 @@ public:
 
 	virtual void setEnum(const char* enumValue, const char* const* enumerationLiterals) _IRR_OVERRIDE_
 	{
-		int literalCount = 0;
+		u32 literalCount = 0;
 
 		if (enumerationLiterals)
 		{
@@ -1594,11 +1594,13 @@ public:
 
 	virtual s32 getInt() _IRR_OVERRIDE_
 	{
-		for (s32 i=0; EnumLiterals.size(); ++i)
+		for (u32 i=0; i < EnumLiterals.size(); ++i)
+		{
 			if (Value.equals_ignore_case(EnumLiterals[i]))
 			{
-				return i;
+				return (s32)i;
 			}
+		}
 
 		return -1;
 	}

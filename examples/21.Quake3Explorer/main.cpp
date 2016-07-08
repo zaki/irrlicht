@@ -316,7 +316,7 @@ void Q3Player::create ( IrrlichtDevice *device, IQ3LevelMesh* mesh, ISceneNode *
 	keyMap[9].Action = EKA_CROUCH;
 	keyMap[9].KeyCode = KEY_KEY_C;
 
-	camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 0.6f, -1, keyMap, 10, false, 0.6f);
+	camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 0.6f, -1, keyMap, 10, false, 600.f);
 	camera->setName ( "First Person Camera" );
 	//camera->setFOV ( 100.f * core::DEGTORAD );
 	camera->setFarValue( 20000.f );

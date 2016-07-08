@@ -8,6 +8,18 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Several fixes for SceneNodeAnimatorCollisionResponse, based on http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=33098&p=290746 
+  Thanks to all people who reported and to JLouisB and kinkreet for the patches:
+  - Gravity is now fps independent
+  - Values of gravity now like documented (wasn't 1 unit = 1m before, had been 1m = current frames per second, so maybe 100 units = 1m). 
+    Note that jump-values for fps-camera must also change when adapting gravity!
+    Several examples got adapted for new ranges.
+  - Pausing timer now pauses animator. Also doesn't reset values anymore with pauses.
+  - Clones no longer have 1000 times the gravity of original animator.
+should now be fps independentn
+- Speedup CTriangleSelector (mainly for animated meshes)
+- CTriangleSelector now supports 32-bit meshbuffers. Thanks @Wol101 for reporting and patch-proposal.
+- Fix: CTriangleSelector no longer resets it's boundingbox to 0,0,0 (was wrong when a meshbuffer was not around 0)
 - Fix: Collada writer now uses wrap_p for third texture wrap value instead of invalid wrap_w (thx @Yoran for bugreport)
 - Several getter functions in IAttributes made const (thx @Erik Schultheis for the patch)
 - Fix: CTriangleSelector no longer ignores meshbuffer transformations from skinned meshes (thx @AlexAzazel for report and test-model).
@@ -143,6 +155,9 @@ Changes in 1.9 (not yet released)
 
 --------------------------
 Changes in 1.8.4
+ - Tests on Unix now have a short pause between switching drivers to avoid certain X11 errors.
+ - Fix CEnumAttribute::getInt() which could crash  (thx @ luthyr for reporting)
+ - No longer try to run tests for drivers not supported on a platform
  - Update lights and renderTargetTexture tests to work with Windows 10 (can't have so tiny Windows anymore).
  - Deprecate CMatrix4::transformBox as the result is no longer a boundingbox. Use CMatrix4::transformBoxEx instead (which has been available for a long time).
  - Fix CSceneCollisionManager::getPickedNodeBB which could sometimes miss collisions.

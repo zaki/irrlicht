@@ -84,6 +84,30 @@ void CTriangleSelector::createFromMesh(const IMesh* mesh)
 	updateFromMesh(mesh);
 }
 
+template <typename TIndex>
+static void updateTriangles(u32& triangleCount, core::array<core::triangle3df>& triangles, u32 idxCnt, const TIndex* indices, const u8* vertices, u32 vertexPitch, const core::matrix4* bufferTransform)
+{
+	if ( bufferTransform )
+	{
+		for (u32 index = 0; index < idxCnt; index += 3)
+		{
+			core::triangle3df& tri = triangles[triangleCount++];
+			bufferTransform->transformVect( tri.pointA, (*reinterpret_cast<const video::S3DVertex*>(&vertices[indices[index + 0]*vertexPitch])).Pos );
+			bufferTransform->transformVect( tri.pointB, (*reinterpret_cast<const video::S3DVertex*>(&vertices[indices[index + 1]*vertexPitch])).Pos );
+			bufferTransform->transformVect( tri.pointC, (*reinterpret_cast<const video::S3DVertex*>(&vertices[indices[index + 2]*vertexPitch])).Pos );
+		}
+	}
+	else
+	{
+		for (u32 index = 0; index < idxCnt; index += 3)
+		{
+			core::triangle3df& tri = triangles[triangleCount++];
+			tri.pointA = (*reinterpret_cast<const video::S3DVertex*>(&vertices[indices[index + 0]*vertexPitch])).Pos;
+			tri.pointB = (*reinterpret_cast<const video::S3DVertex*>(&vertices[indices[index + 1]*vertexPitch])).Pos;
+			tri.pointC = (*reinterpret_cast<const video::S3DVertex*>(&vertices[indices[index + 2]*vertexPitch])).Pos;
+		}
+	}
+}
 
 void CTriangleSelector::updateFromMesh(const IMesh* mesh) const
 {
@@ -94,40 +118,53 @@ void CTriangleSelector::updateFromMesh(const IMesh* mesh) const
 	u32 meshBuffers = mesh->getMeshBufferCount();
 	u32 triangleCount = 0;
 
-	BoundingBox.reset(0.f, 0.f, 0.f);
 	for (u32 i = 0; i < meshBuffers; ++i)
 	{
 		IMeshBuffer* buf = mesh->getMeshBuffer(i);
 		u32 idxCnt = buf->getIndexCount();
-		const u16* indices = buf->getIndices();
+		u32 vertexPitch = getVertexPitchFromType(buf->getVertexType());
+		u8* vertices = (u8*)buf->getVertices();
 
+		const core::matrix4* bufferTransform = 0;
 		if ( skinnnedMesh )
 		{
-			const core::matrix4& bufferTransform = ((scene::SSkinMeshBuffer*)buf)->Transformation;
-			for (u32 index = 0; index < idxCnt; index += 3)
-			{
-				core::triangle3df& tri = Triangles[triangleCount++];
-				bufferTransform.transformVect(tri.pointA, buf->getPosition(indices[index + 0]));
-				bufferTransform.transformVect(tri.pointB, buf->getPosition(indices[index + 1]));
-				bufferTransform.transformVect(tri.pointC, buf->getPosition(indices[index + 2]));
-				BoundingBox.addInternalPoint(tri.pointA);
-				BoundingBox.addInternalPoint(tri.pointB);
-				BoundingBox.addInternalPoint(tri.pointC);
-			}
+			bufferTransform = &(((scene::SSkinMeshBuffer*)buf)->Transformation);
+			if ( bufferTransform->isIdentity() )
+				bufferTransform = 0;
 		}
-		else
+
+		switch ( buf->getIndexType() )
 		{
-			for (u32 index = 0; index < idxCnt; index += 3)
+			case video::EIT_16BIT:
 			{
-				core::triangle3df& tri = Triangles[triangleCount++];
-				tri.pointA = buf->getPosition(indices[index + 0]);
-				tri.pointB = buf->getPosition(indices[index + 1]);
-				tri.pointC = buf->getPosition(indices[index + 2]);
-				BoundingBox.addInternalPoint(tri.pointA);
-				BoundingBox.addInternalPoint(tri.pointB);
-				BoundingBox.addInternalPoint(tri.pointC);
+				const u16* indices = buf->getIndices();
+				updateTriangles(triangleCount, Triangles, idxCnt, indices, vertices, vertexPitch, bufferTransform);
 			}
+			break;
+			case video::EIT_32BIT:
+			{
+				const u32* indices = (u32*)buf->getIndices();
+				updateTriangles(triangleCount, Triangles, idxCnt, indices, vertices, vertexPitch, bufferTransform);
+			}
+			break;
 		}
+	}
+
+	// Update bounding box
+	if ( triangleCount )
+	{
+		BoundingBox.reset( Triangles[0].pointA );
+		for (u32 i=0; i < triangleCount; ++i)
+		{
+			const core::triangle3df& tri = Triangles[i];
+			BoundingBox.addInternalPoint(tri.pointA);
+			BoundingBox.addInternalPoint(tri.pointB);
+			BoundingBox.addInternalPoint(tri.pointC);
+		}
+	}
+	else
+	{
+		BoundingBox.reset(0.f, 0.f, 0.f);
 	}
 }
 
