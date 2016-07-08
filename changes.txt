@@ -148,6 +148,9 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.4
+ - Tests on Unix now have a short pause between switching drivers to avoid certain X11 errors.
+ - Fix CEnumAttribute::getInt() which could crash  (thx @ luthyr for reporting)
+ - No longer try to run tests for drivers not supported on a platform
  - Update lights and renderTargetTexture tests to work with Windows 10 (can't have so tiny Windows anymore).
  - Deprecate CMatrix4::transformBox as the result is no longer a boundingbox. Use CMatrix4::transformBoxEx instead (which has been available for a long time).
  - Fix CSceneCollisionManager::getPickedNodeBB which could sometimes miss collisions.

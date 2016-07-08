@@ -5,15 +5,41 @@
 #include "irrlicht.h"
 #include <assert.h>
 
+// Small hack. Some newer X11 systems can't handle switching drivers too fast (causing BadWindow errors in X_ChangeWindowAttributes).
+// Could be they don't like when Windows with different Visuals are created very quickly (it always happened after creating a new Window with different Visual to previous one).
+// timeMs value set by try&error
+#ifdef _IRR_POSIX_API_
+	#include <time.h>
+	#define SLOW_SWITCH \
+	do { \
+		struct timespec ts; \
+		const int timeMs = 250; \
+		ts.tv_sec = (time_t) (timeMs / 1000); \
+		ts.tv_nsec = (long) (timeMs % 1000) * 1000000; \
+		nanosleep(&ts, NULL);\
+	} while (false)
+#else
+	#define SLOW_SWITCH
+#endif
+
 #define TestWithAllDrivers(X) \
 	logTestString("Running test " #X "\n"); \
-	for (u32 i=1; i<video::EDT_COUNT; ++i)  \
-		if ( video::E_DRIVER_TYPE(i) != video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS ) \
-			result &= X(video::E_DRIVER_TYPE(i))
+	for (u32 i=1; i<video::EDT_COUNT; ++i) \
+		if (video::E_DRIVER_TYPE(i) != video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS && irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE)i)) \
+		{\
+			SLOW_SWITCH; \
+			result &= X(video::E_DRIVER_TYPE(i));\
+		}
+
 #define TestWithAllHWDrivers(X) \
+	SLOW_SWITCH; \
 	logTestString("Running test " #X "\n"); \
 	for (u32 i=video::EDT_DIRECT3D9; i<video::EDT_COUNT; ++i) \
-	result &= X(video::E_DRIVER_TYPE(i))
+		if (irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE)i)) \
+		{\
+			SLOW_SWITCH; \
+			result &= X(video::E_DRIVER_TYPE(i));\
+		}
 
 // replacement for assert which does log the lines instead
 #define assert_log(X) \
