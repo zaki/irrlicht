@@ -50,7 +50,6 @@ RELEASING:
   Best create first a folder with a new name, copy stuff in there, test (just 
   check the website), rename old folder and give new folder the "docu" name. 
   Then you can delete the old folder if you want.
-- - update changes.txt (also in /home/project-web/i/ir/irrlicht/htdocs)
 - - upload the zip by logging in to sourceforge and using the "Files" menu (needs 
 	admin privileges and it's the 'Files' menu between 'Summary' and 'Reviews'). 
 	The target is in one of the Irrlicht SDK subfolders. Then click the "i" beside 
