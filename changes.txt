@@ -147,7 +147,11 @@ should now be fps independentn
 - burningvideo: mipmaplevel adjusted ( not that bad bokeh...(sometimes) )
 
 --------------------------
-Changes in 1.8.4
+Changes in 1.8.5
+ - CImageLoaderJPG::isALoadableFileFormat uses a test which allows to load more jpg formats (for example uncompressed jpg's). Thx @Yaron Cohen-Tal for report, test-image and his help with the patch.
+
+--------------------------
+Changes in 1.8.4 (9th July 2016, svn r5321)
  - Tests on Unix now have a short pause between switching drivers to avoid certain X11 errors.
  - Fix CEnumAttribute::getInt() which could crash  (thx @ luthyr for reporting)
  - No longer try to run tests for drivers not supported on a platform
@@ -155,7 +159,7 @@ Changes in 1.8.4
  - Deprecate CMatrix4::transformBox as the result is no longer a boundingbox. Use CMatrix4::transformBoxEx instead (which has been available for a long time).
  - Fix CSceneCollisionManager::getPickedNodeBB which could sometimes miss collisions.
  - Add -U__STRICT_ANSI__ option to c::b project files to allow compiling with -std=c++11 and add an error when trying to compile with Irrlicht with __STRICT_ANSI__
- - Update libpng to 1.6.21
+ - Update libpng to 1.6.23
  - Update zlib to 1.2.8
  - Fix some compile warnings in aes which got handled as errors by some c++11 compilers.
  - Get rid of some misleading-indentation warnings in gcc6
