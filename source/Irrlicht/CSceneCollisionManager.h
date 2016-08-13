@@ -36,9 +36,9 @@ namespace scene
 						s32 idBitMask=0, bool bNoDebugObjects=false,
 						ISceneNode* root=0) _IRR_OVERRIDE_;
 
-		//! Returns the scene node, at which the overgiven camera is looking at and
+		//! Returns the scene node, at which the given camera is looking at and
 		//! which id matches the bitmask.
-		virtual ISceneNode* getSceneNodeFromCameraBB(ICameraSceneNode* camera,
+		virtual ISceneNode* getSceneNodeFromCameraBB(const ICameraSceneNode* camera,
 				s32 idBitMask=0, bool bNoDebugObjects = false) _IRR_OVERRIDE_;
 
 		//! Finds the collision point of a line and lots of triangles, if there is one.
@@ -63,11 +63,11 @@ namespace scene
 
 		//! Returns a 3d ray which would go through the 2d screen coordinates.
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0) _IRR_OVERRIDE_;
+			const core::position2d<s32> & pos, const ICameraSceneNode* camera = 0) _IRR_OVERRIDE_;
 
 		//! Calculates 2d screen position from a 3d position.
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			const core::vector3df & pos, ICameraSceneNode* camera=0, bool useViewPort=false) _IRR_OVERRIDE_;
+			const core::vector3df & pos, const ICameraSceneNode* camera=0, bool useViewPort=false) _IRR_OVERRIDE_;
 
 		//! Gets the scene node and nearest collision point for a ray based on
 		//! the nodes' id bitmasks, bounding boxes and triangle selectors.
@@ -143,7 +143,7 @@ namespace scene
 		core::vector3df collideWithWorld(s32 recursionDepth, SCollisionData &colData,
 			const core::vector3df& pos, const core::vector3df& vel);
 
-		inline bool getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root);
+		inline bool getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root) const;
 
 		ISceneManager* SceneManager;
 		video::IVideoDriver* Driver;

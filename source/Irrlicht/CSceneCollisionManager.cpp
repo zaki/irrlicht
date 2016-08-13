@@ -332,10 +332,10 @@ void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 }
 
 
-//! Returns the scene node, at which the overgiven camera is looking at and
+//! Returns the scene node, at which the given camera is looking at and
 //! which id matches the bitmask.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
-	ICameraSceneNode* camera, s32 idBitMask, bool noDebugObjects)
+	const ICameraSceneNode* camera, s32 idBitMask, bool noDebugObjects)
 {
 	if (!camera)
 		return 0;
@@ -517,7 +517,7 @@ bool CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 		}
 	}
 
-	// if we havent found a collision already we will have to sweep
+	// if we haven't found a collision already we will have to sweep
 	// the sphere against points and edges of the triangle. Note: A
 	// collision inside the triangle will always happen before a
 	// vertex or edge collision.
@@ -841,7 +841,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 //! Returns a 3d ray which would go through the 2d screen coordinates.
 core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
-	const core::position2d<s32> & pos, ICameraSceneNode* camera)
+	const core::position2d<s32> & pos, const ICameraSceneNode* camera)
 {
 	core::line3d<f32> ln(0,0,0,0,0,0);
 
@@ -879,7 +879,7 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 
 //! Calculates 2d screen position from a 3d position.
 core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition(
-	const core::vector3df & pos3d, ICameraSceneNode* camera, bool useViewPort)
+	const core::vector3df & pos3d, const ICameraSceneNode* camera, bool useViewPort)
 {
 	if (!SceneManager || !Driver)
 		return core::position2d<s32>(-1000,-1000);
@@ -918,7 +918,7 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 }
 
 
-inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root)
+inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root) const
 {
 	// check if solution exists
 	const f32 determinant = b*b - 4.0f*a*c;

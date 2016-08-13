@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Collision manager now using const camera pointers.
 - Several fixes for SceneNodeAnimatorCollisionResponse, based on http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=33098&p=290746
   Thanks to all people who reported and to JLouisB and kinkreet for the patches:
   - Gravity is now fps independent

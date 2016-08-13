@@ -86,7 +86,7 @@ namespace scene
 		at a length of the far value of the camera at a position which
 		would be behind the 2d screen coordinates. */
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			const core::position2d<s32>& pos, ICameraSceneNode* camera = 0) = 0;
+			const core::position2d<s32>& pos, const ICameraSceneNode* camera = 0) = 0;
 
 		//! Calculates 2d screen position from a 3d position.
 		/** \param pos: 3D position in world space to be transformed
@@ -104,7 +104,7 @@ namespace scene
 		method for drawing a decorator over a 3d object, it will be
 		clipped by the screen borders. */
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			const core::vector3df& pos, ICameraSceneNode* camera=0, bool useViewPort=false) = 0;
+			const core::vector3df& pos, const ICameraSceneNode* camera=0, bool useViewPort=false) = 0;
 
 		//! Gets the scene node, which is currently visible under the given screen coordinates, viewed from the currently active camera.
 		/** The collision tests are done using a bounding box for each
@@ -158,7 +158,7 @@ namespace scene
 		\return Scene node nearest to the camera, which collides with
 		the ray and matches the idBitMask, if the mask is not null. If
 		no scene node is found, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromCameraBB(ICameraSceneNode* camera,
+		virtual ISceneNode* getSceneNodeFromCameraBB(const ICameraSceneNode* camera,
 			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
 
 		//! Perform a ray/box and ray/triangle collision check on a hierarchy of scene nodes.
