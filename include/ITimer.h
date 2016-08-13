@@ -40,7 +40,7 @@ public:
 		u32 Minute;
 		// Second of the minute, due to extra seconds from 0 to 61
 		u32 Second;
-		// Year of the gregorian calender
+		// Year of the Gregorian calender
 		s32 Year;
 		// Month of the year, from 1 to 12
 		u32 Month;

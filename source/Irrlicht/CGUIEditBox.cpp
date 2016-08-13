@@ -145,7 +145,7 @@ bool CGUIEditBox::isDrawBackgroundEnabled() const
 	return Background;
 }
 
-//! Sets if the text should use the overide color or the color in the gui skin.
+//! Sets if the text should use the override color or the color in the gui skin.
 void CGUIEditBox::enableOverrideColor(bool enable)
 {
 	OverrideColorEnabled = enable;

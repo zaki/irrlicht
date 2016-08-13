@@ -371,7 +371,7 @@ public:
 	until this messagebox is removed.
 	\param parent Parent gui element of the dialog.
 	\param id Id to identify the gui element.
-	\param restoreCWD If set to true, the current workingn directory will be
+	\param restoreCWD If set to true, the current working directory will be
 	restored after the dialog is closed in some way. Otherwise the working
 	directory will be the one that the file dialog was last showing.
 	\param startDir Optional path for which the file dialog will be opened.
@@ -412,7 +412,7 @@ public:
 		bool fillBackground = false) = 0;
 
 	//! Adds an edit box.
-	/** Supports unicode input from every keyboard around the world,
+	/** Supports Unicode input from every keyboard around the world,
 	scrolling, copying and pasting (exchanging data with the clipboard
 	directly), maximum character amount, marking, and all shortcuts like
 	ctrl+X, ctrl+V, ctrl+C, shift+Left, shift+Right, Home, End, and so on.

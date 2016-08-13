@@ -311,7 +311,7 @@ public:
 	}
 
 
-	//! Constructor for unicode and ascii strings
+	//! Constructor for Unicode and ASCII strings
 	template <class B>
 	string(const B* const c)
 	: array(0), allocated(0), used(0)
@@ -357,7 +357,7 @@ public:
 	}
 
 
-	//! Assignment operator for strings, ascii and unicode
+	//! Assignment operator for strings, ASCII and Unicode
 	template <class B>
 	string<T,TAlloc>& operator=(const B* const c)
 	{
@@ -414,7 +414,7 @@ public:
 	}
 
 
-	//! Append operator for strings, ascii and unicode
+	//! Append operator for strings, ASCII and Unicode
 	template <class B>
 	string<T,TAlloc> operator+(const B* const c) const
 	{

@@ -1,7 +1,7 @@
 // Copyright (C) 2002-2012 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
-// orginally written by Christian Stehno, modified by Nikolaus Gebhardt
+// originally written by Christian Stehno, modified by Nikolaus Gebhardt
 
 #ifndef __C_OGRE_MESH_FILE_LOADER_H_INCLUDED__
 #define __C_OGRE_MESH_FILE_LOADER_H_INCLUDED__

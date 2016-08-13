@@ -322,7 +322,7 @@ namespace core
 	}
 
 	/*
-		float IEEE-754 bit represenation
+		float IEEE-754 bit representation
 
 		0      0x00000000
 		1.0    0x3f800000
@@ -402,7 +402,7 @@ namespace core
 
 #if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 
-	// 8-bit bools in borland builder
+	// 8-bit bools in Borland builder
 
 	//! conditional set based on mask and arithmetic shift
 	REALINLINE u32 if_c_a_else_b ( const c8 condition, const u32 a, const u32 b )
@@ -441,7 +441,7 @@ namespace core
 	*/
 	REALINLINE void setbit_cond ( u32 &state, s32 condition, u32 mask )
 	{
-		// 0, or any postive to mask
+		// 0, or any positive to mask
 		//s32 conmask = -condition >> 31;
 		state ^= ( ( -condition >> 31 ) ^ state ) & mask;
 	}
@@ -536,9 +536,9 @@ namespace core
 
 		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
 		// bi ts of the mantissa
-		// One Newtown-Raphson Iteration:
+		// One Newton-Raphson Iteration:
 		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
-#if defined(_MSC_VER)				
+#if defined(_MSC_VER)
 		f32 rec;
 		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
 		__asm movss xmm1, f               // xmm1 = f
@@ -578,9 +578,9 @@ namespace core
 
 		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
 		// bi ts of the mantissa
-		// One Newtown-Raphson Iteration:
+		// One Newton-Raphson Iteration:
 		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
-#if defined(_MSC_VER)		
+#if defined(_MSC_VER)
 		f32 rec;
 		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
 		__asm movss xmm1, f               // xmm1 = f

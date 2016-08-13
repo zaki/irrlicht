@@ -1169,7 +1169,7 @@ void CIrrDeviceWin32::createDriver()
 	{
 	case video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
 		os::Printer::log("DIRECT3D8 Driver is no longer supported in Irrlicht. Try another one.", ELL_ERROR);
-		break;	
+		break;
 	case video::EDT_DIRECT3D9:
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 		VideoDriver = video::createDirectX9Driver(CreationParams, FileSystem, HWnd);
@@ -1453,7 +1453,7 @@ bool CIrrDeviceWin32::switchToFullScreen(bool reset)
 		os::Printer::log("Switch to fullscreen: The graphics mode is not supported.", ELL_ERROR);
 		break;
 	default:
-		os::Printer::log("An unknown error occured while changing to fullscreen.", ELL_ERROR);
+		os::Printer::log("An unknown error occurred while changing to fullscreen.", ELL_ERROR);
 		break;
 	}
 	return ret;

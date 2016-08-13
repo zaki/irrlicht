@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_SHPERE_SCENE_NODE_H_INCLUDED__
-#define __C_SHPERE_SCENE_NODE_H_INCLUDED__
+#ifndef __C_SPHERE_SCENE_NODE_H_INCLUDED__
+#define __C_SPHERE_SCENE_NODE_H_INCLUDED__
 
 #include "IMeshSceneNode.h"
 #include "IMesh.h"
@@ -76,7 +76,7 @@ namespace scene
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,
-		//! or to remove attached childs.
+		//! or to remove attached child.
 		virtual bool removeChild(ISceneNode* child) _IRR_OVERRIDE_;
 
 	private:

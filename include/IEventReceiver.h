@@ -59,7 +59,7 @@ namespace irr
 			UserData1 and UserData2 members of the SUserEvent.
 		Linux: send a ClientMessage via XSendEvent to the Irrlicht
 			Window; the data.l[0] and data.l[1] members will be
-			casted to s32 and used as UserData1 and UserData2.
+			cast to s32 and used as UserData1 and UserData2.
 		MacOS: Not yet implemented
 		*/
 		EET_USER_EVENT,
@@ -169,7 +169,7 @@ namespace irr
 
 			//! An element would like to close.
 			/** Windows and context menus use this event when they would like to close,
-			this can be cancelled by absorbing the event. */
+			this can be canceled by absorbing the event. */
 			EGET_ELEMENT_CLOSED,
 
 			//! A button was clicked.

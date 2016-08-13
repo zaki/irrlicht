@@ -56,7 +56,7 @@ namespace scene
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1) = 0;
 
 		//! Returns the type of the animated mesh.
-		/** In most cases it is not neccessary to use this method.
+		/** In most cases it is not necessary to use this method.
 		This is useful for making a safe downcast. For example,
 		if getMeshType() returns EAMT_MD2 it's safe to cast the
 		IAnimatedMesh to IAnimatedMeshMD2.

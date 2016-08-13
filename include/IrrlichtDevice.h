@@ -71,7 +71,7 @@ namespace irr
 		DispatchMessage and whatever and simply don't use this method.
 		But note that Irrlicht will not be able to fetch user input
 		then. See irr::SIrrlichtCreationParameters::WindowId for more
-		informations and example code.
+		information and example code.
 		*/
 		virtual bool run() = 0;
 
@@ -82,7 +82,7 @@ namespace irr
 
 		//! Pause execution and let other processes to run for a specified amount of time.
 		/** It may not wait the full given time, as sleep may be interrupted
-		\param timeMs: Time to sleep for in milisecs.
+		\param timeMs: Time to sleep for in milliseconds.
 		\param pauseTimer: If true, pauses the device timer while sleeping
 		*/
 		virtual void sleep(u32 timeMs, bool pauseTimer=false) = 0;
@@ -112,8 +112,8 @@ namespace irr
 		virtual ILogger* getLogger() = 0;
 
 		//! Gets a list with all video modes available.
-		/** You only need a null driver (ED_NULL) to access 
-		those video modes. So you can get the available modes 
+		/** You only need a null driver (ED_NULL) to access
+		those video modes. So you can get the available modes
 		before starting any other video driver.
 		\return Pointer to a list with all video modes supported
 		by the gfx adapter. */
@@ -124,7 +124,7 @@ namespace irr
 
 		//! Provides access to the operation system operator object.
 		/** The OS operator provides methods for
-		getting system specific informations and doing system
+		getting system specific information and doing system
 		specific operations, such as exchanging data with the clipboard
 		or reading the operation system version.
 		\return Pointer to the OS operator. */

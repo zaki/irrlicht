@@ -75,7 +75,7 @@ bool CSceneNodeAnimatorCameraMaya::OnEvent(const SEvent& event)
 		MouseKeys[1] = false;
 		break;
 	case EMIE_MOUSE_MOVED:
-		// check states again because sometimes the gui has already catched events
+		// check states again because sometimes the gui has already caught events
 		MouseKeys[0] = event.MouseInput.isLeftPressed();
 		MouseKeys[2] = event.MouseInput.isRightPressed();
 		MouseKeys[1] = event.MouseInput.isMiddlePressed();

@@ -587,7 +587,7 @@ public:
 
 
 	//! Swap the content of this array container with the content of another array
-	/** Afterwards this object will contain the content of the other object and the other
+	/** Afterward this object will contain the content of the other object and the other
 	object will contain the content of this object.
 	\param other Swap content with this object */
 	void swap(array<T, TAlloc>& other)

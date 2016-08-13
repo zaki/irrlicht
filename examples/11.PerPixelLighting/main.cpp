@@ -270,7 +270,7 @@ int main()
 */
 		/*
 		But just setting color and normal map is not everything. The
-		material we want to use needs some additional informations per
+		material we want to use needs some additional information per
 		vertex like tangents and binormals. Because we are too lazy to
 		calculate that information now, we let Irrlicht do this for us.
 		That's why we call IMeshManipulator::createMeshWithTangents().
@@ -320,7 +320,7 @@ int main()
 		//perform various task with the mesh manipulator
 		scene::IMeshManipulator *manipulator = smgr->getMeshManipulator();
 
-		// create mesh copy with tangent informations from original earth.x mesh
+		// create mesh copy with tangent information from original earth.x mesh
 		scene::IMesh* tangentSphereMesh =
 			manipulator->createMeshWithTangents(earthMesh->getMesh(0));
 

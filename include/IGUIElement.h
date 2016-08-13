@@ -465,7 +465,7 @@ public:
 
 	//! Returns true if element is enabled
 	/** Currently elements do _not_ care about parent-states.
-		So if you want to affect childs you have to enable/disable them all.
+		So if you want to affect children you have to enable/disable them all.
 		The only exception to this are sub-elements which also check their parent.
 	*/
 	virtual bool isEnabled() const
@@ -728,7 +728,7 @@ public:
 	you can overload this function and add a check for the type of the base-class additionally.
 	This allows for checks comparable to the dynamic_cast of c++ with enabled rtti.
 	Note that you can't do that by calling BaseClass::hasType(type), but you have to do an explicit
-	comparison check, because otherwise the base class usually just checks for the membervariable
+	comparison check, because otherwise the base class usually just checks for the member variable
 	Type which contains the type of your derived class.
 	*/
 	virtual bool hasType(EGUI_ELEMENT_TYPE type) const
@@ -1014,10 +1014,10 @@ protected:
 	//! tooltip
 	core::stringw ToolTipText;
 
-	//! users can set this for identificating the element by string
+	//! users can set this for identifying the element by string
 	core::stringc Name;
 
-	//! users can set this for identificating the element by integer
+	//! users can set this for identifying the element by integer
 	s32 ID;
 
 	//! tab stop like in windows

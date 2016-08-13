@@ -13,7 +13,7 @@ namespace irr
 namespace io
 {
 
-	//! Interface providing read acess to a file.
+	//! Interface providing read access to a file.
 	class IReadFile : public virtual IReferenceCounted
 	{
 	public:

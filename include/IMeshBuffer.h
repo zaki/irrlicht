@@ -25,7 +25,7 @@ namespace scene
 	Some mesh buffer implementations have limitations on the number of
 	vertices the buffer can hold. In that case, logical grouping can help.
 	Moreover, the number of vertices should be optimized for the GPU upload,
-	which often depends on the type of gfx card. Typial figures are
+	which often depends on the type of gfx card. Typical figures are
 	1000-10000 vertices per buffer.
 	SMeshBuffer is a simple implementation of a MeshBuffer, which supports
 	up to 65535 vertices.
@@ -70,11 +70,11 @@ namespace scene
 		/** \return Index type of this buffer. */
 		virtual video::E_INDEX_TYPE getIndexType() const =0;
 
-		//! Get access to Indices.
+		//! Get access to indices.
 		/** \return Pointer to indices array. */
 		virtual const u16* getIndices() const = 0;
 
-		//! Get access to Indices.
+		//! Get access to indices.
 		/** \return Pointer to indices array. */
 		virtual u16* getIndices() = 0;
 

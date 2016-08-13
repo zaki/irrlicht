@@ -839,7 +839,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 }
 
 
-//! Returns a 3d ray which would go through the 2d screen coodinates.
+//! Returns a 3d ray which would go through the 2d screen coordinates.
 core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 	const core::position2d<s32> & pos, ICameraSceneNode* camera)
 {

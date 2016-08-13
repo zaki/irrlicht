@@ -41,7 +41,7 @@ namespace scene
 	 * of the indices to draw all the triangles at the max detail for a patch. As each LOD goes up by 1
 	 * the step taken, in generating indices increases by - 2^LOD, so for LOD 1, the step taken is 2, for
 	 * LOD 2, the step taken is 4, LOD 3 - 8, etc. The step can be no larger than the size of the patch,
-	 * so having a LOD of 8, with a patch size of 17, is asking the algoritm to generate indices every
+	 * so having a LOD of 8, with a patch size of 17, is asking the algorithm to generate indices every
 	 * 2^8 ( 256 ) vertices, which is not possible with a patch size of 17. The maximum LOD for a patch
 	 * size of 17 is 2^4 ( 16 ). So, with a MaxLOD of 5, you'll have LOD 0 ( full detail ), LOD 1 ( every
 	 * 2 vertices ), LOD 2 ( every 4 vertices ), LOD 3 ( every 8 vertices ) and LOD 4 ( every 16 vertices ).

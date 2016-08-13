@@ -62,7 +62,7 @@ namespace gui
 		//! Set the maximal number of rows for the selection listbox
 		virtual void setMaxSelectionRows(u32 max) = 0;
 
-		//! Get the maximimal number of rows for the selection listbox
+		//! Get the maximal number of rows for the selection listbox
 		virtual u32 getMaxSelectionRows() const = 0;
 	};
 

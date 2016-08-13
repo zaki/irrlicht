@@ -26,7 +26,7 @@ namespace scene
 	{
 		enum VFPLANES
 		{
-			//! Far plane of the frustum. That is the plane farest away from the eye.
+			//! Far plane of the frustum. That is the plane furthest away from the eye.
 			VF_FAR_PLANE = 0,
 			//! Near plane of the frustum. That is the plane nearest to the eye.
 			VF_NEAR_PLANE,

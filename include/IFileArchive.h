@@ -14,7 +14,7 @@ namespace irr
 namespace io
 {
 
-//! FileSystemType: which Filesystem should be used for e.g. browsing
+//! FileSystemType: which filesystem should be used for e.g. browsing
 enum EFileSystemType
 {
 	FILESYSTEM_NATIVE = 0,	// Native OS FileSystem
@@ -109,7 +109,7 @@ public:
 	//! Check to see if the loader can create archives of this type.
 	/** Check based on the archive type.
 	\param fileType The archive type to check.
-	\return True if the archile loader supports this type, false if not */
+	\return True if the archive loader supports this type, false if not */
 	virtual bool isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const =0;
 
 	//! Creates an archive from the filename

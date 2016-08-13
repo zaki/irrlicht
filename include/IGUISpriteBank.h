@@ -57,7 +57,7 @@ struct SGUISprite
 
 
 //! Sprite bank interface.
-/** See http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=25742&highlight=spritebank
+/** See http://http://irrlicht.sourceforge.net/forum//viewtopic.php?f=9&t=25742
 * for more information how to use the spritebank.
 */
 class IGUISpriteBank : public virtual IReferenceCounted

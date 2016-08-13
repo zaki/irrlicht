@@ -61,7 +61,7 @@ namespace scene
 			f32 slidingSpeed,
 			const core::vector3df& gravityDirectionAndSpeed) _IRR_OVERRIDE_;
 
-		//! Returns a 3d ray which would go through the 2d screen coodinates.
+		//! Returns a 3d ray which would go through the 2d screen coordinates.
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
 			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0) _IRR_OVERRIDE_;
 

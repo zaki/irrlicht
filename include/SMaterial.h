@@ -102,7 +102,7 @@ namespace video
 
 	//! Source of the alpha value to take
 	/** This is currently only supported in EMT_ONETEXTURE_BLEND. You can use an
-	or'ed combination of values. Alpha values are modulated (multiplicated). */
+	or'ed combination of values. Alpha values are modulated (multiplied). */
 	enum E_ALPHA_SOURCE
 	{
 		//! Use no alpha, somewhat redundant with other settings
@@ -247,7 +247,7 @@ namespace video
 		0
 	};
 
-	//! Fine-tuning for SMaterial.ZWriteFineControl 
+	//! Fine-tuning for SMaterial.ZWriteFineControl
 	enum E_ZWRITE_FINE_CONTROL
 	{
 		//! Default. Only write zbuffer when When SMaterial::ZBuffer is true and SMaterial::isTransparent() returns false.
@@ -275,7 +275,7 @@ namespace video
 			PolygonOffsetFactor(0), PolygonOffsetDirection(EPO_FRONT),
 			Wireframe(false), PointCloud(false), GouraudShading(true),
 			Lighting(true), ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), UseMipMaps(true), 
+			FogEnable(false), NormalizeNormals(false), UseMipMaps(true),
 			ZWriteFineControl(EZI_ONLY_NON_TRANSPARENT)
 		{ }
 
@@ -445,7 +445,7 @@ namespace video
 		u8 PolygonOffsetFactor:3;
 
 		//! Flag defining the direction the polygon offset is applied to.
-		/** Can be to front or to back, specififed by values from E_POLYGON_OFFSET. */
+		/** Can be to front or to back, specified by values from E_POLYGON_OFFSET. */
 		E_POLYGON_OFFSET PolygonOffsetDirection:1;
 
 		//! Draw as wireframe or filled triangles? Default: false
@@ -747,7 +747,7 @@ namespace video
 					textureBlendFunc_hasAlpha(srcAlphaFact) || textureBlendFunc_hasAlpha(dstAlphaFact))
 				{
 					return true;
-				} 
+				}
 			}
 
 			return false;

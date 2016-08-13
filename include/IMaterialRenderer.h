@@ -19,7 +19,7 @@ class IMaterialRendererServices;
 
 //! Interface for material rendering.
 /** Can be used to extend the engine with new materials. Refer to
-IVideoDriver::addMaterialRenderer() for more informations on how to extend the
+IVideoDriver::addMaterialRenderer() for more information on how to extend the
 engine with new materials. */
 class IMaterialRenderer : public virtual IReferenceCounted
 {
@@ -57,13 +57,13 @@ public:
 	material set. This method will be called every time. This is useful for
 	example for materials with shaders, which don't only set new
 	renderstates but also shader constants.
-	\param service: Pointer to interface providing methos for setting
+	\param service: Pointer to interface providing methods for setting
 	constants and other things.
 	\param vtxtype: Vertex type with which the next rendering will be done.
 	This can be used by the material renderer to set some specific
 	optimized shaders or if this is an incompatible vertex type for this
 	renderer, to refuse rendering for example.
-	\return Returns true if everything is ok, and false if nothing should
+	\return Returns true if everything is OK, and false if nothing should
 	be rendered. The material renderer can choose to return false for
 	example if he doesn't support the specified vertex type. This is
 	actually done in D3D9 when using a normal mapped material with
@@ -76,7 +76,7 @@ public:
 	virtual void OnUnsetMaterial() {}
 
 	//! Returns if the material is transparent.
-	/** The scene managment needs to know this
+	/** The scene management needs to know this
 	for being able to sort the materials by opaque and transparent. */
 	virtual bool isTransparent() const { return false; }
 

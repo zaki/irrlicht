@@ -38,10 +38,10 @@ class quaternion
 		//! Constructor
 		quaternion(f32 x, f32 y, f32 z, f32 w) : X(x), Y(y), Z(z), W(w) { }
 
-		//! Constructor which converts euler angles (radians) to a quaternion
+		//! Constructor which converts Euler angles (radians) to a quaternion
 		quaternion(f32 x, f32 y, f32 z);
 
-		//! Constructor which converts euler angles (radians) to a quaternion
+		//! Constructor which converts Euler angles (radians) to a quaternion
 		quaternion(const vector3df& vec);
 
 #ifndef IRR_TEST_BROKEN_QUATERNION_USE
@@ -49,7 +49,7 @@ class quaternion
 		quaternion(const matrix4& mat);
 #endif
 
-		//! Equalilty operator
+		//! Equality operator
 		bool operator==(const quaternion& other) const;
 
 		//! inequality operator
@@ -88,10 +88,10 @@ class quaternion
 		//! Sets new quaternion
 		inline quaternion& set(f32 x, f32 y, f32 z, f32 w);
 
-		//! Sets new quaternion based on euler angles (radians)
+		//! Sets new quaternion based on Euler angles (radians)
 		inline quaternion& set(f32 x, f32 y, f32 z);
 
-		//! Sets new quaternion based on euler angles (radians)
+		//! Sets new quaternion based on Euler angles (radians)
 		inline quaternion& set(const core::vector3df& vec);
 
 		//! Sets new quaternion from other quaternion
@@ -172,7 +172,7 @@ class quaternion
 		//! Fills an angle (radians) around an axis (unit vector)
 		void toAngleAxis (f32 &angle, core::vector3df& axis) const;
 
-		//! Output this quaternion to an euler angle (radians)
+		//! Output this quaternion to an Euler angle (radians)
 		void toEuler(vector3df& euler) const;
 
 		//! Set quaternion to identity
@@ -189,14 +189,14 @@ class quaternion
 };
 
 
-// Constructor which converts euler angles to a quaternion
+// Constructor which converts Euler angles to a quaternion
 inline quaternion::quaternion(f32 x, f32 y, f32 z)
 {
 	set(x,y,z);
 }
 
 
-// Constructor which converts euler angles to a quaternion
+// Constructor which converts Euler angles to a quaternion
 inline quaternion::quaternion(const vector3df& vec)
 {
 	set(vec.X,vec.Y,vec.Z);
@@ -459,7 +459,7 @@ inline quaternion& quaternion::set(f32 x, f32 y, f32 z, f32 w)
 }
 
 
-// sets new quaternion based on euler angles
+// sets new quaternion based on Euler angles
 inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 {
 	f64 angle;
@@ -489,7 +489,7 @@ inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 	return normalize();
 }
 
-// sets new quaternion based on euler angles
+// sets new quaternion based on Euler angles
 inline quaternion& quaternion::set(const core::vector3df& vec)
 {
 	return set(vec.X, vec.Y, vec.Z);

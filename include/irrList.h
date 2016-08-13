@@ -382,8 +382,8 @@ public:
 	}
 
 	//! Swap the content of this list container with the content of another list
-	/** Afterwards this object will contain the content of the other object and the other
-	object will contain the content of this object. Iterators will afterwards be valid for
+	/** Afterward this object will contain the content of the other object and the other
+	object will contain the content of this object. Iterators will afterward be valid for
 	the swapped object.
 	\param other Swap content with this object */
 	void swap(list<T>& other)

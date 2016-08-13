@@ -6,7 +6,7 @@ surface scene node.
 
 We start like in some tutorials before. Please note that this time, the
 'shadows' flag in createDevice() is set to true, for we want to have a dynamic
-shadow casted from an animated character. If this example runs too slow,
+shadow cast from an animated character. If this example runs too slow,
 set it to false. The Irrlicht Engine checks if your hardware doesn't support
 the stencil buffer, and disables shadows by itself, but just in case the demo
 runs slow on your hardware.
@@ -236,7 +236,7 @@ int main()
 	}
 
 	/*
-	As our last special effect, we want a dynamic shadow be casted from an
+	As our last special effect, we want a dynamic shadow be cast from an
 	animated character. For this we load a DirectX .x model and place it
 	into our world. For creating the shadow, we simply need to call
 	addShadowVolumeSceneNode(). The color of shadows is only adjustable

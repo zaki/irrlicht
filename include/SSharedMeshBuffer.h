@@ -70,13 +70,13 @@ namespace scene
 				return 0;
 		}
 
-		//! returns pointer to Indices
+		//! returns pointer to indices
 		virtual const u16* getIndices() const
 		{
 			return Indices.const_pointer();
 		}
 
-		//! returns pointer to Indices
+		//! returns pointer to indices
 		virtual u16* getIndices()
 		{
 			return Indices.pointer();
@@ -217,7 +217,7 @@ namespace scene
 		//! Shared Array of vertices
 		core::array<video::S3DVertex> *Vertices;
 
-		//! Array of Indices
+		//! Array of indices
 		core::array<u16> Indices;
 
 		//! ID used for hardware buffer management

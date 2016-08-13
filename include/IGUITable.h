@@ -94,7 +94,7 @@ namespace gui
 			: IGUIElement(EGUIET_TABLE, environment, parent, id, rectangle) {}
 
 		//! Adds a column
-		/** If columnIndex is outside the current range, do push new colum at the end */
+		/** If columnIndex is outside the current range, do push new column at the end */
 		virtual void addColumn(const wchar_t* caption, s32 columnIndex=-1) = 0;
 
 		//! remove a column from the table
@@ -124,7 +124,7 @@ namespace gui
 		//! columns can be resized by drag 'n drop
 		virtual void setResizableColumns(bool resizable) = 0;
 
-		//! can columns be resized by dran 'n drop?
+		//! can columns be resized by drag 'n drop?
 		virtual bool hasResizableColumns() const = 0;
 
 		//! This tells the table control which ordering mode should be used when a column header is clicked.
@@ -135,7 +135,7 @@ namespace gui
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const = 0;
 
-		//! set wich row is currently selected
+		//! set which row is currently selected
 		virtual void setSelected( s32 index ) = 0;
 
 		//! Get amount of rows in the tabcontrol

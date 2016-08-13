@@ -139,7 +139,7 @@ namespace scene
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_CAMERA; }
 
-		//! Binds the camera scene node's rotation to its target position and vice vera, or unbinds them.
+		//! Binds the camera scene node's rotation to its target position and vice versa, or unbinds them.
 		virtual void bindTargetAndRotation(bool bound) _IRR_OVERRIDE_;
 
 		//! Queries if the camera scene node's rotation and its target position are bound together.

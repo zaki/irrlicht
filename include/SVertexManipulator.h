@@ -47,7 +47,7 @@ namespace scene
 	private:
 		u32 Alpha;
 	};
-	//! Vertex manipulator which invertes the RGB values
+	//! Vertex manipulator which inverts the RGB values
 	class SVertexColorInvertManipulator : public IVertexManipulator
 	{
 	public:

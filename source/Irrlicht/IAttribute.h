@@ -74,7 +74,7 @@ public:
 	virtual void setColor(video::SColorf color)	{};
 	virtual void setColor(video::SColor color)	{};
 	virtual void setBool(bool boolValue)		{};
-	virtual void setBinary(void* data, s32 maxLenght) {};
+	virtual void setBinary(void* data, s32 maxLength) {};
 	virtual void setVector(const core::vector3df& v)	{};
 	virtual void setPosition(const core::position2di& v)	{};
 	virtual void setRect(const core::rect<s32>& v)		{};

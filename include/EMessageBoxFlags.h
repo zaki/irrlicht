@@ -13,7 +13,7 @@ namespace gui
 //! enumeration for message box layout flags
 enum EMESSAGE_BOX_FLAG
 {
-	//! Flag for the ok button
+	//! Flag for the OK button
 	EMBF_OK = 0x1,
 
 	//! Flag for the cancel button

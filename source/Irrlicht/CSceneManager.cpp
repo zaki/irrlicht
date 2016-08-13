@@ -1132,7 +1132,7 @@ IAnimatedMesh* CSceneManager::addVolumeLightMesh(const io::path& name,
 }
 
 
-//! Returns the root scene node. This is the scene node wich is parent
+//! Returns the root scene node. This is the scene node which is parent
 //! of all scene nodes. The root scene node is a special scene node which
 //! only exists to manage all scene nodes. It is not rendered and cannot
 //! be removed from the scene.
@@ -1740,7 +1740,7 @@ ISceneNodeAnimator* CSceneManager::createTextureAnimator(const core::array<video
 
 
 //! Creates a scene node animator, which deletes the scene node after
-//! some time automaticly.
+//! some time automatically.
 ISceneNodeAnimator* CSceneManager::createDeleteAnimator(u32 when)
 {
 	return new CSceneNodeAnimatorDelete(this, os::Timer::getTime() + when);
@@ -2065,7 +2065,7 @@ E_SCENE_NODE_RENDER_PASS CSceneManager::getSceneNodeRenderPass() const
 }
 
 
-//! Returns an interface to the mesh cache which is shared beween all existing scene managers.
+//! Returns an interface to the mesh cache which is shared between all existing scene managers.
 IMeshCache* CSceneManager::getMeshCache()
 {
 	return MeshCache;

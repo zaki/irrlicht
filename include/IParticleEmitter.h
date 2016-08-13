@@ -40,13 +40,13 @@ const c8* const ParticleEmitterTypeNames[] =
 };
 
 //! A particle emitter for using with particle systems.
-/** A Particle emitter emitts new particles into a particle system.
+/** A Particle emitter emits new particles into a particle system.
 */
 class IParticleEmitter : public virtual io::IAttributeExchangingObject
 {
 public:
 
-	//! Prepares an array with new particles to emitt into the system
+	//! Prepares an array with new particles to emit into the system
 	/** \param now Current time.
 	\param timeSinceLastCall Time elapsed since last call, in milliseconds.
 	\param outArray Pointer which will point to the array with the new

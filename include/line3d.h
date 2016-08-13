@@ -103,8 +103,8 @@ class line3d
 			return start + v;
 		}
 
-		//! Check if the line intersects with a shpere
-		/** \param sorigin: Origin of the shpere.
+		//! Check if the line intersects with a sphere
+		/** \param sorigin: Origin of the sphere.
 		\param sradius: Radius of the sphere.
 		\param outdistance: The distance to the first intersection point.
 		\return True if there is an intersection.

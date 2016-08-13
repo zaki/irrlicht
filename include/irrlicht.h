@@ -23,7 +23,7 @@
   the Irrlicht Engine in your product, you must acknowledge somewhere in your
   documentation that you've used the IJG code. It would also be nice to mention
   that you use the Irrlicht Engine, the zlib and libPng. See the README files
-  in the jpeglib, the zlib and libPng for further informations.
+  in the jpeglib, the zlib and libPng for further information.
 */
 
 #ifndef __IRRLICHT_H_INCLUDED__
@@ -268,7 +268,7 @@
  * }
  * \endcode
  *
- * Irrlicht can load a lot of file formats automaticly, see irr::scene::ISceneManager::getMesh()
+ * Irrlicht can load a lot of file formats automatically, see irr::scene::ISceneManager::getMesh()
  * for a detailed list. So if you would like to replace the simple blue screen background by
  * a cool Quake 3 Map, optimized by an octree, just insert this code
  * somewhere before the while loop:
@@ -319,7 +319,7 @@ namespace irr
 	\param stencilbuffer: Specifies if the stencil buffer should be enabled. Set this to true,
 	if you want the engine be able to draw stencil buffer shadows. Note that not all
 	devices are able to use the stencil buffer. If they don't no shadows will be drawn.
-	\param vsync: Specifies vertical syncronisation: If set to true, the driver will wait
+	\param vsync: Specifies vertical synchronization: If set to true, the driver will wait
 	for the vertical retrace period, otherwise not.
 	\param receiver: A user created event receiver.
 	\return Returns pointer to the created IrrlichtDevice or null if the
@@ -327,7 +327,7 @@ namespace irr
 	*/
 	extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
 		video::E_DRIVER_TYPE deviceType = video::EDT_SOFTWARE,
-		// parantheses are necessary for some compilers
+		// parentheses are necessary for some compilers
 		const core::dimension2d<u32>& windowSize = (core::dimension2d<u32>(640,480)),
 		u32 bits = 32,
 		bool fullscreen = false,

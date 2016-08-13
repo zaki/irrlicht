@@ -42,7 +42,7 @@ public:
 	/** The shadow can be rendered using the ZPass or the zfail
 	method. ZPass is a little bit faster because the shadow volume
 	creation is easier, but with this method there occur ugly
-	looking artifacs when the camera is inside the shadow volume.
+	looking artifacts when the camera is inside the shadow volume.
 	These error do not occur with the ZFail method.
 	\param shadowMesh: Optional custom mesh for shadow volume.
 	\param id: Id of the shadow scene node. This id can be used to

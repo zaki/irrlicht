@@ -62,7 +62,7 @@ namespace gui
 		virtual void removeItem(u32 index) = 0;
 
 		//! get the the id of the item at the given absolute coordinates
-		/** \return The id of the listitem or -1 when no item is at those coordinates*/
+		/** \return The id of the list item or -1 when no item is at those coordinates*/
 		virtual s32 getItemAt(s32 xpos, s32 ypos) const = 0;
 
 		//! Returns the icon of an item

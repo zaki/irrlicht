@@ -15,7 +15,7 @@ namespace video
 	//! An enum for all types of drivers the Irrlicht Engine supports.
 	enum E_DRIVER_TYPE
 	{
-		//! Null driver, useful for applications to run the engine without visualisation.
+		//! Null driver, useful for applications to run the engine without visualization.
 		/** The null device is able to load textures, but does not
 		render and display any graphics. */
 		EDT_NULL,
@@ -55,8 +55,8 @@ namespace video
 		//! No driver, just for counting the elements
 		EDT_COUNT
 	};
-	
-	const c8* const DRIVER_TYPE_NAMES[] = 
+
+	const c8* const DRIVER_TYPE_NAMES[] =
 	{
 		"NullDriver",
 		"Software Renderer",
@@ -64,10 +64,10 @@ namespace video
 		"Direct3D 8.1",
 		"Direct3D 9.0c",
 		"OpenGL 1.x/2.x/3.x",
-		0 
+		0
 	};
 
-	const c8* const DRIVER_TYPE_NAMES_SHORT[] = 
+	const c8* const DRIVER_TYPE_NAMES_SHORT[] =
 	{
 		"null",
 		"software",
@@ -75,7 +75,7 @@ namespace video
 		"d3d8",
 		"d3d9",
 		"opengl",
-		0 
+		0
 	};
 
 } // end namespace video

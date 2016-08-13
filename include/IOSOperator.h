@@ -11,7 +11,7 @@
 namespace irr
 {
 
-//! The Operating system operator provides operation system specific methods and informations.
+//! The Operating system operator provides operation system specific methods and information.
 class IOSOperator : public virtual IReferenceCounted
 {
 public:

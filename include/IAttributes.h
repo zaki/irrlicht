@@ -37,7 +37,7 @@ namespace io
 {
 	class IXMLWriter;
 
-//! Provides a generic interface for attributes and their values and the possiblity to serialize them
+//! Provides a generic interface for attributes and their values and the possibility to serialize them
 class IAttributes : public virtual IReferenceCounted
 {
 public:
@@ -734,7 +734,7 @@ public:
 
 	*/
 
-	//! Adds an attribute as user pointner
+	//! Adds an attribute as user pointer
 	virtual void addUserPointer(const c8* attributeName, void* userPointer) = 0;
 
 	//! Sets an attribute as user pointer

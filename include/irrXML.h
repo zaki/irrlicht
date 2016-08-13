@@ -22,7 +22,7 @@
   irrXML is intended to be a high speed and easy-to-use XML Parser for C++, and
   this documentation is an important part of it. If you have any questions or
   suggestions, just send a email to the author of the engine, Nikolaus Gebhardt
-  (niko (at) irrlicht3d.org). For more informations about this parser, see \ref history.
+  (niko (at) irrlicht3d.org). For more information about this parser, see \ref history.
 
   \section features Features
 
@@ -46,7 +46,7 @@
 	to use.
 	- It has no external dependencies, it does not even need the STL.
 
-	Although irrXML has some strenghts, it currently also has the following limitations:
+	Although irrXML has some strengths, it currently also has the following limitations:
 
 	- The input xml file is not validated and assumed to be correct.
 
@@ -117,7 +117,7 @@
 
 	\section license License
 
-	The irrXML license is based on the zlib license. Basicly, this means you can do with
+	The irrXML license is based on the zlib license. Basically, this means you can do with
 	irrXML whatever you want:
 
 	Copyright (C) 2002-2012 Nikolaus Gebhardt
@@ -232,7 +232,7 @@ namespace io
 	/** If you need another class as base class for the xml reader, you can do this by creating
 	the reader using for example new CXMLReaderImpl<char, YourBaseClass>(yourcallback);
 	The Irrlicht Engine for example needs IReferenceCounted as base class for every object to
-	let it automaticly reference countend, hence it replaces IXMLBase with IReferenceCounted.
+	let it automatically reference counted, hence it replaces IXMLBase with IReferenceCounted.
 	See irrXML.cpp on how this can be done in detail. */
 	class IXMLBase
 	{
@@ -355,7 +355,7 @@ namespace io
 		/** It is not necessary to use
 		this method because the parser will convert the input file format
 		to the format wanted by the user when creating the parser. This
-		method is useful to get/display additional informations. */
+		method is useful to get/display additional information. */
 		virtual ETEXT_FORMAT getSourceFormat() const = 0;
 
 		//! Returns format of the strings returned by the parser.
@@ -375,7 +375,7 @@ namespace io
 		xmlChar<T>(char in) : c(static_cast<T>(in)) {}
 		xmlChar<T>(wchar_t in) : c(static_cast<T>(in)) {}
 #if defined(__BORLANDC__)
-		// Note - removing explicit for borland was to get it to even compile.
+		// Note - removing explicit for Borland was to get it to even compile.
 		// There haven't been any kind of tests for that besides that.
 		xmlChar<T>(unsigned char in) : c(static_cast<T>(in)) {}
 		xmlChar<T>(unsigned short in) : c(static_cast<T>(in)) {}
@@ -437,7 +437,7 @@ namespace io
 	IFileSystem::createXMLReaderUTF8() instead.
 	\param filename: Name of file to be opened.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReader* IRRCALLCONV createIrrXMLReader(const char* filename);
 
@@ -449,7 +449,7 @@ namespace io
 	\param file: Pointer to opened file, must have been opened in binary mode, e.g.
 	using fopen("foo.bar", "wb"); The file will not be closed after it has been read.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReader* IRRCALLCONV createIrrXMLReader(FILE* file);
 
@@ -462,9 +462,9 @@ namespace io
 	callback to make the xml parser read in other things than just files. See
 	IFileReadCallBack for more information about this.
 	\param deleteCallback: if true, the callback will be deleted after the file
-	has been read.  Otherwise the caller si responsible for cleaning it up.
+	has been read.  Otherwise the caller is responsible for cleaning it up.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReader* IRRCALLCONV createIrrXMLReader(IFileReadCallBack* callback,
 																bool deleteCallback = false);
@@ -477,7 +477,7 @@ namespace io
 	IFileSystem::createXMLReader() instead.
 	\param filename: Name of file to be opened.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReaderUTF16* IRRCALLCONV createIrrXMLReaderUTF16(const char* filename);
 
@@ -489,7 +489,7 @@ namespace io
 	\param file: Pointer to opened file, must have been opened in binary mode, e.g.
 	using fopen("foo.bar", "wb"); The file will not be closed after it has been read.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReaderUTF16* IRRCALLCONV createIrrXMLReaderUTF16(FILE* file);
 
@@ -502,9 +502,9 @@ namespace io
 	callback to make the xml parser read in other things than just files. See
 	IFileReadCallBack for more information about this.
 	\param deleteCallback: if true, the callback will be deleted after the file
-	has been read.  Otherwise the caller si responsible for cleaning it up.
+	has been read.  Otherwise the caller is responsible for cleaning it up.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReaderUTF16* IRRCALLCONV createIrrXMLReaderUTF16(IFileReadCallBack* callback,
 																		bool deleteCallback = false);
@@ -517,7 +517,7 @@ namespace io
 	IFileSystem::createXMLReader() instead.
 	\param filename: Name of file to be opened.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(const char* filename);
 
@@ -529,7 +529,7 @@ namespace io
 	\param file: Pointer to opened file, must have been opened in binary mode, e.g.
 	using fopen("foo.bar", "wb"); The file will not be closed after it has been read.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(FILE* file);
 
@@ -543,9 +543,9 @@ namespace io
 	callback to make the xml parser read in other things than just files. See
 	IFileReadCallBack for more information about this.
 	\param deleteCallback: if true, the callback will be deleted after the file
-	has been read.  Otherwise the caller si responsible for cleaning it up.
+	has been read.  Otherwise the caller is responsible for cleaning it up.
 	\return Returns a pointer to the created xml parser. This pointer should be
-	deleted using 'delete' after no longer needed. Returns 0 if an error occured
+	deleted using 'delete' after no longer needed. Returns 0 if an error occurred
 	and the file could not be opened. */
 	IRRLICHT_API IrrXMLReaderUTF32* IRRCALLCONV createIrrXMLReaderUTF32(IFileReadCallBack* callback,
 																		bool deleteCallback = false);

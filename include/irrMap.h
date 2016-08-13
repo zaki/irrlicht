@@ -123,7 +123,7 @@ class map
 	public:
 
 	typedef RBTree<KeyType,ValueType> Node;
-	// We need the forwad declaration for the friend declaration
+	// We need the forward declaration for the friend declaration
 	class ConstIterator;
 
 	//! Normal Iterator
@@ -227,9 +227,9 @@ class map
 			else
 			{
 				// Current node neither is left child nor has a right child.
-				// Ie it is either right child or root
+				// I.e. it is either right child or root
 				// The next higher node is the parent of the first non-right
-				// child (ie either a left child or the root) up in the
+				// child (i.e. either a left child or the root) up in the
 				// hierarchy. Root's parent is 0.
 				while(Cur->isRightChild())
 					Cur = Cur->getParent();
@@ -258,9 +258,9 @@ class map
 			else
 			{
 				// Current node neither is right child nor has a left child.
-				// Ie it is either left child or root
+				// It is either left child or root
 				// The next higher node is the parent of the first non-left
-				// child (ie either a right child or the root) up in the
+				// child (i.e. either a right child or the root) up in the
 				// hierarchy. Root's parent is 0.
 
 				while(Cur->isLeftChild())
@@ -375,9 +375,9 @@ class map
 			else
 			{
 				// Current node neither is left child nor has a right child.
-				// Ie it is either right child or root
+				// It is either right child or root
 				// The next higher node is the parent of the first non-right
-				// child (ie either a left child or the root) up in the
+				// child (i.e. either a left child or the root) up in the
 				// hierarchy. Root's parent is 0.
 				while(Cur->isRightChild())
 					Cur = Cur->getParent();
@@ -406,9 +406,9 @@ class map
 			else
 			{
 				// Current node neither is right child nor has a left child.
-				// Ie it is either left child or root
+				// It is either left child or root
 				// The next higher node is the parent of the first non-left
-				// child (ie either a right child or the root) up in the
+				// child (i.e. either a right child or the root) up in the
 				// hierarchy. Root's parent is 0.
 
 				while(Cur->isLeftChild())
@@ -497,7 +497,7 @@ class map
 		}
 		else
 		{
-			// No children? Move up in the hierarcy until
+			// No children? Move up in the hierarchy until
 			// we either reach 0 (and are finished) or
 			// find a right uncle.
 			while (Cur!=0)

@@ -287,7 +287,7 @@ namespace scene
 	{
 	public:
 
-		//! tune how many frames you want to render inbetween.
+		//! tune how many frames you want to render in between.
 		virtual void setInterpolationShift(u32 shift, u32 loopMode) =0;
 
 		//! get the tag list of the mesh.
