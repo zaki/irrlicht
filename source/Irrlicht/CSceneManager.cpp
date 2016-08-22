@@ -179,6 +179,8 @@
 
 #include "CGeometryCreator.h"
 
+#include <clocale>
+
 namespace irr
 {
 namespace scene
@@ -2203,8 +2205,13 @@ bool CSceneManager::saveScene(io::IXMLWriter* writer, const io::path& currentPat
 	if (!node)
 		node=this;
 
+	char* oldLocale = setlocale(LC_NUMERIC, NULL);
+	setlocale(LC_NUMERIC, "C");	// float number should to be saved with dots in this format independent of current locale settings.
+
 	writer->writeXMLHeader();
 	writeSceneNode(writer, node, userDataSerializer, currentPath.c_str(), true);
+
+	setlocale(LC_NUMERIC, oldLocale);
 
 	return true;
 }
