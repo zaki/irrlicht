@@ -383,10 +383,10 @@ void CGUIFileOpenDialog::deserializeAttributes(io::IAttributes* in, io::SAttribu
 void CGUIFileOpenDialog::pathToStringW(irr::core::stringw& result, const irr::io::path& p)
 {
 #ifndef _IRR_WCHAR_FILESYSTEM
-	char* oldLocale = setlocale(LC_ALL, NULL);
-	setlocale(LC_ALL,"");	// multibyteToWString is affected by LC_CTYPE. Filenames seem to need the system-locale.
+	char* oldLocale = setlocale(LC_CTYPE, NULL);
+	setlocale(LC_CTYPE,"");	// multibyteToWString is affected by LC_CTYPE. Filenames seem to need the system-locale.
 	core::multibyteToWString(result, p);
-	setlocale(LC_ALL, oldLocale);
+	setlocale(LC_CTYPE, oldLocale);
 #else
 	result = p.c_str();
 #endif
