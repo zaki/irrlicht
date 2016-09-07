@@ -411,7 +411,7 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 	Buffer = new c8[size];
 
 	//! read all into memory
-	if (file->read(Buffer, size) != size)
+	if (file->read(Buffer, size) != static_cast<size_t>(size))
 	{
 		os::Printer::log("Could not read from x file.", ELL_WARNING);
 		return false;

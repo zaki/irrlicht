@@ -75,20 +75,20 @@ long CMemoryReadWriteFile::getSize() const
 }
 
 
-s32 CMemoryReadWriteFile::read(void* buffer, u32 sizeToRead)
+size_t CMemoryReadWriteFile::read(void* buffer, size_t sizeToRead)
 {
 	// cant read past the end
-	if (Pos + sizeToRead >= Data.size())
-		sizeToRead = Data.size() - Pos;
+	if ((size_t)Pos + sizeToRead >= Data.size())
+		sizeToRead = Data.size() - (size_t)Pos;
 
 	// cant read 0 bytes
 	if (!sizeToRead)
 		return 0;
 
 	// copy data
-	memcpy( buffer, (void*) &Data[Pos], (size_t) sizeToRead);
+	memcpy( buffer, (void*) &Data[Pos], sizeToRead);
 
-	Pos += sizeToRead;
+	Pos += (long)sizeToRead;
 
 	return sizeToRead;
 }

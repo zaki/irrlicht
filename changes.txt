@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- IReadFile::read now returning size_t (like fread in c-lib). Also sizeToRead parameter changed from u32 to size_t.
 - add clear function to strings.
 - Collision manager now using const camera pointers.
 - Several fixes for SceneNodeAnimatorCollisionResponse, based on http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=33098&p=290746
