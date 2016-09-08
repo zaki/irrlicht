@@ -105,7 +105,7 @@ bool CImageWriterBMP::writeImage(io::IWriteFile* file, IImage* image, u32 param)
 	u32 row_stride = (pixel_size * imageHeader.Width);
 
 	// length of one row in bytes, rounded up to nearest 4-byte boundary
-	s32 row_size = ((3 * imageHeader.Width) + 3) & ~3;
+	size_t row_size = ((3 * imageHeader.Width) + 3) & ~3;
 
 	// allocate and clear memory for our scan line
 	u8* row_pointer = new u8[row_size];

@@ -97,7 +97,7 @@ bool writeImageToFile(void)
 		goto cleanup;
 	}
 
-	if (memoryFile->getPos() != writtenFile->write(buffer, memoryFile->getPos()))
+	if ((size_t)memoryFile->getPos() != writtenFile->write(buffer, (size_t)memoryFile->getPos()))
 	{
 		logTestString("Error while writing to %s.\n", writtenFilename);
 		assert_log(false);

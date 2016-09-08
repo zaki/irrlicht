@@ -13,7 +13,7 @@ CMemoryReadWriteFile::CMemoryReadWriteFile(const c8* filename)
 }
 
 
-s32 CMemoryReadWriteFile::write(const void* buffer, u32 sizeToWrite)
+size_t CMemoryReadWriteFile::write(const void* buffer, size_t sizeToWrite)
 {
 	// no point in writing 0 bytes
 	if (sizeToWrite < 1)
@@ -24,7 +24,7 @@ s32 CMemoryReadWriteFile::write(const void* buffer, u32 sizeToWrite)
 		Data.set_used(Pos+sizeToWrite);
 
 	// copy data
-	memcpy( (void*) &Data[Pos], buffer, (size_t) sizeToWrite);
+	memcpy( (void*) &Data[Pos], buffer, sizeToWrite);
 
 	Pos += sizeToWrite;
 

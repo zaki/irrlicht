@@ -50,16 +50,22 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 		size = snprintf_irr(cache, 70, "P6\n");
 	else
 		size = snprintf_irr(cache, 70, "P3\n");
+	if ( size < 0 )
+		return false;
 
-	if (file->write(cache, size) != size)
+	if (file->write(cache, (size_t)size) != (size_t)size)
 		return false;
 
 	size = snprintf_irr(cache, 70, "%u %u\n", imageSize.Width, imageSize.Height);
-	if (file->write(cache, size) != size)
+	if ( size < 0 )
+		return false;
+	if (file->write(cache, (size_t)size) != (size_t)size)
 		return false;
 
 	size = snprintf_irr(cache, 70, "255\n");
-	if (file->write(cache, size) != size)
+	if ( size < 0 )
+		return false;
+	if (file->write(cache, (size_t)size) != (size_t)size)
 		return false;
 
 	if (binary)
@@ -88,7 +94,9 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 			{
 				const video::SColor& pixel = image->getPixel(c, h);
 				size = snprintf_irr(cache, 70, "%.3u %.3u %.3u%s", pixel.getRed(), pixel.getGreen(), pixel.getBlue(), n % 5 == 4 ? "\n" : "  ");
-				if (file->write(cache, size) != size)
+				if ( size < 0 )
+					return false;
+				if (file->write(cache, (size_t)size) != (size_t)size)
 					return false;
 			}
 		}
