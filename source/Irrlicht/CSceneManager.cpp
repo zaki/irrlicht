@@ -179,7 +179,7 @@
 
 #include "CGeometryCreator.h"
 
-#include <clocale>
+#include <locale.h>
 
 namespace irr
 {
