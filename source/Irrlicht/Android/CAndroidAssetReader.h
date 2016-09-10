@@ -33,7 +33,7 @@ namespace io
 		/** \param buffer Pointer to buffer where read bytes are written to.
 		\param sizeToRead Amount of bytes to read from the file.
 		\return How many bytes were read. */
-		virtual s32 read(void* buffer, u32 sizeToRead);
+		virtual size_t read(void* buffer, size_t sizeToRead);
 
 		//! Changes position in file
 		/** \param finalPos Destination position in the file.

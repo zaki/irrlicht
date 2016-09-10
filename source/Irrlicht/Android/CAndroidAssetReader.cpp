@@ -36,9 +36,12 @@ CAndroidAssetReader::~CAndroidAssetReader()
 		AAsset_close(Asset);
 }
 
-s32 CAndroidAssetReader::read(void* buffer, u32 sizeToRead)
+size_t CAndroidAssetReader::read(void* buffer, size_t sizeToRead)
 {
-	return AAsset_read(Asset, buffer, sizeToRead);
+	int readBytes = AAsset_read(Asset, buffer, sizeToRead);
+	if ( readBytes >= 0 )
+		return size_t(readBytes);
+	return 0;	// direct fd access is not possible (for example, if the asset is compressed). 
 }
       
 bool CAndroidAssetReader::seek(long finalPos, bool relativeMovement)
