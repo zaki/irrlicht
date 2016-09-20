@@ -33,7 +33,7 @@ namespace io
 		//! Reads an amount of bytes from the file.
 		virtual int read(void* buffer, int sizeToRead)
 		{
-			return ReadFile->read(buffer, sizeToRead);
+			return (int)ReadFile->read(buffer, sizeToRead);
 		}
 
 		//! Returns size of file in bytes

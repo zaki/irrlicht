@@ -469,7 +469,7 @@ void CPLYMeshFileLoader::fillBuffer()
 	if (EndOfFile)
 		return;
 
-	u32 length = (u32)(EndPointer - StartPointer);
+	size_t length = (size_t)(EndPointer - StartPointer);
 	if (length && StartPointer != Buffer)
 	{
 		// copy the remaining data to the start of the buffer
@@ -486,7 +486,7 @@ void CPLYMeshFileLoader::fillBuffer()
 	else
 	{
 		// read data from the file
-		u32 count = File->read(EndPointer, PLY_INPUT_BUFFER_SIZE - length);
+		size_t count = File->read(EndPointer, PLY_INPUT_BUFFER_SIZE - length);
 
 		// increment the end pointer by the number of bytes read
 		EndPointer = EndPointer + count;
