@@ -165,8 +165,7 @@ namespace video
 				return true;
 			else
 				different |= (TextureMatrix != b.TextureMatrix) &&
-					TextureMatrix && b.TextureMatrix &&
-					(*TextureMatrix != *(b.TextureMatrix));
+					(!TextureMatrix || !b.TextureMatrix || (*TextureMatrix != *(b.TextureMatrix)));
 			return different;
 		}
 
