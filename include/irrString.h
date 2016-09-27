@@ -1332,23 +1332,18 @@ public:
 
 		const u32 oldSize=ret.size();
 		u32 lastpos = 0;
-		bool lastWasSeparator = false;
 		for (u32 i=0; i<used; ++i)
 		{
-			bool foundSeparator = false;
 			for (u32 j=0; j<count; ++j)
 			{
 				if (array[i] == c[j])
 				{
-					if ((!ignoreEmptyTokens || i - lastpos != 0) &&
-							!lastWasSeparator)
+					if ((!ignoreEmptyTokens || i - lastpos != 0) )
 						ret.push_back(string<T,TAlloc>(&array[lastpos], i - lastpos));
-					foundSeparator = true;
 					lastpos = (keepSeparators ? i : i + 1);
 					break;
 				}
 			}
-			lastWasSeparator = foundSeparator;
 		}
 		if ((used - 1) > lastpos)
 			ret.push_back(string<T,TAlloc>(&array[lastpos], (used - 1) - lastpos));
