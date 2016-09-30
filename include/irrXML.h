@@ -316,27 +316,31 @@ namespace io
 
 		//! Returns the value of an attribute as integer.
 		/** \param name Name of the attribute.
-		\return Value of the attribute as integer, and 0 if an attribute with this name does not exist or
-		the value could not be interpreted as integer. */
-		virtual int getAttributeValueAsInt(const char_type* name) const = 0;
+		\param defaultNotFound Value returned when name does not exist
+		\return Value of the attribute as integer or value of defaultNotFound 
+		when name was not found or 0 when value could not be interpreted as integer */
+		virtual int getAttributeValueAsInt(const char_type* name, int defaultNotFound=0) const = 0;
 
 		//! Returns the value of an attribute as integer.
 		/** \param idx: Zero based index, should be something between 0 and getAttributeCount()-1.
-		\return Value of the attribute as integer, and 0 if an attribute with this index does not exist or
-		the value could not be interpreted as integer. */
-		virtual int getAttributeValueAsInt(int idx) const = 0;
+		\param defaultNotFound Value returned when index does not exist.
+		\return Value of the attribute as integer or value of defaultNotFound parameter for invalid index
+		or 0 when value could not be interpreted as integer */
+		virtual int getAttributeValueAsInt(int idx, int defaultNotFound=0) const = 0;
 
 		//! Returns the value of an attribute as float.
 		/** \param name: Name of the attribute.
-		\return Value of the attribute as float, and 0 if an attribute with this name does not exist or
-		the value could not be interpreted as float. */
-		virtual float getAttributeValueAsFloat(const char_type* name) const = 0;
+		\param defaultNotFound Value returned when name does not exist.
+		\return Value of the attribute as float or value of defaultNotFound parameter on failure 
+		or 0 when value could not be interpreted as float. */
+		virtual float getAttributeValueAsFloat(const char_type* name, float defaultNotFound=0.f) const = 0;
 
 		//! Returns the value of an attribute as float.
 		/** \param idx: Zero based index, should be something between 0 and getAttributeCount()-1.
-		\return Value of the attribute as float, and 0 if an attribute with this index does not exist or
-		the value could not be interpreted as float. */
-		virtual float getAttributeValueAsFloat(int idx) const = 0;
+		\param defaultNotFound Value returned when index does not exist.
+		\return Value of the attribute as float or value of defaultNotFound parameter on failure 
+		or 0 when value could not be interpreted as float. */
+		virtual float getAttributeValueAsFloat(int idx, float defaultNotFound=0.f) const = 0;
 
 		//! Returns the name of the current node.
 		/** Only valid, if the node type is EXN_ELEMENT.

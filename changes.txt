@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- IIrrXMLReader::getAttributeValueAsInt and  IIrrXMLReader::getAttributeValueAsFloat can now return a custom default-value when the attribute is not found.
 - core::string::split now handles ignoreEmptyTokens=false correct. Thanks @manni63 for bugreport: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=51551&p=299375#p299375
 - Bugfix: Previously when some material had a texture matrix and another didn't those materials were still considered identical. Which had prevented correct switching between materials with and without texture matrices.
 - IWriteFile::write now returning size_t (like fwrite in c-lib). Also sizeToWrite parameter changed from u32 to size_t.
