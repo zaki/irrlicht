@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Bugfix: SMesh::recalculateBoundingBox() does now ignore empty boundingboxes of meshbuffers instead of adding them.
 - IIrrXMLReader::getAttributeValueAsInt and  IIrrXMLReader::getAttributeValueAsFloat can now return a custom default-value when the attribute is not found.
 - core::string::split now handles ignoreEmptyTokens=false correct. Thanks @manni63 for bugreport: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=51551&p=299375#p299375
 - Bugfix: Previously when some material had a texture matrix and another didn't those materials were still considered identical. Which had prevented correct switching between materials with and without texture matrices.
