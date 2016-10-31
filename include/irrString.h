@@ -1306,14 +1306,14 @@ public:
 		return used > 1 ? array[used-2] : 0;
 	}
 
-	//! split string into parts.
+	//! Split string into parts (tokens).
 	/** This method will split a string at certain delimiter characters
 	into the container passed in as reference. The type of the container
 	has to be given as template parameter. It must provide a push_back and
 	a size method.
-	\param ret The result container
-	\param c C-style string of delimiter characters
-	\param count Number of delimiter characters
+	\param ret The result container. Tokens are added, the container is not cleared.
+	\param delimiter C-style string of delimiter characters
+	\param countDelimiters Number of delimiter characters
 	\param ignoreEmptyTokens Flag to avoid empty substrings in the result
 	container. If two delimiters occur without a character in between, an
 	empty substring would be placed in the result. If this flag is set,
@@ -1325,28 +1325,39 @@ public:
 	\return The number of resulting substrings
 	*/
 	template<class container>
-	u32 split(container& ret, const T* const c, u32 count=1, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
+	u32 split(container& ret, const T* const delimiter, u32 countDelimiters=1, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
 	{
-		if (!c)
+		if (!delimiter)
 			return 0;
 
 		const u32 oldSize=ret.size();
-		u32 lastpos = 0;
+		
+		u32 tokenStartIdx = 0;
 		for (u32 i=0; i<used; ++i)
 		{
-			for (u32 j=0; j<count; ++j)
+			for (u32 j=0; j<countDelimiters; ++j)
 			{
-				if (array[i] == c[j])
+				if (array[i] == delimiter[j])
 				{
-					if ((!ignoreEmptyTokens || i - lastpos != 0) )
-						ret.push_back(string<T,TAlloc>(&array[lastpos], i - lastpos));
-					lastpos = (keepSeparators ? i : i + 1);
+					if ( keepSeparators )
+					{
+						ret.push_back(string<T,TAlloc>(&array[tokenStartIdx], i+1 - tokenStartIdx));
+					}
+					else
+					{
+						if (i - tokenStartIdx > 0)
+							ret.push_back(string<T,TAlloc>(&array[tokenStartIdx], i - tokenStartIdx));
+						else if ( !ignoreEmptyTokens )
+							ret.push_back(string<T,TAlloc>());
+					}
+					tokenStartIdx = i+1;					
 					break;
 				}
 			}
 		}
-		if ((used - 1) > lastpos)
-			ret.push_back(string<T,TAlloc>(&array[lastpos], (used - 1) - lastpos));
+		if ((used - 1) > tokenStartIdx)
+			ret.push_back(string<T,TAlloc>(&array[tokenStartIdx], (used - 1) - tokenStartIdx));
+		
 		return ret.size()-oldSize;
 	}
 
