@@ -345,6 +345,9 @@ namespace scene
 		//! Creates a simple ITriangleSelector, based on a mesh.
 		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node, bool separateMeshbuffers) _IRR_OVERRIDE_;
 
+		//! Creates a simple ITriangleSelector, based on a meshbuffer.
+		virtual ITriangleSelector* createTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node) _IRR_OVERRIDE_;
+
 		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
 		//! Details of the mesh associated with the node will be extracted internally.
 		//! Call ITriangleSelector::update() to have the triangle selector updated based

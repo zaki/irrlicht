@@ -56,7 +56,7 @@ struct SCollisionTriangleRange
 
 	//! Meshbuffer from which the triangles are from
 	//! Is 0 when the ITriangleSelector doesn't support meshbuffer selection
-	IMeshBuffer* MeshBuffer;
+	const IMeshBuffer* MeshBuffer;
 
 	//! Index of selected material in the SceneNode. Usually only valid when MeshBuffer is also set, otherwise always 0
 	irr::u32 MaterialIndex;

@@ -29,6 +29,9 @@ public:
 	//! Constructs a selector based on a mesh
 	CTriangleSelector(const IMesh* mesh, ISceneNode* node, bool separateMeshbuffers);
 
+	//! Constructs a selector based on a meshbuffer
+	CTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node);
+
 	//! Constructs a selector based on an animated mesh scene node
 	//!\param node An animated mesh scene node, which must have a valid mesh
 	CTriangleSelector(IAnimatedMeshSceneNode* node, bool separateMeshbuffers);
@@ -71,8 +74,17 @@ protected:
 	//! Create from a mesh
 	virtual void createFromMesh(const IMesh* mesh, bool createBufferRanges);
 
+	//! Create from a meshbuffer
+	virtual void createFromMeshBuffer(const IMeshBuffer* meshBuffer);
+
 	//! Update when the mesh has changed
 	virtual void updateFromMesh(const IMesh* mesh) const;
+
+	//! Update when the meshbuffer has changed
+	virtual void updateFromMeshBuffer(const IMeshBuffer* meshBuffer) const;
+
+	//! Update bounding box from triangles
+	void updateBoundingBox() const;
 
 	//! Update the triangle selector, which will only have an effect if it
 	//! was built from an animated mesh and that mesh's frame has changed
@@ -85,6 +97,8 @@ protected:
 	mutable core::array<core::triangle3df> Triangles; // (mutable for CTriangleBBSelector)
 	mutable core::aabbox3df BoundingBox; // Allows for trivial rejection
 
+	const IMeshBuffer* MeshBuffer;	// non-zero when the selector is for a single meshbuffer
+	irr::u32 MaterialIndex;		// Only set when MeshBuffer is non-zero
 	IAnimatedMeshSceneNode* AnimatedNode;
 	mutable u32 LastMeshFrame;
 };

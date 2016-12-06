@@ -1271,13 +1271,22 @@ namespace scene
 		s->drop();
 		\endcode
 		\param mesh: Mesh of which the triangles are taken.
-		\param node: Scene node of which visibility and transformation is used.
+		\param node: Scene node of which transformation is used.
 		\param separateMeshbuffers: When true it's possible to get information which meshbuffer 
 		got hit in collision tests. But has a slight speed cost.
 		\return The selector, or null if not successful.
 		If you no longer need the selector, you should call ITriangleSelector::drop().
 		See IReferenceCounted::drop() for more information. */
 		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node, bool separateMeshbuffers=false) = 0;
+
+		//! Creates a simple ITriangleSelector, based on a meshbuffer.
+		/**
+		This is a static selector which won't update when the mesh changes.
+		\param meshBuffer Triangles of that meshbuffer are used
+		\param materialIndex If you pass a material index that index can be returned by the triangle selector.
+		\para node: Scene node of which transformation is used.
+		*/
+		virtual ITriangleSelector* createTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node) = 0;
 
 		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
 		/** Details of the mesh associated with the node will be extracted internally.

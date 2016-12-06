@@ -36,7 +36,7 @@ namespace scene
 		ISceneNode* Node;
 
 		//! Meshbuffer which contained the triangle (is 0 when the selector doesn't have that information, only works when selectors are created per meshbuffer)
-		IMeshBuffer* MeshBuffer;
+		const IMeshBuffer* MeshBuffer;
 
 		//! Index of selected material of the triangle in the SceneNode. Usually only valid when MeshBuffer is also set, otherwise always 0
 		irr::u32 MaterialIndex;

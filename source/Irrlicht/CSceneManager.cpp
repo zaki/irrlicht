@@ -1855,6 +1855,13 @@ ITriangleSelector* CSceneManager::createTriangleSelector(IMesh* mesh, ISceneNode
 	return new CTriangleSelector(mesh, node, separateMeshbuffers);
 }
 
+ITriangleSelector* CSceneManager::createTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node)
+{
+	if ( !meshBuffer)
+		return 0;
+	return new  CTriangleSelector(meshBuffer, materialIndex, node);
+}
+
 
 //! Creates a ITriangleSelector, based on a the mesh owned by an animated scene node
 ITriangleSelector* CSceneManager::createTriangleSelector(IAnimatedMeshSceneNode* node, bool separateMeshbuffers)

@@ -15,7 +15,7 @@ namespace scene
 
 //! constructor
 CTriangleSelector::CTriangleSelector(ISceneNode* node)
-: SceneNode(node), AnimatedNode(0), LastMeshFrame(0)
+: SceneNode(node), MeshBuffer(0), MaterialIndex(0), AnimatedNode(0), LastMeshFrame(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CTriangleSelector");
@@ -27,7 +27,7 @@ CTriangleSelector::CTriangleSelector(ISceneNode* node)
 
 //! constructor
 CTriangleSelector::CTriangleSelector(const core::aabbox3d<f32>& box, ISceneNode* node)
-: SceneNode(node), AnimatedNode(0), LastMeshFrame(0)
+: SceneNode(node), MeshBuffer(0), MaterialIndex(0), AnimatedNode(0), LastMeshFrame(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CTriangleSelector");
@@ -40,7 +40,7 @@ CTriangleSelector::CTriangleSelector(const core::aabbox3d<f32>& box, ISceneNode*
 
 //! constructor
 CTriangleSelector::CTriangleSelector(const IMesh* mesh, ISceneNode* node, bool separateMeshbuffers)
-: SceneNode(node), AnimatedNode(0), LastMeshFrame(0)
+: SceneNode(node), MeshBuffer(0), MaterialIndex(0), AnimatedNode(0), LastMeshFrame(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CTriangleSelector");
@@ -49,6 +49,15 @@ CTriangleSelector::CTriangleSelector(const IMesh* mesh, ISceneNode* node, bool s
 	createFromMesh(mesh, separateMeshbuffers);
 }
 
+CTriangleSelector::CTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node)
+	: SceneNode(node), MeshBuffer(meshBuffer), MaterialIndex(materialIndex), AnimatedNode(0), LastMeshFrame(0)
+{
+	#ifdef _DEBUG
+	setDebugName("CTriangleSelector");
+	#endif
+
+	createFromMeshBuffer(meshBuffer);
+}
 
 CTriangleSelector::CTriangleSelector(IAnimatedMeshSceneNode* node, bool separateMeshbuffers)
 : SceneNode(node), AnimatedNode(node), LastMeshFrame(0)
@@ -98,6 +107,19 @@ void CTriangleSelector::createFromMesh(const IMesh* mesh, bool createBufferRange
 	Triangles.set_used(totalFaceCount);
 
 	updateFromMesh(mesh);
+}
+
+void CTriangleSelector::createFromMeshBuffer(const IMeshBuffer* meshBuffer)
+{
+	BufferRanges.clear();
+	Triangles.clear();
+
+	if ( meshBuffer )
+	{
+		Triangles.set_used(meshBuffer->getIndexCount() / 3);
+	}
+
+	updateFromMeshBuffer(meshBuffer);
 }
 
 template <typename TIndex>
@@ -167,10 +189,41 @@ void CTriangleSelector::updateFromMesh(const IMesh* mesh) const
 	}
 
 	// Update bounding box
-	if ( triangleCount )
+	updateBoundingBox();
+}
+
+void CTriangleSelector::updateFromMeshBuffer(const IMeshBuffer* meshBuffer) const
+{
+	if ( !meshBuffer )
+		return;
+
+	u32 idxCnt = meshBuffer->getIndexCount();
+	u32 vertexPitch = getVertexPitchFromType(meshBuffer->getVertexType());
+	u8* vertices = (u8*)meshBuffer->getVertices();
+	u32 triangleCount = 0;
+	switch ( meshBuffer->getIndexType() )
+	{
+		case video::EIT_16BIT:
+		{
+			const u16* indices = meshBuffer->getIndices();
+			updateTriangles(triangleCount, Triangles, idxCnt, indices, vertices, vertexPitch, 0);
+		}
+		break;
+		case video::EIT_32BIT:
+		{
+			const u32* indices = (u32*)meshBuffer->getIndices();
+			updateTriangles(triangleCount, Triangles, idxCnt, indices, vertices, vertexPitch, 0);
+		}
+		break;
+	}
+}
+
+void CTriangleSelector::updateBoundingBox() const
+{
+	if ( !Triangles.empty() )
 	{
 		BoundingBox.reset( Triangles[0].pointA );
-		for (u32 i=0; i < triangleCount; ++i)
+		for (u32 i=0; i < Triangles.size(); ++i)
 		{
 			const core::triangle3df& tri = Triangles[i];
 			BoundingBox.addInternalPoint(tri.pointA);
@@ -183,7 +236,6 @@ void CTriangleSelector::updateFromMesh(const IMesh* mesh) const
 		BoundingBox.reset(0.f, 0.f, 0.f);
 	}
 }
-
 
 void CTriangleSelector::update(void) const
 {
@@ -243,6 +295,8 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 			triRange.RangeSize = cnt;
 			triRange.Selector = const_cast<CTriangleSelector*>(this);
 			triRange.SceneNode = SceneNode;
+			triRange.MeshBuffer = MeshBuffer;
+			triRange.MaterialIndex = MaterialIndex;
 			outTriangleInfo->push_back(triRange);
 		}
 		else
@@ -381,6 +435,8 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 			triRange.RangeSize = triangleCount;
 			triRange.Selector = const_cast<CTriangleSelector*>(this);
 			triRange.SceneNode = SceneNode;
+			triRange.MeshBuffer = MeshBuffer;
+			triRange.MaterialIndex = MaterialIndex;
 			outTriangleInfo->push_back(triRange);
 		}
 	}
