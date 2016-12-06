@@ -41,11 +41,9 @@ namespace scene
 		virtual ISceneNode* getSceneNodeFromCameraBB(const ICameraSceneNode* camera,
 				s32 idBitMask=0, bool bNoDebugObjects = false) _IRR_OVERRIDE_;
 
-		//! Finds the collision point of a line and lots of triangles, if there is one.
-		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
-			ITriangleSelector* selector, core::vector3df& outCollisionPoint,
-			core::triangle3df& outTriangle,
-			ISceneNode* & outNode) _IRR_OVERRIDE_;
+		//! Finds the nearest collision point of a line and lots of triangles, if there is one.
+		virtual bool getCollisionPoint(SCollisionHit& hitResult, const core::line3d<f32>& ray,
+				ITriangleSelector* selector)  _IRR_OVERRIDE_;
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns
 		//! the resulting new position of the ellipsoid.
@@ -72,13 +70,11 @@ namespace scene
 		//! Gets the scene node and nearest collision point for a ray based on
 		//! the nodes' id bitmasks, bounding boxes and triangle selectors.
 		virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(
+								SCollisionHit& hitResult, 
 								const core::line3df& ray,
-								core::vector3df& outCollisionPoint,
-								core::triangle3df& outTriangle,
 								s32 idBitMask = 0,
 								ISceneNode * collisionRootNode = 0,
-								bool noDebugObjects = false) _IRR_OVERRIDE_;
-
+								bool noDebugObjects = false)  _IRR_OVERRIDE_;
 
 	private:
 
@@ -88,14 +84,13 @@ namespace scene
 					f32& outbestdistance, ISceneNode*& outbestnode);
 
 		//! recursive method for going through all scene nodes
-		void getPickedNodeFromBBAndSelector(ISceneNode * root,
+		void getPickedNodeFromBBAndSelector(
+						SCollisionHit& hitResult,
+						ISceneNode * root,
 						core::line3df & ray,
 						s32 bits,
 						bool noDebugObjects,
-						f32 & outBestDistanceSquared,
-						ISceneNode * & outBestNode,
-						core::vector3df & outBestCollisionPoint,
-						core::triangle3df & outBestTriangle);
+						f32 & outBestDistanceSquared);
 
 
 		struct SCollisionData
@@ -114,7 +109,7 @@ namespace scene
 			core::vector3df intersectionPoint;
 
 			core::triangle3df intersectionTriangle;
-			s32 triangleIndex;
+			irr::scene::ISceneNode* node;
 			s32 triangleHits;
 
 			f32 slidingSpeed;

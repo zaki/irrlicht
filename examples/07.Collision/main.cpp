@@ -36,6 +36,13 @@ enum
 	IDFlag_IsHighlightable = 1 << 1
 };
 
+/*
+	Some triangle selectors allow to get collisions either per mesh or per meshbuffer.
+	Getting them per mesh can be faster. But if you need information about the hit 
+	material you have to get the meshbuffer information as well.
+*/
+const bool separateMeshBuffers = true;
+
 int main()
 {
 	// ask user for driver
@@ -183,7 +190,7 @@ int main()
 
 	// Now create a triangle selector for it.  The selector will know that it
 	// is associated with an animated node, and will update itself as necessary.
-	selector = smgr->createTriangleSelector(node);
+	selector = smgr->createTriangleSelector(node, separateMeshBuffers);
 	node->setTriangleSelector(selector);
 	selector->drop(); // We're done with this selector, so drop it now.
 
@@ -197,7 +204,7 @@ int main()
 	node->getMaterial(0).NormalizeNormals = true;
 	node->getMaterial(0).Lighting = true;
 	// Just do the same as we did above.
-	selector = smgr->createTriangleSelector(node);
+	selector = smgr->createTriangleSelector(node, separateMeshBuffers);
 	node->setTriangleSelector(selector);
 	selector->drop();
 
@@ -208,10 +215,9 @@ int main()
 	node->setRotation(core::vector3df(0,-90,0)); // And turn it towards the camera.
 	node->setAnimationSpeed(20.f);
 	node->getMaterial(0).Lighting = true;
-	selector = smgr->createTriangleSelector(node);
+	selector = smgr->createTriangleSelector(node, separateMeshBuffers);
 	node->setTriangleSelector(selector);
 	selector->drop();
-
 
 	// And this mdl file uses skinned skeletal animation.
 	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh(mediaPath + "yodan.mdl"),
@@ -222,7 +228,7 @@ int main()
 	node->setAnimationSpeed(20.f);
 
 	// Just do the same as we did above.
-	selector = smgr->createTriangleSelector(node);
+	selector = smgr->createTriangleSelector(node, separateMeshBuffers);
 	node->setTriangleSelector(selector);
 	selector->drop();
 
@@ -237,7 +243,6 @@ int main()
 	// Remember which scene node is highlighted
 	scene::ISceneNode* highlightedSceneNode = 0;
 	scene::ISceneCollisionManager* collMan = smgr->getSceneCollisionManager();
-	int lastFPS = -1;
 
 	// draw the selection triangle only as wireframe
 	material.Wireframe=true;
@@ -263,10 +268,6 @@ int main()
 		ray.start = camera->getPosition();
 		ray.end = ray.start + (camera->getTarget() - ray.start).normalize() * 1000.0f;
 
-		// Tracks the current intersection point with the level or a mesh
-		core::vector3df intersection;
-		// Used to show with triangle has been hit
-		core::triangle3df hitTriangle;
 
 		// This call is all you need to perform ray/triangle collision on every scene node
 		// that has a triangle selector, including the Quake level mesh.  It finds the nearest
@@ -274,25 +275,27 @@ int main()
 		// Irrlicht provides other types of selection, including ray/triangle selector,
 		// ray/box and ellipse/triangle selector, plus associated helpers.
 		// See the methods of ISceneCollisionManager
-		scene::ISceneNode * selectedSceneNode =
-			collMan->getSceneNodeAndCollisionPointFromRay(
-					ray,
-					intersection, // This will be the position of the collision
-					hitTriangle, // This will be the triangle hit in the collision
+
+		irr::io::SNamedPath hitTextureName;
+		scene::SCollisionHit hitResult;
+		scene::ISceneNode * selectedSceneNode =collMan->getSceneNodeAndCollisionPointFromRay(
+					hitResult,	// Returns all kind of info about the collision
+					ray,	
 					IDFlag_IsPickable, // This ensures that only nodes that we have
 							// set up to be pickable are considered
 					0); // Check the entire scene (this is actually the implicit default)
+
 
 		// If the ray hit anything, move the billboard to the collision position
 		// and draw the triangle that was hit.
 		if(selectedSceneNode)
 		{
-			bill->setPosition(intersection);
+			bill->setPosition(hitResult.Intersection);	// Show the current intersection point with the level or a mesh
 
 			// We need to reset the transform before doing our own rendering.
 			driver->setTransform(video::ETS_WORLD, core::matrix4());
 			driver->setMaterial(material);
-			driver->draw3DTriangle(hitTriangle, video::SColor(0,255,0,0));
+			driver->draw3DTriangle(hitResult.Triangle, video::SColor(0,255,0,0));	// Show which triangle has been hit
 
 			// We can check the flags for the scene node that was hit to see if it should be
 			// highlighted. The animated nodes can be highlighted, but not the Quake level mesh
@@ -304,23 +307,31 @@ int main()
 				// which means that it will be drawn with full brightness.
 				highlightedSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
 			}
+
+			if ( hitResult.MeshBuffer && hitResult.Node && hitResult.Node->getMaterial(hitResult.MaterialIndex).TextureLayer[0].Texture )	
+			{
+				// Note we are interested in the node material and not in the meshbuffer material. 
+				// Otherwise we wouldn't get the fairy2 texture which is only set on the node.
+				hitTextureName = hitResult.Node->getMaterial(hitResult.MaterialIndex).TextureLayer[0].Texture->getName();
+			}
 		}
 
 		// We're all done drawing, so end the scene.
 		driver->endScene();
 
+		// Show some info in title-bar
 		int fps = driver->getFPS();
-
-		if (lastFPS != fps)
+		core::stringw str = L"Collision detection example - Irrlicht Engine [";
+		str += driver->getName();
+		str += "] FPS:";
+		str += fps;
+		if ( !hitTextureName.getInternalName().empty() )
 		{
-			core::stringw str = L"Collision detection example - Irrlicht Engine [";
-			str += driver->getName();
-			str += "] FPS:";
-			str += fps;
-
-			device->setWindowCaption(str.c_str());
-			lastFPS = fps;
+			str += " ";
+			irr::io::path texName(hitTextureName.getInternalName());
+			str += core::deletePathFromFilename(texName);
 		}
+		device->setWindowCaption(str.c_str());
 	}
 
 	device->drop();
