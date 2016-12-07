@@ -40,7 +40,7 @@ void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
 					irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	fillTriangles();
-	return getTriangles(triangles, arraySize, outTriangleCount, box, transform, useNodeTransform, outTriangleInfo);
+	return CTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount, box, transform, useNodeTransform, outTriangleInfo);
 }
 
 void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
@@ -50,7 +50,7 @@ void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
 					irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	fillTriangles();
-	return getTriangles(triangles, arraySize, outTriangleCount, line, transform, useNodeTransform, outTriangleInfo);
+	return CTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount, line, transform, useNodeTransform, outTriangleInfo);
 }
 
 void CTriangleBBSelector::fillTriangles() const
