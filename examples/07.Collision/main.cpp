@@ -95,9 +95,8 @@ int main()
 
 		/*
 			There is currently no way to split an octree by material. 
-			So if we need that we have to create an octrees per meshbuffer
+			So if we need that we have to create one octree per meshbuffer
 			and put them together in a MetaTriangleSelector.
-			
 		*/
 		if ( separateMeshBuffers && q3node->getMesh()->getMeshBufferCount() > 1)
 		{
@@ -117,6 +116,8 @@ int main()
 		}
 		else
 		{
+			// Just one octree for the whole mesh. 
+			// Can't get information which material got hit, but for many situations that's enough.
 			selector = smgr->createOctreeTriangleSelector(
 					q3node->getMesh(), q3node, 128);
 		}
