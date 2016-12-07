@@ -1893,6 +1893,14 @@ ITriangleSelector* CSceneManager::createOctreeTriangleSelector(IMesh* mesh,
 	return new COctreeTriangleSelector(mesh, node, minimalPolysPerNode);
 }
 
+ITriangleSelector* CSceneManager::createOctreeTriangleSelector(IMeshBuffer* meshBuffer, irr::u32 materialIndex,
+			ISceneNode* node, s32 minimalPolysPerNode)
+{
+	if ( !meshBuffer)
+		return 0;
+
+	return new COctreeTriangleSelector(meshBuffer, materialIndex, node, minimalPolysPerNode);
+}
 
 //! Creates a meta triangle selector.
 IMetaTriangleSelector* CSceneManager::createMetaTriangleSelector()

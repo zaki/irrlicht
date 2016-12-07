@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- ITriangleSelector now can also return meshbuffer collision information. 
 - core::string::split now adds delimiter to token before delimiter when keepSeparators is true. That way we never end up with 2 tokens for an original string with a single character.
 - Bugfix: SMesh::recalculateBoundingBox() does now ignore empty boundingboxes of meshbuffers instead of adding them.
 - IIrrXMLReader::getAttributeValueAsInt and  IIrrXMLReader::getAttributeValueAsFloat can now return a custom default-value when the attribute is not found.

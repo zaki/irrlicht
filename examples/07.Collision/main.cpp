@@ -93,8 +93,33 @@ int main()
 	{
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
-		selector = smgr->createOctreeTriangleSelector(
-				q3node->getMesh(), q3node, 128);
+		/*
+			There is currently no way to split an octree by material. 
+			So if we need that we have to create an octrees per meshbuffer
+			and put them together in a MetaTriangleSelector.
+			
+		*/
+		if ( separateMeshBuffers && q3node->getMesh()->getMeshBufferCount() > 1)
+		{
+			scene::IMetaTriangleSelector * metaSelector = smgr->createMetaTriangleSelector();
+			for ( irr::u32 m=0; m < q3node->getMesh()->getMeshBufferCount(); ++m )
+			{
+				scene::ITriangleSelector* 
+					bufferSelector = smgr->createOctreeTriangleSelector(
+					q3node->getMesh()->getMeshBuffer(m), m, q3node);
+				if ( bufferSelector )
+				{
+					metaSelector->addTriangleSelector( bufferSelector );
+					bufferSelector->drop();
+				}
+			}
+			selector = metaSelector;
+		}
+		else
+		{
+			selector = smgr->createOctreeTriangleSelector(
+					q3node->getMesh(), q3node, 128);
+		}
 		q3node->setTriangleSelector(selector);
 		// We're not done with this selector yet, so don't drop it.
 	}

@@ -42,11 +42,23 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 		irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	s32 outWritten = 0;
+	irr::u32 outTriangleInfoSize = outTriangleInfo ? outTriangleInfo->size() : 0;
 	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten,
 				arraySize - outWritten, t, transform, useNodeTransform, outTriangleInfo);
+
+		if ( outTriangleInfo )
+		{
+			irr::u32 newTriangleInfoSize = outTriangleInfo->size();
+			for ( u32 ti=outTriangleInfoSize; ti<newTriangleInfoSize; ++ti )
+			{
+				(*outTriangleInfo)[ti].RangeStart += outWritten;
+			}
+			outTriangleInfoSize = newTriangleInfoSize;
+		}
+
 		outWritten += t;
 		if (outWritten==arraySize)
 			break;
@@ -63,11 +75,23 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 		irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	s32 outWritten = 0;
+	irr::u32 outTriangleInfoSize = outTriangleInfo ? outTriangleInfo->size() : 0;
 	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten,
 				arraySize - outWritten, t, box, transform, useNodeTransform, outTriangleInfo);
+
+		if ( outTriangleInfo )
+		{
+			irr::u32 newTriangleInfoSize = outTriangleInfo->size();
+			for ( u32 ti=outTriangleInfoSize; ti<newTriangleInfoSize; ++ti )
+			{
+				(*outTriangleInfo)[ti].RangeStart += outWritten;
+			}
+			outTriangleInfoSize = newTriangleInfoSize;
+		}
+
 		outWritten += t;
 		if (outWritten==arraySize)
 			break;
@@ -84,11 +108,23 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 		irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	s32 outWritten = 0;
+	irr::u32 outTriangleInfoSize = outTriangleInfo ? outTriangleInfo->size() : 0;
 	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten,
 				arraySize - outWritten, t, line, transform, useNodeTransform, outTriangleInfo);
+
+		if ( outTriangleInfo )
+		{
+			irr::u32 newTriangleInfoSize = outTriangleInfo->size();
+			for ( u32 ti=outTriangleInfoSize; ti<newTriangleInfoSize; ++ti )
+			{
+				(*outTriangleInfo)[ti].RangeStart += outWritten;
+			}
+			outTriangleInfoSize = newTriangleInfoSize;
+		}
+
 		outWritten += t;
 		if (outWritten==arraySize)
 			break;

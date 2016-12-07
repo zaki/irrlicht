@@ -1334,6 +1334,33 @@ namespace scene
 		virtual ITriangleSelector* createOctreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode=32) = 0;
 
+		//! Creates a Triangle Selector for a single meshbuffer, optimized by an octree.
+		/** Triangle selectors
+		can be used for doing collision detection. This triangle selector is
+		optimized for huge amounts of triangle, it organizes them in an octree.
+		Please note that the created triangle selector is not automatically attached
+		to the scene node. You will have to call ISceneNode::setTriangleSelector()
+		for this. To create and attach a triangle selector is done like this:
+		\code
+		ITriangleSelector* s = sceneManager->createOctreeTriangleSelector(yourMesh,
+				yourSceneNode);
+		yourSceneNode->setTriangleSelector(s);
+		s->drop();
+		\endcode
+		For more information and examples on this, take a look at the collision
+		tutorial in the SDK.
+		\param meshBuffer: Meshbuffer of which the triangles are taken.
+		\param materialIndex: Setting this value allows the triangle selector to return the material index
+		\param node: Scene node of which visibility and transformation is used.
+		\param minimalPolysPerNode: Specifies the minimal polygons contained a octree node.
+		If a node gets less polys than this value, it will not be split into
+		smaller nodes.
+		\return The selector, or null if not successful.
+		If you no longer need the selector, you should call ITriangleSelector::drop().
+		See IReferenceCounted::drop() for more information. */
+		virtual ITriangleSelector* createOctreeTriangleSelector(IMeshBuffer* meshBuffer, irr::u32 materialIndex,
+			ISceneNode* node, s32 minimalPolysPerNode=32) = 0;
+
 		//! //! Creates a Triangle Selector, optimized by an octree.
 		/** \deprecated Use createOctreeTriangleSelector instead. This method may be removed by Irrlicht 1.9. */
 		_IRR_DEPRECATED_ ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,

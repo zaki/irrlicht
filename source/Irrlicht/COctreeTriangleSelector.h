@@ -22,6 +22,9 @@ public:
 	//! Constructs a selector based on a mesh
 	COctreeTriangleSelector(const IMesh* mesh, ISceneNode* node, s32 minimalPolysPerNode);
 
+	//! Constructs a selector based on a meshbuffer
+	COctreeTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node, s32 minimalPolysPerNode);
+
 	virtual ~COctreeTriangleSelector();
 
 	//! Gets all triangles which lie within a specific bounding box.

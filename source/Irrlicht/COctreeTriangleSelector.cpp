@@ -15,8 +15,9 @@ namespace scene
 //! constructor
 COctreeTriangleSelector::COctreeTriangleSelector(const IMesh* mesh,
 		ISceneNode* node, s32 minimalPolysPerNode)
-	: CTriangleSelector(mesh, node, false), Root(0), NodeCount(0),
-	 MinimalPolysPerNode(minimalPolysPerNode)
+	: CTriangleSelector(mesh, node, false)
+	, Root(0), NodeCount(0)
+	, MinimalPolysPerNode(minimalPolysPerNode)
 {
 	#ifdef _DEBUG
 	setDebugName("COctreeTriangleSelector");
@@ -38,6 +39,30 @@ COctreeTriangleSelector::COctreeTriangleSelector(const IMesh* mesh,
 	}
 }
 
+COctreeTriangleSelector::COctreeTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node, s32 minimalPolysPerNode)
+	: CTriangleSelector(meshBuffer, materialIndex, node)
+	, Root(0), NodeCount(0)
+	, MinimalPolysPerNode(minimalPolysPerNode)
+{
+	#ifdef _DEBUG
+	setDebugName("COctreeTriangleSelector");
+	#endif
+
+	if (!Triangles.empty())
+	{
+		const u32 start = os::Timer::getRealTime();
+
+		// create the triangle octree
+		Root = new SOctreeNode();
+		Root->Triangles = Triangles;
+		constructOctree(Root);
+
+		c8 tmp[256];
+		sprintf(tmp, "Needed %ums to create OctreeTriangleSelector.(%d nodes, %u polys)",
+			os::Timer::getRealTime() - start, NodeCount, Triangles.size());
+		os::Printer::log(tmp, ELL_INFORMATION);
+	}
+}
 
 //! destructor
 COctreeTriangleSelector::~COctreeTriangleSelector()
@@ -146,6 +171,8 @@ void COctreeTriangleSelector::getTriangles(core::triangle3df* triangles,
 		triRange.RangeSize = trianglesWritten;
 		triRange.Selector = const_cast<COctreeTriangleSelector*>(this);
 		triRange.SceneNode = SceneNode;
+		triRange.MeshBuffer = MeshBuffer;
+		triRange.MaterialIndex = MaterialIndex;
 		outTriangleInfo->push_back(triRange);
 	}
 
@@ -236,6 +263,8 @@ void COctreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arr
 		triRange.RangeSize = trianglesWritten;
 		triRange.Selector = const_cast<COctreeTriangleSelector*>(this);
 		triRange.SceneNode = SceneNode;
+		triRange.MeshBuffer = MeshBuffer;
+		triRange.MaterialIndex = MaterialIndex;
 		outTriangleInfo->push_back(triRange);
 	}
 
