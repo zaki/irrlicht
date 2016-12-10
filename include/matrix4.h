@@ -221,18 +221,25 @@ namespace core
 			void rotateVect(T *out,const core::vector3df &in) const;
 
 			//! Transforms the vector by this matrix
+			/** This operation is performed as if the vector was 4d with the 4th component =1 */
 			void transformVect( vector3df& vect) const;
 
 			//! Transforms input vector by this matrix and stores result in output vector
+			/** This operation is performed as if the vector was 4d with the 4th component =1 */
 			void transformVect( vector3df& out, const vector3df& in ) const;
 
 			//! An alternate transform vector method, writing into an array of 4 floats
+			/** This operation is performed as if the vector was 4d with the 4th component =1.
+				NOTE: out[3] will be written to (4th vector component)*/
 			void transformVect(T *out,const core::vector3df &in) const;
 
 			//! An alternate transform vector method, reading from and writing to an array of 3 floats
+			/** This operation is performed as if the vector was 4d with the 4th component =1
+				NOTE: out[3] will be written to (4th vector component)*/
 			void transformVec3(T *out, const T * in) const;
 
 			//! Translate a vector by the translation part of this matrix.
+			/** This operation is performed as if the vector was 4d with the 4th component =1 */
 			void translateVect( vector3df& vect ) const;
 
 			//! Transforms a plane by this matrix
@@ -247,7 +254,7 @@ namespace core
 			void transformBox(core::aabbox3d<f32>& box) const;
 
 			//! Transforms a axis aligned bounding box
-			/** The result box of this operation should by accurate, but this operation
+			/** The result box of this operation should be accurate, but this operation
 			is slower than transformBox(). */
 			void transformBoxEx(core::aabbox3d<f32>& box) const;
 
