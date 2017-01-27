@@ -148,6 +148,8 @@ bool test_fast_atof(void)
 	accurate &= testCalculation_atof("0000123456.789");
 	accurate &= testCalculation_atof("-0000123456.789");
 	accurate &= testCalculation_atof("-0.0690462109446526");
+	accurate &= testCalculation_atof("0.11999999731779099"); // more numbers past dot than in lookup table
+	accurate &= testCalculation_atof("0.119999997317790999");
 
 	if (!accurate)
 	{
