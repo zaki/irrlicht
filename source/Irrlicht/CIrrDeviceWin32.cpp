@@ -442,6 +442,8 @@ irr::core::stringc SJoystickWin32Control::findJoystickName(int index, const JOYC
 bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	joystickInfo.clear();
+	ActiveJoysticks.clear();
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 	if (!DirectInputDevice || (DirectInputDevice->EnumDevices(DI8DEVCLASS_GAMECTRL, SJoystickWin32Control::EnumJoysticks, this, DIEDFL_ATTACHEDONLY )))
 	{
@@ -462,9 +464,6 @@ bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joyst
 	}
 	return true;
 #else
-	joystickInfo.clear();
-	ActiveJoysticks.clear();
-
 	const u32 numberOfJoysticks = ::joyGetNumDevs();
 	JOYINFOEX info;
 	info.dwSize = sizeof(info);

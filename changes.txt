@@ -159,6 +159,9 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.5
+ - Fix bug when calling activateJoysticks on windows several times. It had appened joystick information instead of replacing it, thereby increasing joystick number on each call.
+   Only happened compiling with _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_ (which is the default). Linux and SDL implementation not affected.
+   Thx @Andrea Demetrio for the bugreport.
  - Fix bug in fast_atof when reading floating point numbers with more than 16 digits past the dot. Those produced completely wrong results (sometimes even causing INF numbers).
    This bug also did cause many meshloaders to have problems with certain meshes (basically all text-based formats are affected).
  - Accuracy of fast_atof is back to older Irrlicht versions (fixes test warnings, usually not a noticable problem).
