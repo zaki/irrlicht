@@ -50,7 +50,7 @@ namespace io
 		virtual void writeClosingTag(const wchar_t* name) _IRR_OVERRIDE_;
 
 		//! Writes a text into the file. All occurrences of special characters like
-		//! & (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automaticly replaced.
+		//! & (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automatically replaced.
 		virtual void writeText(const wchar_t* text) _IRR_OVERRIDE_;
 
 		//! Writes a line break

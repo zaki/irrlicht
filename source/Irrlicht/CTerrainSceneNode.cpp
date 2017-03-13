@@ -250,15 +250,15 @@ namespace scene
 
 		Mesh->MeshBuffers.clear();
 
-		const s32 bytesPerPixel = bitsPerPixel / 8;
+		const size_t bytesPerPixel = (size_t)bitsPerPixel / 8;
 
 		// Get the dimension of the heightmap data
-		const s32 filesize = file->getSize();
+		const long filesize = file->getSize();
 		if (!width)
 			TerrainData.Size = core::floor32(sqrtf((f32)(filesize / bytesPerPixel)));
 		else
 		{
-			if ((filesize-file->getPos())/bytesPerPixel>width*width)
+			if ((filesize-file->getPos())/bytesPerPixel>(size_t)(width*width))
 			{
 				os::Printer::log("Error reading heightmap RAW file", "File is too small.");
 				return false;

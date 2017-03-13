@@ -20,7 +20,7 @@ class ISceneNode;
 
 //! Interface to return triangles with specific properties.
 /** Every ISceneNode may have a triangle selector, available with
-ISceneNode::getTriangleScelector() or ISceneManager::createTriangleSelector.
+ISceneNode::getTriangleSelector() or ISceneManager::createTriangleSelector.
 This is used for doing collision detection: For example if you know, that a
 collision may have happened in the area between (1,1,1) and (10,10,10), you
 can get all triangles of the scene node in this area with the

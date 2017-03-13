@@ -37,7 +37,7 @@ namespace scene
 
 		//! Animates a scene node.
 		/** \param node Node to animate.
-		\param timeMs Current time in milli seconds. */
+		\param timeMs Current time in milliseconds. */
 		virtual void animateNode(ISceneNode* node, u32 timeMs) =0;
 
 		//! Creates a clone of this animator.
@@ -101,9 +101,9 @@ namespace scene
 		//! Sets the enabled state of this element.
 		/**
 		\param enabled When set to false ISceneNodes will not update the animator anymore.
-		       Animators themself usually don't care. So manual calls to animateNode still work.
+		       Animators themselves usually don't care. So manual calls to animateNode still work.
 		\param timeNow When set to values > 0 on enabling and disabling an internal timer will be increased by the time disabled time.
-			   Animator decide themself how to handle that timer, but generally setting it will allow you to pause an animator, so it
+			   Animator decide themselves how to handle that timer, but generally setting it will allow you to pause an animator, so it
 			   will continue at the same position when you enable it again. To use that pass irr::ITimer::getTime() as value.
 			   Animators with no timers will just ignore this.
 		*/

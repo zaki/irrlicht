@@ -77,7 +77,7 @@ namespace gui
 		virtual s32 getTabCount() const = 0;
 
 		//! Returns a tab based on zero based index
-		/** \param idx: zero based index of tab. Is a value betwenn 0 and getTabcount()-1;
+		/** \param idx: zero based index of tab. Is a value between 0 and getTabcount()-1;
 		\return Returns pointer to the Tab. Returns 0 if no tab
 		is corresponding to this tab. */
 		virtual IGUITab* getTab(s32 idx) const = 0;

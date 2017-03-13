@@ -101,7 +101,7 @@ namespace video
 			//SOFTWARE_DRIVER_2_MIPMAPPING_LOD_BIAS
 			it->lodLevel = lodLevel;
 			it->data = (tVideoSample*) it->Texture->lock(ETLM_READ_ONLY,
-				core::s32_clamp ( lodLevel + SOFTWARE_DRIVER_2_MIPMAPPING_LOD_BIAS, 0, SOFTWARE_DRIVER_2_MIPMAPPING_MAX - 1 ));
+				core::s32_clamp ( lodLevel + SOFTWARE_DRIVER_2_MIPMAPPING_LOD_BIAS, 0, SOFTWARE_DRIVER_2_MIPMAPPING_MAX - 1 ), 0);
 
 			// prepare for optimal fixpoint
 			it->pitchlog2 = s32_log2_s32 ( it->Texture->getPitch() );

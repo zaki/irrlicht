@@ -179,6 +179,8 @@
 
 #include "CGeometryCreator.h"
 
+#include <locale.h>
+
 namespace irr
 {
 namespace scene
@@ -1132,7 +1134,7 @@ IAnimatedMesh* CSceneManager::addVolumeLightMesh(const io::path& name,
 }
 
 
-//! Returns the root scene node. This is the scene node wich is parent
+//! Returns the root scene node. This is the scene node which is parent
 //! of all scene nodes. The root scene node is a special scene node which
 //! only exists to manage all scene nodes. It is not rendered and cannot
 //! be removed from the scene.
@@ -1740,7 +1742,7 @@ ISceneNodeAnimator* CSceneManager::createTextureAnimator(const core::array<video
 
 
 //! Creates a scene node animator, which deletes the scene node after
-//! some time automaticly.
+//! some time automatically.
 ISceneNodeAnimator* CSceneManager::createDeleteAnimator(u32 when)
 {
 	return new CSceneNodeAnimatorDelete(this, os::Timer::getTime() + when);
@@ -2065,7 +2067,7 @@ E_SCENE_NODE_RENDER_PASS CSceneManager::getSceneNodeRenderPass() const
 }
 
 
-//! Returns an interface to the mesh cache which is shared beween all existing scene managers.
+//! Returns an interface to the mesh cache which is shared between all existing scene managers.
 IMeshCache* CSceneManager::getMeshCache()
 {
 	return MeshCache;
@@ -2203,8 +2205,13 @@ bool CSceneManager::saveScene(io::IXMLWriter* writer, const io::path& currentPat
 	if (!node)
 		node=this;
 
+	char* oldLocale = setlocale(LC_NUMERIC, NULL);
+	setlocale(LC_NUMERIC, "C");	// float number should to be saved with dots in this format independent of current locale settings.
+
 	writer->writeXMLHeader();
 	writeSceneNode(writer, node, userDataSerializer, currentPath.c_str(), true);
+
+	setlocale(LC_NUMERIC, oldLocale);
 
 	return true;
 }

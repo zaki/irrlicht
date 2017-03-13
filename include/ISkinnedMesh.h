@@ -76,7 +76,7 @@ namespace scene
 		virtual void convertMeshToTangents() = 0;
 
 		//! Allows to enable hardware skinning.
-		/* This feature is not implementated in Irrlicht yet */
+		/* This feature is not implemented in Irrlicht yet */
 		virtual bool setHardwareSkinning(bool on) = 0;
 
 		//! A vertex weight

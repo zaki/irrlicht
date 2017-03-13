@@ -135,7 +135,7 @@ namespace irr
 		Default: true. */
 		bool Stencilbuffer;
 
-		//! Specifies vertical syncronisation.
+		//! Specifies vertical synchronization.
 		/** If set to true, the driver will wait for the vertical
 		retrace period, otherwise not. May be silently ignored.
 		Default: false */
@@ -151,7 +151,7 @@ namespace irr
 		be a good idea to make it possible to switch this option off
 		again by the user.
 		The value is the maximal antialiasing factor requested for
-		the device. The cretion method will automatically try smaller
+		the device. The creation method will automatically try smaller
 		values if no window can be created with the given value.
 		Value one is usually the same as 0 (disabled), but might be a
 		special value on some platforms. On D3D devices it maps to
@@ -160,7 +160,7 @@ namespace irr
 		u8 AntiAlias;
 
 		//! Flag to enable proper sRGB and linear color handling
-		/** In most situations, it is desireable to have the color handling in
+		/** In most situations, it is desirable to have the color handling in
 		non-linear sRGB color space, and only do the intermediate color
 		calculations in linear RGB space. If this flag is enabled, the device and
 		driver try to assure that all color input and output are color corrected
@@ -175,7 +175,7 @@ namespace irr
 		bool HandleSRGB;
 
 		//! Whether the main framebuffer uses an alpha channel.
-		/** In some situations it might be desireable to get a color
+		/** In some situations it might be desirable to get a color
 		buffer with an alpha channel, e.g. when rendering into a
 		transparent window or overlay. If this flag is set the device
 		tries to create a framebuffer with alpha channel.

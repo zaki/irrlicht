@@ -95,7 +95,7 @@ void CGUIComboBox::setMaxSelectionRows(u32 max)
 	}
 }
 
-//! Get the maximimal number of rows for the selection listbox
+//! Get the maximal number of rows for the selection listbox
 u32 CGUIComboBox::getMaxSelectionRows() const
 {
 	return MaxSelectionRows;

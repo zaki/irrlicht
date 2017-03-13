@@ -311,7 +311,7 @@ public:
 	}
 
 
-	//! Constructor for unicode and ascii strings
+	//! Constructor for Unicode and ASCII strings
 	template <class B>
 	string(const B* const c)
 	: array(0), allocated(0), used(0)
@@ -357,7 +357,7 @@ public:
 	}
 
 
-	//! Assignment operator for strings, ascii and unicode
+	//! Assignment operator for strings, ASCII and Unicode
 	template <class B>
 	string<T,TAlloc>& operator=(const B* const c)
 	{
@@ -414,7 +414,7 @@ public:
 	}
 
 
-	//! Append operator for strings, ascii and unicode
+	//! Append operator for strings, ASCII and Unicode
 	template <class B>
 	string<T,TAlloc> operator+(const B* const c) const
 	{
@@ -508,6 +508,16 @@ public:
 	bool empty() const
 	{
 		return (size() == 0);
+	}
+
+	void clear(bool releaseMemory=true)
+	{
+		if ( releaseMemory )
+		{
+			reallocate(1);
+		}
+		array[0] = 0;
+		used = 1;
 	}
 
 	//! Returns character string
@@ -1387,7 +1397,7 @@ typedef string<wchar_t> stringw;
 What the function does exactly depends on the LC_CTYPE of the current c locale.
 \param destination Wide-character string receiving the converted source
 \param source multibyte string
-\return The number of wide characters written to destination, not including the eventual terminating null character. */
+\return The number of wide characters written to destination, not including the eventual terminating null character or -1 when conversion failed */
 static inline size_t multibyteToWString(string<wchar_t>& destination, const core::string<c8>& source)
 {
 	return multibyteToWString(destination, source.c_str(), (u32)source.size());
@@ -1398,7 +1408,7 @@ static inline size_t multibyteToWString(string<wchar_t>& destination, const core
 What the function does exactly depends on the LC_CTYPE of the current c locale.
 \param destination Wide-character string receiving the converted source
 \param source multibyte string
-\return The number of wide characters written to destination, not including the eventual terminating null character. */
+\return The number of wide characters written to destination, not including the eventual terminating null character  or -1 when conversion failed. */
 static inline size_t multibyteToWString(string<wchar_t>& destination, const char* source)
 {
 	u32 s = source ? (u32)strlen(source) : 0;
@@ -1419,13 +1429,22 @@ static size_t multibyteToWString(string<wchar_t>& destination, const char* sourc
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
-		destination.used = (u32)written;
-		destination.array[destination.used] = 0;
+		if ( written != (size_t)-1 )
+		{
+			destination.used = (u32)written+1;
+			destination.array[destination.used-1] = 0;
+		}
+		else
+		{
+			// Likely character which got converted until the invalid character was encountered are in destination now.
+			// And it seems even 0-terminated, but I found no documentation anywhere that this (the 0-termination) is guaranteed :-(
+			destination.clear();
+		}
 		return written;
 	}
 	else
 	{
-		destination.empty();
+		destination.clear();
 		return 0;
 	}
 }

@@ -86,9 +86,9 @@ enum E_TEXTURE_LOCK_MODE
 	/** Often used to read back shader generated textures. */
 	ETLM_READ_ONLY,
 
-	//! Write only. The texture is not downloaded and might be uninitialised.
+	//! Write only. The texture is not downloaded and might be uninitialized.
 	/** The updated texture is uploaded to the GPU.
-	Used for initialising the shader from the CPU. */
+	Used for initializing the shader from the CPU. */
 	ETLM_WRITE_ONLY
 };
 
@@ -130,7 +130,7 @@ public:
 	are done, you must call unlock().
 	Locks are not accumulating, hence one unlock will do for an arbitrary
 	number of previous locks. You should avoid locking different levels without
-	unlocking inbetween, though, because only the last level locked will be
+	unlocking in between, though, because only the last level locked will be
 	unlocked.
 	The size of the i-th mipmap level is defined as max(getSize().Width>>i,1)
 	and max(getSize().Height>>i,1)

@@ -38,13 +38,13 @@ namespace scene
 		/** \param file File handle to write the mesh to.
 		\param mesh Pointer to mesh to be written.
 		\param flags Optional flags to set properties of the writer.
-		\return True if sucessful */
+		\return True if successful */
 		virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh,
 							s32 flags=EMWF_NONE) = 0;
 
 		// Writes an animated mesh
 		// for future use, only b3d writer is able to write animated meshes currently and that was implemented using the writeMesh above.
-		/* \return Returns true if sucessful */
+		/* \return Returns true if successful */
 		//virtual bool writeAnimatedMesh(io::IWriteFile* file,
 		// scene::IAnimatedMesh* mesh,
 		// s32 flags=EMWF_NONE) = 0;

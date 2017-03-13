@@ -106,7 +106,7 @@ bool CImageWriterTGA::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 	u32 row_stride = (pixel_size * imageHeader.ImageWidth);
 
 	// length of one output row in bytes
-	s32 row_size = ((imageHeader.PixelDepth / 8) * imageHeader.ImageWidth);
+	size_t row_size = ((imageHeader.PixelDepth / 8) * imageHeader.ImageWidth);
 
 	// allocate a row do translate data into
 	u8* row_pointer = new u8[row_size];

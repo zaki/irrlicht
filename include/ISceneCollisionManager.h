@@ -61,7 +61,7 @@ namespace scene
 		\param hitPosition: Return value for the position of the collision
 		\param outFalling: Is set to true if the ellipsoid is falling
 		down, caused by gravity.
-		\param outNode: the node with which the ellipoid collided (if any)
+		\param outNode: the node with which the ellipsoid collided (if any)
 		\param slidingSpeed: DOCUMENTATION NEEDED.
 		\param gravityDirectionAndSpeed: Direction and force of gravity.
 		\return New position of the ellipsoid. */
@@ -78,15 +78,15 @@ namespace scene
 			const core::vector3df& gravityDirectionAndSpeed
 			= core::vector3df(0.0f, 0.0f, 0.0f)) = 0;
 
-		//! Returns a 3d ray which would go through the 2d screen coodinates.
+		//! Returns a 3d ray which would go through the 2d screen coordinates.
 		/** \param pos: Screen coordinates in pixels.
 		\param camera: Camera from which the ray starts. If null, the
 		active camera is used.
 		\return Ray starting from the position of the camera and ending
 		at a length of the far value of the camera at a position which
-		would be behind the 2d screen coodinates. */
+		would be behind the 2d screen coordinates. */
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			const core::position2d<s32>& pos, ICameraSceneNode* camera = 0) = 0;
+			const core::position2d<s32>& pos, const ICameraSceneNode* camera = 0) = 0;
 
 		//! Calculates 2d screen position from a 3d position.
 		/** \param pos: 3D position in world space to be transformed
@@ -104,9 +104,9 @@ namespace scene
 		method for drawing a decorator over a 3d object, it will be
 		clipped by the screen borders. */
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			const core::vector3df& pos, ICameraSceneNode* camera=0, bool useViewPort=false) = 0;
+			const core::vector3df& pos, const ICameraSceneNode* camera=0, bool useViewPort=false) = 0;
 
-		//! Gets the scene node, which is currently visible under the given screencoordinates, viewed from the currently active camera.
+		//! Gets the scene node, which is currently visible under the given screen coordinates, viewed from the currently active camera.
 		/** The collision tests are done using a bounding box for each
 		scene node. You can limit the recursive search so just all children of the specified root are tested.
 		\param pos: Position in pixel screen coordinates, under which
@@ -142,11 +142,11 @@ namespace scene
 							s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) =0;
 
 		//! Get the scene node, which the given camera is looking at and whose id matches the bitmask.
-		/** A ray is simply casted from the position of the camera to
+		/** A ray is simply cast from the position of the camera to
 		the view target position, and all scene nodes are tested
 		against this ray. The collision tests are done using a bounding
 		box for each scene node.
-		\param camera: Camera from which the ray is casted.
+		\param camera: Camera from which the ray is cast.
 		\param idBitMask: Only scene nodes with an id which matches at least one of the
 		bits contained in this mask will be tested. However, if this parameter is 0, then
 		all nodes are checked.
@@ -158,13 +158,13 @@ namespace scene
 		\return Scene node nearest to the camera, which collides with
 		the ray and matches the idBitMask, if the mask is not null. If
 		no scene node is found, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromCameraBB(ICameraSceneNode* camera,
+		virtual ISceneNode* getSceneNodeFromCameraBB(const ICameraSceneNode* camera,
 			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
 
-		//! Perform a ray/box and ray/triangle collision check on a heirarchy of scene nodes.
+		//! Perform a ray/box and ray/triangle collision check on a hierarchy of scene nodes.
 		/** This checks all scene nodes under the specified one, first by ray/bounding
 		box, and then by accurate ray/triangle collision, finding the nearest collision,
-		and the scene node containg it.  It returns the node hit, and (via output
+		and the scene node containing it.  It returns the node hit, and (via output
 		parameters) the position of the collision, and the triangle that was hit.
 
 		All scene nodes in the hierarchy tree under the specified node are checked. Only

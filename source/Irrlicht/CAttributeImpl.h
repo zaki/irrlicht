@@ -1686,11 +1686,11 @@ public:
 		setString(value);
 	}
 
-	CStringAttribute(const char* name, void* binaryData, s32 lenghtInBytes)
+	CStringAttribute(const char* name, void* binaryData, s32 lengthInBytes)
 	{
 		IsStringW=false;
 		Name = name;
-		setBinary(binaryData, lenghtInBytes);
+		setBinary(binaryData, lengthInBytes);
 	}
 
 	virtual s32 getInt() _IRR_OVERRIDE_
@@ -1854,8 +1854,8 @@ class CBinaryAttribute : public CStringAttribute
 {
 public:
 
-	CBinaryAttribute(const char* name, void* binaryData, s32 lenghtInBytes)
-		: CStringAttribute(name, binaryData, lenghtInBytes)
+	CBinaryAttribute(const char* name, void* binaryData, s32 lengthInBytes)
+		: CStringAttribute(name, binaryData, lengthInBytes)
 	{
 
 	}

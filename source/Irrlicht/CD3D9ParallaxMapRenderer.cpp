@@ -236,7 +236,7 @@ namespace video
 
 		CallBack = this;
 
-		// basicly, this thing simply compiles these hardcoded shaders if the
+		// basically, this thing simply compiles these hardcoded shaders if the
 		// hardware is able to do them, otherwise it maps to the base material
 
 		if (!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_4) ||

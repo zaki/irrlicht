@@ -37,18 +37,18 @@ CLimitReadFile::~CLimitReadFile()
 
 
 //! returns how much was read
-s32 CLimitReadFile::read(void* buffer, u32 sizeToRead)
+size_t CLimitReadFile::read(void* buffer, size_t sizeToRead)
 {
-#if 1
 	if (0 == File)
 		return 0;
 
-	s32 r = AreaStart + Pos;
-	s32 toRead = core::s32_min(AreaEnd, r + sizeToRead) - core::s32_max(AreaStart, r);
+#if 1
+	long r = AreaStart + Pos;
+	long toRead = core::min_(AreaEnd, r + (long)sizeToRead) - core::max_(AreaStart, r);
 	if (toRead < 0)
 		return 0;
 	File->seek(r);
-	r = File->read(buffer, toRead);
+	r = (long)File->read(buffer, toRead);
 	Pos += r;
 	return r;
 #else

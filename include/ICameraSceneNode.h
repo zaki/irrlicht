@@ -152,7 +152,7 @@ namespace scene
 			return IsOrthogonal;
 		}
 
-		//! Binds the camera scene node's rotation to its target position and vice vera, or unbinds them.
+		//! Binds the camera scene node's rotation to its target position and vice versa, or unbinds them.
 		/** When bound, calling setRotation() will update the camera's
 		target position to be along its +Z axis, and likewise calling
 		setTarget() will update its rotation so that its +Z axis will

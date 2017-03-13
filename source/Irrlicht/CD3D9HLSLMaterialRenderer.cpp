@@ -103,7 +103,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLVertexShader(const char* vertexShaderP
 
 #else
 
-	// compile shader and emitt some debug informations to
+	// compile shader and emit some debug information to
 	// make it possible to debug the shader in visual studio
 
 	static int irr_dbg_hlsl_file_nr = 0;
@@ -205,7 +205,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 
 #else
 
-	// compile shader and emitt some debug informations to
+	// compile shader and emit some debug information to
 	// make it possible to debug the shader in visual studio
 
 	static int irr_dbg_hlsl_file_nr = 0;

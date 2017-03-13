@@ -215,7 +215,7 @@ public:
 
 	//! Adds an element factory to the gui environment.
 	/** Use this to extend the gui environment with new element types which it should be
-	able to create automaticly, for example when loading data from xml files. */
+	able to create automatically, for example when loading data from xml files. */
 	virtual void registerGUIElementFactory(IGUIElementFactory* factoryToAdd) _IRR_OVERRIDE_;
 
 	//! Returns amount of registered scene node factories.

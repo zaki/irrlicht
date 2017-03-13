@@ -60,8 +60,8 @@ namespace gui
 		//! Restrict drawing-area.
 		/** This allows for example to use the image as a progress bar.
 			Base for area is the image, which means:
-			-  The original clippping area when the texture is scaled or there is no texture.
-			-  The source-rect for an unscaled texture (but still restricted afterwards by the clipping area)
+			-  The original clipping area when the texture is scaled or there is no texture.
+			-  The source-rect for an unscaled texture (but still restricted afterward by the clipping area)
 			Unlike normal clipping this does not affect the gui-children.
 			\param drawBoundUVs: Coordinates between 0 and 1 where 0 are for left+top and 1 for right+bottom
 		*/

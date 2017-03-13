@@ -100,7 +100,7 @@ namespace core
 		//! Check if a point is inside the triangle (border-points count also as inside)
 		/** This method uses a barycentric coordinate system.
 		It is faster than isPointInside but is more susceptible to floating point rounding
-		errors. This will especially be noticable when the FPU is in single precision mode
+		errors. This will especially be noticeable when the FPU is in single precision mode
 		(which is for example set on default by Direct3D).
 		\param p Point to test. Assumes that this point is already
 		on the plane of the triangle.

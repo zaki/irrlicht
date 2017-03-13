@@ -202,7 +202,7 @@ const CXMLWriter::XMLSpecialCharacters XMLWSChar[] =
 
 
 //! Writes a text into the file. All occurrences of special characters like
-//! & (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automaticly replaced.
+//! & (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automatically replaced.
 void CXMLWriter::writeText(const wchar_t* text)
 {
 	if (!File || !text)

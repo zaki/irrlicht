@@ -1155,7 +1155,7 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 				m2.setTextureScale( f[0], f[1] );
 				break;
 			case ROTATE:
-				// tcmod rotate <degress per second>
+				// tcmod rotate <degrees per second>
 				m2.setTextureRotationCenter(	getAsFloat( v.content, pos ) *
 												core::DEGTORAD *
 												TimeAbs

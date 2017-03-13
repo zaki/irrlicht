@@ -42,7 +42,7 @@ namespace scene
 
 		//! Will be called when the animation playback has ended.
 		/** See IAnimatedMeshSceneNode::setAnimationEndCallback for
-		more informations.
+		more information.
 		\param node: Node of which the animation has ended. */
 		virtual void OnAnimationEnd(IAnimatedMeshSceneNode* node) = 0;
 	};
@@ -94,7 +94,7 @@ namespace scene
 		/** The shadow can be rendered using the ZPass or the zfail
 		method. ZPass is a little bit faster because the shadow volume
 		creation is easier, but with this method there occur ugly
-		looking artifacs when the camera is inside the shadow volume.
+		looking artifacts when the camera is inside the shadow volume.
 		These error do not occur with the ZFail method.
 		\param shadowMesh: Optional custom mesh for shadow volume.
 		\param id: Id of the shadow scene node. This id can be used to

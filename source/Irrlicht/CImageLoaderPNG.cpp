@@ -149,7 +149,7 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	s32 BitDepth;
 	s32 ColorType;
 	{
-		// Use temporary variables to avoid passing casted pointers
+		// Use temporary variables to avoid passing cast pointers
 		png_uint_32 w,h;
 		// Extract info
 		png_get_IHDR(png_ptr, info_ptr,
@@ -201,7 +201,7 @@ IImage* CImageLoaderPng::loadImage(io::IReadFile* file) const
 	// for proper processing of the RGBA type
 	png_read_update_info(png_ptr, info_ptr);
 	{
-		// Use temporary variables to avoid passing casted pointers
+		// Use temporary variables to avoid passing cast pointers
 		png_uint_32 w,h;
 		// Extract info
 		png_get_IHDR(png_ptr, info_ptr,

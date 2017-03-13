@@ -314,7 +314,7 @@ namespace scene
 		- it's intended to be lossless
 		- it has special care for the borders, which are useful with heightmap tiles
 
-		This function is thread-safe. Remember to weld afterwards - this
+		This function is thread-safe. Remember to weld afterward - this
 		function only moves vertices, it does not weld.
 
 		\param mb Meshbuffer to operate on.

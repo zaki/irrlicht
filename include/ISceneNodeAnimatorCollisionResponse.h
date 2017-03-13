@@ -23,7 +23,7 @@ namespace scene
 	{
 	public:
 
-		//! Will be called when a collision occurrs.
+		//! Will be called when a collision occurs.
 		/** See ISceneNodeAnimatorCollisionResponse::setCollisionCallback for more information.
 		\param animator: Collision response animator in which the collision occurred. You can call
 		this animator's methods to find the node, collisionPoint and/or collision triangle.

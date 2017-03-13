@@ -315,7 +315,7 @@ public:
 
 	//! Determines if a file exists and could be opened.
 	/** \param filename is the string identifying the file which should be tested for existence.
-	\return True if file exists, and false if it does not exist or an error occured. */
+	\return True if file exists, and false if it does not exist or an error occurred. */
 	virtual bool existFile(const path& filename) const =0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as wide characters (wchar_t*).

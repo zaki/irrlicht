@@ -392,7 +392,7 @@ s32 CGUITable::getSelected() const
 	return Selected;
 }
 
-//! set wich row is currently selected
+//! set which row is currently selected
 void CGUITable::setSelected( s32 index )
 {
 	Selected = -1;

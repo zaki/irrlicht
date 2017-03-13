@@ -111,7 +111,7 @@ namespace scene
 		virtual E_COLLADA_IRR_COLOR getColorMapping(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const = 0;
 
 		//! Return custom colors for certain color types requested by collada.
-		/** Only used when getColorMapping returns ECIC_CUSTOM for the same paramters. */
+		/** Only used when getColorMapping returns ECIC_CUSTOM for the same parameters. */
 		virtual video::SColor getCustomColor(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs) const = 0;
 
 		//! Return the transparence color interpretation.
@@ -268,10 +268,10 @@ namespace scene
 		}
 
 		//! Control when and how often a mesh is written
-		/** Optimally ECGI_PER_MESH would be always sufficent - writing geometry once per mesh.
+		/** Optimally ECGI_PER_MESH would be always sufficient - writing geometry once per mesh.
 		Unfortunately many tools (at the time of writing this nearly all of them) have trouble
 		on import when different materials are used per node. So when you override materials
-		per node and importing the resuling collada has materials problems in other tools try
+		per node and importing the resulting collada has materials problems in other tools try
 		using other values here.
 		\param writeStyle One of the E_COLLADA_GEOMETRY_WRITING settings.
 		*/
@@ -368,7 +368,7 @@ namespace scene
 
 
 	protected:
-		// NOTE: You usually should also call setProperties with the same paraemter when using setDefaultProperties
+		// NOTE: You usually should also call setProperties with the same parameter when using setDefaultProperties
 		virtual void setDefaultProperties(IColladaMeshWriterProperties * p)
 		{
 			if ( p == DefaultProperties )
@@ -380,7 +380,7 @@ namespace scene
 			DefaultProperties = p;
 		}
 
-		// NOTE: You usually should also call setNameGenerator with the same paraemter when using setDefaultProperties
+		// NOTE: You usually should also call setNameGenerator with the same parameter when using setDefaultProperties
 		virtual void setDefaultNameGenerator(IColladaMeshWriterNames * p)
 		{
 			if ( p == DefaultNameGenerator )

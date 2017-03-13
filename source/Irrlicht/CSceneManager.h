@@ -27,7 +27,7 @@ namespace scene
 	class IGeometryCreator;
 
 	/*!
-		The Scene Manager manages scene nodes, mesh recources, cameras and all the other stuff.
+		The Scene Manager manages scene nodes, mesh resources, cameras and all the other stuff.
 	*/
 	class CSceneManager : public ISceneManager, public ISceneNode
 	{
@@ -47,7 +47,7 @@ namespace scene
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 		virtual IAnimatedMesh* getMesh(io::IReadFile* file) _IRR_OVERRIDE_;
 
-		//! Returns an interface to the mesh cache which is shared beween all existing scene managers.
+		//! Returns an interface to the mesh cache which is shared between all existing scene managers.
 		virtual IMeshCache* getMeshCache() _IRR_OVERRIDE_;
 
 		//! returns the video driver
@@ -98,7 +98,7 @@ namespace scene
 			bool alsoAddIfMeshPointerZero=false) _IRR_OVERRIDE_;
 
 		//! Adds a scene node for rendering a animated water surface mesh.
-		virtual ISceneNode* addWaterSurfaceSceneNode(IMesh* mesh, f32 waveHeight, f32 waveSpeed, f32 wlenght, ISceneNode* parent=0, s32 id=-1,
+		virtual ISceneNode* addWaterSurfaceSceneNode(IMesh* mesh, f32 waveHeight, f32 waveSpeed, f32 wlength, ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) _IRR_OVERRIDE_;
@@ -274,7 +274,7 @@ namespace scene
 		//! Adds an empty scene node.
 		virtual ISceneNode* addEmptySceneNode(ISceneNode* parent, s32 id=-1) _IRR_OVERRIDE_;
 
-		//! Returns the root scene node. This is the scene node wich is parent
+		//! Returns the root scene node. This is the scene node which is parent
 		//! of all scene nodes. The root scene node is a special scene node which
 		//! only exists to manage all scene nodes. It is not rendered and cannot
 		//! be removed from the scene.
@@ -323,7 +323,7 @@ namespace scene
 			s32 timePerFrame, bool loop) _IRR_OVERRIDE_;
 
 		//! Creates a scene node animator, which deletes the scene node after
-		//! some time automaticly.
+		//! some time automatically.
 		virtual ISceneNodeAnimator* createDeleteAnimator(u32 timeMS) _IRR_OVERRIDE_;
 
 
@@ -441,7 +441,7 @@ namespace scene
 
 		//! Adds a scene node factory to the scene manager.
 		/** Use this to extend the scene manager with new scene node types which it should be
-		able to create automaticly, for example when loading data from xml files. */
+		able to create automatically, for example when loading data from xml files. */
 		virtual void registerSceneNodeFactory(ISceneNodeFactory* factoryToAdd) _IRR_OVERRIDE_;
 
 		//! Returns amount of registered scene node factories.

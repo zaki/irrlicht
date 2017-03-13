@@ -14,7 +14,7 @@
 #include "irrString.h"
 
 // enable this to keep track of changes to the matrix
-// and make simpler identity check for seldomly changing matrices
+// and make simpler identity check for seldom changing matrices
 // otherwise identity check will always compare the elements
 //#define USE_MATRIX_TEST
 
@@ -263,7 +263,7 @@ namespace core
 			/** \param out: where result matrix is written to. */
 			bool getInversePrimitive ( CMatrix4<T>& out ) const;
 
-			//! Gets the inversed matrix of this one
+			//! Gets the inverse matrix of this one
 			/** \param out: where result matrix is written to.
 			\return Returns false if there is no inverse matrix. */
 			bool getInverse(CMatrix4<T>& out) const;
@@ -873,7 +873,7 @@ namespace core
 	/** This code was sent in by Chev.  Note that it does not necessarily return
 	the *same* Euler angles as those set by setRotationDegrees(), but the rotation will
 	be equivalent, i.e. will have the same result when used to rotate a vector or node.
-	This code was orginally written by by Chev.
+	This code was originally written by by Chev.
 	*/
 	template <class T>
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees(const vector3d<T>& scale_) const
@@ -934,7 +934,7 @@ namespace core
 	/** This code was sent in by Chev.  Note that it does not necessarily return
 	the *same* Euler angles as those set by setRotationDegrees(), but the rotation will
 	be equivalent, i.e. will have the same result when used to rotate a vector or node.
-	This code was orginally written by by Chev. */
+	This code was originally written by by Chev. */
 	template <class T>
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
 	{
@@ -2068,7 +2068,7 @@ namespace core
 	}
 
 
-	//! Builds a combined matrix which translate to a center before rotation and translate afterwards
+	//! Builds a combined matrix which translate to a center before rotation and translate afterward
 	template <class T>
 	inline void CMatrix4<T>::setRotationCenter(const core::vector3df& center, const core::vector3df& translation)
 	{

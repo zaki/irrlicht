@@ -52,7 +52,7 @@ public:
 			const core::rect<s32>& sourceRect, const SColor &color,
 			const core::rect<s32>* clipRect = 0) _IRR_OVERRIDE_;
 
-	//! copies this surface into another, scaling it to fit, appyling a box filter
+	//! copies this surface into another, scaling it to fit, applying a box filter
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false) _IRR_OVERRIDE_;
 
 	//! fills the surface with given color

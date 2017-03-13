@@ -104,7 +104,7 @@ s32 CGUIEditFactory::getCreatableGUIElementTypeCount() const
 }
 
 
-//! returns type name of a createable element type
+//! returns type name of a creatable element type
 const c8* CGUIEditFactory::getCreateableGUIElementTypeName(s32 idx) const
 {
 	if (idx>=0 && idx<EGUIEDIT_COUNT)

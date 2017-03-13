@@ -15,7 +15,7 @@ namespace core
 
 
 //! 2d vector template class with lots of operators and methods.
-/** As of Irrlicht 1.6, this class supercedes position2d, which should
+/** As of Irrlicht 1.6, this class supersedes position2d, which should
 	be considered deprecated. */
 template <class T>
 class vector2d

@@ -23,7 +23,7 @@ namespace io
 		//! Writes an xml 1.0 header.
 		/** Looks like &lt;?xml version="1.0"?&gt;. This should always
 		be called before writing anything other, because also the text
-		file header for unicode texts is written out with this method. */
+		file header for Unicode texts is written out with this method. */
 		virtual void writeXMLHeader() = 0;
 
 		//! Writes an xml element with maximal 5 attributes like "<foo />" or
@@ -62,7 +62,7 @@ namespace io
 
 		//! Writes a text into the file.
 		/** All occurrences of special characters such as
-		& (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automaticly
+		& (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automatically
 		replaced. */
 		virtual void writeText(const wchar_t* text) = 0;
 

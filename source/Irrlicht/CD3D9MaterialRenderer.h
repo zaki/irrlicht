@@ -283,7 +283,7 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	//! Returns if the material is transparent. The scene managment needs to know this
+	//! Returns if the material is transparent. The scene management needs to know this
 	//! for being able to sort the materials by opaque and transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
@@ -329,7 +329,7 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	//! Returns if the material is transparent. The scene managment needs to know this
+	//! Returns if the material is transparent. The scene management needs to know this
 	//! for being able to sort the materials by opaque and transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
@@ -372,7 +372,7 @@ public:
 		pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	}
 
-	//! Returns if the material is transparent. The scene managment needs to know this
+	//! Returns if the material is transparent. The scene management needs to know this
 	//! for being able to sort the materials by opaque and transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{
@@ -560,7 +560,7 @@ public:
 		Driver->getBridgeCalls()->setBlend(false);
 	}
 
-	//! Returns if the material is transparent. The scene managment needs to know this
+	//! Returns if the material is transparent. The scene management needs to know this
 	//! for being able to sort the materials by opaque and transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_
 	{

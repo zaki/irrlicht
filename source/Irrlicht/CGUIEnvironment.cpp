@@ -692,7 +692,7 @@ IGUIElementFactory* CGUIEnvironment::getDefaultGUIElementFactory() const
 
 //! Adds an element factory to the gui environment.
 /** Use this to extend the gui environment with new element types which it should be
-able to create automaticly, for example when loading data from xml files. */
+able to create automatically, for example when loading data from xml files. */
 void CGUIEnvironment::registerGUIElementFactory(IGUIElementFactory* factoryToAdd)
 {
 	if (factoryToAdd)

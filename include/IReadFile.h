@@ -13,7 +13,7 @@ namespace irr
 namespace io
 {
 
-	//! Interface providing read acess to a file.
+	//! Interface providing read access to a file.
 	class IReadFile : public virtual IReferenceCounted
 	{
 	public:
@@ -21,7 +21,7 @@ namespace io
 		/** \param buffer Pointer to buffer where read bytes are written to.
 		\param sizeToRead Amount of bytes to read from the file.
 		\return How many bytes were read. */
-		virtual s32 read(void* buffer, u32 sizeToRead) = 0;
+		virtual size_t read(void* buffer, size_t sizeToRead) = 0;
 
 		//! Changes position in file
 		/** \param finalPos Destination position in the file.

@@ -28,9 +28,9 @@ CMemoryReadFile::~CMemoryReadFile()
 
 
 //! returns how much was read
-s32 CMemoryReadFile::read(void* buffer, u32 sizeToRead)
+size_t CMemoryReadFile::read(void* buffer, size_t sizeToRead)
 {
-	s32 amount = static_cast<s32>(sizeToRead);
+	long amount = static_cast<long>(sizeToRead);
 	if (Pos + amount > Len)
 		amount -= Pos + amount - Len;
 
@@ -42,7 +42,7 @@ s32 CMemoryReadFile::read(void* buffer, u32 sizeToRead)
 
 	Pos += amount;
 
-	return amount;
+	return static_cast<size_t>(amount);
 }
 
 //! changes position in file, returns true if successful
@@ -107,9 +107,9 @@ CMemoryWriteFile::~CMemoryWriteFile()
 
 
 //! returns how much was written
-s32 CMemoryWriteFile::write(const void* buffer, u32 sizeToWrite)
+size_t CMemoryWriteFile::write(const void* buffer, size_t sizeToWrite)
 {
-	s32 amount = static_cast<s32>(sizeToWrite);
+	long amount = (long)sizeToWrite;
 	if (Pos + amount > Len)
 		amount -= Pos + amount - Len;
 
@@ -121,7 +121,7 @@ s32 CMemoryWriteFile::write(const void* buffer, u32 sizeToWrite)
 
 	Pos += amount;
 
-	return amount;
+	return (size_t)amount;
 }
 
 

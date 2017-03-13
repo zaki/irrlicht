@@ -33,7 +33,7 @@
 //  * Presents the loaded file as irr::scene::IAnimatedMesh for easy creation of IOctreeSceneNode
 //  * Loads the textures given the correct texture root. hence map and textures can be in separate directories
 //
-// For more informations go to http://www.geocities.com/standard_template/irrcsm/downloads.html
+// For more information go to http://www.geocities.com/standard_template/irrcsm/downloads.html
 
 #ifndef __CSM_LOADER_H_INCLUDED__
 #define __CSM_LOADER_H_INCLUDED__

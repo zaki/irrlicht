@@ -55,12 +55,12 @@ namespace scene
 
 		//! generic skinned mesh
 		EAMT_SKINNED,
-		
+
 		//! generig non-animated mesh
 		EAMT_STATIC
 	};
-	
-	
+
+
 	class IMeshBuffer;
 
 	//! Class which holds the geometry of an object.
@@ -105,7 +105,7 @@ namespace scene
 		//! Set the hardware mapping hint
 		/** This methods allows to define optimization hints for the
 		hardware. This enables, e.g., the use of hardware buffers on
-		pltforms that support this feature. This can lead to noticeable
+		platforms that support this feature. This can lead to noticeable
 		performance gains. */
 		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) = 0;
 
@@ -114,11 +114,11 @@ namespace scene
 		indices have changed. Otherwise, changes won't be updated
 		on the GPU in the next render cycle. */
 		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) = 0;
-		
+
 		//! Returns the type of the meshes.
 		/** This is useful for making a safe downcast. For example,
 		if getMeshType() returns EAMT_MD2 it's safe to cast the
-		IMesh to IAnimatedMeshMD2. 
+		IMesh to IAnimatedMeshMD2.
 		Note: It's no longer just about animated meshes, that name has just historical reasons.
 		\returns Type of the mesh  */
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const

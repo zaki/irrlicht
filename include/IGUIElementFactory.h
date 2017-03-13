@@ -42,17 +42,17 @@ namespace gui
 		//! Get amount of GUI element types this factory is able to create
 		virtual s32 getCreatableGUIElementTypeCount() const = 0;
 
-		//! Get type of a createable element type
+		//! Get type of a creatable element type
 		/** \param idx: Index of the element type in this factory. Must be a value between 0 and
 		getCreatableGUIElementTypeCount() */
 		virtual EGUI_ELEMENT_TYPE getCreateableGUIElementType(s32 idx) const = 0;
 
-		//! Get type name of a createable GUI element type by index
+		//! Get type name of a creatable GUI element type by index
 		/** \param idx: Index of the type in this factory. Must be a value between 0 and
 		getCreatableGUIElementTypeCount() */
 		virtual const c8* getCreateableGUIElementTypeName(s32 idx) const = 0;
 
-		//! returns type name of a createable GUI element
+		//! returns type name of a creatable GUI element
 		/** \param type: Type of GUI element.
 		\return Name of the type if this factory can create the type, otherwise 0. */
 		virtual const c8* getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type) const = 0;

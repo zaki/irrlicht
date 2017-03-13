@@ -2848,7 +2848,7 @@ bool CD3D9Driver::reset()
 			for (u32 j = 0; j < texArray.size(); ++j)
 			{
 				CD3D9Texture* tex = static_cast<CD3D9Texture*>(texArray[j]);
-				
+
 				if (tex)
 					tex->releaseTexture();
 			}
@@ -2881,7 +2881,7 @@ bool CD3D9Driver::reset()
 	// automatically in the next render cycle.
 	removeAllHardwareBuffers();
 
-	// reset render target usage informations.
+	// reset render target usage information.
 	for (u32 i = 0; i < ActiveRenderTarget.size(); ++i)
 		ActiveRenderTarget[i] = false;
 

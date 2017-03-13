@@ -226,7 +226,7 @@ class aabbox3d
 
 		//! Check if this box is completely inside the 'other' box.
 		/** \param other: Other box to check against.
-		\return True if this box is completly inside the other box,
+		\return True if this box is completely inside the other box,
 		otherwise false. */
 		bool isFullInside(const aabbox3d<T>& other) const
 		{

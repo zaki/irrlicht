@@ -30,7 +30,7 @@ namespace io
 		virtual ~CLimitReadFile();
 
 		//! returns how much was read
-		virtual s32 read(void* buffer, u32 sizeToRead) _IRR_OVERRIDE_;
+		virtual size_t read(void* buffer, size_t sizeToRead) _IRR_OVERRIDE_;
 
 		//! changes position in file, returns true if successful
 		//! if relativeMovement==true, the pos is changed relative to current pos,

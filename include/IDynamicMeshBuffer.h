@@ -144,14 +144,14 @@ namespace scene
 			return getIndexBuffer().getType();
 		}
 
-		//! Get access to Indices.
+		//! Get access to indices.
 		/** \return Pointer to indices array. */
 		virtual const u16* getIndices() const
 		{
 			return (u16*)getIndexBuffer().getData();
 		}
 
-		//! Get access to Indices.
+		//! Get access to indices.
 		/** \return Pointer to indices array. */
 		virtual u16* getIndices()
 		{

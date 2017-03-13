@@ -44,7 +44,7 @@ namespace video
 		//! Material type with standard lightmap technique
 		/** There should be 2 textures: The first texture layer is a
 		diffuse map, the second is a light map. Dynamic light is
-		ignored. The texture colors are effectively multiplyied by 4
+		ignored. The texture colors are effectively multiplied by 4
 		for brightening. Like known in DirectX as D3DTOP_MODULATE4X. */
 		EMT_LIGHTMAP_M4,
 
@@ -61,7 +61,7 @@ namespace video
 		/** The first texture is diffuse color map, the second is added
 		to this and usually displayed with a bigger scale value so that
 		it adds more detail. The detail map is added to the diffuse map
-		using ADD_SIGNED, so that it is possible to add and substract
+		using ADD_SIGNED, so that it is possible to add and subtract
 		color from the diffuse map. For example a value of
 		(127,127,127) will not change the appearance of the diffuse map
 		at all. Often used for terrain rendering. */
@@ -105,7 +105,7 @@ namespace video
 		pixel is written to the target, otherwise not. This
 		material does not use alpha blending and is a lot faster
 		than EMT_TRANSPARENT_ALPHA_CHANNEL. It is ideal for drawing
-		stuff like leafes of plants, because the borders are not
+		stuff like leaves of plants, because the borders are not
 		blurry but sharp. Only first texture is used. If you are
 		using this material with small textures and 3d object, it
 		is a good idea to load the texture in 32 bit mode

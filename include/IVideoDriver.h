@@ -288,7 +288,7 @@ namespace video
 		/** The following names can be queried for the given types:
 		MaxTextures (int) The maximum number of simultaneous textures supported by the driver. This can be less than the supported number of textures of the driver. Use _IRR_MATERIAL_MAX_TEXTURES_ to adapt the number.
 		MaxSupportedTextures (int) The maximum number of simultaneous textures supported by the fixed function pipeline of the (hw) driver. The actual supported number of textures supported by the engine can be lower.
-		MaxLights (int) Number of hardware lights supported in the fixed function pipieline of the driver, typically 6-8. Use light manager or deferred shading for more.
+		MaxLights (int) Number of hardware lights supported in the fixed function pipeline of the driver, typically 6-8. Use light manager or deferred shading for more.
 		MaxAnisotropy (int) Number of anisotropy levels supported for filtering. At least 1, max is typically at 16 or 32.
 		MaxUserClipPlanes (int) Number of additional clip planes, which can be set by the user via dedicated driver methods.
 		MaxAuxBuffers (int) Special render buffers, which are currently not really usable inside Irrlicht. Only supported by OpenGL
@@ -584,7 +584,7 @@ namespace video
 		\param clearColor The clear color for the color buffer.
 		\param clearDepth The clear value for the depth buffer.
 		\param clearStencil The clear value for the stencil buffer.
-		\return True if sucessful and false if not. */
+		\return True if successful and false if not. */
 		virtual bool setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
@@ -616,13 +616,13 @@ namespace video
 		\param clearColor The clear color for the color buffer.
 		\param clearDepth The clear value for the depth buffer.
 		\param clearStencil The clear value for the stencil buffer.
-		\return True if sucessful and false if not. */
+		\return True if successful and false if not. */
 		virtual bool setRenderTarget(ITexture* texture, u16 clearFlag=ECBF_COLOR|ECBF_DEPTH, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
-		//! Sets a new render target. 
+		//! Sets a new render target.
 		// Prefer to use the setRenderTarget function taking flags as parameter as this one can't clear the stencil buffer.
-		// It's still offered for backward compatiblity.
+		// It's still offered for backward compatibility.
 		_IRR_DEPRECATED_ bool setRenderTarget(ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color = SColor(255,0,0,0))
 		{
 			u16 flag = 0;
@@ -1272,7 +1272,7 @@ namespace video
 		\param size Desired size of the image
 		\param data A byte array with pixel color information
 		\param ownForeignMemory If true, the image will use the data
-		pointer directly and own it afterwards. If false, the memory
+		pointer directly and own it afterward. If false, the memory
 		will by copied internally.
 		\param deleteMemory Whether the memory is deallocated upon
 		destruction.
@@ -1348,7 +1348,7 @@ namespace video
 		\param name Optional name for the material renderer entry.
 		\return The number of the material type which can be set in
 		SMaterial::MaterialType to use the renderer. -1 is returned if
-		an error occured. For example if you tried to add an material
+		an error occurred. For example if you tried to add an material
 		renderer to the software renderer or the null device, which do
 		not accept material renderers. */
 		virtual s32 addMaterialRenderer(IMaterialRenderer* renderer, const c8* name =0) =0;
@@ -1500,7 +1500,7 @@ namespace video
 		virtual SOverrideMaterial& getOverrideMaterial() =0;
 
 		//! Get the 2d override material for altering its values
-		/** The 2d override materual allows to alter certain render
+		/** The 2d override material allows to alter certain render
 		states of the 2d methods. Not all members of SMaterial are
 		honored, especially not MaterialType and Textures. Moreover,
 		the zbuffer is always ignored, and lighting is always off. All

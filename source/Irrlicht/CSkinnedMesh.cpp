@@ -785,7 +785,7 @@ const core::array<CSkinnedMesh::SJoint*> &CSkinnedMesh::getAllJoints() const
 }
 
 
-//! (This feature is not implementated in irrlicht yet)
+//! (This feature is not implemented in irrlicht yet)
 bool CSkinnedMesh::setHardwareSkinning(bool on)
 {
 	if (HardwareSkinning!=on)

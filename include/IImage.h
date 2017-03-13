@@ -169,7 +169,7 @@ public:
 	}
 
 	//! Use this to get a pointer to the image data.
-	/** 
+	/**
 	\return Pointer to the image data. What type of data is pointed to
 	depends on the color format of the image. For example if the color
 	format is ECF_A8R8G8B8, it is of u32. */
@@ -207,7 +207,7 @@ public:
 	image.
 	\param data A byte array with pixel color information
 	\param ownForeignMemory If true, the image will use the data
-	pointer directly and own it afterwards. If false, the memory
+	pointer directly and own it afterward. If false, the memory
 	will by copied internally.
 	\param deleteMemory Whether the memory is deallocated upon
 	destruction. */
@@ -283,7 +283,7 @@ public:
 			const core::rect<s32>& sourceRect, const SColor &color,
 			const core::rect<s32>* clipRect = 0) =0;
 
-	//! copies this surface into another, scaling it to fit, appyling a box filter
+	//! copies this surface into another, scaling it to fit, applying a box filter
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false) = 0;
 
 	//! fills the surface with given color

@@ -70,7 +70,7 @@ public:
 		}
 	}
 
-	//! Get the texture loader used when this meshloder searches for textures.
+	//! Get the texture loader used when this meshloader searches for textures.
 	/** NOTE: not all meshloaders support this interface so this can return NULL.
 	*/
 	virtual IMeshTextureLoader* getMeshTextureLoader() const

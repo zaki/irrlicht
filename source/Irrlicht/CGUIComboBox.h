@@ -65,7 +65,7 @@ namespace gui
 		//! Set the maximal number of rows for the selection listbox
 		virtual void setMaxSelectionRows(u32 max) _IRR_OVERRIDE_;
 
-		//! Get the maximimal number of rows for the selection listbox
+		//! Get the maximal number of rows for the selection listbox
 		virtual u32 getMaxSelectionRows() const _IRR_OVERRIDE_;
 
 		//! called if an event happened.

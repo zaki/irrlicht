@@ -417,7 +417,7 @@ namespace core
 	};
 
 	//! partial specialization for integer vectors
-	// Implementor note: inline keyword needed due to template specialization for s32. Otherwise put specialization into a .cpp
+	// Implementer note: inline keyword needed due to template specialization for s32. Otherwise put specialization into a .cpp
 	template <>
 	inline vector3d<s32> vector3d<s32>::operator /(s32 val) const {return core::vector3d<s32>(X/val,Y/val,Z/val);}
 	template <>

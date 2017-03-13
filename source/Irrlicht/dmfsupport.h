@@ -192,7 +192,7 @@ StringList SubdivideString(const core::stringc& str, const core::stringc& divide
 }
 
 
-//Get DeleD informations and convert in dmfHeader
+//Get DeleD information and convert in dmfHeader
 /**This function extract a dmfHeader from a DMF file.
 You must give in input a StringList representing a DMF file loaded with LoadFromFile.
 \return true if function succeed or false on fail.*/

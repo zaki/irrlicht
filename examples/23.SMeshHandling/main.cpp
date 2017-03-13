@@ -126,7 +126,7 @@ public:
 
 	s is a scaling factor, which is necessary if the height units are
 	different from the coordinate units; for example, if your map has
-	heights in metres and the coordinates are in units of a
+	heights in meters and the coordinates are in units of a
 	kilometer. */
 
 	vector3df getnormal(u16 x, u16 y, f32 s) const
@@ -201,7 +201,7 @@ public:
 		const u32 mp = driver -> getMaximalPrimitiveCount();
 		Width = hm.width();
 		Height = hm.height();
-		
+
 		const u32 sw = mp / (6 * Height); // the width of each piece
 
 		u32 i=0;
@@ -340,7 +340,7 @@ int main(int argc, char* argv[])
 
 	if(device == 0)
 		return 1;
- 
+
 	IVideoDriver *driver = device->getVideoDriver();
 	ISceneManager *smgr = device->getSceneManager();
 	device->setWindowCaption(L"Irrlicht Example for SMesh usage.");
