@@ -502,6 +502,11 @@ bool CIrrDeviceLinux::createWindow()
 			IrrPrintXGrabError(grabPointer, "XGrabPointer");
 			XWarpPointer(XDisplay, None, XWindow, 0, 0, 0, 0, 0, 0);
 		}
+		else if (CreationParams.WindowPosition.X >= 0 || CreationParams.WindowPosition.Y >= 0)	// default is -1, -1
+		{
+			// Window managers are free to ignore positions above, so give it another shot
+			XMoveWindow(XDisplay,XWindow,x,y);
+		}
 	}
 	else
 	{

@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Try harder to move Window to custom WindowPosition set in SIrrlichtCreationParameters on X11. Thx@ Hernan Ezequiel Di Giorgi for the patch (#304).
 - Fix bug in virtual filessystem which prevented createFileList from working. Thx @Cube for reporting a problem.
 - ITriangleSelector now can also return meshbuffer collision information. 
 - core::string::split now adds delimiter to token before delimiter when keepSeparators is true. That way we never end up with 2 tokens for an original string with a single character.
