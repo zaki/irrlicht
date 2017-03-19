@@ -38,7 +38,7 @@ enum
 
 /*
 	Some triangle selectors allow to get collisions either per mesh or per meshbuffer.
-	Getting them per mesh can be faster. But if you need information about the hit 
+	Getting them per mesh can be faster. But if you need information about the hit
 	material you have to get the meshbuffer information as well.
 */
 const bool separateMeshBuffers = true;
@@ -94,7 +94,7 @@ int main()
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
 		/*
-			There is currently no way to split an octree by material. 
+			There is currently no way to split an octree by material.
 			So if we need that we have to create one octree per meshbuffer
 			and put them together in a MetaTriangleSelector.
 		*/
@@ -103,7 +103,7 @@ int main()
 			scene::IMetaTriangleSelector * metaSelector = smgr->createMetaTriangleSelector();
 			for ( irr::u32 m=0; m < q3node->getMesh()->getMeshBufferCount(); ++m )
 			{
-				scene::ITriangleSelector* 
+				scene::ITriangleSelector*
 					bufferSelector = smgr->createOctreeTriangleSelector(
 					q3node->getMesh()->getMeshBuffer(m), m, q3node);
 				if ( bufferSelector )
@@ -116,7 +116,7 @@ int main()
 		}
 		else
 		{
-			// Just one octree for the whole mesh. 
+			// Just one octree for the whole mesh.
 			// Can't get information which material got hit, but for many situations that's enough.
 			selector = smgr->createOctreeTriangleSelector(
 					q3node->getMesh(), q3node, 128);
@@ -171,7 +171,7 @@ int main()
 
 	if (selector)
 	{
-		scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
+		scene::ISceneNodeAnimatorCollisionResponse * anim = smgr->createCollisionResponseAnimator(
 			selector, camera, core::vector3df(30,50,30),
 			core::vector3df(0,-1000,0), core::vector3df(0,30,0));
 		selector->drop(); // As soon as we're done with the selector, drop it.
@@ -306,7 +306,7 @@ int main()
 		scene::SCollisionHit hitResult;
 		scene::ISceneNode * selectedSceneNode =collMan->getSceneNodeAndCollisionPointFromRay(
 					hitResult,	// Returns all kind of info about the collision
-					ray,	
+					ray,
 					IDFlag_IsPickable, // This ensures that only nodes that we have
 							// set up to be pickable are considered
 					0); // Check the entire scene (this is actually the implicit default)
@@ -334,9 +334,9 @@ int main()
 				highlightedSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
 			}
 
-			if ( hitResult.MeshBuffer && hitResult.Node && hitResult.Node->getMaterial(hitResult.MaterialIndex).TextureLayer[0].Texture )	
+			if ( hitResult.MeshBuffer && hitResult.Node && hitResult.Node->getMaterial(hitResult.MaterialIndex).TextureLayer[0].Texture )
 			{
-				// Note we are interested in the node material and not in the meshbuffer material. 
+				// Note we are interested in the node material and not in the meshbuffer material.
 				// Otherwise we wouldn't get the fairy2 texture which is only set on the node.
 				hitTextureName = hitResult.Node->getMaterial(hitResult.MaterialIndex).TextureLayer[0].Texture->getName();
 			}

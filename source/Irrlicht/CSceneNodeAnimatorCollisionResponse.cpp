@@ -202,7 +202,8 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 			}
 			else
 			{
-				Falling = false;
+				if ( CollisionOccurred )	// f can also happen to be false when FallingVelocity was already 0 (p.e. at top of a jump)
+					Falling = false;
 				FallingVelocity.set(0, 0, 0);
 			}
 		}
