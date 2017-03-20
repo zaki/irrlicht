@@ -77,11 +77,28 @@ void CTextSceneNode::setText(const wchar_t* text)
 	Text = text;
 }
 
+//! get the text string
+const wchar_t* CTextSceneNode::getText() const
+{
+	return Text.c_str();
+}
 
 //! sets the color of the text
 void CTextSceneNode::setTextColor(video::SColor color)
 {
 	Color = color;
+}
+
+//! get the color of the text
+video::SColor CTextSceneNode::getTextColor() const
+{
+	return Color;
+}
+
+//! Get the font used to draw the text
+gui::IGUIFont* CTextSceneNode::getFont() const
+{
+	return Font;
 }
 
 
