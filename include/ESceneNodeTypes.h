@@ -30,6 +30,9 @@ namespace scene
 		//! Text Scene Node
 		ESNT_TEXT           = MAKE_IRR_ID('t','e','x','t'),
 
+		//! Billboard text scene node
+		ESNT_BILLBOARD_TEXT = MAKE_IRR_ID('b','t','x','t'),
+
 		//! Water Surface Scene Node
 		ESNT_WATER_SURFACE  = MAKE_IRR_ID('w','a','t','r'),
 

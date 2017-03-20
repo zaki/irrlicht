@@ -40,6 +40,9 @@ public:
 	//! get the color of the text
 	virtual video::SColor getTextColor() const = 0;
 
+	//! set the font used to draw the text
+	virtual void setFont(gui::IGUIFont* font) = 0;
+
 	//! Get the font used to draw the text
 	virtual gui::IGUIFont* getFont() const = 0;
 };

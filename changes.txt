@@ -3,7 +3,7 @@ Changes in 1.9 (not yet released)
 
 - Fix IBillboardTextSceneNode::setTextColor which did nothing in the past. It now maps to setColor instead.
 - Add access functions to IBillboardTextSceneNode (getText, getFont).
-- Add access functions to ITextSceneNode (getText, getTextColor, getFont).
+- Add access functions to ITextSceneNode (getText, getTextColor, setFont, getFont).
 - Try harder to move Window to custom WindowPosition set in SIrrlichtCreationParameters on X11. Thx@ Hernan Ezequiel Di Giorgi for the patch (#304).
 - Fix bug in virtual filessystem which prevented createFileList from working. Thx @Cube for reporting a problem.
 - ITriangleSelector now can also return meshbuffer collision information. 

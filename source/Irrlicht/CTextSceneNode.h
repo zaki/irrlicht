@@ -50,6 +50,9 @@ namespace scene
 		//! get the color of the text
 		virtual video::SColor getTextColor() const _IRR_OVERRIDE_;
 
+		//! set the font used to draw the text
+		virtual void setFont(gui::IGUIFont* font) _IRR_OVERRIDE_;
+
 		//! Get the font used to draw the text
 		virtual gui::IGUIFont* getFont() const _IRR_OVERRIDE_;
 
@@ -110,7 +113,7 @@ namespace scene
 		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_TEXT; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_BILLBOARD_TEXT; }
 
 		//! Set the color of all vertices of the billboard
 		//! \param overallColor: the color to set

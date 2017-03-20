@@ -95,6 +95,18 @@ video::SColor CTextSceneNode::getTextColor() const
 	return Color;
 }
 
+void CTextSceneNode::setFont(gui::IGUIFont* font)
+{
+	if ( font != Font )
+	{
+		if ( font )
+			font->grab();
+		if ( Font )
+			Font->drop();
+		Font = font;
+	}
+}
+
 //! Get the font used to draw the text
 gui::IGUIFont* CTextSceneNode::getFont() const
 {

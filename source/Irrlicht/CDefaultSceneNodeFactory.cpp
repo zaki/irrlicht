@@ -5,6 +5,7 @@
 #include "CDefaultSceneNodeFactory.h"
 #include "ISceneManager.h"
 #include "ITextSceneNode.h"
+#include "IBillboardTextSceneNode.h"
 #include "ITerrainSceneNode.h"
 #include "IDummyTransformationSceneNode.h"
 #include "ICameraSceneNode.h"
@@ -33,6 +34,7 @@ CDefaultSceneNodeFactory::CDefaultSceneNodeFactory(ISceneManager* mgr)
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_CUBE, "cube"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_SPHERE, "sphere"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_TEXT, "text"));
+	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_BILLBOARD_TEXT, "billboardText"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_WATER_SURFACE, "waterSurface"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_TERRAIN, "terrain"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_SKY_BOX, "skyBox"));
@@ -70,6 +72,8 @@ ISceneNode* CDefaultSceneNodeFactory::addSceneNode(ESCENE_NODE_TYPE type, IScene
 		return Manager->addSphereSceneNode(5, 16, parent);
 	case ESNT_TEXT:
 		return Manager->addTextSceneNode(0, L"example");
+	case ESNT_BILLBOARD_TEXT:
+		return Manager->addBillboardTextSceneNode(0, L"example");
 	case ESNT_WATER_SURFACE:
 		return Manager->addWaterSurfaceSceneNode(0, 2.0f, 300.0f, 10.0f, parent);
 	case ESNT_TERRAIN:
