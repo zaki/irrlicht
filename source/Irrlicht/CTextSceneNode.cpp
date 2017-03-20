@@ -251,6 +251,11 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 	}
 }
 
+//! get the text string
+const wchar_t* CBillboardTextSceneNode::getText() const
+{
+	return Text.c_str();
+}
 
 //! pre render event
 void CBillboardTextSceneNode::OnAnimate(u32 timeMs)
@@ -425,11 +430,10 @@ const core::dimension2d<f32>& CBillboardTextSceneNode::getSize() const
 	return Size;
 }
 
-
-//! sets the color of the text
-void CBillboardTextSceneNode::setTextColor(video::SColor color)
+//! Get the font used to draw the text
+gui::IGUIFont* CBillboardTextSceneNode::getFont() const
 {
-	Color = color;
+	return Font;
 }
 
 //! Set the color of all vertices of the billboard

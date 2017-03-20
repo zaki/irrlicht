@@ -92,8 +92,11 @@ namespace scene
 		//! sets the text string
 		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
 
-		//! sets the color of the text
-		virtual void setTextColor(video::SColor color) _IRR_OVERRIDE_;
+		//! get the text string
+		virtual const wchar_t* getText() const _IRR_OVERRIDE_;
+
+		//! Get the font used to draw the text
+		virtual gui::IGUIFont* getFont() const _IRR_OVERRIDE_;
 
 		//! sets the size of the billboard
 		virtual void setSize(const core::dimension2d<f32>& size) _IRR_OVERRIDE_;
@@ -138,7 +141,6 @@ namespace scene
 	private:
 
 		core::stringw Text;
-		video::SColor Color;
 		gui::IGUIFontBitmap* Font;
 
 		core::dimension2d<f32> Size;
