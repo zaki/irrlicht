@@ -131,10 +131,8 @@ void fcrypt_decrypt(unsigned char data[], unsigned int data_len, fcrypt_ctx cx[1
 
 int fcrypt_end(unsigned char mac[], fcrypt_ctx cx[1])
 {
-    unsigned int res = cx->mode;
-
     hmac_sha_end(mac, MAC_LENGTH(cx->mode), cx->auth_ctx);
     memset(cx, 0, sizeof(fcrypt_ctx));	/* clear the encryption context	*/
-    return MAC_LENGTH(res);		/* return MAC length in bytes   */
+    return MAC_LENGTH(cx->mode);		/* return MAC length in bytes   */
 }
 
