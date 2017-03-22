@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Support more keys on OSX "[]\". Thanks @neoascetic for patch (#313).
 - Fix IBillboardTextSceneNode::setTextColor which did nothing in the past. It now maps to setColor instead.
 - Add access functions to IBillboardTextSceneNode (getText, getFont).
 - Add access functions to ITextSceneNode (getText, getTextColor, setFont, getFont).
