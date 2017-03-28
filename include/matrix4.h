@@ -2240,6 +2240,8 @@ namespace core
 	{
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix = isDefinitelyIdentityMatrix;
+#else
+		(void)isDefinitelyIdentityMatrix; // prevent compiler warning
 #endif
 	}
 
