@@ -65,7 +65,42 @@ class line2d
 
 		//! Get the vector of the line.
 		/** \return The vector of the line. */
-		vector2d<T> getVector() const { return vector2d<T>(end.X - start.X, end.Y - start.Y); }
+		vector2d<T> getVector() const { return vector2d<T>( end.X - start.X, end.Y - start.Y); }
+
+		/*! Check if this segment intersects another segment,
+			or if segments are coincindent (colinear). */
+		bool intersectAsSegments( const line2d<T>& other) const
+		{
+			// Taken from:
+			// http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+
+			// Find the four orientations needed for general and
+			// special cases
+			s32 o1 = start.checkOrientation( end, other.start);
+			s32 o2 = start.checkOrientation( end, other.end);
+			s32 o3 = other.start.checkOrientation( other.end, start);
+			s32 o4 = other.start.checkOrientation( other.end, end);
+
+			// General case
+			if (o1 != o2 && o3 != o4)
+				return true;
+
+			// Special Cases to check if segments are coolinear
+			if (o1 == 0 && start.onSegment( other.start, end)) return true;
+			if (o2 == 0 && start.onSegment( other.end, end)) return true;
+			if (o3 == 0 && other.start.onSegment( start, other.end)) return true;
+			if (o4 == 0 && other.start.onSegment( end, other.end)) return true;
+
+			return false; // Doesn't fall in any of the above cases
+		}
+
+		/*! Check if 2 segments are incident (intersects in exactly 1 point).*/
+		bool incidentSegments( const line2d<T>& other) const
+		{
+			return 
+				start.checkOrientation( end, other.start) != start.checkOrientation( end, other.end);
+			&&  other.start.checkOrientation( other.end, start) != other.start.checkOrientation( other.end, end);
+		}
 
 		//! Tests if this line intersects with another line.
 		/** \param l: Other line to test intersection with.
