@@ -108,6 +108,8 @@ class quaternion
 		//! Creates a matrix from this quaternion
 		matrix4 getMatrix() const;
 #endif
+		//! Faster method to create a rotation matrix, you should normalize the quaternion before!
+		void getMatrixFast(matrix4 &dest) const;
 
 		//! Creates a matrix from this quaternion
 		void getMatrix( matrix4 &dest, const core::vector3df &translation=core::vector3df() ) const;
@@ -349,12 +351,51 @@ inline matrix4 quaternion::getMatrix() const
 }
 #endif
 
+//! Faster method to create a rotation matrix, you should normalize the quaternion before!
+inline void quaternion::getMatrixFast( matrix4 &dest) const
+{
+	// TODO: 
+	// gpu quaternion skinning => fast Bones transform chain O_O YEAH!
+	// http://www.mrelusive.com/publications/papers/SIMD-From-Quaternion-to-Matrix-and-Back.pdf
+	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
+	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
+	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
+	dest[3] = 0.0f;
+
+	dest[4] = 2.0f*X*Y - 2.0f*Z*W;
+	dest[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
+	dest[6] = 2.0f*Z*Y + 2.0f*X*W;
+	dest[7] = 0.0f;
+
+	dest[8] = 2.0f*X*Z + 2.0f*Y*W;
+	dest[9] = 2.0f*Z*Y - 2.0f*X*W;
+	dest[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
+	dest[11] = 0.0f;
+
+	dest[12] = 0.f;
+	dest[13] = 0.f;
+	dest[14] = 0.f;
+	dest[15] = 1.f;
+
+	dest.setDefinitelyIdentityMatrix(false);
+}
+
 /*!
 	Creates a matrix from this quaternion
 */
 inline void quaternion::getMatrix(matrix4 &dest,
 		const core::vector3df &center) const
 {
+	// ok creating a copy may be slower, but at least avoid internal
+	// state chance (also because otherwise we cannot keep this method "const").
+
+	quaternion q( *this);
+	q.normalize();
+	f32 X = q.X;
+	f32 Y = q.Y;
+	f32 Z = q.Z;
+	f32 W = q.W;
+
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
 	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
 	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
@@ -395,6 +436,13 @@ inline void quaternion::getMatrixCenter(matrix4 &dest,
 					const core::vector3df &center,
 					const core::vector3df &translation) const
 {
+	quaternion q(*this);
+	q.normalize();
+	f32 X = q.X;
+	f32 Y = q.Y;
+	f32 Z = q.Z;
+	f32 W = q.W;
+
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
 	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
 	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
@@ -416,6 +464,13 @@ inline void quaternion::getMatrixCenter(matrix4 &dest,
 // Creates a matrix from this quaternion
 inline void quaternion::getMatrix_transposed(matrix4 &dest) const
 {
+	quaternion q(*this);
+	q.normalize();
+	f32 X = q.X;
+	f32 Y = q.Y;
+	f32 Z = q.Z;
+	f32 W = q.W;
+
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
 	dest[4] = 2.0f*X*Y + 2.0f*Z*W;
 	dest[8] = 2.0f*X*Z - 2.0f*Y*W;
@@ -492,7 +547,7 @@ inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 // sets new quaternion based on Euler angles
 inline quaternion& quaternion::set(const core::vector3df& vec)
 {
-	return set(vec.X, vec.Y, vec.Z);
+	return set( vec.X, vec.Y, vec.Z);
 }
 
 // sets new quaternion based on other quaternion
@@ -505,28 +560,23 @@ inline quaternion& quaternion::set(const core::quaternion& quat)
 //! returns if this quaternion equals the other one, taking floating point rounding errors into account
 inline bool quaternion::equals(const quaternion& other, const f32 tolerance) const
 {
-	return core::equals(X, other.X, tolerance) &&
-		core::equals(Y, other.Y, tolerance) &&
-		core::equals(Z, other.Z, tolerance) &&
-		core::equals(W, other.W, tolerance);
+	return core::equals( X, other.X, tolerance) &&
+		core::equals( Y, other.Y, tolerance) &&
+		core::equals( Z, other.Z, tolerance) &&
+		core::equals( W, other.W, tolerance);
 }
 
 
 // normalizes the quaternion
 inline quaternion& quaternion::normalize()
 {
-	const f32 n = X*X + Y*Y + Z*Z + W*W;
-
-	if (n == 1)
-		return *this;
-
-	//n = 1.0f / sqrtf(n);
-	return (*this *= reciprocal_squareroot ( n ));
+	// removed conditional branch since it may slow down and anyway the condition was
+	// false even after normalization in some cases.
+	return (*this *= reciprocal_squareroot ( X*X + Y*Y + Z*Z + W*W ));
 }
 
-
 // set this quaternion to the result of the linear interpolation between two quaternions
-inline quaternion& quaternion::lerp(quaternion q1, quaternion q2, f32 time)
+inline quaternion& quaternion::lerp( quaternion q1, quaternion q2, f32 time)
 {
 	const f32 scale = 1.0f - time;
 	return (*this = (q1*scale) + (q2*time));
@@ -534,7 +584,7 @@ inline quaternion& quaternion::lerp(quaternion q1, quaternion q2, f32 time)
 
 
 // set this quaternion to the result of the interpolation between two quaternions
-inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time, f32 threshold)
+inline quaternion& quaternion::slerp( quaternion q1, quaternion q2, f32 time, f32 threshold)
 {
 	f32 angle = q1.dotProduct(q2);
 
