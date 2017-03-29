@@ -111,7 +111,7 @@ bool CWriteFile::flush()
 	if (!isOpen())
 		return false;
 
-	return !(bool) fflush(File);
+	return fflush(File) == 0; // 0 indicates success, otherwise EOF and errno is set
 }
 
 IWriteFile* CWriteFile::createWriteFile(const io::path& fileName, bool append)
