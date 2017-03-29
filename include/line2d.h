@@ -102,6 +102,49 @@ class line2d
 			&&  other.start.checkOrientation( other.end, start) != other.start.checkOrientation( other.end, end);
 		}
 
+		/*! Check if 2 lines/segments are parallel or nearly parallel.*/ 
+		bool nearlyParallel( const line2d<T>& line) const
+		{
+			vector2d<T> a = this->getVector();
+			vector2d<T> b = line.getVector();
+
+			return  (f32)a.dotProduct(b) < irr::core::ROUNDING_ERROR_f32;
+		}
+
+		/*! returns a intersection point of 2 lines (if lines are not parallel). Behaviour
+		undefined if lines are parallel or coincident.*/
+		vector2d<T> fastLinesIntersection( const line2d<T>& line)
+		{
+			const f32 commonDenominator = (f32)((l.end.Y - l.start.Y)*(end.X - start.X) -
+				(l.end.X - l.start.X)*(end.Y - start.Y));
+
+			const f32 numeratorA = (f32)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
+				(l.end.Y - l.start.Y)*(start.X - l.start.X));
+
+			const f32 numeratorB = (f32)((end.X - start.X)*(start.Y - l.start.Y) -
+				(end.Y - start.Y)*(start.X - l.start.X));
+
+			const f32 uA = numeratorA / commonDenominator;
+			const f32 uB = numeratorB / commonDenominator;
+
+			// Calculate the intersection point.
+			return vector2d<T> (
+				(T)(start.X + uA * (end.X - start.X)), 
+				(T)(start.Y + uA * (end.Y - start.Y))
+				);
+		}
+
+		/*! Check if this line intersect a segment. The eventual intersection point is returned in "out".*/
+		bool lineIntersectSegment( const line2d<T>& segment, vector2d<T> & out) const
+		{
+			if (nearlyParallel( segment))
+				return false;
+
+			out = fastLinesIntersection( segment);
+
+			return segment.start.onSegment( intersection, segment.end);
+		}
+
 		//! Tests if this line intersects with another line.
 		/** \param l: Other line to test intersection with.
 		\param checkOnlySegments: Default is to check intersection between the begin and endpoints.
