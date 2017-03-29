@@ -300,6 +300,68 @@ public:
 					(T)(Y * mul0 + v2.Y * mul1 + v3.Y * mul2));
 	}
 
+	/*! Test if this point and another 2 poitns taken as triplet
+		are colinear, clockwise, anticlockwise. This can be used also
+		to check winding order in triangles for 2D meshes.
+		\return 0 if points are colinear, 1 if clockwise, 2 if anticlockwise
+	*/
+	s32 checkOrientation( const vector2d<T> & b, const & vector2d<T> c) const
+	{
+		// Example of clockwise points
+		//
+		//   ^ Y
+		//   |       A
+		//   |      / \
+		//   |     /   \
+		//   |    C-----B
+		//   +---------------> X
+
+		s32 val = (b.y - y) * (c.x - b.x) -
+			(b.x - x) * (c.y - b.y);
+
+		if (val == 0) return 0;  // colinear
+
+		return (val > 0) ? 1 : 2; // clock or counterclock wise
+	}
+
+	/*! Returns true if points (a,b,c) are clockwise on the X,Y plane*/
+	inline bool areClockwise( const & vector2d<T> b, const & vector2d<T> c) const
+	{
+		s32 val = (b.y - y) * (c.x - b.x) -
+			(b.x - x) * (c.y - b.y);
+
+		return val > 0;
+	}
+
+	/*! Returns true if points (a,b,c) are counterclockwise on the X,Y plane*/
+	inline bool areCounterClockwise( const & vector2d<T> b, const & vector2d<T> c) const
+	{
+		s32 val = (b.y - y) * (c.x - b.x) -
+			(b.x - x) * (c.y - b.y);
+
+		return val < 0;
+	}
+
+	// Given three colinear points p, q, r, the function checks if
+	// point q lies on segment 'pr'. The point "p" is this one.
+	bool onSegment( const & vector2d<T> q, const & vector2d<T> r) const
+	{
+		//   (this)p .
+		//            \
+		//             \   
+		//              \ 
+		//               . r
+		//                -
+		//                 -
+		//                  . q (hei there! Am I on the segment or outside?)
+		//
+		if (q.x <= max_( x, r.x) && q.x >= min_( x, r.x) &&
+			q.y <= max_( y, r.y) && q.y >= min_( y, r.y))
+			return true; // inside
+
+		return false; // outside
+	}
+
 	//! Sets this vector to the linearly interpolated vector between a and b.
 	/** \param a first vector to interpolate with, maximum at 1.0f
 	\param b second vector to interpolate with, maximum at 0.0f
