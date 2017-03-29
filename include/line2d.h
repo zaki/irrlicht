@@ -98,7 +98,7 @@ class line2d
 		bool incidentSegments( const line2d<T>& other) const
 		{
 			return 
-				start.checkOrientation( end, other.start) != start.checkOrientation( end, other.end);
+				start.checkOrientation( end, other.start) != start.checkOrientation( end, other.end)
 			&&  other.start.checkOrientation( other.end, start) != other.start.checkOrientation( other.end, end);
 		}
 
