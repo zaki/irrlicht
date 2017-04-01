@@ -206,16 +206,16 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 {
 #if defined(_IRR_WINDOWS_API_) && !defined (_IRR_XBOX_PLATFORM_)
-	MEMORYSTATUS MemoryStatus;
-	MemoryStatus.dwLength = sizeof(MEMORYSTATUS);
+	MEMORYSTATUSEX MemoryStatusEx;
+ 	MemoryStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 
 	// cannot fail
-	GlobalMemoryStatus(&MemoryStatus);
+	GlobalMemoryStatusEx(&MemoryStatusEx);
 
 	if (Total)
-		*Total = (u32)(MemoryStatus.dwTotalPhys>>10);
+		*Total = (u32)(MemoryStatusEx.ullTotalPhys>>10);
 	if (Avail)
-		*Avail = (u32)(MemoryStatus.dwAvailPhys>>10);
+		*Avail = (u32)(MemoryStatusEx.ullAvailPhys>>10);
 
 	return true;
 
@@ -234,7 +234,7 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 		*Avail = (u32)((ps*(long long)ap)>>10);
 	return true;
 #else
-	// TODO: implement for non-availablity of symbols/features
+	// TODO: implement for non-availability of symbols/features
 	return false;
 #endif
 #elif defined(_IRR_OSX_PLATFORM_)

@@ -118,12 +118,15 @@ namespace irr
 			return CIrrDeviceStub::checkSuccessiveClicks(mouseX, mouseY, inputEvent );
 		}
 
-		//! switchs to fullscreen
+		//! Switch to fullscreen
 		bool switchToFullScreen(bool reset=false);
 
 		//! Check for and show last Windows API error to help internal debugging.
-		//! Does call GetLastError and on errors formats the errortext and displays it in a messagebox.
+		//! Does call GetLastError and on errors formats the error text and displays it in a messagebox.
 		static void ReportLastWinApiError();
+
+		//! Same function Windows offers in VersionHelpers.h, but we can't use that as it's not available before SDK 8.1
+		static bool isWindowsVistaOrGreater();
 
 		// convert an Irrlicht texture to a windows cursor
 		HCURSOR TextureToCursor(HWND hwnd, irr::video::ITexture * tex, const core::rect<s32>& sourceRect, const core::position2d<s32> &hotspot);
@@ -282,15 +285,21 @@ namespace irr
 			{
 				if (!fullscreen)
 				{
+					s32 paddingBorder = 0;
+					#if defined (SM_CXPADDEDBORDER)
+						if (CIrrDeviceWin32::isWindowsVistaOrGreater())
+							paddingBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
+					#endif
+
 					if (resizable)
 					{
-						BorderX = GetSystemMetrics(SM_CXSIZEFRAME);
-						BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME);
+						BorderX = GetSystemMetrics(SM_CXSIZEFRAME) + paddingBorder;
+						BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME) + paddingBorder;
 					}
 					else
 					{
-						BorderX = GetSystemMetrics(SM_CXDLGFRAME);
-						BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME);
+						BorderX = GetSystemMetrics(SM_CXDLGFRAME) + paddingBorder;
+						BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME) + paddingBorder;
 					}
 				}
 				else

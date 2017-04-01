@@ -1955,6 +1955,22 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 	}
 }
 
+// Same function Windows offers in VersionHelpers.h, but we can't use that as it's not available in older sdk's (minimum is SDK 8.1)
+bool CIrrDeviceWin32::isWindowsVistaOrGreater()
+{
+	OSVERSIONINFOEX osvi;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	osvi.dwMajorVersion = 6; //  Windows Vista
+
+	if ( !GetVersionEx((OSVERSIONINFO*)&osvi) )
+	{
+		return false;
+	}
+	
+	return VerifyVersionInfo(&osvi, VER_MAJORVERSION, VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL));
+}
+
 // Convert an Irrlicht texture to a Windows cursor
 // Based on http://www.codeguru.com/cpp/w-p/win32/cursors/article.php/c4529/
 HCURSOR CIrrDeviceWin32::TextureToCursor(HWND hwnd, irr::video::ITexture * tex, const core::rect<s32>& sourceRect, const core::position2d<s32> &hotspot)
