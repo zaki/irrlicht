@@ -107,6 +107,7 @@
 		<Unit filename="irrString.cpp" />
 		<Unit filename="lightMaps.cpp" />
 		<Unit filename="lights.cpp" />
+        <Unit filename="line2d.cpp" />
 		<Unit filename="loadTextures.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />

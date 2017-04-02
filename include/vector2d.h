@@ -127,6 +127,19 @@ public:
 		return X*other.X + Y*other.Y;
 	}
 
+	//! check if this vector is parallel to another vector
+	bool nearlyParallel( const vector2d<T> & other, const T factor = relativeErrorFactor<T>()) const
+	{
+		// if a || b then  a.x/a.y = b.x/b.y (similiar triangles)
+		// if a || b then either both x are 0 or both y are 0.
+
+		return  equalsRelative( X*other.Y, other.X* Y, factor)
+		&& // a bit counterintuitive, but makes sure  that
+		   // only y or only x are 0, and at same time deals
+		   // with the case where one vector is zero vector.
+			(X*other.X + Y*other.Y) != 0;
+	}
+
 	//! Gets distance from another point.
 	/** Here, the vector is interpreted as a point in 2-dimensional space.
 	\param other Other vector to measure from.
@@ -259,16 +272,7 @@ public:
 	\return True if this vector is between begin and end, false if not. */
 	bool isBetweenPoints(const vector2d<T>& begin, const vector2d<T>& end) const
 	{
-		if (begin.X != end.X)
-		{
-			return ((begin.X <= X && X <= end.X) ||
-				(begin.X >= X && X >= end.X));
-		}
-		else
-		{
-			return ((begin.Y <= Y && Y <= end.Y) ||
-				(begin.Y >= Y && Y >= end.Y));
-		}
+		return begin.onSegment( *this, end);
 	}
 
 	//! Creates an interpolated vector between this vector and another vector.
@@ -298,6 +302,68 @@ public:
 
 		return vector2d<T> ( (T)(X * mul0 + v2.X * mul1 + v3.X * mul2),
 					(T)(Y * mul0 + v2.Y * mul1 + v3.Y * mul2));
+	}
+
+	/*! Test if this point and another 2 poitns taken as triplet
+		are colinear, clockwise, anticlockwise. This can be used also
+		to check winding order in triangles for 2D meshes.
+		\return 0 if points are colinear, 1 if clockwise, 2 if anticlockwise
+	*/
+	s32 checkOrientation( const vector2d<T> & b, const vector2d<T> & c) const
+	{
+		// Example of clockwise points
+		//
+		//   ^ Y
+		//   |       A
+		//   |      / \
+		//   |     /   \
+		//   |    C-----B
+		//   +---------------> X
+
+		T val = (b.Y - Y) * (c.X - b.X) -
+			(b.X - X) * (c.Y - b.Y);
+
+		if (val == 0) return 0;  // colinear
+
+		return (val > 0) ? 1 : 2; // clock or counterclock wise
+	}
+
+	/*! Returns true if points (a,b,c) are clockwise on the X,Y plane*/
+	inline bool areClockwise( const vector2d<T> & b, const vector2d<T> & c) const
+	{
+		T val = (b.Y - Y) * (c.X - b.X) -
+			(b.X - X) * (c.Y - b.Y);
+
+		return val > 0;
+	}
+
+	/*! Returns true if points (a,b,c) are counterclockwise on the X,Y plane*/
+	inline bool areCounterClockwise( const vector2d<T> & b, const vector2d<T> & c) const
+	{
+		T val = (b.Y - Y) * (c.X - b.X) -
+			(b.X - X) * (c.Y - b.Y);
+
+		return val < 0;
+	}
+
+	// Given three COLINEAR POINTS p, q, r, the function checks if
+	// point q lies on segment 'pr'. The point "p" is this one.
+	bool onSegment(const vector2d<T> & q, const vector2d<T> & r) const
+	{
+		//   (this)p .
+		//            \
+		//             \   
+		//              \ 
+		//               . r
+		//                -
+		//                 -
+		//                  . q (hei there! Am I on the segment or outside?)
+		//
+		if (q.X <= max_( X, r.X) && q.X >= min_( X, r.X) &&
+			q.Y <= max_( Y, r.Y) && q.X >= min_( Y, r.Y))
+			return true; // inside
+
+		return false; // outside
 	}
 
 	//! Sets this vector to the linearly interpolated vector between a and b.

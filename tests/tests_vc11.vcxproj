@@ -179,6 +179,7 @@
     <ClCompile Include="irrString.cpp" />
     <ClCompile Include="lightMaps.cpp" />
     <ClCompile Include="lights.cpp" />
+    <ClCompile Include="line2d.cpp" />
     <ClCompile Include="loadTextures.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="makeColorKeyTexture.cpp" />
