@@ -254,6 +254,8 @@ namespace core
 	template <class T>
 	inline bool equalsRelative( const T a, const T b, const T factor = relativeErrorFactor<T>())
 	{
+		//https://eagergames.wordpress.com/2017/04/01/fast-parallel-lines-and-vectors-test/
+
 		const T maxi = max_( a, b);
 		const T mini = min_( a, b);
 		const T maxMagnitude = max_( maxi, -mini);

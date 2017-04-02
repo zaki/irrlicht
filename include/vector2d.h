@@ -130,6 +130,7 @@ public:
 	//! check if this vector is parallel to another vector
 	bool nearlyParallel( const vector2d<T> & other, const T factor = relativeErrorFactor<T>()) const
 	{
+		// https://eagergames.wordpress.com/2017/04/01/fast-parallel-lines-and-vectors-test/
 		// if a || b then  a.x/a.y = b.x/b.y (similiar triangles)
 		// if a || b then either both x are 0 or both y are 0.
 
@@ -348,7 +349,7 @@ public:
 
 	// Given three COLINEAR POINTS p, q, r, the function checks if
 	// point q lies on segment 'pr'. The point "p" is this one.
-	bool onSegment(const vector2d<T> & q, const vector2d<T> & r) const
+	bool onSegment( const vector2d<T> & q, const vector2d<T> & r) const
 	{
 		//     (this)p .
 		//            /
@@ -360,7 +361,7 @@ public:
 		//      . q (hei there! Am I on the segment or outside?)
 		//
 		if (q.X <= max_( X, r.X) && q.X >= min_( X, r.X) &&
-			q.Y <= max_( Y, r.Y) && q.X >= min_( Y, r.Y))
+			q.Y <= max_( Y, r.Y) && q.X >= min_( Y, r.Y)) 
 			return true; // inside
 
 		return false; // outside
@@ -372,7 +373,7 @@ public:
 	\param d Interpolation value between 0.0f (all vector b) and 1.0f (all vector a)
 	Note that this is the opposite direction of interpolation to getInterpolated_quadratic()
 	*/
-	vector2d<T>& interpolate(const vector2d<T>& a, const vector2d<T>& b, f64 d)
+	vector2d<T>& interpolate( const vector2d<T>& a, const vector2d<T>& b, f64 d)
 	{
 		X = (T)((f64)b.X + ( ( a.X - b.X ) * d ));
 		Y = (T)((f64)b.Y + ( ( a.Y - b.Y ) * d ));

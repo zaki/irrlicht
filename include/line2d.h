@@ -97,12 +97,12 @@ class line2d
 		/*! Check if 2 segments are incident (intersects in exactly 1 point).*/
 		bool incidentSegments( const line2d<T>& other) const
 		{
-			return
+			return 
 				start.checkOrientation( end, other.start) != start.checkOrientation( end, other.end)
 			&&  other.start.checkOrientation( other.end, start) != other.start.checkOrientation( other.end, end);
 		}
 
-		/*! Check if 2 lines/segments are parallel or nearly parallel.*/
+		/*! Check if 2 lines/segments are parallel or nearly parallel.*/ 
 		bool nearlyParallel( const line2d<T>& line, const T factor = relativeErrorFactor<T>()) const
 		{
 			const vector2d<T> a = getVector();
@@ -113,7 +113,7 @@ class line2d
 
 		/*! returns a intersection point of 2 lines (if lines are not parallel). Behaviour
 		undefined if lines are parallel or coincident.*/
-		vector2d<T> fastLinesIntersection( const line2d<T>& l)
+		vector2d<T> fastLinesIntersection( const line2d<T>& l) const
 		{
 			const f32 commonDenominator = (f32)((l.end.Y - l.start.Y)*(end.X - start.X) -
 				(l.end.X - l.start.X)*(end.Y - start.Y));
@@ -129,9 +129,20 @@ class line2d
 
 			// Calculate the intersection point.
 			return vector2d<T> (
-				(T)(start.X + uA * (end.X - start.X)),
+				(T)(start.X + uA * (end.X - start.X)), 
 				(T)(start.Y + uA * (end.Y - start.Y))
 				);
+		}
+
+		/*! Check if this line intersect a segment. The eventual intersection point is returned in "out".*/
+		bool lineIntersectSegment( const line2d<T>& segment, vector2d<T> & out) const
+		{
+			if (nearlyParallel( segment))
+				return false;
+
+			out = fastLinesIntersection( segment);
+
+			return segment.start.onSegment( out, segment.end);
 		}
 
 		//! Tests if this line intersects with another line.
@@ -276,7 +287,7 @@ class line2d
 		/** Assumes that the point is already somewhere on the line. */
 		bool isPointBetweenStartAndEnd(const vector2d<T>& point) const
 		{
-			return point.isBetweenPoints(start, end);
+			return point.isBetweenPoints(start, end); 
 		}
 
 		//! Get the closest point on this line to a point
