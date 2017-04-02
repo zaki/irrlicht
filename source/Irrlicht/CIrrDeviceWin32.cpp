@@ -1958,6 +1958,7 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 // Same function Windows offers in VersionHelpers.h, but we can't use that as it's not available in older sdk's (minimum is SDK 8.1)
 bool CIrrDeviceWin32::isWindowsVistaOrGreater()
 {
+#if (_WIN32_WINNT >= 0x0500)
 	OSVERSIONINFOEX osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
@@ -1969,6 +1970,9 @@ bool CIrrDeviceWin32::isWindowsVistaOrGreater()
 	}
 
 	return VerifyVersionInfo(&osvi, VER_MAJORVERSION, VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL));
+#else
+    return false;
+#endif
 }
 
 // Convert an Irrlicht texture to a Windows cursor
