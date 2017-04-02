@@ -1,7 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
-- Update speed of draw3DBox (OpenGL). Thanks @zerochen for patch (https://sourceforge.net/p/irrlicht/patches/256)
+- Improve speed of draw3DBox (OpenGL and D3D9). Thanks @zerochen for patch (https://sourceforge.net/p/irrlicht/patches/256)
 - Support more keys on OSX "[]\". Thanks @neoascetic for patch (#313).
 - Fix IBillboardTextSceneNode::setTextColor which did nothing in the past. It now maps to setColor instead.
 - Add access functions to IBillboardTextSceneNode (getText, getFont).

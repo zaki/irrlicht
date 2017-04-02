@@ -2829,6 +2829,47 @@ void CD3D9Driver::draw3DLine(const core::vector3df& start,
 	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, v, sizeof(S3DVertex));
 }
 
+void CD3D9Driver::draw3DBox( const core::aabbox3d<f32>& box, SColor color)
+{
+	core::vector3df edges[8];
+	box.getEdges(edges);
+ 
+	setVertexShader(EVT_STANDARD);
+	setRenderStates3DMode();
+
+	video::S3DVertex v[24];
+
+	for(u32 i = 0; i < 24; i++)
+		v[i].Color = color;
+
+	v[0].Pos = edges[5];
+	v[1].Pos = edges[1];
+	v[2].Pos = edges[1];
+	v[3].Pos = edges[3];
+	v[4].Pos = edges[3];
+	v[5].Pos = edges[7];
+	v[6].Pos = edges[7];
+	v[7].Pos = edges[5];
+	v[8].Pos = edges[0];
+	v[9].Pos = edges[2];
+	v[10].Pos = edges[2];
+	v[11].Pos = edges[6];
+	v[12].Pos = edges[6];
+	v[13].Pos = edges[4];
+	v[14].Pos = edges[4];
+	v[15].Pos = edges[0];
+	v[16].Pos = edges[1];
+	v[17].Pos = edges[0];
+	v[18].Pos = edges[3];
+	v[19].Pos = edges[2];
+	v[20].Pos = edges[7];
+	v[21].Pos = edges[6];
+	v[22].Pos = edges[5];
+	v[23].Pos = edges[4];
+
+	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 12, v, sizeof(S3DVertex));
+}
+
 
 //! resets the device
 bool CD3D9Driver::reset()
