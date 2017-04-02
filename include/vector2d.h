@@ -315,9 +315,9 @@ public:
 		//
 		//   ^ Y
 		//   |       A
-		//   |      / \
-		//   |     /   \
-		//   |    C-----B
+		//   |      . .
+		//   |     .   .
+		//   |    C.....B
 		//   +---------------> X
 
 		T val = (b.Y - Y) * (c.X - b.X) -
@@ -350,14 +350,14 @@ public:
 	// point q lies on segment 'pr'. The point "p" is this one.
 	bool onSegment(const vector2d<T> & q, const vector2d<T> & r) const
 	{
-		//   (this)p .
-		//            \
-		//             \   
-		//              \ 
-		//               . r
-		//                -
-		//                 -
-		//                  . q (hei there! Am I on the segment or outside?)
+		//     (this)p .
+		//            /
+		//           /
+		//          /
+		//         . r
+		//        -
+		//       -
+		//      . q (hei there! Am I on the segment or outside?)
 		//
 		if (q.X <= max_( X, r.X) && q.X >= min_( X, r.X) &&
 			q.Y <= max_( Y, r.Y) && q.X >= min_( Y, r.Y))

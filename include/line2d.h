@@ -97,12 +97,12 @@ class line2d
 		/*! Check if 2 segments are incident (intersects in exactly 1 point).*/
 		bool incidentSegments( const line2d<T>& other) const
 		{
-			return 
+			return
 				start.checkOrientation( end, other.start) != start.checkOrientation( end, other.end)
 			&&  other.start.checkOrientation( other.end, start) != other.start.checkOrientation( other.end, end);
 		}
 
-		/*! Check if 2 lines/segments are parallel or nearly parallel.*/ 
+		/*! Check if 2 lines/segments are parallel or nearly parallel.*/
 		bool nearlyParallel( const line2d<T>& line, const T factor = relativeErrorFactor<T>()) const
 		{
 			const vector2d<T> a = getVector();
@@ -129,20 +129,9 @@ class line2d
 
 			// Calculate the intersection point.
 			return vector2d<T> (
-				(T)(start.X + uA * (end.X - start.X)), 
+				(T)(start.X + uA * (end.X - start.X)),
 				(T)(start.Y + uA * (end.Y - start.Y))
 				);
-		}
-
-		/*! Check if this line intersect a segment. The eventual intersection point is returned in "out".*/
-		bool lineIntersectSegment( const line2d<T>& segment, vector2d<T> & out) const
-		{
-			if (nearlyParallel( segment))
-				return false;
-
-			out = fastLinesIntersection( segment);
-
-			return segment.start.onSegment( intersection, segment.end);
 		}
 
 		//! Tests if this line intersects with another line.

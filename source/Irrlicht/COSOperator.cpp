@@ -82,7 +82,7 @@ void COSOperator::copyToClipboard(const c8* text) const
 #elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
     NSString *str = nil;
     NSPasteboard *board = nil;
-    
+
     if ((text != NULL) && (strlen(text) > 0))
     {
         str = [NSString stringWithCString:text encoding:NSWindowsCP1252StringEncoding];
@@ -90,7 +90,7 @@ void COSOperator::copyToClipboard(const c8* text) const
         [board declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:NSApp];
         [board setString:str forType:NSStringPboardType];
     }
-    
+
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     if ( IrrDeviceLinux )
         IrrDeviceLinux->copyToClipboard(text);
@@ -125,10 +125,10 @@ const c8* COSOperator::getTextFromClipboard() const
 
     board = [NSPasteboard generalPasteboard];
     str = [board stringForType:NSStringPboardType];
-    
+
     if (str != nil)
         result = (char*)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
-    
+
     return (result);
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
