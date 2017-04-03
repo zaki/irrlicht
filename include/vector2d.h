@@ -273,7 +273,25 @@ public:
 	\return True if this vector is between begin and end, false if not. */
 	bool isBetweenPoints(const vector2d<T>& begin, const vector2d<T>& end) const
 	{
-		return begin.onSegment( *this, end);
+		//             .  end
+		//            /
+		//           /
+		//          /
+		//         . begin
+		//        -
+		//       -
+		//      . this point (am I inside or outside)?
+		//
+		if (begin.X != end.X)
+		{
+			return ((begin.X <= X && X <= end.X) ||
+					(begin.X >= X && X >= end.X));
+		}
+		else
+		{
+			return ((begin.Y <= Y && Y <= end.Y) ||
+					(begin.Y >= Y && Y >= end.Y));
+		}
 	}
 
 	//! Creates an interpolated vector between this vector and another vector.
@@ -345,26 +363,6 @@ public:
 			(b.X - X) * (c.Y - b.Y);
 
 		return val < 0;
-	}
-
-	// Given three COLINEAR POINTS p, q, r, the function checks if
-	// point q lies on segment 'pr'. The point "p" is this one.
-	bool onSegment( const vector2d<T> & q, const vector2d<T> & r) const
-	{
-		//     (this)p .
-		//            /
-		//           /
-		//          /
-		//         . r
-		//        -
-		//       -
-		//      . q (hei there! Am I on the segment or outside?)
-		//
-		if (q.X <= max_( X, r.X) && q.X >= min_( X, r.X) &&
-			q.Y <= max_( Y, r.Y) && q.X >= min_( Y, r.Y)) 
-			return true; // inside
-
-		return false; // outside
 	}
 
 	//! Sets this vector to the linearly interpolated vector between a and b.

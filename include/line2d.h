@@ -86,10 +86,10 @@ class line2d
 				return true;
 
 			// Special Cases to check if segments are coolinear
-			if (o1 == 0 && start.onSegment( other.start, end)) return true;
-			if (o2 == 0 && start.onSegment( other.end, end)) return true;
-			if (o3 == 0 && other.start.onSegment( start, other.end)) return true;
-			if (o4 == 0 && other.start.onSegment( end, other.end)) return true;
+			if (o1 == 0 && other.start.isBetweenPoints( start, end)) return true;
+			if (o2 == 0 && other.end.isBetweenPoints( start, end)) return true;
+			if (o3 == 0 && start.isBetweenPoints( other.start, other.end)) return true;
+			if (o4 == 0 && end.isBetweenPoints( other.start, other.end)) return true;
 
 			return false; // Doesn't fall in any of the above cases
 		}
@@ -142,7 +142,7 @@ class line2d
 
 			out = fastLinesIntersection( segment);
 
-			return segment.start.onSegment( out, segment.end);
+			return out.isBetweenPoints( segment.start, segment.end);
 		}
 
 		//! Tests if this line intersects with another line.
