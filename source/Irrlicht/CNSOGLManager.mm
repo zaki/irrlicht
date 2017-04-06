@@ -51,12 +51,12 @@ bool CNSOGLManager::generateSurface()
             NSOpenGLPFANoRecovery,
             NSOpenGLPFAAccelerated,
             NSOpenGLPFADoubleBuffer,
-            NSOpenGLPFADepthSize, depthSize,
+            NSOpenGLPFADepthSize, static_cast<NSOpenGLPixelFormatAttribute>(depthSize),
             NSOpenGLPFAColorSize, Params.Bits,
-            NSOpenGLPFAAlphaSize, alphaSize,
+            NSOpenGLPFAAlphaSize, static_cast<NSOpenGLPixelFormatAttribute>(alphaSize),
             NSOpenGLPFASampleBuffers, 1,
             NSOpenGLPFASamples, Params.AntiAlias,
-            NSOpenGLPFAStencilSize, Params.Stencilbuffer ? 1 : 0,
+            NSOpenGLPFAStencilSize, static_cast<NSOpenGLPixelFormatAttribute>(Params.Stencilbuffer ? 1 : 0),
             //NSOpenGLPFAFullScreen,
             0
         };

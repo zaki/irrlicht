@@ -135,7 +135,7 @@ bool CEAGLManager::generateContext()
     if (dataStorage->Context != nil || !Configured)
         return false;
 
-	EAGLRenderingAPI OpenGLESVersion = 0;
+	EAGLRenderingAPI OpenGLESVersion = kEAGLRenderingAPIOpenGLES2;
 
 	switch (Params.DriverType)
 	{

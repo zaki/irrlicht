@@ -578,7 +578,7 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 		{
 			[[NSAutoreleasePool alloc] init];
 			[NSApplication sharedApplication];
-			[NSApp setDelegate:(id<NSFileManagerDelegate>)[[[CIrrDelegateOSX alloc] initWithDevice:this] autorelease]];
+			[NSApp setDelegate:(id<NSApplicationDelegate>)[[[CIrrDelegateOSX alloc] initWithDevice:this] autorelease]];
             
             // Create menu
             
@@ -1259,7 +1259,7 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	c.y = p.y;
 
 #ifdef __MAC_10_6
-    CGEventRef ev = CGEventCreateMouseEvent(0, kCGEventMouseMoved, c, 0);
+    CGEventRef ev = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, c, kCGMouseButtonLeft);
     CGEventPost(kCGHIDEventTap, ev);
     CFRelease(ev);
 #else
