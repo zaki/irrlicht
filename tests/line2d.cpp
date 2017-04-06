@@ -3,33 +3,10 @@
 
 #include "testUtils.h"
 
-using namespace irr;
-using namespace irr::core;
-
-#include <stdint.h>
 #include <iostream>
 
-/* The state must be seeded so that it is not everywhere zero. */
-uint64_t s[16];
-int p;
-
-uint64_t xorshift1024star(void) {
-	const uint64_t s0 = s[p];
-	uint64_t s1 = s[p = (p + 1) & 15];
-	s1 ^= s1 << 31; // a
-	s[p] = s1 ^ s0 ^ (s1 >> 11) ^ (s0 >> 30); // b, c
-	return s[p] * UINT64_C(1181783497276652981);
-}
-
-void initRand() {
-	for (int i = 0; i < 16; i++) {
-		s[i] = i*i*i - i +13;
-	}
-}
-
-float randomFloat() {
-	return (float) xorshift1024star() / 2e62;
-}
+using namespace irr;
+using namespace irr::core;
 
 #define EXPECT( condition, value, name) if( condition != value) \
 	{ std::cout<< name << ": test failed"<< std::endl; return false;}
@@ -37,8 +14,6 @@ float randomFloat() {
 //! Tests the basic functionality of the software device.
 bool line2DTest(void)
 {
-	initRand();
-
 	{
 		line2d< f32> a(0, 0, 0, 1);
 		line2d< f32> b(2, 0, 2, 1);
@@ -98,11 +73,7 @@ bool line2DTest(void)
 		EXPECT( a.checkOrientation( b, c), 2, "test if orientation is anticlockwise");
 		EXPECT( a.checkOrientation( c, d), 0, "test if orientation is colinear");
 		EXPECT( a.checkOrientation( d, c), 0, "test if orientation is colinear 2");
-
-		
 	}
 
 	return true;
 }
-
-#undef EXPECT

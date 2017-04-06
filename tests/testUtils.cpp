@@ -1,20 +1,16 @@
 // Copyright (C) 2008-2012 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
-#if defined(_MSC_VER)
-#define _CRT_SECURE_NO_WARNINGS 1
-#define TESTING_ON_WINDOWS
-#endif // _MSC_VER
-
 #include "testUtils.h"
 #include <memory.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdarg.h>
 
-#if defined(TESTING_ON_WINDOWS)
+#if defined(_MSC_VER)  || defined(_IRR_WINDOWS_API_)
+#define _CRT_SECURE_NO_WARNINGS 1
 #include <windows.h> // For OutputDebugString()
-#endif // #if defined(TESTING_ON_WINDOWS)
+#endif // _MSC_VER || _IRR_WINDOWS_API_
 
 using namespace irr;
 
