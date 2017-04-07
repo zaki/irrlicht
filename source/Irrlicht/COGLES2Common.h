@@ -17,6 +17,10 @@
 #include <GLES2/gl2ext.h>
 #include <EGL/eglplatform.h>
 #else
+#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+	#define GL_GLEXT_PROTOTYPES 1
+	#define GLX_GLXEXT_PROTOTYPES 1
+#endif
 #include <GLES2/gl2.h>
 #include <EGL/eglplatform.h>
 typedef char GLchar;
