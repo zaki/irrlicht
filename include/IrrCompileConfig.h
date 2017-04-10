@@ -100,6 +100,18 @@
 #endif
 #endif
 
+#if defined(__EMSCRIPTEN__)
+#define _IRR_EMSCRIPTEN_PLATFORM_
+#define NO_IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#define NO_IRR_COMPILE_WITH_OPENGL_
+#define NO_IRR_COMPILE_WITH_OGLES1_
+#define _IRR_COMPILE_WITH_OGLES2_
+#define _IRR_COMPILE_WITH_EGL_MANAGER_
+#define _IRR_COMPILE_WITH_SDL_DEVICE_
+#define NO_IRR_COMPILE_WITH_X11_DEVICE_
+//#define _IRR_LINUX_PLATFORM_ //Hack
+#endif // __EMSCRIPTEN__
+
 #if defined(__ANDROID__)
 #define _IRR_ANDROID_PLATFORM_
 #define _IRR_COMPILE_WITH_ANDROID_DEVICE_
@@ -114,7 +126,7 @@
 #endif
 #endif
 
-#if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_IOS_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
+#if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_IOS_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_) && !defined(_IRR_EMSCRIPTEN_PLATFORM_)
 #ifndef _IRR_SOLARIS_PLATFORM_
 #define _IRR_LINUX_PLATFORM_
 #endif

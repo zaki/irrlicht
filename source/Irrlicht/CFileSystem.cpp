@@ -35,8 +35,7 @@
 		#include <io.h> // for _access
 		#include <tchar.h>
 	#endif
-#else
-	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_) || defined(_IRR_IOS_PLATFORM_) || defined(_IRR_ANDROID_PLATFORM_))
+#elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_) || defined(_IRR_IOS_PLATFORM_) || defined(_IRR_ANDROID_PLATFORM_))
 		#include <stdio.h>
 		#include <stdlib.h>
 		#include <string.h>
@@ -45,7 +44,8 @@
 		#include <dirent.h>
 		#include <sys/stat.h>
 		#include <unistd.h>
-	#endif
+#elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
+    #include <unistd.h>
 #endif
 
 namespace irr

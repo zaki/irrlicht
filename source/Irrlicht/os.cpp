@@ -189,6 +189,58 @@ namespace os
 	}
 } // end namespace os
 
+#elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
+
+// ----------------------------------------------------------------
+// emscripten version
+// ----------------------------------------------------------------
+
+#include <emscripten.h>
+#include <time.h>
+#include <sys/time.h>
+
+namespace irr
+{
+namespace os
+{
+
+	//! prints a debuginfo string
+	void Printer::print(const c8* message, ELOG_LEVEL ll)
+	{
+        int log_level;
+		switch (ll)
+		{
+		case ELL_DEBUG:
+            log_level=0;
+		break;
+		case ELL_INFORMATION:
+           log_level=0;
+		break;
+		case ELL_WARNING:
+            log_level=EM_LOG_WARN;
+			break;
+		case ELL_ERROR:
+            log_level=EM_LOG_ERROR;
+		break;
+		default: // ELL_NONE
+            log_level=0;
+			break;
+		}
+        emscripten_log(log_level, "%s\n", message);
+	}
+
+	void Timer::initTimer(bool usePerformanceTimer)
+	{
+		initVirtualTimer();
+	}
+
+	u32 Timer::getRealTime()
+	{
+        double time = emscripten_get_now();
+        return (u32)(time);
+	}
+} // end namespace os
+
 #else
 
 // ----------------------------------------------------------------
@@ -223,7 +275,7 @@ namespace os
 	}
 } // end namespace os
 
-#endif // end linux / android / windows
+#endif // end linux / emscripten / android / windows
 
 namespace os
 {

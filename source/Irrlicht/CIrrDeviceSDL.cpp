@@ -20,6 +20,13 @@
 #include <SDL/SDL_syswm.h>
 #include <SDL/SDL_video.h>
 
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+#ifdef _IRR_COMPILE_WITH_OGLES2_
+#include "CEGLManager.h"
+#endif
+#include <emscripten.h>
+#endif
+
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
 #endif // _MSC_VER
@@ -36,6 +43,10 @@ namespace irr
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io, CIrrDeviceSDL* device);
+		#endif
+
+		#if defined(_IRR_COMPILE_WITH_OGLES2_) && defined(_IRR_EMSCRIPTEN_PLATFORM_)
+		IVideoDriver* createOGLES2Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 		#endif
 	} // end namespace video
 
@@ -73,14 +84,16 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	SDL_putenv("SDL_VIDEODRIVER=directx");
 #elif defined(_IRR_OSX_PLATFORM_)
 	SDL_putenv("SDL_VIDEODRIVER=Quartz");
-#else
+#elif !defined(_IRR_EMSCRIPTEN_PLATFORM_)
 	SDL_putenv("SDL_VIDEODRIVER=x11");
 #endif
 //	SDL_putenv("SDL_WINDOWID=");
 
 	SDL_VERSION(&Info.version);
 
+#ifndef _IRR_EMSCRIPTEN_PLATFORM_
 	SDL_GetWMInfo(&Info);
+#endif //_IRR_EMSCRIPTEN_PLATFORM_
 	core::stringc sdlversion = "SDL Version ";
 	sdlversion += Info.version.major;
 	sdlversion += ".";
@@ -104,6 +117,11 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		SDL_Flags |= SDL_OPENGL;
 	else if (CreationParams.Doublebuffer)
 		SDL_Flags |= SDL_DOUBLEBUF;
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	else
+		SDL_Flags = SDL_SWSURFACE;
+#endif //_IRR_EMSCRIPTEN_PLATFORM_
+
 	// create window
 	if (CreationParams.DriverType != video::EDT_NULL)
 	{
@@ -136,6 +154,10 @@ CIrrDeviceSDL::~CIrrDeviceSDL()
 
 bool CIrrDeviceSDL::createWindow()
 {
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	emscripten_set_canvas_size( Width, Height);
+	return true;
+#else // !_IRR_EMSCRIPTEN_PLATFORM_
 	if ( Close )
 		return false;
 
@@ -204,6 +226,7 @@ bool CIrrDeviceSDL::createWindow()
 	}
 
 	return true;
+#endif // !_IRR_EMSCRIPTEN_PLATFORM_
 }
 
 
@@ -252,6 +275,21 @@ void CIrrDeviceSDL::createDriver()
 		#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 		#endif
+		break;
+
+	case video::EDT_OGLES2:
+#if defined(_IRR_COMPILE_WITH_OGLES2_) && defined(_IRR_EMSCRIPTEN_PLATFORM_)
+		{
+			video::SExposedVideoData data;
+
+			ContextManager = new video::CEGLManager();
+			ContextManager->initialize(CreationParams, data);
+
+			VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
+		}
+#else
+		os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR);
+#endif
 		break;
 
 	case video::EDT_NULL:
@@ -420,7 +458,11 @@ bool CIrrDeviceSDL::run()
 			{
 				Width = SDL_event.resize.w;
 				Height = SDL_event.resize.h;
-				Screen = SDL_SetVideoMode( Width, Height, 0, SDL_Flags );
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+				emscripten_set_canvas_size( Width, Height);
+#else //_IRR_EMSCRIPTEN_PLATFORM_
+ 				Screen = SDL_SetVideoMode( Width, Height, 0, SDL_Flags );
+#endif //_IRR_EMSCRIPTEN_PLATFOR
 				if (VideoDriver)
 					VideoDriver->OnResize(core::dimension2d<u32>(Width, Height));
 			}
@@ -600,6 +642,9 @@ void CIrrDeviceSDL::setWindowCaption(const wchar_t* text)
 //! presents a surface in the client area
 bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* srcClip)
 {
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	return true;
+#else // !_IRR_EMSCRIPTEN_PLATFORM_
 	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom(
 			surface->lock(), surface->getDimension().Width, surface->getDimension().Height,
 			surface->getBitsPerPixel(), surface->getPitch(),
@@ -675,6 +720,7 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 	SDL_FreeSurface(sdlSurface);
 	surface->unlock();
 	return (scr != 0);
+#endif // !_IRR_EMSCRIPTEN_PLATFORM_
 }
 
 
@@ -688,6 +734,10 @@ void CIrrDeviceSDL::closeDevice()
 //! \return Pointer to a list with all video modes supported
 video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 {
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	os::Printer::log("VideoModeList not available on the web." , ELL_WARNING);
+	return VideoModeList;
+#elif // !_IRR_EMSCRIPTEN_PLATFORM_
 	if (!VideoModeList->getVideoModeCount())
 	{
 		// enumerate video modes.
@@ -706,12 +756,17 @@ video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 	}
 
 	return VideoModeList;
+#endif // !_IRR_EMSCRIPTEN_PLATFORM_
 }
 
 
 //! Sets if the window should be resizable in windowed mode.
 void CIrrDeviceSDL::setResizable(bool resize)
 {
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	os::Printer::log("Resizable not available on the web." , ELL_WARNING);
+	return;
+#elif // !_IRR_EMSCRIPTEN_PLATFORM_
 	if (resize != Resizable)
 	{
 		if (resize)
@@ -721,6 +776,7 @@ void CIrrDeviceSDL::setResizable(bool resize)
 		Screen = SDL_SetVideoMode( 0, 0, 0, SDL_Flags );
 		Resizable = resize;
 	}
+#endif // !_IRR_EMSCRIPTEN_PLATFORM_
 }
 
 

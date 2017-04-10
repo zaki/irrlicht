@@ -59,6 +59,8 @@ LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
 	$(IRRGUIOBJ) $(ZLIBOBJ) $(JPEGLIBOBJ) $(LIBPNGOBJ) $(LIBAESGM) \
 	$(BZIP2OBJ) $(EXTRAOBJ)
 
+emscripten: EMSCRIPTEN=1	
+
 ###############
 #Compiler flags
 
@@ -66,14 +68,27 @@ CXXINCS = -I../../include -Izlib -Ijpeglib -Ilibpng
 CPPFLAGS += $(CXXINCS) -DIRRLICHT_EXPORTS=1
 CXXFLAGS += -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
 ifndef NDEBUG
-CXXFLAGS += -g -D_DEBUG
+  CXXFLAGS += -g -D_DEBUG
 else
-CXXFLAGS += -fexpensive-optimizations -O3
+  ifndef EMSCRIPTEN
+    CXXFLAGS += -fexpensive-optimizations -O3
+  else
+    CXXFLAGS += -O3
+  endif
 endif
 ifdef PROFILE
-CXXFLAGS += -pg
+  CXXFLAGS += -pg
 endif
-CFLAGS := -O3 -fexpensive-optimizations -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
+ifdef EMSCRIPTEN
+  CXXFLAGS += -std=gnu++11 -U__STRICT_ANSI__
+  ifndef NDEBUG
+    CFLAGS := -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
+  else
+    CFLAGS := -O3 -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
+  endif
+else
+  CFLAGS := -O3 -fexpensive-optimizations -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
+endif
 
 sharedlib sharedlib_osx: CXXFLAGS += -fPIC
 sharedlib sharedlib_osx: CFLAGS += -fPIC
@@ -117,7 +132,7 @@ SONAME = $(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR)
 
 ####################
 # All target, builds Irrlicht as static lib (libIrrlicht.a) and copies it into lib/Linux
-all linux: staticlib
+all linux emscripten: staticlib
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into lib/Linux
 sharedlib: $(LINKOBJ)
@@ -163,7 +178,7 @@ TAGS:
 
 # Create dependency files for automatic recompilation
 %.d:%.cpp
-	$(CXX) $(CPPFLAGS) -MM -MF $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM -MF $@ $<
 
 # Create dependency files for automatic recompilation
 %.d:%.c
@@ -192,5 +207,4 @@ help:
 clean:
 	$(RM) $(LINKOBJ) $(SHARED_FULLNAME) $(STATIC_LIB) $(LINKOBJ:.o=.d)
 
-.PHONY: all sharedlib staticlib sharedlib_win32 staticlib_win32 help install clean
-
+.PHONY: all sharedlib staticlib sharedlib_win32 staticlib_win32 emscripten help install clean
