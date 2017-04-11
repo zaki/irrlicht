@@ -157,7 +157,7 @@ int main()
 	device =
 		createDevice(video::EDT_OGLES2, dimension2d<u32>(640, 480), 16,
     		false, false, false, 0);
-+#endif //__EMSCRIPTEN__
+#endif //__EMSCRIPTEN__
 
 	if (!device)
 		return 1;
@@ -257,7 +257,7 @@ int main()
 		driver->endScene();
 	}
 
-+#ifndef __EMSCRIPTEN__	
+#ifndef __EMSCRIPTEN__	
 	/*
 	After we are done with the render loop, we have to delete the Irrlicht
 	Device created before with createDevice(). In the Irrlicht Engine, you
