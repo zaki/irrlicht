@@ -59,7 +59,7 @@ LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
 	$(IRRGUIOBJ) $(ZLIBOBJ) $(JPEGLIBOBJ) $(LIBPNGOBJ) $(LIBAESGM) \
 	$(BZIP2OBJ) $(EXTRAOBJ)
 
-emscripten: EMSCRIPTEN=1	
+emscripten: EMSCRIPTEN=1
 
 ###############
 #Compiler flags
@@ -100,9 +100,6 @@ endif
 
 #Linux specific options
 staticlib sharedlib install: SYSTEM = Linux
-STATIC_LIB = libIrrlicht.a
-LIB_PATH = ../../lib/$(SYSTEM)
-INSTALL_DIR = /usr/local/lib
 sharedlib install: SHARED_LIB = libIrrlicht.so
 sharedlib: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
 staticlib sharedlib: CXXINCS += -I/usr/X11R6/include
@@ -126,13 +123,23 @@ sharedlib_win32: LDFLAGS += -lgdi32 -lopengl32 -ld3dx9d -lwinmm -Wl,--add-stdcal
 sharedlib_win32 staticlib_win32: CPPFLAGS += -DNO_IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_ -DNO_IRR_COMPILE_WITH_DIRECT3D_9_
 staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 
+#emscripten specific options
+staticlib_emscripten: SYSTEM = emscripten
+emscripten: CXXFLAGS += -D_IRR_LINUX_PLATFORM_
+
+STATIC_LIB = libIrrlicht.a
+LIB_PATH = ../../lib/$(SYSTEM)
+INSTALL_DIR = /usr/local/lib
+
 VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
 SHARED_FULLNAME = $(SHARED_LIB).$(VERSION)
 SONAME = $(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR)
 
 ####################
 # All target, builds Irrlicht as static lib (libIrrlicht.a) and copies it into lib/Linux
-all linux emscripten: staticlib
+all linux : staticlib
+
+emscripten: staticlib_emscripten
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into lib/Linux
 sharedlib: $(LINKOBJ)
@@ -144,8 +151,8 @@ sharedlib: $(LINKOBJ)
 $(STATIC_LIB): $(LINKOBJ)
 	$(AR) rs $@ $^
 
-# Copies static lib into lib/Linux
-staticlib staticlib_osx: $(STATIC_LIB)
+# Copies static lib into ../../lib/($SYSTEM)
+staticlib staticlib_osx staticlib_emscripten: $(STATIC_LIB)
 	mkdir -p $(LIB_PATH)
 	cp $^ $(LIB_PATH)
 
@@ -196,6 +203,7 @@ help:
 	@echo "Available targets for Irrlicht"
 	@echo " sharedlib: Build shared library Irrlicht.so for Linux"
 	@echo " staticlib: Build static library Irrlicht.a for Linux"
+	@echo " emscripten: Build static emscripen library on Linux"
 	@echo " install: Copy shared library to /usr/local/lib"
 	@echo ""
 	@echo " sharedlib_win32: Build shared library Irrlicht.dll for Windows"
@@ -207,4 +215,4 @@ help:
 clean:
 	$(RM) $(LINKOBJ) $(SHARED_FULLNAME) $(STATIC_LIB) $(LINKOBJ:.o=.d)
 
-.PHONY: all sharedlib staticlib sharedlib_win32 staticlib_win32 emscripten help install clean
+.PHONY: all sharedlib staticlib sharedlib_win32 staticlib_win32 emscripten staticlib_emscripten help install clean

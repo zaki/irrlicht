@@ -109,7 +109,7 @@
 #define _IRR_COMPILE_WITH_EGL_MANAGER_
 #define _IRR_COMPILE_WITH_SDL_DEVICE_
 #define NO_IRR_COMPILE_WITH_X11_DEVICE_
-//#define _IRR_LINUX_PLATFORM_ //Hack
+//#define _IRR_LINUX_PLATFORM_ // defined in Makefile for emscripten
 #endif // __EMSCRIPTEN__
 
 #if defined(__ANDROID__)
