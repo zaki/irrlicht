@@ -54,8 +54,14 @@ all_linux all_win32 all_emscripten static_win32:
 clean: clean_linux clean_win32 clean_emscripten
 	$(warning Cleaning...)
 
-clean_linux clean_win32 clean_emscripten:
+clean_linux clean_win32:
 	@$(RM) $(DESTPATH)
+
+clean_emscripten:
+	@$(RM) $(BinPath)/$(Target).data
+	@$(RM) $(BinPath)/$(Target).html*
+	@$(RM) $(BinPath)/$(Target).js
+	
 
 .PHONY: all all_win32 all_emscripten static_win32 clean clean_linux clean_win32 clean_emscripten
 
