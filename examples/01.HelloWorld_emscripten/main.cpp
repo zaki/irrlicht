@@ -99,7 +99,7 @@ void one_iter()
 {
     if(!device->run()) 
 	{
-        //emscripten_cancel_main_loop();
+        emscripten_cancel_main_loop();
         return;
     }
     driver->beginScene(ECBF_COLOR | ECBF_DEPTH, SColor(255,100,101,140));
@@ -184,7 +184,7 @@ int main()
 	The text is placed at the position (10,10) as top left corner and
 	(260,22) as lower right corner.
 	*/
-	guienv->addStaticText(L"Hello World! This is the Irrlicht Software renderer!",
+	guienv->addStaticText(L"Hello World! This is the Irrlicht on emscripten!",
 		rect<s32>(10,10,260,22), true);
 
 	/*
@@ -234,6 +234,7 @@ int main()
 	*/
 	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 
+#ifndef __EMSCRIPTEN__		
 	/*
 	Ok, now we have set up the scene, lets draw everything: We run the
 	device in a while() loop, until the device does not want to run any
@@ -257,7 +258,6 @@ int main()
 		driver->endScene();
 	}
 
-#ifndef __EMSCRIPTEN__	
 	/*
 	After we are done with the render loop, we have to delete the Irrlicht
 	Device created before with createDevice(). In the Irrlicht Engine, you

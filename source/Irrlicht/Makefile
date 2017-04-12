@@ -189,7 +189,7 @@ TAGS:
 
 # Create dependency files for automatic recompilation
 %.d:%.c
-	$(CC) $(CPPFLAGS) -MM -MF $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MM -MF $@ $<
 
 # Create object files from objective-c code
 %.o:%.mm

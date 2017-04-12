@@ -47,6 +47,9 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	EglWindow = (NativeWindowType)Data.OpenGLWin32.HWnd;
 	Data.OpenGLWin32.HDc = GetDC((HWND)EglWindow);
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLWin32.HDc);
+#elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
+	EglWindow = 0;
+	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);	
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
