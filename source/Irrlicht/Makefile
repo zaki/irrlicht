@@ -125,8 +125,10 @@ staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 
 #emscripten specific options
 staticlib_emscripten: SYSTEM = emscripten
-# you might want to disable all features you don't need in Irrlicht here to reduce the .js file size
-# emscripten: CXXFLAGS += -DNO_IRR_COMPILE_WITH_XML_
+
+# You might want to disable features you don't need in Irrlicht here to reduce the .js file size.
+# Thought it seems emscripten is using static-linking, so likely it makes no difference at all.
+#emscripten: CXXFLAGS += -DNO_IRR_COMPILE_WITH_XML_ -DNO_IRR_COMPILE_WITH_ZIP_ENCRYPTION_
 
 STATIC_LIB = libIrrlicht.a
 LIB_PATH = ../../lib/$(SYSTEM)
