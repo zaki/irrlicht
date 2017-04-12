@@ -428,8 +428,8 @@ bool CIrrDeviceSDL::run()
 
 		case SDL_USEREVENT:
 			irrevent.EventType = irr::EET_USER_EVENT;
-			irrevent.UserEvent.UserData1 = *(reinterpret_cast<s32*>(&SDL_event.user.data1));
-			irrevent.UserEvent.UserData2 = *(reinterpret_cast<s32*>(&SDL_event.user.data2));
+			irrevent.UserEvent.UserData1 = reinterpret_cast<uintptr_t>(SDL_event.user.data1);
+			irrevent.UserEvent.UserData2 = reinterpret_cast<uintptr_t>(SDL_event.user.data2);
 
 			postEventFromUser(irrevent);
 			break;
@@ -601,7 +601,7 @@ void CIrrDeviceSDL::setWindowCaption(const wchar_t* text)
 bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* srcClip)
 {
 	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom(
-			surface->lock(), surface->getDimension().Width, surface->getDimension().Height,
+			surface->getData(), surface->getDimension().Width, surface->getDimension().Height,
 			surface->getBitsPerPixel(), surface->getPitch(),
 			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), surface->getAlphaMask());
 	if (!sdlSurface)
@@ -673,7 +673,6 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 	}
 
 	SDL_FreeSurface(sdlSurface);
-	surface->unlock();
 	return (scr != 0);
 }
 
