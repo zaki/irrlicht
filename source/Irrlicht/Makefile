@@ -126,9 +126,24 @@ staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 #emscripten specific options
 staticlib_emscripten: SYSTEM = emscripten
 
-# You might want to disable features you don't need in Irrlicht here to reduce the .js file size.
-# Thought it seems emscripten is using static-linking, so likely it makes no difference at all.
-#emscripten: CXXFLAGS += -DNO_IRR_COMPILE_WITH_XML_ -DNO_IRR_COMPILE_WITH_ZIP_ENCRYPTION_
+
+# You might want to disable features you don't need in Irrlicht here to reduce Irrlicht library.
+# This can also help to reduce the .js size when compiling for emscripten.
+# Note you can also disable the same features by modifying IrrCompileConfig.h which is slightly 
+# safer as you have then the same setting when compiling Irrlicht and your project (but needs 
+# modifying source-code while you can simply copy the Makefile and create your own settings)
+
+# xml - use a lot, but also takes  a lot of space. Check if you have any formats using it.s
+#CXXFLAGS += -DNO_IRR_COMPILE_WITH_XML_ 
+# Get rid of encrypted zip files or bzip encrypted zip's or lzma encrypte zip's - or even all zip-file support.
+#CXXFLAGS += -DNO_IRR_COMPILE_WITH_ZIP_ENCRYPTION_ -DNO_IRR_COMPILE_WITH_BZIP2_ -DNO_IRR_COMPILE_WITH_LZMA_ -DNO_IRR_COMPILE_WITH_ZLIB_
+# Disable mesh writers 
+#CXXFLAGS += -DNO_IRR_COMPILE_WITH_IRR_WRITER_ -DNO_IRR_COMPILE_WITH_COLLADA_WRITER_ -DNO_IRR_COMPILE_WITH_STL_WRITER_ 
+#CXXFLAGS += -DNO_IRR_COMPILE_WITH_OBJ_WRITER_ -DNO_IRR_COMPILE_WITH_PLY_WRITER_ -DNO_IRR_COMPILE_WITH_B3D_WRITER_
+# Disable image writers
+#CXXFLAGS += -DNO_IRR_COMPILE_WITH_BMP_WRITER_ -DNO_IRR_COMPILE_WITH_JPG_WRITER_ -DNO_IRR_COMPILE_WITH_PCX_WRITER_
+#CXXFLAGS += -DNO_IRR_COMPILE_WITH_PNG_WRITER_ -DNO_IRR_COMPILE_WITH_PPM_WRITER_ -DNO_IRR_COMPILE_WITH_TGA_WRITER_
+
 
 STATIC_LIB = libIrrlicht.a
 LIB_PATH = ../../lib/$(SYSTEM)
