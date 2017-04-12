@@ -826,7 +826,7 @@ IFileList* CFileSystem::createFileList()
 	CFileList* r = 0;
 	io::path Path = getWorkingDirectory();
 	Path.replace('\\', '/');
-	if (Path.lastChar() != '/')
+	if (!Path.empty() && Path.lastChar() != '/')
 		Path.append('/');
 
 	//! Construct from native filesystem

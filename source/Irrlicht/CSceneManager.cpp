@@ -1847,23 +1847,29 @@ IMeshManipulator* CSceneManager::getMeshManipulator()
 
 
 //! Creates a simple ITriangleSelector, based on a mesh.
-ITriangleSelector* CSceneManager::createTriangleSelector(IMesh* mesh, ISceneNode* node)
+ITriangleSelector* CSceneManager::createTriangleSelector(IMesh* mesh, ISceneNode* node, bool separateMeshbuffers)
 {
 	if (!mesh)
 		return 0;
 
-	return new CTriangleSelector(mesh, node);
+	return new CTriangleSelector(mesh, node, separateMeshbuffers);
+}
+
+ITriangleSelector* CSceneManager::createTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node)
+{
+	if ( !meshBuffer)
+		return 0;
+	return new  CTriangleSelector(meshBuffer, materialIndex, node);
 }
 
 
-//! Creates a simple and updatable ITriangleSelector, based on a the mesh owned by an
-//! animated scene node
-ITriangleSelector* CSceneManager::createTriangleSelector(IAnimatedMeshSceneNode* node)
+//! Creates a ITriangleSelector, based on a the mesh owned by an animated scene node
+ITriangleSelector* CSceneManager::createTriangleSelector(IAnimatedMeshSceneNode* node, bool separateMeshbuffers)
 {
 	if (!node || !node->getMesh())
 		return 0;
 
-	return new CTriangleSelector(node);
+	return new CTriangleSelector(node, separateMeshbuffers);
 }
 
 
@@ -1887,6 +1893,14 @@ ITriangleSelector* CSceneManager::createOctreeTriangleSelector(IMesh* mesh,
 	return new COctreeTriangleSelector(mesh, node, minimalPolysPerNode);
 }
 
+ITriangleSelector* CSceneManager::createOctreeTriangleSelector(IMeshBuffer* meshBuffer, irr::u32 materialIndex,
+			ISceneNode* node, s32 minimalPolysPerNode)
+{
+	if ( !meshBuffer)
+		return 0;
+
+	return new COctreeTriangleSelector(meshBuffer, materialIndex, node, minimalPolysPerNode);
+}
 
 //! Creates a meta triangle selector.
 IMetaTriangleSelector* CSceneManager::createMetaTriangleSelector()

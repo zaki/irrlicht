@@ -285,22 +285,25 @@ bool CGUIContextMenu::OnEvent(const SEvent& event)
 				{
 					// set event parent of submenus
 					IGUIElement * p =  EventParent ? EventParent : Parent;
-					setEventParent(p);
-
-					SEvent event;
-					event.EventType = EET_GUI_EVENT;
-					event.GUIEvent.Caller = this;
-					event.GUIEvent.Element = 0;
-					event.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
-					if ( !p->OnEvent(event) )
+					if ( p )	// can be 0 when element got removed already
 					{
-						if ( CloseHandling & ECMC_HIDE )
+						setEventParent(p);
+
+						SEvent event;
+						event.EventType = EET_GUI_EVENT;
+						event.GUIEvent.Caller = this;
+						event.GUIEvent.Element = 0;
+						event.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
+						if ( !p->OnEvent(event) )
 						{
-							setVisible(false);
-						}
-						if ( CloseHandling & ECMC_REMOVE )
-						{
-							remove();
+							if ( CloseHandling & ECMC_HIDE )
+							{
+								setVisible(false);
+							}
+							if ( CloseHandling & ECMC_REMOVE )
+							{
+								remove();
+							}
 						}
 					}
 

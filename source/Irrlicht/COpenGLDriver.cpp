@@ -1087,14 +1087,19 @@ void COpenGLDriver::renderArray(const void* indexList, u32 primitiveCount,
 			glPointSize(particleSize);
 
 #ifdef GL_ARB_point_sprite
-			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
-				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_TRUE);
+			if (pType == scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
+			{
+				CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
+				glTexEnvf(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE, GL_TRUE);
+			}
 #endif
 			glDrawArrays(GL_POINTS, 0, primitiveCount);
 #ifdef GL_ARB_point_sprite
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 			{
 				glDisable(GL_POINT_SPRITE_ARB);
+
+				CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
 				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_FALSE);
 			}
 #endif
@@ -2098,8 +2103,6 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 		CacheHandler->getTextureCache().set(i, material.getTexture(i));
 		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 	}
-
-	CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
 }
 
 
@@ -2148,6 +2151,8 @@ void COpenGLDriver::setRenderStates3DMode()
 		CacheHandler->setBlend(false);
 		CacheHandler->setAlphaTest(false);
 		CacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		// switch back the matrices
 		CacheHandler->setMatrixMode(GL_MODELVIEW);
@@ -2747,7 +2752,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 {
 	// Set textures to TU/TIU and apply filters to them
 
-	for (s32 i = Feature.TextureUnit - 1; i>= 0; --i)
+	for (s32 i = Feature.TextureUnit - 1; i >= 0; --i)
 	{
 		bool fixedPipeline = false;
 
@@ -2756,149 +2761,146 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 
 		const COpenGLTexture* tmpTexture = CacheHandler->getTextureCache().get(i);
 
-		if (!tmpTexture)
-			continue;
-
-		CacheHandler->setActiveTexture(GL_TEXTURE0 + i);
-
-		if (fixedPipeline)
+		if (tmpTexture)
 		{
-			const bool isRTT = tmpTexture->isRenderTarget();
+			CacheHandler->setActiveTexture(GL_TEXTURE0 + i);
 
-			CacheHandler->setMatrixMode(GL_TEXTURE);
-
-			if (!isRTT && Matrices[ETS_TEXTURE_0 + i].isIdentity())
-				glLoadIdentity();
-			else
+			if (fixedPipeline)
 			{
-				GLfloat glmat[16];
-				if (isRTT)
-					getGLTextureMatrix(glmat, Matrices[ETS_TEXTURE_0 + i] * TextureFlipMatrix);
+				const bool isRTT = tmpTexture->isRenderTarget();
+
+				CacheHandler->setMatrixMode(GL_TEXTURE);
+
+				if (!isRTT && Matrices[ETS_TEXTURE_0 + i].isIdentity())
+					glLoadIdentity();
 				else
-					getGLTextureMatrix(glmat, Matrices[ETS_TEXTURE_0 + i]);
-				glLoadMatrixf(glmat);
+				{
+					GLfloat glmat[16];
+					if (isRTT)
+						getGLTextureMatrix(glmat, Matrices[ETS_TEXTURE_0 + i] * TextureFlipMatrix);
+					else
+						getGLTextureMatrix(glmat, Matrices[ETS_TEXTURE_0 + i]);
+					glLoadMatrixf(glmat);
+				}
 			}
-		}
 
-		const GLenum tmpType = tmpTexture->getOpenGLTextureType();
+			const GLenum tmpType = tmpTexture->getOpenGLTextureType();
 
-		COpenGLTexture::SStatesCache& statesCache = tmpTexture->getStatesCache();
+			COpenGLTexture::SStatesCache& statesCache = tmpTexture->getStatesCache();
 
-		if (resetAllRenderstates)
-			statesCache.IsCached = false;
+			if (resetAllRenderstates)
+				statesCache.IsCached = false;
 
 #ifdef GL_VERSION_2_1
-		if (Version>=210)
-		{
-			if (!statesCache.IsCached || material.TextureLayer[i].LODBias != statesCache.LODBias)
+			if (Version >= 210)
+			{
+				if (!statesCache.IsCached || material.TextureLayer[i].LODBias != statesCache.LODBias)
+				{
+					if (material.TextureLayer[i].LODBias)
+					{
+						const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+						glTexParameterf(tmpType, GL_TEXTURE_LOD_BIAS, tmp);
+					}
+					else
+						glTexParameterf(tmpType, GL_TEXTURE_LOD_BIAS, 0.f);
+
+					statesCache.LODBias = material.TextureLayer[i].LODBias;
+				}
+			}
+			else if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 			{
 				if (material.TextureLayer[i].LODBias)
 				{
 					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-					glTexParameterf(tmpType, GL_TEXTURE_LOD_BIAS, tmp);
+					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
 				}
 				else
-					glTexParameterf(tmpType, GL_TEXTURE_LOD_BIAS, 0.f);
-
-				statesCache.LODBias = material.TextureLayer[i].LODBias;
+					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
 			}
-		}
-		else if (FeatureAvailable[IRR_EXT_texture_lod_bias])
-		{
-			if (material.TextureLayer[i].LODBias)
-			{
-				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
-			}
-			else
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
-		}
 #elif defined(GL_EXT_texture_lod_bias)
-		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
-		{
-			if (material.TextureLayer[i].LODBias)
+			if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 			{
-				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
+				if (material.TextureLayer[i].LODBias)
+				{
+					const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
+				}
+				else
+					glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
 			}
-			else
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
-		}
 #endif
 
-		if (!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
-			material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter)
-		{
-			glTexParameteri(tmpType, GL_TEXTURE_MAG_FILTER,
-				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
-
-			statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
-			statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-		}
-
-		if (material.UseMipMaps && tmpTexture->hasMipMaps())
-		{
 			if (!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
-				material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter || !statesCache.MipMapStatus)
+				material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter)
 			{
-				glTexParameteri(tmpType, GL_TEXTURE_MIN_FILTER,
-					material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
-					material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
-					GL_NEAREST_MIPMAP_NEAREST);
-
-				statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
-				statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-				statesCache.MipMapStatus = true;
-			}
-		}
-		else
-		{
-			if (!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
-				material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter || statesCache.MipMapStatus)
-			{
-				glTexParameteri(tmpType, GL_TEXTURE_MIN_FILTER,
+				glTexParameteri(tmpType, GL_TEXTURE_MAG_FILTER,
 					(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
 				statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
 				statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
-				statesCache.MipMapStatus = false;
 			}
-		}
+
+			if (material.UseMipMaps && tmpTexture->hasMipMaps())
+			{
+				if (!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
+					material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter || !statesCache.MipMapStatus)
+				{
+					glTexParameteri(tmpType, GL_TEXTURE_MIN_FILTER,
+						material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
+						material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
+						GL_NEAREST_MIPMAP_NEAREST);
+
+					statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
+					statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+					statesCache.MipMapStatus = true;
+				}
+			}
+			else
+			{
+				if (!statesCache.IsCached || material.TextureLayer[i].BilinearFilter != statesCache.BilinearFilter ||
+					material.TextureLayer[i].TrilinearFilter != statesCache.TrilinearFilter || statesCache.MipMapStatus)
+				{
+					glTexParameteri(tmpType, GL_TEXTURE_MIN_FILTER,
+						(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
+
+					statesCache.BilinearFilter = material.TextureLayer[i].BilinearFilter;
+					statesCache.TrilinearFilter = material.TextureLayer[i].TrilinearFilter;
+					statesCache.MipMapStatus = false;
+				}
+			}
 
 #ifdef GL_EXT_texture_filter_anisotropic
-		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
-			(!statesCache.IsCached || material.TextureLayer[i].AnisotropicFilter != statesCache.AnisotropicFilter))
-		{
-			glTexParameteri(tmpType, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
+			if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
+				(!statesCache.IsCached || material.TextureLayer[i].AnisotropicFilter != statesCache.AnisotropicFilter))
+			{
+				glTexParameteri(tmpType, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+					material.TextureLayer[i].AnisotropicFilter > 1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
 
-			statesCache.AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
-		}
+				statesCache.AnisotropicFilter = material.TextureLayer[i].AnisotropicFilter;
+			}
 #endif
 
-		if (!statesCache.IsCached || material.TextureLayer[i].TextureWrapU != statesCache.WrapU)
-		{
-			glTexParameteri(tmpType, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
-			statesCache.WrapU = material.TextureLayer[i].TextureWrapU;
-		}
+			if (!statesCache.IsCached || material.TextureLayer[i].TextureWrapU != statesCache.WrapU)
+			{
+				glTexParameteri(tmpType, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[i].TextureWrapU));
+				statesCache.WrapU = material.TextureLayer[i].TextureWrapU;
+			}
 
-		if (!statesCache.IsCached || material.TextureLayer[i].TextureWrapV != statesCache.WrapV)
-		{
-			glTexParameteri(tmpType, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
-			statesCache.WrapV = material.TextureLayer[i].TextureWrapV;
-		}
+			if (!statesCache.IsCached || material.TextureLayer[i].TextureWrapV != statesCache.WrapV)
+			{
+				glTexParameteri(tmpType, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[i].TextureWrapV));
+				statesCache.WrapV = material.TextureLayer[i].TextureWrapV;
+			}
 
-		if (!statesCache.IsCached || material.TextureLayer[i].TextureWrapW != statesCache.WrapW)
-		{
-			glTexParameteri(tmpType, GL_TEXTURE_WRAP_R, getTextureWrapMode(material.TextureLayer[i].TextureWrapW));
-			statesCache.WrapW = material.TextureLayer[i].TextureWrapW;
-		}
+			if (!statesCache.IsCached || material.TextureLayer[i].TextureWrapW != statesCache.WrapW)
+			{
+				glTexParameteri(tmpType, GL_TEXTURE_WRAP_R, getTextureWrapMode(material.TextureLayer[i].TextureWrapW));
+				statesCache.WrapW = material.TextureLayer[i].TextureWrapW;
+			}
 
-		statesCache.IsCached = true;
+			statesCache.IsCached = true;
+		}
 	}
-
-	// be sure to leave in texture stage 0
-	CacheHandler->setActiveTexture(GL_TEXTURE0);
 }
 
 
@@ -2920,6 +2922,8 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	else
 		FixedPipelineState = COpenGLDriver::EOFPS_ENABLE;
 
+	bool resetAllRenderStates = false;
+
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
 		// unset last 3d material
@@ -2928,6 +2932,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 		}
+
 		if (Transformation3DChanged)
 		{
 			CacheHandler->setMatrixMode(GL_PROJECTION);
@@ -2940,32 +2945,40 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 			CacheHandler->setMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-
 			glTranslatef(0.375f, 0.375f, 0.0f);
-
-			// Make sure we set first texture matrix
-			CacheHandler->setActiveTexture(GL_TEXTURE0);
 
 			Transformation3DChanged = false;
 		}
-		if (!OverrideMaterial2DEnabled)
-		{
-			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
-			LastMaterial = InitMaterial2D;
-		}
+
 		CacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 #ifdef GL_EXT_clip_volume_hint
 		if (FeatureAvailable[IRR_EXT_clip_volume_hint])
 			glHint(GL_CLIP_VOLUME_CLIPPING_HINT_EXT, GL_FASTEST);
 #endif
 
+		resetAllRenderStates = true;
 	}
-	if (OverrideMaterial2DEnabled)
+
+	SMaterial currentMaterial = (!OverrideMaterial2DEnabled) ? InitMaterial2D : OverrideMaterial2D;
+	currentMaterial.Lighting = false;
+
+	if (texture)
 	{
-		OverrideMaterial2D.Lighting=false;
-		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
-		LastMaterial = OverrideMaterial2D;
+		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
+
+		// Due to the transformation change, the previous line would call a reset each frame
+		// but we can safely reset the variable as it was false before
+		Transformation3DChanged = false;
 	}
+	else
+	{
+		CacheHandler->getTextureCache().set(0, 0);
+	}
+
+	setBasicRenderStates(currentMaterial, LastMaterial, resetAllRenderStates);
+
+	LastMaterial = currentMaterial;
 
 	// no alphaChannel without texture
 	alphaChannel &= texture;
@@ -2984,23 +2997,14 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (texture)
 	{
-		if (OverrideMaterial2DEnabled)
-			setTextureRenderStates(OverrideMaterial2D, false);
-		else
-			setTextureRenderStates(InitMaterial2D, false);
-
-		Material.setTexture(0, const_cast<COpenGLTexture*>(CacheHandler->getTextureCache()[0]));
-		setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
-		// Due to the transformation change, the previous line would call a reset each frame
-		// but we can safely reset the variable as it was false before
-		Transformation3DChanged=false;
+		CacheHandler->setActiveTexture(GL_TEXTURE0_ARB);
 
 		if (alphaChannel)
 		{
 			// if alpha and alpha texture just modulate, otherwise use only the alpha channel
 			if (alpha)
 			{
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			}
 			else
 			{
@@ -3008,26 +3012,26 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 				if (FeatureAvailable[IRR_ARB_texture_env_combine]||FeatureAvailable[IRR_EXT_texture_env_combine])
 				{
 #ifdef GL_ARB_texture_env_combine
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_REPLACE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_ARB, GL_TEXTURE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_REPLACE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_ARB, GL_TEXTURE);
 					// rgb always modulates
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
 #else
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
 					// rgb always modulates
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
 #endif
 				}
 				else
 #endif
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			}
 		}
 		else
@@ -3038,21 +3042,21 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 				if (FeatureAvailable[IRR_ARB_texture_env_combine]||FeatureAvailable[IRR_EXT_texture_env_combine])
 				{
 #ifdef GL_ARB_texture_env_combine
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_REPLACE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_ARB, GL_PRIMARY_COLOR_ARB);
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_REPLACE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_ARB, GL_PRIMARY_COLOR_ARB);
 					// rgb always modulates
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
 #else
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
 					// rgb always modulates
-					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
 #endif
 				}
 				else
@@ -3530,6 +3534,67 @@ void COpenGLDriver::setFog(SColor c, E_FOG_TYPE fogType, f32 start,
 	SColorf color(c);
 	GLfloat data[4] = {color.r, color.g, color.b, color.a};
 	glFogfv(GL_FOG_COLOR, data);
+}
+
+//! Draws a 3d box.
+void COpenGLDriver::draw3DBox( const core::aabbox3d<f32>& box, SColor color )
+{
+	core::vector3df edges[8];
+	box.getEdges(edges);
+
+	setRenderStates3DMode();
+
+	video::S3DVertex v[24];
+
+	for(u32 i = 0; i < 24; i++)
+		v[i].Color = color;
+
+	v[0].Pos = edges[5];
+	v[1].Pos = edges[1];
+	v[2].Pos = edges[1];
+	v[3].Pos = edges[3];
+	v[4].Pos = edges[3];
+	v[5].Pos = edges[7];
+	v[6].Pos = edges[7];
+	v[7].Pos = edges[5];
+	v[8].Pos = edges[0];
+	v[9].Pos = edges[2];
+	v[10].Pos = edges[2];
+	v[11].Pos = edges[6];
+	v[12].Pos = edges[6];
+	v[13].Pos = edges[4];
+	v[14].Pos = edges[4];
+	v[15].Pos = edges[0];
+	v[16].Pos = edges[1];
+	v[17].Pos = edges[0];
+	v[18].Pos = edges[3];
+	v[19].Pos = edges[2];
+	v[20].Pos = edges[7];
+	v[21].Pos = edges[6];
+	v[22].Pos = edges[5];
+	v[23].Pos = edges[4];
+
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(v, 24, EVT_STANDARD);
+
+	CacheHandler->setClientState(true, false, true, false);
+
+	glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(v))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(v))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawArrays(GL_LINES, 0, 24);
 }
 
 
@@ -4287,7 +4352,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
-			internalFormat = GL_RG32F;			
+			internalFormat = GL_RG32F;
 			pixelFormat = GL_RG;
 			pixelType = GL_FLOAT;
 		}
@@ -4297,7 +4362,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_A32B32G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
 		{
-			internalFormat = GL_RGBA32F_ARB;			
+			internalFormat = GL_RGBA32F_ARB;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_FLOAT;
 		}

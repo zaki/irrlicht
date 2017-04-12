@@ -132,7 +132,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 				wchar_t currentchar = ch;
 
 				if ( IsDBCSLeadByte((BYTE) ch))
-					continue; // surragate pairs unsupported
+					continue; // surrogate pairs unsupported
 
 				// get the dimensions
 				SIZE size;
@@ -144,9 +144,9 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 
 				if (GetCharABCWidthsW(dc, currentchar, currentchar, &abc)) // for unicode fonts, get overhang, underhang, width
 				{
-					size.cx = abc.abcB;
-					fa.underhang  = abc.abcA;
-					fa.overhang   = abc.abcC;
+					size.cx = abc.abcB;			// full font width (ignoring padding/underhang )
+					fa.underhang  = abc.abcA;	// underhang/padding left - can also be negative (in which case it's overhang left)
+					fa.overhang   = abc.abcC;	// overhang/padding right - can also be negative (in which case it's underhand right)
 
 					if (abc.abcB-abc.abcA+abc.abcC<1)
 						continue; // nothing of width 0
@@ -236,7 +236,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 			{
 				s32 currentArea = (*it).getValue();
 				wchar_t wch = (*it).getKey();
-				// sloppy but I couldnt be bothered rewriting it
+				// sloppy but I couldn't be bothered rewriting it
 				if (Areas[currentArea].sourceimage == currentImage)
 				{
 					// draw letter

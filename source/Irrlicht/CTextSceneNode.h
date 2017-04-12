@@ -41,8 +41,20 @@ namespace scene
 		//! sets the text string
 		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
 
+		//! get the text string
+		virtual const wchar_t* getText() const _IRR_OVERRIDE_;
+
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor color) _IRR_OVERRIDE_;
+
+		//! get the color of the text
+		virtual video::SColor getTextColor() const _IRR_OVERRIDE_;
+
+		//! set the font used to draw the text
+		virtual void setFont(gui::IGUIFont* font) _IRR_OVERRIDE_;
+
+		//! Get the font used to draw the text
+		virtual gui::IGUIFont* getFont() const _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_TEXT; }
@@ -83,8 +95,11 @@ namespace scene
 		//! sets the text string
 		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
 
-		//! sets the color of the text
-		virtual void setTextColor(video::SColor color) _IRR_OVERRIDE_;
+		//! get the text string
+		virtual const wchar_t* getText() const _IRR_OVERRIDE_;
+
+		//! Get the font used to draw the text
+		virtual gui::IGUIFont* getFont() const _IRR_OVERRIDE_;
 
 		//! sets the size of the billboard
 		virtual void setSize(const core::dimension2d<f32>& size) _IRR_OVERRIDE_;
@@ -98,7 +113,7 @@ namespace scene
 		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_TEXT; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_BILLBOARD_TEXT; }
 
 		//! Set the color of all vertices of the billboard
 		//! \param overallColor: the color to set
@@ -129,7 +144,6 @@ namespace scene
 	private:
 
 		core::stringw Text;
-		video::SColor Color;
 		gui::IGUIFontBitmap* Font;
 
 		core::dimension2d<f32> Size;

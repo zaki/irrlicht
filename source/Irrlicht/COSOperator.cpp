@@ -11,9 +11,9 @@
 #else
 #include <string.h>
 #include <unistd.h>
-#ifndef _IRR_SOLARIS_PLATFORM_
 #ifndef _IRR_ANDROID_PLATFORM_
 #include <sys/types.h>
+#ifdef _IRR_OSX_PLATFORM_
 #include <sys/sysctl.h>
 #endif
 #endif
@@ -84,7 +84,7 @@ void COSOperator::copyToClipboard(const c8* text) const
 #elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
     NSString *str = nil;
     NSPasteboard *board = nil;
-    
+
     if ((text != NULL) && (strlen(text) > 0))
     {
         str = [NSString stringWithCString:text encoding:NSWindowsCP1252StringEncoding];
@@ -92,7 +92,7 @@ void COSOperator::copyToClipboard(const c8* text) const
         [board declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:NSApp];
         [board setString:str forType:NSStringPboardType];
     }
-    
+
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     if ( IrrDeviceLinux )
         IrrDeviceLinux->copyToClipboard(text);
@@ -127,10 +127,10 @@ const c8* COSOperator::getTextFromClipboard() const
 
     board = [NSPasteboard generalPasteboard];
     str = [board stringForType:NSStringPboardType];
-    
+
     if (str != nil)
         result = (char*)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
-    
+
     return (result);
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
@@ -208,18 +208,32 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 {
 #if defined(_IRR_WINDOWS_API_) && !defined (_IRR_XBOX_PLATFORM_)
+
+    #if (_WIN32_WINNT >= 0x0500)
+	MEMORYSTATUSEX MemoryStatusEx;
+ 	MemoryStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
+
+	// cannot fail
+	GlobalMemoryStatusEx(&MemoryStatusEx);
+
+	if (Total)
+		*Total = (u32)(MemoryStatusEx.ullTotalPhys>>10);
+	if (Avail)
+		*Avail = (u32)(MemoryStatusEx.ullAvailPhys>>10);
+	return true;
+	#else
 	MEMORYSTATUS MemoryStatus;
 	MemoryStatus.dwLength = sizeof(MEMORYSTATUS);
 
-	// cannot fail
+ 	// cannot fail
 	GlobalMemoryStatus(&MemoryStatus);
 
-	if (Total)
+ 	if (Total)
 		*Total = (u32)(MemoryStatus.dwTotalPhys>>10);
-	if (Avail)
+ 	if (Avail)
 		*Avail = (u32)(MemoryStatus.dwAvailPhys>>10);
-
-	return true;
+    return true;
+	#endif
 
 #elif defined(_IRR_POSIX_API_) && !defined(__FreeBSD__)
 #if defined(_SC_PHYS_PAGES) && defined(_SC_AVPHYS_PAGES)
@@ -236,7 +250,7 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 		*Avail = (u32)((ps*(long long)ap)>>10);
 	return true;
 #else
-	// TODO: implement for non-availablity of symbols/features
+	// TODO: implement for non-availability of symbols/features
 	return false;
 #endif
 #elif defined(_IRR_OSX_PLATFORM_)

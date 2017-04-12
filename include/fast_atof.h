@@ -17,7 +17,8 @@ namespace core
 	// the float-to-string code used there has to be rewritten first.
 	IRRLICHT_API extern irr::core::stringc LOCALE_DECIMAL_POINTS;
 
-// we write [17] here instead of [] to work around a swig bug
+#define IRR_ATOF_TABLE_SIZE 17
+// we write [IRR_ATOF_TABLE_SIZE] here instead of [] to work around a swig bug
 const float fast_atof_table[17] = {
 	0.f,
 	0.1f,
@@ -323,8 +324,16 @@ inline const char* fast_atof_move(const char* in, f32& result)
 	if ( LOCALE_DECIMAL_POINTS.findFirst(*in) >= 0 )
 	{
 		const char* afterDecimal = ++in;
-		const f32 decimal = strtof10(in, &afterDecimal);
-		value += decimal * fast_atof_table[afterDecimal - in];
+		f32 decimal = strtof10(in, &afterDecimal);
+		size_t numDecimals = afterDecimal - in;
+		if (numDecimals < IRR_ATOF_TABLE_SIZE)
+		{
+			value += decimal * fast_atof_table[numDecimals];
+		}
+		else
+		{
+			value += decimal * (f32)pow(10.f, -(float)numDecimals);
+		}
 		in = afterDecimal;
 	}
 
@@ -334,7 +343,8 @@ inline const char* fast_atof_move(const char* in, f32& result)
 		// Assume that the exponent is a whole number.
 		// strtol10() will deal with both + and - signs,
 		// but calculate as f32 to prevent overflow at FLT_MAX
-		value *= powf(10.f, (f32)strtol10(in, &in));
+		// Using pow with float cast instead of powf as otherwise accuracy decreases.
+		value *= (f32)pow(10.f, (f32)strtol10(in, &in));
 	}
 
 	result = negative?-value:value;

@@ -9,6 +9,19 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Improve speed of draw3DBox (OpenGL and D3D9). Thanks @zerochen for patch (https://sourceforge.net/p/irrlicht/patches/256)
+- Support more keys on OSX "[]\". Thanks @neoascetic for patch (#313).
+- Fix IBillboardTextSceneNode::setTextColor which did nothing in the past. It now maps to setColor instead.
+- Add access functions to IBillboardTextSceneNode (getText, getFont).
+- Add access functions to ITextSceneNode (getText, getTextColor, setFont, getFont).
+- Try harder to move Window to custom WindowPosition set in SIrrlichtCreationParameters on X11. Thx@ Hernan Ezequiel Di Giorgi for the patch (#304).
+- Fix bug in virtual filessystem which prevented createFileList from working. Thx @Cube for reporting a problem.
+- ITriangleSelector now can also return meshbuffer collision information. 
+- core::string::split now adds delimiter to token before delimiter when keepSeparators is true. That way we never end up with 2 tokens for an original string with a single character.
+- Bugfix: SMesh::recalculateBoundingBox() does now ignore empty boundingboxes of meshbuffers instead of adding them.
+- IIrrXMLReader::getAttributeValueAsInt and  IIrrXMLReader::getAttributeValueAsFloat can now return a custom default-value when the attribute is not found.
+- core::string::split now handles ignoreEmptyTokens=false correct. Thanks @manni63 for bugreport: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=51551&p=299375#p299375
+- Bugfix: Previously when some material had a texture matrix and another didn't those materials were still considered identical. Which had prevented correct switching between materials with and without texture matrices.
 - IWriteFile::write now returning size_t (like fwrite in c-lib). Also sizeToWrite parameter changed from u32 to size_t.
 - IReadFile::read now returning size_t (like fread in c-lib). Also sizeToRead parameter changed from u32 to size_t.
 - add clear function to strings.
@@ -160,6 +173,17 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.5
+ - Fix bug in cursor positions when compiled with newer Windows SDK's (v110 in VS2012) and running on Systems >= Windows Vista in windowed mode.
+   Thanks @Mustapha Tachouct for the bugreport and patch proposal. Also thanks @BakeMyCake for an earlier report.
+ - IOSOperator::getSysteMemory() no longer returns incorrect values with >2GB. Thanks @Eduline - human development for report and patch.
+ - Increase KEY_KEY_CODES_COUNT to fix problem with laptop keyboards which return the keycode 0xff for the function key. Thx @Klokancz for bugreport and patch.
+ - Fix bug when calling activateJoysticks on windows several times. It had appened joystick information instead of replacing it, thereby increasing joystick number on each call.
+   Only happened compiling with _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_ (which is the default). Linux and SDL implementation not affected.
+   Thx @Andrea Demetrio for the bugreport.
+ - Fix bug in fast_atof when reading floating point numbers with more than 16 digits past the dot. Those produced completely wrong results (sometimes even causing INF numbers).
+   This bug also did cause many meshloaders to have problems with certain meshes (basically all text-based formats are affected).
+ - Accuracy of fast_atof is back to older Irrlicht versions (fixes test warnings, usually not a noticable problem).
+ - Fix crash in eventhandling when calling remove() on a contextmenu while it has focus.
  - CImageLoaderJPG::isALoadableFileFormat uses a test which allows to load more jpg formats (for example uncompressed jpg's). Thx @Yaron Cohen-Tal for report, test-image and his help with the patch.
 
 --------------------------
@@ -255,7 +279,7 @@ Changes in 1.8 (7.11.2012)
 
  - quaternion conversions to and from matrix4 no longer invert rotations.
    To test if your code was affected by this you can set IRR_TEST_BROKEN_QUATERNION_USE in quaternion.h and try to compile your application.
-   Then on all compile-errors when you pass the matrix to the quaternion you can replace the matrix transposed matrix.
+   Then on all compile-errors when you pass the matrix to the quaternion you can replace the matrix with the transposed matrix.
    For all errors you get on getMatrix() you can use quaternion::getMatrix_transposed instead.
 
  - CGUIEnvironment::loadGui - loading a gui into a target-element no longer messes up when the gui-file contained guienvironment serialization.

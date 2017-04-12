@@ -65,7 +65,85 @@ class line2d
 
 		//! Get the vector of the line.
 		/** \return The vector of the line. */
-		vector2d<T> getVector() const { return vector2d<T>(end.X - start.X, end.Y - start.Y); }
+		vector2d<T> getVector() const { return vector2d<T>( end.X - start.X, end.Y - start.Y); }
+
+		/*! Check if this segment intersects another segment,
+			or if segments are coincindent (colinear). */
+		bool intersectAsSegments( const line2d<T>& other) const
+		{
+			// Taken from:
+			// http://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+
+			// Find the four orientations needed for general and
+			// special cases
+			s32 o1 = start.checkOrientation( end, other.start);
+			s32 o2 = start.checkOrientation( end, other.end);
+			s32 o3 = other.start.checkOrientation( other.end, start);
+			s32 o4 = other.start.checkOrientation( other.end, end);
+
+			// General case
+			if (o1 != o2 && o3 != o4)
+				return true;
+
+			// Special Cases to check if segments are coolinear
+			if (o1 == 0 && other.start.isBetweenPoints( start, end)) return true;
+			if (o2 == 0 && other.end.isBetweenPoints( start, end)) return true;
+			if (o3 == 0 && start.isBetweenPoints( other.start, other.end)) return true;
+			if (o4 == 0 && end.isBetweenPoints( other.start, other.end)) return true;
+
+			return false; // Doesn't fall in any of the above cases
+		}
+
+		/*! Check if 2 segments are incident (intersects in exactly 1 point).*/
+		bool incidentSegments( const line2d<T>& other) const
+		{
+			return 
+				start.checkOrientation( end, other.start) != start.checkOrientation( end, other.end)
+			&&  other.start.checkOrientation( other.end, start) != other.start.checkOrientation( other.end, end);
+		}
+
+		/*! Check if 2 lines/segments are parallel or nearly parallel.*/ 
+		bool nearlyParallel( const line2d<T>& line, const T factor = relativeErrorFactor<T>()) const
+		{
+			const vector2d<T> a = getVector();
+			const vector2d<T> b = line.getVector();
+
+			return a.nearlyParallel( b, factor);
+		}
+
+		/*! returns a intersection point of 2 lines (if lines are not parallel). Behaviour
+		undefined if lines are parallel or coincident.*/
+		vector2d<T> fastLinesIntersection( const line2d<T>& l) const
+		{
+			const f32 commonDenominator = (f32)((l.end.Y - l.start.Y)*(end.X - start.X) -
+				(l.end.X - l.start.X)*(end.Y - start.Y));
+
+			const f32 numeratorA = (f32)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
+				(l.end.Y - l.start.Y)*(start.X - l.start.X));
+
+			const f32 numeratorB = (f32)((end.X - start.X)*(start.Y - l.start.Y) -
+				(end.Y - start.Y)*(start.X - l.start.X));
+
+			const f32 uA = numeratorA / commonDenominator;
+			const f32 uB = numeratorB / commonDenominator;
+
+			// Calculate the intersection point.
+			return vector2d<T> (
+				(T)(start.X + uA * (end.X - start.X)), 
+				(T)(start.Y + uA * (end.Y - start.Y))
+				);
+		}
+
+		/*! Check if this line intersect a segment. The eventual intersection point is returned in "out".*/
+		bool lineIntersectSegment( const line2d<T>& segment, vector2d<T> & out) const
+		{
+			if (nearlyParallel( segment))
+				return false;
+
+			out = fastLinesIntersection( segment);
+
+			return out.isBetweenPoints( segment.start, segment.end);
+		}
 
 		//! Tests if this line intersects with another line.
 		/** \param l: Other line to test intersection with.
@@ -209,7 +287,7 @@ class line2d
 		/** Assumes that the point is already somewhere on the line. */
 		bool isPointBetweenStartAndEnd(const vector2d<T>& point) const
 		{
-			return point.isBetweenPoints(start, end);
+			return point.isBetweenPoints(start, end); 
 		}
 
 		//! Get the closest point on this line to a point

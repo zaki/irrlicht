@@ -10,6 +10,7 @@
 #include "aabbox3d.h"
 #include "matrix4.h"
 #include "line3d.h"
+#include "irrArray.h"
 
 namespace irr
 {
@@ -17,6 +18,49 @@ namespace scene
 {
 
 class ISceneNode;
+class ITriangleSelector;
+class IMeshBuffer;
+
+//! Additional information about the triangle arrays returned by ITriangleSelector::getTriangles
+/** ITriangleSelector are free to fill out this information fully, partly or ignore it. 
+    Usually they will try to fill it when they can and set values to 0 otherwise.
+*/
+struct SCollisionTriangleRange
+{
+	SCollisionTriangleRange() 
+		: RangeStart(0), RangeSize(0)
+		, Selector(0), SceneNode(0)
+		, MeshBuffer(0), MaterialIndex(0)
+	{}
+
+	//! Check if this triangle index inside the range
+	/**
+	\param triangleIndex Index to an element inside the array of triangles returned by ITriangleSelector::getTriangles
+	*/
+	bool isIndexInRange(irr::u32 triangleIndex) const
+	{
+		return triangleIndex >= RangeStart && triangleIndex < RangeStart+RangeSize;
+	}
+
+	//! First index in the array for which this struct is valid
+	irr::u32 RangeStart;
+
+	//! Number of elements in the array for which this struct is valid (starting with RangeStart)
+	irr::u32 RangeSize;
+
+	//! Real selector which contained those triangles (useful when working with MetaTriangleSelector)
+	ITriangleSelector* Selector;
+
+	//! SceneNode from which the triangles are from
+	ISceneNode* SceneNode;
+
+	//! Meshbuffer from which the triangles are from
+	//! Is 0 when the ITriangleSelector doesn't support meshbuffer selection
+	const IMeshBuffer* MeshBuffer;
+
+	//! Index of selected material in the SceneNode. Usually only valid when MeshBuffer is also set, otherwise always 0
+	irr::u32 MaterialIndex;
+};
 
 //! Interface to return triangles with specific properties.
 /** Every ISceneNode may have a triangle selector, available with
@@ -45,10 +89,18 @@ public:
 	into the array.
 	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
-	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done. */
+	down into an ellipsoid space.  
+	\param useNodeTransform When the selector has a node then transform the 
+	triangles by that node's transformation matrix.	
+	\param outTriangleInfo When a pointer to an array is passed then that 
+	array is filled with additional information about the returned triangles.
+	One element of SCollisionTriangleRange added for each range of triangles which 
+	has distinguishable information. For example one range per meshbuffer. 
+	*/
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::matrix4* transform=0) const = 0;
+		s32& outTriangleCount, const core::matrix4* transform=0, 
+		bool useNodeTransform=true, 
+		irr::core::array<SCollisionTriangleRange>* outTriangleInfo=0) const = 0;
 
 	//! Gets the triangles for one associated node which may lie within a specific bounding box.
 	/**
@@ -68,11 +120,17 @@ public:
 	will be written into the array.
 	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
-	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done. */
+	down into an ellipsoid space.  
+	\param useNodeTransform When the selector has a node then transform the 
+	triangles by that node's transformation matrix. 
+	\param outTriangleInfo When a pointer to an array is passed then that 
+	array is filled with additional information about the returned triangles.
+	One element of SCollisionTriangleRange added for each range of triangles which 
+	has distinguishable information. For example one range per meshbuffer. */
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::aabbox3d<f32>& box,
-		const core::matrix4* transform=0) const = 0;
+		const core::matrix4* transform=0, bool useNodeTransform=true,
+		irr::core::array<SCollisionTriangleRange>* outTriangleInfo=0) const = 0;
 
 	//! Gets the triangles for one associated node which have or may have contact with a 3d line.
 	/**
@@ -92,22 +150,17 @@ public:
 	will be written into the array.
 	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
-	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done. */
+	down into an ellipsoid space. 
+	\param useNodeTransform When the selector has a node then transform the 
+	triangles by that node's transformation matrix.
+	\param outTriangleInfo When a pointer to an array is passed then that 
+	array is filled with additional information about the returned triangles.
+	One element of SCollisionTriangleRange added for each range of triangles which 
+	has distinguishable information. For example one range per meshbuffer. */
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
-		const core::matrix4* transform=0) const = 0;
-
-	//! Get scene node associated with a given triangle.
-	/**
-	This allows to find which scene node (potentially of several) is
-	associated with a specific triangle.
-
-	\param triangleIndex: the index of the triangle for which you want to find
-	the associated scene node.
-	\return The scene node associated with that triangle.
-	*/
-	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const = 0;
+		const core::matrix4* transform=0, bool useNodeTransform=true,
+		irr::core::array<SCollisionTriangleRange>* outTriangleInfo=0) const = 0;
 
 	//! Get number of TriangleSelectors that are part of this one
 	/** Only useful for MetaTriangleSelector, others return 1
@@ -123,6 +176,17 @@ public:
 	/** Only useful for MetaTriangleSelector, others return 'this' or 0
 	*/
 	virtual const ITriangleSelector* getSelector(u32 index) const = 0;
+
+	//! Get scene node associated with a given triangle.
+	/**	With CMetaTriangleSelector-selectors it's possible to find out a node
+	belonging to a certain triangle index. 
+	NOTE: triangleIndex has nothing to do with the order of triangles returned by getTriangles functions!
+	So you can _not_ use this function to find out anything about to which node returned triangles belong.
+	Use STriangleCollisionInfo struct for that.
+	\param triangleIndex: the index of the triangle for which you want to find.
+	\return The scene node associated with that triangle.
+	*/
+	virtual ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const = 0;
 };
 
 } // end namespace scene

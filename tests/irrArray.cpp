@@ -113,6 +113,56 @@ static bool testSwap()
 	return result;
 }
 
+// add numbers to the array going down from size to 1
+static void addInvNumbers(irr::core::array<int>& arr, irr::u32 size)
+{
+	for ( irr::u32 i=0; i<size; ++i )
+	{
+		arr.push_back(size-i);
+	}
+}
+ 
+// Ensure numbers are sorted in ascending order
+static bool validateSortedAscending(const irr::core::array<int>& arr)
+{
+	for ( irr::u32 i=1; i< arr.size(); ++ i)
+	{
+		if ( arr[i-1] > arr[i] )
+			return false;
+	}
+ 
+	return true;
+}
+
+static bool testSort()
+{
+	irr::core::array<int> arr;
+	for ( irr::u32 i=0; i<1000; ++i )
+	{
+		arr.clear();
+		addInvNumbers(arr, i);
+		arr.sort();
+		if ( !validateSortedAscending(arr) )
+		{
+			return false;
+		}
+	}
+	
+	for ( irr::u32 i=0; i<1000; ++i )
+	{
+		arr.clear();
+		addInvNumbers(arr, i);
+		addInvNumbers(arr, i);
+		arr.sort();
+		if ( !validateSortedAscending(arr) )
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 // Test the functionality of core::array
 bool testIrrArray(void)
 {
@@ -123,6 +173,7 @@ bool testIrrArray(void)
 	allExpected &= testSelfAssignment();
 	allExpected &= testSwap();
 	allExpected &= testErase();
+	allExpected &= testSort();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");

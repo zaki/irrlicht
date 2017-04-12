@@ -343,18 +343,25 @@ namespace scene
 
 
 		//! Creates a simple ITriangleSelector, based on a mesh.
-		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node) _IRR_OVERRIDE_;
+		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node, bool separateMeshbuffers) _IRR_OVERRIDE_;
+
+		//! Creates a simple ITriangleSelector, based on a meshbuffer.
+		virtual ITriangleSelector* createTriangleSelector(const IMeshBuffer* meshBuffer, irr::u32 materialIndex, ISceneNode* node) _IRR_OVERRIDE_;
 
 		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
 		//! Details of the mesh associated with the node will be extracted internally.
 		//! Call ITriangleSelector::update() to have the triangle selector updated based
 		//! on the current frame of the animated mesh scene node.
 		//! \param: The animated mesh scene node from which to build the selector
-		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node) _IRR_OVERRIDE_;
+		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node, bool separateMeshbuffers) _IRR_OVERRIDE_;
 
 		//! Creates a simple ITriangleSelector, based on a mesh.
 		virtual ITriangleSelector* createOctreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode) _IRR_OVERRIDE_;
+
+		//! Creates a simple ITriangleSelector, based on a meshbuffer.
+		virtual ITriangleSelector* createOctreeTriangleSelector(IMeshBuffer* meshBuffer, irr::u32 materialIndex,
+			ISceneNode* node, s32 minimalPolysPerNode=32) _IRR_OVERRIDE_;
 
 		//! Creates a simple dynamic ITriangleSelector, based on a axis aligned bounding box.
 		virtual ITriangleSelector* createTriangleSelectorFromBoundingBox(

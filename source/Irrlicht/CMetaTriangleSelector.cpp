@@ -38,14 +38,27 @@ s32 CMetaTriangleSelector::getTriangleCount() const
 
 //! Gets all triangles.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::matrix4* transform) const
+		s32& outTriangleCount, const core::matrix4* transform, bool useNodeTransform, 
+		irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	s32 outWritten = 0;
+	irr::u32 outTriangleInfoSize = outTriangleInfo ? outTriangleInfo->size() : 0;
 	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten,
-				arraySize - outWritten, t, transform);
+				arraySize - outWritten, t, transform, useNodeTransform, outTriangleInfo);
+
+		if ( outTriangleInfo )
+		{
+			irr::u32 newTriangleInfoSize = outTriangleInfo->size();
+			for ( u32 ti=outTriangleInfoSize; ti<newTriangleInfoSize; ++ti )
+			{
+				(*outTriangleInfo)[ti].RangeStart += outWritten;
+			}
+			outTriangleInfoSize = newTriangleInfoSize;
+		}
+
 		outWritten += t;
 		if (outWritten==arraySize)
 			break;
@@ -58,14 +71,27 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 //! Gets all triangles which lie within a specific bounding box.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::aabbox3d<f32>& box,
-		const core::matrix4* transform) const
+		const core::matrix4* transform, bool useNodeTransform, 
+		irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	s32 outWritten = 0;
+	irr::u32 outTriangleInfoSize = outTriangleInfo ? outTriangleInfo->size() : 0;
 	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten,
-				arraySize - outWritten, t, box, transform);
+				arraySize - outWritten, t, box, transform, useNodeTransform, outTriangleInfo);
+
+		if ( outTriangleInfo )
+		{
+			irr::u32 newTriangleInfoSize = outTriangleInfo->size();
+			for ( u32 ti=outTriangleInfoSize; ti<newTriangleInfoSize; ++ti )
+			{
+				(*outTriangleInfo)[ti].RangeStart += outWritten;
+			}
+			outTriangleInfoSize = newTriangleInfoSize;
+		}
+
 		outWritten += t;
 		if (outWritten==arraySize)
 			break;
@@ -78,14 +104,27 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 //! Gets all triangles which have or may have contact with a 3d line.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
-		const core::matrix4* transform) const
+		const core::matrix4* transform, bool useNodeTransform, 
+		irr::core::array<SCollisionTriangleRange>* outTriangleInfo) const
 {
 	s32 outWritten = 0;
+	irr::u32 outTriangleInfoSize = outTriangleInfo ? outTriangleInfo->size() : 0;
 	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten,
-				arraySize - outWritten, t, line, transform);
+				arraySize - outWritten, t, line, transform, useNodeTransform, outTriangleInfo);
+
+		if ( outTriangleInfo )
+		{
+			irr::u32 newTriangleInfoSize = outTriangleInfo->size();
+			for ( u32 ti=outTriangleInfoSize; ti<newTriangleInfoSize; ++ti )
+			{
+				(*outTriangleInfo)[ti].RangeStart += outWritten;
+			}
+			outTriangleInfoSize = newTriangleInfoSize;
+		}
+
 		outWritten += t;
 		if (outWritten==arraySize)
 			break;
@@ -147,10 +186,8 @@ ISceneNode* CMetaTriangleSelector::getSceneNodeForTriangle(u32 triangleIndex) co
 			return TriangleSelectors[i]->getSceneNodeForTriangle(0);
 	}
 
-	// For lack of anything more sensible, return the first selector.
-	return TriangleSelectors[0]->getSceneNodeForTriangle(0);
+	return 0;
 }
-
 
 /* Return the number of TriangleSelectors that are inside this one,
 Only useful for MetaTriangleSelector others return 1

@@ -3,8 +3,12 @@ Target = tests
 Sources = $(wildcard *.cpp)
 
 CPPFLAGS = -I../include -I/usr/X11R6/include -pipe
-# CXXFLAGS += -O3
-CXXFLAGS += -Wall -ansi -pedantic -O0 -g -D_DEBUG -fno-exceptions
+CXXFLAGS += -Wall -ansi -pedantic -fno-exceptions
+ifndef NDEBUG
+CXXFLAGS += -O0 -g -D_DEBUG 
+else
+CXXFLAGS += -fexpensive-optimizations -O3
+endif
 
 ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64

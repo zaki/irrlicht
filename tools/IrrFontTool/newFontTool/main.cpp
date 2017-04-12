@@ -2,7 +2,7 @@
 	Tool for creating Irrlicht bitmap+vector fonts,
 	started by Gaz Davidson in December 2006
 
-	Due to my laziness and Microsoft's unituitive API, surragate pairs and
+	Due to my laziness and Microsoft's unintuitive API, surrogate pairs and
 	nonspacing diacritical marks are not supported!
 
 	Linux bitmap font support added by Neil Burlock Oct 2008

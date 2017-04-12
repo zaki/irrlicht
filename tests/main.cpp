@@ -129,6 +129,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(terrainSceneNode);
 	TEST(lightMaps);
 	TEST(triangleSelector);
+	TEST(line2DTest);
 
 	unsigned int numberOfTests = tests.size();
 	unsigned int testToRun = 0;

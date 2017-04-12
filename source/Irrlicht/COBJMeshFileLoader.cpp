@@ -100,6 +100,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	bool mtlChanged=false;
 	bool useGroups = !SceneManager->getParameters()->getAttributeAsBool(OBJ_LOADER_IGNORE_GROUPS);
 	bool useMaterials = !SceneManager->getParameters()->getAttributeAsBool(OBJ_LOADER_IGNORE_MATERIAL_FILES);
+	irr::u32 lineNr = 1;	// only counts non-empty lines, still useful in debugging to locate errors
 	while(bufPtr != bufEnd)
 	{
 		switch(bufPtr[0])
@@ -289,6 +290,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		}	// end switch(bufPtr[0])
 		// eat up rest of line
 		bufPtr = goNextLine(bufPtr, bufEnd);
+		++lineNr;
 	}	// end while(bufPtr && (bufPtr-buf<filesize))
 
 	SMesh* mesh = new SMesh();

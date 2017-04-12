@@ -50,7 +50,7 @@ namespace scene
 	{
 		BinaryFileReader(io::IReadFile* pFile) : file(pFile) { }
 
-		s32 readBuffer(void* buffer, s32 len)
+		size_t readBuffer(void* buffer, s32 len)
 		{
 			return file->read(buffer,len);
 		}

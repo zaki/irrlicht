@@ -19,11 +19,44 @@ namespace scene
 	class ISceneNode;
 	class ICameraSceneNode;
 	class ITriangleSelector;
+	class IMeshBuffer;
+
+	struct SCollisionHit
+	{
+		//! Point of collision
+		core::vector3df Intersection;
+
+		//! Triangle with which we collided
+		core::triangle3df Triangle;
+
+		//! Triangle selector which contained the colliding triangle (useful when having MetaTriangleSelector)
+		ITriangleSelector* TriangleSelector;
+
+		//! Node which contained the triangle (is 0 when selector doesn't have that information)
+		ISceneNode* Node;
+
+		//! Meshbuffer which contained the triangle (is 0 when the selector doesn't have that information, only works when selectors are created per meshbuffer)
+		const IMeshBuffer* MeshBuffer;
+
+		//! Index of selected material of the triangle in the SceneNode. Usually only valid when MeshBuffer is also set, otherwise always 0
+		irr::u32 MaterialIndex;
+
+		SCollisionHit() : TriangleSelector(0), Node(0), MeshBuffer(0), MaterialIndex(0)
+		{}
+	};
 
 	//! The Scene Collision Manager provides methods for performing collision tests and picking on scene nodes.
 	class ISceneCollisionManager : public virtual IReferenceCounted
 	{
 	public:
+
+		//! Finds the nearest collision point of a line and lots of triangles, if there is one.
+		/** \param hitResult: Contains collision result when there was a collision detected.
+		\param ray: Line with which collisions are tested.
+		\param selector: TriangleSelector to be used for the collision check.
+		\return true if a collision was detected and false if not.	*/
+		virtual bool getCollisionPoint(SCollisionHit& hitResult, const core::line3d<f32>& ray,
+				ITriangleSelector* selector) = 0;
 
 		//! Finds the nearest collision point of a line and lots of triangles, if there is one.
 		/** \param ray: Line with which collisions are tested.
@@ -40,7 +73,18 @@ namespace scene
 		\return True if a collision was detected and false if not. */
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
 				ITriangleSelector* selector, core::vector3df& outCollisionPoint,
-				core::triangle3df& outTriangle, ISceneNode*& outNode) =0;
+				core::triangle3df& outTriangle, ISceneNode*& outNode)
+		{
+			SCollisionHit hitResult;
+			if ( getCollisionPoint(hitResult, ray, selector) )
+			{
+				outCollisionPoint = hitResult.Intersection;
+				outTriangle = hitResult.Triangle;
+				outNode = hitResult.Node;
+				return true;
+			}
+			return false;
+		}
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns the resulting new position of the ellipsoid.
 		/** This can be used for moving a character in a 3d world: The
@@ -161,6 +205,7 @@ namespace scene
 		virtual ISceneNode* getSceneNodeFromCameraBB(const ICameraSceneNode* camera,
 			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
 
+
 		//! Perform a ray/box and ray/triangle collision check on a hierarchy of scene nodes.
 		/** This checks all scene nodes under the specified one, first by ray/bounding
 		box, and then by accurate ray/triangle collision, finding the nearest collision,
@@ -189,17 +234,51 @@ namespace scene
 		\return Returns the scene node containing the hit triangle nearest to ray.start.
 		If no collision is detected, then 0 is returned. */
 		virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(
+								SCollisionHit& hitResult, 
+								const core::line3df& ray,
+								s32 idBitMask = 0,
+								ISceneNode * collisionRootNode = 0,
+								bool noDebugObjects = false) = 0;
+
+		//! Perform a ray/box and ray/triangle collision check on a hierarchy of scene nodes.
+		/** Works same as other getSceneNodeAndCollisionPointFromRay but returns less information.
+		(was written before the other getSceneNodeAndCollisionPointFromRay implementation).
+		\param ray: Line with which collisions are tested.
+		\param outCollisionPoint: If a collision is detected, this will contain the
+		position of the nearest collision.
+		\param outTriangle: If a collision is detected, this will contain the triangle
+		with which the ray collided.
+		\param idBitMask: Only scene nodes with an id which matches at least one of the
+		bits contained in this mask will be tested. However, if this parameter is 0, then
+		all nodes are checked.
+		\param collisionRootNode: the scene node at which to begin checking. Only this
+		node and its children will be checked. If you want to check the entire scene,
+		pass 0, and the root scene node will be used (this is the default).
+		\param noDebugObjects: when true, debug objects are not considered viable targets.
+		Debug objects are scene nodes with IsDebugObject() = true.
+		\return Returns the scene node containing the hit triangle nearest to ray.start.
+		If no collision is detected, then 0 is returned. */
+		virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(
 								const core::line3df& ray,
 								core::vector3df& outCollisionPoint,
 								core::triangle3df& outTriangle,
 								s32 idBitMask = 0,
 								ISceneNode * collisionRootNode = 0,
-								bool noDebugObjects = false) = 0;
-	};
+								bool noDebugObjects = false)
+		{
+			SCollisionHit hitResult;
+			ISceneNode* node = getSceneNodeAndCollisionPointFromRay(hitResult, ray, idBitMask, collisionRootNode, noDebugObjects);
+			if ( node )
+			{
+				outCollisionPoint = hitResult.Intersection;
+				outTriangle  = hitResult.Triangle;
+			}
+			return node;
+		}
 
+	};
 
 } // end namespace scene
 } // end namespace irr
 
 #endif
-

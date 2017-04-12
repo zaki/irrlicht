@@ -1395,6 +1395,10 @@ void CIrrDeviceMacOSX::initKeycodes()
 	KeyCodes[kVK_ANSI_KeypadDivide] = irr::KEY_DIVIDE;
 	KeyCodes[kVK_ANSI_KeypadEnter] = irr::KEY_RETURN;
 	KeyCodes[kVK_ANSI_KeypadMinus] = irr::KEY_SUBTRACT;
+
+	KeyCodes[kVK_ANSI_LeftBracket] = irr::KEY_OEM_4;
+	KeyCodes[kVK_ANSI_Backslash] = irr::KEY_OEM_5;
+	KeyCodes[kVK_ANSI_RightBracket] = irr::KEY_OEM_6;
 }
 
 

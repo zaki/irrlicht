@@ -25,8 +25,6 @@ COpenGLCacheHandler::COpenGLCacheHandler(COpenGLDriver* driver) :
 	glAlphaFunc(AlphaMode, AlphaRef);
 	glDisable(GL_ALPHA_TEST);
 
-	
-
 	glMatrixMode(MatrixMode);
 
 	Driver->irrGlClientActiveTexture(ClientActiveTexture);
