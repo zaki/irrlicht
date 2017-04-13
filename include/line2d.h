@@ -112,26 +112,29 @@ class line2d
 		}
 
 		/*! returns a intersection point of 2 lines (if lines are not parallel). Behaviour
-		undefined if lines are parallel or coincident.*/
+		undefined if lines are parallel or coincident. 
+		It's on optimized intersectWith with checkOnlySegments=false and ignoreCoincidentLines=true
+		*/
 		vector2d<T> fastLinesIntersection( const line2d<T>& l) const
 		{
 			const f32 commonDenominator = (f32)((l.end.Y - l.start.Y)*(end.X - start.X) -
 				(l.end.X - l.start.X)*(end.Y - start.Y));
+			
+			if ( commonDenominator != 0.f )
+			{
+				const f32 numeratorA = (f32)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
+					(l.end.Y - l.start.Y)*(start.X - l.start.X));
 
-			const f32 numeratorA = (f32)((l.end.X - l.start.X)*(start.Y - l.start.Y) -
-				(l.end.Y - l.start.Y)*(start.X - l.start.X));
+				const f32 uA = numeratorA / commonDenominator;
 
-			const f32 numeratorB = (f32)((end.X - start.X)*(start.Y - l.start.Y) -
-				(end.Y - start.Y)*(start.X - l.start.X));
-
-			const f32 uA = numeratorA / commonDenominator;
-			const f32 uB = numeratorB / commonDenominator;
-
-			// Calculate the intersection point.
-			return vector2d<T> (
-				(T)(start.X + uA * (end.X - start.X)), 
-				(T)(start.Y + uA * (end.Y - start.Y))
-				);
+				// Calculate the intersection point.
+				return vector2d<T> (
+					(T)(start.X + uA * (end.X - start.X)), 
+					(T)(start.Y + uA * (end.Y - start.Y))
+					);
+			}
+			else
+				return l.start;
 		}
 
 		/*! Check if this line intersect a segment. The eventual intersection point is returned in "out".*/
@@ -235,12 +238,15 @@ class line2d
 			// Get the point of intersection on this line, checking that
 			// it is within the line segment.
 			const f32 uA = numeratorA / commonDenominator;
-			if(checkOnlySegments && (uA < 0.f || uA > 1.f) )
-				return false; // Outside the line segment
+			if (checkOnlySegments)
+			{
+				if(uA < 0.f || uA > 1.f)
+					return false; // Outside the line segment
 
-			const f32 uB = numeratorB / commonDenominator;
-			if(checkOnlySegments && (uB < 0.f || uB > 1.f))
-				return false; // Outside the line segment
+				const f32 uB = numeratorB / commonDenominator;
+				if(uB < 0.f || uB > 1.f)
+					return false; // Outside the line segment
+			}
 
 			// Calculate the intersection point.
 			out.X = (T)(start.X + uA * (end.X - start.X));

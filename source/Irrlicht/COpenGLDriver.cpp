@@ -56,7 +56,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFil
 	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
-	Params(params), SDLDevice(device), DeviceType(EIDT_SDL)
+	Params(params), SDLDevice(device), ContextManager(0), DeviceType(EIDT_SDL)
 {
 #ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -291,7 +291,8 @@ bool COpenGLDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth,
 		ContextManager->activateContext(videoData);
 
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-	glFrontFace(GL_CW);
+	if ( DeviceType == EIDT_SDL )
+		glFrontFace(GL_CW);
 #endif
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
@@ -311,8 +312,11 @@ bool COpenGLDriver::endScene()
 		status = ContextManager->swapBuffers();
 
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
-	SDL_GL_SwapBuffers();
-	status = true;
+	if ( DeviceType == EIDT_SDL )
+	{
+		SDL_GL_SwapBuffers();
+		status = true;
+	}
 #endif
 
 	// todo: console device present

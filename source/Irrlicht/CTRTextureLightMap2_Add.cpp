@@ -190,10 +190,8 @@ REALINLINE void CTRTextureLightMap2_Add::scanline_bilinear ()
 #endif
 
 
-	f32 inversew = FIX_POINT_F32_MUL;
-
-
 #ifdef BURNINGVIDEO_RENDERER_FAST
+	f32 inversew = FIX_POINT_F32_MUL;
 	u32 dIndex = ( line.y & 3 ) << 2;
 
 
