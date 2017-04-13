@@ -156,6 +156,7 @@ bool CIrrDeviceSDL::createWindow()
 {
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	emscripten_set_canvas_size( Width, Height);
+	Screen = SDL_SetVideoMode( 0, 0, 32, SDL_OPENGL ); // 0,0 will use the canvas size
 	return true;
 #else // !_IRR_EMSCRIPTEN_PLATFORM_
 	if ( Close )
@@ -313,6 +314,8 @@ bool CIrrDeviceSDL::run()
 
 	while ( !Close && SDL_PollEvent( &SDL_event ) )
 	{
+		// os::Printer::log("event: ", core::stringc((int)SDL_event.type).c_str(),   ELL_INFORMATION);	// just for debugging
+
 		switch ( SDL_event.type )
 		{
 		case SDL_MOUSEMOTION:
@@ -460,6 +463,7 @@ bool CIrrDeviceSDL::run()
 				Height = SDL_event.resize.h;
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 				emscripten_set_canvas_size( Width, Height);
+				Screen = SDL_SetVideoMode( 0, 0, 32, SDL_OPENGL ); // 0,0 will use the canvas size
 #else //_IRR_EMSCRIPTEN_PLATFORM_
  				Screen = SDL_SetVideoMode( Width, Height, 0, SDL_Flags );
 #endif //_IRR_EMSCRIPTEN_PLATFOR
