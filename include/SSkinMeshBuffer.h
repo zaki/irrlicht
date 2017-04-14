@@ -22,7 +22,8 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) :
 		ChangedID_Vertex(1), ChangedID_Index(1), VertexType(vt),
 		MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER),
-		BoundingBoxNeedsRecalculated(true)
+		BoundingBoxNeedsRecalculated(true),
+		PrimitiveType(EPT_TRIANGLES)
 	{
 		#ifdef _DEBUG
 		setDebugName("SSkinMeshBuffer");
@@ -357,6 +358,18 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		}
 	}
 
+	//! Describe what kind of primitive geometry is used by the meshbuffer
+	virtual void setPrimitiveType(E_PRIMITIVE_TYPE type)
+	{
+		PrimitiveType = type;
+	}
+
+	//! Get the kind of primitive geometry which is used by the meshbuffer
+	virtual E_PRIMITIVE_TYPE getPrimitiveType() const
+	{
+		return PrimitiveType;
+	}
+
 	//! flags the mesh as changed, reloads hardware buffers
 	virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
 	{
@@ -388,6 +401,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	video::E_VERTEX_TYPE VertexType;
 
 	core::aabbox3d<f32> BoundingBox;
+
+	//! Primitive type used for rendering (triangles, lines, ...)
+	E_PRIMITIVE_TYPE PrimitiveType;
 
 	// hardware mapping hint
 	E_HARDWARE_MAPPING MappingHint_Vertex:3;

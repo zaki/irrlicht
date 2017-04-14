@@ -1166,7 +1166,7 @@ void CD3D9Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 		iPtr=0;
 	}
 
-	drawVertexPrimitiveList(vPtr, mb->getVertexCount(), iPtr, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
+	drawVertexPrimitiveList(vPtr, mb->getVertexCount(), iPtr, mb->getPrimitiveCount(), mb->getVertexType(), mb->getPrimitiveType(), mb->getIndexType());
 
 	if (HWBuffer->vertexBuffer)
 		pID3DDevice->SetStreamSource(0, 0, 0, 0);

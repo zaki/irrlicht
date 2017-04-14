@@ -20,6 +20,7 @@ namespace scene
 	public:
 		//! constructor
 		CDynamicMeshBuffer(video::E_VERTEX_TYPE vertexType, video::E_INDEX_TYPE indexType)
+		: PrimitiveType(EPT_TRIANGLES)
 		{
 			VertexBuffer=new CVertexBuffer(vertexType);
 			IndexBuffer=new CIndexBuffer(indexType);
@@ -101,8 +102,22 @@ namespace scene
 			}
 		}
 
+		//! Describe what kind of primitive geometry is used by the meshbuffer
+		virtual void setPrimitiveType(E_PRIMITIVE_TYPE type)
+		{
+			PrimitiveType = type;
+		}
+
+		//! Get the kind of primitive geometry which is used by the meshbuffer
+		virtual E_PRIMITIVE_TYPE getPrimitiveType() const
+		{
+			return PrimitiveType;
+		}
+
 		video::SMaterial Material;
 		core::aabbox3d<f32> BoundingBox;
+		//! Primitive type used for rendering (triangles, lines, ...)
+		E_PRIMITIVE_TYPE PrimitiveType;
 	private:
 		CDynamicMeshBuffer(const CDynamicMeshBuffer&); // = delete in c++11, prevent copying
 
