@@ -397,6 +397,6 @@ namespace video
 } // end namespace video
 } // end namespace irr
 
-#endif // _IRR_COMPILE_WITH_OPENGL_
+#endif // _IRR_COMPILE_WITH_OGLES2_
 
-#endif
+#endif // __C_OGLES2_DRIVER_H_INCLUDED__
