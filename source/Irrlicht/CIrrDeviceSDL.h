@@ -48,13 +48,13 @@ namespace irr
 		virtual bool isWindowActive() const _IRR_OVERRIDE_;
 
 		//! returns if window has focus.
-		bool isWindowFocused() const;
+		bool isWindowFocused() const _IRR_OVERRIDE_;
 
 		//! returns if window is minimized.
-		bool isWindowMinimized() const;
+		bool isWindowMinimized() const _IRR_OVERRIDE_;
 
 		//! returns color format of the window.
-		video::ECOLOR_FORMAT getColorFormat() const;
+		video::ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
 
 		//! presents a surface in the client area
 		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0) _IRR_OVERRIDE_;
