@@ -1940,7 +1940,6 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 	bool parsePolygonOK = false;
 	bool parseVcountOK = false;
 	u32 inputSemanticCount = 0;
-	bool unresolvedInput=false;
 	u32 maxOffset = 0;
 	core::array<SColladaInput> localInputs;
 
@@ -2095,7 +2094,6 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 			os::Printer::log("COLLADA Warning, polygon input source not found",
 				inp.Source.c_str(), ELL_DEBUG);
 			inp.Semantic=ECIS_COUNT; // for unknown
-			unresolvedInput=true;
 		}
 		else
 		{

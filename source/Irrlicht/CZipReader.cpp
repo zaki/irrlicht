@@ -718,7 +718,8 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 				File->read(pcData, decryptedSize);
 			}
 
-			bz_stream bz_ctx={0};
+			bz_stream bz_ctx;
+			memset(&bz_ctx, 0, sizeof(bz_ctx));
 			/* use BZIP2's default memory allocation
 			bz_ctx->bzalloc = NULL;
 			bz_ctx->bzfree  = NULL;
