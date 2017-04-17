@@ -146,9 +146,9 @@ namespace scene
 		virtual u32 getChangedID_Index() const = 0;
 
 		//! Describe what kind of primitive geometry is used by the meshbuffer
-		/** Note: Default is EPT_TRIANGLES. Using other types is fine for rendering. 
+		/** Note: Default is EPT_TRIANGLES. Using other types is fine for rendering.
 		But meshbuffer manipulation functions might expect type EPT_TRIANGLES
-		to work correctly. Also mesh writers will generally fail (badly!) with other 
+		to work correctly. Also mesh writers will generally fail (badly!) with other
 		types than EPT_TRIANGLES. */
 		virtual void setPrimitiveType(E_PRIMITIVE_TYPE type) = 0;
 
@@ -163,14 +163,14 @@ namespace scene
 			{
                 case scene::EPT_POINTS:	        return indexCount;
                 case scene::EPT_LINE_STRIP:     return indexCount-1;
-                case scene::EPT_LINE_LOOP:      return indexCount-1;
+                case scene::EPT_LINE_LOOP:      return indexCount;
                 case scene::EPT_LINES:          return indexCount/2;
-                case scene::EPT_TRIANGLE_STRIP: return (indexCount-2)/3;
-                case scene::EPT_TRIANGLE_FAN:   return (indexCount-2)/3;
+                case scene::EPT_TRIANGLE_STRIP: return (indexCount-2);
+                case scene::EPT_TRIANGLE_FAN:   return (indexCount-2);
                 case scene::EPT_TRIANGLES:      return indexCount/3;
-                case scene::EPT_QUAD_STRIP:     return (indexCount-2)/4;
+                case scene::EPT_QUAD_STRIP:     return (indexCount-2)/2;
                 case scene::EPT_QUADS:          return indexCount/4;
-                case scene::EPT_POLYGON:        return indexCount-1;
+                case scene::EPT_POLYGON:        return indexCount; // (not really primitives, that would be 1, works like line_strip)
                 case scene::EPT_POINT_SPRITES:  return indexCount;
 			}
 			return 0;
