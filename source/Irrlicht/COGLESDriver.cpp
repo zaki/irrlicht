@@ -540,8 +540,8 @@ void COGLES1Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 
 
 	drawVertexPrimitiveList(vertices, mb->getVertexCount(), indexList,
-			mb->getIndexCount()/3, mb->getVertexType(),
-			scene::EPT_TRIANGLES, mb->getIndexType());
+			mb->getPrimitiveCount(), mb->getVertexType(),
+			mb->getPrimitiveType(), mb->getIndexType());
 
 	if (HWBuffer->Mapped_Vertex!=scene::EHM_NEVER)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

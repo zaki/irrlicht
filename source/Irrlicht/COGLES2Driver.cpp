@@ -686,8 +686,8 @@ COGLES2Driver::~COGLES2Driver()
 
 
 		drawVertexPrimitiveList(vertices, mb->getVertexCount(),
-				indexList, mb->getIndexCount() / 3,
-				mb->getVertexType(), scene::EPT_TRIANGLES,
+				indexList, mb->getPrimitiveCount(),
+				mb->getVertexType(), mb->getPrimitiveType(),
 				mb->getIndexType());
 
 		if (HWBuffer->Mapped_Vertex != scene::EHM_NEVER)
