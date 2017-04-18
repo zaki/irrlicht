@@ -732,7 +732,7 @@ IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 #else
 		if (header.PixelFormat.Flags & DDPF_RGB) // Uncompressed formats
 		{
-			u32 byteCount = header.PixelFormat.RGBBitCount / 8;
+//			u32 byteCount = header.PixelFormat.RGBBitCount / 8;
 
 			if( header.Flags & DDSD_PITCH )
 				dataSize = header.PitchOrLinearSize * header.Height * header.Depth * (header.PixelFormat.RGBBitCount / 8);
