@@ -250,8 +250,8 @@ namespace video
 		virtual bool beginScene(u16 clearFlag=(u16)(ECBF_COLOR|ECBF_DEPTH), SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
 			const SExposedVideoData& videoData=SExposedVideoData(), core::rect<s32>* sourceRect = 0) = 0;
 
-		//! Old beginScene implementation for downward compatibility. Can't clearn stencil buffer, but otherwise identical to other beginScene
-		_IRR_DEPRECATED_ bool beginScene(bool backBuffer, bool zBuffer, SColor color = SColor(255,0,0,0),
+		//! Alternative beginScene implementation. Can't clear stencil buffer, but otherwise identical to other beginScene
+		bool beginScene(bool backBuffer, bool zBuffer, SColor color = SColor(255,0,0,0),
 			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0)
 		{
 			u16 flag = 0;
@@ -621,9 +621,9 @@ namespace video
 			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
 		//! Sets a new render target.
-		// Prefer to use the setRenderTarget function taking flags as parameter as this one can't clear the stencil buffer.
-		// It's still offered for backward compatibility.
-		_IRR_DEPRECATED_ bool setRenderTarget(ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color = SColor(255,0,0,0))
+		//! Prefer to use the setRenderTarget function taking flags as parameter as this one can't clear the stencil buffer.
+		//! It's still offered for backward compatibility.
+		bool setRenderTarget(ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color = SColor(255,0,0,0))
 		{
 			u16 flag = 0;
 
