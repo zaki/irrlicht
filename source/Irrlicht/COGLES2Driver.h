@@ -44,10 +44,13 @@ namespace video
 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
 	{
 		friend class COpenGLCoreTexture<COGLES2Driver>;
+		friend IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+
+	protected:
+		//! constructor (use createOGLES2Driver instead)
+		COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 
 	public:
-		//! constructor
-		COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 
 		//! destructor
 		virtual ~COGLES2Driver();
@@ -315,9 +318,11 @@ namespace video
 
 		COGLES2CacheHandler* getCacheHandler() const;
 
-	private:
+	protected:
 		//! inits the opengl-es driver
-		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
+		virtual bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
+
+		void chooseMaterial2D();
 
 		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
 
@@ -332,7 +337,25 @@ namespace video
 		//! sets the needed renderstates
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
 
-		void chooseMaterial2D();
+		//! Prevent setRenderStateMode calls to do anything.
+		// hack to allow drawing meshbuffers in 2D mode.
+		// Better solution would be passing this flag through meshbuffers,
+		// but the way this is currently implemented in Irrlicht makes this tricky to implement
+		void lockRenderStateMode()
+		{
+			LockRenderStateMode = true;
+		}
+
+		//! Allow setRenderStateMode calls to work again
+		void unlockRenderStateMode()
+		{
+			LockRenderStateMode = false;
+		}
+
+		void draw2D3DVertexPrimitiveList(const void* vertices,
+				u32 vertexCount, const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType, bool is3D);
 
 		void createMaterialRenderers();
 
@@ -355,6 +378,7 @@ namespace video
 		E_RENDER_MODE CurrentRenderMode;
 		//! bool to make all renderstates reset if set to true.
 		bool ResetRenderStates;
+		bool LockRenderStateMode;
 		bool Transformation3DChanged;
 		u8 AntiAlias;
 		irr::io::path OGLES2ShaderPath;

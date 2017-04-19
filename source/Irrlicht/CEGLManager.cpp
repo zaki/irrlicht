@@ -12,7 +12,7 @@
 #if defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
 #include <android/native_activity.h>
 #endif
- 
+
 namespace irr
 {
 namespace video
@@ -37,7 +37,7 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 {
 	if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
         return true;
-	
+
 	// store new data
 	Params=params;
 	Data=data;
@@ -49,7 +49,7 @@ bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLWin32.HDc);
 #elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
 	EglWindow = 0;
-	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);	
+	EglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 	EglWindow = (NativeWindowType)Data.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)Data.OpenGLLinux.X11Display);
@@ -135,6 +135,7 @@ bool CEGLManager::generateSurface()
 		EglOpenGLBIT = EGL_OPENGL_ES_BIT;
 		break;
 	case EDT_OGLES2:
+	case EDT_WEBGL1:
 		EglOpenGLBIT = EGL_OPENGL_ES2_BIT;
 		break;
 	default:
@@ -300,6 +301,7 @@ bool CEGLManager::generateContext()
 		OpenGLESVersion = 1;
 		break;
 	case EDT_OGLES2:
+	case EDT_WEBGL1:
 		OpenGLESVersion = 2;
 		break;
 	default:

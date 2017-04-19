@@ -1241,6 +1241,9 @@ void CIrrDeviceWin32::createDriver()
 		os::Printer::log("OpenGL-ES2 driver was not compiled in.", ELL_ERROR);
 #endif
 		break;
+	case EDT_WEBGL1:
+		os::Printer::log("WebGL1 driver not supported on Win32 device.", ELL_ERROR);
+		break;
 	case video::EDT_SOFTWARE:
 #ifdef _IRR_COMPILE_WITH_SOFTWARE_
 		switchToFullScreen();

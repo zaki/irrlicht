@@ -29,6 +29,15 @@
 #include "android_native_app_glue.h"
 #endif
 
+// Add as first line to a function to get info is was called once.
+#define FIRST_CALL \
+	static bool first = true; \
+	if ( first ) \
+	{\
+		first = false; \
+		os::Printer::log(__FILE__, irr::core::stringc(__LINE__).c_str(), ELL_ERROR); \
+	}
+
 namespace irr
 {
 namespace video
@@ -36,7 +45,7 @@ namespace video
 
 COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager) :
 	CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(), CacheHandler(0), MaterialRenderer2D(0), CurrentRenderMode(ERM_NONE),
-	ResetRenderStates(true), Transformation3DChanged(true), AntiAlias(params.AntiAlias), OGLES2ShaderPath(params.OGLES2ShaderPath),
+	ResetRenderStates(true), LockRenderStateMode(false), Transformation3DChanged(true), AntiAlias(params.AntiAlias), OGLES2ShaderPath(params.OGLES2ShaderPath),
 	ColorFormat(ECF_R8G8B8), Params(params), ContextManager(contextManager)
 {
 #ifdef _DEBUG
@@ -65,9 +74,6 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFil
 			getProfiler().add(EPID_ES2_DRAW_SHADOW, L"shadows", L"ES2");
 		}
  	)
-
-	core::dimension2d<u32> windowSize(0, 0);
-
 	if (!ContextManager)
 		return;
 
@@ -76,10 +82,6 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFil
 	ContextManager->generateContext();
 	ExposedData = ContextManager->getContext();
 	ContextManager->activateContext(ExposedData);
-
-	windowSize = params.WindowSize;
-
-	genericDriverInit(windowSize, params.Stencilbuffer);
 }
 
 COGLES2Driver::~COGLES2Driver()
@@ -659,6 +661,7 @@ COGLES2Driver::~COGLES2Driver()
 	//! Draw hardware buffer
 	void COGLES2Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 	{
+FIRST_CALL;
 		if (!_HWBuffer)
 			return;
 
@@ -719,6 +722,7 @@ COGLES2Driver::~COGLES2Driver()
 			const void* indexList, u32 primitiveCount,
 			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 	{
+FIRST_CALL;
 		if (!primitiveCount || !vertexCount)
 			return;
 
@@ -876,6 +880,7 @@ COGLES2Driver::~COGLES2Driver()
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect, SColor color,
 		bool useAlphaChannelOfTexture)
 	{
+FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1014,6 +1019,7 @@ COGLES2Driver::~COGLES2Driver()
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 		const video::SColor* const colors, bool useAlphaChannelOfTexture)
 	{
+FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1093,6 +1099,7 @@ COGLES2Driver::~COGLES2Driver()
 
 	void COGLES2Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 	{
+FIRST_CALL;
 		chooseMaterial2D();
 		Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
 
@@ -1140,6 +1147,7 @@ COGLES2Driver::~COGLES2Driver()
 			const core::rect<s32>* clipRect,
 			SColor color, bool useAlphaChannelOfTexture)
 	{
+FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1302,6 +1310,7 @@ COGLES2Driver::~COGLES2Driver()
 			const core::rect<s32>* clipRect, SColor color,
 			bool useAlphaChannelOfTexture)
 	{
+FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1398,6 +1407,7 @@ COGLES2Driver::~COGLES2Driver()
 			const core::rect<s32>& position,
 			const core::rect<s32>* clip)
 	{
+FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DRECTANGLE);)
 
 		chooseMaterial2D();
@@ -1444,6 +1454,7 @@ COGLES2Driver::~COGLES2Driver()
 			SColor colorLeftDown, SColor colorRightDown,
 			const core::rect<s32>* clip)
 	{
+FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DRECTANGLE);)
 
 		core::rect<s32> pos = position;
@@ -1491,6 +1502,7 @@ COGLES2Driver::~COGLES2Driver()
 	void COGLES2Driver::draw2DLine(const core::position2d<s32>& start,
 			const core::position2d<s32>& end, SColor color)
 	{
+FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DLINE);)
 
 		if (start==end)
@@ -1529,6 +1541,7 @@ COGLES2Driver::~COGLES2Driver()
 	//! Draws a pixel
 	void COGLES2Driver::drawPixel(u32 x, u32 y, const SColor &color)
 	{
+FIRST_CALL;
 		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		if (x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
 			return;
@@ -1674,6 +1687,9 @@ COGLES2Driver::~COGLES2Driver()
 	void COGLES2Driver::setRenderStates3DMode()
 	{
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_SET_RENDERSTATE_3D);)
+
+		if ( LockRenderStateMode )
+			return;
 
 		if (CurrentRenderMode != ERM_3D)
 		{
@@ -1961,17 +1977,20 @@ COGLES2Driver::~COGLES2Driver()
 	{
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_SET_RENDERSTATE_2D);)
 
-			if (CurrentRenderMode != ERM_2D)
-			{
-				// unset last 3d material
-				if (CurrentRenderMode == ERM_3D)
-				{
-					if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
-						MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-				}
+		if ( LockRenderStateMode )
+			return;
 
-				CurrentRenderMode = ERM_2D;
+		if (CurrentRenderMode != ERM_2D)
+		{
+			// unset last 3d material
+			if (CurrentRenderMode == ERM_3D)
+			{
+				if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
+					MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			}
+
+			CurrentRenderMode = ERM_2D;
+		}
 
 		MaterialRenderer2D->OnSetMaterial(Material, LastMaterial, true, 0);
 		LastMaterial = Material;
@@ -2081,6 +2100,7 @@ COGLES2Driver::~COGLES2Driver()
 	//! Draws a shadow volume into the stencil buffer.
 	void COGLES2Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 	{
+FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_SHADOW);)
 
 		const u32 count=triangles.size();
@@ -2161,6 +2181,7 @@ COGLES2Driver::~COGLES2Driver()
 			video::SColor leftUpEdge, video::SColor rightUpEdge,
 			video::SColor leftDownEdge, video::SColor rightDownEdge)
 	{
+FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_SHADOW);)
 
 		if (!StencilBuffer)
@@ -2208,6 +2229,7 @@ COGLES2Driver::~COGLES2Driver()
 	void COGLES2Driver::draw3DLine(const core::vector3df& start,
 			const core::vector3df& end, SColor color)
 	{
+FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_3DLINE);)
 
 		setRenderStates3DMode();
@@ -2384,9 +2406,9 @@ COGLES2Driver::~COGLES2Driver()
 
 	bool COGLES2Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 	{
-		if (target && target->getDriverType() != EDT_OGLES2)
+		if (target && target->getDriverType() != EDT_OGLES2  && target->getDriverType() != EDT_WEBGL1)
 		{
-			os::Printer::log("Fatal Error: Tried to set a render target not owned by this driver.", ELL_ERROR);
+			os::Printer::log("Fatal Error: Tried to set a render target not owned by OGLES2 driver.", ELL_ERROR);
 			return false;
 		}
 
@@ -2858,7 +2880,9 @@ class IContextManager;
 IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager)
 {
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-	return new COGLES2Driver(params, io, contextManager);
+	COGLES2Driver* driver = new COGLES2Driver(params, io, contextManager);
+	driver->genericDriverInit(params.WindowSize, params.Stencilbuffer);	// don't call in constructor, it uses virtual function calls of driver
+	return driver;
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OGLES2_

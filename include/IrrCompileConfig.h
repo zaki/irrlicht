@@ -97,6 +97,7 @@
 #define _IRR_COMPILE_WITH_OSX_DEVICE_
 #define NO_IRR_COMPILE_WITH_OGLES1_
 #define NO_IRR_COMPILE_WITH_OGLES2_
+#define NO_IRR_COMPILE_WITH_WEBGL1_
 #endif
 #endif
 
@@ -106,6 +107,7 @@
 #define NO_IRR_COMPILE_WITH_OPENGL_
 #define NO_IRR_COMPILE_WITH_OGLES1_
 #define _IRR_COMPILE_WITH_OGLES2_
+#define _IRR_COMPILE_WITH_WEBGL1_
 #define _IRR_COMPILE_WITH_EGL_MANAGER_
 #define _IRR_COMPILE_WITH_SDL_DEVICE_
 #define NO_IRR_COMPILE_WITH_X11_DEVICE_
@@ -251,6 +253,16 @@ define out. */
 #define _IRR_COMPILE_WITH_OGLES2_
 #ifdef NO_IRR_COMPILE_WITH_OGLES2_
 #undef _IRR_COMPILE_WITH_OGLES2_
+#endif
+
+//! Define _IRR_COMPILE_WITH_WEBGL1_ to compile Irrlicht engine with a WebGL friendly
+//! subset of the OpenGL ES 2.0 driver.
+#define _IRR_COMPILE_WITH_WEBGL1_
+#ifdef NO_IRR_COMPILE_WITH_WEBGL1_
+#undef _IRR_COMPILE_WITH_WEBGL1_
+#endif
+#ifdef _IRR_COMPILE_WITH_WEBGL1_
+#define _IRR_COMPILE_WITH_OGLES2_ //  it's a subset of OGL ES2, so always needed when using WebGL
 #endif
 
 //! Define required options for OpenGL ES 2.0 drivers.

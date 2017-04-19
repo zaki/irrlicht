@@ -2719,7 +2719,7 @@ bool COGLES1Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SCol
 {
 	if (target && target->getDriverType() != EDT_OGLES1)
 	{
-		os::Printer::log("Fatal Error: Tried to set a render target not owned by this driver.", ELL_ERROR);
+		os::Printer::log("Fatal Error: Tried to set a render target not owned by OpenGL driver.", ELL_ERROR);
 		return false;
 	}
 

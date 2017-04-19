@@ -51,13 +51,16 @@ namespace video
 		/** Performs hardware accelerated rendering of 3D and 2D
 		primitives. */
 		EDT_OPENGL,
-        
+
         //! OpenGL-ES 1.x driver, for embedded and mobile systems
 		EDT_OGLES1,
-        
+
 		//! OpenGL-ES 2.x driver, for embedded and mobile systems
 		/** Supports shaders etc. */
 		EDT_OGLES2,
+
+		//! WebGL1 friendly subset of OpenGL-ES 2.x driver for Emscripten
+		EDT_WEBGL1,
 
 		//! No driver, just for counting the elements
 		EDT_COUNT
@@ -73,7 +76,8 @@ namespace video
 		"OpenGL 1.x/2.x/3.x",
 		"OpenGL ES1",
 		"OpenGL ES2",
-		0 
+		"WebGL 1",
+		0
 	};
 
 	const c8* const DRIVER_TYPE_NAMES_SHORT[] =
@@ -84,6 +88,9 @@ namespace video
 		"d3d8",
 		"d3d9",
 		"opengl",
+		"ogles1",
+		"ogles2",
+		"webgl1",
 		0
 	};
 

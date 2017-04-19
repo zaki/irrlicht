@@ -1,6 +1,7 @@
 --------------------------
 Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
+- Add support for (experimental) WebGL1 driver for emscripten (still work in process)
 - Add support for emscripten. Thanks @labsin for the patch.
 - Add IVideoDriver::getAmbientLight function so shaders can access global ambient light easier
 - Merge material changes for COGLES1MaterialRenderer_LIGHTMAP and COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL which had been done in OGL in trunk (r2740) to ensure materials look the same on all platforms.

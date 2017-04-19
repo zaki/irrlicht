@@ -73,6 +73,10 @@ namespace irr
 #ifdef _IRR_COMPILE_WITH_OGLES2_
         IVideoDriver* createOGLES2Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
 #endif
+
+#ifdef _IRR_COMPILE_WITH_WEBGL1_
+		IVideoDriver* createWebGL1Driver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager);
+#endif
 	}
 } // end namespace irr
 
@@ -84,7 +88,7 @@ namespace
 	Atom X_ATOM_TEXT;
 	Atom X_ATOM_NETWM_MAXIMIZE_VERT;
 	Atom X_ATOM_NETWM_MAXIMIZE_HORZ;
-	Atom X_ATOM_NETWM_STATE;	
+	Atom X_ATOM_NETWM_STATE;
 };
 
 namespace irr
@@ -559,7 +563,7 @@ bool CIrrDeviceLinux::createWindow()
 	}
 
 	initXAtoms();
-	
+
 	// check netwm support
 	Atom WMCheck = XInternAtom(XDisplay, "_NET_SUPPORTING_WM_CHECK", true);
 	if (WMCheck != None)
@@ -635,6 +639,22 @@ void CIrrDeviceLinux::createDriver()
 		}
 #else
 		os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR);
+#endif
+		break;
+	case video::EDT_WEBGL1:
+#ifdef _IRR_COMPILE_WITH_WEBGL1_
+		{
+			video::SExposedVideoData data;
+			data.OpenGLLinux.X11Window = XWindow;
+			data.OpenGLLinux.X11Display = XDisplay;
+
+			ContextManager = new video::CEGLManager();
+			ContextManager->initialize(CreationParams, data);
+
+			VideoDriver = video::createWebGL1Driver(CreationParams, FileSystem, ContextManager);
+		}
+#else
+		os::Printer::log("No WebGL1 support compiled in.", ELL_ERROR);
 #endif
 		break;
 	case video::DEPRECATED_EDT_DIRECT3D8_NO_LONGER_EXISTS:
@@ -1390,7 +1410,7 @@ void CIrrDeviceLinux::maximizeWindow()
 		XSendEvent(XDisplay, DefaultRootWindow(XDisplay), false,
 				SubstructureNotifyMask|SubstructureRedirectMask, &ev);
 	}
-	
+
 	XMapWindow(XDisplay, XWindow);
 #endif
 }
@@ -1416,7 +1436,7 @@ void CIrrDeviceLinux::restoreWindow()
 		XSendEvent(XDisplay, DefaultRootWindow(XDisplay), false,
 				SubstructureNotifyMask|SubstructureRedirectMask, &ev);
 	}
-	
+
 	XMapWindow(XDisplay, XWindow);
 #endif
 }
@@ -1965,7 +1985,7 @@ void CIrrDeviceLinux::initXAtoms()
 	X_ATOM_TEXT = XInternAtom (XDisplay, "TEXT", False);
 	X_ATOM_NETWM_MAXIMIZE_VERT = XInternAtom(XDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", true);
 	X_ATOM_NETWM_MAXIMIZE_HORZ = XInternAtom(XDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", true);
-	X_ATOM_NETWM_STATE = XInternAtom(XDisplay, "_NET_WM_STATE", true);	
+	X_ATOM_NETWM_STATE = XInternAtom(XDisplay, "_NET_WM_STATE", true);
 #endif
 }
 

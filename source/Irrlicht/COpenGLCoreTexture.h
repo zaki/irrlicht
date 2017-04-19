@@ -187,7 +187,7 @@ public:
 
 		if (LockImage)
 			LockImage->drop();
-		
+
 		for (u32 i = 0; i < Image.size(); ++i)
 			Image[i]->drop();
 	}
