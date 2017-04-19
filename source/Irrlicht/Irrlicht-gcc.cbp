@@ -489,6 +489,7 @@
 		<Unit filename="../../include/IMeshWriter.h" />
 		<Unit filename="../../include/IMetaTriangleSelector.h" />
 		<Unit filename="../../include/IOSOperator.h" />
+		<Unit filename="../../include/IOctreeSceneNode.h" />
 		<Unit filename="../../include/IParticleAffector.h" />
 		<Unit filename="../../include/IParticleAnimatedMeshSceneNodeEmitter.h" />
 		<Unit filename="../../include/IParticleAttractionAffector.h" />
