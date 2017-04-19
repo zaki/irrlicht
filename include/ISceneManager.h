@@ -110,6 +110,7 @@ namespace scene
 	class IMeshSceneNode;
 	class IMeshWriter;
 	class IMetaTriangleSelector;
+	class IOctreeSceneNode;
 	class IParticleSystemSceneNode;
 	class ISceneCollisionManager;
 	class ISceneLoader;
@@ -543,16 +544,8 @@ namespace scene
 		\param alsoAddIfMeshPointerZero: Add the scene node even if a 0 pointer is passed.
 		\return Pointer to the octree if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IMeshSceneNode* addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+		virtual IOctreeSceneNode* addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
-
-		//! Adds a scene node for rendering using a octree to the scene graph.
-		/** \deprecated Use addOctreeSceneNode instead. This method may be removed by Irrlicht 1.9. */
-		_IRR_DEPRECATED_ IMeshSceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
-			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false)
-		{
-			return addOctreeSceneNode(mesh, parent, id, minimalPolysPerNode, alsoAddIfMeshPointerZero);
-		}
 
 		//! Adds a scene node for rendering using a octree to the scene graph.
 		/** This a good method for rendering scenes with lots of
@@ -567,16 +560,8 @@ namespace scene
 		\param alsoAddIfMeshPointerZero: Add the scene node even if a 0 pointer is passed.
 		\return Pointer to the octree if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IMeshSceneNode* addOctreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
+		virtual IOctreeSceneNode* addOctreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
-
-		//! Adds a scene node for rendering using a octree to the scene graph.
-		/** \deprecated Use addOctreeSceneNode instead. This method may be removed by Irrlicht 1.9. */
-		_IRR_DEPRECATED_ IMeshSceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
-			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false)
-		{
-			return addOctreeSceneNode(mesh, parent, id, minimalPolysPerNode, alsoAddIfMeshPointerZero);
-		}
 
 		//! Adds a camera scene node to the scene graph and sets it as active camera.
 		/** This camera does not react on user input like for example the one created with
@@ -1272,7 +1257,7 @@ namespace scene
 		\endcode
 		\param mesh: Mesh of which the triangles are taken.
 		\param node: Scene node of which transformation is used.
-		\param separateMeshbuffers: When true it's possible to get information which meshbuffer 
+		\param separateMeshbuffers: When true it's possible to get information which meshbuffer
 		got hit in collision tests. But has a slight speed cost.
 		\return The selector, or null if not successful.
 		If you no longer need the selector, you should call ITriangleSelector::drop().
@@ -1291,7 +1276,7 @@ namespace scene
 		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
 		/** Details of the mesh associated with the node will be extracted internally.
 		\param node The animated mesh scene node from which to build the selector
-		\param separateMeshbuffers: When true it's possible to get information which meshbuffer 
+		\param separateMeshbuffers: When true it's possible to get information which meshbuffer
 		got hit in collision tests. But has a slight speed cost.
 		*/
 		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node, bool separateMeshbuffers=false) = 0;

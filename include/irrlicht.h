@@ -115,6 +115,7 @@
 #include "IMeshManipulator.h"
 #include "IMeshSceneNode.h"
 #include "IMeshWriter.h"
+#include "IOctreeSceneNode.h"
 #include "IColladaMeshWriter.h"
 #include "IMetaTriangleSelector.h"
 #include "IOSOperator.h"

@@ -5,15 +5,17 @@
 #ifndef __C_OCTREE_SCENE_NODE_H_INCLUDED__
 #define __C_OCTREE_SCENE_NODE_H_INCLUDED__
 
-#include "IMeshSceneNode.h"
+#include "IOctreeSceneNode.h"
 #include "Octree.h"
 
 namespace irr
 {
 namespace scene
 {
-	//! implementation of the IBspTreeSceneNode
-	class COctreeSceneNode : public IMeshSceneNode
+	class COctreeSceneNode;
+
+	//! implementation of the IOctreeSceneNode
+	class COctreeSceneNode : public IOctreeSceneNode
 	{
 	public:
 
@@ -76,6 +78,20 @@ namespace scene
 		//! or to remove attached childs.
 		virtual bool removeChild(ISceneNode* child) _IRR_OVERRIDE_;
 
+		//! Set if/how vertex buffer object are used for the meshbuffers
+		/** NOTE: When there is already a mesh in the node this will rebuild
+		the octree. */
+		virtual void setUseVBO(EOCTREENODE_VBO useVBO) _IRR_OVERRIDE_;
+
+		//! Get if/how vertex buffer object are used for the meshbuffers
+		virtual EOCTREENODE_VBO getUseVBO() const _IRR_OVERRIDE_;
+
+		//! Set the kind of tests polygons do for visibility against the camera
+		virtual void setPolygonChecks(EOCTREE_POLYGON_CHECKS checks) _IRR_OVERRIDE_;
+
+		//! Get the kind of tests polygons do for visibility against the camera
+		virtual EOCTREE_POLYGON_CHECKS getPolygonChecks() const _IRR_OVERRIDE_;
+
 	private:
 
 		void deleteTree();
@@ -100,12 +116,9 @@ namespace scene
 
 		IMesh * Mesh;
 		IShadowVolumeSceneNode* Shadow;
-		//! use VBOs for rendering where possible
-		bool UseVBOs;
-		//! use visibility information together with VBOs
-		bool UseVisibilityAndVBOs;
-		//! use bounding box or frustum for calculate polys
-		bool BoxBased;
+
+		EOCTREENODE_VBO UseVBOs;
+		EOCTREE_POLYGON_CHECKS PolygonChecks;
 	};
 
 } // end namespace scene

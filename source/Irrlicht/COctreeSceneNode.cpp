@@ -24,11 +24,10 @@ namespace scene
 //! constructor
 COctreeSceneNode::COctreeSceneNode(ISceneNode* parent, ISceneManager* mgr,
 					 s32 id, s32 minimalPolysPerNode)
-	: IMeshSceneNode(parent, mgr, id), StdOctree(0), LightMapOctree(0),
+	: IOctreeSceneNode(parent, mgr, id), StdOctree(0), LightMapOctree(0),
 	TangentsOctree(0), VertexType((video::E_VERTEX_TYPE)-1),
 	MinimalPolysPerNode(minimalPolysPerNode), Mesh(0), Shadow(0),
-	UseVBOs(OCTREE_USE_HARDWARE), UseVisibilityAndVBOs(OCTREE_USE_VISIBILITY),
-	BoxBased(OCTREE_BOX_BASED)
+	UseVBOs(EOV_USE_VBO_WITH_VISIBITLY), PolygonChecks(EOPC_BOX)
 {
 #ifdef _DEBUG
 	setDebugName("COctreeSceneNode");
@@ -136,10 +135,15 @@ void COctreeSceneNode::render()
 	case video::EVT_STANDARD:
 		{
 			IRR_PROFILE(getProfiler().start(EPID_OC_CALCPOLYS));
-			if (BoxBased)
-				StdOctree->calculatePolys(box);
-			else
-				StdOctree->calculatePolys(frust);
+			switch ( PolygonChecks )
+			{
+				case EOPC_BOX:
+					StdOctree->calculatePolys(box);
+					break;
+				case EOPC_FRUSTUM:
+					StdOctree->calculatePolys(frust);
+					break;
+			}
 			IRR_PROFILE(getProfiler().stop(EPID_OC_CALCPOLYS));
 
 			const Octree<video::S3DVertex>::SIndexData* d = StdOctree->getIndexData();
@@ -186,10 +190,15 @@ void COctreeSceneNode::render()
 	case video::EVT_2TCOORDS:
 		{
 			IRR_PROFILE(getProfiler().start(EPID_OC_CALCPOLYS));
-			if (BoxBased)
-				LightMapOctree->calculatePolys(box);
-			else
-				LightMapOctree->calculatePolys(frust);
+			switch ( PolygonChecks )
+			{
+				case EOPC_BOX:
+					LightMapOctree->calculatePolys(box);
+					break;
+				case EOPC_FRUSTUM:
+					LightMapOctree->calculatePolys(frust);
+					break;
+			}
 			IRR_PROFILE(getProfiler().stop(EPID_OC_CALCPOLYS));
 
 			const Octree<video::S3DVertex2TCoords>::SIndexData* d = LightMapOctree->getIndexData();
@@ -207,9 +216,18 @@ void COctreeSceneNode::render()
 				if (transparent == isTransparentPass)
 				{
 					driver->setMaterial(Materials[i]);
-					if (UseVBOs)
+					switch ( UseVBOs )
 					{
-						if (UseVisibilityAndVBOs)
+						case EOV_NO_VBO:
+							driver->drawIndexedTriangleList(
+								&LightMapMeshes[i].Vertices[0],
+								LightMapMeshes[i].Vertices.size(),
+								d[i].Indices, d[i].CurrentSize / 3);
+								break;
+						case EOV_USE_VBO:
+							driver->drawMeshBuffer ( &LightMapMeshes[i] );
+							break;
+						case EOV_USE_VBO_WITH_VISIBITLY:
 						{
 							u16* oldPointer = LightMapMeshes[i].Indices.pointer();
 							const u32 oldSize = LightMapMeshes[i].Indices.size();
@@ -219,15 +237,9 @@ void COctreeSceneNode::render()
 							driver->drawMeshBuffer ( &LightMapMeshes[i] );
 							LightMapMeshes[i].Indices.set_pointer(oldPointer, oldSize);
 							LightMapMeshes[i].setDirty(scene::EBT_INDEX);
+							break;
 						}
-						else
-							driver->drawMeshBuffer ( &LightMapMeshes[i] );
 					}
-					else
-						driver->drawIndexedTriangleList(
-							&LightMapMeshes[i].Vertices[0],
-							LightMapMeshes[i].Vertices.size(),
-							d[i].Indices, d[i].CurrentSize / 3);
 				}
 			}
 
@@ -254,10 +266,15 @@ void COctreeSceneNode::render()
 	case video::EVT_TANGENTS:
 		{
 			IRR_PROFILE(getProfiler().start(EPID_OC_CALCPOLYS));
-			if (BoxBased)
-				TangentsOctree->calculatePolys(box);
-			else
-				TangentsOctree->calculatePolys(frust);
+			switch ( PolygonChecks )
+			{
+				case EOPC_BOX:
+					TangentsOctree->calculatePolys(box);
+					break;
+				case EOPC_FRUSTUM:
+					TangentsOctree->calculatePolys(frust);
+					break;
+			}
 			IRR_PROFILE(getProfiler().stop(EPID_OC_CALCPOLYS));
 
 			const Octree<video::S3DVertexTangents>::SIndexData* d =  TangentsOctree->getIndexData();
@@ -319,6 +336,27 @@ bool COctreeSceneNode::removeChild(ISceneNode* child)
 	return ISceneNode::removeChild(child);
 }
 
+void COctreeSceneNode::setUseVBO(EOCTREENODE_VBO useVBO)
+{
+	UseVBOs = useVBO;
+	if ( Mesh )
+		createTree(Mesh);
+}
+
+EOCTREENODE_VBO COctreeSceneNode::getUseVBO() const
+{
+	return UseVBOs;
+}
+
+void COctreeSceneNode::setPolygonChecks(EOCTREE_POLYGON_CHECKS checks)
+{
+	PolygonChecks = checks;
+}
+
+EOCTREE_POLYGON_CHECKS COctreeSceneNode::getPolygonChecks() const
+{
+	return PolygonChecks;
+}
 
 //! Creates shadow volume scene node as child of this node
 //! and returns a pointer to it.
@@ -371,7 +409,11 @@ bool COctreeSceneNode::createTree(IMesh* mesh)
 
 	if (mesh->getMeshBufferCount())
 	{
-		// check for "larger" buffer types
+		// check for "largest" buffer types
+		// Also dropping buffers/materials for empty buffer
+		// (which looks like a horrible idea. If a user wanted that material without mesh he should still get it...
+		//	but not going to change that now. Only documenting it after figuring out what happens here.
+		//  It works at least as Materials are reset in deleteTree).
 		VertexType = video::EVT_STANDARD;
 		u32 meshReserve = 0;
 		for (i=0; i<mesh->getMeshBufferCount(); ++i)
@@ -450,7 +492,7 @@ bool COctreeSceneNode::createTree(IMesh* mesh)
 						Octree<video::S3DVertex2TCoords>::SMeshChunk& nchunk = LightMapMeshes.getLast();
 						nchunk.MaterialId = Materials.size() - 1;
 
-						if (UseVisibilityAndVBOs)
+						if (UseVBOs == EOV_USE_VBO_WITH_VISIBITLY)
 						{
 							nchunk.setHardwareMappingHint(scene::EHM_STATIC, scene::EBT_VERTEX);
 							nchunk.setHardwareMappingHint(scene::EHM_DYNAMIC, scene::EBT_INDEX);
