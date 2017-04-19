@@ -39,7 +39,7 @@ namespace scene
 
 		//! returns the material based on the zero based index i. To get the amount
 		//! of materials used by this scene node, use getMaterialCount().
-		//! This function is needed for inserting the node into the scene hirachy on a
+		//! This function is needed for inserting the node into the scene hierarchy on a
 		//! optimal position for minimizing renderstate changes, but can also be used
 		//! to directly modify the material of a scene node.
 		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
@@ -75,7 +75,7 @@ namespace scene
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,
-		//! or to remove attached childs.
+		//! or to remove attached children.
 		virtual bool removeChild(ISceneNode* child) _IRR_OVERRIDE_;
 
 		//! Set if/how vertex buffer object are used for the meshbuffers
