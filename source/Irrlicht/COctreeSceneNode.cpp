@@ -96,6 +96,34 @@ void COctreeSceneNode::OnRegisterSceneNode()
 	}
 }
 
+template <class VT>
+void renderMeshBuffer(video::IVideoDriver* driver, EOCTREENODE_VBO useVBO, typename Octree<VT>::SMeshChunk& meshChunk, const typename Octree<VT>::SIndexData& indexData)
+{
+	switch ( useVBO )
+	{
+		case EOV_NO_VBO:
+			driver->drawIndexedTriangleList(
+				&meshChunk.Vertices[0],
+				meshChunk.Vertices.size(),
+				indexData.Indices, indexData.CurrentSize / 3);
+				break;
+		case EOV_USE_VBO:
+			driver->drawMeshBuffer ( &meshChunk );
+			break;
+		case EOV_USE_VBO_WITH_VISIBITLY:
+		{
+			u16* oldPointer = meshChunk.Indices.pointer();
+			const u32 oldSize = meshChunk.Indices.size();
+			meshChunk.Indices.set_free_when_destroyed(false);
+			meshChunk.Indices.set_pointer(indexData.Indices, indexData.CurrentSize, false, false);
+			meshChunk.setDirty(scene::EBT_INDEX);
+			driver->drawMeshBuffer ( &meshChunk );
+			meshChunk.Indices.set_pointer(oldPointer, oldSize);
+			meshChunk.setDirty(scene::EBT_INDEX);
+			break;
+		}
+	}
+}
 
 //! renders the node.
 void COctreeSceneNode::render()
@@ -161,9 +189,7 @@ void COctreeSceneNode::render()
 				if (transparent == isTransparentPass)
 				{
 					driver->setMaterial(Materials[i]);
-					driver->drawIndexedTriangleList(
-						&StdMeshes[i].Vertices[0], StdMeshes[i].Vertices.size(),
-						d[i].Indices, d[i].CurrentSize / 3);
+					renderMeshBuffer<video::S3DVertex>(driver, UseVBOs, StdMeshes[i], d[i]);
 				}
 			}
 		}
@@ -197,30 +223,8 @@ void COctreeSceneNode::render()
 				if (transparent == isTransparentPass)
 				{
 					driver->setMaterial(Materials[i]);
-					switch ( UseVBOs )
-					{
-						case EOV_NO_VBO:
-							driver->drawIndexedTriangleList(
-								&LightMapMeshes[i].Vertices[0],
-								LightMapMeshes[i].Vertices.size(),
-								d[i].Indices, d[i].CurrentSize / 3);
-								break;
-						case EOV_USE_VBO:
-							driver->drawMeshBuffer ( &LightMapMeshes[i] );
-							break;
-						case EOV_USE_VBO_WITH_VISIBITLY:
-						{
-							u16* oldPointer = LightMapMeshes[i].Indices.pointer();
-							const u32 oldSize = LightMapMeshes[i].Indices.size();
-							LightMapMeshes[i].Indices.set_free_when_destroyed(false);
-							LightMapMeshes[i].Indices.set_pointer(d[i].Indices, d[i].CurrentSize, false, false);
-							LightMapMeshes[i].setDirty(scene::EBT_INDEX);
-							driver->drawMeshBuffer ( &LightMapMeshes[i] );
-							LightMapMeshes[i].Indices.set_pointer(oldPointer, oldSize);
-							LightMapMeshes[i].setDirty(scene::EBT_INDEX);
-							break;
-						}
-					}
+
+					renderMeshBuffer<video::S3DVertex2TCoords>(driver, UseVBOs, LightMapMeshes[i], d[i]);
 				}
 			}
 		}
@@ -254,9 +258,7 @@ void COctreeSceneNode::render()
 				if (transparent == isTransparentPass)
 				{
 					driver->setMaterial(Materials[i]);
-					driver->drawIndexedTriangleList(
-						&TangentsMeshes[i].Vertices[0], TangentsMeshes[i].Vertices.size(),
-						d[i].Indices, d[i].CurrentSize / 3);
+					renderMeshBuffer<video::S3DVertexTangents>(driver, UseVBOs, TangentsMeshes[i], d[i]);
 				}
 			}
 		}
