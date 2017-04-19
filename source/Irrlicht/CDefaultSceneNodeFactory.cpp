@@ -14,6 +14,7 @@
 #include "IParticleSystemSceneNode.h"
 #include "ILightSceneNode.h"
 #include "IMeshSceneNode.h"
+#include "IOctreeSceneNode.h"
 
 namespace irr
 {
