@@ -166,25 +166,6 @@ void COctreeSceneNode::render()
 						d[i].Indices, d[i].CurrentSize / 3);
 				}
 			}
-
-			// for debug purposes only
-			if (DebugDataVisible && !Materials.empty() && PassCount==1)
-			{
-				const core::aabbox3df& box = frust.getBoundingBox();
-				core::array< const core::aabbox3d<f32>* > boxes;
-				video::SMaterial m;
-				m.Lighting = false;
-				driver->setMaterial(m);
-				if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
-				{
-					StdOctree->getBoundingBoxes(box, boxes);
-					for (u32 b=0; b!=boxes.size(); ++b)
-						driver->draw3DBox(*boxes[b]);
-				}
-
-				if ( DebugDataVisible & scene::EDS_BBOX )
-					driver->draw3DBox(Box,video::SColor(0,255,0,0));
-			}
 		}
 		break;
 	case video::EVT_2TCOORDS:
@@ -242,25 +223,6 @@ void COctreeSceneNode::render()
 					}
 				}
 			}
-
-			// for debug purposes only
-			if (DebugDataVisible && !Materials.empty() && PassCount==1)
-			{
-				const core::aabbox3d<float> &box = frust.getBoundingBox();
-				core::array< const core::aabbox3d<f32>* > boxes;
-				video::SMaterial m;
-				m.Lighting = false;
-				driver->setMaterial(m);
-				if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
-				{
-					LightMapOctree->getBoundingBoxes(box, boxes);
-					for (u32 b=0; b<boxes.size(); ++b)
-						driver->draw3DBox(*boxes[b]);
-				}
-
-				if ( DebugDataVisible & scene::EDS_BBOX )
-					driver->draw3DBox(Box,video::SColor(0,255,0,0));
-			}
 		}
 		break;
 	case video::EVT_TANGENTS:
@@ -297,28 +259,40 @@ void COctreeSceneNode::render()
 						d[i].Indices, d[i].CurrentSize / 3);
 				}
 			}
-
-			// for debug purposes only
-			if (DebugDataVisible && !Materials.empty() && PassCount==1)
-			{
-				const core::aabbox3d<float> &box = frust.getBoundingBox();
-				core::array< const core::aabbox3d<f32>* > boxes;
-				video::SMaterial m;
-				m.Lighting = false;
-				driver->setMaterial(m);
-				if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
-				{
-					TangentsOctree->getBoundingBoxes(box, boxes);
-					for (u32 b=0; b<boxes.size(); ++b)
-						driver->draw3DBox(*boxes[b]);
-				}
-
-				if ( DebugDataVisible & scene::EDS_BBOX )
-					driver->draw3DBox(Box,video::SColor(0,255,0,0));
-			}
 		}
 		break;
 	}
+
+	// for debug purposes only
+	if (DebugDataVisible && !Materials.empty() && PassCount==1)
+	{
+		core::array< const core::aabbox3d<f32>* > boxes;
+		video::SMaterial m;
+		m.Lighting = false;
+		driver->setMaterial(m);
+		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
+		{
+			switch (VertexType)
+			{
+				case video::EVT_STANDARD:
+					StdOctree->getBoundingBoxes(box, boxes);
+					break;
+				case video::EVT_2TCOORDS:
+					LightMapOctree->getBoundingBoxes(box, boxes);
+					break;
+				case video::EVT_TANGENTS:
+					TangentsOctree->getBoundingBoxes(box, boxes);
+					break;
+			}
+
+			for (u32 b=0; b!=boxes.size(); ++b)
+				driver->draw3DBox(*boxes[b]);
+		}
+
+		if ( DebugDataVisible & scene::EDS_BBOX )
+			driver->draw3DBox(Box,video::SColor(0,255,0,0));
+	}
+
 }
 
 
