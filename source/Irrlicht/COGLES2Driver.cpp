@@ -29,15 +29,6 @@
 #include "android_native_app_glue.h"
 #endif
 
-// Add as first line to a function to get info is was called once.
-#define FIRST_CALL \
-	static bool first = true; \
-	if ( first ) \
-	{\
-		first = false; \
-		os::Printer::log(__FILE__, irr::core::stringc(__LINE__).c_str(), ELL_ERROR); \
-	}
-
 namespace irr
 {
 namespace video
@@ -661,7 +652,6 @@ COGLES2Driver::~COGLES2Driver()
 	//! Draw hardware buffer
 	void COGLES2Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 	{
-FIRST_CALL;
 		if (!_HWBuffer)
 			return;
 
@@ -722,7 +712,6 @@ FIRST_CALL;
 			const void* indexList, u32 primitiveCount,
 			E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 	{
-FIRST_CALL;
 		if (!primitiveCount || !vertexCount)
 			return;
 
@@ -880,7 +869,6 @@ FIRST_CALL;
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect, SColor color,
 		bool useAlphaChannelOfTexture)
 	{
-FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1019,7 +1007,6 @@ FIRST_CALL;
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 		const video::SColor* const colors, bool useAlphaChannelOfTexture)
 	{
-FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1099,7 +1086,6 @@ FIRST_CALL;
 
 	void COGLES2Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 	{
-FIRST_CALL;
 		chooseMaterial2D();
 		Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
 
@@ -1147,7 +1133,6 @@ FIRST_CALL;
 			const core::rect<s32>* clipRect,
 			SColor color, bool useAlphaChannelOfTexture)
 	{
-FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1310,7 +1295,6 @@ FIRST_CALL;
 			const core::rect<s32>* clipRect, SColor color,
 			bool useAlphaChannelOfTexture)
 	{
-FIRST_CALL;
 		if (!texture)
 			return;
 
@@ -1407,7 +1391,6 @@ FIRST_CALL;
 			const core::rect<s32>& position,
 			const core::rect<s32>* clip)
 	{
-FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DRECTANGLE);)
 
 		chooseMaterial2D();
@@ -1454,7 +1437,6 @@ FIRST_CALL;
 			SColor colorLeftDown, SColor colorRightDown,
 			const core::rect<s32>* clip)
 	{
-FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DRECTANGLE);)
 
 		core::rect<s32> pos = position;
@@ -1502,7 +1484,6 @@ FIRST_CALL;
 	void COGLES2Driver::draw2DLine(const core::position2d<s32>& start,
 			const core::position2d<s32>& end, SColor color)
 	{
-FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DLINE);)
 
 		if (start==end)
@@ -1541,7 +1522,6 @@ FIRST_CALL;
 	//! Draws a pixel
 	void COGLES2Driver::drawPixel(u32 x, u32 y, const SColor &color)
 	{
-FIRST_CALL;
 		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		if (x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
 			return;
@@ -2100,7 +2080,6 @@ FIRST_CALL;
 	//! Draws a shadow volume into the stencil buffer.
 	void COGLES2Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 	{
-FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_SHADOW);)
 
 		const u32 count=triangles.size();
@@ -2181,7 +2160,6 @@ FIRST_CALL;
 			video::SColor leftUpEdge, video::SColor rightUpEdge,
 			video::SColor leftDownEdge, video::SColor rightDownEdge)
 	{
-FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_SHADOW);)
 
 		if (!StencilBuffer)
@@ -2229,7 +2207,6 @@ FIRST_CALL;
 	void COGLES2Driver::draw3DLine(const core::vector3df& start,
 			const core::vector3df& end, SColor color)
 	{
-FIRST_CALL;
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_3DLINE);)
 
 		setRenderStates3DMode();
