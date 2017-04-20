@@ -1083,7 +1083,6 @@ COGLES2Driver::~COGLES2Driver()
 		testGLError();
 	}
 
-
 	void COGLES2Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 	{
 		chooseMaterial2D();

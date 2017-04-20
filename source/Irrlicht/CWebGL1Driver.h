@@ -44,12 +44,34 @@ namespace video
 			return true;	// All buffers must be bound, WebGL doesn't allow sending unbound buffers at all.
 		}
 
+		//! draws a vertex primitive list
+		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType) _IRR_OVERRIDE_;
+
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb) _IRR_OVERRIDE_;
 
-		//! draw an 2d rectangle
-		virtual void draw2DRectangle(SColor color, const core::rect<s32>& pos,
-				const core::rect<s32>* clip = 0) _IRR_OVERRIDE_;
+		virtual void draw2DImage(const video::ITexture* texture,
+				const core::position2d<s32>& destPos,
+				const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+				SColor color = SColor(255, 255, 255, 255), bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
+
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+			const video::SColor* const colors = 0, bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
+
+		// internally used
+		virtual void draw2DImage(const video::ITexture* texture, u32 layer, bool flip)  _IRR_OVERRIDE_;
+
+		//! draws a set of 2d images
+		virtual void draw2DImageBatch(const video::ITexture* texture,
+				const core::position2d<s32>& pos,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::array<s32>& indices, s32 kerningWidth = 0,
+				const core::rect<s32>* clipRect = 0,
+				SColor color = SColor(255, 255, 255, 255),
+				bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
 
 		void draw2DImageBatch(const video::ITexture* texture,
 				const core::array<core::position2d<s32> >& positions,
@@ -58,15 +80,47 @@ namespace video
 				SColor color,
 				bool useAlphaChannelOfTexture) _IRR_OVERRIDE_;
 
+		//! draw an 2d rectangle
+		virtual void draw2DRectangle(SColor color, const core::rect<s32>& pos,
+				const core::rect<s32>* clip = 0) _IRR_OVERRIDE_;
+
+		//!Draws an 2d rectangle with a gradient.
+		virtual void draw2DRectangle(const core::rect<s32>& pos,
+				SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
+				const core::rect<s32>* clip = 0) _IRR_OVERRIDE_;
+
+		//! Draws a 2d line.
+		virtual void draw2DLine(const core::position2d<s32>& start,
+				const core::position2d<s32>& end,
+				SColor color = SColor(255, 255, 255, 255)) _IRR_OVERRIDE_;
+
+		//! Draws a single pixel
+		virtual void drawPixel(u32 x, u32 y, const SColor & color) _IRR_OVERRIDE_;
+
+		//! Draws a 3d line.
+		virtual void draw3DLine(const core::vector3df& start,
+				const core::vector3df& end,
+				SColor color = SColor(255, 255, 255, 255)) _IRR_OVERRIDE_;
+
+		//! Draws a shadow volume into the stencil buffer.
+		virtual void drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible=0) _IRR_OVERRIDE_;
+
+		//! Fills the stencil shadow with color.
+		virtual void drawStencilShadow(bool clearStencilBuffer=false,
+			video::SColor leftUpEdge = video::SColor(0,0,0,0),
+			video::SColor rightUpEdge = video::SColor(0,0,0,0),
+			video::SColor leftDownEdge = video::SColor(0,0,0,0),
+			video::SColor rightDownEdge = video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
+
+
+
 	protected:
 		// create a meshbuffer which has as many vertices as indices
 		scene::SMeshBuffer* createSimpleMeshBuffer(irr::u32 numVertices, scene::E_PRIMITIVE_TYPE primitiveType, scene::E_HARDWARE_MAPPING vertexMappingHint=scene::EHM_STREAM, scene::E_HARDWARE_MAPPING indexMappingHint=scene::EHM_STATIC) const;
 
 	private:
-		// Because we can't have unbound buffers in webgl we give all drawing functions bound buffers
-		// which they can use.
-		scene::SMeshBuffer* MBDraw2DRectangle;
-		scene::SMeshBuffer* MBDraw2DImageBatch;
+		// Because we can't have unbound buffers in webgl we give drawing functions bound buffers to use
+		scene::SMeshBuffer* MBTriangleFanSize4;
 	};
 
 } // end namespace video

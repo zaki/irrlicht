@@ -117,6 +117,7 @@ namespace video
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			const video::SColor* const colors = 0, bool useAlphaChannelOfTexture = false) _IRR_OVERRIDE_;
 
+		// internally used
 		virtual void draw2DImage(const video::ITexture* texture, u32 layer, bool flip);
 
 		//! draws a set of 2d images
