@@ -38,10 +38,11 @@ namespace video
 		//! Returns type of video driver
 		virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
 
-		//! is vbo recommended on this mesh?
+		//! Is VBO recommended on this mesh?
 		virtual bool isHardwareBufferRecommend(const scene::IMeshBuffer* mb) _IRR_OVERRIDE_
 		{
-			return true;	// All buffers must be bound, WebGL doesn't allow sending unbound buffers at all.
+			// All buffers must be bound, WebGL doesn't allow sending unbound buffers at all.
+			return true;
 		}
 
 		//! draws a vertex primitive list
@@ -121,6 +122,8 @@ namespace video
 	private:
 		// Because we can't have unbound buffers in webgl we give drawing functions bound buffers to use
 		scene::SMeshBuffer* MBTriangleFanSize4;
+		scene::SMeshBuffer* MBLinesSize2;
+		scene::SMeshBuffer* MBPointsSize1;
 	};
 
 } // end namespace video

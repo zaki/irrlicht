@@ -11,15 +11,6 @@
 #include "COpenGLCoreCacheHandler.h"
 #include "EVertexAttributes.h"
 
-// Add as first line to a function to get info is was called once.
-#define FIRST_CALL \
-	static bool first = true; \
-	if ( first ) \
-	{\
-		first = false; \
-		os::Printer::log(__FILE__, irr::core::stringc(__LINE__).c_str(), ELL_ERROR); \
-	}
-
 namespace irr
 {
 namespace video
@@ -27,19 +18,27 @@ namespace video
 
 CWebGL1Driver::CWebGL1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager) :
 	COGLES2Driver(params, io, contextManager)
-	, MBTriangleFanSize4(0)
+	, MBTriangleFanSize4(0), MBLinesSize2(0), MBPointsSize1(0)
 {
 #ifdef _DEBUG
 	setDebugName("CWebGL1Driver");
 #endif
 
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);	// so far causing errors, have to figure out later
+
+	MBLinesSize2 = createSimpleMeshBuffer(2, scene::EPT_LINES);
+	MBTriangleFanSize4 = createSimpleMeshBuffer(4, scene::EPT_TRIANGLE_FAN);
+	MBPointsSize1 = createSimpleMeshBuffer(1, scene::EPT_POINTS);
 }
 
 CWebGL1Driver::~CWebGL1Driver()
 {
 	if ( MBTriangleFanSize4 )
 		MBTriangleFanSize4->drop();
+	if ( MBLinesSize2 )
+		MBLinesSize2->drop();
+	if ( MBPointsSize1 )
+		MBPointsSize1->drop();
 }
 
 //! Returns type of video driver
@@ -53,8 +52,20 @@ void CWebGL1Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
                              const void* indexList, u32 primitiveCount,
                              E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
-	FIRST_CALL;
-	COGLES2Driver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
+	if ( !vertices )
+	{
+		COGLES2Driver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
+	}
+	else
+	{
+		static bool first = true;
+		if ( first )
+		{
+			first = false;
+			os::Printer::log("WebGL driver does not support drawVertexPrimitiveList calls without a VBO", ELL_WARNING);
+			os::Printer::log(__FILE__, irr::core::stringc(__LINE__).c_str(), ELL_WARNING);
+		}
+	}
 }
 
 //! Draws a mesh buffer
@@ -194,13 +205,6 @@ void CWebGL1Driver::draw2DImage(const video::ITexture* texture,
 	f32 down = 2.f - (f32)poss.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 	f32 top = 2.f - (f32)poss.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 
-
-	if ( !MBTriangleFanSize4)
-	{
-		// We can only allocate for one image, otherwise we would have to re-bind the buffer on every frame as it can change size
-		MBTriangleFanSize4 = createSimpleMeshBuffer(4, scene::EPT_TRIANGLE_FAN);
-	}
-
 	MBTriangleFanSize4->Vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
 	MBTriangleFanSize4->Vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
 	MBTriangleFanSize4->Vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
@@ -216,14 +220,105 @@ void CWebGL1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 	const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 	const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
-	FIRST_CALL;
-	COGLES2Driver::draw2DImage(texture, destRect, sourceRect, clipRect, colors, useAlphaChannelOfTexture);
+	if (!texture)
+		return;
+
+	// texcoords need to be flipped horizontally for RTTs
+	const bool isRTT = texture->isRenderTarget();
+	const core::dimension2du& ss = texture->getOriginalSize();
+	const f32 invW = 1.f / static_cast<f32>(ss.Width);
+	const f32 invH = 1.f / static_cast<f32>(ss.Height);
+	const core::rect<f32> tcoords(
+		sourceRect.UpperLeftCorner.X * invW,
+		(isRTT ? sourceRect.LowerRightCorner.Y : sourceRect.UpperLeftCorner.Y) * invH,
+		sourceRect.LowerRightCorner.X * invW,
+		(isRTT ? sourceRect.UpperLeftCorner.Y : sourceRect.LowerRightCorner.Y) *invH);
+
+	const video::SColor temp[4] =
+	{
+		0xFFFFFFFF,
+		0xFFFFFFFF,
+		0xFFFFFFFF,
+		0xFFFFFFFF
+	};
+
+	const video::SColor* const useColor = colors ? colors : temp;
+
+	chooseMaterial2D();
+	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
+	if (!CacheHandler->getTextureCache().set(0, texture))
+		return;
+
+	setRenderStates2DMode(useColor[0].getAlpha() < 255 || useColor[1].getAlpha() < 255 ||
+		useColor[2].getAlpha() < 255 || useColor[3].getAlpha() < 255,
+		true, useAlphaChannelOfTexture);
+	lockRenderStateMode();
+
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+
+	bool useScissorTest = false;
+	if (clipRect && clipRect->isValid())
+	{
+		useScissorTest = true;
+		glEnable(GL_SCISSOR_TEST);
+		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height - clipRect->LowerRightCorner.Y,
+			clipRect->getWidth(), clipRect->getHeight());
+	}
+
+	f32 left = (f32)destRect.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+	f32 right = (f32)destRect.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+	f32 down = 2.f - (f32)destRect.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+	f32 top = 2.f - (f32)destRect.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+
+	MBTriangleFanSize4->Vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, useColor[0], tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+	MBTriangleFanSize4->Vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, useColor[3], tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+	MBTriangleFanSize4->Vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, useColor[2], tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+	MBTriangleFanSize4->Vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, useColor[1], tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
+	MBTriangleFanSize4->setDirty(scene::EBT_VERTEX);
+
+	drawMeshBuffer(MBTriangleFanSize4);
+
+	if (useScissorTest)
+		glDisable(GL_SCISSOR_TEST);
+
+	unlockRenderStateMode();
+
+	testGLError();
 }
 
 void CWebGL1Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 {
-	FIRST_CALL;
-	COGLES2Driver::draw2DImage(texture, layer, flip);
+	chooseMaterial2D();
+	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
+
+	if (!texture || !CacheHandler->getTextureCache().set(0, texture))
+		return;
+
+	setRenderStates2DMode(false, true, true);
+	lockRenderStateMode();
+
+	MBTriangleFanSize4->Vertices[0].Pos = core::vector3df(-1.f, 1.f, 0.f);
+	MBTriangleFanSize4->Vertices[1].Pos = core::vector3df(1.f, 1.f, 0.f);
+	MBTriangleFanSize4->Vertices[2].Pos = core::vector3df(1.f, -1.f, 0.f);
+	MBTriangleFanSize4->Vertices[3].Pos = core::vector3df(-1.f, -1.f, 0.f);
+
+	f32 modificator = (flip) ? 1.f : 0.f;
+
+	MBTriangleFanSize4->Vertices[0].TCoords = core::vector2df(0.f, 0.f + modificator);
+	MBTriangleFanSize4->Vertices[1].TCoords = core::vector2df(1.f, 0.f + modificator);
+	MBTriangleFanSize4->Vertices[2].TCoords = core::vector2df(1.f, 1.f - modificator);
+	MBTriangleFanSize4->Vertices[3].TCoords = core::vector2df(0.f, 1.f - modificator);
+
+	MBTriangleFanSize4->Vertices[0].Color = SColor(0xFFFFFFFF);
+	MBTriangleFanSize4->Vertices[1].Color = SColor(0xFFFFFFFF);
+	MBTriangleFanSize4->Vertices[2].Color = SColor(0xFFFFFFFF);
+	MBTriangleFanSize4->Vertices[3].Color = SColor(0xFFFFFFFF);
+
+	MBTriangleFanSize4->setDirty(scene::EBT_VERTEX);
+
+	drawMeshBuffer(MBTriangleFanSize4);
+
+	unlockRenderStateMode();
 }
 
 void CWebGL1Driver::draw2DImageBatch(const video::ITexture* texture,
@@ -233,8 +328,71 @@ void CWebGL1Driver::draw2DImageBatch(const video::ITexture* texture,
 				const core::rect<s32>* clipRect,
 				SColor color, bool useAlphaChannelOfTexture)
 {
-	FIRST_CALL;
-	COGLES2Driver::draw2DImageBatch(texture, pos, sourceRects, indices, kerningWidth, clipRect, color, useAlphaChannelOfTexture);
+	if (!texture)
+		return;
+
+	chooseMaterial2D();
+	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
+	if (!CacheHandler->getTextureCache().set(0, texture))
+		return;
+
+	setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
+	lockRenderStateMode();
+
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+
+	bool useScissorTest = false;
+	if (clipRect && clipRect->isValid())
+	{
+		useScissorTest = true;
+		glEnable(GL_SCISSOR_TEST);
+		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height - clipRect->LowerRightCorner.Y,
+				clipRect->getWidth(), clipRect->getHeight());
+	}
+
+	const core::dimension2du& ss = texture->getOriginalSize();
+	core::position2d<s32> targetPos(pos);
+	// texcoords need to be flipped horizontally for RTTs
+	const bool isRTT = texture->isRenderTarget();
+	const f32 invW = 1.f / static_cast<f32>(ss.Width);
+	const f32 invH = 1.f / static_cast<f32>(ss.Height);
+
+	for (u32 i = 0; i < indices.size(); ++i)
+	{
+		const s32 currentIndex = indices[i];
+		if (!sourceRects[currentIndex].isValid())
+			break;
+
+		const core::rect<f32> tcoords(
+			sourceRects[currentIndex].UpperLeftCorner.X * invW,
+			(isRTT ? sourceRects[currentIndex].LowerRightCorner.Y : sourceRects[currentIndex].UpperLeftCorner.Y) * invH,
+			sourceRects[currentIndex].LowerRightCorner.X * invW,
+			(isRTT ? sourceRects[currentIndex].UpperLeftCorner.Y : sourceRects[currentIndex].LowerRightCorner.Y) * invH);
+
+		const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
+
+		f32 left = (f32)poss.UpperLeftCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+		f32 right = (f32)poss.LowerRightCorner.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+		f32 down = 2.f - (f32)poss.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+		f32 top = 2.f - (f32)poss.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+
+		MBTriangleFanSize4->Vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+		MBTriangleFanSize4->Vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+		MBTriangleFanSize4->Vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+		MBTriangleFanSize4->Vertices[3] = S3DVertex(left, down, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
+		MBTriangleFanSize4->setDirty(scene::EBT_VERTEX);
+
+		drawMeshBuffer(MBTriangleFanSize4);
+
+		targetPos.X += sourceRects[currentIndex].getWidth();
+	}
+
+	if (useScissorTest)
+		glDisable(GL_SCISSOR_TEST);
+
+	unlockRenderStateMode();
+
+	testGLError();
 }
 
 void CWebGL1Driver::draw2DImageBatch(const video::ITexture* texture,
@@ -249,12 +407,6 @@ void CWebGL1Driver::draw2DImageBatch(const video::ITexture* texture,
 	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
 	if ( !drawCount )
 		return;
-
-	if ( !MBTriangleFanSize4)
-	{
-		// We can only allocate for one image, otherwise we would have to re-bind the buffer on every frame as it can change size
-		MBTriangleFanSize4 = createSimpleMeshBuffer(4, scene::EPT_TRIANGLE_FAN);
-	}
 
 	chooseMaterial2D();
 	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
@@ -401,10 +553,6 @@ void CWebGL1Driver::draw2DRectangle(SColor color,
 	f32 down = 2.f - (f32)pos.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 	f32 top = 2.f - (f32)pos.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 
-	if ( !MBTriangleFanSize4 )
-	{
-		MBTriangleFanSize4 = createSimpleMeshBuffer(4, scene::EPT_TRIANGLE_FAN);
-	}
 	MBTriangleFanSize4->Vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, color, 0, 0);
 	MBTriangleFanSize4->Vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, color, 0, 0);
 	MBTriangleFanSize4->Vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, color, 0, 0);
@@ -445,10 +593,6 @@ void CWebGL1Driver::draw2DRectangle(const core::rect<s32>& position,
 	f32 down = 2.f - (f32)pos.LowerRightCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 	f32 top = 2.f - (f32)pos.UpperLeftCorner.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
 
-	if ( !MBTriangleFanSize4 )
-	{
-		MBTriangleFanSize4 = createSimpleMeshBuffer(4, scene::EPT_TRIANGLE_FAN);
-	}
 	MBTriangleFanSize4->Vertices[0] = S3DVertex(left, top, 0, 0, 0, 1, colorLeftUp, 0, 0);
 	MBTriangleFanSize4->Vertices[1] = S3DVertex(right, top, 0, 0, 0, 1, colorRightUp, 0, 0);
 	MBTriangleFanSize4->Vertices[2] = S3DVertex(right, down, 0, 0, 0, 1, colorRightDown, 0, 0);
@@ -463,26 +607,76 @@ void CWebGL1Driver::draw2DRectangle(const core::rect<s32>& position,
 		//! Draws a 2d line.
 void CWebGL1Driver::draw2DLine(const core::position2d<s32>& start, const core::position2d<s32>& end, SColor color)
 {
-	FIRST_CALL;
-	COGLES2Driver::draw2DLine(start, end, color);
+	if (start==end)
+		drawPixel(start.X, start.Y, color);
+	else
+	{
+		chooseMaterial2D();
+		Material.TextureLayer[0].Texture = 0;
+		CacheHandler->getTextureCache().set(0, 0);
+
+		setRenderStates2DMode(color.getAlpha() < 255, false, false);
+		lockRenderStateMode();
+
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+
+		f32 startX = (f32)start.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+		f32 endX = (f32)end.X / (f32)renderTargetSize.Width * 2.f - 1.f;
+		f32 startY = 2.f - (f32)start.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+		f32 endY = 2.f - (f32)end.Y / (f32)renderTargetSize.Height * 2.f - 1.f;
+
+		MBLinesSize2->Vertices[0] = S3DVertex(startX, startY, 0, 0, 0, 1, color, 0, 0);
+		MBLinesSize2->Vertices[1] = S3DVertex(endX, endY, 0, 0, 0, 1, color, 1, 1);
+		MBLinesSize2->setDirty(scene::EBT_VERTEX);
+
+		drawMeshBuffer(MBLinesSize2);
+
+		unlockRenderStateMode();
+	}
 }
 
 void CWebGL1Driver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	FIRST_CALL;
-	COGLES2Driver::drawPixel(x, y, color);
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+	if (x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
+		return;
+
+	chooseMaterial2D();
+	Material.TextureLayer[0].Texture = 0;
+	CacheHandler->getTextureCache().set(0, 0);
+
+	setRenderStates2DMode(color.getAlpha() < 255, false, false);
+	lockRenderStateMode();
+
+	f32 X = (f32)x / (f32)renderTargetSize.Width * 2.f - 1.f;
+	f32 Y = 2.f - (f32)y / (f32)renderTargetSize.Height * 2.f - 1.f;
+
+	MBPointsSize1->Vertices[0] = S3DVertex(X, Y, 0, 0, 0, 1, color, 0, 0);
+	MBPointsSize1->setDirty(scene::EBT_VERTEX);
+
+	drawMeshBuffer(MBPointsSize1);
+
+	unlockRenderStateMode();
 }
 
 void CWebGL1Driver::draw3DLine(const core::vector3df& start, const core::vector3df& end, SColor color)
 {
-	FIRST_CALL;
-	COGLES2Driver::draw3DLine(start, end, color);
+	MBLinesSize2->Vertices[0] = S3DVertex(start.X, start.Y, start.Z, 0, 0, 1, color, 0, 0);
+	MBLinesSize2->Vertices[1] = S3DVertex(end.X, end.Y, end.Z, 0, 0, 1, color, 0, 0);
+	MBLinesSize2->setDirty(scene::EBT_VERTEX);
+
+	drawMeshBuffer(MBLinesSize2);
 }
 
 void CWebGL1Driver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
-	FIRST_CALL;
-	COGLES2Driver::drawStencilShadowVolume(triangles, zfail, debugDataVisible);
+	static bool first = true;
+	if ( first )
+	{
+		first = false;
+		os::Printer::log("WebGL1 driver does not yet support drawStencilShadowVolume", ELL_WARNING);
+		os::Printer::log(__FILE__, irr::core::stringc(__LINE__).c_str(), ELL_WARNING);
+	}
 }
 
 void CWebGL1Driver::drawStencilShadow(bool clearStencilBuffer,
@@ -491,10 +685,43 @@ void CWebGL1Driver::drawStencilShadow(bool clearStencilBuffer,
 	video::SColor leftDownEdge,
 	video::SColor rightDownEdge)
 {
-	FIRST_CALL;
-	COGLES2Driver::drawStencilShadow(clearStencilBuffer,leftUpEdge,rightUpEdge,leftDownEdge,rightDownEdge);
-}
+	// NOTE: Might work, but untested as drawStencilShadowVolume is not yet supported.
 
+	if (!StencilBuffer)
+		return;
+
+	chooseMaterial2D();
+	Material.TextureLayer[0].Texture = 0;
+	CacheHandler->getTextureCache().set(0, 0);
+
+	setRenderStates2DMode(true, false, false);
+	lockRenderStateMode();
+
+	CacheHandler->setDepthMask(false);
+	CacheHandler->setColorMask(true, true, true, true);
+
+	CacheHandler->setBlend(true);
+	CacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 0, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	MBTriangleFanSize4->Vertices[0] = S3DVertex(-1.f, 1.f, 0.9f, 0, 0, 1, leftDownEdge, 0, 0);
+	MBTriangleFanSize4->Vertices[1] = S3DVertex(1.f, 1.f, 0.9f, 0, 0, 1, leftUpEdge, 0, 0);
+	MBTriangleFanSize4->Vertices[2] = S3DVertex(1.f, -1.f, 0.9f, 0, 0, 1, rightUpEdge, 0, 0);
+	MBTriangleFanSize4->Vertices[3] = S3DVertex(-1.f, -1.f, 0.9f, 0, 0, 1, rightDownEdge, 0, 0);
+	MBTriangleFanSize4->setDirty(scene::EBT_VERTEX);
+
+	drawMeshBuffer(MBTriangleFanSize4);
+
+	unlockRenderStateMode();
+
+	if (clearStencilBuffer)
+		glClear(GL_STENCIL_BUFFER_BIT);
+
+	glDisable(GL_STENCIL_TEST);
+}
 
 
 scene::SMeshBuffer* CWebGL1Driver::createSimpleMeshBuffer(irr::u32 numVertices, scene::E_PRIMITIVE_TYPE primitiveType, scene::E_HARDWARE_MAPPING vertexMappingHint, scene::E_HARDWARE_MAPPING indexMappingHint) const
