@@ -30,7 +30,7 @@ namespace scene
 		CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl,
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, f32 jumpSpeed=0.f,
 			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false,
-			bool invertY=false);
+			bool invertY=false, float rotateSpeedKeyboard = 0.3f);
 
 		//! Destructor
 		virtual ~CSceneNodeAnimatorCameraFPS();
@@ -47,11 +47,23 @@ namespace scene
 		//! Sets the speed of movement in units per second
 		virtual void setMoveSpeed(f32 moveSpeed) _IRR_OVERRIDE_;
 
-		//! Returns the rotation speed
+		//! Returns the rotation speed when moving mouse
 		virtual f32 getRotateSpeed() const _IRR_OVERRIDE_;
 
-		//! Set the rotation speed
+		//! Set the rotation speed when moving mouse
 		virtual void setRotateSpeed(f32 rotateSpeed) _IRR_OVERRIDE_;
+
+		//! Returns the rotation speed when using keyboard
+		virtual f32 getRotateSpeedKeyboard() const _IRR_OVERRIDE_
+		{
+			return RotateSpeedKeyboard;
+		}
+
+		//! Set the rotation speed when using keyboard
+		virtual void setRotateSpeedKeyboard(f32 rotateSpeed) _IRR_OVERRIDE_
+		{
+			RotateSpeedKeyboard = rotateSpeed;
+		}
 
 		//! Sets the keyboard mapping for this animator (old style)
 		//! \param keymap: an array of keyboard mappings, see SKeyMap
@@ -107,6 +119,7 @@ namespace scene
 		bool NoVerticalMovement;
 
 		f32 MoveSpeed;
+		f32 RotateSpeedKeyboard;
 		f32 RotateSpeed;
 		f32 JumpSpeed;
 		// -1.0f for inverted mouse, defaults to 1.0f
