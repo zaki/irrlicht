@@ -35,8 +35,10 @@ namespace video
 {
 
 COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager) :
-	CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(), CacheHandler(0), MaterialRenderer2D(0), CurrentRenderMode(ERM_NONE),
-	ResetRenderStates(true), LockRenderStateMode(false), Transformation3DChanged(true), AntiAlias(params.AntiAlias), OGLES2ShaderPath(params.OGLES2ShaderPath),
+	CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(), CacheHandler(0),
+	MaterialRenderer2DActive(0), MaterialRenderer2DTexture(0), MaterialRenderer2DNoTexture(0),
+	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), LockRenderStateMode(false), Transformation3DChanged(true), AntiAlias(params.AntiAlias),
+	OGLES2ShaderPath(params.OGLES2ShaderPath),
 	ColorFormat(ECF_R8G8B8), Params(params), ContextManager(contextManager)
 {
 #ifdef _DEBUG
@@ -88,6 +90,8 @@ COGLES2Driver::~COGLES2Driver()
 	removeAllOcclusionQueries();
 	removeAllHardwareBuffers();
 
+	delete MaterialRenderer2DTexture;
+	delete MaterialRenderer2DNoTexture;
 	delete CacheHandler;
 
 	if (ContextManager)
@@ -391,12 +395,19 @@ COGLES2Driver::~COGLES2Driver()
 		ParallaxMapVertexAlphaCB->drop();
 		OneTextureBlendCB->drop();
 
-		// Create 2D material renderer.
+		// Create 2D material renderers
 
 		c8* vs2DData = 0;
 		c8* fs2DData = 0;
 		loadShaderData(io::path("COGLES2Renderer2D.vsh"), io::path("COGLES2Renderer2D.fsh"), &vs2DData, &fs2DData);
-		MaterialRenderer2D = new COGLES2Renderer2D(vs2DData, fs2DData, this);
+		MaterialRenderer2DTexture = new COGLES2Renderer2D(vs2DData, fs2DData, this, true);
+		delete[] vs2DData;
+		delete[] fs2DData;
+		vs2DData = 0;
+		fs2DData = 0;
+
+		loadShaderData(io::path("COGLES2Renderer2D.vsh"), io::path("COGLES2Renderer2D_noTex.fsh"), &vs2DData, &fs2DData);
+		MaterialRenderer2DNoTexture = new COGLES2Renderer2D(vs2DData, fs2DData, this, false);
 		delete[] vs2DData;
 		delete[] fs2DData;
 	}
@@ -1684,8 +1695,11 @@ COGLES2Driver::~COGLES2Driver()
 			// unset old material
 
 			// unset last 3d material
-			if (CurrentRenderMode == ERM_2D)
-				MaterialRenderer2D->OnUnsetMaterial();
+			if (CurrentRenderMode == ERM_2D && MaterialRenderer2DActive)
+			{
+				MaterialRenderer2DActive->OnUnsetMaterial();
+				MaterialRenderer2DActive = 0;
+			}
 			else if (LastMaterial.MaterialType != Material.MaterialType &&
 					static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
@@ -1959,6 +1973,8 @@ COGLES2Driver::~COGLES2Driver()
 		if ( LockRenderStateMode )
 			return;
 
+		COGLES2Renderer2D* nextActiveRenderer = texture ? MaterialRenderer2DTexture : MaterialRenderer2DNoTexture;
+
 		if (CurrentRenderMode != ERM_2D)
 		{
 			// unset last 3d material
@@ -1970,8 +1986,14 @@ COGLES2Driver::~COGLES2Driver()
 
 			CurrentRenderMode = ERM_2D;
 		}
+		else if ( MaterialRenderer2DActive && MaterialRenderer2DActive != nextActiveRenderer)
+		{
+			MaterialRenderer2DActive->OnUnsetMaterial();
+		}
 
-		MaterialRenderer2D->OnSetMaterial(Material, LastMaterial, true, 0);
+		MaterialRenderer2DActive = nextActiveRenderer;
+
+		MaterialRenderer2DActive->OnSetMaterial(Material, LastMaterial, true, 0);
 		LastMaterial = Material;
 
 		// no alphaChannel without texture
@@ -1996,7 +2018,7 @@ COGLES2Driver::~COGLES2Driver()
 				setTextureRenderStates(InitMaterial2D, false);
 		}
 
-		MaterialRenderer2D->OnRender(this, video::EVT_STANDARD);
+		MaterialRenderer2DActive->OnRender(this, video::EVT_STANDARD);
 	}
 
 

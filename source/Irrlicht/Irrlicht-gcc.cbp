@@ -824,6 +824,7 @@
 		<Unit filename="COBJMeshWriter.h" />
 		<Unit filename="COCTLoader.cpp" />
 		<Unit filename="COCTLoader.h" />
+		<Unit filename="COGLES2Common.h" />
 		<Unit filename="COGLES2Driver.cpp" />
 		<Unit filename="COGLES2Driver.h" />
 		<Unit filename="COGLES2ExtensionHandler.cpp" />
@@ -838,6 +839,7 @@
 		<Unit filename="COGLES2ParallaxMapRenderer.h" />
 		<Unit filename="COGLES2Renderer2D.cpp" />
 		<Unit filename="COGLES2Renderer2D.h" />
+		<Unit filename="COGLESCommon.h" />
 		<Unit filename="COGLESDriver.cpp" />
 		<Unit filename="COGLESDriver.h" />
 		<Unit filename="COGLESExtensionHandler.cpp" />

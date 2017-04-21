@@ -19,7 +19,7 @@ namespace video
 class COGLES2Renderer2D : public COGLES2MaterialRenderer
 {
 public:
-	COGLES2Renderer2D(const c8* vertexShaderProgram, const c8* pixelShaderProgram, COGLES2Driver* driver);
+	COGLES2Renderer2D(const c8* vertexShaderProgram, const c8* pixelShaderProgram, COGLES2Driver* driver, bool withTexture);
 	~COGLES2Renderer2D();
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
@@ -28,6 +28,7 @@ public:
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
 protected:
+	bool WithTexture;
 	s32 ThicknessID;
 	s32 TextureUsageID;
 };

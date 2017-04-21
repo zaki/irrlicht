@@ -363,7 +363,9 @@ namespace video
 		void loadShaderData(const io::path& vertexShaderName, const io::path& fragmentShaderName, c8** vertexShaderData, c8** fragmentShaderData);
 
 		COGLES2CacheHandler* CacheHandler;
-		COGLES2Renderer2D* MaterialRenderer2D;
+		COGLES2Renderer2D* MaterialRenderer2DActive;
+		COGLES2Renderer2D* MaterialRenderer2DTexture;
+		COGLES2Renderer2D* MaterialRenderer2DNoTexture;
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
