@@ -18,9 +18,10 @@ namespace scene
 //! constructor
 CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl,
 		f32 rotateSpeed, f32 moveSpeed, f32 jumpSpeed,
-		SKeyMap* keyMapArray, u32 keyMapSize, bool noVerticalMovement, bool invertY)
+		SKeyMap* keyMapArray, u32 keyMapSize, bool noVerticalMovement, bool invertY, float rotateSpeedKeyboard)
 : CursorControl(cursorControl), MaxVerticalAngle(88.0f), NoVerticalMovement(noVerticalMovement),
-	MoveSpeed(moveSpeed), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
+	MoveSpeed(moveSpeed), RotateSpeedKeyboard(rotateSpeedKeyboard), RotateSpeed(rotateSpeed),
+	JumpSpeed(jumpSpeed),
 	MouseYDirection(invertY ? -1.0f : 1.0f),
 	LastAnimationTime(0), firstUpdate(true), firstInput(true)
 {
@@ -39,9 +40,13 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 		// create default key map
 		KeyMap.push_back(SKeyMap(EKA_MOVE_FORWARD, irr::KEY_UP));
 		KeyMap.push_back(SKeyMap(EKA_MOVE_BACKWARD, irr::KEY_DOWN));
-		KeyMap.push_back(SKeyMap(EKA_STRAFE_LEFT, irr::KEY_LEFT));
-		KeyMap.push_back(SKeyMap(EKA_STRAFE_RIGHT, irr::KEY_RIGHT));
+		KeyMap.push_back(SKeyMap(EKA_MOVE_FORWARD, irr::KEY_KEY_W));
+		KeyMap.push_back(SKeyMap(EKA_MOVE_BACKWARD, irr::KEY_KEY_S));
+		KeyMap.push_back(SKeyMap(EKA_STRAFE_LEFT, irr::KEY_KEY_A));
+		KeyMap.push_back(SKeyMap(EKA_STRAFE_RIGHT, irr::KEY_KEY_D));
 		KeyMap.push_back(SKeyMap(EKA_JUMP_UP, irr::KEY_KEY_J));
+		KeyMap.push_back(SKeyMap(EKA_ROTATE_LEFT, irr::KEY_LEFT));
+		KeyMap.push_back(SKeyMap(EKA_ROTATE_RIGHT, irr::KEY_RIGHT));
 	}
 	else
 	{
@@ -149,22 +154,8 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	{
 		if (CursorPos != CenterCursor)
 		{
-			relativeRotation.Y -= (0.5f - CursorPos.X) * RotateSpeed;
-			relativeRotation.X -= (0.5f - CursorPos.Y) * RotateSpeed * MouseYDirection;
-
-			// X < MaxVerticalAngle or X > 360-MaxVerticalAngle
-
-			if (relativeRotation.X > MaxVerticalAngle*2 &&
-				relativeRotation.X < 360.0f-MaxVerticalAngle)
-			{
-				relativeRotation.X = 360.0f-MaxVerticalAngle;
-			}
-			else
-			if (relativeRotation.X > MaxVerticalAngle &&
-				relativeRotation.X < 360.0f-MaxVerticalAngle)
-			{
-				relativeRotation.X = MaxVerticalAngle;
-			}
+			relativeRotation.Y -= (CenterCursor.X - CursorPos.X) * RotateSpeed;
+			relativeRotation.X -= (CenterCursor.Y - CursorPos.Y) * RotateSpeed * MouseYDirection;
 
 			// Do the fix as normal, special case below
 			// reset cursor position to the centre of the window.
@@ -191,6 +182,28 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 			CursorPos = CenterCursor;
  		}
 	}
+
+	// keyboard rotation
+	if (CursorKeys[EKA_ROTATE_LEFT])
+		relativeRotation.Y -= timeDiff * RotateSpeedKeyboard;
+
+	if (CursorKeys[EKA_ROTATE_RIGHT])
+		relativeRotation.Y += timeDiff * RotateSpeedKeyboard;
+
+	// X < MaxVerticalAngle or X > 360-MaxVerticalAngle
+
+	if (relativeRotation.X > MaxVerticalAngle*2 &&
+		relativeRotation.X < 360.0f-MaxVerticalAngle)
+	{
+		relativeRotation.X = 360.0f-MaxVerticalAngle;
+	}
+	else
+	if (relativeRotation.X > MaxVerticalAngle &&
+		relativeRotation.X < 360.0f-MaxVerticalAngle)
+	{
+		relativeRotation.X = MaxVerticalAngle;
+	}
+
 
 	// set target
 
@@ -299,7 +312,6 @@ f32 CSceneNodeAnimatorCameraFPS::getMoveSpeed() const
 	return MoveSpeed;
 }
 
-
 //! Sets the keyboard mapping for this animator
 void CSceneNodeAnimatorCameraFPS::setKeyMap(SKeyMap *map, u32 count)
 {
@@ -358,6 +370,7 @@ void CSceneNodeAnimatorCameraFPS::serializeAttributes(io::IAttributes* out, io::
 	out->addFloat("MaxVerticalAngle", MaxVerticalAngle);
 	out->addBool("NoVerticalMovement", NoVerticalMovement);
 	out->addFloat("MoveSpeed", MoveSpeed);
+	out->addFloat("RotateSpeedKeyboard", RotateSpeedKeyboard);
 	out->addFloat("RotateSpeed", RotateSpeed);
 	out->addFloat("JumpSpeed", JumpSpeed);
 	out->addFloat("MouseYDirection", MouseYDirection);
@@ -380,6 +393,7 @@ void CSceneNodeAnimatorCameraFPS::deserializeAttributes(io::IAttributes* in, io:
 	MaxVerticalAngle = in->getAttributeAsFloat("MaxVerticalAngle", MaxVerticalAngle);
 	NoVerticalMovement = in->getAttributeAsBool("NoVerticalMovement", NoVerticalMovement);
 	MoveSpeed = in->getAttributeAsFloat("MoveSpeed", MoveSpeed);
+	RotateSpeedKeyboard = in->getAttributeAsFloat("RotateSpeedKeyboard", RotateSpeedKeyboard);
 	RotateSpeed = in->getAttributeAsFloat("RotateSpeed", RotateSpeed);
 	JumpSpeed = in->getAttributeAsFloat("JumpSpeed", JumpSpeed);
 	MouseYDirection = in->getAttributeAsFloat("MouseYDirection", MouseYDirection);

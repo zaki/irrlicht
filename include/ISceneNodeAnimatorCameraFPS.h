@@ -30,13 +30,19 @@ namespace scene
 		//! Sets the speed of movement in units per millisecond
 		virtual void setMoveSpeed(f32 moveSpeed) = 0;
 
-		//! Returns the rotation speed in degrees
+		//! Returns the rotation speed when using keyboard
+		virtual f32 getRotateSpeedKeyboard() const = 0;
+
+		//! Set the rotation speed when using keyboard
+		virtual void setRotateSpeedKeyboard(f32 rotateSpeed) = 0;
+
+		//! Returns the rotation speed in degrees when using mouse
 		/** The degrees are equivalent to a half screen movement of the mouse,
 		i.e. if the mouse cursor had been moved to the border of the screen since
 		the last animation. */
 		virtual f32 getRotateSpeed() const = 0;
 
-		//! Set the rotation speed in degrees
+		//! Set the rotation speed in degrees when using mouse
 		virtual void setRotateSpeed(f32 rotateSpeed) = 0;
 
 		//! Sets the keyboard mapping for this animator (old style)
