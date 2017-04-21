@@ -412,6 +412,12 @@ COGLES2Driver::~COGLES2Driver()
 		delete[] fs2DData;
 	}
 
+	bool COGLES2Driver::setMaterialTexture(irr::u32 layerIdx, const irr::video::ITexture* texture)
+	{
+		Material.TextureLayer[layerIdx].Texture = const_cast<ITexture*>(texture); // function uses const-pointer for texture because all draw functions use const-pointers already
+		return CacheHandler->getTextureCache().set(0, texture);
+	}
+
 	bool COGLES2Driver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil, const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 	{
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_BEGIN_SCENE);)
@@ -983,8 +989,7 @@ COGLES2Driver::~COGLES2Driver()
 		const core::rect<s32> poss(targetPos, sourceSize);
 
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-		if (!CacheHandler->getTextureCache().set(0, texture))
+		if (!setMaterialTexture(0, texture ))
 			return;
 
 		setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
@@ -1045,8 +1050,7 @@ COGLES2Driver::~COGLES2Driver()
 		const video::SColor* const useColor = colors ? colors : temp;
 
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-		if (!CacheHandler->getTextureCache().set(0, texture))
+		if (!setMaterialTexture(0, texture ))
 			return;
 
 		setRenderStates2DMode(useColor[0].getAlpha() < 255 || useColor[1].getAlpha() < 255 ||
@@ -1096,10 +1100,11 @@ COGLES2Driver::~COGLES2Driver()
 
 	void COGLES2Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 	{
-		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
+		if (!texture)
+			return;
 
-		if (!texture || !CacheHandler->getTextureCache().set(0, texture))
+		chooseMaterial2D();
+		if (!setMaterialTexture(0, texture ))
 			return;
 
 		setRenderStates2DMode(false, true, true);
@@ -1247,8 +1252,7 @@ COGLES2Driver::~COGLES2Driver()
 			const core::rect<s32> poss(targetPos, sourceSize);
 
 			chooseMaterial2D();
-			Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-			if (!CacheHandler->getTextureCache().set(0, texture))
+			if (!setMaterialTexture(0, texture))
 				return;
 
 			setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
@@ -1311,8 +1315,7 @@ COGLES2Driver::~COGLES2Driver()
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DIMAGE_BATCH);)
 
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-		if (!CacheHandler->getTextureCache().set(0, texture))
+		if (!setMaterialTexture(0, texture))
 			return;
 
 		setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
@@ -1404,8 +1407,7 @@ COGLES2Driver::~COGLES2Driver()
 		IRR_PROFILE(CProfileScope p1(EPID_ES2_DRAW_2DRECTANGLE);)
 
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = 0;
-		CacheHandler->getTextureCache().set(0, 0);
+		setMaterialTexture(0, 0);
 
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
@@ -1458,8 +1460,7 @@ COGLES2Driver::~COGLES2Driver()
 			return;
 
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = 0;
-		CacheHandler->getTextureCache().set(0, 0);
+		setMaterialTexture(0, 0);
 
 		setRenderStates2DMode(colorLeftUp.getAlpha() < 255 ||
 				colorRightUp.getAlpha() < 255 ||
@@ -1501,8 +1502,7 @@ COGLES2Driver::~COGLES2Driver()
 		else
 		{
 			chooseMaterial2D();
-			Material.TextureLayer[0].Texture = 0;
-			CacheHandler->getTextureCache().set(0, 0);
+			setMaterialTexture(0, 0);
 
 			setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
@@ -1537,8 +1537,7 @@ COGLES2Driver::~COGLES2Driver()
 			return;
 
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = 0;
-		CacheHandler->getTextureCache().set(0, 0);
+		setMaterialTexture(0, 0);
 
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
@@ -2187,8 +2186,7 @@ COGLES2Driver::~COGLES2Driver()
 			return;
 
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = 0;
-		CacheHandler->getTextureCache().set(0, 0);
+		setMaterialTexture(0, 0);
 
 		setRenderStates2DMode(true, false, false);
 

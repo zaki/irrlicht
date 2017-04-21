@@ -193,8 +193,7 @@ void CWebGL1Driver::draw2DImage(const video::ITexture* texture,
 	const core::rect<s32> poss(targetPos, sourceSize);
 
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-	if (!CacheHandler->getTextureCache().set(0, texture))
+	if ( !setMaterialTexture(0, texture) )
 		return;
 
 	setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
@@ -245,8 +244,7 @@ void CWebGL1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-	if (!CacheHandler->getTextureCache().set(0, texture))
+	if ( !setMaterialTexture(0, texture) )
 		return;
 
 	setRenderStates2DMode(useColor[0].getAlpha() < 255 || useColor[1].getAlpha() < 255 ||
@@ -288,10 +286,11 @@ void CWebGL1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 
 void CWebGL1Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
 {
-	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
+	if (!texture )
+		return;
 
-	if (!texture || !CacheHandler->getTextureCache().set(0, texture))
+	chooseMaterial2D();
+	if ( !setMaterialTexture(0, texture) )
 		return;
 
 	setRenderStates2DMode(false, true, true);
@@ -332,8 +331,7 @@ void CWebGL1Driver::draw2DImageBatch(const video::ITexture* texture,
 		return;
 
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-	if (!CacheHandler->getTextureCache().set(0, texture))
+	if ( !setMaterialTexture(0, texture) )
 		return;
 
 	setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
@@ -409,8 +407,7 @@ void CWebGL1Driver::draw2DImageBatch(const video::ITexture* texture,
 		return;
 
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = const_cast<ITexture*>(texture);
-	if (!CacheHandler->getTextureCache().set(0, texture))
+	if ( !setMaterialTexture(0, texture) )
 		return;
 
 	setRenderStates2DMode(color.getAlpha() < 255, true, useAlphaChannelOfTexture);
@@ -532,8 +529,7 @@ void CWebGL1Driver::draw2DRectangle(SColor color,
 		const core::rect<s32>* clip)
 {
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = 0;
-	CacheHandler->getTextureCache().set(0, 0);
+	setMaterialTexture(0, 0);
 
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 	lockRenderStateMode();
@@ -577,8 +573,7 @@ void CWebGL1Driver::draw2DRectangle(const core::rect<s32>& position,
 		return;
 
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = 0;
-	CacheHandler->getTextureCache().set(0, 0);
+	setMaterialTexture(0, 0);
 
 	setRenderStates2DMode(colorLeftUp.getAlpha() < 255 ||
 			colorRightUp.getAlpha() < 255 ||
@@ -612,8 +607,7 @@ void CWebGL1Driver::draw2DLine(const core::position2d<s32>& start, const core::p
 	else
 	{
 		chooseMaterial2D();
-		Material.TextureLayer[0].Texture = 0;
-		CacheHandler->getTextureCache().set(0, 0);
+		setMaterialTexture(0, 0);
 
 		setRenderStates2DMode(color.getAlpha() < 255, false, false);
 		lockRenderStateMode();
@@ -642,8 +636,7 @@ void CWebGL1Driver::drawPixel(u32 x, u32 y, const SColor & color)
 		return;
 
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = 0;
-	CacheHandler->getTextureCache().set(0, 0);
+	setMaterialTexture(0, 0);
 
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 	lockRenderStateMode();
@@ -691,8 +684,7 @@ void CWebGL1Driver::drawStencilShadow(bool clearStencilBuffer,
 		return;
 
 	chooseMaterial2D();
-	Material.TextureLayer[0].Texture = 0;
-	CacheHandler->getTextureCache().set(0, 0);
+	setMaterialTexture(0, 0);
 
 	setRenderStates2DMode(true, false, false);
 	lockRenderStateMode();

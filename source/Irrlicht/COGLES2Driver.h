@@ -362,7 +362,12 @@ namespace video
 
 		void loadShaderData(const io::path& vertexShaderName, const io::path& fragmentShaderName, c8** vertexShaderData, c8** fragmentShaderData);
 
+		bool setMaterialTexture(irr::u32 layerIdx, const irr::video::ITexture* texture);
+
 		COGLES2CacheHandler* CacheHandler;
+
+private:
+
 		COGLES2Renderer2D* MaterialRenderer2DActive;
 		COGLES2Renderer2D* MaterialRenderer2DTexture;
 		COGLES2Renderer2D* MaterialRenderer2DNoTexture;
