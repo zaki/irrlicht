@@ -113,8 +113,6 @@ namespace video
 			video::SColor leftDownEdge = video::SColor(0,0,0,0),
 			video::SColor rightDownEdge = video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
 
-
-
 	protected:
 		// create a meshbuffer which has as many vertices as indices
 		scene::SMeshBuffer* createSimpleMeshBuffer(irr::u32 numVertices, scene::E_PRIMITIVE_TYPE primitiveType, scene::E_HARDWARE_MAPPING vertexMappingHint=scene::EHM_STREAM, scene::E_HARDWARE_MAPPING indexMappingHint=scene::EHM_STATIC) const;

@@ -24,7 +24,13 @@ CWebGL1Driver::CWebGL1Driver(const SIrrlichtCreationParameters& params, io::IFil
 	setDebugName("CWebGL1Driver");
 #endif
 
-	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);	// so far causing errors, have to figure out later
+	// NPOT are not allowed for WebGL in most cases.
+	// One can use them when:
+	// - The TEXTURE_MIN_FILTER is linear or nearest
+	// - no mipmapping is used
+	// - no texture wrapping is used (so all texture_wraps have to be CLAMP_TO_EDGE)
+	// So users could still enable them for specific cases (usually GUI), but in general better to have it off.
+	disableFeature(EVDF_TEXTURE_NPOT);
 
 	MBLinesSize2 = createSimpleMeshBuffer(2, scene::EPT_LINES);
 	MBTriangleFanSize4 = createSimpleMeshBuffer(4, scene::EPT_TRIANGLE_FAN);
