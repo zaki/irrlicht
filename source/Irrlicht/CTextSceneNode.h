@@ -17,6 +17,8 @@ namespace irr
 namespace scene
 {
 
+	class ICameraSceneNode;
+
 	class CTextSceneNode : public ITextSceneNode
 	{
 	public:
@@ -140,6 +142,11 @@ namespace scene
 			bottomEdgeWidth = Size.Width;
 			topEdgeWidth = Size.Width;
 		}
+
+		virtual const core::aabbox3d<f32>& getTransformedBillboardBoundingBox(const irr::scene::ICameraSceneNode* camera) _IRR_OVERRIDE_;
+
+	protected:
+		void updateMesh(const irr::scene::ICameraSceneNode* camera);
 
 	private:
 

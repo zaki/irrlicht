@@ -6,7 +6,7 @@
 #define __C_BILLBOARD_SCENE_NODE_H_INCLUDED__
 
 #include "IBillboardSceneNode.h"
-#include "S3DVertex.h"
+#include "SMeshBuffer.h"
 
 namespace irr
 {
@@ -24,6 +24,8 @@ public:
 		const core::vector3df& position, const core::dimension2d<f32>& size,
 		video::SColor colorTop=video::SColor(0xFFFFFFFF),
 		video::SColor colorBottom=video::SColor(0xFFFFFFFF));
+
+	virtual ~CBillboardSceneNode();
 
 	//! pre render event
 	virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
@@ -67,6 +69,9 @@ public:
 	virtual void getColor(video::SColor& topColor,
 			video::SColor& bottomColor) const _IRR_OVERRIDE_;
 
+	//! Get the real boundingbox used by the billboard (which depends on the active camera)
+	virtual const core::aabbox3d<f32>& getTransformedBillboardBoundingBox(const irr::scene::ICameraSceneNode* camera) _IRR_OVERRIDE_;
+
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
 
@@ -79,16 +84,24 @@ public:
 	//! Creates a clone of this scene node and its children.
 	virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) _IRR_OVERRIDE_;
 
+protected:
+	void updateMesh(const irr::scene::ICameraSceneNode* camera);
+
 private:
 
 	//! Size.Width is the bottom edge width
 	core::dimension2d<f32> Size;
 	f32 TopEdgeWidth;
-	core::aabbox3d<f32> BBox;
-	video::SMaterial Material;
 
-	video::S3DVertex vertices[4];
-	u16 indices[6];
+	//! BoundingBox which is large enough to contain the billboard independent of the camera
+	// TODO: BUG - still can be wrong with scaling < 1. Billboards should calculate relative coordinates for their mesh
+	// and then use the node-scaling. But needs some work...
+	/** Note that we can't use the real boundingbox for culling because at that point
+	    the camera which is used to calculate the billboard is not yet updated. So we only
+	    know the real boundingbox after rendering - which is too late for culling. */
+	core::aabbox3d<f32> BBoxSafe;
+
+	scene::SMeshBuffer* Buffer;
 };
 
 
