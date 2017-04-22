@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-// TODO: replace printf's by logging messages 
+// TODO: replace printf's by logging messages
 
 #include "IrrCompileConfig.h"
 
@@ -26,7 +26,7 @@ namespace scene
 using namespace core;
 using namespace video;
 
-CB3DMeshWriter::CB3DMeshWriter(io::IFileSystem *fs): FileSystem(fs)
+CB3DMeshWriter::CB3DMeshWriter()
 {
 	#ifdef _DEBUG
 	setDebugName("CB3DMeshWriter");
@@ -64,14 +64,14 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
     array<SB3dTexture> texs;
     map<ITexture *, u32> tex2id;	// TODO: texture pointer as key not sufficient as same texture can have several id's
     u32 texsizes = 0;
-    for (u32 i = 0; i < numBeshBuffers; i++) 
+    for (u32 i = 0; i < numBeshBuffers; i++)
 	{
         const IMeshBuffer * const mb = mesh->getMeshBuffer(i);
         const SMaterial &mat = mb->getMaterial();
 
-        for (u32 j = 0; j < MATERIAL_MAX_TEXTURES; j++) 
+        for (u32 j = 0; j < MATERIAL_MAX_TEXTURES; j++)
 		{
-            if (mat.getTexture(j)) 
+            if (mat.getTexture(j))
 			{
                 SB3dTexture t;
 				t.TextureName = core::stringc(mat.getTexture(j)->getName().getPath());
@@ -98,7 +98,7 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
     write(file, &texsizes, 4);
 
     u32 numTexture = texs.size();
-    for (u32 i = 0; i < numTexture; i++) 
+    for (u32 i = 0; i < numTexture; i++)
 	{
         write(file, texs[i].TextureName.c_str(), texs[i].TextureName.size() + 1);
         write(file, &texs[i].Flags, 7*4);
@@ -113,7 +113,7 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
     const u32 usedtex = MATERIAL_MAX_TEXTURES;
     write(file, &usedtex, 4);
 
-    for (u32 i = 0; i < numBeshBuffers; i++) 
+    for (u32 i = 0; i < numBeshBuffers; i++)
 	{
         const IMeshBuffer * const mb = mesh->getMeshBuffer(i);
         const SMaterial &mat = mb->getMaterial();
@@ -134,14 +134,14 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
         tmp = 0;
         write(file, &tmp, 4);
 
-        for (u32 j = 0; j < MATERIAL_MAX_TEXTURES; j++) 
+        for (u32 j = 0; j < MATERIAL_MAX_TEXTURES; j++)
 		{
-            if (mat.getTexture(j)) 
+            if (mat.getTexture(j))
 			{
                 const u32 id = tex2id[mat.getTexture(j)];
                 write(file, &id, 4);
-            } 
-			else 
+            }
+			else
 			{
                 const int id = -1;
                 write(file, &id, 4);
@@ -250,7 +250,7 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
     {
         const IMeshBuffer * const mb = mesh->getMeshBuffer(i);
         irr::u32 numVertices = mb->getVertexCount();
-        for (u32 j = 0; j < numVertices; j++) 
+        for (u32 j = 0; j < numVertices; j++)
 		{
             const vector3df &pos = mb->getPosition(j);
             write(file, &pos.X, 4);
@@ -263,7 +263,7 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
             write(file, &n.Z, 4);
 
             const u32 zero = 0;
-            switch (mb->getVertexType()) 
+            switch (mb->getVertexType())
 			{
                 case EVT_STANDARD:
                 {
@@ -308,7 +308,7 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
                     write(file, &col.a, 4);
 
                     write(file, &v[j].TCoords.X, 4);
-                    write(file, &v[j].TCoords.Y, 4);   
+                    write(file, &v[j].TCoords.Y, 4);
                     if (texcoords == 2)
                     {
                         write(file, &zero, 4);
@@ -342,7 +342,7 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
 
         u32 numIndices = mb->getIndexCount();
         const u16 * const idx = (u16 *) mb->getIndices();
-        for (u32 j = 0; j < numIndices; j += 3) 
+        for (u32 j = 0; j < numIndices; j += 3)
 		{
             u32 tmp = idx[j] + currentMeshBufferIndex;
             write(file, &tmp, sizeof(u32));

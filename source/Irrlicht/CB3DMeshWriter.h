@@ -8,7 +8,7 @@
 #define __IRR_B3D_MESH_WRITER_H_INCLUDED__
 
 #include "IMeshWriter.h"
-#include "IFileSystem.h"
+#include "IWriteFile.h"
 #include "SB3DStructs.h"
 #include "ISkinnedMesh.h"
 
@@ -24,7 +24,7 @@ class CB3DMeshWriter : public IMeshWriter
 {
 public:
 
-	CB3DMeshWriter(io::IFileSystem *fs);
+	CB3DMeshWriter();
 
 	//! Returns the type of the mesh writer
     virtual EMESH_WRITER_TYPE getType() const;
@@ -33,7 +33,6 @@ public:
     virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE);
 
 private:
-	io::IFileSystem *FileSystem;
 	u32 Size;
 
     void writeJointChunk(io::IWriteFile* file, ISkinnedMesh* mesh , ISkinnedMesh::SJoint* joint);
