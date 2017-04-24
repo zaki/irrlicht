@@ -2573,7 +2573,7 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 
 	case EMWT_B3D:
 #ifdef _IRR_COMPILE_WITH_B3D_WRITER_
-		return new CB3DMeshWriter(FileSystem);
+		return new CB3DMeshWriter();
 #else
 		return 0;
 #endif

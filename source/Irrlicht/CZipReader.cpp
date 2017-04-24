@@ -492,8 +492,16 @@ IReadFile* CZipReader::createAndOpenFile(const io::path& filename)
 //! Used for LZMA decompression. The lib has no default memory management
 namespace
 {
-	void *SzAlloc(void *p, size_t size) { p = p; return malloc(size); }
-	void SzFree(void *p, void *address) { p = p; free(address); }
+	void *SzAlloc(void *p, size_t size)
+	{
+		(void)p; // disable unused variable warnings
+		return malloc(size);
+	}
+	void SzFree(void *p, void *address)
+	{
+		(void)p; // disable unused variable warnings
+		free(address);
+	}
 	ISzAlloc lzmaAlloc = { SzAlloc, SzFree };
 }
 #endif

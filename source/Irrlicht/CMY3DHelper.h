@@ -269,7 +269,7 @@ unsigned long process_comp(
     unsigned char *out_buf, int out_buf_size)
 {
      // we start out with 3 repeating bytes
-     register int len = 3;
+     int len = 3;
 
      unsigned char ch;
 

@@ -120,14 +120,16 @@ namespace scene
 		/** should be called if the mesh changed. */
 		virtual void recalculateBoundingBox()
 		{
-			if (Vertices.empty())
-				BoundingBox.reset(0,0,0);
-			else
+			if (!Vertices.empty())
 			{
 				BoundingBox.reset(Vertices[0].Pos);
-				for (u32 i=1; i<Vertices.size(); ++i)
+				const irr::u32 vsize = Vertices.size();
+				for (u32 i=1; i<vsize; ++i)
 					BoundingBox.addInternalPoint(Vertices[i].Pos);
 			}
+			else
+				BoundingBox.reset(0,0,0);
+
 		}
 
 
