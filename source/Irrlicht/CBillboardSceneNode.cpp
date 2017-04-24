@@ -144,7 +144,7 @@ const core::aabbox3d<f32>& CBillboardSceneNode::getBoundingBox() const
 	return BBoxSafe;
 }
 
-const core::aabbox3d<f32>& CBillboardSceneNode::getTransformedBillboardBoundingBox(const irr::scene::ICameraSceneNode* camera) _IRR_OVERRIDE_
+const core::aabbox3d<f32>& CBillboardSceneNode::getTransformedBillboardBoundingBox(const irr::scene::ICameraSceneNode* camera)
 {
 	updateMesh(camera);
 	return Buffer->BoundingBox;
