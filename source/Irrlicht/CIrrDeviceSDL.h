@@ -16,6 +16,10 @@
 #include "IImagePresenter.h"
 #include "ICursorControl.h"
 
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+#include <emscripten/html5.h>
+#endif
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 
@@ -168,6 +172,24 @@ namespace irr
 
 			void updateCursorPos()
 			{
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+				EmscriptenPointerlockChangeEvent pointerlockStatus; // let's hope that test is not expensive ...
+				if ( emscripten_get_pointerlock_status(&pointerlockStatus) == EMSCRIPTEN_RESULT_SUCCESS )
+				{
+					if ( pointerlockStatus.isActive )
+					{
+						CursorPos.X += Device->MouseXRel;
+						CursorPos.Y += Device->MouseYRel;
+						Device->MouseXRel = 0;
+						Device->MouseYRel = 0;
+					}
+					else
+					{
+						CursorPos.X = Device->MouseX;
+						CursorPos.Y = Device->MouseY;
+					}
+				}
+#else
 				CursorPos.X = Device->MouseX;
 				CursorPos.Y = Device->MouseY;
 
@@ -179,6 +201,7 @@ namespace irr
 					CursorPos.Y = 0;
 				if (CursorPos.Y > (s32)Device->Height)
 					CursorPos.Y = Device->Height;
+#endif
 			}
 
 			CIrrDeviceSDL* Device;
@@ -202,6 +225,7 @@ namespace irr
 #endif
 
 		s32 MouseX, MouseY;
+		s32 MouseXRel, MouseYRel;
 		u32 MouseButtonStates;
 
 		u32 Width, Height;

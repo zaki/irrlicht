@@ -64,7 +64,7 @@ namespace irr
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param),
 	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_ANYFORMAT),
-	MouseX(0), MouseY(0), MouseButtonStates(0),
+	MouseX(0), MouseY(0), MouseXRel(0), MouseYRel(0), MouseButtonStates(0),
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	Resizable(false), WindowHasFocus(false), WindowMinimized(false)
 {
@@ -342,6 +342,8 @@ bool CIrrDeviceSDL::run()
 			irrevent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 			MouseX = irrevent.MouseInput.X = SDL_event.motion.x;
 			MouseY = irrevent.MouseInput.Y = SDL_event.motion.y;
+			MouseXRel = SDL_event.motion.xrel;
+			MouseYRel = SDL_event.motion.yrel;
 			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 
 			postEventFromUser(irrevent);
