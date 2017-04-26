@@ -59,6 +59,15 @@ namespace irr
 
 namespace irr
 {
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+EM_BOOL MouseUpDownCallback(int eventType, const EmscriptenMouseEvent * event, void* userData)
+{
+	// We need this callback so far only because otherwise "emscripten_request_pointerlock" calls will
+	// fail as their request are infinitely deferred.
+	// Not exactly certain why, maybe SDL does catch those mouse-events otherwise and not pass them on.
+	return EM_FALSE;
+}
+#endif
 
 //! constructor
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
@@ -161,6 +170,9 @@ bool CIrrDeviceSDL::createWindow()
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	emscripten_set_canvas_size( Width, Height);
 	Screen = SDL_SetVideoMode( 0, 0, 32, SDL_OPENGL ); // 0,0 will use the canvas size
+
+	emscripten_set_mousedown_callback(0, 0, true, MouseUpDownCallback);
+    emscripten_set_mouseup_callback(0, 0, true, MouseUpDownCallback);
 	return true;
 #else // !_IRR_EMSCRIPTEN_PLATFORM_
 	if ( Close )
@@ -357,6 +369,31 @@ bool CIrrDeviceSDL::run()
 			irrevent.MouseInput.Y = SDL_event.button.y;
 
 			irrevent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
+
+
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+			// Handle mouselocking in emscripten in Windowed mode.
+			// In fullscreen SDL will handle it.
+			// The behavior we want windowed is - when the canvas was clicked then
+			// we will lock the mouse-pointer if it should be invisible.
+			// For security reasons this will be delayed until the next mouse-up event.
+			// We do not pass on this event as we don't want the activation click to do anything.
+			if ( SDL_event.type == SDL_MOUSEBUTTONDOWN && !isFullscreen() )
+			{
+				EmscriptenPointerlockChangeEvent pointerlockStatus; // let's hope that test is not expensive ...
+				if ( emscripten_get_pointerlock_status(&pointerlockStatus) == EMSCRIPTEN_RESULT_SUCCESS )
+				{
+					if ( CursorControl->isVisible() && pointerlockStatus.isActive )
+					{
+						emscripten_exit_pointerlock();
+					}
+					else if ( !CursorControl->isVisible() && !pointerlockStatus.isActive )
+					{
+						emscripten_request_pointerlock(0, true);
+					}
+				}
+			}
+#endif
 
 			switch(SDL_event.button.button)
 			{
@@ -830,10 +867,32 @@ void CIrrDeviceSDL::restoreWindow()
 	// do nothing
 }
 
+bool CIrrDeviceSDL::isFullscreen() const
+{
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	return SDL_GetWindowFlags(0) == SDL_WINDOW_FULLSCREEN;
+#else
+
+	return CIrrDeviceStub::isFullscreen();
+#endif
+}
+
 
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	// Hidden test only does something in some browsers (when tab in background or window is minimized)
+	// In other browsers code automatically doesn't seem to be called anymore.
+	EmscriptenVisibilityChangeEvent emVisibility;
+	if ( emscripten_get_visibility_status(&emVisibility) == EMSCRIPTEN_RESULT_SUCCESS)
+	{
+		if ( emVisibility.hidden )
+			return false;
+	}
+
+	// TODO: not sure yet if/what WindowHasFocus and WindowMinimized do in sdl/emscripten
+#endif
 	return (WindowHasFocus && !WindowMinimized);
 }
 

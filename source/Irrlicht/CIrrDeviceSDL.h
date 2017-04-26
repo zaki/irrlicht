@@ -81,6 +81,10 @@ namespace irr
 		//! Restores the window size.
 		virtual void restoreWindow() _IRR_OVERRIDE_;
 
+		//! Checks if the Irrlicht window is running in fullscreen mode
+		/** \return True if window is fullscreen. */
+		virtual bool isFullscreen() const _IRR_OVERRIDE_;
+
 		//! Get the position of this window on screen
 		virtual core::position2di getWindowPosition() _IRR_OVERRIDE_;
 
@@ -116,7 +120,9 @@ namespace irr
 				if ( visible )
 					SDL_ShowCursor( SDL_ENABLE );
 				else
+				{
 					SDL_ShowCursor( SDL_DISABLE );
+				}
 			}
 
 			//! Returns if the cursor is currently visible.
