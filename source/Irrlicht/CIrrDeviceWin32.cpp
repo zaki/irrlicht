@@ -1111,7 +1111,8 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		// attach external window
 		HWnd = static_cast<HWND>(CreationParams.WindowId);
 		RECT r;
-		GetWindowRect(HWnd, &r);
+		//GetWindowRect(HWnd, &r);
+		GetClientRect(HWnd, &r);
 		CreationParams.WindowSize.Width = r.right - r.left;
 		CreationParams.WindowSize.Height = r.bottom - r.top;
 		CreationParams.Fullscreen = false;
