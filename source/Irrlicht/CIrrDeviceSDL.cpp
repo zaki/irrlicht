@@ -60,11 +60,53 @@ namespace irr
 namespace irr
 {
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
-EM_BOOL MouseUpDownCallback(int eventType, const EmscriptenMouseEvent * event, void* userData)
+EM_BOOL CIrrDeviceSDL::MouseUpDownCallback(int eventType, const EmscriptenMouseEvent * event, void* userData)
 {
 	// We need this callback so far only because otherwise "emscripten_request_pointerlock" calls will
 	// fail as their request are infinitely deferred.
 	// Not exactly certain why, maybe SDL does catch those mouse-events otherwise and not pass them on.
+	return EM_FALSE;
+}
+
+EM_BOOL CIrrDeviceSDL::MouseEnterCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData)
+{
+	CIrrDeviceSDL * This = static_cast<CIrrDeviceSDL*>(userData);
+
+	SEvent irrevent;
+
+	irrevent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+	irrevent.MouseInput.Event = irr::EMIE_MOUSE_ENTER_CANVAS;
+	This->MouseX = irrevent.MouseInput.X = mouseEvent->canvasX;
+	This->MouseY = irrevent.MouseInput.Y = mouseEvent->canvasY;
+	This->MouseXRel = mouseEvent->movementX; // should be 0 I guess? Or can it enter while pointer is locked()?
+	This->MouseYRel = mouseEvent->movementY;
+	irrevent.MouseInput.ButtonStates = This->MouseButtonStates;	// TODO: not correct, but couldn't figure out the bitset of mouseEvent->buttons yet.
+	irrevent.MouseInput.Shift = mouseEvent->shiftKey;
+	irrevent.MouseInput.Control = mouseEvent->ctrlKey;
+
+	This->postEventFromUser(irrevent);
+
+	return EM_FALSE;
+}
+
+EM_BOOL CIrrDeviceSDL::MouseLeaveCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData)
+{
+	CIrrDeviceSDL * This = static_cast<CIrrDeviceSDL*>(userData);
+
+	SEvent irrevent;
+
+	irrevent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+	irrevent.MouseInput.Event = irr::EMIE_MOUSE_LEAVE_CANVAS;
+	This->MouseX = irrevent.MouseInput.X = mouseEvent->canvasX;
+	This->MouseY = irrevent.MouseInput.Y = mouseEvent->canvasY;
+	This->MouseXRel = mouseEvent->movementX; // should be 0 I guess? Or can it enter while pointer is locked()?
+	This->MouseYRel = mouseEvent->movementY;
+	irrevent.MouseInput.ButtonStates = This->MouseButtonStates;	// TODO: not correct, but couldn't figure out the bitset of mouseEvent->buttons yet.
+	irrevent.MouseInput.Shift = mouseEvent->shiftKey;
+	irrevent.MouseInput.Control = mouseEvent->ctrlKey;
+
+	This->postEventFromUser(irrevent);
+
 	return EM_FALSE;
 }
 #endif
@@ -171,8 +213,12 @@ bool CIrrDeviceSDL::createWindow()
 	emscripten_set_canvas_size( Width, Height);
 	Screen = SDL_SetVideoMode( 0, 0, 32, SDL_OPENGL ); // 0,0 will use the canvas size
 
-	emscripten_set_mousedown_callback(0, 0, true, MouseUpDownCallback);
-    emscripten_set_mouseup_callback(0, 0, true, MouseUpDownCallback);
+	// "#canvas" is for the opengl context
+	emscripten_set_mousedown_callback("#canvas", (void*)this, true, MouseUpDownCallback);
+    emscripten_set_mouseup_callback("#canvas", (void*)this, true, MouseUpDownCallback);
+    emscripten_set_mouseenter_callback("#canvas", (void*)this, false, MouseEnterCallback);
+    emscripten_set_mouseleave_callback("#canvas", (void*)this, false, MouseLeaveCallback);
+
 	return true;
 #else // !_IRR_EMSCRIPTEN_PLATFORM_
 	if ( Close )
@@ -386,10 +432,12 @@ bool CIrrDeviceSDL::run()
 					if ( CursorControl->isVisible() && pointerlockStatus.isActive )
 					{
 						emscripten_exit_pointerlock();
+						return !Close;
 					}
 					else if ( !CursorControl->isVisible() && !pointerlockStatus.isActive )
 					{
 						emscripten_request_pointerlock(0, true);
+						return !Close;
 					}
 				}
 			}

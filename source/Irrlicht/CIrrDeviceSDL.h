@@ -217,6 +217,12 @@ namespace irr
 
 	private:
 
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+	static EM_BOOL MouseUpDownCallback(int eventType, const EmscriptenMouseEvent * event, void* userData);
+	static EM_BOOL MouseEnterCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
+	static EM_BOOL MouseLeaveCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
+#endif
+
 		//! create the driver
 		void createDriver();
 

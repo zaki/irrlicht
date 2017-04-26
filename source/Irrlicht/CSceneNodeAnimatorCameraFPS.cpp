@@ -91,6 +91,11 @@ bool CSceneNodeAnimatorCameraFPS::OnEvent(const SEvent& evt)
 				CursorPos = CursorControl->getRelativePosition();
 			return true;
 		}
+		if ( evt.MouseInput.Event == EMIE_MOUSE_ENTER_CANVAS)
+		{
+			resetCursorPos();
+			return false;
+		}
 		break;
 
 	default:
@@ -275,6 +280,13 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	// write right target
 	target += pos;
 	camera->setTarget(target);
+}
+
+void CSceneNodeAnimatorCameraFPS::resetCursorPos()
+{
+	CursorControl->setPosition(0.5f, 0.5f);
+	CenterCursor = CursorControl->getRelativePosition();
+	CursorPos = CenterCursor;
 }
 
 

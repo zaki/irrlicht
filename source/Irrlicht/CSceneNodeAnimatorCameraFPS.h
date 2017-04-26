@@ -109,8 +109,9 @@ namespace scene
 		//! Reads attributes of the scene node animator.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
-
 	private:
+		void resetCursorPos();
+
 		void allKeysUp();
 
 		gui::ICursorControl *CursorControl;
