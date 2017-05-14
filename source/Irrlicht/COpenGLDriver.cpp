@@ -1284,87 +1284,24 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::posi
 	if (!sourceRect.isValid())
 		return;
 
-	core::position2d<s32> targetPos(destPos);
-	core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner);
-	// This needs to be signed as it may go negative.
-	core::dimension2d<s32> sourceSize(sourceRect.getSize());
+	// clip these coordinates
+	core::rect<s32> targetRect(destPos, sourceRect.getSize());
 	if (clipRect)
 	{
-		if (targetPos.X < clipRect->UpperLeftCorner.X)
-		{
-			sourceSize.Width += targetPos.X - clipRect->UpperLeftCorner.X;
-			if (sourceSize.Width <= 0)
-				return;
-
-			sourcePos.X -= targetPos.X - clipRect->UpperLeftCorner.X;
-			targetPos.X = clipRect->UpperLeftCorner.X;
-		}
-
-		if (targetPos.X + sourceSize.Width > clipRect->LowerRightCorner.X)
-		{
-			sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
-			if (sourceSize.Width <= 0)
-				return;
-		}
-
-		if (targetPos.Y < clipRect->UpperLeftCorner.Y)
-		{
-			sourceSize.Height += targetPos.Y - clipRect->UpperLeftCorner.Y;
-			if (sourceSize.Height <= 0)
-				return;
-
-			sourcePos.Y -= targetPos.Y - clipRect->UpperLeftCorner.Y;
-			targetPos.Y = clipRect->UpperLeftCorner.Y;
-		}
-
-		if (targetPos.Y + sourceSize.Height > clipRect->LowerRightCorner.Y)
-		{
-			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
-			if (sourceSize.Height <= 0)
-				return;
-		}
-	}
-
-	// clip these coordinates
-
-	if (targetPos.X<0)
-	{
-		sourceSize.Width += targetPos.X;
-		if (sourceSize.Width <= 0)
+		targetRect.clipAgainst(*clipRect);
+		if ( targetRect.getWidth() < 0 || targetRect.getHeight() < 0 )
 			return;
-
-		sourcePos.X -= targetPos.X;
-		targetPos.X = 0;
 	}
 
 	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-
-	if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
-	{
-		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
-		if (sourceSize.Width <= 0)
+	targetRect.clipAgainst( core::rect<s32>(0,0, (s32)renderTargetSize.Width, (s32)renderTargetSize.Height) );
+	if ( targetRect.getWidth() < 0 || targetRect.getHeight() < 0 )
 			return;
-	}
-
-	if (targetPos.Y<0)
-	{
-		sourceSize.Height += targetPos.Y;
-		if (sourceSize.Height <= 0)
-			return;
-
-		sourcePos.Y -= targetPos.Y;
-		targetPos.Y = 0;
-	}
-
-	if (targetPos.Y + sourceSize.Height >(s32)renderTargetSize.Height)
-	{
-		sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
-		if (sourceSize.Height <= 0)
-			return;
-	}
 
 	// ok, we've clipped everything.
 	// now draw it.
+	const core::dimension2d<s32> sourceSize(targetRect.getSize());
+	const core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner + (targetRect.UpperLeftCorner-destPos));
 
 	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
@@ -1374,8 +1311,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::posi
 		sourcePos.Y * invH,
 		(sourcePos.X + sourceSize.Width) * invW,
 		(sourcePos.Y + sourceSize.Height) * invH);
-
-	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
 	if (!CacheHandler->getTextureCache().set(0, texture))
@@ -1387,10 +1322,10 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::posi
 	Quad2DVertices[2].Color = color;
 	Quad2DVertices[3].Color = color;
 
-	Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
-	Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+	Quad2DVertices[0].Pos = core::vector3df((f32)targetRect.UpperLeftCorner.X, (f32)targetRect.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[1].Pos = core::vector3df((f32)targetRect.LowerRightCorner.X, (f32)targetRect.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[2].Pos = core::vector3df((f32)targetRect.LowerRightCorner.X, (f32)targetRect.LowerRightCorner.Y, 0.0f);
+	Quad2DVertices[3].Pos = core::vector3df((f32)targetRect.UpperLeftCorner.X, (f32)targetRect.LowerRightCorner.Y, 0.0f);
 
 	Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
 	Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
