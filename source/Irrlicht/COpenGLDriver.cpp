@@ -2464,11 +2464,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// Color Mask
-	CacheHandler->setColorMask(
-		(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
-		(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
-		(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
-		(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+	CacheHandler->setColorMask(material.ColorMask);
 
 	// Blend Equation
     if (material.BlendOperation == EBO_NONE)
@@ -3826,10 +3822,15 @@ bool COpenGLDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SCol
 void COpenGLDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
 	GLbitfield mask = 0;
+	u8 colorMask = 0;
+	bool depthMask = false;
+
+	CacheHandler->getColorMask(colorMask);
+	CacheHandler->getDepthMask(depthMask);
 
 	if (flag & ECBF_COLOR)
 	{
-		CacheHandler->setColorMask(true, true, true, true);
+		CacheHandler->setColorMask(ECP_ALL);
 
 		const f32 inv = 1.0f / 255.0f;
 		glClearColor(color.getRed() * inv, color.getGreen() * inv,
@@ -3853,6 +3854,9 @@ void COpenGLDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 
 	if (mask)
 		glClear(mask);
+
+	CacheHandler->setColorMask(colorMask);
+	CacheHandler->setDepthMask(depthMask);
 }
 
 

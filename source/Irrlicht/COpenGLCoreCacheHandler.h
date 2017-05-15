@@ -168,10 +168,10 @@ class COpenGLCoreCacheHandler
 
 public:
 	COpenGLCoreCacheHandler(TOpenGLDriver* driver) :
-		Driver(driver), TextureCache(STextureCache(this, Driver->getFeature().TextureUnit)), FrameBufferCount(0),
-		BlendEquation(0), BlendSourceRGB(0), BlendDestinationRGB(0), BlendSourceAlpha(0), BlendDestinationAlpha(0),
-		Blend(0), ColorMask(0), CullFaceMode(GL_BACK), CullFace(false), DepthFunc(GL_LESS), DepthMask(true),
-		DepthTest(false), FrameBufferID(0), ProgramID(0), ActiveTexture(GL_TEXTURE0), ViewportX(0), ViewportY(0)
+		Driver(driver), TextureCache(STextureCache(this, Driver->getFeature().TextureUnit)), FrameBufferCount(0), BlendEquation(0), BlendSourceRGB(0),
+		BlendDestinationRGB(0), BlendSourceAlpha(0), BlendDestinationAlpha(0), Blend(0), BlendEquationInvalid(false), BlendFuncInvalid(false), BlendInvalid(false),
+		ColorMask(0), ColorMaskInvalid(false), CullFaceMode(GL_BACK), CullFace(false), DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), FrameBufferID(0),
+		ProgramID(0), ActiveTexture(GL_TEXTURE0), ViewportX(0), ViewportY(0)
 	{
 		const COpenGLCoreFeature& feature = Driver->getFeature();
 
@@ -183,8 +183,7 @@ public:
 		BlendSourceAlpha = new GLenum[FrameBufferCount];
 		BlendDestinationAlpha = new GLenum[FrameBufferCount];
 		Blend = new bool[FrameBufferCount];
-
-		ColorMask = new bool[FrameBufferCount][4];
+		ColorMask = new u8[FrameBufferCount];
 
 		// Initial OpenGL values from specification.
 
@@ -203,9 +202,7 @@ public:
 			BlendDestinationAlpha[i] = GL_ZERO;
 
 			Blend[i] = false;
-
-			for (u32 j = 0; j < 4; ++j)
-				ColorMask[i][j] = true;
+			ColorMask[i] = ECP_ALL;
 		}
 
 		glBlendFunc(GL_ONE, GL_ZERO);
@@ -258,12 +255,14 @@ public:
 
 	void setBlendEquation(GLenum mode)
 	{
-		if (BlendEquation[0] != mode)
+		if (BlendEquation[0] != mode || BlendEquationInvalid)
 		{
 			Driver->irrGlBlendEquation(mode);
 
 			for (GLuint i = 0; i < FrameBufferCount; ++i)
 				BlendEquation[i] = mode;
+
+			BlendEquationInvalid = false;
 		}
 	}
 
@@ -274,13 +273,15 @@ public:
 			Driver->irrGlBlendEquationIndexed(index, mode);
 
 			BlendEquation[index] = mode;
+			BlendEquationInvalid = true;
 		}
 	}
 
 	void setBlendFunc(GLenum source, GLenum destination)
 	{
 		if (BlendSourceRGB[0] != source || BlendDestinationRGB[0] != destination ||
-			BlendSourceAlpha[0] != source || BlendDestinationAlpha[0] != destination)
+			BlendSourceAlpha[0] != source || BlendDestinationAlpha[0] != destination ||
+			BlendFuncInvalid)
 		{
 			glBlendFunc(source, destination);
 
@@ -291,6 +292,8 @@ public:
 				BlendSourceAlpha[i] = source;
 				BlendDestinationAlpha[i] = destination;
 			}
+
+			BlendFuncInvalid = false;
 		}
 	}
 
@@ -299,7 +302,8 @@ public:
 		if (sourceRGB != sourceAlpha || destinationRGB != destinationAlpha)
 		{
 			if (BlendSourceRGB[0] != sourceRGB || BlendDestinationRGB[0] != destinationRGB ||
-				BlendSourceAlpha[0] != sourceAlpha || BlendDestinationAlpha[0] != destinationAlpha)
+				BlendSourceAlpha[0] != sourceAlpha || BlendDestinationAlpha[0] != destinationAlpha ||
+				BlendFuncInvalid)
 			{
 				Driver->irrGlBlendFuncSeparate(sourceRGB, destinationRGB, sourceAlpha, destinationAlpha);
 
@@ -310,6 +314,8 @@ public:
 					BlendSourceAlpha[i] = sourceAlpha;
 					BlendDestinationAlpha[i] = destinationAlpha;
 				}
+
+				BlendFuncInvalid = false;
 			}
 		}
 		else
@@ -329,6 +335,7 @@ public:
 			BlendDestinationRGB[index] = destination;
 			BlendSourceAlpha[index] = source;
 			BlendDestinationAlpha[index] = destination;
+			BlendFuncInvalid = true;
 		}
 	}
 
@@ -345,6 +352,7 @@ public:
 				BlendDestinationRGB[index] = destinationRGB;
 				BlendSourceAlpha[index] = sourceAlpha;
 				BlendDestinationAlpha[index] = destinationAlpha;
+				BlendFuncInvalid = true;
 			}
 		}
 		else
@@ -355,7 +363,7 @@ public:
 
 	void setBlend(bool enable)
 	{
-		if (Blend[0] != enable)
+		if (Blend[0] != enable || BlendInvalid)
 		{
 			if (enable)
 				glEnable(GL_BLEND);
@@ -364,6 +372,8 @@ public:
 
 			for (GLuint i = 0; i < FrameBufferCount; ++i)
 				Blend[i] = enable;
+
+			BlendInvalid = false;
 		}
 	}
 
@@ -377,37 +387,38 @@ public:
 				Driver->irrGlDisableIndexed(GL_BLEND, index);
 
 			Blend[index] = enable;
+			BlendInvalid = true;
 		}
 	}
 
 	// Color Mask.
 
-	void setColorMask(bool red, bool green, bool blue, bool alpha)
+	void getColorMask(u8& mask)
 	{
-		if (ColorMask[0][0] != red || ColorMask[0][1] != green || ColorMask[0][2] != blue || ColorMask[0][3] != alpha)
+		mask = ColorMask[0];
+	}
+
+	void setColorMask(u8 mask)
+	{
+		if (ColorMask[0] != mask || ColorMaskInvalid)
 		{
-			glColorMask(red, green, blue, alpha);
+			glColorMask((mask & ECP_RED) ? GL_TRUE : GL_FALSE, (mask & ECP_GREEN) ? GL_TRUE : GL_FALSE, (mask & ECP_BLUE) ? GL_TRUE : GL_FALSE, (mask & ECP_ALPHA) ? GL_TRUE : GL_FALSE);
 
 			for (GLuint i = 0; i < FrameBufferCount; ++i)
-			{
-				ColorMask[i][0] = red;
-				ColorMask[i][1] = green;
-				ColorMask[i][2] = blue;
-				ColorMask[i][3] = alpha;
-			}
+				ColorMask[i] = mask;
+
+			ColorMaskInvalid = false;
 		}
 	}
 
-	void setColorMaskIndexed(GLuint index, bool red, bool green, bool blue, bool alpha)
+	void setColorMaskIndexed(GLuint index, u8 mask)
 	{
-		if (index < FrameBufferCount && (ColorMask[index][0] != red || ColorMask[index][1] != green || ColorMask[index][2] != blue || ColorMask[index][3] != alpha))
+		if (index < FrameBufferCount && ColorMask[index] != mask)
 		{
-			Driver->irrGlColorMaskIndexed(index, red, green, blue, alpha);
+			Driver->irrGlColorMaskIndexed(index, (mask & ECP_RED) ? GL_TRUE : GL_FALSE, (mask & ECP_GREEN) ? GL_TRUE : GL_FALSE, (mask & ECP_BLUE) ? GL_TRUE : GL_FALSE, (mask & ECP_ALPHA) ? GL_TRUE : GL_FALSE);
 
-			ColorMask[index][0] = red;
-			ColorMask[index][1] = green;
-			ColorMask[index][2] = blue;
-			ColorMask[index][3] = alpha;
+			ColorMask[index] = mask;
+			ColorMaskInvalid = true;
 		}
 	}
 
@@ -430,6 +441,7 @@ public:
 				glEnable(GL_CULL_FACE);
 			else
 				glDisable(GL_CULL_FACE);
+
 			CullFace = enable;
 		}
 	}
@@ -445,6 +457,11 @@ public:
 		}
 	}
 
+	void getDepthMask(bool& depth)
+	{
+		depth = DepthMask;
+	}
+
 	void setDepthMask(bool enable)
 	{
 		if (DepthMask != enable)
@@ -453,6 +470,7 @@ public:
 				glDepthMask(GL_TRUE);
 			else
 				glDepthMask(GL_FALSE);
+
 			DepthMask = enable;
 		}
 	}
@@ -465,6 +483,7 @@ public:
 				glEnable(GL_DEPTH_TEST);
 			else
 				glDisable(GL_DEPTH_TEST);
+
 			DepthTest = enable;
 		}
 	}
@@ -552,8 +571,13 @@ protected:
 	GLenum* BlendSourceAlpha;
 	GLenum* BlendDestinationAlpha;
 	bool* Blend;
+	bool BlendEquationInvalid;
+	bool BlendFuncInvalid;
+	bool BlendInvalid;
+	
 
-	bool(*ColorMask)[4];
+	u8* ColorMask;
+	bool ColorMaskInvalid;
 
 	GLenum CullFaceMode;
 	bool CullFace;
