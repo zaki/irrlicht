@@ -1081,10 +1081,10 @@ namespace scene
 
 		//! Get scene nodes by type.
 		/** \param type: Type of scene node to find (ESNT_ANY will return all child nodes).
-		\param outNodes: array to be filled with results.
-		\param start: Scene node to start from. All children of this scene
-		node are searched. If null is specified, the root scene node is
-		taken. */
+		\param outNodes: results will be added to this array (outNodes is not cleared).
+		\param start: Scene node to start from. This node and all children of this scene
+		node are checked (recursively, so also children of children, etc). If null is specified, 
+		the root scene node is taken as start-node. */
 		virtual void getSceneNodesFromType(ESCENE_NODE_TYPE type,
 				core::array<scene::ISceneNode*>& outNodes,
 				ISceneNode* start=0) = 0;
