@@ -262,8 +262,8 @@ namespace video
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) _IRR_OVERRIDE_;
 
-		//! checks if an OpenGL error has happened and prints it
-		bool testGLError();
+		//! checks if an OpenGL error has happened and prints it (+ some internal code which is usually the line number)
+		bool testGLError(int code=0);
 
 		//! Set/unset a clipping plane.
 		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false) _IRR_OVERRIDE_;

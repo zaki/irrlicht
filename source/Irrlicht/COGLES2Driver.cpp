@@ -163,7 +163,7 @@ COGLES2Driver::~COGLES2Driver()
 		// This fixes problems with intermediate changes to the material during texture load.
 		ResetRenderStates = true;
 
-		testGLError();
+		testGLError(__LINE__);
 
 		return true;
 	}
@@ -509,7 +509,7 @@ COGLES2Driver::~COGLES2Driver()
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		return (!testGLError());
+		return (!testGLError(__LINE__));
 	}
 
 
@@ -574,7 +574,7 @@ COGLES2Driver::~COGLES2Driver()
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		return (!testGLError());
+		return (!testGLError(__LINE__));
 	}
 
 
@@ -1095,7 +1095,7 @@ COGLES2Driver::~COGLES2Driver()
 		if (clipRect)
 			glDisable(GL_SCISSOR_TEST);
 
-		testGLError();
+		testGLError(__LINE__);
 	}
 
 	void COGLES2Driver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
@@ -1395,7 +1395,7 @@ COGLES2Driver::~COGLES2Driver()
 		if (clipRect)
 			glDisable(GL_SCISSOR_TEST);
 
-		testGLError();
+		testGLError(__LINE__);
 	}
 
 
@@ -1587,7 +1587,7 @@ COGLES2Driver::~COGLES2Driver()
 	}
 
 	//! prints error if an error happened.
-	bool COGLES2Driver::testGLError()
+	bool COGLES2Driver::testGLError(int code)
 	{
 #ifdef _DEBUG
 		GLenum g = glGetError();
@@ -1596,16 +1596,16 @@ COGLES2Driver::~COGLES2Driver()
 			case GL_NO_ERROR:
 				return false;
 			case GL_INVALID_ENUM:
-				os::Printer::log("GL_INVALID_ENUM", ELL_ERROR);
+				os::Printer::log("GL_INVALID_ENUM", core::stringc(code).c_str(), ELL_ERROR);
 				break;
 			case GL_INVALID_VALUE:
-				os::Printer::log("GL_INVALID_VALUE", ELL_ERROR);
+				os::Printer::log("GL_INVALID_VALUE", core::stringc(code).c_str(), ELL_ERROR);
 				break;
 			case GL_INVALID_OPERATION:
-				os::Printer::log("GL_INVALID_OPERATION", ELL_ERROR);
+				os::Printer::log("GL_INVALID_OPERATION", core::stringc(code).c_str(), ELL_ERROR);
 				break;
 			case GL_OUT_OF_MEMORY:
-				os::Printer::log("GL_OUT_OF_MEMORY", ELL_ERROR);
+				os::Printer::log("GL_OUT_OF_MEMORY", core::stringc(code).c_str(), ELL_ERROR);
 				break;
 		};
 		return true;
@@ -2526,7 +2526,7 @@ COGLES2Driver::~COGLES2Driver()
 		}
 
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, internalformat, type, pixels);
-		testGLError();
+		testGLError(__LINE__);
 
 		// opengl images are horizontally flipped, so we have to fix that here.
 		const s32 pitch = newImage->getPitch();
@@ -2542,12 +2542,12 @@ COGLES2Driver::~COGLES2Driver()
 		}
 		delete [] tmpBuffer;
 
-		if (testGLError())
+		if (testGLError(__LINE__))
 		{
 			newImage->drop();
 			return 0;
 		}
-		testGLError();
+		testGLError(__LINE__);
 		return newImage;
 	}
 
