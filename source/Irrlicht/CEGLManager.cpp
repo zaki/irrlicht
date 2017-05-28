@@ -35,12 +35,12 @@ CEGLManager::~CEGLManager()
 
 bool CEGLManager::initialize(const SIrrlichtCreationParameters& params, const SExposedVideoData& data)
 {
-	if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
-        return true;
-
 	// store new data
 	Params=params;
 	Data=data;
+
+	if (EglWindow != 0 && EglDisplay != EGL_NO_DISPLAY)
+        return true;
 
 	// Window is depend on platform.
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
