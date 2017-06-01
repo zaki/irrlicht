@@ -78,9 +78,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 	const u32 WORD_BUFFER_LENGTH = 512;
 
-	core::array<core::vector3df> vertexBuffer;
-	core::array<core::vector3df> normalsBuffer;
-	core::array<core::vector2df> textureCoordBuffer;
+	core::array<core::vector3df, core::irrAllocatorFast<core::vector3df> > vertexBuffer(1000);
+	core::array<core::vector3df, core::irrAllocatorFast<core::vector3df> > normalsBuffer(1000);
+	core::array<core::vector2df, core::irrAllocatorFast<core::vector2df> > textureCoordBuffer(1000);
 
 	SObjMtl * currMtl = new SObjMtl();
 	Materials.push_back(currMtl);
