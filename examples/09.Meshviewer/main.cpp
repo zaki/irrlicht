@@ -220,7 +220,9 @@ void loadModel(const c8* fn)
 		return;
 	}
 
+	u32 then = Device->getTimer()->getRealTime();
 	scene::IAnimatedMesh* m = Device->getSceneManager()->getMesh( filename.c_str() );
+	Device->getLogger()->log("Loading time (ms): ", core::stringc(Device->getTimer()->getRealTime() - then).c_str());
 
 	if (!m)
 	{
@@ -323,7 +325,7 @@ void createToolBox()
 }
 
 /*
-Function updateToolBox() is called each frame to update dynamic information in 
+Function updateToolBox() is called each frame to update dynamic information in
 the toolbox.
 */
 void updateToolBox()
@@ -354,8 +356,8 @@ void updateToolBox()
 
 void onKillFocus()
 {
-	// Avoid that the FPS-camera continues moving when the user presses alt-tab while 
-	// moving the camera. 
+	// Avoid that the FPS-camera continues moving when the user presses alt-tab while
+	// moving the camera.
 	const core::list<scene::ISceneNodeAnimator*>& animators = Camera[1]->getAnimators();
 	core::list<irr::scene::ISceneNodeAnimator*>::ConstIterator iter = animators.begin();
 	while ( iter != animators.end() )
@@ -524,11 +526,11 @@ public:
 	*/
 	bool OnKeyUp(irr::EKEY_CODE keyCode)
 	{
-		// Don't handle keys if we have a modal dialog open as it would lead 
+		// Don't handle keys if we have a modal dialog open as it would lead
 		// to unexpected application behaviour for the user.
 		if ( hasModalDialog() )
 			return false;
-		
+
 		if (keyCode == irr::KEY_ESCAPE)
 		{
 			if (Device)
