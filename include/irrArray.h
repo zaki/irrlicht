@@ -126,9 +126,7 @@ public:
 
 
 	//! Insert item into array at specified position.
-	/** Please use this only if you know what you are doing (possible
-	performance loss). The preferred method of adding elements should be
-	push_back().
+	/**
 	\param element: Element to be inserted
 	\param index: Where position to insert the new element. */
 	void insert(const T& element, u32 index=0)

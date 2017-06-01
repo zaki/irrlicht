@@ -108,12 +108,12 @@ public:
 #define DEBUG_CLIENTBLOCK new( _CLIENT_BLOCK, __FILE__, __LINE__)
 #endif
 
-//! defines an allocation strategy
+//! defines an allocation strategy (used only by irr::array so far)
 enum eAllocStrategy
 {
-	ALLOC_STRATEGY_SAFE    = 0,
-	ALLOC_STRATEGY_DOUBLE  = 1,
-	ALLOC_STRATEGY_SQRT    = 2
+	ALLOC_STRATEGY_SAFE    = 0,	// increase size by 1
+	ALLOC_STRATEGY_DOUBLE  = 1,	// increase at least 6, double size when under 500 elements, otherwise increase by 1/4th of number elements
+	ALLOC_STRATEGY_SQRT    = 2	// not implemented
 };
 
 
