@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Slightly simplified ALLOC_STRATEGY_DOUBLE in arrays
 - Add alternavive BoundingBox calculation for BillboardSceneNode which can take in a camera node. Thx @Seven and @JacKDuRdEn for bugreports.
 - FPS camera now supports keyboard rotation.
 - Base FPS-camera movement on last position of mouse instead of always center (works better on platforms where cursor-placement is not allowed)

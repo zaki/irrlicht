@@ -145,8 +145,7 @@ public:
 			switch ( strategy )
 			{
 				case ALLOC_STRATEGY_DOUBLE:
-					newAlloc = used + 1 + (allocated < 500 ?
-							(allocated < 5 ? 5 : used) : used >> 2);
+					newAlloc = used + 5 + (allocated < 500 ? used : used >> 2);
 					break;
 				default:
 				case ALLOC_STRATEGY_SAFE:
