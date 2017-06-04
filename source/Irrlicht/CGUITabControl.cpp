@@ -580,7 +580,7 @@ void CGUITabControl::draw()
 
 	core::rect<s32> frameRect(AbsoluteRect);
 
-	// some empty background as placesholder when there are no tabs
+	// some empty background as placeholder when there are no tabs
 	if (Tabs.empty())
 		driver->draw2DRectangle(skin->getColor(EGDC_3D_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
 
@@ -688,7 +688,6 @@ void CGUITabControl::draw()
 		}
 		else
 		{
-
 			frameRect.UpperLeftCorner.X = left-2;
 			frameRect.LowerRightCorner.X = right+2;
 			frameRect.LowerRightCorner.Y += 2;
@@ -712,7 +711,7 @@ void CGUITabControl::draw()
 	}
 	else
 	{
-		// No active tab (I guess only happens when there are no tabs?)
+		// No active tab
 		// Draw a line separating button bar from tab area
 		tr.UpperLeftCorner.X = AbsoluteRect.UpperLeftCorner.X;
 		tr.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X;
