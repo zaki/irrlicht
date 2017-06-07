@@ -1798,11 +1798,7 @@ COGLES2Driver::~COGLES2Driver()
 		}
 
 		// Color Mask
-		CacheHandler->setColorMask(
-			(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
-			(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
-			(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
-			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+		CacheHandler->setColorMask(material.ColorMask);
 
 		// Blend Equation
 		if (material.BlendOperation == EBO_NONE)
@@ -2122,7 +2118,7 @@ COGLES2Driver::~COGLES2Driver()
 
 		if (!(debugDataVisible & (scene::EDS_SKELETON|scene::EDS_MESH_WIRE_OVERLAY)))
 		{
-			CacheHandler->setColorMask(false, false, false, false);
+			CacheHandler->setColorMask(ECP_NONE);
 			glEnable(GL_STENCIL_TEST);
 		}
 
@@ -2191,7 +2187,7 @@ COGLES2Driver::~COGLES2Driver()
 		setRenderStates2DMode(true, false, false);
 
 		CacheHandler->setDepthMask(false);
-		CacheHandler->setColorMask(true, true, true, true);
+		CacheHandler->setColorMask(ECP_ALL);
 
 		CacheHandler->setBlend(true);
 		CacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2447,10 +2443,15 @@ COGLES2Driver::~COGLES2Driver()
 	void COGLES2Driver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 	{
 		GLbitfield mask = 0;
+		u8 colorMask = 0;
+		bool depthMask = false;
+
+		CacheHandler->getColorMask(colorMask);
+		CacheHandler->getDepthMask(depthMask);
 
 		if (flag & ECBF_COLOR)
 		{
-			CacheHandler->setColorMask(true, true, true, true);
+			CacheHandler->setColorMask(ECP_ALL);
 
 			const f32 inv = 1.0f / 255.0f;
 			glClearColor(color.getRed() * inv, color.getGreen() * inv,
@@ -2474,6 +2475,9 @@ COGLES2Driver::~COGLES2Driver()
 
 		if (mask)
 			glClear(mask);
+
+		CacheHandler->setColorMask(colorMask);
+		CacheHandler->setDepthMask(depthMask);
 	}
 
 

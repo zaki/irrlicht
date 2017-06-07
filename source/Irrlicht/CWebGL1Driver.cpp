@@ -696,7 +696,7 @@ void CWebGL1Driver::drawStencilShadow(bool clearStencilBuffer,
 	lockRenderStateMode();
 
 	CacheHandler->setDepthMask(false);
-	CacheHandler->setColorMask(true, true, true, true);
+	CacheHandler->setColorMask(ECP_ALL);
 
 	CacheHandler->setBlend(true);
 	CacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

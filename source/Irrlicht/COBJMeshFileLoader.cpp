@@ -78,9 +78,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 	const u32 WORD_BUFFER_LENGTH = 512;
 
-	core::array<core::vector3df> vertexBuffer;
-	core::array<core::vector3df> normalsBuffer;
-	core::array<core::vector2df> textureCoordBuffer;
+	core::array<core::vector3df, core::irrAllocatorFast<core::vector3df> > vertexBuffer(1000);
+	core::array<core::vector3df, core::irrAllocatorFast<core::vector3df> > normalsBuffer(1000);
+	core::array<core::vector2df, core::irrAllocatorFast<core::vector2df> > textureCoordBuffer(1000);
 
 	SObjMtl * currMtl = new SObjMtl();
 	Materials.push_back(currMtl);
@@ -101,6 +101,10 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	bool useGroups = !SceneManager->getParameters()->getAttributeAsBool(OBJ_LOADER_IGNORE_GROUPS);
 	bool useMaterials = !SceneManager->getParameters()->getAttributeAsBool(OBJ_LOADER_IGNORE_MATERIAL_FILES);
 	irr::u32 lineNr = 1;	// only counts non-empty lines, still useful in debugging to locate errors
+	core::array<int> faceCorners;
+	faceCorners.reallocate(32); // should be large enough
+	const core::stringc TAG_OFF = "off";
+
 	while(bufPtr != bufEnd)
 	{
 		switch(bufPtr[0])
@@ -173,7 +177,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 #ifdef _IRR_DEBUG_OBJ_LOADER_
 	os::Printer::log("Loaded smoothing group start",smooth, ELL_DEBUG);
 #endif
-				if (core::stringc("off")==smooth)
+				if (TAG_OFF==smooth)
 					smoothingGroup=0;
 				else
 					smoothingGroup=core::strtoul10(smooth);
@@ -215,8 +219,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			const c8* linePtr = wordBuffer.c_str();
 			const c8* const endPtr = linePtr+wordBuffer.size();
 
-			core::array<int> faceCorners;
-			faceCorners.reallocate(32); // should be large enough
+			faceCorners.set_used(0); // fast clear
 
 			// read in all vertices
 			linePtr = goNextWord(linePtr, endPtr);
@@ -279,8 +282,6 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				currMtl->Meshbuffer->Indices.push_back( faceCorners[i] );
 				currMtl->Meshbuffer->Indices.push_back( faceCorners[0] );
 			}
-			faceCorners.set_used(0); // fast clear
-			faceCorners.reallocate(32);
 		}
 		break;
 

@@ -22,12 +22,12 @@ class ITriangleSelector;
 class IMeshBuffer;
 
 //! Additional information about the triangle arrays returned by ITriangleSelector::getTriangles
-/** ITriangleSelector are free to fill out this information fully, partly or ignore it. 
+/** ITriangleSelector are free to fill out this information fully, partly or ignore it.
     Usually they will try to fill it when they can and set values to 0 otherwise.
 */
 struct SCollisionTriangleRange
 {
-	SCollisionTriangleRange() 
+	SCollisionTriangleRange()
 		: RangeStart(0), RangeSize(0)
 		, Selector(0), SceneNode(0)
 		, MeshBuffer(0), MaterialIndex(0)
@@ -42,10 +42,10 @@ struct SCollisionTriangleRange
 		return triangleIndex >= RangeStart && triangleIndex < RangeStart+RangeSize;
 	}
 
-	//! First index in the array for which this struct is valid
+	//! First index in the returned triangle array for which this struct is valid
 	irr::u32 RangeStart;
 
-	//! Number of elements in the array for which this struct is valid (starting with RangeStart)
+	//! Number of elements in the returned triangle array for which this struct is valid (starting with RangeStart)
 	irr::u32 RangeSize;
 
 	//! Real selector which contained those triangles (useful when working with MetaTriangleSelector)
@@ -89,17 +89,17 @@ public:
 	into the array.
 	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
-	down into an ellipsoid space.  
-	\param useNodeTransform When the selector has a node then transform the 
-	triangles by that node's transformation matrix.	
-	\param outTriangleInfo When a pointer to an array is passed then that 
+	down into an ellipsoid space.
+	\param useNodeTransform When the selector has a node then transform the
+	triangles by that node's transformation matrix.
+	\param outTriangleInfo When a pointer to an array is passed then that
 	array is filled with additional information about the returned triangles.
-	One element of SCollisionTriangleRange added for each range of triangles which 
-	has distinguishable information. For example one range per meshbuffer. 
+	One element of SCollisionTriangleRange added for each range of triangles which
+	has distinguishable information. For example one range per meshbuffer.
 	*/
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::matrix4* transform=0, 
-		bool useNodeTransform=true, 
+		s32& outTriangleCount, const core::matrix4* transform=0,
+		bool useNodeTransform=true,
 		irr::core::array<SCollisionTriangleRange>* outTriangleInfo=0) const = 0;
 
 	//! Gets the triangles for one associated node which may lie within a specific bounding box.
@@ -120,12 +120,12 @@ public:
 	will be written into the array.
 	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
-	down into an ellipsoid space.  
-	\param useNodeTransform When the selector has a node then transform the 
-	triangles by that node's transformation matrix. 
-	\param outTriangleInfo When a pointer to an array is passed then that 
+	down into an ellipsoid space.
+	\param useNodeTransform When the selector has a node then transform the
+	triangles by that node's transformation matrix.
+	\param outTriangleInfo When a pointer to an array is passed then that
 	array is filled with additional information about the returned triangles.
-	One element of SCollisionTriangleRange added for each range of triangles which 
+	One element of SCollisionTriangleRange added for each range of triangles which
 	has distinguishable information. For example one range per meshbuffer. */
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::aabbox3d<f32>& box,
@@ -150,12 +150,12 @@ public:
 	will be written into the array.
 	\param transform Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
-	down into an ellipsoid space. 
-	\param useNodeTransform When the selector has a node then transform the 
+	down into an ellipsoid space.
+	\param useNodeTransform When the selector has a node then transform the
 	triangles by that node's transformation matrix.
-	\param outTriangleInfo When a pointer to an array is passed then that 
+	\param outTriangleInfo When a pointer to an array is passed then that
 	array is filled with additional information about the returned triangles.
-	One element of SCollisionTriangleRange added for each range of triangles which 
+	One element of SCollisionTriangleRange added for each range of triangles which
 	has distinguishable information. For example one range per meshbuffer. */
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
@@ -179,7 +179,7 @@ public:
 
 	//! Get scene node associated with a given triangle.
 	/**	With CMetaTriangleSelector-selectors it's possible to find out a node
-	belonging to a certain triangle index. 
+	belonging to a certain triangle index.
 	NOTE: triangleIndex has nothing to do with the order of triangles returned by getTriangles functions!
 	So you can _not_ use this function to find out anything about to which node returned triangles belong.
 	Use STriangleCollisionInfo struct for that.

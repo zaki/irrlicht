@@ -243,7 +243,7 @@ namespace core
 
 	//! returns if a equals b, taking possible rounding errors into account
 	template <class T>
-	inline T equals(const T a, const T b, const T tolerance = roundingError<T>()) 
+	inline bool equals(const T a, const T b, const T tolerance = roundingError<T>()) 
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
