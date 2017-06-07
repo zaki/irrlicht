@@ -1474,7 +1474,7 @@ void COGLES1Driver::setRenderStates3DMode()
 		// Reset Texture Stages
 		CacheHandler->setBlend(false);
 		glDisable(GL_ALPHA_TEST);
-		CacheHandler->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		CacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// switch back the matrices
 		glMatrixMode(GL_MODELVIEW);

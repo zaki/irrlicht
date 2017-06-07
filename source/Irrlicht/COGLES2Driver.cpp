@@ -1684,7 +1684,7 @@ COGLES2Driver::~COGLES2Driver()
 		{
 			// Reset Texture Stages
 			CacheHandler->setBlend(false);
-			CacheHandler->setBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			CacheHandler->setBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			ResetRenderStates = true;
 		}
