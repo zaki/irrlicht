@@ -1885,6 +1885,8 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end, SColor color)
 {
+	// TODO: It's not pixel-exact. Reason is the way OpenGL handles line-drawing (search the web for "diamond exit rule").
+
 	if (start==end)
 		drawPixel(start.X, start.Y, color);
 	else

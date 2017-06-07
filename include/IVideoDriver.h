@@ -966,8 +966,11 @@ namespace video
 		virtual void draw2DRectangleOutline(const core::recti& pos,
 				SColor color=SColor(255,255,255,255)) =0;
 
-		//! Draws a 2d line. Both start and end will be included in coloring.
-		/** \param start Screen coordinates of the start of the line
+		//! Draws a 2d line. 
+		/** In theory both start and end will be included in coloring.
+		BUG: Currently hardware drivers (d3d/opengl) ignore the last pixel
+		(they use the so called "diamond exit rule" for drawing lines).
+		\param start Screen coordinates of the start of the line
 		in pixels.
 		\param end Screen coordinates of the start of the line in
 		pixels.
