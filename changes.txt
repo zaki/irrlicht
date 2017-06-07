@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Lets the BSP loader find textures inserted with relative paths. Thx@ curaga for patch
 - Slightly simplified ALLOC_STRATEGY_DOUBLE in arrays
 - Add alternavive BoundingBox calculation for BillboardSceneNode which can take in a camera node. Thx @Seven and @JacKDuRdEn for bugreports.
 - FPS camera now supports keyboard rotation.
