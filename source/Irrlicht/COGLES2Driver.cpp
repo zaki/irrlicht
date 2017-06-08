@@ -1766,8 +1766,7 @@ COGLES2Driver::~COGLES2Driver()
 		}
 
 		// ZWrite
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || (material.BlendOperation == EBO_NONE &&
-				!MaterialRenderers[material.MaterialType].Renderer->isTransparent())))
+		if (getWriteZBuffer(material))
 		{
 			CacheHandler->setDepthMask(true);
 		}
