@@ -6,7 +6,7 @@ namespace irr
 namespace video
 {
 
-//! Enumeration for all vertex attibutes there are.
+//! Enumeration for all vertex attributes there are.
 enum E_VERTEX_ATTRIBUTES
 {
 	EVA_POSITION = 0,
