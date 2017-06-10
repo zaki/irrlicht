@@ -23,8 +23,8 @@ class COpenGLCoreCacheHandler
 	class STextureCache
 	{
 	public:
-		STextureCache(COpenGLCoreCacheHandler* cacheHandler, u32 textureCount) :
-			CacheHandler(cacheHandler), DriverType(cacheHandler->getDriverType()), TextureCount(textureCount)
+		STextureCache(COpenGLCoreCacheHandler& cacheHandler, E_DRIVER_TYPE driverType, u32 textureCount) :
+			CacheHandler(cacheHandler), DriverType(driverType), TextureCount(textureCount)
 		{
 			for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 			{
@@ -61,7 +61,7 @@ class COpenGLCoreCacheHandler
 
 			if (index < MATERIAL_MAX_TEXTURES && index < TextureCount)
 			{
-				CacheHandler->setActiveTexture(GL_TEXTURE0 + index);
+				CacheHandler.setActiveTexture(GL_TEXTURE0 + index);
 
 				const TOpenGLTexture* prevTexture = Texture[index];
 
@@ -158,7 +158,7 @@ class COpenGLCoreCacheHandler
 		}
 
 	private:
-		COpenGLCoreCacheHandler* CacheHandler;
+		COpenGLCoreCacheHandler& CacheHandler;
 
 		E_DRIVER_TYPE DriverType;
 
@@ -168,7 +168,10 @@ class COpenGLCoreCacheHandler
 
 public:
 	COpenGLCoreCacheHandler(TOpenGLDriver* driver) :
-		Driver(driver), TextureCache(STextureCache(this, Driver->getFeature().TextureUnit)), FrameBufferCount(0), BlendEquation(0), BlendSourceRGB(0),
+		Driver(driver), 
+#pragma warning(suppress:4355)	// Warning: "'this' : used in base member initializer list. ". It's OK, we don't use the reference in STextureCache constructor.
+		TextureCache(STextureCache(*this, driver->getDriverType(), driver->getFeature().TextureUnit)), 
+		FrameBufferCount(0), BlendEquation(0), BlendSourceRGB(0),
 		BlendDestinationRGB(0), BlendSourceAlpha(0), BlendDestinationAlpha(0), Blend(0), BlendEquationInvalid(false), BlendFuncInvalid(false), BlendInvalid(false),
 		ColorMask(0), ColorMaskInvalid(false), CullFaceMode(GL_BACK), CullFace(false), DepthFunc(GL_LESS), DepthMask(true), DepthTest(false), FrameBufferID(0),
 		ProgramID(0), ActiveTexture(GL_TEXTURE0), ViewportX(0), ViewportY(0)
