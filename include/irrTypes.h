@@ -7,6 +7,10 @@
 
 #include "IrrCompileConfig.h"
 
+#if __GNUC__ &&  __STDC_VERSION__ >= 199901L	// Should at least be available since C99
+	#include <stdint.h> // needed by __WORDSIZE below
+#endif
+
 namespace irr
 {
 
