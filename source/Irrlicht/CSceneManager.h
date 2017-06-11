@@ -42,7 +42,7 @@ namespace scene
 		virtual ~CSceneManager();
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
-		virtual IAnimatedMesh* getMesh(const io::path& filename) _IRR_OVERRIDE_;
+		virtual IAnimatedMesh* getMesh(const io::path& filename, const io::path& alternativeCacheName) _IRR_OVERRIDE_;
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 		virtual IAnimatedMesh* getMesh(io::IReadFile* file) _IRR_OVERRIDE_;
