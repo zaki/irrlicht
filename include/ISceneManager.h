@@ -379,10 +379,11 @@ namespace scene
 		 * If you would like to implement and add your own file format loader to Irrlicht,
 		 * see addExternalMeshLoader().
 		 * \param filename: Filename of the mesh to load.
+		 * \param alternativeCacheName: In case you want to have the mesh under another name in the cache (to create real copies)
 		 * \return Null if failed, otherwise pointer to the mesh.
 		 * This pointer should not be dropped. See IReferenceCounted::drop() for more information.
 		 **/
-		virtual IAnimatedMesh* getMesh(const io::path& filename) = 0;
+		virtual IAnimatedMesh* getMesh(const io::path& filename, const io::path& alternativeCacheName=io::path("")) = 0;
 
 		//! Get pointer to an animateable mesh. Loads the file if not loaded already.
 		/** Works just as getMesh(const char* filename). If you want to
