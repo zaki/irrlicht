@@ -27,7 +27,7 @@ CMainMenu::CMainMenu()
 
 bool CMainMenu::run()
 {
-	MenuDevice = createDevice(driverType,
+	MenuDevice = createDevice(video::EDT_BURNINGSVIDEO,
 		core::dimension2d<u32>(512, 384), 16, false, false, false, this);
 
 	const io::path mediaPath = getExampleMediaPath();
