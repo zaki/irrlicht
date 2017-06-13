@@ -40,13 +40,9 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 		// create default key map
 		KeyMap.push_back(SKeyMap(EKA_MOVE_FORWARD, irr::KEY_UP));
 		KeyMap.push_back(SKeyMap(EKA_MOVE_BACKWARD, irr::KEY_DOWN));
-		KeyMap.push_back(SKeyMap(EKA_MOVE_FORWARD, irr::KEY_KEY_W));
-		KeyMap.push_back(SKeyMap(EKA_MOVE_BACKWARD, irr::KEY_KEY_S));
-		KeyMap.push_back(SKeyMap(EKA_STRAFE_LEFT, irr::KEY_KEY_A));
-		KeyMap.push_back(SKeyMap(EKA_STRAFE_RIGHT, irr::KEY_KEY_D));
+		KeyMap.push_back(SKeyMap(EKA_STRAFE_LEFT, irr::KEY_LEFT));
+		KeyMap.push_back(SKeyMap(EKA_STRAFE_RIGHT, irr::KEY_RIGHT));
 		KeyMap.push_back(SKeyMap(EKA_JUMP_UP, irr::KEY_KEY_J));
-		KeyMap.push_back(SKeyMap(EKA_ROTATE_LEFT, irr::KEY_LEFT));
-		KeyMap.push_back(SKeyMap(EKA_ROTATE_RIGHT, irr::KEY_RIGHT));
 	}
 	else
 	{

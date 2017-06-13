@@ -289,7 +289,8 @@ void Q3Player::create ( IrrlichtDevice *device, IQ3LevelMesh* mesh, ISceneNode *
 
 	ICameraSceneNode* camera = 0;
 
-	SKeyMap keyMap[10];
+	core::array<SKeyMap> keyMap;
+	keyMap.set_used(12);
 	keyMap[0].Action = EKA_MOVE_FORWARD;
 	keyMap[0].KeyCode = KEY_UP;
 	keyMap[1].Action = EKA_MOVE_FORWARD;
@@ -316,7 +317,13 @@ void Q3Player::create ( IrrlichtDevice *device, IQ3LevelMesh* mesh, ISceneNode *
 	keyMap[9].Action = EKA_CROUCH;
 	keyMap[9].KeyCode = KEY_KEY_C;
 
-	camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 0.6f, -1, keyMap, 10, false, 600.f);
+	keyMap[10].Action = EKA_ROTATE_LEFT;
+	keyMap[10].KeyCode = KEY_KEY_Q;
+
+	keyMap[11].Action = EKA_ROTATE_RIGHT;
+	keyMap[11].KeyCode = KEY_KEY_E;
+
+	camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 0.6f, -1, keyMap.pointer(), keyMap.size(), false, 600.f);
 	camera->setName ( "First Person Camera" );
 	//camera->setFOV ( 100.f * core::DEGTORAD );
 	camera->setFarValue( 20000.f );
