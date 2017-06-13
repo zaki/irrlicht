@@ -14,9 +14,16 @@ public:
 
 	CMainMenu();
 
-	bool run(bool& outFullscreen, bool& outMusic, bool& outShadows,
-		bool& outAdditive, bool &outVSync, bool& outAA,
-		video::E_DRIVER_TYPE& outDriver);
+	bool run();
+
+	bool getFullscreen() const { return fullscreen; }
+	bool getMusic() const { return music; }
+	bool getShadows() const { return shadows; }
+	bool getAdditive() const { return additive; }
+	bool getVSync() const { return vsync; }
+	bool getAntiAliasing() const { return aa; }
+	video::E_DRIVER_TYPE getDriverType() const { return driverType; }
+
 
 	virtual bool OnEvent(const SEvent& event);
 
@@ -35,6 +42,7 @@ private:
 	bool transparent;
 	bool vsync;
 	bool aa;
+	video::E_DRIVER_TYPE driverType;
 
 	scene::IAnimatedMesh* quakeLevel;
 	scene::ISceneNode* lightMapNode;

@@ -2,26 +2,31 @@
 // This file is not documented.
 
 #include "CMainMenu.h"
+#include "CDemo.h"
 #include "exampleHelper.h"
 
 
 
 CMainMenu::CMainMenu()
-: startButton(0), MenuDevice(0), selected(2), start(false), fullscreen(true),
-	music(true), shadows(false), additive(false), transparent(true), vsync(false), aa(false)
+: startButton(0), MenuDevice(0), selected(0), start(false),	fullscreen(false),
+#if defined(USE_IRRKLANG) || defined(USE_SDL_MIXER)
+	music(true),
+#else
+	music(false),
+#endif
+	shadows(true), additive(false), transparent(true), vsync(true), aa(true),
+#ifndef _IRR_WINDOWS_
+	driverType(video::EDT_OPENGL)
+#else
+	driverType(video::EDT_DIRECT3D9)
+#endif
+	//driverType(video::EDT_BURNINGSVIDEO)
 {
 }
 
 
-bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
-			bool& outAdditive, bool& outVSync, bool& outAA,
-			video::E_DRIVER_TYPE& outDriver)
+bool CMainMenu::run()
 {
-	//video::E_DRIVER_TYPE driverType = video::EDT_DIRECT3D9;
-	//video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
-	video::E_DRIVER_TYPE driverType = video::EDT_BURNINGSVIDEO;
-	//video::E_DRIVER_TYPE driverType = video::EDT_SOFTWARE;
-
 	MenuDevice = createDevice(driverType,
 		core::dimension2d<u32>(512, 384), 16, false, false, false, this);
 
@@ -67,6 +72,14 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	box->addItem(L"Direct3D 9.0c");
 	box->addItem(L"Burning's Video 0.47");
 	box->addItem(L"Irrlicht Software Renderer 1.0");
+	switch (driverType )
+	{
+		case video::EDT_OPENGL:        selected = 0; break;
+		case video::EDT_DIRECT3D9:     selected = 1; break;
+		case video::EDT_BURNINGSVIDEO: selected = 2; break;
+		case video::EDT_SOFTWARE:      selected = 3; break;
+		default: break;
+	}
 	box->setSelected(selected);
 
 	// add button
@@ -245,19 +258,12 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 
 	MenuDevice->drop();
 
-	outFullscreen = fullscreen;
-	outMusic = music;
-	outShadows = shadows;
-	outAdditive = additive;
-	outVSync = vsync;
-	outAA = aa;
-
 	switch(selected)
 	{
-	case 0:	outDriver = video::EDT_OPENGL; break;
-	case 1:	outDriver = video::EDT_DIRECT3D9; break;
-	case 2:	outDriver = video::EDT_BURNINGSVIDEO; break;
-	case 3:	outDriver = video::EDT_SOFTWARE; break;
+	case 0:	driverType = video::EDT_OPENGL; break;
+	case 1:	driverType = video::EDT_DIRECT3D9; break;
+	case 2:	driverType = video::EDT_BURNINGSVIDEO; break;
+	case 3:	driverType = video::EDT_SOFTWARE; break;
 	}
 
 	return start;
