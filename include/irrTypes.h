@@ -7,8 +7,8 @@
 
 #include "IrrCompileConfig.h"
 
-#if __GNUC__ &&  __STDC_VERSION__ >= 199901L	// Should at least be available since C99
-	#include <stdint.h> // needed by __WORDSIZE below
+#if defined(__GNUC__)
+	#include <limits.h>	// for __WORDSIZE
 #endif
 
 namespace irr
@@ -76,8 +76,8 @@ typedef signed int		s32;
 /** This is a typedef for 64bit uint, it ensures portability of the engine. */
 #if defined(_MSC_VER) || ((__BORLANDC__ >= 0x530) && !defined(__STRICT_ANSI__))
 typedef unsigned __int64			u64;
-#elif __GNUC__
-#if __WORDSIZE == 64
+#elif defined(__GNUC__)
+#if defined(__WORDSIZE) && __WORDSIZE == 64
 typedef unsigned long int			u64;
 #else
 __extension__ typedef unsigned long long	u64;
@@ -90,8 +90,8 @@ typedef unsigned long long			u64;
 /** This is a typedef for 64bit int, it ensures portability of the engine. */
 #if defined(_MSC_VER) || ((__BORLANDC__ >= 0x530) && !defined(__STRICT_ANSI__))
 typedef __int64					s64;
-#elif __GNUC__
-#if __WORDSIZE == 64
+#elif defined(__GNUC__)
+#if defined(__WORDSIZE) && __WORDSIZE == 64
 typedef long int				s64;
 #else
 __extension__ typedef long long			s64;
