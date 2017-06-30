@@ -43,7 +43,7 @@ namespace video
 		\param depthStencil Depth or packed depth-stencil texture. This texture is used as depth
 		or depth-stencil buffer. */
 		virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) = 0;
-		
+
 		//! Set one texture.
 		void setTexture(ITexture* texture, ITexture* depthStencil)
 		{
@@ -58,17 +58,22 @@ namespace video
 		{
 			return DriverType;
 		}
-		
+
 	protected:
-	
+
 		//! Textures assigned to render target.
 		core::array<ITexture*> Texture;
-		
+
 		//! Depth or packed depth-stencil texture assigned to render target.
 		ITexture* DepthStencil;
 
 		//! Driver type of render target.
 		E_DRIVER_TYPE DriverType;
+
+	private:
+		// no copying (IReferenceCounted still allows that for reasons which take some time to work around)
+		IRenderTarget(const IRenderTarget&);
+		IRenderTarget& operator=(const IRenderTarget&);
 	};
 
 }
