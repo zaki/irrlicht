@@ -2655,7 +2655,6 @@ COGLES2Driver::~COGLES2Driver()
 	void COGLES2Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
 		GLenum& pixelType, void(**converter)(const void*, s32, void*))
 	{
-		internalFormat = GL_RGBA;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_UNSIGNED_BYTE;
 		*converter = 0;
@@ -2663,18 +2662,15 @@ COGLES2Driver::~COGLES2Driver()
 		switch (format)
 		{
 		case ECF_A1R5G5B5:
-			internalFormat = GL_RGBA;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_UNSIGNED_SHORT_5_5_5_1;
 			*converter = CColorConverter::convert_A1R5G5B5toR5G5B5A1;
 			break;
 		case ECF_R5G6B5:
-			internalFormat = GL_RGB;
 			pixelFormat = GL_RGB;
 			pixelType = GL_UNSIGNED_SHORT_5_6_5;
 			break;
 		case ECF_R8G8B8:
-			internalFormat = GL_RGB;
 			pixelFormat = GL_RGB;
 			pixelType = GL_UNSIGNED_BYTE;
 			break;
@@ -2683,12 +2679,10 @@ COGLES2Driver::~COGLES2Driver()
 				queryOpenGLFeature(COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888) ||
 				queryOpenGLFeature(COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888))
 			{
-				internalFormat = GL_BGRA;
 				pixelFormat = GL_BGRA;
 			}
 			else
 			{
-				internalFormat = GL_RGBA;
 				pixelFormat = GL_RGBA;
 				*converter = CColorConverter::convert_A8R8G8B8toA8B8G8R8;
 			}
@@ -2696,7 +2690,6 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 #ifdef GL_EXT_texture_compression_s3tc
 		case ECF_DXT1:
-			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 			break;
@@ -2704,7 +2697,6 @@ COGLES2Driver::~COGLES2Driver()
 #ifdef GL_EXT_texture_compression_s3tc
 		case ECF_DXT2:
 		case ECF_DXT3:
-			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 			break;
@@ -2712,76 +2704,65 @@ COGLES2Driver::~COGLES2Driver()
 #ifdef GL_EXT_texture_compression_s3tc
 		case ECF_DXT4:
 		case ECF_DXT5:
-			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 		case ECF_PVRTC_RGB2:
-			internalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
 			pixelFormat = GL_RGB;
 			pixelType = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 		case ECF_PVRTC_ARGB2:
-			internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 		case ECF_PVRTC_RGB4:
-			internalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
 			pixelFormat = GL_RGB;
 			pixelType = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 		case ECF_PVRTC_ARGB4:
-			internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc2
 		case ECF_PVRTC2_ARGB2:
-			internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
 			break;
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc2
 		case ECF_PVRTC2_ARGB4:
-			internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
 			break;
 #endif
 #ifdef GL_OES_compressed_ETC1_RGB8_texture
 		case ECF_ETC1:
-			internalFormat = GL_ETC1_RGB8_OES;
 			pixelFormat = GL_RGB;
 			pixelType = GL_ETC1_RGB8_OES;
 			break;
 #endif
 #ifdef GL_ES_VERSION_3_0 // TO-DO - fix when extension name will be available
 		case ECF_ETC2_RGB:
-			internalFormat = GL_COMPRESSED_RGB8_ETC2;
 			pixelFormat = GL_RGB;
 			pixelType = GL_COMPRESSED_RGB8_ETC2;
 			break;
 #endif
 #ifdef GL_ES_VERSION_3_0 // TO-DO - fix when extension name will be available
 		case ECF_ETC2_ARGB:
-			internalFormat = GL_COMPRESSED_RGBA8_ETC2_EAC;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_COMPRESSED_RGBA8_ETC2_EAC;
 			break;
 #endif
 		case ECF_D16:
-			internalFormat = GL_DEPTH_COMPONENT16;
 			pixelFormat = GL_DEPTH_COMPONENT;
 			pixelType = GL_UNSIGNED_SHORT;
 			break;
@@ -2789,7 +2770,6 @@ COGLES2Driver::~COGLES2Driver()
 #if defined(GL_OES_depth32)
 			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth32))
 			{
-				internalFormat = GL_DEPTH_COMPONENT32_OES;
 				pixelFormat = GL_DEPTH_COMPONENT;
 				pixelType = GL_UNSIGNED_INT;
 			}
@@ -2801,7 +2781,6 @@ COGLES2Driver::~COGLES2Driver()
 #ifdef GL_OES_packed_depth_stencil
 			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_packed_depth_stencil))
 			{
-				internalFormat = GL_DEPTH24_STENCIL8_OES;
 				pixelFormat = GL_DEPTH_STENCIL_OES;
 				pixelType = GL_UNSIGNED_INT_24_8_OES;
 			}
@@ -2843,6 +2822,12 @@ COGLES2Driver::~COGLES2Driver()
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
 			break;
 		}
+
+		// ES 2.0 says internalFormat must match pixelFormat (chapter 3.7.1 in Spec).
+		// Doesn't mention if "match" means "equal" or some other way of matching, but
+		// some bug on Emscripten and browsing discussions by others lead me to believe
+		// it means they have to be equal. Note that this was different in OpenGL.
+		internalFormat = pixelFormat;
 
 #ifdef _IRR_IOS_PLATFORM_
 		if (internalFormat == GL_BGRA)
