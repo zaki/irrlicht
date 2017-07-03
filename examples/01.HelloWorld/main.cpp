@@ -196,7 +196,7 @@ int main()
 	Instead of writing the filename sydney.md2, it would also be possible
 	to load a Maya object file (.obj), a complete Quake3 map (.bsp) or any
 	other supported file format. By the way, that cool Quake 2 model
-	called sydney was modelled by Brian Collins.
+	called sydney was modeled by Brian Collins.
 	*/
 	IAnimatedMesh* mesh = smgr->getMesh(mediaPath + "sydney.md2");
 	if (!mesh)
@@ -229,7 +229,7 @@ int main()
 	smgr->addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0));
 
 	/*
-	Ok, now we have set up the scene, lets draw everything: We run the
+	OK, now we have set up the scene, lets draw everything: We run the
 	device in a while() loop, until the device does not want to run any
 	more. This would be when the user closes the window or presses ALT+F4
 	(or whatever keycode closes a window on your OS).
