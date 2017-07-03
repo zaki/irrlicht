@@ -2975,36 +2975,6 @@ GLenum COGLES1Driver::getGLBlend(E_BLEND_FACTOR factor) const
 	return blendTable[factor];
 }
 
-GLenum COGLES1Driver::getZBufferBits() const
-{
-	GLenum bits = 0;
-
-	switch (Params.ZBufferBits)
-	{
-	case 24:
-#if defined(GL_OES_depth24)
-		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_depth24))
-			bits = GL_DEPTH_COMPONENT24_OES;
-		else
-#endif
-			bits = GL_DEPTH_COMPONENT16;
-		break;
-	case 32:
-#if defined(GL_OES_depth32)
-		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_depth32))
-			bits = GL_DEPTH_COMPONENT32_OES;
-		else
-#endif
-			bits = GL_DEPTH_COMPONENT16;
-		break;
-	default:
-		bits = GL_DEPTH_COMPONENT16;
-		break;
-	}
-
-	return bits;
-}
-
 void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
 	GLenum& pixelType, void(**converter)(const void*, s32, void*))
 {
