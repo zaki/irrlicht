@@ -1,6 +1,6 @@
 /** Example 001 HelloWorld
 
-This Tutorial shows how to set up the IDE for using the Irrlicht Engine and how
+This tutorial shows how to set up the IDE for using the Irrlicht Engine and how
 to write a simple HelloWorld program with it. The program will show how to use
 the basics of the VideoDriver, the GUIEnvironment, and the SceneManager.
 Microsoft Visual Studio is used as an IDE, but you will also be able to

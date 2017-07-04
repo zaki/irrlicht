@@ -1,6 +1,6 @@
 /** Example 003 Custom SceneNode
 
-This Tutorial is more advanced than the previous ones.
+This tutorial is more advanced than the previous ones.
 If you are currently just playing around with the Irrlicht
 engine, you may want to look at other examples first.
 This tutorials shows how to create a custom scene node and
@@ -9,12 +9,11 @@ if you want to implement a render technique the Irrlicht
 Engine currently does not support. For example, you can write
 an indoor portal based renderer or an advanced terrain scene
 node with it. By creating custom scene nodes, you can
-easily extend the Irrlicht Engine and adapt it to your own
-needs.
+easily extend the Irrlicht Engine and adapt it to your needs.
 
-I will keep the tutorial simple: Keep everything very
-short, everything in one .cpp file, and I'll use the engine
-here as in all other tutorials.
+I will keep the tutorial simple: Keep everything very short 
+and  everything in one .cpp file. This is the style which 
+will also be used in most of the following tutorials.
 
 To start, I include the header files, use the irr namespace,
 and tell the linker to link with the .lib file.
@@ -32,14 +31,14 @@ using namespace irr;
 Here comes the more sophisticated part of this tutorial:
 The class of our very own custom scene node. To keep it simple,
 our scene node will not be an indoor portal renderer nor a terrain
-scene node, but a simple tetraeder, a 3d object consisting of 4
+scene node, but a simple tetrahedron, a 3D object consisting of 4
 connected vertices, which only draws itself and does nothing more.
 Note that this scenario does not require a custom scene node in Irrlicht.
 Instead one would create a mesh from the geometry and pass it to a
 irr::scene::IMeshSceneNode. This example just illustrates creation of a custom
-scene node in a very simple setting.
+scene node in a simple setting.
 
-To let our scene node be able to be inserted into the Irrlicht
+To allow our scene node to be inserted into the Irrlicht
 Engine scene, the class we create needs to be derived from the
 irr::scene::ISceneNode class and has to override some methods.
 */
@@ -49,21 +48,21 @@ class CSampleSceneNode : public scene::ISceneNode
 
 	/*
 	First, we declare some member variables:
-	The bounding box, 4 vertices, and the material of the tetraeder.
+	The bounding box, 4 vertices, and the material of the tetrahedron.
 	*/
 	core::aabbox3d<f32> Box;
 	video::S3DVertex Vertices[4];
 	video::SMaterial Material;
 
+public:
+
 	/*
 	The parameters of the constructor specify the parent of the scene node,
 	a pointer to the scene manager, and an id of the scene node.
 	In the constructor we call the parent class' constructor,
-	set some properties of the material, and
-	create the 4 vertices of the tetraeder we will draw later.
+	set some properties of the material, and create the 4 vertices of 
+	the tetrahedron.
 	*/
-
-public:
 
 	CSampleSceneNode(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id)
 		: scene::ISceneNode(parent, mgr, id)
@@ -106,10 +105,9 @@ public:
 	scene node to render normally. If we would like to let it be rendered
 	like cameras or light, we would have to call
 	SceneManager->registerNodeForRendering(this, SNRT_LIGHT_AND_CAMERA);
-	After this, we call the actual
-	irr::scene::ISceneNode::OnRegisterSceneNode() method of the base class,
-	which simply lets also all the child scene nodes of this node register
-	themselves.
+	After this, we call the actual irr::scene::ISceneNode::OnRegisterSceneNode() 
+	method of the base class, which lets all the child scene nodes of this node 
+	register themselves.
 	*/
 	virtual void OnRegisterSceneNode()
 	{
@@ -122,7 +120,7 @@ public:
 	/*
 	In the render() method most of the interesting stuff happens: The
 	Scene node renders itself. We override this method and draw the
-	tetraeder.
+	tetrahedron.
 	*/
 	virtual void render()
 	{
@@ -141,11 +139,11 @@ public:
 	And finally we create three small additional methods.
 	irr::scene::ISceneNode::getBoundingBox() returns the bounding box of
 	this scene node, irr::scene::ISceneNode::getMaterialCount() returns the
-	amount of materials in this scene node (our tetraeder only has one
+	amount of materials in this scene node (our tetrahedron only has one
 	material), and irr::scene::ISceneNode::getMaterial() returns the
-	material at an index. Because we have only one material here, we can
-	return the only one material, assuming that no one ever calls
-	getMaterial() with an index greater than 0.
+	material at an index. Because we have only one material, we can
+	return that and assume that no one ever calls getMaterial() with an index 
+	greater than 0.
 	*/
 	virtual const core::aabbox3d<f32>& getBoundingBox() const
 	{
@@ -164,8 +162,8 @@ public:
 };
 
 /*
-That's it. The Scene node is done. Now we simply have to start
-the engine, create the scene node and a camera, and look at the result.
+That's it. The Scene node is done. Now we start the engine, 
+create the scene node and a camera, and look at the result.
 */
 int main()
 {
@@ -175,14 +173,13 @@ int main()
 		return 1;
 
 	// create device
-
 	IrrlichtDevice *device = createDevice(driverType,
 			core::dimension2d<u32>(640, 480), 16, false);
 		
 	if (device == 0)
 		return 1; // could not create selected driver.
 
-	// create engine and camera
+	// set window caption, get some pointers, create a camera
 
 	device->setWindowCaption(L"Custom Scene Node - Irrlicht Engine Demo");
 
@@ -205,7 +202,7 @@ int main()
 
 	/*
 	To animate something in this boring scene consisting only of one
-	tetraeder, and to show that you now can use your scene node like any
+	tetrahedron, and to show that you now can use your scene node like any
 	other scene node in the engine, we add an animator to the scene node,
 	which rotates the node a little bit.
 	irr::scene::ISceneManager::createRotationAnimator() could return 0, so
@@ -248,7 +245,7 @@ int main()
 		smgr->drawAll();
 
 		driver->endScene();
-		if (++frames==100)
+		if (++frames==100) // don't update more often, setWindowCaption can be expensive
 		{
 			core::stringw str = L"Irrlicht Engine [";
 			str += driver->getName();

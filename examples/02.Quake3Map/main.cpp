@@ -1,6 +1,6 @@
 /** Example 002 Quake3Map
 
-This Tutorial shows how to load a Quake 3 map into the engine, create a
+This tutorial shows how to load a Quake 3 map into the engine, create a
 SceneNode for optimizing the speed of rendering, and how to create a user
 controlled camera.
 
