@@ -1,19 +1,17 @@
 /** Example 004 Movement
 
-This Tutorial shows how to move and animate SceneNodes. The
+This tutorial shows how to move and animate SceneNodes. The
 basic concept of SceneNodeAnimators is shown as well as manual
 movement of nodes using the keyboard.  We'll demonstrate framerate
 independent movement, which means moving by an amount dependent
 on the duration of the last run of the Irrlicht loop.
 
-Example 19.MouseAndJoystick shows how to handle those kinds of input.
+Example 19.MouseAndJoystick shows how to handle other input than keyboard.
 
-As always, I include the header files, use the irr namespace,
+As always, include the header files, use the irr namespace,
 and tell the linker to link with the .lib file.
 */
 #ifdef _MSC_VER
-// We'll also define this to stop MSVC complaining about sprintf().
-#define _CRT_SECURE_NO_WARNINGS
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
@@ -24,8 +22,8 @@ and tell the linker to link with the .lib file.
 using namespace irr;
 
 /*
-To receive events like mouse and keyboard input, or GUI events like "the OK
-button has been clicked", we need an object which is derived from the
+To receive events like mouse and keyboard input, or GUI events like
+"button has been clicked", we need an object which is derived from the
 irr::IEventReceiver object. There is only one method to override:
 irr::IEventReceiver::OnEvent(). This method will be called by the engine once
 when an event happens. What we really want to know is whether a key is being
@@ -41,6 +39,13 @@ public:
 		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 			KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
 
+		/*
+		Always return false by default. If you return true you tell the engine
+		that you handled this event completely and the Irrlicht should not
+		process it any further. So for example if you return true for all 
+		EET_KEY_INPUT_EVENT events then Irrlicht would not pass on key-events
+		to it's GUI system.
+		*/
 		return false;
 	}
 
@@ -65,9 +70,9 @@ private:
 /*
 The event receiver for keeping the pressed keys is ready, the actual responses
 will be made inside the render loop, right before drawing the scene. So lets
-just create an irr::IrrlichtDevice and the scene node we want to move. We also
-create some other additional scene nodes, to show that there are also some
-different possibilities to move and animate scene nodes.
+create an irr::IrrlichtDevice and the scene node we want to move. We also
+create some additional scene nodes to show different possibilities to move and 
+animate scene nodes.
 */
 int main()
 {
@@ -76,9 +81,14 @@ int main()
 	if (driverType==video::EDT_COUNT)
 		return 1;
 
-	// create device
+	/*
+	Create the event receiver. Take care that the pointer to it has to 
+	stay valid as long as the IrrlichtDevice uses it. Event receivers are not
+	reference counted.
+	*/
 	MyEventReceiver receiver;
 
+	// create device
 	IrrlichtDevice* device = createDevice(driverType,
 			core::dimension2d<u32>(640, 480), 16, false, false, false, &receiver);
 
@@ -97,12 +107,12 @@ int main()
 	interesting. Because we have no dynamic lights in this scene we disable
 	lighting for each model (otherwise the models would be black).
 	*/
-	scene::ISceneNode * node = smgr->addSphereSceneNode();
-	if (node)
+	scene::ISceneNode * sphereNode = smgr->addSphereSceneNode();
+	if (sphereNode)
 	{
-		node->setPosition(core::vector3df(0,0,30));
-		node->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
-		node->setMaterialFlag(video::EMF_LIGHTING, false);
+		sphereNode->setPosition(core::vector3df(0,0,30));
+		sphereNode->setMaterialTexture(0, driver->getTexture(mediaPath + "wall.bmp"));
+		sphereNode->setMaterialFlag(video::EMF_LIGHTING, false);
 	}
 
 	/*
@@ -114,36 +124,35 @@ int main()
 	example. We create a cube scene node and attach a 'fly circle' scene
 	node animator to it, letting this node fly around our sphere scene node.
 	*/
-	scene::ISceneNode* n = smgr->addCubeSceneNode();
-
-	if (n)
+	scene::ISceneNode* cubeNode = smgr->addCubeSceneNode();
+	if (cubeNode)
 	{
-		n->setMaterialTexture(0, driver->getTexture(mediaPath + "t351sml.jpg"));
-		n->setMaterialFlag(video::EMF_LIGHTING, false);
+		cubeNode->setMaterialTexture(0, driver->getTexture(mediaPath + "t351sml.jpg"));
+		cubeNode->setMaterialFlag(video::EMF_LIGHTING, false);
 		scene::ISceneNodeAnimator* anim =
 			smgr->createFlyCircleAnimator(core::vector3df(0,0,30), 20.0f);
 		if (anim)
 		{
-			n->addAnimator(anim);
+			cubeNode->addAnimator(anim);
 			anim->drop();
 		}
 	}
 
 	/*
-	The last scene node we add to show possibilities of scene node animators is
-	a b3d model, which uses a 'fly straight' animator to run between to points.
+	The last scene node we add is a b3d model of a walking ninja. Is shows the 
+	use of a 'fly straight' animator to move the node between two points.
 	*/
-	scene::IAnimatedMeshSceneNode* anms =
+	scene::IAnimatedMeshSceneNode* ninjaNode =
 		smgr->addAnimatedMeshSceneNode(smgr->getMesh(mediaPath + "ninja.b3d"));
 
-	if (anms)
+	if (ninjaNode)
 	{
 		scene::ISceneNodeAnimator* anim =
 			smgr->createFlyStraightAnimator(core::vector3df(100,0,60),
 			core::vector3df(-100,0,60), 3500, true);
 		if (anim)
 		{
-			anms->addAnimator(anim);
+			ninjaNode->addAnimator(anim);
 			anim->drop();
 		}
 
@@ -151,23 +160,23 @@ int main()
 		To make the model look right we disable lighting, set the
 		frames between which the animation should loop, rotate the
 		model around 180 degrees, and adjust the animation speed and
-		the texture. To set the right animation (frames and speed), we
+		the texture. To set the correct animation (frames and speed), we
 		would also be able to just call
-		"anms->setMD2Animation(scene::EMAT_RUN)" for the 'run'
+		"ninjaNode->setMD2Animation(scene::EMAT_RUN)" for the 'run'
 		animation instead of "setFrameLoop" and "setAnimationSpeed",
-		but this only works with MD2 animations, and so you know how to
-		start other animations. But a good advice is to not use
+		But that only works with MD2 animations, while this can be used to
+		start other animations. For MD2 it's usually good advice not to use
 		hardcoded frame-numbers...
 		*/
-		anms->setMaterialFlag(video::EMF_LIGHTING, false);
+		ninjaNode->setMaterialFlag(video::EMF_LIGHTING, false);
 
-		anms->setFrameLoop(0, 13);
-		anms->setAnimationSpeed(15);
-//		anms->setMD2Animation(scene::EMAT_RUN);
+		ninjaNode->setFrameLoop(0, 13);
+		ninjaNode->setAnimationSpeed(15);
+//		ninjaNode->setMD2Animation(scene::EMAT_RUN);
 
-		anms->setScale(core::vector3df(2.f,2.f,2.f));
-		anms->setRotation(core::vector3df(0,-90,0));
-//		anms->setMaterialTexture(0, driver->getTexture(mediaPath + "sydney.bmp"));
+		ninjaNode->setScale(core::vector3df(2.f,2.f,2.f));
+		ninjaNode->setRotation(core::vector3df(0,-90,0));
+//		ninjaNode->setMaterialTexture(0, driver->getTexture(mediaPath + "sydney.bmp"));
 
 	}
 
@@ -186,14 +195,9 @@ int main()
 		driver->getTexture(mediaPath + "irrlichtlogoalpha2.tga"),
 		core::position2d<s32>(10,20));
 
-	gui::IGUIStaticText* diagnostics = device->getGUIEnvironment()->addStaticText(
-		L"", core::rect<s32>(10, 10, 400, 20));
-	diagnostics->setOverrideColor(video::SColor(255, 255, 255, 0));
-
 	/*
-	We have done everything, so lets draw it. We also write the current
-	frames per second and the name of the driver to the caption of the
-	window.
+	Lets draw the scene and also write the current frames per second and the 
+	name of the driver to the caption of the window.
 	*/
 	int lastFPS = -1;
 
@@ -201,7 +205,7 @@ int main()
 	// how long it was since the last frame
 	u32 then = device->getTimer()->getTime();
 
-	// This is the movemen speed in units per second.
+	// This is the movement speed in units per second.
 	const f32 MOVEMENT_SPEED = 5.f;
 
 	while(device->run())
@@ -213,7 +217,7 @@ int main()
 
 		/* Check if keys W, S, A or D are being held down, and move the
 		sphere node around respectively. */
-		core::vector3df nodePosition = node->getPosition();
+		core::vector3df nodePosition = sphereNode->getPosition();
 
 		if(receiver.IsKeyDown(irr::KEY_KEY_W))
 			nodePosition.Y += MOVEMENT_SPEED * frameDeltaTime;
@@ -225,7 +229,7 @@ int main()
 		else if(receiver.IsKeyDown(irr::KEY_KEY_D))
 			nodePosition.X += MOVEMENT_SPEED * frameDeltaTime;
 
-		node->setPosition(nodePosition);
+		sphereNode->setPosition(nodePosition);
 
 		driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 

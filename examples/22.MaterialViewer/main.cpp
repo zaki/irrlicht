@@ -10,7 +10,7 @@ You can move the camera while left-mouse button is clicked.
 
 // TODO: Should be possible to set all material values by the GUI.
 //		 For now just change the defaultMaterial in CApp::init for the rest.
-// TODO: Allow users to switch between a sphere and a box meshĵ
+// TODO: Allow users to switch between a sphere and a box mesh.
 
 #include <irrlicht.h>
 #include "driverChoice.h"

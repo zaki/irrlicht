@@ -1,6 +1,6 @@
 /** Example 021 Quake3 Explorer
 
-This Tutorial shows how to load different Quake 3 maps.
+This tutorial shows how to load different Quake 3 maps.
 
 Features:
 	- Load BSP Archives at Runtime from the menu

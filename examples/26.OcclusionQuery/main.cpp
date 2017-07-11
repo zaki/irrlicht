@@ -1,6 +1,6 @@
 /** Example 026 OcclusionQuery
 
-This Tutorial shows how to speed up rendering by use of the
+This tutorial shows how to speed up rendering by use of the
 OcclusionQuery feature. The usual rendering tries to avoid rendering of
 scene nodes by culling those nodes which are outside the visible area, the
 view frustum. However, this technique does not cope with occluded objects

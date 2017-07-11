@@ -36,13 +36,6 @@ enum
 	IDFlag_IsHighlightable = 1 << 1
 };
 
-/*
-	Some triangle selectors allow to get collisions either per mesh or per meshbuffer.
-	Getting them per mesh can be faster. But if you need information about the hit
-	material you have to get the meshbuffer information as well.
-*/
-const bool separateMeshBuffers = true;
-
 int main()
 {
 	// ask user for driver
@@ -57,6 +50,14 @@ int main()
 
 	if (device == 0)
 		return 1; // could not create selected driver.
+
+	/*
+	If we want to receive information about the material of a hit triangle we have to get 
+	collisions per meshbuffer. The only disadvantage of this is that getting them per 
+	meshbuffer can be a little bit slower than per mesh, but usually that's not noticeable.
+	If you set this to false you will no longer get material names in the title bar.
+	*/
+	const bool separateMeshBuffers = true;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -95,8 +96,8 @@ int main()
 
 		/*
 			There is currently no way to split an octree by material.
-			So if we need that we have to create one octree per meshbuffer
-			and put them together in a MetaTriangleSelector.
+			So if we need material infos we have to create one octree per 
+			meshbuffer and put them together in a MetaTriangleSelector.
 		*/
 		if ( separateMeshBuffers && q3node->getMesh()->getMeshBufferCount() > 1)
 		{
@@ -116,8 +117,8 @@ int main()
 		}
 		else
 		{
-			// Just one octree for the whole mesh.
-			// Can't get information which material got hit, but for many situations that's enough.
+			// If you don't need material infos just create one octree for the 
+			// whole mesh.
 			selector = smgr->createOctreeTriangleSelector(
 					q3node->getMesh(), q3node, 128);
 		}
@@ -129,13 +130,13 @@ int main()
 	/*
 	We add a first person shooter camera to the scene so that we can see and
 	move in the quake 3 level like in tutorial 2. But this, time, we add a
-	special animator to the camera: A Collision Response animator. This
-	animator modifies the scene node to which it is attached to in order to
-	prevent it moving through walls, and to add gravity to it. The
-	only thing we have to tell the animator is how the world looks like,
+	special animator to the camera: A collision response animator. This
+	animator modifies the scene node to which it is attached in order to
+	prevent it from moving through walls and to add gravity to the node. The
+	only things we have to tell the animator is how the world looks like,
 	how big the scene node is, how much gravity to apply and so on. After the
 	collision response animator is attached to the camera, we do not have to do
-	anything more for collision detection, anything is done automatically.
+	anything else for collision detection, it's all done automatically.
 	The rest of the collision detection code below is for picking. And please
 	note another cool feature: The collision response animator can be
 	attached also to all other scene nodes, not only to cameras. And it can
@@ -144,26 +145,25 @@ int main()
 
 	Now we'll take a closer look on the parameters of
 	createCollisionResponseAnimator(). The first parameter is the
-	TriangleSelector, which specifies how the world, against collision
-	detection is done looks like. The second parameter is the scene node,
-	which is the object, which is affected by collision detection, in our
+	TriangleSelector, which specifies how the world, against which collision
+	detection is done, looks like. The second parameter is the scene node,
+	which is the object which is affected by collision detection - in our
 	case it is the camera. The third defines how big the object is, it is
 	the radius of an ellipsoid. Try it out and change the radius to smaller
 	values, the camera will be able to move closer to walls after this. The
 	next parameter is the direction and speed of gravity.  We'll set it to
-	(0, -10, 0), which approximates to realistic gravity, assuming that our
-	units are meters. You could set it to (0,0,0) to disable gravity. And the
-	last value is just a translation: Without this, the ellipsoid with which
-	collision detection is done would be around the camera, and the camera would
-	be in the middle of the ellipsoid. But as human beings, we are used to have our
-	eyes on top of the body, with which we collide with our world, not in
-	the middle of it. So we place the scene node 50 units over the center
-	of the ellipsoid with this parameter. And that's it, collision
-	detection works now.
+	(0, -1000, 0), which approximates realistic gravity (depends on the units 
+	which are used in the scene model). You could set it to (0,0,0) to disable 
+	gravity. And the last value is just an offset: Without it the ellipsoid with 
+	which collision detection is done would be around the camera and the camera 
+	would be in the middle of the ellipsoid. But as human beings, we are used to 
+	have our eyes on top of the body, not in the middle of it. So we place the 
+	scene node 50 units over the center of the ellipsoid with this parameter. 
+	And that's it, collision detection works now.
 	*/
 
-	// Set a jump speed of 3 units per second, which gives a fairly realistic jump
-	// when used with the gravity of (0, -10, 0) in the collision response animator.
+	// Set a jump speed of 300 units per second, which gives a fairly realistic jump
+	// when used with the gravity of (0, -1000, 0) in the collision response animator.
 	scene::ICameraSceneNode* camera =
 		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, ID_IsNotPickable, 0, 0, true, 300.f);
 	camera->setPosition(core::vector3df(50,50,-60));
@@ -300,7 +300,7 @@ int main()
 		// collision point/triangle, and returns the scene node containing that point.
 		// Irrlicht provides other types of selection, including ray/triangle selector,
 		// ray/box and ellipse/triangle selector, plus associated helpers.
-		// See the methods of ISceneCollisionManager
+		// You might also want to check the other methods of ISceneCollisionManager.
 
 		irr::io::SNamedPath hitTextureName;
 		scene::SCollisionHit hitResult;
@@ -334,6 +334,7 @@ int main()
 				highlightedSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
 			}
 
+			// When separateMeshBuffers is set to true we can now find out which material was hit
 			if ( hitResult.MeshBuffer && hitResult.Node && hitResult.Node->getMaterial(hitResult.MaterialIndex).TextureLayer[0].Texture )
 			{
 				// Note we are interested in the node material and not in the meshbuffer material.
@@ -347,6 +348,7 @@ int main()
 
 		// Show some info in title-bar
 		int fps = driver->getFPS();
+		static core::stringw lastString;
 		core::stringw str = L"Collision detection example - Irrlicht Engine [";
 		str += driver->getName();
 		str += "] FPS:";
@@ -357,7 +359,11 @@ int main()
 			irr::io::path texName(hitTextureName.getInternalName());
 			str += core::deletePathFromFilename(texName);
 		}
-		device->setWindowCaption(str.c_str());
+		if ( str != lastString )	// changing caption is somewhat expensive, so don't when nothing changed
+		{
+			device->setWindowCaption(str.c_str());
+			lastString = str;
+		}
 	}
 
 	device->drop();
@@ -367,4 +373,3 @@ int main()
 
 /*
 **/
-
