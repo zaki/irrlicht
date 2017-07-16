@@ -825,6 +825,11 @@
 		<Unit filename="COgreMeshFileLoader.h" />
 		<Unit filename="COpenGLCacheHandler.cpp" />
 		<Unit filename="COpenGLCacheHandler.h" />
+		<Unit filename="COpenGLCommon.h" />
+		<Unit filename="COpenGLCoreCacheHandler.h" />
+		<Unit filename="COpenGLCoreFeature.h" />
+		<Unit filename="COpenGLCoreRenderTarget.h" />
+		<Unit filename="COpenGLCoreTexture.h" />
 		<Unit filename="COpenGLDriver.cpp" />
 		<Unit filename="COpenGLDriver.h" />
 		<Unit filename="COpenGLExtensionHandler.cpp" />
