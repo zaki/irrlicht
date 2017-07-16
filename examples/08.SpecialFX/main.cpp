@@ -1,15 +1,14 @@
 /** Example 008 SpecialFX
 
-This tutorials describes how to do special effects. It shows how to use stencil
+This tutorial describes how to do special effects. It shows how to use stencil
 buffer shadows, the particle system, billboards, dynamic light, and the water
 surface scene node.
 
 We start like in some tutorials before. Please note that this time, the
 'shadows' flag in createDevice() is set to true, for we want to have a dynamic
 shadow cast from an animated character. If this example runs too slow,
-set it to false. The Irrlicht Engine checks if your hardware doesn't support
-the stencil buffer, and disables shadows by itself, but just in case the demo
-runs slow on your hardware.
+set it to false. The Irrlicht Engine also checks if your hardware doesn't 
+support the stencil buffer, and then disables shadows by itself.
 */
 
 #include <irrlicht.h>
@@ -57,7 +56,7 @@ int main()
 	const io::path mediaPath = getExampleMediaPath();
 
 	/*
-	For our environment, we load a .3ds file. It is a small room I modelled
+	For our environment, we load a .3ds file. It is a small room I modeled
 	with Anim8or and exported into the 3ds format because the Irrlicht
 	Engine does not support the .an8 format. I am a very bad 3d graphic
 	artist, and so the texture mapping is not very nice in this model.

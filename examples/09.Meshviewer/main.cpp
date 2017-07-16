@@ -8,10 +8,10 @@ MessageBoxes, SkyBoxes, and how to parse XML files with the integrated XML
 reader of the engine.
 
 We start like in most other tutorials: Include all necessary header files, add
-a comment to let the engine be linked with the right .lib file in Visual
+a comment to let the engine be linked with the correct .lib file in Visual
 Studio, and declare some global variables. We also add two 'using namespace'
 statements, so we do not need to write the whole names of all classes. In this
-tutorial, we use a lot stuff from the gui namespace.
+tutorial, we use a lot of stuff from the gui namespace.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
@@ -168,8 +168,6 @@ displays a short message box, if the model could not be loaded.
 */
 void loadModel(const c8* fn)
 {
-	// modify the name if it a .pk3 file
-
 	io::path filename(fn);
 
 	io::path extension;
@@ -184,14 +182,15 @@ void loadModel(const c8* fn)
 		extension == ".bmp" || extension == ".wal" ||
 		extension == ".rgb" || extension == ".rgba")
 	{
-		video::ITexture * texture =
-			Device->getVideoDriver()->getTexture( filename );
+		// Ensure reloading texture by clearing old one out of cache
+		video::ITexture * texture = Device->getVideoDriver()->findTexture( filename );
+		if ( texture )
+			Device->getVideoDriver()->removeTexture(texture);
+
+		// Load the new one and put int on the model
+		texture = Device->getVideoDriver()->getTexture( filename );
 		if ( texture && Model )
 		{
-			// always reload texture
-			Device->getVideoDriver()->removeTexture(texture);
-			texture = Device->getVideoDriver()->getTexture( filename );
-
 			Model->setMaterialTexture(0, texture);
 		}
 		return;
@@ -203,12 +202,15 @@ void loadModel(const c8* fn)
 		return;
 	}
 
-	// load a model into the engine
+	// Remove old model
 
 	if (Model)
+	{
 		Model->remove();
+		Model = 0;
+	}
 
-	Model = 0;
+	// .irr is a scene format, so load as scene and set Model pointer to first object in the scene
 
 	if (extension==".irr")
 	{
@@ -220,11 +222,13 @@ void loadModel(const c8* fn)
 		return;
 	}
 
+	// load a model into the engine. Also log the time it takes to load it.
+
 	u32 then = Device->getTimer()->getRealTime();
-	scene::IAnimatedMesh* m = Device->getSceneManager()->getMesh( filename.c_str() );
+	scene::IAnimatedMesh* mesh = Device->getSceneManager()->getMesh( filename.c_str() );
 	Device->getLogger()->log("Loading time (ms): ", core::stringc(Device->getTimer()->getRealTime() - then).c_str());
 
-	if (!m)
+	if (!mesh)
 	{
 		// model could not be loaded
 
@@ -238,10 +242,10 @@ void loadModel(const c8* fn)
 	// set default material properties
 
 	if (Octree)
-		Model = Device->getSceneManager()->addOctreeSceneNode(m->getMesh(0));
+		Model = Device->getSceneManager()->addOctreeSceneNode(mesh->getMesh(0));
 	else
 	{
-		scene::IAnimatedMeshSceneNode* animModel = Device->getSceneManager()->addAnimatedMeshSceneNode(m);
+		scene::IAnimatedMeshSceneNode* animModel = Device->getSceneManager()->addAnimatedMeshSceneNode(mesh);
 		Model = animModel;
 	}
 	Model->setMaterialFlag(video::EMF_LIGHTING, UseLight);
@@ -261,8 +265,9 @@ void loadModel(const c8* fn)
 
 /*
 Function createToolBox() creates a toolbox window. In this simple mesh
-viewer, this toolbox only contains a tab control with three edit boxes for
-changing the scale of the displayed model.
+viewer, this toolbox only contains a controls to change the scale 
+and animation speed of the model and a control to set the transparency
+of the GUI-elements.
 */
 void createToolBox()
 {
@@ -409,7 +414,7 @@ class MyEventReceiver : public IEventReceiver
 public:
 	virtual bool OnEvent(const SEvent& event)
 	{
-		// Escape swaps Camera Input
+		// Key events
 		if (event.EventType == EET_KEY_INPUT_EVENT &&
 			event.KeyInput.PressedDown == false)
 		{
@@ -417,6 +422,7 @@ public:
 				return true;
 		}
 
+		// GUI events
 		if (event.EventType == EET_GUI_EVENT)
 		{
 			s32 id = event.GUIEvent.Caller->getID();
@@ -470,7 +476,7 @@ public:
 				{
 				case GUI_ID_BUTTON_SET_SCALE:
 					{
-						// set scale
+						// set model scale
 						gui::IGUIElement* root = env->getRootGUIElement();
 						core::vector3df scale;
 						core::stringc s;
@@ -531,6 +537,7 @@ public:
 		if ( hasModalDialog() )
 			return false;
 
+		// Escape swaps Camera Input
 		if (keyCode == irr::KEY_ESCAPE)
 		{
 			if (Device)
@@ -546,6 +553,7 @@ public:
 		}
 		else if (keyCode == irr::KEY_F1)
 		{
+			// Swap display of position information about the camera
 			if (Device)
 			{
 				IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_POSITION_TEXT);
@@ -581,7 +589,7 @@ public:
 
 		switch(id)
 		{
-		case GUI_ID_OPEN_MODEL: // FilOnButtonSetScalinge -> Open Model
+		case GUI_ID_OPEN_MODEL: // File -> Open Model File & Texture
 			env->addFileOpenDialog(L"Please select a model file to open");
 			break;
 		case GUI_ID_SET_MODEL_ARCHIVE: // File -> Set Model Archive
@@ -809,11 +817,18 @@ int main(int argc, char* argv[])
 	if (xml)
 		xml->drop(); // don't forget to delete the xml reader
 
+	// We can pass a model to load per command line parameter
 	if (argc > 1)
 		StartUpModelFile = argv[1];
 
+	// set a nicer font
+	IGUISkin* skin = env->getSkin();
+	IGUIFont* font = env->getFont("fonthaettenschweiler.bmp");
+	if (font)
+		skin->setFont(font);
+
 	/*
-	That wasn't difficult. Now we'll set a nicer font and create the Menu.
+	Now create the Menu.
 	It is possible to create submenus for every menu item. The call
 	menu->addItem(L"File", -1, true, true); for example adds a new menu
 	Item with the name "File" and the id -1. The following parameter says
@@ -822,15 +837,6 @@ int main(int argc, char* argv[])
 	menu->getSubMenu(0), because the "File" entry is the menu item with
 	index 0.
 	*/
-
-	// set a nicer font
-
-	IGUISkin* skin = env->getSkin();
-	IGUIFont* font = env->getFont("fonthaettenschweiler.bmp");
-	if (font)
-		skin->setFont(font);
-
-	// create menu
 	gui::IGUIContextMenu* menu = env->addMenu();
 	menu->addItem(L"File", -1, true, true);
 	menu->addItem(L"View", -1, true, true);
@@ -932,18 +938,16 @@ int main(int argc, char* argv[])
 	postext->setVisible(false);
 
 	// set window caption
-
 	Caption += " - [";
 	Caption += driver->getName();
 	Caption += "]";
 	Device->setWindowCaption(Caption.c_str());
 
 	/*
-	That's nearly the whole application. We simply show the about message
-	box at start up, and load the first model. To make everything look
-	better, a skybox is created and a user controlled camera, to make the
-	application a little bit more interactive. Finally, everything is drawn
-	in a standard drawing loop.
+	Now we show the about message box at start up, and load the first model. 
+	To make everything look	better a skybox is created. We also add a user 
+	controlled camera, to make the application more interactive. 
+	Finally, everything is drawn in a standard drawing loop.
 	*/
 
 	// show about message box and load default model
@@ -952,7 +956,6 @@ int main(int argc, char* argv[])
 	loadModel(StartUpModelFile.c_str());
 
 	// add skybox
-
 	SkyBox = smgr->addSkyBoxSceneNode(
 		driver->getTexture("irrlicht2_up.jpg"),
 		driver->getTexture("irrlicht2_dn.jpg"),
@@ -988,7 +991,6 @@ int main(int argc, char* argv[])
 	bool hasFocus = Device->isWindowFocused();
 
 	// draw everything
-
 	while(Device->run() && driver)
 	{
 		// Catch focus changes (workaround until Irrlicht has events for this)

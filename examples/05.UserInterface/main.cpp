@@ -60,8 +60,8 @@ void setSkinTransparency(s32 alpha, irr::gui::IGUISkin * skin)
 /*
 The Event Receiver is not only capable of getting keyboard and
 mouse input events, but also events of the graphical user interface
-(gui). There are events for almost everything: Button click,
-Listbox selection change, events that say that a element was hovered
+(gui). There are events for almost everything: button click,
+listbox selection change, events that say that a element was hovered
 and so on. To be able to react to some of these events, we create
 an event receiver.
 We only react to gui events, and if it's such an event, we get the
@@ -85,8 +85,8 @@ public:
 
 			/*
 			If a scrollbar changed its scroll position, and it is
-			'our' scrollbar (the one with id GUI_ID_TRANSPARENCY_SCROLL_BAR), then we change
-			the transparency of all gui elements. This is a very
+			'our' scrollbar (the one with id GUI_ID_TRANSPARENCY_SCROLL_BAR), 
+			then we change the transparency of all gui elements. This is an
 			easy task: There is a skin object, in which all color
 			settings are stored. We simply go through all colors
 			stored in the skin and change their alpha value.
@@ -172,9 +172,9 @@ private:
 
 
 /*
-Ok, now for the more interesting part. First, create the Irrlicht device. As in
+OK, now for the more interesting part. First, create the Irrlicht device. As in
 some examples before, we ask the user which driver he wants to use for this
-example:
+example.
 */
 int main()
 {
@@ -184,7 +184,6 @@ int main()
 		return 1;
 
 	// create device and exit if creation failed
-
 	IrrlichtDevice * device = createDevice(driverType, core::dimension2d<u32>(640, 480));
 
 	if (device == 0)

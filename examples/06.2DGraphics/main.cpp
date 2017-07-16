@@ -1,6 +1,6 @@
 /** Example 006 2D Graphics
 
-This Tutorial shows how to do 2d graphics with the Irrlicht Engine.
+This tutorial shows how to do 2d graphics with the Irrlicht Engine.
 It shows how to draw images, keycolor based sprites,
 transparent rectangles, and different fonts. You may consider
 this useful if you want to make a 2d game with the engine, or if
@@ -31,7 +31,6 @@ int main()
 		return 1;
 
 	// create device
-
 	IrrlichtDevice *device = createDevice(driverType,
 		core::dimension2d<u32>(512, 384));
 
@@ -62,7 +61,7 @@ int main()
 
 	/*
 	To be able to draw some text with two different fonts, we first load
-	them. Ok, we load just one. As the first font we just use the default
+	them. OK, we load just one. As the first font we just use the default
 	font which is built into the engine. Also, we define two rectangles
 	which specify the position of the images of the red imps (little flying
 	creatures) in the texture.
@@ -116,7 +115,7 @@ int main()
 				(time/500 % 2) ? imp1 : imp2, 0,
 				video::SColor(255,255,255,255), true);
 
-			// draw second flying imp with colorcylce
+			// draw second flying imp with color cycle
 			driver->draw2DImage(images, core::position2d<s32>(270,105),
 				(time/500 % 2) ? imp1 : imp2, 0,
 				video::SColor(255,(time) % 255,255,255), true);

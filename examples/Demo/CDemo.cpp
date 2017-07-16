@@ -304,31 +304,27 @@ void CDemo::switchToNextScene()
 			campFire->setVisible(true);
 			timeForThisScene = -1;
 
-			SKeyMap keyMap[9];
-			keyMap[0].Action = EKA_MOVE_FORWARD;
-			keyMap[0].KeyCode = KEY_UP;
-			keyMap[1].Action = EKA_MOVE_FORWARD;
-			keyMap[1].KeyCode = KEY_KEY_W;
+			core::array<SKeyMap> keyMap(11);
 
-			keyMap[2].Action = EKA_MOVE_BACKWARD;
-			keyMap[2].KeyCode = KEY_DOWN;
-			keyMap[3].Action = EKA_MOVE_BACKWARD;
-			keyMap[3].KeyCode = KEY_KEY_S;
+			keyMap.push_back( SKeyMap(EKA_MOVE_FORWARD, KEY_UP) );
+			keyMap.push_back( SKeyMap(EKA_MOVE_FORWARD, KEY_KEY_W) );
 
-			keyMap[4].Action = EKA_STRAFE_LEFT;
-			keyMap[4].KeyCode = KEY_LEFT;
-			keyMap[5].Action = EKA_STRAFE_LEFT;
-			keyMap[5].KeyCode = KEY_KEY_A;
+			keyMap.push_back( SKeyMap(EKA_MOVE_BACKWARD, KEY_DOWN) );
+			keyMap.push_back( SKeyMap(EKA_MOVE_BACKWARD, KEY_KEY_S) );
 
-			keyMap[6].Action = EKA_STRAFE_RIGHT;
-			keyMap[6].KeyCode = KEY_RIGHT;
-			keyMap[7].Action = EKA_STRAFE_RIGHT;
-			keyMap[7].KeyCode = KEY_KEY_D;
+			keyMap.push_back( SKeyMap(EKA_STRAFE_LEFT, KEY_LEFT) );
+			keyMap.push_back( SKeyMap(EKA_STRAFE_LEFT, KEY_KEY_A) );
 
-			keyMap[8].Action = EKA_JUMP_UP;
-			keyMap[8].KeyCode = KEY_KEY_J;
+			keyMap.push_back( SKeyMap(EKA_STRAFE_RIGHT, KEY_RIGHT) );
+			keyMap.push_back( SKeyMap(EKA_STRAFE_RIGHT, KEY_KEY_D) );
 
-			camera = sm->addCameraSceneNodeFPS(0, 100.0f, .4f, -1, keyMap, 9, false, 300.f);
+			keyMap.push_back( SKeyMap(EKA_JUMP_UP, KEY_KEY_J) );
+
+			keyMap.push_back( SKeyMap(EKA_ROTATE_LEFT, KEY_KEY_Q) );
+
+			keyMap.push_back( SKeyMap(EKA_ROTATE_RIGHT, KEY_KEY_E) );
+
+			camera = sm->addCameraSceneNodeFPS(0, 100.0f, .4f, -1, keyMap.pointer(), keyMap.size(), false, 300.f);
 			camera->setPosition(core::vector3df(108,140,-140));
 			camera->setFarValue(5000.0f);
 

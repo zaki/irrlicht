@@ -298,7 +298,15 @@ int main()
 
 	if (gpu)
 	{
-		MyShaderCallBack* mc = new MyShaderCallBack();
+		/*
+		Create one callback instance for each shader material you add.
+		Reason is that the getVertexShaderConstantID returns ID's which are
+		only valid per added material (The ID's tend to be identical
+		as long as the shader code is exactly identical, but it's not good
+		style to depend on that).
+		*/
+		MyShaderCallBack* mcSolid = new MyShaderCallBack();
+		MyShaderCallBack* mcTransparentAdd = new MyShaderCallBack();
 
 		// create the shaders depending on if the user wanted high level
 		// or low level shaders:
@@ -314,25 +322,26 @@ int main()
 			newMaterialType1 = gpu->addHighLevelShaderMaterialFromFiles(
 				vsFileName, "vertexMain", video::EVST_VS_1_1,
 				psFileName, "pixelMain", video::EPST_PS_1_1,
-				mc, video::EMT_SOLID, 0, shadingLanguage);
+				mcSolid, video::EMT_SOLID, 0, shadingLanguage);
 
 			newMaterialType2 = gpu->addHighLevelShaderMaterialFromFiles(
 				vsFileName, "vertexMain", video::EVST_VS_1_1,
 				psFileName, "pixelMain", video::EPST_PS_1_1,
-				mc, video::EMT_TRANSPARENT_ADD_COLOR, 0 , shadingLanguage);
+				mcTransparentAdd, video::EMT_TRANSPARENT_ADD_COLOR, 0 , shadingLanguage);
 		}
 		else
 		{
 			// create material from low level shaders (asm or arb_asm)
 
 			newMaterialType1 = gpu->addShaderMaterialFromFiles(vsFileName,
-				psFileName, mc, video::EMT_SOLID);
+				psFileName, mcSolid, video::EMT_SOLID);
 
 			newMaterialType2 = gpu->addShaderMaterialFromFiles(vsFileName,
-				psFileName, mc, video::EMT_TRANSPARENT_ADD_COLOR);
+				psFileName, mcTransparentAdd, video::EMT_TRANSPARENT_ADD_COLOR);
 		}
 
-		mc->drop();
+		mcSolid->drop();
+		mcTransparentAdd->drop();
 	}
 
 	/*

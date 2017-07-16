@@ -131,6 +131,8 @@ public:
 
 			Image.clear();
 		}
+
+		Driver->testGLError(__LINE__);
 	}
 
 	COpenGLCoreTexture(const io::path& name, const core::dimension2d<u32>& size, ECOLOR_FORMAT format, TOpenGLDriver* driver) : ITexture(name, ETT_2D), Driver(driver), TextureType(GL_TEXTURE_2D),
@@ -176,6 +178,7 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
 
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
+		Driver->testGLError(__LINE__);
 	}
 
 	virtual ~COpenGLCoreTexture()
