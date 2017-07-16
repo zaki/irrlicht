@@ -173,7 +173,17 @@ namespace os
 			break;
 		}
 
-		__android_log_print(LogLevel, "Irrlicht", "%s\n", message);
+		// Android logcat restricts log-output and cuts the rest of the message away. But we want it all.
+		// On my device max-len is 1023 (+ 0 byte). Some websites claim a limit of 4096 so maybe different numbers on different devices.
+		const size_t maxLogLen = 1023;
+		size_t msgLen = strlen(message);
+		size_t start = 0;
+		while ( msgLen-start > maxLogLen )
+		{
+			__android_log_print(LogLevel, "Irrlicht", "%.*s\n", maxLogLen, &message[start]);
+			start += maxLogLen;
+		}
+		__android_log_print(LogLevel, "Irrlicht", "%s\n", &message[start]);
 	}
 
 	void Timer::initTimer(bool usePerformanceTimer)
