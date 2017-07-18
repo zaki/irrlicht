@@ -174,7 +174,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		SDL_Flags |= SDL_DOUBLEBUF;
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	else
-		SDL_Flags = SDL_SWSURFACE;
+		SDL_Flags = SDL_OPENGL | SDL_HWSURFACE;
 #endif //_IRR_EMSCRIPTEN_PLATFORM_
 
 	// create window
@@ -210,8 +210,16 @@ CIrrDeviceSDL::~CIrrDeviceSDL()
 bool CIrrDeviceSDL::createWindow()
 {
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
-	emscripten_set_canvas_size( Width, Height);
-	Screen = SDL_SetVideoMode( 0, 0, 32, SDL_OPENGL ); // 0,0 will use the canvas size
+	if ( Width != 0 || Height != 0 )
+		emscripten_set_canvas_size( Width, Height);
+	else
+	{
+		int w, h, fs;
+		emscripten_get_canvas_size(&w, &h, &fs);
+		Width = w;
+		Height = h;
+	}
+	Screen = SDL_SetVideoMode( 0, 0, 32, SDL_Flags); // 0,0 will use the canvas size
 
 	// "#canvas" is for the opengl context
 	emscripten_set_mousedown_callback("#canvas", (void*)this, true, MouseUpDownCallback);
@@ -569,7 +577,7 @@ bool CIrrDeviceSDL::run()
 				Height = SDL_event.resize.h;
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 				emscripten_set_canvas_size( Width, Height);
-				Screen = SDL_SetVideoMode( 0, 0, 32, SDL_OPENGL ); // 0,0 will use the canvas size
+				Screen = SDL_SetVideoMode( 0, 0, 32, SDL_Flags ); // 0,0 will use the canvas size
 #else //_IRR_EMSCRIPTEN_PLATFORM_
  				Screen = SDL_SetVideoMode( Width, Height, 0, SDL_Flags );
 #endif //_IRR_EMSCRIPTEN_PLATFOR
