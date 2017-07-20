@@ -48,7 +48,9 @@ dimension2d<u32> screenSize(640, 480);
 	Handle changes in canvas size which are done with html/js.
 	Note that it's only OK for windowed so far,
 	the switch to fullscreen not yet working.
-*/
+	Also the emscripten_get_canvas_size might cause a slow-down
+	(but haven't found yet a way to avoid it with SDL1).
+	*/
 void checkCanvasResize()
 {
 	int w, h, fs;
@@ -84,7 +86,7 @@ void one_iter()
     }
 
 	// In case you have a resizeable canvas (resized from html)
-	checkCanvasResize();
+	//checkCanvasResize();
 
     driver->beginScene(ECBF_COLOR | ECBF_DEPTH, SColor(255,100,101,140));
 

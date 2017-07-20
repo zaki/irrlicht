@@ -587,7 +587,6 @@ bool CIrrDeviceSDL::run()
 				Width = SDL_event.resize.w;
 				Height = SDL_event.resize.h;
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
-				emscripten_set_canvas_size( Width, Height);
 				Screen = SDL_SetVideoMode( 0, 0, 32, SDL_OPENGL ); // 0,0 will use the canvas size
 #else //_IRR_EMSCRIPTEN_PLATFORM_
  				Screen = SDL_SetVideoMode( Width, Height, 0, SDL_Flags );
