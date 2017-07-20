@@ -386,6 +386,17 @@ void CIrrDeviceSDL::createDriver()
 		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;
 	}
+
+	// In case we got the size from the canvas
+	if ( VideoDriver && CreationParams.WindowSize.Width == 0 && CreationParams.WindowSize.Height == 0 && Width > 0 && Height > 0 )
+	{
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+		Screen = SDL_SetVideoMode( Width, Height, 32, SDL_OPENGL );
+#else //_IRR_EMSCRIPTEN_PLATFORM_
+		Screen = SDL_SetVideoMode( Width, Height, 0, SDL_Flags );
+#endif //_IRR_EMSCRIPTEN_PLATFOR
+		VideoDriver->OnResize(core::dimension2d<u32>(Width, Height));
+	}
 }
 
 
