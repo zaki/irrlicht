@@ -18,7 +18,10 @@
 				<Linker>
 					<Add library="Xxf86vm" />
 					<Add library="GL" />
+					<Add library="EGL" />
 					<Add library="X11" />
+					<Add library="GLESv1_CM" />
+					<Add library="GLESv2" />
 					<Add directory="../../lib/Linux" />
 				</Linker>
 			</Target>
