@@ -236,7 +236,7 @@ namespace os
             log_level=0;
 			break;
 		}
-        emscripten_log(log_level, "%s\n", message);
+        emscripten_log(log_level, "%s", message);	// Note: not adding \n as emscripten_log seems to do that already.
 	}
 
 	void Timer::initTimer(bool usePerformanceTimer)
