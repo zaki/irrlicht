@@ -1396,8 +1396,10 @@ void CIrrDeviceLinux::restoreWindow()
 core::position2di CIrrDeviceLinux::getWindowPosition()
 {
 	int wx = 0, wy = 0;
+#ifdef _IRR_COMPILE_WITH_X11_
 	Window child;
 	XTranslateCoordinates(XDisplay, XWindow, DefaultRootWindow(XDisplay), 0, 0, &wx, &wy, &child);
+#endif
 	return core::position2di(wx, wy);
 }
 
