@@ -864,7 +864,7 @@ video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	os::Printer::log("VideoModeList not available on the web." , ELL_WARNING);
 	return VideoModeList;
-#elif // !_IRR_EMSCRIPTEN_PLATFORM_
+#else // !_IRR_EMSCRIPTEN_PLATFORM_
 	if (!VideoModeList->getVideoModeCount())
 	{
 		// enumerate video modes.
@@ -893,7 +893,7 @@ void CIrrDeviceSDL::setResizable(bool resize)
 #ifdef _IRR_EMSCRIPTEN_PLATFORM_
 	os::Printer::log("Resizable not available on the web." , ELL_WARNING);
 	return;
-#elif // !_IRR_EMSCRIPTEN_PLATFORM_
+#else // !_IRR_EMSCRIPTEN_PLATFORM_
 	if (resize != Resizable)
 	{
 		if (resize)
