@@ -221,6 +221,9 @@ namespace irr
 	static EM_BOOL MouseUpDownCallback(int eventType, const EmscriptenMouseEvent * event, void* userData);
 	static EM_BOOL MouseEnterCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
 	static EM_BOOL MouseLeaveCallback(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
+
+	// Check if it's a special key like left, right, up down and so on which shouldn't have a Unicode character.
+	bool isNoUnicodeKey(EKEY_CODE key) const;
 #endif
 
 		//! create the driver

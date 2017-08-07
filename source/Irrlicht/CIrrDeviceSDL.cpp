@@ -109,6 +109,74 @@ EM_BOOL CIrrDeviceSDL::MouseLeaveCallback(int eventType, const EmscriptenMouseEv
 
 	return EM_FALSE;
 }
+
+bool CIrrDeviceSDL::isNoUnicodeKey(EKEY_CODE key) const
+{
+	switch ( key )
+	{
+		// keys which  should not be mapped to a Unicode char
+		case KEY_UNKNOWN:
+		case KEY_SHIFT:
+		case KEY_CONTROL:
+		case KEY_MENU:
+		case KEY_PAUSE:
+		case KEY_CAPITAL:
+		case KEY_ESCAPE:
+		case KEY_PRIOR:
+		case KEY_NEXT:
+		case KEY_END:
+		case KEY_HOME:
+		case KEY_LEFT:
+		case KEY_UP:
+		case KEY_RIGHT:
+		case KEY_DOWN:
+		case KEY_PRINT:
+		case KEY_SNAPSHOT:
+		case KEY_INSERT:
+		case KEY_DELETE:
+		case KEY_HELP:
+		case KEY_LWIN:
+		case KEY_RWIN:
+		case KEY_APPS:
+		case KEY_SLEEP:
+		case KEY_F1:
+		case KEY_F2:
+		case KEY_F3:
+		case KEY_F4:
+		case KEY_F5:
+		case KEY_F6:
+		case KEY_F7:
+		case KEY_F8:
+		case KEY_F9:
+		case KEY_F10:
+		case KEY_F11:
+		case KEY_F12:
+		case KEY_F13:
+		case KEY_F14:
+		case KEY_F15:
+		case KEY_F16:
+		case KEY_F17:
+		case KEY_F18:
+		case KEY_F19:
+		case KEY_F20:
+		case KEY_F21:
+		case KEY_F22:
+		case KEY_F23:
+		case KEY_F24:
+		case KEY_NUMLOCK:
+		case KEY_SCROLL:
+		case KEY_LSHIFT:
+		case KEY_RSHIFT:
+		case KEY_LCONTROL:
+		case KEY_RCONTROL:
+		case KEY_LMENU:
+		case KEY_RMENU:
+		return true;
+
+	default:
+		return false;
+	}
+}
 #endif
 
 //! constructor
@@ -561,6 +629,14 @@ bool CIrrDeviceSDL::run()
 				irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
 				irrevent.KeyInput.Char = SDL_event.key.keysym.unicode;
 				irrevent.KeyInput.Key = key;
+#ifdef _IRR_EMSCRIPTEN_PLATFORM_
+				// On emscripten SDL does not (yet?) return 0 for invalid keysym.unicode's.
+				// Instead it sets keysym.unicode to keysym.sym.
+				// But we need to distinguish control keys from characters here as that info
+				// is necessary in other places like the editbox.
+				if ( isNoUnicodeKey(key) )
+					irrevent.KeyInput.Char = 0;
+#endif
 				irrevent.KeyInput.PressedDown = (SDL_event.type == SDL_KEYDOWN);
 				irrevent.KeyInput.Shift = (SDL_event.key.keysym.mod & KMOD_SHIFT) != 0;
 				irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL ) != 0;
