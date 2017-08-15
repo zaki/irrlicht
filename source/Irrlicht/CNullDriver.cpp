@@ -437,7 +437,10 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size, const io::
 	}
 
 	if (0 == name.size())
+	{
+		os::Printer::log("Could not create ITexture, texture needs to have a non-empty name.", ELL_WARNING);
 		return 0;
+	}
 
 	IImage* image = new CImage(format, size);
 	ITexture* t = 0;
@@ -463,7 +466,13 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size, const io::
 
 ITexture* CNullDriver::addTexture(const io::path& name, IImage* image)
 {
-	if (0 == name.size() || !image)
+	if (0 == name.size())
+	{
+		os::Printer::log("Could not create ITexture, texture needs to have a non-empty name.", ELL_WARNING);
+		return 0;
+	}
+
+	if (!image)
 		return 0;
 
 	ITexture* t = 0;
