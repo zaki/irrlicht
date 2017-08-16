@@ -390,7 +390,8 @@ namespace video
 		//! Creates an empty texture of specified size.
 		/** \param size: Size of the texture.
 		\param name A name for the texture. Later calls to
-		getTexture() with this name will return this texture
+		getTexture() with this name will return this texture.
+		The name can _not_ be empty.
 		\param format Desired color format of the texture. Please note
 		that the driver may choose to create the texture in another
 		color format.
@@ -402,7 +403,8 @@ namespace video
 
 		//! Creates a texture from an IImage.
 		/** \param name A name for the texture. Later calls of
-		getTexture() with this name will return this texture
+		getTexture() with this name will return this texture.
+		The name can _not_ be empty.
 		\param image Image the texture is created from.
 		\param mipmapData Optional pointer to a mipmaps data.
 		If this parameter is not given, the mipmaps are derived from image.
@@ -419,7 +421,8 @@ namespace video
 
 		//! Creates a texture from an IImage.
 		/** \param name A name for the texture. Later calls of
-		getTexture() with this name will return this texture
+		getTexture() with this name will return this texture.
+		The name can _not_ be empty.
 		\param image Image the texture is created from.
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
@@ -428,6 +431,7 @@ namespace video
 
 		//! Creates a cubemap texture from loaded IImages.
 		/** \param name A name for the texture. Later calls of getTexture() with this name will return this texture.
+		The name can _not_ be empty.
 		\param imagePosX Image (positive X) the texture is created from.
 		\param imageNegX Image (negative X) the texture is created from.
 		\param imagePosY Image (positive Y) the texture is created from.
@@ -443,7 +447,8 @@ namespace video
 		height should be a power of two (e.g. 64, 128, 256, 512, ...)
 		and it should not be bigger than the backbuffer, because it
 		shares the zbuffer with the screen buffer.
-		\param name An optional name for the RTT.
+		\param name A name for the texture. Later calls of getTexture() with this name will return this texture.
+		The name can _not_ be empty.
 		\param format The color format of the render target. Floating point formats are supported.
 		\return Pointer to the created texture or 0 if the texture
 		could not be created. This pointer should not be dropped. See
@@ -966,7 +971,7 @@ namespace video
 		virtual void draw2DRectangleOutline(const core::recti& pos,
 				SColor color=SColor(255,255,255,255)) =0;
 
-		//! Draws a 2d line. 
+		//! Draws a 2d line.
 		/** In theory both start and end will be included in coloring.
 		BUG: Currently hardware drivers (d3d/opengl) ignore the last pixel
 		(they use the so called "diamond exit rule" for drawing lines).

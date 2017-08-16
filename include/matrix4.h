@@ -60,6 +60,19 @@ namespace core
 			//! Default constructor
 			/** \param constructor Choose the initialization style */
 			CMatrix4( eConstructor constructor = EM4CONST_IDENTITY );
+
+			//! Constructor with value initialization
+			CMatrix4(const T& r0c0, const T& r0c1, const T& r0c2, const T& r0c3,
+			         const T& r1c0, const T& r1c1, const T& r1c2, const T& r1c3,
+			         const T& r2c0, const T& r2c1, const T& r2c2, const T& r2c3,
+			         const T& r3c0, const T& r3c1, const T& r3c2, const T& r3c3)
+			{
+				M[0]  = r0c0; M[1]  = r0c1; M[2]  = r0c2; M[3]  = r0c3;
+				M[4]  = r1c0; M[5]  = r1c1; M[6]  = r1c2; M[7]  = r1c3;
+				M[8]  = r2c0; M[9]  = r2c1; M[10] = r2c2; M[11] = r2c3;
+				M[12] = r3c0; M[13] = r3c1; M[14] = r3c2; M[15] = r3c3;
+			}
+
 			//! Copy constructor
 			/** \param other Other matrix to copy from
 			\param constructor Choose the initialization style */
