@@ -840,6 +840,7 @@
 		<Unit filename="COGLES2Renderer2D.cpp" />
 		<Unit filename="COGLES2Renderer2D.h" />
 		<Unit filename="COGLESCommon.h" />
+		<Unit filename="COGLESCoreExtensionHandler.h" />
 		<Unit filename="COGLESDriver.cpp" />
 		<Unit filename="COGLESDriver.h" />
 		<Unit filename="COGLESExtensionHandler.cpp" />

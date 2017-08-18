@@ -825,7 +825,7 @@ COGLES2Driver::~COGLES2Driver()
 #ifndef GL_UNSIGNED_INT
 #define GL_UNSIGNED_INT 0x1405
 #endif
-				if (FeatureAvailable[IRR_OES_element_index_uint])
+				if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_element_index_uint])
 					indexSize = GL_UNSIGNED_INT;
 				else
 #endif
@@ -1915,7 +1915,7 @@ COGLES2Driver::~COGLES2Driver()
 			}
 
 	#ifdef GL_EXT_texture_filter_anisotropic
-			if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
+			if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_EXT_texture_filter_anisotropic] &&
 				(!tmpTexture->getStatesCache().IsCached || material.TextureLayer[i].AnisotropicFilter != tmpTexture->getStatesCache().AnisotropicFilter))
 			{
 				glTexParameteri(tmpTextureType, GL_TEXTURE_MAX_ANISOTROPY_EXT,
@@ -2630,7 +2630,7 @@ COGLES2Driver::~COGLES2Driver()
 		{
 		case 24:
 #if defined(GL_OES_depth24)
-			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth24))
+			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth24))
 				bits = GL_DEPTH_COMPONENT24_OES;
 			else
 #endif
@@ -2638,7 +2638,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case 32:
 #if defined(GL_OES_depth32)
-			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth32))
+			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 				bits = GL_DEPTH_COMPONENT32_OES;
 			else
 #endif
@@ -2675,9 +2675,9 @@ COGLES2Driver::~COGLES2Driver()
 			pixelType = GL_UNSIGNED_BYTE;
 			break;
 		case ECF_A8R8G8B8:
-			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_IMG_texture_format_BGRA8888) ||
-				queryOpenGLFeature(COGLES2ExtensionHandler::IRR_EXT_texture_format_BGRA8888) ||
-				queryOpenGLFeature(COGLES2ExtensionHandler::IRR_APPLE_texture_format_BGRA8888))
+			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_IMG_texture_format_BGRA8888) ||
+				queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_format_BGRA8888) ||
+				queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_APPLE_texture_format_BGRA8888))
 			{
 				pixelFormat = GL_BGRA;
 			}
@@ -2768,7 +2768,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_D32:
 #if defined(GL_OES_depth32)
-			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_depth32))
+			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 			{
 				pixelFormat = GL_DEPTH_COMPONENT;
 				pixelType = GL_UNSIGNED_INT;
@@ -2779,7 +2779,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_D24S8:
 #ifdef GL_OES_packed_depth_stencil
-			if (queryOpenGLFeature(COGLES2ExtensionHandler::IRR_OES_packed_depth_stencil))
+			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_packed_depth_stencil))
 			{
 				pixelFormat = GL_DEPTH_STENCIL_OES;
 				pixelType = GL_UNSIGNED_INT_24_8_OES;

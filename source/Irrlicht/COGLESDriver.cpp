@@ -642,7 +642,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 #ifdef GL_OES_point_size_array
-	else if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness==0.0f))
+	else if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_point_size_array] && (Material.Thickness==0.0f))
 		glEnableClientState(GL_POINT_SIZE_ARRAY_OES);
 #endif
 	if (threed && (pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
@@ -755,7 +755,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 #ifndef GL_UNSIGNED_INT
 #define GL_UNSIGNED_INT                   0x1405
 #endif
-			if (FeatureAvailable[IRR_OES_element_index_uint])
+			if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_element_index_uint])
 				indexSize=GL_UNSIGNED_INT;
 			else
 #endif
@@ -770,7 +770,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 		case scene::EPT_POINT_SPRITES:
 		{
 #ifdef GL_OES_point_sprite
-			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_point_sprite])
 				glEnable(GL_POINT_SPRITE_OES);
 #endif
 			// if ==0 we use the point size array
@@ -787,12 +787,12 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 				glPointSize(Material.Thickness);
 			}
 #ifdef GL_OES_point_sprite
-			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_point_sprite])
 				glTexEnvf(GL_POINT_SPRITE_OES,GL_COORD_REPLACE_OES, GL_TRUE);
 #endif
 			glDrawArrays(GL_POINTS, 0, primitiveCount);
 #ifdef GL_OES_point_sprite
-			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_point_sprite])
 			{
 				glDisable(GL_POINT_SPRITE_OES);
 				glTexEnvf(GL_POINT_SPRITE_OES,GL_COORD_REPLACE_OES, GL_FALSE);
@@ -840,7 +840,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 	}
 
 #ifdef GL_OES_point_size_array
-	if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness==0.0f))
+	if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_point_size_array] && (Material.Thickness==0.0f))
 		glDisableClientState(GL_POINT_SIZE_ARRAY_OES);
 #endif
 
@@ -1530,7 +1530,7 @@ GLint COGLES1Driver::getTextureWrapMode(u8 clamp) const
 			break;
 		case ETC_MIRROR:
 #ifdef GL_OES_texture_mirrored_repeat
-			if (FeatureAvailable[IRR_OES_texture_mirrored_repeat])
+			if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_texture_mirrored_repeat])
 				return GL_MIRRORED_REPEAT_OES;
 			else
 #endif
@@ -1541,7 +1541,7 @@ GLint COGLES1Driver::getTextureWrapMode(u8 clamp) const
 		case ETC_MIRROR_CLAMP_TO_EDGE:
 		case ETC_MIRROR_CLAMP_TO_BORDER:
 #ifdef GL_OES_texture_mirrored_repeat
-			if (FeatureAvailable[IRR_OES_texture_mirrored_repeat])
+			if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_texture_mirrored_repeat])
 				return GL_MIRRORED_REPEAT_OES;
 			else
 #endif
@@ -1941,7 +1941,7 @@ void COGLES1Driver::setTextureRenderStates(const SMaterial& material, bool reset
 				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
 		}
 #elif defined(GL_EXT_texture_lod_bias)
-		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_EXT_texture_lod_bias])
 		{
 			if (material.TextureLayer[i].LODBias)
 			{
@@ -1993,7 +1993,7 @@ void COGLES1Driver::setTextureRenderStates(const SMaterial& material, bool reset
 		}
 
 #ifdef GL_EXT_texture_filter_anisotropic
-		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic] &&
+		if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_EXT_texture_filter_anisotropic] &&
 			(!statesCache.IsCached || material.TextureLayer[i].AnisotropicFilter != statesCache.AnisotropicFilter))
 		{
 			glTexParameteri(tmpTextureType, GL_TEXTURE_MAX_ANISOTROPY_EXT,
@@ -2364,7 +2364,7 @@ void COGLES1Driver::drawStencilShadowVolume(const core::array<core::vector3df>& 
 	GLenum incr = GL_INCR;
 
 #if defined(GL_OES_stencil_wrap)
-	if (FeatureAvailable[IRR_OES_stencil_wrap])
+	if (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_stencil_wrap])
 	{
 		decr = GL_DECR_WRAP_OES;
 		incr = GL_INCR_WRAP_OES;
@@ -2829,7 +2829,10 @@ IImage* COGLES1Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		return 0;
 	GLint internalformat=GL_RGBA;
 	GLint type=GL_UNSIGNED_BYTE;
-	if (false && (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format] || FeatureAvailable[IRR_EXT_read_format_bgra]))
+	if (false
+		&& (FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_IMG_read_format]
+			|| FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_OES_read_format]
+			|| FeatureAvailable[COGLESCoreExtensionHandler::IRR_GL_EXT_read_format_bgra]))
 	{
 #ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
 		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, &internalformat);
@@ -2983,7 +2986,7 @@ GLenum COGLES1Driver::getZBufferBits() const
 	{
 	case 24:
 #if defined(GL_OES_depth24)
-		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_depth24))
+		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth24))
 			bits = GL_DEPTH_COMPONENT24_OES;
 		else
 #endif
@@ -2991,7 +2994,7 @@ GLenum COGLES1Driver::getZBufferBits() const
 		break;
 	case 32:
 #if defined(GL_OES_depth32)
-		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_depth32))
+		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 			bits = GL_DEPTH_COMPONENT32_OES;
 		else
 #endif
@@ -3032,9 +3035,9 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		pixelType = GL_UNSIGNED_BYTE;
 		break;
 	case ECF_A8R8G8B8:
-		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888) ||
-			queryOpenGLFeature(COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888) ||
-			queryOpenGLFeature(COGLES1ExtensionHandler::IRR_APPLE_texture_format_BGRA8888))
+		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_IMG_texture_format_BGRA8888) ||
+			queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_format_BGRA8888) ||
+			queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_APPLE_texture_format_BGRA8888))
 		{
 			internalFormat = GL_BGRA;
 			pixelFormat = GL_BGRA;
@@ -3140,7 +3143,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		break;
 	case ECF_D32:
 #if defined(GL_OES_depth32)
-		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_depth32))
+		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 		{
 			internalFormat = GL_DEPTH_COMPONENT32_OES;
 			pixelFormat = GL_DEPTH_COMPONENT;
@@ -3152,7 +3155,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		break;
 	case ECF_D24S8:
 #ifdef GL_OES_packed_depth_stencil
-		if (queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_packed_depth_stencil))
+		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_packed_depth_stencil))
 		{
 			internalFormat = GL_DEPTH24_STENCIL8_OES;
 			pixelFormat = GL_DEPTH_STENCIL_OES;
