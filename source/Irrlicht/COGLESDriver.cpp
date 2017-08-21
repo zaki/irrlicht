@@ -3008,9 +3008,10 @@ GLenum COGLES1Driver::getZBufferBits() const
 	return bits;
 }
 
-void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
-	GLenum& pixelType, void(**converter)(const void*, s32, void*))
+bool COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+	GLenum& pixelType, void(**converter)(const void*, s32, void*)) const
 {
+	bool supported = false;
 	internalFormat = GL_RGBA;
 	pixelFormat = GL_RGBA;
 	pixelType = GL_UNSIGNED_BYTE;
@@ -3019,22 +3020,26 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	switch (format)
 	{
 	case ECF_A1R5G5B5:
+		supported = true;
 		internalFormat = GL_RGBA;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_UNSIGNED_SHORT_5_5_5_1;
 		*converter = CColorConverter::convert_A1R5G5B5toR5G5B5A1;
 		break;
 	case ECF_R5G6B5:
+		supported = true;
 		internalFormat = GL_RGB;
 		pixelFormat = GL_RGB;
 		pixelType = GL_UNSIGNED_SHORT_5_6_5;
 		break;
 	case ECF_R8G8B8:
+		supported = true;
 		internalFormat = GL_RGB;
 		pixelFormat = GL_RGB;
 		pixelType = GL_UNSIGNED_BYTE;
 		break;
 	case ECF_A8R8G8B8:
+		supported = true;
 		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_IMG_texture_format_BGRA8888) ||
 			queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_format_BGRA8888) ||
 			queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_APPLE_texture_format_BGRA8888))
@@ -3052,6 +3057,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		break;
 #ifdef GL_EXT_texture_compression_s3tc
 	case ECF_DXT1:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
@@ -3060,6 +3066,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #ifdef GL_EXT_texture_compression_s3tc
 	case ECF_DXT2:
 	case ECF_DXT3:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
@@ -3068,6 +3075,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #ifdef GL_EXT_texture_compression_s3tc
 	case ECF_DXT4:
 	case ECF_DXT5:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
@@ -3075,6 +3083,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 	case ECF_PVRTC_RGB2:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
 		pixelFormat = GL_RGB;
 		pixelType = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
@@ -3082,6 +3091,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 	case ECF_PVRTC_ARGB2:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
@@ -3089,6 +3099,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 	case ECF_PVRTC_RGB4:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
 		pixelFormat = GL_RGB;
 		pixelType = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
@@ -3096,6 +3107,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc
 	case ECF_PVRTC_ARGB4:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
@@ -3103,6 +3115,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc2
 	case ECF_PVRTC2_ARGB2:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
@@ -3110,6 +3123,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_IMG_texture_compression_pvrtc2
 	case ECF_PVRTC2_ARGB4:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
@@ -3117,6 +3131,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_OES_compressed_ETC1_RGB8_texture
 	case ECF_ETC1:
+		supported = true;
 		internalFormat = GL_ETC1_RGB8_OES;
 		pixelFormat = GL_RGB;
 		pixelType = GL_ETC1_RGB8_OES;
@@ -3124,6 +3139,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_ES_VERSION_3_0 // TO-DO - fix when extension name will be available
 	case ECF_ETC2_RGB:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGB8_ETC2;
 		pixelFormat = GL_RGB;
 		pixelType = GL_COMPRESSED_RGB8_ETC2;
@@ -3131,12 +3147,14 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 #ifdef GL_ES_VERSION_3_0 // TO-DO - fix when extension name will be available
 	case ECF_ETC2_ARGB:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA8_ETC2_EAC;
 		pixelFormat = GL_RGBA;
 		pixelType = GL_COMPRESSED_RGBA8_ETC2_EAC;
 		break;
 #endif
 	case ECF_D16:
+		supported = true;
 		internalFormat = GL_DEPTH_COMPONENT16;
 		pixelFormat = GL_DEPTH_COMPONENT;
 		pixelType = GL_UNSIGNED_SHORT;
@@ -3145,6 +3163,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #if defined(GL_OES_depth32)
 		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 		{
+			supported = true;
 			internalFormat = GL_DEPTH_COMPONENT32_OES;
 			pixelFormat = GL_DEPTH_COMPONENT;
 			pixelType = GL_UNSIGNED_INT;
@@ -3157,6 +3176,7 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #ifdef GL_OES_packed_depth_stencil
 		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_packed_depth_stencil))
 		{
+			supported = true;
 			internalFormat = GL_DEPTH24_STENCIL8_OES;
 			pixelFormat = GL_DEPTH_STENCIL_OES;
 			pixelType = GL_UNSIGNED_INT_24_8_OES;
@@ -3204,6 +3224,17 @@ void COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	if (internalFormat == GL_BGRA)
 		internalFormat = GL_RGBA;
 #endif
+
+	return supported;
+}
+
+bool COGLES1Driver::queryTextureFormat(ECOLOR_FORMAT format) const
+{
+	GLint dummyInternalFormat;
+	GLenum dummyPixelFormat;
+	GLenum dummyPixelType;
+	void (*dummyConverter)(const void*, s32, void*);
+	return getColorFormatParameters(format, dummyInternalFormat, dummyPixelFormat, dummyPixelType, &dummyConverter);
 }
 
 COGLES1CacheHandler* COGLES1Driver::getCacheHandler() const

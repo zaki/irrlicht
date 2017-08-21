@@ -278,9 +278,12 @@ namespace video
 		}
 
 		//! Get the maximal texture size for this driver
-		core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
+		virtual core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
 
-		void removeTexture(ITexture* texture) _IRR_OVERRIDE_;
+		virtual void removeTexture(ITexture* texture) _IRR_OVERRIDE_;
+
+		//! Check if the driver supports creating textures with the given color format
+		virtual bool queryTextureFormat(ECOLOR_FORMAT format) const _IRR_OVERRIDE_;
 
 		//! Convert E_BLEND_FACTOR to OpenGL equivalent
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
@@ -288,8 +291,8 @@ namespace video
 		//! Get ZBuffer bits.
 		GLenum getZBufferBits() const;
 
-		void getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
-			GLenum& pixelType, void(**converter)(const void*, s32, void*));
+		bool getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+			GLenum& pixelType, void(**converter)(const void*, s32, void*)) const;
 
 		COGLES1CacheHandler* getCacheHandler() const;
 
