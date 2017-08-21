@@ -161,6 +161,9 @@ namespace video
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
 
+		//! Check if the driver supports creating textures with the given color format
+		virtual bool queryTextureFormat(ECOLOR_FORMAT format) const _IRR_OVERRIDE_;
+
 		IDepthBuffer * getDepthBuffer () { return DepthBuffer; }
 		IStencilBuffer * getStencilBuffer () { return StencilBuffer; }
 

@@ -10,6 +10,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add function IVideoDriver::queryTextureFormat to allow checking if a driver supports textures with a specific color format.
 - ISceneManager::getMesh can now creates meshes with alternative cache-names.
 - Lets the BSP loader find textures inserted with relative paths. Thx@ curaga for patch
 - Slightly simplified ALLOC_STRATEGY_DOUBLE in arrays

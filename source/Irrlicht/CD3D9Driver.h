@@ -293,6 +293,9 @@ namespace video
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
 
+		//! Check if the driver supports creating textures with the given color format
+		virtual bool queryTextureFormat(ECOLOR_FORMAT format) const _IRR_OVERRIDE_;
+
 		//! Get the current color format of the color buffer
 		/** \return Color format of the color buffer as D3D color value. */
 		D3DFORMAT getD3DColorFormat() const;
