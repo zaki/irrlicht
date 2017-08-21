@@ -3568,6 +3568,15 @@ void COpenGLDriver::removeTexture(ITexture* texture)
 	CNullDriver::removeTexture(texture);
 }
 
+//! Check if the driver supports creating textures with the given color format
+bool COpenGLDriver::queryTextureFormat(ECOLOR_FORMAT format) const
+{
+	GLint dummyInternalFormat;
+	GLenum dummyPixelFormat;
+	GLenum dummyPixelType;
+	void (*dummyConverter)(const void*, s32, void*);
+	return getColorFormatParameters(format, dummyInternalFormat, dummyPixelFormat, dummyPixelType, &dummyConverter);
+}
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
@@ -4105,9 +4114,10 @@ GLenum COpenGLDriver::getZBufferBits() const
 	return bits;
 }
 
-void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
-	GLenum& pixelType, void(**converter)(const void*, s32, void*))
+bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+	GLenum& pixelType, void(**converter)(const void*, s32, void*)) const
 {
+	bool supported = false;
 	internalFormat = GL_RGBA;
 	pixelFormat = GL_RGBA;
 	pixelType = GL_UNSIGNED_BYTE;
@@ -4115,49 +4125,58 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	switch (format)
 	{
 	case ECF_A1R5G5B5:
+		supported = true;
 		internalFormat = GL_RGBA;
 		pixelFormat = GL_BGRA_EXT;
 		pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 		break;
 	case ECF_R5G6B5:
+		supported = true;
 		internalFormat = GL_RGB;
 		pixelFormat = GL_RGB;
 		pixelType = GL_UNSIGNED_SHORT_5_6_5;
 		break;
 	case ECF_R8G8B8:
+		supported = true;
 		internalFormat = GL_RGB;
 		pixelFormat = GL_BGR;
 		pixelType = GL_UNSIGNED_BYTE;
 		break;
 	case ECF_A8R8G8B8:
+		supported = true;
 		internalFormat = GL_RGBA;
 		pixelFormat = GL_BGRA_EXT;
 		if (Version > 101)
 			pixelType = GL_UNSIGNED_INT_8_8_8_8_REV;
 		break;
 	case ECF_DXT1:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 		pixelFormat = GL_BGRA_EXT;
 		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 		break;
 	case ECF_DXT2:
 	case ECF_DXT3:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 		pixelFormat = GL_BGRA_EXT;
 		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 		break;
 	case ECF_DXT4:
 	case ECF_DXT5:
+		supported = true;
 		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 		pixelFormat = GL_BGRA_EXT;
 		pixelType = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 		break;
 	case ECF_D16:
+		supported = true;
 		internalFormat = GL_DEPTH_COMPONENT16;
 		pixelFormat = GL_DEPTH_COMPONENT;
 		pixelType = GL_UNSIGNED_SHORT;
 		break;
 	case ECF_D32:
+		supported = true;
 		internalFormat = GL_DEPTH_COMPONENT32;
 		pixelFormat = GL_DEPTH_COMPONENT;
 		pixelType = GL_UNSIGNED_INT;
@@ -4166,6 +4185,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #ifdef GL_VERSION_3_0
 		if (Version >= 300)
 		{
+			supported = true;
 			internalFormat = GL_DEPTH_STENCIL;
 			pixelFormat = GL_DEPTH_STENCIL;
 			pixelType = GL_UNSIGNED_INT_24_8;
@@ -4175,6 +4195,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #ifdef GL_EXT_packed_depth_stencil
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_EXT_packed_depth_stencil))
 		{
+			supported = true;
 			internalFormat = GL_DEPTH_STENCIL_EXT;
 			pixelFormat = GL_DEPTH_STENCIL_EXT;
 			pixelType = GL_UNSIGNED_INT_24_8_EXT;
@@ -4186,6 +4207,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_R8:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_R8;
 			pixelFormat = GL_RED;
 			pixelType = GL_UNSIGNED_BYTE;
@@ -4196,6 +4218,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_R8G8:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_RG8;
 			pixelFormat = GL_RG;
 			pixelType = GL_UNSIGNED_BYTE;
@@ -4206,6 +4229,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_R16:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_R16;
 			pixelFormat = GL_RED;
 			pixelType = GL_UNSIGNED_SHORT;
@@ -4216,6 +4240,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_R16G16:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_RG16;
 			pixelFormat = GL_RG;
 			pixelType = GL_UNSIGNED_SHORT;
@@ -4226,6 +4251,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_R16F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_R16F;
 			pixelFormat = GL_RED;
 #ifdef GL_ARB_half_float_pixel
@@ -4241,6 +4267,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_G16R16F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_RG16F;
 			pixelFormat = GL_RG;
 #ifdef GL_ARB_half_float_pixel
@@ -4256,6 +4283,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_A16B16G16R16F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
 		{
+			supported = true;
 			internalFormat = GL_RGBA16F_ARB;
 			pixelFormat = GL_RGBA;
 #ifdef GL_ARB_half_float_pixel
@@ -4271,6 +4299,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_R32F;
 			pixelFormat = GL_RED;
 			pixelType = GL_FLOAT;
@@ -4281,6 +4310,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
+			supported = true;
 			internalFormat = GL_RG32F;
 			pixelFormat = GL_RG;
 			pixelType = GL_FLOAT;
@@ -4291,6 +4321,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_A32B32G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
 		{
+			supported = true;
 			internalFormat = GL_RGBA32F_ARB;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_FLOAT;
@@ -4312,6 +4343,8 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			internalFormat = GL_SRGB_EXT;
 	}
 #endif
+
+	return supported;
 }
 
 COpenGLDriver::E_OPENGL_FIXED_PIPELINE_STATE COpenGLDriver::getFixedPipelineState() const

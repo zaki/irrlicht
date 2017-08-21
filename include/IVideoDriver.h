@@ -1558,6 +1558,10 @@ namespace video
 		*/
 		virtual void convertColor(const void* sP, ECOLOR_FORMAT sF, s32 sN,
 				void* dP, ECOLOR_FORMAT dF) const =0;
+
+		//! Check if the driver supports creating textures with the given color format
+		/**	\return True if the format is available, false if not. */
+		virtual bool queryTextureFormat(ECOLOR_FORMAT format) const = 0;
 	};
 
 } // end namespace video

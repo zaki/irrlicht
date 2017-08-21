@@ -376,6 +376,12 @@ namespace video
 		virtual void drawMeshBufferNormals(const scene::IMeshBuffer* mb, f32 length=10.f,
 			SColor color=0xffffffff) _IRR_OVERRIDE_;
 
+		//! Check if the driver supports creating textures with the given color format
+		virtual bool queryTextureFormat(ECOLOR_FORMAT format) const _IRR_OVERRIDE_
+		{
+			return false;
+		}
+
 	protected:
 		struct SHWBufferLink
 		{

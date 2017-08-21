@@ -2833,7 +2833,7 @@ void CD3D9Driver::draw3DBox( const core::aabbox3d<f32>& box, SColor color)
 {
 	core::vector3df edges[8];
 	box.getEdges(edges);
- 
+
 	setVertexShader(EVT_STANDARD);
 	setRenderStates3DMode();
 
@@ -3498,6 +3498,10 @@ core::dimension2du CD3D9Driver::getMaxTextureSize() const
 	return core::dimension2du(Caps.MaxTextureWidth, Caps.MaxTextureHeight);
 }
 
+bool CD3D9Driver::queryTextureFormat(ECOLOR_FORMAT format) const
+{
+	return getD3DFormatFromColorFormat(format) != D3DFMT_UNKNOWN;
+}
 
 u32 CD3D9Driver::getD3DBlend(E_BLEND_FACTOR factor) const
 {

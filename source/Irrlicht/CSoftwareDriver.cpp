@@ -938,6 +938,12 @@ u32 CSoftwareDriver::getMaximalPrimitiveCount() const
 	return 0x00800000;
 }
 
+bool CSoftwareDriver::queryTextureFormat(ECOLOR_FORMAT format) const
+{
+	return format == ECF_A1R5G5B5;
+}
+
+
 } // end namespace video
 } // end namespace irr
 

@@ -114,6 +114,9 @@ namespace video
 		//! call.
 		virtual u32 getMaximalPrimitiveCount() const _IRR_OVERRIDE_;
 
+		//! Check if the driver supports creating textures with the given color format
+		virtual bool queryTextureFormat(ECOLOR_FORMAT format) const _IRR_OVERRIDE_;
+
 	protected:
 
 		//! sets a render target
