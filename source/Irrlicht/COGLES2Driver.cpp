@@ -2809,6 +2809,7 @@ COGLES2Driver::~COGLES2Driver()
 				os::Printer::log("ECF_D24S8 color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R8:
+#if defined(GL_EXT_texture_rg)
 			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg))
 			{
 				supported = true;
@@ -2816,6 +2817,7 @@ COGLES2Driver::~COGLES2Driver()
 				pixelType = GL_UNSIGNED_BYTE;
 			}
 			else
+#endif
 				os::Printer::log("ECF_R8 color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R8G8:
