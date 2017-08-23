@@ -551,6 +551,7 @@
 		<Unit filename="../../include/SMeshBuffer.h" />
 		<Unit filename="../../include/SMeshBufferLightMap.h" />
 		<Unit filename="../../include/SMeshBufferTangents.h" />
+		<Unit filename="../../include/SOverrideMaterial.h" />
 		<Unit filename="../../include/SParticle.h" />
 		<Unit filename="../../include/SSharedMeshBuffer.h" />
 		<Unit filename="../../include/SSkinMeshBuffer.h" />
