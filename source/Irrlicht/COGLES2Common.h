@@ -16,6 +16,10 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <EGL/eglplatform.h>
+#elif defined(_IRR_EMSCRIPTEN_PLATFORM_)
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <EGL/eglplatform.h>
 #else
 #if defined(_IRR_OGLES2_USE_EXTPOINTER_)
 	#define GL_GLEXT_PROTOTYPES 1

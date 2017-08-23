@@ -2867,7 +2867,16 @@ COGLES2Driver::~COGLES2Driver()
 				os::Printer::log("ECF_G16R16F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_A16B16G16R16F:
-			os::Printer::log("ECF_A16B16G16R16F color format is not supported", ELL_ERROR);
+#if defined(GL_OES_texture_half_float)
+			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float))
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_HALF_FLOAT_OES ;
+			}
+			else
+#endif
+				os::Printer::log("ECF_A16B16G16R16F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_R32F:
 #if defined(GL_OES_texture_float) && defined(GL_EXT_texture_rg)
@@ -2898,7 +2907,16 @@ COGLES2Driver::~COGLES2Driver()
 				os::Printer::log("ECF_G32R32F color format is not supported", ELL_ERROR);
 			break;
 		case ECF_A32B32G32R32F:
-			os::Printer::log("ECF_A32B32G32R32F color format is not supported", ELL_ERROR);
+#if defined(GL_OES_texture_float)
+			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float))
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_FLOAT ;
+			}
+			else
+#endif
+				os::Printer::log("ECF_A32B32G32R32F color format is not supported", ELL_ERROR);
 			break;
 		default:
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
