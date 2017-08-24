@@ -176,6 +176,9 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.5
+ - CFileSystem::getAbsolutePath no longer wrongly converts an empty filename to "/" on unix platforms.
+   This fixes the bug that CFileSystem::createAndOpenFile("") returned a (strange behaving) non-null file pointer.
+   Additional check also added in createAndOpenFile to early out on empty names.
  - Fix bug in cursor positions when compiled with newer Windows SDK's (v110 in VS2012) and running on Systems >= Windows Vista in windowed mode.
    Thanks @Mustapha Tachouct for the bugreport and patch proposal. Also thanks @BakeMyCake for an earlier report.
  - IOSOperator::getSysteMemory() no longer returns incorrect values with >2GB. Thanks @Eduline - human development for report and patch.
