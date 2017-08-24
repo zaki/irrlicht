@@ -83,9 +83,11 @@ void CReadFile::openFile()
 	{
 		// get FileSize
 
-		fseek(File, 0, SEEK_END);
-		FileSize = getPos();
-		fseek(File, 0, SEEK_SET);
+		if ( fseek(File, 0, SEEK_END) == 0 )
+		{
+			FileSize = getPos();
+			fseek(File, 0, SEEK_SET);
+		}
 	}
 }
 

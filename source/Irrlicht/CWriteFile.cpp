@@ -91,9 +91,12 @@ void CWriteFile::openFile(bool append)
 	{
 		// get FileSize
 
-		fseek(File, 0, SEEK_END);
-		FileSize = ftell(File);
-		fseek(File, 0, SEEK_SET);
+		if ( fseek(File, 0, SEEK_END) == 0 )
+		{
+			FileSize = ftell(File);
+			fseek(File, 0, SEEK_SET);
+
+		}
 	}
 }
 
