@@ -13,7 +13,7 @@ namespace irr
 namespace video
 {
 	//! An enum for the color format of textures used by the Irrlicht Engine.
-	/** A color format specifies how color information is stored. 
+	/** A color format specifies how color information is stored.
 	    NOTE: Byte order in memory is usually flipped (it's probably correct in bitmap files, but flipped on reading).
 	    So for example ECF_A8R8G8B8 is BGRA in memory same as in DX9's D3DFMT_A8R8G8B8 format.
 	*/
@@ -127,6 +127,43 @@ namespace video
 
 		//! Unknown color format:
 		ECF_UNKNOWN
+	};
+
+	//! Names for ECOLOR_FORMAT types
+	const c8* const ColorFormatNames[ECF_UNKNOWN+1] =
+	{
+		"A1R5G5B5",
+		"R5G6B5",
+		"R8G8B8",
+		"A8R8G8B8",
+		"DXT1",
+		"DXT2",
+		"DXT3",
+		"DXT4",
+		"DXT5",
+		"PVRTC_RGB2",
+		"PVRTC_ARGB2",
+		"PVRTC_RGB4",
+		"PVRTC_ARGB4",
+		"PVRTC2_ARGB2",
+		"PVRTC2_ARGB4",
+		"ETC1",
+		"ETC2_RGB",
+		"ETC2_ARGB",
+		"R16F",
+		"G16R16F",
+		"A16B16G16R16F",
+		"R32F",
+		"G32R32F",
+		"A32B32G32R32F",
+		"R8",
+		"R8G8",
+		"R16",
+		"R16G16",
+		"D16",
+		"D32",
+		"D24S8",
+		0
 	};
 
 
