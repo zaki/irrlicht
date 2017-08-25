@@ -200,7 +200,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 		}
 		fclose(file);
 	}
-	return (*MHz != 0);
+	return (MHz && *MHz != 0);
 #endif
 }
 
