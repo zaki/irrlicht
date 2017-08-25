@@ -180,7 +180,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 		*MHz = CpuClock.hz;
 	return true;
 #else
-	// could probably be read from "/proc/cpuinfo" or "/proc/cpufreq"
+	// read from "/proc/cpuinfo"
 	FILE* file = fopen("/proc/cpuinfo", "r");
 	if (file)
 	{
@@ -194,7 +194,8 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 			pos = str.findNext(':', pos);
 			if (pos != -1)
 			{
-				*MHz = core::fast_atof(str.c_str()+pos+1);
+				while ( str[++pos] == ' ' );
+				*MHz = core::fast_atof(str.c_str()+pos);
 			}
 		}
 		fclose(file);
