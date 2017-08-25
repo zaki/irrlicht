@@ -133,10 +133,11 @@ private:
 /*
 	Control which allows setting some of the material values for a meshscenenode
 */
-struct SMaterialControl
+class CMaterialControl
 {
+public:
 	// constructor
-	SMaterialControl()
+	CMaterialControl()
 	: Initialized(false), Driver(0)
 	, TypicalColorsControl(0), ButtonLighting(0), InfoLighting(0), ComboMaterial(0)
 	{
@@ -145,7 +146,7 @@ struct SMaterialControl
 	}
 
 	// Destructor
-	~SMaterialControl()
+	~CMaterialControl()
 	{
 		for (irr::u32 i=0; i<irr::video::MATERIAL_MAX_TEXTURES; ++i)
 		{
@@ -182,13 +183,14 @@ protected:
 /*
 	Control to allow setting the color values of a lightscenenode.
 */
-struct SLightNodeControl
+class CLightNodeControl
 {
+public:
 	// constructor
-	SLightNodeControl() : Initialized(false), TypicalColorsControl(0)
+	CLightNodeControl() : Initialized(false), TypicalColorsControl(0)
 	{}
 
-	~SLightNodeControl()
+	~CLightNodeControl()
 	{
 		if ( TypicalColorsControl )
 			TypicalColorsControl->drop();
@@ -238,6 +240,8 @@ public:
 	, SceneNode(0), SceneNode2T(0), SceneNodeTangents(0), NodeLight(0)
 	, CameraRotationAxis(irr::core::vector3df(1,0,0))
 	, LightRotationAxis(irr::core::vector3df(1,0,0))
+	, MeshMaterialControl(0)
+	, LightControl(0)
 	, ControlVertexColors(0)
 	, GlobalAmbient(0)
 	, MousePressed(false)
@@ -303,8 +307,8 @@ private:
 	irr::scene::ILightSceneNode* 	NodeLight;
 	irr::core::vector3df CameraRotationAxis;
 	irr::core::vector3df LightRotationAxis;
-	SMaterialControl	MeshMaterialControl;
-	SLightNodeControl	LightControl;
+	CMaterialControl*	MeshMaterialControl;
+	CLightNodeControl*	LightControl;
 	CColorControl*	ControlVertexColors;
 	CColorControl*	GlobalAmbient;
 	bool KeysPressed[irr::KEY_KEY_CODES_COUNT];
