@@ -36,7 +36,7 @@ namespace io
 		virtual long getSize() const = 0;
 
 		//! Get the current position in the file.
-		/** \return Current position in the file in bytes. */
+		/** \return Current position in the file in bytes on success or -1L on failure. */
 		virtual long getPos() const = 0;
 
 		//! Get name of file.

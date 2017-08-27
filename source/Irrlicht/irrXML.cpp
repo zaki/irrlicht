@@ -67,11 +67,9 @@ private:
 	//! retrieves the file size of the open file
 	void getFileSize()
 	{
-		if ( fseek(File, 0, SEEK_END) == 0 )
-		{
-			Size = ftell(File);
-			fseek(File, 0, SEEK_SET);
-		}
+		fseek(File, 0, SEEK_END);
+		Size = ftell(File);
+		fseek(File, 0, SEEK_SET);
 	}
 
 	FILE* File;
