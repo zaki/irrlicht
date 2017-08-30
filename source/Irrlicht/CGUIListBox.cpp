@@ -271,7 +271,7 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 					Selected = 0;
 				if (Selected >= (s32)Items.size())
 					Selected = Items.size() - 1;	// will set Selected to -1 for empty listboxes which is correct
-				
+
 
 				recalculateScrollPos();
 
@@ -442,10 +442,7 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 				}
 			}
 			break;
-		case EET_LOG_TEXT_EVENT:
-		case EET_USER_EVENT:
-		case EET_JOYSTICK_INPUT_EVENT:
-		case EGUIET_FORCE_32_BIT:
+		default:
 			break;
 		}
 	}
