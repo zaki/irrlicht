@@ -531,6 +531,9 @@ namespace scene
 
 	private:
 
+		// load and create a mesh which we know already isn't in the cache and put it in there
+		IAnimatedMesh* getUncachedMesh(io::IReadFile* file, const io::path& filename, const io::path& cachename);
+
 		//! clears the deletion list
 		void clearDeletionList();
 

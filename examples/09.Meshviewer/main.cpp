@@ -265,7 +265,7 @@ void loadModel(const c8* fn)
 
 /*
 Function createToolBox() creates a toolbox window. In this simple mesh
-viewer, this toolbox only contains a controls to change the scale 
+viewer, this toolbox only contains a controls to change the scale
 and animation speed of the model and a control to set the transparency
 of the GUI-elements.
 */
@@ -944,9 +944,9 @@ int main(int argc, char* argv[])
 	Device->setWindowCaption(Caption.c_str());
 
 	/*
-	Now we show the about message box at start up, and load the first model. 
-	To make everything look	better a skybox is created. We also add a user 
-	controlled camera, to make the application more interactive. 
+	Now we show the about message box at start up, and load the first model.
+	To make everything look	better a skybox is created. We also add a user
+	controlled camera, to make the application more interactive.
 	Finally, everything is drawn in a standard drawing loop.
 	*/
 
