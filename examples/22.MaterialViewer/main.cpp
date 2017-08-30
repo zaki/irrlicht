@@ -133,6 +133,7 @@ video::E_VERTEX_TYPE getVertexTypeForMaterialType(video::E_MATERIAL_TYPE materia
 CColorControl::CColorControl(gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t *text, IGUIElement* parent, s32 id)
 	: gui::IGUIElement(gui::EGUIET_ELEMENT, guiEnv, parent,id, core::rect< s32 >(pos, pos+core::dimension2d<s32>(80, 75)))
 	, DirtyFlag(true)
+	, Color(0)
 	, ColorStatic(0)
 	, EditAlpha(0)
 	, EditRed(0)
@@ -421,7 +422,7 @@ void CTextureControl::updateTextures(video::IVideoDriver * driver)
 /*
 	Control which allows setting some of the material values for a meshscenenode
 */
-void SMaterialControl::init(scene::IMeshSceneNode* node, IrrlichtDevice * device, const core::position2d<s32> & pos, const wchar_t * description)
+void CMaterialControl::init(scene::IMeshSceneNode* node, IrrlichtDevice * device, const core::position2d<s32> & pos, const wchar_t * description)
 {
 	if ( Initialized || !node || !device) // initializing twice or with invalid data not allowed
 		return;
@@ -465,6 +466,7 @@ void SMaterialControl::init(scene::IMeshSceneNode* node, IrrlichtDevice * device
 	// Controls for selecting the material textures
 	guiEnv->addStaticText(L"Textures", core::rect<s32>(pos.X, top, pos.X+60, top+15), false, false, 0, -1, false);
 	top += 15;
+
 	for (irr::u32 i=0; i<irr::video::MATERIAL_MAX_TEXTURES; ++i)
 	{
 		TextureControls[i] = new CTextureControl(guiEnv, Driver, core::position2di(pos.X, top), guiEnv->getRootGUIElement());
@@ -474,7 +476,7 @@ void SMaterialControl::init(scene::IMeshSceneNode* node, IrrlichtDevice * device
 	Initialized = true;
 }
 
-void SMaterialControl::update(scene::IMeshSceneNode* sceneNode, scene::IMeshSceneNode* sceneNode2T, scene::IMeshSceneNode* sceneNodeTangents)
+void CMaterialControl::update(scene::IMeshSceneNode* sceneNode, scene::IMeshSceneNode* sceneNode2T, scene::IMeshSceneNode* sceneNodeTangents)
 {
 	if ( !Initialized )
 		return;
@@ -527,24 +529,24 @@ void SMaterialControl::update(scene::IMeshSceneNode* sceneNode, scene::IMeshScen
 		TextureControls[i]->resetDirty();
 }
 
-void SMaterialControl::updateTextures()
+void CMaterialControl::updateTextures()
 {
 	for (irr::u32 i=0; i<irr::video::MATERIAL_MAX_TEXTURES; ++i)
 		TextureControls[i]->updateTextures(Driver);
 }
 
-void SMaterialControl::selectTextures(const irr::core::stringw& name)
+void CMaterialControl::selectTextures(const irr::core::stringw& name)
 {
 	for (irr::u32 i=0; i<irr::video::MATERIAL_MAX_TEXTURES; ++i)
 		TextureControls[i]->selectTextureByName(name);
 }
 
-bool SMaterialControl::isLightingEnabled() const
+bool CMaterialControl::isLightingEnabled() const
 {
 	return ButtonLighting && ButtonLighting->isPressed();
 }
 
-void SMaterialControl::updateMaterial(video::SMaterial & material)
+void CMaterialControl::updateMaterial(video::SMaterial & material)
 {
 	TypicalColorsControl->updateMaterialColors(material);
 	material.Lighting = ButtonLighting->isPressed();
@@ -561,7 +563,7 @@ void SMaterialControl::updateMaterial(video::SMaterial & material)
 	Control to allow setting the color values of a lightscenenode.
 */
 
-void SLightNodeControl::init(scene::ILightSceneNode* node, gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t * description)
+void CLightNodeControl::init(scene::ILightSceneNode* node, gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t * description)
 {
 	if ( Initialized || !node || !guiEnv) // initializing twice or with invalid data not allowed
 		return;
@@ -573,7 +575,7 @@ void SLightNodeControl::init(scene::ILightSceneNode* node, gui::IGUIEnvironment*
 	Initialized = true;
 }
 
-void SLightNodeControl::update(scene::ILightSceneNode* node)
+void CLightNodeControl::update(scene::ILightSceneNode* node)
 {
 	if ( !Initialized )
 		return;
@@ -665,6 +667,7 @@ bool CApp::init(int argc, char *argv[])
 	Device = createDevice(Config.DriverType, Config.ScreenSize);
 	if (!Device)
 		return false;
+
 	Device->setWindowCaption( core::stringw(video::DRIVER_TYPE_NAMES[Config.DriverType]).c_str() );
 	Device->setEventReceiver(this);
 
@@ -698,8 +701,6 @@ bool CApp::init(int argc, char *argv[])
 	subMenuFile->addSeparator();
 	subMenuFile->addItem(L"Quit", GUI_ID_QUIT);
 
-	const s32 controlsTop = 20;
-
 	// a static camera
 	Camera = smgr->addCameraSceneNode (0, core::vector3df(0, 40, -40),
 										core::vector3df(0, 10, 0),
@@ -715,8 +716,11 @@ bool CApp::init(int argc, char *argv[])
 									   core::vector3df(0.f, 45.f, 0.f),
 									   core::vector3df(1.0f, 1.0f, 1.0f));
 	SceneNode->getMaterial(0) = defaultMaterial;
-	MeshMaterialControl.init( SceneNode, Device, core::position2d<s32>(10,controlsTop), L"Material" );
-	MeshMaterialControl.selectTextures(core::stringw("CARO_A8R8G8B8"));	// set a useful default texture
+
+	const s32 controlsTop = 20;
+	MeshMaterialControl = new CMaterialControl();
+	MeshMaterialControl->init( SceneNode, Device, core::position2d<s32>(10,controlsTop), L"Material" );
+	MeshMaterialControl->selectTextures(core::stringw("CARO_A8R8G8B8"));	// set a useful default texture
 
 	// create nodes with other vertex types
 	scene::IMesh * mesh2T = MeshManipulator->createMeshWith2TCoords(SceneNode->getMesh());
@@ -733,7 +737,8 @@ bool CApp::init(int argc, char *argv[])
 	NodeLight = smgr->addLightSceneNode(0, core::vector3df(0, 0, -40),
 											video::SColorf(1.0f, 1.0f, 1.0f),
 											35.0f);
-	LightControl.init(NodeLight, guiEnv, core::position2d<s32>(550,controlsTop), L"Dynamic light" );
+	LightControl = new CLightNodeControl();
+	LightControl->init(NodeLight, guiEnv, core::position2d<s32>(550,controlsTop), L"Dynamic light" );
 
 	// one large cube around everything. That's mainly to make the light more obvious.
 	scene::IMeshSceneNode* backgroundCube = smgr->addCubeSceneNode (200.0f, 0, -1, core::vector3df(0, 0, 0),
@@ -783,8 +788,8 @@ bool CApp::update()
 		gui::IGUISkin * skin = guiEnv->getSkin();
 
 		// update our controls
-		MeshMaterialControl.update(SceneNode, SceneNode2T, SceneNodeTangents);
-		LightControl.update(NodeLight);
+		MeshMaterialControl->update(SceneNode, SceneNode2T, SceneNodeTangents);
+		LightControl->update(NodeLight);
 
 		// Update vertices
 		if ( ControlVertexColors->isDirty() )
@@ -836,7 +841,7 @@ bool CApp::update()
 		smgr->drawAll();
 		guiEnv->drawAll();
 
-		if ( MeshMaterialControl.isLightingEnabled() )
+		if ( MeshMaterialControl->isLightingEnabled() )
 		{
 			// draw a line from the light to the target
 			video::SMaterial lineMaterial;
@@ -859,6 +864,13 @@ bool CApp::update()
 void CApp::quit()
 {
 	IsRunning = false;
+
+	delete LightControl;
+	LightControl = NULL;
+
+	delete MeshMaterialControl;
+	MeshMaterialControl = NULL;
+
 	if ( ControlVertexColors )
 	{
 		ControlVertexColors->drop();
@@ -949,7 +961,7 @@ void CApp::createDefaultTextures(video::IVideoDriver * driver)
 void CApp::loadTexture(const io::path &name)
 {
 	Device->getVideoDriver()->getTexture(name);
-	MeshMaterialControl.updateTextures();
+	MeshMaterialControl->updateTextures();
 }
 
 void CApp::RotateHorizontal(irr::scene::ISceneNode* node, irr::f32 angle)

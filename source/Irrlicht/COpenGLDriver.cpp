@@ -4204,9 +4204,7 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_DEPTH_STENCIL_EXT;
 			pixelType = GL_UNSIGNED_INT_24_8_EXT;
 		}
-		else
 #endif
-			os::Printer::log("ECF_D24S8 color format is not supported", ELL_ERROR);
 		break;
 	case ECF_R8:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4216,8 +4214,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_RED;
 			pixelType = GL_UNSIGNED_BYTE;
 		}
-		else
-			os::Printer::log("ECF_R8 color format is not supported", ELL_ERROR);
 		break;
 	case ECF_R8G8:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4227,8 +4223,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_RG;
 			pixelType = GL_UNSIGNED_BYTE;
 		}
-		else
-			os::Printer::log("ECF_R8G8 color format is not supported", ELL_ERROR);
 		break;
 	case ECF_R16:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4238,8 +4232,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_RED;
 			pixelType = GL_UNSIGNED_SHORT;
 		}
-		else
-			os::Printer::log("ECF_R16 color format is not supported", ELL_ERROR);
 		break;
 	case ECF_R16G16:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4249,8 +4241,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_RG;
 			pixelType = GL_UNSIGNED_SHORT;
 		}
-		else
-			os::Printer::log("ECF_R16G16 color format is not supported", ELL_ERROR);
 		break;
 	case ECF_R16F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4265,8 +4255,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 				pixelType = GL_FLOAT;
 		}
-		else
-			os::Printer::log("ECF_R16F color format is not supported", ELL_ERROR);
 		break;
 	case ECF_G16R16F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4281,8 +4269,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 				pixelType = GL_FLOAT;
 		}
-		else
-			os::Printer::log("ECF_G16R16F color format is not supported", ELL_ERROR);
 		break;
 	case ECF_A16B16G16R16F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
@@ -4297,8 +4283,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 #endif
 				pixelType = GL_FLOAT;
 		}
-		else
-			os::Printer::log("ECF_A16B16G16R16F color format is not supported", ELL_ERROR);
 		break;
 	case ECF_R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4308,8 +4292,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_RED;
 			pixelType = GL_FLOAT;
 		}
-		else
-			os::Printer::log("ECF_R32F color format is not supported", ELL_ERROR);
 		break;
 	case ECF_G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
@@ -4319,8 +4301,6 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_RG;
 			pixelType = GL_FLOAT;
 		}
-		else
-			os::Printer::log("ECF_G32R32F color format is not supported", ELL_ERROR);
 		break;
 	case ECF_A32B32G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
@@ -4330,11 +4310,8 @@ bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelFormat = GL_RGBA;
 			pixelType = GL_FLOAT;
 		}
-		else
-			os::Printer::log("ECF_A32B32G32R32F color format is not supported", ELL_ERROR);
 		break;
 	default:
-		os::Printer::log("Unsupported texture format", ELL_ERROR);
 		break;
 	}
 

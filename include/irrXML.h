@@ -224,7 +224,7 @@ namespace io
 		\return Returns how much bytes were read. */
 		virtual int read(void* buffer, int sizeToRead) = 0;
 
-		//! Returns size of file in bytes
+		//! Returns size of file in bytes on success or -1L on failure.
 		virtual long getSize() const = 0;
 	};
 
@@ -317,7 +317,7 @@ namespace io
 		//! Returns the value of an attribute as integer.
 		/** \param name Name of the attribute.
 		\param defaultNotFound Value returned when name does not exist
-		\return Value of the attribute as integer or value of defaultNotFound 
+		\return Value of the attribute as integer or value of defaultNotFound
 		when name was not found or 0 when value could not be interpreted as integer */
 		virtual int getAttributeValueAsInt(const char_type* name, int defaultNotFound=0) const = 0;
 
@@ -331,14 +331,14 @@ namespace io
 		//! Returns the value of an attribute as float.
 		/** \param name: Name of the attribute.
 		\param defaultNotFound Value returned when name does not exist.
-		\return Value of the attribute as float or value of defaultNotFound parameter on failure 
+		\return Value of the attribute as float or value of defaultNotFound parameter on failure
 		or 0 when value could not be interpreted as float. */
 		virtual float getAttributeValueAsFloat(const char_type* name, float defaultNotFound=0.f) const = 0;
 
 		//! Returns the value of an attribute as float.
 		/** \param idx: Zero based index, should be something between 0 and getAttributeCount()-1.
 		\param defaultNotFound Value returned when index does not exist.
-		\return Value of the attribute as float or value of defaultNotFound parameter on failure 
+		\return Value of the attribute as float or value of defaultNotFound parameter on failure
 		or 0 when value could not be interpreted as float. */
 		virtual float getAttributeValueAsFloat(int idx, float defaultNotFound=0.f) const = 0;
 
