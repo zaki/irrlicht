@@ -244,8 +244,29 @@ void CIrrDeviceAndroid::handleAndroidCommand(android_app* app, int32_t cmd)
 
 	switch (cmd)
 	{
+		case APP_CMD_INPUT_CHANGED:
+			os::Printer::log("Android command APP_CMD_INPUT_CHANGED", ELL_DEBUG);
+		break;
+		case APP_CMD_WINDOW_RESIZED:
+			os::Printer::log("Android command APP_CMD_WINDOW_RESIZED", ELL_DEBUG);
+		break;
+		case APP_CMD_WINDOW_REDRAW_NEEDED:
+			os::Printer::log("Android command APP_CMD_WINDOW_REDRAW_NEEDED", ELL_DEBUG);
+		break;
 		case APP_CMD_SAVE_STATE:
 			os::Printer::log("Android command APP_CMD_SAVE_STATE", ELL_DEBUG);
+		break;
+		case APP_CMD_CONTENT_RECT_CHANGED:
+			os::Printer::log("Android command APP_CMD_CONTENT_RECT_CHANGED", ELL_DEBUG);
+		break;
+		case APP_CMD_CONFIG_CHANGED:
+			os::Printer::log("Android command APP_CMD_CONFIG_CHANGED", ELL_DEBUG);
+		break;
+		case APP_CMD_LOW_MEMORY:
+			os::Printer::log("Android command APP_CMD_LOW_MEMORY", ELL_DEBUG);
+		break;
+		case APP_CMD_START:
+			os::Printer::log("Android command APP_CMD_START", ELL_DEBUG);
 		break;
 		case APP_CMD_INIT_WINDOW:
 			os::Printer::log("Android command APP_CMD_INIT_WINDOW", ELL_DEBUG);
@@ -336,7 +357,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 			int32_t metaState = AMotionEvent_getMetaState(androidEvent);
 			os::Printer::log("metaState: ", core::stringc(metaState).c_str(), ELL_DEBUG);
 			int32_t edgeFlags = AMotionEvent_getEdgeFlags(androidEvent);
-			os::Printer::log("edgeFlags: ", core::stringc(flags).c_str(), ELL_DEBUG);			
+			os::Printer::log("edgeFlags: ", core::stringc(flags).c_str(), ELL_DEBUG);
 #endif
 
 			bool touchReceived = true;
@@ -398,7 +419,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 
 			int32_t keyCode = AKeyEvent_getKeyCode(androidEvent);
 			// os::Printer::log("keyCode: ", core::stringc(keyCode).c_str(), ELL_DEBUG);
-			
+
 			int32_t keyAction = AKeyEvent_getAction(androidEvent);
 			int32_t keyMetaState = AKeyEvent_getMetaState(androidEvent);
 
@@ -478,7 +499,7 @@ s32 CIrrDeviceAndroid::handleInput(android_app* app, AInputEvent* androidEvent)
 					event.KeyInput.Char =  0x08;	// same key-code as on other operating systems. Otherwise we have to handle too much system specific stuff in the editbox.
 				}
 				//os::Printer::log("char-code: ", core::stringc((int)event.KeyInput.Char).c_str(), ELL_DEBUG);
-				
+
 			}
 			else
 			{
