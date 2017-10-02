@@ -1365,6 +1365,16 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	return taken;
 }
 
+void CSceneManager::clearAllRegisteredNodesForRendering()
+{
+	CameraList.clear();
+	LightList.clear();
+	SkyBoxList.clear();
+	SolidNodeList.clear();
+	TransparentNodeList.clear();
+	TransparentEffectNodeList.clear();
+	ShadowNodeList.clear();
+}
 
 //! This method is called just before the rendering process of the whole scene.
 //! draws all scene nodes
