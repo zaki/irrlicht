@@ -128,6 +128,18 @@ namespace gui
 		//! Checks whether the button scales the used images
 		virtual bool isScalingImage() const _IRR_OVERRIDE_;
 
+		//! Get if the shift key was pressed in last EGET_BUTTON_CLICKED event
+		virtual bool getClickShiftState() const	_IRR_OVERRIDE_
+		{
+			return ClickShiftState;
+		}
+
+		//! Get if the control key was pressed in last EGET_BUTTON_CLICKED event
+		virtual bool getClickControlState() const _IRR_OVERRIDE_
+		{
+			return ClickControlState;
+		}
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
@@ -206,6 +218,9 @@ namespace gui
 		IGUIFont* OverrideFont;
 
 		u32 ClickTime, HoverTime, FocusTime;
+
+		bool ClickShiftState;
+		bool ClickControlState;
 
 		bool IsPushButton;
 		bool Pressed;

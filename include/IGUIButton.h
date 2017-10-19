@@ -225,6 +225,14 @@ namespace gui
 
 		//! Checks whether the button scales the used images
 		virtual bool isScalingImage() const = 0;
+
+		//! Get if the shift key was pressed in last EGET_BUTTON_CLICKED event
+		/** Generated together with event, so info is available in the event-receiver.	*/
+		virtual bool getClickShiftState() const	= 0;
+
+		//! Get if the control key was pressed in last EGET_BUTTON_CLICKED event
+		/** Generated together with event, so info is available in the event-receiver.	*/
+		virtual bool getClickControlState() const = 0;
 	};
 
 

@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Add functions IGUIButton::getClickShiftState and IGUIButton::getClickControlState to get shift/ctrl key-state when a button was clicked. Thanks @StarSonata for patch.
 - Add function ISceneManager::clearAllRegisteredNodesForRendering.
 - Add function IVideoDriver::queryTextureFormat to allow checking if a driver supports textures with a specific color format.
 - ISceneManager::getMesh can now creates meshes with alternative cache-names.
