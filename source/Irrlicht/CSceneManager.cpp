@@ -465,7 +465,7 @@ IAnimatedMesh* CSceneManager::getUncachedMesh(io::IReadFile* file, const io::pat
 	if (!msh)
 		os::Printer::log("Could not load mesh, file format seems to be unsupported", filename, ELL_ERROR);
 	else
-		os::Printer::log("Loaded mesh", filename, ELL_INFORMATION);
+		os::Printer::log("Loaded mesh", filename, ELL_DEBUG);
 
 	return msh;
 }

@@ -1,6 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- Reduce log-messages for "loaded texture" and "loaded mesh" from ELL_INFORMATION to ELL_DEBUG.
 - Add IGUIButton::setOverrideColor to allow overriding text-color (same function as statictexts and editboxes have).
 - Add functions IGUIButton::getClickShiftState and IGUIButton::getClickControlState to get shift/ctrl key-state when a button was clicked. Thanks @StarSonata for patch.
 - Add function ISceneManager::clearAllRegisteredNodesForRendering.
