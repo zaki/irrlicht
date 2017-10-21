@@ -44,6 +44,18 @@ namespace gui
 		//! Get the font which is used right now for drawing
 		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
 
+		//! Sets another color for the button text.
+		virtual void setOverrideColor(video::SColor color)  _IRR_OVERRIDE_;
+
+		//! Gets the override color
+		virtual video::SColor getOverrideColor(void) const  _IRR_OVERRIDE_;
+
+		//! Sets if the button text should use the override color or the color in the gui skin.
+		virtual void enableOverrideColor(bool enable)  _IRR_OVERRIDE_;
+
+		//! Checks if an override color is enabled
+		virtual bool isOverrideColorEnabled(void) const  _IRR_OVERRIDE_;
+
 		//! Sets an image which should be displayed on the button when it is in the given state.
 		virtual void setImage(EGUI_BUTTON_IMAGE_STATE state, video::ITexture* image=0, const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0))  _IRR_OVERRIDE_;
 
@@ -216,6 +228,9 @@ namespace gui
 		ButtonImage ButtonImages[EGBIS_COUNT];
 
 		IGUIFont* OverrideFont;
+
+		bool OverrideColorEnabled;
+		video::SColor OverrideColor;
 
 		u32 ClickTime, HoverTime, FocusTime;
 

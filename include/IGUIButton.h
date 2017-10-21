@@ -128,6 +128,27 @@ namespace gui
 		font of the active skin otherwise */
 		virtual IGUIFont* getActiveFont() const = 0;
 
+		//! Sets another color for the button text.
+		/** When set, this color is used instead of EGDC_BUTTON_TEXT/EGDC_GRAY_TEXT.
+		You don't need to call enableOverrideColor(true), that's done by this function.
+		If you want the the color of the skin back, call enableOverrideColor(false);
+		\param color: New color of the text. */
+		virtual void setOverrideColor(video::SColor color) = 0;
+
+		//! Gets the override color
+		/** \return: The override color */
+		virtual video::SColor getOverrideColor(void) const = 0;
+
+		//! Sets if the button text should use the override color or the color in the gui skin.
+		/** \param enable: If set to true, the override color, which can be set
+		with IGUIStaticText::setOverrideColor is used, otherwise the
+		EGDC_BUTTON_TEXT or EGDC_GRAY_TEXT color of the skin. */
+		virtual void enableOverrideColor(bool enable) = 0;
+
+		//! Checks if an override color is enabled
+		/** \return true if the override color is enabled, false otherwise */
+		virtual bool isOverrideColorEnabled(void) const = 0;
+
 		//! Sets an image which should be displayed on the button when it is in the given state.
 		/** Only one image-state can be active at a time. Images are drawn below sprites.
 		If a state is without image it will try to use images from other states as described
