@@ -44,6 +44,18 @@ namespace gui
 		//! Get the font which is used right now for drawing
 		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
 
+		//! Sets another color for the button text.
+		virtual void setOverrideColor(video::SColor color)  _IRR_OVERRIDE_;
+
+		//! Gets the override color
+		virtual video::SColor getOverrideColor(void) const  _IRR_OVERRIDE_;
+
+		//! Sets if the button text should use the override color or the color in the gui skin.
+		virtual void enableOverrideColor(bool enable)  _IRR_OVERRIDE_;
+
+		//! Checks if an override color is enabled
+		virtual bool isOverrideColorEnabled(void) const  _IRR_OVERRIDE_;
+
 		//! Sets an image which should be displayed on the button when it is in the given state.
 		virtual void setImage(EGUI_BUTTON_IMAGE_STATE state, video::ITexture* image=0, const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0))  _IRR_OVERRIDE_;
 
@@ -128,6 +140,18 @@ namespace gui
 		//! Checks whether the button scales the used images
 		virtual bool isScalingImage() const _IRR_OVERRIDE_;
 
+		//! Get if the shift key was pressed in last EGET_BUTTON_CLICKED event
+		virtual bool getClickShiftState() const	_IRR_OVERRIDE_
+		{
+			return ClickShiftState;
+		}
+
+		//! Get if the control key was pressed in last EGET_BUTTON_CLICKED event
+		virtual bool getClickControlState() const _IRR_OVERRIDE_
+		{
+			return ClickControlState;
+		}
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
@@ -205,7 +229,13 @@ namespace gui
 
 		IGUIFont* OverrideFont;
 
+		bool OverrideColorEnabled;
+		video::SColor OverrideColor;
+
 		u32 ClickTime, HoverTime, FocusTime;
+
+		bool ClickShiftState;
+		bool ClickControlState;
 
 		bool IsPushButton;
 		bool Pressed;

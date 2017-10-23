@@ -21,7 +21,9 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool noclip)
 : IGUIButton(environment, parent, id, rectangle),
 	SpriteBank(0), OverrideFont(0),
+	OverrideColorEnabled(false), OverrideColor(video::SColor(101,255,255,255)),
 	ClickTime(0), HoverTime(0), FocusTime(0),
+	ClickShiftState(false), ClickControlState(false),
 	IsPushButton(false), Pressed(false),
 	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false)
 {
@@ -146,6 +148,9 @@ bool CGUIButton::OnEvent(const SEvent& event)
 
 			if (Parent)
 			{
+				ClickShiftState = event.KeyInput.Shift;
+				ClickControlState = event.KeyInput.Control;
+
 				SEvent newEvent;
 				newEvent.EventType = EET_GUI_EVENT;
 				newEvent.GUIEvent.Caller = this;
@@ -205,6 +210,9 @@ bool CGUIButton::OnEvent(const SEvent& event)
 			if ((!IsPushButton && wasPressed && Parent) ||
 				(IsPushButton && wasPressed != Pressed))
 			{
+				ClickShiftState = event.MouseInput.Shift;
+				ClickControlState = event.MouseInput.Control;
+
 				SEvent newEvent;
 				newEvent.EventType = EET_GUI_EVENT;
 				newEvent.GUIEvent.Caller = this;
@@ -320,7 +328,7 @@ void CGUIButton::draw()
 
 		if (font)
 			font->draw(Text.c_str(), rect,
-				skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+				OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
 				true, true, &AbsoluteClippingRect);
 	}
 
@@ -445,6 +453,28 @@ IGUIFont* CGUIButton::getActiveFont() const
 	if (skin)
 		return skin->getFont(EGDF_BUTTON);
 	return 0;
+}
+
+//! Sets another color for the text.
+void CGUIButton::setOverrideColor(video::SColor color)
+{
+	OverrideColor = color;
+	OverrideColorEnabled = true;
+}
+
+video::SColor CGUIButton::getOverrideColor() const
+{
+	return OverrideColor;
+}
+
+void CGUIButton::enableOverrideColor(bool enable)
+{
+	OverrideColorEnabled = enable;
+}
+
+bool CGUIButton::isOverrideColorEnabled() const
+{
+	return OverrideColorEnabled;
 }
 
 void CGUIButton::setImage(EGUI_BUTTON_IMAGE_STATE state, video::ITexture* image, const core::rect<s32>& sourceRect)

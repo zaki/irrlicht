@@ -112,6 +112,9 @@ namespace scene
 		//! registers a node for rendering it at a specific time.
 		virtual u32 registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS pass = ESNRP_AUTOMATIC) _IRR_OVERRIDE_;
 
+		//! Clear all nodes which are currently registered for rendering
+		virtual void clearAllRegisteredNodesForRendering() _IRR_OVERRIDE_;
+
 		//! draws all scene nodes
 		virtual void drawAll() _IRR_OVERRIDE_;
 
@@ -530,6 +533,9 @@ namespace scene
 		virtual bool isCulled(const ISceneNode* node) const _IRR_OVERRIDE_;
 
 	private:
+
+		// load and create a mesh which we know already isn't in the cache and put it in there
+		IAnimatedMesh* getUncachedMesh(io::IReadFile* file, const io::path& filename, const io::path& cachename);
 
 		//! clears the deletion list
 		void clearDeletionList();

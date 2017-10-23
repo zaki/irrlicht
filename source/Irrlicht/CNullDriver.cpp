@@ -648,7 +648,7 @@ video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io:
 		}
 
 		if (texture)
-			os::Printer::log("Loaded texture", file->getFileName());
+			os::Printer::log("Loaded texture", file->getFileName(), ELL_DEBUG);
 	}
 
 	for (u32 i = 0; i < imageArray.size(); ++i)

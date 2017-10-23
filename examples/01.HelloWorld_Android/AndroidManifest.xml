@@ -10,7 +10,6 @@
 		android:label="HelloWorldMobile"
 		android:launchMode="singleTask"
 		android:configChanges="orientation|keyboardHidden"
-		android:screenOrientation="portrait"
 		android:clearTaskOnLaunch="true">
 		<meta-data android:name="android.app.lib_name" android:value="HelloWorldMobile" />						  
 		<intent-filter>
