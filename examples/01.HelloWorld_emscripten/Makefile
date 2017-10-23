@@ -26,13 +26,22 @@ else
   endif
   CXXFLAGS += -O3
 endif
+ifdef EMSCRIPTEN
+  CXXFLAGS += -std=gnu++11 -U__STRICT_ANSI__
+endif
 
-#default target is Linux
-all: all_linux
+ifdef EMSCRIPTEN
+  all: all_emscripten
+else
+  all: all_linux
+endif
 
 # target specific settings
 all_linux all_emscripten all_win32 static_win32: LDFLAGS += -L$(IrrlichtHome)/lib/$(SYSTEM) -lIrrlicht
-all_linux: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lEGL -lGLESv1_CM -lGLESv2 -lXxf86vm -lXext -lX11 -lXcursor
+all_linux: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lEGL
+ifndef EMSCRIPTEN
+  LDFLAGS += -lGLESv1_CM -lGLESv2 -lXxf86vm -lXext -lX11 -lXcursor
+endif
 all_linux clean_linux: SYSTEM=Linux
 all_emscripten clean_emscripten: SYSTEM=emscripten
 all_win32 clean_win32 static_win32: SYSTEM=Win32-gcc
@@ -47,6 +56,8 @@ all_win32: LDFLAGS += -lopengl32 -lEGL -lGLESv1_CM -lGLESv2 -lm
 static_win32: LDFLAGS += -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32 -lEGL -lGLESv1_CM -lGLESv2
 # name of the binary - only valid for targets which set SYSTEM
 DESTPATH = $(BinPath)/$(Target)$(SUF)
+
+emscripten: all_emscripten
 
 all_linux all_win32 all_emscripten static_win32:
 	$(warning Building...)
