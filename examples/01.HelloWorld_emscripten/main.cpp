@@ -103,6 +103,7 @@ void one_iter()
 */
 int main()
 {
+	SIrrlichtCreationParameters parameters;
 	/*
 	Create device flags for emscripten are still experimental
 	and might not all work.
@@ -112,12 +113,16 @@ int main()
 	   EDT_OGLES2 needs -s FULL_ES2=1 as linker flag in the Makefile.
 	*/
 #ifndef __EMSCRIPTEN__
-	video::E_DRIVER_TYPE deviceType = EDT_OGLES2;
+	parameters.DriverType = EDT_OGLES2;
 #else //__EMSCRIPTEN__
-	video::E_DRIVER_TYPE deviceType = EDT_WEBGL1;
+	parameters.DriverType = EDT_WEBGL1;
 #endif //__EMSCRIPTEN__
 
-	device = createDevice(deviceType, screenSize, 16, false, false, false, 0);
+	parameters.WindowSize = screenSize;
+	parameters.Stencilbuffer = false;
+	parameters.AntiAlias = 4;
+
+	device = createDeviceEx(parameters);
 
 	if (!device)
 		return 1;

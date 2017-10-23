@@ -273,6 +273,32 @@ CIrrDeviceSDL::~CIrrDeviceSDL()
 	SDL_Quit();
 }
 
+void CIrrDeviceSDL::logAttributes()
+{
+	core::stringc sdl_attr("SDL attribs:");
+	int value = 0;
+	if ( SDL_GL_GetAttribute( SDL_GL_RED_SIZE, &value ) == 0 )
+		sdl_attr += core::stringc(" r:") + core::stringc(value);
+	if ( SDL_GL_GetAttribute( SDL_GL_GREEN_SIZE, &value ) == 0 )
+		sdl_attr += core::stringc(" g:") + core::stringc(value);
+	if ( SDL_GL_GetAttribute( SDL_GL_BLUE_SIZE, &value ) == 0 )
+		sdl_attr += core::stringc(" b:") + core::stringc(value);
+	if ( SDL_GL_GetAttribute( SDL_GL_ALPHA_SIZE, &value ) == 0 )
+		sdl_attr += core::stringc(" a:") + core::stringc(value);
+
+	if ( SDL_GL_GetAttribute( SDL_GL_DEPTH_SIZE, &value) == 0 )
+		sdl_attr += core::stringc(" depth:") + core::stringc(value);
+	if ( SDL_GL_GetAttribute( SDL_GL_STENCIL_SIZE, &value ) == 0 )
+		sdl_attr += core::stringc(" stencil:") + core::stringc(value);
+	if ( SDL_GL_GetAttribute( SDL_GL_DOUBLEBUFFER, &value ) == 0 )
+		sdl_attr += core::stringc(" doublebuf:") + core::stringc(value);
+	if ( SDL_GL_GetAttribute( SDL_GL_MULTISAMPLEBUFFERS, &value ) == 0 )
+		sdl_attr += core::stringc(" aa:") + core::stringc(value);
+	if ( SDL_GL_GetAttribute( SDL_GL_MULTISAMPLESAMPLES, &value ) == 0 )
+		sdl_attr += core::stringc(" aa-samples:") + core::stringc(value);
+
+	os::Printer::log(sdl_attr.c_str());
+}
 
 bool CIrrDeviceSDL::createWindow()
 {
@@ -286,7 +312,30 @@ bool CIrrDeviceSDL::createWindow()
 		Width = w;
 		Height = h;
 	}
+
+	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel?8:0 );
+
+	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
+	SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, CreationParams.Stencilbuffer ? 8 : 0);
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, CreationParams.Doublebuffer ? 1 : 0);
+
+	if (CreationParams.AntiAlias>1)
+	{
+		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
+		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
+	}
+	else
+	{
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
+	}
+
 	Screen = SDL_SetVideoMode( 0, 0, 32, SDL_Flags); // 0,0 will use the canvas size
+
+	logAttributes();
 
 	// "#canvas" is for the opengl context
 	emscripten_set_mousedown_callback("#canvas", (void*)this, true, MouseUpDownCallback);
@@ -318,6 +367,7 @@ bool CIrrDeviceSDL::createWindow()
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
 		if (CreationParams.Doublebuffer)
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, CreationParams.Stencilbuffer ? 8 : 0);
 		if (CreationParams.Stereobuffer)
 			SDL_GL_SetAttribute( SDL_GL_STEREO, 1 );
 		if (CreationParams.AntiAlias>1)

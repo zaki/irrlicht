@@ -233,6 +233,8 @@ namespace irr
 
 		void createKeyMap();
 
+		void logAttributes();
+
 		SDL_Surface* Screen;
 		int SDL_Flags;
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
