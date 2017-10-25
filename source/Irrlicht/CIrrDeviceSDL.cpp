@@ -31,6 +31,8 @@
 #pragma comment(lib, "SDL.lib")
 #endif // _MSC_VER
 
+static int SDLDeviceInstances = 0;
+
 namespace irr
 {
 	namespace video
@@ -191,25 +193,33 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	setDebugName("CIrrDeviceSDL");
 	#endif
 
-	// Initialize SDL... Timer for sleep, video for the obvious, and
-	// noparachute prevents SDL from catching fatal errors.
-	if (SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-				SDL_INIT_JOYSTICK|
-#endif
-				SDL_INIT_NOPARACHUTE ) < 0)
+	if ( ++SDLDeviceInstances == 1 )
 	{
-		os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
-		Close = true;
-	}
+		// Initialize SDL... Timer for sleep, video for the obvious, and
+		// noparachute prevents SDL from catching fatal errors.
+		if (SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+					SDL_INIT_JOYSTICK|
+#endif
+					SDL_INIT_NOPARACHUTE ) < 0)
+		{
+			os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
+			Close = true;
+		}
+		else
+		{
+			os::Printer::log("SDL initialized", ELL_INFORMATION);
+		}
 
 #if defined(_IRR_WINDOWS_)
-	SDL_putenv("SDL_VIDEODRIVER=directx");
+		SDL_putenv("SDL_VIDEODRIVER=directx");
 #elif defined(_IRR_OSX_PLATFORM_)
-	SDL_putenv("SDL_VIDEODRIVER=Quartz");
+		SDL_putenv("SDL_VIDEODRIVER=Quartz");
 #elif !defined(_IRR_EMSCRIPTEN_PLATFORM_)
-	SDL_putenv("SDL_VIDEODRIVER=x11");
+		SDL_putenv("SDL_VIDEODRIVER=x11");
 #endif
+	}
+
 //	SDL_putenv("SDL_WINDOWID=");
 
 	SDL_VERSION(&Info.version);
@@ -225,7 +235,10 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	sdlversion += Info.version.patch;
 
 	Operator = new COSOperator(sdlversion);
-	os::Printer::log(sdlversion.c_str(), ELL_INFORMATION);
+	if ( SDLDeviceInstances == 1 )
+	{
+		os::Printer::log(sdlversion.c_str(), ELL_INFORMATION);
+	}
 
 	// create keymap
 	createKeyMap();
@@ -265,12 +278,17 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 //! destructor
 CIrrDeviceSDL::~CIrrDeviceSDL()
 {
+	if ( --SDLDeviceInstances == 0 )
+	{
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-	const u32 numJoysticks = Joysticks.size();
-	for (u32 i=0; i<numJoysticks; ++i)
-		SDL_JoystickClose(Joysticks[i]);
+		const u32 numJoysticks = Joysticks.size();
+		for (u32 i=0; i<numJoysticks; ++i)
+			SDL_JoystickClose(Joysticks[i]);
 #endif
-	SDL_Quit();
+		SDL_Quit();
+
+		os::Printer::log("Quit SDL", ELL_INFORMATION);
+	}
 }
 
 void CIrrDeviceSDL::logAttributes()
