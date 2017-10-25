@@ -103,6 +103,11 @@ void one_iter()
 */
 int main()
 {
+	/*
+	Printing out the build date/time is very useful to find troubles with unexpected browser-caches.
+	*/
+	printf("Build-date: %s %s\n", __DATE__, __TIME__);
+
 	SIrrlichtCreationParameters parameters;
 	/*
 	Create device flags for emscripten are still experimental
@@ -118,6 +123,7 @@ int main()
 	parameters.DriverType = EDT_WEBGL1;
 #endif //__EMSCRIPTEN__
 
+	parameters.LoggingLevel = ELL_DEBUG;
 	parameters.WindowSize = screenSize;
 	parameters.Stencilbuffer = false;
 	parameters.AntiAlias = 4;
