@@ -40,49 +40,43 @@ namespace video
 		// Initialize EGL.
 		/* This method initialize EGLand create EGL display, anyway surface and context
 		aren't create. */
-		bool initialize(const SIrrlichtCreationParameters& params, const SExposedVideoData& data);
+		virtual bool initialize(const SIrrlichtCreationParameters& params, const SExposedVideoData& data) _IRR_OVERRIDE_;
 
 		// Terminate EGL.
 		/* Terminate EGL context. This method break both existed surface and context. */
-		void terminate();
+		virtual void terminate() _IRR_OVERRIDE_;
 
 		// Create EGL surface.
 		/* This method create EGL surface. On some platforms eg. Android, we must
 		recreate surface on each resume, because WindowID may change, so existed
 		surface may not be valid. If EGL context already exist, this method
 		automatically activates it. */
-		bool generateSurface();
+		virtual bool generateSurface() _IRR_OVERRIDE_;
 
 		// Destroy EGL surface.
 		/* This method destroy EGL. On some platforms eg. Android, we should call
 		this method on each pause, because after resume this surface may not be valid.
 		Hovewer this method doesn'r break EGL context. */
-		void destroySurface();
+		virtual void destroySurface() _IRR_OVERRIDE_;
 
 		// Create EGL context.
 		/* This method create and activate EGL context. */
-		bool generateContext();
+		virtual bool generateContext() _IRR_OVERRIDE_;
 
 		// Destroy EGL context.
 		/* This method destroy EGL context. */
-		void destroyContext();
+		virtual void destroyContext() _IRR_OVERRIDE_;
 
-		const SExposedVideoData& getContext() const;
+		virtual const SExposedVideoData& getContext() const _IRR_OVERRIDE_;
 
-		bool activateContext(const SExposedVideoData& videoData);
+		virtual bool activateContext(const SExposedVideoData& videoData) _IRR_OVERRIDE_;
 
 		// Swap buffers.
-		bool swapBuffers();
+		virtual bool swapBuffers() _IRR_OVERRIDE_;
 
 	protected:
 		enum EConfigStyle
 		{
-			// TODO: We should also have something like ECS_EGL_CHOOSE_CLOSEST
-			//       which doesn't take first result of eglChooseConfigs,
-			//       but the closest to requested parameters. eglChooseConfigs
-			//       can return more than 1 result and first one might have
-			//       "better" values than requested (more bits per pixel etc).
-
 			//! Get first result of eglChooseConfigs and if that fails try again by requesting simpler attributes
 			ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS,
 
@@ -92,7 +86,7 @@ namespace video
 
 		EGLConfig chooseConfig(EConfigStyle confStyle);
 
-		// Check how close this config is to the parameters we requested
+		//! Check how close this config is to the parameters we requested
 		//! returns 0 is perfect, larger values are worse and < 0 is unusable.
 		irr::s32 rateConfig(EGLConfig config, EGLint eglOpenGLBIT, bool log=false);
 

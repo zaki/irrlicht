@@ -128,8 +128,8 @@ bool CEGLManager::generateSurface()
 #endif
 
 #if defined(_IRR_EMSCRIPTEN_PLATFORM_)
-	// eglChooseConfig is only implemented as stub in emscripten currently (version 1.37.22 at point of writing)
-	// So we have to chose ourselves.
+	// eglChooseConfig is currently only implemented as stub in emscripten (version 1.37.22 at point of writing)
+	// But the other solution would also be fine as it also only generates a single context so there is not much to choose from.
 	EglConfig = chooseConfig(ECS_IRR_CHOOSE);
 #else
 	EglConfig = chooseConfig(ECS_EGL_CHOOSE_FIRST_LOWER_EXPECTATIONS);
@@ -212,6 +212,14 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 		u32 steps = 5;
 
 		// Choose the best EGL config.
+			// TODO: We should also have a confStyle ECS_EGL_CHOOSE_CLOSEST
+			//       which doesn't take first result of eglChooseConfigs,
+			//       but the closest to requested parameters. eglChooseConfigs
+			//       can return more than 1 result and first one might have
+			//       "better" values than requested (more bits per pixel etc).
+			//       So this returns the config which can do most, not the
+			//       config which is closest to the requested parameters.
+		//
 		while (!eglChooseConfig(EglDisplay, Attribs, &configResult, 1, &numConfigs) || !numConfigs)
 		{
 			switch (steps)
@@ -294,6 +302,7 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 	}
 	else if ( confStyle == ECS_IRR_CHOOSE )
 	{
+		// find number of available configs
 		EGLint numConfigs;
 		if ( eglGetConfigs( EglDisplay, NULL, 0, &numConfigs) == EGL_FALSE )
 		{
@@ -304,6 +313,7 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 		if ( numConfigs <= 0 )
 			return 0;
 
+		// Get all available configs.
 		EGLConfig * configs = new EGLConfig[numConfigs];
 		if ( eglGetConfigs( EglDisplay, configs, numConfigs, &numConfigs) == EGL_FALSE )
 		{
@@ -330,6 +340,7 @@ EGLConfig CEGLManager::chooseConfig(EConfigStyle confStyle)
 
 			if ( ratings[0].rating != 0 )
 			{
+				// This is just to print some log info (it also rates again while doing that, but rating is cheap enough, so that doesn't matter here).
 				rateConfig(ratings[0].config, eglOpenGLBIT, true);
 			}
 		}
