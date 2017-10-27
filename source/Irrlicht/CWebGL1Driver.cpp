@@ -721,6 +721,266 @@ void CWebGL1Driver::drawStencilShadow(bool clearStencilBuffer,
 	glDisable(GL_STENCIL_TEST);
 }
 
+GLenum CWebGL1Driver::getZBufferBits() const
+{
+	// TODO: Never used, so not sure what this was really about (zbuffer used by device? Or for RTT's?)
+	//       If it's about device it might need a check like: GLint depthBits; glGetIntegerv(GL_DEPTH_BITS, &depthBits);
+	//       If it's about textures it might need a check for IRR_WEBGL_depth_texture
+
+	GLenum bits = 0;
+
+	switch (Params.ZBufferBits)
+	{
+#if defined(GL_OES_depth24)
+	case 24:
+		bits = GL_DEPTH_COMPONENT24_OES;
+		break;
+#endif
+#if defined(GL_OES_depth32)
+	case 32:
+		bits = GL_DEPTH_COMPONENT32_OES;
+		break;
+#endif
+	default:
+		bits = GL_DEPTH_COMPONENT16_OES;
+		break;
+	}
+
+	return bits;
+}
+
+bool CWebGL1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+	GLenum& pixelType, void(**converter)(const void*, s32, void*)) const
+{
+		bool supported = false;
+		pixelFormat = GL_RGBA;
+		pixelType = GL_UNSIGNED_BYTE;
+		*converter = 0;
+
+		switch (format)
+		{
+		case ECF_A1R5G5B5:
+			supported = true;
+			pixelFormat = GL_RGBA;
+			pixelType = GL_UNSIGNED_SHORT_5_5_5_1;
+			*converter = CColorConverter::convert_A1R5G5B5toR5G5B5A1;
+			break;
+		case ECF_R5G6B5:
+			supported = true;
+			pixelFormat = GL_RGB;
+			pixelType = GL_UNSIGNED_SHORT_5_6_5;
+			break;
+		case ECF_R8G8B8:
+			supported = true;
+			pixelFormat = GL_RGB;
+			pixelType = GL_UNSIGNED_BYTE;
+			break;
+		case ECF_A8R8G8B8:
+			// WebGL doesn't seem to support GL_BGRA so we always convert
+			supported = true;
+			pixelFormat = GL_RGBA;
+			*converter = CColorConverter::convert_A8R8G8B8toA8B8G8R8;
+			pixelType = GL_UNSIGNED_BYTE;
+			break;
+#ifdef GL_EXT_texture_compression_dxt1
+		case ECF_DXT1:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_s3tc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			}
+			break;
+#endif
+#ifdef GL_EXT_texture_compression_s3tc
+		case ECF_DXT2:
+		case ECF_DXT3:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_s3tc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			}
+			break;
+#endif
+#ifdef GL_EXT_texture_compression_s3tc
+		case ECF_DXT4:
+		case ECF_DXT5:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_s3tc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			}
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_RGB2:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_pvrtc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGB;
+				pixelType = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
+			}
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_ARGB2:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_pvrtc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+			}
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_RGB4:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_pvrtc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGB;
+				pixelType = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
+			}
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc
+		case ECF_PVRTC_ARGB4:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_pvrtc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+			}
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc2
+		case ECF_PVRTC2_ARGB2:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_pvrtc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG;
+			}
+			break;
+#endif
+#ifdef GL_IMG_texture_compression_pvrtc2
+		case ECF_PVRTC2_ARGB4:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_pvrtc) )
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG;
+			}
+			break;
+#endif
+#ifdef GL_OES_compressed_ETC1_RGB8_texture
+		case ECF_ETC1:
+			if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_compressed_texture_etc1) )
+			{
+				supported = true;
+				pixelFormat = GL_RGB;
+				pixelType = GL_ETC1_RGB8_OES;
+			}
+			break;
+#endif
+#ifdef GL_ES_VERSION_3_0 // TO-DO - fix when extension name will be available
+		case ECF_ETC2_RGB:
+			supported = true;
+			pixelFormat = GL_RGB;
+			pixelType = GL_COMPRESSED_RGB8_ETC2;
+			break;
+#endif
+#ifdef GL_ES_VERSION_3_0 // TO-DO - fix when extension name will be available
+		case ECF_ETC2_ARGB:
+			supported = true;
+			pixelFormat = GL_RGBA;
+			pixelType = GL_COMPRESSED_RGBA8_ETC2_EAC;
+			break;
+#endif
+		case ECF_D16:
+			supported = true;
+			pixelFormat = GL_DEPTH_COMPONENT;
+			pixelType = GL_UNSIGNED_SHORT;
+			break;
+		case ECF_D32:
+#if defined(GL_OES_depth32)
+			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_depth_texture))
+			{
+				// NOTE: There is still no guarantee it will return a 32 bit depth buffer. It might convert stuff internally to 16 bit :-(
+				supported = true;
+				pixelFormat = GL_DEPTH_COMPONENT;
+				pixelType = GL_UNSIGNED_INT;
+			}
+#endif
+			break;
+		case ECF_D24S8:
+#ifdef GL_OES_packed_depth_stencil
+			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_depth_texture))
+			{
+				supported = true;
+				pixelFormat = GL_DEPTH_STENCIL_OES;
+				pixelType = GL_UNSIGNED_INT_24_8_OES;
+			}
+#endif
+			break;
+		case ECF_R8:
+			// Does not seem to be supported in WebGL so far (missing GL_EXT_texture_rg)
+			break;
+		case ECF_R8G8:
+			// Does not seem to be supported in WebGL so far (missing GL_EXT_texture_rg)
+			break;
+		case ECF_R16:
+			// Does not seem to be supported in WebGL so far
+			break;
+		case ECF_R16G16:
+			// Does not seem to be supported in WebGL so far
+			break;
+		case ECF_R16F:
+			// Does not seem to be supported in WebGL so far (missing GL_EXT_texture_rg)
+			break;
+		case ECF_G16R16F:
+			// Does not seem to be supported in WebGL so far (missing GL_EXT_texture_rg)
+			break;
+		case ECF_A16B16G16R16F:
+#if defined(GL_OES_texture_half_float)
+			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_OES_texture_half_float))
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_HALF_FLOAT_OES ;
+			}
+#endif
+			break;
+		case ECF_R32F:
+			// Does not seem to be supported in WebGL so far (missing GL_EXT_texture_rg)
+			break;
+		case ECF_G32R32F:
+			// Does not seem to be supported in WebGL so far (missing GL_EXT_texture_rg)
+			break;
+		case ECF_A32B32G32R32F:
+#if defined(GL_OES_texture_float)
+			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_OES_texture_half_float))
+			{
+				supported = true;
+				pixelFormat = GL_RGBA;
+				pixelType = GL_FLOAT ;
+			}
+#endif
+			break;
+		default:
+			break;
+		}
+
+		// ES 2.0 says internalFormat must match pixelFormat (chapter 3.7.1 in Spec).
+		// Doesn't mention if "match" means "equal" or some other way of matching, but
+		// some bug on Emscripten and browsing discussions by others lead me to believe
+		// it means they have to be equal. Note that this was different in OpenGL.
+		internalFormat = pixelFormat;
+
+		return supported;
+}
+
 
 scene::SMeshBuffer* CWebGL1Driver::createSimpleMeshBuffer(irr::u32 numVertices, scene::E_PRIMITIVE_TYPE primitiveType, scene::E_HARDWARE_MAPPING vertexMappingHint, scene::E_HARDWARE_MAPPING indexMappingHint) const
 {
@@ -736,6 +996,110 @@ scene::SMeshBuffer* CWebGL1Driver::createSimpleMeshBuffer(irr::u32 numVertices, 
 	mbResult->setDirty();
 
 	return mbResult;
+}
+
+bool CWebGL1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer)
+{
+	Name = glGetString(GL_VERSION);
+	printVersion();
+
+	// print renderer information
+	VendorName = glGetString(GL_VENDOR);
+	os::Printer::log(VendorName.c_str(), ELL_INFORMATION);
+
+	// load extensions
+	initWebGLExtensions();
+
+	// reset cache handler
+	delete CacheHandler;
+	CacheHandler = new COGLES2CacheHandler(this);
+
+	StencilBuffer = stencilBuffer;
+
+	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.TextureUnit);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.TextureUnit);
+	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
+	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
+	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
+	DriverAttributes->setAttribute("MaxTextureLODBias", MaxTextureLODBias);
+	DriverAttributes->setAttribute("Version", Version);
+	DriverAttributes->setAttribute("AntiAlias", AntiAlias);
+
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
+	UserClipPlane.reallocate(0);
+
+	for (s32 i = 0; i < ETS_COUNT; ++i)
+		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
+
+	setAmbientLight(SColorf(0.0f, 0.0f, 0.0f, 0.0f));
+	glClearDepthf(1.0f);
+
+	glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+	glFrontFace(GL_CW);
+
+	// create material renderers
+	createMaterialRenderers();
+
+	// set the renderstates
+	setRenderStates3DMode();
+
+	// set fog mode
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+
+	// create matrix for flipping textures
+	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0, 0), core::vector2df(0, 1.0f), core::vector2df(1.0f, -1.0f));
+
+	// We need to reset once more at the beginning of the first rendering.
+	// This fixes problems with intermediate changes to the material during texture load.
+	ResetRenderStates = true;
+
+	testGLError(__LINE__);
+
+	return true;
+}
+
+void CWebGL1Driver::initWebGLExtensions()
+{
+	// Stuff still a little bit hacky as we derive from ES2Driver with it's own extensions.
+	// We only get the feature-strings from WebGLExtensions.
+
+	getGLVersion();
+
+	WebGLExtensions.getGLExtensions();
+
+	// TODO: basically copied ES2 implementation, so not certain if 100% correct for WebGL
+	GLint val=0;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &val);
+	Feature.TextureUnit = static_cast<u8>(val);
+
+#ifdef GL_EXT_texture_filter_anisotropic
+	if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_EXT_texture_filter_anisotropic) )
+	{
+		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
+		MaxAnisotropy = static_cast<u8>(val);
+	}
+#endif
+
+	if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_OES_element_index_uint) )	// note: WebGL2 won't need extension as that got default there
+	{
+		MaxIndices=0xffffffff;
+	}
+
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
+	MaxTextureSize=static_cast<u32>(val);
+
+#ifdef GL_MAX_TEXTURE_LOD_BIAS_EXT
+	// TODO: Found no info about this anywhere. It's no extension in WebGL
+	//       and GL_MAX_TEXTURE_LOD_BIAS_EXT doesn't seem to be part of gl2ext.h in emscripten
+	glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
+#endif
+
+	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
+	glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
+	Feature.TextureUnit = core::min_(Feature.TextureUnit, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+
+	Feature.ColorAttachment = 1;
 }
 
 } // end namespace video

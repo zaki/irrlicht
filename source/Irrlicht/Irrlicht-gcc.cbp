@@ -1020,6 +1020,7 @@
 		<Unit filename="CWaterSurfaceSceneNode.h" />
 		<Unit filename="CWebGL1Driver.cpp" />
 		<Unit filename="CWebGL1Driver.h" />
+		<Unit filename="CWebGLExtensionHandler.h" />
 		<Unit filename="CWriteFile.cpp" />
 		<Unit filename="CWriteFile.h" />
 		<Unit filename="CXMLReader.cpp" />

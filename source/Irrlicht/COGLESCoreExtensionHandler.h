@@ -8,7 +8,7 @@
 #include "IrrCompileConfig.h"
 
 // Can be included from different ES versions
-// (this is also the reason why this file is header-only as correct headers have to be included first)
+// (this is also the reason why this file is header-only as correct OGL ES headers have to be included first)
 #if defined(_IRR_COMPILE_WITH_OGLES2_) || defined(_IRR_COMPILE_WITH_OGLES1_)
 
 #include "COpenGLCoreFeature.h"
@@ -367,7 +367,7 @@ namespace video
 				os::Printer::log(getFeatureString(i), FeatureAvailable[i] ? " true" : " false");
 		}
 
-		bool queryOpenGLFeature(EOGLESFeatures feature) const
+		bool queryGLESFeature(EOGLESFeatures feature) const
 		{
 			return FeatureAvailable[feature];
 		}

@@ -12,6 +12,7 @@
 #ifdef _IRR_COMPILE_WITH_WEBGL1_
 
 #include "COGLES2Driver.h"
+#include "CWebGLExtensionHandler.h"
 #include "CMeshBuffer.h"
 #include "EHardwareBufferFlags.h"
 
@@ -113,11 +114,24 @@ namespace video
 			video::SColor leftDownEdge = video::SColor(0,0,0,0),
 			video::SColor rightDownEdge = video::SColor(0,0,0,0)) _IRR_OVERRIDE_;
 
+		//! Get ZBuffer bits.
+		virtual GLenum getZBufferBits() const _IRR_OVERRIDE_;
+
+		virtual bool getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+			GLenum& pixelType, void(**converter)(const void*, s32, void*)) const _IRR_OVERRIDE_;
+
 	protected:
 		// create a meshbuffer which has as many vertices as indices
 		scene::SMeshBuffer* createSimpleMeshBuffer(irr::u32 numVertices, scene::E_PRIMITIVE_TYPE primitiveType, scene::E_HARDWARE_MAPPING vertexMappingHint=scene::EHM_STREAM, scene::E_HARDWARE_MAPPING indexMappingHint=scene::EHM_STATIC) const;
 
+		virtual bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer) _IRR_OVERRIDE_;
+		void initWebGLExtensions();
+
 	private:
+		// CWebGL1Driver is derived from COGLES2Driver so it already got an extension handler from that.
+		// But we shouldn't use other extensions most of the time as there are minor differences.
+		CWebGLExtensionHandler WebGLExtensions;
+
 		// Because we can't have unbound buffers in webgl we give drawing functions bound buffers to use
 		scene::SMeshBuffer* MBTriangleFanSize4;
 		scene::SMeshBuffer* MBLinesSize2;

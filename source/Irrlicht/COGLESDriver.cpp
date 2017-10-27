@@ -2986,7 +2986,7 @@ GLenum COGLES1Driver::getZBufferBits() const
 	{
 	case 24:
 #if defined(GL_OES_depth24)
-		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth24))
+		if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth24))
 			bits = GL_DEPTH_COMPONENT24_OES;
 		else
 #endif
@@ -2994,7 +2994,7 @@ GLenum COGLES1Driver::getZBufferBits() const
 		break;
 	case 32:
 #if defined(GL_OES_depth32)
-		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
+		if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 			bits = GL_DEPTH_COMPONENT32_OES;
 		else
 #endif
@@ -3040,9 +3040,9 @@ bool COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		break;
 	case ECF_A8R8G8B8:
 		supported = true;
-		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_IMG_texture_format_BGRA8888) ||
-			queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_format_BGRA8888) ||
-			queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_APPLE_texture_format_BGRA8888))
+		if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_IMG_texture_format_BGRA8888) ||
+			queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_format_BGRA8888) ||
+			queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_APPLE_texture_format_BGRA8888))
 		{
 			internalFormat = GL_BGRA;
 			pixelFormat = GL_BGRA;
@@ -3161,7 +3161,7 @@ bool COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		break;
 	case ECF_D32:
 #if defined(GL_OES_depth32)
-		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
+		if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 		{
 			supported = true;
 			internalFormat = GL_DEPTH_COMPONENT32_OES;
@@ -3172,7 +3172,7 @@ bool COGLES1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 		break;
 	case ECF_D24S8:
 #ifdef GL_OES_packed_depth_stencil
-		if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_packed_depth_stencil))
+		if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_packed_depth_stencil))
 		{
 			supported = true;
 			internalFormat = GL_DEPTH24_STENCIL8_OES;

@@ -312,9 +312,9 @@ namespace video
 		GLenum getGLBlend(E_BLEND_FACTOR factor) const;
 
 		//! Get ZBuffer bits.
-		GLenum getZBufferBits() const;
+		virtual GLenum getZBufferBits() const;
 
-		bool getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
+		virtual bool getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
 			GLenum& pixelType, void(**converter)(const void*, s32, void*)) const;
 
 		//! Get current material.
@@ -368,6 +368,24 @@ namespace video
 		bool setMaterialTexture(irr::u32 layerIdx, const irr::video::ITexture* texture);
 
 		COGLES2CacheHandler* CacheHandler;
+		core::stringw Name;
+		core::stringc VendorName;
+		SIrrlichtCreationParameters Params;
+
+		//! bool to make all renderstates reset if set to true.
+		bool ResetRenderStates;
+		bool LockRenderStateMode;
+		u8 AntiAlias;
+
+		struct SUserClipPlane
+		{
+			core::plane3df Plane;
+			bool Enabled;
+		};
+
+		core::array<SUserClipPlane> UserClipPlane;
+
+		core::matrix4 TextureFlipMatrix;
 
 private:
 
@@ -375,7 +393,6 @@ private:
 		COGLES2Renderer2D* MaterialRenderer2DTexture;
 		COGLES2Renderer2D* MaterialRenderer2DNoTexture;
 
-		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
 
 		//! enumeration for rendering modes such as 2d and 3d for minimizing the switching of renderStates.
@@ -387,31 +404,13 @@ private:
 		};
 
 		E_RENDER_MODE CurrentRenderMode;
-		//! bool to make all renderstates reset if set to true.
-		bool ResetRenderStates;
-		bool LockRenderStateMode;
 		bool Transformation3DChanged;
-		u8 AntiAlias;
 		irr::io::path OGLES2ShaderPath;
 
 		SMaterial Material, LastMaterial;
 
-		struct SUserClipPlane
-		{
-			core::plane3df Plane;
-			bool Enabled;
-		};
-
-		core::array<SUserClipPlane> UserClipPlane;
-
-		core::stringc VendorName;
-
-		core::matrix4 TextureFlipMatrix;
-
 		//! Color buffer format
 		ECOLOR_FORMAT ColorFormat;
-
-		SIrrlichtCreationParameters Params;
 
 		//! All the lights that have been requested; a hardware limited
 		//! number of them will be used at once.

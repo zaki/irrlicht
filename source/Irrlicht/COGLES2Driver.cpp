@@ -36,10 +36,11 @@ namespace video
 
 COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, IContextManager* contextManager) :
 	CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(), CacheHandler(0),
+	Params(params), ResetRenderStates(true), LockRenderStateMode(false), AntiAlias(params.AntiAlias),
 	MaterialRenderer2DActive(0), MaterialRenderer2DTexture(0), MaterialRenderer2DNoTexture(0),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), LockRenderStateMode(false), Transformation3DChanged(true), AntiAlias(params.AntiAlias),
+	CurrentRenderMode(ERM_NONE), Transformation3DChanged(true),
 	OGLES2ShaderPath(params.OGLES2ShaderPath),
-	ColorFormat(ECF_R8G8B8), Params(params), ContextManager(contextManager)
+	ColorFormat(ECF_R8G8B8), ContextManager(contextManager)
 {
 #ifdef _DEBUG
 	setDebugName("COGLES2Driver");
@@ -2624,13 +2625,15 @@ COGLES2Driver::~COGLES2Driver()
 
 	GLenum COGLES2Driver::getZBufferBits() const
 	{
+		// TODO: never used, so not sure what this was really about (zbuffer used by device? Or for RTT's?)
+
 		GLenum bits = 0;
 
 		switch (Params.ZBufferBits)
 		{
 		case 24:
 #if defined(GL_OES_depth24)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth24))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth24))
 				bits = GL_DEPTH_COMPONENT24_OES;
 			else
 #endif
@@ -2638,7 +2641,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case 32:
 #if defined(GL_OES_depth32)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 				bits = GL_DEPTH_COMPONENT32_OES;
 			else
 #endif
@@ -2680,9 +2683,9 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_A8R8G8B8:
 			supported = true;
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_IMG_texture_format_BGRA8888) ||
-				queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_format_BGRA8888) ||
-				queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_APPLE_texture_format_BGRA8888))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_IMG_texture_format_BGRA8888) ||
+				queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_format_BGRA8888) ||
+				queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_APPLE_texture_format_BGRA8888))
 			{
 				pixelFormat = GL_BGRA;
 			}
@@ -2786,7 +2789,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_D32:
 #if defined(GL_OES_depth32)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_depth32))
 			{
 				supported = true;
 				pixelFormat = GL_DEPTH_COMPONENT;
@@ -2796,7 +2799,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_D24S8:
 #ifdef GL_OES_packed_depth_stencil
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_packed_depth_stencil))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_packed_depth_stencil))
 			{
 				supported = true;
 				pixelFormat = GL_DEPTH_STENCIL_OES;
@@ -2806,7 +2809,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_R8:
 #if defined(GL_EXT_texture_rg)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg))
 			{
 				supported = true;
 				pixelFormat = GL_RED_EXT;
@@ -2816,7 +2819,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_R8G8:
 #if defined(GL_EXT_texture_rg)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg))
 			{
 				supported = true;
 				pixelFormat = GL_RG_EXT;
@@ -2830,8 +2833,8 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_R16F:
 #if defined(GL_OES_texture_half_float) && defined(GL_EXT_texture_rg)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
-				&& queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float)
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
+				&& queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float)
 				)
 			{
 				supported = true;
@@ -2842,8 +2845,8 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_G16R16F:
 #if defined(GL_OES_texture_half_float) && defined(GL_EXT_texture_rg)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
-				&& queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float)
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
+				&& queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float)
 				)
 			{
 				supported = true;
@@ -2854,7 +2857,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_A16B16G16R16F:
 #if defined(GL_OES_texture_half_float)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float))
 			{
 				supported = true;
 				pixelFormat = GL_RGBA;
@@ -2864,8 +2867,8 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_R32F:
 #if defined(GL_OES_texture_float) && defined(GL_EXT_texture_rg)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
-				&& queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_float)
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
+				&& queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_float)
 				)
 			{
 				supported = true;
@@ -2876,8 +2879,8 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_G32R32F:
 #if defined(GL_OES_texture_float) && defined(GL_EXT_texture_rg)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
-				&& queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_float)
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_EXT_texture_rg)
+				&& queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_float)
 				)
 			{
 				supported = true;
@@ -2888,7 +2891,7 @@ COGLES2Driver::~COGLES2Driver()
 			break;
 		case ECF_A32B32G32R32F:
 #if defined(GL_OES_texture_float)
-			if (queryOpenGLFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float))
+			if (queryGLESFeature(COGLESCoreExtensionHandler::IRR_GL_OES_texture_half_float))
 			{
 				supported = true;
 				pixelFormat = GL_RGBA;
