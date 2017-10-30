@@ -904,7 +904,6 @@ bool CWebGL1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			pixelType = GL_UNSIGNED_SHORT;
 			break;
 		case ECF_D32:
-#if defined(GL_OES_depth32)
 			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_depth_texture))
 			{
 				// NOTE: There is still no guarantee it will return a 32 bit depth buffer. It might convert stuff internally to 16 bit :-(
@@ -912,17 +911,14 @@ bool CWebGL1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 				pixelFormat = GL_DEPTH_COMPONENT;
 				pixelType = GL_UNSIGNED_INT;
 			}
-#endif
 			break;
 		case ECF_D24S8:
-#ifdef GL_OES_packed_depth_stencil
 			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_depth_texture))
 			{
 				supported = true;
-				pixelFormat = GL_DEPTH_STENCIL_OES;
-				pixelType = GL_UNSIGNED_INT_24_8_OES;
+				pixelFormat = 0x84F9; // GL_DEPTH_STENCIL
+				pixelType = 0x84FA;	  // UNSIGNED_INT_24_8_WEBGL
 			}
-#endif
 			break;
 		case ECF_R8:
 			// Does not seem to be supported in WebGL so far (missing GL_EXT_texture_rg)
