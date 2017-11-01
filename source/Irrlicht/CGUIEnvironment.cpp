@@ -400,6 +400,7 @@ void CGUIEnvironment::clear()
 //! called by ui if an event happened.
 bool CGUIEnvironment::OnEvent(const SEvent& event)
 {
+
 	bool ret = false;
 	if (UserReceiver
 		&& (event.EventType != EET_MOUSE_INPUT_EVENT)
@@ -563,7 +564,23 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 	switch(event.EventType)
 	{
 	case EET_GUI_EVENT:
-		// hey, why is the user sending gui events..?
+		if ( event.EventType == EET_GUI_EVENT
+			&& event.GUIEvent.EventType == EGET_ELEMENT_REMOVED )
+		{
+			if ( event.GUIEvent.Caller == Focus )
+				setFocus(0);
+
+			// TODO: In theory we could also check hovered and ToolTip.Element here.
+			// But not trivial (aka - test *a lot* when you try to change) and not so important.
+
+			if ( UserReceiver )
+				UserReceiver->OnEvent(event);
+		}
+		else
+		{
+			// hey, why is the user sending gui events..?
+		}
+
 		break;
 	case EET_MOUSE_INPUT_EVENT:
 
