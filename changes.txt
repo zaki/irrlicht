@@ -1,6 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
-- Add gui event EGET_ELEMENT_REMOVED. Remove active focus now from elements which got removed from the gui graph.
+- Add gui event EGET_ELEMENT_REMOVED.
 - Fix: IGUIContextMenu now raises sub-menu when they would otherwise be displayed below bottom-border of root gui element.
 - Prevent initializing/quitting SDL several times when using more than one Irrlicht device.
 - Reduce log-messages for "loaded texture" and "loaded mesh" from ELL_INFORMATION to ELL_DEBUG.
