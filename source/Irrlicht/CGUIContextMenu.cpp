@@ -668,16 +668,27 @@ void CGUIContextMenu::recalculateSize()
 
             core::rect<s32> subRect(width-5, Items[i].PosY, width+w-5, Items[i].PosY+h);
 
-            // if it would be drawn beyond the right border, then add it to the left side
             gui::IGUIElement * root = Environment->getRootGUIElement();
             if ( root )
             {
                 core::rect<s32> rectRoot( root->getAbsolutePosition() );
+
+				// if it would be drawn beyond the right border, then add it to the left side
                 if ( getAbsolutePosition().UpperLeftCorner.X+subRect.LowerRightCorner.X > rectRoot.LowerRightCorner.X )
                 {
                     subRect.UpperLeftCorner.X = -w;
                     subRect.LowerRightCorner.X = 0;
                 }
+
+                // if it would be drawn below bottom border, move it up, but not further than to top.
+                irr::s32 belowBottom = getAbsolutePosition().UpperLeftCorner.Y+subRect.LowerRightCorner.Y - rectRoot.LowerRightCorner.Y;
+                if ( belowBottom > 0 )
+				{
+					irr::s32 belowTop = getAbsolutePosition().UpperLeftCorner.Y+subRect.UpperLeftCorner.Y;
+					irr::s32 moveUp = belowBottom <  belowTop ? belowBottom : belowTop;
+					subRect.UpperLeftCorner.Y -= moveUp;
+					subRect.LowerRightCorner.Y -= moveUp;
+				}
             }
 
 			Items[i].SubMenu->setRelativePosition(subRect);
