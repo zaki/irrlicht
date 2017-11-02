@@ -158,6 +158,9 @@ namespace gui
 		core::rect<s32> RRect;
 		core::rect<s32> BRRect;
 		core::rect<s32> BRect;
+
+		//! Some gui-elements can't be created in this editor
+		core::array<EGUI_ELEMENT_TYPE> UnusableElementTypeFilter;
 	};
 
 
