@@ -295,7 +295,7 @@ public:
 	of the texture to draw itself.
 	\param parent Parent gui element of the image.
 	\param id Id to identify the gui element.
-	\param text Title text of the image.
+	\param text Title text of the image (not displayed).
 	\return Pointer to the created image element. Returns 0 if an error
 	occurred. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
@@ -307,7 +307,7 @@ public:
 	\param rectangle Rectangle specifying the borders of the image.
 	\param parent Parent gui element of the image.
 	\param id Id to identify the gui element.
-	\param text Title text of the image.
+	\param text Title text of the image (not displayed).
 	\param useAlphaChannel Sets if the image should use the alpha channel
 	of the texture to draw itself.
 	\return Pointer to the created image element. Returns 0 if an error

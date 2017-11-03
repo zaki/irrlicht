@@ -32,6 +32,8 @@ namespace gui
 		virtual video::ITexture* getImage() const = 0;
 
 		//! Sets the color of the image
+		/** \param color Color with which the image is drawn. If the color
+		equals Color(255,255,255,255) it is ignored. */
 		virtual void setColor(video::SColor color) = 0;
 
 		//! Sets if the image should scale to fit the element
