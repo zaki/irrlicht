@@ -18,7 +18,7 @@ namespace gui
 //! constructor
 CGUIImage::CGUIImage(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 : IGUIImage(environment, parent, id, rectangle), Texture(0), Color(255,255,255,255),
-	UseAlphaChannel(false), ScaleImage(false), DrawBounds(0.f, 0.f, 1.f, 1.f)
+	UseAlphaChannel(false), ScaleImage(false), DrawBounds(0.f, 0.f, 1.f, 1.f), DrawBackground(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIImage");
@@ -104,7 +104,7 @@ void CGUIImage::draw()
 				&clippingRect, Color, UseAlphaChannel);
 		}
 	}
-	else
+	else if ( DrawBackground )
 	{
 		core::rect<s32> clippingRect(AbsoluteClippingRect);
 		checkBounds(clippingRect);
@@ -188,6 +188,7 @@ void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 	out->addFloat   ("DrawBoundsY1", DrawBounds.UpperLeftCorner.Y);
 	out->addFloat   ("DrawBoundsX2", DrawBounds.LowerRightCorner.X);
 	out->addFloat   ("DrawBoundsY2", DrawBounds.LowerRightCorner.Y);
+	out->addBool    ("DrawBackground", DrawBackground);
 }
 
 
@@ -207,6 +208,8 @@ void CGUIImage::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 	DrawBounds.LowerRightCorner.X = in->getAttributeAsFloat("DrawBoundsX2", DrawBounds.LowerRightCorner.X);
 	DrawBounds.LowerRightCorner.Y = in->getAttributeAsFloat("DrawBoundsY2", DrawBounds.LowerRightCorner.Y);
 	setDrawBounds(DrawBounds);
+
+	setDrawBackground(in->getAttributeAsBool("DrawBackground", DrawBackground));
 }
 
 
