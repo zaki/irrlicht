@@ -27,22 +27,22 @@ public:
 		setBool(value);
 	}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		return BoolValue ? 1 : 0;
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		return BoolValue ? 1.0f : 0.0f;
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		return BoolValue;
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		return core::stringw( BoolValue ? L"true" : L"false" );
 	}
@@ -91,22 +91,22 @@ public:
 		setInt(value);
 	}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		return Value;
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		return (f32)Value;
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		return (Value != 0);
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		return core::stringw(Value);
 	}
@@ -151,22 +151,22 @@ public:
 		setFloat(value);
 	}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		return (s32)Value;
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		return Value;
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		return (Value != 0);
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		return core::stringw((double)Value);
 	}
@@ -384,7 +384,7 @@ public:
 	}
 
 	// getting values
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		if (Count==0)
 			return 0;
@@ -395,7 +395,7 @@ public:
 			return ValueI[0];
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		if (Count==0)
 			return 0.0f;
@@ -406,7 +406,7 @@ public:
 			return (f32)ValueI[0];
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		// return true if any number is nonzero
 		bool ret=false;
@@ -422,7 +422,7 @@ public:
 	}
 
 
-	virtual core::stringc getString() _IRR_OVERRIDE_
+	virtual core::stringc getString() const _IRR_OVERRIDE_
 	{
 		core::stringc outstr;
 
@@ -439,7 +439,7 @@ public:
 		return outstr;
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		core::stringw outstr;
 
@@ -456,7 +456,7 @@ public:
 		return outstr;
 	}
 
-	virtual core::position2di getPosition() _IRR_OVERRIDE_
+	virtual core::position2di getPosition() const _IRR_OVERRIDE_
 	{
 		core::position2di p;
 
@@ -474,7 +474,7 @@ public:
 		return p;
 	}
 
-	virtual core::vector3df getVector() _IRR_OVERRIDE_
+	virtual core::vector3df getVector() const _IRR_OVERRIDE_
 	{
 		core::vector3df v;
 
@@ -494,7 +494,7 @@ public:
 		return v;
 	}
 
-	virtual core::vector2df getVector2d() _IRR_OVERRIDE_
+	virtual core::vector2df getVector2d() const _IRR_OVERRIDE_
 	{
 		core::vector2df v;
 
@@ -512,7 +512,7 @@ public:
 		return v;
 	}
 
-	virtual video::SColorf getColorf() _IRR_OVERRIDE_
+	virtual video::SColorf getColorf() const _IRR_OVERRIDE_
 	{
 		video::SColorf c;
 		if (IsFloat)
@@ -533,13 +533,13 @@ public:
 		return c;
 	}
 
-	virtual video::SColor getColor() _IRR_OVERRIDE_
+	virtual video::SColor getColor() const _IRR_OVERRIDE_
 	{
 		return getColorf().toSColor();
 	}
 
 
-	virtual core::rect<s32> getRect() _IRR_OVERRIDE_
+	virtual core::rect<s32> getRect() const _IRR_OVERRIDE_
 	{
 		core::rect<s32> r;
 
@@ -560,7 +560,7 @@ public:
 		return r;
 	}
 
-	virtual core::dimension2du getDimension2d() _IRR_OVERRIDE_
+	virtual core::dimension2du getDimension2d() const _IRR_OVERRIDE_
 	{
 		core::dimension2d<u32> dim;
 
@@ -577,7 +577,7 @@ public:
 		return dim;
 	}
 
-	virtual core::matrix4 getMatrix() _IRR_OVERRIDE_
+	virtual core::matrix4 getMatrix() const _IRR_OVERRIDE_
 	{
 		core::matrix4 ret;
 		if (IsFloat)
@@ -597,7 +597,7 @@ public:
 		return ret;
 	}
 
-	virtual core::quaternion getQuaternion() _IRR_OVERRIDE_
+	virtual core::quaternion getQuaternion() const _IRR_OVERRIDE_
 	{
 		core::quaternion ret;
 		if (IsFloat)
@@ -617,7 +617,7 @@ public:
 		return ret;
 	}
 
-	virtual core::triangle3df getTriangle() _IRR_OVERRIDE_
+	virtual core::triangle3df getTriangle() const _IRR_OVERRIDE_
 	{
 		core::triangle3df ret;
 
@@ -649,7 +649,7 @@ public:
 		return ret;
 	}
 
-	virtual core::plane3df getPlane() _IRR_OVERRIDE_
+	virtual core::plane3df getPlane() const _IRR_OVERRIDE_
 	{
 		core::plane3df ret;
 
@@ -671,7 +671,7 @@ public:
 		return ret;
 	}
 
-	virtual core::aabbox3df getBBox() _IRR_OVERRIDE_
+	virtual core::aabbox3df getBBox() const _IRR_OVERRIDE_
 	{
 		core::aabbox3df ret;
 		if (IsFloat)
@@ -696,7 +696,7 @@ public:
 
 	}
 
-	virtual core::line2df getLine2d() _IRR_OVERRIDE_
+	virtual core::line2df getLine2d() const _IRR_OVERRIDE_
 	{
 		core::line2df ret;
 		if (IsFloat)
@@ -716,7 +716,7 @@ public:
 		return ret;
 	}
 
-	virtual core::line3df getLine3d() _IRR_OVERRIDE_
+	virtual core::line3df getLine3d() const _IRR_OVERRIDE_
 	{
 		core::line3df ret;
 		if (IsFloat)
@@ -1198,12 +1198,12 @@ public:
 
 	CColorfAttribute(const char* name, video::SColorf value) : CNumbersAttribute(name, value) {}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		return getColor().color;
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		return (f32)getColor().color;
 	}
@@ -1244,12 +1244,12 @@ public:
 
 	CColorAttribute(const char* name, const video::SColor& value) : CNumbersAttribute(name, value) {}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		return getColor().color;
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		return (f32)getColor().color;
 	}
@@ -1268,7 +1268,7 @@ public:
 		setInt((s32)floatValue);
 	}
 
-	virtual core::stringc getString() _IRR_OVERRIDE_
+	virtual core::stringc getString() const _IRR_OVERRIDE_
 	{
 		char tmp[10];
 		const video::SColor c = getColor();
@@ -1276,7 +1276,7 @@ public:
 		return core::stringc(tmp);
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		char tmp[10];
 		const video::SColor c = getColor();
@@ -1323,7 +1323,7 @@ public:
 		return EAT_VECTOR3D;
 	}
 
-	virtual core::matrix4 getMatrix() _IRR_OVERRIDE_
+	virtual core::matrix4 getMatrix() const _IRR_OVERRIDE_
 	{
 		core::matrix4 ret;
 		ret.makeIdentity();
@@ -1424,7 +1424,7 @@ public:
 		return EAT_MATRIX;
 	}
 
-	virtual core::quaternion getQuaternion() _IRR_OVERRIDE_
+	virtual core::quaternion getQuaternion() const _IRR_OVERRIDE_
 	{
 		return core::quaternion(getMatrix());
 	}
@@ -1507,7 +1507,7 @@ public:
 		return EAT_TRIANGLE3D;
 	}
 
-	virtual core::plane3df getPlane() _IRR_OVERRIDE_
+	virtual core::plane3df getPlane() const _IRR_OVERRIDE_
 	{
 		return getTriangle().getPlane();
 	}
@@ -1592,7 +1592,7 @@ public:
 		setString(enumValue);
 	}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		for (u32 i=0; i < EnumLiterals.size(); ++i)
 		{
@@ -1605,22 +1605,22 @@ public:
 		return -1;
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		return (f32)getInt();
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		return (getInt() != 0); // does not make a lot of sense, I know
 	}
 
-	virtual core::stringc getString() _IRR_OVERRIDE_
+	virtual core::stringc getString() const _IRR_OVERRIDE_
 	{
 		return Value;
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		return core::stringw(Value.c_str());
 	}
@@ -1643,7 +1643,7 @@ public:
 		Value = text;
 	}
 
-	virtual const char* getEnum() _IRR_OVERRIDE_
+	virtual const char* getEnum() const _IRR_OVERRIDE_
 	{
 		return Value.c_str();
 	}
@@ -1693,7 +1693,7 @@ public:
 		setBinary(binaryData, lengthInBytes);
 	}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		if (IsStringW)
 			return atoi(core::stringc(ValueW.c_str()).c_str());
@@ -1701,7 +1701,7 @@ public:
 			return atoi(Value.c_str());
 	}
 
-	virtual f32 getFloat() _IRR_OVERRIDE_
+	virtual f32 getFloat() const _IRR_OVERRIDE_
 	{
 		if (IsStringW)
 			return core::fast_atof(core::stringc(ValueW.c_str()).c_str());
@@ -1709,7 +1709,7 @@ public:
 			return core::fast_atof(Value.c_str());
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		if (IsStringW)
 			return ValueW.equals_ignore_case(L"true");
@@ -1717,14 +1717,14 @@ public:
 			return Value.equals_ignore_case("true");
 	}
 
-	virtual core::stringc getString() _IRR_OVERRIDE_
+	virtual core::stringc getString() const _IRR_OVERRIDE_
 	{
 		if (IsStringW)
 			return core::stringc(ValueW.c_str());
 		else
 			return Value;
 	}
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		if (IsStringW)
 			return ValueW;
@@ -1779,7 +1779,7 @@ public:
 		return L"string";
 	}
 
-	virtual void getBinary(void* outdata, s32 maxLength) _IRR_OVERRIDE_
+	virtual void getBinary(void* outdata, s32 maxLength) const _IRR_OVERRIDE_
 	{
 		s32 dataSize = maxLength;
 		c8* datac8 = (c8*)(outdata);
@@ -1908,7 +1908,7 @@ public:
 		return (Value != 0);
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		// (note: don't try to put all this in some ?: operators, or c++ builder will choke)
 		if ( OverrideName.size() )
@@ -1920,7 +1920,7 @@ public:
 		return core::stringw();
 	}
 
-	virtual core::stringc getString() _IRR_OVERRIDE_
+	virtual core::stringc getString() const _IRR_OVERRIDE_
 	{
 		// since texture names can be stringw we are careful with the types
 		if ( OverrideName.size() )
@@ -1995,7 +1995,7 @@ public:
 		setArray(value);
 	}
 
-	virtual core::array<core::stringw> getArray() _IRR_OVERRIDE_
+	virtual core::array<core::stringw> getArray() const _IRR_OVERRIDE_
 	{
 		return Value;
 	}
@@ -2030,17 +2030,17 @@ public:
 		Value = value;
 	}
 
-	virtual s32 getInt() _IRR_OVERRIDE_
+	virtual s32 getInt() const _IRR_OVERRIDE_
 	{
 		return *static_cast<s32*>(Value);
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		return (Value != 0);
 	}
 
-	virtual core::stringw getStringW() _IRR_OVERRIDE_
+	virtual core::stringw getStringW() const _IRR_OVERRIDE_
 	{
 		wchar_t buf[32];
 		swprintf_irr(buf, 32, L"%p", Value);
@@ -2084,7 +2084,7 @@ public:
 		Value = v;
 	}
 
-	virtual void* getUserPointer() _IRR_OVERRIDE_
+	virtual void* getUserPointer() const _IRR_OVERRIDE_
 	{
 		return Value;
 	}
