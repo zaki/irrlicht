@@ -1142,19 +1142,6 @@ public:
 		}
 	}
 
-
-	//! is it a number list?
-	virtual bool isNumberList()
-	{
-		return true;
-	}
-
-	//! is it a float list?
-	virtual bool isFloat()
-	{
-		return IsFloat;
-	}
-
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_
 	{
 		if (IsFloat)
