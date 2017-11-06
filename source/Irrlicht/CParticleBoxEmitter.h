@@ -5,6 +5,9 @@
 #ifndef __C_PARTICLE_BOX_EMITTER_H_INCLUDED__
 #define __C_PARTICLE_BOX_EMITTER_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "IParticleBoxEmitter.h"
 #include "irrArray.h"
 #include "aabbox3d.h"
@@ -127,6 +130,7 @@ private:
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 
 #endif
 

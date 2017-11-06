@@ -9,7 +9,11 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
 --------------------------
 Changes in 1.9 (not yet released)
-
+- Add _IRR_COMPILE_WITH_PARTICLES_ to control compilation of particle system
+- Add IGUIImage::setDrawBackground to allow disabling background drawing even when no texture is set.
+- Add gui event EGET_ELEMENT_REMOVED.
+- Fix: IGUIContextMenu now raises sub-menu when they would otherwise be displayed below bottom-border of root gui element.
+- Prevent initializing/quitting SDL several times when using more than one Irrlicht device.
 - Reduce log-messages for "loaded texture" and "loaded mesh" from ELL_INFORMATION to ELL_DEBUG.
 - Add IGUIButton::setOverrideColor to allow overriding text-color (same function as statictexts and editboxes have).
 - Add functions IGUIButton::getClickShiftState and IGUIButton::getClickControlState to get shift/ctrl key-state when a button was clicked. Thanks @StarSonata for patch.
@@ -32,7 +36,7 @@ Changes in 1.9 (not yet released)
 - Add access functions to ITextSceneNode (getText, getTextColor, setFont, getFont).
 - Try harder to move Window to custom WindowPosition set in SIrrlichtCreationParameters on X11. Thx@ Hernan Ezequiel Di Giorgi for the patch (#304).
 - Fix bug in virtual filessystem which prevented createFileList from working. Thx @Cube for reporting a problem.
-- ITriangleSelector now can also return meshbuffer collision information. 
+- ITriangleSelector now can also return meshbuffer collision information.
 - core::string::split now adds delimiter to token before delimiter when keepSeparators is true. That way we never end up with 2 tokens for an original string with a single character.
 - Bugfix: SMesh::recalculateBoundingBox() does now ignore empty boundingboxes of meshbuffers instead of adding them.
 - IIrrXMLReader::getAttributeValueAsInt and  IIrrXMLReader::getAttributeValueAsFloat can now return a custom default-value when the attribute is not found.

@@ -15,7 +15,6 @@ namespace video
 }
 namespace gui
 {
-
 	//! GUI element displaying an image.
 	class IGUIImage : public IGUIElement
 	{
@@ -32,6 +31,8 @@ namespace gui
 		virtual video::ITexture* getImage() const = 0;
 
 		//! Sets the color of the image
+		/** \param color Color with which the image is drawn. If the color
+		equals Color(255,255,255,255) it is ignored. */
 		virtual void setColor(video::SColor color) = 0;
 
 		//! Sets if the image should scale to fit the element
@@ -69,6 +70,14 @@ namespace gui
 
 		//! Get drawing-area restrictions.
 		virtual core::rect<f32> getDrawBounds() const = 0;
+
+		//! Sets whether to draw a background color (EGDC_3D_DARK_SHADOW) when no texture is set
+		/** By default it's enabled */
+		virtual void setDrawBackground(bool draw) = 0;
+
+		//! Checks if a background is drawn when no texture is set
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
 	};
 
 

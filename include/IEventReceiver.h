@@ -330,6 +330,11 @@ namespace irr
 			//! may be removed by Irrlicht 1.9
 			EGET_TREEVIEW_NODE_COLLAPS = EGET_TREEVIEW_NODE_COLLAPSE,
 
+			//! Information that an element got removed from the gui-graph.
+			/** NOTE: This event is not passed on to all element parents, but only the
+			gui environment (and user receiver). */
+			EGET_ELEMENT_REMOVED,
+
 			//! No real event. Just for convenience to get number of events
 			EGET_COUNT
 		};

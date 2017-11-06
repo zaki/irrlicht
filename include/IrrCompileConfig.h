@@ -334,6 +334,13 @@ you will not be able to use anything provided by the GUI Environment, including 
 #undef _IRR_COMPILE_WITH_GUI_
 #endif
 
+//! Define _IRR_COMPILE_WITH_PARTICLES to compile the engine the withe build-in particle system
+/** You can disable this if you don't need particles or use an external particle system. */
+#define _IRR_COMPILE_WITH_PARTICLES_
+#ifdef NO_IRR_COMPILE_WITH_PARTICLES_
+#undef _IRR_COMPILE_WITH_PARTICLES_
+#endif
+
 //! Define _IRR_WCHAR_FILESYSTEM to enable unicode filesystem support for the engine.
 /** This enables the engine to read/write from unicode filesystem. If you
 disable this feature, the engine behave as before (ansi). This is currently only supported

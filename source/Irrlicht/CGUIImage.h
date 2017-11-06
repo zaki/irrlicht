@@ -64,6 +64,18 @@ namespace gui
 		//! Get drawing-area restrictions.
 		virtual core::rect<f32> getDrawBounds() const _IRR_OVERRIDE_;
 
+		//! Sets whether to draw a background color (EGDC_3D_DARK_SHADOW) when no texture is set
+		virtual void setDrawBackground(bool draw) _IRR_OVERRIDE_
+		{
+			DrawBackground = draw;
+		}
+
+		//! Checks if a background is drawn when no texture is set
+		virtual bool isDrawBackgroundEnabled() const  _IRR_OVERRIDE_
+		{
+			return DrawBackground;
+		}
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
 
@@ -89,6 +101,7 @@ namespace gui
 		bool ScaleImage;
 		core::rect<s32> SourceRect;
 		core::rect<f32> DrawBounds;
+		bool DrawBackground;
 	};
 
 

@@ -5,6 +5,9 @@
 #ifndef __C_PARTICLE_SYSTEM_SCENE_NODE_H_INCLUDED__
 #define __C_PARTICLE_SYSTEM_SCENE_NODE_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "IParticleSystemSceneNode.h"
 #include "irrArray.h"
 #include "irrList.h"
@@ -240,6 +243,7 @@ private:
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 
 #endif
 

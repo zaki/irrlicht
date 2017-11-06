@@ -5,6 +5,9 @@
 #ifndef C_PARTICLE_SCALE_AFFECTOR_H
 #define C_PARTICLE_SCALE_AFFECTOR_H
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "IParticleAffector.h"
 
 namespace irr
@@ -39,6 +42,7 @@ namespace irr
 	}
 }
 
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 
 #endif // C_PARTICLE_SCALE_AFFECTOR_H
 

@@ -3,6 +3,10 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CParticleCylinderEmitter.h"
+
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "os.h"
 #include "IAttributes.h"
 
@@ -184,4 +188,6 @@ void CParticleCylinderEmitter::deserializeAttributes(io::IAttributes* in, io::SA
 
 } // end namespace scene
 } // end namespace irr
+
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 

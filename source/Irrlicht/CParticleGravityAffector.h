@@ -5,6 +5,9 @@
 #ifndef __C_PARTICLE_GRAVITY_AFFECTOR_H_INCLUDED__
 #define __C_PARTICLE_GRAVITY_AFFECTOR_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "IParticleGravityAffector.h"
 #include "SColor.h"
 
@@ -59,6 +62,7 @@ private:
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 
 #endif
 

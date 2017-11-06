@@ -148,7 +148,11 @@
 #include "CMeshSceneNode.h"
 #include "CSkyBoxSceneNode.h"
 #include "CSkyDomeSceneNode.h"
+
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
 #include "CParticleSystemSceneNode.h"
+#endif // _IRR_COMPILE_WITH_PARTICLES_
+
 #include "CDummyTransformationSceneNode.h"
 #include "CWaterSurfaceSceneNode.h"
 #include "CTerrainSceneNode.h"
@@ -848,6 +852,7 @@ IParticleSystemSceneNode* CSceneManager::addParticleSystemSceneNode(
 	const core::vector3df& position, const core::vector3df& rotation,
 	const core::vector3df& scale)
 {
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
 	if (!parent)
 		parent = this;
 
@@ -856,6 +861,9 @@ IParticleSystemSceneNode* CSceneManager::addParticleSystemSceneNode(
 	node->drop();
 
 	return node;
+#else
+	return 0;
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 }
 
 

@@ -42,6 +42,17 @@ CGUIEditWorkspace::CGUIEditWorkspace(IGUIEnvironment* environment, s32 id, IGUIE
 	// it resizes to fit a resizing window
 	setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 
+	// Types which we currently can't handle in editor
+	// Most of them also just don't make sense in here (like Dialogs)
+	// TODO: We should have a way to create context-menus
+	UnusableElementTypeFilter.push_back(EGUIET_CONTEXT_MENU);
+	UnusableElementTypeFilter.push_back(EGUIET_FILE_OPEN_DIALOG);
+	UnusableElementTypeFilter.push_back(EGUIET_COLOR_SELECT_DIALOG);
+	UnusableElementTypeFilter.push_back(EGUIET_MESSAGE_BOX);
+	UnusableElementTypeFilter.push_back(EGUIET_MODAL_SCREEN);
+	UnusableElementTypeFilter.push_back(EGUIET_ELEMENT); // wouldn't do anything, so don't show in menu
+	UnusableElementTypeFilter.push_back(EGUIET_ROOT);	// wouldn't do anything, so don't show in menu
+
 	EditorWindow = (CGUIEditWindow*) Environment->addGUIElement("GUIEditWindow", this);
 	if (EditorWindow)
 	{
@@ -422,7 +433,9 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 
 					for (j=0; j< f->getCreatableGUIElementTypeCount(); ++j)
 					{
-						sub2->addItem(core::stringw(f->getCreateableGUIElementTypeName(j)).c_str(), MenuCommandStart + EGUIEDMC_COUNT + c);
+						EGUI_ELEMENT_TYPE type = f->getCreateableGUIElementType(j);
+						if ( UnusableElementTypeFilter.linear_search(type) < 0 )
+							sub2->addItem(core::stringw(f->getCreateableGUIElementTypeName(j)).c_str(), MenuCommandStart + EGUIEDMC_COUNT + c);
 						c++;
 					}
 
