@@ -1447,7 +1447,7 @@ public:
 		return EAT_QUATERNION;
 	}
 
-	virtual core::matrix4 getMatrix() _IRR_OVERRIDE_
+	virtual core::matrix4 getMatrix() const _IRR_OVERRIDE_
 	{
 		return getQuaternion().getMatrix();
 	}
@@ -1898,12 +1898,12 @@ public:
 			Value->drop();
 	}
 
-	virtual video::ITexture* getTexture() _IRR_OVERRIDE_
+	virtual video::ITexture* getTexture() const _IRR_OVERRIDE_
 	{
 		return Value;
 	}
 
-	virtual bool getBool() _IRR_OVERRIDE_
+	virtual bool getBool() const _IRR_OVERRIDE_
 	{
 		return (Value != 0);
 	}
