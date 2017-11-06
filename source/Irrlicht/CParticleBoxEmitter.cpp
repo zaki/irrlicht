@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CParticleBoxEmitter.h"
+
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "os.h"
 #include "IAttributes.h"
 #include "irrMath.h"
@@ -186,3 +189,4 @@ void CParticleBoxEmitter::deserializeAttributes(io::IAttributes* in, io::SAttrib
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_PARTICLES_

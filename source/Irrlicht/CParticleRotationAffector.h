@@ -5,6 +5,9 @@
 #ifndef __C_PARTICLE_ROTATION_AFFECTOR_H_INCLUDED__
 #define __C_PARTICLE_ROTATION_AFFECTOR_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "IParticleRotationAffector.h"
 
 namespace irr
@@ -51,6 +54,6 @@ private:
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 
 #endif // __C_PARTICLE_ROTATION_AFFECTOR_H_INCLUDED__
-

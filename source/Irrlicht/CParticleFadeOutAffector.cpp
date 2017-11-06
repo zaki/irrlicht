@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CParticleFadeOutAffector.h"
+
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
+
 #include "IAttributes.h"
 #include "os.h"
 
@@ -68,3 +71,4 @@ void CParticleFadeOutAffector::deserializeAttributes(io::IAttributes* in, io::SA
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_PARTICLES_
