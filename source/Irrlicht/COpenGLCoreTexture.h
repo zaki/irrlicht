@@ -181,7 +181,12 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Size.Width, Size.Height, 0, PixelFormat, PixelType, 0);
 
 		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
-		Driver->testGLError(__LINE__);
+		if ( Driver->testGLError(__LINE__) )
+		{
+			char msg[256];
+			snprintf_irr(msg, 256, "COpenGLCoreTexture: InternalFormat:0x%04x PixelFormat:0x%04x", (int)InternalFormat, (int)PixelFormat);
+			os::Printer::log(msg, ELL_ERROR);
+		}
 	}
 
 	virtual ~COpenGLCoreTexture()

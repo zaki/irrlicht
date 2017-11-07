@@ -899,9 +899,12 @@ bool CWebGL1Driver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 			break;
 #endif
 		case ECF_D16:
-			supported = true;
-			pixelFormat = GL_DEPTH_COMPONENT;
-			pixelType = GL_UNSIGNED_SHORT;
+			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_depth_texture))
+			{
+				supported = true;
+				pixelFormat = GL_DEPTH_COMPONENT;
+				pixelType = GL_UNSIGNED_SHORT;
+			}
 			break;
 		case ECF_D32:
 			if (WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_WEBGL_depth_texture))
