@@ -13,7 +13,7 @@ namespace io
 {
 
 /*
-	basic types
+	Basic types, check documentation in IAttribute.h to see how they generally work.
 */
 
 // Attribute implemented for boolean values
