@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2008
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "Irrlicht15.0.vcxproj", "{DD5C43CB-34A8-409B-9010-5A5A52787552}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release - Fast FPU|Win32 = Release - Fast FPU|Win32
+		Release - Fast FPU|x64 = Release - Fast FPU|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+		SDL-Debug|Win32 = SDL-Debug|Win32
+		SDL-Debug|x64 = SDL-Debug|x64
+		Static lib - Debug|Win32 = Static lib - Debug|Win32
+		Static lib - Debug|x64 = Static lib - Debug|x64
+		Static lib - Release - Fast FPU|Win32 = Static lib - Release - Fast FPU|Win32
+		Static lib - Release - Fast FPU|x64 = Static lib - Release - Fast FPU|x64
+		Static lib - Release|Win32 = Static lib - Release|Win32
+		Static lib - Release|x64 = Static lib - Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Debug|Win32.Build.0 = Debug|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Debug|x64.ActiveCfg = Debug|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Debug|x64.Build.0 = Debug|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release - Fast FPU|Win32.ActiveCfg = Release - Fast FPU|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release - Fast FPU|Win32.Build.0 = Release - Fast FPU|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release - Fast FPU|x64.ActiveCfg = Release - Fast FPU|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release - Fast FPU|x64.Build.0 = Release - Fast FPU|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release|Win32.ActiveCfg = Release|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release|Win32.Build.0 = Release|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release|x64.ActiveCfg = Release|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Release|x64.Build.0 = Release|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.SDL-Debug|Win32.ActiveCfg = SDL-Debug|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.SDL-Debug|Win32.Build.0 = SDL-Debug|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.SDL-Debug|x64.ActiveCfg = SDL-Debug|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.SDL-Debug|x64.Build.0 = SDL-Debug|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Debug|Win32.ActiveCfg = Static lib - Debug|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Debug|Win32.Build.0 = Static lib - Debug|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Debug|x64.ActiveCfg = Static lib - Debug|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Debug|x64.Build.0 = Static lib - Debug|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release - Fast FPU|Win32.ActiveCfg = Static lib - Release - Fast FPU|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release - Fast FPU|Win32.Build.0 = Static lib - Release - Fast FPU|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release - Fast FPU|x64.ActiveCfg = Static lib - Release - Fast FPU|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release - Fast FPU|x64.Build.0 = Static lib - Release - Fast FPU|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release|Win32.ActiveCfg = Static lib - Release|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release|Win32.Build.0 = Static lib - Release|Win32
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release|x64.ActiveCfg = Static lib - Release|x64
+		{DD5C43CB-34A8-409B-9010-5A5A52787552}.Static lib - Release|x64.Build.0 = Static lib - Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DF9BEF31-A6F9-42FD-9573-28F994828B0B}
+	EndGlobalSection
+EndGlobal
