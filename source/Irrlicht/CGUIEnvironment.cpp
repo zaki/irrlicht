@@ -564,17 +564,6 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 	switch(event.EventType)
 	{
 	case EET_GUI_EVENT:
-		if ( event.EventType == EET_GUI_EVENT
-			&& event.GUIEvent.EventType == EGET_ELEMENT_REMOVED )
-		{
-			// TODO: In theory we could also check Focus, Hovered and ToolTip.Element here.
-			// But not trivial (aka - test *a lot* when you try to change, especially GUI editor).
-			// Focus might still be the easiest to get working (and most important, it was one of the reasons I added EGET_ELEMENT_REMOVED ...)
-
-			if ( UserReceiver )
-				UserReceiver->OnEvent(event);
-		}
-		else
 		{
 			// hey, why is the user sending gui events..?
 		}

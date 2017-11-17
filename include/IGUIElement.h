@@ -54,7 +54,6 @@ public:
 		core::list<IGUIElement*>::Iterator it = Children.begin();
 		for (; it != Children.end(); ++it)
 		{
-			(*it)->sendRemoveEvent();
 			(*it)->Parent = 0;
 			(*it)->drop();
 		}
@@ -290,7 +289,6 @@ public:
 		for (; it != Children.end(); ++it)
 			if ((*it) == child)
 			{
-				(*it)->sendRemoveEvent();
 				(*it)->Parent = 0;
 				(*it)->drop();
 				Children.erase(it);
@@ -962,21 +960,6 @@ protected:
 			{
 				(*it)->recalculateAbsolutePosition(recursive);
 			}
-		}
-	}
-
-	// Inform gui-environment that an element got removed from the gui-graph
-	void sendRemoveEvent()
-	{
-		if ( Environment )
-		{
-			SEvent removeEvent;
-			removeEvent.EventType = EET_GUI_EVENT;
-			removeEvent.GUIEvent.Caller = this;
-			removeEvent.GUIEvent.Element = 0;
-			removeEvent.GUIEvent.EventType = EGET_ELEMENT_REMOVED;
-
-			Environment->postEventFromUser(removeEvent);
 		}
 	}
 
