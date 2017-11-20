@@ -23,24 +23,24 @@ namespace scene
 
 	void AngleQuaternion(const core::vector3df& angles, vec4_hl quaternion)
 	{
-		f32		angle;
-		f32		sr, sp, sy, cr, cp, cy;
+		double angle;
+		double sr, sp, sy, cr, cp, cy;
 
 		// FIXME: rescale the inputs to 1/2 angle
-		angle = angles.Z * 0.5f;
+		angle = angles.Z * 0.5;
 		sy = sin(angle);
 		cy = cos(angle);
-		angle = angles.Y * 0.5f;
+		angle = angles.Y * 0.5;
 		sp = sin(angle);
 		cp = cos(angle);
-		angle = angles.X * 0.5f;
+		angle = angles.X * 0.5;
 		sr = sin(angle);
 		cr = cos(angle);
 
-		quaternion[0] = sr*cp*cy-cr*sp*sy; // X
-		quaternion[1] = cr*sp*cy+sr*cp*sy; // Y
-		quaternion[2] = cr*cp*sy-sr*sp*cy; // Z
-		quaternion[3] = cr*cp*cy+sr*sp*sy; // W
+		quaternion[0] = (irr::f32)(sr*cp*cy-cr*sp*sy); // X
+		quaternion[1] = (irr::f32)(cr*sp*cy+sr*cp*sy); // Y
+		quaternion[2] = (irr::f32)(cr*cp*sy-sr*sp*cy); // Z
+		quaternion[3] = (irr::f32)(cr*cp*cy+sr*sp*sy); // W
 	}
 
 	void QuaternionMatrix( const vec4_hl quaternion, f32 (*matrix)[4] )

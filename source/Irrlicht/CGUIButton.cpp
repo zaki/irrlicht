@@ -289,7 +289,6 @@ void CGUIButton::draw()
 		core::position2di pos(buttonCenter);
 		if ( Pressed )
 		{
-			IGUISkin* skin = Environment->getSkin();
 			pos.X += skin->getSize(EGDS_BUTTON_PRESSED_SPRITE_OFFSET_X);
 			pos.Y += skin->getSize(EGDS_BUTTON_PRESSED_SPRITE_OFFSET_Y);
 		}
