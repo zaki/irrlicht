@@ -17,16 +17,6 @@ namespace irr
 namespace video
 {
 
-//! Enumeration describing the type of ITexture.
-enum E_TEXTURE_TYPE
-{
-	//! 2D texture.
-	ETT_2D,
-
-	//! Cubemap texture.
-	ETT_CUBEMAP
-};
-
 //! Interface for software image data.
 /** Image loaders create these images from files. IVideoDrivers convert
 these images into their (hardware) textures.

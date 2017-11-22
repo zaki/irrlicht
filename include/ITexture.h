@@ -105,6 +105,16 @@ enum E_TEXTURE_SOURCE
 	ETS_FROM_FILE
 };
 
+//! Enumeration describing the type of ITexture.
+enum E_TEXTURE_TYPE
+{
+	//! 2D texture.
+	ETT_2D,
+
+	//! Cubemap texture.
+	ETT_CUBEMAP
+};
+
 //! Interface of a Video Driver dependent Texture.
 /** An ITexture is created by an IVideoDriver by using IVideoDriver::addTexture
 or IVideoDriver::getTexture. After that, the texture may only be used by this
