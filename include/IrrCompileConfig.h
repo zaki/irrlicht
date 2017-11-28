@@ -781,6 +781,10 @@ precision will be lower but speed higher. currently X86 only
 	#endif
 #endif
 
+#ifndef __has_feature
+  #define __has_feature(x) 0  // Compatibility with non-clang compilers.
+#endif
+
 #ifdef _DEBUG
 	//! A few attributes are written in CSceneManager when _IRR_SCENEMANAGER_DEBUG is enabled
 	// NOTE: Those attributes were used always until 1.8.0 and became a global define for 1.8.1
