@@ -69,7 +69,6 @@ namespace video
         XVisualInfo* VisualInfo;
         void* glxFBConfig; // GLXFBConfig
         XID GlxWin; // GLXWindow
-        ECOLOR_FORMAT ColorFormat;
 	};
 }
 }
