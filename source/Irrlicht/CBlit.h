@@ -981,6 +981,166 @@ static void executeBlit_ColorAlpha_32_to_32( const SBlitJob * job )
 	}
 }
 
+/*!
+	Combine alpha channels (increases alpha / reduces transparency)
+*/
+static void executeBlit_TextureCombineColor_16_to_16( const SBlitJob * job )
+{
+	const u32 w = job->width * 2;
+	const u32 h = job->height * 2;
+	u8* src = (u8*) job->src;
+	u8* dst = (u8*) job->dst;
+
+	const u16 jobColor = video::A8R8G8B8toA1R5G5B5( job->argb );
+
+	/*
+		Stretch not supported.
+	*/
+	for ( u32 dy = 0; dy != h; dy+=2 )
+	{
+		for ( u32 dx = 0; dx != w; dx+=2 )
+		{
+			const u16 src_x = src[dx] << 8 | src[dx+1];
+			const u16 dst_x = dst[dx] << 8 | dst[dx+1];
+			dst[dx] = PixelCombine16( dst_x, PixelMul16_2( src_x, jobColor ) );
+		}
+		src = (src) + job->srcPitch;
+		dst = (dst) + job->dstPitch;
+	}
+}
+
+/*!
+	Combine alpha channels (increases alpha / reduces transparency)
+*/
+static void executeBlit_TextureCombineColor_16_to_24( const SBlitJob * job )
+{
+	const u32 w = job->width;
+	const u32 h = job->height;
+	const u16 *src = static_cast<const u16*>(job->src);
+	u8 *dst = static_cast<u8*>(job->dst);
+
+	const u16 jobColor = video::A8R8G8B8toA1R5G5B5( job->argb );
+
+	if (job->stretch)
+	{
+		const float wscale = 1.f/job->x_stretch;
+		const float hscale = 1.f/job->y_stretch;
+
+		for ( u32 dy = 0; dy < h; ++dy )
+		{
+			const u32 src_y = (u32)(dy*hscale);
+			src = (u16*) ( (u8*) (job->src) + job->srcPitch*src_y );
+
+			for ( u32 dx = 0; dx < w; ++dx )
+			{
+				const u32 src_x = (u32)(dx*wscale);
+				u32 color = PixelMul16_2( video::A1R5G5B5toA8R8G8B8(src[src_x]), jobColor);
+				u8 * writeTo = &dst[dx * 3];
+				if ( video::getAlpha(src[src_x]) > 0 ) // only overlay if source has visible alpha (alpha == 1)
+				{
+					*writeTo++ = (color >> 16)& 0xFF;
+					*writeTo++ = (color >> 8) & 0xFF;
+					*writeTo++ = color & 0xFF;
+				}
+			}
+			dst += job->dstPitch;
+		}
+	}
+	else
+	{
+		for ( u32 dy = 0; dy != h; ++dy )
+		{
+			for ( u32 dx = 0; dx != w; ++dx )
+			{
+				u32 color = PixelMul16_2( video::A1R5G5B5toA8R8G8B8(src[dx]), jobColor);
+				u8 * writeTo = &dst[dx * 3];
+				if ( video::getAlpha(src[dx]) > 0 ) // only overlay if source has visible alpha (alpha == 1)
+				{
+					*writeTo++ = (color >> 16)& 0xFF;
+					*writeTo++ = (color >> 8) & 0xFF;
+					*writeTo++ = color & 0xFF;
+				}
+			}
+
+			src = (u16*) ( (u8*) (src) + job->srcPitch );
+			dst += job->dstPitch;
+		}
+	}
+}
+
+/*!
+	Combine alpha channels (increases alpha / reduces transparency)
+	Destination alpha is treated as full 255
+*/
+static void executeBlit_TextureCombineColor_32_to_24( const SBlitJob * job )
+{
+	const u32 w = job->width;
+	const u32 h = job->height;
+	const u32 *src = static_cast<const u32*>(job->src);
+	u8 *dst = static_cast<u8*>(job->dst);
+
+	if (job->stretch)
+	{
+		const float wscale = 1.f/job->x_stretch;
+		const float hscale = 1.f/job->y_stretch;
+
+		for ( u32 dy = 0; dy < h; ++dy )
+		{
+			const u32 src_y = (u32)(dy*hscale);
+			src = (u32*) ( (u8*) (job->src) + job->srcPitch*src_y);
+
+			for ( u32 dx = 0; dx < w; ++dx )
+			{
+				const u32 src_x = src[(u32)(dx*wscale)];
+				u8* writeTo = &dst[dx * 3];
+				const u32 dst_x = 0xFF000000 | writeTo[0] << 16 | writeTo[1] << 8 | writeTo[2];
+				const u32 combo = PixelCombine32( dst_x, PixelMul32_2( src_x, job->argb ) );
+				*writeTo++ = (combo >> 16) & 0xFF;
+				*writeTo++ = (combo >> 8) & 0xFF;
+				*writeTo++ = combo & 0xFF;
+			}
+			dst += job->dstPitch;
+		}
+	}
+	else
+	{
+		for ( u32 dy = 0; dy != h; ++dy )
+		{
+			for ( u32 dx = 0; dx != w; ++dx )
+			{
+				u8* writeTo = &dst[dx * 3];
+				const u32 dst_x = 0xFF000000 | writeTo[0] << 16 | writeTo[1] << 8 | writeTo[2];
+				const u32 combo = PixelCombine32( dst_x, PixelMul32_2( src[dx], job->argb ) );
+				*writeTo++ = (combo >> 16) & 0xFF;
+				*writeTo++ = (combo >> 8) & 0xFF;
+				*writeTo++ = combo & 0xFF;
+			}
+
+			src = (u32*) ( (u8*) (src) + job->srcPitch );
+			dst += job->dstPitch;
+		}
+	}
+}
+
+/*!
+	Combine alpha channels (increases alpha / reduces transparency)
+*/
+static void executeBlit_TextureCombineColor_32_to_32( const SBlitJob * job )
+{
+	u32 *src = (u32*) job->src;
+	u32 *dst = (u32*) job->dst;
+
+	for ( s32 dy = 0; dy != job->height; ++dy )
+	{
+		for ( s32 dx = 0; dx != job->width; ++dx )
+		{
+			dst[dx] = PixelCombine32( dst[dx], PixelMul32_2( src[dx], job->argb ) );
+		}
+		src = (u32*) ( (u8*) (src) + job->srcPitch );
+		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
+	}
+}
+
 // Blitter Operation
 enum eBlitter
 {
@@ -989,7 +1149,8 @@ enum eBlitter
 	BLITTER_COLOR_ALPHA,
 	BLITTER_TEXTURE,
 	BLITTER_TEXTURE_ALPHA_BLEND,
-	BLITTER_TEXTURE_ALPHA_COLOR_BLEND
+	BLITTER_TEXTURE_ALPHA_COLOR_BLEND,
+	BLITTER_TEXTURE_COMBINE_ALPHA,
 };
 
 typedef void (*tExecuteBlit) ( const SBlitJob * job );
@@ -1022,6 +1183,14 @@ static const blitterTable blitTable[] =
 	{ BLITTER_COLOR, video::ECF_A8R8G8B8, -1, executeBlit_Color_32_to_32 },
 	{ BLITTER_COLOR_ALPHA, video::ECF_A1R5G5B5, -1, executeBlit_ColorAlpha_16_to_16 },
 	{ BLITTER_COLOR_ALPHA, video::ECF_A8R8G8B8, -1, executeBlit_ColorAlpha_32_to_32 },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_A8R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureCombineColor_32_to_32 },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_A8R8G8B8, video::ECF_R8G8B8, executeBlit_TextureCopy_24_to_32 },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureCombineColor_32_to_24 },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_R8G8B8, video::ECF_R8G8B8, executeBlit_TextureCopy_x_to_x },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_A1R5G5B5, video::ECF_R8G8B8, executeBlit_TextureCopy_24_to_16 },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_A1R5G5B5, video::ECF_A1R5G5B5, executeBlit_TextureCombineColor_16_to_16 },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_A1R5G5B5, video::ECF_R8G8B8, executeBlit_TextureCopy_24_to_16 },
+	{ BLITTER_TEXTURE_COMBINE_ALPHA, video::ECF_R8G8B8, video::ECF_A1R5G5B5, executeBlit_TextureCombineColor_16_to_24 },
 	{ BLITTER_INVALID, -1, -1, 0 }
 };
 

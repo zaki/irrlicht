@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- IImage::copyToWithAlpha has a new parameter to allow combining alpha value instead of replacing them. This uses new blitters called BLITTER_TEXTURE_COMBINE_ALPHA. Thx @chronologicaldot for providing this patch and @burningreggae for his feedback.
 - Add _IRR_COMPILE_WITH_PARTICLES_ to control compilation of particle system
 - Add IGUIImage::setDrawBackground to allow disabling background drawing even when no texture is set.
 - Fix: IGUIContextMenu now raises sub-menu when they would otherwise be displayed below bottom-border of root gui element.
