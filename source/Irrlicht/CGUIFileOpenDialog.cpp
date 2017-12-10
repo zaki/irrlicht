@@ -437,7 +437,7 @@ void CGUIFileOpenDialog::sendSelectedEvent( EGUI_EVENT_TYPE type)
 }
 
 
-//! sends the event that the file choose process has been canceld
+//! sends the event that the file choose process has been cancelled
 void CGUIFileOpenDialog::sendCancelEvent()
 {
 	SEvent event;
