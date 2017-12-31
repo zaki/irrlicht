@@ -1710,6 +1710,7 @@ COGLES2Driver::~COGLES2Driver()
 					Material, LastMaterial, ResetRenderStates, this);
 
 			LastMaterial = Material;
+			CacheHandler->correctCacheMaterial(LastMaterial);
 			ResetRenderStates = false;
 		}
 
@@ -1990,6 +1991,7 @@ COGLES2Driver::~COGLES2Driver()
 
 		MaterialRenderer2DActive->OnSetMaterial(Material, LastMaterial, true, 0);
 		LastMaterial = Material;
+		CacheHandler->correctCacheMaterial(LastMaterial);
 
 		// no alphaChannel without texture
 		alphaChannel &= texture;

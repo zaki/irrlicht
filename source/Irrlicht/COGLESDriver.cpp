@@ -1503,6 +1503,7 @@ void COGLES1Driver::setRenderStates3DMode()
 				Material, LastMaterial, ResetRenderStates, this);
 
 		LastMaterial = Material;
+		CacheHandler->correctCacheMaterial(LastMaterial);
 		ResetRenderStates = false;
 	}
 
@@ -2059,6 +2060,7 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	setBasicRenderStates(Material, LastMaterial, false);
 
 	LastMaterial = Material;
+	CacheHandler->correctCacheMaterial(LastMaterial);
 
 	// no alphaChannel without texture
 	alphaChannel &= texture;
