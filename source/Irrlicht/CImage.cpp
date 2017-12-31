@@ -145,7 +145,7 @@ void CImage::copyTo(IImage* target, const core::position2d<s32>& pos, const core
 
 
 //! copies this surface into another, using the alpha mask, a cliprect and a color to add with
-void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const SColor &color, const core::rect<s32>* clipRect)
+void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const SColor &color, const core::rect<s32>* clipRect, bool combineAlpha)
 {
 	if (IImage::isCompressedFormat(Format))
 	{
@@ -153,9 +153,16 @@ void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, c
 		return;
 	}
 
-	// color blend only necessary on not full spectrum aka. color.color != 0xFFFFFFFF
-	Blit(color.color == 0xFFFFFFFF ? BLITTER_TEXTURE_ALPHA_BLEND: BLITTER_TEXTURE_ALPHA_COLOR_BLEND,
-			target, clipRect, &pos, this, &sourceRect, color.color);
+	if ( combineAlpha )
+	{
+		Blit(BLITTER_TEXTURE_COMBINE_ALPHA, target, clipRect, &pos, this, &sourceRect, color.color);
+	}
+	else
+	{
+		// color blend only necessary on not full spectrum aka. color.color != 0xFFFFFFFF
+		Blit(color.color == 0xFFFFFFFF ? BLITTER_TEXTURE_ALPHA_BLEND: BLITTER_TEXTURE_ALPHA_COLOR_BLEND,
+				target, clipRect, &pos, this, &sourceRect, color.color);
+	}
 }
 
 

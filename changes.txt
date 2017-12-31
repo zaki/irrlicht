@@ -9,9 +9,12 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
 --------------------------
 Changes in 1.9 (not yet released)
+- Fix bug #440 where OpenGL driver enabled second texture for single-texture materials when setMaterial was called twice. Thx@ "number Zero" for bugreport and test-case.
+- Irrlicht icon now loaded with LR_DEFAULTSIZE to better support larger icon requests. Thx@ luthyr for report and bugfix.
+- Cursor on X11 behaves now like on Win32 and doesn't try to clip positions to the window
+- IImage::copyToWithAlpha has a new parameter to allow combining alpha value instead of replacing them. This uses new blitters called BLITTER_TEXTURE_COMBINE_ALPHA. Thx @chronologicaldot for providing this patch and @burningreggae for his feedback.
 - Add _IRR_COMPILE_WITH_PARTICLES_ to control compilation of particle system
 - Add IGUIImage::setDrawBackground to allow disabling background drawing even when no texture is set.
-- Add gui event EGET_ELEMENT_REMOVED.
 - Fix: IGUIContextMenu now raises sub-menu when they would otherwise be displayed below bottom-border of root gui element.
 - Prevent initializing/quitting SDL several times when using more than one Irrlicht device.
 - Reduce log-messages for "loaded texture" and "loaded mesh" from ELL_INFORMATION to ELL_DEBUG.

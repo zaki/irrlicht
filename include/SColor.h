@@ -130,7 +130,7 @@ namespace video
 	};
 
 	//! Names for ECOLOR_FORMAT types
-	const c8* const ColorFormatNames[ECF_UNKNOWN+1] =
+	const c8* const ColorFormatNames[ECF_UNKNOWN+2] =
 	{
 		"A1R5G5B5",
 		"R5G6B5",
@@ -163,6 +163,7 @@ namespace video
 		"D16",
 		"D32",
 		"D24S8",
+		"UNKNOWN",
 		0
 	};
 

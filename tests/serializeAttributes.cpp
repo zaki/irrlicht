@@ -318,6 +318,15 @@ bool stringSerialization(io::IFileSystem * fs)
 				, core::stringc(value).c_str(), core::stringc(value2).c_str(), i, attr->getAttributeName(i), __FILE__, __LINE__ );
 			return false;
 		}
+		else
+		{
+			// TODO: We can't catch yet if getAttributeAsString and setAttribute both change nothing
+			//       Except if string returned is empty - which would be fine in some cases (0 pointers or if string was empty originally)
+			//       But right now at least stringw arrays don't do stringSerialization which is a bug
+			//if ( value.empty() )
+				//return false;
+		}
+
 	}
 
 	attr->drop();

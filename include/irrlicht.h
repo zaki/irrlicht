@@ -311,7 +311,7 @@ namespace irr
 	//! Creates an Irrlicht device. The Irrlicht device is the root object for using the engine.
 	/** If you need more parameters to be passed to the creation of the Irrlicht Engine device,
 	use the createDeviceEx() function.
-	\param deviceType: Type of the device. This can currently be video::EDT_NULL,
+	\param driverType: Type of the video driver to use. This can currently be video::EDT_NULL,
 	video::EDT_SOFTWARE, video::EDT_BURNINGSVIDEO, video::EDT_DIRECT3D9 and video::EDT_OPENGL.
 	\param windowSize: Size of the window or the video mode in fullscreen mode.
 	\param bits: Bits per pixel in fullscreen mode. Ignored if windowed mode.
@@ -327,7 +327,7 @@ namespace irr
 	device could not be created.
 	*/
 	extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
-		video::E_DRIVER_TYPE deviceType = video::EDT_SOFTWARE,
+		video::E_DRIVER_TYPE driverType = video::EDT_SOFTWARE,
 		// parentheses are necessary for some compilers
 		const core::dimension2d<u32>& windowSize = (core::dimension2d<u32>(640,480)),
 		u32 bits = 32,
@@ -338,7 +338,7 @@ namespace irr
 
 	//! typedef for Function Pointer
 	typedef IrrlichtDevice* (IRRCALLCONV *funcptr_createDevice )(
-			video::E_DRIVER_TYPE deviceType,
+			video::E_DRIVER_TYPE driverType,
 			const core::dimension2d<u32>& windowSize,
 			u32 bits,
 			bool fullscreen,

@@ -69,7 +69,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 		color = skin->getColor(EGDC_WINDOW_SYMBOL);
 	}
 
-	const s32 buttonw = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	const s32 buttonw = skin ? skin->getSize(EGDS_WINDOW_BUTTON_WIDTH) : 2;
 	const s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
 	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
@@ -437,7 +437,7 @@ void CGUIFileOpenDialog::sendSelectedEvent( EGUI_EVENT_TYPE type)
 }
 
 
-//! sends the event that the file choose process has been canceld
+//! sends the event that the file choose process has been cancelled
 void CGUIFileOpenDialog::sendCancelEvent()
 {
 	SEvent event;

@@ -170,12 +170,12 @@ class COpenGLCoreCacheHandler
 
 public:
 	COpenGLCoreCacheHandler(TOpenGLDriver* driver) :
-		Driver(driver), 
+		Driver(driver),
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable: 4355)	// Warning: "'this' : used in base member initializer list. ". It's OK, we don't use the reference in STextureCache constructor.
 #endif
-		TextureCache(STextureCache(*this, driver->getDriverType(), driver->getFeature().TextureUnit)), 
+		TextureCache(STextureCache(*this, driver->getDriverType(), driver->getFeature().TextureUnit)),
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
@@ -569,6 +569,21 @@ public:
 		}
 	}
 
+	//! Compare material to current cache and update it when there are differences
+	// Some material renderers do change the cache beyond the original material settings
+	// This correct the material to represent the current cache state again.
+	void correctCacheMaterial(irr::video::SMaterial& material)
+	{
+		// Fix textures which got removed
+		for ( u32 i=0; i < MATERIAL_MAX_TEXTURES; ++i )
+		{
+			if ( material.TextureLayer[i].Texture && !TextureCache[i] )
+			{
+				material.TextureLayer[i].Texture = 0;
+			}
+		}
+	}
+
 protected:
 	TOpenGLDriver* Driver;
 
@@ -585,7 +600,7 @@ protected:
 	bool BlendEquationInvalid;
 	bool BlendFuncInvalid;
 	bool BlendInvalid;
-	
+
 
 	u8* ColorMask;
 	bool ColorMaskInvalid;

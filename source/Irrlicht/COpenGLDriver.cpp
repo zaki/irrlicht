@@ -2114,6 +2114,7 @@ void COpenGLDriver::setRenderStates3DMode()
 				Material, LastMaterial, ResetRenderStates, this);
 
 		LastMaterial = Material;
+		CacheHandler->correctCacheMaterial(LastMaterial);
 		ResetRenderStates = false;
 	}
 
@@ -2907,6 +2908,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	setBasicRenderStates(currentMaterial, LastMaterial, resetAllRenderStates);
 
 	LastMaterial = currentMaterial;
+	CacheHandler->correctCacheMaterial(LastMaterial);
 
 	// no alphaChannel without texture
 	alphaChannel &= texture;

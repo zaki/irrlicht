@@ -13,7 +13,7 @@ namespace io
 {
 
 /*
-	basic types
+	Basic types, check documentation in IAttribute.h to see how they generally work.
 */
 
 // Attribute implemented for boolean values
@@ -1140,19 +1140,6 @@ public:
 			else
 				ValueI[i] = vals[i];
 		}
-	}
-
-
-	//! is it a number list?
-	virtual bool isNumberList()
-	{
-		return true;
-	}
-
-	//! is it a float list?
-	virtual bool isFloat()
-	{
-		return IsFloat;
 	}
 
 	virtual E_ATTRIBUTE_TYPE getType() const _IRR_OVERRIDE_

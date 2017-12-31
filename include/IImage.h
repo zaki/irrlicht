@@ -17,16 +17,6 @@ namespace irr
 namespace video
 {
 
-//! Enumeration describing the type of ITexture.
-enum E_TEXTURE_TYPE
-{
-	//! 2D texture.
-	ETT_2D,
-
-	//! Cubemap texture.
-	ETT_CUBEMAP
-};
-
 //! Interface for software image data.
 /** Image loaders create these images from files. IVideoDrivers convert
 these images into their (hardware) textures.
@@ -279,9 +269,12 @@ public:
 	virtual void copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect=0) =0;
 
 	//! copies this surface into another, using the alpha mask and cliprect and a color to add with
+	/**	\param combineAlpha - When true then combine alpha channels. When false replace target image alpha with source image alpha.
+	*/
 	virtual void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos,
 			const core::rect<s32>& sourceRect, const SColor &color,
-			const core::rect<s32>* clipRect = 0) =0;
+			const core::rect<s32>* clipRect = 0,
+			bool combineAlpha=false) =0;
 
 	//! copies this surface into another, scaling it to fit, applying a box filter
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false) = 0;

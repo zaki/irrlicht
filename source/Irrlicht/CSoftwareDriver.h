@@ -120,7 +120,7 @@ namespace video
 	protected:
 
 		//! sets a render target
-		void setRenderTarget(video::CImage* image);
+		void setRenderTargetImage(video::CImage* image);
 
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, video::ITexture* texture);

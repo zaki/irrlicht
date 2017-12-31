@@ -7,6 +7,7 @@
 
 #include "IReferenceCounted.h"
 #include "IImage.h"
+#include "ITexture.h"
 #include "path.h"
 #include "irrArray.h"
 

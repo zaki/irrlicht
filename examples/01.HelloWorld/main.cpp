@@ -94,7 +94,7 @@ int main()
 	object for doing anything with the engine. createDevice() has the
 	following parameters:
 
-	- deviceType: Type of the device. This can currently be the Null-device,
+	- driverType: Type of the video driver. This can currently be the Null-device,
 	   one of the two software renderers, D3D9, or OpenGL. In this
 	   example we use EDT_BURNINGSVIDEO, but to try out, you might want to
 	   change it to EDT_SOFTWARE, EDT_NULL, EDT_DIRECT3D9, or EDT_OPENGL.

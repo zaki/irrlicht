@@ -210,7 +210,7 @@ virtual void somefunc() _IRR_OVERRIDE_;
 #define _IRR_OVERRIDE_ override
 #elif (_MSC_VER >= 1600 ) /* supported since MSVC 2010 */
 #define _IRR_OVERRIDE_ override
-#elif (__clang_major__ >= 3)
+#elif (__clang_major__ >= 3 && __has_feature(cxx_override_control))
 #define _IRR_OVERRIDE_ override
 #else
 #define _IRR_OVERRIDE_

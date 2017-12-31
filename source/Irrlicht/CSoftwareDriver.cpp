@@ -59,7 +59,7 @@ CSoftwareDriver::CSoftwareDriver(const core::dimension2d<u32>& windowSize, bool 
 
 	// select render target
 
-	setRenderTarget(BackBuffer);
+	setRenderTargetImage(BackBuffer);
 
 	// select the right renderer
 
@@ -269,11 +269,11 @@ bool CSoftwareDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SC
 	if (RenderTargetTexture)
 	{
 		RenderTargetTexture->grab();
-		setRenderTarget(((CSoftwareTexture*)RenderTargetTexture)->getTexture());
+		setRenderTargetImage(((CSoftwareTexture*)RenderTargetTexture)->getTexture());
 	}
 	else
 	{
-		setRenderTarget(BackBuffer);
+		setRenderTargetImage(BackBuffer);
 	}
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
@@ -283,7 +283,7 @@ bool CSoftwareDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SC
 
 
 //! sets a render target
-void CSoftwareDriver::setRenderTarget(video::CImage* image)
+void CSoftwareDriver::setRenderTargetImage(video::CImage* image)
 {
 	if (RenderTargetSurface)
 		RenderTargetSurface->drop();
@@ -771,7 +771,7 @@ void CSoftwareDriver::OnResize(const core::dimension2d<u32>& size)
 		BackBuffer = new CImage(ECF_A1R5G5B5, realSize);
 
 		if (resetRT)
-			setRenderTarget(BackBuffer);
+			setRenderTargetImage(BackBuffer);
 	}
 }
 

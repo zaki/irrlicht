@@ -128,7 +128,7 @@ CBurningVideoDriver::CBurningVideoDriver(const irr::SIrrlichtCreationParameters&
 	umr->drop ();
 
 	// select render target
-	setRenderTarget(BackBuffer);
+	setRenderTargetImage(BackBuffer);
 
 	//reset Lightspace
 	LightSpace.reset ();
@@ -426,11 +426,11 @@ bool CBurningVideoDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag
 	if (RenderTargetTexture)
 	{
 		RenderTargetTexture->grab();
-		setRenderTarget(((CSoftwareTexture2*)RenderTargetTexture)->getTexture());
+		setRenderTargetImage(((CSoftwareTexture2*)RenderTargetTexture)->getTexture());
 	}
 	else
 	{
-		setRenderTarget(BackBuffer);
+		setRenderTargetImage(BackBuffer);
 	}
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
@@ -440,7 +440,7 @@ bool CBurningVideoDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag
 
 
 //! sets a render target
-void CBurningVideoDriver::setRenderTarget(video::CImage* image)
+void CBurningVideoDriver::setRenderTargetImage(video::CImage* image)
 {
 	if (RenderTargetSurface)
 		RenderTargetSurface->drop();
@@ -2000,7 +2000,7 @@ void CBurningVideoDriver::OnResize(const core::dimension2d<u32>& size)
 		BackBuffer = new CImage(BURNINGSHADER_COLOR_FORMAT, realSize);
 
 		if (resetRT)
-			setRenderTarget(BackBuffer);
+			setRenderTargetImage(BackBuffer);
 	}
 }
 
