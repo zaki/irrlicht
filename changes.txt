@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Fix bug #440 where OpenGL driver enabled second texture for single-texture materials when setMaterial was called twice. Thx@ "number Zero" for bugreport and test-case.
 - Irrlicht icon now loaded with LR_DEFAULTSIZE to better support larger icon requests. Thx@ luthyr for report and bugfix.
 - Cursor on X11 behaves now like on Win32 and doesn't try to clip positions to the window
 - IImage::copyToWithAlpha has a new parameter to allow combining alpha value instead of replacing them. This uses new blitters called BLITTER_TEXTURE_COMBINE_ALPHA. Thx @chronologicaldot for providing this patch and @burningreggae for his feedback.

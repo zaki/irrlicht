@@ -567,6 +567,21 @@ public:
 		}
 	}
 
+	//! Compare material to current cache and update it when there are differences
+	// Some material renderers do change the cache beyond the original material settings
+	// This correct the material to represent the current cache state again.
+	void correctCacheMaterial(irr::video::SMaterial& material)
+	{
+		// Fix textures which got removed
+		for ( int i=0; i < MATERIAL_MAX_TEXTURES; ++i )
+		{
+			if ( material.TextureLayer[i].Texture && !TextureCache[i] )
+			{
+				material.TextureLayer[i].Texture = 0;
+			}
+		}
+	}
+
 protected:
 	TOpenGLDriver* Driver;
 
