@@ -1108,6 +1108,12 @@ void CWebGL1Driver::initWebGLExtensions()
 
 namespace irr
 {
+#ifndef _IRR_COMPILE_WITH_WEBGL1_
+namespace io
+{
+	class IFileSystem;
+}
+#endif
 namespace video
 {
 
