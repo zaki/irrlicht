@@ -32,6 +32,7 @@ namespace video
 		ECF_R8G8B8,
 
 		//! Default 32 bit color format. 8 bits are used for every component: red, green, blue and alpha.
+		//! Warning: This tends to be BGRA in memory (it's ARGB on file, but with usual big-endian memory it's flipped)
 		ECF_A8R8G8B8,
 
 		/** Compressed image formats. **/
