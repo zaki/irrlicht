@@ -646,17 +646,10 @@ inline s32 f32_to_23Bits(const f32 x)
 */
 REALINLINE tVideoSample fix_to_color ( const tFixPoint r, const tFixPoint g, const tFixPoint b )
 {
-#ifdef __BIG_ENDIAN__
-	return	FIXPOINT_COLOR_MAX |
-			( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
-			( g & FIXPOINT_COLOR_MAX) << ( 16 - FIX_POINT_PRE ) |
-			( b & FIXPOINT_COLOR_MAX) << ( 24 - FIX_POINT_PRE );
-#else
 	return	( FIXPOINT_COLOR_MAX & FIXPOINT_COLOR_MAX) << ( SHIFT_A - FIX_POINT_PRE ) |
 			( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
 			( g & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_G ) |
 			( b & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_B );
-#endif
 }
 
 
@@ -665,18 +658,10 @@ REALINLINE tVideoSample fix_to_color ( const tFixPoint r, const tFixPoint g, con
 */
 REALINLINE tVideoSample fix4_to_color ( const tFixPoint a, const tFixPoint r, const tFixPoint g, const tFixPoint b )
 {
-#ifdef __BIG_ENDIAN__
-	return	( a & (FIX_POINT_FRACT_MASK - 1 )) >> ( FIX_POINT_PRE ) |
-			( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
-			( g & FIXPOINT_COLOR_MAX) << ( 16 - FIX_POINT_PRE ) |
-			( b & FIXPOINT_COLOR_MAX) << ( 24 - FIX_POINT_PRE );
-#else
 	return	( a & (FIX_POINT_FRACT_MASK - 1 )) << ( SHIFT_A - 1 ) |
 			( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
 			( g & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_G ) |
 			( b & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_B );
-#endif
-
 }
 
 /*!
