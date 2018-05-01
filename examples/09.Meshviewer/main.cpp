@@ -29,7 +29,7 @@ using namespace gui;
 Some global variables used later on
 */
 IrrlichtDevice *Device = 0;
-core::stringc StartUpModelFile;
+io::path StartUpModelFile;
 core::stringw MessageText;
 core::stringw Caption;
 scene::ISceneNode* Model = 0;
@@ -166,10 +166,8 @@ Function loadModel() loads a model and displays it using an
 addAnimatedMeshSceneNode and the scene manager. Nothing difficult. It also
 displays a short message box, if the model could not be loaded.
 */
-void loadModel(const c8* fn)
+void loadModel(const io::path& filename)
 {
-	io::path filename(fn);
-
 	io::path extension;
 	core::getFileNameExtension(extension, filename);
 	extension.make_lower();
@@ -440,7 +438,7 @@ public:
 					// load the model file, selected in the file open dialog
 					IGUIFileOpenDialog* dialog =
 						(IGUIFileOpenDialog*)event.GUIEvent.Caller;
-					loadModel(core::stringc(dialog->getFileName()).c_str());
+					loadModel(dialog->getFileNameP());
 				}
 				break;
 
