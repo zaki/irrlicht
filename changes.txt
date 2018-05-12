@@ -1,5 +1,9 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Improved PLY exporter. Thanks for Patch from JLouisB. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261):
+  - Support for UV and vertex colors.
+  - Support for binary PLY files export with the EMWF_WRITE_BINARY flag
+  - Fix for the meshes with 32 bits index
 - Fix wrong colors on big endian platforms with burnings renders. Thx @kas1e for reporting and @curaga for the patch (#318). Forum bug discussion at http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=52177.
 - Fix bug #440 where OpenGL driver enabled second texture for single-texture materials when setMaterial was called twice. Thx@ "number Zero" for bugreport and test-case.
 - Irrlicht icon now loaded with LR_DEFAULTSIZE to better support larger icon requests. Thx@ luthyr for report and bugfix.
