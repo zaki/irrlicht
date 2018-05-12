@@ -324,9 +324,10 @@ bool CPLYMeshFileLoader::readVertex(const SPLYElement &Element, scene::CDynamicM
 			vert.Normal.Y = getFloat(t);
 			result=true;
 		}
-		else if (Element.Properties[i].Name == "u")
+		 // there isn't a single convention for the UV, some software like Blender or Assimp uses "st" instead of "uv"
+		else if (Element.Properties[i].Name == "u" || Element.Properties[i].Name == "s")
 			vert.TCoords.X = getFloat(t);
-		else if (Element.Properties[i].Name == "v")
+		else if (Element.Properties[i].Name == "v" || Element.Properties[i].Name == "t")
 			vert.TCoords.Y = getFloat(t);
 		else if (Element.Properties[i].Name == "red")
 		{
