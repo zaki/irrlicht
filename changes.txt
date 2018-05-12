@@ -1,5 +1,7 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- STL writer does now also write binary files when EMWF_WRITE_BINARY flag is used. Based on patch from JLouisB. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261)
+ (EMWF_WRITE_COMPRESSED also still works for downward compatibility)
 - Improved PLY exporter. Thanks for Patch from JLouisB. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261):
   - Support for UV and vertex colors.
   - Support for binary PLY files export with the EMWF_WRITE_BINARY flag
