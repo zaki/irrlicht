@@ -100,7 +100,9 @@ namespace scene
 		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const =0;
 
 		//! Manually sets the LOD of a patch
-		/** \param patchX Patch x coordinate.
+		/** NOTE: Any values set here are overwritten again in the automatic
+		recalculations when the camera changes.
+		\param patchX Patch x coordinate.
 		\param patchZ Patch z coordinate.
 		\param LOD The level of detail to set the patch to. */
 		virtual void setLODOfPatch(s32 patchX, s32 patchZ, s32 LOD=0) =0;
@@ -171,6 +173,12 @@ namespace scene
 			bool signedData=false, bool floatVals=false, s32 width=0,
 			video::SColor vertexColor=video::SColor(255,255,255,255),
 			s32 smoothFactor=0) =0;
+
+		//! Force node to use a fixed LOD level at the borders of the terrain.
+		/** This can be useful when several TerrainSceneNodes are connected.
+		\param borderLOD When >= 0 all patches at the 4 borders will use the 
+		given LOD. When < 0 borders are just regular patches (that's default).	*/
+		virtual void setFixedBorderLOD(irr::s32 borderLOD=0) = 0;
 
 	};
 

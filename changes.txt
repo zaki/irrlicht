@@ -1,7 +1,8 @@
 --------------------------
 Changes in 1.9 (not yet released)
-- PLY loader now works with files which use "st" instead of "uv" for texture coordinates (like generated from Blender or Assimp). Thanks @JLouisB for patch (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261)
-- STL writer does now also write binary files when EMWF_WRITE_BINARY flag is used. Based on patch from JLouisB. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261)
+- Add ITerrainSceneNode::setFixedBorderLOD to handle connecting terrain nodes without gaps. Thanks @diho for the bugreport, testcase and a patch proposal (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51220).
+- PLY loader now works with files which use "st" instead of "uv" for texture coordinates (like generated from Blender or Assimp). Thanks @JLouisB for patch (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261).
+- STL writer does now also write binary files when EMWF_WRITE_BINARY flag is used. Based on patch from JLouisB (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261).
  (EMWF_WRITE_COMPRESSED also still works for downward compatibility)
 - Improved PLY exporter. Thanks for Patch from JLouisB. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261):
   - Support for UV and vertex colors.

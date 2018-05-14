@@ -202,6 +202,12 @@ namespace scene
 		//! Scales the two textures
 		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f) _IRR_OVERRIDE_;
 
+		//! Force node to use a fixed LOD level at the borders of the terrain.
+		virtual void setFixedBorderLOD(irr::s32 borderLOD)  _IRR_OVERRIDE_
+		{
+			FixedBorderLOD = borderLOD;
+		}
+
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ {return ESNT_TERRAIN;}
 
@@ -303,6 +309,7 @@ namespace scene
 		bool OverrideDistanceThreshold;
 		bool UseDefaultRotationPivot;
 		bool ForceRecalculation;
+		s32 FixedBorderLOD;
 
 		core::vector3df	OldCameraPosition;
 		core::vector3df	OldCameraRotation;
