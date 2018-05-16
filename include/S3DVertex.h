@@ -25,7 +25,9 @@ enum E_VERTEX_TYPE
 	EVT_2TCOORDS,
 
 	//! Vertex with a tangent and binormal vector, video::S3DVertexTangents.
-	/** Usually used for tangent space normal mapping. */
+	/** Usually used for tangent space normal mapping. 
+		Usually tangent and binormal get send to shaders as texture coordinate sets 1 and 2.
+	*/
 	EVT_TANGENTS
 };
 
@@ -181,7 +183,9 @@ struct S3DVertex2TCoords : public S3DVertex
 
 
 //! Vertex with a tangent and binormal vector.
-/** Usually used for tangent space normal mapping. */
+/** Usually used for tangent space normal mapping. 
+	Usually tangent and binormal get send to shaders as texture coordinate sets 1 and 2.
+*/
 struct S3DVertexTangents : public S3DVertex
 {
 	//! default constructor
