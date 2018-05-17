@@ -609,6 +609,9 @@ namespace video
 		//! Sets the name of a material renderer.
 		virtual void setMaterialRendererName(s32 idx, const char* name) _IRR_OVERRIDE_;
 
+		//! Swap the material renderers used for certain id's
+		virtual void swapMaterialRenderers(u32 idx1, u32 idx2, bool swapNames) _IRR_OVERRIDE_;
+
 		//! Creates material attributes list from a material, usable for serialization and more.
 		virtual io::IAttributes* createAttributesFromMaterial(const video::SMaterial& material,
 			io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;

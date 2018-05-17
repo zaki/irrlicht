@@ -1331,6 +1331,16 @@ namespace video
 		\param name: New name of the material renderer. */
 		virtual void setMaterialRendererName(s32 idx, const c8* name) =0;
 
+		//! Swap the material renderers used for certain id's
+		/** Swap the IMaterialRenderers responsible for rendering specific
+		 material-id's. This means every SMaterial using a MaterialType
+		 with one of the indices involved here will now render differently.
+		 \param idx1 First material index to swap. It must already exist or nothing happens.
+		 \param idx2 Second material index to swap. It must already exist or nothing happens.
+		 \param swapNames When true the renderer names also swap
+		                  When false the names will stay at the original index */
+		virtual void swapMaterialRenderers(u32 idx1, u32 idx2, bool swapNames=true) = 0;
+
 		//! Creates material attributes list from a material
 		/** This method is useful for serialization and more.
 		Please note that the video driver will use the material

@@ -2082,6 +2082,15 @@ void CNullDriver::setMaterialRendererName(s32 idx, const char* name)
 	MaterialRenderers[idx].Name = name;
 }
 
+void CNullDriver::swapMaterialRenderers(u32 idx1, u32 idx2, bool swapNames)
+{
+	if ( idx1 < MaterialRenderers.size() && idx2 < MaterialRenderers.size() )
+	{
+		irr::core::swap(MaterialRenderers[idx1].Renderer, MaterialRenderers[idx2].Renderer);
+		if ( swapNames )
+			irr::core::swap(MaterialRenderers[idx1].Name, MaterialRenderers[idx2].Name);
+	}
+}
 
 //! Creates material attributes list from a material, usable for serialization and more.
 io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMaterial& material,
