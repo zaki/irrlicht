@@ -353,13 +353,13 @@ void CD3D9Texture::generateRenderTarget()
 		if (FAILED(hr))
 		{
 			if (D3DERR_INVALIDCALL == hr)
-				os::Printer::log("Could not create render target texture", "Invalid Call");
+				os::Printer::log("Could not create render target texture", "Invalid Call", irr::ELL_ERROR);
 			else if (D3DERR_OUTOFVIDEOMEMORY == hr)
-				os::Printer::log("Could not create render target texture", "Out of Video Memory");
+				os::Printer::log("Could not create render target texture", "Out of Video Memory", irr::ELL_ERROR);
 			else if (E_OUTOFMEMORY == hr)
-				os::Printer::log("Could not create render target texture", "Out of Memory");
+				os::Printer::log("Could not create render target texture", "Out of Memory", irr::ELL_ERROR);
 			else
-				os::Printer::log("Could not create render target texture");
+				os::Printer::log("Could not create render target texture", irr::ELL_ERROR);
 		}
 	}
 }

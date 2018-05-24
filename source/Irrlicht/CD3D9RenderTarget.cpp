@@ -236,22 +236,24 @@ namespace irr
 				if (!Surface[i] && Texture[i])
 				{
 					IDirect3DTexture9* currentTexture = static_cast<CD3D9Texture*>(Texture[i])->getDX9Texture();
-
-					IDirect3DSurface9* currentSurface = 0;
-					currentTexture->GetSurfaceLevel(0, &currentSurface);
-
-					Surface[i] = currentSurface;
+					if ( currentTexture )
+					{
+						IDirect3DSurface9* currentSurface = 0;
+						currentTexture->GetSurfaceLevel(0, &currentSurface);
+						Surface[i] = currentSurface;
+					}
 				}
 			}
 
 			if (!DepthStencilSurface && DepthStencil)
 			{
 				IDirect3DTexture9* currentTexture = static_cast<CD3D9Texture*>(DepthStencil)->getDX9Texture();
-
-				IDirect3DSurface9* currentSurface = 0;
-				currentTexture->GetSurfaceLevel(0, &currentSurface);
-
-				DepthStencilSurface = currentSurface;
+				if ( currentTexture )
+				{
+					IDirect3DSurface9* currentSurface = 0;
+					currentTexture->GetSurfaceLevel(0, &currentSurface);
+					DepthStencilSurface = currentSurface;
+				}
 			}
 		}
 	}
