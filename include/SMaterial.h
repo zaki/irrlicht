@@ -440,7 +440,7 @@ namespace video
 		f32 BlendFactor;
 
 		//! Factor specifying how far the polygon offset should be made
-		/** Specifying 0 disables the polygon offset. The direction is specified spearately.
+		/** Specifying 0 disables the polygon offset. The direction is specified separately.
 		The factor can be from 0 to 7.*/
 		u8 PolygonOffsetFactor:3;
 
