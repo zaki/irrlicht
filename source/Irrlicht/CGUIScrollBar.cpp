@@ -466,10 +466,11 @@ void CGUIScrollBar::refreshControls()
 
 	if (Horizontal)
 	{
-		s32 h = RelativeRect.getHeight();
+		const s32 h = RelativeRect.getHeight();
+		const s32 w = (h < RelativeRect.getWidth() / 2) ? h : RelativeRect.getWidth() / 2;
 		if (!UpButton)
 		{
-			UpButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,0, h, h), NoClip);
+			UpButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,0, w, h), NoClip);
 			UpButton->setSubElement(true);
 			UpButton->setTabStop(false);
 		}
@@ -479,11 +480,11 @@ void CGUIScrollBar::refreshControls()
 			UpButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_LEFT), CurrentIconColor);
 			UpButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_LEFT), CurrentIconColor);
 		}
-		UpButton->setRelativePosition(core::rect<s32>(0,0, h, h));
+		UpButton->setRelativePosition(core::rect<s32>(0,0, w, h));
 		UpButton->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 		if (!DownButton)
 		{
-			DownButton = new CGUIButton(Environment, this, -1, core::rect<s32>(RelativeRect.getWidth()-h, 0, RelativeRect.getWidth(), h), NoClip);
+			DownButton = new CGUIButton(Environment, this, -1, core::rect<s32>(RelativeRect.getWidth()-w, 0, RelativeRect.getWidth(), h), NoClip);
 			DownButton->setSubElement(true);
 			DownButton->setTabStop(false);
 		}
@@ -493,15 +494,16 @@ void CGUIScrollBar::refreshControls()
 			DownButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_RIGHT), CurrentIconColor);
 			DownButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_RIGHT), CurrentIconColor);
 		}
-		DownButton->setRelativePosition(core::rect<s32>(RelativeRect.getWidth()-h, 0, RelativeRect.getWidth(), h));
+		DownButton->setRelativePosition(core::rect<s32>(RelativeRect.getWidth()-w, 0, RelativeRect.getWidth(), h));
 		DownButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	}
 	else
 	{
-		s32 w = RelativeRect.getWidth();
+		const s32 w = RelativeRect.getWidth();
+		const s32 h = (w < RelativeRect.getHeight() / 2) ? w : RelativeRect.getHeight() / 2;
 		if (!UpButton)
 		{
-			UpButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,0, w, w), NoClip);
+			UpButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,0, w, h), NoClip);
 			UpButton->setSubElement(true);
 			UpButton->setTabStop(false);
 		}
@@ -511,11 +513,11 @@ void CGUIScrollBar::refreshControls()
 			UpButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_UP), CurrentIconColor);
 			UpButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_UP), CurrentIconColor);
 		}
-		UpButton->setRelativePosition(core::rect<s32>(0,0, w, w));
+		UpButton->setRelativePosition(core::rect<s32>(0,0, w, h));
 		UpButton->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 		if (!DownButton)
 		{
-			DownButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,RelativeRect.getHeight()-w, w, RelativeRect.getHeight()), NoClip);
+			DownButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,RelativeRect.getHeight()-h, w, RelativeRect.getHeight()), NoClip);
 			DownButton->setSubElement(true);
 			DownButton->setTabStop(false);
 		}
@@ -525,7 +527,7 @@ void CGUIScrollBar::refreshControls()
 			DownButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_DOWN), CurrentIconColor);
 			DownButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_DOWN), CurrentIconColor);
 		}
-		DownButton->setRelativePosition(core::rect<s32>(0,RelativeRect.getHeight()-w, w, RelativeRect.getHeight()));
+		DownButton->setRelativePosition(core::rect<s32>(0,RelativeRect.getHeight()-h, w, RelativeRect.getHeight()));
 		DownButton->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 	}
 }
