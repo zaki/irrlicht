@@ -320,6 +320,9 @@ namespace gui
 		//! calculates the heigth of an node and of all visible nodes.
 		void recalculateItemHeight();
 
+		//! Resize scrollbars when their size in the skin has changed
+		void updateScrollBarSize(s32 size);
+
 		//! executes an mouse action (like selectNew of CGUIListBox)
 		void mouseAction( s32 xpos, s32 ypos, bool onlyHover = false );
 
@@ -329,6 +332,7 @@ namespace gui
 		s32			IndentWidth;
 		s32			TotalItemHeight;
 		s32			TotalItemWidth;
+		s32			ScrollBarSize;
 		IGUIFont*		Font;
 		gui::IGUIFont*	OverrideFont;
 		IGUIFont*		IconFont;

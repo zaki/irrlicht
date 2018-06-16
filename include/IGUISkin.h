@@ -163,7 +163,7 @@ namespace gui
 		EGDS_MESSAGE_BOX_HEIGHT,
 		//! width of a default button
 		EGDS_BUTTON_WIDTH,
-		//! height of a default button
+		//! height of a default button (OK and cancel buttons)
 		EGDS_BUTTON_HEIGHT,
 		//! distance for text from background
 		EGDS_TEXT_DISTANCE_X,

@@ -1,5 +1,9 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- CGUIListbox, CGUITreeView and CGUITable now resize scrollbars when EGDS_SCROLLBAR_SIZE in the skin changes without having to re-create the elements.
+  This also fixes the problem that drawing looked wrong when this value got changed after the elements were created.
+  Thanks @LunaRebirth for reporting. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52297&p=303682#p303682)
+- Scrollbar buttons can no longer get larger than half the ScrollBar element to avoid them overlapping.
 - Add IVideoDriver::swapMaterialRenderers to allow swapping the renderer used to render a certain material.
 - IMeshManipulator functions createMeshWith1TCoords, createMeshWith2TCoords and createMeshWithTangents no longer weld vertices while converting meshes. Use IMeshManipulator::createMeshWelded if you need that welding.
 - Add ITerrainSceneNode::setFixedBorderLOD to handle connecting terrain nodes without gaps. Thanks @diho for the bugreport, testcase and a patch proposal (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51220).

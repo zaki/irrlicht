@@ -179,8 +179,8 @@ namespace gui
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
 
 	protected:
-		virtual void refreshControls();
-		virtual void checkScrollbars();
+		void refreshControls();
+		void checkScrollbars();
 
 	private:
 
@@ -240,6 +240,7 @@ namespace gui
 		s32 ActiveTab;
 		EGUI_ORDERING_MODE CurrentOrdering;
 		s32 DrawFlags;
+		s32 ScrollBarSize;
 
 		gui::IGUIFont* OverrideFont;
 	};
