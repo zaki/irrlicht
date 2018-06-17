@@ -171,7 +171,6 @@ namespace gui
 		s32 ItemHeightOverride;
 		s32 TotalItemHeight;
 		s32 ItemsIconWidth;
-		s32 ScrollBarSize;
 		gui::IGUIFont* Font;
 		gui::IGUISpriteBank* IconBank;
 		gui::IGUIScrollBar* ScrollBar;
