@@ -501,11 +501,15 @@ namespace video
 				bool zeroTexels = false) const =0;
 
 		//! Creates a normal map from a height map texture.
-		/** If the target texture has 32 bit, the height value is
-		stored in the alpha component of the texture as addition. This
-		value is used by the video::EMT_PARALLAX_MAP_SOLID material and
-		similar materials.
-		\param texture Texture whose alpha channel is modified.
+		/** As input is considered to be a height map the texture is read like:
+		- For a 32-bit texture only the red channel is regarded
+		- For a 16-bit texture the rgb-values are averaged.
+		Output channels red/green for X/Y and blue for up (Z).
+		For a 32-bit texture we store additionally the height value in the 
+		alpha channel. This value is used by the video::EMT_PARALLAX_MAP_SOLID 
+		material and similar materials.
+		On the borders the texture is considered to repeat.
+		\param texture Height map texture which is converted to a normal map.
 		\param amplitude Constant value by which the height
 		information is multiplied.*/
 		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const =0;
@@ -1326,6 +1330,16 @@ namespace video
 		addMaterialRenderer().
 		\param name: New name of the material renderer. */
 		virtual void setMaterialRendererName(s32 idx, const c8* name) =0;
+
+		//! Swap the material renderers used for certain id's
+		/** Swap the IMaterialRenderers responsible for rendering specific
+		 material-id's. This means every SMaterial using a MaterialType
+		 with one of the indices involved here will now render differently.
+		 \param idx1 First material index to swap. It must already exist or nothing happens.
+		 \param idx2 Second material index to swap. It must already exist or nothing happens.
+		 \param swapNames When true the renderer names also swap
+		                  When false the names will stay at the original index */
+		virtual void swapMaterialRenderers(u32 idx1, u32 idx2, bool swapNames=true) = 0;
 
 		//! Creates material attributes list from a material
 		/** This method is useful for serialization and more.

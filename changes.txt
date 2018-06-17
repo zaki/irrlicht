@@ -9,6 +9,22 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
 --------------------------
 Changes in 1.9 (not yet released)
+- CGUIComboBox uses now EGDS_SCROLLBAR_SIZE instead of EGDS_WINDOW_BUTTON_WIDTH for the width of the listbox button to allow changing that without changing window topbar height.
+  Thanks @LunaRebirth for reporting. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52297&p=303682#p303682)
+- CGUIListbox, CGUITreeView and CGUITable now resize scrollbars when EGDS_SCROLLBAR_SIZE in the skin changes without having to re-create the elements.
+  This also fixes the problem that drawing looked wrong when this value got changed after the elements were created.
+  Thanks @LunaRebirth for reporting. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52297&p=303682#p303682)
+- Scrollbar buttons can no longer get larger than half the ScrollBar element to avoid them overlapping.
+- Add IVideoDriver::swapMaterialRenderers to allow swapping the renderer used to render a certain material.
+- IMeshManipulator functions createMeshWith1TCoords, createMeshWith2TCoords and createMeshWithTangents no longer weld vertices while converting meshes. Use IMeshManipulator::createMeshWelded if you need that welding.
+- Add ITerrainSceneNode::setFixedBorderLOD to handle connecting terrain nodes without gaps. Thanks @diho for the bugreport, testcase and a patch proposal (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51220).
+- PLY loader now works with files which use "st" instead of "uv" for texture coordinates (like generated from Blender or Assimp). Thanks @JLouisB for patch (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261).
+- STL writer does now also write binary files when EMWF_WRITE_BINARY flag is used. Based on patch from JLouisB (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261).
+ (EMWF_WRITE_COMPRESSED also still works for downward compatibility)
+- Improved PLY exporter. Thanks for Patch from JLouisB. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=52261):
+  - Support for UV and vertex colors.
+  - Support for binary PLY files export with the EMWF_WRITE_BINARY flag
+  - Fix for the meshes with 32 bits index
 - Fix wrong colors on big endian platforms with burnings renders. Thx @kas1e for reporting and @curaga for the patch (#318). Forum bug discussion at http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=52177.
 - Fix bug #440 where OpenGL driver enabled second texture for single-texture materials when setMaterial was called twice. Thx@ "number Zero" for bugreport and test-case.
 - Irrlicht icon now loaded with LR_DEFAULTSIZE to better support larger icon requests. Thx@ luthyr for report and bugfix.

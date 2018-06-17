@@ -38,6 +38,7 @@ namespace scene
 	TerrainData(patchSize, maxLOD, position, rotation, scale), RenderBuffer(0),
 	VerticesToRender(0), IndicesToRender(0), DynamicSelectorUpdate(false),
 	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(true),
+	FixedBorderLOD(-1),
 	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),CameraFOVDelta(0.1f),
 	TCoordScale1(1.0f), TCoordScale2(1.0f), SmoothFactor(0), FileSystem(fs)
 	{
@@ -640,7 +641,18 @@ namespace scene
 			{
 				const f32 distance = cameraPosition.getDistanceFromSQ(TerrainData.Patches[j].Center);
 
+				if ( FixedBorderLOD >= 0 )
+				{
+					TerrainData.Patches[j].CurrentLOD = FixedBorderLOD;
+					if (j < TerrainData.PatchCount 
+						|| j >= (count - TerrainData.PatchCount) 
+						|| (j % TerrainData.PatchCount) == 0 
+						|| (j % TerrainData.PatchCount) == TerrainData.PatchCount-1)
+						continue;
+				}
+
 				TerrainData.Patches[j].CurrentLOD = 0;
+
 				for (s32 i = TerrainData.MaxLOD - 1; i>0; --i)
 				{
 					if (distance >= TerrainData.LODDistanceThreshold[i])

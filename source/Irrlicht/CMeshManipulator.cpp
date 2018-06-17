@@ -951,75 +951,63 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 // not yet 32bit
 IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted, bool calculateTangents) const
 {
+	using namespace video;
+
 	if (!mesh)
 		return 0;
 
 	// copy mesh and fill data into SMeshBufferTangents
-
 	SMesh* clone = new SMesh();
 	const u32 meshBufferCount = mesh->getMeshBufferCount();
 
 	for (u32 b=0; b<meshBufferCount; ++b)
 	{
 		const IMeshBuffer* const original = mesh->getMeshBuffer(b);
-		const u32 idxCnt = original->getIndexCount();
-		const u16* idx = original->getIndices();
-
 		SMeshBufferTangents* buffer = new SMeshBufferTangents();
 
+		// copy material
 		buffer->Material = original->getMaterial();
-		buffer->Vertices.reallocate(idxCnt);
-		buffer->Indices.reallocate(idxCnt);
 
-		core::map<video::S3DVertexTangents, int> vertMap;
-		int vertLocation;
+		// copy indices
+		const u32 idxCnt = original->getIndexCount();
+		const u16* indices = original->getIndices();
+		buffer->Indices.reallocate(idxCnt);
+		for (u32 i=0; i < idxCnt; ++i)
+			buffer->Indices.push_back(indices[i]);
 
 		// copy vertices
+		const u32 vtxCnt = original->getVertexCount();
+		buffer->Vertices.reallocate(vtxCnt);
 
-		const video::E_VERTEX_TYPE vType = original->getVertexType();
-		video::S3DVertexTangents vNew;
-		for (u32 i=0; i<idxCnt; ++i)
+		const E_VERTEX_TYPE vType = original->getVertexType();
+		switch(vType)
 		{
-			switch(vType)
+		case video::EVT_STANDARD:
 			{
-			case video::EVT_STANDARD:
-				{
-					const video::S3DVertex* v =
-						(const video::S3DVertex*)original->getVertices();
-					vNew = video::S3DVertexTangents(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
-				}
-				break;
-			case video::EVT_2TCOORDS:
-				{
-					const video::S3DVertex2TCoords* v =
-						(const video::S3DVertex2TCoords*)original->getVertices();
-					vNew = video::S3DVertexTangents(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
-				}
-				break;
-			case video::EVT_TANGENTS:
-				{
-					const video::S3DVertexTangents* v =
-						(const video::S3DVertexTangents*)original->getVertices();
-					vNew = v[idx[i]];
-				}
-				break;
-			}
-			core::map<video::S3DVertexTangents, int>::Node* n = vertMap.find(vNew);
-			if (n)
-			{
-				vertLocation = n->getValue();
-			}
-			else
-			{
-				vertLocation = buffer->Vertices.size();
-				buffer->Vertices.push_back(vNew);
-				vertMap.insert(vNew, vertLocation);
-			}
+				const S3DVertex* v = (const S3DVertex*)original->getVertices();
 
-			// create new indices
-			buffer->Indices.push_back(vertLocation);
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back( S3DVertexTangents(
+						v[i].Pos, v[i].Normal, v[i].Color, v[i].TCoords) );
+			}
+			break;
+		case video::EVT_2TCOORDS:
+			{
+				const S3DVertex2TCoords* v =(const S3DVertex2TCoords*)original->getVertices();
+
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back( S3DVertexTangents(
+						v[i].Pos, v[i].Normal, v[i].Color, v[i].TCoords) );
+			}
+			break;
+		case video::EVT_TANGENTS:
+			{
+				const S3DVertexTangents* v =(const S3DVertexTangents*)original->getVertices();
+
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back(v[i]);
+			}
+			break;
 		}
 		buffer->recalculateBoundingBox();
 
@@ -1347,11 +1335,12 @@ donehere:
 	free(accel);
 }
 
-
 //! Creates a copy of the mesh, which will only consist of S3DVertex2TCoords vertices.
 // not yet 32bit
 IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 {
+	using namespace video;
+
 	if (!mesh)
 		return 0;
 
@@ -1363,63 +1352,50 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 	for (u32 b=0; b<meshBufferCount; ++b)
 	{
 		const IMeshBuffer* const original = mesh->getMeshBuffer(b);
-		const u32 idxCnt = original->getIndexCount();
-		const u16* idx = original->getIndices();
-
 		SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
-		buffer->Material = original->getMaterial();
-		buffer->Vertices.reallocate(idxCnt);
-		buffer->Indices.reallocate(idxCnt);
 
-		core::map<video::S3DVertex2TCoords, int> vertMap;
-		int vertLocation;
+		// copy material
+		buffer->Material = original->getMaterial();
+
+		// copy indices
+		const u32 idxCnt = original->getIndexCount();
+		const u16* indices = original->getIndices();
+		buffer->Indices.reallocate(idxCnt);
+		for (u32 i=0; i < idxCnt; ++i)
+			buffer->Indices.push_back(indices[i]);
 
 		// copy vertices
+		const u32 vtxCnt = original->getVertexCount();
+		buffer->Vertices.reallocate(vtxCnt);
 
 		const video::E_VERTEX_TYPE vType = original->getVertexType();
-		video::S3DVertex2TCoords vNew;
-		for (u32 i=0; i<idxCnt; ++i)
+		switch(vType)
 		{
-			switch(vType)
+		case video::EVT_STANDARD:
 			{
-			case video::EVT_STANDARD:
-				{
-					const video::S3DVertex* v =
-						(const video::S3DVertex*)original->getVertices();
-					vNew = video::S3DVertex2TCoords(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords);
-				}
-				break;
-			case video::EVT_2TCOORDS:
-				{
-					const video::S3DVertex2TCoords* v =
-						(const video::S3DVertex2TCoords*)original->getVertices();
-					vNew = v[idx[i]];
-				}
-				break;
-			case video::EVT_TANGENTS:
-				{
-					const video::S3DVertexTangents* v =
-						(const video::S3DVertexTangents*)original->getVertices();
-					vNew = video::S3DVertex2TCoords(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords);
-				}
-				break;
-			}
-			core::map<video::S3DVertex2TCoords, int>::Node* n = vertMap.find(vNew);
-			if (n)
-			{
-				vertLocation = n->getValue();
-			}
-			else
-			{
-				vertLocation = buffer->Vertices.size();
-				buffer->Vertices.push_back(vNew);
-				vertMap.insert(vNew, vertLocation);
-			}
+				const S3DVertex* v = (const S3DVertex*)original->getVertices();
 
-			// create new indices
-			buffer->Indices.push_back(vertLocation);
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back( video::S3DVertex2TCoords(
+						v[i].Pos, v[i].Normal, v[i].Color, v[i].TCoords, v[i].TCoords));
+			}
+			break;
+		case video::EVT_2TCOORDS:
+			{
+				const S3DVertex2TCoords* v =(const S3DVertex2TCoords*)original->getVertices();
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back(v[i]);
+			}
+			break;
+		case video::EVT_TANGENTS:
+			{
+				const S3DVertexTangents* v =(const S3DVertexTangents*)original->getVertices();
+
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back( S3DVertex2TCoords(
+						v[i].Pos, v[i].Normal, v[i].Color, v[i].TCoords, v[i].TCoords) );
+			}
+			break;
 		}
 		buffer->recalculateBoundingBox();
 
@@ -1437,6 +1413,8 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 // not yet 32bit
 IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 {
+	using namespace video;
+
 	if (!mesh)
 		return 0;
 
@@ -1446,64 +1424,54 @@ IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 
 	for (u32 b=0; b<meshBufferCount; ++b)
 	{
-		IMeshBuffer* original = mesh->getMeshBuffer(b);
-		const u32 idxCnt = original->getIndexCount();
-		const u16* idx = original->getIndices();
-
+		const IMeshBuffer* const original = mesh->getMeshBuffer(b);
 		SMeshBuffer* buffer = new SMeshBuffer();
-		buffer->Material = original->getMaterial();
-		buffer->Vertices.reallocate(idxCnt);
-		buffer->Indices.reallocate(idxCnt);
 
-		core::map<video::S3DVertex, int> vertMap;
-		int vertLocation;
+		// copy material
+		buffer->Material = original->getMaterial();
+
+		// copy indices
+		const u32 idxCnt = original->getIndexCount();
+		const u16* indices = original->getIndices();
+		buffer->Indices.reallocate(idxCnt);
+		for (u32 i=0; i < idxCnt; ++i)
+			buffer->Indices.push_back(indices[i]);
 
 		// copy vertices
-		const video::E_VERTEX_TYPE vType = original->getVertexType();
-		video::S3DVertex vNew;
-		for (u32 i=0; i<idxCnt; ++i)
-		{
-			switch(vType)
-			{
-			case video::EVT_STANDARD:
-				{
-					video::S3DVertex* v =
-						(video::S3DVertex*)original->getVertices();
-					vNew = v[idx[i]];
-				}
-				break;
-			case video::EVT_2TCOORDS:
-				{
-					video::S3DVertex2TCoords* v =
-						(video::S3DVertex2TCoords*)original->getVertices();
-					vNew = video::S3DVertex(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
-				}
-				break;
-			case video::EVT_TANGENTS:
-				{
-					video::S3DVertexTangents* v =
-						(video::S3DVertexTangents*)original->getVertices();
-					vNew = video::S3DVertex(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
-				}
-				break;
-			}
-			core::map<video::S3DVertex, int>::Node* n = vertMap.find(vNew);
-			if (n)
-			{
-				vertLocation = n->getValue();
-			}
-			else
-			{
-				vertLocation = buffer->Vertices.size();
-				buffer->Vertices.push_back(vNew);
-				vertMap.insert(vNew, vertLocation);
-			}
+		const u32 vtxCnt = original->getVertexCount();
+		buffer->Vertices.reallocate(vtxCnt);
 
-			// create new indices
-			buffer->Indices.push_back(vertLocation);
+		const video::E_VERTEX_TYPE vType = original->getVertexType();
+		switch(vType)
+		{
+		case video::EVT_STANDARD:
+			{
+				const S3DVertex* v = (const S3DVertex*)original->getVertices();
+
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back( v[i] );
+			}
+			break;
+		case video::EVT_2TCOORDS:
+			{
+				const S3DVertex2TCoords* v =(const S3DVertex2TCoords*)original->getVertices();
+
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back( S3DVertex(
+						v[i].Pos, v[i].Normal, v[i].Color, v[i].TCoords) );
+			}
+			break;
+		case video::EVT_TANGENTS:
+			{
+				const S3DVertexTangents* v =(const S3DVertexTangents*)original->getVertices();
+
+				for (u32 i=0; i < vtxCnt; ++i)
+					buffer->Vertices.push_back( S3DVertex(
+						v[i].Pos, v[i].Normal, v[i].Color, v[i].TCoords) );
+			}
+			break;
 		}
+
 		buffer->recalculateBoundingBox();
 		// add new buffer
 		clone->addMeshBuffer(buffer);

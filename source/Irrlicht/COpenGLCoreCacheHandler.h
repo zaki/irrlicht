@@ -571,7 +571,7 @@ public:
 
 	//! Compare material to current cache and update it when there are differences
 	// Some material renderers do change the cache beyond the original material settings
-	// This correct the material to represent the current cache state again.
+	// This corrects the material to represent the current cache state again.
 	void correctCacheMaterial(irr::video::SMaterial& material)
 	{
 		// Fix textures which got removed

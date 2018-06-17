@@ -432,6 +432,7 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 	IndentWidth( 0 ),
 	TotalItemHeight( 0 ),
 	TotalItemWidth ( 0 ),
+	ScrollBarSize( 0 ),
 	Font( 0 ),
 	OverrideFont( 0 ),
 	IconFont( 0 ),
@@ -450,15 +451,15 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 #endif
 
 	IGUISkin* skin = Environment->getSkin();
-	s32 s = skin->getSize( EGDS_SCROLLBAR_SIZE );
+	ScrollBarSize = skin->getSize( EGDS_SCROLLBAR_SIZE );
 
 	if ( scrollBarVertical )
 	{
 		ScrollBarV = new CGUIScrollBar( false, Environment, this, -1,
-			core::rect<s32>(	RelativeRect.getWidth() - s,
+			core::rect<s32>(	RelativeRect.getWidth() - ScrollBarSize,
 								0,
 								RelativeRect.getWidth(),
-								RelativeRect.getHeight() - s
+								RelativeRect.getHeight() - ScrollBarSize
 			), !clip );
 		ScrollBarV->drop();
 
@@ -471,8 +472,8 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 	{
 		ScrollBarH = new CGUIScrollBar( true, Environment, this, -1,
 			core::rect<s32>(	0,
-								RelativeRect.getHeight() - s,
-								RelativeRect.getWidth() - s,
+								RelativeRect.getHeight() - ScrollBarSize,
+								RelativeRect.getWidth() - ScrollBarSize,
 								RelativeRect.getHeight()
 			), !clip );
 		ScrollBarH->drop();
@@ -638,6 +639,28 @@ void CGUITreeView::recalculateItemHeight()
 		ScrollBarH->setMax( core::max_( 0, diffVert ) );
 	}
 
+}
+
+void CGUITreeView::updateScrollBarSize(s32 size)
+{
+	if ( size != ScrollBarSize )
+	{
+		ScrollBarSize = size;
+
+		if ( ScrollBarV )
+		{
+			core::recti r(RelativeRect.getWidth() - ScrollBarSize, 0,
+			              RelativeRect.getWidth(), RelativeRect.getHeight() - ScrollBarSize);
+			ScrollBarV->setRelativePosition(r);
+		}
+
+		if ( ScrollBarH ) 
+		{
+			core::recti r(0, RelativeRect.getHeight() - ScrollBarSize,
+			              RelativeRect.getWidth() - ScrollBarSize, RelativeRect.getHeight());
+			ScrollBarH->setRelativePosition(r);
+		}
+	}
 }
 
 //! called if an event happened.
@@ -829,9 +852,11 @@ void CGUITreeView::draw()
 		return;
 	}
 
+	IGUISkin* skin = Environment->getSkin();
+
+	updateScrollBarSize(skin->getSize(EGDS_SCROLLBAR_SIZE));
 	recalculateItemHeight(); // if the font changed
 
-	IGUISkin* skin = Environment->getSkin();
 	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	core::rect<s32>* clipRect = 0;
@@ -876,9 +901,9 @@ void CGUITreeView::draw()
 	clientClip.LowerRightCorner.Y -= 1;
 
 	if ( ScrollBarV )
-		clientClip.LowerRightCorner.X -= skin->getSize( EGDS_SCROLLBAR_SIZE );
+		clientClip.LowerRightCorner.X -= ScrollBarSize;
 	if ( ScrollBarH )
-		clientClip.LowerRightCorner.Y -= skin->getSize( EGDS_SCROLLBAR_SIZE );
+		clientClip.LowerRightCorner.Y -= ScrollBarSize;
 
 	if( clipRect )
 	{
@@ -886,7 +911,7 @@ void CGUITreeView::draw()
 	}
 
 	frameRect = AbsoluteRect;
-	frameRect.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - skin->getSize( EGDS_SCROLLBAR_SIZE );
+	frameRect.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - ScrollBarSize;
 	frameRect.LowerRightCorner.Y = AbsoluteRect.UpperLeftCorner.Y + ItemHeight;
 
 	if ( ScrollBarV )

@@ -33,6 +33,7 @@ CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 	ItemHeight(0), TotalItemHeight(0), TotalItemWidth(0), Selected(-1),
 	CellHeightPadding(2), CellWidthPadding(5), ActiveTab(-1),
 	CurrentOrdering(EGOM_NONE), DrawFlags(EGTDF_ROWS | EGTDF_COLUMNS | EGTDF_ACTIVE_ROW ),
+	ScrollBarSize(0),
 	OverrideFont(0)
 {
 	#ifdef _DEBUG
@@ -436,7 +437,8 @@ void CGUITable::checkScrollbars()
 	if ( !HorizontalScrollBar || !VerticalScrollBar || !skin)
 		return;
 
-	s32 scrollBarSize = skin->getSize(EGDS_SCROLLBAR_SIZE);
+	ScrollBarSize = skin->getSize(EGDS_SCROLLBAR_SIZE);
+
 	bool wasHorizontalScrollBarVisible = HorizontalScrollBar->isVisible();
 	bool wasVerticalScrollBarVisible = VerticalScrollBar->isVisible();
 	HorizontalScrollBar->setVisible(false);
@@ -456,7 +458,7 @@ void CGUITable::checkScrollbars()
 	// needs horizontal scroll be visible?
 	if( TotalItemWidth > clientClip.getWidth() )
 	{
-		clientClip.LowerRightCorner.Y -= scrollBarSize;
+		clientClip.LowerRightCorner.Y -= ScrollBarSize;
 		HorizontalScrollBar->setVisible(true);
 		HorizontalScrollBar->setMax(core::max_(0,TotalItemWidth - clientClip.getWidth()));
 	}
@@ -464,7 +466,7 @@ void CGUITable::checkScrollbars()
 	// needs vertical scroll be visible?
 	if( TotalItemHeight > clientClip.getHeight() )
 	{
-		clientClip.LowerRightCorner.X -= scrollBarSize;
+		clientClip.LowerRightCorner.X -= ScrollBarSize;
 		VerticalScrollBar->setVisible(true);
 		VerticalScrollBar->setMax(core::max_(0,TotalItemHeight - clientClip.getHeight()));
 
@@ -473,7 +475,7 @@ void CGUITable::checkScrollbars()
 		{
 			if( TotalItemWidth > clientClip.getWidth() )
 			{
-				clientClip.LowerRightCorner.Y -= scrollBarSize;
+				clientClip.LowerRightCorner.Y -= ScrollBarSize;
 				HorizontalScrollBar->setVisible(true);
 				HorizontalScrollBar->setMax(core::max_(0,TotalItemWidth - clientClip.getWidth()));
 			}
@@ -489,13 +491,13 @@ void CGUITable::checkScrollbars()
 		if ( HorizontalScrollBar->isVisible() )
 		{
 			VerticalScrollBar->setRelativePosition(
-				core::rect<s32>(RelativeRect.getWidth() - scrollBarSize, 1,
-				RelativeRect.getWidth()-1, RelativeRect.getHeight()-(1+scrollBarSize) ) );
+				core::rect<s32>(RelativeRect.getWidth() - ScrollBarSize, 1,
+				RelativeRect.getWidth()-1, RelativeRect.getHeight()-(1+ScrollBarSize) ) );
 		}
 		else
 		{
 			VerticalScrollBar->setRelativePosition(
-				core::rect<s32>(RelativeRect.getWidth() - scrollBarSize, 1,
+				core::rect<s32>(RelativeRect.getWidth() - ScrollBarSize, 1,
 				RelativeRect.getWidth()-1, RelativeRect.getHeight()-1) );
 		}
 	}
@@ -508,11 +510,11 @@ void CGUITable::checkScrollbars()
 
 		if ( VerticalScrollBar->isVisible() )
 		{
-			HorizontalScrollBar->setRelativePosition( core::rect<s32>(1, RelativeRect.getHeight() - scrollBarSize, RelativeRect.getWidth()-(1+scrollBarSize), RelativeRect.getHeight()-1) );
+			HorizontalScrollBar->setRelativePosition( core::rect<s32>(1, RelativeRect.getHeight() - ScrollBarSize, RelativeRect.getWidth()-(1+ScrollBarSize), RelativeRect.getHeight()-1) );
 		}
 		else
 		{
-			HorizontalScrollBar->setRelativePosition( core::rect<s32>(1, RelativeRect.getHeight() - scrollBarSize, RelativeRect.getWidth()-1, RelativeRect.getHeight()-1) );
+			HorizontalScrollBar->setRelativePosition( core::rect<s32>(1, RelativeRect.getHeight() - ScrollBarSize, RelativeRect.getWidth()-1, RelativeRect.getHeight()-1) );
 		}
 	}
 }
@@ -864,15 +866,18 @@ void CGUITable::draw()
 	if (!font)
 		return;
 
+	if ( ScrollBarSize != skin->getSize(EGDS_SCROLLBAR_SIZE) )
+		checkScrollbars();
+
 	// CAREFUL: near identical calculations for tableRect and clientClip are also done in checkScrollbars and selectColumnHeader
 	// Area of table used for drawing without scrollbars
 	core::rect<s32> tableRect(AbsoluteRect);
 	tableRect.UpperLeftCorner.X += 1;
 	tableRect.UpperLeftCorner.Y += 1;
 	if ( VerticalScrollBar && VerticalScrollBar->isVisible() )
-		tableRect.LowerRightCorner.X -= skin->getSize(EGDS_SCROLLBAR_SIZE);
+		tableRect.LowerRightCorner.X -= ScrollBarSize;
 	if ( HorizontalScrollBar && HorizontalScrollBar->isVisible() )
-		tableRect.LowerRightCorner.Y -= skin->getSize(EGDS_SCROLLBAR_SIZE);
+		tableRect.LowerRightCorner.Y -= ScrollBarSize;
 
 	s32 headerBottom = tableRect.UpperLeftCorner.Y + ItemHeight;
 
@@ -910,7 +915,7 @@ void CGUITable::draw()
 		if (rowRect.LowerRightCorner.Y >= AbsoluteRect.UpperLeftCorner.Y &&
 			rowRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y)
 		{
-			// draw row seperator
+			// draw row separator
 			if ( DrawFlags & EGTDF_ROWS )
 			{
 				core::rect<s32> lineRect(rowRect);
@@ -966,7 +971,7 @@ void CGUITable::draw()
 		// draw column background
 		skin->draw3DButtonPaneStandard(this, columnrect, &tableClip);
 
-		// draw column seperator
+		// draw column separator
 		if ( DrawFlags & EGTDF_COLUMNS )
 		{
 			columnSeparator.UpperLeftCorner.X = pos;

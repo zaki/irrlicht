@@ -39,11 +39,21 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 	os::Printer::log("Writing mesh", file->getFileName());
 
-	// write PLY header
-	core::stringc header =
-        	"ply\n"
-		"format ascii 1.0\n"
-		"comment Irrlicht Engine ";
+    // write PLY header
+	core::stringc header = "ply\n";
+
+	if (flags & scene::EMWF_WRITE_BINARY)
+	{
+		#ifdef __BIG_ENDIAN__
+		header += "format binary_big_endian 1.0\n";
+		#else
+		header += "format binary_little_endian 1.0\n";
+		#endif
+	}
+	else
+		header += "format ascii 1.0\n";
+
+	header +=  "comment Irrlicht Engine ";
 	header +=  IRRLICHT_SDK_VERSION;
 
 	// get vertex and triangle counts
@@ -66,16 +76,12 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 		"property float z\n"
 		"property float nx\n"
 		"property float ny\n"
-		"property float nz\n";
-	// todo: writer flags for extended (r,g,b,u,v) and non-standard (alpha,u1,uv,tx,ty,tz) properties
-	//	"property uchar red\n"
-	//	"property uchar green\n"
-	//	"property uchar blue\n"
-	//	"property uchar alpha\n"
-	//	"property float u\n"
-	//	"property float v\n";
-	//	"property float u1\n
-	//	"property float v1\n"
+		"property float nz\n"
+		"property float s\n"
+		"property float t\n"
+		"property uchar red\n"
+		"property uchar green\n"
+		"property uchar blue\n";
 	//	"property float tx\n"
 	//	"property float ty\n"
 	//	"property float tz\n"
@@ -97,38 +103,61 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 	for (u32 i=0; i < mesh->getMeshBufferCount(); ++i)
 	{
-		scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
+		const scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
+		u32 vertexSize = 0;
+		switch(mb->getVertexType())
+		{
+		case video::EVT_STANDARD:
+			vertexSize = sizeof(video::S3DVertex);
+			break;
+		case video::EVT_2TCOORDS:
+			vertexSize = sizeof(video::S3DVertex2TCoords);
+			break;
+		case video::EVT_TANGENTS:
+			vertexSize = sizeof(video::S3DVertexTangents);
+			break;
+		}
+		u8 *vertices  = (u8*)mb->getVertices() ;
+
 		for (u32 j=0; j < mb->getVertexCount(); ++j)
 		{
-			const core::vector3df& pos = mb->getPosition(j);
-			const core::vector3df& n   = mb->getNormal(j);
-//			const core::vector2df& tc  = mb->getTCoords(j);
+        	u8 *buf = vertices + j * vertexSize;
+			const video::S3DVertex* vertex = ( (video::S3DVertex*)buf );
+			const core::vector3df& pos    = vertex->Pos;
+			const core::vector3df& n      = vertex->Normal;
+			const core::vector2df& uv     = vertex->TCoords;
+			const video::SColor& color    = vertex->Color;
 
-			u8 *buf  = (u8*)mb->getVertices();
-			switch(mb->getVertexType())
+			if (flags & scene::EMWF_WRITE_BINARY)
 			{
-			case video::EVT_STANDARD:
-				buf += sizeof(video::S3DVertex)*j;
-				break;
-			case video::EVT_2TCOORDS:
-				buf += sizeof(video::S3DVertex2TCoords)*j;
-				break;
-			case video::EVT_TANGENTS:
-				buf += sizeof(video::S3DVertexTangents)*j;
-				break;
+				// Y and Z are flipped
+				file->write(&pos.X, 4);
+				file->write(&pos.Z, 4);
+				file->write(&pos.Y, 4);
+
+				file->write(&n.X, 4);
+				file->write(&n.Z, 4);
+				file->write(&n.Y, 4);
+
+				file->write(&uv, 8);
+
+				const u32 r = color.getRed(), g = color.getGreen(), b = color.getBlue();
+				file->write(&r, 1);
+				file->write(&g, 1);
+				file->write(&b, 1);
 			}
-//			video::SColor &col = ( (video::S3DVertex*)buf )->Color;
+			else
+			{
+				// x y z nx ny nz u v red green blue [u1 v1 | tx ty tz]\n
+				snprintf_irr(outLine, 1024,
+					"%f %f %f %f %f %f %f %f %d %d %d\n",// %u %u %u %u %f %f\n",
+					pos.X, pos.Z, pos.Y, // Y and Z are flipped
+					n.X, n.Z, n.Y,
+					uv.X, uv.Y,
+					color.getRed(), color.getGreen(), color.getBlue());
 
-			// x y z nx ny nz red green blue alpha u v [u1 v1 | tx ty tz]\n
-			snprintf_irr(outLine, 1024,
-				"%f %f %f %f %f %f\n",// %u %u %u %u %f %f\n",
-				pos.X, pos.Z, pos.Y, // Y and Z are flipped
-				n.X, n.Z, n.Y);
-				/*col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha(),
-				tc.X, tc.Y);*/
-
-			// write the line
-			file->write(outLine, strlen(outLine));
+					file->write(outLine, strlen(outLine));
+			}
 		}
 	}
 
@@ -136,6 +165,7 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 	u32 StartOffset = 0;
 
 	// write triangles
+	const unsigned char nbIndicesParFace = 3;
 	for (u32 i=0; i < mesh->getMeshBufferCount(); ++i)
 	{
 		scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
@@ -155,15 +185,24 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 				break;
 			case video::EIT_32BIT:
 				a += ((u32*)mb->getIndices()) [j+0];
-				c += ((u32*)mb->getIndices()) [j+0];
-				b += ((u32*)mb->getIndices()) [j+0];
+				c += ((u32*)mb->getIndices()) [j+1];
+				b += ((u32*)mb->getIndices()) [j+2];
 				break;
 			}
 
-			// count a b c\n
-			snprintf_irr(outLine, 1024, "3 %u %u %u\n", a, b, c);
-			// write the line
-			file->write(outLine, strlen(outLine));
+			if (flags & scene::EMWF_WRITE_BINARY)
+			{
+				file->write(&nbIndicesParFace, 1);
+				file->write(&a, 4);
+				file->write(&b, 4);
+				file->write(&c, 4);
+			}
+			else
+			{
+				// count a b c\n
+				snprintf_irr(outLine, 1024, "3 %u %u %u\n", a, b, c);
+				file->write(outLine, strlen(outLine));
+			}
 		}
 
 		// increment offset

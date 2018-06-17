@@ -45,9 +45,12 @@ namespace scene
 		EMWF_NONE = 0,
 
 		//! write lightmap textures out if possible
+		//! Currently not used by any Irrlicht mesh-writer
+		// (Note: User meshwriters can still use it)
 		EMWF_WRITE_LIGHTMAPS = 0x1,
 
 		//! write in a way that consumes less disk space
+		// (Note: Mainly there for user meshwriters)
 		EMWF_WRITE_COMPRESSED = 0x2,
 
 		//! write in binary format rather than text
