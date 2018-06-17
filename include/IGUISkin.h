@@ -149,11 +149,11 @@ namespace gui
 	//! Enumeration for default sizes.
 	enum EGUI_DEFAULT_SIZE
 	{
-		//! default with / height of scrollbar
+		//! default with / height of scrollbar. Also width of drop-down button in comboboxes.
 		EGDS_SCROLLBAR_SIZE = 0,
 		//! height of menu
 		EGDS_MENU_HEIGHT,
-		//! width of a window button
+		//! width and height of a window titlebar button (like minimize/maximize/close buttons). The titlebar height is also calculated from that.
 		EGDS_WINDOW_BUTTON_WIDTH,
 		//! width of a checkbox check
 		EGDS_CHECK_BOX_WIDTH,

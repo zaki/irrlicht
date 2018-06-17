@@ -84,6 +84,7 @@ namespace gui
 
 		void openCloseMenu();
 		void sendSelectionChangedEvent();
+		void updateListButtonWidth(s32 width);
 
 		IGUIButton* ListButton;
 		IGUIStaticText* SelectedText;
