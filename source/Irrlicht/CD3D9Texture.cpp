@@ -360,6 +360,15 @@ void CD3D9Texture::generateRenderTarget()
 				os::Printer::log("Could not create render target texture", "Out of Memory", irr::ELL_ERROR);
 			else
 				os::Printer::log("Could not create render target texture", irr::ELL_ERROR);
+			core::stringc params("Width:");
+			params += (unsigned int)Size.Width;
+			params += " Height: ";
+			params += (unsigned int)Size.Height;
+			params += " flag: ";
+			params += (unsigned int)flag;
+			params += " format";
+			params += (unsigned int)InternalFormat;
+			os::Printer::log(params.c_str(), irr::ELL_ERROR);
 		}
 	}
 }
