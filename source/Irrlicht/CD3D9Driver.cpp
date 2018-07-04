@@ -466,11 +466,7 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	setRenderStates3DMode();
 
 	// store the screen's depth buffer descriptor
-	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
-	{
-		DepthStencilSurface->Release();
-	}
-	else
+	if (!SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
 	{
 		os::Printer::log("Was not able to get main depth buffer.", ELL_ERROR);
 		return false;
@@ -2926,7 +2922,10 @@ bool CD3D9Driver::reset()
 		ActiveRenderTarget[i] = false;
 
 	if (DepthStencilSurface)
+	{
 		DepthStencilSurface->Release();
+		DepthStencilSurface = 0;
+	}
 
 	if (BackBufferSurface)
 	{
@@ -2943,8 +2942,11 @@ bool CD3D9Driver::reset()
 		BridgeCalls->reset();
 
 	// restore screen depthbuffer descriptor
-	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
-		DepthStencilSurface->Release();
+	if (!SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
+	{
+		os::Printer::log("Was not able to get main depth buffer.", ELL_ERROR);
+		return false;
+	}
 
 	// restore RTTs
 	for (i=0; i<Textures.size(); ++i)
