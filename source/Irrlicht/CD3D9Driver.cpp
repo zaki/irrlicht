@@ -2936,6 +2936,42 @@ bool CD3D9Driver::reset()
 	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
+	if (FAILED(hr))
+	{
+		if (hr == D3DERR_DEVICELOST)
+		{
+			DeviceLost = true;
+			os::Printer::log("Resetting failed due to device lost.", ELL_WARNING);
+		}
+#ifdef D3DERR_DEVICEREMOVED
+		else if (hr == D3DERR_DEVICEREMOVED)
+		{
+			os::Printer::log("Resetting failed due to device removed.", ELL_WARNING);
+		}
+#endif
+		else if (hr == D3DERR_DRIVERINTERNALERROR)
+		{
+			os::Printer::log("Resetting failed due to internal error.", ELL_WARNING);
+		}
+		else if (hr == D3DERR_OUTOFVIDEOMEMORY)
+		{
+			os::Printer::log("Resetting failed due to out of memory.", ELL_WARNING);
+		}
+		else if (hr == D3DERR_DEVICENOTRESET)
+		{
+			os::Printer::log("Resetting failed due to not reset.", ELL_WARNING);
+		}
+		else if (hr == D3DERR_INVALIDCALL)
+		{
+			os::Printer::log("Resetting failed due to invalid call", "You need to release some more surfaces.", ELL_WARNING);
+		}
+		else
+		{
+			os::Printer::log("Resetting failed due to unknown reason.", core::stringc((int)hr).c_str(), ELL_WARNING);
+		}
+		return false;
+	}
+	DeviceLost = false;
 
 	// reset bridge calls.
 	if (BridgeCalls)
@@ -2983,43 +3019,6 @@ bool CD3D9Driver::reset()
 		pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, reinterpret_cast<IDirect3DQuery9**>(&OcclusionQueries[i].PID));
 	}
 
-	if (FAILED(hr))
-	{
-		if (hr == D3DERR_DEVICELOST)
-		{
-			DeviceLost = true;
-			os::Printer::log("Resetting failed due to device lost.", ELL_WARNING);
-		}
-#ifdef D3DERR_DEVICEREMOVED
-		else if (hr == D3DERR_DEVICEREMOVED)
-		{
-			os::Printer::log("Resetting failed due to device removed.", ELL_WARNING);
-		}
-#endif
-		else if (hr == D3DERR_DRIVERINTERNALERROR)
-		{
-			os::Printer::log("Resetting failed due to internal error.", ELL_WARNING);
-		}
-		else if (hr == D3DERR_OUTOFVIDEOMEMORY)
-		{
-			os::Printer::log("Resetting failed due to out of memory.", ELL_WARNING);
-		}
-		else if (hr == D3DERR_DEVICENOTRESET)
-		{
-			os::Printer::log("Resetting failed due to not reset.", ELL_WARNING);
-		}
-		else if (hr == D3DERR_INVALIDCALL)
-		{
-			os::Printer::log("Resetting failed due to invalid call", "You need to release some more surfaces.", ELL_WARNING);
-		}
-		else
-		{
-			os::Printer::log("Resetting failed due to unknown reason.", core::stringc((int)hr).c_str(), ELL_WARNING);
-		}
-		return false;
-	}
-
-	DeviceLost = false;
 	ResetRenderStates = true;
 	LastVertexType = (E_VERTEX_TYPE)-1;
 
