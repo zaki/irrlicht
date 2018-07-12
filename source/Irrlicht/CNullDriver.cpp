@@ -2610,6 +2610,12 @@ ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size
 	return 0;
 }
 
+ITexture* CNullDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen,
+				const io::path& name, const ECOLOR_FORMAT format)
+{
+	return 0;
+}
+
 void CNullDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
 }

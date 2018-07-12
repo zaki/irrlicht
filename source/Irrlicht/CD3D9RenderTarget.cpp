@@ -49,9 +49,9 @@ namespace irr
 				DepthStencil->drop();
 		}
 
-		void CD3D9RenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil)
+		void CD3D9RenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces)
 		{
-			bool textureUpdate = (Texture != texture) ? true : false;
+			bool textureUpdate = (Texture != texture) || (CubeSurfaces != cubeSurfaces) ? true : false;
 			bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
 
 			if (textureUpdate || depthStencilUpdate)
@@ -60,6 +60,8 @@ namespace irr
 
 				if (textureUpdate)
 				{
+					CubeSurfaces = cubeSurfaces;
+
 					if (texture.size() > Driver->ActiveRenderTarget.size())
 					{
 						core::stringc message = "This GPU supports up to ";
@@ -92,13 +94,15 @@ namespace irr
 						CD3D9Texture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<CD3D9Texture*>(texture[i]) : 0;
 
 						IDirect3DTexture9* textureID = 0;
+						IDirect3DCubeTexture9* cubeTextureId = 0;
+						UINT level = 0;	// no support for rendering to to other mip-levels so far
 
 						if (currentTexture)
 						{
 							if (currentTexture->getType() == ETT_2D)
 								textureID = currentTexture->getDX9Texture();
-							else
-								os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+							else if ( currentTexture->getType() == ETT_CUBEMAP )
+								cubeTextureId = currentTexture->getDX9CubeTexture();
 						}
 
 						if (textureID)
@@ -107,7 +111,18 @@ namespace irr
 							Texture[i]->grab();
 
 							IDirect3DSurface9* currentSurface = 0;
-							textureID->GetSurfaceLevel(0, &currentSurface);
+							textureID->GetSurfaceLevel(level, &currentSurface);
+
+							Surface[i] = currentSurface;
+						}
+						else if ( cubeTextureId )
+						{
+							Texture[i] = texture[i];
+							Texture[i]->grab();
+
+							IDirect3DSurface9* currentSurface = 0;
+							D3DCUBEMAP_FACES face = (D3DCUBEMAP_FACES)CubeSurfaces[i];	// we use same numbering
+							cubeTextureId->GetCubeMapSurface(face, level, &currentSurface);
 
 							Surface[i] = currentSurface;
 						}
@@ -146,7 +161,7 @@ namespace irr
 						if (currentTexture->getType() == ETT_2D)
 							textureID = currentTexture->getDX9Texture();
 						else
-							os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+							os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
 					}
 
 					if (textureID)

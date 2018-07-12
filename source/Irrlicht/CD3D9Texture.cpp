@@ -74,10 +74,10 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 	switch (Type)
 	{
 	case ETT_2D:
-		Device->CreateTexture(Size.Width, Size.Height, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &Texture, NULL);
+		hr = Device->CreateTexture(Size.Width, Size.Height, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &Texture, NULL);
 		break;
 	case ETT_CUBEMAP:
-		Device->CreateCubeTexture(Size.Width, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &CubeTexture, NULL);
+		hr = Device->CreateCubeTexture(Size.Width, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &CubeTexture, NULL);
 		break;
 	default:
 		_IRR_DEBUG_BREAK_IF(true)
@@ -114,8 +114,8 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
     }
 }
 
-CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, const ECOLOR_FORMAT format)
-	: ITexture(name, ETT_2D), Driver(driver), InternalFormat(D3DFMT_UNKNOWN), LockReadOnly(false), LockData(0), LockLayer(0),
+CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, E_TEXTURE_TYPE type, const ECOLOR_FORMAT format)
+	: ITexture(name, type), Driver(driver), InternalFormat(D3DFMT_UNKNOWN), LockReadOnly(false), LockData(0), LockLayer(0),
 	AutoGenerateMipMaps(false), Device(0), Texture(0), CubeTexture(0), RTTSurface(0)
 {
 #ifdef _DEBUG
@@ -344,32 +344,44 @@ void CD3D9Texture::releaseTexture()
 
 void CD3D9Texture::generateRenderTarget()
 {
-	if (!Texture)
+	DWORD flags = (IImage::isDepthFormat(ColorFormat)) ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
+
+	HRESULT hr = 0;
+
+	switch (Type)
 	{
-		DWORD flag = (IImage::isDepthFormat(ColorFormat)) ? D3DUSAGE_DEPTHSTENCIL : D3DUSAGE_RENDERTARGET;
+		case ETT_2D:
+			hr = Device->CreateTexture(Size.Width, Size.Height, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
+			break;
+		case ETT_CUBEMAP:
+			hr = Device->CreateCubeTexture(Size.Width, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &CubeTexture, NULL);
+			break;
+		default:
+			_IRR_DEBUG_BREAK_IF(true)
+			break;
+	}
 
-		HRESULT hr = Device->CreateTexture(Size.Width, Size.Height, 1, flag, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
-
-		if (FAILED(hr))
-		{
-			if (D3DERR_INVALIDCALL == hr)
-				os::Printer::log("Could not create render target texture", "Invalid Call", irr::ELL_ERROR);
-			else if (D3DERR_OUTOFVIDEOMEMORY == hr)
-				os::Printer::log("Could not create render target texture", "Out of Video Memory", irr::ELL_ERROR);
-			else if (E_OUTOFMEMORY == hr)
-				os::Printer::log("Could not create render target texture", "Out of Memory", irr::ELL_ERROR);
-			else
-				os::Printer::log("Could not create render target texture", irr::ELL_ERROR);
-			core::stringc params("Width:");
-			params += (unsigned int)Size.Width;
-			params += " Height: ";
-			params += (unsigned int)Size.Height;
-			params += " flag: ";
-			params += (unsigned int)flag;
-			params += " format";
-			params += (unsigned int)InternalFormat;
-			os::Printer::log(params.c_str(), irr::ELL_ERROR);
-		}
+	if (FAILED(hr))
+	{
+		if (D3DERR_INVALIDCALL == hr)
+			os::Printer::log("Could not create render target texture", "Invalid Call", irr::ELL_ERROR);
+		else if (D3DERR_OUTOFVIDEOMEMORY == hr)
+			os::Printer::log("Could not create render target texture", "Out of Video Memory", irr::ELL_ERROR);
+		else if (E_OUTOFMEMORY == hr)
+			os::Printer::log("Could not create render target texture", "Out of Memory", irr::ELL_ERROR);
+		else
+			os::Printer::log("Could not create render target texture", irr::ELL_ERROR);
+		core::stringc params("Width:");
+		params += (unsigned int)Size.Width;
+		params += " Height: ";
+		params += (unsigned int)Size.Height;
+		params += " flag: ";
+		params += (unsigned int)flags;
+		params += " format";
+		params += (unsigned int)InternalFormat;
+		params += " Type: ";
+		params += (unsigned int)Type;
+		os::Printer::log(params.c_str(), irr::ELL_ERROR);
 	}
 }
 

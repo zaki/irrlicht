@@ -15,6 +15,17 @@ namespace video
 {
 	class ITexture;
 
+	//! Enumeration of cube texture surfaces
+	enum E_CUBE_SURFACE
+	{
+		ECS_POSX  = 0,
+		ECS_NEGX,
+		ECS_POSY,
+		ECS_NEGY,
+		ECS_POSZ, 
+		ECS_NEGZ
+	};
+
 	//! Interface of a Render Target.
 	class IRenderTarget : public virtual IReferenceCounted
 	{
@@ -41,8 +52,10 @@ namespace video
 		/** Set multiple textures for the render target.
 		\param texture Array of texture objects. These textures are used for a color outputs.
 		\param depthStencil Depth or packed depth-stencil texture. This texture is used as depth
-		or depth-stencil buffer. */
-		virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) = 0;
+		or depth-stencil buffer. 
+		\param cubeSurfaces When rendering to cube textures, set the surface to be used for each texture. Can be empty otherwise.
+		*/
+		virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces = core::array<E_CUBE_SURFACE>()) = 0;
 
 		//! Set one texture.
 		void setTexture(ITexture* texture, ITexture* depthStencil)
@@ -51,6 +64,18 @@ namespace video
 			textureArray.push_back(texture);
 
 			setTexture(textureArray, depthStencil);
+		}
+
+		//! Set one cube surface texture.
+		void setTexture(ITexture* texture, ITexture* depthStencil, E_CUBE_SURFACE cubeSurface)
+		{
+			core::array<ITexture*> textureArray(1);
+			textureArray.push_back(texture);
+
+			core::array<E_CUBE_SURFACE> cubeSurfaces(1);
+			cubeSurfaces.push_back(cubeSurface);
+
+			setTexture(textureArray, depthStencil, cubeSurfaces);
 		}
 
 		//! Get driver type of render target.
@@ -66,6 +91,9 @@ namespace video
 
 		//! Depth or packed depth-stencil texture assigned to render target.
 		ITexture* DepthStencil;
+
+		//! Active surface of cube textures
+		core::array<E_CUBE_SURFACE> CubeSurfaces;
 
 		//! Driver type of render target.
 		E_DRIVER_TYPE DriverType;

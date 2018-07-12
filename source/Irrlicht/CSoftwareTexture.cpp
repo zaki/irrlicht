@@ -129,7 +129,7 @@ CSoftwareRenderTarget::~CSoftwareRenderTarget()
 		Texture[0]->drop();
 }
 
-void CSoftwareRenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil)
+void CSoftwareRenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces)
 {
 	if (Texture != texture)
 	{

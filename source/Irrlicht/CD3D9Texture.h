@@ -28,7 +28,7 @@ class CD3D9Texture : public ITexture
 public:
 	CD3D9Texture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, CD3D9Driver* driver);
 
-	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, E_TEXTURE_TYPE type, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	virtual ~CD3D9Texture();
 
