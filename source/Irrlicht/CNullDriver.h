@@ -320,7 +320,7 @@ namespace video
 			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
 		//! Creates a render target texture for a cubemap
-		ITexture* CNullDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen,
+		ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
 				const io::path& name, const ECOLOR_FORMAT format) _IRR_OVERRIDE_;
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
