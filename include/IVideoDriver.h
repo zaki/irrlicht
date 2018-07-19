@@ -86,22 +86,6 @@ namespace video
 		ETS_COUNT
 	};
 
-	//! enumeration for signaling resources which were lost after the last render cycle
-	/** These values can be signaled by the driver, telling the app that some resources
-	were lost and need to be recreated. Irrlicht will sometimes recreate the actual objects,
-	but the content needs to be recreated by the application. */
-	enum E_LOST_RESOURCE
-	{
-		//! The whole device/driver is lost
-		ELR_DEVICE = 1,
-		//! All texture are lost, rare problem
-		ELR_TEXTURES = 2,
-		//! The Render Target Textures are lost, typical problem for D3D
-		ELR_RTTS = 4,
-		//! The HW buffers are lost, will be recreated automatically, but might require some more time this frame
-		ELR_HW_BUFFERS = 8
-	};
-
 	//! Special render targets, which usually map to dedicated hardware
 	/** These render targets (besides 0 and 1) need not be supported by gfx cards */
 	enum E_RENDER_TARGET
