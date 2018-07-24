@@ -27,6 +27,8 @@ VERSION_RELEASE = 0
 #
 # make win32
 #
+# Or as MinGW by default has CC set to cc - but has no compiler by that name - you might have to do:
+# make CC=gcc win32
 
 #List of object files, separated based on engine architecture
 IRRMESHLOADER = CBSPMeshFileLoader.o CMD2MeshFileLoader.o CMD3MeshFileLoader.o CMS3DMeshFileLoader.o CB3DMeshFileLoader.o C3DSMeshFileLoader.o COgreMeshFileLoader.o COBJMeshFileLoader.o CColladaFileLoader.o CCSMLoader.o CDMFLoader.o CLMTSMeshFileLoader.o CMY3DMeshFileLoader.o COCTLoader.o CXMeshFileLoader.o CIrrMeshFileLoader.o CSTLMeshFileLoader.o CLWOMeshFileLoader.o CPLYMeshFileLoader.o CSMFMeshFileLoader.o CMeshTextureLoader.o

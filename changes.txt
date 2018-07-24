@@ -205,6 +205,7 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.5
+ - Fix serialization of OverrideTextColorEnabled flag in CGUITab. Thanks @ chronologicaldot for reporting (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=52344&p=303891#p303891)
  - CFileSystem::getAbsolutePath no longer wrongly converts an empty filename to "/" on unix platforms.
    This fixes the bug that CFileSystem::createAndOpenFile("") returned a (strange behaving) non-null file pointer.
    Additional check also added in createAndOpenFile to early out on empty names.
