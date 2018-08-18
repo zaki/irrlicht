@@ -48,7 +48,11 @@ all_win32 clean_win32 static_win32: SYSTEM=Win32-gcc
 all_win32 clean_win32 static_win32: SUF=.exe
 all_emscripten clean_emscripten: SUF=.html
 all_emscripten: CXXFLAGS += -fno-exceptions -fno-rtti -fstrict-aliasing  -std=gnu++11 -U__STRICT_ANSI__
+# Pass on a custom html file.
+#all_emscripten: CXXFLAGS += --shell-file shell_minimal.html
 all_emscripten: LDFLAGS += -lGL -lSDL --preload-file ../../media@/media -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=1
+#If you know the maximum memory (in bytes) which your application need then set it. It can speed things up a lot.
+#all_emscripten: LDFLAGS += -s TOTAL_MEMORY=268435456
 # You need the FULL_ES2 when using EDT_OGLES2 driver
 #all_emscripten: LDFLAGS += -s FULL_ES2=1 
 static_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
@@ -56,6 +60,13 @@ all_win32: LDFLAGS += -lopengl32 -lEGL -lGLESv1_CM -lGLESv2 -lm
 static_win32: LDFLAGS += -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32 -lEGL -lGLESv1_CM -lGLESv2
 # name of the binary - only valid for targets which set SYSTEM
 DESTPATH = $(BinPath)/$(Target)$(SUF)
+
+# Enable compiling to WASM and not just asm.js (you have to set it in the engine Makefile as well)
+ifdef EMSCRIPTEN
+  ifdef WASM
+    CXXFLAGS += -s WASM=1
+  endif
+endif
 
 emscripten: all_emscripten
 

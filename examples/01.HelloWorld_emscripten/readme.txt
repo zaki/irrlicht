@@ -20,3 +20,5 @@ emmake make emscripten
 
 Go into examples/01.HelloWord_emscripten folder and call:
 emmake make all_emscripten
+
+Note: The shell_minimal.html is currently not used (as resizing isn't working yet correctly), but can be enabled in the Makefile.

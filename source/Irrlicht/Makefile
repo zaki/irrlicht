@@ -90,6 +90,9 @@ ifdef EMSCRIPTEN
   else
     CFLAGS := -O3 -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
   endif
+  ifdef WASM
+    CXXFLAGS += -s WASM=1
+  endif  
 else
   CFLAGS := -O3 -fexpensive-optimizations -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
 endif
