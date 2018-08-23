@@ -664,6 +664,11 @@ class map
 		clear();
 	}
 
+	// typedefs
+	typedef KeyType key_type;
+	typedef ValueType value_type;
+	typedef u32 size_type;
+
 	//------------------------------
 	// Public Commands
 	//------------------------------
