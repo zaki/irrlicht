@@ -508,19 +508,8 @@ bool CD3D9Driver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u
 	HRESULT hr;
 	if (DeviceLost)
 	{
-		if (FAILED(hr = pID3DDevice->TestCooperativeLevel()))
-		{
-			if (hr == D3DERR_DEVICELOST)
-			{
-				Sleep(100);
-				hr = pID3DDevice->TestCooperativeLevel();
-				if (hr == D3DERR_DEVICELOST)
-					return false;
-			}
-
-			if ((hr == D3DERR_DEVICENOTRESET) && !reset())
-				return false;
-		}
+		if ( !retrieveDevice(1) )
+			return false;
 	}
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
@@ -2866,6 +2855,35 @@ void CD3D9Driver::draw3DBox( const core::aabbox3d<f32>& box, SColor color)
 	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 12, v, sizeof(S3DVertex));
 }
 
+bool CD3D9Driver::retrieveDevice(int numTries, int msSleepBetweenTries)
+{
+	while ( numTries > 0)
+	{
+		HRESULT hr;
+		if ( FAILED(hr = pID3DDevice->TestCooperativeLevel()) )
+		{
+			// hr can be: D3DERR_DEVICELOST, D3DERR_DEVICENOTRESET or D3DERR_DRIVERINTERNALERROR
+			switch ( hr )
+			{
+				case D3DERR_DEVICENOTRESET:
+					if ( reset() )
+						return true;
+					// when reset fails, just try again, maybe device got lost in between TestCooperativeLevel and reset calls?
+				break;
+				case D3DERR_DEVICELOST:
+					break;
+				case D3DERR_DRIVERINTERNALERROR:
+					return false;
+			}
+
+			Sleep(msSleepBetweenTries);
+			--numTries;
+		}
+		else
+			return true;
+	}
+	return false;
+}
 
 //! resets the device
 bool CD3D9Driver::reset()
@@ -3043,7 +3061,13 @@ void CD3D9Driver::OnResize(const core::dimension2d<u32>& size)
 	present.BackBufferWidth = size.Width;
 	present.BackBufferHeight = size.Height;
 
-	reset();
+	if ( !reset() )
+	{
+		if ( !retrieveDevice(30, 100) ) // retrying for 3 seconds, I hope that's long enough?
+		{
+			os::Printer::log("Failed to retrieve device in OnResize.", ELL_ERROR);
+		}
+	}
 }
 
 

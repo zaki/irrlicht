@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Try recovering lost device in D3D9 for 3 seconds when device reset fails after resizing Window.
 - Add typedefs like value_type and size_type to array, list and map like std containers have. Thanks @SLC for idea (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52363)
 - Remove unused enum E_LOST_RESOURCE
 - CGUIComboBox uses now EGDS_SCROLLBAR_SIZE instead of EGDS_WINDOW_BUTTON_WIDTH for the width of the listbox button to allow changing that without changing window topbar height.

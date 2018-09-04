@@ -353,6 +353,9 @@ namespace video
 		//! resets the device
 		bool reset();
 
+		//! Try to get back a lost device
+		bool retrieveDevice(int numTries, int msSleepBetweenTries=100);
+
 		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
 
 		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image) _IRR_OVERRIDE_;
