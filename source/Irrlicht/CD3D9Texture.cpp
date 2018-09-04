@@ -351,10 +351,12 @@ void CD3D9Texture::generateRenderTarget()
 	switch (Type)
 	{
 		case ETT_2D:
-			hr = Device->CreateTexture(Size.Width, Size.Height, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
+			if (!Texture )
+				hr = Device->CreateTexture(Size.Width, Size.Height, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &Texture, NULL);
 			break;
 		case ETT_CUBEMAP:
-			hr = Device->CreateCubeTexture(Size.Width, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &CubeTexture, NULL);
+			if (!CubeTexture)
+				hr = Device->CreateCubeTexture(Size.Width, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &CubeTexture, NULL);
 			break;
 		default:
 			_IRR_DEBUG_BREAK_IF(true)
