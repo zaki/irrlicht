@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Add serialization for ToolTip to IGUIElement. Thanks @chronologicaldot for patch (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=2&t=52374)
 - Try recovering lost device in D3D9 for 3 seconds when device reset fails after resizing Window.
 - Add typedefs like value_type and size_type to array, list and map like std containers have. Thanks @SLC for idea (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52363)
 - Remove unused enum E_LOST_RESOURCE

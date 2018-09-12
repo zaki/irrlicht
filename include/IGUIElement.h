@@ -774,6 +774,7 @@ public:
 		out->addString("Name", Name.c_str());
 		out->addInt("Id", ID );
 		out->addString("Caption", getText());
+		out->addString("ToolTip", getToolTipText().c_str());
 		out->addRect("Rect", DesiredRect);
 		out->addPosition2d("MinSize", core::position2di(MinSize.Width, MinSize.Height));
 		out->addPosition2d("MaxSize", core::position2di(MaxSize.Width, MaxSize.Height));
@@ -798,6 +799,7 @@ public:
 		setName(in->getAttributeAsString("Name"));
 		setID(in->getAttributeAsInt("Id"));
 		setText(in->getAttributeAsStringW("Caption").c_str());
+		setToolTipText(in->getAttributeAsStringW("ToolTip").c_str());
 		setVisible(in->getAttributeAsBool("Visible"));
 		setEnabled(in->getAttributeAsBool("Enabled"));
 		IsTabStop = in->getAttributeAsBool("TabStop");
