@@ -104,7 +104,20 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 	}
 	else
 	{
-		os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
+		switch  (hr )
+		{
+			case D3DERR_INVALIDCALL:
+				os::Printer::log("Could not create DIRECT3D9 Texture. D3DERR_INVALIDCALL", ELL_WARNING);
+				break;
+			case D3DERR_OUTOFVIDEOMEMORY:
+				os::Printer::log("Could not create DIRECT3D9 Texture. D3DERR_OUTOFVIDEOMEMORY", ELL_WARNING);
+				break;
+			case E_OUTOFMEMORY:
+				os::Printer::log("Could not create DIRECT3D9 Texture. E_OUTOFMEMORY", ELL_WARNING);
+				break;
+			default:
+				os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
+		}
 	}
 	
 	if (releaseImageData)

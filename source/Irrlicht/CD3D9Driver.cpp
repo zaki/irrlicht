@@ -3063,7 +3063,7 @@ void CD3D9Driver::OnResize(const core::dimension2d<u32>& size)
 
 	if ( !reset() )
 	{
-		if ( !retrieveDevice(30, 100) ) // retrying for 3 seconds, I hope that's long enough?
+		if ( !retrieveDevice(20, 200) ) // retrying for 3 seconds, I hope that's long enough?
 		{
 			os::Printer::log("Failed to retrieve device in OnResize.", ELL_ERROR);
 		}
