@@ -2,7 +2,7 @@
 The Irrlicht Engine SDK version 1.9
 ==========================================================================
 
-  Welcome the Irrlicht Engine SDK.
+  Welcome to the Irrlicht Engine SDK.
 
   Content of this file:
 

@@ -266,6 +266,10 @@ namespace video
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
 
+		//! Creates a render target texture for a cubemap
+		ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
+				const io::path& name, const ECOLOR_FORMAT format) _IRR_OVERRIDE_;
+
 		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) _IRR_OVERRIDE_;
 
 		//! Returns an image created from the last rendered frame.
@@ -348,6 +352,9 @@ namespace video
 
 		//! resets the device
 		bool reset();
+
+		//! Try to get back a lost device
+		bool retrieveDevice(int numTries, int msSleepBetweenTries=100);
 
 		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
 

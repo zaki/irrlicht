@@ -9,6 +9,10 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
 --------------------------
 Changes in 1.9 (not yet released)
+- Add serialization for ToolTip to IGUIElement. Thanks @chronologicaldot for patch (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=2&t=52374)
+- Try recovering lost device in D3D9 for 3 seconds when device reset fails after resizing Window.
+- Add typedefs like value_type and size_type to array, list and map like std containers have. Thanks @SLC for idea (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52363)
+- Remove unused enum E_LOST_RESOURCE
 - CGUIComboBox uses now EGDS_SCROLLBAR_SIZE instead of EGDS_WINDOW_BUTTON_WIDTH for the width of the listbox button to allow changing that without changing window topbar height.
   Thanks @LunaRebirth for reporting. (Forum: http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52297&p=303682#p303682)
 - CGUIListbox, CGUITreeView and CGUITable now resize scrollbars when EGDS_SCROLLBAR_SIZE in the skin changes without having to re-create the elements.
@@ -213,6 +217,7 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.5
+ - Fix serialization of OverrideTextColorEnabled flag in CGUITab. Thanks @ chronologicaldot for reporting (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=52344&p=303891#p303891)
  - CFileSystem::getAbsolutePath no longer wrongly converts an empty filename to "/" on unix platforms.
    This fixes the bug that CFileSystem::createAndOpenFile("") returned a (strange behaving) non-null file pointer.
    Additional check also added in createAndOpenFile to early out on empty names.

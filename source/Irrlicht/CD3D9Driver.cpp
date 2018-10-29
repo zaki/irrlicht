@@ -466,11 +466,7 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	setRenderStates3DMode();
 
 	// store the screen's depth buffer descriptor
-	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
-	{
-		DepthStencilSurface->Release();
-	}
-	else
+	if (!SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
 	{
 		os::Printer::log("Was not able to get main depth buffer.", ELL_ERROR);
 		return false;
@@ -512,19 +508,8 @@ bool CD3D9Driver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth, u
 	HRESULT hr;
 	if (DeviceLost)
 	{
-		if (FAILED(hr = pID3DDevice->TestCooperativeLevel()))
-		{
-			if (hr == D3DERR_DEVICELOST)
-			{
-				Sleep(100);
-				hr = pID3DDevice->TestCooperativeLevel();
-				if (hr == D3DERR_DEVICELOST)
-					return false;
-			}
-
-			if ((hr == D3DERR_DEVICENOTRESET) && !reset())
-				return false;
-		}
+		if ( !retrieveDevice(1) )
+			return false;
 	}
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
@@ -2871,6 +2856,35 @@ void CD3D9Driver::draw3DBox( const core::aabbox3d<f32>& box, SColor color)
 	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 12, v, sizeof(S3DVertex));
 }
 
+bool CD3D9Driver::retrieveDevice(int numTries, int msSleepBetweenTries)
+{
+	while ( numTries > 0)
+	{
+		HRESULT hr;
+		if ( FAILED(hr = pID3DDevice->TestCooperativeLevel()) )
+		{
+			// hr can be: D3DERR_DEVICELOST, D3DERR_DEVICENOTRESET or D3DERR_DRIVERINTERNALERROR
+			switch ( hr )
+			{
+				case D3DERR_DEVICENOTRESET:
+					if ( reset() )
+						return true;
+					// when reset fails, just try again, maybe device got lost in between TestCooperativeLevel and reset calls?
+				break;
+				case D3DERR_DEVICELOST:
+					break;
+				case D3DERR_DRIVERINTERNALERROR:
+					return false;
+			}
+
+			Sleep(msSleepBetweenTries);
+			--numTries;
+		}
+		else
+			return true;
+	}
+	return false;
+}
 
 //! resets the device
 bool CD3D9Driver::reset()
@@ -2927,7 +2941,10 @@ bool CD3D9Driver::reset()
 		ActiveRenderTarget[i] = false;
 
 	if (DepthStencilSurface)
+	{
 		DepthStencilSurface->Release();
+		DepthStencilSurface = 0;
+	}
 
 	if (BackBufferSurface)
 	{
@@ -2938,14 +2955,53 @@ bool CD3D9Driver::reset()
 	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
+	if (FAILED(hr))
+	{
+		if (hr == D3DERR_DEVICELOST)
+		{
+			DeviceLost = true;
+			os::Printer::log("Resetting failed due to device lost.", ELL_WARNING);
+		}
+#ifdef D3DERR_DEVICEREMOVED
+		else if (hr == D3DERR_DEVICEREMOVED)
+		{
+			os::Printer::log("Resetting failed due to device removed.", ELL_WARNING);
+		}
+#endif
+		else if (hr == D3DERR_DRIVERINTERNALERROR)
+		{
+			os::Printer::log("Resetting failed due to internal error.", ELL_WARNING);
+		}
+		else if (hr == D3DERR_OUTOFVIDEOMEMORY)
+		{
+			os::Printer::log("Resetting failed due to out of memory.", ELL_WARNING);
+		}
+		else if (hr == D3DERR_DEVICENOTRESET)
+		{
+			os::Printer::log("Resetting failed due to not reset.", ELL_WARNING);
+		}
+		else if (hr == D3DERR_INVALIDCALL)
+		{
+			os::Printer::log("Resetting failed due to invalid call", "You need to release some more surfaces.", ELL_WARNING);
+		}
+		else
+		{
+			os::Printer::log("Resetting failed due to unknown reason.", core::stringc((int)hr).c_str(), ELL_WARNING);
+		}
+		return false;
+	}
+	DeviceLost = false;
 
 	// reset bridge calls.
 	if (BridgeCalls)
 		BridgeCalls->reset();
 
 	// restore screen depthbuffer descriptor
-	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
-		DepthStencilSurface->Release();
+	if (!SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&DepthStencilSurface)))
+	{
+		os::Printer::log("Was not able to get main depth buffer.", ELL_ERROR);
+		return false;
+	}
 
 	// restore RTTs
 	for (i=0; i<Textures.size(); ++i)
@@ -2982,43 +3038,6 @@ bool CD3D9Driver::reset()
 		pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, reinterpret_cast<IDirect3DQuery9**>(&OcclusionQueries[i].PID));
 	}
 
-	if (FAILED(hr))
-	{
-		if (hr == D3DERR_DEVICELOST)
-		{
-			DeviceLost = true;
-			os::Printer::log("Resetting failed due to device lost.", ELL_WARNING);
-		}
-#ifdef D3DERR_DEVICEREMOVED
-		else if (hr == D3DERR_DEVICEREMOVED)
-		{
-			os::Printer::log("Resetting failed due to device removed.", ELL_WARNING);
-		}
-#endif
-		else if (hr == D3DERR_DRIVERINTERNALERROR)
-		{
-			os::Printer::log("Resetting failed due to internal error.", ELL_WARNING);
-		}
-		else if (hr == D3DERR_OUTOFVIDEOMEMORY)
-		{
-			os::Printer::log("Resetting failed due to out of memory.", ELL_WARNING);
-		}
-		else if (hr == D3DERR_DEVICENOTRESET)
-		{
-			os::Printer::log("Resetting failed due to not reset.", ELL_WARNING);
-		}
-		else if (hr == D3DERR_INVALIDCALL)
-		{
-			os::Printer::log("Resetting failed due to invalid call", "You need to release some more surfaces.", ELL_WARNING);
-		}
-		else
-		{
-			os::Printer::log("Resetting failed due to unknown reason.", core::stringc((int)hr).c_str(), ELL_WARNING);
-		}
-		return false;
-	}
-
-	DeviceLost = false;
 	ResetRenderStates = true;
 	LastVertexType = (E_VERTEX_TYPE)-1;
 
@@ -3043,7 +3062,13 @@ void CD3D9Driver::OnResize(const core::dimension2d<u32>& size)
 	present.BackBufferWidth = size.Width;
 	present.BackBufferHeight = size.Height;
 
-	reset();
+	if ( !reset() )
+	{
+		if ( !retrieveDevice(20, 200) ) // retrying for 3 seconds, I hope that's long enough?
+		{
+			os::Printer::log("Failed to retrieve device in OnResize.", ELL_ERROR);
+		}
+	}
 }
 
 
@@ -3221,10 +3246,28 @@ ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size
 											  const io::path& name,
 											  const ECOLOR_FORMAT format)
 {
-	CD3D9Texture* tex = new CD3D9Texture(this, size, name, format);
+	CD3D9Texture* tex = new CD3D9Texture(this, size, name, ETT_2D, format);
 	if (tex)
 	{
 		if (!tex->Texture)
+		{
+			tex->drop();
+			return 0;
+		}
+
+		addTexture(tex);
+		tex->drop();
+	}
+	return tex;
+}
+
+ITexture* CD3D9Driver::addRenderTargetTextureCubemap(const irr::u32 sideLen,
+	const io::path& name, const ECOLOR_FORMAT format)
+{
+	CD3D9Texture* tex = new CD3D9Texture(this, core::dimension2d<u32>(sideLen, sideLen), name, ETT_CUBEMAP, format);
+	if (tex)
+	{
+		if (!tex->CubeTexture)
 		{
 			tex->drop();
 			return 0;

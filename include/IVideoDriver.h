@@ -86,22 +86,6 @@ namespace video
 		ETS_COUNT
 	};
 
-	//! enumeration for signaling resources which were lost after the last render cycle
-	/** These values can be signaled by the driver, telling the app that some resources
-	were lost and need to be recreated. Irrlicht will sometimes recreate the actual objects,
-	but the content needs to be recreated by the application. */
-	enum E_LOST_RESOURCE
-	{
-		//! The whole device/driver is lost
-		ELR_DEVICE = 1,
-		//! All texture are lost, rare problem
-		ELR_TEXTURES = 2,
-		//! The Render Target Textures are lost, typical problem for D3D
-		ELR_RTTS = 4,
-		//! The HW buffers are lost, will be recreated automatically, but might require some more time this frame
-		ELR_HW_BUFFERS = 8
-	};
-
 	//! Special render targets, which usually map to dedicated hardware
 	/** These render targets (besides 0 and 1) need not be supported by gfx cards */
 	enum E_RENDER_TARGET
@@ -389,6 +373,18 @@ namespace video
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
+				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
+
+		//! Adds a new render target texture with 6 sides for a cubemap map to the texture cache.
+		/** NOTE: Only supported on D3D9 so far.
+		\param sideLen Length of one cubemap side.
+		\param name A name for the texture. Later calls of getTexture() with this name will return this texture.
+		The name can _not_ be empty.
+		\param format The color format of the render target. Floating point formats are supported.
+		\return Pointer to the created texture or 0 if the texture
+		could not be created. This pointer should not be dropped. See
+		IReferenceCounted::drop() for more information. */
+		virtual ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
 				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
 
 		//! Removes a texture from the texture cache and deletes it.

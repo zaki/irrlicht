@@ -821,7 +821,7 @@ namespace scene
 		}
 
 		//! Name of the scene node.
-		core::stringc Name = "";
+		core::stringc Name;
 
 		//! Absolute transformation of the node.
 		core::matrix4 AbsoluteTransformation;

@@ -54,14 +54,6 @@ void CGUITab::setNumber(s32 n)
 	Number = n;
 }
 
-void CGUITab::refreshSkinColors()
-{
-	if ( !OverrideTextColorEnabled )
-	{
-		TextColor = Environment->getSkin()->getColor(EGDC_BUTTON_TEXT);
-	}
-}
-
 //! draws the element and its children
 void CGUITab::draw()
 {
@@ -101,9 +93,11 @@ void CGUITab::setTextColor(video::SColor c)
 
 video::SColor CGUITab::getTextColor() const
 {
-	return TextColor;
+	if ( OverrideTextColorEnabled )
+		return TextColor;
+	else
+		return Environment->getSkin()->getColor(EGDC_BUTTON_TEXT);
 }
-
 
 //! returns true if the tab is drawing its background, false if not
 bool CGUITab::isDrawingBackground() const
@@ -141,12 +135,9 @@ void CGUITab::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWrite
 	setNumber(in->getAttributeAsInt("TabNumber"));
 	setDrawBackground(in->getAttributeAsBool("DrawBackground"));
 	setBackgroundColor(in->getAttributeAsColor("BackColor"));
-	bool override = in->getAttributeAsBool("OverrideTextColorEnabled");
+	bool overrideColor = in->getAttributeAsBool("OverrideTextColorEnabled", OverrideTextColorEnabled);
 	setTextColor(in->getAttributeAsColor("TextColor"));
-	if ( !override )
-	{
-		OverrideTextColorEnabled = false;
-	}
+	OverrideTextColorEnabled = overrideColor;	// because setTextColor does set OverrideTextColorEnabled always to true
 
 	if (Parent && Parent->getType() == EGUIET_TAB_CONTROL)
 	{
@@ -633,9 +624,6 @@ void CGUITabControl::draw()
 		frameRect.LowerRightCorner.X = frameRect.UpperLeftCorner.X + len;
 
 		pos += len;
-
-		if ( text )
-			Tabs[i]->refreshSkinColors();
 
 		if ((s32)i == ActiveTab)
 		{

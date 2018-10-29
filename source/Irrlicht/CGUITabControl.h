@@ -65,9 +65,6 @@ namespace gui
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
 
-		//! only for internal use by CGUITabControl
-		void refreshSkinColors();
-
 	private:
 
 		s32 Number;

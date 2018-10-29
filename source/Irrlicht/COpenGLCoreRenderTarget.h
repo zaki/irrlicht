@@ -58,7 +58,7 @@ public:
 			DepthStencil->drop();
 	}
 
-	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) _IRR_OVERRIDE_
+	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces) _IRR_OVERRIDE_
 	{
 		bool textureUpdate = (Texture != texture) ? true : false;
 		bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;

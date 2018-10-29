@@ -1623,6 +1623,10 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 				else
 					out.append("Microsoft Windows Server 2008 R2 ");
 			}
+			else if (osvi.dwMinorVersion == 2)
+			{
+				out.append("Microsoft Windows 8 or later ");
+			}
 		}
 
 		if (bOsVersionInfoEx)

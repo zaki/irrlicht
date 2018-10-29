@@ -101,7 +101,7 @@ public:
 	CSoftwareRenderTarget2(CBurningVideoDriver* driver);
 	virtual ~CSoftwareRenderTarget2();
 
-	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) _IRR_OVERRIDE_;
+	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces) _IRR_OVERRIDE_;
 
 	ITexture* getTexture() const;
 
