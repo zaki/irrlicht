@@ -133,6 +133,7 @@ void CBillboardSceneNode::updateMesh(const irr::scene::ICameraSceneNode* camera)
 	vertices[2].Pos = pos - topHorizontal - vertical;
 	vertices[3].Pos = pos - horizontal + vertical;
 
+	Buffer->setDirty(EBT_VERTEX);
 	Buffer->recalculateBoundingBox();
 }
 
