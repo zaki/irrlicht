@@ -60,7 +60,7 @@ public:
 
 	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces) _IRR_OVERRIDE_
 	{
-		bool textureUpdate = (Texture != texture) ? true : false;
+		bool textureUpdate = (Texture != texture) || (CubeSurfaces != cubeSurfaces) ? true : false;
 		bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
 
 		if (textureUpdate || depthStencilUpdate)
@@ -69,6 +69,8 @@ public:
 
 			if (textureUpdate)
 			{
+				CubeSurfaces = cubeSurfaces;
+
 				for (u32 i = 0; i < Texture.size(); ++i)
 				{
 					if (Texture[i])
@@ -94,10 +96,7 @@ public:
 
 					if (currentTexture)
 					{
-						if (currentTexture->getType() == ETT_2D)
-							textureID = currentTexture->getOpenGLTextureName();
-						else
-							os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+						textureID = currentTexture->getOpenGLTextureName();
 					}
 
 					if (textureID != 0)
@@ -123,11 +122,11 @@ public:
 				GLuint textureID = 0;
 
 				if (currentTexture)
-				{
+				{	
 					if (currentTexture->getType() == ETT_2D)
 						textureID = currentTexture->getOpenGLTextureName();
 					else
-						os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+						os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
 				}
 
 				const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
@@ -178,12 +177,17 @@ public:
 
 				for (u32 i = 0; i < textureSize; ++i)
 				{
-					GLuint textureID = (Texture[i]) ? static_cast<TOpenGLTexture*>(Texture[i])->getOpenGLTextureName() : 0;
+					TOpenGLTexture* currentTexture = static_cast<TOpenGLTexture*>(Texture[i]);
+					GLuint textureID = currentTexture ? currentTexture->getOpenGLTextureName() : 0;
 
 					if (textureID != 0)
 					{
 						AssignedTexture[i] = GL_COLOR_ATTACHMENT0 + i;
-						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTexture[i], GL_TEXTURE_2D, textureID, 0);
+						GLenum textarget = currentTexture->getType() == ETT_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP_POSITIVE_X + (int)CubeSurfaces[i];
+						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTexture[i], textarget, textureID, 0);
+#ifdef _DEBUG
+						Driver->testGLError(__LINE__);
+#endif
 					}
 					else if (AssignedTexture[i] != GL_NONE)
 					{
@@ -267,6 +271,11 @@ public:
 
 					Driver->irrGlDrawBuffers(bufferCount, AssignedTexture.pointer());
 				}
+
+#ifdef _DEBUG
+				Driver->testGLError(__LINE__);
+#endif
+
 			}
 
 #ifdef _DEBUG
