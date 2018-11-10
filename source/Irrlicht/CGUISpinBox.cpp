@@ -332,9 +332,9 @@ void CGUISpinBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 void CGUISpinBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
 	IGUIElement::deserializeAttributes(in, options);
-	setRange(in->getAttributeAsFloat("Min"), in->getAttributeAsFloat("Max"));
-	setStepSize(in->getAttributeAsFloat("Step"));
-	setDecimalPlaces(in->getAttributeAsInt("DecimalPlaces"));
+	setRange(in->getAttributeAsFloat("Min", RangeMin), in->getAttributeAsFloat("Max", RangeMax));
+	setStepSize(in->getAttributeAsFloat("Step", StepSize));
+	setDecimalPlaces(in->getAttributeAsInt("DecimalPlaces", DecimalPlaces));
 	setValidateOn((u32)in->getAttributeAsInt("ValidateOn", (s32)ValidateOn) );
 }
 

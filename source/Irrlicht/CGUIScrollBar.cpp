@@ -544,7 +544,7 @@ void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeRead
 	out->addInt ("Max",			Max);
 	out->addInt ("SmallStep",	SmallStep);
 	out->addInt ("LargeStep",	LargeStep);
-	// CurrentIconColor - not serialized as continuiously updated
+	// CurrentIconColor - not serialized as continuously updated
 }
 
 
@@ -553,13 +553,13 @@ void CGUIScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 {
 	IGUIScrollBar::deserializeAttributes(in,options);
 
-	Horizontal = in->getAttributeAsBool("Horizontal");
-	setMin(in->getAttributeAsInt("Min"));
-	setMax(in->getAttributeAsInt("Max"));
-	setPos(in->getAttributeAsInt("Value"));
-	setSmallStep(in->getAttributeAsInt("SmallStep"));
-	setLargeStep(in->getAttributeAsInt("LargeStep"));
-	// CurrentIconColor - not serialized as continuiously updated
+	Horizontal = in->getAttributeAsBool("Horizontal", Horizontal);
+	setMin(in->getAttributeAsInt("Min", Min));
+	setMax(in->getAttributeAsInt("Max", Max));
+	setPos(in->getAttributeAsInt("Value", Pos));
+	setSmallStep(in->getAttributeAsInt("SmallStep", SmallStep));
+	setLargeStep(in->getAttributeAsInt("LargeStep", LargeStep));
+	// CurrentIconColor - not serialized as continuously updated
 
 	refreshControls();
 }
