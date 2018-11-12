@@ -106,10 +106,10 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 }
 
 
-void COpenGLExtensionHandler::dump() const
+void COpenGLExtensionHandler::dump(ELOG_LEVEL logLevel) const
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
-		os::Printer::log(OpenGLFeatureStrings[i], FeatureAvailable[i]?" true":" false");
+		os::Printer::log(OpenGLFeatureStrings[i], FeatureAvailable[i]?" true":" false", logLevel);
 }
 
 
