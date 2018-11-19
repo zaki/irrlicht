@@ -46,10 +46,11 @@ int main(int argumentCount, char * arguments[])
 	// Use an STL vector so that we don't rely on Irrlicht.
 	std::vector<STestDefinition> tests;
 
-	// Note that to interactively debug a test, you will generally want to move it
-	// (temporarily) to the beginning of the list, since each test runs in its own
-	// process.
-
+#if 0
+	// To interactively debug a test, move it (temporarily) in here and enable the define to only run this test
+	// Otherwise debugging is slightly tricky as each test runs in it's own process.
+	TEST(renderTargetTexture);
+#else
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	// Now the simple tests without device
 	TEST(testIrrArray);
@@ -130,6 +131,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(lightMaps);
 	TEST(triangleSelector);
 	TEST(line2DTest);
+#endif
 
 	unsigned int numberOfTests = tests.size();
 	unsigned int testToRun = 0;
