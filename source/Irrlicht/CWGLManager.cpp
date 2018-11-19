@@ -164,7 +164,7 @@ bool CWGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	}
 
 	SetPixelFormat(HDc, PixelFormat, &pfd);
-	os::Printer::log("Temporary context");
+	os::Printer::log("Create temporary GL rendering context", ELL_DEBUG);
 	HGLRC hrc=wglCreateContext(HDc);
 	if (!hrc)
 	{

@@ -230,9 +230,13 @@ public:
 
 			if (LockImage && mode != ETLM_WRITE_ONLY)
 			{
-				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, Size);
+				bool passed = true;
 
-#if 0 // This method doesn't work properly in some cases.
+#if 1
+				IImage* tmpImage = LockImage;	// not sure yet if the size required by glGetTexImage is always correct, if not we might have to allocate a different tmpImage and convert colors later on.
+
+				Driver->getCacheHandler()->getTextureCache().set(0, this);
+
 				GLenum tmpTextureType = TextureType;
 
 				if (tmpTextureType == GL_TEXTURE_CUBE_MAP)
@@ -242,7 +246,7 @@ public:
 					tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer;
 				}
 
-				glGetTexImage(tmpTextureType, 0, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
+				glGetTexImage(tmpTextureType, 0, PixelFormat, PixelType, tmpImage->getData());
 
 				if (IsRenderTarget)
 				{
@@ -264,7 +268,7 @@ public:
 
 					delete[] tmpBuffer;
 				}
-#else	// this method does not work with cubemaps in RTT's (but works with other cubemaps)
+#else	// Alternative method working with copies to memory, still here for quick testing when things break, hope we can remove that before 1.9 release.
 				COpenGLCoreTexture* tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", Size, ETT_2D, ColorFormat, Driver);
 
 				GLuint tmpFBO = 0;
@@ -287,6 +291,7 @@ public:
 
 				Driver->draw2DImage(this, layer, true);
 
+				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, Size);
 				glReadPixels(0, 0, Size.Width, Size.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
 
 				Driver->getCacheHandler()->setFBO(prevFBO);
@@ -294,11 +299,9 @@ public:
 
 				Driver->irrGlDeleteFramebuffers(1, &tmpFBO);
 				delete tmpTexture;
-#endif
+
 				void* src = tmpImage->getData();
 				void* dest = LockImage->getData();
-
-				bool passed = true;
 
 				switch (ColorFormat)
 				{
@@ -318,8 +321,8 @@ public:
 					passed = false;
 					break;
 				}
-
 				tmpImage->drop();
+#endif
 
 				if (!passed)
 				{
@@ -328,6 +331,8 @@ public:
 				}
 			}
 		}
+
+		Driver->testGLError(__LINE__);
 
 		return (LockImage) ? LockImage->getData() : 0;
 	}
