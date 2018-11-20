@@ -2022,6 +2022,19 @@ ITexture* COpenGLDriver::createDeviceDependentTextureCubemap(const io::path& nam
 	return texture;
 }
 
+void COpenGLDriver::disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag)
+{
+	CNullDriver::disableFeature(feature, flag);
+
+	if ( feature == EVDF_TEXTURE_CUBEMAP_SEAMLESS )
+	{
+		if ( queryFeature(feature) )
+			glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		else if (COpenGLExtensionHandler::queryFeature(feature))
+			glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	}
+}
+
 //! Sets a material. All 3d drawing functions draw geometry now using this material.
 void COpenGLDriver::setMaterial(const SMaterial& material)
 {

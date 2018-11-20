@@ -131,6 +131,9 @@ namespace video
 			return FeatureEnabled[feature] && COpenGLExtensionHandler::queryFeature(feature);
 		}
 
+		//! Disable a feature of the driver.
+		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true) _IRR_OVERRIDE_;
+
 		//! Sets a material. All 3d drawing functions draw geometry now
 		//! using this material.
 		//! \param material: Material to be used from now on.
