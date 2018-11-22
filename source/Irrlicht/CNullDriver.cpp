@@ -525,6 +525,44 @@ ITexture* CNullDriver::addTextureCubemap(const io::path& name, IImage* imagePosX
 	return t;
 }
 
+ITexture* CNullDriver::addTextureCubemap(const irr::u32 sideLen, const io::path& name, ECOLOR_FORMAT format)
+{
+	if ( 0 == sideLen )
+		return 0;
+
+	if (IImage::isRenderTargetOnlyFormat(format))
+	{
+		os::Printer::log("Could not create ITexture, format only supported for render target textures.", ELL_WARNING);
+		return 0;
+	}
+
+	if (0 == name.size())
+	{
+		os::Printer::log("Could not create ITexture, texture needs to have a non-empty name.", ELL_WARNING);
+		return 0;
+	}
+
+	core::array<IImage*> imageArray(6);
+	for ( int i=0; i < 6; ++i )
+		imageArray.push_back(new CImage(format, core::dimension2du(sideLen, sideLen)));
+
+	ITexture* t = 0;
+	if (checkImage(imageArray))
+	{
+		t = createDeviceDependentTextureCubemap(name, imageArray);
+
+		if (t)
+		{
+			addTexture(t);
+			t->drop();
+		}
+	}
+
+	for ( int i=0; i < 6; ++i )
+		imageArray[i]->drop();
+
+	return t;
+}
 
 //! loads a Texture
 ITexture* CNullDriver::getTexture(const io::path& filename)
