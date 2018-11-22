@@ -177,7 +177,7 @@ CD3D9Texture::~CD3D9Texture()
 		Device->Release();
 }
 
-void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 layer)
+void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel, u32 layer, E_TEXTURE_LOCK_FLAGS lockFlags)
 {
 	if (LockData)
 		return LockData;

@@ -49,7 +49,7 @@ int main(int argumentCount, char * arguments[])
 #if 0
 	// To interactively debug a test, move it (temporarily) in here and enable the define to only run this test
 	// Otherwise debugging is slightly tricky as each test runs in it's own process.
-	TEST(renderTargetTexture);
+	TEST(textureFeatures);
 #else
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	// Now the simple tests without device

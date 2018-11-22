@@ -206,7 +206,7 @@ public:
 			Image[i]->drop();
 	}
 
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel=0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) _IRR_OVERRIDE_
 	{
 		if (LockImage)
 			return LockImage->getData();
@@ -248,7 +248,7 @@ public:
 
 				glGetTexImage(tmpTextureType, 0, PixelFormat, PixelType, tmpImage->getData());
 
-				if (IsRenderTarget)
+				if (IsRenderTarget && lockFlags == ETLF_FLIP_Y_UP_RTT)
 				{
 					const s32 pitch = tmpImage->getPitch();
 
