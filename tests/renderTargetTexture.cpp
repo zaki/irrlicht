@@ -190,7 +190,7 @@ bool rttAndZBuffer(video::E_DRIVER_TYPE driverType)
 
 	{
 		vd->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255, 0, 0, 0));
-		vd->setRenderTargetEx(renderTarget, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
+		vd->setRenderTargetEx(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH);
 		sm->drawAll();
 		vd->setRenderTargetEx(0, 0, 0);
 		vd->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -241,7 +241,7 @@ bool rttAndText(video::E_DRIVER_TYPE driverType)
 
 	stabilizeScreenBackground(driver);
 
-	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255, 255, 255));
+	driver->beginScene(0, video::SColor(255,255, 255, 255));
 	driver->setRenderTargetEx(renderTarget, video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,255,0,255));
 	driver->draw2DImage(driver->getTexture("../media/fireball.bmp"), core::recti(0, 0, renderTargetTex->getSize().Width, renderTargetTex->getSize().Height), core::recti(0, 0, 64, 64));
 	guienv->getBuiltInFont()->draw(L"OMGGG =!", core::rect<s32>(120, 100, 256, 256), video::SColor(255, 0, 0, 255));
@@ -286,7 +286,7 @@ static void Render(IrrlichtDevice* device, video::IRenderTarget* rt, core::vecto
 				   core::vector3df& pos2, scene::IAnimatedMesh* sphereMesh, core::vector3df& pos3, core::vector3df& pos4)
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
-	driver->setRenderTargetEx(rt, 0, video::ECBF_COLOR | video::ECBF_DEPTH);
+	driver->setRenderTargetEx(rt, video::ECBF_COLOR | video::ECBF_DEPTH);
 	device->getSceneManager()->drawAll();
 
 	video::SMaterial mat;
@@ -394,11 +394,12 @@ bool rttAndAntiAliasing(video::E_DRIVER_TYPE driverType)
 #if 1
 	st->setText(L"Texture Rendering");
 	Render(device, renderTarget1, pos1, pos2, sphereMesh, pos3, pos4);
+
 	Render(device, renderTarget2, pos1, pos2, sphereMesh, pos3, pos4);
 	Render(device, renderTarget3, pos1, pos2, sphereMesh, pos3, pos4);
 	Render(device, renderTarget4, pos1, pos2, sphereMesh, pos3, pos4);
 
-	device->getVideoDriver()->setRenderTargetEx(0, 0, 0);
+	device->getVideoDriver()->setRenderTargetEx(0, video::ECBF_COLOR | video::ECBF_DEPTH);
 	device->getVideoDriver()->draw2DImage(renderTargetTex1, core::position2di(0, 0));
 	device->getVideoDriver()->draw2DImage(renderTargetTex2, core::position2di(80, 0));
 	device->getVideoDriver()->draw2DImage(renderTargetTex3, core::position2di(0, 60));

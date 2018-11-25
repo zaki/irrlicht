@@ -1269,22 +1269,22 @@ void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 	TotalItemHeight = 0;	// calculated
 	TotalItemWidth = 0;	// calculated
 
-	Clip = in->getAttributeAsBool("Clip");
-	DrawBack = in->getAttributeAsBool("DrawBack");
-	MoveOverSelect = in->getAttributeAsBool("MoveOverSelect");
+	Clip = in->getAttributeAsBool("Clip", Clip);
+	DrawBack = in->getAttributeAsBool("DrawBack", DrawBack);
+	MoveOverSelect = in->getAttributeAsBool("MoveOverSelect", MoveOverSelect);
 
 	CurrentResizedColumn = -1;
 	ResizeStart = 0;
-	ResizableColumns = in->getAttributeAsBool("ResizableColumns");
+	ResizableColumns = in->getAttributeAsBool("ResizableColumns", ResizableColumns);
 
 	Selected = -1;
-	CellWidthPadding = in->getAttributeAsInt("CellWidthPadding");
-	CellHeightPadding = in->getAttributeAsInt("CellHeightPadding");
+	CellWidthPadding = in->getAttributeAsInt("CellWidthPadding", CellWidthPadding);
+	CellHeightPadding = in->getAttributeAsInt("CellHeightPadding", CellHeightPadding);
 	ActiveTab = -1;
 	Selecting = false;
 
-	CurrentOrdering = (EGUI_ORDERING_MODE) in->getAttributeAsEnumeration("CurrentOrdering", GUIOrderingModeNames);
-	DrawFlags = in->getAttributeAsInt("DrawFlags");
+	CurrentOrdering = (EGUI_ORDERING_MODE) in->getAttributeAsEnumeration("CurrentOrdering", GUIOrderingModeNames, (s32)CurrentOrdering);
+	DrawFlags = in->getAttributeAsInt("DrawFlags", DrawFlags);
 
 	refreshControls();
 }

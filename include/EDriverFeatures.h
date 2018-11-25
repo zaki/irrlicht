@@ -139,6 +139,9 @@ namespace video
 		//! Support for cube map textures.
 		EVDF_TEXTURE_CUBEMAP,
 
+		//! Support for filtering across different faces of the cubemap
+		EVDF_TEXTURE_CUBEMAP_SEAMLESS,
+
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT
 	};

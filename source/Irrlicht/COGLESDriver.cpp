@@ -2698,7 +2698,7 @@ ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& si
 		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
 
-	COGLES1Texture* renderTargetTexture = new COGLES1Texture(name, destSize, format, this);
+	COGLES1Texture* renderTargetTexture = new COGLES1Texture(name, destSize, ETT_2D, format, this);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 
@@ -2708,6 +2708,32 @@ ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& si
 	return renderTargetTexture;
 }
 
+ITexture* COGLES1Driver::addRenderTargetTextureCubemap(const irr::u32 sideLen, const io::path& name, const ECOLOR_FORMAT format)
+{
+	//disable mip-mapping
+	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
+
+	bool supportForFBO = (Feature.ColorAttachment > 0);
+
+	const core::dimension2d<u32> size(sideLen, sideLen);
+	core::dimension2du destSize(size);
+
+	if (!supportForFBO)
+	{
+		destSize = core::dimension2d<u32>(core::min_(size.Width, ScreenSize.Width), core::min_(size.Height, ScreenSize.Height));
+		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
+	}
+
+	COGLES1Texture* renderTargetTexture = new COGLES1Texture(name, destSize, ETT_CUBEMAP, format, this);
+	addTexture(renderTargetTexture);
+	renderTargetTexture->drop();
+
+	//restore mip-mapping
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, generateMipLevels);
+
+	return renderTargetTexture;
+}
 
 //! Returns the maximum amount of primitives
 u32 COGLES1Driver::getMaximalPrimitiveCount() const

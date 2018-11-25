@@ -106,10 +106,10 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 }
 
 
-void COpenGLExtensionHandler::dump() const
+void COpenGLExtensionHandler::dump(ELOG_LEVEL logLevel) const
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
-		os::Printer::log(OpenGLFeatureStrings[i], FeatureAvailable[i]?" true":" false");
+		os::Printer::log(OpenGLFeatureStrings[i], FeatureAvailable[i]?" true":" false", logLevel);
 }
 
 
@@ -747,6 +747,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		os::Printer::log("Free render buffer memory (kB)", core::stringc(val[0]));
 	}
 #endif
+
+	if (queryFeature(EVDF_TEXTURE_CUBEMAP_SEAMLESS))
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
 #endif
 }
 
@@ -824,6 +828,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_EXT_texture_compression_s3tc];
 	case EVDF_TEXTURE_CUBEMAP:
 		return (Version >= 130) || FeatureAvailable[IRR_ARB_texture_cube_map] || FeatureAvailable[IRR_EXT_texture_cube_map];
+	case EVDF_TEXTURE_CUBEMAP_SEAMLESS:
+		return FeatureAvailable[IRR_ARB_seamless_cube_map];
 	default:
 		return false;
 	};

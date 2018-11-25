@@ -361,6 +361,17 @@ namespace video
 		virtual ITexture* addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
 			IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ) = 0;
 
+		//! Creates an empty cubemap texture of specified size.
+		/** \param sideLen diameter of one side of the cube
+		\param name A name for the texture. Later calls of
+		getTexture() with this name will return this texture.
+		The name can _not_ be empty.
+		\param format Desired color format of the texture. Please note
+		that the driver may choose to create the texture in another
+		color format.
+		\return Pointer to the newly created texture. 	*/
+		virtual ITexture* addTextureCubemap(const irr::u32 sideLen, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
+
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
 		height should be a power of two (e.g. 64, 128, 256, 512, ...)

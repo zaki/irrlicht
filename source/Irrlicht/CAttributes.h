@@ -290,11 +290,11 @@ public:
 	//! This is useful when the attribute list maybe was read from an xml file, and only contains the enumeration string, but
 	//! no information about its index.
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual s32 getAttributeAsEnumeration(const c8* attributeName, const c8* const* enumerationLiteralsToUse) const _IRR_OVERRIDE_;
+	virtual s32 getAttributeAsEnumeration(const c8* attributeName, const c8* const* enumerationLiteralsToUse, s32 defaultNotFound ) const _IRR_OVERRIDE_;
 
 	//! Gets an attribute as enumeration
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual s32 getAttributeAsEnumeration(s32 index, const c8* const* enumerationLiteralsToUse) const _IRR_OVERRIDE_;
+	virtual s32 getAttributeAsEnumeration(s32 index, const c8* const* enumerationLiteralsToUse, s32 defaultNotFound) const _IRR_OVERRIDE_;
 
 	//! Gets an attribute as enumeration
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.

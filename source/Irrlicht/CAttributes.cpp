@@ -517,7 +517,7 @@ const char* CAttributes::getAttributeAsEnumeration(const c8* attributeName, cons
 }
 
 //! Gets an attribute as enumeration
-s32 CAttributes::getAttributeAsEnumeration(const c8* attributeName, const char* const* enumerationLiteralsToUse) const
+s32 CAttributes::getAttributeAsEnumeration(const c8* attributeName, const char* const* enumerationLiteralsToUse, s32 defaultNotFound) const
 {
 	IAttribute* att = getAttributeP(attributeName);
 
@@ -532,7 +532,7 @@ s32 CAttributes::getAttributeAsEnumeration(const c8* attributeName, const char* 
 		}
 	}
 
-	return -1;
+	return defaultNotFound;
 }
 
 //! Gets the list of enumeration literals of an enumeration attribute
@@ -762,7 +762,7 @@ const char* CAttributes::getAttributeAsEnumeration(s32 index) const
 
 //! Gets an attribute as enumeration
 //! \param index: Index value, must be between 0 and getAttributeCount()-1.
-s32 CAttributes::getAttributeAsEnumeration(s32 index, const char* const* enumerationLiteralsToUse) const
+s32 CAttributes::getAttributeAsEnumeration(s32 index, const char* const* enumerationLiteralsToUse, s32 defaultNotFound) const
 {
 	if ((u32)index < Attributes.size())
 	{
@@ -780,7 +780,7 @@ s32 CAttributes::getAttributeAsEnumeration(s32 index, const char* const* enumera
 		}
 	}
 
-	return -1;
+	return defaultNotFound;
 }
 
 //! Gets the list of enumeration literals of an enumeration attribute

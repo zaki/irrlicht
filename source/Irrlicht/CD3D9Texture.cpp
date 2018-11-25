@@ -177,7 +177,7 @@ CD3D9Texture::~CD3D9Texture()
 		Device->Release();
 }
 
-void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 layer)
+void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel, u32 layer, E_TEXTURE_LOCK_FLAGS lockFlags)
 {
 	if (LockData)
 		return LockData;
@@ -216,7 +216,10 @@ void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 layer)
 		{
 			// Make RTT surface large enough for all miplevels (including 0)
 			D3DSURFACE_DESC desc;
-			Texture->GetLevelDesc(0, &desc);
+			if (Texture)
+				Texture->GetLevelDesc(0, &desc);
+			else if (CubeTexture)
+				CubeTexture->GetLevelDesc(0, &desc);
 			hr = Device->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &RTTSurface, 0);
 			if (FAILED(hr))
 			{
@@ -226,7 +229,10 @@ void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 layer)
 		}
 
 		IDirect3DSurface9 *surface = 0;
-		hr = Texture->GetSurfaceLevel(0, &surface);
+		if (Texture)
+			hr = Texture->GetSurfaceLevel(0, &surface);
+		else if (CubeTexture)
+			hr = CubeTexture->GetCubeMapSurface(static_cast<_D3DCUBEMAP_FACES>(layer), 0, &surface);
 		if (FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture", "Could not get surface.", ELL_ERROR);

@@ -1008,8 +1008,8 @@ class COpenGLExtensionHandler
 		return FeatureAvailable[feature];
 	}
 
-	//! show all features with availablity
-	void dump() const;
+	//! show all features with availability
+	void dump(ELOG_LEVEL logLevel) const;
 
 	void dumpFramebufferFormats() const;
 

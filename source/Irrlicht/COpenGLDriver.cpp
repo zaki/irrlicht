@@ -2024,6 +2024,19 @@ ITexture* COpenGLDriver::createDeviceDependentTextureCubemap(const io::path& nam
 	return texture;
 }
 
+void COpenGLDriver::disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag)
+{
+	CNullDriver::disableFeature(feature, flag);
+
+	if ( feature == EVDF_TEXTURE_CUBEMAP_SEAMLESS )
+	{
+		if ( queryFeature(feature) )
+			glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		else if (COpenGLExtensionHandler::queryFeature(feature))
+			glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	}
+}
+
 //! Sets a material. All 3d drawing functions draw geometry now using this material.
 void COpenGLDriver::setMaterial(const SMaterial& material)
 {
@@ -3742,7 +3755,35 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
 	}
 
-	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, format, this);
+	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, ETT_2D, format, this);
+	addTexture(renderTargetTexture);
+	renderTargetTexture->drop();
+
+	//restore mip-mapping
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, generateMipLevels);
+
+	return renderTargetTexture;
+}
+
+//! Creates a render target texture for a cubemap
+ITexture* COpenGLDriver::addRenderTargetTextureCubemap(const irr::u32 sideLen, const io::path& name, const ECOLOR_FORMAT format)
+{
+	//disable mip-mapping
+	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
+
+	bool supportForFBO = (Feature.ColorAttachment > 0);
+
+	const core::dimension2d<u32> size(sideLen, sideLen);
+	core::dimension2du destSize(size);
+
+	if (!supportForFBO)
+	{
+		destSize = core::dimension2d<u32>(core::min_(size.Width, ScreenSize.Width), core::min_(size.Height, ScreenSize.Height));
+		destSize = destSize.getOptimalSize((size == size.getOptimalSize()), false, false);
+	}
+
+	COpenGLTexture* renderTargetTexture = new COpenGLTexture(name, destSize, ETT_CUBEMAP, format, this);
 	addTexture(renderTargetTexture);
 	renderTargetTexture->drop();
 

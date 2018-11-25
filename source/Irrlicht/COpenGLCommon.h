@@ -173,6 +173,9 @@ typedef char GLchar;
 
 #define IRR_OPENGL_VERSION 14
 
+// to check if this header is in the current compile unit (different GL implementation used different "GLCommon" headers in Irrlicht
+#define IRR_COMPILE_GL_COMMON
+
 namespace irr
 {
 namespace video

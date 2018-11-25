@@ -590,12 +590,12 @@ void CGUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 	out->addBool	("Border",              Border);
 	out->addBool	("OverrideColorEnabled",OverrideColorEnabled);
 	out->addBool	("OverrideBGColorEnabled",OverrideBGColorEnabled);
-	out->addBool	("WordWrap",		WordWrap);
+	out->addBool	("WordWrap",			WordWrap);
 	out->addBool	("Background",          Background);
 	out->addBool	("RightToLeft",         RightToLeft);
 	out->addBool	("RestrainTextInside",  RestrainTextInside);
 	out->addColor	("OverrideColor",       OverrideColor);
-	out->addColor	("BGColor",       	BGColor);
+	out->addColor	("BGColor",       		BGColor);
 	out->addEnum	("HTextAlign",          HAlign, GUIAlignmentNames);
 	out->addEnum	("VTextAlign",          VAlign, GUIAlignmentNames);
 
@@ -608,18 +608,18 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 {
 	IGUIStaticText::deserializeAttributes(in,options);
 
-	Border = in->getAttributeAsBool("Border");
-	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
-	OverrideBGColorEnabled = in->getAttributeAsBool("OverrideBGColorEnabled");
-	setWordWrap(in->getAttributeAsBool("WordWrap"));
-	Background = in->getAttributeAsBool("Background");
-	RightToLeft = in->getAttributeAsBool("RightToLeft");
-	RestrainTextInside = in->getAttributeAsBool("RestrainTextInside");
-	OverrideColor = in->getAttributeAsColor("OverrideColor");
-	BGColor = in->getAttributeAsColor("BGColor");
+	Border = in->getAttributeAsBool("Border", Border);
+	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled", OverrideColorEnabled));
+	OverrideBGColorEnabled = in->getAttributeAsBool("OverrideBGColorEnabled", OverrideBGColorEnabled);
+	setWordWrap(in->getAttributeAsBool("WordWrap", WordWrap));
+	Background = in->getAttributeAsBool("Background", Background);
+	RightToLeft = in->getAttributeAsBool("RightToLeft", RightToLeft);
+	RestrainTextInside = in->getAttributeAsBool("RestrainTextInside", RestrainTextInside);
+	OverrideColor = in->getAttributeAsColor("OverrideColor", OverrideColor);
+	BGColor = in->getAttributeAsColor("BGColor", BGColor);
 
-	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
-                      (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
+	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames, (s32)HAlign),
+                      (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames, (s32)VAlign));
 
 	// OverrideFont = in->getAttributeAsFont("OverrideFont");
 }

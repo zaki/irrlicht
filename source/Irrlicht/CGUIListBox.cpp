@@ -35,7 +35,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 
 	IGUISkin* skin = Environment->getSkin();
 
-	ScrollBar = new CGUIScrollBar(false, Environment, this, -1, 
+	ScrollBar = new CGUIScrollBar(false, Environment, this, -1,
 		core::recti(0, 0, 1, 1),
 		!clip);
 	ScrollBar->setSubElement(true);
@@ -728,9 +728,9 @@ void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 {
 	clear();
 
-	DrawBack        = in->getAttributeAsBool("DrawBack");
-	MoveOverSelect  = in->getAttributeAsBool("MoveOverSelect");
-	AutoScroll      = in->getAttributeAsBool("AutoScroll");
+	DrawBack        = in->getAttributeAsBool("DrawBack", DrawBack);
+	MoveOverSelect  = in->getAttributeAsBool("MoveOverSelect", MoveOverSelect);
+	AutoScroll      = in->getAttributeAsBool("AutoScroll", AutoScroll);
 
 	IGUIListBox::deserializeAttributes(in,options);
 

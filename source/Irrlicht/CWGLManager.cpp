@@ -164,7 +164,7 @@ bool CWGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	}
 
 	SetPixelFormat(HDc, PixelFormat, &pfd);
-	os::Printer::log("Temporary context");
+	os::Printer::log("Create temporary GL rendering context", ELL_DEBUG);
 	HGLRC hrc=wglCreateContext(HDc);
 	if (!hrc)
 	{
@@ -409,13 +409,14 @@ bool CWGLManager::generateContext()
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 1,
 			WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+//			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,	// enable to get a debug context (depends on driver if that does anything)
 			0
 		};
 		hrc=wglCreateContextAttribs_ARB(HDc, 0, iAttribs);
 	}
 	else
 #endif
-		hrc=wglCreateContext(HDc);
+	hrc=wglCreateContext(HDc);
 	os::Printer::log("Irrlicht context");
 
 	if (!hrc)

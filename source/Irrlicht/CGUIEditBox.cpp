@@ -1659,23 +1659,25 @@ void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 {
 	IGUIEditBox::deserializeAttributes(in,options);
 
-	setDrawBorder( in->getAttributeAsBool("Border") );
-	setDrawBackground( in->getAttributeAsBool("Background") );
-	setOverrideColor(in->getAttributeAsColor("OverrideColor"));
-	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
-	setMax(in->getAttributeAsInt("MaxChars"));
-	setWordWrap(in->getAttributeAsBool("WordWrap"));
-	setMultiLine(in->getAttributeAsBool("MultiLine"));
-	setAutoScroll(in->getAttributeAsBool("AutoScroll"));
-	core::stringw ch = in->getAttributeAsStringW("PasswordChar");
+	setDrawBorder( in->getAttributeAsBool("Border", Border) );
+	setDrawBackground( in->getAttributeAsBool("Background", Background) );
+	setOverrideColor(in->getAttributeAsColor("OverrideColor", OverrideColor));
+	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled", OverrideColorEnabled));
+	setMax(in->getAttributeAsInt("MaxChars", Max));
+	setWordWrap(in->getAttributeAsBool("WordWrap", WordWrap));
+	setMultiLine(in->getAttributeAsBool("MultiLine", MultiLine));
+	setAutoScroll(in->getAttributeAsBool("AutoScroll", AutoScroll));
+	core::stringw ch = L" ";
+	ch[0] = PasswordChar;
+	ch = in->getAttributeAsStringW("PasswordChar", ch);
 
 	if (!ch.size())
-		setPasswordBox(in->getAttributeAsBool("PasswordBox"));
+		setPasswordBox(in->getAttributeAsBool("PasswordBox", PasswordBox));
 	else
-		setPasswordBox(in->getAttributeAsBool("PasswordBox"), ch[0]);
+		setPasswordBox(in->getAttributeAsBool("PasswordBox", PasswordBox), ch[0]);
 
-	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
-			(EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
+	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames, (s32)HAlign),
+			(EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames, (s32)VAlign));
 
 	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
 }
