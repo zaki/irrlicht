@@ -20,6 +20,7 @@ namespace video
 //! Interface for software image data.
 /** Image loaders create these images from files. IVideoDrivers convert
 these images into their (hardware) textures.
+NOTE: Floating point formats are not well supported yet. Basically only getData() works for them.
 */
 class IImage : public virtual IReferenceCounted
 {
@@ -444,7 +445,7 @@ public:
 		}
 	}
 
-	//! check if the color format is only viable for RenderTarget textures
+	//! Check if the color format is only viable for RenderTarget textures
 	/** Since we don't have support for e.g. floating point IImage formats
 	one should test if the color format can be used for arbitrary usage, or
 	if it is restricted to RTTs. */
@@ -472,6 +473,7 @@ public:
 			case ECF_ETC2_ARGB:
 				return false;
 			default:
+				// All floating point formats. Function name should really be isFloatingPointFormat.
 				return true;
 		}
 	}
