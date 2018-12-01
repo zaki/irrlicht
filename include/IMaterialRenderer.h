@@ -16,6 +16,7 @@ namespace video
 
 class IVideoDriver;
 class IMaterialRendererServices;
+class IShaderConstantSetCallBack;
 
 //! Interface for material rendering.
 /** Can be used to extend the engine with new materials. Refer to
@@ -91,6 +92,11 @@ public:
 	Fixed function pipeline materials should return 0 in most cases, parallax mapped
 	material will only return 0 when at least pixel shader 1.4 is available on that machine. */
 	virtual s32 getRenderCapability() const { return 0; }
+
+	//! Access the callback provided by the users when creating shader materials
+	/** \returns Returns either the users provided callback or 0 when no such 
+	callback exists. Non-shader materials will always return 0.	*/
+	virtual IShaderConstantSetCallBack* getShaderConstantSetCallBack() const { return 0; }
 };
 
 
