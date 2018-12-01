@@ -175,8 +175,6 @@ void CMeshSceneNode::render()
 		}
 	}
 
-	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-
 	// for debug purposes only:
 	if (DebugDataVisible && PassCount==1)
 	{
