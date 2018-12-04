@@ -293,6 +293,16 @@ void COpenGLSLMaterialRenderer::OnUnsetMaterial()
 		Driver->extGlUseProgramObject(0);
 	if (Program2)
 		Driver->irrGlUseProgram(0);
+
+	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
+	if (Alpha || FixedBlending || Blending)
+	{
+		cacheHandler->setBlend(false);
+	}
+	else if (AlphaTest)
+	{
+		cacheHandler->setAlphaTest(false);
+	}
 }
 
 
