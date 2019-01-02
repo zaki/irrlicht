@@ -61,7 +61,7 @@ namespace scene
 	void QuaternionSlerp( const vec4_hl p, vec4_hl q, f32 t, vec4_hl qt )
 	{
 		s32 i;
-		f32 omega, cosom, sinom, sclp, sclq;
+		double omega, cosom, sinom, sclp, sclq;
 
 		// decide if one of the quaternions is backwards
 		f32 a = 0;
@@ -90,7 +90,7 @@ namespace scene
 				sclq = t;
 			}
 			for (i = 0; i < 4; i++) {
-				qt[i] = sclp * p[i] + sclq * q[i];
+				qt[i] = f32(sclp * p[i] + sclq * q[i]);
 			}
 		}
 		else {
@@ -101,7 +101,7 @@ namespace scene
 			sclp = sin( (1.f - t) * 0.5f * core::PI);
 			sclq = sin( t * 0.5f * core::PI);
 			for (i = 0; i < 3; i++) {
-				qt[i] = sclp * p[i] + sclq * qt[i];
+				qt[i] = f32(sclp * p[i] + sclq * qt[i]);
 			}
 		}
 	}
