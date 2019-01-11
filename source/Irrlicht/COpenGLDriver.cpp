@@ -2043,8 +2043,12 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < Feature.TextureUnit; ++i)
 	{
-		CacheHandler->getTextureCache().set(i, material.getTexture(i), EST_ACTIVE_ON_CHANGE);
-		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		const ITexture* texture = Material.getTexture(i);
+		CacheHandler->getTextureCache().set(i, texture, EST_ACTIVE_ON_CHANGE);
+		if ( texture )
+		{
+			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		}
 	}
 }
 
