@@ -19,7 +19,7 @@ namespace video
 class COpenGLCoreFeature
 {
 public:
-	COpenGLCoreFeature() : BlendOperation(false), ColorAttachment(0), MultipleRenderTarget(0), TextureUnit(1)
+	COpenGLCoreFeature() : BlendOperation(false), ColorAttachment(0), MultipleRenderTarget(0), MaxTextureUnits(1)
 	{
 	}
 
@@ -31,7 +31,7 @@ public:
 	
 	u8 ColorAttachment;
 	u8 MultipleRenderTarget;
-	u8 TextureUnit;
+	u8 MaxTextureUnits;
 };
 
 }

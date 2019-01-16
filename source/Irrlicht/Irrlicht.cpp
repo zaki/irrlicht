@@ -115,6 +115,7 @@ namespace core
 namespace video
 {
 	SMaterial IdentityMaterial;
+	u32 MATERIAL_MAX_TEXTURES_USED = MATERIAL_MAX_TEXTURES;
 }
 
 } // end namespace irr

@@ -184,7 +184,7 @@ public:
 #pragma warning(push)
 #pragma warning(disable: 4355)	// Warning: "'this' : used in base member initializer list. ". It's OK, we don't use the reference in STextureCache constructor.
 #endif
-		TextureCache(STextureCache(*this, driver->getDriverType(), driver->getFeature().TextureUnit)),
+		TextureCache(STextureCache(*this, driver->getDriverType(), driver->getFeature().MaxTextureUnits)),
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif

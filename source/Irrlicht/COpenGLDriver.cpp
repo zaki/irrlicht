@@ -152,8 +152,8 @@ bool COpenGLDriver::genericDriverInit()
 	}
 	else
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
-	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.TextureUnit);
-	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.TextureUnit);
+	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxLights", MaxLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxUserClipPlanes", MaxUserClipPlanes);
@@ -886,7 +886,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), 0);
 			}
 
-			if (Feature.TextureUnit > 0 && CacheHandler->getTextureCache()[1])
+			if (Feature.MaxTextureUnits > 0 && CacheHandler->getTextureCache()[1])
 			{
 				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -912,7 +912,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			}
 
 
-			if (Feature.TextureUnit > 0)
+			if (Feature.MaxTextureUnits > 0)
 			{
 				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -937,7 +937,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(0));
 			}
 
-			if (Feature.TextureUnit > 0)
+			if (Feature.MaxTextureUnits > 0)
 			{
 				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -958,7 +958,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	renderArray(indexList, primitiveCount, pType, iType);
 
-	if (Feature.TextureUnit > 0)
+	if (Feature.MaxTextureUnits > 0)
 	{
 		if (vType==EVT_TANGENTS)
 		{
@@ -1211,7 +1211,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), 0);
 			}
 
-			if (Feature.TextureUnit > 0 && CacheHandler->getTextureCache()[1])
+			if (Feature.MaxTextureUnits > 0 && CacheHandler->getTextureCache()[1])
 			{
 				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1234,7 +1234,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(0));
 			}
 
-			if (Feature.TextureUnit > 0)
+			if (Feature.MaxTextureUnits > 0)
 			{
 				CacheHandler->setClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1262,7 +1262,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 	renderArray(indexList, primitiveCount, pType, iType);
 
-	if (Feature.TextureUnit > 0)
+	if (Feature.MaxTextureUnits > 0)
 	{
 		if ((vType!=EVT_STANDARD) || CacheHandler->getTextureCache()[1])
 		{
@@ -1966,7 +1966,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 bool COpenGLDriver::disableTextures(u32 fromStage)
 {
 	bool result=true;
-	for (u32 i=fromStage; i<Feature.TextureUnit; ++i)
+	for (u32 i=fromStage; i<Feature.MaxTextureUnits; ++i)
 	{
 		result &= CacheHandler->getTextureCache().set(i, 0, EST_ACTIVE_ON_CHANGE);
 	}
@@ -2041,7 +2041,7 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 	Material = material;
 	OverrideMaterial.apply(Material);
 
-	for (u32 i = 0; i < Feature.TextureUnit; ++i)
+	for (u32 i = 0; i < Feature.MaxTextureUnits; ++i)
 	{
 		const ITexture* texture = Material.getTexture(i);
 		CacheHandler->getTextureCache().set(i, texture, EST_ACTIVE_ON_CHANGE);
@@ -2696,7 +2696,7 @@ void COpenGLDriver::setTextureRenderStates(const SMaterial& material, bool reset
 {
 	// Set textures to TU/TIU and apply filters to them
 
-	for (s32 i = Feature.TextureUnit - 1; i >= 0; --i)
+	for (s32 i = Feature.MaxTextureUnits - 1; i >= 0; --i)
 	{
 		bool fixedPipeline = false;
 
