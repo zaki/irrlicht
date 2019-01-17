@@ -2142,18 +2142,15 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 	{
 		video::ITexture* texture = material.getTexture(i);
-		if ( texture )
+		if (options && (options->Flags&io::EARWF_USE_RELATIVE_PATHS) && options->Filename && texture)
 		{
-			if (options && (options->Flags&io::EARWF_USE_RELATIVE_PATHS) && options->Filename && texture)
-			{
-				io::path path = FileSystem->getRelativeFilename(
-					FileSystem->getAbsolutePath(material.getTexture(i)->getName()), options->Filename);
-				attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i), path);
-			}
-			else
-			{
-				attr->addTexture((prefix+core::stringc(i+1)).c_str(), texture);
-			}
+			io::path path = FileSystem->getRelativeFilename(
+				FileSystem->getAbsolutePath(material.getTexture(i)->getName()), options->Filename);
+			attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i), path);
+		}
+		else
+		{
+			attr->addTexture((prefix+core::stringc(i+1)).c_str(), texture);
 		}
 	}
 
