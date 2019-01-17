@@ -45,6 +45,7 @@ namespace video
 			"texture_clamp_mirror_clamp_to_border", 0};
 
 	//! Struct for holding material parameters which exist per texture layer
+	// Note for implementors: Serialization is in CNullDriver
 	class SMaterialLayer
 	{
 	public:

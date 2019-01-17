@@ -9,6 +9,10 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
 --------------------------
 Changes in 1.9 (not yet released)
+- _IRR_MATERIAL_MAX_TEXTURES_ now set to 8 by default. So we can use now 8 textures per material without recompiling the engine. 
+  Additionally there's a new global variable irr::video::MATERIAL_MAX_TEXTURES_USED which can be set to lower numbers to avoid most of the costs coming with this for people not needing more textures.
+  But using more textures via _IRR_MATERIAL_MAX_TEXTURES_ also has become less calculation intensive than it was in the past, so in release builds the difference is hardly noticeable.
+- Serialization fixes for materials in irr format (in IVideoDriver::createAttributesFromMaterial/fillMaterialStructureFromAttributes).
 - Add serialization for ToolTip to IGUIElement. Thanks @chronologicaldot for patch (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=2&t=52374)
 - Try recovering lost device in D3D9 for 3 seconds when device reset fails after resizing Window.
 - Add typedefs like value_type and size_type to array, list and map like std containers have. Thanks @SLC for idea (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=1&t=52363)

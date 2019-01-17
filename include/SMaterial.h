@@ -282,6 +282,7 @@ namespace video
 	IRRLICHT_API extern u32 MATERIAL_MAX_TEXTURES_USED;
 
 	//! Struct for holding parameters for a material renderer
+	// Note for implementors: Serialization is in CNullDriver
 	class SMaterial
 	{
 	public:
@@ -510,7 +511,7 @@ namespace video
 		//! Give more control how the ZWriteEnable flag is interpreted
 		/** Note that there is also the global flag AllowZWriteOnTransparent
 		which when set acts like all materials have set EZI_ALLOW_ON_TRANSPARENT. */
-		E_ZWRITE_FINE_CONTROL ZWriteFineControl;
+		E_ZWRITE_FINE_CONTROL ZWriteFineControl:1;
 
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES

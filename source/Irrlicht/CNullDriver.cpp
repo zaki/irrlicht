@@ -2140,22 +2140,27 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addFloat("Shininess", material.Shininess);
 	attr->addFloat("Param1", material.MaterialTypeParam);
 	attr->addFloat("Param2", material.MaterialTypeParam2);
+	attr->addFloat("Thickness", material.Thickness);
 
 	core::stringc prefix="Texture";
 	u32 i;
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 	{
-		if (options && (options->Flags&io::EARWF_USE_RELATIVE_PATHS) && options->Filename && material.getTexture(i))
+		video::ITexture* texture = material.getTexture(i);
+		if (options && (options->Flags&io::EARWF_USE_RELATIVE_PATHS) && options->Filename && texture)
 		{
 			io::path path = FileSystem->getRelativeFilename(
 				FileSystem->getAbsolutePath(material.getTexture(i)->getName()), options->Filename);
 			attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i), path);
 		}
 		else
-			attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i));
+		{
+			attr->addTexture((prefix+core::stringc(i+1)).c_str(), texture);
+		}
 	}
 
 	attr->addBool("Wireframe", material.Wireframe);
+	attr->addBool("PointCloud", material.PointCloud);
 	attr->addBool("GouraudShading", material.GouraudShading);
 	attr->addBool("Lighting", material.Lighting);
 	attr->addBool("ZWriteEnable", material.ZWriteEnable);
@@ -2168,9 +2173,13 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addInt("AntiAliasing", material.AntiAliasing);
 	attr->addInt("ColorMask", material.ColorMask);
 	attr->addInt("ColorMaterial", material.ColorMaterial);
+	attr->addInt("BlendOperation", material.BlendOperation);
+	attr->addFloat("BlendFactor", material.BlendFactor);
 	attr->addInt("PolygonOffsetFactor", material.PolygonOffsetFactor);
 	attr->addEnum("PolygonOffsetDirection", material.PolygonOffsetDirection, video::PolygonOffsetDirectionNames);
+	attr->addInt("ZWriteFineControl", material.ZWriteFineControl);
 
+	// TODO: Would be nice to have a flag that only serializes rest of texture data when a texture pointer exists.
 	prefix = "BilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		attr->addBool((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].BilinearFilter);
@@ -2213,63 +2222,60 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 			break;
 		}
 
-	outMaterial.AmbientColor = attr->getAttributeAsColor("Ambient");
-	outMaterial.DiffuseColor = attr->getAttributeAsColor("Diffuse");
-	outMaterial.EmissiveColor = attr->getAttributeAsColor("Emissive");
-	outMaterial.SpecularColor = attr->getAttributeAsColor("Specular");
+	outMaterial.AmbientColor = attr->getAttributeAsColor("Ambient", outMaterial.AmbientColor);
+	outMaterial.DiffuseColor = attr->getAttributeAsColor("Diffuse", outMaterial.DiffuseColor);
+	outMaterial.EmissiveColor = attr->getAttributeAsColor("Emissive", outMaterial.EmissiveColor);
+	outMaterial.SpecularColor = attr->getAttributeAsColor("Specular", outMaterial.SpecularColor);
 
-	outMaterial.Shininess = attr->getAttributeAsFloat("Shininess");
-	outMaterial.MaterialTypeParam = attr->getAttributeAsFloat("Param1");
-	outMaterial.MaterialTypeParam2 = attr->getAttributeAsFloat("Param2");
+	outMaterial.Shininess = attr->getAttributeAsFloat("Shininess", outMaterial.Shininess);
+	outMaterial.MaterialTypeParam = attr->getAttributeAsFloat("Param1", outMaterial.MaterialTypeParam);
+	outMaterial.MaterialTypeParam2 = attr->getAttributeAsFloat("Param2", outMaterial.MaterialTypeParam2);
+	outMaterial.Thickness = attr->getAttributeAsFloat("Thickness", outMaterial.Thickness);
 
 	core::stringc prefix="Texture";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		outMaterial.setTexture(i, attr->getAttributeAsTexture((prefix+core::stringc(i+1)).c_str()));
 
-	outMaterial.Wireframe = attr->getAttributeAsBool("Wireframe");
-	outMaterial.GouraudShading = attr->getAttributeAsBool("GouraudShading");
-	outMaterial.Lighting = attr->getAttributeAsBool("Lighting");
-	outMaterial.ZWriteEnable = attr->getAttributeAsBool("ZWriteEnable");
-	outMaterial.ZBuffer = (u8)attr->getAttributeAsInt("ZBuffer");
-	outMaterial.BackfaceCulling = attr->getAttributeAsBool("BackfaceCulling");
-	outMaterial.FrontfaceCulling = attr->getAttributeAsBool("FrontfaceCulling");
-	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable");
-	outMaterial.NormalizeNormals = attr->getAttributeAsBool("NormalizeNormals");
-	if (attr->existsAttribute("UseMipMaps")) // legacy
-		outMaterial.UseMipMaps = attr->getAttributeAsBool("UseMipMaps");
-	else
-		outMaterial.UseMipMaps = true;
+	outMaterial.Wireframe = attr->getAttributeAsBool("Wireframe", outMaterial.Wireframe);
+	outMaterial.PointCloud = attr->getAttributeAsBool("PointCloud", outMaterial.PointCloud);
+	outMaterial.GouraudShading = attr->getAttributeAsBool("GouraudShading", outMaterial.GouraudShading);
+	outMaterial.Lighting = attr->getAttributeAsBool("Lighting", outMaterial.Lighting);
+	outMaterial.ZWriteEnable = attr->getAttributeAsBool("ZWriteEnable", outMaterial.ZWriteEnable);
+	outMaterial.ZBuffer = (u8)attr->getAttributeAsInt("ZBuffer", outMaterial.ZBuffer);
+	outMaterial.BackfaceCulling = attr->getAttributeAsBool("BackfaceCulling", outMaterial.BackfaceCulling);
+	outMaterial.FrontfaceCulling = attr->getAttributeAsBool("FrontfaceCulling", outMaterial.FrontfaceCulling);
+	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable", outMaterial.FogEnable);
+	outMaterial.NormalizeNormals = attr->getAttributeAsBool("NormalizeNormals", outMaterial.NormalizeNormals);
+	outMaterial.UseMipMaps = attr->getAttributeAsBool("UseMipMaps", outMaterial.UseMipMaps);
 
-	// default 0 is ok
-	outMaterial.AntiAliasing = attr->getAttributeAsInt("AntiAliasing");
-	if (attr->existsAttribute("ColorMask"))
-		outMaterial.ColorMask = attr->getAttributeAsInt("ColorMask");
-	if (attr->existsAttribute("ColorMaterial"))
-		outMaterial.ColorMaterial = attr->getAttributeAsInt("ColorMaterial");
-	if (attr->existsAttribute("PolygonOffsetFactor"))
-		outMaterial.PolygonOffsetFactor = attr->getAttributeAsInt("PolygonOffsetFactor");
-	if (attr->existsAttribute("PolygonOffsetDirection"))
-		outMaterial.PolygonOffsetDirection = (video::E_POLYGON_OFFSET)attr->getAttributeAsEnumeration("PolygonOffsetDirection", video::PolygonOffsetDirectionNames);
+	outMaterial.AntiAliasing = attr->getAttributeAsInt("AntiAliasing", outMaterial.AntiAliasing);
+	outMaterial.ColorMask = attr->getAttributeAsInt("ColorMask", outMaterial.ColorMask);
+	outMaterial.ColorMaterial = attr->getAttributeAsInt("ColorMaterial", outMaterial.ColorMaterial);
+	outMaterial.BlendOperation = (video::E_BLEND_OPERATION)attr->getAttributeAsInt("BlendOperation", outMaterial.BlendOperation);
+	outMaterial.BlendFactor = attr->getAttributeAsFloat("BlendFactor", outMaterial.BlendFactor);
+	outMaterial.PolygonOffsetFactor = attr->getAttributeAsInt("PolygonOffsetFactor", outMaterial.PolygonOffsetFactor);
+	outMaterial.PolygonOffsetDirection = (video::E_POLYGON_OFFSET)attr->getAttributeAsEnumeration("PolygonOffsetDirection", video::PolygonOffsetDirectionNames, outMaterial.PolygonOffsetDirection);
+	outMaterial.ZWriteFineControl = (video::E_ZWRITE_FINE_CONTROL)attr->getAttributeAsInt("ZWriteFineControl", outMaterial.ZWriteFineControl);
 	prefix = "BilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_BILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
 	else
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			outMaterial.TextureLayer[i].BilinearFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str());
+			outMaterial.TextureLayer[i].BilinearFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str(), outMaterial.TextureLayer[i].BilinearFilter);
 
 	prefix = "TrilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_TRILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
 	else
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			outMaterial.TextureLayer[i].TrilinearFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str());
+			outMaterial.TextureLayer[i].TrilinearFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str(), outMaterial.TextureLayer[i].TrilinearFilter);
 
 	prefix = "AnisotropicFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_ANISOTROPIC_FILTER, attr->getAttributeAsBool(prefix.c_str()));
 	else
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			outMaterial.TextureLayer[i].AnisotropicFilter = attr->getAttributeAsInt((prefix+core::stringc(i+1)).c_str());
+			outMaterial.TextureLayer[i].AnisotropicFilter = attr->getAttributeAsInt((prefix+core::stringc(i+1)).c_str(), outMaterial.TextureLayer[i].AnisotropicFilter);
 
 	prefix = "TextureWrap";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
@@ -2285,18 +2291,15 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	{
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		{
-			outMaterial.TextureLayer[i].TextureWrapU = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"U"+core::stringc(i+1)).c_str(), aTextureClampNames);
-			outMaterial.TextureLayer[i].TextureWrapV = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"V"+core::stringc(i+1)).c_str(), aTextureClampNames);
-
-			if (attr->existsAttribute((prefix+"W"+core::stringc(i+1)).c_str())) // legacy
-				outMaterial.TextureLayer[i].TextureWrapW = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"W"+core::stringc(i+1)).c_str(), aTextureClampNames);
+			outMaterial.TextureLayer[i].TextureWrapU = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"U"+core::stringc(i+1)).c_str(), aTextureClampNames, outMaterial.TextureLayer[i].TextureWrapU);
+			outMaterial.TextureLayer[i].TextureWrapV = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"V"+core::stringc(i+1)).c_str(), aTextureClampNames, outMaterial.TextureLayer[i].TextureWrapV);
+			outMaterial.TextureLayer[i].TextureWrapW = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+"W"+core::stringc(i+1)).c_str(), aTextureClampNames, outMaterial.TextureLayer[i].TextureWrapW);
 		}
 	}
 
-	// default 0 is ok
 	prefix="LODBias";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.TextureLayer[i].LODBias = attr->getAttributeAsInt((prefix+core::stringc(i+1)).c_str());
+		outMaterial.TextureLayer[i].LODBias = attr->getAttributeAsInt((prefix+core::stringc(i+1)).c_str(), outMaterial.TextureLayer[i].LODBias);
 }
 
 
