@@ -171,6 +171,8 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 			{
 				//we've got a material
 
+				material = video::SMaterial();	// reset
+
 				io::IAttributes* attributes = FileSystem->createEmptyAttributes(SceneManager->getVideoDriver());
 				attributes->read(reader, true, L"material");
 
