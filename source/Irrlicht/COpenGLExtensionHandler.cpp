@@ -582,7 +582,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #elif defined(GL_MAX_TEXTURE_UNITS_ARB)
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &num);
 #endif
-		Feature.TextureUnit=static_cast<u8>(num);
+		Feature.TextureUnit=static_cast<u8>(num);	// MULTITEXTURING (fixed function pipeline texture units)
 	}
 #endif
 #if defined(GL_ARB_vertex_shader) || defined(GL_VERSION_2_0)

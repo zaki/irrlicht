@@ -1970,7 +1970,7 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 	bool result=true;
 	for (u32 i=fromStage; i<Feature.TextureUnit; ++i)
 	{
-		result &= CacheHandler->getTextureCache().set(i, 0);
+		result &= CacheHandler->getTextureCache().set(i, 0, EST_ACTIVE_ON_CHANGE);
 	}
 	return result;
 }
@@ -2045,8 +2045,12 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < Feature.TextureUnit; ++i)
 	{
-		CacheHandler->getTextureCache().set(i, material.getTexture(i));
-		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		const ITexture* texture = Material.getTexture(i);
+		CacheHandler->getTextureCache().set(i, texture, EST_ACTIVE_ON_CHANGE);
+		if ( texture )
+		{
+			setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
+		}
 	}
 }
 

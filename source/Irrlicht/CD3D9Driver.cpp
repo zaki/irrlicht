@@ -728,9 +728,13 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
-		setActiveTexture(i, Material.getTexture(i));
-		setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
+		const ITexture* texture = Material.getTexture(i);
+		setActiveTexture(i, texture);
+		if ( texture )
+		{
+			setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
+		}
 	}
 }
 

@@ -66,8 +66,11 @@ namespace video
 		//! Destructor
 		~SMaterialLayer()
 		{
-			MatrixAllocator.destruct(TextureMatrix);
-			MatrixAllocator.deallocate(TextureMatrix);
+			if ( TextureMatrix )
+			{
+				MatrixAllocator.destruct(TextureMatrix);
+				MatrixAllocator.deallocate(TextureMatrix);
+			}
 		}
 
 		//! Assignment operator
@@ -135,7 +138,9 @@ namespace video
 		}
 
 		//! Sets the texture transformation matrix to mat
-		/** \param mat New texture matrix for this layer. */
+		/** NOTE: Pipelines can ignore this matrix when the 
+		texture	is 0.
+		\param mat New texture matrix for this layer. */
 		void setTextureMatrix(const core::matrix4& mat)
 		{
 			if (!TextureMatrix)
