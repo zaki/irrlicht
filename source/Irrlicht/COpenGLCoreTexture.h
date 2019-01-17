@@ -220,7 +220,7 @@ public:
 		if (LockImage)
 			return LockImage->getData();
 
-		if (IImage::isCompressedFormat(ColorFormat) || IImage::isRenderTargetOnlyFormat(ColorFormat))
+		if (IImage::isCompressedFormat(ColorFormat))
 			return 0;
 
 		LockReadOnly |= (mode == ETLM_READ_ONLY);

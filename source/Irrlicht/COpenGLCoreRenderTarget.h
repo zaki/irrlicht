@@ -60,93 +60,90 @@ public:
 
 	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces) _IRR_OVERRIDE_
 	{
-		bool textureUpdate = (Texture != texture) || (CubeSurfaces != cubeSurfaces) ? true : false;
-		bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
+		bool needSizeUpdate = false;
 
-		if (textureUpdate || depthStencilUpdate)
+		// Set color attachments.
+		if ((Texture != texture) || (CubeSurfaces != cubeSurfaces))
 		{
-			// Set color attachments.
+			needSizeUpdate = true;
+			CubeSurfaces = cubeSurfaces;
 
-			if (textureUpdate)
+			for (u32 i = 0; i < Texture.size(); ++i)
 			{
-				CubeSurfaces = cubeSurfaces;
-
-				for (u32 i = 0; i < Texture.size(); ++i)
-				{
-					if (Texture[i])
-						Texture[i]->drop();
-				}
-
-				if (texture.size() > static_cast<u32>(ColorAttachment))
-				{
-					core::stringc message = "This GPU supports up to ";
-					message += static_cast<u32>(ColorAttachment);
-					message += " textures per render target.";
-
-					os::Printer::log(message.c_str(), ELL_WARNING);
-				}
-
-				Texture.set_used(core::min_(texture.size(), static_cast<u32>(ColorAttachment)));
-
-				for (u32 i = 0; i < Texture.size(); ++i)
-				{
-					TOpenGLTexture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(texture[i]) : 0;
-
-					GLuint textureID = 0;
-
-					if (currentTexture)
-					{
-						textureID = currentTexture->getOpenGLTextureName();
-					}
-
-					if (textureID != 0)
-					{
-						Texture[i] = texture[i];
-						Texture[i]->grab();
-					}
-					else
-					{
-						Texture[i] = 0;
-					}
-				}
-
-				RequestTextureUpdate = true;
+				if (Texture[i])
+					Texture[i]->drop();
 			}
 
-			// Set depth and stencil attachments.
-
-			if (depthStencilUpdate)
+			if (texture.size() > static_cast<u32>(ColorAttachment))
 			{
-				TOpenGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(depthStencil) : 0;
+				core::stringc message = "This GPU supports up to ";
+				message += static_cast<u32>(ColorAttachment);
+				message += " textures per render target.";
+
+				os::Printer::log(message.c_str(), ELL_WARNING);
+			}
+
+			Texture.set_used(core::min_(texture.size(), static_cast<u32>(ColorAttachment)));
+
+			for (u32 i = 0; i < Texture.size(); ++i)
+			{
+				TOpenGLTexture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(texture[i]) : 0;
 
 				GLuint textureID = 0;
 
 				if (currentTexture)
-				{	
-					if (currentTexture->getType() == ETT_2D)
-						textureID = currentTexture->getOpenGLTextureName();
-					else
-						os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
+				{
+					textureID = currentTexture->getOpenGLTextureName();
 				}
 
-				const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
-
-				if (IImage::isDepthFormat(textureFormat))
+				if (textureID != 0)
 				{
-					DepthStencil = depthStencil;
-					DepthStencil->grab();
+					Texture[i] = texture[i];
+					Texture[i]->grab();
 				}
 				else
 				{
-					if (DepthStencil)
-						DepthStencil->drop();
-
-					DepthStencil = 0;
+					Texture[i] = 0;
 				}
-
-				RequestDepthStencilUpdate = true;
 			}
 
+			RequestTextureUpdate = true;
+		}
+
+		// Set depth and stencil attachments.
+		if (DepthStencil != depthStencil)
+		{
+			if (DepthStencil)
+			{
+				DepthStencil->drop();
+				DepthStencil = 0;
+			}
+
+			needSizeUpdate = true;
+			TOpenGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(depthStencil) : 0;
+
+			GLuint textureID = 0;
+
+			if (currentTexture)
+			{	
+				if (currentTexture->getType() == ETT_2D)
+					textureID = currentTexture->getOpenGLTextureName();
+				else
+					os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
+			}
+
+			const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
+			if (IImage::isDepthFormat(textureFormat))
+			{
+				DepthStencil = depthStencil;
+				DepthStencil->grab();
+			}
+
+			RequestDepthStencilUpdate = true;
+		}
+
+		if (needSizeUpdate)
+		{
 			// Set size required for a viewport.
 
 			ITexture* firstTexture = getTexture();

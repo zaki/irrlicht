@@ -1672,12 +1672,6 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 	const core::dimension2d<u32>& size, void *data, bool ownForeignMemory,
 	bool deleteMemory)
 {
-	if(IImage::isRenderTargetOnlyFormat(format))
-	{
-		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
-		return 0;
-	}
-
 	return new CImage(format, size, data, ownForeignMemory, deleteMemory);
 }
 
@@ -1685,12 +1679,6 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 //! Creates an empty software image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 {
-	if(IImage::isRenderTargetOnlyFormat(format))
-	{
-		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
-		return 0;
-	}
-
 	return new CImage(format, size);
 }
 

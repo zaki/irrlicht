@@ -266,6 +266,16 @@ void COpenGLShaderMaterialRenderer::OnUnsetMaterial()
 	if (PixelShader[0])
 		glDisable(GL_FRAGMENT_PROGRAM_NV);
 #endif
+
+	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
+	if (Alpha || FixedBlending || Blending)
+	{
+		cacheHandler->setBlend(false);
+	}
+	else if (AlphaTest)
+	{
+		cacheHandler->setAlphaTest(false);
+	}
 }
 
 

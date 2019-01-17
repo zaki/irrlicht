@@ -65,6 +65,12 @@ public:
 	//! Returns if the material is transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_;
 
+	//! Access the callback provided by the users when creating shader materials
+	virtual IShaderConstantSetCallBack* getShaderConstantSetCallBack() const _IRR_OVERRIDE_
+	{ 
+		return CallBack;
+	}
+
 	// implementations for the render services
 	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates) _IRR_OVERRIDE_;
 	virtual s32 getVertexShaderConstantID(const c8* name) _IRR_OVERRIDE_;

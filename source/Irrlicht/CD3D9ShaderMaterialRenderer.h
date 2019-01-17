@@ -48,6 +48,12 @@ public:
 	//! Returns if the material is transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_;
 
+	//! Access the callback provided by the users when creating shader materials
+	virtual IShaderConstantSetCallBack* getShaderConstantSetCallBack() const _IRR_OVERRIDE_
+	{ 
+		return CallBack;
+	}
+
 protected:
 
 	//! constructor only for use by derived classes who want to
