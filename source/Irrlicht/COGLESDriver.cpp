@@ -100,8 +100,8 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 
 	StencilBuffer = stencilBuffer;
 
-	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.TextureUnit);
-	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.TextureUnit);
+	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
 	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
@@ -669,7 +669,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), 0);
 			}
 
-			if (Feature.TextureUnit > 0 && CacheHandler->getTextureCache().get(1))
+			if (Feature.MaxTextureUnits > 0 && CacheHandler->getTextureCache().get(1))
 			{
 				glClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -695,7 +695,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(0));
 			}
 
-			if (Feature.TextureUnit > 0)
+			if (Feature.MaxTextureUnits > 0)
 			{
 				glClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -721,7 +721,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(0));
 			}
 
-			if (Feature.TextureUnit > 0)
+			if (Feature.MaxTextureUnits > 0)
 			{
 				glClientActiveTexture(GL_TEXTURE0 + 1);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -824,7 +824,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 			break;
 	}
 
-	if (Feature.TextureUnit > 0)
+	if (Feature.MaxTextureUnits > 0)
 	{
 		if (vType == EVT_TANGENTS)
 		{
@@ -1431,7 +1431,7 @@ void COGLES1Driver::setMaterial(const SMaterial& material)
 	Material = material;
 	OverrideMaterial.apply(Material);
 
-	for (u32 i = 0; i < Feature.TextureUnit; ++i)
+	for (u32 i = 0; i < Feature.MaxTextureUnits; ++i)
 		setTransform((E_TRANSFORMATION_STATE)(ETS_TEXTURE_0 + i), material.getTextureMatrix(i));
 }
 
@@ -1879,7 +1879,7 @@ void COGLES1Driver::setTextureRenderStates(const SMaterial& material, bool reset
 {
 	// Set textures to TU/TIU and apply filters to them
 
-	for (s32 i = Feature.TextureUnit - 1; i >= 0; --i)
+	for (s32 i = Feature.MaxTextureUnits - 1; i >= 0; --i)
 	{
 		CacheHandler->getTextureCache().set(i, material.TextureLayer[i].Texture);
 

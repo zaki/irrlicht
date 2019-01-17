@@ -427,12 +427,14 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	createMaterialRenderers();
 
 	MaxFixedPipelineTextureUnits = (u32)Caps.MaxSimultaneousTextures;
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)MaxFixedPipelineTextureUnits);
 
 	u32 maxTextureSamplers = (Caps.PixelShaderVersion >= D3DPS_VERSION(2, 0)) ? 16 : (Caps.PixelShaderVersion >= D3DPS_VERSION(1, 4)) ?
 		6 : (Caps.PixelShaderVersion >= D3DPS_VERSION(1, 0)) ? 4 : 0;
 
 	MaxTextureUnits = core::max_(MaxFixedPipelineTextureUnits, maxTextureSamplers);
 	MaxTextureUnits = core::min_(MaxTextureUnits, MATERIAL_MAX_TEXTURES);
+	MaxTextureUnits = core::min_(MaxTextureUnits, MATERIAL_MAX_TEXTURES_USED);
 
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
 	OcclusionQuerySupport=(pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL) == S_OK);
@@ -450,7 +452,6 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 #endif
 
 	DriverAttributes->setAttribute("MaxTextures", (s32)MaxTextureUnits);
-	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxLights", (s32)Caps.MaxActiveLights);
 	DriverAttributes->setAttribute("MaxAnisotropy", (s32)Caps.MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxUserClipPlanes", (s32)Caps.MaxUserClipPlanes);
@@ -672,7 +673,8 @@ void CD3D9Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4
 		{
 			const s32 stage = state - ETS_TEXTURE_0;
 
-			if (stage < MATERIAL_MAX_TEXTURES && stage < static_cast<s32>(MaxFixedPipelineTextureUnits))
+			if (   stage < static_cast<s32>(MaxTextureUnits) 
+				&& stage < static_cast<s32>(MaxFixedPipelineTextureUnits))	// texture transforms for shader pipeline have to be passed by user
 			{
 				if (mat.isIdentity())
 					pID3DDevice->SetTextureStageState(stage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);

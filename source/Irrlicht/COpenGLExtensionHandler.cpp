@@ -582,7 +582,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #elif defined(GL_MAX_TEXTURE_UNITS_ARB)
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &num);
 #endif
-		Feature.TextureUnit=static_cast<u8>(num);	// MULTITEXTURING (fixed function pipeline texture units)
+		Feature.MaxTextureUnits=static_cast<u8>(num);	// MULTITEXTURING (fixed function pipeline texture units)
 	}
 #endif
 #if defined(GL_ARB_vertex_shader) || defined(GL_VERSION_2_0)
@@ -594,7 +594,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #elif defined(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB)
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &num);
 #endif
-		Feature.TextureUnit =core::max_(Feature.TextureUnit,static_cast<u8>(num));
+		Feature.MaxTextureUnits =core::max_(Feature.MaxTextureUnits,static_cast<u8>(num));
 	}
 #endif
 	glGetIntegerv(GL_MAX_LIGHTS, &num);
@@ -694,12 +694,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (!pGlActiveTextureARB || !pGlClientActiveTextureARB)
 	{
-		Feature.TextureUnit = 1;
+		Feature.MaxTextureUnits = 1;
 		os::Printer::log("Failed to load OpenGL's multitexture extension, proceeding without.", ELL_WARNING);
 	}
 	else
 #endif
-	Feature.TextureUnit = core::min_(Feature.TextureUnit, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+	Feature.MaxTextureUnits = core::min_(Feature.MaxTextureUnits, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+	Feature.MaxTextureUnits = core::min_(Feature.MaxTextureUnits, static_cast<u8>(MATERIAL_MAX_TEXTURES_USED));
 
 #ifdef GL_ARB_occlusion_query
 	if (FeatureAvailable[IRR_ARB_occlusion_query])
@@ -768,7 +769,7 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_HARDWARE_TL:
 		return true; // we cannot tell other things
 	case EVDF_MULTITEXTURE:
-		return Feature.TextureUnit > 1;
+		return Feature.MaxTextureUnits > 1;
 	case EVDF_BILINEAR_FILTER:
 		return true;
 	case EVDF_MIP_MAP:

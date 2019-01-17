@@ -59,7 +59,7 @@ namespace video
 		MaxLights = static_cast<u8>(val);
 
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &val);
-		Feature.TextureUnit = static_cast<u8>(val);
+		Feature.MaxTextureUnits = static_cast<u8>(val);
 
 #ifdef GL_EXT_texture_filter_anisotropic
 		if (FeatureAvailable[IRR_GL_EXT_texture_filter_anisotropic])
@@ -81,7 +81,8 @@ namespace video
 		glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
 		glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
 
-		Feature.TextureUnit = core::min_(Feature.TextureUnit, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+		Feature.MaxTextureUnits = core::min_(Feature.MaxTextureUnits, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+		Feature.MaxTextureUnits = core::min_(Feature.MaxTextureUnits, static_cast<u8>(MATERIAL_MAX_TEXTURES_USED));
 		Feature.ColorAttachment = 1;
 
 #if defined(_IRR_OGLES1_USE_EXTPOINTER_)

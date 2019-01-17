@@ -1015,8 +1015,8 @@ bool CWebGL1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 
 	StencilBuffer = stencilBuffer;
 
-	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.TextureUnit);
-	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.TextureUnit);
+	DriverAttributes->setAttribute("MaxTextures", (s32)Feature.MaxTextureUnits);
+	DriverAttributes->setAttribute("MaxSupportedTextures", (s32)Feature.MaxTextureUnits);
 	DriverAttributes->setAttribute("MaxAnisotropy", MaxAnisotropy);
 	DriverAttributes->setAttribute("MaxIndices", (s32)MaxIndices);
 	DriverAttributes->setAttribute("MaxTextureSize", (s32)MaxTextureSize);
@@ -1070,7 +1070,7 @@ void CWebGL1Driver::initWebGLExtensions()
 	// TODO: basically copied ES2 implementation, so not certain if 100% correct for WebGL
 	GLint val=0;
 	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &val);
-	Feature.TextureUnit = static_cast<u8>(val);
+	Feature.MaxTextureUnits = static_cast<u8>(val);
 
 #ifdef GL_EXT_texture_filter_anisotropic
 	if ( WebGLExtensions.queryWebGLFeature(CWebGLExtensionHandler::IRR_EXT_texture_filter_anisotropic) )
@@ -1096,7 +1096,8 @@ void CWebGL1Driver::initWebGLExtensions()
 
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
 	glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
-	Feature.TextureUnit = core::min_(Feature.TextureUnit, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+	Feature.MaxTextureUnits = core::min_(Feature.MaxTextureUnits, static_cast<u8>(MATERIAL_MAX_TEXTURES));
+	Feature.MaxTextureUnits = core::min_(Feature.MaxTextureUnits, static_cast<u8>(MATERIAL_MAX_TEXTURES_USED));
 
 	Feature.ColorAttachment = 1;
 }

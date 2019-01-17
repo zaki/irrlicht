@@ -259,7 +259,27 @@ namespace video
 
 
 	//! Maximum number of texture an SMaterial can have.
+	/** SMaterial might ignore some textures in most function, like assignment and comparison,
+		when SIrrlichtCreationParameters::MaxTextureUnits is set to a lower number.
+	*/
 	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;
+
+	//! By default this is identical to MATERIAL_MAX_TEXTURES
+	/** Users can modify this value if they are certain they don't need all
+		available textures per material in their application. For example if you 
+		never need more than 2 textures per material you can set this to 2.
+
+		We (mostly) avoid dynamic memory in SMaterial, so the extra memory 
+		will still be allocated. But by lowering MATERIAL_MAX_TEXTURES_USED the 
+		material comparisons and assignments can be faster. Also several other 
+		places in the engine can be faster when reducing this value to the limit 
+		you need.
+
+		NOTE: This should only be changed once and before any call to createDevice.
+		NOTE: Do not set it below 1 or above the value of _IRR_MATERIAL_MAX_TEXTURES_.
+		NOTE: Going below 4 is usually not worth it.
+	*/
+	IRRLICHT_API extern u32 MATERIAL_MAX_TEXTURES_USED;
 
 	//! Struct for holding parameters for a material renderer
 	class SMaterial
@@ -284,7 +304,7 @@ namespace video
 		SMaterial(const SMaterial& other)
 		{
 			// These pointers are checked during assignment
-			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
 				TextureLayer[i].TextureMatrix = 0;
 			*this = other;
 		}
@@ -307,7 +327,7 @@ namespace video
 			MaterialTypeParam = other.MaterialTypeParam;
 			MaterialTypeParam2 = other.MaterialTypeParam2;
 			Thickness = other.Thickness;
-			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
 			{
 				TextureLayer[i] = other.TextureLayer[i];
 			}
@@ -493,7 +513,7 @@ namespace video
 		E_ZWRITE_FINE_CONTROL ZWriteFineControl;
 
 		//! Gets the texture transformation matrix for level i
-		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES.
+		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES
 		\return Texture matrix for texture level i. */
 		core::matrix4& getTextureMatrix(u32 i)
 		{
@@ -565,23 +585,23 @@ namespace video
 					FrontfaceCulling = value; break;
 				case EMF_BILINEAR_FILTER:
 				{
-					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+					for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
 						TextureLayer[i].BilinearFilter = value;
 				}
 				break;
 				case EMF_TRILINEAR_FILTER:
 				{
-					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+					for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
 						TextureLayer[i].TrilinearFilter = value;
 				}
 				break;
 				case EMF_ANISOTROPIC_FILTER:
 				{
 					if (value)
-						for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
 							TextureLayer[i].AnisotropicFilter = 0xFF;
 					else
-						for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
 							TextureLayer[i].AnisotropicFilter = 0;
 				}
 				break;
@@ -591,7 +611,7 @@ namespace video
 					NormalizeNormals = value; break;
 				case EMF_TEXTURE_WRAP:
 				{
-					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+					for (u32 i=0; i<MATERIAL_MAX_TEXTURES_USED; ++i)
 					{
 						TextureLayer[i].TextureWrapU = (E_TEXTURE_CLAMP)value;
 						TextureLayer[i].TextureWrapV = (E_TEXTURE_CLAMP)value;
@@ -711,7 +731,7 @@ namespace video
 				UseMipMaps != b.UseMipMaps ||
 				ZWriteFineControl != b.ZWriteFineControl;
 				;
-			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
+			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES_USED) && !different; ++i)
 			{
 				different |= (TextureLayer[i] != b.TextureLayer[i]);
 			}
@@ -752,12 +772,10 @@ namespace video
 
 			return false;
 		}
-
 	};
 
 	//! global const identity Material
 	IRRLICHT_API extern SMaterial IdentityMaterial;
-
 } // end namespace video
 } // end namespace irr
 
