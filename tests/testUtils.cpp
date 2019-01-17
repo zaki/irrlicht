@@ -12,6 +12,10 @@
 #include <windows.h> // For OutputDebugString()
 #endif // _MSC_VER || _IRR_WINDOWS_API_
 
+#ifdef _MSC_VER
+#pragma warning( disable: 4996)
+#endif
+
 using namespace irr;
 
 bool binaryCompareFiles(const char * fileName1, const char * fileName2)

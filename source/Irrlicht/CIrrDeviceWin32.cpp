@@ -1973,7 +1973,7 @@ bool CIrrDeviceWin32::isWindowsVistaOrGreater()
 		return false;
 	}
 
-	return VerifyVersionInfo(&osvi, VER_MAJORVERSION, VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL));
+	return VerifyVersionInfo(&osvi, VER_MAJORVERSION, VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL)) ? true : false;
 #else
     return false;
 #endif
