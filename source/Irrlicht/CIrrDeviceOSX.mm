@@ -577,8 +577,8 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 		if (!CreationParams.WindowId)
 		{
 			[[NSAutoreleasePool alloc] init];
-			[NSApplication sharedApplication];
-			[NSApp setDelegate:(id<NSFileManagerDelegate>)[[[CIrrDelegateOSX alloc] initWithDevice:this] autorelease]];
+			[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+			[NSApp setDelegate:(id<NSApplicationDelegate>)[[[CIrrDelegateOSX alloc] initWithDevice:this] autorelease]];
             
             // Create menu
             
