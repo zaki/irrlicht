@@ -224,7 +224,8 @@ namespace scene
 		}
 
 		//! writes a scene starting with the given node
-		virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root) = 0;
+		//\param writeRoot: 0 = no, 1=yes unless root is scenemanager, 2=yes
+		virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root, int writeRoot=1) = 0;
 
 
 		//! Set if texture information should be written

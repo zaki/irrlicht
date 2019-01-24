@@ -88,7 +88,7 @@ public:
 	virtual EMESH_WRITER_TYPE getType() const _IRR_OVERRIDE_;
 
 	//! writes a scene starting with the given node
-	virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root) _IRR_OVERRIDE_;
+	virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root, int writeRoot) _IRR_OVERRIDE_;
 
 	//! writes a mesh
 	virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE) _IRR_OVERRIDE_;

@@ -275,7 +275,7 @@ EMESH_WRITER_TYPE CColladaMeshWriter::getType() const
 }
 
 //! writes a scene starting with the given node
-bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* root)
+bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* root, int writeRoot)
 {
 	if (!file || !root)
 		return false;
@@ -365,7 +365,7 @@ bool CColladaMeshWriter::writeScene(io::IWriteFile* file, scene::ISceneNode* roo
 		Writer->writeLineBreak();
 
 		// Write the scenegraph.
-		if ( root->getType() != ESNT_SCENE_MANAGER )
+		if ( writeRoot == 2 || (writeRoot == 1 && root->getType() != ESNT_SCENE_MANAGER) )
 		{
 			// TODO: Not certain if we should really write the root or if we should just always only write the children.
 			// For now writing root to keep backward compatibility for this case, but if anyone needs to _not_ write
