@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Switch Collada writer to utf8 xml's.
 - Add IXMLWriterUTF8 
 - IColladaMeshWriter::writeScene got an additional flag to decide if root should be written.
 - _IRR_MATERIAL_MAX_TEXTURES_ now set to 8 by default. So we can use now 8 textures per material without recompiling the engine. 
