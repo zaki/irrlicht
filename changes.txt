@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Add IXMLWriterUTF8 
 - IColladaMeshWriter::writeScene got an additional flag to decide if root should be written.
 - _IRR_MATERIAL_MAX_TEXTURES_ now set to 8 by default. So we can use now 8 textures per material without recompiling the engine. 
   Additionally there's a new global variable irr::video::MATERIAL_MAX_TEXTURES_USED which can be set to lower numbers to avoid most of the costs coming with this for people not needing more textures.

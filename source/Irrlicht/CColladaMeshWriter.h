@@ -9,12 +9,12 @@
 #include "S3DVertex.h"
 #include "irrMap.h"
 #include "IVideoDriver.h"
+#include "IXMLWriter.h"
 
 namespace irr
 {
 namespace io
 {
-	class IXMLWriter;
 	class IFileSystem;
 }
 
