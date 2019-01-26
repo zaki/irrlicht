@@ -1157,10 +1157,22 @@ bool CColladaMeshWriter::isXmlNameStartChar(c8 c) const
 {
 	return	   (c >= 'A' && c <= 'Z')
 			||	c == '_'
-			||	(c >= 'a' && c <= 'z')
-			||	(c >= 0xC0 && c <= 0xD6)
+			||	(c >= 'a' && c <= 'z');
+			/*	Following would also be legal, but only when using real unicode.
+				We do only check ansi codes as they are sufficient for us.
+ 			||	(c >= 0xC0 && c <= 0xD6)
 			||	(c >= 0xD8 && c <= 0xF6)
-			||	(c >= 0xF8 && c <= 0xFF)
+			||	(c >= 0xF8 && c <= 0x2FF)
+			||	(c >= 0x370 && c <= 0x37D)
+			||  (c >= 0x37F && c <= 0x1FFF)
+			||  (c >= 0x200C && c <= 0x200D)
+			||  (c >= 0x2070 && c <= 0x218F)
+			||  (c >= 0x2C00 && c <= 0x2FEF)
+			||  (c >= 0x3001 && c <= 0xD7FF)
+			||  (c >= 0xF900 && c <= 0xFDCF)
+			||  (c >= 0xFDF0 && c <= 0xFFFD)
+			||  (c >= 0x10000 && c <=0xEFFFF)
+*/
 			;
 }
 
@@ -1169,8 +1181,13 @@ bool CColladaMeshWriter::isXmlNameChar(c8 c) const
 	return isXmlNameStartChar(c)
 		||	c == '-'
 		||	c == '.'
-		||	(c >= '0' && c <= '9')
-		||	c == 0xB7;
+		||	(c >= '0' && c <= '9');
+		/*	Following would also be legal, but only when using real unicode.
+			We do only check ansi codes for now as they are sufficient for us.
+		 ||	c == 0xB7
+		 ||	(c >= 9x0300 && c <= 0x036F)
+		 ||	(c >= 0x203F && c <= 0x2040)
+		 */
 }
 
 // Restrict the characters to a set of allowed characters in xs::NCName.
