@@ -1644,9 +1644,9 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 						"count", vertexCountStr.c_str(), "stride", "2");
 			Writer->writeLineBreak();
 
-				Writer->writeElement("param", true, "name", "U", "type", "float");
+				Writer->writeElement("param", true, "name", ParamNamesUV[0].c_str(), "type", "float");
 				Writer->writeLineBreak();
-				Writer->writeElement("param", true, "name", "V", "type", "float");
+				Writer->writeElement("param", true, "name", ParamNamesUV[1].c_str(), "type", "float");
 				Writer->writeLineBreak();
 
 			Writer->writeClosingTag("accessor");
@@ -1807,9 +1807,9 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 										"count", vertexCountStr.c_str(), "stride", "2");
 				Writer->writeLineBreak();
 
-					Writer->writeElement("param", true, "name", "U", "type", "float");
+					Writer->writeElement("param", true, "name", ParamNamesUV[0].c_str(), "type", "float");
 					Writer->writeLineBreak();
-					Writer->writeElement("param", true, "name", "V", "type", "float");
+					Writer->writeElement("param", true, "name", ParamNamesUV[1].c_str(), "type", "float");
 					Writer->writeLineBreak();
 
 				Writer->writeClosingTag("accessor");

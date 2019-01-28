@@ -208,6 +208,8 @@ namespace scene
 			, AmbientLight(0.f, 0.f, 0.f, 1.f)
 			, GeometryWriting(ECGI_PER_MESH)
 		{
+			ParamNamesUV[0] = "U";
+			ParamNamesUV[1] = "V";
 		}
 
 		//! Destructor
@@ -367,6 +369,19 @@ namespace scene
 		// TODO: Function is not const because there is no const getMesh() function for several Irrlicht nodes.
 		virtual const irr::core::stringc* findGeometryNameForNode(ISceneNode* node) = 0;
 
+		//! Change param name used for UV's.
+		/** Param names for UV's have a name. By default it's "U" and "V".
+			Usually it doesn't matter as names are optional in Collada anyway.
+			But unfortunately some tools insist on specific names.
+			So if "U", "V" does not work then try to export by setting this to "S", "T".
+			One tool which insists on "S", "T" is for example SketchUp.
+		*/
+		void SetParamNamesUV(const core::stringc& u, const core::stringc& v)
+		{
+			ParamNamesUV[0] = u;
+			ParamNamesUV[1] = v;
+		}
+
 
 	protected:
 		// NOTE: You usually should also call setProperties with the same parameter when using setDefaultProperties
@@ -392,6 +407,9 @@ namespace scene
 				DefaultNameGenerator->drop();
 			DefaultNameGenerator = p;
 		}
+
+	protected:
+		irr::core::stringc ParamNamesUV[2];
 
 	private:
 		IColladaMeshWriterProperties * Properties;
