@@ -1471,7 +1471,8 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 			needsTangents = mesh->getMeshBuffer(i)->getVertexType() == video::EVT_TANGENTS;
 	}
 
-	SComponentGlobalStartPos* globalIndices = new SComponentGlobalStartPos[mesh->getMeshBufferCount()];
+	const irr::u32 mbCount = mesh->getMeshBufferCount();
+	SComponentGlobalStartPos* globalIndices = new SComponentGlobalStartPos[mbCount];
 
 	// write positions
 	core::stringc meshPosId(meshId);
@@ -1486,17 +1487,16 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 					"count", vertexCountStr.c_str());
 		Writer->writeLineBreak();
 
-		for (i=0; i<mesh->getMeshBufferCount(); ++i)
+		for (i=0; i<mbCount; ++i)
 		{
 			scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 			u32 vertexCount = buffer->getVertexCount();
 
-			globalIndices[i].PosStartIndex = 0;
+			if ( i == 0 )
+				globalIndices[i].PosStartIndex = 0;
 
-			if (i!=0)
-				globalIndices[i].PosStartIndex = globalIndices[i-1].PosLastIndex + 1;
-
-			globalIndices[i].PosLastIndex = globalIndices[i].PosStartIndex + vertexCount - 1;
+			if (i+1 < mbCount)
+				globalIndices[i+1].PosStartIndex = globalIndices[i].PosStartIndex + vertexCount;
 
 			u8* vertices = static_cast<u8*>(buffer->getVertices());
 			u32 vertexPitch = getVertexPitchFromType(buffer->getVertexType());
@@ -1549,17 +1549,16 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 					"count", vertexCountStr.c_str());
 		Writer->writeLineBreak();
 
-		for (i=0; i<mesh->getMeshBufferCount(); ++i)
+		for (i=0; i<mbCount; ++i)
 		{
 			scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 			u32 vertexCount = buffer->getVertexCount();
 
-			globalIndices[i].TCoord0StartIndex = 0;
+			if (i==0)
+				globalIndices[i].TCoord0StartIndex = 0;
 
-			if (i!=0)
-				globalIndices[i].TCoord0StartIndex = globalIndices[i-1].TCoord0LastIndex + 1;
-
-			globalIndices[i].TCoord0LastIndex = globalIndices[i].TCoord0StartIndex + vertexCount - 1;
+			if (i+1 < mbCount)
+				globalIndices[i+1].TCoord0StartIndex = globalIndices[i].TCoord0StartIndex + vertexCount;
 
 			u8* vertices = static_cast<u8*>(buffer->getVertices());
 			u32 vertexPitch = getVertexPitchFromType(buffer->getVertexType());
@@ -1609,17 +1608,16 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 					"count", vertexCountStr.c_str());
 		Writer->writeLineBreak();
 
-		for (i=0; i<mesh->getMeshBufferCount(); ++i)
+		for (i=0; i<mbCount; ++i)
 		{
 			scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 			u32 vertexCount = buffer->getVertexCount();
 
-			globalIndices[i].NormalStartIndex = 0;
+			if ( i==0 )
+				globalIndices[i].NormalStartIndex = 0;
 
-			if (i!=0)
-				globalIndices[i].NormalStartIndex = globalIndices[i-1].NormalLastIndex + 1;
-
-			globalIndices[i].NormalLastIndex = globalIndices[i].NormalStartIndex + vertexCount - 1;
+			if (i+1 < mbCount)
+				globalIndices[i+1].NormalStartIndex = globalIndices[i].NormalStartIndex + vertexCount;
 
 			u8* vertices = static_cast<u8*>(buffer->getVertices());
 			u32 vertexPitch = getVertexPitchFromType(buffer->getVertexType());
@@ -1673,21 +1671,15 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 									"count", vertexCountStr.c_str());
 			Writer->writeLineBreak();
 
-			for (i=0; i<mesh->getMeshBufferCount(); ++i)
+			for (i=0; i<mbCount; ++i)
 			{
 				scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 				video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
-				u32 vertexCount = buffer->getVertexCount();
+				u32 vertexCount = 0;
 
 				if (hasSecondTextureCoordinates(vtxType))
 				{
-					globalIndices[i].TCoord1StartIndex = 0;
-
-					if (i!=0 && globalIndices[i-1].TCoord1LastIndex != -1)
-						globalIndices[i].TCoord1StartIndex = globalIndices[i-1].TCoord1LastIndex + 1;
-
-					globalIndices[i].TCoord1LastIndex = globalIndices[i].TCoord1StartIndex + vertexCount - 1;
-
+					vertexCount = buffer->getVertexCount();
 					switch(vtxType)
 					{
 					case video::EVT_2TCOORDS:
@@ -1704,6 +1696,12 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 						break;
 					}
 				} // end this buffer has 2 texture coordinates
+
+				if ( i == 0 )
+					globalIndices[i].TCoord1StartIndex = 0;
+
+				if (i+1 < mbCount)
+					globalIndices[i+1].TCoord1StartIndex = globalIndices[i].TCoord1StartIndex + vertexCount;
 			}
 
 			Writer->writeClosingTag("float_array");
@@ -1751,11 +1749,17 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 
 	// write polygons
 
-	for (i=0; i<mesh->getMeshBufferCount(); ++i)
+	for (i=0; i<mbCount; ++i)
 	{
 		scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 
-		const u32 polyCount = buffer->getIndexCount() / 3;
+		if ( buffer->getPrimitiveType() != EPT_TRIANGLES )
+		{
+			os::Printer::log("Collada writer does not support non-triangle meshbuffers. Mesh: ", meshname.c_str(), ELL_WARNING);
+			continue;
+		}
+
+		const u32 polyCount = buffer->getPrimitiveCount();
 		core::stringc strPolyCount(polyCount);
 		irr::core::stringc strMat(nameForMaterialSymbol(mesh, i));
 
@@ -1781,10 +1785,11 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 
 		// write indices now
 
-		s32 posIdx = globalIndices[i].PosStartIndex;
-		s32 tCoordIdx = globalIndices[i].TCoord0StartIndex;
-		s32 normalIdx = globalIndices[i].NormalStartIndex;
-		s32 tCoord2Idx = globalIndices[i].TCoord1StartIndex;
+		// In Collada we us a single global buffer for all vertices, so indices have this offset compared to Irrlicht
+		u32 posIdx = globalIndices[i].PosStartIndex;
+		u32 tCoordIdx = globalIndices[i].TCoord0StartIndex;
+		u32 normalIdx = globalIndices[i].NormalStartIndex;
+		u32 tCoord2Idx = globalIndices[i].TCoord1StartIndex;
 
 		Writer->writeElement("p", false);
 
@@ -1792,40 +1797,43 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 		strP.reserve(100);
 		for (u32 p=0; p<polyCount; ++p)
 		{
+			u32 irrIdx = buffer->getIndices()[(p*3) + 0];
 			strP = "";
-			strP += buffer->getIndices()[(p*3) + 0] + posIdx;
+			strP += irrIdx + posIdx;
 			strP += " ";
-			strP += buffer->getIndices()[(p*3) + 0] + tCoordIdx;
+			strP += irrIdx + tCoordIdx;
 			strP += " ";
-			strP += buffer->getIndices()[(p*3) + 0] + normalIdx;
+			strP += irrIdx + normalIdx;
 			strP += " ";
 			if (has2ndTexCoords)
 			{
-				strP += buffer->getIndices()[(p*3) + 0] + tCoord2Idx;
+				strP += irrIdx + tCoord2Idx;
 				strP += " ";
 			}
 
-			strP += buffer->getIndices()[(p*3) + 1] + posIdx;
+			irrIdx = buffer->getIndices()[(p*3) + 1];
+			strP += irrIdx + posIdx;
 			strP += " ";
-			strP += buffer->getIndices()[(p*3) + 1] + tCoordIdx;
+			strP += irrIdx + tCoordIdx;
 			strP += " ";
-			strP += buffer->getIndices()[(p*3) + 1] + normalIdx;
+			strP += irrIdx + normalIdx;
 			strP += " ";
 			if (has2ndTexCoords)
 			{
-				strP += buffer->getIndices()[(p*3) + 1] + tCoord2Idx;
+				strP += irrIdx + tCoord2Idx;
 				strP += " ";
 			}
 
-			strP += buffer->getIndices()[(p*3) + 2] + posIdx;
+			irrIdx = buffer->getIndices()[(p*3) + 2];
+			strP += irrIdx + posIdx;
 			strP += " ";
-			strP += buffer->getIndices()[(p*3) + 2] + tCoordIdx;
+			strP += irrIdx + tCoordIdx;
 			strP += " ";
-			strP += buffer->getIndices()[(p*3) + 2] + normalIdx;
+			strP += irrIdx + normalIdx;
 			if (has2ndTexCoords)
 			{
 				strP += " ";
-				strP += buffer->getIndices()[(p*3) + 2] + tCoord2Idx;
+				strP += irrIdx + tCoord2Idx;
 			}
 			strP += " ";
 

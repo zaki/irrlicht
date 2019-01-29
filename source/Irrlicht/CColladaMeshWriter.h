@@ -156,23 +156,16 @@ protected:
 
 	struct SComponentGlobalStartPos
 	{
-		SComponentGlobalStartPos() : PosStartIndex(-1), PosLastIndex(-1),
-				NormalStartIndex(-1), NormalLastIndex(-1),
-				TCoord0StartIndex(-1), TCoord0LastIndex(-1),
-				TCoord1StartIndex(-1), TCoord1LastIndex(-1)
+		SComponentGlobalStartPos() : PosStartIndex(0),
+				NormalStartIndex(0),
+				TCoord0StartIndex(0),
+				TCoord1StartIndex(0)
 		{ }
 
-		s32 PosStartIndex;
-		s32 PosLastIndex;
-
-		s32 NormalStartIndex;
-		s32 NormalLastIndex;
-
-		s32 TCoord0StartIndex;
-		s32 TCoord0LastIndex;
-
-		s32 TCoord1StartIndex;
-		s32 TCoord1LastIndex;
+		u32 PosStartIndex;
+		u32 NormalStartIndex;
+		u32 TCoord0StartIndex;
+		u32 TCoord1StartIndex;
 	};
 
 	io::IFileSystem* FileSystem;
