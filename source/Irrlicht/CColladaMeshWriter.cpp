@@ -998,14 +998,6 @@ void CColladaMeshWriter::writeUv(const irr::core::vector2df& vec)
 	Writer->writeText(tmpbuf);
 }
 
-void CColladaMeshWriter::writeVector(const irr::core::vector2df& vec)
-{
-	c8 tmpbuf[255];
-	snprintf_irr(tmpbuf, 255, "%f %f", vec.X, vec.Y);
-
-	Writer->writeText(tmpbuf);
-}
-
 void CColladaMeshWriter::writeColor(const irr::video::SColorf& colorf, bool writeAlpha)
 {
 	c8 tmpbuf[255];
@@ -1703,7 +1695,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 							video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
 							for (u32 j=0; j<vertexCount; ++j)
 							{
-								writeVector(vtx[j].TCoords2);
+								writeUv(vtx[j].TCoords2);
 								Writer->writeLineBreak();
 							}
 						}
