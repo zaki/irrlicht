@@ -1497,7 +1497,6 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 		for (i=0; i<mesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
-			video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
 			u32 vertexCount = buffer->getVertexCount();
 
 			globalIndices[i].PosStartIndex = 0;
@@ -1507,38 +1506,12 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 
 			globalIndices[i].PosLastIndex = globalIndices[i].PosStartIndex + vertexCount - 1;
 
-			switch(vtxType)
+			u8* vertices = static_cast<u8*>(buffer->getVertices());
+			u32 vertexPitch = getVertexPitchFromType(buffer->getVertexType());
+			for (u32 j=0; j<vertexCount; ++j)
 			{
-			case video::EVT_STANDARD:
-				{
-					video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeVector(vtx[j].Pos);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
-			case video::EVT_2TCOORDS:
-				{
-					video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeVector(vtx[j].Pos);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
-			case video::EVT_TANGENTS:
-				{
-					video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeVector(vtx[j].Pos);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
+				writeVector( (*reinterpret_cast<const video::S3DVertex*>(&vertices[j*vertexPitch])).Pos );
+				Writer->writeLineBreak();
 			}
 		}
 
@@ -1587,7 +1560,6 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 		for (i=0; i<mesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
-			video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
 			u32 vertexCount = buffer->getVertexCount();
 
 			globalIndices[i].TCoord0StartIndex = 0;
@@ -1597,38 +1569,12 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 
 			globalIndices[i].TCoord0LastIndex = globalIndices[i].TCoord0StartIndex + vertexCount - 1;
 
-			switch(vtxType)
+			u8* vertices = static_cast<u8*>(buffer->getVertices());
+			u32 vertexPitch = getVertexPitchFromType(buffer->getVertexType());
+			for (u32 j=0; j<vertexCount; ++j)
 			{
-			case video::EVT_STANDARD:
-				{
-					video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeUv(vtx[j].TCoords);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
-			case video::EVT_2TCOORDS:
-				{
-					video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeUv(vtx[j].TCoords);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
-			case video::EVT_TANGENTS:
-				{
-					video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeUv(vtx[j].TCoords);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
+				writeUv( (*reinterpret_cast<const video::S3DVertex*>(&vertices[j*vertexPitch])).TCoords );
+				Writer->writeLineBreak();
 			}
 		}
 
@@ -1674,7 +1620,6 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 		for (i=0; i<mesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
-			video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
 			u32 vertexCount = buffer->getVertexCount();
 
 			globalIndices[i].NormalStartIndex = 0;
@@ -1684,38 +1629,12 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 
 			globalIndices[i].NormalLastIndex = globalIndices[i].NormalStartIndex + vertexCount - 1;
 
-			switch(vtxType)
+			u8* vertices = static_cast<u8*>(buffer->getVertices());
+			u32 vertexPitch = getVertexPitchFromType(buffer->getVertexType());
+			for (u32 j=0; j<vertexCount; ++j)
 			{
-			case video::EVT_STANDARD:
-				{
-					video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeVector(vtx[j].Normal);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
-			case video::EVT_2TCOORDS:
-				{
-					video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeVector(vtx[j].Normal);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
-			case video::EVT_TANGENTS:
-				{
-					video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
-					for (u32 j=0; j<vertexCount; ++j)
-					{
-						writeVector(vtx[j].Normal);
-						Writer->writeLineBreak();
-					}
-				}
-				break;
+				writeVector( (*reinterpret_cast<const video::S3DVertex*>(&vertices[j*vertexPitch])).Normal );
+				Writer->writeLineBreak();
 			}
 		}
 
