@@ -323,7 +323,7 @@ public:
 					(T)(Y * mul0 + v2.Y * mul1 + v3.Y * mul2));
 	}
 
-	/*! Test if this point and another 2 poitns taken as triplet
+	/*! Test if this point and another 2 points taken as triplet
 		are colinear, clockwise, anticlockwise. This can be used also
 		to check winding order in triangles for 2D meshes.
 		\return 0 if points are colinear, 1 if clockwise, 2 if anticlockwise
