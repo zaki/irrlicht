@@ -984,7 +984,7 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) 
 void CColladaMeshWriter::writeVector(const irr::core::vector3df& vec)
 {
 	c8 tmpbuf[255];
-	snprintf_irr(tmpbuf, 255, "%f %f %f", vec.X, vec.Y, vec.Z);
+	snprintf_irr(tmpbuf, 255, "%f %f %f", vec.X, vec.Y, vec.Z*-1.f);
 
 	Writer->writeText(tmpbuf);
 }
@@ -1250,7 +1250,7 @@ void CColladaMeshWriter::writeAsset()
 	Writer->writeElement("contributor", false);
 	Writer->writeLineBreak();
 	Writer->writeElement("authoring_tool", false);
-	Writer->writeText("Irrlicht Engine / irrEdit");  // this code has originated from irrEdit 0.7
+	Writer->writeText("Irrlicht Engine");
 	Writer->writeClosingTag("authoring_tool");
 	Writer->writeLineBreak();
 	Writer->writeClosingTag("contributor");
@@ -1267,8 +1267,16 @@ void CColladaMeshWriter::writeAsset()
 	Writer->writeClosingTag("modified");
 	Writer->writeLineBreak();
 
+	// Revision 2.0 changes (since 1.0):
+	// - All coordinates are now written with right-handed coordinate system.
+	//   Before only texture V of first textures was swapped and all other 
+	//   parameters where exported left-handed.
+	//   For specific changes change svn revision 5708.
+	// - authoring_tool no longer mentions IrrEdit (this code has originated 
+	//   from irrEdit 0.7) to avoid conflicts as the software is now
+	//   independent of each other and we're not aware of irrEdit revision numbers.
 	Writer->writeElement("revision", false);
-	Writer->writeText("1.0");
+	Writer->writeText("2.0");	
 	Writer->writeClosingTag("revision");
 	Writer->writeLineBreak();
 
@@ -1797,7 +1805,8 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 		strP.reserve(100);
 		for (u32 p=0; p<polyCount; ++p)
 		{
-			u32 irrIdx = buffer->getIndices()[(p*3) + 0];
+			// Irrlicht uses clockwise, Collada uses counter-clockwise to define front-face
+			u32 irrIdx = buffer->getIndices()[(p*3) + 2];
 			strP = "";
 			strP += irrIdx + posIdx;
 			strP += " ";
@@ -1824,7 +1833,7 @@ void CColladaMeshWriter::writeMeshGeometry(const irr::core::stringc& meshname, s
 				strP += " ";
 			}
 
-			irrIdx = buffer->getIndices()[(p*3) + 2];
+			irrIdx = buffer->getIndices()[(p*3) + 0];
 			strP += irrIdx + posIdx;
 			strP += " ";
 			strP += irrIdx + tCoordIdx;
@@ -2142,9 +2151,9 @@ void CColladaMeshWriter::writeRotateElement(const irr::core::vector3df& axis, ir
 	txt += " ";
 	txt += irr::core::stringc(axis.Y);
 	txt += " ";
-	txt += irr::core::stringc(axis.Z);
+	txt += irr::core::stringc(axis.Z * -1.f);
 	txt += " ";
-	txt += irr::core::stringc((double)angle);
+	txt += irr::core::stringc((double)angle * -1.f);
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag("rotate");
 	Writer->writeLineBreak();
@@ -2170,7 +2179,7 @@ void CColladaMeshWriter::writeTranslateElement(const irr::core::vector3df& trans
 	txt += " ";
 	txt += irr::core::stringc(translate.Y);
 	txt += " ";
-	txt += irr::core::stringc(translate.Z);
+	txt += irr::core::stringc(translate.Z*-1.f);
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag("translate");
 	Writer->writeLineBreak();
@@ -2181,15 +2190,23 @@ void CColladaMeshWriter::writeLookAtElement(const irr::core::vector3df& eyePos, 
 	Writer->writeElement("lookat", false);
 
 	c8 tmpbuf[255];
-	snprintf_irr(tmpbuf, 255, "%f %f %f %f %f %f %f %f %f", eyePos.X, eyePos.Y, eyePos.Z, targetPos.X, targetPos.Y, targetPos.Z, upVector.X, upVector.Y, upVector.Z);
+	snprintf_irr(tmpbuf, 255, "%f %f %f %f %f %f %f %f %f", eyePos.X, eyePos.Y, eyePos.Z*-1.f, targetPos.X, targetPos.Y, targetPos.Z*-1.f, upVector.X, upVector.Y, upVector.Z*-1.f);
 	Writer->writeText(tmpbuf);
 
 	Writer->writeClosingTag("lookat");
 	Writer->writeLineBreak();
 }
 
-void CColladaMeshWriter::writeMatrixElement(const irr::core::matrix4& matrix)
+void CColladaMeshWriter::writeMatrixElement(const irr::core::matrix4& matrixIrr)
 {
+	irr::core::matrix4 matrix(matrixIrr.getTransposed());
+	matrix[2] *= -1.f;
+	matrix[6] *= -1.f;
+	matrix[8] *= -1.f;
+	matrix[9] *= -1.f;
+	matrix[11] *= -1.f;
+
+
 	Writer->writeElement("matrix", false);
 	Writer->writeLineBreak();
 
@@ -2200,8 +2217,7 @@ void CColladaMeshWriter::writeMatrixElement(const irr::core::matrix4& matrix)
 		{
 			if ( b > 0 )
 				txt += " ";
-			// row-column switched compared to Irrlicht
-			txt += irr::core::stringc(matrix[b*4+a]);
+			txt += irr::core::stringc(matrix[a*4+b]);
 		}
 		Writer->writeText(txt.c_str());
 		Writer->writeLineBreak();
