@@ -2199,13 +2199,14 @@ void CColladaMeshWriter::writeLookAtElement(const irr::core::vector3df& eyePos, 
 
 void CColladaMeshWriter::writeMatrixElement(const irr::core::matrix4& matrixIrr)
 {
-	irr::core::matrix4 matrix(matrixIrr.getTransposed());
+	irr::core::matrix4 matrix(matrixIrr.getTransposed());	// transposed because row/lines are written other way round in Collada
+	// Convert to right-handed
 	matrix[2] *= -1.f;
 	matrix[6] *= -1.f;
 	matrix[8] *= -1.f;
 	matrix[9] *= -1.f;
 	matrix[11] *= -1.f;
-
+	matrix[14] *= -1.f;
 
 	Writer->writeElement("matrix", false);
 	Writer->writeLineBreak();
