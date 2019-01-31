@@ -258,6 +258,8 @@ protected:
 		irr::core::stringc Name;
 	};
 	irr::core::array< MaterialName > MaterialNameCache;
+
+	irr::core::stringc WriteBuffer;	// use for writing short strings to avoid regular memory allocations
 };
 
 

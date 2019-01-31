@@ -984,29 +984,61 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) 
 void CColladaMeshWriter::writeVector(const irr::core::vector3df& vec)
 {
 	c8 tmpbuf[255];
-	snprintf_irr(tmpbuf, 255, "%f %f %f", vec.X, vec.Y, vec.Z*-1.f);
 
-	Writer->writeText(tmpbuf);
+	snprintf_irr(tmpbuf, 255, "%f", vec.X);
+	WriteBuffer = tmpbuf;
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	snprintf_irr(tmpbuf, 255, " %f", vec.Y);
+	WriteBuffer.append(tmpbuf);
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	snprintf_irr(tmpbuf, 255, " %f", vec.Z*-1.f);	// 	change handedness
+	WriteBuffer.append(tmpbuf);
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	Writer->writeText(WriteBuffer.c_str());
 }
 
 void CColladaMeshWriter::writeUv(const irr::core::vector2df& vec)
 {
-	// change handedness
 	c8 tmpbuf[255];
-	snprintf_irr(tmpbuf, 255, "%f %f", vec.X, 1.f-vec.Y);
 
-	Writer->writeText(tmpbuf);
+	snprintf_irr(tmpbuf, 255, "%f", vec.X);
+	WriteBuffer = tmpbuf;
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	snprintf_irr(tmpbuf, 255, " %f", 1.f-vec.Y);	// 	change handedness
+	WriteBuffer.append(tmpbuf);
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	Writer->writeText(WriteBuffer.c_str());
 }
 
 void CColladaMeshWriter::writeColor(const irr::video::SColorf& colorf, bool writeAlpha)
 {
 	c8 tmpbuf[255];
-	if ( writeAlpha )
-		snprintf_irr(tmpbuf, 255, "%f %f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue(), colorf.getAlpha());
-	else
-		snprintf_irr(tmpbuf, 255, "%f %f %f", colorf.getRed(), colorf.getGreen(), colorf.getBlue());
 
-	Writer->writeText(tmpbuf);
+	snprintf_irr(tmpbuf, 255, "%f", colorf.getRed());
+	WriteBuffer = tmpbuf;
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	snprintf_irr(tmpbuf, 255, " %f", colorf.getGreen());
+	WriteBuffer.append(tmpbuf);
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	snprintf_irr(tmpbuf, 255, " %f", colorf.getBlue());
+	WriteBuffer.append(tmpbuf);
+	WriteBuffer.eraseTrailingFloatZeros();
+
+	if ( writeAlpha )
+	{
+		snprintf_irr(tmpbuf, 255, " %f", colorf.getAlpha());
+		WriteBuffer.append(tmpbuf);
+		WriteBuffer.eraseTrailingFloatZeros();
+	}
+
+	Writer->writeText(WriteBuffer.c_str());
 }
 
 irr::core::stringc CColladaMeshWriter::toString(const irr::video::ECOLOR_FORMAT format) const
@@ -2139,7 +2171,7 @@ void CColladaMeshWriter::writeNode(const c8 * nodeName, const c8 * content)
 void CColladaMeshWriter::writeFloatElement(irr::f32 value)
 {
 	Writer->writeElement("float", false);
-	Writer->writeText(core::stringc((double)value).c_str());
+	Writer->writeText(core::stringc((double)value).eraseTrailingFloatZeros().c_str());
 	Writer->writeClosingTag("float");
 	Writer->writeLineBreak();
 }
@@ -2148,12 +2180,16 @@ void CColladaMeshWriter::writeRotateElement(const irr::core::vector3df& axis, ir
 {
 	Writer->writeElement("rotate", false);
 	irr::core::stringc txt(axis.X);
+	txt.eraseTrailingFloatZeros();
 	txt += " ";
 	txt += irr::core::stringc(axis.Y);
+	txt.eraseTrailingFloatZeros();
 	txt += " ";
 	txt += irr::core::stringc(axis.Z * -1.f);
+	txt.eraseTrailingFloatZeros();
 	txt += " ";
 	txt += irr::core::stringc((double)angle * -1.f);
+	txt.eraseTrailingFloatZeros();
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag("rotate");
 	Writer->writeLineBreak();
@@ -2163,10 +2199,13 @@ void CColladaMeshWriter::writeScaleElement(const irr::core::vector3df& scale)
 {
 	Writer->writeElement("scale", false);
 	irr::core::stringc txt(scale.X);
+	txt.eraseTrailingFloatZeros();
 	txt += " ";
 	txt += irr::core::stringc(scale.Y);
+	txt.eraseTrailingFloatZeros();
 	txt += " ";
 	txt += irr::core::stringc(scale.Z);
+	txt.eraseTrailingFloatZeros();
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag("scale");
 	Writer->writeLineBreak();
@@ -2176,10 +2215,13 @@ void CColladaMeshWriter::writeTranslateElement(const irr::core::vector3df& trans
 {
 	Writer->writeElement("translate", false);
 	irr::core::stringc txt(translate.X);
+	txt.eraseTrailingFloatZeros();
 	txt += " ";
 	txt += irr::core::stringc(translate.Y);
+	txt.eraseTrailingFloatZeros();
 	txt += " ";
 	txt += irr::core::stringc(translate.Z*-1.f);
+	txt.eraseTrailingFloatZeros();
 	Writer->writeText(txt.c_str());
 	Writer->writeClosingTag("translate");
 	Writer->writeLineBreak();
@@ -2218,7 +2260,7 @@ void CColladaMeshWriter::writeMatrixElement(const irr::core::matrix4& matrixIrr)
 		{
 			if ( b > 0 )
 				txt += " ";
-			txt += irr::core::stringc(matrix[a*4+b]);
+			txt += irr::core::stringc(matrix[a*4+b]).eraseTrailingFloatZeros();
 		}
 		Writer->writeText(txt.c_str());
 		Writer->writeLineBreak();
