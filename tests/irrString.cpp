@@ -260,6 +260,14 @@ bool testFindFunctions()
 	if ( p >= 0 )
 		return false;
 
+	irr::core::stringc lastX("max");
+	p = lastX.findLastCharNotInList("x",1);
+	if ( p != 1 )
+		return false;
+	p = lastX.findLastCharNotInList("y",1);
+	if ( p != 2 )
+		return false;
+
 	p = empty.findLast('x');
 	if ( p >= 0 )
 		return false;
