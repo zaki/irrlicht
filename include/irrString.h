@@ -1269,7 +1269,7 @@ public:
 	string<T,TAlloc>& eraseTrailingFloatZeros(char decimalPoint='.')
 	{
 		s32 i=findLastCharNotInList("0", 1);
-		if ( i > 0 && i<used-2 )	// non 0 must be found and not last char (also used is at least 2 when i > 0)
+		if ( i > 0 && (u32)i < used-2 )	// non 0 must be found and not last char (also used is at least 2 when i > 0)
 		{
 			u32 eraseStart=i+1;
 			u32 dot=0;
