@@ -1244,7 +1244,7 @@ public:
 
 	//! Trims the string.
 	/** Removes the specified characters (by default, Latin-1 whitespace)
-	from the begining and the end of the string. */
+	from the beginning and the end of the string. */
 	string<T,TAlloc>& trim(const string<T,TAlloc> & whitespace = " \t\n\r")
 	{
 		// find start and end of the substring without the specified characters
@@ -1257,6 +1257,41 @@ public:
 		return (*this = subString(begin, (end +1) - begin));
 	}
 
+	//! Erase 0's at the end when a string ends with a floating point number
+	/** After generating strings from floats we often end up with strings 
+		ending up with lots of zeros which don't add any value. Erase 'em all.
+		Examples: "0.100000" becomes "0.1"
+	              "10.000000" becomes "10"
+				  "foo 3.140000" becomes "foo 3.14"
+				  "no_num.000" stays "no_num.000"
+				  "1." stays "1."
+	*/
+	string<T,TAlloc>& eraseTrailingFloatZeros(char decimalPoint='.')
+	{
+		s32 i=findLastCharNotInList("0", 1);
+		if ( i > 0 && i<used-2 )	// non 0 must be found and not last char (also used is at least 2 when i > 0)
+		{
+			u32 eraseStart=i+1;
+			u32 dot=0;
+			if( isdigit(array[i]) )
+			{
+				while( --i>0 && isdigit(array[i]) );
+				if ( array[i] == decimalPoint )
+					dot = i;
+			}
+			else if ( array[i] == decimalPoint )
+			{
+				dot = i;
+				eraseStart = i;
+			}
+			if ( dot > 0 && isdigit(array[dot-1]) )
+			{
+				array[eraseStart] = 0;
+				used = eraseStart+1;
+			}
+		}
+		return *this;
+	}
 
 	//! Erases a character from the string.
 	/** May be slow, because all elements

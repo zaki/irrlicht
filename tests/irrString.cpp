@@ -287,6 +287,29 @@ bool testFindFunctions()
 	return true;
 }
 
+bool testErase()
+{
+	if ( stringc(1.f).eraseTrailingFloatZeros() != stringc("1") )
+		return false;
+
+	if ( stringc("0.100000").eraseTrailingFloatZeros() != stringc("0.1") )
+		return false;
+
+	if ( stringc("10.000000").eraseTrailingFloatZeros() !=  stringc("10") )
+		return false;
+
+	if ( stringc("foo 3.140000").eraseTrailingFloatZeros() != stringc("foo 3.14") )
+		return false;
+
+	if ( stringc("no_num.000").eraseTrailingFloatZeros() != stringc("no_num.000") )
+		return false;
+
+	if ( stringc("1.").eraseTrailingFloatZeros() != stringc("1.") )
+		return false;
+
+	return true;
+}
+
 // Test the functionality of irrString
 /** Validation is done with assert_log() against expected results. */
 bool testIrrString(void)
@@ -354,6 +377,9 @@ bool testIrrString(void)
 
 	logTestString("test find functions\n");
 	allExpected &= testFindFunctions();
+
+	logTestString("test erase functions\n");
+	allExpected &= testErase();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");

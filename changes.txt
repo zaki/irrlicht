@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Add irr::string::eraseTrailingFloatZeros to kick out trailing 0's for strings generated from floats.
 - Fix .dae/Collada writer to export a right-handed coordinate system as expected by Collada
 - Switch Collada writer to utf8 xml's.
 - Add IXMLWriterUTF8 
