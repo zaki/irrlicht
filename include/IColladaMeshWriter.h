@@ -206,6 +206,7 @@ namespace scene
 			: Properties(0), DefaultProperties(0), NameGenerator(0), DefaultNameGenerator(0)
 			, WriteTextures(true), WriteDefaultScene(true), ExportSMaterialOnce(true)
 			, AmbientLight(0.f, 0.f, 0.f, 1.f)
+			, UnitMeter(1.f), UnitName("meter")
 			, GeometryWriting(ECGI_PER_MESH)
 		{
 			ParamNamesUV[0] = "U";
@@ -268,6 +269,28 @@ namespace scene
 		virtual video::SColorf getAmbientLight() const
 		{
 			return AmbientLight;
+		}
+
+		//! Set the unit distances for all elements and objects
+		/**
+		\param meter: Real-world meters to use per unit. Default 1 unit = 1 meter. For 1 unit = 1cm you would set to 0.01
+		\param name: Name to use for distance unit. Default is "meter".	*/
+		virtual void setUnit(irr::f32 meter, const irr::core::stringc& name)
+		{
+			UnitMeter = meter;
+			UnitName = name;
+		}
+
+		//! Return real world meters to use per unit for all elements and objects
+		virtual irr::f32 getUnitMeter() const
+		{
+			return UnitMeter;
+		}
+
+		//! Return name to use for distance units. Like p.E. "meter".
+		virtual irr::core::stringc getUnitName() const 
+		{
+			return UnitName;
 		}
 
 		//! Control when and how often a mesh is written
@@ -420,6 +443,8 @@ namespace scene
 		bool WriteDefaultScene;
 		bool ExportSMaterialOnce;
 		video::SColorf AmbientLight;
+		irr::f32 UnitMeter;
+		irr::core::stringc UnitName;
 		E_COLLADA_GEOMETRY_WRITING GeometryWriting;
 	};
 

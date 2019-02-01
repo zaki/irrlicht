@@ -1312,6 +1312,9 @@ void CColladaMeshWriter::writeAsset()
 	Writer->writeClosingTag("revision");
 	Writer->writeLineBreak();
 
+	Writer->writeElement("unit", true, "meter", core::stringc(getUnitMeter()).eraseTrailingFloatZeros().c_str(), "name", getUnitName().c_str());
+	Writer->writeLineBreak();
+
 	Writer->writeClosingTag("asset");
 	Writer->writeLineBreak();
 }
