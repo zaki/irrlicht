@@ -175,7 +175,7 @@ static inline void splitFilename(const io::path &name, io::path* path=0,
 static inline io::path mergeFilename(const io::path& path, const io::path& filename, const io::path& extension = "")
 {
 	io::path result(path);
-	
+
 	if ( !result.empty() )
 	{
 		fschar_t last = result.lastChar();
@@ -190,15 +190,12 @@ static inline io::path mergeFilename(const io::path& path, const io::path& filen
 			result += _IRR_TEXT('.');
 		result += extension;
 	}
-	
+
 	return result;
 }
 
 
 //! some standard function ( to remove dependencies )
-#undef isdigit
-#undef isspace
-#undef isupper
 inline s32 isdigit(s32 c) { return c >= '0' && c <= '9'; }
 inline s32 isspace(s32 c) { return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v'; }
 inline s32 isupper(s32 c) { return c >= 'A' && c <= 'Z'; }
