@@ -879,10 +879,20 @@ core::matrix4 CColladaFileLoader::readLookAtNode(io::IXMLReaderUTF8* reader)
 	f32 floats[9];
 	readFloatsInsideElement(reader, floats, 9);
 
-	mat.buildCameraLookAtMatrixLH(
-		core::vector3df(floats[0], floats[1], floats[2]),
-		core::vector3df(floats[3], floats[4], floats[5]),
-		core::vector3df(floats[6], floats[7], floats[8]));
+	if (FlipAxis)
+	{
+		mat.buildCameraLookAtMatrixLH(
+			core::vector3df(floats[0], floats[2], floats[1]),
+			core::vector3df(floats[3], floats[5], floats[4]),
+			core::vector3df(floats[6], floats[8], floats[7]));
+	}
+	else
+	{
+		mat.buildCameraLookAtMatrixLH(
+			core::vector3df(floats[0], floats[1], floats[2]*-1.f),
+			core::vector3df(floats[3], floats[4], floats[5]*-1.f),
+			core::vector3df(floats[6], floats[7], floats[8]*-1.f));
+	}
 
 	return mat;
 }
@@ -903,6 +913,8 @@ core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 	readFloatsInsideElement(reader, floats, 7);
 
 	// build skew matrix from these 7 floats
+	// TODO: missing example, not sure if rotation is in correct direction.
+	// TODO: shouldn't FlipAxis also be regarded here?
 	core::quaternion q;
 	q.fromAngleAxis(floats[0]*core::DEGTORAD, core::vector3df(floats[1], floats[2], floats[3]));
 	mat = q.getMatrix();
@@ -931,7 +943,10 @@ core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 		mat[6]=0.f;
 	}
 
-	return mat;
+	if ( FlipAxis )
+		return mat;
+	else
+		return flipZAxis(mat);
 }
 
 
@@ -990,6 +1005,7 @@ core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 		return mat;
 
 	readFloatsInsideElement(reader, mat.pointer(), 16);
+
 	// put translation into the correct place
 	if (FlipAxis)
 	{
@@ -1008,7 +1024,7 @@ core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 		return mat2;
 	}
 	else
-		return core::matrix4(mat, core::matrix4::EM4CONST_TRANSPOSED);
+		return flipZAxis(core::matrix4(mat, core::matrix4::EM4CONST_TRANSPOSED));
 }
 
 
@@ -1026,7 +1042,7 @@ core::matrix4 CColladaFileLoader::readPerspectiveNode(io::IXMLReaderUTF8* reader
 	f32 floats[1];
 	readFloatsInsideElement(reader, floats, 1);
 
-	// TODO: build perspecitve matrix from this float
+	// TODO: build perspective matrix from this float
 
 	os::Printer::log("COLLADA loader warning: <perspective> not implemented yet.", ELL_WARNING);
 
@@ -1047,6 +1063,7 @@ core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 
 	f32 floats[4];
 	readFloatsInsideElement(reader, floats, 4);
+	floats[3] *= -1.f; // to left handed rotation
 
 	if (!core::iszero(floats[3]))
 	{
@@ -1054,7 +1071,7 @@ core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 		if (FlipAxis)
 			q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[2], floats[1]));
 		else
-			q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[1], floats[2]));
+			q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[1], floats[2]*-1.f));
 		return q.getMatrix();
 	}
 	else
@@ -1102,7 +1119,7 @@ core::matrix4 CColladaFileLoader::readTranslateNode(io::IXMLReaderUTF8* reader)
 	if (FlipAxis)
 		mat.setTranslation(core::vector3df(floats[0], floats[2], floats[1]));
 	else
-		mat.setTranslation(core::vector3df(floats[0], floats[1], floats[2]));
+		mat.setTranslation(core::vector3df(floats[0], floats[1], floats[2]*-1.f));
 
 	return mat;
 }
@@ -2181,7 +2198,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 						else
 						{
 							vtx.Pos.Y = localInputs[k].Data[idx+1];
-							vtx.Pos.Z = localInputs[k].Data[idx+2];
+							vtx.Pos.Z = localInputs[k].Data[idx+2] * -1.f;
 						}
 						break;
 					case ECIS_NORMAL:
@@ -2194,7 +2211,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 						else
 						{
 							vtx.Normal.Y = localInputs[k].Data[idx+1];
-							vtx.Normal.Z = localInputs[k].Data[idx+2];
+							vtx.Normal.Z = localInputs[k].Data[idx+2] * -1.f;
 						}
 						break;
 					case ECIS_TEXCOORD:
@@ -2235,26 +2252,14 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 			if (polygonsSectionName == polygonType &&
 				indices.size() > 3)
 			{
-				// need to tesselate for polygons of 4 or more vertices
+				// need to tessellate for polygons of 4 or more vertices
 				// for now we naively turn interpret it as a triangle fan
-				// as full tesselation is problematic
-				if (FlipAxis)
+				// as full tessellation is problematic
+				for (u32 ind = 0; ind+2 < indices.size(); ++ind)
 				{
-					for (u32 ind = indices.size()-3; ind>0 ; --ind)
-					{
-						mbuffer->Indices.push_back(indices[0]);
-						mbuffer->Indices.push_back(indices[ind+2]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-					}
-				}
-				else
-				{
-					for (u32 ind = 0; ind+2 < indices.size(); ++ind)
-					{
-						mbuffer->Indices.push_back(indices[0]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-						mbuffer->Indices.push_back(indices[ind+2]);
-					}
+					mbuffer->Indices.push_back(indices[0]);
+					mbuffer->Indices.push_back(indices[ind+2]);
+					mbuffer->Indices.push_back(indices[ind+1]);
 				}
 			}
 			else
@@ -2262,18 +2267,9 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				// it's just triangles
 				for (u32 ind = 0; ind < indices.size(); ind+=3)
 				{
-					if (FlipAxis)
-					{
-						mbuffer->Indices.push_back(indices[ind+2]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-						mbuffer->Indices.push_back(indices[ind+0]);
-					}
-					else
-					{
-						mbuffer->Indices.push_back(indices[ind+0]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-						mbuffer->Indices.push_back(indices[ind+2]);
-					}
+					mbuffer->Indices.push_back(indices[ind+2]);
+					mbuffer->Indices.push_back(indices[ind+1]);
+					mbuffer->Indices.push_back(indices[ind+0]);
 				}
 			}
 
@@ -2984,6 +2980,19 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader, io::IAttribut
 			}
 		}
 	}
+}
+
+core::matrix4 CColladaFileLoader::flipZAxis(const core::matrix4& m)
+{
+	core::matrix4 matrix(m);
+	matrix[2] *= -1.f;
+	matrix[6] *= -1.f;
+	matrix[8] *= -1.f;
+	matrix[9] *= -1.f;
+	matrix[11] *= -1.f;
+	matrix[14] *= -1.f;	
+
+	return matrix;
 }
 
 

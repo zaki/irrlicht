@@ -1,7 +1,8 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- .dae/Collade reader now converts from Collada's right-handed to Irrlicht's left handed coordinate system (switching z to -z)
 - Add irr::string::eraseTrailingFloatZeros to kick out trailing 0's for strings generated from floats.
-- Fix .dae/Collada writer to export a right-handed coordinate system as expected by Collada
+- .dae/Collada writer now converts from Irrlicht's left-handed to Collada's right-handed coordinate system (switching z to -z)
 - Switch Collada writer to utf8 xml's.
 - Add IXMLWriterUTF8 
 - IColladaMeshWriter::writeScene got an additional flag to decide if root should be written.
