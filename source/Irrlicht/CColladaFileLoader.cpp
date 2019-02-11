@@ -83,7 +83,6 @@ namespace
 	const core::stringc scaleNodeName =        "scale";
 	const core::stringc translateNodeName =    "translate";
 	const core::stringc skewNodeName =         "skew";
-	const core::stringc bboxNodeName =         "boundingbox";
 	const core::stringc minNodeName =          "min";
 	const core::stringc maxNodeName =          "max";
 	const core::stringc instanceName =         "instance";
@@ -645,7 +644,6 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 	// read the scene
 
 	core::matrix4 transform; // transformation of this node
-	core::aabbox3df bbox;
 	scene::IDummyTransformationSceneNode* node = 0;
 
 	while(reader->read())
@@ -672,9 +670,6 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 			else
 			if (translateNodeName == reader->getNodeName())
 				transform *= readTranslateNode(reader);
-			else
-			if (bboxNodeName == reader->getNodeName())
-				readBboxNode(reader, bbox);
 			else
 			if (nodeSectionName == reader->getNodeName())
 			{
@@ -751,7 +746,6 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 	#endif
 
 	core::matrix4 transform; // transformation of this node
-	core::aabbox3df bbox;
 	scene::ISceneNode* node = 0; // instance
 	CScenePrefab* nodeprefab = 0; // prefab for library_nodes usage
 
@@ -791,9 +785,6 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 			else
 			if (translateNodeName == reader->getNodeName())
 				transform *= readTranslateNode(reader);
-			else
-			if (bboxNodeName == reader->getNodeName())
-				readBboxNode(reader, bbox);
 			else
 			if ((instanceName == reader->getNodeName()) ||
 				(instanceNodeName == reader->getNodeName()) ||
@@ -948,50 +939,6 @@ core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 	else
 		return flipZAxis(mat);
 }
-
-
-//! reads a <boundingbox> element and its content and stores it in bbox
-void CColladaFileLoader::readBboxNode(io::IXMLReaderUTF8* reader,
-		core::aabbox3df& bbox)
-{
-	#ifdef COLLADA_READER_DEBUG
-	os::Printer::log("COLLADA reading boundingbox node", ELL_DEBUG);
-	#endif
-
-	bbox.reset(core::aabbox3df());
-
-	if (reader->isEmptyElement())
-		return;
-
-	f32 floats[3];
-
-	while(reader->read())
-	{
-		if (reader->getNodeType() == io::EXN_ELEMENT)
-		{
-			if (minNodeName == reader->getNodeName())
-			{
-				readFloatsInsideElement(reader, floats, 3);
-				bbox.MinEdge.set(floats[0], floats[1], floats[2]);
-			}
-			else
-			if (maxNodeName == reader->getNodeName())
-			{
-				readFloatsInsideElement(reader, floats, 3);
-				bbox.MaxEdge.set(floats[0], floats[1], floats[2]);
-			}
-			else
-				skipSection(reader, true); // ignore all other sections
-		}
-		else
-		if (reader->getNodeType() == io::EXN_ELEMENT_END)
-		{
-			if (bboxNodeName == reader->getNodeName())
-				break;
-		}
-	}
-}
-
 
 //! reads a <matrix> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
