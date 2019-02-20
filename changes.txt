@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- SViewFrustum::setFrom now sets the correct near clipping plane when the projection matrix doesn't use a target depth range of 0 to z, but for example -z to z. So OGL projections matrices can now also use it.
 - Remove code to read boundingbox element in Collada reader as it's not in Collada specification.
 - .dae/Collade reader now converts from Collada's right-handed to Irrlicht's left handed coordinate system (switching z to -z)
 - Add irr::string::eraseTrailingFloatZeros to kick out trailing 0's for strings generated from floats.

@@ -323,10 +323,10 @@ namespace scene
 		planes[VF_FAR_PLANE].D =        mat[15] - mat[14];
 
 		// near clipping plane
-		planes[VF_NEAR_PLANE].Normal.X = mat[2];
-		planes[VF_NEAR_PLANE].Normal.Y = mat[6];
-		planes[VF_NEAR_PLANE].Normal.Z = mat[10];
-		planes[VF_NEAR_PLANE].D =        mat[14];
+		planes[VF_NEAR_PLANE].Normal.X = mat[3 ] + mat[2];
+		planes[VF_NEAR_PLANE].Normal.Y = mat[7 ] + mat[6];
+		planes[VF_NEAR_PLANE].Normal.Z = mat[11] + mat[10];
+		planes[VF_NEAR_PLANE].D =        mat[15] + mat[14];
 
 		// normalize normals
 		u32 i;
