@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Add a flag to most CMatrix4::buildProjectionMatrix functions to allow creating OpenGL projection matrices (target range of -w to w instead of 0 to w).
 - Bugfix: CCameraSceneNode resets the IsOrthogonal flag to false now when it recalculates a projection matrix.
 - SViewFrustum::setFrom now sets the correct near clipping plane when the projection matrix doesn't use a target depth range of 0 to z, but for example -z to z. So OGL projections matrices can now also use it.
 - Remove code to read boundingbox element in Collada reader as it's not in Collada specification.
