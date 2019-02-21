@@ -304,10 +304,11 @@ namespace core
 			CMatrix4<T>& buildProjectionMatrixPerspectiveLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
 
 			//! Builds a left-handed orthogonal projection matrix.
-			CMatrix4<T>& buildProjectionMatrixOrthoLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+			//\param zClipFromZero: Clipping of z can be projected from 0 to 1 when true (D3D style) and from -1 to 1 when false (OGL style).
+			CMatrix4<T>& buildProjectionMatrixOrthoLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar, bool zClipFromZero=true);
 
 			//! Builds a right-handed orthogonal projection matrix.
-			CMatrix4<T>& buildProjectionMatrixOrthoRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+			CMatrix4<T>& buildProjectionMatrixOrthoRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar, bool zClipFromZero=true);
 
 			//! Builds a left-handed look-at matrix.
 			CMatrix4<T>& buildCameraLookAtMatrixLH(
@@ -1654,7 +1655,7 @@ namespace core
 	// Builds a left-handed orthogonal projection matrix.
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixOrthoLH(
-			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
+			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar, bool zClipFromZero)
 	{
 		_IRR_DEBUG_BREAK_IF(widthOfViewVolume==0.f); //divide by zero
 		_IRR_DEBUG_BREAK_IF(heightOfViewVolume==0.f); //divide by zero
@@ -1671,13 +1672,24 @@ namespace core
 
 		M[8] = 0;
 		M[9] = 0;
-		M[10] = (T)(1/(zFar-zNear));
+		// M[10] 
 		M[11] = 0;
-
+		
 		M[12] = 0;
 		M[13] = 0;
-		M[14] = (T)(zNear/(zNear-zFar));
+		// M[14]
 		M[15] = 1;
+
+		if ( zClipFromZero )
+		{
+			M[10] = (T)(1/(zFar-zNear));
+			M[14] = (T)(zNear/(zNear-zFar));
+		}
+		else
+		{
+			M[10] = (T)(2/(zFar-zNear));
+			M[14] = (T)-(zFar+zNear)/(zFar-zNear);
+		}
 
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
@@ -1689,7 +1701,7 @@ namespace core
 	// Builds a right-handed orthogonal projection matrix.
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixOrthoRH(
-			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
+			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar, bool zClipFromZero)
 	{
 		_IRR_DEBUG_BREAK_IF(widthOfViewVolume==0.f); //divide by zero
 		_IRR_DEBUG_BREAK_IF(heightOfViewVolume==0.f); //divide by zero
@@ -1706,13 +1718,24 @@ namespace core
 
 		M[8] = 0;
 		M[9] = 0;
-		M[10] = (T)(1/(zNear-zFar));
+		// M[10] 
 		M[11] = 0;
 
 		M[12] = 0;
 		M[13] = 0;
-		M[14] = (T)(zNear/(zNear-zFar));
+		// M[14] 
 		M[15] = 1;
+
+		if ( zClipFromZero )
+		{
+			M[10] = (T)(1/(zNear-zFar));
+			M[14] = (T)(zNear/(zNear-zFar));
+		}
+		else
+		{
+			M[10] = (T)(2/(zNear-zFar));
+			M[14] = (T)-(zFar+zNear)/(zFar-zNear);
+		}
 
 #if defined ( USE_MATRIX_TEST )
 		definitelyIdentityMatrix=false;
