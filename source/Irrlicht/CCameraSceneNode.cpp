@@ -231,6 +231,7 @@ void CCameraSceneNode::setFOV(f32 f)
 void CCameraSceneNode::recalculateProjectionMatrix()
 {
 	ViewArea.getTransform ( video::ETS_PROJECTION ).buildProjectionMatrixPerspectiveFovLH(Fovy, Aspect, ZNear, ZFar);
+	IsOrthogonal = false;
 }
 
 
