@@ -1578,7 +1578,7 @@ namespace core
 		}
 		else	// OpenGL version
 		{
-			M[10] = (T)(zFar+zNear/(zNear-zFar));
+			M[10] = (T)((zFar+zNear)/(zNear-zFar));
 			M[14] = (T)(2.0f*zNear*zFar/(zNear-zFar));
 		}
 
@@ -1626,7 +1626,7 @@ namespace core
 		}
 		else	// OpenGL version
 		{
-			M[10] = (T)(zFar+zNear/(zFar-zNear));
+			M[10] = (T)((zFar+zNear)/(zFar-zNear));
 			M[14] = (T)(2.0f*zNear*zFar/(zNear-zFar));
 		}
 
@@ -1800,7 +1800,7 @@ namespace core
 		}
 		else	// OpenGL version
 		{
-			M[10] = (T)(zFar+zNear/(zNear-zFar));
+			M[10] = (T)((zFar+zNear)/(zNear-zFar));
 			M[14] = (T)(2.0f*zNear*zFar/(zNear-zFar));
 		}
 
@@ -1846,7 +1846,7 @@ namespace core
 		}
 		else	// OpenGL version
 		{
-			M[10] = (T)(zFar+zNear/(zFar-zNear));
+			M[10] = (T)((zFar+zNear)/(zFar-zNear));
 			M[14] = (T)(2.0f*zNear*zFar/(zNear-zFar));
 		}
 
