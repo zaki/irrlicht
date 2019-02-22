@@ -1237,9 +1237,8 @@ namespace core
 		// Transform the normal by the transposed inverse of the matrix
 		CMatrix4<T> transposedInverse(*this, EM4CONST_INVERSE_TRANSPOSED);
 		vector3df normal = plane.Normal;
-		transposedInverse.transformVect(normal);
-
-		plane.setPlane(member, normal);
+		transposedInverse.rotateVect(normal);
+		plane.setPlane(member, normal.normalize());
 	}
 
 	//! Transforms a plane by this matrix

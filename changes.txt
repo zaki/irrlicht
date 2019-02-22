@@ -1,5 +1,8 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Bugfix: CMatrix4::transformPlane was calculating the wrong plane-normal before. 
+- SViewFrustum::recalculateBoundingBox no longer includes camera position in the bounding-box. Only using frustum corners now. Thx @DevSH for bugreport & patch.
+- Camera uses now OGL projection matrices with OpenGL driver. Fixes wrong near-plane values with OpenGL (showed too much before).
 - Add a flag to most CMatrix4::buildProjectionMatrix functions to allow creating OpenGL projection matrices (target range of -w to w instead of 0 to w).
 - Bugfix: CCameraSceneNode resets the IsOrthogonal flag to false now when it recalculates a projection matrix.
 - SViewFrustum::setFrom now sets the correct near clipping plane when the projection matrix doesn't use a target depth range of 0 to z, but for example -z to z. So OGL projections matrices can now also use it.
