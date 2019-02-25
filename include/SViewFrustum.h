@@ -51,10 +51,12 @@ namespace scene
 		SViewFrustum(const SViewFrustum& other);
 
 		//! This constructor creates a view frustum based on a projection and/or view matrix.
-		SViewFrustum(const core::matrix4& mat);
+		//\param zClipFromZero: Clipping of z can be projected from 0 to w when true (D3D style) and from -w to w when false (OGL style).
+		SViewFrustum(const core::matrix4& mat, bool zClipFromZero);
 
 		//! This constructor creates a view frustum based on a projection and/or view matrix.
-		inline void setFrom(const core::matrix4& mat);
+		//\param zClipFromZero: Clipping of z can be projected from 0 to w when true (D3D style) and from -w to w when false (OGL style).
+		inline void setFrom(const core::matrix4& mat, bool zClipFromZero);
 
 		//! transforms the frustum by the matrix
 		/** \param mat: Matrix by which the view frustum is transformed.*/
@@ -159,9 +161,9 @@ namespace scene
 		BoundingCenter = other.BoundingCenter;
 	}
 
-	inline SViewFrustum::SViewFrustum(const core::matrix4& mat)
+	inline SViewFrustum::SViewFrustum(const core::matrix4& mat, bool zClipFromZero)
 	{
-		setFrom(mat);
+		setFrom(mat, zClipFromZero);
 	}
 
 
@@ -292,7 +294,7 @@ namespace scene
 
 	//! This constructor creates a view frustum based on a projection
 	//! and/or view matrix.
-	inline void SViewFrustum::setFrom(const core::matrix4& mat)
+	inline void SViewFrustum::setFrom(const core::matrix4& mat, bool zClipFromZero)
 	{
 		// left clipping plane
 		planes[VF_LEFT_PLANE].Normal.X = mat[3 ] + mat[0];
@@ -325,10 +327,21 @@ namespace scene
 		planes[VF_FAR_PLANE].D =        mat[15] - mat[14];
 
 		// near clipping plane
-		planes[VF_NEAR_PLANE].Normal.X = mat[3 ] + mat[2];
-		planes[VF_NEAR_PLANE].Normal.Y = mat[7 ] + mat[6];
-		planes[VF_NEAR_PLANE].Normal.Z = mat[11] + mat[10];
-		planes[VF_NEAR_PLANE].D =        mat[15] + mat[14];
+		if ( zClipFromZero )
+		{
+			planes[VF_NEAR_PLANE].Normal.X = mat[2];
+			planes[VF_NEAR_PLANE].Normal.Y = mat[6];
+			planes[VF_NEAR_PLANE].Normal.Z = mat[10];
+			planes[VF_NEAR_PLANE].D =        mat[14];
+		}
+		else
+		{
+			// near clipping plane
+			planes[VF_NEAR_PLANE].Normal.X = mat[3 ] + mat[2];
+			planes[VF_NEAR_PLANE].Normal.Y = mat[7 ] + mat[6];
+			planes[VF_NEAR_PLANE].Normal.Z = mat[11] + mat[10];
+			planes[VF_NEAR_PLANE].D =        mat[15] + mat[14];
+		}
 
 		// normalize normals
 		u32 i;
