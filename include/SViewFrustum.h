@@ -263,9 +263,13 @@ namespace scene
 	inline void SViewFrustum::recalculateBoundingBox()
 	{
 		boundingBox.reset(getNearLeftUp());
+		boundingBox.addInternalPoint(getNearRightUp());
+		boundingBox.addInternalPoint(getNearLeftDown());
+		boundingBox.addInternalPoint(getNearRightDown());
 		boundingBox.addInternalPoint(getFarRightUp());
 		boundingBox.addInternalPoint(getFarLeftDown());
 		boundingBox.addInternalPoint(getFarRightDown());
+		boundingBox.addInternalPoint(getFarLeftUp());
 
 		// Also recalculate the bounding sphere when the bbox changes
 		recalculateBoundingSphere();
