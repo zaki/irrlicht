@@ -5,7 +5,7 @@ Changes in 1.9 (not yet released)
 - Camera uses now OGL projection matrices with OpenGL driver. Fixes wrong near-plane values with OpenGL (showed too much before).
 - Add a flag to most CMatrix4::buildProjectionMatrix functions to allow creating OpenGL projection matrices (target range of -w to w instead of 0 to w).
 - Bugfix: CCameraSceneNode resets the IsOrthogonal flag to false now when it recalculates a projection matrix.
-- SViewFrustum::setFrom now sets the correct near clipping plane when the projection matrix doesn't use a target depth range of 0 to z, but for example -z to z. So OGL projections matrices can now also use it.
+- SViewFrustum::setFrom and SViewFrustum constructor now use a parameter to allow to set the correct near clipping plane when the projection matrix doesn't use a target depth range of 0 to z, but for example -z to z. So OGL projections matrices can now also use it.
 - Remove code to read boundingbox element in Collada reader as it's not in Collada specification.
 - .dae/Collade reader now converts from Collada's right-handed to Irrlicht's left handed coordinate system (switching z to -z)
 - Add irr::string::eraseTrailingFloatZeros to kick out trailing 0's for strings generated from floats.

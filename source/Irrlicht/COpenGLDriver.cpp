@@ -3581,10 +3581,11 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 //! Removes a texture from the texture cache and deletes it, freeing lot of memory.
 void COpenGLDriver::removeTexture(ITexture* texture)
 {
-	if (!texture)
-		return;
-
-	CNullDriver::removeTexture(texture);
+	if (texture)
+	{
+		CacheHandler->getTextureCache().remove(texture);
+		CNullDriver::removeTexture(texture);
+	}
 }
 
 //! Check if the driver supports creating textures with the given color format

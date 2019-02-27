@@ -194,8 +194,6 @@ public:
 
 	virtual ~COpenGLCoreTexture()
 	{
-		Driver->getCacheHandler()->getTextureCache().remove(this);
-
 		if (TextureName)
 			glDeleteTextures(1, &TextureName);
 
