@@ -16,7 +16,7 @@ static bool testOrthoCam(video::E_DRIVER_TYPE driverType)
 	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNode();
 	cam->setPosition(core::vector3df(500,200,-500));
 	cam->setTarget(core::vector3df());
-	cam->setProjectionMatrix(core::matrix4().buildProjectionMatrixOrthoLH(240,180,0.9f,2000.f), true);
+	cam->setProjectionMatrix(core::matrix4().buildProjectionMatrixOrthoLH(240,180,0.9f,2000.f,driverType != video::EDT_OPENGL), true);
 
 	device->getSceneManager()->addAnimatedMeshSceneNode(device->getSceneManager()->addHillPlaneMesh("plane", core::dimension2df(32,32), core::dimension2du(16,16)));//->setMaterialFlag(video::EMF_WIREFRAME, true);
 	device->getSceneManager()->addCubeSceneNode(20.f)->setPosition(core::vector3df(50,20,50));
@@ -60,7 +60,7 @@ static bool testOrthoStencil(video::E_DRIVER_TYPE driverType)
 	scene::ICameraSceneNode* cam = device->getSceneManager()->addCameraSceneNode();
 	cam->setPosition(core::vector3df(300,250,-300));
 	cam->setTarget(core::vector3df(0,20,0));
-	cam->setProjectionMatrix(core::matrix4().buildProjectionMatrixOrthoLH(120,90,0.9f,2000.f), true);
+	cam->setProjectionMatrix(core::matrix4().buildProjectionMatrixOrthoLH(120,90,0.9f,2000.f,driverType != video::EDT_OPENGL), true);
 
 	device->getSceneManager()->addAnimatedMeshSceneNode(device->getSceneManager()->addHillPlaneMesh("plane", core::dimension2df(32,32), core::dimension2du(16,16)));//->setMaterialFlag(video::EMF_WIREFRAME, true);
 
@@ -74,7 +74,7 @@ static bool testOrthoStencil(video::E_DRIVER_TYPE driverType)
 	light->setRadius(500.f);
 	light->getLightData().DiffuseColor.set(0,1,1);
 
-	device->getVideoDriver()->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(0,0,0,0));
+	device->getVideoDriver()->beginScene(video::ECBF_ALL, video::SColor(0,0,0,0));
 	device->getSceneManager()->drawAll();
 	device->getVideoDriver()->endScene();
 

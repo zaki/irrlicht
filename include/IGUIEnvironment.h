@@ -12,6 +12,7 @@
 #include "EFocusFlags.h"
 #include "IEventReceiver.h"
 #include "IXMLReader.h"
+#include "IXMLWriter.h"
 #include "path.h"
 
 namespace irr
@@ -21,7 +22,6 @@ namespace irr
 
 	namespace io
 	{
-		class IXMLWriter;
 		class IReadFile;
 		class IWriteFile;
 		class IFileSystem;

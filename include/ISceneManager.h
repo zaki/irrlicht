@@ -19,6 +19,7 @@
 #include "SceneParameters.h"
 #include "IGeometryCreator.h"
 #include "ISkinnedMesh.h"
+#include "IXMLWriter.h"
 
 namespace irr
 {

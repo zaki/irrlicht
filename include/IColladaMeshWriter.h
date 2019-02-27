@@ -171,7 +171,7 @@ namespace scene
 		\param instance When E_COLLADA_GEOMETRY_WRITING is not ECGI_PER_MESH then
 		several instances of the same mesh can be written and this counts them.
 		*/
-		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh, int instance) = 0;
+		virtual irr::core::stringc nameForMesh(const scene::IMesh* mesh, int instance) = 0;
 
 		//! Return a unique name for the given node
 		/** Note that names really must be unique here per node-pointer, so
@@ -180,7 +180,7 @@ namespace scene
 		the xs::NCName standard to be valid, you can run them through
 		IColladaMeshWriter::toNCName to ensure that.
 		*/
-		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) = 0;
+		virtual irr::core::stringc nameForNode(const scene::ISceneNode* node) = 0;
 
 		//! Return a name for the material
 		/** There is one material created in the writer for each unique name.
@@ -193,7 +193,7 @@ namespace scene
 		Names must follow the xs::NCName standard to be valid, you can run them
 		through IColladaMeshWriter::toNCName to ensure that.
 		*/
-		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
+		virtual irr::core::stringc nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
 	};
 
 
@@ -206,8 +206,11 @@ namespace scene
 			: Properties(0), DefaultProperties(0), NameGenerator(0), DefaultNameGenerator(0)
 			, WriteTextures(true), WriteDefaultScene(true), ExportSMaterialOnce(true)
 			, AmbientLight(0.f, 0.f, 0.f, 1.f)
+			, UnitMeter(1.f), UnitName("meter")
 			, GeometryWriting(ECGI_PER_MESH)
 		{
+			ParamNamesUV[0] = "U";
+			ParamNamesUV[1] = "V";
 		}
 
 		//! Destructor
@@ -224,7 +227,8 @@ namespace scene
 		}
 
 		//! writes a scene starting with the given node
-		virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root) = 0;
+		//\param writeRoot: 0 = no, 1=yes unless root is scenemanager, 2=yes
+		virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root, int writeRoot=1) = 0;
 
 
 		//! Set if texture information should be written
@@ -265,6 +269,28 @@ namespace scene
 		virtual video::SColorf getAmbientLight() const
 		{
 			return AmbientLight;
+		}
+
+		//! Set the unit distances for all elements and objects
+		/**
+		\param meter: Real-world meters to use per unit. Default 1 unit = 1 meter. For 1 unit = 1cm you would set to 0.01
+		\param name: Name to use for distance unit. Default is "meter".	*/
+		virtual void setUnit(irr::f32 meter, const irr::core::stringc& name)
+		{
+			UnitMeter = meter;
+			UnitName = name;
+		}
+
+		//! Return real world meters to use per unit for all elements and objects
+		virtual irr::f32 getUnitMeter() const
+		{
+			return UnitMeter;
+		}
+
+		//! Return name to use for distance units. Like p.E. "meter".
+		virtual irr::core::stringc getUnitName() const 
+		{
+			return UnitName;
 		}
 
 		//! Control when and how often a mesh is written
@@ -358,13 +384,26 @@ namespace scene
 
 		//! Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
 		/** A tool function to help when using a custom name generator to generative valid names for collada names and id's. */
-		virtual irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const = 0;
+		virtual irr::core::stringc toNCName(const irr::core::stringc& oldString, const irr::core::stringc& prefix=irr::core::stringc("_NC_")) const = 0;
 
 		//! After export you can find out which name had been used for writing the geometry for this node.
 		/** The name comes from IColladaMeshWriterNames::nameForMesh, but you can't access the node there.
 		\return Either a pointer to the name or NULL */
 		// TODO: Function is not const because there is no const getMesh() function for several Irrlicht nodes.
-		virtual const irr::core::stringw* findGeometryNameForNode(ISceneNode* node) = 0;
+		virtual const irr::core::stringc* findGeometryNameForNode(ISceneNode* node) = 0;
+
+		//! Change param name used for UV's.
+		/** Param names for UV's have a name. By default it's "U" and "V".
+			Usually it doesn't matter as names are optional in Collada anyway.
+			But unfortunately some tools insist on specific names.
+			So if "U", "V" does not work then try to export by setting this to "S", "T".
+			One tool which insists on "S", "T" is for example SketchUp.
+		*/
+		void SetParamNamesUV(const core::stringc& u, const core::stringc& v)
+		{
+			ParamNamesUV[0] = u;
+			ParamNamesUV[1] = v;
+		}
 
 
 	protected:
@@ -392,6 +431,9 @@ namespace scene
 			DefaultNameGenerator = p;
 		}
 
+	protected:
+		irr::core::stringc ParamNamesUV[2];
+
 	private:
 		IColladaMeshWriterProperties * Properties;
 		IColladaMeshWriterProperties * DefaultProperties;
@@ -401,6 +443,8 @@ namespace scene
 		bool WriteDefaultScene;
 		bool ExportSMaterialOnce;
 		video::SColorf AmbientLight;
+		irr::f32 UnitMeter;
+		irr::core::stringc UnitName;
 		E_COLLADA_GEOMETRY_WRITING GeometryWriting;
 	};
 

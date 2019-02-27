@@ -260,6 +260,14 @@ bool testFindFunctions()
 	if ( p >= 0 )
 		return false;
 
+	irr::core::stringc lastX("max");
+	p = lastX.findLastCharNotInList("x",1);
+	if ( p != 1 )
+		return false;
+	p = lastX.findLastCharNotInList("y",1);
+	if ( p != 2 )
+		return false;
+
 	p = empty.findLast('x');
 	if ( p >= 0 )
 		return false;
@@ -274,6 +282,29 @@ bool testFindFunctions()
 
 	p = dot.findLastChar("-.", 2);
 	if ( p != 0 )
+		return false;
+
+	return true;
+}
+
+bool testErase()
+{
+	if ( stringc(1.f).eraseTrailingFloatZeros() != stringc("1") )
+		return false;
+
+	if ( stringc("0.100000").eraseTrailingFloatZeros() != stringc("0.1") )
+		return false;
+
+	if ( stringc("10.000000").eraseTrailingFloatZeros() !=  stringc("10") )
+		return false;
+
+	if ( stringc("foo 3.140000").eraseTrailingFloatZeros() != stringc("foo 3.14") )
+		return false;
+
+	if ( stringc("no_num.000").eraseTrailingFloatZeros() != stringc("no_num.000") )
+		return false;
+
+	if ( stringc("1.").eraseTrailingFloatZeros() != stringc("1.") )
 		return false;
 
 	return true;
@@ -346,6 +377,9 @@ bool testIrrString(void)
 
 	logTestString("test find functions\n");
 	allExpected &= testFindFunctions();
+
+	logTestString("test erase functions\n");
+	allExpected &= testErase();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");

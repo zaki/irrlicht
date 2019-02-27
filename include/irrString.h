@@ -36,6 +36,7 @@ outside the string class for explicit use.
 template <typename T, typename TAlloc = irrAllocator<T> >
 class string;
 static size_t multibyteToWString(string<wchar_t>& destination, const char* source, u32 sourceSize);
+inline s32 isdigit(s32 c);
 
 enum eLocaleID
 {
@@ -1244,7 +1245,7 @@ public:
 
 	//! Trims the string.
 	/** Removes the specified characters (by default, Latin-1 whitespace)
-	from the begining and the end of the string. */
+	from the beginning and the end of the string. */
 	string<T,TAlloc>& trim(const string<T,TAlloc> & whitespace = " \t\n\r")
 	{
 		// find start and end of the substring without the specified characters
@@ -1257,6 +1258,41 @@ public:
 		return (*this = subString(begin, (end +1) - begin));
 	}
 
+	//! Erase 0's at the end when a string ends with a floating point number
+	/** After generating strings from floats we often end up with strings
+		ending up with lots of zeros which don't add any value. Erase 'em all.
+		Examples: "0.100000" becomes "0.1"
+	              "10.000000" becomes "10"
+				  "foo 3.140000" becomes "foo 3.14"
+				  "no_num.000" stays "no_num.000"
+				  "1." stays "1."
+	*/
+	string<T,TAlloc>& eraseTrailingFloatZeros(char decimalPoint='.')
+	{
+		s32 i=findLastCharNotInList("0", 1);
+		if ( i > 0 && (u32)i < used-2 )	// non 0 must be found and not last char (also used is at least 2 when i > 0)
+		{
+			u32 eraseStart=i+1;
+			u32 dot=0;
+			if( core::isdigit(array[i]) )
+			{
+				while( --i>0 && core::isdigit(array[i]) );
+				if ( array[i] == decimalPoint )
+					dot = i;
+			}
+			else if ( array[i] == decimalPoint )
+			{
+				dot = i;
+				eraseStart = i;
+			}
+			if ( dot > 0 && core::isdigit(array[dot-1]) )
+			{
+				array[eraseStart] = 0;
+				used = eraseStart+1;
+			}
+		}
+		return *this;
+	}
 
 	//! Erases a character from the string.
 	/** May be slow, because all elements
@@ -1331,7 +1367,7 @@ public:
 			return 0;
 
 		const u32 oldSize=ret.size();
-		
+
 		u32 tokenStartIdx = 0;
 		for (u32 i=0; i<used; ++i)
 		{
@@ -1350,14 +1386,14 @@ public:
 						else if ( !ignoreEmptyTokens )
 							ret.push_back(string<T,TAlloc>());
 					}
-					tokenStartIdx = i+1;					
+					tokenStartIdx = i+1;
 					break;
 				}
 			}
 		}
 		if ((used - 1) > tokenStartIdx)
 			ret.push_back(string<T,TAlloc>(&array[tokenStartIdx], (used - 1) - tokenStartIdx));
-		
+
 		return ret.size()-oldSize;
 	}
 

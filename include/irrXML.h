@@ -7,6 +7,8 @@
 
 #include <stdio.h>
 #include "IrrCompileConfig.h"
+#include "irrArray.h"
+#include "irrString.h"
 
 /** \mainpage irrXML 1.2 API documentation
  <div align="center"><img src="logobig.png" ></div>
@@ -368,6 +370,65 @@ namespace io
 		IrrXMLReaderUTF32. It should not be necessary to call this
 		method and only exists for informational purposes. */
 		virtual ETEXT_FORMAT getParserFormat() const = 0;
+	};
+
+	//! Interface providing methods for making it easier to write XML files.
+	template<class char_type, class super_class>
+	class IIrrXMLWriter : public super_class
+	{
+	public:
+
+		//! Destructor
+		virtual ~IIrrXMLWriter() {}
+
+		//! Writes an xml 1.0 header.
+		/** Looks like &lt;?xml version="1.0"?&gt;. This should always
+		be called before writing anything other, because also the text
+		file header for Unicode texts is written out with this method. */
+		virtual void writeXMLHeader() = 0;
+
+		//! Writes an xml element with maximal 5 attributes like "<foo />" or
+		//! &lt;foo optAttr="value" /&gt;.
+		/** The element can be empty or not.
+		\param name: Name of the element
+		\param empty: Specifies if the element should be empty. Like
+		"<foo />". If You set this to false, something like this is
+		written instead: "<foo>".
+		\param attr1Name: 1st attributes name
+		\param attr1Value: 1st attributes value
+		\param attr2Name: 2nd attributes name
+		\param attr2Value: 2nd attributes value
+		\param attr3Name: 3rd attributes name
+		\param attr3Value: 3rd attributes value
+		\param attr4Name: 4th attributes name
+		\param attr4Value: 4th attributes value
+		\param attr5Name: 5th attributes name
+		\param attr5Value: 5th attributes value */
+		virtual void writeElement(const char_type* name, bool empty=false,
+			const char_type* attr1Name = 0, const char_type* attr1Value = 0,
+			const char_type* attr2Name = 0, const char_type* attr2Value = 0,
+			const char_type* attr3Name = 0, const char_type* attr3Value = 0,
+			const char_type* attr4Name = 0, const char_type* attr4Value = 0,
+			const char_type* attr5Name = 0, const char_type* attr5Value = 0) = 0;
+
+		//! Writes an xml element with any number of attributes
+		virtual void writeElement(const char_type* name, bool empty,
+				core::array<core::string<char_type> > &names, core::array<core::string<char_type> > &values) = 0;
+
+		//! Writes a comment into the xml file
+		virtual void writeComment(const char_type* comment) = 0;
+
+		//! Writes the closing tag for an element. Like "</foo>"
+		virtual void writeClosingTag(const char_type* name) = 0;
+
+		//! Writes a text into the file.
+		/** All occurrences of special characters such as
+		& (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automatically
+		replaced. */
+		virtual void writeText(const char_type* text) = 0;
+
+		//! Writes a line break
+		virtual void writeLineBreak() = 0;
 	};
 
 

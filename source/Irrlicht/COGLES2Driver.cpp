@@ -2586,9 +2586,7 @@ COGLES2Driver::~COGLES2Driver()
 
 	void COGLES2Driver::removeTexture(ITexture* texture)
 	{
-		if (!texture)
-			return;
-
+		CacheHandler->getTextureCache().remove(texture);
 		CNullDriver::removeTexture(texture);
 	}
 

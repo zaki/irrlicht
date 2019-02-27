@@ -24,6 +24,7 @@
 #include "irrString.h"
 #include "irrArray.h"
 #include "IXMLReader.h"
+#include "IXMLWriter.h"
 #include "EAttributes.h"
 #include "path.h"
 
@@ -35,7 +36,6 @@ namespace video
 } // end namespace video
 namespace io
 {
-	class IXMLWriter;
 
 //! Provides a generic interface for attributes and their values and the possibility to serialize them
 class IAttributes : public virtual IReferenceCounted

@@ -2929,9 +2929,7 @@ IImage* COGLES1Driver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 
 void COGLES1Driver::removeTexture(ITexture* texture)
 {
-	if (!texture)
-		return;
-
+	CacheHandler->getTextureCache().remove(texture);
 	CNullDriver::removeTexture(texture);
 }
 
