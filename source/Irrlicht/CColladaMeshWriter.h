@@ -9,12 +9,12 @@
 #include "S3DVertex.h"
 #include "irrMap.h"
 #include "IVideoDriver.h"
+#include "IXMLWriter.h"
 
 namespace irr
 {
 namespace io
 {
-	class IXMLWriter;
 	class IFileSystem;
 }
 
@@ -63,11 +63,11 @@ namespace scene
 	{
 	public:
 		CColladaMeshWriterNames(IColladaMeshWriter * writer);
-		virtual irr::core::stringw nameForMesh(const scene::IMesh* mesh, int instance) _IRR_OVERRIDE_;
-		virtual irr::core::stringw nameForNode(const scene::ISceneNode* node) _IRR_OVERRIDE_;
-		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) _IRR_OVERRIDE_;
+		virtual irr::core::stringc nameForMesh(const scene::IMesh* mesh, int instance) _IRR_OVERRIDE_;
+		virtual irr::core::stringc nameForNode(const scene::ISceneNode* node) _IRR_OVERRIDE_;
+		virtual irr::core::stringc nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) _IRR_OVERRIDE_;
 	protected:
-		irr::core::stringw nameForPtr(const void* ptr) const;
+		irr::core::stringc nameForPtr(const void* ptr) const;
 	private:
 		IColladaMeshWriter * ColladaMeshWriter;
 	};
@@ -88,40 +88,39 @@ public:
 	virtual EMESH_WRITER_TYPE getType() const _IRR_OVERRIDE_;
 
 	//! writes a scene starting with the given node
-	virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root) _IRR_OVERRIDE_;
+	virtual bool writeScene(io::IWriteFile* file, scene::ISceneNode* root, int writeRoot) _IRR_OVERRIDE_;
 
 	//! writes a mesh
 	virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE) _IRR_OVERRIDE_;
 
 	// Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
-	virtual irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const _IRR_OVERRIDE_;
+	virtual irr::core::stringc toNCName(const irr::core::stringc& oldString, const irr::core::stringc& prefix=irr::core::stringc("_NC_")) const _IRR_OVERRIDE_;
 
 	//! After export you can find out which name had been used for writing the geometry for this node.
-	virtual const irr::core::stringw* findGeometryNameForNode(ISceneNode* node) _IRR_OVERRIDE_;
+	virtual const irr::core::stringc* findGeometryNameForNode(ISceneNode* node) _IRR_OVERRIDE_;
 
 protected:
 
 	void reset();
 	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
 	void writeUv(const irr::core::vector2df& vec);
-	void writeVector(const irr::core::vector2df& vec);
 	void writeVector(const irr::core::vector3df& vec);
 	void writeColor(const irr::video::SColorf& colorf, bool writeAlpha=true);
-	inline irr::core::stringw toString(const irr::video::ECOLOR_FORMAT format) const;
-	inline irr::core::stringw toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
-	inline irr::core::stringw toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;
-	inline irr::core::stringw toRef(const irr::core::stringw& source) const;
+	inline irr::core::stringc toString(const irr::video::ECOLOR_FORMAT format) const;
+	inline irr::core::stringc toString(const irr::video::E_TEXTURE_CLAMP clamp) const;
+	inline irr::core::stringc toString(const irr::scene::E_COLLADA_TRANSPARENT_FX opaque) const;
+	inline irr::core::stringc toRef(const irr::core::stringc& source) const;
 	bool isCamera(const scene::ISceneNode* node) const;
-	irr::core::stringw nameForMesh(const scene::IMesh* mesh, int instance) const;
-	irr::core::stringw nameForNode(const scene::ISceneNode* node) const;
-	irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node);
-	irr::core::stringw nameForMaterialSymbol(const scene::IMesh* mesh, int materialId) const;
-	irr::core::stringw findCachedMaterialName(const irr::video::SMaterial& material) const;
-	irr::core::stringw minTexfilterToString(bool bilinear, bool trilinear) const;
-	irr::core::stringw magTexfilterToString(bool bilinear, bool trilinear) const;
-	irr::core::stringw pathToURI(const irr::io::path& path) const;
-	inline bool isXmlNameStartChar(wchar_t c) const;
-	inline bool isXmlNameChar(wchar_t c) const;
+	irr::core::stringc nameForMesh(const scene::IMesh* mesh, int instance) const;
+	irr::core::stringc nameForNode(const scene::ISceneNode* node) const;
+	irr::core::stringc nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node);
+	irr::core::stringc nameForMaterialSymbol(const scene::IMesh* mesh, int materialId) const;
+	irr::core::stringc findCachedMaterialName(const irr::video::SMaterial& material) const;
+	irr::core::stringc minTexfilterToString(bool bilinear, bool trilinear) const;
+	irr::core::stringc magTexfilterToString(bool bilinear, bool trilinear) const;
+	irr::core::stringc pathToURI(const irr::io::path& path) const;
+	inline bool isXmlNameStartChar(c8 c) const;
+	inline bool isXmlNameChar(c8 c) const;
 	s32 getCheckedTextureIdx(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs);
 	video::SColor getColorMapping(const video::SMaterial & material, E_COLLADA_COLOR_SAMPLER cs, E_COLLADA_IRR_COLOR colType);
 	void writeAsset();
@@ -132,22 +131,22 @@ protected:
 	void writeNodeCameras(irr::scene::ISceneNode * node);
 	void writeAllMeshGeometries();
 	void writeSceneNode(irr::scene::ISceneNode * node);
-	void writeMeshMaterials(scene::IMesh* mesh, irr::core::array<irr::core::stringw> * materialNamesOut=0);
+	void writeMeshMaterials(scene::IMesh* mesh, irr::core::array<irr::core::stringc> * materialNamesOut=0);
 	void writeMeshEffects(scene::IMesh* mesh);
-	void writeMaterialEffect(const irr::core::stringw& materialname, const video::SMaterial & material);
-	void writeMeshGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh);
-	void writeMeshInstanceGeometry(const irr::core::stringw& meshname, scene::IMesh* mesh, scene::ISceneNode* node=0);
-	void writeMaterial(const irr::core::stringw& materialname);
-	void writeLightInstance(const irr::core::stringw& lightName);
-	void writeCameraInstance(const irr::core::stringw& cameraName);
+	void writeMaterialEffect(const irr::core::stringc& materialname, const video::SMaterial & material);
+	void writeMeshGeometry(const irr::core::stringc& meshname, scene::IMesh* mesh);
+	void writeMeshInstanceGeometry(const irr::core::stringc& meshname, scene::IMesh* mesh, scene::ISceneNode* node=0);
+	void writeMaterial(const irr::core::stringc& materialname);
+	void writeLightInstance(const irr::core::stringc& lightName);
+	void writeCameraInstance(const irr::core::stringc& cameraName);
 	void writeLibraryImages();
-	void writeColorFx(const video::SMaterial & material, const wchar_t * colorname, E_COLLADA_COLOR_SAMPLER cs, const wchar_t* attr1Name=0, const wchar_t* attr1Value=0);
+	void writeColorFx(const video::SMaterial & material, const c8 * colorname, E_COLLADA_COLOR_SAMPLER cs, const c8* attr1Name=0, const c8* attr1Value=0);
 	void writeAmbientLightElement(const video::SColorf & col);
 	void writeColorElement(const video::SColor & col, bool writeAlpha=true);
 	void writeColorElement(const video::SColorf & col, bool writeAlpha=true);
 	void writeTextureSampler(s32 textureIdx);
 	void writeFxElement(const video::SMaterial & material, E_COLLADA_TECHNIQUE_FX techFx);
-	void writeNode(const wchar_t * nodeName, const wchar_t * content);
+	void writeNode(const c8 * nodeName, const c8 * content);
 	void writeFloatElement(irr::f32 value);
 	void writeRotateElement(const irr::core::vector3df& axis, irr::f32 angle);
 	void writeScaleElement(const irr::core::vector3df& scale);
@@ -157,35 +156,28 @@ protected:
 
 	struct SComponentGlobalStartPos
 	{
-		SComponentGlobalStartPos() : PosStartIndex(-1), PosLastIndex(-1),
-				NormalStartIndex(-1), NormalLastIndex(-1),
-				TCoord0StartIndex(-1), TCoord0LastIndex(-1),
-				TCoord1StartIndex(-1), TCoord1LastIndex(-1)
+		SComponentGlobalStartPos() : PosStartIndex(0),
+				NormalStartIndex(0),
+				TCoord0StartIndex(0),
+				TCoord1StartIndex(0)
 		{ }
 
-		s32 PosStartIndex;
-		s32 PosLastIndex;
-
-		s32 NormalStartIndex;
-		s32 NormalLastIndex;
-
-		s32 TCoord0StartIndex;
-		s32 TCoord0LastIndex;
-
-		s32 TCoord1StartIndex;
-		s32 TCoord1LastIndex;
+		u32 PosStartIndex;
+		u32 NormalStartIndex;
+		u32 TCoord0StartIndex;
+		u32 TCoord1StartIndex;
 	};
 
 	io::IFileSystem* FileSystem;
 	video::IVideoDriver* VideoDriver;
-	io::IXMLWriter* Writer;
+	io::IXMLWriterUTF8* Writer;
 	core::array<video::ITexture*> LibraryImages;
 	io::path Directory;
 
 	// Helper struct for creating geometry copies for the ECGI_PER_MESH_AND_MATERIAL settings.
 	struct SGeometryMeshMaterials
 	{
-		bool equals(const core::array<irr::core::stringw>& names) const
+		bool equals(const core::array<irr::core::stringc>& names) const
 		{
 			if ( names.size() != MaterialNames.size() )
 				return false;
@@ -195,8 +187,8 @@ protected:
 			return true;
 		}
 
-		irr::core::stringw GeometryName;				// replacing the usual ColladaMesh::Name
-		core::array<irr::core::stringw> MaterialNames;	// Material names exported for this instance
+		irr::core::stringc GeometryName;				// replacing the usual ColladaMesh::Name
+		core::array<irr::core::stringc> MaterialNames;	// Material names exported for this instance
 		core::array<const ISceneNode*> MaterialOwners;	// Nodes using this specific mesh-material combination
 	};
 
@@ -207,7 +199,7 @@ protected:
 		{
 		}
 
-		SGeometryMeshMaterials * findGeometryMeshMaterials(const irr::core::array<irr::core::stringw> materialNames)
+		SGeometryMeshMaterials * findGeometryMeshMaterials(const irr::core::array<irr::core::stringc> materialNames)
 		{
 			for ( irr::u32 i=0; i<GeometryMeshMaterials.size(); ++i )
 			{
@@ -217,7 +209,7 @@ protected:
 			return NULL;
 		}
 
-		const irr::core::stringw& findGeometryNameForNode(const ISceneNode* node) const
+		const irr::core::stringc& findGeometryNameForNode(const ISceneNode* node) const
 		{
 			if ( GeometryMeshMaterials.size() < 2 )
 				return Name;
@@ -229,7 +221,7 @@ protected:
 			return Name; // (shouldn't get here usually)
 		}
 
-		irr::core::stringw Name;
+		irr::core::stringc Name;
 		bool MaterialsWritten;	// just an optimization doing that here in addition to the MaterialsWritten map
 		bool EffectsWritten;	// just an optimization doing that here in addition to the EffectsWritten map
 
@@ -242,30 +234,32 @@ protected:
 	struct SColladaLight
 	{
 		SColladaLight()	{}
-		irr::core::stringw Name;
+		irr::core::stringc Name;
 	};
 	typedef core::map<ISceneNode*, SColladaLight>::Node LightNode;
 	core::map<ISceneNode*, SColladaLight> LightNodes;
 
 	// structure for the camera library
-	typedef core::map<ISceneNode*, irr::core::stringw>::Node CameraNode;
-	core::map<ISceneNode*, irr::core::stringw> CameraNodes;
+	typedef core::map<ISceneNode*, irr::core::stringc>::Node CameraNode;
+	core::map<ISceneNode*, irr::core::stringc> CameraNodes;
 
 	// Check per name if stuff has been written already
 	// TODO: second parameter not needed, we just don't have a core::set class yet in Irrlicht
-	core::map<irr::core::stringw, bool> MaterialsWritten;
-	core::map<irr::core::stringw, bool> EffectsWritten;
+	core::map<irr::core::stringc, bool> MaterialsWritten;
+	core::map<irr::core::stringc, bool> EffectsWritten;
 
 	// Cache material names
 	struct MaterialName
 	{
-		MaterialName(const irr::video::SMaterial & material, const irr::core::stringw& name)
+		MaterialName(const irr::video::SMaterial & material, const irr::core::stringc& name)
 			: Material(material), Name(name)
 		{}
 		irr::video::SMaterial Material;
-		irr::core::stringw Name;
+		irr::core::stringc Name;
 	};
 	irr::core::array< MaterialName > MaterialNameCache;
+
+	irr::core::stringc WriteBuffer;	// use for writing short strings to avoid regular memory allocations
 };
 
 

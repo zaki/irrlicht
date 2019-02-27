@@ -19,7 +19,8 @@ CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 i
 	: ICameraSceneNode(parent, mgr, id, position),
 	BoundingBox(core::vector3df(0, 0, 0)),	// Camera has no size. Still not sure if FLT_MAX might be the better variant
 	Target(lookat), UpVector(0.0f, 1.0f, 0.0f), ZNear(1.0f), ZFar(3000.0f),
-	InputReceiverEnabled(true), TargetAndRotationAreBound(false)
+	InputReceiverEnabled(true), TargetAndRotationAreBound(false),
+	HasD3DStyleProjectionMatrix(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNode");
@@ -30,8 +31,11 @@ CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 i
 
 	const video::IVideoDriver* const d = mgr?mgr->getVideoDriver():0;
 	if (d)
+	{
 		Aspect = (f32)d->getCurrentRenderTargetSize().Width /
 			(f32)d->getCurrentRenderTargetSize().Height;
+		HasD3DStyleProjectionMatrix = d->getDriverType() != video::EDT_OPENGL;
+	}
 	else
 		Aspect = 4.0f / 3.0f;	// Aspect ratio.
 
@@ -230,7 +234,9 @@ void CCameraSceneNode::setFOV(f32 f)
 
 void CCameraSceneNode::recalculateProjectionMatrix()
 {
-	ViewArea.getTransform ( video::ETS_PROJECTION ).buildProjectionMatrixPerspectiveFovLH(Fovy, Aspect, ZNear, ZFar);
+	video::E_DRIVER_TYPE driverType = SceneManager->getVideoDriver()->getDriverType();
+	ViewArea.getTransform ( video::ETS_PROJECTION ).buildProjectionMatrixPerspectiveFovLH(Fovy, Aspect, ZNear, ZFar, HasD3DStyleProjectionMatrix);
+	IsOrthogonal = false;
 }
 
 
@@ -305,7 +311,7 @@ void CCameraSceneNode::recalculateViewArea()
 	core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
 	m.setbyproduct_nocheck(ViewArea.getTransform(video::ETS_PROJECTION),
 						ViewArea.getTransform(video::ETS_VIEW));
-	ViewArea.setFrom(m);
+	ViewArea.setFrom(m, HasD3DStyleProjectionMatrix);
 }
 
 

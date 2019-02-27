@@ -1070,7 +1070,37 @@ IXMLWriter* CFileSystem::createXMLWriter(const io::path& filename)
 IXMLWriter* CFileSystem::createXMLWriter(IWriteFile* file)
 {
 #ifdef _IRR_COMPILE_WITH_XML_
-	return new CXMLWriter(file);
+	return createIXMLWriter(file);
+#else
+	noXML();
+	return 0;
+#endif
+}
+
+//! Creates a XML Writer from a file.
+IXMLWriterUTF8* CFileSystem::createXMLWriterUTF8(const io::path& filename)
+{
+#ifdef _IRR_COMPILE_WITH_XML_
+	IWriteFile* file = createAndWriteFile(filename);
+	IXMLWriterUTF8* writer = 0;
+	if (file)
+	{
+		writer = createXMLWriterUTF8(file);
+		file->drop();
+	}
+	return writer;
+#else
+	noXML();
+	return 0;
+#endif
+}
+
+
+//! Creates a XML Writer from a file.
+IXMLWriterUTF8* CFileSystem::createXMLWriterUTF8(IWriteFile* file)
+{
+#ifdef _IRR_COMPILE_WITH_XML_
+	return createIXMLWriterUTF8(file);
 #else
 	noXML();
 	return 0;

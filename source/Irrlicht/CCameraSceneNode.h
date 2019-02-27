@@ -168,6 +168,8 @@ namespace scene
 
 		bool InputReceiverEnabled;
 		bool TargetAndRotationAreBound;
+
+		bool HasD3DStyleProjectionMatrix;	// true: projection from 0 to w; false: -w to w
 	};
 
 } // end namespace

@@ -16,10 +16,7 @@
 
 namespace irr
 {
-namespace io
-{
-	class IXMLWriter;
-}
+
 namespace gui
 {
 

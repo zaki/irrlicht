@@ -9,13 +9,11 @@
 #include "S3DVertex.h"
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
+#include "IXMLWriter.h"
 
 namespace irr
 {
-namespace io
-{
-	class IXMLWriter;
-}
+
 namespace scene
 {
 	class IMeshBuffer;

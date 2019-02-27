@@ -340,6 +340,10 @@ private:
 	//! read a parameter and value
 	void readParameter(io::IXMLReaderUTF8* reader, io::IAttributes* parameters);
 
+	//! Flip z axis in matrix around to convert between right-handed and left-handed coordinate system.
+	//! Note that function is symmetric (no difference if called before or after a transpose).
+	core::matrix4 flipZAxis(const core::matrix4& m);
+
 	scene::ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
 
