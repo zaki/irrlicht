@@ -385,6 +385,7 @@ void CNullDriver::removeTexture(ITexture* texture)
 		{
 			texture->drop();
 			Textures.erase(i);
+			return;
 		}
 	}
 }
