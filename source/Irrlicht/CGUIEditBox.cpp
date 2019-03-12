@@ -937,7 +937,7 @@ void CGUIEditBox::draw()
 		}
 
 		// draw cursor
-		if ( IsEnabled )
+		if ( isEnabled() )
 		{
 			if (WordWrap || MultiLine)
 			{
