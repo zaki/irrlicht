@@ -1397,7 +1397,6 @@ void CGUIEditBox::inputChar(wchar_t c)
 
 	if (c != 0)
 	{
-		if (Text.size() < Max || Max == 0)
 		{
 			core::stringw s;
 
@@ -1418,23 +1417,27 @@ void CGUIEditBox::inputChar(wchar_t c)
 				//check to see if we are at the end of the text
 				if ( (u32)CursorPos != Text.size())
 				{
-					s = Text.subString(0, CursorPos);
-					s.append(c);
-					if ( Text[CursorPos] == L'\n')
+					bool isEOL = (Text[CursorPos] == L'\n' ||Text[CursorPos] == L'\r' );
+					if (!isEOL || Text.size() < Max || Max == 0)
 					{
-						//just keep appending to the current line
-						//This follows the behavior of over gui libraries behaviors
-						s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
+						s = Text.subString(0, CursorPos);
+						s.append(c);
+						if ( isEOL )
+						{
+							//just keep appending to the current line
+							//This follows the behavior of other gui libraries behaviors
+							s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
+						}
+						else
+						{
+							//replace the next character
+							s.append( Text.subString(CursorPos + 1,Text.size() - CursorPos + 1));
+						}
+						Text = s;
+						++CursorPos;
 					}
-					else
-					{
-						//replace the next character
-						s.append( Text.subString(CursorPos + 1,Text.size() - CursorPos + 1));
-					}
-					Text = s;
-					++CursorPos;
 				}
-				else
+				else if (Text.size() < Max || Max == 0)
 				{
 					// add new character because we are at the end of the string
 					s = Text.subString(0, CursorPos);
@@ -1444,7 +1447,7 @@ void CGUIEditBox::inputChar(wchar_t c)
 					++CursorPos;
 				}
 			}
-			else
+			else if (Text.size() < Max || Max == 0)
 			{
 				// add new character
 				s = Text.subString(0, CursorPos);
