@@ -345,8 +345,10 @@ const SExposedVideoData& CGLXManager::getContext() const
 	return CurrentContext;
 }
 
-bool CGLXManager::activateContext(const SExposedVideoData& videoData)
+bool CGLXManager::activateContext(const SExposedVideoData& videoData, bool restorePrimaryOnZero)
 {
+	//TODO: handle restorePrimaryOnZero
+
 	if (videoData.OpenGLLinux.X11Window)
 	{
 		if (videoData.OpenGLLinux.X11Display && videoData.OpenGLLinux.X11Context)

@@ -53,7 +53,7 @@ namespace video
 		const SExposedVideoData& getContext() const;
 
 		//! Change render context, disable old and activate new defined by videoData
-		bool activateContext(const SExposedVideoData& videoData);
+		bool activateContext(const SExposedVideoData& videoData, bool restorePrimaryOnZero);
 
         // Swap buffers.
         bool swapBuffers();
