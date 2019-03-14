@@ -379,6 +379,16 @@ bool CGLXManager::activateContext(const SExposedVideoData& videoData, bool resto
 			}
 		}
 	}
+	else if (!restorePrimaryOnZero && !videoData.OpenGLLinux.X11Window && !videoData.OpenGLLinux.X11Display)
+	{
+		if (!glXMakeCurrent((Display*)PrimaryContext.OpenGLLinux.X11Display, None, NULL))
+		{
+			os::Printer::log("Render Context reset failed.");
+			return false;
+		}
+		CurrentContext.OpenGLLinux.X11Window = 0;
+		CurrentContext.OpenGLLinux.X11Display = 0;
+	}
 	// set back to main context
 	else if (CurrentContext.OpenGLLinux.X11Display != PrimaryContext.OpenGLLinux.X11Display)
 	{
