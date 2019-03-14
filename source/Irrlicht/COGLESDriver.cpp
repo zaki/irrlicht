@@ -47,7 +47,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params, io::IFil
 	ContextManager->generateSurface();
 	ContextManager->generateContext();
 	ExposedData = ContextManager->getContext();
-	ContextManager->activateContext(ExposedData);
+	ContextManager->activateContext(ExposedData, false);
 
 	windowSize = params.WindowSize;
 
@@ -206,7 +206,7 @@ bool COGLES1Driver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth,
 	CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 
 	if (ContextManager)
-		ContextManager->activateContext(videoData);
+		ContextManager->activateContext(videoData, true);
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 

@@ -345,8 +345,10 @@ const SExposedVideoData& CGLXManager::getContext() const
 	return CurrentContext;
 }
 
-bool CGLXManager::activateContext(const SExposedVideoData& videoData)
+bool CGLXManager::activateContext(const SExposedVideoData& videoData, bool restorePrimaryOnZero)
 {
+	//TODO: handle restorePrimaryOnZero
+
 	if (videoData.OpenGLLinux.X11Window)
 	{
 		if (videoData.OpenGLLinux.X11Display && videoData.OpenGLLinux.X11Context)
@@ -376,6 +378,16 @@ bool CGLXManager::activateContext(const SExposedVideoData& videoData)
 				CurrentContext.OpenGLLinux.X11Display = PrimaryContext.OpenGLLinux.X11Display;
 			}
 		}
+	}
+	else if (!restorePrimaryOnZero && !videoData.OpenGLLinux.X11Window && !videoData.OpenGLLinux.X11Display)
+	{
+		if (!glXMakeCurrent((Display*)PrimaryContext.OpenGLLinux.X11Display, None, NULL))
+		{
+			os::Printer::log("Render Context reset failed.");
+			return false;
+		}
+		CurrentContext.OpenGLLinux.X11Window = 0;
+		CurrentContext.OpenGLLinux.X11Display = 0;
 	}
 	// set back to main context
 	else if (CurrentContext.OpenGLLinux.X11Display != PrimaryContext.OpenGLLinux.X11Display)

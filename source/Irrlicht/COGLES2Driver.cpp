@@ -75,7 +75,7 @@ COGLES2Driver::COGLES2Driver(const SIrrlichtCreationParameters& params, io::IFil
 	ContextManager->generateSurface();
 	ContextManager->generateContext();
 	ExposedData = ContextManager->getContext();
-	ContextManager->activateContext(ExposedData);
+	ContextManager->activateContext(ExposedData, false);
 }
 
 COGLES2Driver::~COGLES2Driver()
@@ -426,7 +426,7 @@ COGLES2Driver::~COGLES2Driver()
 		CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 
 		if (ContextManager)
-			ContextManager->activateContext(videoData);
+			ContextManager->activateContext(videoData, true);
 
 		clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
 

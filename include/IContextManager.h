@@ -12,6 +12,7 @@ namespace irr
 {
 namespace video
 {
+	// For system specific window contexts (used for OpenGL)
 	class IContextManager : public virtual IReferenceCounted
 	{
 	public:
@@ -37,7 +38,15 @@ namespace video
 		virtual const SExposedVideoData& getContext() const =0;
 
 		//! Change render context, disable old and activate new defined by videoData
-		virtual bool activateContext(const SExposedVideoData& videoData) =0;
+		//\param restorePrimaryOnZero When true: restore original driver context when videoData is set to 0 values.
+		//                            When false: resets the context when videoData is set to 0 values.
+		/** This is mostly used internally by IVideoDriver::beginScene().
+			But if you want to switch threads which access your OpenGL driver you will have to
+			call this function as follows:
+			Old thread gives up context with: activateContext(irr::video::SExposedVideoData());
+			New thread takes over context with: activateContext(videoDriver->getExposedVideoData());
+			Note that only 1 thread at a time may access an OpenGL context.	*/
+		virtual bool activateContext(const SExposedVideoData& videoData, bool restorePrimaryOnZero=false) =0;
 
         //! Swap buffers.
         virtual bool swapBuffers() =0;

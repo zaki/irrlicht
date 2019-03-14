@@ -179,7 +179,7 @@ bool CWGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	CurrentContext.OpenGLWin32.HRc = hrc;
 	CurrentContext.OpenGLWin32.HWnd = temporary_wnd;
 
-	if (!activateContext(CurrentContext))
+	if (!activateContext(CurrentContext, false))
 	{
 		os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
 		wglDeleteContext(hrc);
@@ -438,7 +438,7 @@ const SExposedVideoData& CWGLManager::getContext() const
 	return CurrentContext;
 }
 
-bool CWGLManager::activateContext(const SExposedVideoData& videoData)
+bool CWGLManager::activateContext(const SExposedVideoData& videoData, bool restorePrimaryOnZero)
 {
 	if (videoData.OpenGLWin32.HWnd && videoData.OpenGLWin32.HDc && videoData.OpenGLWin32.HRc)
 	{
@@ -448,6 +448,15 @@ bool CWGLManager::activateContext(const SExposedVideoData& videoData)
 			return false;
 		}
 		CurrentContext=videoData;
+	}
+	else if (!restorePrimaryOnZero && !videoData.OpenGLWin32.HDc && !videoData.OpenGLWin32.HRc)
+	{
+		if (!wglMakeCurrent((HDC)0, (HGLRC)0))
+		{
+			os::Printer::log("Render Context reset failed.");
+			return false;
+		}
+		CurrentContext = videoData;
 	}
 	// set back to main context
 	else if (!videoData.OpenGLWin32.HWnd && CurrentContext.OpenGLWin32.HDc != PrimaryContext.OpenGLWin32.HDc)

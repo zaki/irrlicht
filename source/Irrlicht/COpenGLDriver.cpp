@@ -72,7 +72,7 @@ bool COpenGLDriver::initDriver()
 	ContextManager->generateSurface();
 	ContextManager->generateContext();
 	ExposedData = ContextManager->getContext();
-	ContextManager->activateContext(ExposedData);
+	ContextManager->activateContext(ExposedData, false);
 
 	genericDriverInit();
 
@@ -288,7 +288,7 @@ bool COpenGLDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth,
 	CNullDriver::beginScene(clearFlag, clearColor, clearDepth, clearStencil, videoData, sourceRect);
 
 	if (ContextManager)
-		ContextManager->activateContext(videoData);
+		ContextManager->activateContext(videoData, true);
 
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 	if ( DeviceType == EIDT_SDL )
@@ -3584,11 +3584,8 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 //! Removes a texture from the texture cache and deletes it, freeing lot of memory.
 void COpenGLDriver::removeTexture(ITexture* texture)
 {
-	if (texture)
-	{
-		CacheHandler->getTextureCache().remove(texture);
-		CNullDriver::removeTexture(texture);
-	}
+	CacheHandler->getTextureCache().remove(texture);
+	CNullDriver::removeTexture(texture);
 }
 
 //! Check if the driver supports creating textures with the given color format

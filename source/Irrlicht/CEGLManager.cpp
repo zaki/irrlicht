@@ -573,7 +573,7 @@ void CEGLManager::destroyContext()
     EglContext = EGL_NO_CONTEXT;
 }
 
-bool CEGLManager::activateContext(const SExposedVideoData& videoData)
+bool CEGLManager::activateContext(const SExposedVideoData& videoData, bool restorePrimaryOnZero)
 {
 	eglMakeCurrent(EglDisplay, EglSurface, EglSurface, EglContext);
 

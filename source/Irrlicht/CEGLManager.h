@@ -69,7 +69,7 @@ namespace video
 
 		virtual const SExposedVideoData& getContext() const _IRR_OVERRIDE_;
 
-		virtual bool activateContext(const SExposedVideoData& videoData) _IRR_OVERRIDE_;
+		virtual bool activateContext(const SExposedVideoData& videoData, bool restorePrimaryOnZero) _IRR_OVERRIDE_;
 
 		// Swap buffers.
 		virtual bool swapBuffers() _IRR_OVERRIDE_;
