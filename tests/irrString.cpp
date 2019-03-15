@@ -180,6 +180,29 @@ bool testAppendStringc()
 	return true;
 }
 
+bool testInsert()
+{
+	core::stringc str;
+
+	str.insert(0, "something", 4);
+	if (str != "some")
+		return false;
+
+	str.insert(4, "thing", 5);
+	if (str != "something")
+		return false;
+
+	str.insert(0, "is ", 3);
+	if (str != "is something")
+		return false;
+
+	str.insert(3, "there ", 6);
+	if (str != "is there something")
+		return false;
+
+	return true;
+}
+
 bool testLowerUpper()
 {
 	irr::core::array <irr::core::stringc> stringsOrig, targetLower, targetUpper;
@@ -355,6 +378,8 @@ bool testIrrString(void)
 		assert_log(allExpected &= testSplit());
 	}
 	allExpected &= testAppendStringc();
+
+	allExpected &= testInsert();
 
 	logTestString("Test io::path\n");
 	{

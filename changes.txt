@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Add function string::insert.
 - EditBox now still allows overwriting characters when the text-length is at max.
 - Bugfix: CMatrix4::transformPlane was calculating the wrong plane-normal before. 
 - SViewFrustum::recalculateBoundingBox no longer includes camera position in the bounding-box. Only using frustum corners now. Thx @DevSH for bugreport & patch.
