@@ -260,6 +260,19 @@ protected:
 	irr::core::array< MaterialName > MaterialNameCache;
 
 	irr::core::stringc WriteBuffer;	// use for writing short strings to avoid regular memory allocations
+
+	struct EscapeCharacterURL
+	{
+		EscapeCharacterURL(irr::c8 c, const irr::c8* e)
+			: Character(c)
+		{
+			Escape = e;
+		}
+
+		irr::c8 Character;
+		irr::core::stringc Escape;
+	};
+	irr::core::array<EscapeCharacterURL> EscapeCharsAnyURI;
 };
 
 

@@ -235,6 +235,17 @@ CColladaMeshWriter::CColladaMeshWriter(	ISceneManager * smgr, video::IVideoDrive
 	if ( smgr )
 		setAmbientLight( smgr->getAmbientLight() );
 
+	// Escape some characters 
+	// Slightly fuzzy definition for xs:anyURI.
+	// In theory not even spaces would need to be escaped, 
+	// but it's strongly encouraged to do so and many Apps rely on it.
+	// If there are any apps out there which need more escapes we can add them.
+	// See https://www.w3schools.com/tags/ref_urlencode.asp for a list.
+	// NOTE: Never replace by empty characters (so not the place to delete chars!)
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL(' ', "%20"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('#', "%23"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('%', "%25"));
+
 	CColladaMeshWriterProperties * p = new CColladaMeshWriterProperties();
 	setDefaultProperties(p);
 	setProperties(p);
@@ -1249,7 +1260,7 @@ const irr::core::stringc* CColladaMeshWriter::findGeometryNameForNode(ISceneNode
 	return &colladaMesh.findGeometryNameForNode(node);
 }
 
-// Restrict the characters to a set of allowed characters in xs::NCName.
+// Restrict the characters to a set of allowed characters in xs::anyURI
 irr::core::stringc CColladaMeshWriter::pathToURI(const irr::io::path& path) const
 {
 	irr::core::stringc result;
@@ -1269,7 +1280,25 @@ irr::core::stringc CColladaMeshWriter::pathToURI(const irr::io::path& path) cons
 	}
 	result.append(path);
 
-	// TODO: make correct URI (without whitespaces)
+	// Make correct URI (without whitespaces)
+	u32 len = result.size();
+	for (u32 i=0; i<len; ++i)
+	{
+		for (u32 e = 0; e < EscapeCharsAnyURI.size(); ++e)
+		{
+			if (result[i] == EscapeCharsAnyURI[e].Character)
+			{
+				// escape characters should always be at least 3 characters
+				const u32 addLen = EscapeCharsAnyURI[e].Escape.size() - 1;
+				result[i] = EscapeCharsAnyURI[e].Escape[0];	// replace first one
+				result.insert(i+1, &EscapeCharsAnyURI[e].Escape[1], addLen); // insert rest
+				i += addLen;
+				len += addLen;
+				break;
+			}
+		}
+	}
+
 
 	return result;
 }
