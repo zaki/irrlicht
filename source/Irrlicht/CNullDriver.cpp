@@ -1710,7 +1710,10 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 {
 	if ((pos==core::position2di(0,0)) && (size == texture->getSize()))
 	{
-		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(ETLM_READ_ONLY), false, false);
+		void * data = texture->lock(ETLM_READ_ONLY);
+		if ( !data)
+			return 0;
+		IImage* image = new CImage(texture->getColorFormat(), size, data, false, false);
 		texture->unlock();
 		return image;
 	}
