@@ -154,6 +154,7 @@ namespace scene
 	//! Callback interface to use custom names on collada writing.
 	/** You can either modify names and id's written to collada or you can use
 	this interface to just find out which names are used on writing.
+	Names are often used later as xs:anyURI, so avoid whitespace, '#' and '%' in the names.
 	*/
 	class IColladaMeshWriterNames  : public virtual IReferenceCounted
 	{
@@ -165,7 +166,7 @@ namespace scene
 		/** Note that names really must be unique here per mesh-pointer, so
 		mostly it's a good idea to return the nameForMesh from
 		IColladaMeshWriter::getDefaultNameGenerator(). Also names must follow
-		the xs::NCName standard to be valid, you can run them through
+		the xs:NCName standard to be valid, you can run them through
 		IColladaMeshWriter::toNCName to ensure that.
 		\param mesh Pointer to the mesh which needs a name
 		\param instance When E_COLLADA_GEOMETRY_WRITING is not ECGI_PER_MESH then
@@ -177,7 +178,7 @@ namespace scene
 		/** Note that names really must be unique here per node-pointer, so
 		mostly it's a good idea to return the nameForNode from
 		IColladaMeshWriter::getDefaultNameGenerator(). Also names must follow
-		the xs::NCName standard to be valid, you can run them through
+		the xs:NCName standard to be valid, you can run them through
 		IColladaMeshWriter::toNCName to ensure that.
 		*/
 		virtual irr::core::stringc nameForNode(const scene::ISceneNode* node) = 0;
@@ -190,7 +191,7 @@ namespace scene
 		instances per node are identical between different nodes you can reduce
 		the number of exported materials using that knowledge by using identical
 		names for such shared materials.
-		Names must follow the xs::NCName standard to be valid, you can run them
+		Names must follow the xs:NCName standard to be valid, you can run them
 		through IColladaMeshWriter::toNCName to ensure that.
 		*/
 		virtual irr::core::stringc nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
@@ -382,7 +383,7 @@ namespace scene
 			return DefaultNameGenerator;
 		}
 
-		//! Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
+		//! Restrict the characters of oldString a set of allowed characters in xs:NCName and add the prefix.
 		/** A tool function to help when using a custom name generator to generative valid names for collada names and id's. */
 		virtual irr::core::stringc toNCName(const irr::core::stringc& oldString, const irr::core::stringc& prefix=irr::core::stringc("_NC_")) const = 0;
 

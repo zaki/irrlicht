@@ -178,7 +178,7 @@ irr::core::stringc CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh
 irr::core::stringc CColladaMeshWriterNames::nameForNode(const scene::ISceneNode* node)
 {
 	irr::core::stringc name;
-	// Prefix, because xs::ID can't start with a number, also nicer name
+	// Prefix, because xs:ID can't start with a number, also nicer name
 	if ( node && node->getType() == ESNT_LIGHT )
 		name = "light";
 	else
@@ -1225,7 +1225,7 @@ bool CColladaMeshWriter::isXmlNameChar(c8 c) const
 		 */
 }
 
-// Restrict the characters to a set of allowed characters in xs::NCName.
+// Restrict the characters to a set of allowed characters in xs:NCName.
 irr::core::stringc CColladaMeshWriter::toNCName(const irr::core::stringc& oldString, const irr::core::stringc& prefix) const
 {
 	irr::core::stringc result(prefix);	// help to ensure id starts with a valid char and reduce chance of name-conflicts
@@ -1260,7 +1260,7 @@ const irr::core::stringc* CColladaMeshWriter::findGeometryNameForNode(ISceneNode
 	return &colladaMesh.findGeometryNameForNode(node);
 }
 
-// Restrict the characters to a set of allowed characters in xs::anyURI
+// Restrict the characters to a set of allowed characters in xs:anyURI
 irr::core::stringc CColladaMeshWriter::pathToURI(const irr::io::path& path) const
 {
 	irr::core::stringc result;
@@ -1280,7 +1280,7 @@ irr::core::stringc CColladaMeshWriter::pathToURI(const irr::io::path& path) cons
 	}
 	result.append(path);
 
-	// Make correct URI (without whitespaces)
+	// Make correct URI (without whitespace)
 	u32 len = result.size();
 	for (u32 i=0; i<len; ++i)
 	{
@@ -1404,7 +1404,7 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringc& materialf
 		//          <init_from>internal_texturename</init_from>
 					Writer->writeElement("init_from", false);
 					irr::io::path p(FileSystem->getRelativeFilename(layer.Texture->getName().getPath(), Directory));
-					Writer->writeText(toNCName(irr::core::stringc(p)).c_str());
+					Writer->writeText(toNCName(irr::core::stringc(p)).c_str());	// same ID for internal name as in writeLibraryImages
 					Writer->writeClosingTag("init_from");
 					Writer->writeLineBreak();
 
