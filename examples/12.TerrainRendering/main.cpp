@@ -10,9 +10,7 @@ simple solution for building larger area on small heightmaps -> terrain
 smoothing.
 
 In the beginning there is nothing special. We include the needed header files
-and create an event listener to listen if the user presses a key: The 'W' key
-switches to wireframe mode, the 'P' key to pointcloud mode, and the 'D' key
-toggles between solid and detail mapped material.
+and create an event listener to listen if the user presses certain keys.
 */
 #include <irrlicht.h>
 #include "driverChoice.h"
@@ -48,7 +46,7 @@ public:
 						!Terrain->getMaterial(0).Wireframe);
 				Terrain->setMaterialFlag(video::EMF_POINTCLOUD, false);
 				return true;
-			case irr::KEY_KEY_P: // switch wire frame mode
+			case irr::KEY_KEY_P: // switch point cloud mode
 				Terrain->setMaterialFlag(video::EMF_POINTCLOUD,
 						!Terrain->getMaterial(0).PointCloud);
 				Terrain->setMaterialFlag(video::EMF_WIREFRAME, false);
@@ -128,7 +126,7 @@ int main()
 	//set other font
 	env->getSkin()->setFont(env->getFont(mediaPath + "fontlucida.png"));
 
-	// add some help text
+	// add some help text (let's ignore 'P' and 'X' which are more about debugging)
 	env->addStaticText(
 		L"Press 'W' to change wireframe mode\nPress 'D' to toggle detail map\nPress 'S' to toggle skybox/skydome",
 		core::rect<s32>(10,421,250,475), true, true, 0, -1, true);
@@ -147,13 +145,13 @@ int main()
 	/*
 	Here comes the terrain renderer scene node: We add it just like any
 	other scene node to the scene using
-	ISceneManager::addTerrainSceneNode(). The only parameter we use is a
+	ISceneManager::addTerrainSceneNode(). The first parameter is a
 	file name to the heightmap we use. A heightmap is simply a gray scale
 	texture. The terrain renderer loads it and creates the 3D terrain from
 	it.
 
-	To make the terrain look more big, we change the scale factor of
-	it to (40, 4.4, 40). Because we don't have any dynamic lights in the
+	To make the terrain look bigger, we change it's scale factor to 
+	(40, 4.4, 40). Because we don't have any dynamic lights in the
 	scene, we switch off the lighting, and we set the file
 	terrain-texture.jpg as texture for the terrain and detailmap3.jpg as
 	second texture, called detail map. At last, we set the scale values for
