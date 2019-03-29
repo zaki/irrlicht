@@ -402,13 +402,13 @@ namespace scene
 			if (planes[i].classifyPointRelation(line.start) == core::ISREL3D_FRONT)
 			{
 				line.start = line.start.getInterpolated(line.end,
-						planes[i].getKnownIntersectionWithLine(line.start, line.end));
+						1.f-planes[i].getKnownIntersectionWithLine(line.start, line.end));
 				wasClipped = true;
 			}
 			if (planes[i].classifyPointRelation(line.end) == core::ISREL3D_FRONT)
 			{
 				line.end = line.start.getInterpolated(line.end,
-						planes[i].getKnownIntersectionWithLine(line.start, line.end));
+						1.f-planes[i].getKnownIntersectionWithLine(line.start, line.end));
 				wasClipped = true;
 			}
 		}

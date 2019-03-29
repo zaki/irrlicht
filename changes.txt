@@ -228,6 +228,9 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.5
+ - Fix SViewFrustum::clipLine. Was before clipping at wrong points (inverse places along lines).
+ - Fix compilation on OSX and prevent capturing mouse cursor when Window is not on top (Patch #319)
+   Thanks at Artem Shoobovych for bugreport and patch (https://sourceforge.net/p/irrlicht/patches/319/)
  - Fix serialization of OverrideTextColorEnabled flag in CGUITab. Thanks @ chronologicaldot for reporting (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=52344&p=303891#p303891)
  - CFileSystem::getAbsolutePath no longer wrongly converts an empty filename to "/" on unix platforms.
    This fixes the bug that CFileSystem::createAndOpenFile("") returned a (strange behaving) non-null file pointer.

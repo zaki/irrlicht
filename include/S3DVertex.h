@@ -92,6 +92,7 @@ struct S3DVertex
 		return EVT_STANDARD;
 	}
 
+	//\param d d=0 returns other, d=1 returns this, values between interpolate.
 	S3DVertex getInterpolated(const S3DVertex& other, f32 d)
 	{
 		d = core::clamp(d, 0.0f, 1.0f);
@@ -170,6 +171,7 @@ struct S3DVertex2TCoords : public S3DVertex
 		return EVT_2TCOORDS;
 	}
 
+	//\param d d=0 returns other, d=1 returns this, values between interpolate.
 	S3DVertex2TCoords getInterpolated(const S3DVertex2TCoords& other, f32 d)
 	{
 		d = core::clamp(d, 0.0f, 1.0f);
