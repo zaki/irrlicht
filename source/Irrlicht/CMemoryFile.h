@@ -43,6 +43,12 @@ namespace io
 		//! returns name of file
 		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
 
+		//! Get the type of the class implementing this interface
+		virtual EREAD_FILE_TYPE getType() const _IRR_OVERRIDE_
+		{
+			return ERFT_MEMORY_READ_FILE;
+		}
+
 	private:
 
 		const void *Buffer;
