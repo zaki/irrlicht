@@ -5,7 +5,7 @@
 #ifndef __C_MEMORY_READ_FILE_H_INCLUDED__
 #define __C_MEMORY_READ_FILE_H_INCLUDED__
 
-#include "IReadFile.h"
+#include "IMemoryReadFile.h"
 #include "IWriteFile.h"
 #include "irrString.h"
 
@@ -18,7 +18,7 @@ namespace io
 	/*!
 		Class for reading from memory.
 	*/
-	class CMemoryReadFile : public IReadFile
+	class CMemoryReadFile : public IMemoryReadFile
 	{
 	public:
 
@@ -47,6 +47,12 @@ namespace io
 		virtual EREAD_FILE_TYPE getType() const _IRR_OVERRIDE_
 		{
 			return ERFT_MEMORY_READ_FILE;
+		}
+
+		//! Get direct access to internal buffer
+		virtual const void *getBuffer() const _IRR_OVERRIDE_
+		{
+			return Buffer;
 		}
 
 	private:
