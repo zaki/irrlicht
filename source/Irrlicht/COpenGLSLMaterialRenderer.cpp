@@ -339,7 +339,9 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 
 		if (status != GL_TRUE)
 		{
-			os::Printer::log("GLSL shader failed to compile", ELL_ERROR);
+			core::stringc typeInfo("shaderType: ");
+			typeInfo += core::stringc((unsigned long)shaderType);
+			os::Printer::log("GLSL (> 2.x) shader failed to compile", typeInfo.c_str(), ELL_ERROR);
 			// check error message and log it
 			GLint maxLength=0;
 			GLint length;
@@ -375,7 +377,9 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 
 		if (!status)
 		{
-			os::Printer::log("GLSL shader failed to compile", ELL_ERROR);
+			core::stringc typeInfo("shaderType: ");
+			typeInfo += core::stringc((unsigned long)shaderType);
+			os::Printer::log("GLSL shader failed to compile", typeInfo.c_str(), ELL_ERROR);
 			// check error message and log it
 			GLint maxLength=0;
 			GLsizei length;
@@ -414,7 +418,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 		if (!status)
 		{
-			os::Printer::log("GLSL shader program failed to link", ELL_ERROR);
+			os::Printer::log("GLSL (> 2.x) shader program failed to link", ELL_ERROR);
 			// check error message and log it
 			GLint maxLength=0;
 			GLsizei length;
@@ -452,7 +456,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 		if (maxlen == 0)
 		{
-			os::Printer::log("GLSL: failed to retrieve uniform information", ELL_ERROR);
+			os::Printer::log("GLSL (> 2.x): failed to retrieve uniform information", ELL_ERROR);
 			return false;
 		}
 

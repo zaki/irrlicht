@@ -448,7 +448,7 @@ namespace video
 
 		//! Interpolates the color with a f32 value to another color
 		/** \param other: Other color
-		\param d: value between 0.0f and 1.0f
+		\param d: value between 0.0f and 1.0f. d=0 returns other, d=1 returns this, values between interpolate.
 		\return Interpolated color. */
 		SColor getInterpolated(const SColor &other, f32 d) const
 		{

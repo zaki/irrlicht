@@ -191,7 +191,7 @@ namespace core
 
 			//! Get the interpolated dimension
 			/** \param other Other dimension to interpolate with.
-			\param d Value between 0.0f and 1.0f.
+			\param d Value between 0.0f and 1.0f. d=0 returns other, d=1 returns this, values between interpolate.
 			\return Interpolated dimension. */
 			dimension2d<T> getInterpolated(const dimension2d<T>& other, f32 d) const
 			{

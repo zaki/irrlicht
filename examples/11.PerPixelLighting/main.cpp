@@ -237,8 +237,8 @@ int main()
 
 	if (roomMesh)
 	{
-		// The Room mesh doesn't have proper Texture Mapping on the
-		// floor, so we can recreate them on runtime
+		// The room mesh doesn't have proper texture mapping on the
+		// floor, so we can recreate the mapping on runtime.
 		smgr->getMeshManipulator()->makePlanarTextureMapping(
 				roomMesh->getMesh(0), 0.003f);
 
@@ -263,11 +263,7 @@ int main()
 
 		if (normalMap)
 			driver->makeNormalMapTexture(normalMap, 9.0f);
-/*
-		// The Normal Map and the displacement map/height map in the alpha channel
-		video::ITexture* normalMap =
-			driver->getTexture(mediaPath + "rockwall_NRM.tga");
-*/
+
 		/*
 		But just setting color and normal map is not everything. The
 		material we want to use needs some additional information per
@@ -317,7 +313,7 @@ int main()
 	scene::IAnimatedMesh* earthMesh = smgr->getMesh(mediaPath + "earth.x");
 	if (earthMesh)
 	{
-		//perform various task with the mesh manipulator
+		//perform various tasks with the mesh manipulator
 		scene::IMeshManipulator *manipulator = smgr->getMeshManipulator();
 
 		// create mesh copy with tangent information from original earth.x mesh
@@ -389,9 +385,9 @@ int main()
 	/*
 	Now the same again, with the second light. The difference is that we
 	add a particle system to it too. And because the light moves, the
-	particles of the particlesystem will follow. If you want to know more
+	particles of the particle system will follow. If you want to know more
 	about how particle systems are created in Irrlicht, take a look at the
-	specialFx example. Maybe you will have noticed that we only add 2
+	SpecialFX example. Maybe you will have noticed that we only add 2
 	lights, this has a simple reason: The low end version of this material
 	was written in ps1.1 and vs1.1, which doesn't allow more lights. You
 	could add a third light to the scene, but it won't be used to shade the

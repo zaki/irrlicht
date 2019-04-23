@@ -730,6 +730,32 @@ public:
 		return *this;
 	}
 
+	//! Insert a certain amount of characters into the string before the given index
+	//\param pos Insert the characters before this index
+	//\param s String to insert. Must be at least of size n
+	//\param n Number of characters from string s to use.
+	string<T,TAlloc>& insert(u32 pos, const char* s, u32 n)
+	{
+		if ( pos < used )
+		{
+			reserve(used+n);
+
+			// move stuff behind insert point
+			const u32 end = used+n-1;
+			for (u32 i=0; i<used-pos; ++i)
+			{
+				array[end-i] = array[end-(i+n)];
+			}
+			used += n;
+
+			for (u32 i=0; i<n; ++i)
+			{
+				array[pos+i] = s[i];
+			}
+		}
+
+		return *this;
+	}
 
 	//! Reserves some memory.
 	/** \param count: Amount of characters to reserve. */

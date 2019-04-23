@@ -93,7 +93,7 @@ public:
 	//! writes a mesh
 	virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE) _IRR_OVERRIDE_;
 
-	// Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
+	// Restrict the characters of oldString a set of allowed characters in xs:NCName and add the prefix.
 	virtual irr::core::stringc toNCName(const irr::core::stringc& oldString, const irr::core::stringc& prefix=irr::core::stringc("_NC_")) const _IRR_OVERRIDE_;
 
 	//! After export you can find out which name had been used for writing the geometry for this node.
@@ -260,6 +260,19 @@ protected:
 	irr::core::array< MaterialName > MaterialNameCache;
 
 	irr::core::stringc WriteBuffer;	// use for writing short strings to avoid regular memory allocations
+
+	struct EscapeCharacterURL
+	{
+		EscapeCharacterURL(irr::c8 c, const irr::c8* e)
+			: Character(c)
+		{
+			Escape = e;
+		}
+
+		irr::c8 Character;		// unescaped (like ' ')
+		irr::core::stringc Escape;	// escaped (like '%20')
+	};
+	irr::core::array<EscapeCharacterURL> EscapeCharsAnyURI;
 };
 
 

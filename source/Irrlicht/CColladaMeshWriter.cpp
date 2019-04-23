@@ -178,7 +178,7 @@ irr::core::stringc CColladaMeshWriterNames::nameForMesh(const scene::IMesh* mesh
 irr::core::stringc CColladaMeshWriterNames::nameForNode(const scene::ISceneNode* node)
 {
 	irr::core::stringc name;
-	// Prefix, because xs::ID can't start with a number, also nicer name
+	// Prefix, because xs:ID can't start with a number, also nicer name
 	if ( node && node->getType() == ESNT_LIGHT )
 		name = "light";
 	else
@@ -234,6 +234,17 @@ CColladaMeshWriter::CColladaMeshWriter(	ISceneManager * smgr, video::IVideoDrive
 
 	if ( smgr )
 		setAmbientLight( smgr->getAmbientLight() );
+
+	// Escape some characters 
+	// Slightly fuzzy definition for xs:anyURI.
+	// In theory not even spaces would need to be escaped, 
+	// but it's strongly encouraged to do so and many Apps rely on it.
+	// If there are any apps out there which need more escapes we can add them.
+	// See https://www.w3schools.com/tags/ref_urlencode.asp for a list.
+	// NOTE: Never replace by empty characters (so not the place to delete chars!)
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL(' ', "%20"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('#', "%23"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('%', "%25"));
 
 	CColladaMeshWriterProperties * p = new CColladaMeshWriterProperties();
 	setDefaultProperties(p);
@@ -1214,7 +1225,7 @@ bool CColladaMeshWriter::isXmlNameChar(c8 c) const
 		 */
 }
 
-// Restrict the characters to a set of allowed characters in xs::NCName.
+// Restrict the characters to a set of allowed characters in xs:NCName.
 irr::core::stringc CColladaMeshWriter::toNCName(const irr::core::stringc& oldString, const irr::core::stringc& prefix) const
 {
 	irr::core::stringc result(prefix);	// help to ensure id starts with a valid char and reduce chance of name-conflicts
@@ -1249,7 +1260,7 @@ const irr::core::stringc* CColladaMeshWriter::findGeometryNameForNode(ISceneNode
 	return &colladaMesh.findGeometryNameForNode(node);
 }
 
-// Restrict the characters to a set of allowed characters in xs::NCName.
+// Restrict the characters to a set of allowed characters in xs:anyURI
 irr::core::stringc CColladaMeshWriter::pathToURI(const irr::io::path& path) const
 {
 	irr::core::stringc result;
@@ -1269,7 +1280,25 @@ irr::core::stringc CColladaMeshWriter::pathToURI(const irr::io::path& path) cons
 	}
 	result.append(path);
 
-	// TODO: make correct URI (without whitespaces)
+	// Make correct URI (without whitespace)
+	u32 len = result.size();
+	for (u32 i=0; i<len; ++i)
+	{
+		for (u32 e = 0; e < EscapeCharsAnyURI.size(); ++e)
+		{
+			if (result[i] == EscapeCharsAnyURI[e].Character)
+			{
+				// escape characters should always be at least 3 characters
+				const u32 addLen = EscapeCharsAnyURI[e].Escape.size() - 1;
+				result[i] = EscapeCharsAnyURI[e].Escape[0];	// replace first one
+				result.insert(i+1, &EscapeCharsAnyURI[e].Escape[1], addLen); // insert rest
+				i += addLen;
+				len += addLen;
+				break;
+			}
+		}
+	}
+
 
 	return result;
 }
@@ -1375,7 +1404,7 @@ void CColladaMeshWriter::writeMaterialEffect(const irr::core::stringc& materialf
 		//          <init_from>internal_texturename</init_from>
 					Writer->writeElement("init_from", false);
 					irr::io::path p(FileSystem->getRelativeFilename(layer.Texture->getName().getPath(), Directory));
-					Writer->writeText(toNCName(irr::core::stringc(p)).c_str());
+					Writer->writeText(toNCName(irr::core::stringc(p)).c_str());	// same ID for internal name as in writeLibraryImages
 					Writer->writeClosingTag("init_from");
 					Writer->writeLineBreak();
 

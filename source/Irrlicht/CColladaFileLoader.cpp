@@ -332,6 +332,22 @@ CColladaFileLoader::CColladaFileLoader(scene::ISceneManager* smgr,
 	setDebugName("CColladaFileLoader");
 	#endif
 
+	// Escape characters, see https://www.w3schools.com/tags/ref_urlencode.asp
+	// TODO: There should be more, but usually people just escape the space character anyway.
+	//       And I'm not sure if our xml files are utf-8 or windows-1252, so let's avoid the ambiguous ones.
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL(' ', "%20"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('"', "%22"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('#', "%23"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('$', "%24"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('%', "%25"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('&', "%26"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('\'', "%27"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('(', "%28"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL(')', "%29"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('/', "%2F"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('\\', "%5C"));
+
+
 	TextureLoader = new CMeshTextureLoader( FileSystem, SceneManager->getVideoDriver() );
 }
 
@@ -1209,6 +1225,7 @@ void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 					reader->read();
 					image.Source = reader->getNodeData();
 					image.Source.trim();
+					unescape(image.Source);
 					image.SourceIsFilename=true;
 				}
 				else
@@ -2742,8 +2759,8 @@ void CColladaFileLoader::clearData()
 //! changes the XML URI into an internal id
 void CColladaFileLoader::uriToId(core::stringc& str)
 {
-	// currently, we only remove the # from the begin if there
-	// because we simply don't support referencing other files.
+	// Currently, we only remove the # from the beginning
+	// as we don't support referencing other files.
 	if (!str.size())
 		return;
 
@@ -2940,6 +2957,47 @@ core::matrix4 CColladaFileLoader::flipZAxis(const core::matrix4& m)
 	matrix[14] *= -1.f;	
 
 	return matrix;
+}
+
+void CColladaFileLoader::unescape(irr::core::stringc& uri)
+{
+	u32 len = uri.size();
+	for (u32 i=0; i<len-1; ++i)
+	{
+		if (uri[i] == '%' )
+		{
+			if (uri[i+1] == '%')
+			{
+				++i;
+				continue;
+			}
+
+			for (u32 e = 0; e < EscapeCharsAnyURI.size(); ++e)
+			{
+				const irr::core::stringc& escapeString = EscapeCharsAnyURI[e].Escape;
+				const u32 escapeLen = escapeString.size();
+				bool equals = true;
+				for ( u32 c = 1; c<escapeLen; ++c)	// string compare (and we already know first on fits as always '%')
+				{
+					if ( uri[i+c] != escapeString[c] )
+					{
+						equals = false;
+						break;
+					}
+				}
+
+				if ( equals )
+				{
+					uri[i] = EscapeCharsAnyURI[e].Character;
+					// TODO: core::string has no erase function which erases more than one char at a time currently
+					for ( u32 a=0;a<escapeLen-1; ++a)
+						uri.erase(i+1);
+					len -= escapeLen-1;
+					break;
+				}
+			}
+		}
+	}
 }
 
 

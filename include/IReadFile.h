@@ -7,6 +7,7 @@
 
 #include "IReferenceCounted.h"
 #include "coreutil.h"
+#include "EReadFileType.h"
 
 namespace irr
 {
@@ -42,6 +43,12 @@ namespace io
 		//! Get name of file.
 		/** \return File name as zero terminated character string. */
 		virtual const io::path& getFileName() const = 0;
+
+		//! Get the type of the class implementing this interface
+		virtual EREAD_FILE_TYPE getType() const
+		{
+			return EFIT_UNKNOWN;
+		}
 	};
 
 	//! Internal function, please do not use.

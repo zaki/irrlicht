@@ -424,6 +424,7 @@
 		<Unit filename="../../include/EMeshWriterEnums.h" />
 		<Unit filename="../../include/EMessageBoxFlags.h" />
 		<Unit filename="../../include/EPrimitiveTypes.h" />
+		<Unit filename="../../include/EReadFileType.h" />
 		<Unit filename="../../include/ESceneNodeAnimatorTypes.h" />
 		<Unit filename="../../include/ESceneNodeTypes.h" />
 		<Unit filename="../../include/EShaderTypes.h" />
@@ -486,6 +487,7 @@
 		<Unit filename="../../include/ILogger.h" />
 		<Unit filename="../../include/IMaterialRenderer.h" />
 		<Unit filename="../../include/IMaterialRendererServices.h" />
+		<Unit filename="../../include/IMemoryReadFile.h" />
 		<Unit filename="../../include/IMesh.h" />
 		<Unit filename="../../include/IMeshBuffer.h" />
 		<Unit filename="../../include/IMeshCache.h" />

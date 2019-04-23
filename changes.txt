@@ -9,6 +9,10 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
 --------------------------
 Changes in 1.9 (not yet released)
+- Add IMemoryReadFile interface which allows direct access to memory block used as file.
+- Add IReadFile::getType() interface to all users to find out what kind of class implements that interface.
+- .dae/Collada reader/writer now handle whitespace in texture-filenames with escape characters (handle them as xs:anyURI).
+- Add function string::insert.
 - EditBox now still allows overwriting characters when the text-length is at max.
 - Bugfix: CMatrix4::transformPlane was calculating the wrong plane-normal before. 
 - SViewFrustum::recalculateBoundingBox no longer includes camera position in the bounding-box. Only using frustum corners now. Thx @DevSH for bugreport & patch.
@@ -17,7 +21,7 @@ Changes in 1.9 (not yet released)
 - Bugfix: CCameraSceneNode resets the IsOrthogonal flag to false now when it recalculates a projection matrix.
 - SViewFrustum::setFrom and SViewFrustum constructor now use a parameter to allow to set the correct near clipping plane when the projection matrix doesn't use a target depth range of 0 to z, but for example -z to z. So OGL projections matrices can now also use it.
 - Remove code to read boundingbox element in Collada reader as it's not in Collada specification.
-- .dae/Collade reader now converts from Collada's right-handed to Irrlicht's left handed coordinate system (switching z to -z)
+- .dae/Collada reader now converts from Collada's right-handed to Irrlicht's left handed coordinate system (switching z to -z)
 - Add irr::string::eraseTrailingFloatZeros to kick out trailing 0's for strings generated from floats.
 - .dae/Collada writer now converts from Irrlicht's left-handed to Collada's right-handed coordinate system (switching z to -z)
 - Switch Collada writer to utf8 xml's.
@@ -235,6 +239,9 @@ should now be fps independentn
 
 --------------------------
 Changes in 1.8.5
+ - Fix SViewFrustum::clipLine. Was before clipping at wrong points (inverse places along lines).
+ - Fix compilation on OSX and prevent capturing mouse cursor when Window is not on top (Patch #319)
+   Thanks at Artem Shoobovych for bugreport and patch (https://sourceforge.net/p/irrlicht/patches/319/)
  - Fix serialization of OverrideTextColorEnabled flag in CGUITab. Thanks @ chronologicaldot for reporting (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=7&t=52344&p=303891#p303891)
  - CFileSystem::getAbsolutePath no longer wrongly converts an empty filename to "/" on unix platforms.
    This fixes the bug that CFileSystem::createAndOpenFile("") returned a (strange behaving) non-null file pointer.
