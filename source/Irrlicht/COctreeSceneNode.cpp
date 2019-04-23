@@ -2,6 +2,9 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_OCTREE_SCENENODE_
+
 #include "COctreeSceneNode.h"
 #include "Octree.h"
 #include "ISceneManager.h"
@@ -11,7 +14,11 @@
 #include "IAnimatedMesh.h"
 #include "IMaterialRenderer.h"
 #include "os.h"
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
+#else
+#include "IShadowVolumeSceneNode.h"
+#endif // _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "EProfileIDs.h"
 #include "IProfiler.h"
 
@@ -339,6 +346,7 @@ EOCTREE_POLYGON_CHECKS COctreeSceneNode::getPolygonChecks() const
 IShadowVolumeSceneNode* COctreeSceneNode::addShadowVolumeSceneNode(
 		const IMesh* shadowMesh, s32 id, bool zfailmethod, f32 infinity)
 {
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_ 
 	if (!SceneManager->getVideoDriver()->queryFeature(video::EVDF_STENCIL_BUFFER))
 		return 0;
 
@@ -350,6 +358,9 @@ IShadowVolumeSceneNode* COctreeSceneNode::addShadowVolumeSceneNode(
 
 	Shadow = new CShadowVolumeSceneNode(shadowMesh, this, SceneManager, id,  zfailmethod, infinity);
 	return Shadow;
+#else
+	return 0;
+#endif
 }
 
 
@@ -671,3 +682,4 @@ bool COctreeSceneNode::isReadOnlyMaterials() const
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_OCTREE_SCENENODE_

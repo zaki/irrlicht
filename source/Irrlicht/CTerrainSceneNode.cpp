@@ -7,6 +7,10 @@
 // distributed under this licence. I only modified some parts. A lot of thanks
 // go to him.
 
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_TERRAIN_SCENENODE_
+
 #include "CTerrainSceneNode.h"
 #include "CTerrainTriangleSelector.h"
 #include "IVideoDriver.h"
@@ -1511,4 +1515,4 @@ namespace scene
 } // end namespace scene
 } // end namespace irr
 
-
+#endif // _IRR_COMPILE_WITH_TERRAIN_SCENENODE_

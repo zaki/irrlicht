@@ -7,7 +7,11 @@
 #include "ISceneManager.h"
 #include "S3DVertex.h"
 #include "os.h"
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
+#else
+#include "IShadowVolumeSceneNode.h"
+#endif // _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "IAnimatedMeshMD3.h"
 #include "CSkinnedMesh.h"
 #include "IDummyTransformationSceneNode.h"
@@ -556,6 +560,7 @@ u32 CAnimatedMeshSceneNode::getMaterialCount() const
 IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(
 		const IMesh* shadowMesh, s32 id, bool zfailmethod, f32 infinity)
 {
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 	if (!SceneManager->getVideoDriver()->queryFeature(video::EVDF_STENCIL_BUFFER))
 		return 0;
 
@@ -567,6 +572,9 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(
 
 	Shadow = new CShadowVolumeSceneNode(shadowMesh, this, SceneManager, id,  zfailmethod, infinity);
 	return Shadow;
+#else
+	return 0;
+#endif
 }
 
 //! Returns a pointer to a child node, which has the same transformation as
