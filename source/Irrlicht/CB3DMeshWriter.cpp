@@ -6,7 +6,6 @@
 
 #include "IrrCompileConfig.h"
 
-#define _IRR_COMPILE_WITH_B3D_WRITER_
 #ifdef _IRR_COMPILE_WITH_B3D_WRITER_
 
 #include "CB3DMeshWriter.h"
