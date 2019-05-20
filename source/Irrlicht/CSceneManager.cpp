@@ -138,9 +138,9 @@
 #include "CB3DMeshWriter.h"
 #endif
 
-#ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE
+#ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE_
 #include "CCubeSceneNode.h"
-#endif // _IRR_COMPILE_WITH_CUBE_SCENENODE
+#endif // _IRR_COMPILE_WITH_CUBE_SCENENODE_
 #ifdef _IRR_COMPILE_WITH_SPHERE_SCENENODE_
 #include "CSphereSceneNode.h"
 #endif
@@ -604,7 +604,7 @@ IMeshSceneNode* CSceneManager::addCubeSceneNode(f32 size, ISceneNode* parent,
 		s32 id, const core::vector3df& position,
 		const core::vector3df& rotation, const core::vector3df& scale)
 {
-#ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE
+#ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE_
 	if (!parent)
 		parent = this;
 

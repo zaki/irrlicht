@@ -226,6 +226,12 @@ public:
 	/** \return The color format of texture. */
 	ECOLOR_FORMAT getColorFormat() const { return ColorFormat; };
 
+	//! Get the original color format
+	/** When create textures from image data we will often use different color formats.
+	For example depending on driver TextureCreationFlag's. 
+	This can give you the original format which the image used to create the texture had	*/
+	ECOLOR_FORMAT getOriginalColorFormat() const { return OriginalColorFormat; };
+
 	//! Get pitch of the main texture (in bytes).
 	/** The pitch is the amount of bytes used for a row of pixels in a
 	texture.

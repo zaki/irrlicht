@@ -3,7 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
-#ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE
+#ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE_
 #include "CCubeSceneNode.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
@@ -243,4 +243,4 @@ ISceneNode* CCubeSceneNode::clone(ISceneNode* newParent, ISceneManager* newManag
 } // end namespace scene
 } // end namespace irr
 
-#endif // _IRR_COMPILE_WITH_CUBE_SCENENODE
+#endif // _IRR_COMPILE_WITH_CUBE_SCENENODE_

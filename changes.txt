@@ -9,6 +9,7 @@ Changes in ogl-es (not yet released - will be merged with trunk at some point)
 
 --------------------------
 Changes in 1.9 (not yet released)
+- Add ITexture::getOriginalColorFormat to access color format of images used to create a texture
 - Add IMemoryReadFile interface which allows direct access to memory block used as file.
 - Add IReadFile::getType() interface to all users to find out what kind of class implements that interface.
 - .dae/Collada reader/writer now handle whitespace in texture-filenames with escape characters (handle them as xs:anyURI).
