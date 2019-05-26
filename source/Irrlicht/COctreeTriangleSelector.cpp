@@ -86,17 +86,17 @@ void COctreeTriangleSelector::constructOctree(SOctreeNode* node)
 		node->Box.addInternalPoint(node->Triangles[i].pointC);
 	}
 
-	const core::vector3df& middle = node->Box.getCenter();
-	core::vector3df edges[8];
-	node->Box.getEdges(edges);
-
-	core::aabbox3d<f32> box;
-	core::array<core::triangle3df> keepTriangles;
-
 	// calculate children
 
 	if (!node->Box.isEmpty() && (s32)node->Triangles.size() > MinimalPolysPerNode)
 	{
+		const core::vector3df& middle = node->Box.getCenter();
+		core::vector3df edges[8];
+		node->Box.getEdges(edges);
+
+		core::aabbox3d<f32> box;
+		core::array<core::triangle3df> keepTriangles(node->Triangles.size()); // reserving enough memory, so we don't get re-allocations per child
+
 		for (s32 ch=0; ch<8; ++ch)
 		{
 			box.reset(middle);
@@ -122,6 +122,8 @@ void COctreeTriangleSelector::constructOctree(SOctreeNode* node)
 			node->Triangles.set_used(keepTriangles.size());
 			keepTriangles.set_used(0);
 		}
+		keepTriangles.clear();	// release memory early, for large meshes it can matter.
+		node->Triangles.reallocate(node->Triangles.size(), true); // shrink memory to minimum necessary
 
 		// Note: We use an extra loop to construct child-nodes instead of doing
 		// that in above loop to avoid memory fragmentation which happens if
