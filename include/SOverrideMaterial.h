@@ -68,7 +68,10 @@ namespace video
 						case EMF_BLEND_FACTOR: material.BlendFactor = Material.BlendFactor; break;
 						case EMF_POLYGON_OFFSET:
 							material.PolygonOffsetDirection = Material.PolygonOffsetDirection;
-							material.PolygonOffsetFactor = Material.PolygonOffsetFactor; break;
+							material.PolygonOffsetFactor = Material.PolygonOffsetFactor; 
+							material.PolygonOffsetDepthBias = Material.PolygonOffsetDepthBias;
+							material.PolygonOffsetSlopeScale = Material.PolygonOffsetSlopeScale;
+							break;
 						}
 					}
 				}

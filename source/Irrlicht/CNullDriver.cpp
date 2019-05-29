@@ -2176,6 +2176,8 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addFloat("BlendFactor", material.BlendFactor);
 	attr->addInt("PolygonOffsetFactor", material.PolygonOffsetFactor);
 	attr->addEnum("PolygonOffsetDirection", material.PolygonOffsetDirection, video::PolygonOffsetDirectionNames);
+	attr->addFloat("PolygonOffsetDepthBias", material.PolygonOffsetDepthBias);
+	attr->addFloat("PolygonOffsetSlopeScale", material.PolygonOffsetSlopeScale);
 	attr->addInt("ZWriteFineControl", material.ZWriteFineControl);
 
 	// TODO: Would be nice to have a flag that only serializes rest of texture data when a texture pointer exists.
@@ -2254,6 +2256,8 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.BlendFactor = attr->getAttributeAsFloat("BlendFactor", outMaterial.BlendFactor);
 	outMaterial.PolygonOffsetFactor = attr->getAttributeAsInt("PolygonOffsetFactor", outMaterial.PolygonOffsetFactor);
 	outMaterial.PolygonOffsetDirection = (video::E_POLYGON_OFFSET)attr->getAttributeAsEnumeration("PolygonOffsetDirection", video::PolygonOffsetDirectionNames, outMaterial.PolygonOffsetDirection);
+	outMaterial.PolygonOffsetDepthBias = attr->getAttributeAsFloat("PolygonOffsetDepthBias", outMaterial.PolygonOffsetDepthBias);
+	outMaterial.PolygonOffsetSlopeScale = attr->getAttributeAsFloat("PolygonOffsetSlopeScale", outMaterial.PolygonOffsetSlopeScale);
 	outMaterial.ZWriteFineControl = (video::E_ZWRITE_FINE_CONTROL)attr->getAttributeAsInt("ZWriteFineControl", outMaterial.ZWriteFineControl);
 	prefix = "BilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy

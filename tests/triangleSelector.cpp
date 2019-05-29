@@ -85,7 +85,8 @@ bool octree()
 	video::SMaterial unlit;
 	unlit.Lighting = false;
 	unlit.Thickness = 3.f;
-	unlit.PolygonOffsetFactor=1;
+	unlit.PolygonOffsetSlopeScale= -1.f;
+	unlit.PolygonOffsetDepthBias = -1.f;
 
 	bool result = true;
 	{
@@ -199,7 +200,8 @@ bool triangle()
 	video::SMaterial unlit;
 	unlit.Lighting = false;
 	unlit.Thickness = 3.f;
-	unlit.PolygonOffsetFactor=1;
+	unlit.PolygonOffsetSlopeScale= -1.f;
+	unlit.PolygonOffsetDepthBias = -1.f;
 
 	bool result = true;
 	{

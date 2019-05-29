@@ -2226,9 +2226,16 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	// Polygon offset
 	if (queryFeature(EVDF_POLYGON_OFFSET) && (resetAllRenderstates ||
 		lastmaterial.PolygonOffsetDirection != material.PolygonOffsetDirection ||
-		lastmaterial.PolygonOffsetFactor != material.PolygonOffsetFactor))
+		lastmaterial.PolygonOffsetFactor != material.PolygonOffsetFactor ||
+		lastmaterial.PolygonOffsetSlopeScale != material.PolygonOffsetSlopeScale ||
+		lastmaterial.PolygonOffsetDepthBias != material.PolygonOffsetDepthBias ))
 	{
-		if (material.PolygonOffsetFactor)
+		if ( material.PolygonOffsetSlopeScale || material.PolygonOffsetDepthBias )
+		{
+			pID3DDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(material.PolygonOffsetSlopeScale));
+			pID3DDevice->SetRenderState(D3DRS_DEPTHBIAS, F2DW(material.PolygonOffsetDepthBias));
+		}
+		else if (material.PolygonOffsetFactor)
 		{
 			if (material.PolygonOffsetDirection==EPO_BACK)
 			{

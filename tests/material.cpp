@@ -43,8 +43,10 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 	smgr->addCameraSceneNode();
 
 	// test back plane to back
-	plane->getMaterial(0).PolygonOffsetDirection=video::EPO_BACK;
-	plane->getMaterial(0).PolygonOffsetFactor=7;
+	plane->getMaterial(0).PolygonOffsetSlopeScale = 1.f;
+	plane->getMaterial(0).PolygonOffsetDepthBias = 1.f;
+	if ( type == video::EDT_DIRECT3D9 )
+		plane->getMaterial(0).PolygonOffsetDepthBias *= 2.f*4.8e-7f;
 
 	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
@@ -52,10 +54,12 @@ static bool polygonOffset(video::E_DRIVER_TYPE type)
 	bool result = takeScreenshotAndCompareAgainstReference(driver, "-polygonBack.png");
 
 	//reset back plane
-	plane->getMaterial(0).PolygonOffsetFactor=0;
+	plane->getMaterial(0).PolygonOffsetDepthBias=0;
 	// test front plane to front
-	plane2->getMaterial(0).PolygonOffsetDirection=video::EPO_FRONT;
-	plane2->getMaterial(0).PolygonOffsetFactor=7;
+	plane2->getMaterial(0).PolygonOffsetSlopeScale=-1.f;
+	plane2->getMaterial(0).PolygonOffsetDepthBias=-1.f;
+	if ( type == video::EDT_DIRECT3D9 )
+		plane2->getMaterial(0).PolygonOffsetDepthBias *= 2.f*4.8e-7f;
 	driver->beginScene(video::ECBF_COLOR | video::ECBF_DEPTH, video::SColor(255,113,113,133));
 	smgr->drawAll();
 	driver->endScene();
