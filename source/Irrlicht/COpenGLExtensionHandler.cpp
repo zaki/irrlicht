@@ -15,6 +15,8 @@ namespace irr
 namespace video
 {
 
+bool COpenGLExtensionHandler::needsDSAFramebufferHack = true;
+
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false), TextureCompressionExtension(false), MaxLights(1),
 		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0), MaxIndices(65535),
@@ -22,6 +24,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0),
 		OcclusionQuerySupport(false)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	,pGlActiveTexture(0)
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
 	pGlGenProgramsARB(0), pGlGenProgramsNV(0),
 	pGlBindProgramARB(0), pGlBindProgramNV(0),
@@ -78,7 +81,12 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0),
 	pGlColorMaskIndexedEXT(0),
 	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0), pGlBlendFuncSeparateIndexedAMD(0), pGlBlendFuncSeparateiARB(0),
-	pGlBlendEquationIndexedAMD(0), pGlBlendEquationiARB(0), pGlBlendEquationSeparateIndexedAMD(0), pGlBlendEquationSeparateiARB(0)
+	pGlBlendEquationIndexedAMD(0), pGlBlendEquationiARB(0), pGlBlendEquationSeparateIndexedAMD(0), pGlBlendEquationSeparateiARB(0),
+
+    pGlTextureSubImage2D(0), pGlTextureStorage2D(0), pGlTextureStorage3D(0), pGlNamedFramebufferTexture(0),
+    pGlTextureParameteri(0), pGlCreateTextures(0), pGlCreateFramebuffers(0), pGlBindTextures(0),
+    pGlTextureSubImage2DEXT(0), pGlTextureStorage2DEXT(0), pGlTexStorage2D(0), pGlTextureStorage3DEXT(0),
+    pGlTexStorage3D(0), pGlNamedFramebufferTextureEXT(0), pGlFramebufferTexture(0)
 #if defined(GLX_SGI_swap_control)
 	,pGlxSwapIntervalSGI(0)
 #endif
@@ -247,7 +255,7 @@ void COpenGLExtensionHandler::dumpFramebufferFormats() const
 			{
 				memset(vals,0,sizeof(vals));
 #define tmplog(x,y) os::Printer::log(x, core::stringc(y).c_str())
-				const BOOL res = wglGetPixelFormatAttribiv_ARB(hdc,i,0,nums,atts,vals);
+				const BOOL res = wglGetPixelFormatAttribiv_ARB(hdc,i,0,(UINT)nums,atts,vals);
 				if (FALSE==res)
 					continue;
 				tmplog("Pixel format ",i);
@@ -556,6 +564,26 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlBlendEquationiARB = (PFNGLBLENDEQUATIONIPROC) IRR_OGL_LOAD_EXTENSION("glBlendEquationiARB");
 	pGlBlendEquationSeparateIndexedAMD = (PFNGLBLENDEQUATIONSEPARATEINDEXEDAMDPROC) IRR_OGL_LOAD_EXTENSION("glBlendEquationSeparateIndexedAMD");
 	pGlBlendEquationSeparateiARB = (PFNGLBLENDEQUATIONSEPARATEIPROC) IRR_OGL_LOAD_EXTENSION("glBlendEquationSeparateiARB");
+
+    pGlTextureSubImage2D = (PFNGLTEXTURESUBIMAGE2DPROC)IRR_OGL_LOAD_EXTENSION("glTextureSubImage2D");
+    pGlTextureStorage2D = (PFNGLTEXTURESTORAGE2DPROC) IRR_OGL_LOAD_EXTENSION("glTextureStorage2D");
+    pGlTextureStorage3D = (PFNGLTEXTURESTORAGE3DPROC) IRR_OGL_LOAD_EXTENSION("glTextureStorage3D");
+    pGlNamedFramebufferTexture = (PFNGLNAMEDFRAMEBUFFERTEXTUREPROC) IRR_OGL_LOAD_EXTENSION("glNamedFramebufferTexture");
+    pGlTextureParameteri = (PFNGLTEXTUREPARAMETERIPROC) IRR_OGL_LOAD_EXTENSION("glTextureParameteri");
+    pGlCreateTextures = (PFNGLCREATETEXTURESPROC) IRR_OGL_LOAD_EXTENSION("glCreateTextures");
+    pGlCreateFramebuffers = (PFNGLCREATEFRAMEBUFFERSPROC) IRR_OGL_LOAD_EXTENSION("glCreateFramebuffers");
+    pGlBindTextures = (PFNGLBINDTEXTURESPROC) IRR_OGL_LOAD_EXTENSION("glBindTextures");
+    pGlGenerateTextureMipmap = (PFNGLGENERATETEXTUREMIPMAPPROC) IRR_OGL_LOAD_EXTENSION("glGenerateTextureMipmap");
+    //==============================
+    pGlTextureSubImage2DEXT = (PFNGLTEXTURESUBIMAGE2DEXTPROC)IRR_OGL_LOAD_EXTENSION("glTextureSubImage2DEXT");
+    pGlTextureStorage2DEXT = (PFNGLTEXTURESTORAGE2DEXTPROC)IRR_OGL_LOAD_EXTENSION("glTextureStorage2DEXT");
+    pGlTexStorage2D = (PFNGLTEXSTORAGE2DPROC)IRR_OGL_LOAD_EXTENSION("glTexStorage2D");
+    pGlTextureStorage3DEXT = (PFNGLTEXTURESTORAGE3DEXTPROC)IRR_OGL_LOAD_EXTENSION("glTextureStorage3DEXT");
+    pGlTexStorage3D = (PFNGLTEXSTORAGE3DPROC)IRR_OGL_LOAD_EXTENSION("glTexStorage3D");
+    pGlNamedFramebufferTextureEXT = (PFNGLNAMEDFRAMEBUFFERTEXTUREEXTPROC)IRR_OGL_LOAD_EXTENSION("glNamedFramebufferTextureEXT");
+    pGlFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)IRR_OGL_LOAD_EXTENSION("glFramebufferTexture");
+    pGlActiveTexture = (PFNGLACTIVETEXTUREPROC)IRR_OGL_LOAD_EXTENSION("glActiveTexture");
+    pGlGenerateTextureMipmapEXT = (PFNGLGENERATETEXTUREMIPMAPEXTPROC) IRR_OGL_LOAD_EXTENSION("glGenerateTextureMipmapEXT");
 
 	// get vsync extension
 	#if defined(WGL_EXT_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
