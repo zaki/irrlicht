@@ -189,6 +189,16 @@ class aabbox3d
 				{ t=MinEdge.Z; MinEdge.Z = MaxEdge.Z; MaxEdge.Z=t; }
 		}
 
+		// Check if MaxEdge > MinEdge
+		bool isValid()
+		{
+			if (MinEdge.X > MaxEdge.X) return false;
+			if (MinEdge.Y > MaxEdge.Y) return false;
+			if (MinEdge.Z > MaxEdge.Z) return false;
+
+			return true;
+		}
+
 		//! Calculates a new interpolated bounding box.
 		/** d=0 returns other, d=1 returns this, all other values blend between
 		the two boxes.
