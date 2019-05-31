@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Add CMatrix4::transformVec4 to transform vectors with 4 elements (thx @ devsh)
 - Add ITexture::getOriginalColorFormat to access color format of images used to create a texture
 - Add IMemoryReadFile interface which allows direct access to memory block used as file.
 - Add IReadFile::getType() interface to all users to find out what kind of class implements that interface.

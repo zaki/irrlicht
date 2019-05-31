@@ -251,6 +251,9 @@ namespace core
 				NOTE: out[3] will be written to (4th vector component)*/
 			void transformVec3(T *out, const T * in) const;
 
+			//! An alternate transform vector method, reading from and writing to an array of 4 floats
+			void transformVec4(T *out, const T * in) const;
+
 			//! Translate a vector by the translation part of this matrix.
 			/** This operation is performed as if the vector was 4d with the 4th component =1 */
 			void translateVect( vector3df& vect ) const;
@@ -1223,6 +1226,15 @@ namespace core
 		out[0] = in[0]*M[0] + in[1]*M[4] + in[2]*M[8] + M[12];
 		out[1] = in[0]*M[1] + in[1]*M[5] + in[2]*M[9] + M[13];
 		out[2] = in[0]*M[2] + in[1]*M[6] + in[2]*M[10] + M[14];
+	}
+
+	template <class T>
+	inline void CMatrix4<T>::transformVec4(T *out, const T * in) const
+	{
+		out[0] = in[0]*M[0] + in[1]*M[4] + in[2]*M[8] + in[3]*M[12];
+		out[1] = in[0]*M[1] + in[1]*M[5] + in[2]*M[9] + in[3]*M[13];
+		out[2] = in[0]*M[2] + in[1]*M[6] + in[2]*M[10] + in[3]*M[14];
+		out[3] = in[0]*M[3] + in[1]*M[7] + in[2]*M[11] + in[3]*M[16];
 	}
 
 
