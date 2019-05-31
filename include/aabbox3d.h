@@ -190,7 +190,7 @@ class aabbox3d
 		}
 
 		// Check if MaxEdge > MinEdge
-		bool isValid()
+		bool isValid() const
 		{
 			if (MinEdge.X > MaxEdge.X) return false;
 			if (MinEdge.Y > MaxEdge.Y) return false;
