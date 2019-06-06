@@ -82,11 +82,12 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlColorMaskIndexedEXT(0),
 	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0), pGlBlendFuncSeparateIndexedAMD(0), pGlBlendFuncSeparateiARB(0),
 	pGlBlendEquationIndexedAMD(0), pGlBlendEquationiARB(0), pGlBlendEquationSeparateIndexedAMD(0), pGlBlendEquationSeparateiARB(0),
-
-    pGlTextureSubImage2D(0), pGlTextureStorage2D(0), pGlTextureStorage3D(0), pGlNamedFramebufferTexture(0),
-    pGlTextureParameteri(0), pGlCreateTextures(0), pGlCreateFramebuffers(0), pGlBindTextures(0),
+	// DSA
+    pGlTextureStorage2D(0), pGlTextureStorage3D(0), pGlTextureSubImage2D(0), pGlNamedFramebufferTexture(0),
+    pGlTextureParameteri(0), pGlCreateTextures(0), pGlCreateFramebuffers(0), pGlBindTextures(0), pGlGenerateTextureMipmap(0),
+    // DSA with EXT or functions to simulate it
     pGlTextureSubImage2DEXT(0), pGlTextureStorage2DEXT(0), pGlTexStorage2D(0), pGlTextureStorage3DEXT(0),
-    pGlTexStorage3D(0), pGlNamedFramebufferTextureEXT(0), pGlFramebufferTexture(0)
+    pGlTexStorage3D(0), pGlNamedFramebufferTextureEXT(0), pGlFramebufferTexture(0), pGlGenerateTextureMipmapEXT(0)
 #if defined(GLX_SGI_swap_control)
 	,pGlxSwapIntervalSGI(0)
 #endif
