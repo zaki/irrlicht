@@ -199,7 +199,7 @@ namespace video
 		//! All typical anti-alias and smooth modes
 		EAAM_FULL_BASIC=15,
 		//! Enhanced anti-aliasing for transparent materials
-		/** Usually used with EMT_TRANSPARENT_ALPHA_REF and multisampling. */
+		/** Usually used with EMT_TRANSPARENT_ALPHA_CHANNEL_REF and multisampling. */
 		EAAM_ALPHA_TO_COVERAGE=16
 	};
 
@@ -266,13 +266,13 @@ namespace video
 
 	//! By default this is identical to MATERIAL_MAX_TEXTURES
 	/** Users can modify this value if they are certain they don't need all
-		available textures per material in their application. For example if you 
+		available textures per material in their application. For example if you
 		never need more than 2 textures per material you can set this to 2.
 
-		We (mostly) avoid dynamic memory in SMaterial, so the extra memory 
-		will still be allocated. But by lowering MATERIAL_MAX_TEXTURES_USED the 
-		material comparisons and assignments can be faster. Also several other 
-		places in the engine can be faster when reducing this value to the limit 
+		We (mostly) avoid dynamic memory in SMaterial, so the extra memory
+		will still be allocated. But by lowering MATERIAL_MAX_TEXTURES_USED the
+		material comparisons and assignments can be faster. Also several other
+		places in the engine can be faster when reducing this value to the limit
 		you need.
 
 		NOTE: This should only be changed once and before any call to createDevice.
@@ -470,7 +470,7 @@ namespace video
 		Note: This probably never worked on Direct3D9 (was coded for D3D8 which had different value ranges)	*/
 		u8 PolygonOffsetFactor:3;
 
-		//! DEPRECATED. Will be removed after Irrlicht 1.9. 
+		//! DEPRECATED. Will be removed after Irrlicht 1.9.
 		/** Flag defining the direction the polygon offset is applied to.
 		Can be to front or to back, specified by values from E_POLYGON_OFFSET. 	*/
 		E_POLYGON_OFFSET PolygonOffsetDirection:1;
@@ -480,7 +480,7 @@ namespace video
 		On OpenGL you get units which are multiplied by the smallest value that is guaranteed to produce a resolvable offset.
 		On D3D9 you can pass a range between -1 and 1. But you should likely divide it by the range of the depthbuffer.
 		Like dividing by 65535.0 for a 16 bit depthbuffer. Thought it still might produce too large of a bias.
-		Some article (https://aras-p.info/blog/2008/06/12/depth-bias-and-the-power-of-deceiving-yourself/) 
+		Some article (https://aras-p.info/blog/2008/06/12/depth-bias-and-the-power-of-deceiving-yourself/)
 		recommends multiplying by 2.0*4.8e-7 (and strangely on both 16 bit and 24 bit).	*/
 		f32 PolygonOffsetDepthBias;
 

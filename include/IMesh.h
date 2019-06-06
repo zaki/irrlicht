@@ -56,7 +56,7 @@ namespace scene
 		//! generic skinned mesh
 		EAMT_SKINNED,
 
-		//! generig non-animated mesh
+		//! generic non-animated mesh
 		EAMT_STATIC
 	};
 

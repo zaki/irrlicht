@@ -54,7 +54,7 @@ namespace video
 		//! Like EMT_LIGHTMAP_M2, but also supports dynamic lighting.
 		EMT_LIGHTMAP_LIGHTING_M2,
 
-		//! Like EMT_LIGHTMAP_4, but also supports dynamic lighting.
+		//! Like EMT_LIGHTMAP_M4, but also supports dynamic lighting.
 		EMT_LIGHTMAP_LIGHTING_M4,
 
 		//! Detail mapped material.

@@ -16,7 +16,7 @@ namespace video
 		//! Is driver able to render to a surface?
 		EVDF_RENDER_TO_TARGET = 0,
 
-		//! Is hardeware transform and lighting supported?
+		//! Is hardware transform and lighting supported?
 		EVDF_HARDWARE_TL,
 
 		//! Are multiple textures per material possible?
