@@ -250,7 +250,7 @@ namespace video
 	//! Fine-tuning for SMaterial.ZWriteFineControl
 	enum E_ZWRITE_FINE_CONTROL
 	{
-		//! Default. Only write zbuffer when When SMaterial::ZBuffer is true and SMaterial::isTransparent() returns false.
+		//! Default. Only write zbuffer when SMaterial::ZBuffer is true and SMaterial::isTransparent() returns false.
 		EZI_ONLY_NON_TRANSPARENT,
 		//! Writing will just be based on SMaterial::ZBuffer value, transparency is ignored.
 		//! Needed mostly for certain shader materials as SMaterial::isTransparent will always return false for those.
@@ -508,7 +508,7 @@ namespace video
 		//! Will this material be lighted? Default: true
 		bool Lighting:1;
 
-		//! Is the zbuffer writeable or is it read-only. Default: true.
+		//! Is the zbuffer writable or is it read-only. Default: true.
 		/** This flag is forced to false if the MaterialType is a
 		transparent type and the scene parameter
 		ALLOW_ZWRITE_ON_TRANSPARENT is not set. If you set this parameter

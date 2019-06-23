@@ -468,8 +468,8 @@ struct SJoystickInfo
 	u32 Axes;
 
 	//! An indication of whether the joystick has a POV hat.
-	/** A Windows device will identify the presence or absence or the POV hat.  A
-	 *  Linux device cannot, and will always return POV_HAT_UNKNOWN. */
+	/** A Windows device will identify the presence or absence of the POV hat.
+	 *  A Linux device cannot, and will always return POV_HAT_UNKNOWN. */
 	enum
 	{
 		//! A hat is definitely present.

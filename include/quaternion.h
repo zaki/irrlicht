@@ -163,7 +163,7 @@ class quaternion
 		quaternion& slerp(quaternion q1, quaternion q2,
 				f32 time, f32 threshold=.05f);
 
-		//! Create quaternion from rotation angle and rotation axis.
+		//! Set this quaternion to represent a rotation from angle and axis.
 		/** Axis must be unit length.
 		The quaternion representing the rotation is
 		q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k).
@@ -354,7 +354,7 @@ inline matrix4 quaternion::getMatrix() const
 //! Faster method to create a rotation matrix, you should normalize the quaternion before!
 inline void quaternion::getMatrixFast( matrix4 &dest) const
 {
-	// TODO: 
+	// TODO:
 	// gpu quaternion skinning => fast Bones transform chain O_O YEAH!
 	// http://www.mrelusive.com/publications/papers/SIMD-From-Quaternion-to-Matrix-and-Back.pdf
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
