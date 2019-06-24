@@ -1,5 +1,6 @@
 --------------------------
 Changes in 1.9 (not yet released)
+- Ignore degenerated faces in obj file loader when they would generate triangles where 2 vertices use identical indices.
 - Add CMatrix4::transformVec4 to transform vectors with 4 elements (thx @ devsh)
 - Add ITexture::getOriginalColorFormat to access color format of images used to create a texture
 - Add IMemoryReadFile interface which allows direct access to memory block used as file.

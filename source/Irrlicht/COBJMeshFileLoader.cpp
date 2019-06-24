@@ -104,6 +104,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	core::array<int> faceCorners;
 	faceCorners.reallocate(32); // should be large enough
 	const core::stringc TAG_OFF = "off";
+	irr::u32 degeneratedFaces = 0;
 
 	while(bufPtr != bufEnd)
 	{
@@ -275,12 +276,22 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			}
 
 			// triangulate the face
+			const int c = faceCorners[0];
 			for ( u32 i = 1; i < faceCorners.size() - 1; ++i )
 			{
 				// Add a triangle
-				currMtl->Meshbuffer->Indices.push_back( faceCorners[i+1] );
-				currMtl->Meshbuffer->Indices.push_back( faceCorners[i] );
-				currMtl->Meshbuffer->Indices.push_back( faceCorners[0] );
+				const int a = faceCorners[i + 1];
+				const int b = faceCorners[i];
+				if (a != b && a != c && b != c)	// ignore degenerated faces. We can get them when we merge vertices above in the VertMap.
+				{
+					currMtl->Meshbuffer->Indices.push_back(a);
+					currMtl->Meshbuffer->Indices.push_back(b);
+					currMtl->Meshbuffer->Indices.push_back(c);
+				}
+				else
+				{
+					++degeneratedFaces;
+				}
 			}
 		}
 		break;
@@ -293,6 +304,14 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		bufPtr = goNextLine(bufPtr, bufEnd);
 		++lineNr;
 	}	// end while(bufPtr && (bufPtr-buf<filesize))
+
+	if ( degeneratedFaces > 0 )
+	{
+		irr::core::stringc log(degeneratedFaces);
+		log += " degenerated faces removed in ";
+		log += irr::core::stringc(fullName);
+		os::Printer::log(log.c_str(), ELL_INFORMATION);
+	}
 
 	SMesh* mesh = new SMesh();
 
