@@ -180,8 +180,8 @@ private:
 
 		void calculateTangents(core::vector3df& normal,
 			core::vector3df& tangent, core::vector3df& binormal,
-			core::vector3df& vt1, core::vector3df& vt2, core::vector3df& vt3,
-			core::vector2df& tc1, core::vector2df& tc2, core::vector2df& tc3);
+			const core::vector3df& vt1, const core::vector3df& vt2, const core::vector3df& vt3,
+			const core::vector2df& tc1, const core::vector2df& tc2, const core::vector2df& tc3);
 
 		core::array<SSkinMeshBuffer*> *SkinningBuffers; //Meshbuffer to skin, default is to skin localBuffers
 

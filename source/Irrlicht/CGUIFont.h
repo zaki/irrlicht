@@ -99,7 +99,7 @@ private:
 	void setMaxHeight();
 
 	void pushTextureCreationFlags(bool(&flags)[3]);
-	void popTextureCreationFlags(bool(&flags)[3]);
+	void popTextureCreationFlags(const bool(&flags)[3]);
 
 	core::array<SFontArea>		Areas;
 	core::map<wchar_t, s32>		CharacterMap;

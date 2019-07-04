@@ -227,7 +227,7 @@ void CGUIFont::pushTextureCreationFlags(bool(&flags)[3])
 	Driver->setTextureCreationFlag(video::ETCF_ALLOW_MEMORY_COPY, true);
 }
 
-void CGUIFont::popTextureCreationFlags(bool(&flags)[3])
+void CGUIFont::popTextureCreationFlags(const bool(&flags)[3])
 {
 	Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, flags[0]);
 	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, flags[1]);
