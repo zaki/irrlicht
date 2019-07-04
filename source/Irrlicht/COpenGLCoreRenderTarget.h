@@ -122,21 +122,23 @@ public:
 			needSizeUpdate = true;
 			TOpenGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(depthStencil) : 0;
 
-			GLuint textureID = 0;
-
 			if (currentTexture)
 			{	
 				if (currentTexture->getType() == ETT_2D)
-					textureID = currentTexture->getOpenGLTextureName();
-				else
-					os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
-			}
+				{
+					GLuint textureID = currentTexture->getOpenGLTextureName();
 
-			const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
-			if (IImage::isDepthFormat(textureFormat))
-			{
-				DepthStencil = depthStencil;
-				DepthStencil->grab();
+					const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
+					if (IImage::isDepthFormat(textureFormat))
+					{
+						DepthStencil = depthStencil;
+						DepthStencil->grab();
+					}
+				}
+				else
+				{
+					os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
+				}
 			}
 
 			RequestDepthStencilUpdate = true;
