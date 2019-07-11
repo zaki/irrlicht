@@ -96,6 +96,7 @@ namespace scene
 
 	private:
 
+		void updateMousePos();
 		void allKeysUp();
 		void animate();
 		bool isMouseKeyDown(s32 key) const;

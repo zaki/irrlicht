@@ -58,32 +58,34 @@ bool CSceneNodeAnimatorCameraMaya::OnEvent(const SEvent& event)
 	{
 	case EMIE_LMOUSE_PRESSED_DOWN:
 		MouseKeys[0] = true;
+		updateMousePos();
 		break;
 	case EMIE_RMOUSE_PRESSED_DOWN:
 		MouseKeys[2] = true;
+		updateMousePos();
 		break;
 	case EMIE_MMOUSE_PRESSED_DOWN:
 		MouseKeys[1] = true;
+		updateMousePos();
 		break;
 	case EMIE_LMOUSE_LEFT_UP:
 		MouseKeys[0] = false;
+		updateMousePos();
 		break;
 	case EMIE_RMOUSE_LEFT_UP:
 		MouseKeys[2] = false;
+		updateMousePos();
 		break;
 	case EMIE_MMOUSE_LEFT_UP:
 		MouseKeys[1] = false;
+		updateMousePos();
 		break;
 	case EMIE_MOUSE_MOVED:
 		// check states again because sometimes the gui has already caught events
 		MouseKeys[0] = event.MouseInput.isLeftPressed();
 		MouseKeys[2] = event.MouseInput.isRightPressed();
 		MouseKeys[1] = event.MouseInput.isMiddlePressed();
-
-		if ( CursorControl )
-		{
-			MousePos = CursorControl->getRelativePosition();
-		}
+		updateMousePos();
 		break;
 	case EMIE_MOUSE_WHEEL:
 	case EMIE_LMOUSE_DOUBLE_CLICK:
@@ -98,6 +100,13 @@ bool CSceneNodeAnimatorCameraMaya::OnEvent(const SEvent& event)
 	return true;
 }
 
+void CSceneNodeAnimatorCameraMaya::updateMousePos()
+{
+	if ( CursorControl )
+	{
+		MousePos = CursorControl->getRelativePosition();
+	}
+}
 
 //! OnAnimate() is called just before rendering the whole scene.
 void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
