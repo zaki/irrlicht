@@ -208,9 +208,21 @@ static bool doTests()
 {
 	vector3d<T> vec(-5, 5, 0);
 	vector3d<T> otherVec((T)-5.1, 5, 0);
+
 	if(!vec.equals(otherVec, (T)0.1))
 	{
 		logTestString("vector3d::equals failed\n");
+		assert_log(0);
+		return false;
+	}
+
+	otherVec = vector3d<T>(1,2,3);
+	otherVec[0] = vec[0];
+	otherVec[1] = vec[1];
+	otherVec[2] = vec[2];
+	if(!vec.equals(otherVec))
+	{
+		logTestString("vector3d::operator[] failed\n");
 		assert_log(0);
 		return false;
 	}

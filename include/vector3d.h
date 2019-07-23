@@ -57,6 +57,20 @@ namespace core
 		vector3d<T> operator/(const T v) const { T i=(T)1.0/v; return vector3d<T>(X * i, Y * i, Z * i); }
 		vector3d<T>& operator/=(const T v) { T i=(T)1.0/v; X*=i; Y*=i; Z*=i; return *this; }
 
+		T& operator [](u32 index)
+		{
+			_IRR_DEBUG_BREAK_IF(index>2) // access violation
+
+			return *(&X+index);
+		}
+
+		const T& operator [](u32 index) const
+		{
+			_IRR_DEBUG_BREAK_IF(index>2) // access violation
+
+			return *(&X+index);
+		}
+
 		//! sort in order X, Y, Z. Equality with rounding tolerance.
 		bool operator<=(const vector3d<T>&other) const
 		{

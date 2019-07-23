@@ -36,6 +36,15 @@ static bool doTests()
 		return false;
 	}
 
+	otherVec = vector2d<T>(1,2);
+	otherVec[0] = vec[0];
+	otherVec[1] = vec[1];
+	if(!vec.equals(otherVec))
+	{
+		logTestString("vector2d::operator[] failed\n");
+		assert_log(0);
+		return false;
+	}
 
 	vec.rotateBy(45); // Test implicit (0, 0) center
 	COMPARE_VECTORS(vec, vector2d<T>(0, (T)7.0710678118654755));

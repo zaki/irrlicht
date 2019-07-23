@@ -64,6 +64,20 @@ public:
 	vector2d<T> operator/(const T v) const { return vector2d<T>(X / v, Y / v); }
 	vector2d<T>& operator/=(const T v) { X/=v; Y/=v; return *this; }
 
+	T& operator [](u32 index)
+	{
+		_IRR_DEBUG_BREAK_IF(index>1) // access violation
+
+		return *(&X+index);
+	}
+
+	const T& operator [](u32 index) const
+	{
+		_IRR_DEBUG_BREAK_IF(index>1) // access violation
+
+		return *(&X+index);
+	}
+
 	//! sort in order X, Y. Equality with rounding tolerance.
 	bool operator<=(const vector2d<T>&other) const
 	{
