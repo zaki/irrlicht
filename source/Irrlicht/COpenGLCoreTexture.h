@@ -104,8 +104,6 @@ public:
 		for (u32 i = 0; i < (*tmpImage).size(); ++i)
 			uploadTexture(true, i, 0, (*tmpImage)[i]->getData());
 
-		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
-
 		bool autoGenerateRequired = true;
 
 		for (u32 i = 0; i < (*tmpImage).size(); ++i)
@@ -126,6 +124,9 @@ public:
 
 			Image.clear();
 		}
+
+
+		Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
 
 		Driver->testGLError(__LINE__);
 	}
