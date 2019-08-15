@@ -903,6 +903,7 @@
     <ClInclude Include="..\..\include\position2d.h" />
     <ClInclude Include="..\..\include\quaternion.h" />
     <ClInclude Include="..\..\include\rect.h" />
+    <ClInclude Include="..\..\include\SOverrideMaterial.h" />
     <ClInclude Include="..\..\include\triangle3d.h" />
     <ClInclude Include="..\..\include\vector2d.h" />
     <ClInclude Include="..\..\include\vector3d.h" />
