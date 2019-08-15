@@ -134,6 +134,10 @@ public:
 						DepthStencil = depthStencil;
 						DepthStencil->grab();
 					}
+					else
+					{
+						os::Printer::log("Ignoring depth/stencil texture without depth color format.", ELL_WARNING);
+					}
 				}
 				else
 				{

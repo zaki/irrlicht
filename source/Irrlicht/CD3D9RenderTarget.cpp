@@ -51,136 +51,138 @@ namespace irr
 
 		void CD3D9RenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces)
 		{
-			bool textureUpdate = (Texture != texture) || (CubeSurfaces != cubeSurfaces) ? true : false;
-			bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
+			bool needSizeUpdate = false;
 
-			if (textureUpdate || depthStencilUpdate)
+			// Set color attachments.
+			if ((Texture != texture) || (CubeSurfaces != cubeSurfaces))
 			{
-				// Set color attachments.
+				needSizeUpdate = true;
+				CubeSurfaces = cubeSurfaces;
 
-				if (textureUpdate)
+				if (texture.size() > Driver->ActiveRenderTarget.size())
 				{
-					CubeSurfaces = cubeSurfaces;
+					core::stringc message = "This GPU supports up to ";
+					message += Driver->ActiveRenderTarget.size();
+					message += " textures per render target.";
 
-					if (texture.size() > Driver->ActiveRenderTarget.size())
-					{
-						core::stringc message = "This GPU supports up to ";
-						message += Driver->ActiveRenderTarget.size();
-						message += " textures per render target.";
-
-						os::Printer::log(message.c_str(), ELL_WARNING);
-					}
-
-					const u32 size = core::min_(texture.size(), static_cast<u32>(Driver->ActiveRenderTarget.size()));
-
-					for (u32 i = 0; i < Surface.size(); ++i)
-					{
-						if (Surface[i])
-							Surface[i]->Release();
-					}
-
-					Surface.set_used(size);
-
-					for (u32 i = 0; i < Texture.size(); ++i)
-					{
-						if (Texture[i])
-							Texture[i]->drop();
-					}
-
-					Texture.set_used(size);
-
-					for (u32 i = 0; i < size; ++i)
-					{
-						CD3D9Texture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<CD3D9Texture*>(texture[i]) : 0;
-
-						IDirect3DTexture9* textureID = 0;
-						IDirect3DCubeTexture9* cubeTextureId = 0;
-						UINT level = 0;	// no support for rendering to to other mip-levels so far
-
-						if (currentTexture)
-						{
-							if (currentTexture->getType() == ETT_2D)
-								textureID = currentTexture->getDX9Texture();
-							else if ( currentTexture->getType() == ETT_CUBEMAP )
-								cubeTextureId = currentTexture->getDX9CubeTexture();
-						}
-
-						if (textureID)
-						{
-							Texture[i] = texture[i];
-							Texture[i]->grab();
-
-							IDirect3DSurface9* currentSurface = 0;
-							textureID->GetSurfaceLevel(level, &currentSurface);
-
-							Surface[i] = currentSurface;
-						}
-						else if ( cubeTextureId )
-						{
-							Texture[i] = texture[i];
-							Texture[i]->grab();
-
-							IDirect3DSurface9* currentSurface = 0;
-							D3DCUBEMAP_FACES face = (D3DCUBEMAP_FACES)CubeSurfaces[i];	// we use same numbering
-							cubeTextureId->GetCubeMapSurface(face, level, &currentSurface);
-
-							Surface[i] = currentSurface;
-						}
-						else
-						{
-							Surface[i] = 0;
-							Texture[i] = 0;
-						}
-					}
+					os::Printer::log(message.c_str(), ELL_WARNING);
 				}
 
-				// Set depth and stencil attachments.
+				const u32 size = core::min_(texture.size(), static_cast<u32>(Driver->ActiveRenderTarget.size()));
 
-				if (depthStencilUpdate)
+				for (u32 i = 0; i < Surface.size(); ++i)
 				{
-					if (DepthStencilSurface)
-					{
-						DepthStencilSurface->Release();
-						DepthStencilSurface = 0;
-					}
+					if (Surface[i])
+						Surface[i]->Release();
+				}
 
-					if (DepthStencil)
-					{
-						DepthStencil->drop();
-						DepthStencil = 0;
+				Surface.set_used(size);
 
-						DepthStencilSurface = 0;
-					}
+				for (u32 i = 0; i < Texture.size(); ++i)
+				{
+					if (Texture[i])
+						Texture[i]->drop();
+				}
 
-					CD3D9Texture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<CD3D9Texture*>(depthStencil) : 0;
+				Texture.set_used(size);
+
+				for (u32 i = 0; i < size; ++i)
+				{
+					CD3D9Texture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<CD3D9Texture*>(texture[i]) : 0;
 
 					IDirect3DTexture9* textureID = 0;
+					IDirect3DCubeTexture9* cubeTextureId = 0;
+					UINT level = 0;	// no support for rendering to to other mip-levels so far
 
 					if (currentTexture)
 					{
 						if (currentTexture->getType() == ETT_2D)
 							textureID = currentTexture->getDX9Texture();
-						else
-							os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
+						else if ( currentTexture->getType() == ETT_CUBEMAP )
+							cubeTextureId = currentTexture->getDX9CubeTexture();
 					}
 
 					if (textureID)
 					{
-						const ECOLOR_FORMAT textureFormat = (depthStencil) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
+						Texture[i] = texture[i];
+						Texture[i]->grab();
 
-						if (IImage::isDepthFormat(textureFormat))
-						{
-							DepthStencil = depthStencil;
-							DepthStencil->grab();
+						IDirect3DSurface9* currentSurface = 0;
+						textureID->GetSurfaceLevel(level, &currentSurface);
 
-							IDirect3DSurface9* currentSurface = 0;
-							textureID->GetSurfaceLevel(0, &currentSurface);
+						Surface[i] = currentSurface;
+					}
+					else if ( cubeTextureId )
+					{
+						Texture[i] = texture[i];
+						Texture[i]->grab();
 
-							DepthStencilSurface = currentSurface;
-						}
+						IDirect3DSurface9* currentSurface = 0;
+						D3DCUBEMAP_FACES face = (D3DCUBEMAP_FACES)CubeSurfaces[i];	// we use same numbering
+						cubeTextureId->GetCubeMapSurface(face, level, &currentSurface);
+
+						Surface[i] = currentSurface;
+					}
+					else
+					{
+						Surface[i] = 0;
+						Texture[i] = 0;
 					}
 				}
+			}
 
+			// Set depth and stencil attachments.
+
+			if (DepthStencil != depthStencil)
+			{
+				if (DepthStencilSurface)
+				{
+					DepthStencilSurface->Release();
+					DepthStencilSurface = 0;
+				}
+
+				if (DepthStencil)
+				{
+					DepthStencil->drop();
+					DepthStencil = 0;
+
+					DepthStencilSurface = 0;
+				}
+
+				needSizeUpdate = true;
+				CD3D9Texture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<CD3D9Texture*>(depthStencil) : 0;
+
+				if (currentTexture)
+				{
+					if (currentTexture->getType() == ETT_2D)
+					{
+						IDirect3DTexture9* textureID = currentTexture->getDX9Texture();
+						if (textureID)
+						{
+							const ECOLOR_FORMAT textureFormat = depthStencil->getColorFormat();
+							if (IImage::isDepthFormat(textureFormat))
+							{
+								DepthStencil = depthStencil;
+								DepthStencil->grab();
+
+								IDirect3DSurface9* currentSurface = 0;
+								textureID->GetSurfaceLevel(0, &currentSurface);
+
+								DepthStencilSurface = currentSurface;
+							}
+							else
+							{
+								os::Printer::log("Ignoring depth/stencil texture without depth color format.", ELL_WARNING);
+							}
+						}
+					}
+					else
+						os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
+				}
+			}
+
+			if (needSizeUpdate)
+			{
 				// Set size required for a viewport.
 
 				bool sizeDetected = false;
