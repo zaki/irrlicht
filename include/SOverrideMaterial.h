@@ -16,19 +16,39 @@ namespace video
 	{
 		//! The Material values
 		SMaterial Material;
-		//! Which values are taken for override
+
+		//! Which values are overridden
 		/** OR'ed values from E_MATERIAL_FLAGS. */
 		u32 EnableFlags;
+
+		//! For those flags in EnableFlags which affect layers, set which of the layers are affected
+		bool EnableLayerFlags[MATERIAL_MAX_TEXTURES];
+
+		//! Which textures are overridden
+		bool EnableTextures[MATERIAL_MAX_TEXTURES];
+
+		//! Overwrite complete layers (settings of EnableLayerFlags and EnableTextures don't matter then for layer data)
+		bool EnableLayers[MATERIAL_MAX_TEXTURES];
+
 		//! Set in which render passes the material override is active.
 		/** OR'ed values from E_SCENE_NODE_RENDER_PASS. */
 		u16 EnablePasses;
+
 		//! Global enable flag, overwritten by the SceneManager in each pass
 		/** The Scenemanager uses the EnablePass array and sets Enabled to
 		true if the Override material is enabled in the current pass. */
 		bool Enabled;
 
 		//! Default constructor
-		SOverrideMaterial() : EnableFlags(0), EnablePasses(0), Enabled(false) {}
+		SOverrideMaterial() : EnableFlags(0), EnablePasses(0), Enabled(false) 
+		{
+			for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			{
+				EnableLayerFlags[i] = true;
+				EnableTextures[i] = false;
+				EnableLayers[i] = false;
+			}
+		}
 
 		//! Apply the enabled overrides
 		void apply(SMaterial& material)
@@ -50,15 +70,45 @@ namespace video
 						case EMF_ZWRITE_ENABLE: material.ZWriteEnable = Material.ZWriteEnable; break;
 						case EMF_BACK_FACE_CULLING: material.BackfaceCulling = Material.BackfaceCulling; break;
 						case EMF_FRONT_FACE_CULLING: material.FrontfaceCulling = Material.FrontfaceCulling; break;
-						case EMF_BILINEAR_FILTER: material.TextureLayer[0].BilinearFilter = Material.TextureLayer[0].BilinearFilter; break;
-						case EMF_TRILINEAR_FILTER: material.TextureLayer[0].TrilinearFilter = Material.TextureLayer[0].TrilinearFilter; break;
-						case EMF_ANISOTROPIC_FILTER: material.TextureLayer[0].AnisotropicFilter = Material.TextureLayer[0].AnisotropicFilter; break;
+						case EMF_BILINEAR_FILTER: 
+							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							{
+								if ( EnableLayerFlags[i] )
+								{
+									material.TextureLayer[i].BilinearFilter = Material.TextureLayer[i].BilinearFilter; 
+								}
+							}
+							break;
+						case EMF_TRILINEAR_FILTER: 
+							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							{
+								if ( EnableLayerFlags[i] )
+								{
+									material.TextureLayer[i].TrilinearFilter = Material.TextureLayer[i].TrilinearFilter; 
+								}
+							}
+							break;
+						case EMF_ANISOTROPIC_FILTER: 
+							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							{
+								if ( EnableLayerFlags[i] )
+								{
+									material.TextureLayer[i].AnisotropicFilter = Material.TextureLayer[i].AnisotropicFilter; 
+								}
+							}
+							break;
 						case EMF_FOG_ENABLE: material.FogEnable = Material.FogEnable; break;
 						case EMF_NORMALIZE_NORMALS: material.NormalizeNormals = Material.NormalizeNormals; break;
 						case EMF_TEXTURE_WRAP:
-							material.TextureLayer[0].TextureWrapU = Material.TextureLayer[0].TextureWrapU;
-							material.TextureLayer[0].TextureWrapV = Material.TextureLayer[0].TextureWrapV;
-							material.TextureLayer[0].TextureWrapW = Material.TextureLayer[0].TextureWrapW;
+							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							{
+								if ( EnableLayerFlags[i] )
+								{
+									material.TextureLayer[i].TextureWrapU = Material.TextureLayer[i].TextureWrapU;
+									material.TextureLayer[i].TextureWrapV = Material.TextureLayer[i].TextureWrapV;
+									material.TextureLayer[i].TextureWrapW = Material.TextureLayer[i].TextureWrapW;
+								}
+							}
 							break;
 						case EMF_ANTI_ALIASING: material.AntiAliasing = Material.AntiAliasing; break;
 						case EMF_COLOR_MASK: material.ColorMask = Material.ColorMask; break;
@@ -73,6 +123,17 @@ namespace video
 							material.PolygonOffsetSlopeScale = Material.PolygonOffsetSlopeScale;
 							break;
 						}
+					}
+				}
+				for(int i=0; i<MATERIAL_MAX_TEXTURES; ++i )
+				{
+					if ( EnableLayers[i] )
+					{
+						material.TextureLayer[i] = Material.TextureLayer[i];
+					}
+					else if ( EnableTextures[i] )
+					{
+						material.TextureLayer[i].Texture = Material.TextureLayer[i].Texture;
 					}
 				}
 			}
