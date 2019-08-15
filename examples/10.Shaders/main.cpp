@@ -305,21 +305,17 @@ int main()
 
 		if (UseHighLevelShaders)
 		{
-			// Choose the desired shader type. Default is the native
-			// shader type for the driver
-			const video::E_GPU_SHADING_LANGUAGE shadingLanguage = video::EGSL_DEFAULT;
-
 			// create material from high level shaders (hlsl, glsl)
 
 			newMaterialType1 = gpu->addHighLevelShaderMaterialFromFiles(
 				vsFileName, "vertexMain", video::EVST_VS_1_1,
 				psFileName, "pixelMain", video::EPST_PS_1_1,
-				mcSolid, video::EMT_SOLID, 0, shadingLanguage);
+				mcSolid, video::EMT_SOLID, 0);
 
 			newMaterialType2 = gpu->addHighLevelShaderMaterialFromFiles(
 				vsFileName, "vertexMain", video::EVST_VS_1_1,
 				psFileName, "pixelMain", video::EPST_PS_1_1,
-				mcTransparentAdd, video::EMT_TRANSPARENT_ADD_COLOR, 0 , shadingLanguage);
+				mcTransparentAdd, video::EMT_TRANSPARENT_ADD_COLOR, 0);
 		}
 		else
 		{

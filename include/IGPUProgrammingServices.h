@@ -24,16 +24,6 @@ namespace video
 class IVideoDriver;
 class IShaderConstantSetCallBack;
 
-//! Enumeration for different types of shading languages
-enum E_GPU_SHADING_LANGUAGE
-{
-	//! The default language, so HLSL for Direct3D and GLSL for OpenGL.
-	EGSL_DEFAULT = 0,
-
-	//! Cg shading language.*/
-	EGSL_CG
-};
-
 //! Interface making it possible to create and use programs running on the GPU.
 class IGPUProgrammingServices
 {
@@ -78,7 +68,6 @@ public:
 	OnSetConstants(). In this way it is easily possible to use the same
 	callback method for multiple materials and distinguish between them
 	during the call.
-	\param shaderLang a type of shading language used in current shader.
 	\return Number of the material type which can be set in
 	SMaterial::MaterialType to use the renderer. -1 is returned if an error
 	occurred, e.g. if a shader program could not be compiled or a compile
@@ -99,8 +88,7 @@ public:
 		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0,
-		E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT) = 0;
+		s32 userData = 0) = 0;
 
 	//! convenience function for use without geometry shaders
 	s32 addHighLevelShaderMaterial(
@@ -112,8 +100,7 @@ public:
 		E_PIXEL_SHADER_TYPE psCompileTarget=EPST_PS_1_1,
 		IShaderConstantSetCallBack* callback=0,
 		E_MATERIAL_TYPE baseMaterial=video::EMT_SOLID,
-		s32 userData=0,
-		E_GPU_SHADING_LANGUAGE shadingLang=EGSL_DEFAULT)
+		s32 userData=0)
 	{
 		return addHighLevelShaderMaterial(
 			vertexShaderProgram, vertexShaderEntryPointName,
@@ -121,7 +108,7 @@ public:
 			pixelShaderEntryPointName, psCompileTarget,
 			0, "main", EGST_GS_4_0,
 			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
-			callback, baseMaterial, userData, shadingLang);
+			callback, baseMaterial, userData);
 	}
 
 	//! convenience function for use with many defaults, without geometry shader
@@ -205,7 +192,6 @@ public:
 	OnSetConstants(). In this way it is easily possible to use the same
 	callback method for multiple materials and distinguish between them
 	during the call.
-	\param shaderLang a type of shading language used in current shader.
 	\return Number of the material type which can be set in
 	SMaterial::MaterialType to use the renderer. -1 is returned if an error
 	occurred, e.g. if a shader program could not be compiled or a compile
@@ -226,8 +212,7 @@ public:
 		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0,
-		E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT) = 0;
+		s32 userData = 0) = 0;
 
 	//! convenience function for use without geometry shaders
 	s32 addHighLevelShaderMaterialFromFiles(
@@ -239,8 +224,7 @@ public:
 		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0,
-		E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT)
+		s32 userData = 0)
 	{
 		return addHighLevelShaderMaterialFromFiles(
 			vertexShaderProgramFileName, vertexShaderEntryPointName,
@@ -248,7 +232,7 @@ public:
 			pixelShaderEntryPointName, psCompileTarget,
 			"", "main", EGST_GS_4_0,
 			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
-			callback, baseMaterial, userData, shadingLang);
+			callback, baseMaterial, userData);
 	}
 
 	//! convenience function for use with many defaults, without geometry shader
@@ -330,7 +314,6 @@ public:
 	OnSetConstants(). In this way it is easily possible to use the same
 	callback method for multiple materials and distinguish between them
 	during the call.
-	\param shaderLang a type of shading language used in current shader.
 	\return Number of the material type which can be set in
 	SMaterial::MaterialType to use the renderer. -1 is returned if an
 	error occurred, e.g. if a shader program could not be compiled or a
@@ -351,8 +334,7 @@ public:
 		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0,
-		E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT) = 0;
+		s32 userData = 0) = 0;
 
 	//! convenience function for use without geometry shaders
 	s32 addHighLevelShaderMaterialFromFiles(
@@ -364,8 +346,7 @@ public:
 		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-		s32 userData = 0,
-		E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT)
+		s32 userData = 0)
 	{
 		return addHighLevelShaderMaterialFromFiles(
 			vertexShaderProgram, vertexShaderEntryPointName,
@@ -373,7 +354,7 @@ public:
 			pixelShaderEntryPointName, psCompileTarget,
 			0, "main", EGST_GS_4_0,
 			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
-			callback, baseMaterial, userData, shadingLang);
+			callback, baseMaterial, userData);
 	}
 
 	//! Adds a new ASM shader material renderer to the VideoDriver

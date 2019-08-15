@@ -3723,7 +3723,7 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
-	s32 userData, E_GPU_SHADING_LANGUAGE shadingLang)
+	s32 userData)
 {
 	s32 nr = -1;
 
