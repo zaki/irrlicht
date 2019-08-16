@@ -55,9 +55,9 @@ namespace video
 		{
 			if (Enabled)
 			{
-				for (u32 i=0; i<32; ++i)
+				for (u32 f=0; f<32; ++f)
 				{
-					const u32 num=(1<<i);
+					const u32 num=(1<<f);
 					if (EnableFlags & num)
 					{
 						switch (num)
