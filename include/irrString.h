@@ -958,15 +958,14 @@ public:
 		string<T> o;
 		o.reserve(length+1);
 
-		s32 i;
 		if ( !make_lower )
 		{
-			for (i=0; i<length; ++i)
+			for (s32 i=0; i<length; ++i)
 				o.array[i] = array[i+begin];
 		}
 		else
 		{
-			for (i=0; i<length; ++i)
+			for (s32 i=0; i<length; ++i)
 				o.array[i] = locale_lower ( array[i+begin] );
 		}
 

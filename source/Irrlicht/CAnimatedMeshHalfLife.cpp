@@ -23,19 +23,17 @@ namespace scene
 
 	void AngleQuaternion(const core::vector3df& angles, vec4_hl quaternion)
 	{
-		double angle;
-		double sr, sp, sy, cr, cp, cy;
-
 		// FIXME: rescale the inputs to 1/2 angle
-		angle = angles.Z * 0.5;
-		sy = sin(angle);
-		cy = cos(angle);
+		double angle = angles.Z * 0.5;
+
+		const double sy = sin(angle);
+		const double cy = cos(angle);
 		angle = angles.Y * 0.5;
-		sp = sin(angle);
-		cp = cos(angle);
+		const double sp = sin(angle);
+		const double cp = cos(angle);
 		angle = angles.X * 0.5;
-		sr = sin(angle);
-		cr = cos(angle);
+		const double sr = sin(angle);
+		const double cr = cos(angle);
 
 		quaternion[0] = (irr::f32)(sr*cp*cy-cr*sp*sy); // X
 		quaternion[1] = (irr::f32)(cr*sp*cy+sr*cp*sy); // Y
@@ -60,28 +58,26 @@ namespace scene
 
 	void QuaternionSlerp( const vec4_hl p, vec4_hl q, f32 t, vec4_hl qt )
 	{
-		s32 i;
-		double omega, cosom, sinom, sclp, sclq;
-
 		// decide if one of the quaternions is backwards
 		f32 a = 0;
 		f32 b = 0;
-		for (i = 0; i < 4; i++) {
+		for (s32 i = 0; i < 4; i++) {
 			a += (p[i]-q[i])*(p[i]-q[i]);
 			b += (p[i]+q[i])*(p[i]+q[i]);
 		}
 		if (a > b) {
-			for (i = 0; i < 4; i++) {
+			for (s32 i = 0; i < 4; i++) {
 				q[i] = -q[i];
 			}
 		}
 
-		cosom = p[0]*q[0] + p[1]*q[1] + p[2]*q[2] + p[3]*q[3];
+		double sclp, sclq;
+		const double cosom = p[0]*q[0] + p[1]*q[1] + p[2]*q[2] + p[3]*q[3];
 
 		if ((1.f + cosom) > 0.00000001) {
 			if ((1.f - cosom) > 0.00000001) {
-				omega = acos( cosom );
-				sinom = sin( omega );
+				const double omega = acos( cosom );
+				const double sinom = sin( omega );
 				sclp = sin( (1.f - t)*omega) / sinom;
 				sclq = sin( t*omega ) / sinom;
 			}
@@ -89,7 +85,7 @@ namespace scene
 				sclp = 1.f - t;
 				sclq = t;
 			}
-			for (i = 0; i < 4; i++) {
+			for (s32 i = 0; i < 4; i++) {
 				qt[i] = f32(sclp * p[i] + sclq * q[i]);
 			}
 		}
@@ -100,7 +96,7 @@ namespace scene
 			qt[3] = p[2];
 			sclp = sin( (1.f - t) * 0.5f * core::PI);
 			sclq = sin( t * 0.5f * core::PI);
-			for (i = 0; i < 3; i++) {
+			for (s32 i = 0; i < 3; i++) {
 				qt[i] = f32(sclp * p[i] + sclq * qt[i]);
 			}
 		}
@@ -281,13 +277,12 @@ void CAnimatedMeshHalfLife::initModel()
 	// init Sequences to Animation
 	KeyFrameInterpolation ipol;
 	ipol.Name.reserve ( 64 );
-	u32 i;
 
 	AnimList.clear();
 	FrameCount = 0;
 
-	SHalflifeSequence *seq = (SHalflifeSequence*) ((u8*) Header + Header->seqindex);
-	for ( i = 0; i < Header->numseq; i++)
+	const SHalflifeSequence *seq = (SHalflifeSequence*) ((u8*) Header + Header->seqindex);
+	for (u32 i = 0; i < Header->numseq; i++)
 	{
 		ipol.Name = seq[i].label;
 		ipol.StartFrame = FrameCount;
@@ -323,13 +318,13 @@ void CAnimatedMeshHalfLife::initModel()
 	u32 meshBuffer = 0;
 	BodyList.clear();
 	const SHalflifeBody *body = (const SHalflifeBody *) ((u8*) Header + Header->bodypartindex);
-	for (i=0; i < Header->numbodyparts; ++i)
+	for (u32 i=0; i < Header->numbodyparts; ++i)
 	{
 		BodyPart part;
 		part.name = body[i].name;
 		part.defaultModel = core::max_ ( 0, (s32) body[i].base - 1 );
 
-		SHalflifeModel * model = (SHalflifeModel *)((u8*) Header + body[i].modelindex);
+		const SHalflifeModel * model = (SHalflifeModel *)((u8*) Header + body[i].modelindex);
 		for ( u32 g = 0; g < body[i].nummodels; ++g)
 		{
 			SubModel sub;
@@ -378,7 +373,7 @@ void CAnimatedMeshHalfLife::initModel()
 			const vec3_hl *studioverts = (vec3_hl *)((u8*)Header + model->vertindex);
 			const vec3_hl *studionorms = (vec3_hl *)((u8*)Header + model->normindex);
 #endif
-			for (i = 0; i < model->nummesh; ++i)
+			for (u32 i = 0; i < model->nummesh; ++i)
 			{
 				const SHalflifeMesh *mesh = (SHalflifeMesh *)((u8*)Header + model->meshindex) + i;
 				const SHalflifeTexture *currentex = &tex[skinref[mesh->skinref]];
@@ -531,10 +526,6 @@ void CAnimatedMeshHalfLife::buildVertices()
 	if (SkinGroupSelection != 0 && SkinGroupSelection < TextureHeader->numskinfamilies)
 		skinref += (SkinGroupSelection * TextureHeader->numskinref);
 */
-	u32 i;
-	s32 c,g;
-	const s16 *tricmd;
-
 	u32 meshBufferNr = 0;
 	for ( u32 bodypart = 0 ; bodypart < Header->numbodyparts; ++bodypart)
 	{
@@ -548,7 +539,7 @@ void CAnimatedMeshHalfLife::buildVertices()
 
 			const vec3_hl *studioverts = (vec3_hl *)((u8*)Header + model->vertindex);
 
-			for ( i = 0; i < model->numverts; i++)
+			for (u32 i = 0; i < model->numverts; i++)
 			{
 				VectorTransform ( studioverts[i],  BoneTransform[vertbone[i]], TransformedVerts[i]  );
 			}
@@ -560,20 +551,21 @@ void CAnimatedMeshHalfLife::buildVertices()
 				VectorTransform ( studionorms[i],  BoneTransform[normbone[i]], TransformedNormals[i]  );
 			}
 	*/
-			for (i = 0; i < model->nummesh; i++)
+			for (u32 i = 0; i < model->nummesh; i++)
 			{
 				const SHalflifeMesh *mesh = (SHalflifeMesh *)((u8*)Header + model->meshindex) + i;
 
 				IMeshBuffer * buffer = MeshIPol->getMeshBuffer ( meshBufferNr++ );
 				video::S3DVertex* v = (video::S3DVertex* ) buffer->getVertices();
 
-				tricmd = (s16*)((u8*)Header + mesh->triindex);
+				const s16 *tricmd = (s16*)((u8*)Header + mesh->triindex);
+				s32 c = 0;
 				while ( (c = *(tricmd++)) )
 				{
 					if (c < 0)
 						c = -c;
 
-					for ( g = 0; g < c; ++g, v += 1, tricmd += 4 )
+					for (s32 g = 0; g < c; ++g, v += 1, tricmd += 4 )
 					{
 						// fill vertex
 						const core::vector3df& av = TransformedVerts[tricmd[0]];
@@ -596,17 +588,16 @@ void CAnimatedMeshHalfLife::buildVertices()
 */
 void CAnimatedMeshHalfLife::renderModel(u32 param, IVideoDriver * driver, const core::matrix4 &absoluteTransformation)
 {
-	SHalflifeBone *bone = (SHalflifeBone *) ((u8 *) Header + Header->boneindex);
+	const SHalflifeBone *bone = (SHalflifeBone *) ((u8 *) Header + Header->boneindex);
 
-	video::SColor blue(0xFF000080);
-	video::SColor red(0xFF800000);
-	video::SColor yellow(0xFF808000);
-	video::SColor cyan(0xFF008080);
+	const video::SColor blue(0xFF000080);
+	const video::SColor red(0xFF800000);
+	const video::SColor yellow(0xFF808000);
+	const video::SColor cyan(0xFF008080);
 
 	core::aabbox3df box;
 
-	u32 i;
-	for ( i = 0; i < Header->numbones; i++)
+	for (u32 i = 0; i < Header->numbones; i++)
 	{
 		if (bone[i].parent >= 0)
 		{
@@ -632,9 +623,9 @@ void CAnimatedMeshHalfLife::renderModel(u32 param, IVideoDriver * driver, const 
 	}
 
 	// attachements
-	SHalflifeAttachment *attach = (SHalflifeAttachment *) ((u8*) Header + Header->attachmentindex);
+	const SHalflifeAttachment *attach = (SHalflifeAttachment *) ((u8*) Header + Header->attachmentindex);
 	core::vector3df v[8];
-	for ( i = 0; i < Header->numattachments; i++)
+	for (u32 i = 0; i < Header->numattachments; i++)
 	{
 		getTransformedBoneVector ( v[0],attach[i].bone,attach[i].org );
 		getTransformedBoneVector ( v[1],attach[i].bone,attach[i].vectors[0] );
@@ -647,12 +638,11 @@ void CAnimatedMeshHalfLife::renderModel(u32 param, IVideoDriver * driver, const 
 
 	// hit boxes
 	SHalflifeBBox *hitbox = (SHalflifeBBox *) ((u8*) Header + Header->hitboxindex);
-	f32 *bbmin,*bbmax;
 	vec3_hl v2[8];
-	for (i = 0; i < Header->numhitboxes; i++)
+	for (u32 i = 0; i < Header->numhitboxes; i++)
 	{
-		bbmin = hitbox[i].bbmin;
-		bbmax = hitbox[i].bbmax;
+		f32 *bbmin = hitbox[i].bbmin;
+		f32 *bbmax = hitbox[i].bbmax;
 
 		v2[0][0] = bbmin[0];
 		v2[0][1] = bbmax[1];
@@ -710,8 +700,8 @@ void CAnimatedMeshHalfLife::renderModel(u32 param, IVideoDriver * driver, const 
 //! Returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail.
 IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
 {
-	f32 frame = frameInt + (detailLevel * 0.001f);
-	u32 frameA = core::floor32 ( frame );
+	const f32 frame = frameInt + (detailLevel * 0.001f);
+	const u32 frameA = core::floor32 ( frame );
 //	f32 blend = core::fract ( frame );
 
 	SHalflifeSequence *seq = (SHalflifeSequence*) ((u8*) Header + Header->seqindex);
@@ -720,7 +710,7 @@ IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFr
 	u32 frameCount = 0;
 	for (u32 i = 0; i < Header->numseq; ++i)
 	{
-		u32 val = core::max_ ( 1, seq[i].numframes - 1 );
+		const u32 val = core::max_ ( 1, seq[i].numframes - 1 );
 		if ( frameCount + val > frameA  )
 		{
 			SequenceIndex = i;
@@ -752,22 +742,20 @@ IMesh* CAnimatedMeshHalfLife::getMesh(s32 frameInt, s32 detailLevel, s32 startFr
 */
 void CAnimatedMeshHalfLife::initData ()
 {
-	u32 i;
-
 	Header = 0;
 	TextureHeader = 0;
 	OwnTexModel = false;
 
-	for ( i = 0; i < 32; ++i )
+	for (u32 i = 0; i < 32; ++i )
 		AnimationHeader[i] = 0;
 
 	SequenceIndex = 0;
 	CurrentFrame = 0.f;
 
-	for ( i = 0; i < 5; ++i )
+	for (u32 i = 0; i < 5; ++i )
 		BoneController[i] = 0;
 
-	for ( i = 0; i < 2; ++i )
+	for (u32 i = 0; i < 2; ++i )
 		Blending[i] = 0;
 
 	SkinGroupSelection = 0;
@@ -853,7 +841,6 @@ void STextureAtlas::getTranslation(const c8* name, core::vector2di& pos)
 */
 void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 {
-	u32 i = 0;
 	u32 w = 0;
 	u32 w2;
 	u32 h2;
@@ -869,7 +856,7 @@ void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 
 	// split size
 	wsum = frame;
-	for (i = 0; i < atlas.size(); i++)
+	for (u32 i = 0; i < atlas.size(); i++)
 	{
 		// make space
 		w2 = atlas[i].width + border;
@@ -886,7 +873,7 @@ void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 	hsum = frame;
 	w = frame;
 	h = 0;
-	for (i = 0; i < atlas.size(); i++)
+	for (u32 i = 0; i < atlas.size(); i++)
 	{
 		if ( atlas[i].image->getColorFormat() == ECF_A8R8G8B8 )
 		{
@@ -921,7 +908,7 @@ void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 	wsum = core::s32_max ( wsum, w );
 
 	// build image
-	core::dimension2d<u32> dim = core::dimension2d<u32>( wsum, hsum ).getOptimalSize();
+	const core::dimension2d<u32> dim = core::dimension2d<u32>( wsum, hsum ).getOptimalSize();
 	IImage* master = new CImage(format, dim);
 	master->fill(0);
 
@@ -935,16 +922,15 @@ void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 		{0, 1}	// ETC_MIRROR
 	};
 
-	s32 a,b;
-	for (i = 0; i < atlas.size(); i++)
+	for (u32 i = 0; i < atlas.size(); i++)
 	{
 		atlas[i].image->copyTo ( master, atlas[i].pos );
 
 		// clamp/wrap ( copy edges, filtering needs it )
 
-		for ( b = 0; b < frame; ++b )
+		for (s32 b = 0; b < frame; ++b )
 		{
-			for ( a = 0 - b; a <= (s32) atlas[i].width + b; ++a )
+			for (s32 a = 0 - b; a <= (s32) atlas[i].width + b; ++a )
 			{
 				col[0] = atlas[i].image->getPixel ( core::s32_clamp ( a, 0, atlas[i].width - 1 ), 0 );
 				col[1] = atlas[i].image->getPixel ( core::s32_clamp ( a, 0, atlas[i].width - 1 ), atlas[i].height - 1 );
@@ -953,7 +939,7 @@ void STextureAtlas::create(u32 border, E_TEXTURE_CLAMP texmode)
 				master->setPixel ( atlas[i].pos.X + a, atlas[i].pos.Y + atlas[i].height - 1 + ( b + 1 ) * 1, col[wrap[texmode][1]] );
 			}
 
-			for ( a = -1 - b; a <= (s32) atlas[i].height + b; ++a )
+			for (s32 a = -1 - b; a <= (s32) atlas[i].height + b; ++a )
 			{
 				col[0] = atlas[i].image->getPixel ( 0, core::s32_clamp ( a, 0, atlas[i].height - 1 ) );
 				col[1] = atlas[i].image->getPixel ( atlas[i].width - 1, core::s32_clamp ( a, 0, atlas[i].height - 1 ) );
@@ -1016,7 +1002,7 @@ SHalflifeHeader* CAnimatedMeshHalfLife::loadModel(io::IReadFile* file, const io:
 		core::splitFilename(file->getFileName(), &path, &fname, &ext);
 		TextureBaseName = path + fname + "_";
 
-		SHalflifeTexture *tex = (SHalflifeTexture *)(pin + header->textureindex);
+		const SHalflifeTexture *tex = (SHalflifeTexture *)(pin + header->textureindex);
 		u32 *palette = new u32[256];
 		for (u32 i = 0; i < header->numtextures; ++i)
 		{
@@ -1109,7 +1095,7 @@ f32 CAnimatedMeshHalfLife::SetController( s32 controllerIndex, f32 value )
 		}
 	}
 
-	s32 range = controllerIndex == MOUTH_CONTROLLER ? 64 : 255;
+	const s32 range = controllerIndex == MOUTH_CONTROLLER ? 64 : 255;
 
 	s32 setting = (s32) ( (f32) range * (value - bonecontroller->start) / (bonecontroller->end - bonecontroller->start));
 
@@ -1184,7 +1170,6 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 {
 	const u8 *phdr = (const u8*) Header;
 	const SHalflifeHeader * hdr = Header;
-	u32 i;
 
 	if (level == 0)
 	{
@@ -1228,7 +1213,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 	printf("flags: %d\n\n", hdr->flags);
 
 	printf("numbones: %u\n", hdr->numbones);
-	for (i = 0; i < hdr->numbones; i++)
+	for (u32 i = 0; i < hdr->numbones; i++)
 	{
 		const SHalflifeBone *bone = (const SHalflifeBone *) (phdr + hdr->boneindex);
 		printf("bone %u.name: \"%s\"\n", i + 1, bone[i].name);
@@ -1241,7 +1226,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 
 	printf("\nnumbonecontrollers: %u\n", hdr->numbonecontrollers);
 	const SHalflifeBoneController *bonecontrollers = (const SHalflifeBoneController *) (phdr + hdr->bonecontrollerindex);
-	for (i = 0; i < hdr->numbonecontrollers; i++)
+	for (u32 i = 0; i < hdr->numbonecontrollers; i++)
 	{
 		printf("bonecontroller %u.bone: %d\n", i + 1, bonecontrollers[i].bone);
 		printf("bonecontroller %u.type: %d\n", i + 1, bonecontrollers[i].type);
@@ -1253,7 +1238,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 
 	printf("\nnumhitboxes: %u\n", hdr->numhitboxes);
 	const SHalflifeBBox *box = (const SHalflifeBBox *) (phdr + hdr->hitboxindex);
-	for (i = 0; i < hdr->numhitboxes; i++)
+	for (u32 i = 0; i < hdr->numhitboxes; i++)
 	{
 		printf("hitbox %u.bone: %d\n", i + 1, box[i].bone);
 		printf("hitbox %u.group: %d\n", i + 1, box[i].group);
@@ -1263,7 +1248,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 
 	printf("\nnumseq: %u\n", hdr->numseq);
 	const SHalflifeSequence *seq = (const SHalflifeSequence *) (phdr + hdr->seqindex);
-	for (i = 0; i < hdr->numseq; i++)
+	for (u32 i = 0; i < hdr->numseq; i++)
 	{
 		printf("seqdesc %u.label: \"%s\"\n", i + 1, seq[i].label);
 		printf("seqdesc %u.fps: %f\n", i + 1, seq[i].fps);
@@ -1272,7 +1257,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 	}
 
 	printf("\nnumseqgroups: %u\n", hdr->numseqgroups);
-	for (i = 0; i < hdr->numseqgroups; i++)
+	for (u32 i = 0; i < hdr->numseqgroups; i++)
 	{
 		const SHalflifeSequenceGroup *group = (const SHalflifeSequenceGroup *) (phdr + hdr->seqgroupindex);
 		printf("\nseqgroup %u.label: \"%s\"\n", i + 1, group[i].label);
@@ -1285,16 +1270,16 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 
 	printf("\nnumbodyparts: %u\n", hdr->numbodyparts);
 	const SHalflifeBody *pbodyparts = (const SHalflifeBody*) ((const u8*) hdr + hdr->bodypartindex);
-	for (i = 0; i < hdr->numbodyparts; i++)
+	for (u32 i = 0; i < hdr->numbodyparts; i++)
 	{
 		printf("bodypart %u.name: \"%s\"\n", i + 1, pbodyparts[i].name);
 		printf("bodypart %u.nummodels: %u\n", i + 1, pbodyparts[i].nummodels);
 		printf("bodypart %u.base: %u\n", i + 1, pbodyparts[i].base);
-		printf("bodypart %d.modelindex: %u\n", i + 1, pbodyparts[i].modelindex);
+		printf("bodypart %u.modelindex: %u\n", i + 1, pbodyparts[i].modelindex);
 	}
 
 	printf("\nnumattachments: %u\n", hdr->numattachments);
-	for (i = 0; i < hdr->numattachments; i++)
+	for (u32 i = 0; i < hdr->numattachments; i++)
 	{
 		const SHalflifeAttachment *attach = (const SHalflifeAttachment *) ((const u8*) hdr + hdr->attachmentindex);
 		printf("attachment %u.name: \"%s\"\n", i + 1, attach[i].name);
@@ -1305,7 +1290,7 @@ void CAnimatedMeshHalfLife::dumpModelInfo(u32 level) const
 	printf("textureindex: %u\n", hdr->textureindex);
 	printf("texturedataindex: %u\n", hdr->texturedataindex);
 	const SHalflifeTexture *ptextures = (const SHalflifeTexture *) ((const u8*) hdr + hdr->textureindex);
-	for (i = 0; i < hdr->numtextures; i++)
+	for (u32 i = 0; i < hdr->numtextures; i++)
 	{
 		printf("texture %u.name: \"%s\"\n", i + 1, ptextures[i].name);
 		printf("texture %u.flags: %d\n", i + 1, ptextures[i].flags);
@@ -1490,8 +1475,8 @@ void CAnimatedMeshHalfLife::calcBonePosition(const s32 frame, f32 s,
 void CAnimatedMeshHalfLife::calcRotations(vec3_hl *pos, vec4_hl *q,
 		SHalflifeSequence *seq, SHalflifeAnimOffset *anim, f32 f)
 {
-	s32 frame = (s32)f;
-	f32 s = (f - frame);
+	const s32 frame = (s32)f;
+	const f32 s = (f - frame);
 
 	// add in programatic controllers
 	calcBoneAdj();
@@ -1616,7 +1601,7 @@ void CAnimatedMeshHalfLife::setUpBones()
 		}
 	}
 
-	SHalflifeBone *bone = (SHalflifeBone *)((u8*) Header + Header->boneindex);
+	const SHalflifeBone *bone = (SHalflifeBone *)((u8*) Header + Header->boneindex);
 
 	for (u32 i = 0; i < Header->numbones; i++)
 	{
