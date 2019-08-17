@@ -87,7 +87,8 @@ struct S3DVertex
 				((Pos == other.Pos) && (Normal == other.Normal) && (Color == other.Color) && (TCoords < other.TCoords)));
 	}
 
-	E_VERTEX_TYPE getType() const
+	//! Get type of the class
+	static E_VERTEX_TYPE getType()
 	{
 		return EVT_STANDARD;
 	}
@@ -166,7 +167,7 @@ struct S3DVertex2TCoords : public S3DVertex
 				((static_cast<S3DVertex>(*this) == other) && (TCoords2 < other.TCoords2)));
 	}
 
-	E_VERTEX_TYPE getType() const
+	static E_VERTEX_TYPE getType()
 	{
 		return EVT_2TCOORDS;
 	}
@@ -240,7 +241,7 @@ struct S3DVertexTangents : public S3DVertex
 				((static_cast<S3DVertex>(*this) == other) && (Tangent == other.Tangent) && (Binormal < other.Binormal)));
 	}
 
-	E_VERTEX_TYPE getType() const
+	static E_VERTEX_TYPE getType()
 	{
 		return EVT_TANGENTS;
 	}

@@ -137,7 +137,7 @@ namespace scene
 		/** \return Type of vertex data. */
 		virtual video::E_VERTEX_TYPE getVertexType() const _IRR_OVERRIDE_
 		{
-			return T().getType();
+			return T::getType();
 		}
 
 		//! returns position of vertex i

@@ -66,7 +66,7 @@ namespace scene
 
 			virtual video::S3DVertex* pointer() _IRR_OVERRIDE_ {return Vertices.pointer();}
 
-			virtual video::E_VERTEX_TYPE getType() const _IRR_OVERRIDE_ {return T().getType();}
+			virtual video::E_VERTEX_TYPE getType() const _IRR_OVERRIDE_ {return T::getType();}
 		};
 
 	public:
