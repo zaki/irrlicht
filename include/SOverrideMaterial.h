@@ -40,9 +40,9 @@ namespace video
 		bool Enabled;
 
 		//! Default constructor
-		SOverrideMaterial() : EnableFlags(0), EnablePasses(0), Enabled(false) 
+		SOverrideMaterial() : EnableFlags(0), EnablePasses(0), Enabled(false)
 		{
-			for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			for ( u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 			{
 				EnableLayerFlags[i] = true;
 				EnableTextures[i] = false;
@@ -70,37 +70,37 @@ namespace video
 						case EMF_ZWRITE_ENABLE: material.ZWriteEnable = Material.ZWriteEnable; break;
 						case EMF_BACK_FACE_CULLING: material.BackfaceCulling = Material.BackfaceCulling; break;
 						case EMF_FRONT_FACE_CULLING: material.FrontfaceCulling = Material.FrontfaceCulling; break;
-						case EMF_BILINEAR_FILTER: 
-							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						case EMF_BILINEAR_FILTER:
+							for ( u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 							{
 								if ( EnableLayerFlags[i] )
 								{
-									material.TextureLayer[i].BilinearFilter = Material.TextureLayer[i].BilinearFilter; 
+									material.TextureLayer[i].BilinearFilter = Material.TextureLayer[i].BilinearFilter;
 								}
 							}
 							break;
-						case EMF_TRILINEAR_FILTER: 
-							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						case EMF_TRILINEAR_FILTER:
+							for ( u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 							{
 								if ( EnableLayerFlags[i] )
 								{
-									material.TextureLayer[i].TrilinearFilter = Material.TextureLayer[i].TrilinearFilter; 
+									material.TextureLayer[i].TrilinearFilter = Material.TextureLayer[i].TrilinearFilter;
 								}
 							}
 							break;
-						case EMF_ANISOTROPIC_FILTER: 
-							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						case EMF_ANISOTROPIC_FILTER:
+							for ( u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 							{
 								if ( EnableLayerFlags[i] )
 								{
-									material.TextureLayer[i].AnisotropicFilter = Material.TextureLayer[i].AnisotropicFilter; 
+									material.TextureLayer[i].AnisotropicFilter = Material.TextureLayer[i].AnisotropicFilter;
 								}
 							}
 							break;
 						case EMF_FOG_ENABLE: material.FogEnable = Material.FogEnable; break;
 						case EMF_NORMALIZE_NORMALS: material.NormalizeNormals = Material.NormalizeNormals; break;
 						case EMF_TEXTURE_WRAP:
-							for ( int i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							for ( u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 							{
 								if ( EnableLayerFlags[i] )
 								{
@@ -118,14 +118,14 @@ namespace video
 						case EMF_BLEND_FACTOR: material.BlendFactor = Material.BlendFactor; break;
 						case EMF_POLYGON_OFFSET:
 							material.PolygonOffsetDirection = Material.PolygonOffsetDirection;
-							material.PolygonOffsetFactor = Material.PolygonOffsetFactor; 
+							material.PolygonOffsetFactor = Material.PolygonOffsetFactor;
 							material.PolygonOffsetDepthBias = Material.PolygonOffsetDepthBias;
 							material.PolygonOffsetSlopeScale = Material.PolygonOffsetSlopeScale;
 							break;
 						}
 					}
 				}
-				for(int i=0; i<MATERIAL_MAX_TEXTURES; ++i )
+				for(u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i )
 				{
 					if ( EnableLayers[i] )
 					{
