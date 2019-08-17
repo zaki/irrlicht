@@ -1350,6 +1350,7 @@
     <None Include="..\..\readme.txt">
       <Filter>doc</Filter>
     </None>
+    <None Include="Irrlicht.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CDefaultSceneNodeAnimatorFactory.cpp">
