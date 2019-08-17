@@ -48,7 +48,7 @@ public:
 	virtual bool getOutlineOnly() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_CYLINDER; }
+	virtual E_PARTICLE_EMITTER_TYPE getType() const _IRR_OVERRIDE_ { return EPET_CYLINDER; }
 };
 
 } // end namespace scene

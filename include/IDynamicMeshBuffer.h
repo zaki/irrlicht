@@ -50,7 +50,7 @@ namespace scene
 		\param numVertices Number of vertices in the array.
 		\param indices Pointer to index array.
 		\param numIndices Number of indices in array. */
-		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices)
+		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) _IRR_OVERRIDE_
 		{
 
 		}
@@ -58,7 +58,7 @@ namespace scene
 		//! Append the meshbuffer to the current buffer
 		/** Only works for compatible vertex types
 		\param other Buffer to append to this one. */
-		virtual void append(const IMeshBuffer* const other)
+		virtual void append(const IMeshBuffer* const other) _IRR_OVERRIDE_
 		{
 
 		}
@@ -66,19 +66,19 @@ namespace scene
 		// ------------------- To be removed? -------------------  //
 
 		//! get the current hardware mapping hint
-		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer().getHardwareMappingHint();
 		}
 
 		//! get the current hardware mapping hint
-		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const _IRR_OVERRIDE_
 		{
 			return getIndexBuffer().getHardwareMappingHint();
 		}
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX )
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX ) _IRR_OVERRIDE_
 		{
 			if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_VERTEX)
 				getVertexBuffer().setHardwareMappingHint(NewMappingHint);
@@ -87,7 +87,7 @@ namespace scene
 		}
 
 		//! flags the mesh as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
+		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) _IRR_OVERRIDE_
 		{
 			if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_VERTEX)
 				getVertexBuffer().setDirty();
@@ -95,12 +95,12 @@ namespace scene
 				getIndexBuffer().setDirty();
 		}
 
-		virtual u32 getChangedID_Vertex() const
+		virtual u32 getChangedID_Vertex() const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer().getChangedID();
 		}
 
-		virtual u32 getChangedID_Index() const
+		virtual u32 getChangedID_Index() const _IRR_OVERRIDE_
 		{
 			return getIndexBuffer().getChangedID();
 		}
@@ -109,7 +109,7 @@ namespace scene
 
 		//! Get type of vertex data which is stored in this meshbuffer.
 		/** \return Vertex type of this buffer. */
-		virtual video::E_VERTEX_TYPE getVertexType() const
+		virtual video::E_VERTEX_TYPE getVertexType() const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer().getType();
 		}
@@ -117,7 +117,7 @@ namespace scene
 		//! Get access to vertex data. The data is an array of vertices.
 		/** Which vertex type is used can be determined by getVertexType().
 		\return Pointer to array of vertices. */
-		virtual const void* getVertices() const
+		virtual const void* getVertices() const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer().getData();
 		}
@@ -125,78 +125,78 @@ namespace scene
 		//! Get access to vertex data. The data is an array of vertices.
 		/** Which vertex type is used can be determined by getVertexType().
 		\return Pointer to array of vertices. */
-		virtual void* getVertices()
+		virtual void* getVertices() _IRR_OVERRIDE_
 		{
 			return getVertexBuffer().getData();
 		}
 
 		//! Get amount of vertices in meshbuffer.
 		/** \return Number of vertices in this buffer. */
-		virtual u32 getVertexCount() const
+		virtual u32 getVertexCount() const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer().size();
 		}
 
 		//! Get type of index data which is stored in this meshbuffer.
 		/** \return Index type of this buffer. */
-		virtual video::E_INDEX_TYPE getIndexType() const
+		virtual video::E_INDEX_TYPE getIndexType() const _IRR_OVERRIDE_
 		{
 			return getIndexBuffer().getType();
 		}
 
 		//! Get access to indices.
 		/** \return Pointer to indices array. */
-		virtual const u16* getIndices() const
+		virtual const u16* getIndices() const _IRR_OVERRIDE_
 		{
 			return (u16*)getIndexBuffer().getData();
 		}
 
 		//! Get access to indices.
 		/** \return Pointer to indices array. */
-		virtual u16* getIndices()
+		virtual u16* getIndices() _IRR_OVERRIDE_
 		{
 			return (u16*)getIndexBuffer().getData();
 		}
 
 		//! Get amount of indices in this meshbuffer.
 		/** \return Number of indices in this buffer. */
-		virtual u32 getIndexCount() const
-		{
+		virtual u32 getIndexCount() const _IRR_OVERRIDE_
+		{ 
 			return getIndexBuffer().size();
 		}
 
 		//! returns position of vertex i
-		virtual const core::vector3df& getPosition(u32 i) const
+		virtual const core::vector3df& getPosition(u32 i) const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer()[i].Pos;
 		}
 
 		//! returns position of vertex i
-		virtual core::vector3df& getPosition(u32 i)
+		virtual core::vector3df& getPosition(u32 i) _IRR_OVERRIDE_
 		{
 			return getVertexBuffer()[i].Pos;
 		}
 
 		//! returns texture coords of vertex i
-		virtual const core::vector2df& getTCoords(u32 i) const
+		virtual const core::vector2df& getTCoords(u32 i) const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer()[i].TCoords;
 		}
 
 		//! returns texture coords of vertex i
-		virtual core::vector2df& getTCoords(u32 i)
+		virtual core::vector2df& getTCoords(u32 i) _IRR_OVERRIDE_
 		{
 			return getVertexBuffer()[i].TCoords;
 		}
 
 		//! returns normal of vertex i
-		virtual const core::vector3df& getNormal(u32 i) const
+		virtual const core::vector3df& getNormal(u32 i) const _IRR_OVERRIDE_
 		{
 			return getVertexBuffer()[i].Normal;
 		}
 
 		//! returns normal of vertex i
-		virtual core::vector3df& getNormal(u32 i)
+		virtual core::vector3df& getNormal(u32 i) _IRR_OVERRIDE_
 		{
 			return getVertexBuffer()[i].Normal;
 		}

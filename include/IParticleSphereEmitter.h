@@ -30,7 +30,7 @@ public:
 	virtual f32 getRadius() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_SPHERE; }
+	virtual E_PARTICLE_EMITTER_TYPE getType() const _IRR_OVERRIDE_ { return EPET_SPHERE; }
 };
 
 } // end namespace scene

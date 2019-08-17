@@ -19,7 +19,7 @@ class IGUIFontBitmap : public IGUIFont
 public:
 
 	//! Returns the type of this font
-	virtual EGUI_FONT_TYPE getType() const { return EGFT_BITMAP; }
+	virtual EGUI_FONT_TYPE getType() const _IRR_OVERRIDE_ { return EGFT_BITMAP; }
 
 	//! returns the parsed Symbol Information
 	virtual IGUISpriteBank* getSpriteBank() const = 0;

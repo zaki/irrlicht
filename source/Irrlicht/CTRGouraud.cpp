@@ -26,7 +26,7 @@ public:
 	}
 
 	//! draws an indexed triangle list
-	virtual void drawIndexedTriangleList(S2DVertex* vertices, s32 vertexCount, const u16* indexList, s32 triangleCount)
+	virtual void drawIndexedTriangleList(S2DVertex* vertices, s32 vertexCount, const u16* indexList, s32 triangleCount) _IRR_OVERRIDE_
 	{
 		const S2DVertex *v1, *v2, *v3;
 

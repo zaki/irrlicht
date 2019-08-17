@@ -241,10 +241,12 @@
     <Rule Id="C26402" Action="None" />
     <Rule Id="C26408" Action="None" />
     <Rule Id="C26409" Action="None" />
+    <Rule Id="C26426" Action="Warning" />
     <Rule Id="C26429" Action="None" />
     <Rule Id="C26431" Action="None" />
     <Rule Id="C26432" Action="None" />
     <Rule Id="C26435" Action="None" />
+    <Rule Id="C26438" Action="None" />
     <Rule Id="C26440" Action="None" />
     <Rule Id="C26443" Action="None" />
     <Rule Id="C26445" Action="None" />
@@ -262,6 +264,8 @@
     <Rule Id="C26493" Action="None" />
     <Rule Id="C26494" Action="Warning" />
     <Rule Id="C26495" Action="None" />
+    <Rule Id="C26496" Action="Warning" />
     <Rule Id="C26497" Action="None" />
+    <Rule Id="C28251" Action="None" />
   </Rules>
 </RuleSet>

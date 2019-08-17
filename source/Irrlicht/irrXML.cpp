@@ -48,7 +48,7 @@ public:
 	}
 
 	//! Reads an amount of bytes from the file.
-	virtual int read(void* buffer, int sizeToRead)
+	virtual int read(void* buffer, int sizeToRead) _IRR_OVERRIDE_
 	{
 		if (!File)
 			return 0;
@@ -57,7 +57,7 @@ public:
 	}
 
 	//! Returns size of file in bytes
-	virtual long getSize() const
+	virtual long getSize() const _IRR_OVERRIDE_
 	{
 		return Size;
 	}

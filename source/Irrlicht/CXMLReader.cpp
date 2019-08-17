@@ -31,13 +31,13 @@ namespace io
 		}
 
 		//! Reads an amount of bytes from the file.
-		virtual int read(void* buffer, int sizeToRead)
+		virtual int read(void* buffer, int sizeToRead) _IRR_OVERRIDE_
 		{
 			return (int)ReadFile->read(buffer, sizeToRead);
 		}
 
 		//! Returns size of file in bytes
-		virtual long getSize() const
+		virtual long getSize() const _IRR_OVERRIDE_
 		{
 			return ReadFile->getSize();
 		}

@@ -30,7 +30,7 @@ public:
 	virtual u32 getFadeOutTime() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_AFFECTOR_TYPE getType() const { return EPAT_FADE_OUT; }
+	virtual E_PARTICLE_AFFECTOR_TYPE getType() const _IRR_OVERRIDE_ { return EPAT_FADE_OUT; }
 };
 
 } // end namespace scene

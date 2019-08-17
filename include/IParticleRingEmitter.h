@@ -36,7 +36,7 @@ public:
 	virtual f32 getRingThickness() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_RING; }
+	virtual E_PARTICLE_EMITTER_TYPE getType() const _IRR_OVERRIDE_ { return EPET_RING; }
 };
 
 } // end namespace scene

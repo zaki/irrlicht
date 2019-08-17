@@ -80,8 +80,8 @@ public:
 	CTRTextureWire2(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
-	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
-	virtual void drawLine ( const s4DVertex *a,const s4DVertex *b);
+	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c ) _IRR_OVERRIDE_;
+	virtual void drawLine ( const s4DVertex *a,const s4DVertex *b) _IRR_OVERRIDE_;
 
 
 

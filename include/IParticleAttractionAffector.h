@@ -54,7 +54,7 @@ public:
 	virtual bool getAffectZ() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_AFFECTOR_TYPE getType() const { return EPAT_ATTRACT; }
+	virtual E_PARTICLE_AFFECTOR_TYPE getType() const _IRR_OVERRIDE_ { return EPAT_ATTRACT; }
 };
 
 } // end namespace scene

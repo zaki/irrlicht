@@ -25,7 +25,7 @@ public:
 	virtual const core::aabbox3df& getBox() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_BOX; }
+	virtual E_PARTICLE_EMITTER_TYPE getType() const _IRR_OVERRIDE_ { return EPET_BOX; }
 };
 
 } // end namespace scene

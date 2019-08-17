@@ -43,7 +43,7 @@ public:
 	virtual bool getEveryMeshVertex() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_MESH; }
+	virtual E_PARTICLE_EMITTER_TYPE getType() const _IRR_OVERRIDE_ { return EPET_MESH; }
 };
 
 } // end namespace scene

@@ -20,7 +20,7 @@ namespace scene
 		ISceneNodeAnimatorFinishing(u32 finishTime)
 			: FinishTime(finishTime), HasFinished(false) { }
 
-		virtual bool hasFinished(void) const { return HasFinished; }
+		virtual bool hasFinished(void) const _IRR_OVERRIDE_ { return HasFinished; }
 
 	protected:
 

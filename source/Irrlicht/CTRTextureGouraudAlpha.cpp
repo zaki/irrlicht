@@ -84,9 +84,9 @@ public:
 	CTRTextureGouraudAlpha2(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
-	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
+	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c ) _IRR_OVERRIDE_;
 
-	virtual void setParam ( u32 index, f32 value);
+	virtual void setParam ( u32 index, f32 value) _IRR_OVERRIDE_;
 
 
 private:

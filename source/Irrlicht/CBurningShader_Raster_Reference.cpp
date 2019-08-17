@@ -512,9 +512,9 @@ public:
 	CBurningShader_Raster_Reference(CBurningVideoDriver* driver);
 
 	//! draws an indexed triangle list
-	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
+	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c ) _IRR_OVERRIDE_;
 
-	virtual void setMaterial ( const SBurningShaderMaterial &material );
+	virtual void setMaterial ( const SBurningShaderMaterial &material ) _IRR_OVERRIDE_;
 
 
 private:

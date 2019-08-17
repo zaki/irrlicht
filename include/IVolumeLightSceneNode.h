@@ -27,7 +27,7 @@ namespace scene
 			: ISceneNode(parent, mgr, id, position, rotation, scale) {};
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_VOLUME_LIGHT; }
+		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_VOLUME_LIGHT; }
 
 		//! Sets the number of segments across the U axis
 		virtual void setSubDivideU(const u32 inU) =0;

@@ -30,7 +30,7 @@ public:
 	virtual const core::vector3df& getSpeed() const = 0;
 
 	//! Get emitter type
-	virtual E_PARTICLE_AFFECTOR_TYPE getType() const { return EPAT_ROTATE; }
+	virtual E_PARTICLE_AFFECTOR_TYPE getType() const _IRR_OVERRIDE_ { return EPAT_ROTATE; }
 };
 
 } // end namespace scene
