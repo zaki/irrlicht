@@ -322,7 +322,7 @@ void CAnimatedMeshHalfLife::initModel()
 	// initBodyparts
 	u32 meshBuffer = 0;
 	BodyList.clear();
-	SHalflifeBody *body = (SHalflifeBody *) ((u8*) Header + Header->bodypartindex);
+	const SHalflifeBody *body = (const SHalflifeBody *) ((u8*) Header + Header->bodypartindex);
 	for (i=0; i < Header->numbodyparts; ++i)
 	{
 		BodyPart part;
@@ -369,7 +369,7 @@ void CAnimatedMeshHalfLife::initModel()
 
 	for (u32 bodypart=0 ; bodypart < Header->numbodyparts ; ++bodypart)
 	{
-		const SHalflifeBody *body = (SHalflifeBody *)((u8*) Header + Header->bodypartindex) + bodypart;
+		body = (const SHalflifeBody *)((u8*) Header + Header->bodypartindex) + bodypart;
 
 		for (u32 modelnr = 0; modelnr < body->nummodels; ++modelnr)
 		{

@@ -253,10 +253,10 @@ namespace core
 			{
 				// This catches some floating point troubles.
 				// Unfortunately slightly expensive and we don't really know the best epsilon for iszero.
-				vector3d<f64> cp1 = bminusa.normalize().crossProduct((p1 - a).normalize());
-				if (core::iszero(cp1.X, (f64)ROUNDING_ERROR_f32)
-					&& core::iszero(cp1.Y, (f64)ROUNDING_ERROR_f32)
-					&& core::iszero(cp1.Z, (f64)ROUNDING_ERROR_f32) )
+				vector3d<f64> cp1n = bminusa.normalize().crossProduct((p1 - a).normalize());
+				if (core::iszero(cp1n.X, (f64)ROUNDING_ERROR_f32)
+					&& core::iszero(cp1n.Y, (f64)ROUNDING_ERROR_f32)
+					&& core::iszero(cp1n.Z, (f64)ROUNDING_ERROR_f32) )
 				{
 					res = 0.f;
 				}

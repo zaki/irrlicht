@@ -1472,10 +1472,7 @@ void CGUIEditBox::calculateScrollPos()
 	if (!AutoScroll)
 		return;
 
-	IGUISkin* skin = Environment->getSkin();
-	if (!skin)
-		return;
-	IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
+	IGUIFont* font = getActiveFont();
 	if (!font)
 		return;
 
@@ -1489,10 +1486,6 @@ void CGUIEditBox::calculateScrollPos()
 	// NOTE: Calculations different to vertical scrolling because setTextRect interprets VAlign relative to line but HAlign not relative to row
 	{
 		// get cursor position
-		IGUIFont* font = getActiveFont();
-		if (!font)
-			return;
-
 		// get cursor area
 		irr::u32 cursorWidth = font->getDimension(CursorChar.c_str()).Width;
 		core::stringw *txtLine = hasBrokenText ? &BrokenText[cursLine] : &Text;

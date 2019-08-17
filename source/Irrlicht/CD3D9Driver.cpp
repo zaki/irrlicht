@@ -2901,10 +2901,9 @@ bool CD3D9Driver::retrieveDevice(int numTries, int msSleepBetweenTries)
 //! resets the device
 bool CD3D9Driver::reset()
 {
-	u32 i;
 	os::Printer::log("Resetting D3D9 device.", ELL_INFORMATION);
 
-	for (i = 0; i<RenderTargets.size(); ++i)
+	for (u32 i = 0; i<RenderTargets.size(); ++i)
 	{
 		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
 		{
@@ -2926,7 +2925,7 @@ bool CD3D9Driver::reset()
 				tex->releaseTexture();
 		}
 	}
-	for (i=0; i<Textures.size(); ++i)
+	for (u32 i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 		{
@@ -2936,7 +2935,7 @@ bool CD3D9Driver::reset()
 				tex->releaseTexture();
 		}
 	}
-	for (i=0; i<OcclusionQueries.size(); ++i)
+	for (u32 i=0; i<OcclusionQueries.size(); ++i)
 	{
 		if (OcclusionQueries[i].PID)
 		{
@@ -3016,12 +3015,12 @@ bool CD3D9Driver::reset()
 	}
 
 	// restore RTTs
-	for (i=0; i<Textures.size(); ++i)
+	for (u32 i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 			((CD3D9Texture*)(Textures[i].Surface))->generateRenderTarget();
 	}
-	for (i = 0; i<RenderTargets.size(); ++i)
+	for (u32 i = 0; i<RenderTargets.size(); ++i)
 	{
 		if (RenderTargets[i]->getDriverType() == EDT_DIRECT3D9)
 		{
@@ -3045,7 +3044,7 @@ bool CD3D9Driver::reset()
 	}
 
 	// restore occlusion queries
-	for (i=0; i<OcclusionQueries.size(); ++i)
+	for (u32 i=0; i<OcclusionQueries.size(); ++i)
 	{
 		pID3DDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, reinterpret_cast<IDirect3DQuery9**>(&OcclusionQueries[i].PID));
 	}

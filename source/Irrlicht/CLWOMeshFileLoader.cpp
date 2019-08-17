@@ -171,8 +171,7 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 	os::Printer::log("LWO loader: Creating geometry.");
 	os::Printer::log("LWO loader: Assigning UV maps.");
 #endif
-	u32 i;
-	for (i=0; i<Materials.size(); ++i)
+	for (u32 i=0; i<Materials.size(); ++i)
 	{
 		u16 uvTag;
 		for (u32 j=0; j<2; ++j) // max 2 texture coords
@@ -206,11 +205,11 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 	{
 		core::array<u32> vertexCount;
 		vertexCount.reallocate(Materials.size());
-		for (i=0; i<Materials.size(); ++i)
+		for (u32 i=0; i<Materials.size(); ++i)
 			vertexCount.push_back(0);
 		for (u32 polyIndex=0; polyIndex<Indices.size(); ++polyIndex)
 			vertexCount[MaterialMapping[polyIndex]] += Indices[polyIndex].size();
-		for (i=0; i<Materials.size(); ++i)
+		for (u32 i=0; i<Materials.size(); ++i)
 		{
 			Materials[i]->Meshbuffer->Vertices.reallocate(vertexCount[i]);
 			Materials[i]->Meshbuffer->Indices.reallocate(vertexCount[i]);

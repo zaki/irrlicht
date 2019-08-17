@@ -113,11 +113,11 @@ void CGUIProfiler::updateDisplay()
 			{
 				for ( u32 i=1; i<Profiler->getGroupCount(); ++i )
 				{
-					const SProfileData& groupData = Profiler->getGroupData(i);
-					if ( groupData.getCallsCounter() >= MinCalls )
+					const SProfileData& groupDataOv = Profiler->getGroupData(i);
+					if (groupDataOv.getCallsCounter() >= MinCalls )
 					{
 						rowIndex = DisplayTable->addRow(rowIndex);
-						fillRow(rowIndex, groupData, false, false);
+						fillRow(rowIndex, groupDataOv, false, false);
 						++rowIndex;
 					}
 				}
