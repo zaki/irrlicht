@@ -686,7 +686,7 @@ public:
 			return *this;
 
 		--used;
-		u32 len = other.size()+1;
+		const u32 len = other.size()+1;
 
 		if (used + len > allocated)
 			reallocate(used + len);
@@ -1435,7 +1435,7 @@ private:
 		array = allocator.allocate(new_size); //new T[new_size];
 		allocated = new_size;
 
-		u32 amount = used < new_size ? used : new_size;
+		const u32 amount = used < new_size ? used : new_size;
 		for (u32 i=0; i<amount; ++i)
 			array[i] = old_array[i];
 
@@ -1479,7 +1479,7 @@ What the function does exactly depends on the LC_CTYPE of the current c locale.
 \return The number of wide characters written to destination, not including the eventual terminating null character  or -1 when conversion failed. */
 static inline size_t multibyteToWString(string<wchar_t>& destination, const char* source)
 {
-	u32 s = source ? (u32)strlen(source) : 0;
+	const u32 s = source ? (u32)strlen(source) : 0;
 	return multibyteToWString(destination, source, s);
 }
 
@@ -1493,7 +1493,7 @@ static size_t multibyteToWString(string<wchar_t>& destination, const char* sourc
 #pragma warning(push)
 #pragma warning(disable: 4996)	// 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead.
 #endif
-		size_t written = mbstowcs(destination.array, source, (size_t)sourceSize);
+		const size_t written = mbstowcs(destination.array, source, (size_t)sourceSize);
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif

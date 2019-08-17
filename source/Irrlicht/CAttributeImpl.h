@@ -1275,7 +1275,7 @@ public:
 	{
 		u32 c;
 		int characters;
-		int items = sscanf(text, "%08x%n", &c, &characters);
+		const int items = sscanf(text, "%08x%n", &c, &characters);
 		if (items != 1 || characters != 8 )
 		{
 			CNumbersAttribute::setString(text);
@@ -1768,7 +1768,7 @@ public:
 
 	virtual void getBinary(void* outdata, s32 maxLength) const _IRR_OVERRIDE_
 	{
-		s32 dataSize = maxLength;
+		const s32 dataSize = maxLength;
 		c8* datac8 = (c8*)(outdata);
 		s32 p = 0;
 		const c8* dataString = Value.c_str();
@@ -1790,8 +1790,8 @@ public:
 
 	virtual void setBinary(void* data, s32 maxLength) _IRR_OVERRIDE_
 	{
-		s32 dataSize = maxLength;
-		c8* datac8 = (c8*)(data);
+		const s32 dataSize = maxLength;
+		const c8* datac8 = (c8*)(data);
 		char tmp[3];
 		tmp[2] = 0;
 		Value = "";
@@ -2050,9 +2050,9 @@ public:
 			case 8:
 			{
 #ifdef _MSC_VER
-				unsigned __int64 tmp = _strtoui64(text, NULL, 16);
+				const unsigned __int64 tmp = _strtoui64(text, NULL, 16);
 #else
-				unsigned long long tmp = strtoull(text, NULL, 16);
+				const unsigned long long tmp = strtoull(text, NULL, 16);
 #endif
 				val = (size_t)tmp;
 			}

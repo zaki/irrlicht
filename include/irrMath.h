@@ -283,8 +283,8 @@ namespace core
 		// by one integer number. Also works the other way round, an integer of 1 interpreted as float
 		// is for example the smallest possible float number.
 
-		FloatIntUnion32 fa(a);
-		FloatIntUnion32 fb(b);
+		const FloatIntUnion32 fa(a);
+		const FloatIntUnion32 fb(b);
 
 		// Different signs, we could maybe get difference to 0, but so close to 0 using epsilons is better.
 		if ( fa.sign() != fb.sign() )
@@ -296,7 +296,7 @@ namespace core
 		}
 
 		// Find the difference in ULPs.
-		int ulpsDiff = abs_(fa.i- fb.i);
+		const int ulpsDiff = abs_(fa.i- fb.i);
 		if (ulpsDiff <= maxUlpDiff)
 			return true;
 

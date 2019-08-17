@@ -76,7 +76,7 @@ public:
 		allocated = new_size;
 
 		// copy old data
-		s32 end = used < new_size ? used : new_size;
+		const s32 end = used < new_size ? used : new_size;
 
 		for (s32 i=0; i<end; ++i)
 		{

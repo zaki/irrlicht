@@ -315,7 +315,7 @@ public:
 	\return An interpolated vector.  This vector is not modified. */
 	vector2d<T> getInterpolated(const vector2d<T>& other, f64 d) const
 	{
-		f64 inv = 1.0f - d;
+		const f64 inv = 1.0f - d;
 		return vector2d<T>((T)(other.X*inv + X*d), (T)(other.Y*inv + Y*d));
 	}
 

@@ -722,7 +722,7 @@ public:
 
 protected:
 
-	void readAttributeFromXML(io::IXMLReader* reader);
+	void readAttributeFromXML(const io::IXMLReader* reader);
 
 	core::array<IAttribute*> Attributes;
 

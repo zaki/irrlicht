@@ -78,7 +78,7 @@ void CAttributes::setAttribute(const c8* attributeName, const c8* value)
 //! or 0 if attribute is not set.
 core::stringc CAttributes::getAttributeAsString(const c8* attributeName, const core::stringc& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getString();
 	else
@@ -90,7 +90,7 @@ core::stringc CAttributes::getAttributeAsString(const c8* attributeName, const c
 //! \param target: Buffer where the string is copied to.
 void CAttributes::getAttributeAsString(const c8* attributeName, char* target) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 	{
 		core::stringc str = att->getString();
@@ -146,7 +146,7 @@ void CAttributes::setAttribute(const c8* attributeName, const wchar_t* value)
 //! or 0 if attribute is not set.
 core::stringw CAttributes::getAttributeAsStringW(const c8* attributeName, const core::stringw& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getStringW();
 	else
@@ -158,7 +158,7 @@ core::stringw CAttributes::getAttributeAsStringW(const c8* attributeName, const 
 //! \param target: Buffer where the string is copied to.
 void CAttributes::getAttributeAsStringW(const c8* attributeName, wchar_t* target) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 	{
 		core::stringw str = att->getStringW();
@@ -201,7 +201,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::array<core::
 //! Gets an attribute as an array of wide strings.
 core::array<core::stringw> CAttributes::getAttributeAsArray(const c8* attributeName, const core::array<core::stringw>& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getArray();
 	else
@@ -268,7 +268,7 @@ void CAttributes::setAttribute(const c8* attributeName, bool value)
 //! or 0 if attribute is not set.
 bool CAttributes::getAttributeAsBool(const c8* attributeName, bool defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getBool();
 	else
@@ -293,7 +293,7 @@ void CAttributes::setAttribute(const c8* attributeName, s32 value)
 //! or 0 if attribute is not set.
 s32 CAttributes::getAttributeAsInt(const c8* attributeName, irr::s32 defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getInt();
 	else
@@ -316,7 +316,7 @@ void CAttributes::setAttribute(const c8* attributeName, f32 value)
 //! or 0 if attribute is not set.
 f32 CAttributes::getAttributeAsFloat(const c8* attributeName, irr::f32 defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getFloat();
 
@@ -338,7 +338,7 @@ void CAttributes::setAttribute(const c8* attributeName, video::SColor value)
 //! \return Returns value of the attribute previously set by setAttribute()
 video::SColor CAttributes::getAttributeAsColor(const c8* attributeName, const video::SColor& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getColor();
 	else
@@ -360,7 +360,7 @@ void CAttributes::setAttribute(const c8* attributeName, video::SColorf value)
 //! \return Returns value of the attribute previously set by setAttribute()
 video::SColorf CAttributes::getAttributeAsColorf(const c8* attributeName, const video::SColorf& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getColorf();
 	else
@@ -382,7 +382,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::position2di&
 //! \return Returns value of the attribute previously set by setAttribute()
 core::position2di CAttributes::getAttributeAsPosition2d(const c8* attributeName, const core::position2di& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getPosition();
 	else
@@ -404,7 +404,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::rect<s32>& v
 //! \return Returns value of the attribute previously set by setAttribute()
 core::rect<s32> CAttributes::getAttributeAsRect(const c8* attributeName, const core::rect<s32>& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getRect();
 	else
@@ -426,7 +426,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::dimension2d<
 //! \return Returns value of the attribute previously set by setAttribute()
 core::dimension2d<u32> CAttributes::getAttributeAsDimension2d(const c8* attributeName, const core::dimension2d<u32>& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getDimension2d();
 	else
@@ -458,7 +458,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::vector2df& v
 //! \return Returns value of the attribute previously set by setAttribute()
 core::vector3df CAttributes::getAttributeAsVector3d(const c8* attributeName, const core::vector3df& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getVector();
 	else
@@ -468,7 +468,7 @@ core::vector3df CAttributes::getAttributeAsVector3d(const c8* attributeName, con
 //! Gets an attribute as vector
 core::vector2df CAttributes::getAttributeAsVector2d(const c8* attributeName, const core::vector2df& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getVector2d();
 	else
@@ -489,7 +489,7 @@ void CAttributes::setAttribute(const c8* attributeName, void* data, s32 dataSize
 //! \param attributeName: Name of the attribute to get.
 void CAttributes::getAttributeAsBinaryData(const c8* attributeName, void* outData, s32 maxSizeInBytes) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		att->getBinary(outData, maxSizeInBytes);
 }
@@ -509,7 +509,7 @@ void CAttributes::setAttribute(const c8* attributeName, const char* enumValue, c
 //! \return Returns value of the attribute previously set by setAttribute()
 const char* CAttributes::getAttributeAsEnumeration(const c8* attributeName, const c8* defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getEnum();
 	else
@@ -519,7 +519,7 @@ const char* CAttributes::getAttributeAsEnumeration(const c8* attributeName, cons
 //! Gets an attribute as enumeration
 s32 CAttributes::getAttributeAsEnumeration(const c8* attributeName, const char* const* enumerationLiteralsToUse, s32 defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 
 	if (enumerationLiteralsToUse && att)
 	{
@@ -539,7 +539,7 @@ s32 CAttributes::getAttributeAsEnumeration(const c8* attributeName, const char* 
 //! \param attributeName: Name of the attribute to get.
 void CAttributes::getAttributeEnumerationLiteralsOfEnumeration(const c8* attributeName, core::array<core::stringc>& outLiterals) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 
 	if (att && att->getType() == EAT_ENUM)
 		outLiterals = ((CEnumAttribute*)att)->EnumLiterals;
@@ -560,7 +560,7 @@ void CAttributes::setAttribute(const c8* attributeName, video::ITexture* value, 
 //! \param attributeName: Name of the attribute to get.
 video::ITexture* CAttributes::getAttributeAsTexture(const c8* attributeName, video::ITexture* defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getTexture();
 	else
@@ -599,7 +599,7 @@ E_ATTRIBUTE_TYPE CAttributes::getAttributeType(const c8* attributeName) const
 {
 	E_ATTRIBUTE_TYPE ret = EAT_UNKNOWN;
 
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		ret = att->getType();
 
@@ -619,7 +619,7 @@ E_ATTRIBUTE_TYPE CAttributes::getAttributeType(s32 index) const
 //! Returns the type of an attribute
 const wchar_t* CAttributes::getAttributeTypeString(const c8* attributeName, const wchar_t* defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getTypeString();
 	else
@@ -766,7 +766,7 @@ s32 CAttributes::getAttributeAsEnumeration(s32 index, const char* const* enumera
 {
 	if ((u32)index < Attributes.size())
 	{
-		IAttribute* att = Attributes[index];
+		const IAttribute* att = Attributes[index];
 
 		if (enumerationLiteralsToUse && att)
 		{
@@ -1027,7 +1027,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::matrix4& v)
 //! Gets an attribute as a matrix4
 core::matrix4 CAttributes::getAttributeAsMatrix(const c8* attributeName, const core::matrix4& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getMatrix();
 	else
@@ -1074,7 +1074,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::quaternion& 
 //! Gets an attribute as a quaternion
 core::quaternion CAttributes::getAttributeAsQuaternion(const c8* attributeName, const core::quaternion& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getQuaternion();
 	else
@@ -1120,7 +1120,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::aabbox3df& v
 //! Gets an attribute as a axis aligned bounding box
 core::aabbox3df CAttributes::getAttributeAsBox3d(const c8* attributeName, const core::aabbox3df& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getBBox();
 	else
@@ -1166,7 +1166,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::plane3df& v)
 //! Gets an attribute as a 3d plane
 core::plane3df CAttributes::getAttributeAsPlane3d(const c8* attributeName, const core::plane3df& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getPlane();
 	else
@@ -1212,7 +1212,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::triangle3df&
 //! Gets an attribute as a 3d triangle
 core::triangle3df CAttributes::getAttributeAsTriangle3d(const c8* attributeName, const core::triangle3df& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getTriangle();
 	else
@@ -1259,7 +1259,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::line2df& v)
 //! Gets an attribute as a 2d line
 core::line2df CAttributes::getAttributeAsLine2d(const c8* attributeName, const core::line2df& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getLine2d();
 	else
@@ -1305,7 +1305,7 @@ void CAttributes::setAttribute(const c8* attributeName, const core::line3df& v)
 //! Gets an attribute as a 3d line
 core::line3df CAttributes::getAttributeAsLine3d(const c8* attributeName, const core::line3df& defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getLine3d();
 	else
@@ -1354,7 +1354,7 @@ void CAttributes::setAttribute(const c8* attributeName, void* userPointer)
 //! \param attributeName: Name of the attribute to get.
 void* CAttributes::getAttributeAsUserPointer(const c8* attributeName, void* defaultNotFound) const
 {
-	IAttribute* att = getAttributeP(attributeName);
+	const IAttribute* att = getAttributeP(attributeName);
 	if (att)
 		return att->getUserPointer();
 	else
@@ -1427,7 +1427,7 @@ bool CAttributes::read(io::IXMLReader* reader, bool readCurrentElementOnly,
 }
 
 
-void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
+void CAttributes::readAttributeFromXML(const io::IXMLReader* reader)
 {
 #ifdef _IRR_COMPILE_WITH_XML_
 	core::stringw element = reader->getNodeName();
@@ -1557,7 +1557,7 @@ void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 	{
 		core::array<core::stringw> tmpArray;
 
-		s32 count = reader->getAttributeValueAsInt(L"count");
+		const s32 count = reader->getAttributeValueAsInt(L"count");
 		s32 n=0;
 		const core::stringw tmpName(L"value");
 		for (; n<count; ++n)
