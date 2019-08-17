@@ -2398,14 +2398,18 @@ struct dreadglobal
 	irr::io::IFileSystem* io;
 	irr::video::IImagePresenter* presenter;
 };
-dreadglobal b;
+
+namespace
+{
+	dreadglobal burning_dread;
+}
 
 DWORD WINAPI dreadFun( void *p)
 {
     printf("Hi This is burning dread\n");
-	b.driver = new irr::video::CBurningVideoDriver(*b.params, b.io, b.presenter);
+	burning_dread.driver = new irr::video::CBurningVideoDriver(*burning_dread.params, burning_dread.io, burning_dread.presenter);
 
-	SetEvent ( b.sync );
+	SetEvent (burning_dread.sync );
 	while ( 1 )
 	{
 		Sleep ( 1000 );
@@ -2426,13 +2430,13 @@ IVideoDriver* createBurningVideoDriver(const irr::SIrrlichtCreationParameters& p
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
 	#ifdef _IRR_WINDOWS_
-	b.sync = CreateEventA ( 0, 0, 0, "burnevent0" );
-	b.params = &params;
-	b.io = io;
-	b.presenter = presenter;
-	b.dread = CreateThread ( 0, 0, dreadFun, 0, 0, &b.dreadid );
-	WaitForSingleObject ( b.sync, INFINITE );
-	return b.driver;
+	burning_dread.sync = CreateEventA ( 0, 0, 0, "burnevent0" );
+	burning_dread.params = &params;
+	burning_dread.io = io;
+	burning_dread.presenter = presenter;
+	burning_dread.dread = CreateThread ( 0, 0, dreadFun, 0, 0, &burning_dread.dreadid );
+	WaitForSingleObject (burning_dread.sync, INFINITE );
+	return burning_dread.driver;
 	#else
 	return new CBurningVideoDriver(params, io, presenter);
 	#endif
