@@ -751,8 +751,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 		OcclusionQuerySupport=false;
 
-		Feature.BlendOperation = (Version >= 140) || FeatureAvailable[IRR_EXT_blend_minmax] || FeatureAvailable[IRR_EXT_blend_subtract] ||
-		FeatureAvailable[IRR_EXT_blend_logic_op];
+    Feature.BlendOperation = (Version >= 140) ||
+            FeatureAvailable[IRR_EXT_blend_minmax] ||
+            FeatureAvailable[IRR_EXT_blend_subtract] ||
+            FeatureAvailable[IRR_EXT_blend_logic_op];
 
 #ifdef _DEBUG
 	if (FeatureAvailable[IRR_NVX_gpu_memory_info])
