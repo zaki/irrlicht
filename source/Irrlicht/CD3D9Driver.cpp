@@ -1491,7 +1491,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 
 	s16 indices[6] = {0,1,2,0,2,3};
 
-	setActiveTexture(0, const_cast<video::ITexture*>(texture));
+	setActiveTexture(0, texture);
 
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
@@ -1528,7 +1528,7 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 	if (!texture)
 		return;
 
-	if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
+	if (!setActiveTexture(0, texture))
 		return;
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
@@ -1678,7 +1678,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	if (!sourceRect.isValid())
 		return;
 
-	if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
+	if (!setActiveTexture(0, texture))
 		return;
 
 	core::position2d<s32> targetPos = pos;
