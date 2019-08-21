@@ -508,7 +508,7 @@ private:
 
 	// replaces xml special characters in a string and creates a new one
 	core::string<char_type> replaceSpecialCharacters(
-		core::string<char_type>& origstr)
+		const core::string<char_type>& origstr)
 	{
 		int pos = origstr.findFirst(L'&');
 		int oldPos = 0;

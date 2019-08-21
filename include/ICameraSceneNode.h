@@ -193,7 +193,7 @@ namespace scene
 
 	protected:
 
-		void cloneMembers(ICameraSceneNode* toCopyFrom)
+		void cloneMembers(const ICameraSceneNode* toCopyFrom)
 		{
 			IsOrthogonal = toCopyFrom->IsOrthogonal;
 		}

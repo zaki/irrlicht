@@ -762,7 +762,7 @@ namespace quake3
 	*/
 	inline void getTextures(tTexArray &textures,
 				const core::stringc &name, u32 &startPos,
-				io::IFileSystem *fileSystem,
+				const io::IFileSystem *fileSystem,
 				video::IVideoDriver* driver)
 	{
 		static const char * const extension[] =
