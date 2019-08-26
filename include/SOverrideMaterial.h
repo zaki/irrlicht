@@ -39,15 +39,40 @@ namespace video
 		true if the Override material is enabled in the current pass. */
 		bool Enabled;
 
+		struct SMaterialTypeReplacement
+		{
+			SMaterialTypeReplacement(s32 original, u32 replacement) : Original(original), Replacement(replacement) {}
+			SMaterialTypeReplacement(u32 replacement) : Original(-1), Replacement(replacement) {}
+
+			//! SMaterial.MaterialType to replace. 
+			//! -1 for all types or a specific value to only replace that one (which is either one of E_MATERIAL_TYPE or a shader material id)
+			s32 Original;
+
+			//! MaterialType to used to override Original (either one of E_MATERIAL_TYPE or a shader material id)
+			u32 Replacement;
+		};
+
+		//! To overwrite SMaterial::MaterialType
+		core::array<SMaterialTypeReplacement> MaterialTypes;
+
 		//! Default constructor
 		SOverrideMaterial() : EnableFlags(0), EnablePasses(0), Enabled(false)
 		{
-			for ( u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		}
+
+		//! disable overrides and reset all flags
+		void reset()
+		{
+			EnableFlags = 0;
+			EnablePasses = 0;
+			Enabled = false;
+			for (u32 i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 			{
-				EnableLayerFlags[i] = true;
+				EnableLayerFlags[i] = true;	// doesn't do anything unless EnableFlags is set, just saying by default all texture layers are affected by flags
 				EnableTextures[i] = false;
 				EnableLayers[i] = false;
 			}
+			MaterialTypes.clear();
 		}
 
 		//! Apply the enabled overrides
@@ -55,6 +80,12 @@ namespace video
 		{
 			if (Enabled)
 			{
+				for (u32 i = 0; i < MaterialTypes.size(); ++i)
+				{
+					const SMaterialTypeReplacement& mtr = MaterialTypes[i];
+					if (mtr.Original < 0 || (s32)mtr.Original == material.MaterialType)
+						material.MaterialType = (E_MATERIAL_TYPE)mtr.Replacement;
+				}
 				for (u32 f=0; f<32; ++f)
 				{
 					const u32 num=(1<<f);
