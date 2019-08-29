@@ -69,7 +69,7 @@ enum E_TEXTURE_CREATION_FLAG
 	/** Enabling this makes calls to ITexture::lock a lot faster, but costs main memory.
 	Currently only used in combination with OpenGL drivers.
 	NOTE: Disabling this does not yet work correctly with alpha-textures.
-	So the default is off for now (but might change with Irrlicht 1.9 if we get the alpha-troubles fixed).
+	So the default is on for now (but might change with Irrlicht 1.9 if we get the alpha-troubles fixed).
 	*/
 	ETCF_ALLOW_MEMORY_COPY = 0x00000080,
 
