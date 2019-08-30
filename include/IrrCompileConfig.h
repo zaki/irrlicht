@@ -175,18 +175,22 @@ define out. */
 
 //! Define required options for OpenGL drivers.
 #if defined(_IRR_COMPILE_WITH_OPENGL_)
-#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
-#define _IRR_OPENGL_USE_EXTPOINTER_
-#define _IRR_COMPILE_WITH_WGL_MANAGER_
-#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-#define _IRR_OPENGL_USE_EXTPOINTER_
-#define _IRR_COMPILE_WITH_GLX_MANAGER_
-#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
-#define _IRR_COMPILE_WITH_NSOGL_MANAGER_
-#elif defined(_IRR_SOLARIS_PLATFORM_)
-#define _IRR_COMPILE_WITH_GLX_MANAGER_
+	#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+		#define _IRR_OPENGL_USE_EXTPOINTER_
+		#define _IRR_COMPILE_WITH_WGL_MANAGER_
+	#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
+		#define _IRR_OPENGL_USE_EXTPOINTER_
+		#define _IRR_COMPILE_WITH_GLX_MANAGER_
+	#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
+		#define _IRR_COMPILE_WITH_NSOGL_MANAGER_
+	#elif defined(_IRR_SOLARIS_PLATFORM_)
+		#define _IRR_COMPILE_WITH_GLX_MANAGER_
+	#elif defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+		#define _IRR_OPENGL_USE_EXTPOINTER_
+	#endif
 #endif
-#endif
+
+
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
 /** If you do not need the software driver, or want to use Burning's Video instead,
